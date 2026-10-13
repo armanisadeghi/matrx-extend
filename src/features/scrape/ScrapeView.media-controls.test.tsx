@@ -212,18 +212,18 @@ describe('ScrapeView media controls', () => {
     const firstRemove = showTooltip('Remove video');
     expect(observeAsNative(selectedContent()).videoItems).toEqual([
       {
-        href: 'https://video.test/watch/seedlings?utm_source=aimatrx.com&utm_medium=referral',
+        href: 'https://video.test/watch/seedlings',
         text: 'https://video.test/watch/seedlings',
       },
       {
-        href: 'https://video.test/watch/watering?utm_source=aimatrx.com&utm_medium=referral',
+        href: 'https://video.test/watch/watering',
         text: 'https://video.test/watch/watering',
       },
     ]);
     fireEvent.click(firstRemove);
     expect(observeAsNative(selectedContent()).videoItems).toEqual([
       {
-        href: 'https://video.test/watch/watering?utm_source=aimatrx.com&utm_medium=referral',
+        href: 'https://video.test/watch/watering',
         text: 'https://video.test/watch/watering',
       },
     ]);
@@ -233,7 +233,7 @@ describe('ScrapeView media controls', () => {
     showTooltip('Remove link');
     expect(observeAsNative(selectedContent()).linkItems).toEqual([
       {
-        href: 'https://fieldnotes.test/garden/calendar?utm_source=aimatrx.com&utm_medium=referral',
+        href: 'https://fieldnotes.test/garden/calendar',
         text: 'Planting calendar',
       },
     ]);
@@ -246,17 +246,17 @@ describe('ScrapeView media controls', () => {
       })),
     ).toEqual([
       {
-        href: 'https://fieldnotes.test/media/seed-tray.jpg?utm_source=aimatrx.com&utm_medium=referral',
+        href: 'https://fieldnotes.test/media/seed-tray.jpg',
         src: 'https://fieldnotes.test/media/seed-tray.jpg',
         alt: 'Seed tray',
       },
       {
-        href: 'https://fieldnotes.test/media/soil-chart.png?utm_source=aimatrx.com&utm_medium=referral',
+        href: 'https://fieldnotes.test/media/soil-chart.png',
         src: 'https://fieldnotes.test/media/soil-chart.png',
         alt: '',
       },
       {
-        href: 'https://fieldnotes.test/media/site-mark.svg?utm_source=aimatrx.com&utm_medium=referral',
+        href: 'https://fieldnotes.test/media/site-mark.svg',
         src: 'https://fieldnotes.test/media/site-mark.svg',
         alt: 'Fieldnotes',
       },
@@ -376,9 +376,7 @@ describe('ScrapeView media controls', () => {
     render(<ScrapeView />);
     await openTab('Video');
     const videoLink = screen.getByRole('link', { name: 'https://video.test/watch/seedlings' });
-    expect(videoLink.getAttribute('href')).toBe(
-      'https://video.test/watch/seedlings?utm_source=aimatrx.com&utm_medium=referral',
-    );
+    expect(videoLink.getAttribute('href')).toBe('https://video.test/watch/seedlings');
     fireEvent.click(firstElement(screen.getAllByTitle('Copy video URL'), 'copy video URL button'));
     await waitFor(() =>
       expect(mocks.copiedText).toHaveBeenCalledWith('https://video.test/watch/seedlings'),

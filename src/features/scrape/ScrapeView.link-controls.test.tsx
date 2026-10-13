@@ -168,10 +168,8 @@ describe('ScrapeView link controls', () => {
     await openLinks();
 
     const guide = screen.getByRole('link', { name: /Seed starting guide/ });
-    // Opens through the outbound door (our referral data); Copy keeps the exact address.
-    expect(guide.getAttribute('href')).toBe(
-      'https://fieldnotes.test/garden/seed-starting?utm_source=aimatrx.com&utm_medium=referral',
-    );
+    // Rendered as written (the outbound door tags it only for the click); Copy keeps the exact address.
+    expect(guide.getAttribute('href')).toBe('https://fieldnotes.test/garden/seed-starting');
     expect(guide.getAttribute('target')).toBe('_blank');
     const copyButton = screen.getAllByTitle('Copy URL').at(0);
     if (!copyButton) throw new Error('Expected the guide copy button to exist');
