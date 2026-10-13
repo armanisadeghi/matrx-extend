@@ -34,6 +34,7 @@ import {
   hostedScrapeSaveScope,
   hostedScrapeScope,
 } from './hosted-scrape-route.mjs';
+import { hostedScreenshotRoute } from './hosted-screenshot-route.mjs';
 import {
   hostedGuestSeoRoute,
   hostedSeoInterruptTarget,
@@ -43,6 +44,7 @@ import {
 import { hostedShowcaseRoute } from './hosted-showcase-route.mjs';
 import { runHostedStartupIntervalDiagnostic } from './hosted-startup-interval-diagnostic.mjs';
 import { hostedTabGroupsRoute } from './hosted-tab-groups-route.mjs';
+import { promoteImportedCiDevArtifact } from './promote-ci-dev-artifact.mjs';
 import {
   PUBLISHED_STORE_CRX,
   requirePublishedStoreCrxTarget,
@@ -421,6 +423,20 @@ async function run(prepared, artifactMode) {
     assert.equal(kind, 'ci_development_test', 'Visibility census requires CI development receipt');
   if (acceptanceCase === 'audit-key-admin')
     assert.equal(kind, 'ci_development_test', 'Audit key requires CI development receipt');
+  const screenshotRoute = hostedScreenshotRoute(
+    acceptanceCase,
+    prepared,
+    process.env.MATRX_HOSTED_ACCEPTANCE_LANE,
+  );
+  const screenshotPromotion = screenshotRoute
+    ? await promoteImportedCiDevArtifact(prepared.extensionDir)
+    : null;
+  if (screenshotPromotion)
+    assert.equal(
+      screenshotPromotion.compatibility,
+      'exact-source',
+      'hosted_screenshot_exact_source_required',
+    );
   if (acceptanceCase === 'member-chat')
     assert.equal(
       kind,
@@ -485,6 +501,9 @@ async function run(prepared, artifactMode) {
     runtimeDir,
     'approved-admin-organization-private.json',
   );
+  const screenshotAdminEnvPath = join(homedir(), 'code/aidream/.env');
+  const screenshotOrganizationPath = join(repo, 'test-results/d22-private-config.json');
+  const screenshotPrivateFiles = [];
   const showcaseRoute = hostedShowcaseRoute(
     acceptanceCase,
     prepared,
@@ -519,7 +538,8 @@ async function run(prepared, artifactMode) {
     acceptanceCase === 'settings-account-popover-admin' ||
     acceptanceCase === 'audit-key-admin' ||
     acceptanceCase === 'desktop-settings-admin' ||
-    acceptanceCase === 'visibility-census-admin'
+    acceptanceCase === 'visibility-census-admin' ||
+    Boolean(screenshotRoute)
   ) {
     assert.ok(process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON, 'Prepare admin secret required');
     const parsed = JSON.parse(process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
@@ -629,7 +649,8 @@ async function run(prepared, artifactMode) {
     acceptanceCase === 'settings-account-popover-admin' ||
     acceptanceCase === 'audit-key-admin' ||
     acceptanceCase === 'desktop-settings-admin' ||
-    acceptanceCase === 'visibility-census-admin'
+    acceptanceCase === 'visibility-census-admin' ||
+    Boolean(screenshotRoute)
       ? {
           MATRX_PREPARE_EXTENSION_DIR: extensionDir,
           MATRX_PREPARE_RECEIPT: relocatedReceipt,
@@ -669,6 +690,12 @@ async function run(prepared, artifactMode) {
     ...(kind === 'ci_development_test'
       ? { MATRX_GUEST_CHAT_DEV_RECEIPT: relocatedReceipt }
       : { MATRX_GUEST_CHAT_RELEASE_RECEIPT: relocatedReceipt }),
+    ...(screenshotRoute
+      ? {
+          SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT: screenshotPromotion.receiptPath,
+          SCREENSHOT_CAPTURE_EXPECTED_SOURCE_SHA: prepared.sourceSha,
+        }
+      : {}),
   };
   childEnv.MATRX_HOSTED_MEMBER_LINK_JSON = undefined;
   childEnv.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON = undefined;
@@ -687,7 +714,20 @@ async function run(prepared, artifactMode) {
     }
   }
   try {
+    if (screenshotRoute) {
+      const credentials = JSON.parse(await readFile(adminCredentialsPath, 'utf8'));
+      await mkdir(dirname(screenshotAdminEnvPath), { recursive: true, mode: 0o700 });
+      await writeFile(
+        screenshotAdminEnvPath,
+        `AI_ADMIN_USERNAME=admin@admin.com\nAI_ADMIN_PASSWORD=${credentials.password}\n`,
+        { flag: 'wx', mode: 0o600 },
+      );
+      screenshotPrivateFiles.push(screenshotAdminEnvPath);
+      await stageProfileOrganizationConfig(screenshotOrganizationPath, process.env);
+      screenshotPrivateFiles.push(screenshotOrganizationPath);
+    }
     const driver =
+      screenshotRoute?.driver ??
       notesFindRoute?.driver ??
       ([
         'settings-controls',
@@ -744,6 +784,7 @@ async function run(prepared, artifactMode) {
       `native side-panel acceptance exited ${result.code ?? result.signal}`,
     );
   } finally {
+    for (const path of screenshotPrivateFiles.reverse()) await unlink(path);
     if (
       acceptanceCase === 'member-chat' ||
       acceptanceCase === 'member-data' ||

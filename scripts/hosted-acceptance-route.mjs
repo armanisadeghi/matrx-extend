@@ -39,6 +39,7 @@ const HOSTED_ACCEPTANCE_CASES = new Set([
   'records-readonly-admin',
   'profile-admin',
   'profile-member',
+  'screenshots-capture-admin',
 ]);
 
 /** Resolve the exact case and its native driver before the acceptance run proceeds. */

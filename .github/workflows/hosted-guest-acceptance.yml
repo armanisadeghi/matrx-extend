@@ -53,6 +53,7 @@ on:
           - scrape-save-member
           - tab-groups-member
           - native-ai-member-probe
+          - screenshots-capture-admin
           - notes-find-member
           - notes-lazy-general-member
           - settings-controls
@@ -265,7 +266,7 @@ jobs:
             [[ "$ACCEPTANCE_CASE" == notes-find-member && "$ACCEPTANCE_LANE" == A ]] || { echo 'Notes startup diagnostic requires notes-find-member on lane A.' >&2; exit 1; }
           fi
           case "$ACCEPTANCE_CASE" in
-            guest-chat|guest-seo|guest-data|member-data|guest-scrape|guest-scrape-development|scrape-error-recovery-guest|scrape-save-member|tab-groups-member|native-ai-member-probe|notes-find-member|notes-lazy-general-member|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|settings-account-popover-guest|settings-account-popover-member|settings-account-popover-admin|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
+            guest-chat|guest-seo|guest-data|member-data|guest-scrape|guest-scrape-development|scrape-error-recovery-guest|scrape-save-member|tab-groups-member|native-ai-member-probe|screenshots-capture-admin|notes-find-member|notes-lazy-general-member|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|settings-account-popover-guest|settings-account-popover-member|settings-account-popover-admin|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
             *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;
           esac
           [[ "${RELOAD_OPEN_DIAGNOSTIC:-0}" != 1 || "$ACCEPTANCE_CASE" == guest-scrape-development || "$ACCEPTANCE_CASE" == member-data || "$ACCEPTANCE_CASE" == settings-controls ]] || { echo 'Worker open diagnostic requires guest-scrape-development, member-data or settings-controls.' >&2; exit 1; }
@@ -284,6 +285,9 @@ jobs:
           fi
           if [[ "$ACCEPTANCE_CASE" == tab-groups-member || "$ACCEPTANCE_CASE" == native-ai-member-probe || "$ACCEPTANCE_CASE" == notes-find-member || "$ACCEPTANCE_CASE" == notes-lazy-general-member ]]; then
             [[ "$ACCEPTANCE_LANE" == A ]] || { echo 'Member native probe requires lane A.' >&2; exit 1; }
+          fi
+          if [[ "$ACCEPTANCE_CASE" == screenshots-capture-admin ]]; then
+            [[ "$ACCEPTANCE_LANE" == A && -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || { echo 'Admin Screenshots requires lane A and a CI development artifact.' >&2; exit 1; }
           fi
           if [[ "$ACCEPTANCE_CASE" == member-data ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'Member Data requires member auth.' >&2; exit 1; }
@@ -425,7 +429,7 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == member-chat || "$ACCEPTANCE_CASE" == guest-scrape ]]; then
             [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
-          if [[ "$ACCEPTANCE_CASE" == guest-scrape-development || "$ACCEPTANCE_CASE" == scrape-error-recovery-guest || "$ACCEPTANCE_CASE" == scrape-save-member || "$ACCEPTANCE_CASE" == tab-groups-member || "$ACCEPTANCE_CASE" == native-ai-member-probe || "$ACCEPTANCE_CASE" == notes-find-member || "$ACCEPTANCE_CASE" == notes-lazy-general-member ]]; then
+          if [[ "$ACCEPTANCE_CASE" == guest-scrape-development || "$ACCEPTANCE_CASE" == scrape-error-recovery-guest || "$ACCEPTANCE_CASE" == scrape-save-member || "$ACCEPTANCE_CASE" == tab-groups-member || "$ACCEPTANCE_CASE" == native-ai-member-probe || "$ACCEPTANCE_CASE" == notes-find-member || "$ACCEPTANCE_CASE" == notes-lazy-general-member || "$ACCEPTANCE_CASE" == screenshots-capture-admin ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == guest-seo || "$ACCEPTANCE_CASE" == guest-data ]]; then
@@ -607,6 +611,7 @@ jobs:
             test-results/visibility-census-guest.json.guest-account-readiness.png
             test-results/settings-desktop-native-*.json
             test-results/audit-key-native-*.json
+            test-results/screenshot-capture-*.json
             test-results/reviewer-chat-store-*.json
             test-results/prepare-stale-result-native-*.json
             ${{ runner.temp }}/showcase-picker-native-*.json

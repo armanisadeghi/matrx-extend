@@ -90,6 +90,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       'records-readonly-admin',
       'profile-admin',
       'visibility-census-admin',
+      'screenshots-capture-admin',
     ].includes(acceptanceCase) ||
     scrapeMode === 'admin'
   ) {
@@ -98,15 +99,26 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       scrapeMode === 'admin' ||
       acceptanceCase.startsWith('showcase-') ||
       acceptanceCase === 'records-readonly-admin' ||
-      acceptanceCase === 'settings-account-popover-admin'
+      acceptanceCase === 'settings-account-popover-admin' ||
+      acceptanceCase === 'screenshots-capture-admin'
     )
       requireSettingsCredential('admin', env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
+    if (acceptanceCase === 'screenshots-capture-admin') {
+      const { password } = JSON.parse(env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
+      assert.ok(!/[\r\n]/.test(password), 'hosted_screenshot_password_line_refused');
+      assert.equal(
+        password.trim().replace(/^["']|["']$/g, ''),
+        password,
+        'hosted_screenshot_password_file_roundtrip_refused',
+      );
+    }
   }
   if (
     acceptanceCase === 'profile-admin' ||
     acceptanceCase.startsWith('showcase-') ||
     acceptanceCase === 'records-readonly-admin' ||
-    scrapeMode === 'admin'
+    scrapeMode === 'admin' ||
+    acceptanceCase === 'screenshots-capture-admin'
   )
     profileOrganizationConfig(
       env,
