@@ -32,7 +32,6 @@ import {
 } from '@/lib/guided-capture/protocol';
 import { recipeForPlatform, recipeForUrl } from '@/lib/guided-capture/recipes';
 import { getOne, setOne } from '@/lib/storage/chrome-local';
-import { withReferral } from "@ai-matrx/kit/outbound";
 
 type TabMap = Record<string, GuidedTabJob>;
 
@@ -124,7 +123,8 @@ export async function openGuidedTab(args: {
   const social = (row.metadata?.social ?? {}) as { platform?: unknown; target?: unknown };
   if (typeof chrome.tabs?.create !== 'function')
     return { ok: false, sentence: 'This browser cannot open a capture tab.' };
-  const tab = await chrome.tabs.create({ url: withReferral(row.url), active: true });
+  // outbound-ok: a capture of this exact page, not a referral — the captured URL stays exact.
+  const tab = await chrome.tabs.create({ url: row.url, active: true });
   if (typeof tab.id !== 'number') {
     return { ok: false, sentence: 'Your browser would not open the page. Try again.' };
   }
