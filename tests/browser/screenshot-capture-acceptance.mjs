@@ -15,6 +15,7 @@ import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { screenshotPublicLink, screenshotViewer } from './screenshot-current-controls.mjs';
 import { ownedScreenshotCardMatches } from './screenshot-owned-card-identity.mjs';
+import { watchOwnedScreenshotDelete } from './screenshot-owned-delete-observer.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -556,6 +557,7 @@ async function watchGalleryReads(panel) {
         finished: false,
         rows: null,
         outcome: 'pending',
+        startedAt: performance.now(),
       });
     } catch {
       // Unrelated traffic cannot establish a gallery read.
@@ -569,6 +571,7 @@ async function watchGalleryReads(panel) {
     const request = requests.get(requestId);
     if (!request) return;
     request.finished = true;
+    request.completedAt = performance.now();
     if (request.status !== 200) {
       request.outcome = 'http_failure';
       return;
@@ -617,6 +620,10 @@ async function watchGalleryReads(panel) {
         status: request.status,
         finished: request.finished,
         outcome: request.outcome,
+        elapsedMs:
+          request.completedAt === undefined
+            ? null
+            : Math.round(request.completedAt - request.startedAt),
       })),
     }),
     completedAfter: (index, expected) =>
@@ -627,7 +634,14 @@ async function watchGalleryReads(panel) {
       [...requests.values()]
         .slice(index)
         .filter((request) => request.canonical === expected)
-        .map((request) => ({ status: request.status, outcome: request.outcome })),
+        .map((request) => ({
+          status: request.status,
+          outcome: request.outcome,
+          elapsedMs:
+            request.completedAt === undefined
+              ? null
+              : Math.round(request.completedAt - request.startedAt),
+        })),
     pendingAt: (index, expected) =>
       [...requests.values()]
         .slice(index)
@@ -813,7 +827,34 @@ async function verifyOwnedFilesTab(panel, journal, fixtureUrl, fixtureCanonical,
   }
   // Switching back from Files changes the active page. Require the product's
   // completed read for this fixture before accepting the restored card.
-  const restoredRead = await completedRead(journal, restoreMarker, fixtureCanonical);
+  report.observations ??= {};
+  const returnedTabs = await ownedTabs(panel);
+  report.observations.filesReturn = {
+    activeTab: safeObservation({
+      tabCount: returnedTabs.filter((tab) => tab.active).length,
+      ownedFixtureActive: returnedTabs.some(
+        (tab) => tab.active && tab.id === original.id && tab.url === fixtureUrl,
+      ),
+    }),
+    read: { started: false, completed: false, requestCount: 0 },
+  };
+  let restoredRead;
+  try {
+    restoredRead = await completedRead(journal, restoreMarker, fixtureCanonical);
+  } finally {
+    const requests = journal.summaryAfter(restoreMarker, fixtureCanonical);
+    report.observations.filesReturn.read = {
+      started: requests.length > 0,
+      completed: requests.some((request) => request.outcome === 'complete'),
+      requestCount: requests.length,
+      requests: safeObservation(requests),
+    };
+  }
+  report.observations.filesReturn.read.ownedRow =
+    restoredRead.rows.length === 1 &&
+    restoredRead.rows[0].id === row.id &&
+    restoredRead.rows[0].file_id === row.file_id;
+  report.observations.filesReturn.read.rowCount = restoredRead.rows.length;
   if (
     restoredRead.rows.length !== 1 ||
     restoredRead.rows[0].id !== row.id ||
@@ -821,6 +862,7 @@ async function verifyOwnedFilesTab(panel, journal, fixtureUrl, fixtureCanonical,
   )
     fail('restored_fixture_read_lost_owned_row');
   await selectedGallery(panel, fixtureCanonical);
+  report.observations.filesReturn.gallery = safeObservation(await gallery(panel, fixtureCanonical));
   try {
     await observedWait(
       `restored_owned_files_card_identity_${index}`,
@@ -829,6 +871,44 @@ async function verifyOwnedFilesTab(panel, journal, fixtureUrl, fixtureCanonical,
       30_000,
     );
   } catch {
+    try {
+      report.observations.filesReturn.card = safeObservation(
+        await galleryResponseAgreement(panel, restoredRead.rows),
+      );
+    } catch {
+      report.observations.filesReturn.card = { readFailed: true };
+    }
+    // One trusted Refresh distinguishes a stale restored view from a read
+    // that still cannot render the owned response. Keep the initial failure.
+    const refresh = {
+      clicked: false,
+      completedRead: false,
+      ownedRow: false,
+      cardMatched: false,
+      failureCode: null,
+    };
+    report.observations.filesReturn.refreshDiscrimination = refresh;
+    try {
+      const refreshMarker = journal.marker();
+      await click(panel, 'title', 'Refresh');
+      refresh.clicked = true;
+      const read = await completedRead(journal, refreshMarker, fixtureCanonical);
+      refresh.completedRead = true;
+      refresh.readElapsedMs = Math.round(read.completedAt - read.startedAt);
+      refresh.ownedRow =
+        read.rows.length === 1 &&
+        read.rows[0].id === row.id &&
+        read.rows[0].file_id === row.file_id;
+      const card = await galleryResponseAgreement(panel, read.rows);
+      refresh.cardMatched = refresh.ownedRow && ownedScreenshotCardMatches(read.rows, row, card);
+      refresh.gallery = safeObservation(await gallery(panel, fixtureCanonical));
+      refresh.card = safeObservation(card);
+      refresh.ownedFixtureActive = (await ownedTabs(panel)).some(
+        (tab) => tab.active && tab.id === original.id && tab.url === fixtureUrl,
+      );
+    } catch {
+      refresh.failureCode = 'refresh_observation_failed';
+    }
     fail('restored_owned_files_card_identity_unverified');
   }
   return { exactFilesUrlAtApexOrCanonicalWww: true, newTabCount: 1, closedOwnedTab: true };
@@ -1118,7 +1198,18 @@ async function exercise({ page, panel, panelTarget }) {
     if (!confirmation.consequence) fail('delete_consequence_missing');
     stage = 'owned_capture_delete_confirm';
     const deleteMarker = journal.marker();
-    await click(panel, 'button-text', 'Delete');
+    const deletion = watchOwnedScreenshotDelete(panel, createdRow.id);
+    try {
+      await deletion.clickAndWait(
+        () => click(panel, 'button-text', 'Delete'),
+        (state) => {
+          report.observations ??= {};
+          report.observations.ownedDeleteMutation = state;
+        },
+      );
+    } finally {
+      deletion.stop();
+    }
     const deletedRead = await completedRead(journal, deleteMarker, fixtureCanonical);
     const deleted = await selectedGallery(panel, fixtureCanonical);
     await requireGalleryAgreement(panel, deleted, deletedRead.rows);
@@ -1206,8 +1297,18 @@ async function exercise({ page, panel, panelTarget }) {
           );
           if (!confirmation.consequence) throw new Error('consequence_not_visible');
           report.failure.ownedUiCleanupStage = 'delete_confirm_click';
-          await click(panel, 'button-text', 'Delete');
-          report.failure.ownedUiCleanupAttempted = true;
+          const deletion = watchOwnedScreenshotDelete(panel, createdRow.id);
+          try {
+            await deletion.clickAndWait(
+              () => click(panel, 'button-text', 'Delete'),
+              (state) => {
+                report.failure.ownedUiCleanupMutation = state;
+              },
+            );
+            report.failure.ownedUiCleanupAttempted = true;
+          } finally {
+            deletion.stop();
+          }
         } else if (identity.cardCount !== 0) {
           throw new Error('owned_card_not_unique');
         }
