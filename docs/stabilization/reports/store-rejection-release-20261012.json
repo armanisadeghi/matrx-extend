@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-13T01:21:03.566038+00:00",
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "status": "not release eligible; no dispatch, upload or resubmission",
+  "official_email": {
+    "method": "Authenticated Chrome accessibility via cua_repl; blank Gmail page reloaded through normal Chrome UI",
+    "sender": "chromewebstore-noreply@google.com",
+    "subject": "Chrome Web Store: Rejection notification for Matrx Extend",
+    "received_pacific": "2026-10-11T22:10:00-07:00",
+    "received_utc": "2026-10-12T05:10:00Z",
+    "violation": "Blue Argon: remotely hosted code in a Manifest V3 item",
+    "routing_id": "FZSL",
+    "chunk": "chunks/jspdf.es.min-BeFHQiId.js",
+    "remote_loader": "https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js",
+    "version_named": false,
+    "email_url": "https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox/FMfcgzQhWnztJSXxmqPDBNWMdpSftfsr"
+  },
+  "public_listing": {
+    "method": "Direct read-only HTTPS with Cache-Control no-cache",
+    "observed_at_utc": "2026-10-13T01:20:16Z",
+    "response_date": "Tue, 13 Oct 2026 01:20:16 GMT",
+    "status": 200,
+    "version": "0.2.205",
+    "private_review_state_proven": false
+  },
+  "private_dashboard": {
+    "fresh_status": "unverified",
+    "last_authenticated_state": "Pending review 0.2.479; Published 0.2.205; upload disabled",
+    "last_authenticated_observed_at": "2026-10-11 about 17:25 UTC per existing receipt",
+    "prior_browser_safety_refusal": "Existing primary Package tab was refused as extensions gallery; retained restriction; no alternate dashboard control attempted",
+    "current_browser_tab_binding": "Gmail tab binding timed out twice on CDP Emulation.setFocusEmulationEnabled; native Chrome accessibility read succeeded for email only",
+    "replacement_pending_item": false
+  },
+  "source": {
+    "package_version": "0.2.509",
+    "verified_ci_source": "134696fcab7944fdcaf38a97b2d9fb59a439f48d",
+    "ci_run": 38330393915,
+    "ci_conclusion": "success",
+    "focused_run": 38330393919,
+    "focused_conclusion": "success",
+    "latest_local_head_seen": "ce11963312529eff46360ce3d9c93d2113d79f94",
+    "exact_store_zip": "missing",
+    "last_hosted_release_run": 38080281242,
+    "last_hosted_release_version": "0.2.479",
+    "print_lockfile_version": "0.12.35",
+    "local_package_graph_check": {
+      "command": "pnpm -s check:matrx-packages",
+      "exit_code": 1,
+      "problems": [
+        "nested installed chat 0.8.70 beside lockfile 0.8.71",
+        "nested installed data 0.29.24 beside lockfile 0.29.25",
+        "kit 0.44.1 versus npm latest 0.44.3"
+      ],
+      "scope": "Installed graph at check time, not proof that clean CI install at prior source is broken"
+    }
+  },
+  "spend": {
+    "command": "python3 scripts/check_workflow_runner_cost.py --summary",
+    "exit_code": 1,
+    "modeled_weekly_usd": 250.04,
+    "ceiling_weekly_usd": 100,
+    "aidream_weekly_usd": 250.04,
+    "extension_weekly_usd": 0,
+    "optimizations_already_present": [
+      "exact-SHA automatic publish joins instead of duplicate dispatch",
+      "no-op publication plans skip workspace install",
+      "batched deployment source hashing preserves selected bytes"
+    ],
+    "post_change_savings_verified": false,
+    "largest_workflows_weekly_usd": {
+      "publish-npm-package.yml": 82.16,
+      "deploy.yml": 57.84,
+      "repo-only-checks.yml": 30.24
+    },
+    "bounded_assessment": "Narrow publish dedup cannot alone clear the ceiling: removing even the entire $82.16 npm forecast would leave $167.88/week. Existing deploy hash optimization saves less than $1.70/week even if the entire prior 54-second hashing step vanished on all 313 releases. Hourly repo-only schedule remains owner-approved; no schedule or estimates changed."
+  },
+  "private_runner_admission": {
+    "current": "admitted; historical payment refusal no longer demonstrates current blanket denial",
+    "observed_at_utc": "2026-10-13T01:18Z",
+    "repo": "AI-Matrix-Engine/aidream",
+    "run": 38331290282,
+    "job": 115081367362,
+    "runner_id": 1000000859,
+    "status_when_observed": "in_progress",
+    "completed_setup_install_steps": 11,
+    "secondary_admitted_run": 38331396766,
+    "secondary_job": 115081699468,
+    "secondary_runner_id": 1000000862,
+    "secondary_result": "failure after Self-test, check; runner did execute",
+    "historical_refused_job": 115025313399,
+    "historical_refused_runner_id": 0
+  },
+  "actions": {
+    "workflow_dispatches": 0,
+    "upload": false,
+    "submission": false,
+    "product_changes": false,
+    "workflow_changes": false,
+    "cost_manifest_changes": false,
+    "budget_changes": false,
+    "runner_relocation": false,
+    "live_2fa_challenge": false
+  },
+  "next_action": [
+    "Clear modeled weekly spend using measured optimization without changing approved schedules or relocating blocked work",
+    "Reconcile latest package graph and consumer actions before candidate generation",
+    "Establish exact primary dashboard status through permitted authenticated browser; preserve any actually pending submission",
+    "Only when gates pass dispatch release.yml with immutable aidream_sha, message and requested_by; scan exact Store ZIP and complete exact-candidate guest/member acceptance; upload only primary item; verify Pending review and auto-publish"
+  ]
+}
