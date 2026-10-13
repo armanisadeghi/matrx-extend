@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0221 hosted Screenshots admin T04/T05 preflight attempt",
+  "status": "zero_credit_preflight_failure",
+  "run_record": "docs/stabilization/runs/ext-d-0221-admin-preflight-20261013-02.json",
+  "workflow_run": {
+    "id": 38333808942,
+    "checkout_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38333808942"
+  },
+  "artifact": {
+    "ci_run_id": 38332759835,
+    "artifact_id": 11783662933,
+    "source_sha": "84dbc143d85ee63ca68cbd47ef75267e8fe015b4",
+    "ci_conclusion": "success",
+    "workflow_source_drift": "99c647a changes pnpm-lock.yaml only and updates @ai-matrx/chat from 0.8.71 to 0.8.72; this run cannot be labeled latest-main acceptance."
+  },
+  "cause": {
+    "classification": "workflow credential configuration gap",
+    "failed_gate": "Require selected authentication before browser setup",
+    "safe_error": "hosted_admin_secret_required",
+    "missing_repository_secrets": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "repo_secret_name_listing": "confirmed both absent; values were not queried",
+    "admin_source": "aidream .env exists with the documented AI_ADMIN_USERNAME and AI_ADMIN_PASSWORD keys; values were not read or staged",
+    "organization_source": "existing approved-organization fixture is mode 0600 and contains the expected name/id fields; values were not read or staged",
+    "org_secret_scope": "repository owner is a user account; organization-level secret listing returned not found"
+  },
+  "behavior": {
+    "browser_started": false,
+    "resource_admitted": false,
+    "product_credit": false,
+    "admin_T04": "unverified, not reached",
+    "admin_T05": "unverified, not reached",
+    "fixture_cleanup": "not applicable; no product fixture was created"
+  },
+  "durable_evidence": {
+    "sanitized_result": "not produced",
+    "resource_journal": "not produced; guard did not start",
+    "artifact_upload": "workflow upload step completed with no matching result/journal files"
+  },
+  "prior_D221_product_result": "Unchanged: previous admitted browser attempt stopped after Files navigation when the completed GET contained the owned row but the returned gallery rendered zero cards; T05 and owned-row cleanup remained unverified.",
+  "inventory_change": "none; no product case was exercised",
+  "dispatch_policy": "Exactly one dispatch was issued. No retry was made after the preflight failure.",
+  "next_action": "For a future separately authorized run, stage both temporary repository secrets from their documented private sources using a protected stdin/private process, remove them after terminal completion, and use a fresh successful CI artifact for the then-current main SHA."
+}

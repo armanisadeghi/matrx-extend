@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0221-admin-preflight-20261013-02",
+  "defect_id": "EXT-D-0221",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05"],
+  "status": "unverified",
+  "scope": "One authorized hosted lane-A admin Screenshots dispatch. It stopped during authentication preflight before resource admission, browser startup, or product interaction.",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 38333808942,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38333808942",
+    "checkout_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+    "lane": "A",
+    "runner_label": "macos-15-intel",
+    "case": "screenshots-capture-admin",
+    "requested_by": "extend-stabilization-d221-lane-a-20261013",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "failed_step": "Require selected authentication before browser setup",
+    "failure_code": "hosted_admin_secret_required",
+    "workflow_exit_code": 1
+  },
+  "source_and_artifact": {
+    "development_ci_run_id": 38332759835,
+    "development_ci_attempt": 1,
+    "development_artifact_id": 11783662933,
+    "artifact_name": "matrx-extend-development-test-84dbc143d85ee63ca68cbd47ef75267e8fe015b4-38332759835-1",
+    "artifact_sha": "84dbc143d85ee63ca68cbd47ef75267e8fe015b4",
+    "full_ci_conclusion": "success",
+    "focused_acceptance": "success",
+    "workflow_checkout_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+    "checkout_delta": "pnpm-lock.yaml only; @ai-matrx/chat moved from 0.8.71 to 0.8.72",
+    "interpretation": "The development artifact is exact to successful CI run 38332759835, but the hosted workflow checked out a newer main commit. This attempt is not latest-main or release acceptance evidence."
+  },
+  "preflight": {
+    "artifact_provenance_step": "passed; the specified CI development artifact was accepted",
+    "admin_credential_secret": "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON was absent from the workflow environment and repository secret-name listing",
+    "approved_organization_secret": "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON was absent from the repository secret-name listing; the workflow did not reach organization validation",
+    "browser_started": false,
+    "resource_guard_started": false,
+    "resource_admitted": false,
+    "product_interaction": false,
+    "fixture_created": false,
+    "product_credit": false
+  },
+  "case_status": {
+    "admin_T04": "unverified; not reached",
+    "admin_T05": "unverified; not reached",
+    "member_T04_T05": "unverified"
+  },
+  "evidence": {
+    "workflow_logs": "Sanitized failure log identifies hosted_admin_secret_required; no credential values were emitted.",
+    "hosted_artifacts": "No result or resource-journal artifact was available; the upload step found no matching files because failure preceded resource and browser setup.",
+    "repo_secret_inventory": "Read-only listing confirmed both required secret names absent. The repository owner is a user account; organization-level secret listing is unavailable.",
+    "authorized_local_sources": "The documented aidream .env source file exists with AI_ADMIN_USERNAME and AI_ADMIN_PASSWORD keys. The existing approved-organization private fixture exists at mode 0600 with both expected fields. Values were not read into output or changed."
+  },
+  "cleanup": {
+    "resource_journal": "not created; resource guard never started",
+    "browser_or_runner_processes": "none launched by the acceptance workflow",
+    "temporary_credentials": "none staged or created by this attempt",
+    "fixture_row": "no fixture write occurred"
+  },
+  "followup": "No retry was issued. For a separately authorized future attempt, temporarily provision the expected repository secrets from the documented private admin source and the existing mode-0600 approved-organization fixture through a protected stdin/private process, then remove them after terminal completion. Obtain a fresh exact-current-main successful CI artifact because main advanced with a runtime package-lock change."
+}
