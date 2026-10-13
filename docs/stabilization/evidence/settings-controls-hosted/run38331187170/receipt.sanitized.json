@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_run_id": 38331187170,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38331187170",
+  "workflow_result_artifact_id": null,
+  "workflow_checkout_sha": null,
+  "acceptance_case": "settings-local-controls",
+  "role": "guest",
+  "driver_report": "docs/stabilization/evidence/settings-controls-hosted/run38331187170/native-report.sanitized.json",
+  "driver_report_status": "unverified",
+  "source_boundary": {
+    "artifact_kind": "ci_development_test",
+    "source_sha": null,
+    "version": "0.2.509",
+    "tree_sha256": "ccb46c1db5f9cfd781478553e46fe30e44118669dc3ef36c39562e8edce9999f",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "publish_state": "not_published",
+    "artifact_verified": true,
+    "note": "Downloaded hosted result contains the verified build identity and tree hash; source SHA, CI artifact ID, workflow checkout SHA and workflow conclusion were not present in the downloaded files."
+  },
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "resource_finals": {
+    "hosted-package-38331187170-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38331187170-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38331187170-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    }
+  },
+  "case_outcomes": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "status": "pass_bounded_exact_artifact",
+      "criteria_passed": 21,
+      "criteria_failed": 0,
+      "observed": [
+        "Theme Dark, Light and System selection, rendering and storage passed across panel reloads.",
+        "Dark, Light and System full-extension worker/panel replacement and persistence passed.",
+        "Original implicit System value and absent preference/container baseline were restored, including after full extension reload."
+      ],
+      "limits": [
+        "Guest T04 only; dark OS preference, member/admin, Store and full Settings health remain outside this result."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T10",
+      "status": "pass_bounded_exact_artifact",
+      "criteria_passed": 18,
+      "criteria_failed": 0,
+      "observed": [
+        "Ask and Act persisted through panel and full-extension reloads.",
+        "New chats inherited each selected mode after warm selection and after full extension reload.",
+        "Original absent preference/container baseline was restored."
+      ],
+      "limits": [
+        "Guest T10 only; member/admin, Store and full Settings health remain outside this result."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T40",
+      "status": "unverified_overall",
+      "criteria_passed": 10,
+      "criteria_failed": 0,
+      "observed": [
+        "Auto-scrape On and Off controls matched storage through full extension reload.",
+        "Original visible Off and stored false baseline cleanup passed."
+      ],
+      "unverified": [
+        "No downstream background/page-load capture was exercised, so the full T40 case remains unverified."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T67",
+      "status": "pass_bounded_persisted_mode",
+      "criteria_passed": 13,
+      "criteria_failed": 0,
+      "observed": [
+        "Capture and Scroll & capture each persisted through panel and full-extension reload; original mode was restored."
+      ],
+      "limits": [
+        "The initial report observation was already stored=capture after T40. This does not verify the original absent-field/default-mode reproduction for D224."
+      ]
+    }
+  ],
+  "independent_review": {
+    "reviewed_by": "independent peer agent (finding supplied in current task)",
+    "result": "Accepted T04/T10 full-extension passes; accepted T40 toggle/reload/cleanup observations while keeping overall T40 unverified for absent downstream capture; accepted T67 persisted-mode pass while noting initial stored=capture does not resolve the D224 absent-field reproduction.",
+    "d224_status": "must remain open; original absent-field reproduction unverified."
+  },
+  "evidence": {
+    "resource_finals": "docs/stabilization/evidence/settings-controls-hosted/run38331187170/resource-finals.sanitized.json",
+    "resource_journals": [
+      "docs/stabilization/evidence/settings-controls-hosted/run38331187170/resource-journals/hosted-package-38331187170-1.jsonl",
+      "docs/stabilization/evidence/settings-controls-hosted/run38331187170/resource-journals/hosted-browser-38331187170-1.jsonl",
+      "docs/stabilization/evidence/settings-controls-hosted/run38331187170/resource-journals/hosted-guest-38331187170-1.jsonl"
+    ]
+  },
+  "limitations": [
+    "Hosted CI development artifact only, not Store or current-main health.",
+    "Native report status is unverified overall; hosted resource jobs are valid and exited 0.",
+    "No downstream background capture occurred; no T40 full-case pass.",
+    "T67 began with explicit stored=capture, so D224’s original absent-field/default path remains unverified."
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-13T01:02:00+00:00",
+  "updated_at": "2026-10-13T01:25:54.324Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -6831,38 +6831,22 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 38328904848,
-              "source_sha": "ca51b7ac2b7f40271d309af3171ad88ebe02f9e0",
-              "workflow_source_sha": "a7e57addf8eb5ac23b5dc761496f048cad10d848",
-              "hosted_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38328904848",
-              "development_ci_run_id": 38327753178,
-              "development_artifact_id": 11781602861,
-              "build_version": "0.2.509",
-              "tree_sha256": "fd3bad02842d27c65710aa8f583e9e5372a9dcfa0b39b701777f0c4778803e79",
-              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "run_id": 38331187170,
               "resource_valid": true,
-              "resource_final_decision": "child_failed because T40 and T67 full-reload rechecks raised assertions; resourceInvalid=false. T04/T10 criteria themselves passed.",
+              "build_version": "0.2.509",
+              "tree_sha256": "ccb46c1db5f9cfd781478553e46fe30e44118669dc3ef36c39562e8edce9999f",
+              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passed_criteria_count": 21,
               "passed_subtargets": [
-                "Guest Theme: 21/21 criteria passed: 1 pre-full-reload baseline/restoration check, 7/7 panel-document reload assertions, and 13/13 full-extension reload assertions. Dark/Light/System rendered and persisted; full extension worker/panel replacement verified; original absent preference/container baseline restored."
+                "21/21 guest Theme criteria passed on the verified unpublished development artifact: Dark, Light, and System selection/rendering/storage through panel reload; full-extension worker/panel replacement and persistence; and original absent preference/settings-container baseline restoration."
               ],
               "unverified": [
-                "System with dark OS preference; member/admin, Store, and broader Settings behavior."
+                "System with dark OS preference; member/admin, Store, and wider Settings behavior."
               ],
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-controls-38328904848.json"
+                "docs/stabilization/runs/hosted-settings-controls-38331187170.json"
               ],
-              "independent_review": "docs/stabilization/runs/hosted-settings-controls-38328904848.json",
-              "scope": "Signed-out guest exact unpacked development artifact 11781602861 (source ca51b7ac2). T04/T10 bounded criteria only; not full Settings health, Store, member/admin, or dark-OS System coverage.",
-              "passed_criteria_count": 21,
-              "detail": "Exact artifact guest T04 pass, independently adjudicated. System appearance observed while OS preference was light (systemDark=false).",
-              "panel_document_reload": {
-                "status": "pass",
-                "passed_criteria_count": 7
-              },
-              "full_extension_reload": {
-                "status": "pass",
-                "passed_criteria_count": 13
-              }
+              "detail": "Hosted guest T04 pass on exact verified development artifact. Original absent Theme/settings baseline restored through full extension reload. This is a bounded case result only; no full Settings or Store claim."
             }
           },
           "linked_defects": [
@@ -7263,6 +7247,46 @@
               },
               "superseded_at": "2026-10-13T00:55:22Z",
               "reason": "Retained prior artifact-specific result; new exact-artifact hosted run 38328904848 is the current bounded verdict."
+            },
+            {
+              "at": "2026-10-13T01:25:54.324Z",
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 38328904848,
+                "source_sha": "ca51b7ac2b7f40271d309af3171ad88ebe02f9e0",
+                "workflow_source_sha": "a7e57addf8eb5ac23b5dc761496f048cad10d848",
+                "hosted_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38328904848",
+                "development_ci_run_id": 38327753178,
+                "development_artifact_id": 11781602861,
+                "build_version": "0.2.509",
+                "tree_sha256": "fd3bad02842d27c65710aa8f583e9e5372a9dcfa0b39b701777f0c4778803e79",
+                "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+                "resource_valid": true,
+                "resource_final_decision": "child_failed because T40 and T67 full-reload rechecks raised assertions; resourceInvalid=false. T04/T10 criteria themselves passed.",
+                "passed_subtargets": [
+                  "Guest Theme: 21/21 criteria passed: 1 pre-full-reload baseline/restoration check, 7/7 panel-document reload assertions, and 13/13 full-extension reload assertions. Dark/Light/System rendered and persisted; full extension worker/panel replacement verified; original absent preference/container baseline restored."
+                ],
+                "unverified": [
+                  "System with dark OS preference; member/admin, Store, and broader Settings behavior."
+                ],
+                "evidence": [
+                  "docs/stabilization/runs/hosted-settings-controls-38328904848.json"
+                ],
+                "independent_review": "docs/stabilization/runs/hosted-settings-controls-38328904848.json",
+                "scope": "Signed-out guest exact unpacked development artifact 11781602861 (source ca51b7ac2). T04/T10 bounded criteria only; not full Settings health, Store, member/admin, or dark-OS System coverage.",
+                "passed_criteria_count": 21,
+                "detail": "Exact artifact guest T04 pass, independently adjudicated. System appearance observed while OS preference was light (systemDark=false).",
+                "panel_document_reload": {
+                  "status": "pass",
+                  "passed_criteria_count": 7
+                },
+                "full_extension_reload": {
+                  "status": "pass",
+                  "passed_criteria_count": 13
+                }
+              },
+              "reason": "Preserve the preceding bounded result when recording hosted run 38331187170."
             }
           ],
           "attempt_history": [
@@ -7676,38 +7700,22 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 38328904848,
-              "source_sha": "ca51b7ac2b7f40271d309af3171ad88ebe02f9e0",
-              "workflow_source_sha": "a7e57addf8eb5ac23b5dc761496f048cad10d848",
-              "hosted_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38328904848",
-              "development_ci_run_id": 38327753178,
-              "development_artifact_id": 11781602861,
-              "build_version": "0.2.509",
-              "tree_sha256": "fd3bad02842d27c65710aa8f583e9e5372a9dcfa0b39b701777f0c4778803e79",
-              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "run_id": 38331187170,
               "resource_valid": true,
-              "resource_final_decision": "child_failed because T40 and T67 full-reload rechecks raised assertions; resourceInvalid=false. T04/T10 criteria themselves passed.",
+              "build_version": "0.2.509",
+              "tree_sha256": "ccb46c1db5f9cfd781478553e46fe30e44118669dc3ef36c39562e8edce9999f",
+              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passed_criteria_count": 18,
               "passed_subtargets": [
-                "Guest Default mode: 6/6 panel-document reload assertions and 12/12 full-extension reload assertions passed. Act and Ask persisted, new chats inherited the selected value after reload, and the original absent preference/container baseline was restored."
+                "18/18 guest Default mode criteria passed: Ask and Act selection/storage through panel reload; full-extension worker/panel replacement; new-chat inheritance after each selection; original absent preference/settings-container baseline restoration."
               ],
               "unverified": [
                 "Member/admin, Store, and broader Settings behavior."
               ],
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-controls-38328904848.json"
+                "docs/stabilization/runs/hosted-settings-controls-38331187170.json"
               ],
-              "independent_review": "docs/stabilization/runs/hosted-settings-controls-38328904848.json",
-              "scope": "Signed-out guest exact unpacked development artifact 11781602861 (source ca51b7ac2). T04/T10 bounded criteria only; not full Settings health, Store, member/admin, or dark-OS System coverage.",
-              "passed_criteria_count": 18,
-              "detail": "Exact artifact guest T10 pass, independently adjudicated.",
-              "panel_document_reload": {
-                "status": "pass",
-                "passed_criteria_count": 6
-              },
-              "full_extension_reload": {
-                "status": "pass",
-                "passed_criteria_count": 12
-              }
+              "detail": "Hosted guest T10 pass on exact verified development artifact. Original absent Default mode/settings baseline restored through full extension reload. This is a bounded case result only; no full Settings or Store claim."
             }
           },
           "linked_defects": [
@@ -7924,6 +7932,46 @@
               },
               "superseded_at": "2026-10-13T00:55:22Z",
               "reason": "Retained prior artifact-specific result; new exact-artifact hosted run 38328904848 is the current bounded verdict."
+            },
+            {
+              "at": "2026-10-13T01:25:54.324Z",
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 38328904848,
+                "source_sha": "ca51b7ac2b7f40271d309af3171ad88ebe02f9e0",
+                "workflow_source_sha": "a7e57addf8eb5ac23b5dc761496f048cad10d848",
+                "hosted_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38328904848",
+                "development_ci_run_id": 38327753178,
+                "development_artifact_id": 11781602861,
+                "build_version": "0.2.509",
+                "tree_sha256": "fd3bad02842d27c65710aa8f583e9e5372a9dcfa0b39b701777f0c4778803e79",
+                "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+                "resource_valid": true,
+                "resource_final_decision": "child_failed because T40 and T67 full-reload rechecks raised assertions; resourceInvalid=false. T04/T10 criteria themselves passed.",
+                "passed_subtargets": [
+                  "Guest Default mode: 6/6 panel-document reload assertions and 12/12 full-extension reload assertions passed. Act and Ask persisted, new chats inherited the selected value after reload, and the original absent preference/container baseline was restored."
+                ],
+                "unverified": [
+                  "Member/admin, Store, and broader Settings behavior."
+                ],
+                "evidence": [
+                  "docs/stabilization/runs/hosted-settings-controls-38328904848.json"
+                ],
+                "independent_review": "docs/stabilization/runs/hosted-settings-controls-38328904848.json",
+                "scope": "Signed-out guest exact unpacked development artifact 11781602861 (source ca51b7ac2). T04/T10 bounded criteria only; not full Settings health, Store, member/admin, or dark-OS System coverage.",
+                "passed_criteria_count": 18,
+                "detail": "Exact artifact guest T10 pass, independently adjudicated.",
+                "panel_document_reload": {
+                  "status": "pass",
+                  "passed_criteria_count": 6
+                },
+                "full_extension_reload": {
+                  "status": "pass",
+                  "passed_criteria_count": 12
+                }
+              },
+              "reason": "Preserve the preceding bounded result when recording hosted run 38331187170."
             }
           ],
           "attempt_history": [
@@ -10676,93 +10724,24 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "38020947337",
-              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
-              "workflow_source_sha": "391eb8b52ac999ce41de3f6be1a68fc94663f863",
-              "development_ci_run_id": 38019685913,
-              "development_artifact_id": 11657971729,
-              "hosted_result_artifact_id": 11658786685,
-              "build_version": "0.2.458",
-              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+              "status": "unverified",
+              "run_id": 38331187170,
               "resource_valid": true,
+              "build_version": "0.2.509",
+              "tree_sha256": "ccb46c1db5f9cfd781478553e46fe30e44118669dc3ef36c39562e8edce9999f",
+              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
               "passed_subtargets": [
-                "Warm ON emitted one successful marker-bearing scrape:capture-page call; warm OFF emitted zero calls after loading a fresh page.",
-                "ON and OFF each survived full extension worker/panel replacement; ON emitted one marker-bearing capture after replacement, and OFF emitted zero calls.",
-                "Independent review confirmed cleanup compared final visible/storage/key/field state with the separately captured pre-probe baseline and passed; the report's `initial` criterion is a later warm-OFF observation, not that original baseline."
+                "Visible On/Off and stored toggle matched through full extension reload.",
+                "Cleanup restored the original visible Off and stored false baseline."
               ],
               "unverified": [
-                "Manual Capture action/result is not covered by the automatic page-capture test.",
-                "Member/admin roles, Store behavior, downstream chat/context consumption, and broader Settings feature health are outside this bounded guest T40 result."
+                "Downstream background/page-load capture was not exercised, so the canonical T40 case remains unverified overall.",
+                "Member/admin, Store, and broader Settings behavior."
               ],
-              "detail": "Independent review approves a bounded guest T40 pass on the exact frozen 0.2.458 development artifact. Warm and post-full-extension-reload ON/OFF capture behavior passed. The report's `initial` criterion is after warm OFF; original pre-probe baseline values were captured separately and key/field equality was asserted during cleanup, though that baseline was not serialized. No current-main, Store, member/admin, or broader feature claim. Reviewed frozen guest run38041519886: 10 passed criteria; native case unverified. Unverified: background capture follows the persisted switch. This persistence-only run does not replace the earlier separately bound capture pass. Newer reviewed run 38073451744 confirms a fresh hosted guest profile starts with the setting visibly/stored OFF, ON/OFF automatic capture behavior through full extension reload, and baseline restoration on exact CI development v0.2.471. This does not test manual Capture; that path remains unverified. CI development artifact only, not Store; shared main/package has advanced to v0.2.473.",
               "evidence": [
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/receipt.json",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/native-report.sanitized.json",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-package-38020947337-1.jsonl",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-browser-38020947337-1.jsonl",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-guest-38020947337-1.jsonl",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/hosted-settings-controls-38331187170.json"
               ],
-              "scope": "Hosted signed-out guest T40 only on exact imported CI development artifact 11657971729 (run 38019685913), source dcbda7e0, v0.2.458; workflow checkout 391eb8b5. Does not establish current-main health, member/admin, Store, downstream chat/context use, or broader Settings feature health.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "partial",
-                  "native_case_status": "unverified",
-                  "resource_valid": true,
-                  "unverified": [
-                    "background capture follows the persisted switch"
-                  ],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "full_extension_reload": {
-                    "status": "pass",
-                    "downstream_capture_status": "unverified"
-                  },
-                  "panel_document_reload": {
-                    "status": "unverified"
-                  },
-                  "passed_criteria_count": 10
-                },
-                {
-                  "source_sha": "c81477c80ec4c516c16a4280c7970c060cb840d3",
-                  "build_version": "0.2.471",
-                  "development_ci_run_id": 38072429709,
-                  "development_artifact_id": 11677346776,
-                  "tree_sha256": "ab8f31d116557a89b52da3a7c1ea08a838c2bacfd1f2b457c88f9fb573236ce6",
-                  "run_id": 38073451744,
-                  "workflow_source_sha": "ba76b7816132832c2efafcf2ce9df40c9040821c",
-                  "hosted_result_artifact_id": 11677527693,
-                  "status": "pass",
-                  "resource_valid": true,
-                  "passed_subtargets": [
-                    "Fresh owned guest profile began with Auto-scrape on load visibly off and persisted false.",
-                    "Enabling the setting emitted one marker-bearing scrape:capture-page call; disabling it emitted zero calls after page load.",
-                    "ON and OFF behavior persisted through full extension worker/panel replacement, and cleanup restored the OFF baseline."
-                  ],
-                  "unverified": [
-                    "Manual Capture action/result; this run exercised automatic page capture only."
-                  ],
-                  "scope": "Guest T40 only on exact CI development artifact v0.2.471; not Store. Shared main/package state has advanced to v0.2.473.",
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/native-report.sanitized.json",
-                    "docs/stabilization/reports/peer-review-run38073451744.json"
-                  ]
-                }
-              ]
+              "detail": "Hosted guest control/reload/cleanup subtargets passed on exact verified development artifact. Full T40 remains unverified because downstream background capture was not exercised; this run does not establish the full case or feature health."
             }
           },
           "result_history": [
@@ -10876,6 +10855,100 @@
                 "scope": "Hosted lane B run 38003055389 on macos-15-intel, signed-out guest; exact frozen CI development artifact 11647758423 (CI run 37998294843), source 7230bb7669582179898fc187e05f1b939562a89e, v0.2.456. Warm capture only; reload and other roles remain unverified."
               },
               "superseded_at": "2026-10-10T03:04:48Z"
+            },
+            {
+              "at": "2026-10-13T01:25:54.324Z",
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "38020947337",
+                "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+                "workflow_source_sha": "391eb8b52ac999ce41de3f6be1a68fc94663f863",
+                "development_ci_run_id": 38019685913,
+                "development_artifact_id": 11657971729,
+                "hosted_result_artifact_id": 11658786685,
+                "build_version": "0.2.458",
+                "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Warm ON emitted one successful marker-bearing scrape:capture-page call; warm OFF emitted zero calls after loading a fresh page.",
+                  "ON and OFF each survived full extension worker/panel replacement; ON emitted one marker-bearing capture after replacement, and OFF emitted zero calls.",
+                  "Independent review confirmed cleanup compared final visible/storage/key/field state with the separately captured pre-probe baseline and passed; the report's `initial` criterion is a later warm-OFF observation, not that original baseline."
+                ],
+                "unverified": [
+                  "Manual Capture action/result is not covered by the automatic page-capture test.",
+                  "Member/admin roles, Store behavior, downstream chat/context consumption, and broader Settings feature health are outside this bounded guest T40 result."
+                ],
+                "detail": "Independent review approves a bounded guest T40 pass on the exact frozen 0.2.458 development artifact. Warm and post-full-extension-reload ON/OFF capture behavior passed. The report's `initial` criterion is after warm OFF; original pre-probe baseline values were captured separately and key/field equality was asserted during cleanup, though that baseline was not serialized. No current-main, Store, member/admin, or broader feature claim. Reviewed frozen guest run38041519886: 10 passed criteria; native case unverified. Unverified: background capture follows the persisted switch. This persistence-only run does not replace the earlier separately bound capture pass. Newer reviewed run 38073451744 confirms a fresh hosted guest profile starts with the setting visibly/stored OFF, ON/OFF automatic capture behavior through full extension reload, and baseline restoration on exact CI development v0.2.471. This does not test manual Capture; that path remains unverified. CI development artifact only, not Store; shared main/package has advanced to v0.2.473.",
+                "evidence": [
+                  "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/receipt.json",
+                  "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/native-report.sanitized.json",
+                  "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-package-38020947337-1.jsonl",
+                  "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-browser-38020947337-1.jsonl",
+                  "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-guest-38020947337-1.jsonl",
+                  "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                ],
+                "scope": "Hosted signed-out guest T40 only on exact imported CI development artifact 11657971729 (run 38019685913), source dcbda7e0, v0.2.458; workflow checkout 391eb8b5. Does not establish current-main health, member/admin, Store, downstream chat/context use, or broader Settings feature health.",
+                "bounded_subtarget_evidence": [
+                  {
+                    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+                    "build_version": "0.2.459",
+                    "development_ci_run_id": 38036029832,
+                    "development_artifact_id": 11664077690,
+                    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+                    "run_id": 38041519886,
+                    "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
+                    "hosted_result_artifact_id": 11665862988,
+                    "status": "partial",
+                    "native_case_status": "unverified",
+                    "resource_valid": true,
+                    "unverified": [
+                      "background capture follows the persisted switch"
+                    ],
+                    "evidence": [
+                      "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+                      "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                    ],
+                    "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
+                    "full_extension_reload": {
+                      "status": "pass",
+                      "downstream_capture_status": "unverified"
+                    },
+                    "panel_document_reload": {
+                      "status": "unverified"
+                    },
+                    "passed_criteria_count": 10
+                  },
+                  {
+                    "source_sha": "c81477c80ec4c516c16a4280c7970c060cb840d3",
+                    "build_version": "0.2.471",
+                    "development_ci_run_id": 38072429709,
+                    "development_artifact_id": 11677346776,
+                    "tree_sha256": "ab8f31d116557a89b52da3a7c1ea08a838c2bacfd1f2b457c88f9fb573236ce6",
+                    "run_id": 38073451744,
+                    "workflow_source_sha": "ba76b7816132832c2efafcf2ce9df40c9040821c",
+                    "hosted_result_artifact_id": 11677527693,
+                    "status": "pass",
+                    "resource_valid": true,
+                    "passed_subtargets": [
+                      "Fresh owned guest profile began with Auto-scrape on load visibly off and persisted false.",
+                      "Enabling the setting emitted one marker-bearing scrape:capture-page call; disabling it emitted zero calls after page load.",
+                      "ON and OFF behavior persisted through full extension worker/panel replacement, and cleanup restored the OFF baseline."
+                    ],
+                    "unverified": [
+                      "Manual Capture action/result; this run exercised automatic page capture only."
+                    ],
+                    "scope": "Guest T40 only on exact CI development artifact v0.2.471; not Store. Shared main/package state has advanced to v0.2.473.",
+                    "evidence": [
+                      "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/receipt.sanitized.json",
+                      "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/native-report.sanitized.json",
+                      "docs/stabilization/reports/peer-review-run38073451744.json"
+                    ]
+                  }
+                ]
+              },
+              "reason": "Preserve the preceding bounded result when recording hosted run 38331187170."
             }
           ],
           "linked_defects": [
@@ -13168,79 +13241,23 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "38018411295",
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "hosted_result_artifact_id": 11657092463,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": 38331187170,
               "resource_valid": true,
+              "build_version": "0.2.509",
+              "tree_sha256": "ccb46c1db5f9cfd781478553e46fe30e44118669dc3ef36c39562e8edce9999f",
+              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passed_criteria_count": 13,
               "passed_subtargets": [
-                "13/13 bounded guest assertions passed for both Auto-scrape modes through panel and full-extension reload; original saved baseline restored."
+                "Capture and Scroll & capture each displayed and persisted through panel and full-extension reload; cleanup restored Capture."
               ],
               "unverified": [
-                "Member/admin and Store behavior remain outside this run."
+                "Original absent-field/default-mode reproduction for EXT-D-0224: the initial observation already had stored=capture after T40.",
+                "Member/admin, Store, and broader Settings behavior."
               ],
-              "detail": "Independent review accepts the bounded guest Auto-scrape modes case. Both modes persisted across panel/full-extension reloads, and the original saved baseline was restored. Reviewed frozen guest run38041519886: 13 passed criteria; native case pass. Mode persistence passed; nested downstream capture remains unverified.",
               "evidence": [
-                "docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
-                "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/hosted-settings-controls-38331187170.json"
               ],
-              "scope": "Hosted signed-out guest on exact imported CI development artifact 11657076101 (run 38017683667), source 0735eb7a; workflow checkout 56c27f70. Does not establish later-main, member/admin, or Store behavior.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "resource_valid": true,
-                  "unverified": [],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "full_extension_reload": {
-                    "status": "pass",
-                    "downstream_capture_status": "unverified"
-                  },
-                  "panel_document_reload": {
-                    "status": "pass"
-                  },
-                  "passed_criteria_count": 13
-                },
-                {
-                  "run_id": "local-settings-guest-20261012-1441",
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
-                  "build_version": "0.2.509",
-                  "development_ci_run_id": 38261957044,
-                  "development_artifact_id": 11752953286,
-                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
-                  "resource_valid": true,
-                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
-                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
-                  ],
-                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
-                }
-              ]
+              "detail": "Hosted guest T67 persisted-mode behavior passed on exact verified development artifact. The initial value was already explicitly stored as capture after T40, so this is not evidence for D224’s absent-field reproduction; D224 remains open."
             }
           },
           "linked_defects": [
@@ -13352,6 +13369,87 @@
                 "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
               },
               "superseded_at": "2026-10-10T03:04:48Z"
+            },
+            {
+              "at": "2026-10-13T01:25:54.324Z",
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "38018411295",
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
+                "development_ci_run_id": 38017683667,
+                "development_artifact_id": 11657076101,
+                "hosted_result_artifact_id": 11657092463,
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "13/13 bounded guest assertions passed for both Auto-scrape modes through panel and full-extension reload; original saved baseline restored."
+                ],
+                "unverified": [
+                  "Member/admin and Store behavior remain outside this run."
+                ],
+                "detail": "Independent review accepts the bounded guest Auto-scrape modes case. Both modes persisted across panel/full-extension reloads, and the original saved baseline was restored. Reviewed frozen guest run38041519886: 13 passed criteria; native case pass. Mode persistence passed; nested downstream capture remains unverified.",
+                "evidence": [
+                  "docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
+                  "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl",
+                  "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                ],
+                "scope": "Hosted signed-out guest on exact imported CI development artifact 11657076101 (run 38017683667), source 0735eb7a; workflow checkout 56c27f70. Does not establish later-main, member/admin, or Store behavior.",
+                "bounded_subtarget_evidence": [
+                  {
+                    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+                    "build_version": "0.2.459",
+                    "development_ci_run_id": 38036029832,
+                    "development_artifact_id": 11664077690,
+                    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+                    "run_id": 38041519886,
+                    "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
+                    "hosted_result_artifact_id": 11665862988,
+                    "status": "pass",
+                    "native_case_status": "pass",
+                    "resource_valid": true,
+                    "unverified": [],
+                    "evidence": [
+                      "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+                      "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                    ],
+                    "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
+                    "full_extension_reload": {
+                      "status": "pass",
+                      "downstream_capture_status": "unverified"
+                    },
+                    "panel_document_reload": {
+                      "status": "pass"
+                    },
+                    "passed_criteria_count": 13
+                  },
+                  {
+                    "run_id": "local-settings-guest-20261012-1441",
+                    "status": "pass",
+                    "native_case_status": "pass",
+                    "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                    "build_version": "0.2.509",
+                    "development_ci_run_id": 38261957044,
+                    "development_artifact_id": 11752953286,
+                    "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                    "resource_valid": true,
+                    "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "evidence": [
+                      "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                      "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                      "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                    ],
+                    "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
+                  }
+                ]
+              },
+              "reason": "Preserve the preceding bounded result when recording hosted run 38331187170."
             }
           ],
           "attempt_history": [

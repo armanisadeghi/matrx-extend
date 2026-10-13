@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "run_id": 38331187170,
+  "title": "Hosted guest Settings controls and reload acceptance",
+  "status": "mixed_bounded_results",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38331187170",
+    "workflow": "Hosted guest side-panel acceptance",
+    "head_sha": null,
+    "conclusion": "not available in downloaded files; all three hosted resource jobs completed valid with exit code 0",
+    "product_artifact_source_sha": null,
+    "product_artifact_kind": "local_dev_unpacked",
+    "product_artifact_version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "ccb46c1db5f9cfd781478553e46fe30e44118669dc3ef36c39562e8edce9999f",
+    "artifact_verified": true,
+    "publish_state": "not_published",
+    "development_ci_run_id": null
+  },
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "resource_finals": {
+    "hosted-package-38331187170-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38331187170-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38331187170-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    }
+  },
+  "case_verdicts": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "mode": "guest",
+      "status": "pass_bounded_exact_artifact",
+      "criteria_passed": 21,
+      "criteria_failed": 0,
+      "observed": [
+        "Theme selection, appearance and stored values passed across panel reloads.",
+        "All three themes passed full extension worker/panel replacement and persistence.",
+        "Original absent theme/settings baseline restored after reload."
+      ],
+      "limits": [
+        "No dark-OS System, other role, Store or full Settings claim."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T10",
+      "mode": "guest",
+      "status": "pass_bounded_exact_artifact",
+      "criteria_passed": 18,
+      "criteria_failed": 0,
+      "observed": [
+        "Ask and Act persisted through panel/full extension reload and new chats inherited each value.",
+        "Original absent mode/settings baseline restored."
+      ],
+      "limits": [
+        "No other role, Store or full Settings claim."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T40",
+      "mode": "guest",
+      "status": "unverified_overall",
+      "criteria_passed": 10,
+      "criteria_failed": 0,
+      "warm_and_reload": "Visible toggle and stored value agreed for On/Off through full extension reload; cleanup restored visible Off/stored false.",
+      "downstream_capture": "unverified; page-load/background capture was not exercised."
+    },
+    {
+      "case_id": "EXT-F-1003-T67",
+      "mode": "guest",
+      "status": "pass_bounded_persisted_mode",
+      "criteria_passed": 13,
+      "criteria_failed": 0,
+      "observed": [
+        "Capture and Scroll & capture each displayed and persisted through panel/full extension reload; restored Capture."
+      ],
+      "limits": [
+        "Initial stored mode was already capture after T40; absent-field default path not tested, so this does not resolve D224."
+      ]
+    }
+  ],
+  "overall_limit": "Bounded guest development-artifact results only. T40 remains unverified overall without downstream capture; T67 does not retest the absent-field starting state. D224 remains in-fix/open pending an exact-source run that verifies absent fields before any control materializes stored values.",
+  "evidence_source": "Sanitized summary of the downloaded native report and the three terminal hosted resource journals. Raw screenshots and runner-local artifacts are not committed.",
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-hosted/run38331187170/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38331187170/native-report.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38331187170/resource-finals.sanitized.json"
+  ],
+  "independent_review": {
+    "reviewed_by": "independent peer agent (finding supplied in current task)",
+    "result": "Accepted T04/T10 full-extension passes; accepted T40 toggle/reload/cleanup observations while keeping overall T40 unverified for absent downstream capture; accepted T67 persisted-mode pass while noting initial stored=capture does not resolve the D224 absent-field reproduction.",
+    "d224_status": "must remain open; original absent-field reproduction unverified."
+  }
+}

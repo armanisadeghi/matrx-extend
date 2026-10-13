@@ -1,0 +1,20 @@
+{
+  "hosted-package-38331187170-1": {
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid"
+  },
+  "hosted-browser-38331187170-1": {
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid"
+  },
+  "hosted-guest-38331187170-1": {
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid"
+  }
+}

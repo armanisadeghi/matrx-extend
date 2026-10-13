@@ -1,7 +1,10 @@
 {
   "id": "EXT-D-0224",
   "feature_id": "EXT-F-1003",
-  "case_ids": ["EXT-F-1003-T40", "EXT-F-1003-T67"],
+  "case_ids": [
+    "EXT-F-1003-T40",
+    "EXT-F-1003-T67"
+  ],
   "title": "Guest Scrape rechecks treat implicit Settings defaults as missing values",
   "surface": "Native Settings acceptance harness",
   "auth_mode": "guest",
@@ -47,11 +50,11 @@
   "source_verification": {
     "focused_tests": "27/27 pass; focused absent-container guard failed on old behavior with null !== false",
     "compile": "pass",
-    "native_acceptance": "pending fresh guarded run",
-    "independent_source_review": "pass: docs/stabilization/reports/ext-d-0224-source-peer-20261013.json",
+    "native_acceptance": "bounded hosted run 38331187170: T04/T10 pass; T40 control/reload/cleanup pass but full case unverified because downstream capture was not exercised; T67 persisted-mode pass began with explicit stored=capture. Original absent-field reproduction remains unverified.",
+    "independent_source_review": "pass for source fix only: docs/stabilization/reports/ext-d-0224-source-peer-20261013.json",
     "release": "pending"
   },
-  "next_action": "Run one separately admitted exact-source guest Settings T40/T67 browser retest after green CI artifact, then independently review the resource journals and original reproduction. Keep T40/T67 product coverage unverified until the recheck actually passes.",
+  "next_action": "Run a fresh admitted exact-source guest Settings test that proves absent Settings/Scrape fields are the starting state before any T40/T67 operation materializes them; separately exercise T40 downstream background capture and review its resource journals. Keep EXT-D-0224 in-fix and do not claim T40/T67 as proving the original absent-field reproduction.",
   "transition_history": [
     {
       "at": "2026-10-13T01:00:00Z",
@@ -70,6 +73,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Narrow observer repair and focused tests pass; independent source and native acceptance remain pending."
+    },
+    {
+      "at": "2026-10-13T01:25:54.324Z",
+      "from": "in-fix",
+      "to": "in-fix",
+      "reason": "Hosted run 38331187170 accepts bounded T04/T10 passes, T40 toggle/reload/cleanup subtargets, and T67 persisted-mode behavior; T40 downstream capture was absent and T67 began with stored=capture, leaving the original absent-field reproduction unverified."
     }
   ]
 }
