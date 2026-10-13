@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0224",
+  "reviewed_commit": "c03595d5d",
+  "review_type": "independent source and focused-test review",
+  "verdict": "pass_for_source_fix_only",
+  "basis": [
+    "The observer applies false and capture only when the stored field is absent, matching the product defaults in src/state/settings.ts.",
+    "Explicit true and scroll-capture values remain distinct; malformed JSON and invalid stored values do not become defaults.",
+    "The new test exercises the real scrapeObservationExpression with DOM and storage boundaries, including absent storage, explicit conflict, partial persisted state, and malformed state.",
+    "T40 still rejects an explicit visible-switch versus stored-value mismatch before interaction; existing T67 helper tests remain green."
+  ],
+  "verification": {
+    "command": "node --test tests/browser/settings-guest-scrape-controls.test.mjs tests/browser/settings-guest-extension-rechecks.test.mjs",
+    "passed": 23,
+    "failed": 0,
+    "red_capability": "The absent-field assertion fails on the pre-fix observer because null is not false."
+  },
+  "limits": [
+    "No exact-source hosted/native retest has run after this fix.",
+    "The original T40/T67 result remains failed at harness setup; no product pass or product defect is inferred from it."
+  ],
+  "files_reviewed": [
+    "tests/browser/settings-guest-scrape-controls.mjs",
+    "tests/browser/settings-guest-scrape-controls.test.mjs",
+    "docs/stabilization/defects/EXT-D-0224.json"
+  ]
+}

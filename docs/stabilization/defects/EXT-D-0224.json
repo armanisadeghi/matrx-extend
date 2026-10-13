@@ -18,8 +18,8 @@
   "expected": "The harness compares visible Scrape controls with the effective product defaults when their persisted fields are absent, while rejecting explicit UI/storage disagreements and malformed persisted state.",
   "actual": "T40 and T67 warm and panel-document checks passed, but both full-extension rechecks failed before observing a Scrape choice or replacement. The T40 report retains only AssertionError at settings-guest-scrape-controls.mjs:107; T67 retains AssertionError at settings-guest-extension-rechecks.mjs:108. No product failure is established by these two results.",
   "evidence": [
-    "test-results/hosted-review-38328904848/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
-    "test-results/hosted-review-38328904848/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-38328904848-1.jsonl",
+    "docs/stabilization/runs/hosted-settings-controls-38328904848.json",
+    "docs/stabilization/reports/ext-d-0224-source-peer-20261013.json",
     "src/state/settings.ts",
     "tests/browser/settings-guest-scrape-controls.test.mjs"
   ],
@@ -48,10 +48,10 @@
     "focused_tests": "27/27 pass; focused absent-container guard failed on old behavior with null !== false",
     "compile": "pass",
     "native_acceptance": "pending fresh guarded run",
-    "independent_source_review": "pending",
+    "independent_source_review": "pass: docs/stabilization/reports/ext-d-0224-source-peer-20261013.json",
     "release": "pending"
   },
-  "next_action": "Obtain independent source review, then run a fresh admitted exact-source guest Settings T40/T67 native check and independently review its receipt. Keep existing hosted failure and downstream capture limits; do not claim a product pass from source tests.",
+  "next_action": "Run one separately admitted exact-source guest Settings T40/T67 browser retest after green CI artifact, then independently review the resource journals and original reproduction. Keep T40/T67 product coverage unverified until the recheck actually passes.",
   "transition_history": [
     {
       "at": "2026-10-13T01:00:00Z",
