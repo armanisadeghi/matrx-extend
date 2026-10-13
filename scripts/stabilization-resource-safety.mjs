@@ -15,11 +15,19 @@ export async function cpuBusyFraction(output) {
     !/^\s*us\s+sy\s+id\s+1m\s+5m\s+15m\s*$/.test(lines[1] ?? '')
   )
     throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-busy:header');
-  const readings = lines
-    .slice(2)
-    .map((line) =>
-      line.match(/^\s*(\d+)\s+(\d+)\s+(\d+)\s+\d+(?:\.\d+)?\s+\d+(?:\.\d+)?\s+\d+(?:\.\d+)?\s*$/),
-    );
+  // iostat reprints headers on SIGCONT and device notifications, even with
+  // disks suppressed. Accept only the same complete pair BETWEEN the boot
+  // and interval rows; never filter unknown lines or treat a header as data.
+  const body = lines.slice(2);
+  if (
+    body.length === 4 &&
+    /^\s*cpu\s+load average\s*$/.test(body[1]) &&
+    /^\s*us\s+sy\s+id\s+1m\s+5m\s+15m\s*$/.test(body[2])
+  )
+    body.splice(1, 2);
+  const readings = body.map((line) =>
+    line.match(/^\s*(\d+)\s+(\d+)\s+(\d+)\s+\d+(?:\.\d+)?\s+\d+(?:\.\d+)?\s+\d+(?:\.\d+)?\s*$/),
+  );
   if (readings.length !== 2) throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count');
   if (readings.some((reading) => !reading))
     throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-busy:row-format');

@@ -11,7 +11,10 @@ import {
   sampleDiskSpace,
   writeSafetyState,
 } from './stabilization-resource-safety.mjs';
-import { copyResourceGuardModules } from './stabilization-resource-test-measurements.mjs';
+import {
+  copyResourceGuardModules,
+  setHealthyHostMeasurements,
+} from './stabilization-resource-test-measurements.mjs';
 
 test('focused acceptance and Scrape admit only exact commands before profile validation', async () => {
   const scratch = await mkdtemp(join(tmpdir(), 'focused-command-admission-'));
@@ -156,6 +159,121 @@ test('CPU sampler uses the second interval and refuses a missing reading', async
 const cpuHeader = '      cpu    load average\n us sy id   1m   5m   15m';
 const cpuBootRow = '  9  4 87  2.61 2.60 2.84';
 const cpuIntervalRow = ' 12  7 80  2.61 2.60 2.84';
+
+// Captured from /usr/sbin/iostat -c 2 -w 1 -n 0 on macOS, with SIGCONT
+// delivered after the boot row. Apple also reprints this pair on drive changes.
+const repeatedCpuHeaderCapture =
+  '      cpu    load average\n us sy id   1m   5m   15m\n 14  7 79  1.65 1.52 1.54\n      cpu    load average\n us sy id   1m   5m   15m\n  8  3 89  1.65 1.52 1.54\n';
+
+test('CPU sampler measures the interval when macOS repeats the complete header', async () => {
+  assert.equal(await cpuBusyFraction(async () => repeatedCpuHeaderCapture), 0.11);
+  assert.equal(
+    await cpuBusyFraction(async () => repeatedCpuHeaderCapture.replace('  8  3 89 ', ' 35 10 55 ')),
+    0.45,
+  );
+});
+
+test('repeated CPU headers cannot substitute for readings or hide malformed output', async () => {
+  for (const raw of [
+    [cpuHeader, cpuBootRow, cpuHeader].join('\n'),
+    [cpuHeader, cpuHeader, cpuIntervalRow].join('\n'),
+    [cpuHeader, cpuBootRow, cpuIntervalRow, cpuHeader].join('\n'),
+    repeatedCpuHeaderCapture.replace('  8  3 89 ', 'private-row-probe '),
+    repeatedCpuHeaderCapture.replace('15m\n  8', 'private-column-probe\n  8'),
+    repeatedCpuHeaderCapture.replace(
+      '      cpu    load average\n us sy id   1m   5m   15m\n  8',
+      '      cpu    load average\n  8',
+    ),
+    repeatedCpuHeaderCapture + cpuIntervalRow,
+  ]) {
+    await assert.rejects(
+      cpuBusyFraction(async () => raw),
+      /RESOURCE_MEASUREMENT_INVALID:cpu-busy/,
+    );
+  }
+  await assert.rejects(
+    cpuBusyFraction(async () => repeatedCpuHeaderCapture.replace('  8  3 89 ', '  8  3 101 ')),
+    /RESOURCE_MEASUREMENT_INVALID:cpu-idle/,
+  );
+});
+
+test('real resource preflight preserves CPU limits and measurement refusal with repeated headers', async () => {
+  const scratch = await mkdtemp(join(tmpdir(), 'resource-repeated-header-'));
+  const scripts = join(scratch, 'scripts');
+  const docs = join(scratch, 'docs/stabilization');
+  try {
+    await mkdir(scripts);
+    await mkdir(docs, { recursive: true });
+    await copyResourceGuardModules(import.meta.dirname, scripts);
+    await setHealthyHostMeasurements(scripts);
+    const guardPath = join(scripts, 'stabilization-resource.mjs');
+    const guardSource = await readFile(guardPath, 'utf8');
+    const leasePath = join(scripts, 'stabilization-resource-lease.mjs');
+    await writeFile(
+      leasePath,
+      (await readFile(leasePath, 'utf8')).replace(
+        "return join('/var/tmp', leaseName(uid));",
+        `return ${JSON.stringify(join(scratch, 'lease'))};`,
+      ),
+    );
+    const safetyPath = join(scripts, 'stabilization-resource-safety.mjs');
+    await writeFile(
+      safetyPath,
+      (await readFile(safetyPath, 'utf8')).replace(
+        'statfsFn = statfs',
+        'statfsFn = async () => ({ bavail: 1600 * 1024 * 1024, bsize: 1024 })',
+      ),
+    );
+    const policy = JSON.parse(
+      await readFile(new URL('../docs/stabilization/resource-policy.json', import.meta.url)),
+    );
+    // Only the scratch sampling window is shortened; production limits stay real.
+    policy.swapWindowSeconds = 0.02;
+    policy.cpuSampleIntervalSeconds = 0.01;
+    await writeFile(join(docs, 'resource-policy.json'), JSON.stringify(policy));
+    for (const [index, raw] of [
+      repeatedCpuHeaderCapture,
+      repeatedCpuHeaderCapture.replace('  8  3 89 ', ' 60 15 25 '),
+      [cpuHeader, cpuBootRow, cpuHeader].join('\n'),
+    ].entries()) {
+      // Control command output at the external telemetry boundary. The real
+      // parser, preflight averaging, thresholds, lease and journal all execute.
+      await writeFile(
+        guardPath,
+        guardSource.replace(
+          'Promise.resolve(0.1),',
+          `cpuBusyFraction(async () => ${JSON.stringify(raw)}),`,
+        ),
+      );
+      const result = spawnSync(
+        process.execPath,
+        [guardPath, 'check', '--run-id', `repeated-${index}`, '--profile-dir', scratch],
+        { encoding: 'utf8' },
+      );
+      const events = result.stdout.trim().split('\n').map(JSON.parse);
+      assert.equal(result.status, index === 0 ? 0 : 2, result.stdout + result.stderr);
+      assert.equal(events.at(-1).decision, index === 0 ? 'valid' : 'refused');
+      if (index === 0)
+        assert.equal(
+          events.find((event) => event.code === 'RESOURCE_ADMITTED').sample.cpuBusyFraction,
+          0.11,
+        );
+      if (index === 1)
+        assert.deepEqual(
+          events.find((event) => event.code === 'RESOURCE_PREFLIGHT_REFUSED').reasons,
+          ['RESOURCE_CPU_BUSY'],
+        );
+      if (index === 2)
+        assert(
+          events.some(
+            (event) => event.code === 'RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count',
+          ),
+        );
+    }
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
 
 test('CPU sampler identifies malformed headers with a fixed refusal code', async () => {
   for (const header of [

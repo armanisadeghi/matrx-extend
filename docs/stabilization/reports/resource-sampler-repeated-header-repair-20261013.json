@@ -1,0 +1,129 @@
+{
+  "task_id": "resource-sampler-repeated-header-repair-20261013",
+  "lane": "resource-sampler-fix",
+  "status": "reviewed_source_repair_ready_for_guarded_hosted_retest",
+  "summary": "The CPU sampler now accepts the exact complete header pair that macOS iostat can repeat between its boot-average and interval rows. It still requires exactly two measured data rows and preserves every production admission threshold.",
+  "changed_files": [
+    "scripts/stabilization-resource-safety.mjs",
+    "scripts/test-stabilization-resource-safety.mjs",
+    "docs/stabilization/reports/resource-sampler-repeated-header-repair-20261013.json"
+  ],
+  "commit_shas": [],
+  "hosted_evidence": [
+    {
+      "run_id": "38334606711",
+      "verdict": "invalid-resource",
+      "boundary": "guest watchdog",
+      "code": "RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count"
+    },
+    {
+      "run_id": "38335625868",
+      "verdict": "refused",
+      "boundary": "browser preparation preflight",
+      "code": "RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count"
+    }
+  ],
+  "diagnosis": {
+    "confirmed_parser_defect": "A valid six-line iostat output containing header + boot row + same complete header + interval row is counted as four readings and rejected.",
+    "reproducer": "Spawn /usr/sbin/iostat -c 2 -w 1 -n 0, send SIGCONT immediately after stdout contains the initial header pair and boot row, then pass its completed stdout to the real cpuBusyFraction parser.",
+    "red_result": "Actual macOS command exited 0 and emitted six lines; original parser threw RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count. New captured-output regression test failed with that exact error before the repair.",
+    "captured_red_output": [
+      "      cpu    load average",
+      " us sy id   1m   5m   15m",
+      " 14  7 79  1.65 1.52 1.54",
+      "      cpu    load average",
+      " us sy id   1m   5m   15m",
+      "  8  3 89  1.65 1.52 1.54"
+    ],
+    "green_real_command": "Same real-command reproducer emitted the repeated header shape and parsed its final idle=87 as busy=0.13.",
+    "primary_source": "https://github.com/apple-oss-distributions/system_cmds/blob/main/iostat/iostat.c",
+    "source_mechanism": "SIGCONT sets phdr_flag; device arrival and termination notifications also set phdr_flag; the next sampling iteration reprints the complete header before its data row, including with -n 0.",
+    "hypotheses": [
+      {
+        "hypothesis": "Valid repeated header is miscounted as readings",
+        "prediction": "Exact complete repeated header pair reproduces sample-count despite two valid data rows",
+        "result": "Confirmed using real macOS iostat; narrow normalization turns the original loop green"
+      },
+      {
+        "hypothesis": "The second data row is genuinely missing",
+        "prediction": "One data row must continue to refuse",
+        "result": "Negative guard still refuses with sample-count"
+      },
+      {
+        "hypothesis": "The measurement is genuinely over threshold",
+        "prediction": "Measured 75 percent busy still refuses through real preflight",
+        "result": "Scratch real guard refuses RESOURCE_CPU_BUSY at unchanged production threshold"
+      }
+    ]
+  },
+  "verification": [
+    {
+      "case_id": "parser_red_green",
+      "command": "node --test --test-name-pattern='macOS repeats' scripts/test-stabilization-resource-safety.mjs",
+      "verdict": "original parser failed with exact sample-count; repaired parser passes"
+    },
+    {
+      "case_id": "real_preflight",
+      "command": "node --test scripts/test-stabilization-resource-safety.mjs",
+      "verdict": "13 passed; real scratch guard admission at 11 percent, refusal at 75 percent, missing measurement refusal"
+    },
+    {
+      "case_id": "targeted_suite",
+      "command": "node --test scripts/test-stabilization-resource-safety.mjs scripts/test-hosted-resource-measurement-copy.mjs scripts/test-stabilization-resource-journal.mjs scripts/test-stabilization-resource-process.mjs scripts/test-stabilization-resource-lease.mjs",
+      "verdict": "44 passed, 0 failed, 0 skipped"
+    },
+    {
+      "case_id": "types",
+      "command": "pnpm compile",
+      "verdict": "exit 0"
+    },
+    {
+      "case_id": "format",
+      "command": "pnpm exec biome check scripts/stabilization-resource-safety.mjs scripts/test-stabilization-resource-safety.mjs",
+      "verdict": "exit 0"
+    },
+    {
+      "case_id": "mutation_constant_return",
+      "mutation": "cpuBusyFraction immediately returns 0.11",
+      "verdict": "RED; real preflight wrongly admits 75 percent, negative parser cases fail; plant.py restored byte-identically"
+    },
+    {
+      "case_id": "mutation_missing_normalization",
+      "mutation": "body.splice(1, 2) becomes body.splice(1, 0)",
+      "verdict": "RED exact sample-count on captured fixture and real scratch preflight; plant.py restored byte-identically"
+    },
+    {
+      "case_id": "mutation_wrong_reading",
+      "mutation": "readings.at(-1)[3] becomes readings[0][3]",
+      "verdict": "RED interval assertions and preflight observed 0.21 instead of 0.11; plant.py restored byte-identically"
+    },
+    {
+      "case_id": "post_peer_clean_rerun",
+      "command": "node --test scripts/test-stabilization-resource-safety.mjs; pnpm compile",
+      "verdict": "13 passed, 0 failed, 0 skipped; compile exit 0 after verified owned-process cleanup"
+    }
+  ],
+  "limitations": [
+    "Neither failed hosted journal retained raw iostat stdout. Repeated headers are a confirmed parser defect with the exact observed refusal code, but the original hosted trigger remains unconfirmed.",
+    "No native product acceptance or release result is claimed. Independent peer review and resource-admitted hosted product retest remain required.",
+    "The controlled SIGCONT reproducer verifies parser shape, not the full 60-second hosted admission window. Production sampling command, window and refusal thresholds are unchanged."
+  ],
+  "open_questions": [],
+  "next_action": "Coordinator runs a fresh Settings browser acceptance through the normal resource-admitted hosted path; no hosted product acceptance is claimed by this source repair.",
+  "independent_review": {
+    "code_verdict": "PASS",
+    "behavior_verdict": "PARTIAL",
+    "basis": "Reviewer reported no parser/test finding and first focused 13/13 pass; later rerun refused because of an inherited-token process left by its integration check.",
+    "clean_rerun": "Builder rerun had 12/13 pass; scratch preflight correctly refused RESOURCE_LEGACY_OWNED_PROCESS_BUSY. No parser assertion failed.",
+    "process_identity": {
+      "pid": 72244,
+      "ppid": 1,
+      "start": "Mon Oct 12 19:20:04 2026",
+      "executable": "node"
+    },
+    "boundary": "No live stabilization-resource.mjs command remained; the non-zombie inherited-token process was found without recording environment or arguments.",
+    "reviewer": "/root/resource_sampler_peer",
+    "environment_resolution": "Reviewer confirmed PID 72244 was its orphaned integration-test child, sent SIGTERM and verified it absent. No lease was removed. Builder independently found zero non-zombie owned-token processes before the final rerun.",
+    "final_clean_verification": "Focused 13/13 passed, 0 failed, 0 skipped; pnpm compile exit 0 after owned-process cleanup. Original peer code verdict PASS and initial behavior 13/13 pass remain bounded to local source verification."
+  }
+}
