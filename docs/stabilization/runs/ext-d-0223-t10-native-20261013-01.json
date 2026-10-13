@@ -28,7 +28,7 @@
     "name": "Chrome for Testing",
     "version": "151.0.7922.34",
     "playwright_version": "1.62.1",
-    "isolated_profile": true,
+    "isolated_profile": false,
     "auth": "signed-out guest",
     "organization": "none; local guest preferences",
     "launched": false
