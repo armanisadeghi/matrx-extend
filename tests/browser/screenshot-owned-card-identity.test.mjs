@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { ownedScreenshotCardMatches } from './screenshot-owned-card-identity.mjs';
+import {
+  discriminateRestoredScreenshotCard,
+  ownedScreenshotCardMatches,
+} from './screenshot-owned-card-identity.mjs';
 import { waitFor } from './settings-panel-driver.mjs';
 
 // Harbor Dental's captured fixture returns after its Files tab closes. A
@@ -39,4 +42,41 @@ test('a permanent wrong row cannot satisfy an otherwise matching card', async ()
     ownedScreenshotCardMatches([owned], owned, { ...matchingCard, distinct: false }),
     false,
   );
+});
+
+test('Files-return discrimination clicks Refresh once before the fresh read and card check', async () => {
+  const order = [];
+  const result = await discriminateRestoredScreenshotCard({
+    clickRefresh: async () => {
+      order.push('refresh');
+    },
+    readRows: async () => {
+      order.push('read');
+      return { rows: [owned], startedAt: 10, completedAt: 25 };
+    },
+    cardForRows: async (rows) => {
+      order.push('card');
+      assert.equal(rows[0].id, owned.id);
+      return matchingCard;
+    },
+    owned,
+  });
+  assert.deepEqual(order, ['refresh', 'read', 'card']);
+  assert.equal(result.cardMatched, true);
+  assert.equal(result.readElapsedMs, 15);
+});
+
+test('Files-return discrimination records a mismatched row without accepting its card', async () => {
+  let clicks = 0;
+  const result = await discriminateRestoredScreenshotCard({
+    clickRefresh: async () => {
+      clicks++;
+    },
+    readRows: async () => ({ rows: [other], startedAt: 0, completedAt: 8 }),
+    cardForRows: async () => matchingCard,
+    owned,
+  });
+  assert.equal(clicks, 1);
+  assert.equal(result.ownedRow, false);
+  assert.equal(result.cardMatched, false);
 });

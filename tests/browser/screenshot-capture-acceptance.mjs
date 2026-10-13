@@ -14,8 +14,11 @@ import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { screenshotPublicLink, screenshotViewer } from './screenshot-current-controls.mjs';
-import { ownedScreenshotCardMatches } from './screenshot-owned-card-identity.mjs';
-import { watchOwnedScreenshotDelete } from './screenshot-owned-delete-observer.mjs';
+import {
+  discriminateRestoredScreenshotCard,
+  ownedScreenshotCardMatches,
+} from './screenshot-owned-card-identity.mjs';
+import { deleteOwnedScreenshotAndVerify } from './screenshot-owned-delete-observer.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -890,19 +893,15 @@ async function verifyOwnedFilesTab(panel, journal, fixtureUrl, fixtureCanonical,
     report.observations.filesReturn.refreshDiscrimination = refresh;
     try {
       const refreshMarker = journal.marker();
-      await click(panel, 'title', 'Refresh');
-      refresh.clicked = true;
-      const read = await completedRead(journal, refreshMarker, fixtureCanonical);
-      refresh.completedRead = true;
-      refresh.readElapsedMs = Math.round(read.completedAt - read.startedAt);
-      refresh.ownedRow =
-        read.rows.length === 1 &&
-        read.rows[0].id === row.id &&
-        read.rows[0].file_id === row.file_id;
-      const card = await galleryResponseAgreement(panel, read.rows);
-      refresh.cardMatched = refresh.ownedRow && ownedScreenshotCardMatches(read.rows, row, card);
+      const discrimination = await discriminateRestoredScreenshotCard({
+        clickRefresh: () => click(panel, 'title', 'Refresh'),
+        readRows: () => completedRead(journal, refreshMarker, fixtureCanonical),
+        cardForRows: (rows) => galleryResponseAgreement(panel, rows),
+        owned: row,
+      });
+      Object.assign(refresh, discrimination);
       refresh.gallery = safeObservation(await gallery(panel, fixtureCanonical));
-      refresh.card = safeObservation(card);
+      refresh.card = safeObservation(discrimination.card);
       refresh.ownedFixtureActive = (await ownedTabs(panel)).some(
         (tab) => tab.active && tab.id === original.id && tab.url === fixtureUrl,
       );
@@ -1198,19 +1197,16 @@ async function exercise({ page, panel, panelTarget }) {
     if (!confirmation.consequence) fail('delete_consequence_missing');
     stage = 'owned_capture_delete_confirm';
     const deleteMarker = journal.marker();
-    const deletion = watchOwnedScreenshotDelete(panel, createdRow.id);
-    try {
-      await deletion.clickAndWait(
-        () => click(panel, 'button-text', 'Delete'),
-        (state) => {
-          report.observations ??= {};
-          report.observations.ownedDeleteMutation = state;
-        },
-      );
-    } finally {
-      deletion.stop();
-    }
-    const deletedRead = await completedRead(journal, deleteMarker, fixtureCanonical);
+    const deletedRead = await deleteOwnedScreenshotAndVerify({
+      panel,
+      ownedId: createdRow.id,
+      clickDelete: () => click(panel, 'button-text', 'Delete'),
+      readRows: () => completedRead(journal, deleteMarker, fixtureCanonical),
+      observeMutation: (state) => {
+        report.observations ??= {};
+        report.observations.ownedDeleteMutation = state;
+      },
+    });
     const deleted = await selectedGallery(panel, fixtureCanonical);
     await requireGalleryAgreement(panel, deleted, deletedRead.rows);
     if (
@@ -1270,6 +1266,7 @@ async function exercise({ page, panel, panelTarget }) {
         report.failure.ownedUiCleanupStage = 'card_identity';
         const identity = await galleryResponseAgreement(panel, [createdRow]);
         report.failure.ownedUiCleanupCardIdentity = safeObservation(identity);
+        let cleanupRead;
         if (identity.cardCount === 1 && identity.ordered && identity.distinct) {
           report.failure.ownedUiCleanupStage = 'dialog';
           const dialog = await evaluate(
@@ -1297,28 +1294,36 @@ async function exercise({ page, panel, panelTarget }) {
           );
           if (!confirmation.consequence) throw new Error('consequence_not_visible');
           report.failure.ownedUiCleanupStage = 'delete_confirm_click';
-          const deletion = watchOwnedScreenshotDelete(panel, createdRow.id);
-          try {
-            await deletion.clickAndWait(
-              () => click(panel, 'button-text', 'Delete'),
-              (state) => {
-                report.failure.ownedUiCleanupMutation = state;
-              },
-            );
-            report.failure.ownedUiCleanupAttempted = true;
-          } finally {
-            deletion.stop();
-          }
+          // Both normal and failure cleanup pass through the same mutation
+          // and fresh-read boundary; unrelated rows never authorize delete.
+          report.failure.ownedUiCleanupAttempted = true;
+          cleanupRead = await deleteOwnedScreenshotAndVerify({
+            panel,
+            ownedId: createdRow.id,
+            clickDelete: () => click(panel, 'button-text', 'Delete'),
+            readRows: async () => {
+              const cleanupMarker = journal.marker();
+              report.failure.ownedUiCleanupStage = 'refresh_click';
+              await click(panel, 'title', 'Refresh');
+              report.failure.ownedUiCleanupStage = 'verified_read';
+              return completedRead(journal, cleanupMarker, fixtureCanonical);
+            },
+            observeMutation: (state) => {
+              report.failure.ownedUiCleanupMutation = state;
+            },
+          });
         } else if (identity.cardCount !== 0) {
           throw new Error('owned_card_not_unique');
         }
         // A click is not cleanup proof. Force a fresh real list read and
         // require the exact captured row absent before clearing the flag.
-        const cleanupMarker = journal.marker();
-        report.failure.ownedUiCleanupStage = 'refresh_click';
-        await click(panel, 'title', 'Refresh');
-        report.failure.ownedUiCleanupStage = 'verified_read';
-        const cleanupRead = await completedRead(journal, cleanupMarker, fixtureCanonical);
+        if (!cleanupRead) {
+          const cleanupMarker = journal.marker();
+          report.failure.ownedUiCleanupStage = 'refresh_click';
+          await click(panel, 'title', 'Refresh');
+          report.failure.ownedUiCleanupStage = 'verified_read';
+          cleanupRead = await completedRead(journal, cleanupMarker, fixtureCanonical);
+        }
         if (
           cleanupRead.rows.some((row) => row.id === createdRow.id) ||
           cleanupRead.rows.length !== 0

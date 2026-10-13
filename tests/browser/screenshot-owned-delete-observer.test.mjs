@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import { test } from 'node:test';
-import { watchOwnedScreenshotDelete } from './screenshot-owned-delete-observer.mjs';
+import {
+  deleteOwnedScreenshotAndVerify,
+  watchOwnedScreenshotDelete,
+} from './screenshot-owned-delete-observer.mjs';
 
 function panel() {
   const events = new EventEmitter();
@@ -106,4 +109,53 @@ test('failed exact DELETE never authorizes row absence verification', async () =
     /exact_owned_delete_mutation_not_observed/,
   );
   owned.stop();
+});
+
+test('runner cleanup reads owned-row absence only after exact DELETE completes', async () => {
+  const channel = panel();
+  let readCount = 0;
+  const cleanup = deleteOwnedScreenshotAndVerify({
+    panel: channel,
+    ownedId: 'harbor-guide',
+    clickDelete: async () => {
+      channel.emit('Network.requestWillBeSent', {
+        requestId: 'owned',
+        request: {
+          method: 'DELETE',
+          url: 'https://database.invalid/rest/v1/wbx_screenshot?id=eq.harbor-guide',
+        },
+      });
+      channel.emit('Network.responseReceived', {
+        requestId: 'owned',
+        response: { status: 204 },
+      });
+    },
+    readRows: async () => {
+      readCount++;
+      return { rows: [] };
+    },
+    observeMutation: () => {},
+    timeoutMs: 500,
+  });
+  await Promise.resolve();
+  assert.equal(readCount, 0);
+  channel.emit('Network.loadingFinished', { requestId: 'owned' });
+  const read = await cleanup;
+  assert.deepEqual(read.rows, []);
+  assert.equal(readCount, 1);
+});
+
+test('runner cleanup refuses a fresh read that still contains the owned row', async () => {
+  const channel = panel();
+  await assert.rejects(
+    deleteOwnedScreenshotAndVerify({
+      panel: channel,
+      ownedId: 'harbor-guide',
+      clickDelete: async () => request(channel, 'owned', 'harbor-guide', 204),
+      readRows: async () => ({ rows: [{ id: 'harbor-guide' }] }),
+      observeMutation: () => {},
+      timeoutMs: 500,
+    }),
+    /owned_row_still_present/,
+  );
 });

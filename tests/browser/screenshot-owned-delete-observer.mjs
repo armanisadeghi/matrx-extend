@@ -77,3 +77,25 @@ export function watchOwnedScreenshotDelete(panel, ownedId) {
     },
   };
 }
+
+// This is the acceptance runner's complete cleanup boundary. The fresh read
+// cannot begin until the exact owned mutation has finished successfully.
+export async function deleteOwnedScreenshotAndVerify({
+  panel,
+  ownedId,
+  clickDelete,
+  readRows,
+  observeMutation,
+  timeoutMs = 30_000,
+}) {
+  const deletion = watchOwnedScreenshotDelete(panel, ownedId);
+  try {
+    await deletion.clickAndWait(clickDelete, observeMutation, timeoutMs);
+    const read = await readRows();
+    if (!Array.isArray(read?.rows) || read.rows.length !== 0)
+      throw new Error('owned_row_still_present');
+    return read;
+  } finally {
+    deletion.stop();
+  }
+}
