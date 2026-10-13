@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mjs';
+import { sourceCompatibility } from './development-source-compatibility.mjs';
 
 const OWNER = 'armanisadeghi/matrx-extend';
 const PHASES = ['hosted-package', 'hosted-browser', 'hosted-guest'];
@@ -799,7 +800,14 @@ function ghJson(endpoint) {
   );
 }
 export function requireDevelopmentArtifact(
-  { runId, artifactId, sourceSha, expectedDigest },
+  {
+    runId,
+    artifactId,
+    sourceSha,
+    expectedDigest,
+    allowRuntimeEquivalent = false,
+    repoRoot = process.cwd(),
+  },
   fetchJson = ghJson,
 ) {
   if (!DECIMAL.test(runId ?? '') || !DECIMAL.test(artifactId ?? '') || !SHA.test(sourceSha ?? ''))
@@ -811,22 +819,37 @@ export function requireDevelopmentArtifact(
     run.event !== 'push' ||
     run.head_branch !== 'main' ||
     run.conclusion !== 'success' ||
-    run.head_sha !== sourceSha
+    !SHA.test(run.head_sha ?? '') ||
+    (run.head_sha !== sourceSha && !allowRuntimeEquivalent)
   )
     refuse('HOSTED_DEVELOPMENT_RUN_INVALID');
+  let compatibility;
+  if (allowRuntimeEquivalent) {
+    try {
+      compatibility = sourceCompatibility(repoRoot, run.head_sha);
+      if (compatibility.mainSha !== sourceSha) refuse('HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT');
+    } catch {
+      refuse('HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT');
+    }
+  }
   const listing = fetchJson(`repos/${OWNER}/actions/runs/${runId}/artifacts?per_page=100`);
   const matches = listing.artifacts?.filter(
     (artifact) =>
       String(artifact.id) === artifactId &&
       artifact.expired === false &&
-      artifact.name === `matrx-extend-development-test-${sourceSha}-${runId}-${run.run_attempt}`,
+      artifact.name === `matrx-extend-development-test-${run.head_sha}-${runId}-${run.run_attempt}`,
   );
   if (matches?.length !== 1 || !/^sha256:[a-f0-9]{64}$/.test(matches[0].digest ?? ''))
     refuse('HOSTED_DEVELOPMENT_ARTIFACT_INVALID');
   if (expectedDigest !== undefined && matches[0].digest !== expectedDigest)
     refuse('HOSTED_DEVELOPMENT_ARTIFACT_DIGEST_MISMATCH');
   return {
-    sourceSha,
+    sourceSha: run.head_sha,
+    ...(compatibility && {
+      mainSha: compatibility.mainSha,
+      compatibility: compatibility.compatibility,
+      allowedDiffPaths: compatibility.diffPaths,
+    }),
     artifactId,
     developmentRunId: runId,
     developmentRunAttempt: run.run_attempt,
@@ -1087,6 +1110,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         runId: developmentRunId,
         artifactId: developmentArtifactId,
         sourceSha,
+        ...(guestSeo && { allowRuntimeEquivalent: true }),
       });
       if (
         mode === 'dispatch-settings-member' ||
@@ -1105,7 +1129,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             'status',
             '--porcelain',
             '--',
-            ...(notes || scrape || settings || settingsGuest
+            ...(notes || scrape || settings || settingsGuest || guestSeo
               ? []
               : [
                   '.github/workflows/hosted-guest-acceptance.yml',
@@ -1219,6 +1243,17 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             settingsGuest ? 'HOSTED_SETTINGS_GUEST_SOURCE_DRIFT' : 'HOSTED_SCRAPE_SOURCE_DRIFT',
           );
         }
+        if (guestSeo) {
+          // Re-prove after admission reads: the workflow must still execute the
+          // synchronized main whose inputs were compared to the frozen artifact.
+          const current = sourceCompatibility(process.cwd(), artifact.sourceSha);
+          requireSynchronizedDispatchSource(
+            current.mainSha,
+            ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha,
+            execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
+          );
+          if (current.mainSha !== sourceSha) refuse('HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT');
+        }
         const result = spawnSync(plan.command, [...plan.args, '-R', OWNER], { stdio: 'inherit' });
         if (result.status !== 0) refuse('HOSTED_DISPATCH_FAILED');
       }
@@ -1296,20 +1331,22 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           : guestSeo
             ? String(report.imported_artifact?.artifactId ?? '')
             : String(report.artifact.artifact_id);
-      if (guestSeo)
-        verifyHostedGuestSeoReport(report, {
-          sourceSha,
-          developmentRunId: artifactRunId,
-          developmentArtifactId: artifactId,
-        });
       const artifact = requireDevelopmentArtifact({
         runId: artifactRunId,
         artifactId,
         sourceSha,
+        ...(guestSeo && { allowRuntimeEquivalent: true }),
         ...((guestSeo || notes || scrape) && {
           expectedDigest: report.imported_artifact.githubArtifactDigest,
         }),
       });
+      if (guestSeo && run.head_sha !== sourceSha) refuse('HOSTED_SEO_WORKFLOW_SOURCE_DRIFT');
+      if (guestSeo)
+        verifyHostedGuestSeoReport(report, {
+          sourceSha: artifact.sourceSha,
+          developmentRunId: artifactRunId,
+          developmentArtifactId: artifactId,
+        });
       if (
         guestSeo &&
         Number(artifact.developmentRunAttempt) !== report.imported_artifact.runAttempt

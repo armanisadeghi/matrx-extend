@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import {
   chmodSync,
   copyFileSync,
@@ -13,10 +13,12 @@ import {
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
+import { requireHostedDevelopmentCheckout } from './development-source-compatibility.mjs';
 import {
   matchesHostedRunName,
   planHostedGuestSeo,
   planHostedMemberData,
+  requireDevelopmentArtifact,
   requireExactArchiveJournalSet,
   requireHostedWorkflowContract,
   requireSynchronizedDispatchSource,
@@ -61,7 +63,11 @@ test('standalone hosted CLI reaches admission refusals without installed package
   try {
     mkdirSync(join(scratch, 'scripts'));
     mkdirSync(join(scratch, 'docs/stabilization'), { recursive: true });
-    for (const name of ['hosted-remote-admission.mjs', 'copy-hosted-resource-journal.mjs'])
+    for (const name of [
+      'hosted-remote-admission.mjs',
+      'copy-hosted-resource-journal.mjs',
+      'development-source-compatibility.mjs',
+    ])
       copyFileSync(new URL(name, import.meta.url), join(scratch, 'scripts', name));
     copyFileSync(
       new URL('../docs/stabilization/resource-policy.json', import.meta.url),
@@ -1251,5 +1257,253 @@ if (process.argv[1].endsWith('/git')) {
     assert.match(failed.stderr, /HOSTED_DISPATCH_FAILED/);
   } finally {
     rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+function git(root, ...args) {
+  return execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
+}
+function commit(root, path, content) {
+  mkdirSync(join(root, path, '..'), { recursive: true });
+  writeFileSync(join(root, path), content);
+  git(root, 'add', '--', path);
+  git(root, 'commit', '-qm', 'Update input');
+  return git(root, 'rev-parse', 'HEAD');
+}
+function fixture() {
+  const root = mkdtempSync(join(tmpdir(), 'hosted-equivalence-'));
+  git(root, 'init', '-q');
+  git(root, 'config', 'user.name', 'Artifact guard');
+  git(root, 'config', 'user.email', 'artifact-guard@test.invalid');
+  const artifactSha = commit(root, 'src/panel.js', 'runtime');
+  const run = {
+    name: 'CI',
+    path: '.github/workflows/ci.yml',
+    event: 'push',
+    head_branch: 'main',
+    conclusion: 'success',
+    head_sha: artifactSha,
+    run_attempt: 1,
+  };
+  const artifact = {
+    id: 123,
+    expired: false,
+    name: `matrx-extend-development-test-${artifactSha}-456-1`,
+    digest: `sha256:${'b'.repeat(64)}`,
+  };
+  const fetchJson = (endpoint) =>
+    endpoint.includes('/artifacts?') ? { artifacts: [artifact] } : run;
+  const admit = (sourceSha, extra = {}) =>
+    requireDevelopmentArtifact(
+      {
+        runId: '456',
+        artifactId: '123',
+        sourceSha,
+        allowRuntimeEquivalent: true,
+        repoRoot: root,
+        ...extra,
+      },
+      fetchJson,
+    );
+  return { root, artifactSha, admit, run, artifact };
+}
+
+test('docs-only main accepts previous successful CI bytes and preserves original artifact identity', () => {
+  const f = fixture();
+  try {
+    const main = commit(f.root, 'docs/stabilization/reports/seo.json', '{}');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', main);
+    const result = f.admit(main);
+    assert.equal(result.sourceSha, f.artifactSha);
+    assert.equal(result.compatibility, 'runtime-equivalent');
+    assert.equal(result.mainSha, main);
+    assert.equal(result.githubArtifactDigest, `sha256:${'b'.repeat(64)}`);
+    assert.throws(
+      () => f.admit(main, { allowRuntimeEquivalent: false }),
+      /HOSTED_DEVELOPMENT_RUN_INVALID/,
+    );
+    assert.throws(
+      () => f.admit(main, { expectedDigest: `sha256:${'c'.repeat(64)}` }),
+      /HOSTED_DEVELOPMENT_ARTIFACT_DIGEST_MISMATCH/,
+    );
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+for (const path of [
+  'src/panel.js',
+  'wxt.config.ts',
+  '.github/workflows/ci.yml',
+  'package.json',
+  'pnpm-lock.yaml',
+  '.env',
+  'unknown.txt',
+  'docs/stabilization/resource-policy.json',
+  'docs/stabilization/evidence/runtime.js',
+]) {
+  test(`refuses runtime/build/unknown history at ${path} even after revert`, () => {
+    const f = fixture();
+    try {
+      commit(f.root, path, 'changed');
+      const main = commit(f.root, path, 'runtime');
+      git(f.root, 'update-ref', 'refs/remotes/origin/main', main);
+      assert.throws(() => f.admit(main), /HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT/);
+    } finally {
+      rmSync(f.root, { recursive: true, force: true });
+    }
+  });
+}
+
+test('refuses unsynchronized and pending runtime inputs', () => {
+  const f = fixture();
+  try {
+    const main = commit(f.root, 'docs/stabilization/reports/seo.json', '{}');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', f.artifactSha);
+    assert.throws(() => f.admit(main), /HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT/);
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', main);
+    writeFileSync(join(f.root, 'src/panel.js'), 'pending runtime');
+    assert.throws(() => f.admit(main), /HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT/);
+    writeFileSync(join(f.root, 'src/panel.js'), 'runtime');
+    assert.equal(f.admit(main).sourceSha, f.artifactSha);
+    f.run.conclusion = 'failure';
+    assert.throws(() => f.admit(main), /HOSTED_DEVELOPMENT_RUN_INVALID/);
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+// SUT owns source/identity validation and dispatch ordering; only GitHub is doubled.
+test('normal guest SEO CLI dispatch reuses docs-equivalent CI and refuses tracked/untracked docs, runtime or moving main', () => {
+  const f = fixture();
+  try {
+    const main = commit(f.root, 'docs/stabilization/reports/seo.json', '{}');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', main);
+    const bin = join(f.root, 'test-bin');
+    mkdirSync(bin);
+    // Keep the external command double outside Git's pending input census.
+    writeFileSync(join(f.root, '.git/info/exclude'), '/test-bin/\n/dispatch.json\n');
+    const log = join(f.root, 'dispatch.json');
+    const stub = join(bin, 'gh');
+    writeFileSync(
+      stub,
+      `#!/usr/bin/env node
+const fs = require('node:fs');
+const cfg = JSON.parse(process.env.SEO_ADMISSION_STUB);
+const args = process.argv.slice(2);
+if (args[0] === 'workflow') {
+  fs.writeFileSync(cfg.log, JSON.stringify(args));
+} else {
+  const endpoint = args[1];
+  let result;
+  if (endpoint.includes('/git/ref/')) result = { object: { sha: cfg.remoteSha } };
+  else if (endpoint.includes('/artifacts?')) result = { artifacts: [cfg.artifact] };
+  else result = cfg.run;
+  process.stdout.write(JSON.stringify(result));
+}
+`,
+    );
+    chmodSync(stub, 0o755);
+    const execute = (remoteSha = main) =>
+      spawnSync(
+        process.execPath,
+        [
+          resolve('scripts/hosted-remote-admission.mjs'),
+          'dispatch-guest-seo',
+          '--lane',
+          'B',
+          '--case',
+          'guest-seo',
+          '--seo-case-scope',
+          'notice-stacked',
+          '--seo-metadata-fixture',
+          'none',
+          '--seo-resource-diagnostic',
+          'false',
+          '--seo-interrupt-after-target',
+          'none',
+          '--runner-label',
+          'macos-15-intel',
+          '--development-run-id',
+          '456',
+          '--development-artifact-id',
+          '123',
+          '--source-sha',
+          main,
+        ],
+        {
+          cwd: f.root,
+          encoding: 'utf8',
+          env: {
+            ...process.env,
+            PATH: `${bin}:${process.env.PATH}`,
+            SEO_ADMISSION_STUB: JSON.stringify({
+              run: f.run,
+              artifact: f.artifact,
+              remoteSha,
+              log,
+            }),
+          },
+        },
+      );
+    const admitted = execute();
+    assert.equal(admitted.status, 0, admitted.stderr);
+    const receipt = JSON.parse(admitted.stdout);
+    assert.equal(receipt.artifact.sourceSha, f.artifactSha);
+    assert.equal(receipt.artifact.mainSha, main);
+    assert.equal(receipt.artifact.compatibility, 'runtime-equivalent');
+    assert.ok(JSON.parse(readFileSync(log, 'utf8')).includes('development_run_id=456'));
+    rmSync(log);
+    writeFileSync(join(f.root, 'docs/stabilization/reports/seo.json'), 'pending docs');
+    const pendingDocs = execute();
+    assert.notEqual(pendingDocs.status, 0);
+    assert.match(pendingDocs.stderr, /HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED/);
+    assert.throws(() => readFileSync(log), { code: 'ENOENT' });
+    writeFileSync(join(f.root, 'docs/stabilization/reports/seo.json'), '{}');
+    const untrackedDoc = join(f.root, 'docs/stabilization/reports/pending.json');
+    writeFileSync(untrackedDoc, '{}');
+    const untrackedDocs = execute();
+    assert.notEqual(untrackedDocs.status, 0);
+    assert.match(untrackedDocs.stderr, /HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED/);
+    assert.throws(() => readFileSync(log), { code: 'ENOENT' });
+    rmSync(untrackedDoc);
+    const moved = execute('f'.repeat(40));
+    assert.notEqual(moved.status, 0);
+    assert.throws(() => readFileSync(log), { code: 'ENOENT' });
+    writeFileSync(join(f.root, 'src/panel.js'), 'pending runtime');
+    const dirty = execute();
+    assert.notEqual(dirty.status, 0);
+    assert.match(dirty.stderr, /HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT/);
+    assert.throws(() => readFileSync(log), { code: 'ENOENT' });
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+test('hosted runner proves its actual immutable checkout before product acceptance', () => {
+  const f = fixture();
+  try {
+    const main = commit(f.root, 'docs/stabilization/reports/seo.json', '{}');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', main);
+    assert.equal(
+      requireHostedDevelopmentCheckout(f.root, f.artifactSha, main).compatibility,
+      'runtime-equivalent',
+    );
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, f.artifactSha, f.artifactSha),
+      /HOSTED_DEVELOPMENT_CHECKOUT_INVALID/,
+    );
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, f.artifactSha, undefined),
+      /HOSTED_DEVELOPMENT_CHECKOUT_INVALID/,
+    );
+    const moved = commit(f.root, 'src/panel.js', 'new runtime after dispatch');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', moved);
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, f.artifactSha, moved),
+      /ci_dev_runtime_source_changed/,
+    );
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
   }
 });

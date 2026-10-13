@@ -17,6 +17,7 @@ import {
   selectOrImportNativeTarget,
   verifyImportedNativeEvidence,
 } from './current-test-artifact.mjs';
+import { requireHostedDevelopmentCheckout } from './development-source-compatibility.mjs';
 import { hostedAcceptanceRoute } from './hosted-acceptance-route.mjs';
 import { hostedDesktopSettingsCase } from './hosted-desktop-settings-route.mjs';
 import { lockedHostedTypeScript } from './hosted-driver-dependencies.mjs';
@@ -89,6 +90,8 @@ async function prepareDevelopment(runId, artifactId) {
   assert.equal(evidence.sourceSha, sourceSha);
   assert.equal(evidence.runId, Number(runId));
   assert.equal(evidence.artifactId, Number(artifactId));
+  if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'guest-seo')
+    requireHostedDevelopmentCheckout(repo, evidence.sourceSha, process.env.GITHUB_SHA);
   process.stdout.write(`PREPARED_DEVELOPMENT ${evidence.sourceSha} ${evidence.treeSha256}\n`);
   return {
     extensionDir,
