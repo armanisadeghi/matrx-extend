@@ -6,7 +6,7 @@
   "case_ids": ["EXT-F-1008-T02"],
   "defect_id": "EXT-D-0199",
   "mode": "guest",
-  "status": "awaiting_exact_source_ci_and_artifact_before_admission",
+  "status": "terminal_failed_unverified_no_product_credit",
   "selection": {
     "case": "EXT-F-1008-T02",
     "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
@@ -17,7 +17,7 @@
     "runner_label": "macos-15-intel",
     "requested_by": "extend-stabilization"
   },
-  "source_and_ci": {
+  "source_and_ci_at_checkpoint": {
     "current_main_sha_at_checkpoint": "8bc9b44d345cc7132cf788ef3b75054c5059e3bd",
     "current_main_ci_run_id": 38346429044,
     "current_main_ci_status": "pending",
@@ -30,7 +30,7 @@
     "development_artifact_id": null,
     "development_artifact_digest": null
   },
-  "admission": {
+  "admission_at_checkpoint": {
     "hosted_run_id": null,
     "dispatched": false,
     "product_state_observed": false,
@@ -39,7 +39,7 @@
     "active_conflicting_hosted_runs_at_checkpoint": 0,
     "secrets_or_fixtures_staged": false
   },
-  "ci_spend_gate": {
+  "ci_spend_gate_at_checkpoint": {
     "workflow": ".github/workflows/hosted-guest-acceptance.yml",
     "repo_visibility": "public",
     "standard_macos_runner_billed_cost_per_manifest": 0,
@@ -48,5 +48,17 @@
     "repo_weekly_ceiling_usd": 100.0,
     "assessment": "No billing/spending gate is claimed passed at this checkpoint. Do not dispatch if exact CI's existing workflow cost guard or current resource admission refuses."
   },
-  "next_step": "After 38346429044 starts and completes successfully with an exact-source development artifact, confirm the focused-acceptance result for 8bc9b44 (or its documented path-filter disposition), fetch origin/main again, and execute scripts/hosted-remote-admission.mjs plan-guest-seo then dispatch-guest-seo with lane B, case guest-seo, scope notice-stacked, fixture none, diagnostics false, interruption none, runner macos-15-intel, and the exact CI/artifact IDs. Dispatch once only if the normal helper and workflow resource guard admit; then retrieve the native report and all three resource journals, independently review, and update T02/D199 narrowly."
+  "terminal_run": "docs/stabilization/runs/guest-seo-t02-notice-stacked-run38348374036.json",
+  "terminal_source_sha": "6df6270eb72f3b80a9e4792a856cddd03be5f4b6",
+  "terminal_ci_run_id": 38347477042,
+  "terminal_ci_conclusion": "success",
+  "terminal_focused_acceptance": "success",
+  "terminal_development_artifact_id": 11789524042,
+  "terminal_development_artifact_digest": "sha256:e595de0f0f88acce70d6f9bc4eec3614576e66e9e1e73618ee42633e7a53f340",
+  "hosted_run_id": 38348374036,
+  "hosted_result_artifact_id": 11790040862,
+  "hosted_conclusion": "failure",
+  "product_credit": false,
+  "independent_review": "docs/stabilization/reports/guest-seo-t02-peer-38348374036.json",
+  "next_step": "No blind retry. T02 remains unverified and EXT-D-0199 remains fixed/open. The native report did not establish notice visibility or a reproducible product defect, and the hosted guest resource final was invalid after CPU busy 0.95 and child exit 1. Require new discriminating evidence and fresh normal resource admission before another native attempt."
 }

@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "unverified",
+  "scope": "two controlled guest SEO notices and trusted Re-audit at native 360px",
+  "targets": [],
+  "deferred": [
+    {
+      "case": "T01",
+      "part": "one audit per URL and slow-old-result race"
+    },
+    {
+      "case": "T02",
+      "part": "stale advice replacement and failure report after re-audit"
+    },
+    {
+      "case": "T03",
+      "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+    },
+    {
+      "case": "T04,T05,T08",
+      "part": "database save, saved-row history, and diff flows"
+    },
+    {
+      "case": "T06",
+      "part": "guest/member/admin history failure and retry modes"
+    },
+    {
+      "case": "T07",
+      "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+    },
+    {
+      "case": "T09",
+      "part": "detail controls beyond the bounded next batch; optional metadata-fixture phase is excluded by controlled scope"
+    },
+    {
+      "case": "T10-T13",
+      "part": "recommendations and Chat staging"
+    },
+    {
+      "case": "T14",
+      "part": "social snippet behavior beyond the two controlled public page states"
+    },
+    {
+      "case": "all",
+      "part": "member and admin modes"
+    }
+  ],
+  "last_safe_stage": "owned_guest_panel_ready",
+  "last_safe_observable": {
+    "nativePanel": true
+  },
+  "current_operation": "stacked_notice_native_360",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.509",
+      "treeSha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177"
+    },
+    "after": null
+  },
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "6df6270eb72f3b80a9e4792a856cddd03be5f4b6",
+    "runId": 38347477042,
+    "runAttempt": 1,
+    "artifactId": 11789524042,
+    "githubArtifactDigest": "sha256:e595de0f0f88acce70d6f9bc4eec3614576e66e9e1e73618ee42633e7a53f340",
+    "version": "0.2.509",
+    "treeSha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
+    "source": {
+      "originMain": "6df6270eb72f3b80a9e4792a856cddd03be5f4b6",
+      "localHead": "6df6270eb72f3b80a9e4792a856cddd03be5f4b6",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "current_pushed_source"
+    }
+  },
+  "case_selection": {
+    "scope": "notice-stacked",
+    "selected_cases": ["T02"],
+    "selected_subtargets": ["multiple_and_long_notice_clearance_at_native_360px"],
+    "excluded_cases": ["all other SEO targets; no full T02 or D199 closure"]
+  },
+  "resource_diagnostic_enabled": false,
+  "operation_start_sample": {
+    "at": "2026-10-13T04:56:37.256Z",
+    "user": 1617233,
+    "system": 507890
+  },
+  "boundary_sample": {
+    "at": "2026-10-13T04:56:36.181Z",
+    "user": 1541340,
+    "system": 479130
+  },
+  "failure_stage": "stacked_notice_native_360",
+  "stacked_notice_fixture_diagnostic": {
+    "failure_code": "stacked_notice_assertion_failed",
+    "stage": "stacked_geometry",
+    "geometry": {
+      "failed_predicate": "notice_visible_0",
+      "expected": true,
+      "observed": false,
+      "native_sample": {
+        "width": 360,
+        "title_counts": [1, 1],
+        "message_lengths": [77, 199],
+        "dismiss_counts": [0, 0],
+        "notice_visible": [false, false],
+        "target_count": 1,
+        "target_enabled": true,
+        "hit_point_count": 9,
+        "notice_hit_point_count": 0
+      }
+    },
+    "cleanup": {
+      "status": "failed",
+      "attempted_count": 2,
+      "cleared_count": 0,
+      "failed_count": 2,
+      "failure_code": "stacked_notice_cleanup_failed"
+    }
+  }
+}

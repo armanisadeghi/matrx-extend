@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "id": "guest-seo-t02-notice-stacked-run38348374036",
+  "created_at_utc": "2026-10-13T04:56:52Z",
+  "feature_id": "EXT-F-1008",
+  "case_ids": ["EXT-F-1008-T02"],
+  "defect_id": "EXT-D-0199",
+  "mode": "guest",
+  "status": "terminal_failed_unverified",
+  "run_id": 38348374036,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38348374036",
+  "attempt": 1,
+  "completed_at_utc": "2026-10-13T04:56:52Z",
+  "conclusion": "failure",
+  "hosted_result_artifact": {
+    "artifact_id": 11790040862,
+    "name": "hosted-guest-38348374036-1",
+    "digest": "sha256:c391b803a0a2a1b33bf9ed20b41bdce612f5e0b714a32346b166736a91443134"
+  },
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "workflow_source_sha": "6df6270eb72f3b80a9e4792a856cddd03be5f4b6",
+  "inputs": {
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "notice-stacked",
+    "seo_metadata_fixture": "none",
+    "seo_diagnostic": "none",
+    "runner_label": "macos-15-intel"
+  },
+  "product_artifact": {
+    "ci_run_id": 38347477042,
+    "ci_attempt": 1,
+    "artifact_id": 11789524042,
+    "source_sha": "6df6270eb72f3b80a9e4792a856cddd03be5f4b6",
+    "github_digest": "sha256:e595de0f0f88acce70d6f9bc4eec3614576e66e9e1e73618ee42633e7a53f340",
+    "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
+    "ci_conclusion": "success",
+    "focused_acceptance": "success",
+    "resource_guard_integration": "success",
+    "workflow_cost_guard": "success",
+    "compatibility": "exact-source"
+  },
+  "dispatch_admission": {
+    "helper": "scripts/hosted-remote-admission.mjs plan-guest-seo then dispatch-guest-seo",
+    "plan_result": "admitted",
+    "dispatch_count": 1,
+    "source_fetch_after_ci": "local main and origin/main both equal product_artifact.source_sha",
+    "fixture": "none",
+    "secrets_staged": false
+  },
+  "selection": {
+    "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+    "viewport_width": 360,
+    "viewport_source": "native",
+    "scope": "two controlled guest SEO notices and trusted Re-audit at native 360px"
+  },
+  "product_observation": {
+    "report_status": "unverified",
+    "native_panel_ready": true,
+    "failure_stage": "stacked_notice_native_360",
+    "failure_code": "stacked_notice_assertion_failed",
+    "failed_predicate": "notice_visible_0",
+    "expected": true,
+    "observed": false,
+    "notice_titles_seen": [1, 1],
+    "notice_visible": [false, false],
+    "target_count": 1,
+    "target_enabled": true,
+    "hit_point_count": 9,
+    "notice_hit_point_count": 0,
+    "cleanup": {
+      "status": "failed",
+      "attempted_count": 2,
+      "cleared_count": 0,
+      "failed_count": 2,
+      "failure_code": "stacked_notice_cleanup_failed"
+    },
+    "passed_targets": [],
+    "verdict": "inconclusive product-negative diagnostic; no reproducible defect established and no product credit"
+  },
+  "resource_verdict": {
+    "all_three_journals_finalized": true,
+    "hosted_package": {
+      "decision": "valid",
+      "exit_code": 0,
+      "evidence": "docs/stabilization/evidence/guest-seo-stacked-notice/run38348374036/resource-journals/hosted-package-38348374036-1.sanitized.jsonl"
+    },
+    "hosted_browser": {
+      "decision": "valid",
+      "exit_code": 0,
+      "evidence": "docs/stabilization/evidence/guest-seo-stacked-notice/run38348374036/resource-journals/hosted-browser-38348374036-1.sanitized.jsonl"
+    },
+    "hosted_guest": {
+      "admitted": true,
+      "decision": "invalid",
+      "resource_invalid": true,
+      "exit_code": 3,
+      "cpu_pending_busy_fraction": 0.95,
+      "cpu_pending_at_utc": "2026-10-13T04:56:32.390Z",
+      "child_exit_code": 1,
+      "evidence": "docs/stabilization/evidence/guest-seo-stacked-notice/run38348374036/resource-journals/hosted-guest-38348374036-1.sanitized.jsonl"
+    },
+    "overall_acceptance_credit": false,
+    "reason": "Hosted guest resource final is invalid; only package and browser phases are resource-valid."
+  },
+  "independent_review": "docs/stabilization/reports/guest-seo-t02-peer-38348374036.json",
+  "sanitized_evidence": [
+    "docs/stabilization/evidence/guest-seo-stacked-notice/run38348374036/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-stacked-notice/run38348374036/resource-journals/hosted-package-38348374036-1.sanitized.jsonl",
+    "docs/stabilization/evidence/guest-seo-stacked-notice/run38348374036/resource-journals/hosted-browser-38348374036-1.sanitized.jsonl",
+    "docs/stabilization/evidence/guest-seo-stacked-notice/run38348374036/resource-journals/hosted-guest-38348374036-1.sanitized.jsonl"
+  ],
+  "inventory_and_defect": {
+    "t02_status_changed": false,
+    "d0199_state_changed": false,
+    "result": "T02 remains unverified; EXT-D-0199 remains fixed/open."
+  },
+  "next_action": "No blind retry. Keep T02 unverified and EXT-D-0199 fixed/open; require new discriminating evidence and fresh normal resource admission before another native attempt."
+}

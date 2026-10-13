@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-seo-t02-peer-38348374036",
+  "status": "accepted_bounded_diagnostic_no_product_credit",
+  "run_id": 38348374036,
+  "review_scope": [
+    "A: product evidence for EXT-F-1008-T02 multiple_and_long_notice_clearance_at_native_360px",
+    "B: exact-source artifact provenance and all-three resource validity"
+  ],
+  "reviewers": [
+    {
+      "reviewer": "seo_t02_peer_review",
+      "fresh_independent": true,
+      "product_verdict": "inconclusive_no_reproducible_defect",
+      "resource_and_provenance_verdict": "no_product_credit_guest_resource_invalid",
+      "evidence": "The native report is unverified with no passing target; notice_visible is false for both notices and cleanup clears 0/2. The guest resource final is invalid after CPU_PENDING and child exit 1."
+    },
+    {
+      "reviewer": "seo_t02_luna_verifier",
+      "model": "gpt-6-luna",
+      "fresh_independent": true,
+      "product_verdict": "inconclusive_no_reproducible_defect",
+      "resource_and_provenance_verdict": "source_and_artifact_identity_correlated_guest_resource_invalid_no_product_credit",
+      "evidence": "GitHub API and run status corroborate the successful exact-source development artifact. Package and browser journals are valid; guest journal records CPU busy 0.95, then child exit 1 and resourceInvalid=true/exitCode 3."
+    }
+  ],
+  "disposition": "Do not update inventory or EXT-D-0199; do not retry from this evidence. The attempt is retained as a sanitized invalid-resource diagnostic."
+}
