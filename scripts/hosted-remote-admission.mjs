@@ -746,19 +746,32 @@ export function verifyHostedResourceJournals({ runId, attempt, files }) {
       .map((line) => JSON.parse(line));
     if (events[0]?.code !== 'RESOURCE_JOURNAL_OPENED') refuse('HOSTED_JOURNAL_OPEN_MISSING');
     const admitted = events.findIndex((e) => e.code === 'RESOURCE_ADMITTED' && e.mode === 'run');
+    // CPU pending/recovered are emitted by the same periodic guard sample as
+    // RESOURCE_WATCH_*; a valid run may contain only CPU-episode samples.
     const watched = events.findIndex(
-      (e, i) => i > admitted && e.code.startsWith('RESOURCE_WATCH_'),
+      (e, i) =>
+        i > admitted &&
+        (e.code.startsWith('RESOURCE_WATCH_') ||
+          ((e.code === 'RESOURCE_CPU_PENDING' || e.code === 'RESOURCE_CPU_RECOVERED') &&
+            Array.isArray(e.reasons) &&
+            Number.isFinite(e.sample?.cpuBusyFraction))),
     );
     const exited = events.findIndex(
       (e, i) => i > admitted && e.code === 'RESOURCE_JOB_EXIT' && e.childExitCode === 0,
     );
     const elapsed = Date.parse(events[exited]?.at) - Date.parse(events[admitted]?.at);
+    const watchedAt = Date.parse(events[watched]?.at);
     if (
       admitted < 1 ||
       exited < 0 ||
       !Number.isFinite(elapsed) ||
       elapsed < 0 ||
-      (elapsed >= RESOURCE_POLICY.watchIntervalSeconds * 1000 && (watched < 0 || watched >= exited))
+      (elapsed >= RESOURCE_POLICY.watchIntervalSeconds * 1000 &&
+        (watched < 0 ||
+          watched >= exited ||
+          !Number.isFinite(watchedAt) ||
+          watchedAt <= Date.parse(events[admitted]?.at) ||
+          watchedAt >= Date.parse(events[exited]?.at)))
     )
       refuse('HOSTED_JOURNAL_EVIDENCE_MISSING');
     if (events.at(-1)?.decision !== 'valid') refuse('HOSTED_JOURNAL_NOT_VALID');

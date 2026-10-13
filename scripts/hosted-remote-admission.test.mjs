@@ -388,6 +388,79 @@ test('remote evidence refuses a missing or pending hosted acceptance final', () 
     () => verifyHostedResourceJournals({ runId, attempt, files: noWatch }),
     /HOSTED_JOURNAL_EVIDENCE_MISSING/,
   );
+  // A CPU episode is sampled by the same guard loop as RESOURCE_WATCH_HEALTHY.
+  // The hosted browser may finish during that episode and recover before its valid final.
+  const cpuSample = {
+    pressureLevel: 1,
+    availableMemoryGiB: 12.6,
+    requiredMemoryGiB: 4,
+    oneMinuteLoad: 1.51,
+    logicalCpus: 4,
+    cpuBusyFraction: 0.84,
+    swapUsedMiB: 0,
+    repoFreeGiB: 108.71806335449219,
+    profileFreeGiB: 108.71806335449219,
+    safetyFreeGiB: 108.71806335449219,
+    systemFreeGiB: 108.71806335449219,
+  };
+  const browserCpuJournal = (watchOverride = {}) =>
+    `${journal('hosted-browser')
+      .trim()
+      .split('\n')
+      .map((line) => {
+        const event = JSON.parse(line);
+        return JSON.stringify(
+          event.code === 'RESOURCE_WATCH_HEALTHY'
+            ? {
+                ...event,
+                code: 'RESOURCE_CPU_PENDING',
+                reasons: ['RESOURCE_CPU_BUSY'],
+                sample: cpuSample,
+                ...watchOverride,
+              }
+            : event,
+        );
+      })
+      .join('\n')}\n`;
+  const cpuPending = {
+    ...complete,
+    [`hosted-browser-${runId}-${attempt}.jsonl`]: browserCpuJournal(),
+  };
+  assert.equal(verifyHostedResourceJournals({ runId, attempt, files: cpuPending }).valid, true);
+  for (const watchOverride of [
+    { reasons: undefined, sample: undefined },
+    { at: '2026-10-11T08:01:00Z' },
+    { at: '2026-10-11T08:02:00Z' },
+  ]) {
+    const notObservedDuringChild = {
+      ...complete,
+      [`hosted-browser-${runId}-${attempt}.jsonl`]: browserCpuJournal(watchOverride),
+    };
+    assert.throws(
+      () => verifyHostedResourceJournals({ runId, attempt, files: notObservedDuringChild }),
+      /HOSTED_JOURNAL_EVIDENCE_MISSING/,
+    );
+  }
+  const invalidCpuFinal = {
+    ...cpuPending,
+    [`hosted-browser-${runId}-${attempt}.jsonl`]: cpuPending[
+      `hosted-browser-${runId}-${attempt}.jsonl`
+    ].replace('"decision":"valid"', '"decision":"invalid"'),
+  };
+  assert.throws(
+    () => verifyHostedResourceJournals({ runId, attempt, files: invalidCpuFinal }),
+    /JOURNAL_FINAL_DECISION_INVALID/,
+  );
+  const cpuAfterExit = {
+    ...complete,
+    [`hosted-browser-${runId}-${attempt}.jsonl`]: browserCpuJournal({
+      at: '2026-10-11T08:02:00.500Z',
+    }),
+  };
+  assert.throws(
+    () => verifyHostedResourceJournals({ runId, attempt, files: cpuAfterExit }),
+    /HOSTED_JOURNAL_EVIDENCE_MISSING/,
+  );
   const quick = {
     ...complete,
     [`hosted-package-${runId}-${attempt}.jsonl`]: journal('hosted-package')
