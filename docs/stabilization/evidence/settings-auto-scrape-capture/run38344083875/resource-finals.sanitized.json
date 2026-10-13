@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "run_id": 38344083875,
+  "artifact_id": 11788492210,
+  "artifact_sha256": "c92b318f9b928c0469acee99850e5854729d30f43f36e61cacb060dc349450c5",
+  "journal_finals": [
+    {
+      "journal": "hosted-package-38344083875-1.jsonl",
+      "sha256": "b7898302faaf3067153cbc64b684d1923c17ab7e3801d33c20bc8a85d4063b4a",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "journal": "hosted-browser-38344083875-1.jsonl",
+      "sha256": "e43e4453be83150bf98bd89e3c797c886039cbf28e18fc4c6d40ee8b45bf9a57",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "journal": "hosted-guest-38344083875-1.jsonl",
+      "sha256": "3035c6db5923f4c49609048a9f8f8eccbde49f624c87a87353186c7d22f0d10d",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  ],
+  "browser_resource_sequence": [
+    { "code": "RESOURCE_CPU_PENDING", "reason": "RESOURCE_CPU_BUSY" },
+    { "code": "RESOURCE_CPU_PENDING", "reasons": [] },
+    { "code": "RESOURCE_CPU_PENDING", "reasons": [] },
+    { "code": "RESOURCE_CPU_RECOVERED", "reasons": [] },
+    {
+      "code": "RESOURCE_FINAL_DECISION",
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0
+    }
+  ],
+  "offline_validator": {
+    "name": "verifyHostedResourceJournals",
+    "result": "pass",
+    "source_commit": "e52e24bfcf63142fc3707b65ce0df6bf60f3c3aa",
+    "valid": true,
+    "receipts": {
+      "hosted-package": {
+        "sha256": "b7898302faaf3067153cbc64b684d1923c17ab7e3801d33c20bc8a85d4063b4a",
+        "decision": "valid"
+      },
+      "hosted-browser": {
+        "sha256": "e43e4453be83150bf98bd89e3c797c886039cbf28e18fc4c6d40ee8b45bf9a57",
+        "decision": "valid"
+      },
+      "hosted-guest": {
+        "sha256": "3035c6db5923f4c49609048a9f8f8eccbde49f624c87a87353186c7d22f0d10d",
+        "decision": "valid"
+      }
+    },
+    "interpretation": "Guard CPU pending/recovered samples with sample data count as monitor evidence when they occur strictly between admission and successful child exit."
+  },
+  "raw_journal_location_ignored": "/Volumes/Samsung2TB/.cache/stabilization/hosted-run38344083875/unpacked/matrx-extend/matrx-extend/docs/stabilization/resource-journals",
+  "credentials_included": false
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "run_id": 38344083875,
+  "case_id": "EXT-F-1003-T40",
+  "native_report_status": "pass",
+  "criteria_passed": 12,
+  "criteria_failed": 0,
+  "criteria_unverified": 0,
+  "observations": [
+    {
+      "name": "ON emits one real capture with the page marker",
+      "status": "pass",
+      "capture_calls": 1,
+      "call_succeeded": true,
+      "marker_present": true,
+      "page": "/harbor-dental-intake"
+    },
+    {
+      "name": "OFF emits no capture after the loaded page settles",
+      "status": "pass",
+      "capture_calls": 0,
+      "page_loaded": true,
+      "settled_window_seconds": 3,
+      "page": "/harbor-dental-followup"
+    },
+    {
+      "name": "ON survives full extension reload and emits one real capture",
+      "status": "pass",
+      "worker_replaced": true,
+      "panel_replaced": true,
+      "capture_calls": 1,
+      "call_succeeded": true,
+      "marker_present": true
+    },
+    {
+      "name": "OFF survives full extension reload with zero capture calls",
+      "status": "pass",
+      "worker_replaced": true,
+      "panel_replaced": true,
+      "capture_calls": 0,
+      "page_loaded": true,
+      "settled_window_seconds": 3
+    },
+    {
+      "name": "Original OFF baseline cleanup assertion",
+      "status": "pass",
+      "visible_off": true,
+      "stored_value": null,
+      "limit": "Driver cleanup comparison passed against captured baseline; report records final visible Off and stored null but omits original key/field presence, so exact raw-container restoration cannot be independently reconstructed."
+    }
+  ],
+  "scope_limit": "Independent peer accepts this dedicated downstream-capture evidence and all journals pass the committed validator. The original absent-container entry/default observation is in separate controls run 38342265985 with the same product tree SHA. Canonical inventory/defect update followed terminal-green focused acceptance 38345251934 and full CI 38345251877. No broad Settings health or latest-main runtime claim."
+}

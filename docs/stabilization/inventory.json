@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-13T04:00:00Z",
+  "updated_at": "2026-10-13T04:22:46Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -10730,27 +10730,33 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": 38342265985,
+              "status": "pass",
+              "run_id": 38344083875,
               "resource_valid": true,
-              "source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
-              "development_ci_run_id": 38341429896,
-              "development_artifact_id": 11787535752,
+              "source_sha": "74287b7efff1b53778153f8a2b524b4f217c6c88",
+              "development_ci_run_id": 38343439920,
+              "development_artifact_id": 11788341081,
               "build_version": "0.2.509",
               "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
               "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
               "passed_subtargets": [
-                "Full-extension recheck observed absent Settings storage with effective Auto-scrape Off and Capture defaults.",
-                "On/Off UI and storage matched through panel reload; baseline cleanup passed."
+                "Run 38342265985: full-extension recheck observed absent Settings storage with effective Auto-scrape Off and Capture defaults; On/Off selection persisted through reload and cleanup comparison passed.",
+                "Run 38344083875: ON emitted exactly one successful marker-bearing capture; OFF emitted zero calls in settled 3-second windows; both settings survived worker/panel replacement.",
+                "All three resource journals from run 38344083875 pass the committed verifier; independent peer review accepts combined T40 evidence."
               ],
               "unverified": [
-                "Downstream background/page-load capture following the persisted switch; canonical T40 remains unverified overall.",
-                "Member/admin, Store, and broader Settings behavior."
+                "Member/admin behavior, broad Settings health, Chrome Web Store behavior, and latest-main runtime/Chrome loaded or pinned identity."
               ],
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-controls-38342265985.json"
+                "docs/stabilization/runs/hosted-settings-controls-38342265985.json",
+                "docs/stabilization/evidence/settings-controls-hosted/run38342265985/case-results.sanitized.json",
+                "docs/stabilization/runs/hosted-settings-auto-scrape-38344083875.json",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/case-results.sanitized.json",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/resource-finals.sanitized.json",
+                "docs/stabilization/reports/peer-review-settings-auto-scrape-38344083875.json"
               ],
-              "detail": "Bounded exact-source guest evidence: absent-container defaults, toggle persistence, reload, and cleanup pass; the dedicated downstream capture criterion remains unverified. Not latest-main or full Settings coverage."
+              "detail": "Bounded guest T40 pass combining absent-container defaults from 38342265985 and downstream ON/OFF capture from 38344083875 on identical product tree SHA. Driver cleanup comparison passed with final visible Off/stored null, but capture report omits original raw key/field presence, so exact raw-container restoration cannot be independently reconstructed. No latest-main runtime, loaded/pinned, member/admin, Store or broad Settings claim.",
+              "defect_id": "EXT-D-0224"
             }
           },
           "result_history": [

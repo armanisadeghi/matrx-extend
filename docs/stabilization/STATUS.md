@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-13 03:46 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-13T04:00:00Z. 207 features · 812 cases · 1400 controls · 224 linked defect records.
+Generated 2026-10-13 04:23 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-13T04:22:46Z. 207 features · 812 cases · 1400 controls · 224 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1299** — Pass: 100 · Partial: 97 · Fail: 1 · Unverified: 1099 · N/A: 2.
+Applicable case-by-role slots: **1299** — Pass: 101 · Partial: 96 · Fail: 1 · Unverified: 1099 · N/A: 2.
 Unverified splits into **147 explicitly marked unverified** and **952 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -21,7 +21,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 20, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 18 pass · 7 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 32, partial 17, fail 0, unverified 48, n/a 1 | 6 |
+| [Settings](#settings) | 1 | 19 pass · 6 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 33, partial 16, fail 0, unverified 48, n/a 1 | 5 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -424,9 +424,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Partial · member: Partial · admin: Partial. **Cases:** 95. **Controls:** 40.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0159, EXT-D-0167, EXT-D-0189, EXT-D-0220, EXT-D-0223, EXT-D-0224
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0159, EXT-D-0167, EXT-D-0189, EXT-D-0220, EXT-D-0223
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed), [EXT-D-0084](defects/EXT-D-0084.json) (closed), [EXT-D-0086](defects/EXT-D-0086.json) (closed), [EXT-D-0087](defects/EXT-D-0087.json) (closed), [EXT-D-0093](defects/EXT-D-0093.json) (closed), [EXT-D-0155](defects/EXT-D-0155.json) (closed), [EXT-D-0157](defects/EXT-D-0157.json) (closed), [EXT-D-0159](defects/EXT-D-0159.json) (fixed), [EXT-D-0161](defects/EXT-D-0161.json) (closed), [EXT-D-0162](defects/EXT-D-0162.json) (closed), [EXT-D-0167](defects/EXT-D-0167.json) (in-fix), [EXT-D-0186](defects/EXT-D-0186.json) (closed), [EXT-D-0189](defects/EXT-D-0189.json) (in-fix), [EXT-D-0220](defects/EXT-D-0220.json) (in-fix), [EXT-D-0223](defects/EXT-D-0223.json) (in-fix), [EXT-D-0224](defects/EXT-D-0224.json) (in-fix)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed), [EXT-D-0084](defects/EXT-D-0084.json) (closed), [EXT-D-0086](defects/EXT-D-0086.json) (closed), [EXT-D-0087](defects/EXT-D-0087.json) (closed), [EXT-D-0093](defects/EXT-D-0093.json) (closed), [EXT-D-0155](defects/EXT-D-0155.json) (closed), [EXT-D-0157](defects/EXT-D-0157.json) (closed), [EXT-D-0159](defects/EXT-D-0159.json) (fixed), [EXT-D-0161](defects/EXT-D-0161.json) (closed), [EXT-D-0162](defects/EXT-D-0162.json) (closed), [EXT-D-0167](defects/EXT-D-0167.json) (in-fix), [EXT-D-0186](defects/EXT-D-0186.json) (closed), [EXT-D-0189](defects/EXT-D-0189.json) (in-fix), [EXT-D-0220](defects/EXT-D-0220.json) (in-fix), [EXT-D-0223](defects/EXT-D-0223.json) (in-fix), [EXT-D-0224](defects/EXT-D-0224.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -469,7 +469,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T37 guest: Deep clean | Pass | N/A | N/A | EXT-F-1003-C13 |
 | EXT-F-1003-T38 member: Deep clean | N/A | Unverified | N/A | EXT-F-1003-C13 |
 | EXT-F-1003-T39 admin: Deep clean | N/A | N/A | Unverified | EXT-F-1003-C13 |
-| EXT-F-1003-T40 guest: Auto-scrape on load | Partial | N/A | N/A | EXT-F-1003-C14 |
+| EXT-F-1003-T40 guest: Auto-scrape on load | Pass | N/A | N/A | EXT-F-1003-C14 |
 | EXT-F-1003-T41 member: Auto-scrape on load | N/A | Unverified | N/A | EXT-F-1003-C14 |
 | EXT-F-1003-T42 admin: Auto-scrape on load | N/A | N/A | Unverified | EXT-F-1003-C14 |
 | EXT-F-1003-T43 guest: Desktop bridge pairing | Partial | N/A | N/A | EXT-F-1003-C15 |
@@ -568,8 +568,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: settings-local397-native-20261008, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T06:30:08.992059+00:00, ['.research/settings-local397-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
 - EXT-F-1003-T37 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 3 passed criteria; native case pass.
   Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
-- EXT-F-1003-T40 · guest: Partial. Bounded exact-source guest evidence: absent-container defaults, toggle persistence, reload, and cleanup pass; the dedicated downstream capture criterion remains unverified. Not latest-main or full Settings coverage.
-  Evidence / build / date recorded: 38342265985, ['docs/stabilization/runs/hosted-settings-controls-38342265985.json']
+- EXT-F-1003-T40 · guest: Pass. Bounded guest T40 pass combining absent-container defaults from 38342265985 and downstream ON/OFF capture from 38344083875 on identical product tree SHA. Driver cleanup comparison passed with final visible Off/stored null, but capture report omits original raw key/field presence, so exact raw-container restoration cannot be independently reconstructed. No latest-main runtime, loaded/pinned, member/admin, Store or broad Settings claim.
+  Evidence / build / date recorded: 38344083875, ['docs/stabilization/runs/hosted-settings-controls-38342265985.json', 'docs/stabilization/evidence/settings-controls-hosted/run38342265985/case-results.sanitized.json', 'docs/stabilization/runs/hosted-settings-auto-scrape-38344083875.json', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/case-results.sanitized.json', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/resource-finals.sanitized.json', 'docs/stabilization/reports/peer-review-settings-auto-scrape-38344083875.json']
 - EXT-F-1003-T43 · guest: Partial.
   Evidence / build / date recorded: 38034890248, ['docs/stabilization/evidence/desktop-settings-hosted/run38034890248/receipt.sanitized.json', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/native-report.sanitized.json', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-package-38034890248-1.jsonl', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-browser-38034890248-1.jsonl', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-guest-38034890248-1.jsonl']
 - EXT-F-1003-T44 · member: Partial.

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "run_id": 38344083875,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38344083875",
+  "workflow_source_sha": "74287b7efff1b53778153f8a2b524b4f217c6c88",
+  "development_ci_run_id": 38343439920,
+  "focused_acceptance_run_id": 38343439858,
+  "development_artifact_id": 11788341081,
+  "development_artifact_sha256": "8d258135ba04747ab874211c81fbe57459f6b38d860047d283b56d7e7efca240",
+  "hosted_result_artifact_id": 11788492210,
+  "hosted_result_artifact_name": "hosted-guest-38344083875-1",
+  "hosted_result_artifact_size": 61166,
+  "hosted_result_artifact_sha256": "c92b318f9b928c0469acee99850e5854729d30f43f36e61cacb060dc349450c5",
+  "downloaded_zip_sha256_matches": true,
+  "build_tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
+  "lane": "B",
+  "case": "settings-auto-scrape-capture",
+  "role": "guest",
+  "credentials_included": false,
+  "independent_resource_review": "pass; three journal files pass committed verifyHostedResourceJournals from e52e24bfcf63142fc3707b65ce0df6bf60f3c3aa with matching hashes",
+  "independent_product_evidence_review": "pass; dedicated T40 assertions and combined D224 scope accepted",
+  "canonical_inventory_update": "completed after terminal-green focused acceptance 38345251934 and full CI 38345251877; D224 closure and bounded T40 inventory result independently reviewed."
+}

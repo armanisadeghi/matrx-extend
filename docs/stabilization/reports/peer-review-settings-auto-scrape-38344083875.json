@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "run_id": 38344083875,
+  "review_result": "pass",
+  "review_scope": [
+    "T40 native report assertions, marker-bearing capture behavior, and cleanup.",
+    "Exact CI/development artifact provenance, report artifact digest, and product tree identity.",
+    "Three resource journal finals and offline validator behavior.",
+    "Combined D224 evidence with prior absent-container and neighboring Settings cases."
+  ],
+  "findings": {
+    "native_case": "Pass: exactly one successful capture call with the unique marker when ON; zero calls after each loaded OFF page settles for 3000 ms; ON and OFF survive worker/panel replacement. The driver cleanup comparison passed, with final visible Off and stored null; exact initial storage key/field presence is omitted from the report, so exact raw-container restoration cannot be independently reconstructed.",
+    "provenance": "Exact source 74287b7efff1b53778153f8a2b524b4f217c6c88, CI 38343439920, artifact 11788341081, result artifact 11788492210 with matching downloaded ZIP SHA-256. Native product tree hash 91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177 matches prior controls run 38342265985.",
+    "resources": "All three final journals are admitted, resource-valid, exit 0, decision valid. The committed verifier from e52e24bfc accepts the CPU pending/recovery sequence and returns matching journal hashes.",
+    "combined_d224": "Prior run 38342265985 supplies T40 absent-container defaults and T04/T10/T67 bounded results; this run supplies T40 downstream ON/OFF capture behavior on the same product tree. This supports bounded D224 retest success without broad Settings health or latest-main runtime claims.",
+    "initial_fixture_limit": "The dedicated report confirms its Off precondition and cleanup assertion, but does not serialize the pre-run Settings storage-key and field-presence pair. The report's later initial=false observation follows an explicit Off selection and is not treated as the pre-test baseline. Absent-container entry/default evidence is from controls run 38342265985."
+  },
+  "reviewed_files": [
+    "docs/stabilization/runs/hosted-settings-auto-scrape-38344083875.json",
+    "docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/case-results.sanitized.json",
+    "docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/resource-finals.sanitized.json",
+    "docs/stabilization/runs/hosted-settings-controls-38342265985.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38342265985/case-results.sanitized.json"
+  ],
+  "reviewer": "independent evidence reviewer agent"
+}

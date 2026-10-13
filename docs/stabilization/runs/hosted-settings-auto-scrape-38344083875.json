@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "run_id": 38344083875,
+  "title": "Guarded guest T40 downstream automatic-capture retest",
+  "status": "bounded_guest_acceptance_passed",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38344083875",
+    "head_sha": "74287b7efff1b53778153f8a2b524b4f217c6c88",
+    "conclusion": "success",
+    "workflow": "Hosted guest side-panel acceptance",
+    "acceptance_case": "settings-auto-scrape-capture",
+    "lane": "B",
+    "requested_by": "extend-stabilization",
+    "auth_mode": "guest",
+    "product_artifact_source_sha": "74287b7efff1b53778153f8a2b524b4f217c6c88",
+    "product_artifact_kind": "ci_development_test",
+    "product_development_run_id": 38343439920,
+    "product_development_artifact_id": 11788341081,
+    "product_development_artifact_sha256": "8d258135ba04747ab874211c81fbe57459f6b38d860047d283b56d7e7efca240",
+    "focused_acceptance_run_id": 38343439858,
+    "artifact_verified_by_hosted_provenance_gate": true,
+    "publish_state": "not_published"
+  },
+  "scope": "One guarded guest native side-panel T40 downstream capture run; isolated owned profile and unique-marker pages.",
+  "build": {
+    "kind": "local_dev_unpacked",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
+    "verified": true,
+    "publish_state": "not_published"
+  },
+  "product_observations_from_native_report": [
+    {
+      "criterion": "ON emits one real capture with the page marker",
+      "status": "pass",
+      "evidence": "Exactly one scrape:capture-page call returned successfully for /harbor-dental-intake and included the unique marker."
+    },
+    {
+      "criterion": "OFF emits no capture after the loaded page settles",
+      "status": "pass",
+      "evidence": "The follow-up marker page loaded and the full 3-second observation window completed with zero capture calls."
+    },
+    {
+      "criterion": "ON survives full extension reload and emits one real capture",
+      "status": "pass",
+      "evidence": "After worker and panel replacement, ON was restored and one successful marker-bearing capture occurred."
+    },
+    {
+      "criterion": "OFF survives full extension reload with zero capture calls",
+      "status": "pass",
+      "evidence": "After worker and panel replacement, OFF remained selected and the settled follow-up page produced zero calls."
+    },
+    {
+      "criterion": "Original OFF baseline cleanup",
+      "status": "pass",
+      "evidence": "The driver's cleanup comparison passed against its captured baseline; the native report records final visible Off and stored null (effective default). It does not serialize the original storage key/field presence, so exact raw-container restoration cannot be independently reconstructed from this artifact."
+    }
+  ],
+  "case_result": {
+    "native_report_status": "pass",
+    "criteria_passed": 12,
+    "criteria_failed": 0,
+    "criteria_unverified": 0,
+    "product_credit": "Accepted for the bounded guest T40 downstream-capture criterion, combined with run 38342265985 absent-container/default and neighboring-case evidence on the identical product tree. Exact current-main runtime and broad Settings acceptance are not established."
+  },
+  "artifact": {
+    "id": 11788492210,
+    "name": "hosted-guest-38344083875-1",
+    "size": 61166,
+    "sha256": "c92b318f9b928c0469acee99850e5854729d30f43f36e61cacb060dc349450c5",
+    "downloaded_zip_sha256_matches": true,
+    "raw_location_ignored": "/Volumes/Samsung2TB/.cache/stabilization/hosted-run38344083875/hosted-guest-38344083875-1.zip"
+  },
+  "resource_finals_from_downloaded_journals_and_job_logs": {
+    "hosted-package-38344083875-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38344083875-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38344083875-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "browser_observations": "One transient RESOURCE_CPU_PENDING / RESOURCE_CPU_BUSY sample was followed by three samples ending RESOURCE_CPU_RECOVERED before the valid final receipt.",
+    "offline_helper_verification": "Pass using verifyHostedResourceJournals from source commit e52e24bfcf63142fc3707b65ce0df6bf60f3c3aa; returned valid=true and matching SHA receipts for all three completed journals."
+  },
+  "combined_d224_context": {
+    "prior_controls_run": 38342265985,
+    "prior_run_source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
+    "prior_run_product_tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
+    "prior_run_scope": "T04/T10 pass; T67 pass from initially absent Settings container; T40 absent-container defaults, toggle persistence/reload/cleanup pass; downstream capture remained unverified.",
+    "assessment": "Independent peer accepts combined bounded T40 evidence: run 38342265985 supplies absent-container defaults and T04/T10/T67; this run supplies real ON/OFF downstream capture on the identical product tree. Together they support closure of D224’s defined guest absent-container harness defect. Cleanup comparison passed, but the original raw storage-key/field-presence shape is not independently recoverable. No latest-main runtime, member/admin, Store, or broad Settings claim."
+  },
+  "scope_limit": "The original absent-container entry/default observation is in separate controls run 38342265985 with identical product tree SHA. The dedicated run reports final visible Off/stored null and a passing driver baseline-comparison assertion, but does not serialize original key/field presence. This is bounded guest acceptance only; no latest-main runtime, member/admin, Store, or broad Settings health claim. Chrome loaded/pinned build remains unverified."
+}

@@ -29,7 +29,12 @@
     "docs/stabilization/evidence/settings-controls-hosted/run38342265985/receipt.sanitized.json",
     "docs/stabilization/evidence/settings-controls-hosted/run38342265985/case-results.sanitized.json",
     "docs/stabilization/evidence/settings-controls-hosted/run38342265985/resource-finals.sanitized.json",
-    "docs/stabilization/reports/peer-review-hosted-settings-controls-38342265985.json"
+    "docs/stabilization/reports/peer-review-hosted-settings-controls-38342265985.json",
+    "docs/stabilization/runs/hosted-settings-auto-scrape-38344083875.json",
+    "docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/case-results.sanitized.json",
+    "docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/resource-finals.sanitized.json",
+    "docs/stabilization/reports/peer-review-settings-auto-scrape-38344083875.json"
   ],
   "build_receipt": {
     "native_ci_run_id": 38328904848,
@@ -39,11 +44,11 @@
     "resource_valid": true,
     "guest_job_exit": 1
   },
-  "reproducibility": "Deterministic focused DOM/storage reproduction of absent persisted fields; the hosted report's T40 pre-assertion raw values were not serialized, so a fresh native retest remains required.",
+  "reproducibility": "Reproduced by focused absent-container observer tests and a fresh guarded guest native retest: T04/T10/T67 pass in run 38342265985, while combined T40 absent-default and downstream capture evidence passes on the identical product tree across runs 38342265985 and 38344083875.",
   "severity": "S2: false guest Scrape full-extension failures leave T40 and T67 unverified",
-  "priority": "P1: repair before the next guarded Settings native run",
-  "state": "in-fix",
-  "owner": "root/settings_reload_diagnosis",
+  "priority": "Resolved for the defined guest absent-container acceptance after exact-source hosted retest and independent evidence review.",
+  "state": "closed",
+  "owner": "",
   "cause": "The harness read absent scrapeAutoOnLoad and scrapeAutoMode fields as null, despite the product store merging absent persisted fields with defaults false and capture. Earlier Theme and Default mode baseline restoration intentionally removed the whole Settings container.",
   "sibling_census": "Both T40 and T67 use observeScrape. The observer now applies the same implicit defaults to absent fields; explicit differing fields and malformed persisted state still remain distinguishable.",
   "acceptance_criteria": [
@@ -55,12 +60,13 @@
   "source_verification": {
     "focused_tests": "27/27 pass; focused absent-container guard failed on old behavior with null !== false",
     "compile": "pass",
-    "native_acceptance": "Hosted run 38331187170: T04/T10 pass; T40 control/reload/cleanup pass but full case unverified because downstream capture was not exercised; T67 persisted-mode pass began with explicit stored=capture. Run 38334606711 used the exact-source CI artifact for 99c647a56 but the guest resource watchdog invalidated acceptance with cpu-busy sample-count failure before a native report. One diagnosed retry, 38335625868 on 9df3fdd0a, was refused at browser resource admission for the same sampler failure before Chromium or Settings started. Both new runs grant zero credit to T04/T10/T40/T67 and establish no product failure. Run 38339589962 on eb0d262973dfe5558352559093b18bf9d38e6835 failed importing its exact CI artifact before Settings assertions; no artifact/journals were available, so it grants zero credit. New run 38342265985 used exact source 6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1, CI 38341429896, development artifact 11787535752 (sha256:b20c57389269d12c533a33486ce334b2c52800f4672bb3a87a05515ce7ba35a2). Three downloaded resource journals independently validate as resource-valid. T04 and T10 pass their absent-container initial default checks and restoration; T67 passes with an observed initially absent Settings container, effective defaults false/capture, choice persistence, worker/panel replacement survival, and restoration. T40 is unverified overall: its full-extension absent-container initial default, On/Off persistence, reload, and cleanup subchecks pass, but the separate downstream background-capture criterion remains unverified. The artifact suite overall remains unverified (13/20 pass, 7/20 unverified). No blanket Settings pass or D224 closure is claimed. Current main later advanced to 8569fadc10bd9f7a829890705b40b0f3a5e1f14c with a package-watch metadata-only change; this run is bound to 6f0a, not latest-main coverage.",
+    "native_acceptance": "Hosted run 38331187170: T04/T10 pass; T40 control/reload/cleanup pass but full case unverified because downstream capture was not exercised; T67 persisted-mode pass began with explicit stored=capture. Run 38334606711 used the exact-source CI artifact for 99c647a56 but the guest resource watchdog invalidated acceptance with cpu-busy sample-count failure before a native report. One diagnosed retry, 38335625868 on 9df3fdd0a, was refused at browser resource admission for the same sampler failure before Chromium or Settings started. Both new runs grant zero credit to T04/T10/T40/T67 and establish no product failure. Run 38339589962 on eb0d262973dfe5558352559093b18bf9d38e6835 failed importing its exact CI artifact before Settings assertions; no artifact/journals were available, so it grants zero credit. New run 38342265985 used exact source 6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1, CI 38341429896, development artifact 11787535752 (sha256:b20c57389269d12c533a33486ce334b2c52800f4672bb3a87a05515ce7ba35a2). Three downloaded resource journals independently validate as resource-valid. T04 and T10 pass their absent-container initial default checks and restoration; T67 passes with an observed initially absent Settings container, effective defaults false/capture, choice persistence, worker/panel replacement survival, and restoration. T40 is unverified overall: its full-extension absent-container initial default, On/Off persistence, reload, and cleanup subchecks pass, but the separate downstream background-capture criterion remains unverified. The artifact suite overall remains unverified (13/20 pass, 7/20 unverified). At that checkpoint, no blanket Settings pass or D224 closure was claimed; the later dedicated capture retest below supplies the remaining T40 criterion. Current main later advanced to 8569fadc10bd9f7a829890705b40b0f3a5e1f14c with a package-watch metadata-only change; this run is bound to 6f0a, not latest-main coverage.",
     "independent_source_review": "pass for source fix only: docs/stabilization/reports/ext-d-0224-source-peer-20261013.json",
-    "independent_acceptance_review": "pass for bounded case evidence, resource journal hashes, provenance, and redaction: docs/stabilization/reports/peer-review-hosted-settings-controls-38342265985.json",
-    "release": "pending"
+    "independent_acceptance_review": "pass for controls run 38342265985 and capture run 38344083875; bounded guest criteria, exact provenance, resource journals, and redaction reviewed: docs/stabilization/reports/peer-review-hosted-settings-controls-38342265985.json; docs/stabilization/reports/peer-review-settings-auto-scrape-38344083875.json",
+    "release": "pending",
+    "verifier_ci": "Committed journal verifier correction e52e24bfcf63142fc3707b65ce0df6bf60f3c3aa passed focused acceptance 38345251934 and full CI 38345251877."
   },
-  "next_action": "Keep EXT-D-0224 in-fix/open. Independent review accepts the bounded evidence. T04/T10/T67 pass on source 6f0a; T40 absent-container defaults, switch persistence, reload, and cleanup pass, but the case remains unverified until the dedicated downstream background-capture criterion is exercised. The run is not latest-main coverage, and no blanket Settings health claim is made.",
+  "next_action": "D224 is closed for the defined guest absent-container Scrape default-observation defect after independently reviewed T04/T10/T67 controls and combined T40 absent-default plus downstream-capture acceptance on identical product tree. No further D224 retest is required for this bounded scope. Member/admin, broad Settings, Store and latest-main runtime/Chrome loaded-pin behavior remain unverified.",
   "transition_history": [
     {
       "at": "2026-10-13T01:00:00Z",
@@ -109,6 +115,18 @@
       "from": "in-fix",
       "to": "in-fix",
       "reason": "Guarded guest run 38342265985 on exact 6f0a20f source completed with valid downloaded resource journals and acceptance artifact. T04/T10/T67 pass, including T67 from an initially absent Settings container; T40 absent-container defaults, switch persistence, reload, and cleanup pass, while downstream background capture remains unverified. D224 stays open, with independent evidence review required; later main 8569fadc1 is not covered by this run."
+    },
+    {
+      "at": "2026-10-13T04:21:41Z",
+      "from": "in-fix",
+      "to": "retest-pass",
+      "reason": "Exact-source guarded guest controls run 38342265985 and dedicated T40 downstream capture run 38344083875 pass with valid resource journals and independent evidence review; the combined evidence covers T04/T10/T67 and the defined T40 reproduction on identical product tree."
+    },
+    {
+      "at": "2026-10-13T04:21:41Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Bounded D224 guest absent-container default-observation acceptance is complete. Closure is limited to the defined harness defect and does not assert broad Settings health, member/admin, Store, latest-main runtime, or Chrome loaded/pinned acceptance."
     }
   ]
 }
