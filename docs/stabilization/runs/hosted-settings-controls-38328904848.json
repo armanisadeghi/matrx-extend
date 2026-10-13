@@ -56,6 +56,7 @@
         "failed": 0
       },
       "observed": [
+        "21/21 recorded T04 criteria passed: one pre-full-reload baseline/restoration check, 7 panel-document reload assertions, and 13 full-extension reload assertions.",
         "Dark, Light and System each changed selected value, storage value and rendered theme, and persisted across panel reload.",
         "Dark and Light each persisted across full extension worker/panel replacement.",
         "System setting and the original absent preference/settings-container baseline were restored, including after full extension reload."
@@ -63,7 +64,13 @@
       "limits": [
         "System was observed with systemDark=false; System under a dark OS preference is unverified.",
         "This is guest T04 only; it does not establish other roles, Store behavior or full Settings health."
-      ]
+      ],
+      "passed_criteria_count": 21,
+      "criteria_phase_counts": {
+        "before_full_extension_reload": 1,
+        "panel_document_reload": 7,
+        "full_extension_reload": 13
+      }
     },
     {
       "case_id": "EXT-F-1003-T10",

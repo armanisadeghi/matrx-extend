@@ -6843,7 +6843,7 @@
               "resource_valid": true,
               "resource_final_decision": "child_failed because T40 and T67 full-reload rechecks raised assertions; resourceInvalid=false. T04/T10 criteria themselves passed.",
               "passed_subtargets": [
-                "Guest Theme: 7/7 panel-document reload assertions and 13/13 full-extension reload assertions passed. Dark/Light/System rendered and persisted; full extension worker/panel replacement verified; original absent preference/container baseline restored."
+                "Guest Theme: 21/21 criteria passed: 1 pre-full-reload baseline/restoration check, 7/7 panel-document reload assertions, and 13/13 full-extension reload assertions. Dark/Light/System rendered and persisted; full extension worker/panel replacement verified; original absent preference/container baseline restored."
               ],
               "unverified": [
                 "System with dark OS preference; member/admin, Store, and broader Settings behavior."
@@ -6853,7 +6853,7 @@
               ],
               "independent_review": "docs/stabilization/runs/hosted-settings-controls-38328904848.json",
               "scope": "Signed-out guest exact unpacked development artifact 11781602861 (source ca51b7ac2). T04/T10 bounded criteria only; not full Settings health, Store, member/admin, or dark-OS System coverage.",
-              "passed_criteria_count": 20,
+              "passed_criteria_count": 21,
               "detail": "Exact artifact guest T04 pass, independently adjudicated. System appearance observed while OS preference was light (systemDark=false).",
               "panel_document_reload": {
                 "status": "pass",
