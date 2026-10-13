@@ -37,10 +37,46 @@ function json(path) {
 function git(...args) {
   return execFileSync('git', args, { cwd: REPO, encoding: 'utf8' }).trim();
 }
-function ghJson(endpoint) {
-  return JSON.parse(
-    execFileSync('gh', ['api', endpoint], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 }),
-  );
+function githubRetryPolicy() {
+  const attempts = Number(process.env.MATRX_ARTIFACT_GH_RETRY_ATTEMPTS ?? '3');
+  const delayMs = Number(process.env.MATRX_ARTIFACT_GH_RETRY_DELAY_MS ?? '1000');
+  if (
+    !Number.isInteger(attempts) ||
+    attempts < 1 ||
+    attempts > 5 ||
+    !Number.isInteger(delayMs) ||
+    delayMs < 0 ||
+    delayMs > 10000
+  )
+    fail('test_artifact_github_retry_policy_refused');
+  return { attempts, delayMs };
+}
+function isTransientGithubConnectionError(error) {
+  const detail = String(error.stderr ?? '');
+  return /error connecting to api\.github\.com|ECONNRESET|ETIMEDOUT|EAI_AGAIN/i.test(detail);
+}
+export async function ghJson(endpoint) {
+  const { attempts, delayMs } = githubRetryPolicy();
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    let response;
+    try {
+      response = execFileSync('gh', ['api', endpoint], {
+        encoding: 'utf8',
+        maxBuffer: 8 * 1024 * 1024,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+    } catch (error) {
+      if (!isTransientGithubConnectionError(error)) fail('test_artifact_github_api_failed');
+      if (attempt === attempts) fail('test_artifact_github_api_unavailable');
+      await new Promise((resolveDelay) => setTimeout(resolveDelay, delayMs * attempt));
+      continue;
+    }
+    try {
+      return JSON.parse(response);
+    } catch {
+      fail('test_artifact_github_response_invalid');
+    }
+  }
 }
 function devId(key) {
   if (typeof key !== 'string' || !key) fail('test_artifact_dev_key_missing');
@@ -383,9 +419,9 @@ async function importArtifact(runId, artifactId) {
     fail('test_artifact_selector_refused');
   const root = `/repos/${OWNER}`;
   const [run, workflow, artifact] = [
-    ghJson(`${root}/actions/runs/${runId}`),
-    ghJson(`${root}/actions/workflows/ci.yml`),
-    ghJson(`${root}/actions/artifacts/${artifactId}`),
+    await ghJson(`${root}/actions/runs/${runId}`),
+    await ghJson(`${root}/actions/workflows/ci.yml`),
+    await ghJson(`${root}/actions/artifacts/${artifactId}`),
   ];
   const digest = verifyGitHubMetadata(run, workflow, artifact, runId, artifactId);
   const scratch = await mkdtemp(join(tmpdir(), 'matrx-ci-test-import-'));

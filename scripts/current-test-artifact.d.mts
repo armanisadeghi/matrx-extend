@@ -20,6 +20,8 @@ export type GitHubArtifactMetadata = {
   workflow_run: { id: number; head_sha: string };
 };
 
+export function ghJson(endpoint: string): Promise<unknown>;
+
 export type CiBuildProvenance = {
   schema_version: 1;
   kind: 'ci_development_test';
