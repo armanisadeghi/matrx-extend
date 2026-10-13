@@ -1,0 +1,72 @@
+{
+  "id": "EXT-D-0225",
+  "feature_id": "EXT-F-2007",
+  "case_ids": ["EXT-F-2007-T03"],
+  "title": "Note deletion refusals bypass the shared notice and durable diagnostic boundary",
+  "surface": "Notes query and editor delete action",
+  "auth_mode": "member/admin; source guards only",
+  "organization_context": "Existing visible note; diagnostics-enabled member organization; native roles unverified",
+  "preconditions": ["softDeleteNote receives a database error or a count other than exactly one."],
+  "reproduction": [
+    "Run pnpm check:swallowed-refusals on repair base: Notes reports 6 sites against budget 5.",
+    "Run the new src/lib/notes/queries.delete-failures.test.ts against the original query: five failure cases resolve false rather than rejecting with a recorded DbFailureError."
+  ],
+  "expected": "Failed or unconfirmed deletion uses failDbCall to announce a remedy, submit a structured diagnostic when diagnostics is enabled, and reject; only exactly one affected row confirms success. The editor retains the note and draft on rejection.",
+  "actual": "Both database errors and unexpected affected-row counts warn to the console and return false, bypassing the canonical diagnostic seam. The editor already preserves its draft, but no shared notice or durable report is emitted.",
+  "evidence": [
+    "src/lib/notes/queries.delete-failures.test.ts",
+    "src/features/notes/NoteEditor.delete-failures.test.tsx",
+    "scripts/check-swallowed-refusals.ts",
+    "docs/feature-tests.md"
+  ],
+  "build_receipt": {
+    "repair_base_sha": "584054ddf24f97cabfac4ed52bf8979bc539f526",
+    "native_source_sha": null,
+    "native_artifact": "Not built or installed in this lane"
+  },
+  "reproducibility": "Guard red once; behavioral red 5/6 cases before fix, green 6/6 after fix. Constant-success and missing-count mutations each killed and source restored byte-identically by plant.py.",
+  "severity": "S2: deletion refusal is omitted from shared diagnostics",
+  "priority": "P1: mandatory release guard failure",
+  "state": "in-fix",
+  "owner": "root/notes_refusal_fix",
+  "cause": "The exact-row-count confirmation added to softDeleteNote copied the older console-warn/false database-error path rather than the canonical failDbCall boundary.",
+  "sibling_census": "Both deletion failure branches now share one failDbCall. Four pre-existing sites remain in moveNoteHome, createNote and updateNote and retain the lowered Notes ratchet budget of 4. No broader Notes write behavior changed. Editor performDelete already catches rejection and preserves draft/retry; focused caller tests pass.",
+  "acceptance_criteria": [
+    "Original refusal ratchet passes with budget lowered from 5 to 4, never raised.",
+    "Deletion error, zero count, unknown count and impossible multiple count each reject through the real canonical failure seam; exactly one row succeeds without notice/report.",
+    "Existing editor draft retention, retry confirmation and successful delete behavior remain guarded.",
+    "Independent source review and exact-build native evidence remain required before closure."
+  ],
+  "source_verification": {
+    "focused_tests": "62/62 pass in 13 files (all Notes plus canonical db-refusal seam)",
+    "compile": "pass",
+    "swallowed_refusals": "pass; 37 known sites",
+    "swallowed_refusals_self_test": "pass",
+    "schema_routing": "pass",
+    "lint": "Owned-file Biome pass; full pnpm -s lint currently blocked by formatting in scripts/test-hosted-acceptance-lanes.mjs:83 (separate root-owned lane).",
+    "independent_source_review": "pending",
+    "native_acceptance": "pending",
+    "release": "pending"
+  },
+  "next_action": "Root obtains independent source review, pushes the verified unit, then owns guarded hosted release and fresh exact-source native Notes deletion/error-inspector acceptance. Do not mark native or Store acceptance from source tests.",
+  "transition_history": [
+    {
+      "at": "2026-10-13T01:24:55.483347+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Real mandatory release ratchet fails at the Notes deletion count refusal."
+    },
+    {
+      "at": "2026-10-13T01:24:55.483347+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Behavioral red confirms both deletion failure branches bypass shared notice/reporting."
+    },
+    {
+      "at": "2026-10-13T01:24:55.483347+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Focused repair and red/green tests complete; independent review and native acceptance pending."
+    }
+  ]
+}

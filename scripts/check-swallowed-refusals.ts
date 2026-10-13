@@ -90,7 +90,7 @@ const BUDGET: Record<string, number> = {
   'src/lib/supabase/queries.ts': 19,
   // the six highlight READ paths (every write is on the seam)
   'src/lib/highlights/queries.ts': 6,
-  'src/lib/notes/queries.ts': 5,
+  'src/lib/notes/queries.ts': 4,
   'src/lib/agenda/queries.ts': 8,
 };
 

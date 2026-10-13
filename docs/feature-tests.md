@@ -3721,12 +3721,13 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Steps:** Open a note while its detail SELECT fails; retry after restoring access. Repeat with a successful zero-row detail SELECT. While editing a loaded note, make a background detail refresh fail.
 - **Expected:** Failure and missing-note states name the problem and offer Retry loading note plus Back; neither remains a loading skeleton. A background failure shows a notice and preserves the current draft.
 
-### Notes delete failure (EXT-D-0068, EXT-F-2007-T03)
+### Notes delete failure (EXT-D-0068, EXT-D-0225, EXT-F-2007-T03)
 
 - **What it does:** Note deletion requires confirmation that exactly one row changed. An error or zero affected rows keeps the editor open with a retry control.
 - **Where to test:** Signed-in Notes editor with an existing disposable note.
-- **Steps:** Confirm Delete while its filtered UPDATE returns zero affected rows. Repeat with a transport error. Restore access, use Retry delete, confirm again, and reopen the list.
-- **Expected:** An unconfirmed delete shows an explicit notice and preserves the editor draft. Retry requires confirmation again. A confirmed delete returns to the list without the note.
+- **Steps:** Confirm Delete while its filtered UPDATE returns zero affected rows. Repeat with an unknown affected-row count, a database refusal, and a transport error. Restore access, use Retry delete, confirm again, and reopen the list. With diagnostics enabled, check the platform error inspector for the corresponding `workbench.notes` update failure.
+- **Expected:** An unconfirmed delete shows a shared failure notice with a remedy and preserves the editor draft and retry control. With diagnostics enabled, the failure is submitted through `log_client_error`; it never resolves as a successful query. Retry requires confirmation again. Exactly one affected row confirms deletion and returns to the list without the note.
+- **Verification status:** Query and editor regression guards pass; fresh exact-build native and platform error-store acceptance for EXT-D-0225 remain pending.
 
 ### Server error sentences, live-run rejoin, and speech failures
 

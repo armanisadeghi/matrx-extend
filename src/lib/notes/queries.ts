@@ -16,6 +16,7 @@ import {
   NoteSchema,
   type UpdateNotePatch,
 } from '@/lib/notes/types';
+import { failDbCall } from '@/lib/supabase/db-failure';
 import { platformDb, workbenchDb } from '@/lib/supabase/schemas';
 
 const LIST_COLUMNS = 'id, created_by, label, home_scope_id, tags, updated_at, position';
@@ -150,13 +151,19 @@ export async function softDeleteNote(id: string): Promise<boolean> {
       { count: 'exact' },
     )
     .eq('id', id);
-  if (error) {
-    console.warn('[notes] softDeleteNote error', error.message);
-    return false;
-  }
-  if (count !== 1) {
-    console.warn('[notes] softDeleteNote affected unexpected row count', count);
-    return false;
+  if (error || count !== 1) {
+    failDbCall(
+      {
+        table: 'workbench.notes',
+        operation: 'update',
+        what: 'delete this note',
+        title: 'Note not deleted',
+      },
+      error ??
+        (count === null || count === 0
+          ? null
+          : { message: `Deletion affected an unexpected number of notes: ${count}` }),
+    );
   }
   return true;
 }
