@@ -173,6 +173,11 @@ export const DESTRUCTIVE_OPERATIONS: DestructiveOperation[] = [
  */
 export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
   {
+    fn: 'showSwipePillAgain',
+    module: 'src/lib/swipe-file/pill-dismiss.ts',
+    why: 'Clears only the extension-owned flag that hides the Swipe file pill; no saved user content is removed.',
+  },
+  {
     fn: 'applySwipeIntent',
     module: 'src/entrypoints/sidepanel/App.tsx',
     why: 'Consumes only the transient extension-owned Swipe file navigation request after selecting its post in the matching browser window; no saved user content is removed.',
