@@ -8,6 +8,9 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 const ports = vi.hoisted(() => ({ rpc: vi.fn(), tree: vi.fn() }));
 vi.mock('@/lib/supabase/schemas', () => ({ platformDb: () => ({ rpc: ports.rpc }) }));
+vi.mock('@/lib/supabase/client', () => ({
+  getSupabase: () => ({ schema: () => ({ rpc: ports.rpc }) }),
+}));
 vi.mock('@/lib/api/routes/auth', () => ({
   requireRequestOrganizationId: async () => 'active-org',
 }));
@@ -59,7 +62,7 @@ it('initializes a selected lazy General only when moving a note, then uses the r
   if (!home) throw new Error('Missing lazy General');
   await expect(moveNoteHome('note-1', home)).resolves.toBe(true);
   expect(ports.rpc.mock.calls).toEqual([
-    ['my_homes'],
+    ['my_homes', {}],
     ['ensure_general_scope', { p_org: org }],
     ['set_home', { p_entity_type: 'note', p_entity_id: 'note-1', p_scope_id: scope }],
   ]);
@@ -98,7 +101,7 @@ it('keeps General identity after materialization and moves without initializing 
   expect(screen.getByRole('button', { name: 'Intake · Law Firm' })).toBeDefined();
   await expect(moveNoteHome('note-1', home)).resolves.toBe(true);
   expect(ports.rpc.mock.calls).toEqual([
-    ['my_homes'],
+    ['my_homes', {}],
     ['set_home', { p_entity_type: 'note', p_entity_id: 'note-1', p_scope_id: scope }],
   ]);
 });

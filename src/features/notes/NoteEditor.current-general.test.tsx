@@ -12,6 +12,9 @@ vi.mock('@/lib/supabase/schemas', () => ({
     from: () => ({ select: () => ({ eq: () => ({ maybeSingle: db.read }) }) }),
   }),
 }));
+vi.mock('@/lib/supabase/client', () => ({
+  getSupabase: () => ({ schema: () => ({ rpc: db.rpc }) }),
+}));
 vi.mock('@/lib/api/routes/auth', () => ({ requireRequestOrganizationId: vi.fn() }));
 vi.mock('@/components/MarkdownView', () => ({
   MarkdownView: ({ content }: { content: string }) => <div>{content}</div>,

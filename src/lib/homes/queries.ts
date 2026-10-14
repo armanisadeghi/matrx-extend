@@ -1,5 +1,6 @@
 /** Platform home options, including General before its scope is materialized. */
-import { platformDb } from '@/lib/supabase/schemas';
+import { getSupabase } from '@/lib/supabase/client';
+import { type FunctionDescriptor, call, createDb } from '@ai-matrx/data/db';
 import { z } from 'zod';
 
 const HomeRowSchema = z.object({
@@ -9,6 +10,24 @@ const HomeRowSchema = z.object({
   name: z.string(),
   is_general: z.boolean(),
 });
+
+type HomeRow = z.infer<typeof HomeRowSchema>;
+
+const MY_HOMES = {
+  schema: 'platform',
+  name: 'my_homes',
+  roles: ['authenticated'],
+  registered: true,
+} as FunctionDescriptor<Record<string, never>, HomeRow[]>;
+
+const ENSURE_GENERAL_SCOPE = {
+  schema: 'platform',
+  name: 'ensure_general_scope',
+  roles: ['authenticated'],
+  registered: true,
+} as FunctionDescriptor<{ p_org: string }, string>;
+
+const homesDb = () => createDb({ client: getSupabase() });
 
 export interface HomeChoice {
   /** Stable UI identity; every General uses general:<organization UUID>. */
@@ -22,9 +41,15 @@ export interface HomeChoice {
 
 /** Read all homes the platform permits, without creating any scope. */
 export async function listHomeChoices(): Promise<HomeChoice[]> {
-  const { data, error } = await platformDb().rpc('my_homes');
-  if (error) throw new Error(`Could not load homes: ${error.message}`);
-  const parsed = z.array(HomeRowSchema).safeParse(data ?? []);
+  let rows: HomeRow[] | null;
+  try {
+    rows = await call(homesDb(), MY_HOMES, {});
+  } catch (error) {
+    throw new Error(
+      `Could not load homes: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+  const parsed = z.array(HomeRowSchema).safeParse(rows ?? []);
   if (!parsed.success)
     throw new Error('Could not load homes: an unexpected home shape was returned.');
   const counts = new Map<string, number>();
@@ -54,7 +79,13 @@ export async function resolveHomeScopeId(choice: string | HomeChoice): Promise<s
   const choiceId = typeof choice === 'string' ? choice : (choice.scope_id ?? choice.id);
   if (!choiceId.startsWith('general:')) return z.string().uuid().parse(choiceId);
   const organizationId = z.string().uuid().parse(choiceId.slice('general:'.length));
-  const { data, error } = await platformDb().rpc('ensure_general_scope', { p_org: organizationId });
-  if (error) throw new Error(`Could not choose home: ${error.message}`);
-  return z.string().uuid().parse(data);
+  let scopeId: string;
+  try {
+    scopeId = await call(homesDb(), ENSURE_GENERAL_SCOPE, { p_org: organizationId });
+  } catch (error) {
+    throw new Error(
+      `Could not choose home: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+  return z.string().uuid().parse(scopeId);
 }
