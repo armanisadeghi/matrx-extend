@@ -73,6 +73,7 @@ async function settled(tabId: number, timeoutMs: number): Promise<chrome.tabs.Ta
 /** Open a filled compose window in a new tab. Never sends. */
 export async function openOwaCompose(c: OwaCompose, timeoutMs = 30_000): Promise<OwaOpenResult> {
   const host = c.host ?? 'outlook.office.com';
+  // outbound-ok: the user's own mail compose window, not a referral to a third-party site
   const tab = await chrome.tabs.create({ url: owaComposeUrl({ ...c, host }), active: true });
   if (tab.id === undefined) return { ok: false, reason: 'Chrome did not open a tab' };
   const loaded = await settled(tab.id, timeoutMs);
