@@ -135,6 +135,17 @@
    "application/json"
   ]
  },
+ "/admin/converters": {
+  "get": []
+ },
+ "/admin/converters/definitions/{definition_id}/check": {
+  "post": []
+ },
+ "/admin/converters/replay": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/admin/cx-explorer/attribution-registry": {
   "get": []
  },
@@ -602,6 +613,14 @@
   "get": []
  },
  "/ai-tools/{tool_id}": {
+  "get": []
+ },
+ "/ai-visibility/brands/{brand_id}/check": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai-visibility/brands/{brand_id}/check/estimate": {
   "get": []
  },
  "/ai-visibility/panels": {
@@ -1280,6 +1299,9 @@
  "/broker/gateway/openai_codex/v1/responses": {
   "post": []
  },
+ "/broker/jwks.json": {
+  "get": []
+ },
  "/broker/provider-failures": {
   "post": [
    "application/json"
@@ -1495,6 +1517,22 @@
  "/chili-piper/public/status": {
   "get": []
  },
+ "/ci-spend/costly": {
+  "get": []
+ },
+ "/ci-spend/pause": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ci-spend/resume": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ci-spend/status": {
+  "get": []
+ },
  "/circle/public/status": {
   "get": []
  },
@@ -1657,6 +1695,9 @@
   "post": [
    "application/json"
   ]
+ },
+ "/coding-sessions/own-plan/claude_code/cloud-send/{job_id}": {
+  "get": []
  },
  "/coding-sessions/own-plan/{provider}": {
   "get": []
@@ -2178,13 +2219,30 @@
   "get": []
  },
  "/data-sources/fetch": {
-  "post": []
+  "post": [
+   "application/json"
+  ]
  },
  "/data-sources/jobs/{job_id}": {
   "get": []
  },
+ "/data-sources/jobs/{job_id}/changes": {
+  "get": []
+ },
  "/data-sources/tables/{table_id}/refresh": {
-  "post": []
+  "post": [
+   "application/json"
+  ]
+ },
+ "/data-sources/unlock": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/data-sources/unlock/compare": {
+  "post": [
+   "application/json"
+  ]
  },
  "/databox/public/status": {
   "get": []
@@ -2524,6 +2582,19 @@
  },
  "/esign/envelopes/{envelope_id}/signed-copy": {
   "post": []
+ },
+ "/esign/envelopes/{envelope_id}/signers": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/esign/envelopes/{envelope_id}/signers/{signer_id}": {
+  "delete": []
+ },
+ "/esign/envelopes/{envelope_id}/signers/{signer_id}/correct": {
+  "post": [
+   "application/json"
+  ]
  },
  "/esign/envelopes/{envelope_id}/signers/{signer_id}/resend": {
   "post": [
@@ -3416,6 +3487,16 @@
   ]
  },
  "/google-workspace/linked/documents/to-markdown": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/linked/presentations/from-pptx": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/linked/presentations/push": {
   "post": [
    "application/json"
   ]
@@ -5775,6 +5856,11 @@
  "/proposify/public/status": {
   "get": []
  },
+ "/provision-window/{point_key}/capture": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/pubchem/public/compound": {
   "get": []
  },
@@ -6515,6 +6601,9 @@
   "post": [
    "application/json"
   ]
+ },
+ "/runs/gates": {
+  "get": []
  },
  "/runs/stream": {
   "get": []
@@ -7658,6 +7747,12 @@
  "/social/capabilities": {
   "get": []
  },
+ "/social/captured-posts/{captured_post_id}/media/{file_id}": {
+  "get": []
+ },
+ "/social/captured-posts/{captured_post_id}/thumbnail": {
+  "get": []
+ },
  "/social/cloud-capture/readiness": {
   "get": []
  },
@@ -7678,6 +7773,16 @@
   "delete": []
  },
  "/social/collections/{collection_id}/save-link": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social/connected-accounts/attach": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social/connected-accounts/refresh": {
   "post": [
    "application/json"
   ]
@@ -9183,6 +9288,48 @@
  },
  "/wetransfer/public/status": {
   "get": []
+ },
+ "/whatsapp-business/complete": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/whatsapp-business/config": {
+  "get": []
+ },
+ "/whatsapp-business/disconnect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/whatsapp-business/discover": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/whatsapp-business/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/whatsapp-business/register": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/whatsapp-business/select": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/whatsapp-business/start": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/whatsapp-business/webhook": {
+  "get": [],
+  "post": []
  },
  "/when-i-work/public/status": {
   "get": []

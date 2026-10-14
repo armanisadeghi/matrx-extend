@@ -1116,6 +1116,39 @@ export interface MandateInputRequiredData {
   message?: string;
 }
 
+export interface MandateRunData {
+  type?: "mandate_run";
+  mandate_key: string;
+  door: string;
+  request_id?: string | null;
+  conversation_id?: string | null;
+  mandate_id?: string | null;
+  provenance?: string;
+  replay_of?: string | null;
+  rung?: string | null;
+  holder_type?: string;
+  holder_id?: string | null;
+  holder_version_id?: string | null;
+  holder_version_number?: number | null;
+  holder_version_live?: boolean;
+  model_id?: string | null;
+  goal?: string | null;
+  definition_version?: number | null;
+  input_kind?: string | null;
+  output_kind?: string | null;
+  required_output_keys?: string[];
+  placement?: Record<string, JsonValue> | null;
+  placement_captured_at?: string;
+  provision_applied?: boolean;
+  holder_source?: string;
+  started_by_request_id?: string | null;
+  turn_author?: string | null;
+  turn_input?: JsonValue;
+  host_turn_reason?: string | null;
+  turn_context?: Record<string, JsonValue> | null;
+  earlier_frames?: Record<string, JsonValue>[];
+}
+
 export interface MasterworkAgentBuildData {
   type?: "masterwork_agent_build";
   role: string;
@@ -2533,6 +2566,7 @@ export type TypedDataPayload =
   | LibrarySyncStartedData
   | LibrarySyncUnavailableData
   | MandateInputRequiredData
+  | MandateRunData
   | MasterworkAgentBuildData
   | MasterworkAuditionOutcomeVerdictData
   | MasterworkAuditionProgressData
