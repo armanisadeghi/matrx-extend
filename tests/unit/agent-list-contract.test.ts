@@ -42,9 +42,7 @@ describe('package picker id shape ⇄ extension send path', () => {
     expect(agentTargetExecutePath(mandateAgentId(DEFAULT_CHAT_MANDATE_KEY))).toBe(
       mandateExecutePath(DEFAULT_CHAT_MANDATE_KEY),
     );
-    expect(mandateExecutePath(DEFAULT_CHAT_MANDATE_KEY)).toBe(
-      '/ai/mandates/extend.browser_chat',
-    );
+    expect(mandateExecutePath(DEFAULT_CHAT_MANDATE_KEY)).toBe('/ai/mandates/extend.browser_chat');
 
     const agentUuid = '1f365d07-cad3-4ef7-81fc-57a6c60767e7';
     expect(agentTargetExecutePath(agentUuid)).toContain(agentUuid);
