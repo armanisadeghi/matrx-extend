@@ -25,6 +25,8 @@ export const CONFIGURED_ROW_NAMES: readonly string[] = [
   'records',
   'google_workspace',
   'google_email_send',
+  'outlook_email_send',
+  'outlook_web_draft',
   'submit_form',
   'wait_for',
   'ai',

@@ -14,6 +14,7 @@
  */
 
 import { GmailReviewCard } from '@/features/chat/GmailReviewCard';
+import { OutlookReviewCard } from '@/features/chat/OutlookReviewCard';
 import { respondToAsk } from '@/hooks/use-tool-inbox';
 import type { AskUserResponse, PendingAskUserRequest, UserAskOption } from '@/lib/tools/types';
 import { useToolInbox } from '@/state/tool-inbox';
@@ -36,6 +37,9 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
   // before any of the question machinery below runs.
   if (req.kind === 'email_review') {
     return <GmailReviewCard req={req} />;
+  }
+  if (req.kind === 'outlook_review') {
+    return <OutlookReviewCard req={req} />;
   }
   return <AgentQuestionCard req={req} />;
 }

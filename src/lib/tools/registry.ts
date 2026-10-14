@@ -51,6 +51,7 @@ import {
   pagecapture_handlers,
   sessions_handlers,
 } from '@/lib/tools/handlers/optional-perms';
+import { outlook_handlers } from '@/lib/tools/handlers/outlook-web';
 import { page_ref_handlers } from '@/lib/tools/handlers/page-refs';
 import { parallel_handlers } from '@/lib/tools/handlers/parallel';
 import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handlers/privileged';
@@ -97,6 +98,8 @@ const ALL: AnyToolHandler[] = [
   ...education_handlers,
   // ─── google workspace (the reviewed Gmail send — client-only BY DESIGN) ─
   ...google_handlers,
+  // ─── outlook (web drafts + the reviewed send — client-only BY DESIGN) ─
+  ...outlook_handlers,
   // ─── memory ────────────────────────────────────────────────────────────
   ...memory_handlers,
   // ─── optional-permission tools ─────────────────────────────────────────

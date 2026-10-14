@@ -429,6 +429,8 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   // Matches `tool.definition.category` for the google bundle; `google_workspace`
   // itself is server-executed (executor `aidream`) so it has no handler here.
   google_email_send: 'productivity',
+  outlook_email_send: 'productivity',
+  outlook_web_draft: 'productivity',
 };
 
 export function categoryOf(toolName: string): ToolCategory {
@@ -550,6 +552,9 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'capture_study_set',
   // ─── productivity (the reviewed Gmail send — no server executor exists) ──
   'google_email_send',
+  // ─── productivity (Outlook: web drafts and the reviewed send — no server executor) ──
+  'outlook_email_send',
+  'outlook_web_draft',
   // ─── records (the custom record store, in the browser — CUT-N-11) ───────
   'records',
 ]);

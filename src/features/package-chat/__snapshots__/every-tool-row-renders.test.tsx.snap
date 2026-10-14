@@ -602,6 +602,16 @@ exports[`every browser-tool row config draws through the package's row > draws v
     "error": "Navigate failedhttps://example.com/pricing",
     "started": "Navigating tohttps://example.com/pricing",
   },
+  "outlook_email_send": {
+    "completed": "Opened in Outlook for you to send: sample to",
+    "error": "Email not opened — sample to",
+    "started": "Waiting for you to review an email to sample to",
+  },
+  "outlook_web_draft": {
+    "completed": "Outlook draft to sample toPricing - Example",
+    "error": "Outlook draft failed — sample to",
+    "started": "Opening an Outlook draft to sample to",
+  },
   "query_elements": {
     "completed": "Found #checkout-submit matches",
     "error": "Query failed #checkout-submit",

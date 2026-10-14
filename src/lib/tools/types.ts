@@ -364,7 +364,7 @@ export interface EmailReviewDraft {
  * conversation routing, expiry and cancel semantics) rather than growing a
  * second inbox.
  */
-export type PendingAskKind = UserAskKind | 'email_review';
+export type PendingAskKind = UserAskKind | 'email_review' | 'outlook_review';
 
 export interface PendingAskUserRequest {
   callId: string;
@@ -381,6 +381,8 @@ export interface PendingAskUserRequest {
   kind: PendingAskKind;
   /** Required for kind 'email_review' — the message awaiting review. */
   email?: EmailReviewDraft | undefined;
+  /** Required for kind 'outlook_review' — the message awaiting review. */
+  outlook_email?: OutlookReviewDraft | undefined;
   /** Required for confirm / choice / choice_many / text / secret. */
   question?: string | undefined;
   /**
@@ -446,6 +448,23 @@ export interface PendingAskUserRequest {
  * left them — which is why the tool result echoes these and not the agent's
  * original arguments.
  */
+/** The message `outlook_email_send` asks the person to review. */
+export interface OutlookReviewDraft {
+  to: string;
+  cc: string[];
+  subject: string;
+  body: string;
+}
+
+/** kind 'outlook_review': the reviewed message was opened in Outlook for the person to send. */
+export interface OutlookOpenedReceipt {
+  to: string;
+  cc: string[];
+  subject: string;
+  edited: boolean;
+  tab_id: number;
+}
+
 export interface SentEmailReceipt {
   message_id: string;
   to: string;
@@ -459,6 +478,8 @@ export interface AskUserResponse {
   callId: string;
   /** kind 'email_review' only — present iff a message was really sent. */
   sent_email?: SentEmailReceipt;
+  /** kind 'outlook_review' only — present iff Outlook opened the reviewed message. */
+  outlook_opened?: OutlookOpenedReceipt;
   /** text / secret types — user's freeform text. */
   answer?: string | null;
   /** choice / choice_many — selected option labels. */

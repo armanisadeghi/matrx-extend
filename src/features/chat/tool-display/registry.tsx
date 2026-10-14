@@ -499,6 +499,57 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
+  // The reviewed Outlook send. The consent surface is <OutlookReviewCard>; the
+  // send is the person's own click in Outlook, so this row never reads "sent".
+  outlook_email_send: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Mail', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Waiting for you to review an email to',
+        completed: 'Opened in Outlook for you to send:',
+        error: 'Email not opened —',
+      },
+      name: { path: 'args.to', fallback: '' },
+      info: { completed: { path: 'result.subject', fallback: '' } },
+      color: { started: 'amber', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+    results: {
+      displayType: 'custom',
+      keysInfo: [
+        { key: 'opened_in_outlook', component: 'BoldLabel' },
+        { key: 'declined', component: 'BoldLabel' },
+        { key: 'cancelled', component: 'BoldLabel' },
+        { key: 'edited', component: 'BoldLabel' },
+        { key: 'error', component: 'BoldLabel', className: 'text-red-600 dark:text-red-400' },
+      ],
+    },
+  },
+
+  // A draft opened in Outlook on the web (never sent).
+  outlook_web_draft: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Mail', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Opening an Outlook draft to',
+        completed: 'Outlook draft to',
+        error: 'Outlook draft failed —',
+      },
+      name: { path: 'args.to', fallback: '' },
+      info: { completed: { path: 'args.subject', fallback: '' } },
+      color: { started: 'amber', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+    results: {
+      displayType: 'custom',
+      keysInfo: [
+        { key: 'compose_open', component: 'BoldLabel' },
+        { key: 'note', component: 'BoldLabel' },
+        { key: 'reason', component: 'BoldLabel', className: 'text-red-600 dark:text-red-400' },
+      ],
+    },
+  },
+
   // The reviewed Gmail send. The consent surface is <GmailReviewCard>, which
   // renders as a pending ask; this row is the AFTER record, so it must never
   // read as "sent" when it wasn't — declined and cancelled are normal results.
