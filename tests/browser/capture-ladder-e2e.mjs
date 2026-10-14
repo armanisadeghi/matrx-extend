@@ -44,6 +44,7 @@ import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
+import { extensionOAuthClientId, seedExtensionSession } from './seed-extension-session.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -290,25 +291,11 @@ async function main() {
     // token is deliberately not seeded: it is encrypted at rest by the flow's
     // own key, and a one-hour access token is all a test run needs.
     await page.goto(`chrome-extension://${extensionId}/sidepanel.html`);
-    await page.evaluate(
-      async ([accessToken, expiresIn, user, org]) => {
-        await chrome.storage.local.set({
-          'matrx.auth.accessToken': accessToken,
-          'matrx.auth.expiresAt': Date.now() + expiresIn * 1000,
-          'matrx.user.profile': user,
-          // The shape persistSelection() writes — {id, name}, not a bare id.
-          // A bare string reads back as "no organization selected", which is
-          // exactly what the tab told us the first time this harness ran.
-          'matrx.org.active': { id: org.id, name: org.name },
-        });
-      },
-      [
-        session.access_token,
-        session.expires_in ?? 3600,
-        session.user,
-        { id: organizationId, name: organizationName },
-      ],
-    );
+    await seedExtensionSession(page, {
+      session,
+      clientId: extensionOAuthClientId(REPO),
+      organization: { id: organizationId, name: organizationName },
+    });
     await page.reload();
     await page.waitForTimeout(2500);
     await page.screenshot({ path: join(SHOTS, '01-sidepanel-signed-in.png'), fullPage: true });

@@ -45,6 +45,7 @@ import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
+import { extensionOAuthClientId, seedExtensionSession } from './seed-extension-session.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -202,22 +203,11 @@ async function main() {
 
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/sidepanel.html`);
-    await page.evaluate(
-      async ([accessToken, expiresIn, user, org]) => {
-        await chrome.storage.local.set({
-          'matrx.auth.accessToken': accessToken,
-          'matrx.auth.expiresAt': Date.now() + expiresIn * 1000,
-          'matrx.user.profile': user,
-          'matrx.org.active': org,
-        });
-      },
-      [
-        session.access_token,
-        session.expires_in ?? 3600,
-        session.user,
-        { id: ORGANIZATION_ID, name: "Admin's Workspace" },
-      ],
-    );
+    await seedExtensionSession(page, {
+      session,
+      clientId: extensionOAuthClientId(REPO),
+      organization: { id: ORGANIZATION_ID, name: "Admin's Workspace" },
+    });
     await page.reload();
     await page.waitForTimeout(2500);
 

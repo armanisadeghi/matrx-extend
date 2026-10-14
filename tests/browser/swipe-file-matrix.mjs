@@ -20,6 +20,7 @@ import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
+import { extensionOAuthClientId, seedExtensionSession } from './seed-extension-session.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const EXT = join(REPO, '.output', 'chrome-mv3');
@@ -104,24 +105,17 @@ try {
   const extId = new URL(sw.url()).host;
   const setup = await ctx.newPage();
   await setup.goto(`chrome-extension://${extId}/sidepanel.html`);
-  await setup.evaluate(
-    async ([t, exp, user, o, backend]) => {
-      await chrome.storage.local.set({
-        'matrx.auth.accessToken': t,
-        'matrx.auth.expiresAt': Date.now() + exp * 1000,
-        'matrx.user.profile': user,
-        'matrx.org.active': { id: o.id, name: o.name },
-        ...(backend ? { 'matrx.backend.urlOverride': backend } : {}),
-      });
-    },
-    [
-      session.access_token,
-      session.expires_in ?? 3600,
-      session.user,
-      org,
-      process.env.MATRX_SWIPE_BACKEND || '',
-    ],
-  );
+  await seedExtensionSession(setup, {
+    session,
+    clientId: extensionOAuthClientId(REPO),
+    organization: { id: org.id, name: org.name },
+  });
+  {
+    const extra = process.env.MATRX_SWIPE_BACKEND
+      ? { 'matrx.backend.urlOverride': process.env.MATRX_SWIPE_BACKEND }
+      : null;
+    if (extra) await setup.evaluate((e) => chrome.storage.local.set(e), extra);
+  }
   await setup.close();
 
   const results = [];

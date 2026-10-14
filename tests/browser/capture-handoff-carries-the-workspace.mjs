@@ -22,6 +22,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
+import { extensionOAuthClientId, seedExtensionSession } from './seed-extension-session.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -83,17 +84,11 @@ console.log('extension id', extId);
 
 const panel = await ctx.newPage();
 await panel.goto(`chrome-extension://${extId}/sidepanel.html`);
-await panel.evaluate(
-  async ([t, exp, user, org]) => {
-    await chrome.storage.local.set({
-      'matrx.auth.accessToken': t,
-      'matrx.auth.expiresAt': Date.now() + exp * 1000,
-      'matrx.user.profile': user,
-      'matrx.org.active': org,
-    });
-  },
-  [session.access_token, session.expires_in ?? 3600, session.user, WRONG_ORG],
-);
+await seedExtensionSession(panel, {
+  session,
+  clientId: extensionOAuthClientId(REPO),
+  organization: WRONG_ORG,
+});
 await panel.reload();
 await panel.waitForTimeout(3000);
 

@@ -36,6 +36,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { agentTrafficHeaders, markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
+import { extensionOAuthClientId, seedExtensionSession } from './seed-extension-session.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -242,24 +243,14 @@ async function main() {
     // ── Point the extension at this aidream, and hand it the real session ───
     const panel = await context.newPage();
     await panel.goto(`chrome-extension://${extensionId}/sidepanel.html`);
-    await panel.evaluate(
-      async ([accessToken, expiresIn, user, orgRow, apiBase]) => {
-        await chrome.storage.local.set({
-          'matrx.auth.accessToken': accessToken,
-          'matrx.auth.expiresAt': Date.now() + expiresIn * 1000,
-          'matrx.user.profile': user,
-          'matrx.org.active': { id: orgRow.id, name: orgRow.name },
-          'matrx.backend.urlOverride': apiBase,
-        });
-      },
-      [
-        session.access_token,
-        session.expires_in ?? 3600,
-        session.user,
-        { id: org.id, name: org.name },
-        API,
-      ],
-    );
+    await seedExtensionSession(panel, {
+      session,
+      clientId: extensionOAuthClientId(REPO),
+      organization: { id: org.id, name: org.name },
+    });
+    await panel.evaluate((extra) => chrome.storage.local.set(extra), {
+      'matrx.backend.urlOverride': API,
+    });
     await panel.reload();
     await panel.waitForTimeout(2500);
 

@@ -99,6 +99,7 @@ import {
   handOffDeviceCalls,
   runDeviceToolOnce,
 } from '@/lib/tools/device-handoff';
+import { mayInvokeDeviceTool } from '@/lib/tools/device-invoke-gate';
 import {
   handleWebmcpCall,
   recordAssignedTab,
@@ -593,12 +594,12 @@ function registerHandlers(): void {
   });
 
   // The side panel's package chat delegates a cloud agent's browser tool here
-  // (`deviceTools` port). Only extension pages reach this (no tab sender).
+  // (`deviceTools` port). Only the extension's own pages reach this (tab or not); web pages and content scripts are refused.
   on<
     { callId: string; toolName: string; args: unknown },
     { ok: boolean; result?: unknown; error?: string }
   >(CHANNELS.DEVICE_TOOL_INVOKE, async (payload, sender) => {
-    if (sender.tab || sender.id !== chrome.runtime.id) {
+    if (!mayInvokeDeviceTool(sender, chrome.runtime.id)) {
       return { ok: false, error: 'device tool: extension pages only' };
     }
     // One run per call id: a hand-off for the same id (the panel closing) joins this run.

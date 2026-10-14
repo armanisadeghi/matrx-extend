@@ -18,6 +18,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
+import { extensionOAuthClientId, seedExtensionSession } from './seed-extension-session.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -244,51 +245,14 @@ for (const scheme of ['light', 'dark']) {
     const extensionId = new URL(worker.url()).host;
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/sidepanel.html`);
-    await page.evaluate(
-      async ([accessToken, refreshToken, expiresIn, user, org]) => {
-        const enc = new TextEncoder();
-        const base = await crypto.subtle.importKey(
-          'raw',
-          enc.encode('matrx-extend.refresh-token.v1'),
-          { name: 'PBKDF2' },
-          false,
-          ['deriveKey'],
-        );
-        const key = await crypto.subtle.deriveKey(
-          {
-            name: 'PBKDF2',
-            salt: enc.encode(chrome.runtime.id),
-            iterations: 100_000,
-            hash: 'SHA-256',
-          },
-          base,
-          { name: 'AES-GCM', length: 256 },
-          false,
-          ['encrypt'],
-        );
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        const ct = new Uint8Array(
-          await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(refreshToken)),
-        );
-        const b64 = (bytes) => btoa(String.fromCharCode(...bytes));
-        await chrome.storage.local.set({
-          'matrx.auth.accessToken': accessToken,
-          'matrx.auth.refreshTokenEnc': b64(ct),
-          'matrx.auth.refreshTokenIv': b64(iv),
-          'matrx.auth.expiresAt': Date.now() + expiresIn * 1000,
-          'matrx.user.profile': user,
-          'matrx.org.active': org,
-          'matrx-extend:chat-address': '/chat',
-        });
-      },
-      [
-        session.access_token,
-        session.refresh_token,
-        session.expires_in ?? 3600,
-        session.user,
-        { id: ORGANIZATION_ID, name: "Admin's Workspace" },
-      ],
-    );
+    await seedExtensionSession(page, {
+      session,
+      clientId: extensionOAuthClientId(REPO),
+      organization: { id: ORGANIZATION_ID, name: "Admin's Workspace" },
+    });
+    await page.evaluate((extra) => chrome.storage.local.set(extra), {
+      'matrx-extend:chat-address': '/chat',
+    });
     for (const s of surfaces) {
       await page.goto(`chrome-extension://${extensionId}/${s.url}`);
       await page

@@ -15,10 +15,7 @@
  *
  *   WXT_OUT_DIR=.output pnpm build && node tests/browser/act-without-asking-walk.mjs
  *   (MATRX_PLAYWRIGHT_MODULE / MATRX_CHROME_PATH as for every walk.)
- *
- * NOTE: `tool:device-invoke` (the New chat's only hop to the service worker) refuses any caller
- * that has a tab, and Playwright can only open extension pages AS tabs, so the New chat's tool hop
- * cannot reach the SW from here; the walk reports that outcome as-is rather than faking it.
+ * The New chat hops through `tool:device-invoke`; the SW gate admits the extension's own pages even with a tab.
  */
 import { readFileSync } from 'node:fs';
 import { mkdirSync } from 'node:fs';
@@ -124,6 +121,28 @@ const mock = createServer((req, res) => {
       res.write(line(seq++, 'phase', { phase: 'connected' }));
       res.write(line(seq++, 'data', { type: 'conversation_id', conversation_id: conversationId }));
       res.write(line(seq++, 'phase', { phase: 'processing' }));
+      const urid = `walk-urid-${n}`;
+      res.write(
+        line(seq++, 'record_reserved', {
+          db_project: 'main',
+          table: 'request',
+          record_id: urid,
+          status: 'pending',
+          parent_refs: { conversation_id: conversationId, user_request_id: urid },
+          metadata: { iteration: 1 },
+        }),
+      );
+      res.write(
+        line(seq++, 'record_reserved', {
+          db_project: 'main',
+          table: 'message',
+          record_id: `walk-msg-${n}`,
+          status: 'pending',
+          parent_refs: { conversation_id: conversationId, user_request_id: urid },
+          metadata: { role: 'assistant', position: 1 },
+        }),
+      );
+      res.write(line(seq++, 'chunk', { text: 'Working on three things.' }));
       res.write(
         delegated(
           `walk-act-${n}`,
@@ -214,7 +233,6 @@ await context.addInitScript(() => {
   };
 });
 const results = [];
-const skip = (name, why) => console.log(`  SKIP  ${name} — ${why}`);
 const check = (name, ok, detail = '') => {
   results.push({ name, ok });
   console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ` — ${detail}` : ''}`);
@@ -284,7 +302,7 @@ try {
       await composer.fill('walk: do the three things');
       await composer.press('Enter');
       // Let the stream arrive and the gate decide.
-      await page.waitForTimeout(8000);
+      await page.waitForTimeout(surface === "package" ? 20_000 : 8000);
       const seen = await page.evaluate(() => [...window.__seen]);
       const approvalButtons = await page
         .getByRole('button', { name: /^(Approve|Allow|Allow once|Allow always)/i })
@@ -294,44 +312,42 @@ try {
       const started = runNo > startedBefore;
       check(`${label}: the mocked run started`, started, `run ${runNo}`);
       const confirmCard = seen.includes('tool:confirm-request') || approvalButtons > 0;
-      if (surface === 'default') {
-        if (mode === 'act') {
-          check(
-            `${label}: no approval card`,
-            !confirmCard,
-            `msgs=${[...new Set(seen)].join(',')} buttons=${approvalButtons}`,
-          );
-          check(
-            `${label}: browser action tool executed`,
-            Boolean(resultFor(`walk-act-${runNo}`)) &&
-              !resultFor(`walk-act-${runNo}`)?.results?.[0]?.is_error,
-            JSON.stringify(resultFor(`walk-act-${runNo}`))?.slice(0, 120),
-          );
-          check(
-            `${label}: privileged tool ran (not held for approval)`,
-            Boolean(resultFor(`walk-priv-${runNo}`)),
-            JSON.stringify(resultFor(`walk-priv-${runNo}`))?.slice(0, 120),
-          );
-          check(
-            `${label}: the agent's question still waits`,
-            questionShown && !resultFor(`walk-user-${runNo}`),
-            `shown=${questionShown}`,
-          );
-        } else {
-          check(
-            `${label}: approval cards appear`,
-            confirmCard,
-            `msgs=${[...new Set(seen)].join(',')} buttons=${approvalButtons}`,
-          );
-          check(
-            `${label}: nothing ran before approval`,
-            !resultFor(`walk-act-${runNo}`) && !resultFor(`walk-priv-${runNo}`),
-            `results=${posted.toolResults.length}`,
-          );
-        }
+      if (mode === 'act') {
+        check(
+          `${label}: no approval card`,
+          !confirmCard,
+          `msgs=${[...new Set(seen)].join(',')} buttons=${approvalButtons}`,
+        );
+        check(
+          `${label}: browser action tool executed`,
+          Boolean(resultFor(`walk-act-${runNo}`)) &&
+            !resultFor(`walk-act-${runNo}`)?.results?.[0]?.is_error,
+          JSON.stringify(resultFor(`walk-act-${runNo}`))?.slice(0, 120),
+        );
+        check(
+          `${label}: privileged tool ran (not held for approval)`,
+          Boolean(resultFor(`walk-priv-${runNo}`)),
+          JSON.stringify(resultFor(`walk-priv-${runNo}`))?.slice(0, 120),
+        );
+        check(
+          `${label}: the agent's question still waits`,
+          questionShown && !resultFor(`walk-user-${runNo}`),
+          `shown=${questionShown}`,
+        );
       } else {
-        // New chat: the hop to the service worker refuses a caller that has a tab (this page is one),
-        // so what the walk can prove is what the package chat SENDS into the gate: the person's choice.
+        check(
+          `${label}: approval cards appear`,
+          confirmCard,
+          `msgs=${[...new Set(seen)].join(',')} buttons=${approvalButtons}`,
+        );
+        check(
+          `${label}: nothing ran before approval`,
+          !resultFor(`walk-act-${runNo}`) && !resultFor(`walk-priv-${runNo}`),
+          `results=${posted.toolResults.length}`,
+        );
+      }
+      if (surface === 'package') {
+        // New chat: also prove what it SENDS into the gate: the person's choice.
         const invokes = await page.evaluate(() => window.__invokes ?? []);
         const mine = invokes.filter(
           (i) => i.callId?.endsWith(`-${runNo}`) || String(i.callId).includes(`${runNo}`),
@@ -348,11 +364,9 @@ try {
           `${label}: every call carries permissionMode=${want}`,
           mine.length >= 3 && mine.every((i) => i.mode === want),
         );
-        skip(
-          `${label}: tools execute / approval cards / question wait`,
-          'tool:device-invoke refuses callers with a tab; headless extension pages are always tabs (proven by the Current chat rows and src/lib/tools/act-without-asking.test.ts)',
-        );
       }
+      if (process.env.WALK_DEBUG)
+        console.log('  [page]', (await page.locator('body').innerText()).slice(0, 600).replace(/\n+/g, ' | '));
       if (process.env.WALK_DEBUG)
         console.log('  [results]', JSON.stringify(posted.toolResults).slice(0, 1200));
       await page.screenshot({ path: join(SHOTS, `${surface}-${mode}.png`) });
