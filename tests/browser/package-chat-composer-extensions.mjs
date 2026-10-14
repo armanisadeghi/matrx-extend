@@ -11,6 +11,7 @@ import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
+import { extensionOAuthClientId, seedExtensionSession } from './seed-extension-session.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -91,53 +92,11 @@ try {
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   await page.goto(`chrome-extension://${extensionId}/sidepanel.html?chat=package`);
-  await page.evaluate(
-    async ([accessToken, refreshToken, expiresIn, user, org]) => {
-      // The panel restores a session only with the refresh token encrypted the way
-      // src/lib/auth/crypto.ts does it (PBKDF2 over the runtime id → AES-GCM); an
-      // access token alone reads as "Could not restore your saved sign-in".
-      const enc = new TextEncoder();
-      const base = await crypto.subtle.importKey(
-        'raw',
-        enc.encode('matrx-extend.refresh-token.v1'),
-        { name: 'PBKDF2' },
-        false,
-        ['deriveKey'],
-      );
-      const key = await crypto.subtle.deriveKey(
-        {
-          name: 'PBKDF2',
-          salt: enc.encode(chrome.runtime.id),
-          iterations: 100_000,
-          hash: 'SHA-256',
-        },
-        base,
-        { name: 'AES-GCM', length: 256 },
-        false,
-        ['encrypt'],
-      );
-      const iv = crypto.getRandomValues(new Uint8Array(12));
-      const ct = new Uint8Array(
-        await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(refreshToken)),
-      );
-      const b64 = (bytes) => btoa(String.fromCharCode(...bytes));
-      await chrome.storage.local.set({
-        'matrx.auth.accessToken': accessToken,
-        'matrx.auth.refreshTokenEnc': b64(ct),
-        'matrx.auth.refreshTokenIv': b64(iv),
-        'matrx.auth.expiresAt': Date.now() + expiresIn * 1000,
-        'matrx.user.profile': user,
-        'matrx.org.active': org,
-      });
-    },
-    [
-      session.access_token,
-      session.refresh_token,
-      session.expires_in ?? 3600,
-      session.user,
-      { id: ORGANIZATION_ID, name: "Admin's Workspace" },
-    ],
-  );
+  await seedExtensionSession(page, {
+    session,
+    clientId: extensionOAuthClientId(REPO),
+    organization: { id: ORGANIZATION_ID, name: "Admin's Workspace" },
+  });
   // A past conversation with a user todo seeded for it, so the Todos companion pill has content.
   const latest = await fetch(
     `${supabaseUrl}/rest/v1/message?select=conversation_id&role=eq.assistant&order=created_at.desc&limit=1`,
