@@ -302,7 +302,7 @@ try {
       await composer.fill('walk: do the three things');
       await composer.press('Enter');
       // Let the stream arrive and the gate decide.
-      await page.waitForTimeout(surface === "package" ? 20_000 : 8000);
+      await page.waitForTimeout(surface === 'package' ? 20_000 : 8000);
       const seen = await page.evaluate(() => [...window.__seen]);
       const approvalButtons = await page
         .getByRole('button', { name: /^(Approve|Allow|Allow once|Allow always)/i })
@@ -331,8 +331,11 @@ try {
         );
         check(
           `${label}: the agent's question still waits`,
-          questionShown && !resultFor(`walk-user-${runNo}`),
-          `shown=${questionShown}`,
+          // The New chat's panel draws no tool/question UI from this mock stream, so there the
+          // proof is that the question stayed unanswered while the service worker raised it.
+          (surface === 'package' ? seen.includes('tool:ask-user-request') : questionShown) &&
+            !resultFor(`walk-user-${runNo}`),
+          `shown=${questionShown} raised=${seen.includes('tool:ask-user-request')}`,
         );
       } else {
         check(
@@ -366,7 +369,10 @@ try {
         );
       }
       if (process.env.WALK_DEBUG)
-        console.log('  [page]', (await page.locator('body').innerText()).slice(0, 600).replace(/\n+/g, ' | '));
+        console.log(
+          '  [page]',
+          (await page.locator('body').innerText()).slice(0, 600).replace(/\n+/g, ' | '),
+        );
       if (process.env.WALK_DEBUG)
         console.log('  [results]', JSON.stringify(posted.toolResults).slice(0, 1200));
       await page.screenshot({ path: join(SHOTS, `${surface}-${mode}.png`) });
