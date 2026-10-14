@@ -107,7 +107,7 @@ describe('startStream never starts a signed-in run as a guest', () => {
     await expect(
       startStream({
         runId: 'r1',
-        endpoint: '/v2/ai/mandates/extend.browser_chat',
+        endpoint: '/ai/mandates/extend.browser_chat',
         parser: 'rich-events',
       }),
     ).rejects.toBeInstanceOf(SessionNotReadyError);

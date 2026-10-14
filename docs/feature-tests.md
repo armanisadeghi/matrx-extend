@@ -145,7 +145,7 @@ component, so all four must show identical rows in identical order.
   - On the narrow side panel, opening the Drawer moves focus without Chrome's
     `Blocked aria-hidden` accessibility warning.
   - Selecting the default row and sending routes to
-    `/v2/ai/mandates/<key>`; selecting a normal agent routes to the agent id
+    `/ai/mandates/<key>`; selecting a normal agent routes to the agent id
     path. Both start a run.
 - **Signed out:** the picker still lists builtin agents (anon can read them);
   it must not be blank or dead.
@@ -3250,34 +3250,21 @@ Every entry follows this shape:
   has no owned native fixture for holding that read or controlling Chrome's
   callback order, so those race variants remain unit-only and unverified natively.
 
-### AI v2 → v1 protocol fallback (agent runs)
-- **What it does:** agent-run and mandate-run streams are sent to the `/v2/ai/*`
-  spine. If that v2 ENDPOINT itself fails — a network throw, a 404/405 (surface
-  not on v2), or a 5xx — the transport retries the identical request on `/ai/*`
-  before any stream content is consumed, and says so out loud. Owned by
-  `@ai-matrx/agents/matrx` (0.6.0), not by this repo. Before this the extension
-  hardcoded `/v2` with no fallback: an unhealthy v2 surface was a hard failure
-  here while the web app degraded gracefully.
+### AI stream transport (agent runs)
+- **What it does:** agent-run and mandate-run streams POST to the plain `/ai/*`
+  paths. There is no version transform and no silent retry on another path: a
+  failed open is reported once, through the stream's error contract.
 - **Where to test:** side panel chat, with the Debug log open.
-- **Steps:**
-  1. Send a normal chat message and confirm it streams. In Debug, the request
-     URL is `/v2/ai/agent/{id}` (or `/v2/ai/mandates/{key}`).
-  2. Point the extension at a backend where the v2 alias is absent (Settings →
-     backend override, or a local server with the v2 router disabled) and send
-     again.
-- **Expected:** step 1 streams normally on v2. In step 2 the run STILL completes:
-  the Debug log carries `ai_v2_downgrade → retrying on v1` naming the failed v2
-  URL and the reason, and the retried request goes to `/ai/agent/{id}`.
+- **Steps:** send a normal chat message and confirm it streams. In Debug, the
+  request URL is `/ai/agent/{id}` (or `/ai/mandates/{key}`).
+- **Expected:** the run streams normally; a refused or failed open shows one
+  error and does not repeat the request.
 - **Edge cases worth poking:**
-  - Cancel a run mid-stream: this must NOT log a downgrade. A user cancel logged
-    as a downgrade poisons the telemetry the v2 rollout reads.
-  - An APPLICATION error (a 4xx the server means, e.g. a validation failure)
-    must NOT trigger a fallback — it would fail identically on v1.
+  - Cancel a run mid-stream: the stream stops and no error is shown.
   - A long run (> 2 minutes) must not be cut off. Streams are uncapped on
-    purpose; the shared transport's 120s total timeout is explicitly disabled
-    for this call.
-  - Warm, cancel, and the turn-boundary inbox have no v2 sibling and must still
-    go to `/ai/...` — pinned by `src/lib/api/ai-protocol.test.ts`.
+    purpose (no total timeout).
+  - Warm, cancel, and the turn-boundary inbox go to `/ai/...` — pinned by
+    `src/lib/api/ai-protocol.test.ts`.
 
 ### Realtime catch-up (all four channels) — 2026-09-07
 - **What it does:** every Supabase realtime subscription in the extension now rides

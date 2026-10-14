@@ -50,7 +50,7 @@ organization into every insert.
 ## Mandate-backed starts
 
 `routes/ai.ts#mandateExecutePath` targets
-`POST /v2/ai/mandates/{mandate_key}`. A Mandate-backed UI choice keeps a stable
+`POST /ai/mandates/{mandate_key}`. A Mandate-backed UI choice keeps a stable
 `mandate:*` reference only for local selection and permission preferences; that
 reference is never passed as an Agent id. The stream sends the Mandate key and
 aidream resolves the Holder for the same bearer/fingerprint principal used by

@@ -65,7 +65,7 @@ describe('Pilot start target routing', () => {
       expect(transport.send).toHaveBeenCalledTimes(1);
       const envelope = transport.send.mock.calls[0]?.[1];
       if (!envelope) throw new Error('Pilot start transport was not called');
-      expect(envelope.endpoint).toBe(`/v2/ai/mandates/${target.slice('mandate:'.length)}`);
+      expect(envelope.endpoint).toBe(`/ai/mandates/${target.slice('mandate:'.length)}`);
       expect(envelope.body).toMatchObject({
         is_new: true,
         store: true,
@@ -94,7 +94,7 @@ describe('Pilot start target routing', () => {
       expect(transport.send).toHaveBeenCalledTimes(1);
       const envelope = transport.send.mock.calls[0]?.[1];
       if (!envelope) throw new Error('Pilot start transport was not called');
-      expect(envelope.endpoint).toBe(`/v2/ai/agent/${target}`);
+      expect(envelope.endpoint).toBe(`/ai/agent/${target}`);
       expect(envelope.body).toMatchObject({
         conversation_id: conversation,
         is_new: false,

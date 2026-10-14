@@ -395,7 +395,7 @@ try {
         stopOffscreen = [
           offscreen.on('Network.requestWillBeSent', ({ requestId, request }) => {
             try {
-              if (new URL(request?.url).pathname.endsWith('/v2/ai/mandates/extend.browser_chat'))
+              if (new URL(request?.url).pathname.endsWith('/ai/mandates/extend.browser_chat'))
                 chatRequests.add(requestId);
             } catch {
               /* unrelated request */

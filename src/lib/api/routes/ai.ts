@@ -1,55 +1,21 @@
 /**
  * AI route definitions. Endpoint paths and request shapes verified against
- * `types/python-generated/openapi.json` (run `pnpm update-api-types` to refresh)
- * AND directly diffed against the live backend's `/openapi.json` (2026-07-11).
+ * `types/python-generated/openapi.json` (run `pnpm update-api-types` to refresh).
  *
- * ── v1 vs v2 (the "spine") ──────────────────────────────────────────────────
- * The backend exposes exactly 6 `/v2/ai/*` operations (tag "v2 (runtime
- * spine)"). Every one of them is a byte-for-byte alias of its v1
- * counterpart: same request schema (`AgentStartRequest` / `ChatRequest` /
- * `ConversationContinueRequest` — no `*V2` variant exists), same response
- * shape, same auth (verified live: an unauthenticated POST to both
- * `/ai/agent/{id}` and `/v2/ai/agent/{id}` returns an identical
- * `401 {"error":"auth_required",...}` body). The v2 operation descriptions
- * say it outright: "identical pipeline to `/api/ai/agents/{agent_id}`" etc.
- * This is a PATH move, not a payload/stream/event change.
- *
- * The v2 surface does NOT include: cancel, tool_results, inbox, or
- * resume/pending_calls. Those endpoints only exist under `/ai/*` — calling
- * them is correct and NOT a bug.
- *
- * ── Who decides the version (C22, @ai-matrx/agents 0.6.0) ───────────────────
- * NOT this file any more. Every path below is written in its v1, in-app form
- * and handed to the PACKAGE's `applyAiApiVersion`, which owns the covered-
- * surface allowlist and the `/v2` insertion. This client used to carry its
- * own `API_VERSION` constant and hand-maintained list of which endpoints have
- * a v2 sibling — a twin of the policy the package now ships, and one that
- * would drift the moment the backend's v2 surface grows. The allowlist is
- * anchored per whole path segment, so `/ai/conversations/{id}/inbox` and
- * `/ai/cancel/{id}` are correctly left on v1 —
- * pinned by `__tests__/ai-protocol.test.ts`, which asserts every helper in
- * this file still produces the exact path it produced before the collapse.
+ * Every path is the plain `/ai/...` form; there is no version transform.
  */
 
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api/client';
 import type { RequestContextWire } from '@/lib/chat/context/request-context';
 import { type AnyMandateKey, mandateKeyFromAgentRef } from '@/lib/mandates';
-import { MATRX_AI_API_VERSION_DEFAULT, applyAiApiVersion } from '@ai-matrx/api';
 
-/**
- * THE ONE DOOR every AI path in this client goes through. Give it the v1
- * in-app path; the package decides whether this surface has a v2 sibling.
- * Never hardcode a `/v2` segment at a call site or anywhere in this file.
- */
-const aiPath = (v1Path: string): string => applyAiApiVersion(v1Path, MATRX_AI_API_VERSION_DEFAULT);
-
-/** POST /ai/agent/{agent_id} (promoted to /v2) — start agent stream. */
+/** POST /ai/agent/{agent_id} — start agent stream. */
 export const agentExecutePath = (agentId: string): string =>
-  aiPath(`/ai/agent/${encodeURIComponent(agentId)}`);
+  `/ai/agent/${encodeURIComponent(agentId)}`;
 
-/** POST /ai/mandates/{mandate_key} (promoted to /v2) — resolve and start the Holder server-side. */
+/** POST /ai/mandates/{mandate_key} — resolve and start the Holder server-side. */
 export const mandateExecutePath = (mandateKey: AnyMandateKey): string =>
-  aiPath(`/ai/mandates/${encodeURIComponent(mandateKey)}`);
+  `/ai/mandates/${encodeURIComponent(mandateKey)}`;
 
 /** Route a concrete Agent id or a local `mandate:*` UI reference correctly. */
 export const agentTargetExecutePath = (target: string): string => {
@@ -190,13 +156,10 @@ export interface AgentStartRequest {
   writable_variables?: string[];
 }
 
-/** POST /ai/chat (promoted to /v2) — direct chat with explicit ai_model_id (not used by extension currently). */
-export const CHAT_PATH = aiPath('/ai/chat');
+/** POST /ai/chat — direct chat with explicit ai_model_id (not used by extension currently). */
+export const CHAT_PATH = '/ai/chat';
 
-/**
- * POST /ai/cancel/{request_id} — cancel an in-flight stream.
- * No `/v2/ai/cancel/{request_id}` exists on the backend — stays on v1.
- */
+/** POST /ai/cancel/{request_id} — cancel an in-flight stream. */
 export const cancelPath = (requestId: string): string =>
   `/ai/cancel/${encodeURIComponent(requestId)}`;
 
@@ -210,11 +173,6 @@ export function cancelRequest(requestId: string) {
  * The running agent drains the item at its next natural pause and answers it
  * on the same stream. Plain JSON response (not a stream).
  * See docs/TURN_BOUNDARY_INBOX.md.
- *
- * NOT versioned: there is no `/v2/ai/conversations/{id}/inbox` on the
- * backend. Do not "fix" this by routing it through `aiPath` — the package's
- * allowlist would leave it on v1 anyway, and writing the call as if it had a
- * v2 form misstates the contract. See the file-header note.
  */
 export const conversationInboxPath = (conversationId: string): string =>
   `/ai/conversations/${encodeURIComponent(conversationId)}/inbox`;

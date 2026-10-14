@@ -1,18 +1,9 @@
 /**
- * THE PROTOCOL GUARD — proof that collapsing this client's hand-rolled AI
- * version policy onto `@ai-matrx/agents/matrx` (0.6.0, C22) changed no wire
- * behaviour, and that the collapse cannot silently un-collapse.
+ * THE PATH GUARD — every path helper in `routes/ai.ts` produces the plain
+ * `/ai/...` string, and the organization-context header has one spelling.
  *
- * Before the adoption this repo carried its own `API_VERSION = 'v2'` constant
- * and a hand-maintained prose list of which `/ai/*` endpoints have a v2
- * sibling. That list is the package's `V2_COVERED_AI_PATH_TEMPLATES` — a twin,
- * and one that drifts the moment the backend's v2 surface changes. These tests
- * assert every path helper in `routes/ai.ts` still produces EXACTLY the string
- * it produced before, and that the sub-resource paths the extension must keep
- * on v1 (cancel / inbox) are still left alone.
- *
- * The expected strings below are written as literals ON PURPOSE. Deriving them
- * from the same package function the code under test uses would prove nothing.
+ * Expected strings are literals ON PURPOSE: deriving them from the code under
+ * test would prove nothing.
  */
 
 import { describe, expect, it, vi } from 'vitest';
@@ -29,21 +20,21 @@ import {
   mandateExecutePath,
 } from './routes/ai';
 
-describe('AI path versioning is the package policy, and the wire did not move', () => {
-  it('promotes the run-start doors to /v2, byte-for-byte as before', () => {
-    expect(agentExecutePath('abc-123')).toBe('/v2/ai/agent/abc-123');
-    expect(mandateExecutePath(storedMandateKey('daily_brief'))).toBe('/v2/ai/mandates/daily_brief');
-    expect(CHAT_PATH).toBe('/v2/ai/chat');
+describe('AI path helpers emit the plain /ai form', () => {
+  it('emits the run-start doors', () => {
+    expect(agentExecutePath('abc-123')).toBe('/ai/agent/abc-123');
+    expect(mandateExecutePath(storedMandateKey('daily_brief'))).toBe('/ai/mandates/daily_brief');
+    expect(CHAT_PATH).toBe('/ai/chat');
   });
 
   it('still percent-encodes the interpolated segment', () => {
-    expect(agentExecutePath('a/b c')).toBe('/v2/ai/agent/a%2Fb%20c');
-    expect(mandateExecutePath(storedMandateKey('a/b'))).toBe('/v2/ai/mandates/a%2Fb');
+    expect(agentExecutePath('a/b c')).toBe('/ai/agent/a%2Fb%20c');
+    expect(mandateExecutePath(storedMandateKey('a/b'))).toBe('/ai/mandates/a%2Fb');
   });
 
   it('routes a mandate reference through the mandate door and an id through the agent door', () => {
-    expect(agentTargetExecutePath('mandate:daily_brief')).toBe('/v2/ai/mandates/daily_brief');
-    expect(agentTargetExecutePath('abc-123')).toBe('/v2/ai/agent/abc-123');
+    expect(agentTargetExecutePath('mandate:daily_brief')).toBe('/ai/mandates/daily_brief');
+    expect(agentTargetExecutePath('abc-123')).toBe('/ai/agent/abc-123');
   });
 });
 

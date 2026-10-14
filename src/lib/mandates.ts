@@ -53,7 +53,7 @@ export function isMandateAgentRef(value: string | null | undefined): boolean {
  * The key inside a `mandate:` ref, or `null` if it is not one.
  *
  * 🚨 This deliberately does NOT narrow to `MandateKey`. It decides which DOOR a
- * stored target goes through (`/v2/ai/mandates/{key}` vs the agent-id route),
+ * stored target goes through (`/ai/mandates/{key}` vs the agent-id route),
  * and the SERVER — not this build's snapshot of the vocabulary — is the
  * authority on what exists. Narrowing here would send a ref naming a mandate
  * declared after this version shipped to the agent door, which fails in a way

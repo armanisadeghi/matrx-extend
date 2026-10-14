@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 
-const CHAT_PATH = '/v2/ai/mandates/extend.browser_chat';
+const CHAT_PATH = '/ai/mandates/extend.browser_chat';
 const conversationFingerprint = (value) =>
   createHash('sha256').update(value).digest('hex').slice(0, 16);
 

@@ -123,7 +123,7 @@ test('fresh offscreen target is observed before its first fetch, without precrea
       requestId: 'first-1',
       request: {
         method: 'POST',
-        url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat',
+        url: 'https://server.invalid/ai/mandates/extend.browser_chat',
         headers: { Authorization: 'Bearer do-not-retain' },
         postData: JSON.stringify({
           conversation_id: 'conversation-private-opening',
@@ -182,7 +182,7 @@ test('fresh offscreen target is observed before its first fetch, without precrea
     'Network.requestWillBeSent',
     {
       requestId: 'second-2',
-      request: { method: 'POST', url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat' },
+      request: { method: 'POST', url: 'https://server.invalid/ai/mandates/extend.browser_chat' },
     },
     'offscreen-session',
   );
@@ -253,7 +253,7 @@ test('large offscreen POST body is inspected transiently without retaining guest
   watch.arm('same_conversation_followup');
   events.emit('Network.requestWillBeSent', {
     requestId: 'large-post',
-    request: { method: 'POST', url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat' },
+    request: { method: 'POST', url: 'https://server.invalid/ai/mandates/extend.browser_chat' },
   });
   events.emit('Network.responseReceived', { requestId: 'large-post', response: { status: 200 } });
   await watch.settle();
@@ -298,7 +298,7 @@ test('existing offscreen target is observed directly without changing target sta
   watch.arm('opening');
   offscreenEvents.emit('Network.requestWillBeSent', {
     requestId: 'preexisting-1',
-    request: { method: 'POST', url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat' },
+    request: { method: 'POST', url: 'https://server.invalid/ai/mandates/extend.browser_chat' },
   });
   offscreenEvents.emit('Network.responseReceived', {
     requestId: 'preexisting-1',
@@ -344,7 +344,7 @@ test('offscreen target with initially empty URL still captures its first POST', 
     'Network.requestWillBeSent',
     {
       requestId: 'late-first',
-      request: { method: 'POST', url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat' },
+      request: { method: 'POST', url: 'https://server.invalid/ai/mandates/extend.browser_chat' },
     },
     'late-url-session',
   );
@@ -397,7 +397,7 @@ test('unavailable error body preserves HTTP status and later observations', asyn
     'Network.requestWillBeSent',
     {
       requestId: 'first',
-      request: { method: 'POST', url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat' },
+      request: { method: 'POST', url: 'https://server.invalid/ai/mandates/extend.browser_chat' },
     },
     'offscreen-session',
   );
@@ -420,7 +420,7 @@ test('unavailable error body preserves HTTP status and later observations', asyn
     'Network.requestWillBeSent',
     {
       requestId: 'second',
-      request: { method: 'POST', url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat' },
+      request: { method: 'POST', url: 'https://server.invalid/ai/mandates/extend.browser_chat' },
     },
     'offscreen-session',
   );
@@ -500,7 +500,7 @@ test('discovery delivers the late offscreen identity required for transport proo
                 requestId: 'opening-request',
                 request: {
                   method: 'POST',
-                  url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat',
+                  url: 'https://server.invalid/ai/mandates/extend.browser_chat',
                 },
               },
               sessionId,

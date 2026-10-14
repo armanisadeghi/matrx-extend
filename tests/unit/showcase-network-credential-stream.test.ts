@@ -2,14 +2,17 @@ import { describe, expect, it, vi } from 'vitest';
 
 const deps = vi.hoisted(() => ({ info: vi.fn(), warn: vi.fn(), success: vi.fn(), error: vi.fn() }));
 vi.mock('@/lib/debug/log', () => ({ log: deps }));
-vi.mock('@ai-matrx/api', () => ({
-  fetchWithMatrxProtocolFallback: vi.fn(async () => ({
-    response: new Response('{}', {
-      status: 200,
-      headers: { 'content-type': 'application/x-ndjson' },
-    }),
-  })),
-}));
+vi.stubGlobal(
+  'fetch',
+  vi.fn(
+    async () =>
+      new Response('{}', {
+        status: 200,
+        headers: { 'content-type': 'application/x-ndjson' },
+      }),
+  ),
+);
+vi.mock('@ai-matrx/api', () => ({}));
 vi.mock('@ai-matrx/api/stream', () => ({
   readMatrxNdjsonStream: async function* (
     _body: unknown,
