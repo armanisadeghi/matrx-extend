@@ -13,10 +13,9 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 // An object-literal key (`'matrx.auth.x': value`) or a `.set('matrx.auth.x', ...)` call.
-export const RETIRED_AUTH_WRITE =
-  /['"`]matrx\.auth\.[A-Za-z]+['"`]\s*:|\.set\(\s*['"`]matrx\.auth\./;
+const RETIRED_AUTH_WRITE = /['"`]matrx\.auth\.[A-Za-z]+['"`]\s*:|\.set\(\s*['"`]matrx\.auth\./;
 
-export function walkFiles(dir) {
+function walkFiles(dir) {
   const out = [];
   for (const e of readdirSync(dir, { withFileTypes: true })) {
     const p = join(dir, e.name);
