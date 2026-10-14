@@ -29,6 +29,12 @@ const ENSURE_GENERAL_SCOPE = {
 
 const homesDb = () => createDb({ client: getSupabase() });
 
+function databaseMessage(error: unknown): string {
+  const wrapped = error as { name?: string; cause?: { message?: string }; message?: string } | null;
+  if (wrapped?.name === 'DatabaseError' && wrapped.cause?.message) return wrapped.cause.message;
+  return error instanceof Error ? error.message : String(error);
+}
+
 export interface HomeChoice {
   /** Stable UI identity; every General uses general:<organization UUID>. */
   id: string;
@@ -45,9 +51,7 @@ export async function listHomeChoices(): Promise<HomeChoice[]> {
   try {
     rows = await call(homesDb(), MY_HOMES, {});
   } catch (error) {
-    throw new Error(
-      `Could not load homes: ${error instanceof Error ? error.message : String(error)}`,
-    );
+    throw new Error(`Could not load homes: ${databaseMessage(error)}`);
   }
   const parsed = z.array(HomeRowSchema).safeParse(rows ?? []);
   if (!parsed.success)
@@ -83,9 +87,7 @@ export async function resolveHomeScopeId(choice: string | HomeChoice): Promise<s
   try {
     scopeId = await call(homesDb(), ENSURE_GENERAL_SCOPE, { p_org: organizationId });
   } catch (error) {
-    throw new Error(
-      `Could not choose home: ${error instanceof Error ? error.message : String(error)}`,
-    );
+    throw new Error(`Could not choose home: ${databaseMessage(error)}`);
   }
   return z.string().uuid().parse(scopeId);
 }
