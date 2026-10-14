@@ -106,7 +106,10 @@ vi.mock('@/lib/credentials/inline-suggestions-host', () => ({
   registerInlineCredentialSuggestionHost: vi.fn(),
 }));
 vi.mock('@/lib/origin-allowlist', () => ({ matchesAllowedOrigin: vi.fn() }));
-vi.mock('@/lib/settings/persisted', () => ({ readDefaultPermissionMode: vi.fn() }));
+vi.mock('@/lib/settings/persisted', () => ({
+  readDefaultPermissionMode: vi.fn(),
+  watchDefaultPermissionMode: vi.fn(() => () => 'ask'),
+}));
 vi.mock('@/lib/stream/active-runs', () => ({ hasRecentActiveStream: vi.fn(async () => false) }));
 vi.mock('@/lib/stream/offscreen-proxy', () => ({
   cancelStream: vi.fn(),

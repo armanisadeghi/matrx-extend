@@ -104,8 +104,8 @@ describe('package device tools run through the real gate', () => {
     expect(await call('ask-user')).toEqual({ ok: true, result: { status: 'executed' } });
   });
 
-  it('a privileged tool reaches the approval card for THIS conversation, even in Act mode, and runs on Allow', async () => {
-    const pending = call('privileged', { mode: 'act', id: 'priv-1' });
+  it('a privileged tool reaches the approval card for THIS conversation in Ask mode, and runs on Allow', async () => {
+    const pending = call('privileged', { mode: 'ask', id: 'priv-1' });
     await flush();
     await flush();
     expect(deps.run).not.toHaveBeenCalled();
@@ -116,12 +116,21 @@ describe('package device tools run through the real gate', () => {
   });
 
   it('a denied approval comes back as an error the model can read', async () => {
-    const pending = call('privileged', { id: 'priv-2' });
+    const pending = call('privileged', { mode: 'ask', id: 'priv-2' });
     await flush();
     await flush();
     respond('priv-2', 'deny');
     expect(await pending).toEqual({ ok: false, error: 'User denied this action' });
     expect(deps.run).not.toHaveBeenCalled();
+  });
+
+  it('a privileged tool runs without confirmation in Act mode', async () => {
+    expect(await call('privileged', { mode: 'act', id: 'priv-act' })).toEqual({
+      ok: true,
+      result: { status: 'executed' },
+    });
+    expect(confirmRequests()).toHaveLength(0);
+    expect(deps.run).toHaveBeenCalledTimes(1);
   });
 
   it.each([

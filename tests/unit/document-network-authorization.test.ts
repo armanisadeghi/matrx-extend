@@ -26,7 +26,9 @@ function fixture() {
     run: attachAndCapture,
   }));
   const boundary: DispatchBoundary<Awaited<ReturnType<typeof attachAndCapture>>> = {
-    permissionMode: 'act',
+    // This is a person-started local capture; privileged network attachment
+    // still requires a confirmation in Ask mode.
+    permissionMode: 'ask',
     signal: controller.signal,
     prepare,
     confirm,
@@ -40,7 +42,7 @@ const approval = (overrides: Partial<RecoveredApproval> = {}): RecoveredApproval
   expiresAt: Date.now() + 1000,
   ...overrides,
 });
-it('Act still asks for the actual data_patterns operation before attaching', async () => {
+it('Ask confirms the actual data_patterns operation before attaching', async () => {
   const f = fixture();
   f.confirm.mockImplementation(async (operation, tier) => {
     expect(operation.toolName).toBe('data_patterns');

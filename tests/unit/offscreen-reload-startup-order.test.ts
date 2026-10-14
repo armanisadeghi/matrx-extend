@@ -99,7 +99,10 @@ vi.mock('@/lib/messaging/schemas', () => ({
   CHANNELS: { DESKTOP_AVAILABILITY: 'desktop:availability', WEBMCP_CALL: 'webmcp:call' },
 }));
 vi.mock('@/lib/origin-allowlist', () => ({ matchesAllowedOrigin: vi.fn() }));
-vi.mock('@/lib/settings/persisted', () => ({ readDefaultPermissionMode: vi.fn() }));
+vi.mock('@/lib/settings/persisted', () => ({
+  readDefaultPermissionMode: vi.fn(),
+  watchDefaultPermissionMode: vi.fn(() => () => 'ask'),
+}));
 vi.mock('@/lib/stream/active-runs', () => ({ hasRecentActiveStream: mocks.close }));
 vi.mock('@/lib/stream/offscreen-proxy', () => ({
   cancelStream: vi.fn(),
