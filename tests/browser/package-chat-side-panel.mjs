@@ -146,7 +146,10 @@ try {
   const composer = page.locator('[data-package-chat] textarea').first();
   await composer.waitFor({ timeout: 45_000 }).catch(() => undefined);
   // Editable from first paint: no waiting for the chat to boot (owner ruling 2026-10-14).
-  check('composer is editable immediately (first paint, no boot wait)', await composer.isEditable().catch(() => false));
+  check(
+    'composer is editable immediately (first paint, no boot wait)',
+    await composer.isEditable().catch(() => false),
+  );
   const banner = await page.getByText(/Could not (restore|verify) your saved sign-in/).count();
   check('extension sign-in restored (no sign-in failure banner)', banner === 0);
   await page.screenshot({ path: join(SHOTS, '1-new-chat.png') });

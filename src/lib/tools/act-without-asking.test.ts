@@ -12,9 +12,8 @@ import { z } from 'zod';
 
 const broadcasts: { channel: string; payload: unknown }[] = [];
 vi.mock('@/lib/messaging/native', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/messaging/native')>(
-    '@/lib/messaging/native',
-  );
+  const actual =
+    await vi.importActual<typeof import('@/lib/messaging/native')>('@/lib/messaging/native');
   return {
     ...actual,
     broadcast: (channel: string, payload: unknown) => {
@@ -42,7 +41,8 @@ const handlers: Record<string, unknown> = {
   t_privileged: fake('t_privileged', 'privileged'),
 };
 vi.mock('@/lib/tools/registry', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/tools/registry')>('@/lib/tools/registry');
+  const actual =
+    await vi.importActual<typeof import('@/lib/tools/registry')>('@/lib/tools/registry');
   return { ...actual, lookup: (n: string) => handlers[n] ?? actual.lookup(n) };
 });
 
