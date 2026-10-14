@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T12:38:58.293Z",
+  "generated_at": "2026-10-14T22:40:03.269Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_chrome_categories",
@@ -194,6 +194,8 @@
     "capture_prospect",
     "capture_study_set",
     "google_email_send",
+    "outlook_web_draft",
+    "outlook_email_send",
     "remember_for_domain",
     "list_recently_closed",
     "restore_recently_closed",
@@ -337,6 +339,8 @@
     "capture_prospect",
     "capture_study_set",
     "google_email_send",
+    "outlook_web_draft",
+    "outlook_email_send",
     "remember_for_domain",
     "list_recently_closed",
     "restore_recently_closed",
@@ -740,7 +744,9 @@
       "list_tool": "list_productivity_tools",
       "admin_only": false,
       "tool_names": [
-        "google_email_send"
+        "google_email_send",
+        "outlook_web_draft",
+        "outlook_email_send"
       ]
     },
     {
@@ -4419,6 +4425,120 @@
     },
     {
       "name": "google_email_send",
+      "tier": "ask-user",
+      "category": "productivity",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 320
+          },
+          "cc": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20
+          },
+          "subject": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 998
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100000
+          }
+        },
+        "required": [
+          "to",
+          "subject",
+          "body"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "outlook_web_draft",
+      "tier": "action",
+      "category": "productivity",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 320
+            },
+            "minItems": 1,
+            "maxItems": 50
+          },
+          "cc": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 320
+            },
+            "maxItems": 50
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 998
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 100000
+          },
+          "host": {
+            "type": "string",
+            "enum": [
+              "outlook.office.com",
+              "outlook.live.com"
+            ]
+          }
+        },
+        "required": [
+          "to",
+          "subject",
+          "body"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "outlook_email_send",
       "tier": "ask-user",
       "category": "productivity",
       "input_schema": {

@@ -7,8 +7,8 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-10-14T12:38:59.550Z
-Total tools: 81
+Generated: 2026-10-14T22:40:04.608Z
+Total tools: 83
 
 ## ai
 
@@ -508,6 +508,22 @@ _ask-user_
 Show the user one Gmail message and let THEM send it. Pass the exact recipient, subject and body you want sent (use google_workspace prepare_email first to compose it). AI Matrx renders that message to the user, who may edit any field and must explicitly confirm before anything is sent from their Gmail account. You cannot confirm on their behalf and there is no argument that skips the review. Returns {sent:true, message_id, to, subject, edited} once the user sends, or {sent:false, declined:true} if they decline — treat a decline as a normal outcome and ask what to change.
 
 **Parameters:** `cc` (array); `to` (string, required); `body` (string, required); `subject` (string, required)
+
+### `outlook_email_send`
+
+_ask-user_
+
+Send ONE email from the person's Outlook after they review it. The person sees the exact message, can edit any field, and nothing sends until they press Send. Use it only when the person asked to send; to prepare a message without sending, use outlook_web_draft.
+
+**Parameters:** `cc` (array); `to` (string, required); `body` (string, required); `subject` (string, required)
+
+### `outlook_web_draft`
+
+_action_
+
+Open a filled Outlook on the web compose window in the person's signed-in Chrome. Outlook keeps it in Drafts; nothing is sent. A sign-in wall is reported, never treated as success.
+
+**Parameters:** `cc` (array); `to` (array, required); `body` (string, required); `host` (string) = ["outlook.office.com","outlook.live.com"]; `subject` (string, required)
 
 ## reading
 

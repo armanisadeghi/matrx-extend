@@ -1,11 +1,11 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-10-14T12:38:58.293Z
+Generated: 2026-10-14T22:40:03.269Z
 
-- **Total tools:** 167
+- **Total tools:** 169
 - **Assistant bundle:** 74 tools (read-only)
-- **Pilot bundle:** 141 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 167 tools
+- **Pilot bundle:** 143 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 169 tools
 
 
 ## Tier: read (74)
@@ -1953,7 +1953,7 @@ Generated: 2026-10-14T12:38:58.293Z
 }
 ```
 
-## Tier: action (63)
+## Tier: action (64)
 
 ### `navigate_active_tab`
 
@@ -3327,6 +3327,60 @@ Generated: 2026-10-14T12:38:58.293Z
 }
 ```
 
+### `outlook_web_draft`
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "to": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 320
+      },
+      "minItems": 1,
+      "maxItems": 50
+    },
+    "cc": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 320
+      },
+      "maxItems": 50
+    },
+    "subject": {
+      "type": "string",
+      "maxLength": 998
+    },
+    "body": {
+      "type": "string",
+      "maxLength": 100000
+    },
+    "host": {
+      "type": "string",
+      "enum": [
+        "outlook.office.com",
+        "outlook.live.com"
+      ]
+    }
+  },
+  "required": [
+    "to",
+    "subject",
+    "body"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### `remember_for_domain`
 
 - **Required permissions:** (none)
@@ -4397,9 +4451,51 @@ Generated: 2026-10-14T12:38:58.293Z
 }
 ```
 
-## Tier: ask-user (4)
+## Tier: ask-user (5)
 
 ### `google_email_send`
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "to": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 320
+    },
+    "cc": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 998
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100000
+    }
+  },
+  "required": [
+    "to",
+    "subject",
+    "body"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `outlook_email_send`
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
