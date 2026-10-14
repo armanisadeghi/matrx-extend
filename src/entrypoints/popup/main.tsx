@@ -7,6 +7,7 @@ import {
   requestCapturePagePanel,
   waitForSidePanelContextId,
 } from '@/lib/panel/launch-intent';
+import { showSwipePillAgain } from '@/lib/swipe-file/pill-dismiss';
 import { Button } from '@ai-matrx/design-system';
 import { ExternalLink, MessageSquare, ScanLine } from 'lucide-react';
 import React, { useState } from 'react';
@@ -155,6 +156,8 @@ export function Popup() {
 
 // Any third-party link in the extension's pages carries our referral data (@ai-matrx/kit/outbound).
 installOutboundReferralDecorator();
+// Opening the extension brings back a swipe-file card the person closed.
+void showSwipePillAgain();
 
 const root = createRoot(document.getElementById('app')!);
 root.render(

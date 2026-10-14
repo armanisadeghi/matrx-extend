@@ -127,6 +127,8 @@ export function feedTargetFromUrl(raw: string | undefined | null): string | null
   } catch {
     return null;
   }
+  // Only the consumer site itself; business, ads and seller subdomains are not feeds.
+  if (!recipe.hosts.includes(u.hostname.toLowerCase().replace(/^(www|m)\./, ''))) return null;
   const first = u.pathname.split('/').filter(Boolean)[0]?.toLowerCase();
   if (
     !first ||

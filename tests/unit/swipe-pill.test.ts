@@ -259,3 +259,48 @@ it('does not bring the card back over the guide after Capture more handed the pa
   vi.advanceTimersByTime(3000);
   expect(document.querySelector('#matrx-swipe-pill')).toBeNull();
 });
+
+it('closing the card hides it on every page until the extension is opened again', async () => {
+  const { SWIPE_PILL_HIDDEN_KEY, showSwipePillAgain } = await import(
+    '@/lib/swipe-file/pill-dismiss'
+  );
+  let changed: ((changes: Record<string, { newValue?: unknown }>, area: string) => void) | null =
+    null;
+  const onChanged = chrome.storage.onChanged;
+  Object.assign(chrome.storage, {
+    onChanged: { addListener: (fn: typeof changed) => (changed = fn), removeListener: () => {} },
+  });
+  try {
+    (window as unknown as { happyDOM: { setURL(url: string): void } }).happyDOM.setURL(
+      'https://www.instagram.com/nasa/',
+    );
+    mountSwipePill();
+    const host = document.querySelector<HTMLElement>('#matrx-swipe-pill')!;
+    await vi.waitFor(() => expect(host.style.visibility).toBe('visible'));
+    host.shadowRoot!.querySelector<HTMLButtonElement>('#close')!.click();
+    expect(document.querySelector('#matrx-swipe-pill')).toBeNull();
+    await vi.waitFor(async () =>
+      expect((await chrome.storage.local.get(SWIPE_PILL_HIDDEN_KEY))[SWIPE_PILL_HIDDEN_KEY]).toBe(
+        true,
+      ),
+    );
+    vi.advanceTimersByTime(3000);
+    expect(document.querySelector('#matrx-swipe-pill')).toBeNull();
+
+    // A fresh page load while closed never shows the card.
+    host.remove();
+    delete (window as unknown as { __matrxSwipePill?: boolean }).__matrxSwipePill;
+    mountSwipePill();
+    await vi.waitFor(() => expect(document.querySelector('#matrx-swipe-pill')).toBeNull());
+
+    // Opening the extension clears the flag and the card comes back.
+    await showSwipePillAgain();
+    changed!({ [SWIPE_PILL_HIDDEN_KEY]: {} }, 'local');
+    const back = document.querySelector<HTMLElement>('#matrx-swipe-pill');
+    expect(back).not.toBeNull();
+    expect(back!.style.visibility).toBe('visible');
+  } finally {
+    Object.assign(chrome.storage, { onChanged });
+    await showSwipePillAgain();
+  }
+});

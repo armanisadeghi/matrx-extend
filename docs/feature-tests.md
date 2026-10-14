@@ -3783,6 +3783,7 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 ### Capture more (from the Swipe card) and retrying missing slides
 
 - On any supported profile or feed (Instagram, TikTok, X, Facebook, LinkedIn; not a single post) the bottom-right Matrx card shows **Capture more**. Press it: the capture guide opens on this same tab (no new tab), then use **Scroll for me** and **Capture** below. The card does not return over the guide. A failure says one plain sentence on the card.
+- **Closing the card:** the **×** on the card hides it on every tab and every page load. It comes back only after opening Matrx (toolbar popup or side panel). Business, ads and seller subdomains (e.g. ads.tiktok.com, business.facebook.com) never show **Capture more**.
 - After saving a carousel with missing slides the card names them ("Slides 2, 5 missing") and offers **Retry slides 2, 5**; it saves again into the same collection and only the missing items are fetched.
 - **Automated:** `tests/unit/swipe-pill.test.ts`, `swipe-coverage.test.ts`, `swipe-file-urls.test.ts`; headless real page: `node tests/browser/swipe-feed-entry-e2e.mjs` (env `MATRX_FEED_URL`, `MATRX_LADDER_ORGANIZATION_ID`, `MATRX_PLAYWRIGHT_MODULE`).
 

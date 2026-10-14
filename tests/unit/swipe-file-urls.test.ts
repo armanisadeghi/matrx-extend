@@ -82,5 +82,8 @@ describe('feedTargetFromUrl ("Capture more" pages)', () => {
     expect(feedTargetFromUrl('https://www.instagram.com/accounts/login/')).toBeNull();
     expect(feedTargetFromUrl('https://www.youtube.com/@nasa')).toBeNull();
     expect(feedTargetFromUrl('https://example.com/nasa')).toBeNull();
+    expect(feedTargetFromUrl('https://ads.tiktok.com/i18n/login/security-verify')).toBeNull();
+    expect(feedTargetFromUrl('https://business.facebook.com/latest/home')).toBeNull();
+    expect(feedTargetFromUrl('https://m.facebook.com/nasa')).toBe('https://m.facebook.com/nasa');
   });
 });

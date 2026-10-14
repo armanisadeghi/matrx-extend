@@ -1,6 +1,11 @@
 /** Branded social capture control, isolated from site styles with open shadow DOM. */
 import { SWIPE_PORT, type SwipeClientMsg, type SwipeHostMsg } from '@/lib/swipe-file/host';
 import { SWIPE_OPEN_KEY, swipePostWebUrl } from '@/lib/swipe-file/navigation';
+import {
+  hideSwipePill,
+  isSwipePillHidden,
+  onSwipePillHiddenChange,
+} from '@/lib/swipe-file/pill-dismiss';
 import { captureReceiptSummary, missingSlideNumbers } from '@/lib/swipe-file/receipt';
 import type { SwipeOutcome } from '@/lib/swipe-file/save';
 import { feedTargetFromUrl, swipeTargetFromUrl } from '@/lib/swipe-file/urls';
@@ -20,22 +25,22 @@ export function mountSwipePill(): void {
   host.id = 'matrx-swipe-pill';
   host.setAttribute('aria-label', 'Matrx swipe file');
   host.style.cssText =
-    'all:initial;position:fixed;right:16px;bottom:16px;z-index:2147483646;max-width:calc(100vw - 32px);';
+    'all:initial;position:fixed;right:16px;bottom:16px;z-index:2147483646;max-width:calc(100vw - 32px);visibility:hidden;';
   const root = host.attachShadow({ mode: 'open' });
   root.innerHTML = `
 <style>
 :host{color-scheme:dark}*{box-sizing:border-box}
 .card{font:13px/1.4 system-ui,sans-serif;background:#111827;color:#f9fafb;border:1px solid #374151;border-radius:12px;box-shadow:0 8px 30px #0006;padding:10px;width:320px;max-width:calc(100vw - 32px);display:flex;flex-direction:column;gap:8px}
-.row{display:flex;gap:8px;align-items:center;min-width:0}.logo{width:24px;height:24px;flex:none}.controls{display:flex;gap:6px;min-width:0;flex:1}
+.row{display:flex;gap:8px;align-items:center;min-width:0}.logo{width:24px;height:24px;flex:none}.controls{display:flex;gap:6px;align-items:center;justify-content:space-between;min-width:0;flex:1}
 select,input{min-width:0;background:#1f2937;color:#f9fafb;border:1px solid #4b5563;border-radius:6px;padding:6px;font:inherit}select{flex:1;width:0}input{width:100%}
 button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radius:6px;padding:7px 9px;cursor:pointer;white-space:nowrap}button:disabled{opacity:.6;cursor:default}
 .feedback{border-top:1px solid #374151;padding-top:8px;display:flex;flex-direction:column;gap:5px;min-width:0}.status{display:flex;align-items:flex-start;gap:6px;font-weight:600}.mark{flex:none}.msg,.summary,.notice{overflow-wrap:anywhere}.summary{font-size:12px;color:#d1d5db}.notice{font-size:12px;color:#fcd34d;max-height:100px;overflow:auto}.ok{color:#86efac}.warn{color:#fcd34d}.bad{color:#fca5a5}
 .links{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding-top:3px}.links button{padding:0;background:none;color:#93c5fd}.links a{color:#93c5fd;text-decoration:none}.links a:hover,.links button:hover{text-decoration:underline}
+.close{flex:none;margin-left:auto;background:none;color:#9ca3af;padding:2px 6px;font-size:16px;line-height:1}.close:hover{color:#f9fafb;background:#374151}
 :focus-visible{outline:2px solid #93c5fd;outline-offset:2px}[hidden]{display:none!important}
 </style>
 <section class="card" aria-label="Matrx swipe file">
- <div class="row"><img class="logo" alt="Matrx" /><div id="postrow" class="controls"><select id="col" aria-label="Collection"></select><button id="save">Save to swipe file</button></div></div>
- <div id="feedrow" class="row" hidden><span class="msg">Capture posts from this page</span><button id="feed">Capture more</button></div>
+ <div class="row"><img class="logo" alt="Matrx" /><div id="postrow" class="controls"><select id="col" aria-label="Collection"></select><button id="save">Save to swipe file</button></div><div id="feedrow" class="controls" hidden><span class="msg">Posts on this page</span><button id="feed">Capture more</button></div><button id="close" class="close" title="Hide until you open Matrx" aria-label="Hide until you open Matrx">×</button></div>
  <input id="newname" placeholder="Collection name" aria-label="New collection name" hidden />
  <div id="feedback" class="feedback" hidden>
   <div class="status" role="status" aria-live="polite"><span id="mark" class="mark" aria-hidden="true"></span><span id="msg" class="msg"></span></div>
@@ -70,6 +75,8 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
   let currentUrl: string | null = null;
   let savingUrl: string | null = null;
   let saved: Extract<SwipeOutcome, { status: 'saved' | 'already_saved' }> | null = null;
+  /** Closed by the person; stays away on every page until the extension is opened. */
+  let dismissed = false;
 
   function say(text: string, cls = '', symbol = '') {
     feedback.hidden = !text;
@@ -181,6 +188,11 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
       }
     }
   }
+  $('close').addEventListener('click', () => {
+    dismissed = true;
+    host.remove();
+    void hideSwipePill();
+  });
   feedBtn.addEventListener('click', () => {
     if (!feedUrl || feedBtn.disabled) return;
     feedBtn.disabled = true;
@@ -252,6 +264,10 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
       });
   });
   function refresh() {
+    if (dismissed) {
+      host.remove();
+      return;
+    }
     const post = swipeTargetFromUrl(location.href)?.url ?? null;
     const rawFeed = post ? null : feedTargetFromUrl(location.href);
     if (rawFeed !== feedHandedOff) feedHandedOff = null;
@@ -274,6 +290,17 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
     if (post && !loaded) send({ t: 'list' });
   }
   refresh();
+  // Shown only once we know the person has not closed it, so a closed card never flashes.
+  void isSwipePillHidden().then((hidden) => {
+    dismissed = hidden;
+    if (hidden) host.remove();
+    else host.style.visibility = 'visible';
+  });
+  onSwipePillHiddenChange((hidden) => {
+    dismissed = hidden;
+    if (!hidden) host.style.visibility = 'visible';
+    refresh();
+  });
   window.addEventListener('popstate', refresh);
   setInterval(refresh, 1000);
 }
