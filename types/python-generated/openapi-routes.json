@@ -86,6 +86,23 @@
    "application/json"
   ]
  },
+ "/admin/ai-test-mode/baselines": {
+  "get": []
+ },
+ "/admin/ai-test-mode/baselines/{baseline_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/admin/ai-test-mode/report": {
+  "get": []
+ },
+ "/admin/ai-test-mode/stand-ins/{mandate_key}": {
+  "put": [
+   "application/json"
+  ]
+ },
  "/admin/app-logs/files": {
   "get": []
  },
@@ -597,6 +614,9 @@
  "/ai-models": {
   "get": []
  },
+ "/ai-test-mode/status": {
+  "get": []
+ },
  "/ai-tools": {
   "get": []
  },
@@ -910,6 +930,14 @@
  },
  "/ai/retry-now/{request_id}": {
   "post": []
+ },
+ "/ai/sessions/offers/{offer_id}": {
+  "get": []
+ },
+ "/ai/sessions/offers/{offer_id}/{action}": {
+  "post": [
+   "application/json"
+  ]
  },
  "/ai/tools/execute": {
   "post": [
@@ -1265,6 +1293,35 @@
  },
  "/box/oauth/callback": {
   "get": []
+ },
+ "/brand-intake/images/groups": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/brand-intake/people-search/linkedin/jobs/{snapshot_id}": {
+  "get": []
+ },
+ "/brand-intake/people-search/linkedin/jobs/{snapshot_id}/cancel": {
+  "post": []
+ },
+ "/brand-intake/people-search/methods": {
+  "get": []
+ },
+ "/brand-intake/people-search/{method}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/brand-intake/person-harder/find-you": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/brand-intake/person-harder/round": {
+  "post": [
+   "application/json"
+  ]
  },
  "/brand-voice/extract": {
   "post": [
@@ -7650,6 +7707,12 @@
  "/social-oauth/facebook/deauthorize": {
   "post": []
  },
+ "/social-oauth/instagram/deauthorize": {
+  "post": []
+ },
+ "/social-oauth/threads/deauthorize": {
+  "post": []
+ },
  "/social-oauth/x/attach": {
   "post": [
    "application/json"
@@ -7782,8 +7845,16 @@
    "application/json"
   ]
  },
+ "/social/connected-accounts/plans": {
+  "get": []
+ },
  "/social/connected-accounts/refresh": {
   "post": [
+   "application/json"
+  ]
+ },
+ "/social/connected-accounts/{tracked_account_id}/frequency": {
+  "put": [
    "application/json"
   ]
  },
@@ -8784,46 +8855,6 @@
   "get": []
  },
  "/v1/tables/{table}/views": {
-  "post": [
-   "application/json"
-  ]
- },
- "/v2/ai/agent/{agent_id}": {
-  "post": [
-   "application/json"
-  ]
- },
- "/v2/ai/agents/{agent_id}": {
-  "post": [
-   "application/json"
-  ]
- },
- "/v2/ai/chat": {
-  "post": [
-   "application/json"
-  ]
- },
- "/v2/ai/conversation/{conversation_id}": {
-  "post": [
-   "application/json"
-  ]
- },
- "/v2/ai/conversations/{conversation_id}": {
-  "post": [
-   "application/json"
-  ]
- },
- "/v2/ai/mandates/{mandate_key}": {
-  "post": [
-   "application/json"
-  ]
- },
- "/v2/ai/manual": {
-  "post": [
-   "application/json"
-  ]
- },
- "/v2/ai/prompts/{prompt_id}": {
   "post": [
    "application/json"
   ]

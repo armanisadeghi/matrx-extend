@@ -2994,6 +2994,10 @@ export interface ToolResultPreviewData {
 
 export interface ToolCompletedData {
   result?: JsonValue;
+  result_omitted?: boolean;
+  result_preview?: string | null;
+  output_chars?: number | null;
+  tool_call_id?: string | null;
 }
 
 export interface ToolErrorData {
@@ -3080,6 +3084,10 @@ export interface ToolResultPreviewToolEvent {
 
 export interface ToolCompletedData {
   result?: JsonValue;
+  result_omitted?: boolean;
+  result_preview?: string | null;
+  output_chars?: number | null;
+  tool_call_id?: string | null;
 }
 
 export interface ToolCompletedToolEvent {
