@@ -850,12 +850,12 @@ exports[`every browser-tool row config draws through the package's row > draws v
   "update_plan": {
     "completed": "Plan updated steps",
     "error": "Plan failed steps",
-    "started": "Proposing plan steps",
+    "started": "Proposing plan steps3",
   },
   "upload_file": {
     "completed": "Uploaded file to ref_12 file(s)",
     "error": "Upload failed for ref_12 file(s)",
-    "started": "Uploading file to ref_12 file(s)0",
+    "started": "Uploading file to ref_12 file(s)3",
   },
   "user": {
     "completed": "Askedquarterly revenue report",
