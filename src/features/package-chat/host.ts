@@ -19,6 +19,7 @@ import {
 } from '@/lib/org/active-org';
 import { getSupabase } from '@/lib/supabase/client';
 import type { DeviceToolCallRef } from '@/lib/tools/device-handoff';
+import { useChatStore } from '@/state/chat';
 import type {
   ChatDeviceToolContext,
   ChatDeviceToolHandOff,
@@ -152,7 +153,13 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
     }),
     // Drafts and density in the page's own storage, plus the platform settings register (the composer's quick starts are a setting).
     prefs: { ...createWebPrefs(), knobs: extensionKnobs },
-    deviceTools: { invoke: invokeDeviceTool, handOff: handOffDeviceTools },
+    deviceTools: {
+      invoke: invokeDeviceTool,
+      handOff: handOffDeviceTools,
+      // The person's "Act without asking" lives in the extension (Settings default + the chat
+      // chip's per-agent choice); the package would otherwise default every run to "ask".
+      permissionMode: (agentId) => useChatStore.getState().getPermissionMode(agentId),
+    },
     registry: { contextSources: [browserDomContextSource, extensionPageContextSource] },
     // Chrome cannot prompt inside a side panel: the grant is asked in the mic-grant popup.
     microphone: { requestPermission: () => requestMicrophoneGrant() },

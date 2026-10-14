@@ -106,3 +106,24 @@ describe('with it OFF, the prompts still appear', () => {
     expect(runs).toContain('t_read');
   });
 });
+
+describe("with Act without asking ON, the agent's own question to the person still waits", () => {
+  it('the user tool raises its question card and stays pending until answered', async () => {
+    let settled = false;
+    void runDeviceToolCall({
+      callId: 'call-user-act-4',
+      toolName: 'user',
+      args: { type: 'text', question: 'Which account should I use?' },
+      conversationId: 'conv-act-4',
+      permissionMode: 'act',
+      assignedTabId: null,
+    }).then(() => {
+      settled = true;
+    });
+    await new Promise((r) => setTimeout(r, 150));
+    const questions = broadcasts.filter((b) => b.channel === 'tool:ask-user-request');
+    expect(questions).toHaveLength(1);
+    expect(cards()).toHaveLength(0);
+    expect(settled).toBe(false);
+  });
+});
