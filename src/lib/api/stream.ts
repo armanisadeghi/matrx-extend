@@ -18,6 +18,7 @@ import { log } from '@/lib/debug/log';
 import {
   isResumeConflict,
   readLiveRunRejoin,
+  resilientFetch,
   readLiveStreamUnavailable,
   streamErrorText,
 } from '@ai-matrx/api';
@@ -96,14 +97,26 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
 
   let res: Response;
   try {
-    // `signal` ends the stream on cancel; no total timeout (streams are
-    // uncapped); a non-2xx is reported below through `onEvent`, not thrown.
-    res = await fetch(opts.url, {
-      method: 'POST',
-      headers: opts.headers,
-      ...(opts.body !== undefined ? { body: JSON.stringify(opts.body) } : {}),
-      ...(opts.signal !== undefined ? { signal: opts.signal } : {}),
-    });
+    // The three options are PARITY, not taste, and none may be dropped:
+    //   - signal goes in the OPTIONS bag, not `init` — resilientFetch drives
+    //     its own AbortController and overwrites `init.signal`;
+    //   - totalTimeoutMs: null — streams are uncapped (the default is 120s);
+    //   - throwOnHttpError: false — a non-2xx is reported below through
+    //     `onEvent`, so the response must come back rather than throw.
+    const { response } = await resilientFetch(
+      opts.url,
+      {
+        method: 'POST',
+        headers: opts.headers,
+        ...(opts.body !== undefined ? { body: JSON.stringify(opts.body) } : {}),
+      },
+      {
+        ...(opts.signal !== undefined ? { signal: opts.signal } : {}),
+        totalTimeoutMs: null,
+        throwOnHttpError: false,
+      },
+    );
+    res = response;
   } catch (err) {
     log.error('stream', `✗ ${diagnosticUrl} network error`, {
       error: err instanceof Error ? err.name : 'NetworkError',
