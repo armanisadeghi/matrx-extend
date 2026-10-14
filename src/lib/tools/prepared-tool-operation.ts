@@ -2,6 +2,7 @@
  * Only dispatcher-owned code constructs Boundary; no member crosses a port.
  * The approval identity is the real data_patterns call and immutable operation.
  */
+import { needsApproval } from './tier-policy';
 import type { NetworkCaptureApprovalPreview, ToolTier } from './types';
 export interface OperationIdentity {
   toolName: string;
@@ -51,9 +52,7 @@ export async function executePreparedOperation<T>(boundary: DispatchBoundary<T>)
   const operation = await boundary.prepare();
   await operation.checkRequirements();
   cancelled(boundary.signal);
-  const needsConfirm =
-    operation.tier === 'privileged' ||
-    (operation.tier === 'action' && boundary.permissionMode === 'ask');
+  const needsConfirm = needsApproval(operation.tier, boundary.permissionMode);
   if (boundary.recovered) {
     const recovered = boundary.recovered;
     if (recovered.delivery === 'local')

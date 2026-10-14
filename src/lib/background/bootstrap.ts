@@ -79,7 +79,7 @@ import { registerGuidedCaptureHost } from '@/lib/guided-capture/host';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
-import { readDefaultPermissionMode } from '@/lib/settings/persisted';
+import { readDefaultPermissionMode, watchDefaultPermissionMode } from '@/lib/settings/persisted';
 import { hasRecentActiveStream } from '@/lib/stream/active-runs';
 import {
   type StartStreamArgs,
@@ -175,7 +175,7 @@ export function bootstrapBackground(): void {
   // ── 2. Tool dispatcher subscribes to STREAM_OPENED + STREAM_CHUNK.
   //       Per-run permission mode is latched from the chat hook; this default
   //       only kicks in if the sidepanel forgot to pass one.
-  startToolDispatcher({ defaultPermissionMode: () => 'ask' });
+  startToolDispatcher({ defaultPermissionMode: watchDefaultPermissionMode() });
 
   // ── 2a. Audio log: track when each tab last produced sound so
   //        `tab_audio_inspect` can answer "recently audible" queries.

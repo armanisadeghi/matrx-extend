@@ -80,3 +80,19 @@ export async function readCredentialAssistancePresentation(): Promise<Credential
   const state = await readPersistedSettingsState();
   return state?.credentialAssistancePresentation === 'on_page' ? 'on_page' : 'quiet';
 }
+
+/**
+ * A synchronous view of the person's default permission mode for the service worker's
+ * dispatcher. The dispatcher falls back to it when a run opens without a latched mode; a
+ * hard-coded 'ask' there ignored "Act without asking" for exactly those runs. Kept current
+ * from the persisted blob (read once, then on every settings change).
+ */
+export function watchDefaultPermissionMode(): () => PermissionMode {
+  let current: PermissionMode = 'ask';
+  const refresh = () => void readDefaultPermissionMode().then((m) => (current = m));
+  refresh();
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && SETTINGS_PERSIST_KEY in changes) refresh();
+  });
+  return () => current;
+}

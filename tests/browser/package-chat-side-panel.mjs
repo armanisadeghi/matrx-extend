@@ -145,18 +145,8 @@ try {
   check('side panel renders the package chat', (await root.count()) > 0);
   const composer = page.locator('[data-package-chat] textarea').first();
   await composer.waitFor({ timeout: 45_000 }).catch(() => undefined);
-  // The composer mounts read-only for ~1s while the chat boots; "ready" means editable, not attached.
-  await page
-    .waitForFunction(
-      () => {
-        const t = document.querySelector('[data-package-chat] textarea');
-        return Boolean(t && !t.disabled && !t.readOnly);
-      },
-      undefined,
-      { timeout: 45_000 },
-    )
-    .catch(() => undefined);
-  check('composer is ready', await composer.isEditable().catch(() => false));
+  // Editable from first paint: no waiting for the chat to boot (owner ruling 2026-10-14).
+  check('composer is editable immediately (first paint, no boot wait)', await composer.isEditable().catch(() => false));
   const banner = await page.getByText(/Could not (restore|verify) your saved sign-in/).count();
   check('extension sign-in restored (no sign-in failure banner)', banner === 0);
   await page.screenshot({ path: join(SHOTS, '1-new-chat.png') });

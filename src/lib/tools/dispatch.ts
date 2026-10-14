@@ -1,4 +1,4 @@
-import { resolveToolTier } from '@/lib/tools/tier-policy';
+import { mayActWithoutAsking, needsApproval, resolveToolTier } from '@/lib/tools/tier-policy';
 import {
   type PreparedOperation,
   type RecoveredApproval,
@@ -837,9 +837,7 @@ async function handleCall(
     }
 
     // Permission gate.
-    const needsConfirm =
-      effectiveTier === 'privileged' ||
-      (effectiveTier === 'action' && ctx.permissionMode === 'ask');
+    const needsConfirm = effectiveTier === 'privileged' || (effectiveTier === 'action' && ctx.permissionMode === 'ask');
     if (needsConfirm && !gateOpts.preApproved) {
       const allowed = await requestConfirmation(handler, parsed.data, ctx, meta, {
         effectiveTier,
@@ -1637,7 +1635,7 @@ export async function handleWebmcpCall(
 
   // External action calls ALWAYS confirm — the user's act-mode preference
   // applies to their own agent, never to a page/frontend/desktop caller.
-  if (effectiveTier === 'action') {
+  if (effectiveTier === 'action' && !mayActWithoutAsking(opts.permissionMode, initiator)) {
     opts.onAwaitingConfirmation?.();
     const allowed = await requestConfirmation(handler, parsed.data, ctx, undefined, {
       effectiveTier,
@@ -1837,7 +1835,9 @@ async function runPrepared(
 ): Promise<unknown> {
   let initial = true;
   return executePreparedOperation({
-    permissionMode: ctx.permissionMode,
+    // A person-started local replay (the extension's own button) keeps its review step: "act
+    // without asking" is about the agent's run, not about a replay the person is watching.
+    permissionMode: ctx.localInvocation ? 'ask' : ctx.permissionMode,
     signal,
     ...(recovered && { recovered }),
     prepare: async () => {
@@ -2001,7 +2001,8 @@ export async function runLocalNetworkDiscovery(
     };
   };
   return executePreparedOperation({
-    permissionMode: 'act',
+    // Person-started capture: its privileged review stays (not an agent run).
+    permissionMode: 'ask',
     signal,
     prepare,
     confirm: async (identity, tier, abortSignal) =>
