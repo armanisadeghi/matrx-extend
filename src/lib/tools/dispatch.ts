@@ -837,7 +837,7 @@ async function handleCall(
     }
 
     // Permission gate.
-    const needsConfirm = effectiveTier === 'privileged' || (effectiveTier === 'action' && ctx.permissionMode === 'ask');
+    const needsConfirm = needsApproval(effectiveTier, ctx.permissionMode);
     if (needsConfirm && !gateOpts.preApproved) {
       const allowed = await requestConfirmation(handler, parsed.data, ctx, meta, {
         effectiveTier,
