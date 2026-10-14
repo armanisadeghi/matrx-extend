@@ -42,7 +42,7 @@ importers:
         version: 0.86.131(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@typescript/typescript6@6.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/desktop-protocol':
         specifier: latest
-        version: 0.21.33(@typescript/typescript6@6.0.2)(react@19.3.0)
+        version: 0.21.35(@typescript/typescript6@6.0.2)(react@19.3.0)
       '@ai-matrx/kit':
         specifier: latest
         version: 0.45.0(@typescript/typescript6@6.0.2)(react@19.3.0)
@@ -381,8 +381,8 @@ packages:
       recharts:
         optional: true
 
-  '@ai-matrx/desktop-protocol@0.21.33':
-    resolution: {integrity: sha512-ye9+/lolynPd5GiSUkBhEstpn2SHigQajZHO1QnDyh0Wf4VYHExYjYS1+3ysJELlq9rXw1kMmaYndRGUn7Elgg==}
+  '@ai-matrx/desktop-protocol@0.21.35':
+    resolution: {integrity: sha512-ivy1PPhC7Qm1xCDXdZaklrfVYmvrbNB6K77eBgzYdxppPMPfNOIjGZWbQf4VRnMEa+1qWqGhR0zsfNucMvjnNg==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -6707,7 +6707,7 @@ snapshots:
       - '@types/react-dom'
       - typescript
 
-  '@ai-matrx/desktop-protocol@0.21.33(@typescript/typescript6@6.0.2)(react@19.3.0)':
+  '@ai-matrx/desktop-protocol@0.21.35(@typescript/typescript6@6.0.2)(react@19.3.0)':
     dependencies:
       '@ai-matrx/kit': 0.45.0(@typescript/typescript6@6.0.2)(react@19.3.0)
       '@ai-matrx/realtime': 0.10.8(@typescript/typescript6@6.0.2)(react@19.3.0)
