@@ -12,6 +12,7 @@ import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
+import { extensionOAuthClientId, seedExtensionSession } from './seed-extension-session.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -90,53 +91,11 @@ try {
   const extensionId = new URL(worker.url()).host;
 
   const seed = async (page) => {
-    await page.evaluate(
-    async ([accessToken, refreshToken, expiresIn, user, org]) => {
-      // The panel restores a session only with the refresh token encrypted the way
-      // src/lib/auth/crypto.ts does it (PBKDF2 over the runtime id → AES-GCM); an
-      // access token alone reads as "Could not restore your saved sign-in".
-      const enc = new TextEncoder();
-      const base = await crypto.subtle.importKey(
-        'raw',
-        enc.encode('matrx-extend.refresh-token.v1'),
-        { name: 'PBKDF2' },
-        false,
-        ['deriveKey'],
-      );
-      const key = await crypto.subtle.deriveKey(
-        {
-          name: 'PBKDF2',
-          salt: enc.encode(chrome.runtime.id),
-          iterations: 100_000,
-          hash: 'SHA-256',
-        },
-        base,
-        { name: 'AES-GCM', length: 256 },
-        false,
-        ['encrypt'],
-      );
-      const iv = crypto.getRandomValues(new Uint8Array(12));
-      const ct = new Uint8Array(
-        await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(refreshToken)),
-      );
-      const b64 = (bytes) => btoa(String.fromCharCode(...bytes));
-      await chrome.storage.local.set({
-        'matrx.auth.accessToken': accessToken,
-        'matrx.auth.refreshTokenEnc': b64(ct),
-        'matrx.auth.refreshTokenIv': b64(iv),
-        'matrx.auth.expiresAt': Date.now() + expiresIn * 1000,
-        'matrx.user.profile': user,
-        'matrx.org.active': org,
-      });
-    },
-    [
-      session.access_token,
-      session.refresh_token,
-      session.expires_in ?? 3600,
-      session.user,
-      { id: ORGANIZATION_ID, name: "Admin's Workspace" },
-    ],
-  );
+    await seedExtensionSession(page, {
+    session,
+    clientId: extensionOAuthClientId(REPO),
+    organization: { id: ORGANIZATION_ID, name: "Admin's Workspace" },
+  });
 
   };
   const KEY = 'matrx.settings.v1';
@@ -179,7 +138,7 @@ try {
         const ta = page.locator('[data-package-chat] textarea').first();
         await ta.waitFor({ timeout: 45_000 }).catch(() => undefined);
         await ta.fill('typing right away').catch(() => undefined);
-        check(`${label}: composer accepts typing at once`, (await ta.inputValue().catch(() => '')) === 'typing right away');
+        check(`${label}: composer accepts typing at once`, (await ta.inputValue().catch(() => '')) === 'typing right away', `editable=${await ta.isEditable().catch((e) => String(e).slice(0, 80))}`);
       }
       await page.evaluate(() => {
         window.__seen = [];
@@ -201,13 +160,14 @@ try {
           [callId, tool, args, mode],
         );
         let settled = false;
-        answer.then(() => (settled = true)).catch(() => (settled = true));
+        let ans = null;
+        answer.then((r) => ((ans = r), (settled = true))).catch(() => (settled = true));
         await page.waitForTimeout(2500);
         const seen = await page.evaluate(() => [...window.__seen]);
         const card = seen.includes('tool:confirm-request');
         const bodyHasCard = await page.getByRole('button', { name: /^(Approve|Allow|Allow once)/i }).count();
-        if (mode === 'act') check(`${label}: ${name} runs with no approval card`, !card && bodyHasCard === 0 && settled, `msgs=${seen.join(',')}`);
-        else check(`${label}: ${name} waits behind an approval card`, card && !settled, `msgs=${seen.join(',')} cardButtons=${bodyHasCard}`);
+        if (mode === 'act') check(`${label}: ${name} runs with no approval card`, !card && bodyHasCard === 0 && settled, `msgs=${seen.join(',')} ans=${JSON.stringify(ans)?.slice(0, 160)}`);
+        else check(`${label}: ${name} waits behind an approval card`, card && !settled, `msgs=${seen.join(',')} cardButtons=${bodyHasCard} ans=${JSON.stringify(ans)?.slice(0, 160)}`);
         await page.screenshot({ path: join(SHOTS, `${surface}-${mode}-${tool}.png`) });
         if (!settled && card) {
           await page.evaluate(
