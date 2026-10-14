@@ -1,0 +1,141 @@
+{
+  "mandate_key": "extend.browser_chat",
+  "holder_type": "agent",
+  "agent_id": "443dd7ff-e7cc-47b8-907a-0a14834caa48",
+  "is_version": false,
+  "definition_agent_id": "443dd7ff-e7cc-47b8-907a-0a14834caa48",
+  "workflow_id": null,
+  "workflow_version_id": null,
+  "version_number": null,
+  "config_overrides": null,
+  "input_kind": null,
+  "output_kind": "text",
+  "contract": {
+    "required_output_keys": [],
+    "required_context_policies": [],
+    "accepts_user_input": true,
+    "typed_input_complete": false,
+    "auto_context_disabled": false
+  },
+  "provenance": "system",
+  "freshness": "Your own and your organization's bindings are read fresh on every call. The global binding and the job's own definition are re-checked at most 5 seconds apart on every server, so a rebind made anywhere answers everywhere within 5 seconds, with no deploy (bound: mandates.cache_stamp_max_age_seconds).",
+  "provision_key": "extend.browser_chat",
+  "offered_values": [
+    {
+      "name": "page_brief",
+      "kind": "json",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "page_full_content",
+      "kind": "json",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "page_seo_audit",
+      "kind": "json",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "page_meta",
+      "kind": "json",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "page_links",
+      "kind": "json",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "page_media",
+      "kind": "json",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "page_structured_data",
+      "kind": "json",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "tab_state",
+      "kind": "json",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "form_elements",
+      "kind": "json",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "product_data",
+      "kind": "json",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "article_excerpt",
+      "kind": "json",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "selection",
+      "kind": "text",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "user_name",
+      "kind": "text",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "user_email",
+      "kind": "text",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "browser_timezone",
+      "kind": "text",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    },
+    {
+      "name": "task_variables",
+      "kind": "json",
+      "guaranteed": false,
+      "lazy": false,
+      "example": ""
+    }
+  ],
+  "consumption_map": null,
+  "auto_run": null,
+  "dropped_rungs": [],
+  "output_warnings": []
+}
