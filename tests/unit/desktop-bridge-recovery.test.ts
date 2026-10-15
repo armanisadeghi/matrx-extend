@@ -70,6 +70,10 @@ describe('discovery cannot report a running engine as offline for long', () => {
 
   it('keeps the tunnel lookup off the loopback ladder', async () => {
     vi.resetModules();
+    vi.doMock('@/lib/config/computers', async (orig) => ({
+      ...(await orig<typeof import('@/lib/config/computers')>()),
+      nonComputerPlatforms: async () => ['web', 'chrome-extension', 'server'],
+    }));
     vi.doMock('@/lib/supabase/client', () => ({
       getSupabase: () => {
         const q = {
