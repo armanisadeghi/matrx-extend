@@ -1047,6 +1047,7 @@ if (process.argv[1].endsWith('/git')) {
   }
   const execute = (mode, change = {}, extra = [], guestCase = 'settings-controls') => {
     for (const name of ['local', 'remote', 'history']) rmSync(`${log}.${name}`, { force: true });
+    const memberData = mode === 'plan' || mode === 'dispatch';
     const scrape = mode.endsWith('-scrape');
     const settingsGuest = mode.endsWith('-settings-guest');
     return spawnSync(
@@ -1056,15 +1057,18 @@ if (process.argv[1].endsWith('/git')) {
         mode,
         '--lane',
         scrape || settingsGuest ? 'B' : 'A',
-        '--case',
-        scrape
-          ? 'guest-scrape-development'
-          : settingsGuest
-            ? guestCase
-            : 'settings-account-popover-member',
+        ...(memberData
+          ? ['--member-data-scope', 'lifecycle']
+          : [
+              '--case',
+              scrape
+                ? 'guest-scrape-development'
+                : settingsGuest
+                  ? guestCase
+                  : 'settings-account-popover-member',
+            ]),
         ...(scrape ? ['--scrape-scope', 'seo-schema-empty', '--auth-mode', 'guest'] : []),
-        '--runner-label',
-        'macos-15-intel',
+        ...(memberData ? [] : ['--runner-label', 'macos-15-intel']),
         '--development-run-id',
         input.developmentRunId,
         '--development-artifact-id',
@@ -1084,6 +1088,27 @@ if (process.argv[1].endsWith('/git')) {
     );
   };
   try {
+    const memberPlan = execute('plan');
+    assert.equal(memberPlan.status, 0, memberPlan.stderr);
+    assert.ok(JSON.parse(memberPlan.stdout).plan.args.includes('member_data_scope=lifecycle'));
+    const memberDispatch = execute('dispatch');
+    assert.equal(memberDispatch.status, 0, memberDispatch.stderr);
+    assert.ok(JSON.parse(readFileSync(log, 'utf8')).includes('member_data_scope=lifecycle'));
+    for (const [change, code] of [
+      [{ noSecret: true }, 'HOSTED_MEMBER_DATA_SECRET_MISSING'],
+      [
+        { runs: [{ name: 'Native A · member-data', status: 'in_progress' }] },
+        'HOSTED_MEMBER_DATA_A_CAPACITY_REFUSED',
+      ],
+      [{ moveAfterAdmission: true }, 'HOSTED_MEMBER_DATA_SOURCE_DRIFT'],
+      [{ wrongArtifact: 1 }, 'HOSTED_DEVELOPMENT_ARTIFACT_INVALID'],
+    ]) {
+      rmSync(log, { force: true });
+      const refused = execute('dispatch', change);
+      assert.equal(refused.status, 1, refused.stderr);
+      assert.match(refused.stderr, new RegExp(code));
+      assert.throws(() => readFileSync(log), /ENOENT/);
+    }
     const plan = execute('plan-settings-member');
     assert.equal(plan.status, 0, plan.stderr);
     assert.equal(JSON.parse(plan.stdout).artifact.artifactId, input.developmentArtifactId);

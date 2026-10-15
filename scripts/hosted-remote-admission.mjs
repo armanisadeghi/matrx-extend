@@ -113,6 +113,7 @@ export function verifyHostedWorkflowCheckout(run, fetchContent = ghJson) {
 
 export function planHostedMemberData({
   lane,
+  memberDataScope = 'auto-extract',
   developmentRunId,
   developmentArtifactId,
   workflowRef = 'main',
@@ -120,6 +121,10 @@ export function planHostedMemberData({
   sourceSha,
 }) {
   if (lane !== 'A') refuse('HOSTED_MEMBER_LANE_REFUSED');
+  if (memberDataScope === 'lifecycle' && !SHA.test(sourceSha ?? ''))
+    refuse('HOSTED_SOURCE_SHA_INVALID');
+  if (!['lifecycle', 'auto-extract'].includes(memberDataScope))
+    refuse('HOSTED_MEMBER_DATA_SCOPE_REFUSED');
   if (!DECIMAL.test(developmentRunId ?? '') || !DECIMAL.test(developmentArtifactId ?? ''))
     refuse('HOSTED_ARTIFACT_ID_INVALID');
   if (workflowRef !== 'main') refuse('HOSTED_WORKFLOW_REF_REFUSED');
@@ -146,7 +151,7 @@ export function planHostedMemberData({
       '-f',
       `requested_by=${DISPATCH_REQUESTER}`,
       '-f',
-      'member_data_scope=auto-extract',
+      `member_data_scope=${memberDataScope}`,
       '-f',
       'scrape_auth_mode=member',
       '-f',
@@ -712,6 +717,134 @@ export function verifyHostedNotesLazyGeneralReport(report, identity) {
   return true;
 }
 
+/** T03 uses the production callback as ingress evidence; diagnostic worker hooks are refused. */
+export function verifyHostedMemberDataLifecycleReport(report, identity) {
+  const o = report?.observations;
+  const lifecycle = report?.reload_lifecycle;
+  const request = lifecycle?.open_panel_request;
+  const fixture = request?.fixture;
+  const timeline = lifecycle?.timeline;
+  const auth = report?.authentication;
+  if (
+    report?.schema_version !== 1 ||
+    report.case_id !== 'EXT-F-2005-T03' ||
+    report.auth_mode !== 'member' ||
+    report.status !== 'pass' ||
+    report.stage !== 'complete' ||
+    report.failure_stage !== null ||
+    report.error_code !== undefined ||
+    report.reload_open_diagnostic?.enabled !== false ||
+    report.reload_sender_document_diagnostic?.enabled !== false ||
+    lifecycle?.open_panel_diagnostic != null ||
+    auth?.mode !== 'member' ||
+    [
+      'web_signed_in',
+      'extension_signed_in',
+      'non_admin_identity_verified',
+      'canonical_nonadmin_check_passed',
+      'organization_selected',
+      'selected_organization_id_verified',
+    ].some((key) => auth[key] !== true) ||
+    !['load_ladder', 'device_choice'].includes(auth.organization_resolution) ||
+    report.artifact?.source_sha !== identity.sourceSha ||
+    String(report.artifact?.run_id) !== identity.developmentRunId ||
+    String(report.artifact?.artifact_id) !== identity.developmentArtifactId ||
+    !/^[a-f0-9]{64}$/.test(report.artifact?.tree_sha256 ?? '') ||
+    report.runtime_tree_after !== report.artifact.tree_sha256 ||
+    [
+      'two_distinct_previews',
+      'save_pattern_visible',
+      'pattern_name_visible',
+      'saved_row_lookup_verified',
+      'request_body_organization_present',
+      'request_body_organization_matched_selected',
+      'request_header_organization_matched_body',
+      'request_header_organization_matched_selected',
+      'saved_pattern_refreshed',
+      'saved_pattern_run_before_reload',
+      'saved_pattern_run_after_reload',
+      'cancel_cleared_unsaved_selection',
+      'reload_replacement_adopted',
+      'saved_pattern_survived_extension_reload',
+      'member_save_succeeded',
+    ].some((key) => o?.[key] !== true) ||
+    o?.pattern_write_requests !== 1 ||
+    o.pattern_write_status !== 201 ||
+    ['before_reload', 'after_reload'].some((phase) =>
+      [
+        'tsv_matches_fixture',
+        'json_matches_fixture',
+        'ai_contains_all_fixture_rows',
+        'native_copy_feedback_observed',
+        'clipboard_readback',
+        'observation_permission_restored',
+      ].some((key) => o?.[`clipboard_${phase}`]?.[key] !== true),
+    ) ||
+    lifecycle?.old_worker_absent !== true ||
+    lifecycle.old_panel_absent !== true ||
+    lifecycle.replacement_worker_present !== true ||
+    lifecycle.replacement_panel_created_event !== true ||
+    timeline?.final_predicate !== true ||
+    !timeline.old_worker_id ||
+    !timeline.old_panel_id ||
+    !timeline.replacement_worker_id ||
+    timeline.old_worker_id === timeline.replacement_worker_id ||
+    !timeline.final_snapshot?.some(
+      (target) => target.kind === 'panel' && target.target_id !== timeline.old_panel_id,
+    ) ||
+    report.reload_context?.exact_expected_appeared !== true ||
+    request?.received !== true ||
+    request.ok !== true ||
+    request.opened !== true ||
+    request.category !== 'opened' ||
+    fixture?.availability !== 'ready' ||
+    fixture.click_received !== true ||
+    fixture.send_invoked !== true ||
+    fixture.send_returned !== true ||
+    fixture.callback_entered !== true ||
+    fixture.callback_has_reply !== true ||
+    fixture.callback_last_error !== false ||
+    fixture.send_threw !== false ||
+    report.cleanup?.verified !== true ||
+    report.cleanup.deleted_rows !== 1 ||
+    report.cleanup.exact_owned_name_organization_lookup !== true ||
+    report.cleanup.active_rows_after_delete !== 0
+  )
+    refuse('HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID');
+  return true;
+}
+
+export function requireMemberDataSecretCleanup(secretNames) {
+  if (!Array.isArray(secretNames) || secretNames.includes('MATRX_REVIEWER_MAGIC_LINK_JSON'))
+    refuse('HOSTED_MEMBER_DATA_SECRET_CLEANUP_UNVERIFIED');
+  return true;
+}
+
+export function requireMemberDataDispatchAdmission({
+  localSha,
+  remoteSha,
+  sourceSha,
+  dirty,
+  runs,
+  secretNames,
+}) {
+  requireExactDispatchSource(
+    localSha,
+    remoteSha,
+    dirty,
+    sourceSha,
+    'HOSTED_MEMBER_DATA_SOURCE_DRIFT',
+  );
+  if (
+    !Array.isArray(runs) ||
+    runs.some((run) => run.status !== 'completed' && !/^Native B · /.test(run.name ?? ''))
+  )
+    refuse('HOSTED_MEMBER_DATA_A_CAPACITY_REFUSED');
+  if (!Array.isArray(secretNames) || !secretNames.includes('MATRX_REVIEWER_MAGIC_LINK_JSON'))
+    refuse('HOSTED_MEMBER_DATA_SECRET_MISSING');
+  return true;
+}
+
 export function requireSynchronizedDispatchSource(localSha, remoteSha, dirty) {
   if (!SHA.test(localSha ?? '') || localSha !== remoteSha || dirty)
     refuse('HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED');
@@ -939,7 +1072,7 @@ export function verifyHostedGuestSeoReport(
     refuse('HOSTED_SEO_NATIVE_REPORT_PROVENANCE_INVALID');
   return true;
 }
-function verifyArchive(zip, bytes, runId, attempt, sourceSha, acceptanceCase) {
+function verifyArchive(zip, bytes, runId, attempt, sourceSha, acceptanceCase, memberDataScope) {
   const listing = ghJson(`repos/${OWNER}/actions/runs/${runId}/artifacts?per_page=100`);
   const name = `hosted-guest-${runId}-${attempt}`;
   const matches = listing.artifacts?.filter(
@@ -978,11 +1111,13 @@ function verifyArchive(zip, bytes, runId, attempt, sourceSha, acceptanceCase) {
           ? 'seo-guest-acceptance.json'
           : ['notes-find-member', 'notes-lazy-general-member'].includes(acceptanceCase)
             ? 'notes-native-acceptance.json'
-            : 'data-member-auto-extract-acceptance.json';
+            : memberDataScope === 'lifecycle'
+              ? 'data-member-native-acceptance.json'
+              : 'data-member-auto-extract-acceptance.json';
   const report = JSON.parse(archiveEntry(zip, bytes, find(reportName)));
   if (
     acceptanceCase === 'member-data' &&
-    (report.case_id !== 'EXT-F-2005-T08' ||
+    (report.case_id !== (memberDataScope === 'lifecycle' ? 'EXT-F-2005-T03' : 'EXT-F-2005-T08') ||
       report.auth_mode !== 'member' ||
       report.artifact?.source_sha !== sourceSha ||
       !DECIMAL.test(String(report.artifact?.run_id ?? '')) ||
@@ -1021,6 +1156,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       const settingsGuest = mode.endsWith('-settings-guest');
       const notes = mode.endsWith('-notes') || mode.endsWith('-notes-lazy-general');
       const scrape = mode.endsWith('-scrape');
+      const memberData = mode === 'plan' || mode === 'dispatch';
+      const memberDataScope = args.get('--member-data-scope') ?? 'auto-extract';
       if (
         notes &&
         args.get('--case') !==
@@ -1034,7 +1171,19 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         !['settings-controls', 'settings-auto-scrape-capture'].includes(args.get('--case'))
       )
         refuse('HOSTED_SETTINGS_GUEST_CASE_MODE_MISMATCH');
-      if (notes || scrape || settings || settingsGuest)
+      if (memberData)
+        for (const key of args.keys())
+          if (
+            ![
+              '--lane',
+              '--member-data-scope',
+              '--development-run-id',
+              '--development-artifact-id',
+              '--source-sha',
+            ].includes(key)
+          )
+            refuse('HOSTED_ARGUMENT_INVALID');
+      if (notes || scrape || settings || settingsGuest || memberData)
         for (const key of args.keys())
           if (
             ![
@@ -1042,6 +1191,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
               '--case',
               '--runner-label',
               ...(scrape ? ['--scrape-scope', '--auth-mode'] : []),
+              ...(memberData ? ['--member-data-scope'] : []),
               '--development-run-id',
               '--development-artifact-id',
               '--source-sha',
@@ -1101,6 +1251,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
                   })
                 : planHostedMemberData({
                     lane,
+                    memberDataScope,
                     developmentRunId,
                     developmentArtifactId,
                     sourceSha,
@@ -1140,7 +1291,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           { encoding: 'utf8' },
         ).trim();
         requireSynchronizedDispatchSource(localSha, remoteSha, dirty);
-        if (notes || settings) {
+        if (notes || settings || memberData) {
           verifyHostedWorkflowCheckout({
             path: '.github/workflows/hosted-guest-acceptance.yml',
             head_sha: remoteSha,
@@ -1180,15 +1331,21 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
                   listing.total_count !== listing.workflow_runs.length
                 )
                   refuse(
-                    settings
-                      ? 'HOSTED_SETTINGS_MEMBER_A_CAPACITY_REFUSED'
-                      : 'HOSTED_NOTES_A_CAPACITY_REFUSED',
+                    memberData
+                      ? 'HOSTED_MEMBER_DATA_A_CAPACITY_REFUSED'
+                      : settings
+                        ? 'HOSTED_SETTINGS_MEMBER_A_CAPACITY_REFUSED'
+                        : 'HOSTED_NOTES_A_CAPACITY_REFUSED',
                   );
                 return listing.workflow_runs;
               }),
           );
           const secrets = ghJson(`repos/${OWNER}/actions/secrets?per_page=100`);
-          (settings ? requireSettingsMemberDispatchAdmission : requireNotesDispatchAdmission)({
+          (memberData
+            ? requireMemberDataDispatchAdmission
+            : settings
+              ? requireSettingsMemberDispatchAdmission
+              : requireNotesDispatchAdmission)({
             localSha,
             remoteSha,
             dirty,
@@ -1197,12 +1354,12 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             runs,
             secretNames: secrets.secrets?.map((secret) => secret.name),
           });
-          (settings ? requireExactDispatchSource : requireSynchronizedDispatchSource)(
+          (memberData || settings ? requireExactDispatchSource : requireSynchronizedDispatchSource)(
             execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
             ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha,
             execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
             sourceSha,
-            'HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT',
+            memberData ? 'HOSTED_MEMBER_DATA_SOURCE_DRIFT' : 'HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT',
           );
         }
         if (scrape || settingsGuest) {
@@ -1278,6 +1435,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       const notes = mode === 'verify-notes' || mode === 'verify-notes-lazy-general';
       const lazyGeneral = mode === 'verify-notes-lazy-general';
       const scrape = mode === 'verify-scrape';
+      const memberDataScope = args.get('--member-data-scope') ?? 'auto-extract';
+      if (mode === 'verify' && !['lifecycle', 'auto-extract'].includes(memberDataScope))
+        refuse('HOSTED_MEMBER_DATA_SCOPE_REFUSED');
       const expectedRunName = settings
         ? 'Native A · settings-account-popover-member'
         : scrape
@@ -1318,15 +1478,16 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
                   ? 'notes-lazy-general-member'
                   : 'notes-find-member'
                 : 'member-data',
+        memberDataScope,
       );
       const artifactRunId =
-        notes || scrape || settings
+        notes || scrape || settings || (mode === 'verify' && memberDataScope === 'lifecycle')
           ? args.get('--development-run-id')
           : guestSeo
             ? String(report.imported_artifact?.runId ?? '')
             : String(report.artifact.run_id);
       const artifactId =
-        notes || scrape || settings
+        notes || scrape || settings || (mode === 'verify' && memberDataScope === 'lifecycle')
           ? args.get('--development-artifact-id')
           : guestSeo
             ? String(report.imported_artifact?.artifactId ?? '')
@@ -1400,6 +1561,18 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           ...artifact,
           developmentArtifactId: artifact.artifactId,
         });
+      }
+      if (mode === 'verify' && memberDataScope === 'lifecycle') {
+        if (run.head_sha !== sourceSha) refuse('HOSTED_MEMBER_DATA_SOURCE_DRIFT');
+        verifyHostedMemberDataLifecycleReport(report, {
+          sourceSha,
+          developmentRunId: artifactRunId,
+          developmentArtifactId: artifactId,
+        });
+        const secrets = ghJson(`repos/${OWNER}/actions/secrets?per_page=100`);
+        if (secrets.total_count !== secrets.secrets?.length)
+          refuse('HOSTED_MEMBER_DATA_SECRET_CLEANUP_UNVERIFIED');
+        requireMemberDataSecretCleanup(secrets.secrets?.map((secret) => secret.name));
       }
       const verdict = verifyHostedResourceJournals({ runId, attempt, files });
       process.stdout.write(
