@@ -49,19 +49,25 @@ export function attachRecorder(r: ConfigReadRecorder): void {
 type ReadArg = Parameters<ConfigReadRecorder['read']>[0];
 type MissingArg = Parameters<ConfigReadRecorder['missing']>[0];
 
+const CHANNEL = 'matrx-config-reads';
+let channel: BroadcastChannel | null = null;
+function forward(payload: { read?: ReadArg; missing?: MissingArg }, key: string): void {
+  try {
+    // Same-origin extension pages reach the service worker over BroadcastChannel (no runtime-message traffic).
+    channel ??= new BroadcastChannel(CHANNEL);
+    channel.postMessage({ kind: FORWARD_KIND, ...payload });
+  } catch {
+    countConfigEvent('config.read_forward_failed', { key });
+  }
+}
+
 function routeRead(read: ReadArg): void {
   if (isServiceWorker()) {
     if (realRecorder) realRecorder.read(read);
     else pendingBeforeRecorder.push((r) => r.read(read));
     return;
   }
-  try {
-    void chrome.runtime.sendMessage({ __matrx: true, kind: FORWARD_KIND, read }).catch(() => {
-      countConfigEvent('config.read_forward_failed', { key: read.key });
-    });
-  } catch {
-    countConfigEvent('config.read_forward_failed', { key: read.key });
-  }
+  forward({ read }, read.key);
 }
 
 function routeMissing(m: MissingArg): void {
@@ -70,29 +76,18 @@ function routeMissing(m: MissingArg): void {
     else pendingBeforeRecorder.push((r) => r.missing(m));
     return;
   }
-  try {
-    void chrome.runtime
-      .sendMessage({ __matrx: true, kind: FORWARD_KIND, missing: m })
-      .catch(() => undefined);
-  } catch {
-    /* counted at the service worker when it sees the key */
-  }
+  forward({ missing: m }, m.key);
 }
 
-/** The service worker installs this once: reads forwarded from the panel/content scripts land in the recorder. */
+/** The service worker installs this once: reads forwarded from the panel/pages land in the recorder. */
 export function listenForForwardedReads(): void {
-  chrome.runtime.onMessage.addListener((msg: unknown) => {
-    const m = msg as {
-      __matrx?: boolean;
-      kind?: string;
-      read?: ReadArg;
-      missing?: MissingArg;
-    } | null;
-    if (!m?.__matrx || m.kind !== FORWARD_KIND) return undefined;
+  const inbound = new BroadcastChannel(CHANNEL);
+  inbound.onmessage = (ev: MessageEvent) => {
+    const m = ev.data as { kind?: string; read?: ReadArg; missing?: MissingArg } | null;
+    if (m?.kind !== FORWARD_KIND) return;
     if (m.read) routeRead(m.read);
     if (m.missing) routeMissing(m.missing);
-    return undefined;
-  });
+  };
 }
 
 const forwardingRecorder: ConfigReadRecorder = {
@@ -173,3 +168,26 @@ export function recordKnobRead(fullKey: string, source: ConfigValueSource): void
 }
 
 export { buildSha };
+
+/** A stored feature flag (`flags.<name>`): absent means off. One counted read of the `flags` key. */
+export function appFlag(name: string): boolean {
+  return appConfig<Record<string, boolean>>('flags')[name] === true;
+}
+
+/** The stored notice, or null when none. One counted read of the `notice` key. */
+export function appConfigNotice(): { level: 'info' | 'warning' | 'critical'; title: string; body: string; url?: string | null } | null {
+  return appConfig('notice') as ReturnType<typeof appConfigNotice>;
+}
+
+/** The stored minimum supported version (db or cache only, never the seed); null when none is known. Counted. */
+export function appConfigVersionFloor(): string | null {
+  const r = getReader();
+  const floor = r.versionFloor();
+  routeRead({ kind: 'app_config', feature: null, key: 'min_supported_app_version', source: r.forDisplay().source });
+  return floor;
+}
+
+/** Tell a context when the stored row changed (a live read landed). */
+export function onAppConfigChange(listener: () => void): () => void {
+  return getReader().on(listener);
+}

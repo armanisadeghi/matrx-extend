@@ -1,6 +1,6 @@
-import { getActiveOrganizationId } from '@/lib/org/active-org';
-import { log } from '@/lib/debug/log';
 import { getCurrentUser } from '@/lib/auth/flow';
+import { log } from '@/lib/debug/log';
+import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { getSupabase } from '@/lib/supabase/client';
 /**
  * Service-worker side of config attestation (OBSERVED): registers this install's own `app_instances`
@@ -19,6 +19,7 @@ import {
   listenForForwardedReads,
   recordKnobRead,
 } from './index';
+import { appFlag } from './index';
 import { resolveKnob } from './knob-resolve';
 import { APP_SLUG } from './registry';
 
@@ -144,11 +145,33 @@ async function scheduleNext(): Promise<void> {
 
 export async function flushConfigReads(): Promise<void> {
   if (!recorder) return;
+  // Kill switch: the stored flag `flags.disable_config_reporting` pauses reports (reads keep accumulating, counted).
+  if (appFlag('disable_config_reporting')) {
+    countConfigEvent('config.reporting_paused_by_flag');
+    return;
+  }
   await ensureDevice().catch((e) =>
     countConfigEvent('config.device_failed', { error: String(e).slice(0, 200) }),
   );
   await recorder.flush();
   await persistSpool();
+}
+
+let markReady: () => void = () => undefined;
+const ready = new Promise<void>((resolve) => {
+  markReady = resolve;
+});
+
+/**
+ * MV3: a listener must be registered synchronously at the top level of the service worker, or an alarm
+ * that woke a cold worker is missed. Call this BEFORE any async init; the handler waits for the
+ * recorder (`ready`) so a cold-wake alarm flushes once init has finished.
+ */
+export function registerConfigAlarmListener(): void {
+  chrome.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name !== ALARM) return;
+    void ready.then(() => flushConfigReads()).finally(() => void scheduleNext());
+  });
 }
 
 /** Service worker boot: build the recorder from the persisted spool and arm the flush alarm. */
@@ -194,10 +217,7 @@ export async function startConfigReporting(): Promise<void> {
     },
   };
   attachRecorder(counting);
-  chrome.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name !== ALARM) return;
-    void flushConfigReads().finally(() => void scheduleNext());
-  });
+  markReady();
   chrome.runtime.onSuspend.addListener(() => void persistSpool());
   void scheduleNext();
 }

@@ -29,7 +29,7 @@ import { registerSafariAuthorizationBackground } from '@/lib/auth/safari-backgro
 import { stampDocumentSender } from '@/lib/background/document-event-relay';
 import { reconcileOnBoot as reconcileCdpOnBoot } from '@/lib/cdp/client';
 import { initAppConfig, startAppConfig } from '@/lib/config';
-import { startConfigReporting } from '@/lib/config/reporting';
+import { registerConfigAlarmListener, startConfigReporting } from '@/lib/config/reporting';
 import { registerListPickerRelays } from '@/lib/data-pattern/list-picker-relay';
 import { hydrateBridgeTrafficEnabled, recordBridgeTraffic } from '@/lib/debug/bridge-traffic';
 import { log, startDebugRelay } from '@/lib/debug/log';
@@ -186,6 +186,7 @@ export function bootstrapBackground(): void {
 
   // ── 3. Alarms — also synchronous registration.
   setupAlarms();
+  registerConfigAlarmListener(); // synchronous, before any async init (MV3 cold-wake rule)
   // Config attestation: stored app config (live read + last-seen copy) and the counted-read reporter.
   void initAppConfig().then(() => {
     startAppConfig();
