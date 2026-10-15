@@ -87,6 +87,7 @@
     "@ai-matrx/data": "latest",
     "@ai-matrx/design-system": "latest",
     "@ai-matrx/desktop-protocol": "latest",
+    "@ai-matrx/files": "latest",
     "@ai-matrx/kit": "latest",
     "@ai-matrx/media": "latest",
     "@ai-matrx/realtime": "latest",
@@ -166,6 +167,10 @@
       "@ai-matrx/associations": "latest",
       "@ai-matrx/design-system": "latest"
     },
-    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "spawn-sync"]
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild",
+      "spawn-sync"
+    ]
   }
 }
