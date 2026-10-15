@@ -7,7 +7,7 @@
  * type into pixels is `components/kinds/dispatch.tsx`.
  */
 
-import type { KindRouteEnv, KindVersionSources } from '@ai-matrx/content-ir-react';
+import type { KindRouteEnv, KindVersionSources } from '@ai-matrx/content-ir/react';
 import { reportContentIrError } from './errors';
 import { CONTENT_IR_PLATFORM } from './platform';
 import { componentRegistry, kindRegistry } from './registry';
@@ -35,7 +35,7 @@ export const contentIrVersionSources: KindVersionSources = {
  *
  * Nothing calls this a second time, so BOTH registries own their own
  * retry-with-backoff for the auth-hydration race — the component resolver
- * inside `@ai-matrx/content-ir-react` (0.10.0), the kind source in
+ * inside `@ai-matrx/content-ir/react` (0.10.0), the kind source in
  * `./registry`. A single unlucky first read never becomes this session's
  * verdict on what the platform knows.
  */

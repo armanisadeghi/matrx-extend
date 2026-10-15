@@ -1,7 +1,7 @@
 /**
  * THE FLOOR — render ANY JSON value as something a human reads.
  *
- * This is the `renderValue` seam of `@ai-matrx/content-ir-react`. The package
+ * This is the `renderValue` seam of `@ai-matrx/content-ir/react`. The package
  * refuses to bundle it because rendering a value WELL means prose through the
  * host's markdown renderer — host property, and in a side panel a
  * panel-calibrated one.

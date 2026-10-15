@@ -14,7 +14,7 @@
  * server-side for thin clients by design; re-implementing it here is the
  * "bespoke stream renderer" the platform bans.
  *
- * ## THE SUPERSEDED HANDOFF (`@ai-matrx/content-ir-react` 0.11.1)
+ * ## THE SUPERSEDED HANDOFF (`@ai-matrx/content-ir/react` 0.11.1)
  *
  * A server-built block whose producer shadows the text channel (a workflow
  * node) never hands the browser a verified `__ir` — only a `superseded`
@@ -39,7 +39,7 @@ import {
   applyIrKindRoute,
   resolveSupersededKindRender,
   useContentIrKindVersion,
-} from '@ai-matrx/content-ir-react';
+} from '@ai-matrx/content-ir/react';
 import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir/core';
 import { isProvisionalKind, readPartialKindEvent } from '@ai-matrx/content-ir/wire';
 import { useMemo } from 'react';

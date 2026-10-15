@@ -13,7 +13,7 @@
  *   - DETECTION is server-side. This extension never parses a raw chunk
  *     looking for a `__kind`; the server hands it a `render_block` carrying a
  *     validated Content-IR envelope on `metadata.__ir`.
- *   - The ROUTE and the RESOLVER come from `@ai-matrx/content-ir-react`. Every
+ *   - The ROUTE and the RESOLVER come from `@ai-matrx/content-ir/react`. Every
  *     tier rule, every fallback disposition, is the shared one.
  *   - Only the DISPATCH TABLE (`components/kinds/dispatch.tsx`) is ours, and it
  *     is EXPLICIT: a kind renders through a real component here only because a
@@ -35,7 +35,7 @@ import {
   ComponentResolver,
   type ComponentRole,
   type KindComponentRow,
-} from '@ai-matrx/content-ir-react';
+} from '@ai-matrx/content-ir/react';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
@@ -60,7 +60,7 @@ function thinDefinition(kind: string): KindDefinition {
 }
 
 /**
- * Warm-load retry backoff, matching `@ai-matrx/content-ir-react`'s
+ * Warm-load retry backoff, matching `@ai-matrx/content-ir/react`'s
  * `ComponentResolver` (0.10.0) delay for delay. THE AUTH-HYDRATION RACE: a
  * freshly opened side panel mounts the chat surface — and therefore calls
  * `warmContentIr()` — before the Supabase session has restored, so this read

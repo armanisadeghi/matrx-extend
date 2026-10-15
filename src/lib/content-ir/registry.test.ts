@@ -1,7 +1,7 @@
 /**
  * THE AUTH-HYDRATION RACE, on this client's own kind-definition source.
  *
- * `@ai-matrx/content-ir-react` 0.10.0 fixed exactly this class inside its
+ * `@ai-matrx/content-ir/react` 0.10.0 fixed exactly this class inside its
  * `ComponentResolver`: a fresh surface warms BEFORE the Supabase session has
  * restored, the read runs as `anon`, RLS answers 42501, and a registry that
  * settled on that failure declared an empty world to be the truth. The

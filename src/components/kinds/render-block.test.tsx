@@ -8,7 +8,7 @@
  * exactly how the render-block channel stayed dead for months.
  *
  * What is exercised here: the kernel's inbound envelope gate, the SHARED kind
- * route from `@ai-matrx/content-ir-react`, this client's resolver, and the
+ * route from `@ai-matrx/content-ir/react`, this client's resolver, and the
  * real components. Only the DB is stubbed — the registries are fed the same
  * rows `content_ir.kind_component` holds for `platform='chrome-extension'`.
  */
