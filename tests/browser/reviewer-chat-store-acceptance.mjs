@@ -266,6 +266,12 @@ async function accountObservation(panel, expectedEmail) {
         organizationLoading: orgSection?.textContent?.includes('Loading…') === true,
         chatVisible: [...document.querySelectorAll('button[role="tab"]')]
           .some((button) => button.title === 'Chat' && button.getBoundingClientRect().width > 0),
+        swipeFileVisible: [...document.querySelectorAll('button[role="tab"][title="Swipe file"]')]
+          .some((button) => {
+            const rect = button.getBoundingClientRect(), style = getComputedStyle(button);
+            return rect.width > 0 && rect.height > 0 && style.display !== 'none' &&
+              style.visibility !== 'hidden';
+          }),
       };
     })()`,
   );
@@ -1365,6 +1371,15 @@ try {
           await exerciseApproval(native);
           return;
         }
+
+        stage = 'signed_in_swipe_file_tab';
+        await waitFor(
+          'reviewer_swipe_file_tab_visible',
+          () => accountObservation(panel, email),
+          (state) => state?.swipeFileVisible === true,
+          30_000,
+        );
+        report.account.swipe_file_tab_visible = true;
 
         // Load-time organization ladder selections intentionally stay in memory.
         // Device storage is diagnostic only; the real Chat transport is the oracle.

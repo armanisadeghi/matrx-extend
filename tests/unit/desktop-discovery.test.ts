@@ -27,6 +27,7 @@ function remoteQuery(result: {
     select: vi.fn(() => query),
     eq: vi.fn(() => query),
     is: vi.fn(() => query),
+    or: vi.fn(() => query),
     not: vi.fn(() => query),
     or: vi.fn(() => query),
     order: vi.fn(() => query),
@@ -86,6 +87,9 @@ describe('desktop engine discovery', () => {
     await expect(getEngineBaseUrl()).resolves.toBe('https://fresh-tunnel.trycloudflare.com');
     expect(remote.client.from).toHaveBeenCalledWith('app_instances');
     expect(remote.query.eq).toHaveBeenCalledWith('tunnel_active', true);
+    expect(remote.query.or).toHaveBeenCalledWith(
+      'platform.is.null,platform.not.in.(web,chrome-extension,server)',
+    );
     expect(remote.query.order).toHaveBeenCalledWith('last_seen', { ascending: false });
 
     // The short in-memory cache avoids 20 localhost probes + one database

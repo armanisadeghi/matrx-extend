@@ -49,25 +49,19 @@ export function attachRecorder(r: ConfigReadRecorder): void {
 type ReadArg = Parameters<ConfigReadRecorder['read']>[0];
 type MissingArg = Parameters<ConfigReadRecorder['missing']>[0];
 
-const CHANNEL = 'matrx-config-reads';
-let channel: BroadcastChannel | null = null;
-function forward(payload: { read?: ReadArg; missing?: MissingArg }, key: string): void {
-  try {
-    // Same-origin extension pages reach the service worker over BroadcastChannel (no runtime-message traffic).
-    channel ??= new BroadcastChannel(CHANNEL);
-    channel.postMessage({ kind: FORWARD_KIND, ...payload });
-  } catch {
-    countConfigEvent('config.read_forward_failed', { key });
-  }
-}
-
 function routeRead(read: ReadArg): void {
   if (isServiceWorker()) {
     if (realRecorder) realRecorder.read(read);
     else pendingBeforeRecorder.push((r) => r.read(read));
     return;
   }
-  forward({ read }, read.key);
+  try {
+    void chrome.runtime.sendMessage({ __matrx: true, kind: FORWARD_KIND, read }).catch(() => {
+      countConfigEvent('config.read_forward_failed', { key: read.key });
+    });
+  } catch {
+    countConfigEvent('config.read_forward_failed', { key: read.key });
+  }
 }
 
 function routeMissing(m: MissingArg): void {
@@ -76,18 +70,29 @@ function routeMissing(m: MissingArg): void {
     else pendingBeforeRecorder.push((r) => r.missing(m));
     return;
   }
-  forward({ missing: m }, m.key);
+  try {
+    void chrome.runtime
+      .sendMessage({ __matrx: true, kind: FORWARD_KIND, missing: m })
+      .catch(() => undefined);
+  } catch {
+    /* counted at the service worker when it sees the key */
+  }
 }
 
-/** The service worker installs this once: reads forwarded from the panel/pages land in the recorder. */
+/** The service worker installs this once: reads forwarded from the panel/content scripts land in the recorder. */
 export function listenForForwardedReads(): void {
-  const inbound = new BroadcastChannel(CHANNEL);
-  inbound.onmessage = (ev: MessageEvent) => {
-    const m = ev.data as { kind?: string; read?: ReadArg; missing?: MissingArg } | null;
-    if (m?.kind !== FORWARD_KIND) return;
+  chrome.runtime.onMessage.addListener((msg: unknown) => {
+    const m = msg as {
+      __matrx?: boolean;
+      kind?: string;
+      read?: ReadArg;
+      missing?: MissingArg;
+    } | null;
+    if (!m?.__matrx || m.kind !== FORWARD_KIND) return undefined;
     if (m.read) routeRead(m.read);
     if (m.missing) routeMissing(m.missing);
-  };
+    return undefined;
+  });
 }
 
 const forwardingRecorder: ConfigReadRecorder = {
@@ -99,23 +104,19 @@ const forwardingRecorder: ConfigReadRecorder = {
 let cachedRow: unknown;
 let reader: ReturnType<typeof createAppConfigReader> | null = null;
 
-/** The build bootstrap; outside a WXT build (tests, tsx) it is absent, so live reads fail loudly and the seed serves. */
-function bootstrapValue(read: () => string): string {
-  try {
-    return read();
-  } catch (error) {
-    countConfigEvent('config.bootstrap_missing', { error: String(error).slice(0, 120) });
-    return '';
-  }
-}
-
 function getReader() {
   if (reader) return reader;
   reader = createAppConfigReader({
     app: APP_SLUG,
     bootstrap: {
-      databaseUrl: bootstrapValue(() => ENV.SUPABASE_URL),
-      publishableKey: bootstrapValue(() => ENV.SUPABASE_PUBLISHABLE_KEY),
+      // The reader can serve its bundled or cached row before a live fetch. Resolve
+      // required build credentials only when refresh() actually uses this bootstrap.
+      get databaseUrl() {
+        return ENV.SUPABASE_URL;
+      },
+      get publishableKey() {
+        return ENV.SUPABASE_PUBLISHABLE_KEY;
+      },
       serverUrl: BUNDLED_APP_CONFIG.config.aidream_server_url,
     },
     bundled: BUNDLED_APP_CONFIG,

@@ -23,6 +23,7 @@ agent -> Needs Arman) with ` — <question> — <what was checked> — <who>` ad
 Its files stay as they are.
 
 ## Held files
+- _conflicts/2026-10-15-101506/src/lib/config/index.ts.held — LOCAL latest 2026-10-15 10:03; GITHUB latest 2026-10-15 10:09; LOCAL lacks 6 of GITHUB's 6 new lines; GITHUB lacks 20 of LOCAL's 21 new lines; recover: git show 83c17fe963:'src/lib/config/index.ts' / e52a3c36f5:'src/lib/config/index.ts'
 
 ## Needs a manager
 
