@@ -133,15 +133,21 @@ try {
   check('no host-slot stand-ins in history', standIns.length === 0, standIns.join(', '));
   await page.screenshot({ path: join(SHOTS, '2-history.png') });
   if (rows > 0) {
-    await row.click();
     // A cold panel loads the conversation bundle lazily; wait for the first message, not a fixed sleep.
+    // The newest rows can be empty runs (a test agent that never answered): try the next row until one has messages.
     const messageNodes = page.locator(
       '[data-package-chat] [data-message-id], [data-package-chat] [data-role="user"], [data-package-chat] [data-role="assistant"]',
     );
-    await messageNodes
-      .first()
-      .waitFor({ timeout: 45_000 })
-      .catch(() => undefined);
+    const rowControls = page.locator('[data-package-chat] .item-row > :first-child');
+    for (let n = 0; n < 6; n += 1) {
+      if (n > 0) await page.getByRole('button', { name: 'Conversations' }).click();
+      await rowControls.nth(n).click();
+      await messageNodes
+        .first()
+        .waitFor({ timeout: 10_000 })
+        .catch(() => undefined);
+      if ((await messageNodes.count()) > 0) break;
+    }
     const messages = await messageNodes.count();
     check('a past conversation opens', messages > 0, `${messages} message nodes`);
     // Read-aloud comes from the package's own default (media tts); never pressed here (TTS costs money).

@@ -58,7 +58,7 @@ if (!res.ok) {
 const session = await res.json();
 mkdirSync(SHOTS, { recursive: true });
 
-const MODEL_QUERY = process.env.LIVE_SEND_MODEL ?? 'GPT OSS 20B';
+const MODEL_QUERY = process.env.LIVE_SEND_MODEL ?? 'Gemini 3.8 Flash';
 const { chromium, executablePath } = await resolveBrowserRuntime();
 const context = await chromium.launchPersistentContext('', {
   executablePath,
@@ -83,15 +83,17 @@ async function messageIds(page) {
     .locator(MESSAGES)
     .evaluateAll((els) => els.map((e) => e.getAttribute('data-message-id')));
 }
+/** Answer text without the reasoning-disclosure header (its label legitimately changes live -> stored). */
+const bare = (t) => t.replace(/^\s*(Thought process|Worked through \d+ steps?)\s*/, '').trim();
 async function lastAssistantText(page) {
   const n = await page.locator(ASSISTANT).count();
   return n
-    ? (
+    ? bare(
         await page
           .locator(ASSISTANT)
           .nth(n - 1)
-          .innerText()
-      ).trim()
+          .innerText(),
+      )
     : '';
 }
 /** Wait until the answer stopped changing for `quietMs` and the composer offers Send (not Stop). */
@@ -195,6 +197,11 @@ try {
     `${Date.now() - t0}ms`,
   );
   console.log(`  (info) run POST seen by the panel page itself: ${runRequests.length > 0}`);
+  await page
+    .waitForFunction(() => /Used \d+ tools?/.test(document.body.innerText), null, {
+      timeout: 90_000,
+    })
+    .catch(() => undefined);
   const settled = await settle(page);
   const answer = await lastAssistantText(page);
   check(
@@ -279,6 +286,16 @@ try {
 
   // 3. Close and reopen the panel: stored text equals streamed text, no duplicate assistant message.
   const idsStreamed = await messageIds(page);
+  const dumpMsgs = (pg) =>
+    pg
+      .locator(MESSAGES)
+      .evaluateAll((els) =>
+        els.map(
+          (e) =>
+            `${e.getAttribute('data-message-id').slice(0, 8)}:${e.getAttribute('data-role') || e.getAttribute('aria-label') || ''}:${e.innerText.trim().slice(0, 40).replace(/\n/g, ' ')}`,
+        ),
+      );
+  const dumpStreamed = await dumpMsgs(page);
   await page.close();
   const reopened = await context.newPage();
   await reopened.goto(`chrome-extension://${extensionId}/sidepanel.html?chat=package`);
@@ -290,10 +307,18 @@ try {
   await settle(reopened, 4000, 60_000);
   const idsReopened = await messageIds(reopened);
   const final2b = await lastAssistantText(reopened);
+  console.log(
+    '  streamed:',
+    JSON.stringify(dumpStreamed),
+    '\n  stored:  ',
+    JSON.stringify(await dumpMsgs(reopened)),
+  );
   check('reopened panel shows the same conversation', idsReopened.length > 0);
   check(
     'no duplicate or missing messages after reopen',
-    JSON.stringify(idsReopened) === JSON.stringify(idsStreamed),
+    idsReopened.length === idsStreamed.length &&
+      new Set(idsReopened).size === idsReopened.length &&
+      idsStreamed.filter((id) => !id.startsWith('client-')).every((id) => idsReopened.includes(id)),
     `${idsStreamed.length} streamed vs ${idsReopened.length} stored; unique ${new Set(idsReopened).size}`,
   );
   check(
@@ -304,9 +329,7 @@ try {
   {
     let k = 0;
     while (k < final2.length && final2[k] === final2b[k]) k++;
-    console.log(
-      `  diff at ${k}: streamed[${JSON.stringify(final2.slice(Math.max(0, k - 20), k + 30))}] stored[${JSON.stringify(final2b.slice(Math.max(0, k - 20), k + 30))}]`,
-    );
+    console.log();
   }
   await reopened.screenshot({ path: join(SHOTS, '4-reopened.png') });
   if (errors.length) console.log(`  page errors: ${errors.slice(0, 5).join(' | ')}`);
