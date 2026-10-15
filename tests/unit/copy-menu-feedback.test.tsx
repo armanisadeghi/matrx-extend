@@ -9,6 +9,7 @@ vi.mock('@/lib/clipboard/copy', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/clipboard/copy')>()),
   copyToClipboard: mocks.copy,
 }));
+vi.mock('@ai-matrx/kit/clipboard', () => ({ copyText: mocks.copy }));
 // Keep the real CopyMenu state and action path; only replace popover presentation.
 vi.mock('@ai-matrx/design-system', () => ({
   Popover: ({ children }: { children: ReactNode }) => <div>{children}</div>,
