@@ -37,6 +37,8 @@ export async function sendThroughPackageChat(message: {
   mandateKey?: string;
   variables?: Record<string, unknown>;
   conversationId?: string | null;
+  /** "auto" for a scheduler (alarm, auto task); absent means a person sent it. */
+  initiation?: 'user' | 'auto';
 }): Promise<{ conversationId: string }> {
   useSidepanelTabStore.getState().setTab('chat');
   const { mandateKey, ...rest } = message;

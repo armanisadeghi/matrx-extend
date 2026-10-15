@@ -31,11 +31,12 @@ const run = { id: 'r1' } as never;
 describe('runThroughPackageChat', () => {
   it('sends the prompt to the task agent through the chat door and finishes the run', async () => {
     const sent = vi.fn(async () => ({ conversationId: 'conv-1' }));
-    expect(await runThroughPackageChat(task({}), run, sent)).toBe(run);
+    expect(await runThroughPackageChat(task({}), run, 'auto', sent)).toBe(run);
     expect(sent).toHaveBeenCalledWith({
       text: 'Run the review',
       agentId: 'agent-7',
       conversationId: null,
+      initiation: 'auto',
     });
     expect(q.markRunStarted).toHaveBeenCalledWith('r1', 'conv-1');
     expect(q.updateTask).toHaveBeenCalledWith('t1', { persistent_conversation_id: 'conv-1' });
@@ -47,12 +48,14 @@ describe('runThroughPackageChat', () => {
     await runThroughPackageChat(
       task({ agent_id: 'mandate:extend.browser_chat', persistent_conversation_id: 'conv-9' }),
       run,
+      'user',
       sent,
     );
     expect(sent).toHaveBeenCalledWith({
       text: 'Run the review',
       mandateKey: 'extend.browser_chat',
       conversationId: 'conv-9',
+      initiation: 'user',
     });
   });
 
@@ -61,7 +64,7 @@ describe('runThroughPackageChat', () => {
     const sent = vi.fn(async () => {
       throw new Error('chat not open');
     });
-    expect(await runThroughPackageChat(task({}), run, sent)).toBeNull();
+    expect(await runThroughPackageChat(task({}), run, 'auto', sent)).toBeNull();
     expect(q.finishRun).toHaveBeenCalledWith('r1', 'failed', { error_message: 'chat not open' });
   });
 });

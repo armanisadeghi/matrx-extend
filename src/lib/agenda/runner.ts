@@ -42,7 +42,10 @@ export function isTaskRunning(taskId: string): boolean {
  * Kick off a run. Returns null if another surface already holds the lease
  * or if the lease attempt failed; otherwise returns the new run row.
  */
-export async function runTask(task: AgendaTask): Promise<AgendaRun | null> {
+export async function runTask(
+  task: AgendaTask,
+  initiation: 'user' | 'auto',
+): Promise<AgendaRun | null> {
   if (inFlightByTaskId.has(task.id)) {
     log.info('sys', `agenda: task ${task.id} already running locally`);
     return null;
@@ -56,7 +59,7 @@ export async function runTask(task: AgendaTask): Promise<AgendaRun | null> {
     return null;
   }
   log.info('sys', `agenda: claimed run ${run.id} for task "${task.title}"`);
-  return runThroughPackageChat(task, run);
+  return runThroughPackageChat(task, run, initiation);
 }
 
 /**
@@ -66,6 +69,7 @@ export async function runTask(task: AgendaTask): Promise<AgendaRun | null> {
 export async function runThroughPackageChat(
   task: AgendaTask,
   run: AgendaRun,
+  initiation: 'user' | 'auto',
   sendMessage: typeof sendThroughPackageChat = sendThroughPackageChat,
 ): Promise<AgendaRun | null> {
   const agentRef =
@@ -79,6 +83,8 @@ export async function runThroughPackageChat(
       text: task.prompt,
       ...target,
       conversationId: task.persistent_conversation_id,
+      // An alarm or an auto task opening is a scheduler, never a person: the run is filed "auto".
+      initiation,
     });
     await markRunStarted(run.id, conversationId);
     if (task.trigger_type === 'heartbeat' && !task.persistent_conversation_id) {

@@ -78,7 +78,7 @@ export function AgendaView() {
     const task = tasks.find((t) => t.id === focusTaskId);
     if (!task) return;
     if (task.auth_mode === 'auto' && task.enabled && !isTaskRunning(task.id)) {
-      void runTask(task).then(() => void refresh());
+      void runTask(task, 'auto').then(() => void refresh());
     }
   }, [focusTaskId, tasks, refresh]);
 
@@ -155,7 +155,7 @@ function TaskRow({
     setWorking('run');
     try {
       // Sends the task through the shared chat and switches the sidepanel to the chat tab.
-      await runTask(task);
+      await runTask(task, 'user');
       log.info('sys', `agenda: "${task.title}" running`);
     } finally {
       setWorking(null);

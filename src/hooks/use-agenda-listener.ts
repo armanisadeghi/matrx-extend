@@ -32,7 +32,7 @@ export function useAgendaListener(): void {
         }
         if (!task.enabled) return { ack: true };
         log.info('sys', `agenda listener: SW asked us to run "${task.title}"`);
-        await runTask(task);
+        await runTask(task, 'auto');
         return { ack: true };
       },
     );
