@@ -1,5 +1,6 @@
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { log } from '@/lib/debug/log';
+import { getCurrentUser } from '@/lib/auth/flow';
 import { getSupabase } from '@/lib/supabase/client';
 /**
  * Service-worker side of config attestation (OBSERVED): registers this install's own `app_instances`
@@ -42,9 +43,12 @@ function sidecarLog(
 
 /** The signed-in person as the service worker's own Supabase session knows them (the auth store is a panel store). */
 async function currentUserId(): Promise<string | null> {
-  const { data, error } = await getSupabase().auth.getSession();
-  if (error) countConfigEvent('config.session_read_failed', { error: error.message });
-  return data.session?.user.id ?? null;
+  try {
+    return (await getCurrentUser())?.id ?? null;
+  } catch (error) {
+    countConfigEvent('config.session_read_failed', { error: String(error).slice(0, 200) });
+    return null;
+  }
 }
 
 /** Find or create this install's own row; its id is the report's device_id. */
