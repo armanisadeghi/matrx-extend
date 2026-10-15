@@ -109,8 +109,14 @@ function getReader() {
   reader = createAppConfigReader({
     app: APP_SLUG,
     bootstrap: {
-      databaseUrl: ENV.SUPABASE_URL,
-      publishableKey: ENV.SUPABASE_PUBLISHABLE_KEY,
+      // The reader can serve its bundled or cached row before a live fetch. Resolve
+      // required build credentials only when refresh() actually uses this bootstrap.
+      get databaseUrl() {
+        return ENV.SUPABASE_URL;
+      },
+      get publishableKey() {
+        return ENV.SUPABASE_PUBLISHABLE_KEY;
+      },
       serverUrl: BUNDLED_APP_CONFIG.config.aidream_server_url,
     },
     bundled: BUNDLED_APP_CONFIG,
