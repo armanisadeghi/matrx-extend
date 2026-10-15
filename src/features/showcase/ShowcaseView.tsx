@@ -10,6 +10,7 @@ import { DoctorTab } from './tabs/DoctorTab';
 import { FrameworkTab } from './tabs/FrameworkTab';
 import { JsonLdTab } from './tabs/JsonLdTab';
 import { ListPatternTab } from './tabs/ListPatternTab';
+import { MarkdownTab } from './tabs/MarkdownTab';
 import { MicrodataTab } from './tabs/MicrodataTab';
 import { NetworkTab } from './tabs/NetworkTab';
 import { PatternsTab } from './tabs/PatternsTab';
@@ -77,6 +78,7 @@ export function ShowcaseView() {
               <ShowcaseTab value="framework">Framework</ShowcaseTab>
               <ShowcaseTab value="ai_extract">AI Extract</ShowcaseTab>
               <ShowcaseTab value="list_pattern">List Pattern</ShowcaseTab>
+              <ShowcaseTab value="markdown">Markdown</ShowcaseTab>
               <ShowcaseTab value="network">Network</ShowcaseTab>
               <ShowcaseTab value="patterns">Patterns</ShowcaseTab>
             </TabsList>
@@ -114,6 +116,9 @@ export function ShowcaseView() {
         </ShowcaseContent>
         <ShowcaseContent value="list_pattern">
           <ListPatternTab />
+        </ShowcaseContent>
+        <ShowcaseContent value="markdown">
+          <MarkdownTab />
         </ShowcaseContent>
         <ShowcaseContent value="network">
           <NetworkTab />

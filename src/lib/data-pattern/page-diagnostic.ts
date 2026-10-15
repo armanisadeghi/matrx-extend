@@ -40,6 +40,8 @@ export interface PageDiagnostic {
     bpr_guid: { count: number; total_size_bytes: number };
     window_assignments: { name: string; size_bytes: number }[];
     repeating_groups: RepeatingGroup[];
+    /** A clean LLM-ready Markdown rendering the page advertises, if any. */
+    markdown: { declared: boolean; affordance: boolean; href: string | null };
   };
   /**
    * Which mode is most likely to work.
@@ -88,6 +90,7 @@ export function pageDiagnosticInPage(): PageDiagnostic {
       bpr_guid: { count: 0, total_size_bytes: 0 },
       window_assignments: [],
       repeating_groups: [],
+      markdown: { declared: false, affordance: false, href: null },
     },
     recommendations: [],
     body_sample: '',
@@ -334,6 +337,45 @@ export function pageDiagnosticInPage(): PageDiagnostic {
   out.body_total_bytes = encoder.encode(text).length;
   out.body_sample = text.replace(/\s+/g, ' ').trim().slice(0, 500);
 
+  // ── Markdown source (cheap signals only; fetch confirms at run time) ─────
+  {
+    const absMd = (href: string | null | undefined): string | null => {
+      if (!href) return null;
+      try {
+        return new URL(href, document.baseURI).href;
+      } catch {
+        return null;
+      }
+    };
+    let declaredHref: string | null = null;
+    for (const link of Array.from(
+      document.querySelectorAll<HTMLLinkElement>('link[rel~="alternate"]'),
+    )) {
+      if (/text\/(?:x-)?markdown/i.test(link.getAttribute('type') ?? '')) {
+        declaredHref = absMd(link.getAttribute('href'));
+        if (declaredHref) break;
+      }
+    }
+    const MD_RE =
+      /\b(?:copy|open|view|read|get)\s+(?:this\s+)?(?:page\s+)?(?:as|in)\s+markdown\b|\bview\s+as\s+\.md\b|\bmarkdown\s+version\b/i;
+    let affordanceHref: string | null = null;
+    let hasAffordance = false;
+    for (const el of Array.from(
+      document.querySelectorAll<HTMLElement>('a[href], button, [role="button"]'),
+    ).slice(0, 400)) {
+      const label = `${el.getAttribute('aria-label') ?? ''} ${el.textContent ?? ''}`.trim();
+      if (!label || !MD_RE.test(label)) continue;
+      hasAffordance = true;
+      const href = el.getAttribute('href');
+      if (href && !affordanceHref) affordanceHref = absMd(href);
+    }
+    out.sources.markdown = {
+      declared: Boolean(declaredHref),
+      affordance: hasAffordance,
+      href: declaredHref ?? affordanceHref,
+    };
+  }
+
   // ── Recommendations (ranked by likely usefulness) ───────────────────────
   // Rule of thumb: more rows = better. A 400-Event microdata feed beats a
   // 1-WebPage one; a 400-card repeating group beats a single JSON-LD block.
@@ -420,6 +462,19 @@ export function pageDiagnosticInPage(): PageDiagnostic {
     out.recommendations.push({
       mode: 'microdata',
       reason: `${out.sources.microdata.count} microdata item(s): ${out.sources.microdata.types.join(', ')}. Useful for page-level metadata.`,
+    });
+  }
+
+  // 0. Markdown — when a page advertises a clean Markdown rendering, that is
+  // the single best capture (no selectors, no table fiddling). Rank it ABOVE
+  // table/list for docs pages by unshifting it to the front.
+  if (out.sources.markdown.declared || out.sources.markdown.affordance) {
+    out.recommendations.unshift({
+      mode: 'markdown',
+      reason: out.sources.markdown.declared
+        ? 'This page offers a clean Markdown version — fetch it.'
+        : 'This page has a "view as Markdown" option — fetch the clean Markdown.',
+      ...(out.sources.markdown.href ? { config: { url: out.sources.markdown.href } } : {}),
     });
   }
 

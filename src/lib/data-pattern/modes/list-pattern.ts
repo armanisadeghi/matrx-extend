@@ -93,6 +93,29 @@ export const listPatternMode: ExtractionMode<ListPatternConfig> = {
       return v;
     };
 
+    // No fields picked yet? Never dead-end: return each item's visible text
+    // (and its first link), so a seeded pattern always extracts SOMETHING.
+    // The user can still pick precise fields to get real columns.
+    if (cfg.field_paths.length === 0) {
+      return items.flatMap((item) => {
+        const text = ((item as HTMLElement).innerText ?? item.textContent ?? '')
+          .replace(/\s+/g, ' ')
+          .trim();
+        const anchor = item.querySelector('a[href]');
+        const href = anchor?.getAttribute('href') ?? null;
+        let link: string | null = null;
+        if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+          try {
+            link = new URL(href, document.baseURI).href;
+          } catch {
+            link = href;
+          }
+        }
+        // An item with no text and no link is structural noise, not a row.
+        return text || link ? [{ text: text || null, link }] : [];
+      });
+    }
+
     return items.flatMap((item) => {
       let matchedElement = false;
       const row: Record<string, string | null> = {};
@@ -170,6 +193,24 @@ export function probeFirstRowInPage(
     }
     return v;
   };
+
+  // Mirror runInPage's no-fields default so the inline preview matches.
+  if (cfg.field_paths.length === 0) {
+    const text = ((item as HTMLElement).innerText ?? item.textContent ?? '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const anchor = item.querySelector('a[href]');
+    const href = anchor?.getAttribute('href') ?? null;
+    let link: string | null = null;
+    if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+      try {
+        link = new URL(href, document.baseURI).href;
+      } catch {
+        link = href;
+      }
+    }
+    return text || link ? { text: text || null, link } : null;
+  }
 
   let matchedElement = false;
   const row: Record<string, string | null> = {};

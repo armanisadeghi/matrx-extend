@@ -80,6 +80,51 @@ describe('List Pattern — find every similar sibling', () => {
     });
   });
 
+  // The exact shape Arman hit: a docs nav whose FIRST item is a section
+  // header (anchor to "#", no real field), the rest are real links. Before
+  // the fix the inspector sampled only items[0] and surfaced ZERO fields,
+  // and Extract stayed disabled forever. It must now offer text + links.
+  const NAV = `
+    <nav class="devsite-book-nav">
+      <ul class="devsite-nav-list" id="nav">
+        <li class="devsite-nav-item"><a class="devsite-nav-title" href="#">Section header</a></li>
+        <li class="devsite-nav-item"><a class="devsite-nav-title" href="/gemini-api/docs/a">Deprecation A</a></li>
+        <li class="devsite-nav-item"><a class="devsite-nav-title" href="/gemini-api/docs/b">Deprecation B</a></li>
+        <li class="devsite-nav-item"><a class="devsite-nav-title" href="/gemini-api/docs/c">Deprecation C</a></li>
+      </ul>
+    </nav>`;
+
+  it('suggests text fields for a plain nav list whose first item is a header', () => {
+    document.body.innerHTML = NAV;
+    const inspection = inspectCardInPage({
+      list_root: 'ul#nav',
+      item_selector: 'li.devsite-nav-item',
+    });
+    expect(inspection.status).toBe('ready');
+    // The regression returned 0 here. There must be real suggestions now.
+    expect(inspection.candidates.length).toBeGreaterThan(0);
+    const kinds = new Set(inspection.candidates.map((c) => c.kind));
+    expect(kinds.has('text')).toBe(true);
+    // A :scope "all text" floor candidate must always be present.
+    expect(inspection.candidates.some((c) => c.rel_selector === ':scope')).toBe(true);
+    // A real link (from a non-header item) should also surface.
+    expect(inspection.candidates.some((c) => c.kind === 'link')).toBe(true);
+  });
+
+  it('extracts every nav item as text+link with ZERO picked fields', () => {
+    document.body.innerHTML = NAV;
+    const cfg = { list_root: 'ul#nav', item_selector: 'li.devsite-nav-item', field_paths: [] };
+    const rows = listPatternMode.runInPage?.(cfg) as Record<string, string | null>[];
+    // All four items (header included — it has text) become rows.
+    expect(rows).toHaveLength(4);
+    expect(rows[1]).toMatchObject({ text: 'Deprecation A' });
+    expect(rows[1]?.link).toContain('/gemini-api/docs/a');
+    // The header has no real link (href="#") → link is null but text is kept.
+    expect(rows[0]).toMatchObject({ text: 'Section header', link: null });
+    // Inline preview must agree with the runner's default.
+    expect(probeFirstRowInPage(cfg)).toMatchObject({ text: 'Section header', link: null });
+  });
+
   it('suggests one-click candidate fields from the sample card', () => {
     document.body.innerHTML = GRID;
     const top = inferListPatternCandidates(document.querySelector('.product-card') as Element)[0];

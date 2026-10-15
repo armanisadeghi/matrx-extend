@@ -3812,3 +3812,27 @@ Save an Instagram carousel to Swipe file. The card reads "N of M slides saved" (
 - **Steps:** Return HTTP 200 with malformed JSON, then make the same route unreachable. Repeat with a valid JSON response.
 - **Expected:** The malformed response returns status `-1` with an invalid response body error; the unreachable route returns status `0`; the valid response succeeds.
 - **Covered by:** `src/lib/api/matrx-api-session.test.ts`. Native verification remains open until the installed build exercises these responses.
+
+---
+
+## Showcase capture (List Pattern, Markdown)
+
+### List Pattern — field inference and never-dead-end Extract
+- **What it does:** After seeding a list (click an item or accept Doctor's recommendation), the Suggested-Fields panel always offers at least the item's text and links, and Extract runs even with zero picked fields (returning each item's text + link).
+- **Where to test:** Showcase → List Pattern, signed in as admin@admin.com.
+- **Steps:**
+  1. Open https://ai.google.dev/gemini-api/docs/deprecations, run Doctor, open the List Pattern recommendation (seeds `ul.devsite-nav-list` / `li.devsite-nav-item`).
+  2. Confirm Suggested fields shows text + a link candidate (not "0").
+  3. Without picking any field, click "Extract text".
+- **Expected:** ~69 rows, each with the nav item's `text` (and `link` where present). Picking fields narrows to real columns.
+- **Edge cases worth poking:** A list whose FIRST item is a section header (anchor to `#`) must still yield suggestions — the inspector samples the richest item, preferring one with a real link.
+
+### Markdown — fetch the clean LLM-ready version
+- **What it does:** Detects when a page advertises a Markdown rendering (declared `text/markdown` alternate link, an on-page "view as Markdown" affordance, a sibling `.md`, or `/llms.txt`) and fetches it extension-side.
+- **Where to test:** Showcase → Markdown (and Doctor's ranked recommendation).
+- **Steps:**
+  1. On a docs page (e.g. the Gemini deprecations page, a Docusaurus/Mintlify docs site) run Doctor — a "Markdown" recommendation should rank at the top when a signal exists.
+  2. Open the Markdown tab and click "Fetch Markdown".
+  3. Try a GitHub file URL whose sibling raw `.md` exists.
+- **Expected:** The clean Markdown renders with a char count and source URL; Copy yields the full document. When nothing is served, a clear "No Markdown version found" message (never a silent empty).
+- **Edge cases worth poking:** A server that returns HTML with a 200 for the guessed `.md` must be rejected (content/body sniff), not shown as Markdown.

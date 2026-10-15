@@ -3,6 +3,7 @@ import { autoTableMode } from './modes/auto-table';
 import { jsonLdMode } from './modes/json-ld';
 import { listPatternMode } from './modes/list-pattern';
 import { manualCssMode } from './modes/manual-css';
+import { markdownMode } from './modes/markdown';
 import { microdataMode } from './modes/microdata';
 import { networkCaptureMode } from './modes/network-capture';
 import { nextDataMode } from './modes/next-data';
@@ -22,6 +23,7 @@ register(autoTableMode);
 register(nextDataMode);
 register(aiExtractMode);
 register(listPatternMode);
+register(markdownMode);
 register(microdataMode);
 register(networkCaptureMode);
 

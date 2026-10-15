@@ -814,11 +814,16 @@ export function ListPatternTab() {
               </Button>
               <Button
                 onClick={() => void handleRun()}
-                disabled={running || fields.length === 0 || !tab.pageKey}
+                disabled={running || !tab.pageKey}
                 className="flex-1 rounded-full"
+                title={
+                  fields.length === 0
+                    ? 'Extract each item’s text and link. Pick fields for precise columns.'
+                    : undefined
+                }
               >
                 {running ? <Loader2 className="animate-spin" /> : <PlayCircle />}
-                {running ? 'Extracting…' : 'Extract'}
+                {running ? 'Extracting…' : fields.length === 0 ? 'Extract text' : 'Extract'}
               </Button>
             </div>
           </div>

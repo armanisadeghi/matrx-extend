@@ -19,6 +19,7 @@ export const SHOWCASE_SUB_TABS = [
   'framework',
   'ai_extract',
   'list_pattern',
+  'markdown',
   'network',
   'patterns',
 ] as const;

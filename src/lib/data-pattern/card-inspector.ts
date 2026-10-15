@@ -59,7 +59,35 @@ export function inspectCardInPage(input: InspectInput): CardInspection {
   const root = document.querySelector(cfg.list_root);
   if (!root) return { status: 'root_missing', item_count: 0, candidates: [] };
   const items = (root as ParentNode).querySelectorAll(cfg.item_selector);
-  const sample = items[0] as HTMLElement | undefined;
+  if (items.length === 0) return { status: 'items_missing', item_count: 0, candidates: [] };
+
+  // Pick the RICHEST of the first few items as the structural sample. A plain
+  // nav/list often leads with a section header (few children, an anchor to
+  // "#") — sampling only items[0] there surfaces zero fields, the regression
+  // Arman hit on the Gemini docs nav. Choosing the item with the most
+  // content as the exemplar makes discovery representative of a real row.
+  const hasRealLink = (el: Element): boolean => {
+    for (const a of Array.from(el.querySelectorAll('a[href]'))) {
+      const href = a.getAttribute('href') ?? '';
+      if (href && !href.startsWith('#') && !href.startsWith('javascript:')) return true;
+    }
+    return false;
+  };
+  const probe = Array.from(items).slice(0, 8) as HTMLElement[];
+  let sample = probe[0] as HTMLElement;
+  let bestScore = -1;
+  for (const it of probe) {
+    const text = (it.innerText ?? it.textContent ?? '').trim().length;
+    // Reward a real (non-anchor-to-#) link heavily: in a nav/list the first
+    // item is often a section header whose only anchor points at "#", and
+    // sampling it would starve the link + field suggestions.
+    const score =
+      it.querySelectorAll('*').length * 2 + (text > 0 ? 1 : 0) + (hasRealLink(it) ? 5 : 0);
+    if (score > bestScore) {
+      bestScore = score;
+      sample = it;
+    }
+  }
   if (!sample) return { status: 'items_missing', item_count: 0, candidates: [] };
 
   const out: CandidateField[] = [];
@@ -243,6 +271,81 @@ export function inspectCardInPage(input: InspectInput): CardInspection {
       });
       break;
     }
+  }
+
+  // ── 7. Generic text — the common case, and the guaranteed floor ─────────
+  // A plain list (nav items, simple cards, headings-only rows) carries no
+  // microdata / data-* / usable link / regex hit, so sections 1-6 can all
+  // come up empty and the tool dead-ends with "0 suggested fields" even
+  // though every item visibly has text. We ALWAYS surface the item's text,
+  // plus the most informative text-bearing descendants, so the user never
+  // hits a seeded-but-unextractable pattern.
+  const collapse = (v: string): string => v.replace(/\s+/g, ' ').trim();
+
+  // 7a. Headings first — the clearest column in most cards.
+  for (const h of Array.from(sample.querySelectorAll<HTMLElement>('h1,h2,h3,h4,h5,h6'))) {
+    const txt = collapse(h.innerText ?? h.textContent ?? '');
+    if (!txt) continue;
+    dedupePush({
+      kind: 'text',
+      name: slug(h.tagName.toLowerCase()),
+      label: `Heading (${h.tagName.toLowerCase()})`,
+      rel_selector: relSelector(h),
+      sample_value: previewVal(txt),
+    });
+  }
+
+  // 7b. Anchor label text (distinct from the link URL already offered above).
+  for (const a of Array.from(sample.querySelectorAll<HTMLAnchorElement>('a'))) {
+    const txt = collapse(a.innerText ?? a.textContent ?? '');
+    if (!txt) continue;
+    dedupePush({
+      kind: 'text',
+      name: 'text',
+      label: `Text: ${txt.slice(0, 24)}`,
+      rel_selector: relSelector(a),
+      sample_value: previewVal(txt),
+    });
+  }
+
+  // 7c. Leaf text elements (own direct text only) — titles, labels, prices,
+  // descriptions that aren't headings or anchors. Capped so a dense card
+  // doesn't flood the panel.
+  const LEAF_CAP = 10;
+  let leafCount = 0;
+  for (const el of Array.from(sample.querySelectorAll<HTMLElement>('*'))) {
+    if (leafCount >= LEAF_CAP) break;
+    const tag = el.tagName.toLowerCase();
+    if (tag === 'script' || tag === 'style' || tag === 'a') continue;
+    const direct = collapse(
+      Array.from(el.childNodes)
+        .filter((n) => n.nodeType === 3)
+        .map((n) => n.nodeValue ?? '')
+        .join(''),
+    );
+    if (!direct || direct.length > 160) continue;
+    const before = out.length;
+    dedupePush({
+      kind: 'text',
+      name: slug(Array.from(el.classList)[0] ?? tag),
+      label: `Text: ${direct.slice(0, 24)}`,
+      rel_selector: relSelector(el),
+      sample_value: previewVal(direct),
+    });
+    if (out.length > before) leafCount++;
+  }
+
+  // 7d. Guaranteed floor — the whole item's text. Always valid, always
+  // non-empty when the item has any content, so Extract is never a dead end.
+  const wholeText = collapse(sample.innerText ?? sample.textContent ?? '');
+  if (wholeText) {
+    dedupePush({
+      kind: 'text',
+      name: 'text',
+      label: 'Item text (all)',
+      rel_selector: ':scope',
+      sample_value: previewVal(wholeText),
+    });
   }
 
   return { status: 'ready', item_count: items.length, candidates: out };
