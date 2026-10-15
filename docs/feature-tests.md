@@ -3268,7 +3268,7 @@ Every entry follows this shape:
 
 ### Realtime catch-up (all four channels) — 2026-09-07
 - **What it does:** every Supabase realtime subscription in the extension now rides
-  `@ai-matrx/realtime`, which means each one RE-READS after any gap (reconnect, service-worker
+  `@ai-matrx/data/realtime`, which means each one RE-READS after any gap (reconnect, service-worker
   wake, network restore). Before, a gap silently lost every event and the screen kept showing
   pre-gap state while looking perfectly healthy.
 - **Where to test:** Lists tab, the chat TaskPanel, and the scheduler (Agenda).

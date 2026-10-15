@@ -159,7 +159,7 @@ one source of truth per fact, no shallow empty keys, confidence gating):
 in the same commit as any key change.
 
 **Structured content: NEVER parse a stream here.** `render_block` envelopes render through the
-SHARED packages (`@ai-matrx/content-ir` + `@ai-matrx/content-ir-react`) — wiring
+SHARED packages (`@ai-matrx/content-ir` + `@ai-matrx/content-ir/react`) — wiring
 [src/lib/content-ir/](./src/lib/content-ir/), components + dispatch
 [src/components/kinds/](./src/components/kinds/). Detection is SERVER-SIDE for thin clients by
 design; a client-side kind parser is the banned "bespoke stream renderer". A kind draws as a real
