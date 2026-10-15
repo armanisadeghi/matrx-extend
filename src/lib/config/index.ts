@@ -143,6 +143,8 @@ export async function initAppConfig(): Promise<void> {
     const stored = await chrome.storage.local.get(CACHE_STORAGE_KEY);
     cachedRow = stored[CACHE_STORAGE_KEY];
     getReader().load();
+    // Every context reads the live row once at boot, so its reads are served from the database (source db).
+    void getReader().refresh();
   } catch (error) {
     countConfigEvent('config.cache_load_failed', { error: String(error).slice(0, 200) });
   }
