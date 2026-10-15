@@ -84,7 +84,11 @@ async function messageIds(page) {
     .evaluateAll((els) => els.map((e) => e.getAttribute('data-message-id')));
 }
 /** Answer text without the reasoning-disclosure header (its label legitimately changes live -> stored). */
-const bare = (t) => t.replace(/^\s*(Thought process|Worked through \d+ steps?)\s*/, '').trim();
+const bare = (t) =>
+  t
+    .replace(/^\s*(Thought process|Worked through \d+ steps?)\s*/, '')
+    .replace(/\s*\d{1,2}:\d{2}\s*[AP]M\s*$/, '')
+    .trim();
 async function lastAssistantText(page) {
   const n = await page.locator(ASSISTANT).count();
   return n
@@ -134,7 +138,7 @@ try {
   });
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
-  await page.goto(`chrome-extension://${extensionId}/sidepanel.html?chat=package`);
+  await page.goto(`chrome-extension://${extensionId}/sidepanel.html`);
   await seedExtensionSession(page, {
     session,
     clientId: extensionOAuthClientId(REPO),
@@ -298,7 +302,7 @@ try {
   const dumpStreamed = await dumpMsgs(page);
   await page.close();
   const reopened = await context.newPage();
-  await reopened.goto(`chrome-extension://${extensionId}/sidepanel.html?chat=package`);
+  await reopened.goto(`chrome-extension://${extensionId}/sidepanel.html`);
   await reopened
     .locator(MESSAGES)
     .first()
@@ -330,6 +334,13 @@ try {
     let k = 0;
     while (k < final2.length && final2[k] === final2b[k]) k++;
     console.log();
+  }
+  if (final2b !== final2) {
+    let k = 0;
+    while (k < final2.length && final2[k] === final2b[k]) k++;
+    console.log(
+      `  first difference at ${k}: streamed ${JSON.stringify(final2.slice(Math.max(0, k - 15), k + 25))} stored ${JSON.stringify(final2b.slice(Math.max(0, k - 15), k + 25))}`,
+    );
   }
   await reopened.screenshot({ path: join(SHOTS, '4-reopened.png') });
   if (errors.length) console.log(`  page errors: ${errors.slice(0, 5).join(' | ')}`);

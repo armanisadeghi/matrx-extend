@@ -92,7 +92,7 @@ try {
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
-  await page.goto(`chrome-extension://${extensionId}/sidepanel.html?chat=package`);
+  await page.goto(`chrome-extension://${extensionId}/sidepanel.html`);
   await seedExtensionSession(page, {
     session,
     clientId: extensionOAuthClientId(REPO),
