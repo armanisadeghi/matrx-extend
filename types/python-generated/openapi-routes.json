@@ -5026,6 +5026,9 @@
  "/mcp-connections/{server_id}/tools": {
   "get": []
  },
+ "/mcp-connections/{server_id}/verify": {
+  "post": []
+ },
  "/mcp-connections/{server_id}/woocommerce/products-query": {
   "post": []
  },
@@ -5374,10 +5377,19 @@
    "application/json"
   ]
  },
+ "/notion-import/sync": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
  "/notion-import/zip": {
   "post": [
    "application/json"
   ]
+ },
+ "/notion-webhook": {
+  "post": []
  },
  "/ntfy/public/health": {
   "get": []
@@ -6888,6 +6900,11 @@
    "application/json"
   ]
  },
+ "/scheduling/device-tasks/{task_id}": {
+  "patch": [
+   "application/json"
+  ]
+ },
  "/scheduling/run-now/{task_id}": {
   "post": []
  },
@@ -7011,7 +7028,22 @@
  "/scummvm-wiki/public/page": {
   "get": []
  },
+ "/search-kinds/image": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/search-kinds/place-reviews": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/search-kinds/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/search-kinds/social": {
   "post": [
    "application/json"
   ]
@@ -8854,6 +8886,12 @@
  },
  "/v1/tables/{table}/rows/{row_id}/back_links": {
   "get": []
+ },
+ "/v1/tables/{table}/rows/{row_id}/comments": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
  },
  "/v1/tables/{table}/rows/{row_id}/restore": {
   "post": []
