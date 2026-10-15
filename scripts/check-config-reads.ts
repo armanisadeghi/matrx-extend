@@ -18,6 +18,9 @@ import { tmpdir } from 'node:os';
 import { join, relative } from 'node:path';
 
 const ROOT = join(import.meta.dirname, '..');
+// A second app_config reader: building one, fetching the row (PostgREST or aidream route), or importing the reader package.
+const SECOND_READER =
+  /createAppConfigReader|@ai-matrx\/data\/app-config|rest\/v1\/app_config|\/app-config\//;
 const RAW =
   /rpc\(\s*['"`](knob_resolve|knob_snapshot)['"`]|from\(\s*['"`](app_config|feature_knob)['"`]/;
 const ALLOWED = (rel: string) =>
@@ -41,7 +44,7 @@ function run(root: string): number {
     readFileSync(f, 'utf8')
       .split('\n')
       .forEach((l, i) => {
-        if (RAW.test(l)) bad.push(`${rel}:${i + 1}  ${l.trim().slice(0, 100)}`);
+        if (RAW.test(l) || SECOND_READER.test(l)) bad.push(`${rel}:${i + 1}  ${l.trim().slice(0, 100)}`);
       });
   }
   if (bad.length) {
@@ -61,7 +64,9 @@ if (process.argv.includes('--self-test')) {
   const clean = run(dir);
   writeFileSync(join(dir, 'src', 'a.ts'), "db.rpc('knob_resolve', {});\n");
   const red = run(dir);
-  console.log(clean === 0 && red === 1 ? 'self-test PASS' : `self-test FAIL ${clean} ${red}`);
-  process.exit(clean === 0 && red === 1 ? 0 : 1);
+  writeFileSync(join(dir, 'src', 'a.ts'), "const r = createAppConfigReader({});\n");
+  const red2 = run(dir);
+  console.log(clean === 0 && red === 1 && red2 === 1 ? 'self-test PASS' : `self-test FAIL ${clean} ${red} ${red2}`);
+  process.exit(clean === 0 && red === 1 && red2 === 1 ? 0 : 1);
 }
 process.exit(run(ROOT));
