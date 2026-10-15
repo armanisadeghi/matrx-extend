@@ -30,13 +30,16 @@ const context = await chromium.launchPersistentContext('', {
 try {
   let [worker] = context.serviceWorkers();
   if (!worker) worker = await context.waitForEvent('serviceworker', { timeout: 30_000 });
-  worker.on('console', (m) => { const t = m.text(); if (/config|attest/i.test(t)) console.log('  [sw]', t.slice(0, 260)); });
+  worker.on('console', (m) => { const t = m.text(); if (/config|attest|app_config/i.test(t)) console.log('  [sw]', t.slice(0, 260)); });
   const extensionId = new URL(worker.url()).host;
   const page = await context.newPage();
   await page.goto(`chrome-extension://${extensionId}/sidepanel.html`);
   await seedExtensionSession(page, { session, clientId: extensionOAuthClientId(REPO), organization: { id: ORGANIZATION_ID, name: "Admin's Workspace" } });
   await page.reload();
   await page.waitForTimeout(20_000);
+  // A second panel load: by now the live row has been read, so the same keys are served from the database.
+  await page.reload();
+  await page.waitForTimeout(10_000);
   for (let i = 0; i < 3; i++) {
     await worker.evaluate(() => chrome.alarms.create('matrx-config-flush', { when: Date.now() + 300 }));
     await page.waitForTimeout(8_000);

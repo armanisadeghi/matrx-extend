@@ -28,6 +28,7 @@ function remoteQuery(result: {
     eq: vi.fn(() => query),
     is: vi.fn(() => query),
     not: vi.fn(() => query),
+    or: vi.fn(() => query),
     order: vi.fn(() => query),
     limit: vi.fn(async () => result),
   };

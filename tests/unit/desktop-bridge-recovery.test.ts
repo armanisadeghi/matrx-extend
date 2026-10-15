@@ -15,6 +15,7 @@ vi.mock('@/lib/supabase/client', () => ({
       eq: () => q,
       is: () => q,
       not: () => q,
+      or: () => q,
       order: () => q,
       limit: async () => ({ data: [], error: null }),
     };
@@ -76,6 +77,7 @@ describe('discovery cannot report a running engine as offline for long', () => {
           eq: () => q,
           is: () => q,
           not: () => q,
+          or: () => q,
           order: () => q,
           limit: async () => ({
             data: [
