@@ -4,7 +4,12 @@ import test from 'node:test';
 import { createContext, runInContext } from 'node:vm';
 import { reloadCase } from './native-reload-fixture.mjs';
 import { safeReloadOperationFailure } from './native-reload-operation-boundary.mjs';
-import { captureFailure, captureSenderDocument } from './profile-reload-capture.mjs';
+import {
+  captureContextBoundary,
+  captureFailure,
+  captureLifecycleEvidence,
+  captureSenderDocument,
+} from './profile-reload-capture.mjs';
 
 const source = await readFile(
   new URL('./data-member-native-acceptance.mjs', import.meta.url),
@@ -21,9 +26,12 @@ const adoptDriver = new AsyncFunction(
   'captureFailure',
   'safeReloadOperationFailure',
   'captureSenderDocument',
+  'captureLifecycleEvidence',
+  'captureContextBoundary',
   `${source.slice(start, end)} return panel;`,
 );
-const adopt = (...args) => adoptDriver(...args, captureSenderDocument);
+const adopt = (...args) =>
+  adoptDriver(...args, captureSenderDocument, captureLifecycleEvidence, captureContextBoundary);
 
 test('member Data adopts verified replacement without touching retired session or reacquiring', async () => {
   const replacement = {

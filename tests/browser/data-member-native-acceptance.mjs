@@ -25,7 +25,12 @@ import {
 import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 import { safeReloadOperationFailure } from './native-reload-operation-boundary.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { captureFailure, captureSenderDocument } from './profile-reload-capture.mjs';
+import {
+  captureContextBoundary,
+  captureFailure,
+  captureLifecycleEvidence,
+  captureSenderDocument,
+} from './profile-reload-capture.mjs';
 import {
   refuseDiagnosticAcceptance,
   reloadOpenEvidenceClass,
@@ -625,6 +630,8 @@ try {
           'data_member_reload_replacement_invalid',
         );
         panel = reload.panel;
+        report.reload_lifecycle = captureLifecycleEvidence(reload.retirement_evidence);
+        report.reload_context = captureContextBoundary(reload.context_boundary);
         report.observations.reload_replacement_adopted = true;
         report.stage = 'extension_reload_activate';
         await panel.send('Page.bringToFront');
@@ -645,6 +652,13 @@ try {
           true,
           'data_member_saved_pattern_lost_on_reload',
         );
+        if (!AUTO_SCOPE) {
+          const request = report.reload_lifecycle?.open_panel_request;
+          assert.equal(request?.received, true, 'data_member_reload_callback_missing');
+          assert.equal(request?.category, 'opened', 'data_member_reload_open_callback_unverified');
+          assert.equal(request?.ok, true, 'data_member_reload_ingress_unverified');
+          assert.equal(request?.opened, true, 'data_member_reload_open_unverified');
+        }
         report.observations.saved_pattern_survived_extension_reload = true;
         await runAndCopy('after_reload');
       } catch (error) {
@@ -685,6 +699,10 @@ try {
                   expectedPatternId: writeTarget.patternId,
                 }),
             });
+            const afterDelete = await queryOwnedPattern(patternName, identity.organizationId);
+            assert.equal(afterDelete?.status, 200, 'data_member_cleanup_readback_failed');
+            assert.deepEqual(afterDelete.rows, [], 'data_member_cleanup_active_rows_remain');
+            report.cleanup.active_rows_after_delete = 0;
           } catch (error) {
             cleanupError = error;
             report.cleanup = { verified: false, error: safeFailureCode(error) };
@@ -697,6 +715,12 @@ try {
       report.observations.member_save_succeeded = true;
     },
   });
+  report.runtime_tree_after = hashReleaseTree(extensionDir);
+  assert.equal(
+    report.runtime_tree_after,
+    report.artifact.tree_sha256,
+    'data_member_runtime_tree_changed',
+  );
   report.status = report.auto_extract?.running === 'unverified' ? 'partial' : 'pass';
   report.stage = 'complete';
 } catch (error) {
