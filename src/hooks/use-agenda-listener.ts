@@ -10,7 +10,6 @@
  * Run-now manually.
  */
 
-import { useChatStream } from '@/hooks/use-chat-stream';
 import { getTask } from '@/lib/agenda/queries';
 import { isTaskRunning, runTask } from '@/lib/agenda/runner';
 import { log } from '@/lib/debug/log';
@@ -19,7 +18,6 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 import { useEffect } from 'react';
 
 export function useAgendaListener(): void {
-  const { send } = useChatStream();
 
   useEffect(() => {
     const unsubscribe = on<{ taskId: string }, { ack: true }>(
@@ -34,13 +32,10 @@ export function useAgendaListener(): void {
         }
         if (!task.enabled) return { ack: true };
         log.info('sys', `agenda listener: SW asked us to run "${task.title}"`);
-        // 'auto': the SW's schedule alarm asked for this run. Nobody clicked
-        // anything — the person may not even have the sidepanel in front of
-        // them. Claiming 'user' here would file a cron run as a human's.
-        await runTask(task, send, 'auto');
+        await runTask(task);
         return { ack: true };
       },
     );
     return unsubscribe;
-  }, [send]);
+  }, []);
 }

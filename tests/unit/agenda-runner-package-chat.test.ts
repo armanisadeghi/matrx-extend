@@ -1,4 +1,4 @@
-/** Agenda in package mode: the run is ONE send through the package chat (intercepted here — never a live AI call). */
+/** Agenda: the run is ONE send through the package chat (intercepted here — never a live AI call). */
 import { describe, expect, it, vi } from 'vitest';
 
 const q = vi.hoisted(() => ({
@@ -11,7 +11,6 @@ vi.mock('@/lib/agenda/queries', () => q);
 vi.mock('@/lib/debug/log', () => ({ log: { info: vi.fn(), warn: vi.fn(), error: vi.fn() } }));
 vi.mock('@/lib/messaging/native', () => ({ send: vi.fn(), on: vi.fn() }));
 vi.mock('@/lib/chat-target', () => ({
-  isPackageChatMode: () => true,
   sendThroughPackageChat: vi.fn(),
 }));
 

@@ -43,7 +43,9 @@ vi.mock('@/lib/messaging/native', () => ({
   on: () => () => undefined,
   send: () => Promise.resolve({ state: 'none' }),
 }));
-vi.mock('@/features/chat/ChatView', () => ({ ChatView: () => <div>Chat</div> }));
+vi.mock('@/features/package-chat/PackageChatView', () => ({
+  PackageChatView: () => <div>Chat</div>,
+}));
 vi.mock('@/features/scrape/ScrapeView', () => ({ ScrapeView: () => <div>Scrape</div> }));
 vi.mock('@ai-matrx/agents/catalog/react', () => ({
   AgentCatalogProvider: ({ children }: { children: React.ReactNode }) => children,
@@ -126,7 +128,7 @@ describe('popup capture claim recovery', () => {
     // App starts these imports from effects without awaiting them. Resolve the
     // exact modules before teardown instead of waiting for unrelated dynamic imports.
     await import('@/lib/auth/identity');
-    await import('@/features/chat/ChatView');
+    await import('@/features/package-chat/PackageChatView');
 
     const alert = await screen.findByRole('alert');
     expect(alert.textContent).toContain('Capture did not open');

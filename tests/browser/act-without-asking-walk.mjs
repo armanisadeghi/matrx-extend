@@ -259,7 +259,7 @@ try {
       [SETTINGS, patch, MOCK_URL],
     );
 
-  for (const surface of ['default', 'package']) {
+  for (const surface of ['package']) {
     for (const mode of ['act', 'ask']) {
       const label = `${surface === 'default' ? 'Current' : 'New'} chat, Act ${mode === 'act' ? 'ON' : 'OFF'}`;
       posted.toolResults.length = 0;
@@ -273,7 +273,7 @@ try {
         clientId: extensionOAuthClientId(REPO),
         organization: { id: ORGANIZATION_ID, name: "Admin's Workspace" },
       });
-      await configure(page, { chatSurface: surface, defaultPermissionMode: mode });
+      await configure(page, { defaultPermissionMode: mode });
       await page.reload();
       await page.evaluate(() => {
         window.__seen = [];

@@ -3,31 +3,20 @@
  *
  * Flow:
  *   1. Claim a run row (lease pattern; another surface won't double-fire).
- *   2. Switch the sidepanel to the chat tab so the user can see it.
- *   3. Set the chat's selected agent + selected conversation:
- *        - agent_id: task.agent_id ?? settings.defaultAgentId ?? the canonical
- *                    default-chat Mandate UI reference
- *        - conversation_id: task.persistent_conversation_id (heartbeats)
- *                           or null (ephemeral runs)
- *   4. Send the task's prompt as a normal chat message — the existing
- *      use-chat-stream pipeline handles streaming, tool calls, the works.
- *   5. After the stream finishes (chunk.type === 'done'), mark the run as
- *      success and — if this was the first run of a heartbeat — capture
- *      the new conversation_id so subsequent runs append to the same thread.
+ *   2. Send the task's prompt through the shared chat (`sendThroughPackageChat`): the agent is
+ *      task.agent_id ?? settings.defaultAgentId ?? the canonical default-chat Mandate reference,
+ *      the conversation is task.persistent_conversation_id (heartbeats) or a new one.
+ *   3. Settle the run from the send's own outcome and — if this was the first run of a heartbeat —
+ *      capture the new conversation_id so subsequent runs append to the same thread.
  *
- * This module is the only place that ties Agenda to the chat stack. The
- * SW-side code never imports from here; runner is sidepanel-context only.
+ * This module is the only place that ties Agenda to the chat. The SW-side code never imports from
+ * here; runner is sidepanel-context only.
  */
 
-import type { RequestInitiation } from '@/lib/api/routes/ai';
-import { isPackageChatMode, sendThroughPackageChat } from '@/lib/chat-target';
+import { sendThroughPackageChat } from '@/lib/chat-target';
 import { log } from '@/lib/debug/log';
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
-import { on, send } from '@/lib/messaging/native';
-import { CHANNELS } from '@/lib/messaging/schemas';
-import { useChatStore } from '@/state/chat';
 import { useSettingsStore } from '@/state/settings';
-import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { AGENDA_SURFACE_ID } from './constants';
 import {
   type AgendaRun,
@@ -38,28 +27,9 @@ import {
   updateTask,
 } from './queries';
 
-type SendFn = (
-  text: string,
-  opts: {
-    agentId?: string;
-    agentName?: string;
-    conversationId?: string;
-    variables?: Record<string, unknown>;
-    /** Provenance attestation — see AgentStartRequest.initiation. */
-    initiation?: RequestInitiation;
-    /** Fires synchronously with the claimed runId, before any await. */
-    onRunId?: (runId: string) => void;
-    /** Fires when the stream failed to start (no chunk will ever arrive). */
-    onStartFailed?: (err: Error) => void;
-  },
-) => Promise<string | null>;
-
 interface RunHandle {
   run: AgendaRun;
   task: AgendaTask;
-  unsubscribe: () => void;
-  /** Stream runId once claimed — lets cancelRun actually abort the SSE. */
-  streamRunId?: string | null;
 }
 
 const inFlightByTaskId = new Map<string, RunHandle>();
@@ -71,18 +41,8 @@ export function isTaskRunning(taskId: string): boolean {
 /**
  * Kick off a run. Returns null if another surface already holds the lease
  * or if the lease attempt failed; otherwise returns the new run row.
- *
- * `initiation` is REQUIRED and has no default on purpose: an Agenda task runs
- * from BOTH a scheduled alarm (`'auto'`) and the Run-now button (`'user'`), and
- * a default here would quietly file one of them as the other. It is the
- * client's only input into the server's `origin_class` — see
- * `AgentStartRequest.initiation`.
  */
-export async function runTask(
-  task: AgendaTask,
-  send: SendFn,
-  initiation: RequestInitiation,
-): Promise<AgendaRun | null> {
+export async function runTask(task: AgendaTask): Promise<AgendaRun | null> {
   if (inFlightByTaskId.has(task.id)) {
     log.info('sys', `agenda: task ${task.id} already running locally`);
     return null;
@@ -96,130 +56,11 @@ export async function runTask(
     return null;
   }
   log.info('sys', `agenda: claimed run ${run.id} for task "${task.title}"`);
-
-  // Package mode: the run is a send through the shared chat; its settle comes from that send, not
-  // from the old stream events (which the package chat never emits).
-  if (isPackageChatMode()) return runThroughPackageChat(task, run);
-
-  // Tab-switch + chat-store priming so the user sees the run in the chat tab.
-  useSidepanelTabStore.getState().setTab('chat');
-  const chat = useChatStore.getState();
-  // Honor the task's explicit run-scope pick, then the user's explicit saved
-  // preference, then the server-resolved default-chat Mandate.
-  const agentId =
-    task.agent_id ?? useSettingsStore.getState().defaultAgentId ?? DEFAULT_CHAT_MANDATE_REF;
-  chat.setAgent(agentId);
-  if (task.persistent_conversation_id) {
-    chat.setConversation(task.persistent_conversation_id);
-    // Note: if the chat already had a different conversation loaded, the
-    // user will see the heartbeat conversation now. ChatView's useEffect
-    // will load messages on next render.
-  } else {
-    chat.setConversation(null);
-    chat.setMessages([]);
-  }
-
-  // Subscribe stream listeners INSIDE onRunId — synchronously, before the
-  // send path's first await. The old shape did `streamRunId = await send(…)`
-  // first, but `send` only resolves after the SW→offscreen handoff has run
-  // the ENTIRE SSE to completion — so the listeners were mounted onto a
-  // stream that had already finished: `markRunStarted`/`finishRun` never
-  // fired (every run stuck 'claimed' forever), `inFlightByTaskId` was
-  // populated only after the stream (blocking re-runs instead of duplicate
-  // runs), and heartbeat conversation capture never happened (a fresh
-  // conversation forked every pulse). docs/AUDIT_2026_06_10.md P0-6.
-  let conversationId: string | null = task.persistent_conversation_id;
-  let started = false;
-  let streamRunId: string | null = null;
-  let unsubOpened: (() => void) | null = null;
-  let unsubChunk: (() => void) | null = null;
-
-  const handle: RunHandle = {
-    run,
-    task,
-    unsubscribe: () => {
-      try {
-        unsubOpened?.();
-      } catch {}
-      try {
-        unsubChunk?.();
-      } catch {}
-    },
-  };
-
-  const settle = async (status: 'success' | 'failed', errorMessage?: string) => {
-    handle.unsubscribe();
-    inFlightByTaskId.delete(task.id);
-    await finishRun(run.id, status, errorMessage ? { error_message: errorMessage } : undefined);
-    if (status === 'success') {
-      log.info('sys', `agenda: run ${run.id} succeeded`);
-    } else {
-      log.warn('sys', `agenda: run ${run.id} failed — ${errorMessage ?? 'unknown'}`);
-    }
-  };
-
-  const subscribe = (rid: string) => {
-    streamRunId = rid;
-    handle.streamRunId = rid;
-    // Filtered by THIS run's id — without the filter we'd claim a parallel
-    // manual chat's completion as ours.
-    unsubOpened = on<
-      { runId: string; conversationId: string | null; requestId: string | null },
-      { ack: true }
-    >(CHANNELS.STREAM_OPENED, async (payload) => {
-      if (payload.runId !== streamRunId || started) return { ack: true };
-      started = true;
-      conversationId = payload.conversationId ?? conversationId;
-      await markRunStarted(run.id, conversationId ?? undefined);
-      if (task.trigger_type === 'heartbeat' && !task.persistent_conversation_id && conversationId) {
-        await updateTask(task.id, { persistent_conversation_id: conversationId });
-        log.info('sys', `agenda: heartbeat ${task.id} persists in convo ${conversationId}`);
-      }
-      return { ack: true };
-    });
-    unsubChunk = on<{ runId: string; type: string; payload: { message?: string } }, { ack: true }>(
-      CHANNELS.STREAM_CHUNK,
-      async (payload) => {
-        if (payload.runId !== streamRunId) return { ack: true };
-        if (payload.type === 'done') {
-          await settle('success');
-        } else if (payload.type === 'error') {
-          await settle('failed', payload.payload?.message);
-        }
-        return { ack: true };
-      },
-    );
-    inFlightByTaskId.set(task.id, handle);
-  };
-
-  try {
-    const returnedRunId = await send(task.prompt, {
-      agentId,
-      initiation,
-      ...(task.persistent_conversation_id
-        ? { conversationId: task.persistent_conversation_id }
-        : {}),
-      onRunId: subscribe,
-      onStartFailed: (err) => {
-        // Same-context signal — broadcast chunks don't loop back to us.
-        void settle('failed', `stream failed to start: ${err.message}`);
-      },
-    });
-    if (!returnedRunId && !streamRunId) {
-      await settle('failed', 'send returned null runId');
-      return null;
-    }
-  } catch (err) {
-    log.error('sys', `agenda: send threw for run ${run.id}`, err);
-    await settle('failed', (err as Error).message);
-    return null;
-  }
-
-  return run;
+  return runThroughPackageChat(task, run);
 }
 
 /**
- * The package-mode run: one send through the shared chat (an AI send — callers and tests decide
+ * The run: one send through the shared chat (an AI send — callers and tests decide
  * when it is allowed to happen). Settles the run from the send's own outcome.
  */
 export async function runThroughPackageChat(
@@ -232,7 +73,7 @@ export async function runThroughPackageChat(
   const target = agentRef.startsWith('mandate:')
     ? { mandateKey: agentRef.slice('mandate:'.length) }
     : { agentId: agentRef };
-  inFlightByTaskId.set(task.id, { run, task, unsubscribe: () => undefined });
+  inFlightByTaskId.set(task.id, { run, task });
   try {
     const { conversationId } = await sendMessage({
       text: task.prompt,
@@ -258,12 +99,6 @@ export async function runThroughPackageChat(
 export async function cancelRun(taskId: string): Promise<void> {
   const handle = inFlightByTaskId.get(taskId);
   if (!handle) return;
-  handle.unsubscribe();
   inFlightByTaskId.delete(taskId);
-  // Actually abort the SSE — marking the row 'cancelled' while the stream
-  // kept running (and billing) was a paper cancel.
-  if (handle.streamRunId) {
-    void send(CHANNELS.STREAM_CANCEL, { runId: handle.streamRunId }).catch(() => {});
-  }
   await finishRun(handle.run.id, 'cancelled');
 }

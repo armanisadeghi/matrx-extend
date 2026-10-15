@@ -10,7 +10,6 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { captureFailure, captureLifecycleEvidence } from './profile-reload-capture.mjs';
 import { reloadOpenEvidenceClass } from './scrape-reload-open-diagnostic.mjs';
-import { runGuestChatVersionReopen } from './settings-chat-version-reopen.mjs';
 import {
   FULL_EXTENSION_RECHECK_IDS,
   captureGuestPreferenceBaselines,
@@ -90,7 +89,6 @@ const IDS = [
   'T73',
   'T76',
   'T92',
-  'T93',
 ].map((id) => `EXT-F-1003-${id}`);
 const THEME_RENDERING_PROBE =
   process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'settings-theme-rendering';
@@ -1208,24 +1206,6 @@ try {
             ? 'pass'
             : 'unverified';
       }
-      await runCase(byId('T93'), async () => {
-        const c = byId('T93');
-        const livePanel = await acquireLivePanel();
-        try {
-          await runGuestChatVersionReopen({
-            panel: livePanel,
-            cyclePanel: cycleOwnedPanel,
-            acquireLivePanel,
-            settings,
-            record: (phase, action, observation, passed) => {
-              c.steps.push({ phase, action, observation });
-              criterion(c, action, passed ? 'pass' : 'fail', observation);
-            },
-          });
-        } finally {
-          await livePanel.detach();
-        }
-      });
     },
   });
   assert.equal(result.verified, true);

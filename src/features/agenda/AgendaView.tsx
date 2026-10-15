@@ -11,7 +11,6 @@
  * read that here and scroll the matching row into view.
  */
 
-import { useChatStream } from '@/hooks/use-chat-stream';
 import { isValidCron, nextCronTime } from '@/lib/agenda/cron';
 import {
   type AgendaTask,
@@ -54,7 +53,6 @@ export function AgendaView() {
   const [tasks, setTasks] = useState<AgendaTask[] | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [focusTaskId, setFocusTaskId] = useState<string | null>(null);
-  const { send } = useChatStream();
 
   const refresh = useCallback(async () => {
     const list = await listMyTasks();
@@ -80,13 +78,9 @@ export function AgendaView() {
     const task = tasks.find((t) => t.id === focusTaskId);
     if (!task) return;
     if (task.auth_mode === 'auto' && task.enabled && !isTaskRunning(task.id)) {
-      // 'auto': this fires from a mount effect reacting to a focus id restored
-      // from session storage, not from a control the person pressed on this
-      // screen. An effect-driven send is automation even when a notification
-      // click led here.
-      void runTask(task, send, 'auto').then(() => void refresh());
+      void runTask(task).then(() => void refresh());
     }
-  }, [focusTaskId, tasks, send, refresh]);
+  }, [focusTaskId, tasks, refresh]);
 
   return (
     <div className="flex h-full flex-col">
@@ -134,7 +128,6 @@ export function AgendaView() {
                 task={task}
                 highlighted={task.id === focusTaskId}
                 onChanged={refresh}
-                send={send}
               />
             ))}
           </ul>
@@ -150,12 +143,10 @@ function TaskRow({
   task,
   highlighted,
   onChanged,
-  send,
 }: {
   task: AgendaTask;
   highlighted: boolean;
   onChanged: () => Promise<void>;
-  send: ReturnType<typeof useChatStream>['send'];
 }) {
   const [working, setWorking] = useState<'run' | 'toggle' | 'delete' | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -163,10 +154,8 @@ function TaskRow({
   const runNow = async () => {
     setWorking('run');
     try {
-      // Fires the task through the chat stream pipeline. Switches the
-      // sidepanel to the chat tab so the user sees it run.
-      // 'user': the Run-now button — a direct press on this row.
-      await runTask(task, send, 'user');
+      // Sends the task through the shared chat and switches the sidepanel to the chat tab.
+      await runTask(task);
       log.info('sys', `agenda: "${task.title}" running`);
     } finally {
       setWorking(null);
