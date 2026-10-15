@@ -8,10 +8,10 @@
  * another AI chat.
  */
 
-import { copyText } from '@ai-matrx/kit/clipboard';
 import { cn } from '@/lib/utils';
 import type { ChatMessage } from '@/state/chat';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
+import { copyText } from '@ai-matrx/kit/clipboard';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.

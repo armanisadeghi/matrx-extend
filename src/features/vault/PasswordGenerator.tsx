@@ -1,4 +1,3 @@
-import { copyText } from '@ai-matrx/kit/clipboard';
 import { resolveGeneratedCredentialLimits } from '@/lib/credentials/generation-limits';
 import type {
   GenerationDiscoveryResponse,
@@ -15,6 +14,7 @@ import { GENERATED_SECRET_TTL_MS } from '@/lib/credentials/generation-targets';
 import { useTransientSecret } from '@/lib/credentials/transient-secret';
 import { cn } from '@/lib/utils';
 import { Button, BasicInput as Input, Switch } from '@ai-matrx/design-system';
+import { copyText } from '@ai-matrx/kit/clipboard';
 import {
   type CredentialGenerationOptions,
   generateCredentialSecret,

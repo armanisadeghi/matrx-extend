@@ -18,7 +18,6 @@
  * `lib/audit/log`.
  */
 
-import { copyText } from '@ai-matrx/kit/clipboard';
 import {
   DeviceKeyLockUnavailableError,
   DeviceKeyOutcomeUnknownError,
@@ -36,6 +35,7 @@ import { log } from '@/lib/debug/log';
 import { cn } from '@/lib/utils';
 import { ConfirmDialog } from '@ai-matrx/design-system';
 import { Button } from '@ai-matrx/design-system';
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { Check, Copy, KeyRound } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

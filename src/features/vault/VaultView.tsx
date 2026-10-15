@@ -35,7 +35,6 @@ import type {
   VaultItemSummary,
 } from '@/lib/api/routes/vault';
 import { WEBSITE_LOGIN_DEFINITION_KEY, describeVaultFailure } from '@/lib/api/routes/vault';
-import { copyText } from '@ai-matrx/kit/clipboard';
 import { captureUpdateTargetLabel } from '@/lib/credentials/capture-update-targets';
 import {
   type UriMatchMode,
@@ -59,6 +58,7 @@ import { Badge, Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { Switch } from '@ai-matrx/design-system';
 import { Tabs, TabsList, TabsTrigger } from '@ai-matrx/design-system';
 import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { withReferral } from '@ai-matrx/kit/outbound';
 import {
   AlertTriangle,

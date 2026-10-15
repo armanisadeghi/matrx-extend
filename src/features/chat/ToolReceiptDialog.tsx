@@ -13,11 +13,11 @@
  * the side panel root is small enough that fixed-position covers it).
  */
 
-import { copyText } from '@ai-matrx/kit/clipboard';
 import { getReceiptByCallId } from '@/lib/audit/log';
 import { type ToolReceipt, exportReceiptJws, verifyReceipt } from '@/lib/audit/receipt';
 import { cn } from '@/lib/utils';
 import { Button } from '@ai-matrx/design-system';
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { Check, Copy, ShieldAlert, ShieldCheck, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

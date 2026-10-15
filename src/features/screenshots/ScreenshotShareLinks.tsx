@@ -1,4 +1,3 @@
-import { copyText } from '@ai-matrx/kit/clipboard';
 import { ENV } from '@/config/env';
 import { requireActiveOrganizationId } from '@/lib/org/active-org';
 import { getSupabase } from '@/lib/supabase/client';
@@ -12,6 +11,7 @@ import {
   Input,
   Label,
 } from '@ai-matrx/design-system';
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { shortLinkUrl } from '@ai-matrx/kit/short-link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

@@ -14,7 +14,6 @@
  * in once and never see the prompt.
  */
 
-import { copyText } from '@ai-matrx/kit/clipboard';
 import { TabCaptureDialog } from '@/features/tools/TabCaptureDialog';
 import { confirmDestructive } from '@/lib/destructive/confirm';
 import { cn } from '@/lib/utils';
@@ -22,6 +21,7 @@ import { type RecordingEntry, useRecordingsStore } from '@/lib/video/recordings-
 import { type RecorderStatus, useTabVideoRecorder } from '@/lib/video/useTabVideoRecorder';
 import { Badge, Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { Switch } from '@ai-matrx/design-system';
+import { copyText } from '@ai-matrx/kit/clipboard';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.

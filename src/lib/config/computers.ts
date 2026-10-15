@@ -7,7 +7,9 @@ import { resolveKnob } from './knob-resolve';
 export async function nonComputerPlatforms(): Promise<string[] | null> {
   const [organizationId, user] = await Promise.all([getActiveOrganizationId(), getCurrentUser()]);
   if (!organizationId || !user?.id) {
-    countConfigEvent('config.non_computer_platforms_unavailable', { why: 'not signed in or no organization' });
+    countConfigEvent('config.non_computer_platforms_unavailable', {
+      why: 'not signed in or no organization',
+    });
     return null;
   }
   const r = await resolveKnob({
@@ -16,8 +18,16 @@ export async function nonComputerPlatforms(): Promise<string[] | null> {
     organizationId,
     userId: user.id,
   });
-  if (r.error || !Array.isArray(r.data) || !r.data.every((p) => typeof p === 'string' && /^[a-z0-9_-]+$/.test(p))) {
-    countConfigEvent('config.non_computer_platforms_unavailable', { error: r.error?.message ?? 'not a list of platform names' }, 'error');
+  if (
+    r.error ||
+    !Array.isArray(r.data) ||
+    !r.data.every((p) => typeof p === 'string' && /^[a-z0-9_-]+$/.test(p))
+  ) {
+    countConfigEvent(
+      'config.non_computer_platforms_unavailable',
+      { error: r.error?.message ?? 'not a list of platform names' },
+      'error',
+    );
     return null;
   }
   return r.data as string[];
@@ -25,7 +35,9 @@ export async function nonComputerPlatforms(): Promise<string[] | null> {
 
 /** The PostgREST `or` filter that keeps only computers (a NULL platform is a legacy computer). */
 export function computersOnlyFilter(excluded: readonly string[]): string {
-  return excluded.length === 0 ? 'platform.is.null,platform.not.is.null' : `platform.is.null,platform.not.in.(${excluded.join(',')})`;
+  return excluded.length === 0
+    ? 'platform.is.null,platform.not.is.null'
+    : `platform.is.null,platform.not.in.(${excluded.join(',')})`;
 }
 
 export function isComputerPlatform(platform: string | null, excluded: readonly string[]): boolean {

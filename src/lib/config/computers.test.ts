@@ -12,7 +12,9 @@ describe('only computers', () => {
     expect(isComputerPlatform(null, excluded)).toBe(true);
   });
   it('builds the filter from the knob-provided set', () => {
-    expect(computersOnlyFilter(excluded)).toBe('platform.is.null,platform.not.in.(web,chrome-extension,server)');
+    expect(computersOnlyFilter(excluded)).toBe(
+      'platform.is.null,platform.not.in.(web,chrome-extension,server)',
+    );
     expect(computersOnlyFilter(['web'])).toBe('platform.is.null,platform.not.in.(web)');
   });
 });

@@ -3,7 +3,6 @@
  * (sidepanel, SW, offscreen, content scripts) via the cross-context relay.
  */
 
-import { copyText } from '@ai-matrx/kit/clipboard';
 import { setBackendEnv, setBackendOverride, useBackendConfig } from '@/config/backend';
 import type { BackendEnv } from '@/config/env';
 import { AdminAgentFlagsPanel } from '@/features/debug/AdminAgentFlagsPanel';
@@ -35,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@ai-matrx/design-system';
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { downloadFile } from '@ai-matrx/kit/download';
 import {
   Activity,

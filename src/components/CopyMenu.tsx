@@ -12,9 +12,9 @@
  */
 
 import { useAuth } from '@/hooks/use-auth';
-import { copyText } from '@ai-matrx/kit/clipboard';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { Check, Copy, Sparkles, X } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 
