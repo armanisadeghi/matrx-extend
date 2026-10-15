@@ -5,7 +5,12 @@
  */
 import { pushNotice } from '@/state/notices';
 import pkg from '../../../package.json';
-import { appConfigNotice, appConfigVersionFloor, countConfigEvent, onAppConfigChange } from './index';
+import {
+  appConfigNotice,
+  appConfigVersionFloor,
+  countConfigEvent,
+  onAppConfigChange,
+} from './index';
 
 export function versionLess(a: string, b: string): boolean {
   const pa = a.split('.').map(Number);
@@ -25,7 +30,8 @@ export function applyStoredAppConfig(): void {
     if (!shown.has(id)) {
       shown.add(id);
       pushNotice({
-        tone: notice.level === 'critical' ? 'error' : notice.level === 'warning' ? 'warning' : 'info',
+        tone:
+          notice.level === 'critical' ? 'error' : notice.level === 'warning' ? 'warning' : 'info',
         title: notice.title,
         message: notice.body,
       });
@@ -36,7 +42,11 @@ export function applyStoredAppConfig(): void {
     const id = `floor|${floor}`;
     if (!shown.has(id)) {
       shown.add(id);
-      countConfigEvent('config.build_below_min_supported_version', { version: pkg.version, floor }, 'error');
+      countConfigEvent(
+        'config.build_below_min_supported_version',
+        { version: pkg.version, floor },
+        'error',
+      );
       pushNotice({
         tone: 'error',
         title: 'This version of Matrx Extend is out of date',

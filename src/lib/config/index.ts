@@ -175,7 +175,12 @@ export function appFlag(name: string): boolean {
 }
 
 /** The stored notice, or null when none. One counted read of the `notice` key. */
-export function appConfigNotice(): { level: 'info' | 'warning' | 'critical'; title: string; body: string; url?: string | null } | null {
+export function appConfigNotice(): {
+  level: 'info' | 'warning' | 'critical';
+  title: string;
+  body: string;
+  url?: string | null;
+} | null {
   return appConfig('notice') as ReturnType<typeof appConfigNotice>;
 }
 
@@ -183,7 +188,12 @@ export function appConfigNotice(): { level: 'info' | 'warning' | 'critical'; tit
 export function appConfigVersionFloor(): string | null {
   const r = getReader();
   const floor = r.versionFloor();
-  routeRead({ kind: 'app_config', feature: null, key: 'min_supported_app_version', source: r.forDisplay().source });
+  routeRead({
+    kind: 'app_config',
+    feature: null,
+    key: 'min_supported_app_version',
+    source: r.forDisplay().source,
+  });
   return floor;
 }
 

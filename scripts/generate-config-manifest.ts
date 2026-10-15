@@ -14,7 +14,12 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { buildConfigManifest } from '@ai-matrx/data/config-attestation';
-import { APP_CONFIG_KEYS, APP_SLUG, KNOB_FEATURES, PACKAGE_CHAT_FEATURES } from '../src/lib/config/registry';
+import {
+  APP_CONFIG_KEYS,
+  APP_SLUG,
+  KNOB_FEATURES,
+  PACKAGE_CHAT_FEATURES,
+} from '../src/lib/config/registry';
 
 const root = join(import.meta.dirname, '..');
 const arg = (n: string) => {
@@ -90,7 +95,12 @@ function main() {
   for (const k of Object.keys(knobs))
     if (!registeredKnobs.includes(k)) problems.push(`knob '${k}' is read but not registered`);
   // A registered knob with no explicit call site is read through the platform snapshot reader.
-  for (const k of registeredKnobs) knobs[k] ??= [PACKAGE_CHAT_FEATURES.has(k.slice(0, k.lastIndexOf('.'))) ? 'src/features/package-chat/knobs.ts' : 'src/lib/settings/platform-knobs.ts'];
+  for (const k of registeredKnobs)
+    knobs[k] ??= [
+      PACKAGE_CHAT_FEATURES.has(k.slice(0, k.lastIndexOf('.')))
+        ? 'src/features/package-chat/knobs.ts'
+        : 'src/lib/settings/platform-knobs.ts',
+    ];
   if (problems.length) {
     console.error(`config:manifest REFUSED:\n - ${problems.join('\n - ')}`);
     process.exit(1);

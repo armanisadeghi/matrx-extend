@@ -38,7 +38,7 @@ does not create a second file store.
   Screenshots tab resolves fresh authenticated bytes by `file_id` for previews
   and opens the already-loaded image in a local dialog. The separate Files action
   opens the durable route. Public sharing uses `@ai-matrx/media/share` with
-  the canonical `@ai-matrx/data/files` client. Its host link-manager slot uses
+  the canonical `@ai-matrx/files/client` client. Its host link-manager slot uses
   the owner-gated public share-link RPCs for expiration, view limits and
   revocation; no preview or expiring upload URL is shared.
 

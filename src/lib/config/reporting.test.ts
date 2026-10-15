@@ -10,7 +10,9 @@ vi.mock('@/lib/supabase/schemas', () => ({ platformDb: () => ({ rpc: vi.fn() }) 
 describe('config alarm listener (MV3 cold-wake rule)', () => {
   it('registers the onAlarm listener synchronously, before any await', async () => {
     const addListener = vi.fn();
-    (globalThis as unknown as { chrome: unknown }).chrome = { alarms: { onAlarm: { addListener } } };
+    (globalThis as unknown as { chrome: unknown }).chrome = {
+      alarms: { onAlarm: { addListener } },
+    };
     const { registerConfigAlarmListener } = await import('./reporting');
     registerConfigAlarmListener();
     expect(addListener).toHaveBeenCalledTimes(1);
