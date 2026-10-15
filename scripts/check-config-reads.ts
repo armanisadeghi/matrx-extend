@@ -6,13 +6,24 @@
  *   rpc('knob_resolve' | 'knob_snapshot'), from('app_config'), from('feature_knob').
  * Exit 0 clean · 1 offender.     pnpm check:config-reads [--self-test]
  */
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, relative } from 'node:path';
 
 const ROOT = join(import.meta.dirname, '..');
-const RAW = /rpc\(\s*['"`](knob_resolve|knob_snapshot)['"`]|from\(\s*['"`](app_config|feature_knob)['"`]/;
-const ALLOWED = (rel: string) => rel.startsWith('src/lib/config/') || rel === 'src/lib/settings/platform-knobs.ts' || rel.includes('/generated/');
+const RAW =
+  /rpc\(\s*['"`](knob_resolve|knob_snapshot)['"`]|from\(\s*['"`](app_config|feature_knob)['"`]/;
+const ALLOWED = (rel: string) =>
+  rel.startsWith('src/lib/config/') ||
+  rel === 'src/lib/settings/platform-knobs.ts' ||
+  rel.includes('/generated/');
 
 function* walk(dir: string): Generator<string> {
   for (const e of readdirSync(dir)) {
@@ -27,9 +38,18 @@ function run(root: string): number {
   for (const f of walk(join(root, 'src'))) {
     const rel = relative(root, f);
     if (ALLOWED(rel)) continue;
-    readFileSync(f, 'utf8').split('\n').forEach((l, i) => { if (RAW.test(l)) bad.push(`${rel}:${i + 1}  ${l.trim().slice(0, 100)}`); });
+    readFileSync(f, 'utf8')
+      .split('\n')
+      .forEach((l, i) => {
+        if (RAW.test(l)) bad.push(`${rel}:${i + 1}  ${l.trim().slice(0, 100)}`);
+      });
   }
-  if (bad.length) { console.error(`check:config-reads: ${bad.length} raw config read(s) outside src/lib/config/ (use resolveKnob / appConfig):\n  ${bad.join('\n  ')}`); return 1; }
+  if (bad.length) {
+    console.error(
+      `check:config-reads: ${bad.length} raw config read(s) outside src/lib/config/ (use resolveKnob / appConfig):\n  ${bad.join('\n  ')}`,
+    );
+    return 1;
+  }
   console.log('check:config-reads: clean');
   return 0;
 }

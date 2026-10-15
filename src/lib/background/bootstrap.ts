@@ -15,8 +15,6 @@ import { registerDocumentNetworkCaptureHost } from '@/lib/data-pattern/document-
  * works fine there and avoids the lazy-message-handler race.
  */
 
-import { initAppConfig, startAppConfig } from '@/lib/config';
-import { startConfigReporting } from '@/lib/config/reporting';
 import { ALARMS, STORAGE_KEYS } from '@/config/env';
 import {
   registerAgendaNotificationClicks,
@@ -30,6 +28,8 @@ import { logExtensionIdentityOnce } from '@/lib/auth/identity';
 import { registerSafariAuthorizationBackground } from '@/lib/auth/safari-background';
 import { stampDocumentSender } from '@/lib/background/document-event-relay';
 import { reconcileOnBoot as reconcileCdpOnBoot } from '@/lib/cdp/client';
+import { initAppConfig, startAppConfig } from '@/lib/config';
+import { startConfigReporting } from '@/lib/config/reporting';
 import { registerListPickerRelays } from '@/lib/data-pattern/list-picker-relay';
 import { hydrateBridgeTrafficEnabled, recordBridgeTraffic } from '@/lib/debug/bridge-traffic';
 import { log, startDebugRelay } from '@/lib/debug/log';
