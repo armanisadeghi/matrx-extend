@@ -150,6 +150,7 @@ async function observe(panel, expected = {}) {
         profileAbsent: !stored['matrx.user.profile'],
         organizationAbsent: !stored['matrx.org.active'],
         chatVisible: visible(chat),
+        swipeFileTabCount: document.querySelectorAll('button[role="tab"][title="Swipe file"]').length,
         chatSelected: chat?.getAttribute('aria-selected') === 'true',
         paneVisible: Boolean(active),
         composerVisible: active && visible(pane.querySelector('textarea')),
@@ -649,10 +650,17 @@ try {
           state.accessTokenAbsent &&
           state.profileAbsent &&
           state.organizationAbsent &&
+          state.swipeFileTabCount === 0 &&
           state.chatVisible,
         30_000,
       );
-      report.guest = { fresh: true, chat_visible: initial.chatVisible, after_reload: false };
+      assert.equal(initial.swipeFileTabCount, 0, 'Swipe file tab must be absent for a guest');
+      report.guest = {
+        fresh: true,
+        chat_visible: initial.chatVisible,
+        swipe_file_tab_absent: true,
+        after_reload: false,
+      };
 
       const web = page;
       let fixture = null;
