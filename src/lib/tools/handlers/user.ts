@@ -21,7 +21,7 @@
  * plan approval) and live alongside it.
  */
 
-import { addTasks, savePlan, setPlanStatus } from '@/lib/lists/storage';
+import { savePlan, setPlanStatus } from '@/lib/lists/storage';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { resolveTabIdArg } from '@/lib/tools/handlers/_active-tab';
@@ -488,15 +488,9 @@ export const update_plan: ToolHandler<UpdatePlanArgs, unknown> = {
     const approved = choice.toLowerCase().startsWith('approve');
     if (ctx.conversationId) {
       void setPlanStatus(ctx.conversationId, approved ? 'approved' : 'rejected');
-      // Auto-populate tasks from approved plan steps so the live tasklist
-      // has something to show without the model needing a separate call.
-      if (approved && steps.length) {
-        void addTasks(
-          ctx.conversationId,
-          steps.map((s) => ({ title: s })),
-          'agent',
-        );
-      }
+      // The SERVER turns an approved plan into chat.agent_task rows when this
+      // result is posted back (aidream `seed_tasks_from_approved_plan`) — one
+      // path for every client, so no client writes plan tasks.
     }
     // The card now always offers an "Other" radio + an "Anything else?" note.
     // Prefer the typed-out freeform (the user amending the plan) over the bare
