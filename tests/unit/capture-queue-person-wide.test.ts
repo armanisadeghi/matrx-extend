@@ -38,7 +38,7 @@ interface Opened {
   postgresChanges: { filter?: string }[];
 }
 const opened: Opened[] = [];
-vi.mock('@ai-matrx/realtime', () => ({
+vi.mock('@ai-matrx/data/realtime', () => ({
   defineChannelNamespace: () => ({ topic: () => 'capture:person' }),
   onRealtimeManagerChange: (cb: (manager: unknown) => void) => {
     cb({

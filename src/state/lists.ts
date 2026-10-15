@@ -18,7 +18,7 @@ import {
 import type { Plan, Task, UserTodo } from '@/lib/lists/types';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { useChannel } from '@ai-matrx/realtime/react';
+import { useChannel } from '@ai-matrx/data/realtime/react';
 import { useCallback, useEffect } from 'react';
 import { create } from 'zustand';
 
@@ -78,7 +78,7 @@ async function refreshAll(conversationId: string): Promise<void> {
  * active conversation's data changes from elsewhere (SW tool handler,
  * a parallel sidepanel, another tab editing the same data, etc.).
  *
- * REALTIME: `@ai-matrx/realtime` owns the `chat.agent_task` channel. What was
+ * REALTIME: `@ai-matrx/data/realtime` owns the `chat.agent_task` channel. What was
  * here was a hand-rolled `supabase.channel(...)` with its own
  * `crypto.randomUUID()` topic suffix (a `uniqueChannelTopic` twin — the package
  * mints the unique instance topic for a Postgres Changes channel itself), its

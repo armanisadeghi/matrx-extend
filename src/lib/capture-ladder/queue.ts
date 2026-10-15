@@ -25,17 +25,17 @@ import { listMemberOrganizations } from '@/lib/org/active-org';
 import { failDbCall } from '@/lib/supabase/db-failure';
 import { mediaDb } from '@/lib/supabase/schemas';
 import { formatDurationMs } from '@ai-matrx/kit/format';
-import type { ChannelHandle } from '@ai-matrx/realtime';
+import type { ChannelHandle } from '@ai-matrx/data/realtime';
 import {
   type RealtimeManager,
   defineChannelNamespace,
   onRealtimeManagerChange,
-} from '@ai-matrx/realtime';
+} from '@ai-matrx/data/realtime';
 
 /**
  * ONE PLACE NAMES THE CHANNEL. supabase-js dedupes channels by topic, so two
  * surfaces that both picked `"capture"` would silently share one channel and
- * lose each other's bindings; `@ai-matrx/realtime` closes that off with a
+ * lose each other's bindings; `@ai-matrx/data/realtime` closes that off with a
  * declared namespace, which only works if the declaration lives in one module.
  */
 const captureHandoffChannel = defineChannelNamespace({

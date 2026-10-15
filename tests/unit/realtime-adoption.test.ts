@@ -2,7 +2,7 @@
  * THE GUARD FOR THE CLASS: no hand-rolled Supabase realtime channels in this
  * repo, ever again.
  *
- * `@ai-matrx/realtime` exists because the hard parts of realtime are invisible
+ * `@ai-matrx/data/realtime` exists because the hard parts of realtime are invisible
  * until they hurt — echo storms that freeze a tab, a reconnect with no re-read
  * that leaves a permanently wrong screen looking healthy, a private Database
  * Broadcast channel whose join was refused while it reports itself connected.
@@ -62,7 +62,7 @@ describe('realtime adoption', () => {
     expect(
       offenders,
       'Hand-rolled Supabase realtime channels found. Open the channel through ' +
-        '@ai-matrx/realtime instead: useChannel (React), or manager.open / ' +
+        '@ai-matrx/data/realtime instead: useChannel (React), or manager.open / ' +
         'subscribeToRealtimeManager (module-level owners). See the package README.',
     ).toEqual([]);
   });

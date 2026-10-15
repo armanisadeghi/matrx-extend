@@ -26,7 +26,7 @@
  * inverse: publish `extension->frontend`, await the matching
  * `frontend->extension` reply.
  *
- * THE CHANNEL IS `@ai-matrx/realtime`'s, NOT OURS (adopted 2026-09-07)
+ * THE CHANNEL IS `@ai-matrx/data/realtime`'s, NOT OURS (adopted 2026-09-07)
  * -------------------------------------------------------------------
  * This module used to hand-roll `supabase.channel(...)`: its own subscribe
  * promise, its own 10s join timeout, no reconnect at all (a dropped channel
@@ -66,7 +66,7 @@ import {
   handleFrontendRpc,
 } from '@/lib/frontend-bridge/handler';
 import { ensureRealtimeHost } from '@/lib/realtime/host';
-import { type ChannelHandle, defineChannelNamespace } from '@ai-matrx/realtime';
+import { type ChannelHandle, defineChannelNamespace } from '@ai-matrx/data/realtime';
 import { z } from 'zod';
 
 // ─── Wire format (CONTRACTUAL — must match frontend) ────────────────────────

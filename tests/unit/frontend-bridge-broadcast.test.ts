@@ -131,7 +131,7 @@ describe('frontend bridge Broadcast transport', () => {
   }, 15_000);
 
   it('puts the BARE BridgeEnvelope on the wire — no Matrx envelope, ever', async () => {
-    // @ai-matrx/realtime normally wraps a broadcast in `{v, cid, eid, ts, data}`.
+    // @ai-matrx/data/realtime normally wraps a broadcast in `{v, cid, eid, ts, data}`.
     // This channel declares `wire: {mode:"raw"}` because the frontend and every
     // deployed build of this extension read the `BridgeEnvelope` directly. If a
     // future edit drops that declaration, the two halves go mute to each other

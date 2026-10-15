@@ -30,7 +30,7 @@ import type {
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { agentChatDb, chatDb } from '@/lib/supabase/schemas';
-import { currentRealtimeManager } from '@ai-matrx/realtime';
+import { currentRealtimeManager } from '@ai-matrx/data/realtime';
 import { z } from 'zod';
 
 const PLAN_KEY = 'matrx.lists.plans';

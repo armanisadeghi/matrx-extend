@@ -22,7 +22,7 @@ vi.mock('@/lib/supabase/db-failure', () => ({
     throw new Error(`db refused: ${(error as { message?: string })?.message ?? 'unknown'}`);
   }),
 }));
-vi.mock('@ai-matrx/realtime', () => ({
+vi.mock('@ai-matrx/data/realtime', () => ({
   defineChannelNamespace: () => ({ topic: () => 'topic' }),
   onRealtimeManagerChange: () => () => undefined,
 }));

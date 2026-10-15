@@ -1,7 +1,7 @@
 /**
  * The sidepanel's ONE realtime provider.
  *
- * `@ai-matrx/realtime` builds exactly one manager per app realm, and that
+ * `@ai-matrx/data/realtime` builds exactly one manager per app realm, and that
  * manager owns the write ledger that makes an optimistic write's own echo
  * recognizable. A second provider anywhere in the tree is a second ledger, so
  * one manager's own writes look REMOTE to the other and every one costs a
@@ -23,7 +23,7 @@
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
 import { useAuthStore } from '@/state/auth';
-import { RealtimeProvider } from '@ai-matrx/realtime/react';
+import { RealtimeProvider } from '@ai-matrx/data/realtime/react';
 import type { ReactNode } from 'react';
 
 export function RealtimeHost({ children }: { children: ReactNode }): React.JSX.Element {

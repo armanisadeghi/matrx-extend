@@ -2,7 +2,7 @@
  * THE ONE realtime manager for this extension's NON-REACT contexts — the MV3
  * service worker and the offscreen document.
  *
- * `@ai-matrx/realtime` builds exactly one manager per app, and in a React app
+ * `@ai-matrx/data/realtime` builds exactly one manager per app, and in a React app
  * `<RealtimeProvider>` builds it and PUBLISHES it (`setAmbientRealtimeManager`)
  * so non-hook owners can read it back. This extension has two kinds of context
  * and only one of them has React:
@@ -39,7 +39,7 @@ import {
   createInertEnvironment,
   createRealtimeManager,
   setAmbientRealtimeManager,
-} from '@ai-matrx/realtime';
+} from '@ai-matrx/data/realtime';
 
 interface Host {
   manager: RealtimeManager;

@@ -3,7 +3,7 @@
  *
  * supabase-js dedupes channels by topic, so two features that both picked
  * `"lists"` would silently share one channel and lose each other's bindings.
- * `@ai-matrx/realtime` closes that off with declared namespaces — a second,
+ * `@ai-matrx/data/realtime` closes that off with declared namespaces — a second,
  * DIFFERENT declaration of the same name throws — which only works if the
  * declaration lives in one module both consumers import. Both lists surfaces
  * (`ListsHubView` and `useListsSubscriber`) watch the same table, so this is
@@ -16,7 +16,7 @@
  * `crypto.randomUUID()` suffix this repo used to append itself.
  */
 
-import { defineChannelNamespace } from '@ai-matrx/realtime';
+import { defineChannelNamespace } from '@ai-matrx/data/realtime';
 
 /** Every `chat.agent_task` row the signed-in user can see (RLS gates delivery). */
 export const listsAllTasksChannel = defineChannelNamespace({

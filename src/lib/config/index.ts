@@ -112,7 +112,11 @@ function getReader() {
       get publishableKey() {
         return ENV.SUPABASE_PUBLISHABLE_KEY;
       },
-      serverUrl: BUNDLED_APP_CONFIG.config.aidream_server_url,
+      get serverUrl() {
+        const url = BUNDLED_APP_CONFIG.config.aidream_server_url;
+        if (!url) throw new Error("The bundled app config has no aidream_server_url; rebuild the extension config.");
+        return url;
+      },
     },
     bundled: BUNDLED_APP_CONFIG,
     cache: {

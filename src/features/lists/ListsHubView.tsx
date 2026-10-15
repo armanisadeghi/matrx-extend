@@ -8,7 +8,7 @@
  * broadcasts, and `chat.agent_task` Realtime events so server task writes
  * repaint without polling.
  *
- * REALTIME: both channels are `@ai-matrx/realtime`'s. What was here were two
+ * REALTIME: both channels are `@ai-matrx/data/realtime`'s. What was here were two
  * hand-rolled `supabase.channel(...)` blocks with their own `removeChannel`
  * teardown, no reconnect (a dropped channel stayed dropped for the life of the
  * panel), no dedup, and no catch-up read — a task written while the sidepanel
@@ -38,7 +38,7 @@ import { cn } from '@/lib/utils';
 import { ConfirmDialog } from '@ai-matrx/design-system';
 import { Badge, Button } from '@ai-matrx/design-system';
 import { ScrollArea } from '@ai-matrx/design-system';
-import { useChannel } from '@ai-matrx/realtime/react';
+import { useChannel } from '@ai-matrx/data/realtime/react';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import {
