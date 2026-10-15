@@ -12,29 +12,6 @@
  * an optional bullet list of metadata, then the content in a fenced block.
  */
 
-export async function copyToClipboard(text: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    // Fallback: hidden textarea (old contexts, deny-listed permissions, etc.)
-    try {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      ta.style.pointerEvents = 'none';
-      document.body.appendChild(ta);
-      ta.select();
-      const ok = document.execCommand('copy');
-      ta.remove();
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-}
-
 export type AgentWrapFormat = 'markdown' | 'json' | 'text' | 'html' | 'tsv' | 'csv';
 
 export interface AgentWrapInput {

@@ -30,11 +30,11 @@ vi.mock('@/hooks/use-active-tab', () => ({
     pageKey !== null && pageKey === bridge.page.pageKey,
 }));
 vi.mock('@/hooks/use-auth', () => ({ useAuth: () => ({ isAdmin: false }) }));
-vi.mock('@/lib/clipboard/copy', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@/lib/clipboard/copy')>();
+vi.mock('@ai-matrx/kit/clipboard', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@ai-matrx/kit/clipboard')>();
   return {
     ...original,
-    copyToClipboard: async (text: string) => {
+    copyText: async (text: string) => {
       bridge.copied.push(text);
       return true;
     },

@@ -8,7 +8,7 @@
  * another AI chat.
  */
 
-import { copyToClipboard } from '@/lib/clipboard/copy';
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { cn } from '@/lib/utils';
 import type { ChatMessage } from '@/state/chat';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
@@ -97,7 +97,7 @@ export function CopyConversationButton({
 
   const handleCopy = async () => {
     const content = formatConversation(getMessages(), opts, getAgent());
-    const ok = await copyToClipboard(content);
+    const ok = await copyText(content);
     if (ok) {
       setCopied(true);
       setTimeout(() => {

@@ -18,6 +18,7 @@
  * `lib/audit/log`.
  */
 
+import { copyText } from '@ai-matrx/kit/clipboard';
 import {
   DeviceKeyLockUnavailableError,
   DeviceKeyOutcomeUnknownError,
@@ -159,7 +160,9 @@ export function AuditKeyCard() {
     setCopied(false);
     try {
       const pk = await exportPublicKeyJwk();
-      await navigator.clipboard.writeText(JSON.stringify(pk.publicKeyJwk, null, 2));
+      if (!(await copyText(JSON.stringify(pk.publicKeyJwk, null, 2)))) {
+        throw new Error('The clipboard refused the public key');
+      }
       setCopied(true);
     } catch (err) {
       log.error('ui', 'Audit public key export failed', safeErrorKind(err));

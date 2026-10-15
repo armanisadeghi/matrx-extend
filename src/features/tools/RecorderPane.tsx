@@ -14,6 +14,7 @@
  * in once and never see the prompt.
  */
 
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { TabCaptureDialog } from '@/features/tools/TabCaptureDialog';
 import { confirmDestructive } from '@/lib/destructive/confirm';
 import { cn } from '@/lib/utils';
@@ -336,7 +337,7 @@ function RecordingRow({
 }) {
   const captured = useMemo(() => new Date(entry.capturedAt), [entry.capturedAt]);
   const handleCopyId = (): void => {
-    void navigator.clipboard.writeText(entry.fileId).catch(() => undefined);
+    void copyText(entry.fileId);
   };
   return (
     <li className="flex items-start gap-2 px-3 py-2">

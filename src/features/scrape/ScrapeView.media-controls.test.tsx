@@ -53,8 +53,8 @@ vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => 'org-seed-garden',
   onActiveOrganizationChange: () => () => undefined,
 }));
-vi.mock('@/lib/clipboard/copy', () => ({
-  copyToClipboard: async (text: string) => {
+vi.mock('@ai-matrx/kit/clipboard', () => ({
+  copyText: async (text: string) => {
     mocks.copiedText(text);
     return true;
   },

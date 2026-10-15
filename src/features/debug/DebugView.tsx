@@ -3,6 +3,7 @@
  * (sidepanel, SW, offscreen, content scripts) via the cross-context relay.
  */
 
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { setBackendEnv, setBackendOverride, useBackendConfig } from '@/config/backend';
 import type { BackendEnv } from '@/config/env';
 import { AdminAgentFlagsPanel } from '@/features/debug/AdminAgentFlagsPanel';
@@ -176,7 +177,7 @@ export function DebugView() {
 
   const copyAll = async () => {
     const text = filtered.slice().reverse().map(formatEventLine).join('\n');
-    await navigator.clipboard.writeText(text);
+    if (!(await copyText(text))) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };

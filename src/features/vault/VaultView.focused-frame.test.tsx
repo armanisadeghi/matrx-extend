@@ -47,7 +47,7 @@ vi.mock('@/features/vault/useVault', () => ({
   }),
 }));
 vi.mock('@/lib/messaging/native', () => ({ send: async () => null, on: () => () => {} }));
-vi.mock('@/lib/clipboard/copy', () => ({ copyToClipboard: vi.fn() }));
+vi.mock('@ai-matrx/kit/clipboard', () => ({ copyText: vi.fn() }));
 vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
 
 import { VaultView } from './VaultView';

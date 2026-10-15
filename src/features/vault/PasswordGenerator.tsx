@@ -1,4 +1,4 @@
-import { copyToClipboard } from '@/lib/clipboard/copy';
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { resolveGeneratedCredentialLimits } from '@/lib/credentials/generation-limits';
 import type {
   GenerationDiscoveryResponse,
@@ -330,7 +330,7 @@ export function PasswordGenerator({
     busyRef.current = true;
     setBusy(true);
     try {
-      const copied = await copyToClipboard(generatedValue);
+      const copied = await copyText(generatedValue);
       if (admission.current())
         setStatus(
           copied

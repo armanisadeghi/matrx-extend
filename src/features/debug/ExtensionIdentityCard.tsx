@@ -11,6 +11,7 @@
  * "Authorization page could not be loaded" with no other clues.
  */
 
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { readExtensionIdentity } from '@/lib/auth/identity';
 import { cn } from '@/lib/utils';
 import { Button } from '@ai-matrx/design-system';
@@ -31,12 +32,7 @@ export function ExtensionIdentityCard() {
   const dump = useMemo(() => JSON.stringify(identity, null, 2), [identity]);
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(dump);
-      setCopied(true);
-    } catch {
-      /* clipboard rejected — silent fall-through */
-    }
+    if (await copyText(dump)) setCopied(true);
   };
 
   return (

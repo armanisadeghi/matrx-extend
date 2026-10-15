@@ -35,7 +35,7 @@ import type {
   VaultItemSummary,
 } from '@/lib/api/routes/vault';
 import { WEBSITE_LOGIN_DEFINITION_KEY, describeVaultFailure } from '@/lib/api/routes/vault';
-import { copyToClipboard } from '@/lib/clipboard/copy';
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { captureUpdateTargetLabel } from '@/lib/credentials/capture-update-targets';
 import {
   type UriMatchMode,
@@ -1182,7 +1182,7 @@ function FieldRow({
       setError(describeVaultFailure(result.failure));
       return;
     }
-    const ok = await copyToClipboard(result.data);
+    const ok = await copyText(result.data);
     setCopied(ok);
     setError(ok ? null : 'Could not reach the clipboard.');
     setTimeout(() => setCopied(false), 2000);

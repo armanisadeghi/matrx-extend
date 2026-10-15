@@ -13,6 +13,7 @@
  * the side panel root is small enough that fixed-position covers it).
  */
 
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { getReceiptByCallId } from '@/lib/audit/log';
 import { type ToolReceipt, exportReceiptJws, verifyReceipt } from '@/lib/audit/receipt';
 import { cn } from '@/lib/utils';
@@ -73,20 +74,16 @@ export function ToolReceiptDialog({
 
   const handleCopyJson = async () => {
     if (!receipt) return;
-    try {
-      await navigator.clipboard.writeText(JSON.stringify(receipt, null, 2));
-      setCopied('json');
-    } catch (err) {
-      console.warn('[audit] clipboard write failed', err);
-    }
+    if (await copyText(JSON.stringify(receipt, null, 2))) setCopied('json');
+    else console.warn('[audit] clipboard write failed');
   };
 
   const handleCopyJws = async () => {
     if (!receipt) return;
     try {
       const jws = await exportReceiptJws(receipt);
-      await navigator.clipboard.writeText(jws);
-      setCopied('jws');
+      if (await copyText(jws)) setCopied('jws');
+      else console.warn('[audit] clipboard write failed');
     } catch (err) {
       console.warn('[audit] JWS export failed', err);
     }

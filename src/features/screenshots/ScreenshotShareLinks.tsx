@@ -1,3 +1,4 @@
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { ENV } from '@/config/env';
 import { requireActiveOrganizationId } from '@/lib/org/active-org';
 import { getSupabase } from '@/lib/supabase/client';
@@ -98,12 +99,8 @@ export function ScreenshotShareLinks({
     };
   }, [open, reload]);
   const copy = async (url: string) => {
-    try {
-      await navigator.clipboard.writeText(url);
-      setNotice('Link copied');
-    } catch {
-      setError('Could not copy. Select the link and copy it manually.');
-    }
+    if (await copyText(url)) setNotice('Link copied');
+    else setError('Could not copy. Select the link and copy it manually.');
   };
   const mutate = async (operation: () => Promise<void>) => {
     if (busyRef.current) return;

@@ -12,7 +12,7 @@
  */
 
 import { useAuth } from '@/hooks/use-auth';
-import { copyToClipboard } from '@/lib/clipboard/copy';
+import { copyText } from '@ai-matrx/kit/clipboard';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
 import { Check, Copy, Sparkles, X } from 'lucide-react';
@@ -48,7 +48,7 @@ export function CopyButton({ text, title = 'Copy', className, size = 'sm' }: Cop
     let ok = false;
     try {
       const value = typeof text === 'function' ? await text() : text;
-      ok = await copyToClipboard(value);
+      ok = await copyText(value);
     } catch {
       // Content generation can fail (for example, unsupported JSON). Never
       // show success when nothing was written to the clipboard.
@@ -119,7 +119,7 @@ export function CopyMenu({
     let failureMessage = '✕ Copy failed — click the panel first, then retry';
     try {
       const content = await o.getContent();
-      ok = await copyToClipboard(content);
+      ok = await copyText(content);
     } catch {
       failureMessage = '✕ Could not prepare this content for copy';
     }
