@@ -6883,6 +6883,11 @@
    "application/json"
   ]
  },
+ "/scheduling/device-tasks": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/scheduling/run-now/{task_id}": {
   "post": []
  },
