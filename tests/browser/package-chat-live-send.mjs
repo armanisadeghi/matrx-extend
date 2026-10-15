@@ -232,20 +232,34 @@ try {
   });
   await pcdp.send('ServiceWorker.enable');
   const swWorker = context.serviceWorkers().find((w) => w.url().includes(extensionId));
-  const swClosed = swWorker ? new Promise((res) => swWorker.on('close', () => res(true))) : Promise.resolve(false);
+  const swClosed = swWorker
+    ? new Promise((res) => swWorker.on('close', () => res(true)))
+    : Promise.resolve(false);
   const assistantBefore = await page.locator(ASSISTANT).count();
-  await composer.fill('Write about 400 words on how tide pools work, in plain paragraphs, no title and no preamble.');
+  await composer.fill(
+    'Write about 400 words on how tide pools work, in plain paragraphs, no title and no preamble.',
+  );
   await composer.press('Enter');
   await page.waitForFunction(
-    ([sel, n]) => document.querySelectorAll(sel).length > n && [...document.querySelectorAll(sel)].at(-1).innerText.trim().length > 40,
+    ([sel, n]) =>
+      document.querySelectorAll(sel).length > n &&
+      [...document.querySelectorAll(sel)].at(-1).innerText.trim().length > 40,
     [ASSISTANT, assistantBefore],
     { timeout: 60_000 },
   );
   const midText = await lastAssistantText(page);
-  const running = [...versions.values()].filter((v) => v.runningStatus === 'running' && (v.scriptURL || '').includes(extensionId));
-  for (const v of running) await pcdp.send('ServiceWorker.stopWorker', { versionId: v.versionId }).catch((e) => console.log(`  stopWorker: ${e}`));
-  const killed = await Promise.race([swClosed, new Promise((r) => setTimeout(() => r(false), 6000))]) ||
-    [...versions.values()].some((v) => (v.scriptURL || '').includes(extensionId) && v.runningStatus !== 'running');
+  const running = [...versions.values()].filter(
+    (v) => v.runningStatus === 'running' && (v.scriptURL || '').includes(extensionId),
+  );
+  for (const v of running)
+    await pcdp
+      .send('ServiceWorker.stopWorker', { versionId: v.versionId })
+      .catch((e) => console.log(`  stopWorker: ${e}`));
+  const killed =
+    (await Promise.race([swClosed, new Promise((r) => setTimeout(() => r(false), 6000))])) ||
+    [...versions.values()].some(
+      (v) => (v.scriptURL || '').includes(extensionId) && v.runningStatus !== 'running',
+    );
   const detail = `${running.length} running worker(s) stopped`;
   check(
     'service worker was terminated mid-stream',
@@ -256,7 +270,9 @@ try {
   const final2 = await lastAssistantText(page);
   check(
     'answer still completes after the worker died',
-    done2 && final2.length > midText.length + 400 && /[.!?]["')\]]?\s*(\d{1,2}:\d{2}\s*[AP]M)?$/.test(final2),
+    done2 &&
+      final2.length > midText.length + 400 &&
+      /[.!?]["')\]]?\s*(\d{1,2}:\d{2}\s*[AP]M)?$/.test(final2),
     `${midText.length} chars at kill -> ${final2.length} final; ends: ${final2.slice(-40).replace(/\n/g, ' ')}`,
   );
   await page.screenshot({ path: join(SHOTS, '3-after-worker-kill.png') });
@@ -285,7 +301,13 @@ try {
     final2b === final2,
     `${final2b.length} vs ${final2.length} chars`,
   );
-  { let k = 0; while (k < final2.length && final2[k] === final2b[k]) k++; console.log(`  diff at ${k}: streamed[${JSON.stringify(final2.slice(Math.max(0,k-20), k+30))}] stored[${JSON.stringify(final2b.slice(Math.max(0,k-20), k+30))}]`); }
+  {
+    let k = 0;
+    while (k < final2.length && final2[k] === final2b[k]) k++;
+    console.log(
+      `  diff at ${k}: streamed[${JSON.stringify(final2.slice(Math.max(0, k - 20), k + 30))}] stored[${JSON.stringify(final2b.slice(Math.max(0, k - 20), k + 30))}]`,
+    );
+  }
   await reopened.screenshot({ path: join(SHOTS, '4-reopened.png') });
   if (errors.length) console.log(`  page errors: ${errors.slice(0, 5).join(' | ')}`);
 } finally {
