@@ -6,7 +6,7 @@ The Chat and Pilot surfaces each own exactly one `useListsSubscriber` call while
 visible. `TaskPanel` and `TaskPanelChip` are renderers over the shared Zustand state; they must
 never create their own subscriptions.
 
-**Realtime is `@ai-matrx/realtime`'s — never a hand-rolled `supabase.channel(...)`** (guard:
+**Realtime is `@ai-matrx/data/realtime`'s — never a hand-rolled `supabase.channel(...)`** (guard:
 `tests/unit/realtime-adoption.test.ts`). The three channels this feature owns are declared once
 in [`src/lib/lists/realtime.ts`](../../lib/lists/realtime.ts) and opened with `useChannel`:
 
@@ -34,7 +34,7 @@ Three things the package now handles that this feature used to get wrong:
 
 ## Change log
 
-- 2026-09-07 — Moved all three channels onto `@ai-matrx/realtime`; deleted `createTaskChannelTopic`
+- 2026-09-07 — Moved all three channels onto `@ai-matrx/data/realtime`; deleted `createTaskChannelTopic`
   (a `uniqueChannelTopic` twin — now a row in `scripts/package-twins.json`), the `removeChannel`
   teardowns, and the `CHANNEL_ERROR` console lines. Added the catch-up reads the feature never
   had, and the write-ledger registration on `updateTask`. The hub's DETAIL channel also gained the

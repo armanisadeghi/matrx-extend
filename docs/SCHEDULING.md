@@ -384,7 +384,7 @@ All four tables are RLS-protected with owner-only policies: a row is readable / 
 ## 10. Real-time updates (optional, but recommended)
 
 🚨 **Never hand-write `supabase.channel(...)`.** Every realtime subscription in this repo rides
-`@ai-matrx/realtime`; a hand-rolled channel is a code-review defect and `pnpm vitest run`
+`@ai-matrx/data/realtime`; a hand-rolled channel is a code-review defect and `pnpm vitest run`
 (`tests/unit/realtime-adoption.test.ts`) fails on one. The reason is not style: a hand-rolled
 channel has no reconnect, no dedup, no ordered handler queue, and — the defect that actually
 bites here — no catch-up read, so every run that finished while the panel was closed simply
@@ -393,8 +393,8 @@ never arrives and the screen goes on looking healthy.
 Subscribe to `sch_run` changes on visible tasks so the UI updates live as runs progress:
 
 ```ts
-import { defineChannelNamespace } from "@ai-matrx/realtime";
-import { useChannel } from "@ai-matrx/realtime/react";
+import { defineChannelNamespace } from "@ai-matrx/data/realtime";
+import { useChannel } from "@ai-matrx/data/realtime/react";
 
 const runsChannel = defineChannelNamespace({
   namespace: "extend-scheduler-runs",

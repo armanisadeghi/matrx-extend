@@ -15,7 +15,7 @@ The frontend bridge has two transports with one action handler:
 capabilities never advertise privileged or ask-user tools. `broadcast.ts`
 only adapts direction/correlation and must not fork action behavior.
 
-The Broadcast channel is `@ai-matrx/realtime`'s (`wire: {mode:"raw"}` +
+The Broadcast channel is `@ai-matrx/data/realtime`'s (`wire: {mode:"raw"}` +
 `foreignTopic`, because the deployed frontend and every shipped extension
 build read the bare `BridgeEnvelope` off the wire). The MANAGER is the service
 worker realm's, from `src/lib/realtime/host.ts` — this module must never build
