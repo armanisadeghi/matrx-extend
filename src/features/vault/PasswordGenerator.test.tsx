@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
 }));
 vi.mock('@/lib/supabase/schemas', () => ({ platformDb: () => ({ rpc: mocks.rpc }) }));
 vi.mock('@/lib/clipboard/copy', () => ({ copyToClipboard: mocks.copy }));
+vi.mock('@/lib/config', () => ({ recordKnobRead: vi.fn() }));
 import { PasswordGenerator } from './PasswordGenerator';
 
 const offer = {
