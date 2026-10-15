@@ -1,5 +1,5 @@
 import { claimRun } from '@/lib/agenda/queries';
-import { claimTask } from '@/lib/scheduler-client/claim';
+import { claimTask } from '@ai-matrx/data/scheduler';
 import { schedulerDb } from '@/lib/supabase/schemas';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -87,8 +87,7 @@ describe('scheduler run organization provenance', () => {
     expect(rpc).toHaveBeenCalledWith('sch_run_claim', {
       p_task_id: TASK_ID,
       p_surface: 'chrome-extension-chat',
-      p_trigger_id: null,
-      p_queue: null,
+      // @ai-matrx/data/scheduler omits an absent trigger and queue; the door defaults both to null.
       p_lease_seconds: 600,
     });
     // The point of the change: none of these leave the client any more.

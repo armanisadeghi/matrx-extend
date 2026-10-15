@@ -32,7 +32,7 @@ import {
   TaskClaimRaceError,
   type TaskEvent,
   createSchedulerClient,
-} from '@/lib/scheduler-client';
+} from '@ai-matrx/data/scheduler';
 import { getMachineryAuthoredSupabase } from '@/lib/supabase/client';
 import { schedulerDb } from '@/lib/supabase/schemas';
 

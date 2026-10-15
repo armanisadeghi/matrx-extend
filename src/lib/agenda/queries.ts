@@ -614,7 +614,7 @@ export async function claimRun(
   // 🚨 THE SECOND CLAIM IMPLEMENTATION, AND IT MINTED ITS OWN LEASE TOO.
   // (SECURITY-SWEEP, 2026-09-21.) Holding a run's claim_token IS holding the run, so a client
   // that chose it could write one it already knew onto somebody else's run. Both claim paths
-  // — this one and `scheduler-client/claim.ts::claimTask` — now go through
+  // — this one and `@ai-matrx/data/scheduler`'s `claimTask` — now go through
   // `scheduler.sch_run_claim` (SECURITY DEFINER), which mints the token, takes
   // `organization_id` / `user_id` / `due_at` / `queue` from the PERSISTED task and writes
   // `metadata.claim_protocol` itself. A trigger on `scheduler.sch_run` refuses any client
@@ -645,7 +645,7 @@ export async function claimRun(
  * (audit P2-15). Unconditional `.eq('id')` updates let a late finisher —
  * e.g. a run the reaper already failed for an expired lease — overwrite the
  * terminal row (`success` stomping `failed`, or re-nulling a fresh claim's
- * token). The scheduler-client twins gate on claim_token; the agenda façade
+ * token). The @ai-matrx/data/scheduler claims gate on claim_token; the agenda façade
  * gates on status, which is the equivalent invariant the reaper maintains.
  * Errors are logged (they used to be silently ignored — a failed write left
  * the row stuck while the UI believed it finished).
