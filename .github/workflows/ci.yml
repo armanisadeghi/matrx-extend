@@ -137,6 +137,12 @@ jobs:
       - name: the sign-out scope guard can still fail (self-test)
         run: pnpm check:signout-scope:self-test
 
+      - name: Config reads go through the counted door (config attestation)
+        run: pnpm check:config-reads && pnpm check:config-reads:self-test
+
+      - name: No new hard-coded settings (ratchet)
+        run: pnpm check:settings-hardcoded && pnpm check:settings-hardcoded:self-test
+
       # EVERY LINK LEAVING AI MATRX CARRIES OUR REFERRAL DATA (Arman, 2026-10-12). A raw
       # <a target="_blank">, literal third-party anchor, window.open, chrome.tabs.create without
       # withReferral, or a hand-rolled utm_source outside @ai-matrx/kit/outbound fails. Zero tolerance.

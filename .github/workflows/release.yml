@@ -187,6 +187,36 @@ jobs:
           echo "sha=$head_sha" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
+      - name: Attest the config manifest (advisory)
+        id: attest
+        working-directory: matrx-extend
+        shell: bash
+        env:
+          SUPABASE_MATRIX_SECRET_KEY: ${{ secrets.SUPABASE_MATRIX_SECRET_KEY }}
+          WXT_SUPABASE_URL: ${{ secrets.WXT_SUPABASE_URL }}
+          WXT_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.WXT_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          # Config attestation (common-docs/systems/platform/app-config/attestation/FEATURE.md): the manifest is
+          # generated from the typed registry at the SAME sha the receipt names, then attested. Advisory pre-launch:
+          # a failure is a loud warning annotation, never a failed release.
+          sha="${{ steps.candidate.outputs.sha }}"
+          if [[ -z "${SUPABASE_MATRIX_SECRET_KEY:-}" ]]; then
+            echo "::warning title=NOT ATTESTED::matrx-extend ${sha}: SUPABASE_MATRIX_SECRET_KEY is not configured for this repository"
+            echo "### Config attestation: NOT ATTESTED (no service key)" >> "$GITHUB_STEP_SUMMARY"; exit 0
+          fi
+          if node --input-type=module -e "
+            import { readFileSync } from 'node:fs';
+            const r = JSON.parse(readFileSync('.output/release-receipt.json','utf8'));
+            if (r.sourceSha !== process.argv[1]) { console.error('receipt sourceSha != candidate sha'); process.exit(1); }
+          " "$sha" \
+            && pnpm -s config:manifest --sha "$sha" --out .output/config-manifest.json \
+            && python3 ../aidream/scripts/attest_config_manifest.py --app matrx-extend --manifest .output/config-manifest.json; then
+            echo "### Config attestation: attested matrx-extend ${sha}" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning title=NOT ATTESTED::matrx-extend ${sha} config manifest was not attested (see log)"
+            echo "### Config attestation: NOT ATTESTED ${sha} (counted)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Upload validated release artifacts
         uses: actions/upload-artifact@v4
         with:
