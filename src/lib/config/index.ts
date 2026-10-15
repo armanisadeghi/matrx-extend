@@ -108,7 +108,7 @@ function getReader() {
         void chrome.storage.local.set({ [CACHE_STORAGE_KEY]: row });
       },
     },
-    log: (level, event, data) => (level === 'info' ? log.info('config', event, data) : countConfigEvent(event, data, level === 'error' ? 'error' : 'warn')),
+    log: (level, event, data) => (level === 'info' ? log.info('sys', event, data) : countConfigEvent(event, data, level === 'error' ? 'error' : 'warn')),
     recorder: forwardingRecorder,
   });
   reader.load();

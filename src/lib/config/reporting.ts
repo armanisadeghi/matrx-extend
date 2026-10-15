@@ -30,7 +30,7 @@ let spoolRef: object | null = null;
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
 
 function sidecarLog(level: 'info' | 'warn' | 'error', event: string, data: Record<string, unknown>): void {
-  if (level === 'info') log.info('config', event, data);
+  if (level === 'info') log.info('sys', event, data);
   else countConfigEvent(event, data, level);
 }
 

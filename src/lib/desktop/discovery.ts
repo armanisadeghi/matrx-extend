@@ -272,6 +272,8 @@ async function discoverRemoteEngineBaseUrl(): Promise<string | null> {
       .eq('is_active', true)
       .eq('tunnel_active', true)
       .is('deleted_at', null)
+      // Only real computers: web / chrome-extension / server rows are installs, not machines (NULL = legacy computer).
+      .or('platform.is.null,platform.not.in.(web,chrome-extension,server)')
       .not('tunnel_url', 'is', null)
       .order('last_seen', { ascending: false })
       .limit(1);
