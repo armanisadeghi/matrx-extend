@@ -4,6 +4,9 @@
     "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032"
   ],
   "watchIntervalSeconds": 15,
+  "hostedReadinessWaitSeconds": 90,
+  "maximumHostedReadinessWaitSeconds": 90,
+  "hostedReadinessRationale": "Two hosted acceptance runs expired after seven measurements while startup load was falling. The first ended with two consecutive healthy samples and needs one more; the second ended with one and needs two more. Allow nine measurements while retaining the three-consecutive-healthy admission rule and every CPU/load threshold.",
   "nativeCdpStartupDeadlineMs": 8000,
   "swapWindowSeconds": 60,
   "unsafeSamplesToStop": 2,

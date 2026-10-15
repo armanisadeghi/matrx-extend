@@ -10,7 +10,7 @@
     "macos": 0.062
   },
   "prices_source": "GitHub billing API pricePerUnit (Actions Linux / Windows / macOS 3-core), read 2026-10-11",
-  "total_usd_per_week": 370.01,
+  "total_usd_per_week": 401.36,
   "workflows": {
     "ci.yml": {
       "triggers": ["pull_request", "push"],
@@ -55,14 +55,14 @@
       "crons": [],
       "benefit": "Native side-panel acceptance on a hosted Mac guest, including EXT-D-0217 retained-profile Save/Retry and EXT-D-0221 admin Screenshots T04/T05 on the existing guarded lane; no extra job or schedule.",
       "owner_reason": "Extension acceptance on a real browser.",
-      "basis": "observed 2026-10-02..09: 288 dispatches/week x 4.8 macOS min; allow one additional on-demand D221 Screenshots run/week on the same runner, budgeted at 8 min. Blended 289 runs x 4.81 min; incremental gross ~$0.50/week; standard public runner billed $0.",
-      "usd_per_week": 86.19,
+      "basis": "observed 2026-10-02..09: 288 dispatches/week x 4.8 macOS min plus one on-demand D221 Screenshots run/week. The readiness window now permits two additional 15-second intervals at each of three stages; budget 1.75 extra minutes per run, including observed ~1-second/sample overhead, for all 289 runs. Public runner billed $0.",
+      "usd_per_week": 117.54,
       "legs": {
         "macos": {
           "jobs": ["guest"],
           "runs_per_week": 289,
-          "minutes_per_run": 4.81,
-          "usd_per_week": 86.19
+          "minutes_per_run": 6.56,
+          "usd_per_week": 117.54
         }
       }
     },
