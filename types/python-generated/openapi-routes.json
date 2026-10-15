@@ -6878,6 +6878,11 @@
    "application/json"
   ]
  },
+ "/scheduling/device-runs/{run_id}/agent": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/scheduling/run-now/{task_id}": {
   "post": []
  },
