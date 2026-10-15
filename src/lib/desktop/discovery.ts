@@ -65,6 +65,7 @@
  * called in the side panel would only clear that context's own copy.
  */
 
+import { computersOnlyFilter, nonComputerPlatforms } from '@/lib/config/computers';
 import { log } from '@/lib/debug/log';
 import { DesktopHealthSchema } from '@/lib/desktop/types';
 import { getSupabase } from '@/lib/supabase/client';
@@ -266,14 +267,17 @@ async function discoverRemoteEngineBaseUrl(): Promise<string | null> {
   }
 
   try {
+    // Which platforms are NOT computers is a platform knob (platform.app_instances/non_computer_platforms).
+    const excluded = await nonComputerPlatforms();
+    if (!excluded) return null; // unreadable: counted loudly in nonComputerPlatforms, never a silent guess
     const { data, error } = await getSupabase()
       .from('app_instances')
       .select('instance_id,instance_name,tunnel_url,last_seen')
       .eq('is_active', true)
       .eq('tunnel_active', true)
       .is('deleted_at', null)
-      // Only real computers: web / chrome-extension / server rows are installs, not machines (NULL = legacy computer).
-      .or('platform.is.null,platform.not.in.(web,chrome-extension,server)')
+      // Only real computers (app-instances: knob-driven set; NULL platform = legacy computer).
+      .or(computersOnlyFilter(excluded))
       .not('tunnel_url', 'is', null)
       .order('last_seen', { ascending: false })
       .limit(1);

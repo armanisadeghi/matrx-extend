@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   getSupabase: vi.fn(),
+  nonComputerPlatforms: vi.fn(async () => ['web', 'chrome-extension', 'server']),
 }));
 
 vi.mock('@/lib/debug/log', () => ({
@@ -11,6 +12,10 @@ vi.mock('@/lib/debug/log', () => ({
     error: vi.fn(),
     success: vi.fn(),
   },
+}));
+vi.mock('@/lib/config/computers', async (orig) => ({
+  ...(await orig<typeof import('@/lib/config/computers')>()),
+  nonComputerPlatforms: mocks.nonComputerPlatforms,
 }));
 vi.mock('@/lib/supabase/client', () => ({ getSupabase: mocks.getSupabase }));
 

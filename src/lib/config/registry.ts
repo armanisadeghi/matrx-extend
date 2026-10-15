@@ -31,6 +31,9 @@ export const KNOB_FEATURES = [
     max_password_length: knob('max_password_length', any),
     max_passphrase_words: knob('max_passphrase_words', any),
   }),
+  defineKnobFeature('platform.app_instances', {
+    non_computer_platforms: knob('non_computer_platforms', any),
+  }),
   defineKnobFeature('platform.config_attestation', {
     flush_interval_minutes: knob('flush_interval_minutes', any),
   }),
