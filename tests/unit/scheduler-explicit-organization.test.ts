@@ -1,6 +1,6 @@
 import { claimRun } from '@/lib/agenda/queries';
-import { claimTask } from '@ai-matrx/data/scheduler';
 import { schedulerDb } from '@/lib/supabase/schemas';
+import { claimTask } from '@ai-matrx/data/scheduler';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

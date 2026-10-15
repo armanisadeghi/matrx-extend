@@ -27,7 +27,7 @@ import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { listsAllTasksChannel, listsConversationTasksChannel } from '@/lib/lists/realtime';
-import { schedulerBroadcastTopic } from '@/lib/scheduler-client/realtime';
+import { schedulerBroadcastTopic } from '@ai-matrx/data/scheduler';
 
 const SRC = join(__dirname, '..', '..', 'src');
 const SOURCE_EXTENSIONS = ['.ts', '.tsx'];

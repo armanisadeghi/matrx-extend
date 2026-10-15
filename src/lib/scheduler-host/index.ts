@@ -3,7 +3,7 @@
  *
  * Activates when a user is signed in; consumes `sch_task` rows that target
  * this surface (`chrome-extension-chat`) via Supabase Realtime postgres_changes,
- * claims them atomically through the vendored scheduler-client, dispatches
+ * claims them atomically through @ai-matrx/data/scheduler, dispatches
  * to a registered handler for the task's `kind`, and reports the result via
  * `completeRun` / `failRun`.
  *
@@ -25,6 +25,8 @@
 import { getOrMintInstanceId } from '@/lib/cross-component/instance-id';
 import { log } from '@/lib/debug/log';
 import { ensureRealtimeHost } from '@/lib/realtime/host';
+import { getMachineryAuthoredSupabase } from '@/lib/supabase/client';
+import { schedulerDb } from '@/lib/supabase/schemas';
 import {
   type Json,
   type SchTaskRow,
@@ -33,8 +35,6 @@ import {
   type TaskEvent,
   createSchedulerClient,
 } from '@ai-matrx/data/scheduler';
-import { getMachineryAuthoredSupabase } from '@/lib/supabase/client';
-import { schedulerDb } from '@/lib/supabase/schemas';
 
 // ── Handler registry ───────────────────────────────────────────────────────
 
@@ -308,7 +308,7 @@ async function handleTaskEvent(client: SchedulerClient, event: TaskEvent): Promi
 
 /**
  * Narrow an arbitrary `Record<string, unknown>` to the `Record<string, Json>`
- * shape the scheduler-client write paths expect. We don't deep-validate —
+ * shape the @ai-matrx/data/scheduler write paths expect. We don't deep-validate —
  * the caller's handler is trusted, and any non-JSON-serializable value will
  * fail at the supabase-js serialization layer. This cast is purely a
  * structural-compat bridge so handler authors don't have to type their
