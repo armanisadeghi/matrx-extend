@@ -1,7 +1,6 @@
-import { ensureRequestOrganizationId } from '@/hooks/use-request-organization';
+import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
-import { useAuthStore } from '@/state/auth';
 /**
  * Service-worker side of config attestation (OBSERVED): registers this install's own `app_instances`
  * row, builds the read recorder, and flushes sealed buckets to `platform.config_reads_report` on an
@@ -41,15 +40,21 @@ function sidecarLog(
   else countConfigEvent(event, data, level);
 }
 
+/** The signed-in person as the service worker's own Supabase session knows them (the auth store is a panel store). */
+async function currentUserId(): Promise<string | null> {
+  const { data, error } = await getSupabase().auth.getSession();
+  if (error) countConfigEvent('config.session_read_failed', { error: error.message });
+  return data.session?.user.id ?? null;
+}
+
 /** Find or create this install's own row; its id is the report's device_id. */
 async function ensureDevice(): Promise<typeof device> {
-  const auth = useAuthStore.getState();
-  const userId = auth.status === 'signed-in' ? auth.user?.id : null;
+  const userId = await currentUserId();
   if (!userId) {
     countConfigEvent('config.reads_not_reported_signed_out');
     return null;
   }
-  const organizationId = await ensureRequestOrganizationId();
+  const organizationId = await getActiveOrganizationId();
   if (!organizationId) {
     countConfigEvent('config.reads_not_reported_no_organization');
     return null;
@@ -111,8 +116,8 @@ function persistSoon(): void {
 }
 
 async function scheduleNext(): Promise<void> {
-  const org = device?.organizationId ?? (await ensureRequestOrganizationId());
-  const userId = useAuthStore.getState().user?.id;
+  const org = device?.organizationId ?? (await getActiveOrganizationId().catch(() => null));
+  const userId = await currentUserId();
   let minutes: number | null = null;
   if (org && userId) {
     const r = await resolveKnob({
