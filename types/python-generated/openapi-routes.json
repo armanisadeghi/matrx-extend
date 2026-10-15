@@ -5377,6 +5377,11 @@
    "application/json"
   ]
  },
+ "/notion-import/connection": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/notion-import/sync": {
   "post": [
    "application/json"
