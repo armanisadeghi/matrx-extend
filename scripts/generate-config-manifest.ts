@@ -11,7 +11,7 @@
  * Release identity: --sha / MATRX_BUILD_SHA / git HEAD — the same value wxt.config.ts embeds.
  */
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { buildConfigManifest } from '@ai-matrx/data/config-attestation';
 import {
@@ -71,6 +71,51 @@ export function scanReaders(srcDir: string): {
   return { appKeys, knobs };
 }
 
+/**
+ * The bundled @ai-matrx/* packages' own knob declarations (`knob-declaration.json`, format 1, generated
+ * from each package's source at its build by aidream apps/shared/scripts/knob-declaration.mjs). The
+ * version is the lockfile's; the file is read from that exact version in the pnpm store. A version the
+ * store does not hold is announced and counted unresolved — never assumed to read nothing.
+ */
+export function packageDeclarations(lockfile: string): {
+  reads: Array<{ full: string; reader: string }>;
+  unresolved: Array<{ file: string; line: number; call: string }>;
+  summary: string;
+} {
+  const versions = new Map<string, { name: string; version: string }>();
+  const re = /^\s{2}'?(@ai-matrx\/[\w.-]+)@(\d+\.\d+\.\d+(?:-[\w.]+)?)(?:\([^\n]*\))?'?:\s*$/gm;
+  for (let m = re.exec(lockfile); m; m = re.exec(lockfile))
+    versions.set(`${m[1]}@${m[2]}`, { name: m[1]!, version: m[2]! });
+  const store = join(root, 'node_modules', '.pnpm');
+  const entries = existsSync(store) ? readdirSync(store) : [];
+  const reads: Array<{ full: string; reader: string }> = [];
+  const unresolved: Array<{ file: string; line: number; call: string }> = [];
+  let declared = 0;
+  for (const { name, version } of [...versions.values()].sort((a, b) => (a.name < b.name ? -1 : 1))) {
+    const prefix = `${name.replace('/', '+')}@${version}`;
+    const hit = entries.find((e) => e === prefix || e.startsWith(`${prefix}_`) || e.startsWith(`${prefix}(`));
+    const dir = hit ? join(store, hit, 'node_modules', name) : null;
+    if (!dir || !existsSync(join(dir, 'package.json'))) {
+      console.warn(`config:manifest WARNING: ${name}@${version} is not in the pnpm store; its knob declaration is counted unresolved`);
+      unresolved.push({ file: `node_modules/${name}`, line: 0, call: `package ${name}@${version}` });
+      continue;
+    }
+    const path = join(dir, 'knob-declaration.json');
+    if (!existsSync(path)) continue;
+    const d = JSON.parse(readFileSync(path, 'utf8')) as {
+      format: number;
+      reads: Array<{ feature: string; key: string; files: string[] }>;
+      unresolved: Array<{ file: string; line: number; call: string }>;
+    };
+    if (d.format !== 1) throw new Error(`${name}@${version}: knob-declaration.json format ${d.format} is not 1`);
+    declared++;
+    for (const r of d.reads)
+      for (const f of r.files) reads.push({ full: `${r.feature}.${r.key}`, reader: `${name}/${f}` });
+    for (const u of d.unresolved) unresolved.push({ ...u, file: `${name}/${u.file}` });
+  }
+  return { reads, unresolved, summary: `${versions.size} bundled @ai-matrx package version(s), ${declared} with a knob declaration` };
+}
+
 function main() {
   const sha =
     arg('--sha') ??
@@ -105,6 +150,20 @@ function main() {
     console.error(`config:manifest REFUSED:\n - ${problems.join('\n - ')}`);
     process.exit(1);
   }
+  // Reads inside the bundled packages, from each package's own declaration (never its source).
+  const pkgs = packageDeclarations(readFileSync(join(root, 'pnpm-lock.yaml'), 'utf8'));
+  const extra = new Map<string, Set<string>>();
+  for (const r of pkgs.reads) {
+    (knobs[r.full] ??= []).push(r.reader);
+    if (!registeredKnobs.includes(r.full)) {
+      const at = r.full.lastIndexOf('.');
+      (extra.get(r.full.slice(0, at)) ?? extra.set(r.full.slice(0, at), new Set()).get(r.full.slice(0, at))!).add(r.full.slice(at + 1));
+    }
+  }
+  const packageFeatures = [...extra.entries()].map(([feature, keys]) => ({
+    feature,
+    defs: Object.fromEntries([...keys].map((key) => [key, { key }])),
+  }));
   const url = process.env.WXT_SUPABASE_URL ?? readEnvFile('WXT_SUPABASE_URL');
   const key =
     process.env.WXT_SUPABASE_PUBLISHABLE_KEY ?? readEnvFile('WXT_SUPABASE_PUBLISHABLE_KEY');
@@ -112,7 +171,7 @@ function main() {
     app: APP_SLUG,
     appVersion: pkg.version,
     buildSha: sha,
-    knobFeatures: [...KNOB_FEATURES] as never,
+    knobFeatures: [...KNOB_FEATURES, ...packageFeatures] as never,
     appConfigKeys: APP_CONFIG_KEYS.map((k) => ({ key: k, readers: appKeys[k]! })),
     readers: knobs,
     bootstrap: {
@@ -122,10 +181,15 @@ function main() {
       source: 'wxt build env (WXT_SUPABASE_URL, WXT_SUPABASE_PUBLISHABLE_KEY)',
     },
   });
+  // Unresolved read sites (the bundled packages' computed reads): additive to the frozen v1 shape.
+  (manifest as typeof manifest & { unresolved?: unknown }).unresolved = {
+    count: pkgs.unresolved.length,
+    sites: pkgs.unresolved,
+  };
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, `${JSON.stringify(manifest, null, 2)}\n`);
   console.log(
-    `config:manifest wrote ${out} (${manifest.app_config.keys.length} app_config keys, ${manifest.knobs.length} knobs) for ${APP_SLUG}@${pkg.version} ${sha}`,
+    `config:manifest wrote ${out} (${manifest.app_config.keys.length} app_config keys, ${manifest.knobs.length} knobs, ${pkgs.unresolved.length} unresolved read site(s); ${pkgs.summary}) for ${APP_SLUG}@${pkg.version} ${sha}`,
   );
 }
 
