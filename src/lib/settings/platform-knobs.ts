@@ -52,7 +52,12 @@ async function snapshot(): Promise<Record<string, unknown> | null> {
   const organizationId = await ensureRequestOrganizationId();
   if (!organizationId) return null;
   const key = `${organizationId}:${userId ?? ''}`;
-  if (cached && cached.key === key && Date.now() - cached.at < appConfig<number>('platform_knobs_cache_ms')) return cached.resolved;
+  if (
+    cached &&
+    cached.key === key &&
+    Date.now() - cached.at < appConfig<number>('platform_knobs_cache_ms')
+  )
+    return cached.resolved;
   if (inFlight?.key === key) return inFlight.promise;
 
   const promise = (async () => {

@@ -1,0 +1,38 @@
+{
+  "kind": "store_candidate_copy_review",
+  "status": "proposal_only_no_dashboard_change",
+  "source_sha": "0636fde1d37f8371144aa79aa317f1eb05b36c70",
+  "primary_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "classification": "store_material_semantic_review_required",
+  "basis": [
+    "The Store manifest permission, host, CSP and external-origin surface has no known source change in this candidate; the hosted ZIP risk gate still needs to run.",
+    "src/config/sidepanel-visibility.ts exposes Swipe file to signed-in members and excludes guests.",
+    "src/lib/swipe-file/save.ts sends a deliberately chosen supported social post URL to the Matrx ingest service, then saves the post in a chosen collection. The view offers stored media, transcript, notes and tags.",
+    "src/lib/config/index.ts reads bundled, cached and live app configuration. src/lib/config/reporting.ts automatically registers a signed-in extension instance and periodically reports counted configuration-key reads to Supabase. Signed-out reporting has no instance registration.",
+    "The live extension privacy page returned HTTP 200 on 2026-10-15. Its visible text has no Swipe File, social-post saving, configuration-read reporting or diagnostic-reporting explanation. It says the extension does not send browsing telemetry, which must remain truthful; configuration-key counts are not browsing history."
+  ],
+  "proposed_store_description_addition": "When signed in, you can save a supported social post or ad to a Swipe file collection you choose, then review the saved post, media and transcript in the side panel. Saving starts only when you press Save; availability of media and transcripts depends on the source. This feature requires a Matrx account.",
+  "proposed_privacy_additions": [
+    "Swipe file: When you choose Save on a supported social post or ad, Matrx sends that post URL to its service to retrieve the post and available media or transcript, and saves the result to the collection and organization you choose. Notes and tags you add are stored with that saved item. The extension does not save a social post merely because you visited it.",
+    "Configuration diagnostics: The extension fetches its public runtime settings from Supabase and keeps a last-seen copy on your device. For a signed-in account, it registers this extension installation and periodically sends counts of which setting keys were read and whether a bundled, cached or live value supplied them, with the app version and build identity. This report is for configuration health; it does not include page contents or a browsing-history list. Confirm the exact payload from the hosted candidate before publishing this wording."
+  ],
+  "proposed_reviewer_steps_addition": "Guest: open Chat, Capture and SEO; confirm Swipe file is absent and Chat answers a first and same-conversation follow-up. Sign in with the supplied non-admin reviewer account: confirm Swipe file appears; on a supported social post, choose a collection, press Save, then inspect the saved item and any media/transcript notice. Automatic page capture stays off on a fresh installation.",
+  "screenshot_reconciliation": "Keep the four guest screenshots only if regenerated from the exact Store candidate and still truthful. If Swipe file is named in the submitted description, add one current non-admin Swipe File screenshot showing a saved supported post, and ensure no admin-only tabs or private post content appear. Do not reuse the August 2026 0.1.72 captures.",
+  "gmail_rejection_evidence": {
+    "search_scope": "Authenticated Gmail search from:chromewebstore-noreply@google.com after:2026/10/10 in the publisher profile",
+    "matched_rejection_messages": 1,
+    "received_local": "2026-10-11 22:10 America/Los_Angeles",
+    "received_utc": "2026-10-12 05:10 UTC",
+    "policy": "Blue Argon; Manifest V3 remotely hosted code; PDFObject 2.1.1 CDN URL in bundled jsPDF chunk",
+    "routing_id": "FZSL",
+    "version_stated": false,
+    "action": "Appeal is optional if the publisher believes the rejection was mistaken; the email does not demand an appeal for a corrected submission."
+  },
+  "dashboard": "Current authenticated status remains unverified. The permitted direct Chrome dashboard URL returned Not allowed; the Gmail result must not be used to infer draft, pending, or upload availability.",
+  "release_holds": [
+    "Exact-current-source CI and hosted guest/member acceptance",
+    "Exact hosted Store ZIP and automated risk gate",
+    "Review the emitted config-report payload and reconcile the live privacy page before upload",
+    "Authenticated primary-item dashboard state before replacing or submitting a package"
+  ]
+}

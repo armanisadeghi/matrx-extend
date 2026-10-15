@@ -51,9 +51,9 @@
 import type { ApiRequestOptions, ApiResult } from '@/lib/api/client';
 import { runOpAs } from '@/lib/api/matrx-api';
 import { getAccessToken, getCurrentUser } from '@/lib/auth/flow';
+import { resolveKnob } from '@/lib/config/knob-resolve';
 import { log } from '@/lib/debug/log';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
-import { resolveKnob } from '@/lib/config/knob-resolve';
 import {
   FILL_SETUP_REQUIRED_MESSAGE,
   type FillSurface,

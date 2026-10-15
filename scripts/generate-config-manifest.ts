@@ -30,20 +30,27 @@ function* walk(dir: string): Generator<string> {
   }
 }
 
-export function scanReaders(srcDir: string): { appKeys: Record<string, string[]>; knobs: Record<string, string[]> } {
+export function scanReaders(srcDir: string): {
+  appKeys: Record<string, string[]>;
+  knobs: Record<string, string[]>;
+} {
   const appKeys: Record<string, string[]> = {};
   const knobs: Record<string, string[]> = {};
   for (const f of walk(srcDir)) {
     const rel = relative(root, f);
     if (rel.startsWith('src/lib/config/')) continue;
     const text = readFileSync(f, 'utf8');
-    for (const m of text.matchAll(/appConfig(?:<[^>]*>)?\(\s*'([a-z0-9_]+)'\s*\)/g)) (appKeys[m[1]!] ??= []).push(rel);
-    for (const m of text.matchAll(/resolveKnob\(\{\s*feature:\s*([A-Za-z_'.]+),\s*key:\s*([A-Za-z_'.]+)/g)) {
+    for (const m of text.matchAll(/appConfig(?:<[^>]*>)?\(\s*'([a-z0-9_]+)'\s*\)/g))
+      (appKeys[m[1]!] ??= []).push(rel);
+    for (const m of text.matchAll(
+      /resolveKnob\(\{\s*feature:\s*([A-Za-z_'.]+),\s*key:\s*([A-Za-z_'.]+)/g,
+    )) {
       const lit = (v: string) => (v.startsWith("'") ? v.slice(1, -1) : undefined);
       let feature = lit(m[1]!);
       let key = lit(m[2]!);
       // A named constant: resolve `const NAME = 'value'` in the same file.
-      const constant = (n: string) => text.match(new RegExp(`const\\s+${n}\\s*=\\s*'([^']+)'`))?.[1];
+      const constant = (n: string) =>
+        text.match(new RegExp(`const\\s+${n}\\s*=\\s*'([^']+)'`))?.[1];
       feature ??= constant(m[1]!);
       key ??= constant(m[2]!);
       if (feature && key) (knobs[`${feature}.${key}`] ??= []).push(rel);
@@ -53,18 +60,28 @@ export function scanReaders(srcDir: string): { appKeys: Record<string, string[]>
 }
 
 function main() {
-  const sha = arg('--sha') ?? process.env.MATRX_BUILD_SHA ?? execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
+  const sha =
+    arg('--sha') ??
+    process.env.MATRX_BUILD_SHA ??
+    execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
   const out = arg('--out') ?? join(root, '.output', 'config-manifest.json');
   const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')) as { version: string };
   const { appKeys, knobs } = scanReaders(join(root, 'src'));
-  const registeredKnobs = KNOB_FEATURES.flatMap((f) => Object.values(f.defs).map((d) => `${f.feature}.${d.key}`));
+  const registeredKnobs = KNOB_FEATURES.flatMap((f) =>
+    Object.values(f.defs).map((d) => `${f.feature}.${d.key}`),
+  );
   // The attestation interval knob is read by the reporter itself (src/lib/config/reporting.ts).
   knobs['platform.config_attestation.flush_interval_minutes'] = ['src/lib/config/reporting.ts'];
   // Snapshot-served knobs are read through platform-knobs (dynamic keys); register them by that reader.
   const problems: string[] = [];
-  for (const k of APP_CONFIG_KEYS) if (!appKeys[k]) problems.push(`app_config key '${k}' is registered but has no appConfig('${k}') call site`);
-  for (const k of Object.keys(appKeys)) if (!(APP_CONFIG_KEYS as readonly string[]).includes(k)) problems.push(`appConfig('${k}') is called but not registered`);
-  for (const k of Object.keys(knobs)) if (!registeredKnobs.includes(k)) problems.push(`knob '${k}' is read but not registered`);
+  for (const k of APP_CONFIG_KEYS)
+    if (!appKeys[k])
+      problems.push(`app_config key '${k}' is registered but has no appConfig('${k}') call site`);
+  for (const k of Object.keys(appKeys))
+    if (!(APP_CONFIG_KEYS as readonly string[]).includes(k))
+      problems.push(`appConfig('${k}') is called but not registered`);
+  for (const k of Object.keys(knobs))
+    if (!registeredKnobs.includes(k)) problems.push(`knob '${k}' is read but not registered`);
   // A registered knob with no explicit call site is read through the platform snapshot reader.
   for (const k of registeredKnobs) knobs[k] ??= ['src/lib/settings/platform-knobs.ts'];
   if (problems.length) {
@@ -72,7 +89,8 @@ function main() {
     process.exit(1);
   }
   const url = process.env.WXT_SUPABASE_URL ?? readEnvFile('WXT_SUPABASE_URL');
-  const key = process.env.WXT_SUPABASE_PUBLISHABLE_KEY ?? readEnvFile('WXT_SUPABASE_PUBLISHABLE_KEY');
+  const key =
+    process.env.WXT_SUPABASE_PUBLISHABLE_KEY ?? readEnvFile('WXT_SUPABASE_PUBLISHABLE_KEY');
   const manifest = buildConfigManifest({
     app: APP_SLUG,
     appVersion: pkg.version,
@@ -89,7 +107,9 @@ function main() {
   });
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, `${JSON.stringify(manifest, null, 2)}\n`);
-  console.log(`config:manifest wrote ${out} (${manifest.app_config.keys.length} app_config keys, ${manifest.knobs.length} knobs) for ${APP_SLUG}@${pkg.version} ${sha}`);
+  console.log(
+    `config:manifest wrote ${out} (${manifest.app_config.keys.length} app_config keys, ${manifest.knobs.length} knobs) for ${APP_SLUG}@${pkg.version} ${sha}`,
+  );
 }
 
 function readEnvFile(name: string): string {

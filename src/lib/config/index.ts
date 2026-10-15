@@ -1,3 +1,6 @@
+import { ENV } from '@/config/env';
+import { log } from '@/lib/debug/log';
+import { createAppConfigReader } from '@ai-matrx/data/app-config';
 /**
  * The extension's ONE config door. Every app-config key and feature-knob read goes through here so
  * each is counted (key + where the value came from) and reported by the service worker for config
@@ -6,10 +9,7 @@
  * warning in `configHealth()`.
  */
 import type { ConfigReadRecorder } from '@ai-matrx/data/config-attestation';
-import { createAppConfigReader } from '@ai-matrx/data/app-config';
 import type { ConfigValueSource } from '@ai-matrx/data/config-attestation';
-import { log } from '@/lib/debug/log';
-import { ENV } from '@/config/env';
 import { buildSha } from './build-sha';
 import { BUNDLED_APP_CONFIG } from './bundled-app-config';
 import { APP_SLUG, type AppConfigKey, REGISTERED_KNOBS } from './registry';
@@ -22,13 +22,19 @@ const counters = new Map<string, number>();
 export function configHealth(): Record<string, number> {
   return Object.fromEntries(counters);
 }
-export function countConfigEvent(event: string, data: Record<string, unknown> = {}, level: 'warn' | 'error' = 'warn'): void {
+export function countConfigEvent(
+  event: string,
+  data: Record<string, unknown> = {},
+  level: 'warn' | 'error' = 'warn',
+): void {
   counters.set(event, (counters.get(event) ?? 0) + 1);
   log[level]('sys', event, { ...data, count: counters.get(event) });
 }
 
 export function isServiceWorker(): boolean {
-  return typeof ServiceWorkerGlobalScope !== 'undefined' && self instanceof ServiceWorkerGlobalScope;
+  return (
+    typeof ServiceWorkerGlobalScope !== 'undefined' && self instanceof ServiceWorkerGlobalScope
+  );
 }
 
 let realRecorder: ConfigReadRecorder | null = null;
@@ -65,7 +71,9 @@ function routeMissing(m: MissingArg): void {
     return;
   }
   try {
-    void chrome.runtime.sendMessage({ __matrx: true, kind: FORWARD_KIND, missing: m }).catch(() => undefined);
+    void chrome.runtime
+      .sendMessage({ __matrx: true, kind: FORWARD_KIND, missing: m })
+      .catch(() => undefined);
   } catch {
     /* counted at the service worker when it sees the key */
   }
@@ -74,7 +82,12 @@ function routeMissing(m: MissingArg): void {
 /** The service worker installs this once: reads forwarded from the panel/content scripts land in the recorder. */
 export function listenForForwardedReads(): void {
   chrome.runtime.onMessage.addListener((msg: unknown) => {
-    const m = msg as { __matrx?: boolean; kind?: string; read?: ReadArg; missing?: MissingArg } | null;
+    const m = msg as {
+      __matrx?: boolean;
+      kind?: string;
+      read?: ReadArg;
+      missing?: MissingArg;
+    } | null;
     if (!m?.__matrx || m.kind !== FORWARD_KIND) return undefined;
     if (m.read) routeRead(m.read);
     if (m.missing) routeMissing(m.missing);
@@ -108,7 +121,10 @@ function getReader() {
         void chrome.storage.local.set({ [CACHE_STORAGE_KEY]: row });
       },
     },
-    log: (level, event, data) => (level === 'info' ? log.info('sys', event, data) : countConfigEvent(event, data, level === 'error' ? 'error' : 'warn')),
+    log: (level, event, data) =>
+      level === 'info'
+        ? log.info('sys', event, data)
+        : countConfigEvent(event, data, level === 'error' ? 'error' : 'warn'),
     recorder: forwardingRecorder,
   });
   reader.load();

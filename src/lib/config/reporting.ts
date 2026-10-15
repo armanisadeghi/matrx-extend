@@ -1,15 +1,17 @@
+import { ensureRequestOrganizationId } from '@/hooks/use-request-organization';
+import { log } from '@/lib/debug/log';
+import { getSupabase } from '@/lib/supabase/client';
+import { useAuthStore } from '@/state/auth';
 /**
  * Service-worker side of config attestation (OBSERVED): registers this install's own `app_instances`
  * row, builds the read recorder, and flushes sealed buckets to `platform.config_reads_report` on an
  * alarm whose period is the platform knob `flush_interval_minutes`. Every failure is a counted warning.
  */
-import { createConfigReadRecorder, type ConfigReadRecorder } from '@ai-matrx/data/config-attestation';
-import { ensureRequestOrganizationId } from '@/hooks/use-request-organization';
-import { log } from '@/lib/debug/log';
-import { getSupabase } from '@/lib/supabase/client';
-import { useAuthStore } from '@/state/auth';
+import {
+  type ConfigReadRecorder,
+  createConfigReadRecorder,
+} from '@ai-matrx/data/config-attestation';
 import pkg from '../../../package.json';
-import { APP_SLUG } from './registry';
 import {
   attachRecorder,
   buildSha,
@@ -18,6 +20,7 @@ import {
   recordKnobRead,
 } from './index';
 import { resolveKnob } from './knob-resolve';
+import { APP_SLUG } from './registry';
 
 const SPOOL_KEY = 'matrx.config.readSpool';
 const INSTANCE_KEY = 'matrx.config.instanceId';
@@ -29,7 +32,11 @@ let recorder: (ConfigReadRecorder & { flush(): Promise<void> }) | null = null;
 let spoolRef: object | null = null;
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
 
-function sidecarLog(level: 'info' | 'warn' | 'error', event: string, data: Record<string, unknown>): void {
+function sidecarLog(
+  level: 'info' | 'warn' | 'error',
+  event: string,
+  data: Record<string, unknown>,
+): void {
   if (level === 'info') log.info('sys', event, data);
   else countConfigEvent(event, data, level);
 }
@@ -92,7 +99,8 @@ async function ensureDevice(): Promise<typeof device> {
 }
 
 async function persistSpool(): Promise<void> {
-  if (spoolRef) await chrome.storage.local.set({ [SPOOL_KEY]: JSON.parse(JSON.stringify(spoolRef)) });
+  if (spoolRef)
+    await chrome.storage.local.set({ [SPOOL_KEY]: JSON.parse(JSON.stringify(spoolRef)) });
 }
 function persistSoon(): void {
   if (persistTimer) return;
@@ -107,9 +115,19 @@ async function scheduleNext(): Promise<void> {
   const userId = useAuthStore.getState().user?.id;
   let minutes: number | null = null;
   if (org && userId) {
-    const r = await resolveKnob({ feature: 'platform.config_attestation', key: 'flush_interval_minutes', organizationId: org, userId });
+    const r = await resolveKnob({
+      feature: 'platform.config_attestation',
+      key: 'flush_interval_minutes',
+      organizationId: org,
+      userId,
+    });
     if (!r.error && typeof r.data === 'number' && r.data > 0) minutes = r.data;
-    else countConfigEvent('config.flush_interval_unavailable', { error: r.error?.message ?? 'not a positive number' }, 'error');
+    else
+      countConfigEvent(
+        'config.flush_interval_unavailable',
+        { error: r.error?.message ?? 'not a positive number' },
+        'error',
+      );
   }
   // internal-bound: an unreadable interval knob (counted above) is retried every minute, never silent.
   await chrome.alarms.create(ALARM, { delayInMinutes: minutes ?? 1 });
@@ -117,7 +135,9 @@ async function scheduleNext(): Promise<void> {
 
 export async function flushConfigReads(): Promise<void> {
   if (!recorder) return;
-  await ensureDevice().catch((e) => countConfigEvent('config.device_failed', { error: String(e).slice(0, 200) }));
+  await ensureDevice().catch((e) =>
+    countConfigEvent('config.device_failed', { error: String(e).slice(0, 200) }),
+  );
   await recorder.flush();
   await persistSpool();
 }
@@ -135,7 +155,12 @@ export async function startConfigReporting(): Promise<void> {
   spoolRef =
     loaded && loaded.version === 1 && loaded.build_sha === sha
       ? loaded
-      : { version: 1, build_sha: sha, open: { bucket_start: new Date().toISOString(), reads: {}, missing: {} }, pending: [] };
+      : {
+          version: 1,
+          build_sha: sha,
+          open: { bucket_start: new Date().toISOString(), reads: {}, missing: {} },
+          pending: [],
+        };
   const rec = createConfigReadRecorder({
     app: APP_SLUG,
     appVersion: pkg.version,
@@ -149,9 +174,15 @@ export async function startConfigReporting(): Promise<void> {
   });
   recorder = rec;
   const counting: ConfigReadRecorder = {
-    read: (r) => { rec.read(r); persistSoon(); },
+    read: (r) => {
+      rec.read(r);
+      persistSoon();
+    },
     applied: (r) => rec.applied(r),
-    missing: (r) => { rec.missing(r); persistSoon(); },
+    missing: (r) => {
+      rec.missing(r);
+      persistSoon();
+    },
   };
   attachRecorder(counting);
   chrome.alarms.onAlarm.addListener((alarm) => {
