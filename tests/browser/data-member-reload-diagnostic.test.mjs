@@ -15,8 +15,8 @@ const start = source.indexOf('  await runNativeSidepanelQa({');
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 // SUT owns the actual driver options, terminal verdict, and persisted report.
 // Browser execution and artifact filesystem are external; no native acceptance is claimed.
-async function drive(flag, fail = false, senderFlag = '0') {
-  const report = { observations: {}, stage: 'input' };
+async function drive(flag, fail = false, senderFlag = '0', treeChanged = false) {
+  const report = { observations: {}, stage: 'input', artifact: { tree_sha256: 'receipt-tree' } };
   const process = {
     env: {
       MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: flag,
@@ -30,6 +30,7 @@ async function drive(flag, fail = false, senderFlag = '0') {
   const run = new AsyncFunction(
     'report',
     'process',
+    'assert',
     'runNativeSidepanelQa',
     'join',
     'tmpdir',
@@ -38,17 +39,20 @@ async function drive(flag, fail = false, senderFlag = '0') {
     'refuseDiagnosticAcceptance',
     'reloadOpenEvidenceClass',
     'recordDataMemberDriverDiagnostic',
+    'hashReleaseTree',
     `
     const extensionDir = '/owned/development', receiptPath = '/owned/receipt', receipt = {}, fixture = '', output = 'owned.json';
     ${source.match(/const RELOAD_OPEN_DIAGNOSTIC = [^;]+;/)?.[0] ?? ''}
     ${source.match(/const RELOAD_SENDER_DOCUMENT_DIAGNOSTIC =\s*[^;]+;/)?.[0] ?? ''}
-    const safeFailureCode = () => 'native_acceptance_error';
+    const safeFailureCode = (error) => error.message?.includes('data_member_runtime_tree_changed')
+      ? 'data_member_runtime_tree_changed' : 'native_acceptance_error';
     try { ${source.slice(start)}
   `,
   );
   await run(
     report,
     process,
+    assert,
     async (value) => {
       options = value;
       if (fail) throw new Error('injected browser failure');
@@ -62,9 +66,18 @@ async function drive(flag, fail = false, senderFlag = '0') {
     refuseDiagnosticAcceptance,
     reloadOpenEvidenceClass,
     recordDataMemberDriverDiagnostic,
+    () => (treeChanged ? 'changed-tree' : 'receipt-tree'),
   );
   return { options, persisted, exitCode: process.exitCode };
 }
+
+test('member Data refuses acceptance when the runtime tree differs from the receipt', async () => {
+  const result = await drive('0', false, '0', true);
+  assert.equal(result.persisted.status, 'fail');
+  assert.equal(result.persisted.error_code, 'data_member_runtime_tree_changed');
+  assert.equal(result.persisted.runtime_tree_after, 'changed-tree');
+  assert.equal(result.exitCode, 1);
+});
 
 test('member Data propagates opt-in and cannot persist acceptance credit for a perturbed run', async () => {
   for (const flag of ['0', '1']) {
