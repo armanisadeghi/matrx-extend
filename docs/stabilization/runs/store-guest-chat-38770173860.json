@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "run_id": 38770173860,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38770173860",
+  "case": "guest-chat",
+  "lane": "B",
+  "source_sha": "e03cd7dac8875309e6b8ff71971949a4d9dfcc11",
+  "development_ci_run_id": 38768383804,
+  "development_artifact_id": 11990369498,
+  "development_artifact_name": "matrx-extend-development-test-e03cd7dac8875309e6b8ff71971949a4d9dfcc11-38768383804-1",
+  "conclusion": "failure",
+  "failure_stage": "Wait for measured package readiness",
+  "terminal_error": "RESOURCE_READINESS_EXPIRED",
+  "resource_samples": [
+    { "busy": 0.62, "load_per_cpu": 2.83, "consecutive_healthy": 0 },
+    { "busy": 0.1, "load_per_cpu": 2.17, "consecutive_healthy": 1 },
+    { "busy": 0.64, "load_per_cpu": 1.71, "consecutive_healthy": 0 },
+    { "busy": 0.22, "load_per_cpu": 1.4225, "consecutive_healthy": 1 },
+    { "busy": 0.99, "load_per_cpu": 1.37, "consecutive_healthy": 0 },
+    { "busy": 0.01, "load_per_cpu": 1.19, "consecutive_healthy": 1 },
+    { "busy": 0.01, "load_per_cpu": 0.945, "consecutive_healthy": 2 }
+  ],
+  "classification": "Hosted resource admission expired before package preparation, browser launch, or product exercise. Zero guest Chat product credit.",
+  "preflight": "Lane, source provenance, selected-auth preflight and disposable-VM indexing steps passed. No secret values are included.",
+  "native_result": null,
+  "resource_finals": null,
+  "artifact_count": 0,
+  "cleanup": "The ephemeral hosted job ended and checkout post-job cleanup completed; no Chrome/profile or native acceptance step ran.",
+  "next_action": "Use reviewed readiness wait-budget repair with unchanged admission thresholds, then rerun exact-source guest Chat once on a fresh hosted runner."
+}

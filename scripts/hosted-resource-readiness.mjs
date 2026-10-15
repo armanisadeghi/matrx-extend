@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { promisify } from 'node:util';
+import { waitForResourceReadiness } from './hosted-resource-readiness-loop.mjs';
 import { cpuBusyFraction } from './stabilization-resource-safety.mjs';
 
 const policy = JSON.parse(
@@ -13,29 +14,17 @@ const output = async (command, args) =>
       maxBuffer: policy.processSnapshotMaxBytes,
     })
   ).stdout.trim();
-const limit =
-  Math.ceil(policy.swapWindowSeconds / policy.watchIntervalSeconds) + policy.healthySamplesToResume;
-let healthy = 0;
-for (let i = 0; i < limit; i++) {
-  const [busy, load, cpus] = await Promise.all([
-    cpuBusyFraction(output),
-    output('/usr/sbin/sysctl', ['-n', 'vm.loadavg']),
-    output('/usr/sbin/sysctl', ['-n', 'hw.logicalcpu']),
-  ]);
-  const ratio = Number(load.match(/\{\s*([\d.]+)/)?.[1]) / Number(cpus);
-  if (!Number.isFinite(ratio) || Number(cpus) <= 0)
-    throw new Error('RESOURCE_READINESS_MEASUREMENT_INVALID');
-  healthy =
-    busy < policy.maximumSustainedCpuBusyFraction &&
-    (ratio < policy.maximumOneMinuteLoadPerLogicalCpu ||
-      busy < policy.maximumBusyFractionAtHighLoad)
-      ? healthy + 1
-      : 0;
-  console.log(
-    JSON.stringify({ code: 'RESOURCE_READINESS_SAMPLE', busy, loadPerCpu: ratio, healthy }),
-  );
-  if (healthy >= policy.healthySamplesToResume) process.exit(0);
-  if (i + 1 < limit)
-    await new Promise((done) => setTimeout(done, policy.watchIntervalSeconds * 1000));
-}
-throw new Error('RESOURCE_READINESS_EXPIRED');
+await waitForResourceReadiness(policy, {
+  sample: async () => {
+    const [busy, load, cpus] = await Promise.all([
+      cpuBusyFraction(output),
+      output('/usr/sbin/sysctl', ['-n', 'vm.loadavg']),
+      output('/usr/sbin/sysctl', ['-n', 'hw.logicalcpu']),
+    ]);
+    const loadPerCpu = Number(load.match(/\{\s*([\d.]+)/)?.[1]) / Number(cpus);
+    if (Number(cpus) <= 0) throw new Error('RESOURCE_READINESS_MEASUREMENT_INVALID');
+    return { busy, loadPerCpu };
+  },
+  sleep: (duration) => new Promise((done) => setTimeout(done, duration)),
+  onSample: (result) => console.log(JSON.stringify(result)),
+});
