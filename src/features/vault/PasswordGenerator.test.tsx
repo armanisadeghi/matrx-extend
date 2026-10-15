@@ -51,7 +51,12 @@ beforeEach(() => {
   mocks.sendMessage.mockResolvedValue({ status: 'ready', offers: [offer] });
   (globalThis as unknown as { chrome: unknown }).chrome = {
     runtime: {
-      sendMessage: mocks.sendMessage,
+      // Config telemetry shares chrome.runtime, but must not consume a queued
+      // credential discovery/use response or count as a generation request.
+      sendMessage: (message: { kind?: string }) =>
+        message.kind === 'matrx.config.read'
+          ? Promise.resolve(undefined)
+          : mocks.sendMessage(message),
       connect: () => {
         const connectionId = (++mocks.connectionCount).toString(16).padStart(36, '0');
         const messageListeners = new Set<(message: unknown) => void>();
