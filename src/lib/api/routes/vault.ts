@@ -53,7 +53,7 @@ import { runOpAs } from '@/lib/api/matrx-api';
 import { getAccessToken, getCurrentUser } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
-import { platformDb } from '@/lib/supabase/schemas';
+import { resolveKnob } from '@/lib/config/knob-resolve';
 import {
   FILL_SETUP_REQUIRED_MESSAGE,
   type FillSurface,
@@ -348,11 +348,11 @@ export async function resolveBrowserLoginListItemCap(): Promise<BrowserLoginList
   const [organizationId, user] = await Promise.all([getActiveOrganizationId(), getCurrentUser()]);
   if (!organizationId || !user?.id) return { ok: false, reason: 'organization_not_selected' };
 
-  const { data, error } = await platformDb().rpc('knob_resolve', {
-    p_feature: 'vault.browser_login',
-    p_key: 'list_item_cap',
-    p_organization_id: organizationId,
-    p_user_id: user.id,
+  const { data, error } = await resolveKnob({
+    feature: 'vault.browser_login',
+    key: 'list_item_cap',
+    organizationId,
+    userId: user.id,
   });
   if (error || !Number.isInteger(data) || (data as number) < 1) {
     log.warn('api', 'vault browser-login list cap unavailable');

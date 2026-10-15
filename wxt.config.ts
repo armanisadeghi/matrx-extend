@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import ts from 'typescript';
@@ -8,6 +9,16 @@ import { FIREFOX_GECKO_ID } from './src/config/identity';
 
 const devExtensionKey =
   'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1+MJD71hyTGZT40a/vRzeM9dz80VyHsiTm7zq8Yz0NxqVcl9nBx8GELq+FS0GUo1fUQBjqm17zPYtD/w4Y7TAzRY+AFu2wEzaP78b49gir3FEPw9liAhowraluj13Pg5tNPKTH1znL6rAsMi9VTrYm+WDJtj+nKI5CoKKKq0rQTUf/ChGn4Db1CrCnv7H33v9czYHZOBkksvni65uczSnDkx3x0+xH9ApJjiL5ADa2a9IUFwfBWML4AW+Q7jM7ZcegIBxsDtyzStgL7PR67cniI34An6Xsm+VVSyfP2uBP9eZr8FWfdehAmFo4v9WmxuVXAukJ+TuRAczbExT59FpQIDAQAB';
+// The commit this bundle is built from: release.sh builds from a snapshot whose git HEAD is the release
+// commit, so this is the SAME sha the release receipt carries (one identity for manifest, report, receipt).
+function buildSha(): string {
+  if (process.env.MATRX_BUILD_SHA) return process.env.MATRX_BUILD_SHA;
+  try {
+    return execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+  } catch {
+    return '';
+  }
+}
 const isChromeWebStoreBuild = process.env.MATRX_CWS_BUILD === '1';
 const chromeWebStoreEntrypoints = [
   'background',
@@ -250,6 +261,7 @@ export default defineConfig({
     };
   },
   vite: () => ({
+    define: { __MATRX_BUILD_SHA__: JSON.stringify(buildSha()) },
     plugins: [
       tailwindcss(),
       tldrawGistLink(),

@@ -1,0 +1,438 @@
+[
+  {
+    "file": "src/components/ui/json-tree.tsx",
+    "id": "CHILD_PAGE_SIZE"
+  },
+  {
+    "file": "src/features/chat/QueuedMessageCard.tsx",
+    "id": "DELIVERED_LINGER_MS"
+  },
+  {
+    "file": "src/features/files/FilesView.tsx",
+    "id": "GRAPH_PAGE_SIZE"
+  },
+  {
+    "file": "src/features/notes/NoteEditor.tsx",
+    "id": "SAVE_DEBOUNCE_MS"
+  },
+  {
+    "file": "src/features/saved-captures/SavedCapturesView.tsx",
+    "id": "PAGE_SIZE"
+  },
+  {
+    "file": "src/features/seo/SeoDetails.tsx",
+    "id": "HEADING_DISPLAY_LIMIT"
+  },
+  {
+    "file": "src/features/settings/AuditKeyCard.tsx",
+    "id": "RECENT_LIMIT"
+  },
+  {
+    "file": "src/features/tools/RecorderPane.tsx",
+    "id": "MAX_DURATION_S"
+  },
+  {
+    "file": "src/features/tools/RecorderPane.tsx",
+    "id": "MIN_DURATION_S"
+  },
+  {
+    "file": "src/hooks/use-agent-text-run.ts",
+    "id": "STALL_MS"
+  },
+  {
+    "file": "src/hooks/use-ai-extraction.ts",
+    "id": "STALL_MS"
+  },
+  {
+    "file": "src/hooks/use-auto-extract.ts",
+    "id": "DEBOUNCE_MS"
+  },
+  {
+    "file": "src/hooks/use-auto-scrape.ts",
+    "id": "FRESH_THRESHOLD_MS"
+  },
+  {
+    "file": "src/hooks/use-auto-scrape.ts",
+    "id": "SETTLE_DELAY_MS"
+  },
+  {
+    "file": "src/hooks/use-chat-stream.ts",
+    "id": "RESUME_CLAIM_TTL_MS"
+  },
+  {
+    "file": "src/hooks/use-chat-stream.ts",
+    "id": "RESUME_CONFLICT_MAX_RETRIES"
+  },
+  {
+    "file": "src/hooks/use-chat-stream.ts",
+    "id": "STALL_MS"
+  },
+  {
+    "file": "src/hooks/use-network-capture.ts",
+    "id": "MAX_EVENTS"
+  },
+  {
+    "file": "src/hooks/use-pilot-chat-stream.ts",
+    "id": "PILOT_STALL_MS"
+  },
+  {
+    "file": "src/lib/agents/use-agent-row.ts",
+    "id": "AUTO_RETRY_DELAY_MS"
+  },
+  {
+    "file": "src/lib/api/client.ts",
+    "id": "DEFAULT_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/api/matrx-api.ts",
+    "id": "DEFAULT_TOTAL_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/api/private-client.ts",
+    "id": "PRIVATE_MAX_REQUEST_MS"
+  },
+  {
+    "file": "src/lib/api/session-credentials.ts",
+    "id": "SESSION_READY_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/api/session-credentials.ts",
+    "id": "SESSION_REASK_SPACING_MS"
+  },
+  {
+    "file": "src/lib/audio/mic-grant.ts",
+    "id": "MIC_GRANT_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/audio/mic-recorder-offscreen.ts",
+    "id": "DEFAULT_CHUNK_MS"
+  },
+  {
+    "file": "src/lib/audio/mic-recorder-offscreen.ts",
+    "id": "FIRST_CHUNK_MS"
+  },
+  {
+    "file": "src/lib/audio/mic-recorder-offscreen.ts",
+    "id": "KEEPALIVE_GRACE_MS"
+  },
+  {
+    "file": "src/lib/audio/mic-recorder-offscreen.ts",
+    "id": "NO_DATA_WATCHDOG_MS"
+  },
+  {
+    "file": "src/lib/audio/mic-recorder-offscreen.ts",
+    "id": "SECOND_CHUNK_MS"
+  },
+  {
+    "file": "src/lib/audio/mic-recorder-offscreen.ts",
+    "id": "STOP_COMPLETION_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/audio/mic-recorder-offscreen.ts",
+    "id": "THIRD_CHUNK_MS"
+  },
+  {
+    "file": "src/lib/audio/mic-recorder-offscreen.ts",
+    "id": "UNMUTE_WAIT_MS"
+  },
+  {
+    "file": "src/lib/audit/log.ts",
+    "id": "MAX_RECEIPTS"
+  },
+  {
+    "file": "src/lib/auth/verify-claims.ts",
+    "id": "JWKS_FETCH_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/background/bootstrap.ts",
+    "id": "STALE_OFFSCREEN_PREFLIGHT_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/capture-ladder/api.ts",
+    "id": "RESULT_POST_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/capture-ladder/captions.ts",
+    "id": "LOAD_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/capture-ladder/queue.ts",
+    "id": "DEFAULT_POLL_FLOOR_MS"
+  },
+  {
+    "file": "src/lib/capture-ladder/runner.ts",
+    "id": "LOAD_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/capture-ladder/runner.ts",
+    "id": "SCROLL_JITTER_MS"
+  },
+  {
+    "file": "src/lib/capture-ladder/runner.ts",
+    "id": "SCROLL_MAX_MS"
+  },
+  {
+    "file": "src/lib/capture-ladder/runner.ts",
+    "id": "SCROLL_MIN_MS"
+  },
+  {
+    "file": "src/lib/capture-ladder/runner.ts",
+    "id": "SETTLE_MAX_MS"
+  },
+  {
+    "file": "src/lib/capture-ladder/runner.ts",
+    "id": "SETTLE_QUIET_MS"
+  },
+  {
+    "file": "src/lib/capture-ladder/types.ts",
+    "id": "MIN_CAPTURED_CHARS"
+  },
+  {
+    "file": "src/lib/chat/refresh-page-context.ts",
+    "id": "FAST_FRESH_MS"
+  },
+  {
+    "file": "src/lib/credentials/capture-candidates.ts",
+    "id": "PROMPT_FALLBACK_MS"
+  },
+  {
+    "file": "src/lib/credentials/capture-detector.ts",
+    "id": "DEDUPE_WINDOW_MS"
+  },
+  {
+    "file": "src/lib/credentials/capture-detector.ts",
+    "id": "GESTURE_FOLLOWUP_MS"
+  },
+  {
+    "file": "src/lib/credentials/capture-detector.ts",
+    "id": "MAX_PASSWORD_LEN"
+  },
+  {
+    "file": "src/lib/credentials/capture-detector.ts",
+    "id": "MAX_USERNAME_LEN"
+  },
+  {
+    "file": "src/lib/credentials/capture-prompt.ts",
+    "id": "AUTO_HIDE_MS"
+  },
+  {
+    "file": "src/lib/credentials/capture-settings.ts",
+    "id": "MAX_ORIGINS"
+  },
+  {
+    "file": "src/lib/credentials/generation-host.ts",
+    "id": "MAX_VALUE_LENGTH"
+  },
+  {
+    "file": "src/lib/credentials/generation-limits.ts",
+    "id": "MAX_PASSPHRASE_WORDS"
+  },
+  {
+    "file": "src/lib/credentials/generation-limits.ts",
+    "id": "MAX_PASSWORD_LENGTH"
+  },
+  {
+    "file": "src/lib/credentials/generation-limits.ts",
+    "id": "MIN_PASSPHRASE_WORDS"
+  },
+  {
+    "file": "src/lib/credentials/generation-limits.ts",
+    "id": "MIN_PASSWORD_LENGTH"
+  },
+  {
+    "file": "src/lib/credentials/generation-targets.ts",
+    "id": "GENERATED_SECRET_TTL_MS"
+  },
+  {
+    "file": "src/lib/credentials/generation-targets.ts",
+    "id": "MAX_REGISTERED_INPUTS"
+  },
+  {
+    "file": "src/lib/credentials/generation-targets.ts",
+    "id": "REGISTERED_INPUT_TTL_MS"
+  },
+  {
+    "file": "src/lib/credentials/inline-suggestions-host.ts",
+    "id": "OFFER_TTL_MS"
+  },
+  {
+    "file": "src/lib/credentials/sensitive-fields.ts",
+    "id": "MAX_SELECTORS_PER_TAB"
+  },
+  {
+    "file": "src/lib/credentials/transient-secret.ts",
+    "id": "REVEAL_CLEAR_MS"
+  },
+  {
+    "file": "src/lib/debug/bridge-traffic.ts",
+    "id": "MAX_ENTRIES"
+  },
+  {
+    "file": "src/lib/debug/log.ts",
+    "id": "MAX_EVENTS"
+  },
+  {
+    "file": "src/lib/demos/replayer.ts",
+    "id": "NAV_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/demos/replayer.ts",
+    "id": "SETTLE_MS"
+  },
+  {
+    "file": "src/lib/desktop/discovery.ts",
+    "id": "PROBE_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/desktop/http.ts",
+    "id": "HEALTH_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/desktop/http.ts",
+    "id": "PAIR_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/desktop/http.ts",
+    "id": "RPC_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/desktop/local-browser/controller.ts",
+    "id": "MAX_OWNED_RUNS"
+  },
+  {
+    "file": "src/lib/desktop/matrx2/connection.ts",
+    "id": "MAX_FAILED_DIALS"
+  },
+  {
+    "file": "src/lib/desktop/matrx2/discovery.ts",
+    "id": "PAIR_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/desktop/matrx2/discovery.ts",
+    "id": "PROBE_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/desktop/ws-offscreen.ts",
+    "id": "HEARTBEAT_INTERVAL_MS"
+  },
+  {
+    "file": "src/lib/desktop/ws-offscreen.ts",
+    "id": "OPEN_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/frontend-bridge/broadcast.ts",
+    "id": "OUTBOUND_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/frontend-bridge/broadcast.ts",
+    "id": "SUBSCRIBE_TIMEOUT_MS"
+  },
+  {
+    "file": "src/lib/guided-capture/overlay.ts",
+    "id": "MAX_HTML_CHARS"
+  },
+  {
+    "file": "src/lib/guided-capture/overlay.ts",
+    "id": "MAX_PAGE_IMAGES"
+  },
+  {
+    "file": "src/lib/panel/launch-intent.ts",
+    "id": "CAPTURE_PAGE_INTENT_TTL_MS"
+  },
+  {
+    "file": "src/lib/recording/gif-encoder.ts",
+    "id": "MAX_BITS"
+  },
+  {
+    "file": "src/lib/recording/render.ts",
+    "id": "CLICK_FX_WINDOW_MS"
+  },
+  {
+    "file": "src/lib/recording/render.ts",
+    "id": "DRAG_WINDOW_MS"
+  },
+  {
+    "file": "src/lib/recording/render.ts",
+    "id": "LABEL_WINDOW_MS"
+  },
+  {
+    "file": "src/lib/recording/render.ts",
+    "id": "MAX_FRAME_DELAY_CS"
+  },
+  {
+    "file": "src/lib/recording/render.ts",
+    "id": "MIN_FRAME_DELAY_CS"
+  },
+  {
+    "file": "src/lib/scrape/diagnose-bundle.ts",
+    "id": "MAX_SELECTOR_DEPTH"
+  },
+  {
+    "file": "src/lib/screenshot/full-page.ts",
+    "id": "MAX_TILES"
+  },
+  {
+    "file": "src/lib/screenshot/full-page.ts",
+    "id": "POST_TILE_DELAY_MS"
+  },
+  {
+    "file": "src/lib/screenshot/full-page.ts",
+    "id": "RETRY_DELAY_MS"
+  },
+  {
+    "file": "src/lib/screenshot/full-page.ts",
+    "id": "TILE_SETTLE_MS"
+  },
+  {
+    "file": "src/lib/tools/dispatch.ts",
+    "id": "CONTINUE_SUPPRESS_TTL_MS"
+  },
+  {
+    "file": "src/lib/tools/handlers/canonical.ts",
+    "id": "NETWORK_QUIET_MS"
+  },
+  {
+    "file": "src/lib/tools/handlers/credential-login.ts",
+    "id": "POLL_INTERVAL_MS"
+  },
+  {
+    "file": "src/lib/tools/handlers/credential-login.ts",
+    "id": "WAIT_AFTER_SUBMIT_MS"
+  },
+  {
+    "file": "src/lib/tools/handlers/credential-login.ts",
+    "id": "WAIT_FOR_PASSWORD_MS"
+  },
+  {
+    "file": "src/lib/tools/handlers/data-patterns.ts",
+    "id": "DEFAULT_ROWS_LIMIT"
+  },
+  {
+    "file": "src/lib/tools/handlers/extras.ts",
+    "id": "RECENT_AUDIBLE_WINDOW_MS"
+  },
+  {
+    "file": "src/lib/tools/handlers/page-refs.ts",
+    "id": "SCRAPE_TTL_MS"
+  },
+  {
+    "file": "src/lib/tools/handlers/parallel.ts",
+    "id": "MAX_TABS"
+  },
+  {
+    "file": "src/lib/video/recordings-store.ts",
+    "id": "MAX_ENTRIES"
+  },
+  {
+    "file": "src/state/chat.ts",
+    "id": "MAX_PROGRESS_ENTRIES"
+  },
+  {
+    "file": "src/state/notices.ts",
+    "id": "MAX_NOTICES"
+  },
+  {
+    "file": "src/state/parallel-runs.ts",
+    "id": "MAX_FINISHED"
+  }
+]

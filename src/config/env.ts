@@ -26,6 +26,8 @@
  *   "Missing required env var" incident).
  */
 
+import { appConfig } from '@/lib/config';
+
 export type BackendEnv = 'prod' | 'staging' | 'dev' | 'local';
 
 // Wraps a literal `import.meta.env.X` access. In Vite/WXT, the access is
@@ -68,18 +70,26 @@ export const ENV = {
   get SAFARI_OAUTH_CLIENT_ID(): string {
     return safeRead(() => import.meta.env.WXT_SAFARI_OAUTH_CLIENT_ID) ?? '';
   },
+  // Stored config (public.app_config 'matrx-extend'), read through the counted door.
   get DESKTOP_NATIVE_HOST(): string {
-    return safeRead(() => import.meta.env.WXT_DESKTOP_NATIVE_HOST) ?? 'com.matrx.local';
+    return appConfig('desktop_native_host');
   },
   get FRONTEND_URL(): string {
-    return safeRead(() => import.meta.env.WXT_FRONTEND_URL) ?? 'https://aimatrx.com';
+    return appConfig('frontend_url');
   },
 } as const;
 
 export const BACKEND_URLS: Readonly<Record<BackendEnv, string>> = {
-  prod: 'https://server.app.matrxserver.com',
-  staging: 'https://staging.server.app.matrxserver.com',
-  dev: 'https://dev.server.app.matrxserver.com',
+  get prod() {
+    return appConfig('aidream_server_url');
+  },
+  get staging() {
+    return appConfig('staging_server_url');
+  },
+  get dev() {
+    return appConfig('dev_server_url');
+  },
+  // The developer-machine escape hatch: not a stored setting (declared in the hardcoded-settings allowlist).
   local: 'http://localhost:8000',
 };
 

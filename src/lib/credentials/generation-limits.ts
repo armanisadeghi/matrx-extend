@@ -1,5 +1,5 @@
 import type { PanelActionAdmission } from '@/features/vault/usePanelAdmission';
-import { platformDb } from '@/lib/supabase/schemas';
+import { resolveKnob } from '@/lib/config/knob-resolve';
 import type { CredentialGenerationLimits } from '@ai-matrx/kit/credential-generator';
 
 export const VAULT_GENERATOR_FEATURE = 'vault.generator';
@@ -28,17 +28,17 @@ export async function resolveGeneratedCredentialLimits(
 
   const resolved = await admission.run(async () => {
     const [password, passphrase] = await Promise.all([
-      platformDb().rpc('knob_resolve', {
-        p_feature: VAULT_GENERATOR_FEATURE,
-        p_key: MAX_PASSWORD_LENGTH_KEY,
-        p_organization_id: actor.organizationId,
-        p_user_id: actor.userId,
+      resolveKnob({
+        feature: VAULT_GENERATOR_FEATURE,
+        key: MAX_PASSWORD_LENGTH_KEY,
+        organizationId: actor.organizationId,
+        userId: actor.userId,
       }),
-      platformDb().rpc('knob_resolve', {
-        p_feature: VAULT_GENERATOR_FEATURE,
-        p_key: MAX_PASSPHRASE_WORDS_KEY,
-        p_organization_id: actor.organizationId,
-        p_user_id: actor.userId,
+      resolveKnob({
+        feature: VAULT_GENERATOR_FEATURE,
+        key: MAX_PASSPHRASE_WORDS_KEY,
+        organizationId: actor.organizationId,
+        userId: actor.userId,
       }),
     ]);
     if (!admission.current() || password.error || passphrase.error) return null;

@@ -1,5 +1,6 @@
 import { RealtimeHost } from '@/components/RealtimeHost';
 import { RootErrorBoundary } from '@/components/RootErrorBoundary';
+import { initAppConfig } from '@/lib/config';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { showSwipePillAgain } from '@/lib/swipe-file/pill-dismiss';
 import { installSpeechHost } from '@/lib/tts/speech-host';
@@ -11,6 +12,8 @@ import '@/styles/globals.css';
 import { installOutboundReferralDecorator } from '@ai-matrx/kit/outbound-react';
 
 startDebugRelay();
+// Stored app config: load the last-seen copy (the service worker owns the live read and the report).
+void initAppConfig();
 // Opening the extension brings back a swipe-file card the person closed.
 void showSwipePillAgain();
 log.info('sys', 'sidepanel mounted');

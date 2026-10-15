@@ -8,10 +8,10 @@
  */
 
 import { ensureRequestOrganizationId } from '@/hooks/use-request-organization';
+import { appConfig, recordKnobRead } from '@/lib/config';
 import { getSupabase } from '@/lib/supabase/client';
 import { useAuthStore } from '@/state/auth';
 
-const CACHE_MS = 60_000;
 let cached: { key: string; resolved: Record<string, unknown>; at: number } | null = null;
 const listeners = new Set<() => void>();
 let version = 0;
@@ -33,7 +33,9 @@ export function platformKnobsVersion(): number {
 
 /** The cached value for this session, or `undefined` when no snapshot has landed (or none has this key). */
 export function peekPlatformKnob(fullKey: string): unknown {
-  return cached?.resolved[fullKey];
+  const value = cached?.resolved[fullKey];
+  if (value !== undefined) recordKnobRead(fullKey, 'db');
+  return value;
 }
 
 /** Ask for the snapshot (once, shared); resolves when it landed or failed. Never throws. */
@@ -50,7 +52,7 @@ async function snapshot(): Promise<Record<string, unknown> | null> {
   const organizationId = await ensureRequestOrganizationId();
   if (!organizationId) return null;
   const key = `${organizationId}:${userId ?? ''}`;
-  if (cached && cached.key === key && Date.now() - cached.at < CACHE_MS) return cached.resolved;
+  if (cached && cached.key === key && Date.now() - cached.at < appConfig<number>('platform_knobs_cache_ms')) return cached.resolved;
   if (inFlight?.key === key) return inFlight.promise;
 
   const promise = (async () => {
@@ -81,7 +83,9 @@ async function snapshot(): Promise<Record<string, unknown> | null> {
 /** One platform setting's resolved value, or `undefined` when it cannot be read. */
 export async function resolvePlatformKnob(fullKey: string): Promise<unknown> {
   const resolved = await snapshot();
-  return resolved ? resolved[fullKey] : undefined;
+  const value = resolved ? resolved[fullKey] : undefined;
+  if (value !== undefined) recordKnobRead(fullKey, 'db');
+  return value;
 }
 
 /** A string setting; "" / missing / unreadable → null. */

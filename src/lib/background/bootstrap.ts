@@ -15,6 +15,8 @@ import { registerDocumentNetworkCaptureHost } from '@/lib/data-pattern/document-
  * works fine there and avoids the lazy-message-handler race.
  */
 
+import { initAppConfig, startAppConfig } from '@/lib/config';
+import { startConfigReporting } from '@/lib/config/reporting';
 import { ALARMS, STORAGE_KEYS } from '@/config/env';
 import {
   registerAgendaNotificationClicks,
@@ -184,6 +186,11 @@ export function bootstrapBackground(): void {
 
   // ── 3. Alarms — also synchronous registration.
   setupAlarms();
+  // Config attestation: stored app config (live read + last-seen copy) and the counted-read reporter.
+  void initAppConfig().then(() => {
+    startAppConfig();
+    return startConfigReporting();
+  });
   startDesktopProbeAlarm();
   void startAgendaScanner();
   registerAgendaNotificationClicks();
