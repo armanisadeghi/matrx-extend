@@ -2,6 +2,7 @@ import { CopyButton } from '@/components/CopyMenu';
 import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { runMode } from '@/lib/data-pattern/run-pattern';
 import { Button } from '@ai-matrx/design-system';
+import { formatCount } from '@ai-matrx/kit/format';
 import { FileText, Loader2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 
@@ -89,7 +90,7 @@ export function MarkdownTab() {
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0 text-[11px] text-muted-foreground">
-                <span className="font-medium">{result.chars.toLocaleString()}</span> chars ·{' '}
+                <span className="font-medium">{formatCount(result.chars)}</span> chars ·{' '}
                 <span className="break-all">{result.source_url}</span>
               </div>
               <CopyButton text={() => result.markdown} size="xs" title="Copy Markdown" />
