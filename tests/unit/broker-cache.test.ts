@@ -154,14 +154,14 @@ describe('transport mode dispatch', () => {
 
   it('brokeredFetch refuses a native credential', async () => {
     const native = makeCredential({ credential_mode: 'native_ephemeral' });
-    await expect(brokeredFetch(native, { body: {} })).rejects.toThrow(/native_ephemeral/);
+    await expect(brokeredFetch(native, { body: {}, initiation: 'auto' })).rejects.toThrow(/native_ephemeral/);
   });
 
   it('brokeredFetch hits the credential endpoint with the Bearer grant', async () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response('{}', { status: 200 }));
     vi.stubGlobal('fetch', fetchMock);
     const cred = makeCredential();
-    await brokeredFetch(cred, { body: { model: 'm' } });
+    await brokeredFetch(cred, { body: { model: 'm' }, initiation: 'auto' });
     expect(fetchMock).toHaveBeenCalledWith(
       cred.endpoint,
       expect.objectContaining({
