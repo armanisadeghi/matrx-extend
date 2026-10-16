@@ -1,19 +1,15 @@
 import { recordKnobRead } from '@/lib/config';
-import { platformDb } from '@/lib/supabase/schemas';
+import { getSupabase } from '@/lib/supabase/client';
+import { resolveConfigKnob } from '@ai-matrx/data/config-attestation-doors';
 
-/** The ONE direct `platform.knob_resolve` door: same call, plus the counted read. */
+/** The app-facing `platform.knob_resolve` read, with attestation counting. */
 export async function resolveKnob(args: {
   feature: string;
   key: string;
   organizationId: string;
   userId: string;
 }) {
-  const result = await platformDb().rpc('knob_resolve', {
-    p_feature: args.feature,
-    p_key: args.key,
-    p_organization_id: args.organizationId,
-    p_user_id: args.userId,
-  });
+  const result = await resolveConfigKnob(getSupabase(), args);
   if (!result.error) recordKnobRead(`${args.feature}.${args.key}`, 'db');
   return result;
 }

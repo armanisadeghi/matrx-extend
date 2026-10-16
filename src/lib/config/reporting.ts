@@ -11,6 +11,10 @@ import {
   type ConfigReadRecorder,
   createConfigReadRecorder,
 } from '@ai-matrx/data/config-attestation';
+import {
+  findConfigAppInstance,
+  registerConfigAppInstance,
+} from '@ai-matrx/data/config-attestation-doors';
 import pkg from '../../../package.json';
 import {
   attachRecorder,
@@ -72,37 +76,31 @@ async function ensureDevice(): Promise<typeof device> {
     await chrome.storage.local.set({ [INSTANCE_KEY]: instanceId });
   }
   const db = getSupabase();
-  const found = await db
-    .from('app_instances')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('instance_id', instanceId)
-    .eq('platform', PLATFORM)
-    .maybeSingle();
+  const found = await findConfigAppInstance(db, { userId, instanceId, platform: PLATFORM });
   if (found.error) {
     countConfigEvent('config.device_lookup_failed', { error: found.error.message });
     return null;
   }
-  let id = (found.data as { id: string } | null)?.id;
+  let id = found.data?.id;
   if (!id) {
-    const inserted = await db
-      .from('app_instances')
-      .insert({
-        user_id: userId,
-        created_by: userId,
-        instance_id: instanceId,
-        instance_name: 'Chrome extension',
-        platform: PLATFORM,
-        organization_id: organizationId,
-        is_active: true,
-      } as never)
-      .select('id')
-      .single();
+    const inserted = await registerConfigAppInstance(db, {
+      user_id: userId,
+      created_by: userId,
+      instance_id: instanceId,
+      instance_name: 'Chrome extension',
+      platform: PLATFORM,
+      organization_id: organizationId,
+      is_active: true,
+    });
     if (inserted.error) {
       countConfigEvent('config.device_register_failed', { error: inserted.error.message });
       return null;
     }
-    id = (inserted.data as { id: string }).id;
+    id = inserted.data?.id;
+    if (!id) {
+      countConfigEvent('config.device_register_failed', { error: 'missing app instance id' });
+      return null;
+    }
   }
   device = { deviceId: id, organizationId };
   return device;
