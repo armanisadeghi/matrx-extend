@@ -34,11 +34,12 @@ describe('every feature reaches the chat through the package door', () => {
     expect(door.openConversation).toHaveBeenCalledWith('c2');
     expect(useChatStore.getState().selectedConversationId).toBeNull();
     expect(await currentChatConversationId()).toBe('conv-from-package');
-    await sendThroughPackageChat({ text: 'go', agentId: 'a1', variables: { k: 'v' } });
+    await sendThroughPackageChat({ text: 'go', agentId: 'a1', variables: { k: 'v' }, initiation: 'user' });
     expect(door.sendMessage).toHaveBeenCalledWith({
       text: 'go',
       agentId: 'a1',
       variables: { k: 'v' },
+      initiation: 'user',
     });
   });
 });
