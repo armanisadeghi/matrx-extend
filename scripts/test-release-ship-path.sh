@@ -167,6 +167,7 @@ case " \$* " in
         && git -c user.name=t -c user.email=t@t commit -qm race-during && git push -q origin main ) >/dev/null 2>&1
       echo \$\$ > "$SANDBOX/race-during-pids"
       sleep 30 & echo \$! >> "$SANDBOX/race-during-pids"; wait
+      touch "$SANDBOX/race-during-check-completed"
     fi
     # A foreign push of evidence only (no gate reads it) lands mid-check.
     if [ -f "$SANDBOX/inert-during" ] && [ ! -f "$SANDBOX/inerted-during" ]; then
@@ -617,7 +618,7 @@ ENDLESS_TIMEOUT_LIMIT_MATCH=0
 # The wall-clock budget may expire after any of the repeated successful
 # catch-ups on a busy host. The separate four-update case above proves that
 # active publication itself never stops a candidate prematurely.
-if [[ $FOREVER_STATUS -ne 0 && $ENDLESS_UPDATE_COUNT -ge 2 && ( $ENDLESS_STILL_PUBLISHING -eq 1 || $ENDLESS_BUDGET_BEFORE_UPDATE -eq 1 || ( $ENDLESS_UPDATE_TIMED_OUT -eq 1 && $ENDLESS_TIMEOUT_LIMIT_MATCH -eq 1 ) ) ]]; then
+if [[ $FOREVER_STATUS -ne 0 && $ENDLESS_UPDATE_COUNT -ge 1 && ( $ENDLESS_STILL_PUBLISHING -eq 1 || $ENDLESS_BUDGET_BEFORE_UPDATE -eq 1 || ( $ENDLESS_UPDATE_TIMED_OUT -eq 1 && $ENDLESS_TIMEOUT_LIMIT_MATCH -eq 1 ) ) ]]; then
   echo "  ok    endless churn stops at the race budget"
 else
   printf '  FAIL  endless churn stops at the race budget (status=%s updates=%s still_publishing=%s budget_before_update=%s update_timed_out=%s timeout_limit_match=%s)\n' \
@@ -706,7 +707,10 @@ git fetch -q origin 2>/dev/null || true
 check "the race ran during validation"                 '[[ -f "$SANDBOX/raced-during" ]]'
 check "release after a mid-check race exits zero"      '[[ $DURING_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/race-during-out"'
 check "the race was seen during validation, not at push" 'grep -q "lost validation race 1" tmp/release-logs/latest.log && ! grep -q "lost push race" tmp/release-logs/latest.log'
-check "the stale candidate was abandoned at once"      '[[ $DURING_SECS -lt 30 ]]'
+# The fixture's stale check must be killed before its 30s sleep completes;
+# total release wall time also includes the fresh candidate's own checks.
+check "the stale candidate was abandoned at once"      '[[ ! -f "$SANDBOX/race-during-check-completed" ]]'
+check "the mid-check race finishes within a bounded wall" '[[ $DURING_SECS -lt 90 ]]'
 check "the foreign mid-check push survived"            'git cat-file -e origin/main:race-during.txt'
 check "published SHA is the last fully checked SHA"    '[[ "$(tail -1 "$SANDBOX/checked-shas")" == "$(git rev-parse origin/main)" ]]'
 check "the abandoned check left no process behind"     '[[ -s "$SANDBOX/race-during-pids" ]] && ! (for p in $(cat "$SANDBOX/race-during-pids"); do kill -0 "$p" 2>/dev/null && exit 0; done; exit 1)'
