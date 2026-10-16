@@ -68,8 +68,8 @@ it.each([
     'no selected fields',
     '<div id="events"><article class="event"><h2 class="title">Brooklyn Bowl</h2></article></div>',
     false,
-    [],
-    'no_match',
+    [{ text: 'Brooklyn Bowl', link: null }],
+    'matched',
   ],
   [
     'blank existing field',
@@ -108,6 +108,12 @@ it.each([
     const result = await data_patterns.run({ action: 'run', pattern_id: saved.id }, context);
     expect(result).toMatchObject({ ok: true, outcome, rows: expected, row_count: expected.length });
     expect(mocks.bumpRun.mock.calls).toEqual(outcome === 'matched' ? [[saved.id, 'ok', 1]] : []);
-    expect(probeFirstRowInPage(saved.config)).toEqual(outcome === 'matched' ? { title: '' } : null);
+    expect(probeFirstRowInPage(saved.config)).toEqual(
+      fields
+        ? outcome === 'matched'
+          ? { title: '' }
+          : null
+        : { text: 'Brooklyn Bowl', link: null },
+    );
   },
 );

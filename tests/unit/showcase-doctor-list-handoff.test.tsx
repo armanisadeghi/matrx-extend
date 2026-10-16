@@ -229,14 +229,16 @@ describe('Showcase Doctor recommendation handoff', () => {
     expect(screen.getByRole('button', { name: /Pick an example item/i })).toBeTruthy();
   });
 
-  it('carries detected list selectors into the builder while still requiring field selection', async () => {
+  it('carries detected list selectors into the builder and permits fallback text extraction', async () => {
     render(<TestSurface />);
     fireEvent.click(await screen.findByRole('button', { name: /5 repeating cards detected/i }));
 
     expect(await screen.findByText(detectedRoot)).toBeTruthy();
     expect(screen.getByText(detectedItem)).toBeTruthy();
     expect(screen.getByRole('button', { name: /pick more fields/i })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /extract/i }).hasAttribute('disabled')).toBe(true);
+    expect(
+      (screen.getByRole('button', { name: /^extract text$/i }) as HTMLButtonElement).disabled,
+    ).toBe(false);
     fireEvent.click(await screen.findByRole('button', { name: /name Neon Nights at Area15/i }));
     fireEvent.click(screen.getByRole('button', { name: /^Extract$/i }));
     expect(await screen.findByText(/\[\{"name":"Neon Nights at Area15"/)).toBeTruthy();

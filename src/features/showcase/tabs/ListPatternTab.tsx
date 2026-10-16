@@ -521,6 +521,11 @@ export function ListPatternTab() {
   };
 
   const fields = config?.field_paths ?? [];
+  // Text/link fallback is useful for a valid list with no selected fields, but
+  // never run a stale selector after inspection has shown that its root or
+  // items disappeared from this document.
+  const extractionTargetMissing =
+    inspectionStatus === 'root_missing' || inspectionStatus === 'items_missing';
   const usedSelectors = useMemo(() => {
     const set = new Set<string>();
     for (const f of fields) set.add(`${f.rel_selector}|${f.attr ?? 'text'}`);
@@ -814,7 +819,7 @@ export function ListPatternTab() {
               </Button>
               <Button
                 onClick={() => void handleRun()}
-                disabled={running || !tab.pageKey}
+                disabled={running || !tab.pageKey || extractionTargetMissing}
                 className="flex-1 rounded-full"
                 title={
                   fields.length === 0

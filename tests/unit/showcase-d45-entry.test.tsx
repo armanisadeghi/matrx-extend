@@ -177,7 +177,7 @@ describe('D45 cancel is a picker transaction boundary', () => {
     expect(JSON.parse(screen.getByTestId('rows').textContent ?? '[]')).toEqual(priorRows);
   });
 
-  it('commits an explicitly chosen new collection on Done even with zero fields', async () => {
+  it('commits an explicitly chosen new collection on Done and extracts fallback text with zero fields', async () => {
     await startWithPreview();
     const overlay = await restartAndChooseNestedScope();
     await act(async () => {
@@ -187,10 +187,18 @@ describe('D45 cancel is a picker transaction boundary', () => {
     expect(screen.queryByText('#wideeventsList')).toBeNull();
     expect(screen.getByText(/briefDetails/)).toBeTruthy();
     expect(screen.queryByText(/1 selected field/i)).toBeNull();
-    expect((screen.getByRole('button', { name: /^Extract$/i }) as HTMLButtonElement).disabled).toBe(
-      true,
-    );
+    const extract = screen.getByRole('button', { name: /^Extract text$/i }) as HTMLButtonElement;
+    expect(extract.disabled).toBe(false);
     expect(screen.queryByTestId('rows')).toBeNull();
+    fireEvent.click(extract);
+    const rows = JSON.parse((await screen.findByTestId('rows')).textContent ?? '[]') as Array<
+      Record<string, unknown>
+    >;
+    expect(rows).toHaveLength(3);
+    expect(rows[0]).toMatchObject({
+      text: 'Neon Nights at Area15Details',
+      link: 'http://localhost:3000/events/neon-nights',
+    });
   });
 
   it('appends page-picked fields to the staged same-scope definition on Done', async () => {
