@@ -13,7 +13,9 @@ const mocks = vi.hoisted(() => ({
   autoHandshake: true,
   ports: [] as Array<{ handshake: () => void; disconnect: () => void }>,
 }));
-vi.mock('@/lib/supabase/schemas', () => ({ platformDb: () => ({ rpc: mocks.rpc }) }));
+vi.mock('@/lib/supabase/client', () => ({
+  getSupabase: () => ({ schema: () => ({ rpc: mocks.rpc }) }),
+}));
 vi.mock('@ai-matrx/kit/clipboard', () => ({ copyText: mocks.copy }));
 vi.mock('@/lib/config', () => ({ recordKnobRead: vi.fn() }));
 import { PasswordGenerator } from './PasswordGenerator';

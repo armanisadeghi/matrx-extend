@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({ rpc: vi.fn() }));
 
-vi.mock('@/lib/supabase/schemas', () => ({
-  platformDb: () => ({ rpc: mocks.rpc }),
+vi.mock('@/lib/supabase/client', () => ({
+  getSupabase: () => ({ schema: () => ({ rpc: mocks.rpc }) }),
 }));
 
 import { resolveGeneratedCredentialLimits } from './generation-limits';

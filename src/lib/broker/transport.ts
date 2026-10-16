@@ -54,6 +54,8 @@ export async function brokeredFetch(
   credential: BrokeredCredential,
   init: {
     body: unknown;
+    /** Who started this relay call; the server witnesses origin and holds unattested callers. */
+    initiation: 'user' | 'auto';
     method?: string;
     headers?: Record<string, string>;
     signal?: AbortSignal;
@@ -69,6 +71,7 @@ export async function brokeredFetch(
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${credential.token}`,
+      'x-matrx-initiation': init.initiation,
       ...init.headers,
     },
     body: JSON.stringify(init.body),

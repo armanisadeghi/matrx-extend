@@ -95,6 +95,7 @@ export default function BrokerView() {
       const result = await proxiedJson({
         audience: 'anthropic',
         tierPolicy: tier,
+        initiation: 'user',
         model: proxyModel.trim(),
         body: {
           model: proxyModel.trim(),

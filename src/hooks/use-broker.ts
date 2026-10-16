@@ -36,6 +36,7 @@ export interface UseBroker {
     body: unknown;
     headers?: Record<string, string>;
     model?: string;
+    initiation: 'user' | 'auto';
   }) => Promise<BrokerProxiedJsonResult>;
 }
 
@@ -78,6 +79,7 @@ export function useBroker(): UseBroker {
       body: unknown;
       headers?: Record<string, string>;
       model?: string;
+      initiation: 'user' | 'auto';
     }) => {
       const result = await callProxiedJson(msg);
       void refreshSnapshot();

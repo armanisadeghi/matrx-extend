@@ -63,6 +63,8 @@ export interface BrokerProxiedJsonMessage {
   body: unknown;
   headers?: Record<string, string>;
   model?: string;
+  /** Required: 'user' only when a person's action starts the call; 'auto' otherwise. Sent as x-matrx-initiation. */
+  initiation: 'user' | 'auto';
 }
 export interface BrokerProxiedJsonResult {
   ok: boolean;
@@ -163,6 +165,7 @@ export async function callProxiedJsonInSw(
     try {
       res = await brokeredFetch(cred, {
         body: msg.body,
+        initiation: msg.initiation,
         ...(msg.headers !== undefined ? { headers: msg.headers } : {}),
       });
     } catch (err) {

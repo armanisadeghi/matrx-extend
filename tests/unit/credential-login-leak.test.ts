@@ -74,12 +74,14 @@ vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => 'org-1',
 }));
 
-vi.mock('@/lib/supabase/schemas', () => ({
-  platformDb: () => ({
-    rpc: async (_name: string, args: unknown) => {
-      knobRequests.push(args);
-      return knobImpl();
-    },
+vi.mock('@/lib/supabase/client', () => ({
+  getSupabase: () => ({
+    schema: () => ({
+      rpc: async (_name: string, args: unknown) => {
+        knobRequests.push(args);
+        return knobImpl();
+      },
+    }),
   }),
 }));
 
