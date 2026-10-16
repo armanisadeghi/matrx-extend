@@ -18,7 +18,6 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 import { useEffect } from 'react';
 
 export function useAgendaListener(): void {
-
   useEffect(() => {
     const unsubscribe = on<{ taskId: string }, { ack: true }>(
       CHANNELS.AGENDA_RUN_NOW,

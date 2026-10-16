@@ -33,11 +33,11 @@
 import { log } from '@/lib/debug/log';
 import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { RECONNECT_ALARM_ATTEMPTS, createBackoff } from '@ai-matrx/data/realtime';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
 import { formatDurationMs } from '@ai-matrx/kit/format';
-import { RECONNECT_ALARM_ATTEMPTS, createBackoff } from '@ai-matrx/data/realtime';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 

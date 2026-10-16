@@ -33,6 +33,7 @@ import type { InboundRenderBlock } from '@/lib/content-ir/inbound';
 import { CONTENT_IR_PLATFORM } from '@/lib/content-ir/platform';
 import { componentRegistry } from '@/lib/content-ir/registry';
 import { contentIrRouteEnv, contentIrVersionSources } from '@/lib/content-ir/route-env';
+import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir/core';
 import {
   GenericStructuredView,
   type IrRenderBlock,
@@ -40,7 +41,6 @@ import {
   resolveSupersededKindRender,
   useContentIrKindVersion,
 } from '@ai-matrx/content-ir/react';
-import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir/core';
 import { isProvisionalKind, readPartialKindEvent } from '@ai-matrx/content-ir/wire';
 import { useMemo } from 'react';
 import { lookupKindComponent } from './dispatch';

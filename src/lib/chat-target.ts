@@ -54,7 +54,9 @@ export function useChatConversationId(): string | null {
   useEffect(() => {
     let live = true;
     const read = () =>
-      void currentChatConversationId().then((next) => live && setId((p) => (p === next ? p : next)));
+      void currentChatConversationId().then(
+        (next) => live && setId((p) => (p === next ? p : next)),
+      );
     read();
     const timer = setInterval(read, 500);
     return () => {

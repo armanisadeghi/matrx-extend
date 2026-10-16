@@ -35,10 +35,10 @@ import type { ConversationListsSummary, Task, UserTodo } from '@/lib/lists/types
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { cn } from '@/lib/utils';
+import { useChannel } from '@ai-matrx/data/realtime/react';
 import { ConfirmDialog } from '@ai-matrx/design-system';
 import { Badge, Button } from '@ai-matrx/design-system';
 import { ScrollArea } from '@ai-matrx/design-system';
-import { useChannel } from '@ai-matrx/data/realtime/react';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import {

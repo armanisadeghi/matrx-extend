@@ -91,13 +91,23 @@ export function packageDeclarations(lockfile: string): {
   const reads: Array<{ full: string; reader: string }> = [];
   const unresolved: Array<{ file: string; line: number; call: string }> = [];
   let declared = 0;
-  for (const { name, version } of [...versions.values()].sort((a, b) => (a.name < b.name ? -1 : 1))) {
+  for (const { name, version } of [...versions.values()].sort((a, b) =>
+    a.name < b.name ? -1 : 1,
+  )) {
     const prefix = `${name.replace('/', '+')}@${version}`;
-    const hit = entries.find((e) => e === prefix || e.startsWith(`${prefix}_`) || e.startsWith(`${prefix}(`));
+    const hit = entries.find(
+      (e) => e === prefix || e.startsWith(`${prefix}_`) || e.startsWith(`${prefix}(`),
+    );
     const dir = hit ? join(store, hit, 'node_modules', name) : null;
     if (!dir || !existsSync(join(dir, 'package.json'))) {
-      console.warn(`config:manifest WARNING: ${name}@${version} is not in the pnpm store; its knob declaration is counted unresolved`);
-      unresolved.push({ file: `node_modules/${name}`, line: 0, call: `package ${name}@${version}` });
+      console.warn(
+        `config:manifest WARNING: ${name}@${version} is not in the pnpm store; its knob declaration is counted unresolved`,
+      );
+      unresolved.push({
+        file: `node_modules/${name}`,
+        line: 0,
+        call: `package ${name}@${version}`,
+      });
       continue;
     }
     const path = join(dir, 'knob-declaration.json');
@@ -107,13 +117,19 @@ export function packageDeclarations(lockfile: string): {
       reads: Array<{ feature: string; key: string; files: string[] }>;
       unresolved: Array<{ file: string; line: number; call: string }>;
     };
-    if (d.format !== 1) throw new Error(`${name}@${version}: knob-declaration.json format ${d.format} is not 1`);
+    if (d.format !== 1)
+      throw new Error(`${name}@${version}: knob-declaration.json format ${d.format} is not 1`);
     declared++;
     for (const r of d.reads)
-      for (const f of r.files) reads.push({ full: `${r.feature}.${r.key}`, reader: `${name}/${f}` });
+      for (const f of r.files)
+        reads.push({ full: `${r.feature}.${r.key}`, reader: `${name}/${f}` });
     for (const u of d.unresolved) unresolved.push({ ...u, file: `${name}/${u.file}` });
   }
-  return { reads, unresolved, summary: `${versions.size} bundled @ai-matrx package version(s), ${declared} with a knob declaration` };
+  return {
+    reads,
+    unresolved,
+    summary: `${versions.size} bundled @ai-matrx package version(s), ${declared} with a knob declaration`,
+  };
 }
 
 function main() {
@@ -157,7 +173,10 @@ function main() {
     (knobs[r.full] ??= []).push(r.reader);
     if (!registeredKnobs.includes(r.full)) {
       const at = r.full.lastIndexOf('.');
-      (extra.get(r.full.slice(0, at)) ?? extra.set(r.full.slice(0, at), new Set()).get(r.full.slice(0, at))!).add(r.full.slice(at + 1));
+      (
+        extra.get(r.full.slice(0, at)) ??
+        extra.set(r.full.slice(0, at), new Set()).get(r.full.slice(0, at))!
+      ).add(r.full.slice(at + 1));
     }
   }
   const packageFeatures = [...extra.entries()].map(([feature, keys]) => ({

@@ -24,13 +24,13 @@ import { log } from '@/lib/debug/log';
 import { listMemberOrganizations } from '@/lib/org/active-org';
 import { failDbCall } from '@/lib/supabase/db-failure';
 import { mediaDb } from '@/lib/supabase/schemas';
-import { formatDurationMs } from '@ai-matrx/kit/format';
 import type { ChannelHandle } from '@ai-matrx/data/realtime';
 import {
   type RealtimeManager,
   defineChannelNamespace,
   onRealtimeManagerChange,
 } from '@ai-matrx/data/realtime';
+import { formatDurationMs } from '@ai-matrx/kit/format';
 
 /**
  * ONE PLACE NAMES THE CHANNEL. supabase-js dedupes channels by topic, so two
