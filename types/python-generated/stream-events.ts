@@ -9331,7 +9331,7 @@ export const MESSAGE_FLAGS_METADATA_KEY = "flags";
 /** What a flag the model cannot honour becomes (org knob agents.messages / flag_compatibility_mode). */
 export const FLAG_COMPATIBILITY_MODES = ["refuse", "convert", "drop"] as const;
 export type FlagCompatibilityMode = (typeof FLAG_COMPATIBILITY_MODES)[number];
-export const DEFAULT_FLAG_COMPATIBILITY_MODE: FlagCompatibilityMode = "refuse";
+export const DEFAULT_FLAG_COMPATIBILITY_MODE: FlagCompatibilityMode = "convert";
 
 /** One message: its role, its parts, and its translator flags (top level on an
  *  agent-definition message; `metadata.flags` on a runtime cx_message). */
