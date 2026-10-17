@@ -35,7 +35,7 @@
   "cause": "Reload duplicated guest readiness with obsolete banner-only text, whereas the canonical warm Settings opener recognizes current organization guidance.",
   "sibling_census": "Settings desktop/reset acceptance already recognizes current guidance; reload-boundary fixtures still carried retired banner text and are updated. Diagnostic probes retain both typed banner/guidance fields deliberately.",
   "fix_sha": "See commit introducing this record; native retest pending.",
-  "original_retest_runs": [39070057081],
+  "original_retest_runs": [39070057081, 39074994379],
   "surrounding_retest_runs": [],
   "reviewer": "Parent independent review pending",
   "acceptance_criteria": [
@@ -48,10 +48,10 @@
     "red": "Before repair current guest DOM assertion failed with guest_panel_after_reload_not_observed:false.",
     "mutation": "plant.py constant successful return for reloadSettings is rejected; exact source restored.",
     "compile": "Blocked by pre-existing missing @ai-matrx package exports and resulting implicit-any errors in unrelated product paths.",
-    "native": "Pending; no browser/build/release launched.",
+    "native": "Run 39074994379: invalid-resource, zero product credit. Hosted watchdog stopped the native exercise after repeated unsafe CPU samples; no native report was uploaded. T04 remains unverified.",
     "replacement_tab_guard": "Real replacement-tab helper refuses current guest DOM with zero or two Settings tabs before clicking. plant.py shortcut skipping replacement-tab readiness makes both named refusal assertions fail; original source restored identically."
   },
-  "next_action": "Run guarded guest Settings native acceptance against reviewed exact artifact with repaired harness; verify warm and reload Theme persistence plus selected surrounding cases.",
+  "next_action": "After release and hosted lane capacity settle, rerun the repaired harness against an exact CI development artifact; retain native report and all valid resource finals before crediting guest T04.",
   "transition_history": [
     {
       "at": "2026-10-17T21:46:56.177138+00:00",
