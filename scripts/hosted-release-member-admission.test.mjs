@@ -188,6 +188,29 @@ test('member admission rejects unreviewed stabilization documents', () => {
     assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
 });
 
+test('reviewed guest send peer receipt preserves the released member candidate', () => {
+  requireReleaseMemberSource(true, [
+    'docs/stabilization/reports/guest-send-boundary-peer-20261017.json',
+  ]);
+  for (const path of [
+    'docs/stabilization/reports/guest-send-boundary-peer-20261018.json',
+    'docs/stabilization/reports/../reports/guest-send-boundary-peer-20261017.json',
+    'docs/stabilization/reports//guest-send-boundary-peer-20261017.json',
+    'docs\\stabilization\\reports\\guest-send-boundary-peer-20261017.json',
+    'docs/stabilization/reports/guest-send-boundary-peer-20261017.json/child',
+    'src/features/chat/ChatView.tsx',
+    'package.json',
+    '.github/workflows/release.yml',
+    'tests/browser/unreviewed-driver.mjs',
+  ]) {
+    assert.throws(
+      () => requireReleaseMemberSource(true, [path]),
+      /release_member_product_changed/,
+      `unreviewed path must refuse admission: ${path}`,
+    );
+  }
+});
+
 test('exact member identity diagnostic delta is admitted without widening paths', () => {
   const identityDelta = [
     'tests/browser/reviewer-chat-identity-diagnostic.mjs',

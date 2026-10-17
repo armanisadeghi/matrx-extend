@@ -112,6 +112,7 @@ export function requireReleaseMemberSource(ancestor, paths) {
         path ===
           'docs/stabilization/evidence/settings-navigation-lane-a-preflight-20261017/resource-journals/settings-nav-preflight-20261017-01.sanitized.jsonl' ||
         path === 'docs/stabilization/reports/guest-send-controls-20261017.json' ||
+        path === 'docs/stabilization/reports/guest-send-boundary-peer-20261017.json' ||
         path === 'docs/stabilization/reports/guest-values-chip-20261017.json' ||
         path === 'docs/stabilization/reports/member-acceptance-auth-repair-20261017.json' ||
         path === 'docs/stabilization/reports/member-acceptance-resource-retry-20261017.json' ||
