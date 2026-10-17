@@ -1,0 +1,35 @@
+{
+  "task_id": "guest-receipt-class-repair-20261017",
+  "status": "source-fixed-native-pending",
+  "scope": "Guest Chat acceptance receipt classifier only; no product runtime changes",
+  "cause": "Per-release .520/.521 allowlist rejected valid .522 before browser/product observation",
+  "failed_run": 39057016053,
+  "release": {
+    "run_id": 39056398246,
+    "artifact_id": 12109816135,
+    "version": "0.2.522",
+    "source_sha": "f4a72d5ddbb508f63eef71661547b80c23bb6ffe",
+    "store_zip_sha256": "fe80e3025dead2e2f508f0c2ba44656f33fa069b454d7f1313061f44e7cd54b9"
+  },
+  "repair": "Require supported receipt kind and its provenance shape/hash relationships; select package capability from the single .520 transport transition rather than exact release enumeration. Historical .205 remains legacy; other older versions fail closed. Workflow authenticates selected release and checks ZIP bytes; native harness still verifies runtime bytes. Classifier does not authenticate arbitrary JSON.",
+  "verification": {
+    "red": "New regression tests: 2 failures on old classifier, including valid .522 rejection",
+    "green": "node --test tests/browser/guest-chat-transport-observer.test.mjs: 13/13",
+    "versions": ["0.2.520", "0.2.521", "0.2.522", "0.2.999", "0.3.0", "1.0.0"],
+    "exact_artifact_replay": "prepareHostedReleaseArtifact on downloaded .522 ZIPs validates SHA/source/manifest and generates adapted receipt; guestTransportModeForReceipt returns package; owned scratch removed",
+    "mutations_red_restored": [
+      "constant package return",
+      "remove selected ZIP hash equality",
+      "remove pushed-state check",
+      "remove runtime hash equality",
+      "remove original Store tree equality",
+      "allow unknown kind",
+      "restore exact .520-only package boundary"
+    ],
+    "lint": "biome check two changed mjs files PASS",
+    "compile": "FAIL: workspace missing @ai-matrx/data/realtime, @ai-matrx/content-ir/react, @ai-matrx/files/client declarations and consequential implicit-any diagnostics; no runtime source edited"
+  },
+  "independent_review": "pending parent-assigned review",
+  "native_gate": "Rerun guarded hosted guest Chat acceptance on exact .522 release artifact, then independent native evidence review. No native/product success claimed.",
+  "owned_jobs": []
+}

@@ -1,0 +1,67 @@
+{
+  "id": "EXT-D-0229",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "title": "Guest Chat Send receives a trusted click but leaves the draft unsent",
+  "surface": "Shared @ai-matrx/chat composer in the extension side panel",
+  "auth_mode": "fresh isolated guest profile",
+  "organization_context": "No account token, profile, or organization",
+  "preconditions": [
+    "Exact 0.2.522 Store candidate from release run 39056398246 loaded unpacked under its Store identity on the guarded hosted B runner.",
+    "Fresh guest Chat and the page-specific controlled fixture are visible; the 139-character opening question is in the composer and Send is enabled."
+  ],
+  "reproduction": [
+    "Run the native guest Chat acceptance with a fresh owned browser profile, open Chat, and enter the page-grounded opening question.",
+    "Click the enabled Send message button with the browser input driver. Capture content-free input and click boundaries and CDP request counters.",
+    "Observe a trusted click at capture and bubble on the same connected button, followed by the unchanged composer and no chat request or run."
+  ],
+  "expected": "A trusted click on enabled Send submits the opening guest message, emits a real chat POST, and produces a terminal assistant answer grounded in the active page.",
+  "actual": "In B run 39059598056 the click was trusted, captured, and bubbled while the button stayed connected, but the 139-character draft remained; user messages, chat POSTs, runs, replies, and visible errors all stayed at zero. Earlier exact-artifact B run 39057768241 showed the same unsent draft and zero POST, before the finer click-boundary instrumentation. The Values sheet observer repair passed in 39059598056. Server SHA changed during the native run, so the run also cannot confer release acceptance, independently of the no-send symptom.",
+  "evidence": [
+    "docs/stabilization/evidence/guest-send-b-39059598056/result.sanitized.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39059598056",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39057768241"
+  ],
+  "build_receipt": {
+    "source_sha": "2b700795860ae6dabe12b8d2699ef98257362b6a",
+    "release_run_id": 39056398246,
+    "artifact_version": "0.2.522",
+    "artifact_tree_sha256": "5e0563fdab98d1c66d33b98caa7eb6ae13fd77ccf27884548d3b494a78e3f8c6",
+    "artifact_kind": "native_store_zip_candidate_key_adapted",
+    "server_sha_before": "894d635ed8020549ddc536a5504050512f17744a",
+    "server_sha_after": "4c904bf0743bc6871ca7cd9e80e274b5561e51c8"
+  },
+  "reproducibility": "Two exact-0.2.522 hosted B runs retained the opening draft with zero POST. The later run proves one trusted capture-and-bubble click on the connected enabled Send button; an independently reviewed harness fixture verified that instrumentation before the run.",
+  "severity": "S1: guest Chat opening message cannot be sent in the tested Store candidate",
+  "priority": "P0: diagnose and repair before guest Chat acceptance or Store submission",
+  "state": "triaged",
+  "owner": "guest_send_click_diagnosis",
+  "cause": "Unresolved inside the shared package Send handler, React event delegation, or first-send dispatch path; a missed or synthetic browser click is ruled out by the trusted bubbling event.",
+  "sibling_census": "The extension Chat tab mounts @ai-matrx/chat ChatNewClient for the guest opening turn and ChatConversationRoom for existing conversations. The same package composer is used for signed-in/member Chat; member behavior on this exact artifact has not been independently tested. Pilot uses a separate extension composer and is not evidence for this defect.",
+  "acceptance_criteria": [
+    "Locate the earliest silent boundary after the trusted bubbling click and establish a deterministic forcing regression that fails before the repair and passes after it.",
+    "Repair in the shared @ai-matrx/chat package if the cause is there; publish and adopt latest in the extension in the same session.",
+    "Pass focused package and extension checks, an independent source review, and a new guarded native guest Chat run with real POST, terminal opening answer, independent same-conversation follow-up, and post-reload new conversation.",
+    "Require stable server SHA and valid package/browser/guest resource finals throughout the acceptance run."
+  ],
+  "source_verification": {
+    "click_boundary_harness": "independent peer PASS; native trusted capture and bubble observed",
+    "product_regression": "pending root cause",
+    "native_acceptance": "39059598056 failed at first Send; zero acceptance credit"
+  },
+  "next_action": "Trace the exact shared-package Send handler and first-send dispatch against the extension host, identify the earliest silent return, repair its class in the owning package, and retest with a newly built hosted artifact after independent review. Do not rerun unchanged 0.2.522 without new causal evidence.",
+  "transition_history": [
+    {
+      "at": "2026-10-17T18:56:46Z",
+      "from": null,
+      "to": "open",
+      "reason": "Resource-admitted native B run captured a trusted connected bubbling Send click but no submission, transport, run, reply, or UI error."
+    },
+    {
+      "at": "2026-10-17T19:00:48Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Two exact-candidate B runs reproduce the no-send symptom; severity and priority set while the React input-to-Redux and button handler boundaries remain under investigation."
+    }
+  ]
+}

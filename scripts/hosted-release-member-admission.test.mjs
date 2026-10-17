@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { test } from 'node:test';
 import {
   admitReleaseMember,
@@ -178,11 +181,11 @@ test('reviewed package Chat driver repairs preserve immutable candidate eligibil
     assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
 });
 
-test('member admission rejects unreviewed stabilization documents', () => {
+test('member admission rejects documents outside the flat report namespace', () => {
   for (const path of [
     'docs/stabilization/release-workflow-change.json',
-    'docs/stabilization/reports/unreviewed.json',
-    'docs/stabilization/reports/guest-send-controls-20261018.json',
+    'docs/stabilization/reports/nested/unreviewed.json',
+    'docs/stabilization/reports/guest-send-controls-20261018.json.mjs',
     'docs/stabilization/evidence/unreviewed/receipt.json',
   ])
     assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
@@ -193,7 +196,7 @@ test('reviewed guest send peer receipt preserves the released member candidate',
     'docs/stabilization/reports/guest-send-boundary-peer-20261017.json',
   ]);
   for (const path of [
-    'docs/stabilization/reports/guest-send-boundary-peer-20261018.json',
+    'docs/stabilization/reports/guest-send-boundary-peer-20261018.JSON',
     'docs/stabilization/reports/../reports/guest-send-boundary-peer-20261017.json',
     'docs/stabilization/reports//guest-send-boundary-peer-20261017.json',
     'docs\\stabilization\\reports\\guest-send-boundary-peer-20261017.json',
@@ -221,7 +224,7 @@ test('exact member identity diagnostic delta is admitted without widening paths'
   for (const path of [
     'tests/browser/reviewer-chat-identity-diagnostic-extra.mjs',
     'tests/browser/reviewer-chat-organization-boundary-copy.test.mjs',
-    'docs/stabilization/reports/unreviewed-member-run.json',
+    'docs/stabilization/reports/unreviewed-member-run.ts',
     'src/features/chat/ChatView.tsx',
     '.github/workflows/hosted-guest-acceptance.yml',
   ])
@@ -263,11 +266,234 @@ test('role-proof diagnostic admits only reviewed exact files', () => {
   requireReleaseMemberSource(true, paths);
   for (const extra of [
     'tests/browser/member-native-auth-proof-copy.mjs',
-    'docs/stabilization/reports/member-identity-escalation-20261018.json',
+    'docs/stabilization/reports/member-identity-escalation-20261018.json.js',
     'src/hooks/use-auth.ts',
   ])
     assert.throws(
       () => requireReleaseMemberSource(true, [...paths, extra]),
       /release_member_product_changed/,
     );
+});
+
+// Break caught: a new evidence-only peer report must not force another Store release.
+test('new flat JSON reports preserve immutable release eligibility as a class', () => {
+  requireReleaseMemberSource(true, [
+    'docs/stabilization/reports/guest-receipt-class-peer-20261017.json',
+    'docs/stabilization/reports/guest-receipt-class-repair-20261017.json',
+    'docs/stabilization/reports/member-report-admission-peer-20261017.json',
+    'docs/stabilization/reports/store-0522-blue-argon-peer-20261017.json',
+    'docs/stabilization/reports/member-admission-class-repair-20261017.json',
+    'docs/stabilization/reports/future-peer-20261018.json',
+  ]);
+});
+
+test('report namespace cannot conceal product drift or malformed paths', () => {
+  const report = 'docs/stabilization/reports/future-peer-20261018.json';
+  for (const path of [
+    'pnpm-lock.yaml',
+    'tests/browser/unknown.test.mjs',
+    'docs/stabilization/reports-other/peer.json',
+    'docs/stabilization/reports/../package.json',
+    'docs/stabilization/reports/./peer.json',
+    'docs/stabilization/reports//peer.json',
+    'docs/stabilization/reports/nested/peer.json',
+    'docs/stabilization/reports/.json',
+    'docs/stabilization/reports/.hidden.json',
+    'docs/stabilization/reports/peer.json.mjs',
+    'docs/stabilization/reports/peer.mjs.json',
+    'docs/stabilization/reports/peer.json/child',
+    'docs/stabilization/reports/peer.json\n',
+    'docs/stabilization/reports/peer.json\0',
+    'docs/stabilization/reports/peer%2fproduct.json',
+    'R100\tdocs/stabilization/reports/old.json\tdocs/stabilization/reports/new.json',
+  ]) {
+    assert.throws(
+      () => requireReleaseMemberSource(true, [report, path]),
+      /release_member_product_changed/,
+      path,
+    );
+  }
+  assert.throws(
+    () => requireReleaseMemberSource(false, [report]),
+    /release_member_source_not_ancestor/,
+  );
+});
+
+// Use real Git history: a name-only census must include both sides of a rename
+// and transient product changes, not merely the final source-to-HEAD diff.
+test('source proof rejects renamed or reverted product paths and pending drift', (t) => {
+  const cwd = mkdtempSync(join(tmpdir(), 'member-source-proof-'));
+  t.after(() => rmSync(cwd, { recursive: true, force: true }));
+  const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8' }).trim();
+  const write = (path, content) => writeFileSync(join(cwd, path), content);
+  const commit = () => {
+    git('add', '.');
+    git(
+      '-c',
+      'user.name=Admission guard',
+      '-c',
+      'user.email=guard@localhost',
+      'commit',
+      '-qm',
+      'source proof',
+    );
+    return git('rev-parse', 'HEAD');
+  };
+  const moduleUrl = new URL('./hosted-release-member-admission.mjs', import.meta.url).href;
+  const prove = (source, head) =>
+    spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `import { proveSource } from ${JSON.stringify(moduleUrl)}; proveSource(${JSON.stringify(source)}, ${JSON.stringify(head)});`,
+      ],
+      { cwd, encoding: 'utf8' },
+    );
+  git('init', '-q');
+  mkdirSync(join(cwd, 'src'), { recursive: true });
+  mkdirSync(join(cwd, 'docs/stabilization/reports'), { recursive: true });
+  write('src/product.json', '{}');
+  const source = commit();
+  write('docs/stabilization/reports/future-peer.json', '{}');
+  const reportHead = commit();
+  assert.equal(prove(source, reportHead).status, 0, 'report-only history is eligible');
+  git('mv', 'src/product.json', 'docs/stabilization/reports/renamed-product.json');
+  const renameHead = commit();
+  const renamed = prove(source, renameHead);
+  assert.notEqual(renamed.status, 0);
+  assert.match(renamed.stderr, /release_member_product_changed/);
+  git('revert', '--no-commit', renameHead);
+  const restored = commit();
+  const reverted = prove(source, restored);
+  assert.notEqual(reverted.status, 0);
+  assert.match(reverted.stderr, /release_member_product_changed/);
+  // An otherwise eligible baseline must still refuse unstaged, staged and untracked files.
+  write('src/product.json', '{"changed":true}');
+  const pending = prove(restored, restored);
+  assert.notEqual(pending.status, 0);
+  assert.match(pending.stderr, /release_member_product_changed/);
+  git('add', 'src/product.json');
+  assert.notEqual(prove(restored, restored).status, 0, 'staged product drift refuses');
+  write('src/product.json', '{}');
+  git('add', 'src/product.json');
+  write('unknown.test.mjs', 'export {};');
+  const untracked = prove(restored, restored);
+  assert.notEqual(untracked.status, 0);
+  assert.match(untracked.stderr, /release_member_product_changed/);
+});
+
+// Break caught: reviewed fixture mint repair must be usable with the immutable release,
+// while similarly named helpers remain outside the reviewed source delta.
+test('reviewed fixture mint helper admits only its two exact paths', () => {
+  const reviewed = [
+    'tests/browser/prepare-reviewer-magic-link.mjs',
+    'tests/browser/prepare-reviewer-magic-link.test.mjs',
+  ];
+  requireReleaseMemberSource(true, reviewed);
+  for (const path of [
+    'tests/browser/prepare-reviewer-magic-link-copy.mjs',
+    'tests/browser/prepare-reviewer-magic-link-other.test.mjs',
+    'tests/browser/prepare-reviewer-magic-link.mjs/child',
+    'tests/browser/../browser/prepare-reviewer-magic-link.mjs',
+    'tests/browser/prepare-reviewer-magic-link.mjs\n',
+    'src/prepare-reviewer-magic-link.mjs',
+  ])
+    assert.throws(
+      () => requireReleaseMemberSource(true, [...reviewed, path]),
+      /release_member_product_changed/,
+      path,
+    );
+});
+
+// Break caught: reviewed member/guest harness and sanitized stabilization records
+// after v0.2.522 must not make the immutable Store candidate ineligible.
+test('strict post-release history admits reviewed harness and bounded stabilization evidence', () => {
+  requireReleaseMemberSource(true, [
+    'tests/browser/member-chat-completion-oracle.mjs',
+    'tests/browser/member-chat-completion-oracle.test.mjs',
+    'docs/stabilization/CHECKLIST.md',
+    'docs/stabilization/STATUS.md',
+    'docs/stabilization/STATUS.html',
+    'docs/stabilization/inventory.json',
+    'docs/stabilization/defects/EXT-D-0228.json',
+    'docs/stabilization/evidence/guest-values-b-39058763654/result.sanitized.json',
+    'docs/stabilization/evidence/guest-values-b-39058763654/values-open.png',
+    'docs/stabilization/evidence/member-run39058586019-20261017/native-summary.json',
+    'docs/stabilization/evidence/member-run39058586019-20261017/hosted-browser-39058586019-1.sanitized.jsonl',
+    'docs/stabilization/evidence/member-run39058586019-20261017/hosted-guest-39058586019-1.sanitized.jsonl',
+    'docs/stabilization/evidence/member-run39058586019-20261017/hosted-package-39058586019-1.sanitized.jsonl',
+  ]);
+});
+
+test('bounded stabilization paths refuse unsafe nesting and unrelated payloads', () => {
+  for (const path of [
+    'tests/browser/member-chat-completion-oracle-copy.mjs',
+    'docs/stabilization/defects/EXT-D-0229.json',
+    'docs/stabilization/evidence/guest-values-b-39058763654/nested/values-open.png',
+    'docs/stabilization/evidence/guest-values-b-39058763654/values-open.png.mjs',
+    'docs/stabilization/evidence/guest-values-b-39058763654/../package.json',
+    'docs/stabilization/evidence/guest-values-b-39058763654/private-link.json',
+    'docs/stabilization/evidence/member-run39058586019-20261017/hosted-browser-39058586020-1.sanitized.jsonl',
+    'docs/stabilization/evidence/member-run39058586019-20261017/hosted-browser-39058586019-1.jsonl',
+    'docs/stabilization/evidence/member-run39058586019-20261017/nested/native-summary.json',
+    'docs/stabilization/STATUS.ts',
+    'pnpm-lock.yaml',
+    '.github/workflows/hosted-guest-acceptance.yml',
+    'src/features/chat/ChatView.tsx',
+  ])
+    assert.throws(
+      () => requireReleaseMemberSource(true, [path]),
+      /release_member_product_changed/,
+      path,
+    );
+});
+
+test('member runner selection changes only the existing hosted architecture input', () => {
+  const intel = releaseMemberPlan(input, run, listing, receipt, sha);
+  const arm = releaseMemberPlan({ ...input, runnerLabel: 'macos-15' }, run, listing, receipt, sha);
+  assert.ok(intel.args.includes('runner_label=macos-15-intel'));
+  assert.ok(arm.args.includes('runner_label=macos-15'));
+  assert.deepEqual(
+    arm.args,
+    intel.args.map((arg) =>
+      arg === 'runner_label=macos-15-intel' ? 'runner_label=macos-15' : arg,
+    ),
+  );
+  assert.equal(arm.args.filter((arg) => arg === 'requested_by=release-member-admission').length, 1);
+  assert.ok(arm.args.includes('acceptance_lane=A'));
+  for (const runnerLabel of ['macos-latest', 'ubuntu-latest', '', null, 'macos-15-arm64'])
+    assert.throws(
+      () => releaseMemberPlan({ ...input, runnerLabel }, run, listing, receipt, sha),
+      /runner_label_invalid/,
+    );
+  assert.throws(
+    () =>
+      releaseMemberPlan(
+        { ...input, runnerLabel: 'macos-15' },
+        { ...run, conclusion: 'failure' },
+        listing,
+        receipt,
+        sha,
+      ),
+    /release_member_run_invalid/,
+  );
+});
+
+test('CLI rejects an unsupported runner before credential or network admission', () => {
+  const result = spawnSync(
+    process.execPath,
+    [
+      'scripts/hosted-release-member-admission.mjs',
+      'plan',
+      input.releaseRunId,
+      input.artifactId,
+      input.sourceSha,
+      'ubuntu-latest',
+    ],
+    { encoding: 'utf8' },
+  );
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /release_member_runner_label_invalid/);
+  assert.equal(result.stdout, '');
 });

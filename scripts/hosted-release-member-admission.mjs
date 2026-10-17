@@ -17,13 +17,20 @@ const HASH = /^[a-f0-9]{64}$/;
 const decimal = /^[1-9][0-9]*$/;
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
+/** Match the two existing hosted workflow architectures; resources are still guarded there. */
+export function releaseMemberRunnerLabel(value = 'macos-15-intel') {
+  assert.ok(['macos-15', 'macos-15-intel'].includes(value), 'release_member_runner_label_invalid');
+  return value;
+}
+
 export function releaseMemberPlan(
-  { releaseRunId, artifactId, sourceSha },
+  { releaseRunId, artifactId, sourceSha, runnerLabel },
   run,
   listing,
   receipt,
   tagSha,
 ) {
+  runnerLabel = releaseMemberRunnerLabel(runnerLabel);
   assert.ok(
     decimal.test(releaseRunId ?? '') && decimal.test(artifactId ?? '') && SHA.test(sourceSha ?? ''),
     'release_member_identity_invalid',
@@ -71,7 +78,7 @@ export function releaseMemberPlan(
         'acceptance_lane=A',
         'acceptance_case=member-chat',
         `release_run_id=${releaseRunId}`,
-        'runner_label=macos-15-intel',
+        `runner_label=${runnerLabel}`,
         'requested_by=release-member-admission',
       ].flatMap((value) => ['-f', value]),
       '-R',
@@ -102,22 +109,45 @@ export function verifyReleaseMemberBytes(archiveBytes, artifact, receipt, storeB
   assert.equal(digest(storeBytes), receipt.storeZip.sha256, 'release_member_store_digest_mismatch');
 }
 
+function reviewedStabilizationPath(path) {
+  if (
+    [
+      'docs/stabilization/CHECKLIST.md',
+      'docs/stabilization/STATUS.md',
+      'docs/stabilization/STATUS.html',
+      'docs/stabilization/inventory.json',
+      'docs/stabilization/defects/EXT-D-0228.json',
+    ].includes(path)
+  )
+    return true;
+  if (
+    /^docs\/stabilization\/evidence\/guest-values-b-[1-9][0-9]{10}\/(?:result\.sanitized\.json|values-open\.png)$/.test(
+      path,
+    )
+  )
+    return true;
+  const memberEvidence =
+    /^docs\/stabilization\/evidence\/member-run([1-9][0-9]{10})-[0-9]{8}\/(.+)$/.exec(path);
+  return (
+    memberEvidence !== null &&
+    (memberEvidence[2] === 'native-summary.json' ||
+      new RegExp(
+        `^hosted-(?:browser|guest|package)-${memberEvidence[1]}-[1-9][0-9]*\\.sanitized\\.jsonl$`,
+      ).test(memberEvidence[2]))
+  );
+}
+
 export function requireReleaseMemberSource(ancestor, paths) {
   assert.equal(ancestor, true, 'release_member_source_not_ancestor');
   assert.ok(
     paths.every(
       (path) =>
+        reviewedStabilizationPath(path) ||
+        /^docs\/stabilization\/reports\/[a-z0-9]+(?:-[a-z0-9]+)*\.json(?![\s\S])/.test(path) ||
         path ===
           'docs/stabilization/evidence/member-release-admission-20261017/release-api-metadata.json' ||
         path ===
           'docs/stabilization/evidence/settings-navigation-lane-a-preflight-20261017/resource-journals/settings-nav-preflight-20261017-01.sanitized.jsonl' ||
-        path === 'docs/stabilization/reports/guest-send-controls-20261017.json' ||
-        path === 'docs/stabilization/reports/guest-send-boundary-peer-20261017.json' ||
-        path === 'docs/stabilization/reports/guest-values-chip-20261017.json' ||
-        path === 'docs/stabilization/reports/member-acceptance-auth-repair-20261017.json' ||
-        path === 'docs/stabilization/reports/member-acceptance-resource-retry-20261017.json' ||
-        path === 'docs/stabilization/reports/settings-navigation-lane-a-checkpoint-20261017.json' ||
-        path === 'docs/stabilization/reports/store-release-audit-20261017.json' ||
         /^scripts\/hosted-release-member-admission(?:\.test)?\.mjs$/.test(path) ||
         path === 'tests/browser/guest-chat-store-acceptance.mjs' ||
         path === 'tests/browser/guest-chat-store-sequence.test.mjs' ||
@@ -126,9 +156,12 @@ export function requireReleaseMemberSource(ancestor, paths) {
         path === 'tests/browser/guest-chat-completion-oracle.test.mjs' ||
         path === 'tests/browser/guest-chat-transport-observer.mjs' ||
         path === 'tests/browser/guest-chat-transport-observer.test.mjs' ||
+        path === 'tests/browser/prepare-reviewer-magic-link.mjs' ||
+        path === 'tests/browser/prepare-reviewer-magic-link.test.mjs' ||
         path === 'tests/browser/member-native-auth-proof.mjs' ||
         path === 'tests/browser/member-native-auth-proof.test.mjs' ||
-        path === 'docs/stabilization/reports/member-identity-escalation-20261017.json' ||
+        path === 'tests/browser/member-chat-completion-oracle.mjs' ||
+        path === 'tests/browser/member-chat-completion-oracle.test.mjs' ||
         path === 'tests/browser/reviewer-chat-store-acceptance.mjs' ||
         path === 'tests/browser/reviewer-chat-identity-diagnostic.mjs' ||
         path === 'tests/browser/reviewer-chat-identity-diagnostic.test.mjs' ||
@@ -189,7 +222,7 @@ function admission() {
   return remoteSha;
 }
 
-function proveSource(sourceSha, workflowSha) {
+export function proveSource(sourceSha, workflowSha) {
   execFileSync('git', ['merge-base', '--is-ancestor', sourceSha, workflowSha]);
   const changedPaths = execFileSync(
     'git',
@@ -210,9 +243,10 @@ function proveSource(sourceSha, workflowSha) {
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   let scratch;
   try {
-    const [mode, releaseRunId, artifactId, sourceSha] = process.argv.slice(2);
+    const [mode, releaseRunId, artifactId, sourceSha, requestedRunner] = process.argv.slice(2);
+    const runnerLabel = releaseMemberRunnerLabel(requestedRunner);
     assert.ok(
-      ['plan', 'dispatch'].includes(mode) && process.argv.length === 6,
+      ['plan', 'dispatch'].includes(mode) && [6, 7].includes(process.argv.length),
       'release_member_arguments_invalid',
     );
     assert.ok(
@@ -255,7 +289,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       remoteTags.find(([, ref]) => ref === `${tagRef}^{}`)?.[0] ??
       remoteTags.find(([, ref]) => ref === tagRef)?.[0];
     const plan = releaseMemberPlan(
-      { releaseRunId, artifactId, sourceSha },
+      { releaseRunId, artifactId, sourceSha, runnerLabel },
       run,
       listing,
       receipt,
@@ -277,6 +311,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         artifactId,
         sourceSha,
         workflowSha,
+        runnerLabel,
         version: receipt.version,
         storeZipSha256: receipt.storeZip.sha256,
         githubArtifactDigest: plan.artifact.digest,

@@ -11,6 +11,7 @@ import {
   classifyPackageGuestTurn,
   createGuestComposerProbe,
   createGuestStreamCollector,
+  readGuestReactDraft,
 } from './guest-chat-completion-oracle.mjs';
 import {
   guestTransportModeForReceipt,
@@ -358,10 +359,13 @@ async function openAndCloseGuestValuesChip(panel) {
     const pane = chat ? document.getElementById(chat.getAttribute('aria-controls') ?? '') : null;
     const matches = [...(pane?.querySelectorAll('button[aria-label]') ?? [])]
       .filter((button) => /^[0-9]+ included$/.test(button.getAttribute('aria-label') ?? ''));
+    const openPanels = [...document.querySelectorAll('[role="dialog"][data-state="open"]')]
+      .filter((dialog) => dialog.querySelector('[aria-label="Send everything"]') &&
+        dialog.querySelector('[aria-label="Open full view"]'));
     return matches.length === 1 ? {
       count: 1,
-      expanded: matches[0].getAttribute('aria-expanded'),
-    } : { count: matches.length, expanded: null };
+      openPanelCount: openPanels.length,
+    } : { count: matches.length, openPanelCount: openPanels.length };
   })()`,
     );
   const count = (await readChip())?.count;
@@ -373,9 +377,20 @@ async function openAndCloseGuestValuesChip(panel) {
   // expose it still exercise its real open/close path under the read observer.
   if (count === 0) return { present: false, exercised: false };
   await click(panel, 'context-values', '');
-  await waitFor('guest_values_chip_open', readChip, (state) => state?.expanded === 'true');
-  await click(panel, 'context-values', '');
-  await waitFor('guest_values_chip_closed', readChip, (state) => state?.expanded === 'false');
+  await waitFor('guest_values_chip_open', readChip, (state) => state?.openPanelCount === 1);
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyDown',
+    key: 'Escape',
+    code: 'Escape',
+    windowsVirtualKeyCode: 27,
+  });
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    key: 'Escape',
+    code: 'Escape',
+    windowsVirtualKeyCode: 27,
+  });
+  await waitFor('guest_values_chip_closed', readChip, (state) => state?.openPanelCount === 0);
   return { present: true, exercised: true };
 }
 
@@ -566,14 +581,26 @@ async function installGuestSendClickProbe(panel) {
         : [];
       if (send.length !== 1) return { installed: false };
       let clickEvents = 0;
-      const listener = (event) => {
-        if (event.target === send[0] || send[0].contains(event.target)) clickEvents += 1;
+      let bubbleClickEvents = 0;
+      let trustedClickEvents = 0;
+      const hitsSend = (event) => event.target === send[0] || send[0].contains(event.target);
+      const capture = (event) => {
+        if (!hitsSend(event)) return;
+        clickEvents += 1;
+        if (event.isTrusted) trustedClickEvents += 1;
       };
-      document.addEventListener('click', listener, true);
+      const bubble = (event) => {
+        if (hitsSend(event)) bubbleClickEvents += 1;
+      };
+      document.addEventListener('click', capture, true);
+      document.addEventListener('click', bubble);
       const snapshot = () => {
         const composer = pane.querySelector('textarea');
         return {
           clickEvents,
+          bubbleClickEvents,
+          trustedClickEvents,
+          buttonConnected: send[0].isConnected && pane.contains(send[0]),
           composerLength: composer?.value?.length ?? 0,
           userMessageCount: pane.querySelectorAll('[role="article"][aria-label="Your message"]').length,
           sendEnabled: !send[0].disabled && send[0].getAttribute('aria-disabled') !== 'true',
@@ -581,7 +608,8 @@ async function installGuestSendClickProbe(panel) {
       };
       window.__guestChatSendClickProbe = {
         stop: () => {
-          document.removeEventListener('click', listener, true);
+          document.removeEventListener('click', capture, true);
+          document.removeEventListener('click', bubble);
           return snapshot();
         },
       };
@@ -590,7 +618,7 @@ async function installGuestSendClickProbe(panel) {
   );
 }
 
-async function submitQuestion(panel, question, label, mode) {
+async function submitQuestion(panel, question, label, mode, readDraft = readGuestReactDraft) {
   const boundary = mode === 'package' ? { attempt: label } : null;
   let phase = 'focus';
   if (boundary) report.composer_input_boundaries.push(boundary);
@@ -625,7 +653,83 @@ async function submitQuestion(panel, question, label, mode) {
     assert.equal(focused, true, `${label} guest Chat composer must focus`);
     phase = 'insert';
     await panel.send('Input.insertText', { text: question });
-    if (boundary) boundary.after_insert = await snapshot();
+    if (boundary) {
+      boundary.after_insert = await snapshot();
+      boundary.react_after_insert = await evaluate(
+        panel,
+        `(() => {
+        const chat = document.querySelector('button[role="tab"][title="Chat"]');
+        const pane = document.getElementById(chat?.getAttribute('aria-controls') ?? '');
+        return (${readDraft.toString()})(pane?.querySelector('textarea'), ${JSON.stringify(question)});
+      })()`,
+      );
+    }
+    // Compare input paths on the same mounted composer. Both are native CDP input;
+    // key events additionally traverse React's keyboard path. Never set DOM values.
+    if (boundary) {
+      phase = 'keyboard_comparison';
+      await panel.send('Input.dispatchKeyEvent', {
+        type: 'keyDown',
+        key: 'a',
+        code: 'KeyA',
+        modifiers: 4,
+        windowsVirtualKeyCode: 65,
+        commands: ['selectAll'],
+      });
+      await panel.send('Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        key: 'a',
+        code: 'KeyA',
+        modifiers: 4,
+        windowsVirtualKeyCode: 65,
+      });
+      await panel.send('Input.dispatchKeyEvent', {
+        type: 'keyDown',
+        key: 'Backspace',
+        code: 'Backspace',
+        windowsVirtualKeyCode: 8,
+      });
+      await panel.send('Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        key: 'Backspace',
+        code: 'Backspace',
+        windowsVirtualKeyCode: 8,
+      });
+      boundary.after_keyboard_clear = await snapshot();
+      assert.equal(
+        boundary.after_keyboard_clear?.currentValueLength,
+        0,
+        'keyboard comparison must clear the existing draft through native input',
+      );
+      for (const character of question) {
+        await panel.send('Input.dispatchKeyEvent', {
+          type: 'keyDown',
+          key: character,
+          text: character,
+        });
+        await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', key: character });
+      }
+      boundary.after_keyboard = await snapshot();
+      assert.equal(
+        boundary.after_keyboard?.currentNodeSame,
+        true,
+        'keyboard comparison must retain the original composer node',
+      );
+      assert.equal(
+        boundary.after_keyboard?.currentNodeFocused,
+        true,
+        'keyboard comparison must retain focus on the original composer',
+      );
+      boundary.react_after_keyboard = await evaluate(
+        panel,
+        `(() => {
+        const chat = document.querySelector('button[role="tab"][title="Chat"]');
+        const pane = document.getElementById(chat?.getAttribute('aria-controls') ?? '');
+        return (${readDraft.toString()})(pane?.querySelector('textarea'), ${JSON.stringify(question)});
+      })()`,
+      );
+      boundary.submitted_input_method = 'native_key_events_after_insert_text_comparison';
+    }
     phase = 'send_ready_wait';
     await waitFor(
       `${label}_send_ready`,

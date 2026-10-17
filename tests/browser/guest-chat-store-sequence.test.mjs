@@ -40,7 +40,15 @@ test('guest send boundary distinguishes a reached button from a missed native cl
     const probe = install(async (_panel, expression) => window.eval(expression));
     assert.deepEqual(JSON.parse(JSON.stringify(await probe({}))), {
       installed: true,
-      beforeClick: { clickEvents: 0, composerLength: 22, userMessageCount: 0, sendEnabled: true },
+      beforeClick: {
+        clickEvents: 0,
+        bubbleClickEvents: 0,
+        trustedClickEvents: 0,
+        buttonConnected: true,
+        composerLength: 22,
+        userMessageCount: 0,
+        sendEnabled: true,
+      },
     });
     button.addEventListener('click', () => {
       pane.querySelector('textarea').value = '';
@@ -53,12 +61,35 @@ test('guest send boundary distinguishes a reached button from a missed native cl
     const result = await window.eval('window.__guestChatSendClickProbe.stop()');
     assert.deepEqual(JSON.parse(JSON.stringify(result)), {
       clickEvents: shouldClick ? 1 : 0,
+      bubbleClickEvents: shouldClick ? 1 : 0,
+      trustedClickEvents: 0,
+      buttonConnected: true,
       composerLength: shouldClick ? 0 : 22,
       userMessageCount: shouldClick ? 1 : 0,
       sendEnabled: true,
     });
     await window.happyDOM.abort();
   }
+});
+
+test('guest send boundary exposes a click stopped before the React root', async () => {
+  const body = source.slice(
+    source.indexOf('async function installGuestSendClickProbe('),
+    source.indexOf('async function submitQuestion('),
+  );
+  const install = new Function('evaluate', `${body}; return installGuestSendClickProbe;`);
+  const window = new Window();
+  window.document.body.innerHTML =
+    '<button role="tab" title="Chat" aria-controls="chat"></button><div id="chat" data-state="active"><textarea></textarea><button aria-label="Send message"></button></div>';
+  const button = window.document.querySelector('#chat button');
+  await install(async (_panel, expression) => window.eval(expression))({});
+  button.addEventListener('click', (event) => event.stopPropagation());
+  button.click();
+  const result = await window.eval('window.__guestChatSendClickProbe.stop()');
+  assert.equal(result.clickEvents, 1);
+  assert.equal(result.bubbleClickEvents, 0);
+  assert.equal(result.buttonConnected, true);
+  await window.happyDOM.abort();
 });
 
 test('guest send records native dispatch phases and reached-button outcome before answer wait', async () => {
@@ -69,6 +100,7 @@ test('guest send records native dispatch phases and reached-button outcome befor
   for (const reachedButton of [true, false]) {
     const report = { composer_input_boundaries: [] };
     let dispatched = false;
+    let draftLength = 139;
     const submit = new Function(
       'assert',
       'evaluate',
@@ -94,7 +126,12 @@ test('guest send records native dispatch phases and reached-button outcome befor
         return null;
       },
       async () => ({ currentValueLength: 0 }),
-      async () => ({ currentValueLength: 139, sendEnabled: true }),
+      async () => ({
+        currentValueLength: draftLength,
+        currentNodeSame: true,
+        currentNodeFocused: true,
+        sendEnabled: true,
+      }),
       async (_stage, read, accepts) => assert.equal(accepts(await read()), true),
       async () => ({ sendEnabled: true }),
       async () => ({
@@ -118,10 +155,17 @@ test('guest send records native dispatch phases and reached-button outcome befor
       report,
     );
     await submit(
-      { send: async () => ({}) },
+      {
+        send: async (method, args) => {
+          if (method === 'Input.dispatchKeyEvent' && args.key === 'Backspace') draftLength = 0;
+          if (method === 'Input.dispatchKeyEvent' && args.text) draftLength += args.text.length;
+          return {};
+        },
+      },
       'Read the current page.',
       'opening_question',
       'package',
+      () => ({}),
     );
     assert.deepEqual(report.composer_input_boundaries[0].click, {
       phases: ['press_attempted', 'press_returned', 'release_attempted', 'release_returned'],
@@ -250,30 +294,48 @@ const valuesDriver = new Function(
 );
 
 function valuesControlHarness(count, blocked = null) {
-  let expanded = 'false';
+  let open = false;
   const calls = [];
   const buttons = Array.from({ length: count }, () => ({
-    getAttribute: (name) => (name === 'aria-label' ? '0 included' : expanded),
+    getAttribute: (name) => (name === 'aria-label' ? '0 included' : null),
   }));
-  // Sanitized DOM seam from the .520 failed screenshot: selected Chat and
-  // composer, no Values control. The .205 control uses the same accessible name.
+  // The mobile package opens a BottomSheet while the face button has no
+  // aria-expanded. Its dialog contains these two Values-only controls.
   const document = {
     querySelector: () => ({ getAttribute: () => 'chat-pane' }),
     getElementById: () => ({ querySelectorAll: () => buttons }),
+    querySelectorAll: () =>
+      open
+        ? [
+            {
+              querySelector: (selector) =>
+                (blocked !== 'unrelated' && selector === '[aria-label="Send everything"]') ||
+                selector === '[aria-label="Open full view"]'
+                  ? {}
+                  : null,
+            },
+          ]
+        : [],
+  };
+  const panel = {
+    send: async (method, args) => {
+      calls.push([method, args.type]);
+      if (method === 'Input.dispatchKeyEvent' && args.type === 'keyUp' && blocked !== 'close')
+        open = false;
+    },
   };
   const run = valuesDriver(
     async (_panel, expression) => new Function('document', `return ${expression}`)(document),
     async (_panel, kind, label) => {
       calls.push([kind, label]);
-      if (blocked === 'open' || (blocked === 'close' && expanded === 'true')) return;
-      expanded = expanded === 'false' ? 'true' : 'false';
+      if (blocked !== 'open') open = true;
     },
     async (stage, read, accepts) => {
       assert.ok(accepts(await read()), stage);
     },
     assert,
   );
-  return { run: () => run({}), calls };
+  return { run: () => run(panel), calls };
 }
 
 test('package guest Chat without Values continues without a fabricated control verdict', async () => {
@@ -287,7 +349,8 @@ test('published guest Chat Values must actually open and close when present', as
   assert.deepEqual(await harness.run(), { present: true, exercised: true });
   assert.deepEqual(harness.calls, [
     ['context-values', ''],
-    ['context-values', ''],
+    ['Input.dispatchKeyEvent', 'keyDown'],
+    ['Input.dispatchKeyEvent', 'keyUp'],
   ]);
 });
 
@@ -296,5 +359,6 @@ test('optional Values does not silently accept duplicate controls or a failed in
   await assert.rejects(duplicates.run, /absent or uniquely present/);
   assert.deepEqual(duplicates.calls, []);
   await assert.rejects(valuesControlHarness(1, 'open').run, /guest_values_chip_open/);
+  await assert.rejects(valuesControlHarness(1, 'unrelated').run, /guest_values_chip_open/);
   await assert.rejects(valuesControlHarness(1, 'close').run, /guest_values_chip_closed/);
 });

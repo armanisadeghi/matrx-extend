@@ -8,24 +8,67 @@ const conversationFingerprint = (value) =>
   createHash('sha256').update(value).digest('hex').slice(0, 16);
 
 export function guestTransportModeForReceipt(receipt) {
-  const kind = receipt?.kind;
-  const version = receipt?.version;
+  const refuse = () => {
+    throw new Error('guest_transport_receipt_unrecognized');
+  };
+  const hash = (value) => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
   if (
-    version === '0.2.205' &&
-    ['native_store_zip_candidate_key_adapted', 'published_store_crx_unpacked'].includes(kind)
+    typeof receipt?.version !== 'string' ||
+    !/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(receipt.version) ||
+    !hash(receipt.treeSha256)
   )
-    return 'legacy';
+    refuse();
+  const { kind, version } = receipt;
+  // Authentication and byte verification belong to the hosted artifact loader
+  // and native harness. Require their provenance shape here, never infer trust
+  // from a version alone. Transport capability changed once at .520.
+  if (kind === 'native_store_zip_candidate_key_adapted') {
+    const selected = receipt.artifactSelection;
+    if (
+      receipt.publishState !== 'pushed' ||
+      typeof receipt.sourceSha !== 'string' ||
+      !/^[a-f0-9]{40}$/.test(receipt.sourceSha) ||
+      selected?.source !== 'release_receipt_store_zip' ||
+      !hash(receipt.storeZip?.sha256) ||
+      selected.selectedZipSha256 !== receipt.storeZip.sha256 ||
+      !hash(selected.publisherSourceTreeSha256) ||
+      !hash(receipt.storeTreeSha256) ||
+      selected.originalStoreTreeSha256 !== receipt.storeTreeSha256 ||
+      selected.runtimeTreeSha256 !== receipt.treeSha256 ||
+      !Array.isArray(selected.modifiedPaths) ||
+      selected.modifiedPaths.length !== 1 ||
+      selected.modifiedPaths[0] !== 'manifest.json'
+    )
+      refuse();
+  } else if (kind === 'published_store_crx_unpacked') {
+    if (
+      !hash(receipt.crxSha256) ||
+      typeof receipt.extensionId !== 'string' ||
+      !/^[a-p]{32}$/.test(receipt.extensionId) ||
+      receipt.downloadSource !==
+        'Google Chrome public update service; verified CRX3 signing key and SHA-256'
+    )
+      refuse();
+  } else if (kind === 'local_dev_unpacked') {
+    if (
+      receipt.schema_version !== 1 ||
+      receipt.publish_state !== 'not_published' ||
+      typeof receipt.extensionDir !== 'string' ||
+      !receipt.extensionDir ||
+      typeof receipt.observedAt !== 'string' ||
+      !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(receipt.observedAt) ||
+      !Number.isFinite(Date.parse(receipt.observedAt))
+    )
+      refuse();
+  } else refuse();
+  if (version === '0.2.205' && kind !== 'local_dev_unpacked') return 'legacy';
+  const [major, minor, patch] = version.split('.').map(Number);
   if (
-    version === '0.2.520' &&
-    [
-      'native_store_zip_candidate_key_adapted',
-      'published_store_crx_unpacked',
-      'local_dev_unpacked',
-    ].includes(kind)
+    [major, minor, patch].every(Number.isSafeInteger) &&
+    (major > 0 || minor > 2 || (minor === 2 && patch >= 520))
   )
     return 'package';
-  if (version === '0.2.521' && kind === 'native_store_zip_candidate_key_adapted') return 'package';
-  throw new Error('guest_transport_receipt_unrecognized');
+  return refuse();
 }
 
 function chatPathClass(url) {

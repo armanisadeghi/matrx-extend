@@ -8,38 +8,101 @@ import {
   watchGuestAiRequests,
 } from './guest-chat-transport-observer.mjs';
 
-// Break caught: the exact .521 native Store ZIP receipt must arm the package
-// observer, while .520 remains supported and unknown releases stay closed.
-test('receipt selects the observed transport by exact release and rejects unknown builds', () => {
-  for (const kind of ['native_store_zip_candidate_key_adapted', 'published_store_crx_unpacked']) {
-    assert.equal(guestTransportModeForReceipt({ kind, version: '0.2.205' }), 'legacy');
-    assert.equal(guestTransportModeForReceipt({ kind, version: '0.2.520' }), 'package');
+// Captured .522 publisher hashes, with the adapter's documented receipt shape.
+// This guards transport selection, not artifact authentication (the workflow
+// verifies the release and ZIP bytes; the native harness verifies runtime bytes).
+const storeReceipt = (version = '0.2.522') => ({
+  kind: 'native_store_zip_candidate_key_adapted',
+  version,
+  publishState: 'pushed',
+  sourceSha: 'f4a72d5ddbb508f63eef71661547b80c23bb6ffe',
+  treeSha256: 'a'.repeat(64),
+  storeTreeSha256: 'b'.repeat(64),
+  storeZip: { sha256: 'fe80e3025dead2e2f508f0c2ba44656f33fa069b454d7f1313061f44e7cd54b9' },
+  artifactSelection: {
+    source: 'release_receipt_store_zip',
+    publisherSourceTreeSha256: 'f521397efceb1cd9f2ecd3292d01256f33e575db29a6d28f184fc51f89fc6195',
+    selectedZipSha256: 'fe80e3025dead2e2f508f0c2ba44656f33fa069b454d7f1313061f44e7cd54b9',
+    originalStoreTreeSha256: 'b'.repeat(64),
+    runtimeTreeSha256: 'a'.repeat(64),
+    modifiedPaths: ['manifest.json'],
+  },
+});
+
+test('proven Store receipt selects transport across release increments', () => {
+  for (const version of ['0.2.520', '0.2.521', '0.2.522', '0.2.999', '0.3.0', '1.0.0']) {
+    assert.equal(guestTransportModeForReceipt(storeReceipt(version)), 'package');
   }
-  assert.equal(
-    guestTransportModeForReceipt({ kind: 'local_dev_unpacked', version: '0.2.520' }),
-    'package',
-  );
-  assert.equal(
-    guestTransportModeForReceipt({
-      kind: 'native_store_zip_candidate_key_adapted',
-      version: '0.2.521',
-    }),
-    'package',
-  );
+  assert.equal(guestTransportModeForReceipt(storeReceipt('0.2.205')), 'legacy');
+});
+
+test('receipt selection refuses malformed, unsupported and unproven artifacts', () => {
+  const valid = storeReceipt();
   for (const receipt of [
-    { kind: 'native_store_zip_candidate_key_adapted', version: '0.2.522' },
-    { kind: 'published_store_crx_unpacked', version: '0.2.521' },
-    { kind: 'local_dev_unpacked', version: '0.2.521' },
-    { kind: 'local_dev_unpacked', version: '0.2.205' },
-    { kind: 'unknown', version: '0.2.520' },
-    { kind: 'published_store_crx_unpacked' },
     null,
-  ]) {
+    {},
+    { kind: valid.kind, version: valid.version },
+    { ...valid, kind: 'unknown' },
+    ...['', '0.2.519', '0.2.522-next', 'garbage', null, 522].map((version) => ({
+      ...valid,
+      version,
+    })),
+    { ...valid, publishState: 'not_published' },
+    { ...valid, sourceSha: 'unproven' },
+    { ...valid, treeSha256: 'unproven' },
+    { ...valid, storeZip: undefined },
+    { ...valid, artifactSelection: undefined },
+    ...[
+      { source: 'release_receipt_local_zip' },
+      { selectedZipSha256: 'c'.repeat(64) },
+      { runtimeTreeSha256: 'c'.repeat(64) },
+      { originalStoreTreeSha256: 'c'.repeat(64) },
+      { publisherSourceTreeSha256: null },
+      { modifiedPaths: ['manifest.json', 'sidepanel.html'] },
+    ].map((change) => ({ ...valid, artifactSelection: { ...valid.artifactSelection, ...change } })),
+  ])
     assert.throws(
       () => guestTransportModeForReceipt(receipt),
       /guest_transport_receipt_unrecognized/,
     );
-  }
+});
+
+test('published CRX and local development retain their distinct provenance contracts', () => {
+  const crx = {
+    kind: 'published_store_crx_unpacked',
+    version: '0.2.205',
+    treeSha256: 'a'.repeat(64),
+    crxSha256: 'b'.repeat(64),
+    extensionId: 'a'.repeat(32),
+    downloadSource: 'Google Chrome public update service; verified CRX3 signing key and SHA-256',
+  };
+  assert.equal(guestTransportModeForReceipt(crx), 'legacy');
+  assert.equal(guestTransportModeForReceipt({ ...crx, version: '0.2.522' }), 'package');
+  assert.throws(
+    () => guestTransportModeForReceipt({ ...crx, crxSha256: null }),
+    /guest_transport_receipt_unrecognized/,
+  );
+  const local = {
+    kind: 'local_dev_unpacked',
+    version: '0.2.520',
+    schema_version: 1,
+    publish_state: 'not_published',
+    treeSha256: 'a'.repeat(64),
+    extensionDir: '/owned/chrome-mv3',
+    observedAt: '2026-10-17T00:00:00.000Z',
+  };
+  assert.equal(guestTransportModeForReceipt(local), 'package');
+  assert.equal(guestTransportModeForReceipt({ ...local, version: '0.2.999' }), 'package');
+  for (const change of [
+    { version: '0.2.205' },
+    { publish_state: 'pushed' },
+    { schema_version: 2 },
+    { observedAt: null },
+  ])
+    assert.throws(
+      () => guestTransportModeForReceipt({ ...local, ...change }),
+      /guest_transport_receipt_unrecognized/,
+    );
 });
 
 // Break caught: a turn loses its identity on the documented v2 404/405 route

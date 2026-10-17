@@ -12,7 +12,12 @@ import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
+import { classifyPackageGuestTurn as classifyMemberChatTurn } from './guest-chat-completion-oracle.mjs';
 import { watchGuestAiRequests } from './guest-chat-transport-observer.mjs';
+import {
+  requireMemberChatSequence,
+  requireMemberOrganizationBinding,
+} from './member-chat-completion-oracle.mjs';
 import {
   authenticatedWebIdentity,
   observeCanonicalAdminCheck,
@@ -57,6 +62,8 @@ const SAFE_FAILURE_CODES = new Set([
   'approval_action_completion_not_observed',
   'reviewer_extension_identity_unverified',
   'reviewer_canonical_role_unverified',
+  'reviewer_composer_input_unverified',
+  'reviewer_chat_terminal_answer_unverified',
 ]);
 const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -244,6 +251,52 @@ async function captureStoreCandidate(panel, artifacts) {
   }
 }
 
+/** Observe the checked option's real UUID; only its fingerprint enters evidence. */
+async function selectedMemberOrganizationFingerprint(panel) {
+  await click(panel, 'organization', '');
+  try {
+    const selected = await waitFor(
+      'member_selected_organization_option',
+      () =>
+        evaluate(
+          panel,
+          `(() => {
+      const organization = [...document.querySelectorAll('button[aria-expanded]')]
+        .find(button => button.textContent.trim() === 'Organization');
+      const orgSection = organization?.parentElement?.nextElementSibling;
+      const pickers = ${actingOrganizationPickersExpression()};
+      const picker = pickers.length === 1 ? pickers[0] : null;
+      const list = picker ? document.getElementById(picker.getAttribute('aria-controls') ?? '') : null;
+      const checked = [...(list?.querySelectorAll('[role="option"][data-state="checked"][data-value]') ?? [])];
+      return { pickerCount: pickers.length, checkedCount: checked.length,
+        value: checked.length === 1 ? checked[0].getAttribute('data-value') : null,
+        labelMatches: checked.length === 1 && checked[0].textContent.trim() === picker?.textContent.trim() };
+    })()`,
+        ),
+      (value) =>
+        value?.pickerCount === 1 &&
+        value.checkedCount === 1 &&
+        value.labelMatches &&
+        UUID.test(value.value ?? ''),
+      10_000,
+    );
+    return hash(selected.value);
+  } finally {
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+  }
+}
+
 async function accountObservation(panel, expectedEmail) {
   return evaluate(
     panel,
@@ -381,6 +434,11 @@ async function chatObservation(panel) {
         sendControlDisabled: controls.sendControlDisabled,
         streaming: controls.streaming,
         completedReplyCount: controls.replies.length,
+        replyCount: controls.replies.length,
+        latestReplyText: controls.replies.at(-1) ?? '',
+        errorNotice: [...(pane?.querySelectorAll('[role="alert"]') ?? [])].some(el => el.getBoundingClientRect().height > 0),
+        terminalAnswerError: false,
+        answerIsRefusal: false,
         answerNamesWorkflowStages: ['Capture', 'Understand', 'Use'].every((term) =>
           (controls.replies.at(-1) ?? '').includes(term),
         ),
@@ -540,7 +598,10 @@ async function observeAuthenticatedTransport(native, expectedUrl, mode) {
     flatten: true,
   });
   await native.browserSession.send('Network.enable', {}, workerSession);
-  const observer = await watchGuestAiRequests(native);
+  const observer = await watchGuestAiRequests({
+    ...native,
+    mode: UNINTERRUPTED ? 'legacy' : 'package',
+  });
   observer.arm('approval-action');
   const summarize = (entry, source) => {
     try {
@@ -626,6 +687,15 @@ async function observeAuthenticatedTransport(native, expectedUrl, mode) {
   native.browserSession.on('Network.requestWillBeSent', requestListener);
   native.browserSession.on('Network.responseReceived', responseListener);
   return {
+    armTurn(label) {
+      observer.arm(label);
+    },
+    turnRequests() {
+      return observer.snapshot();
+    },
+    async settle() {
+      await observer.settle();
+    },
     observeTab(id) {
       observedTabId = Number.isInteger(id) ? id : null;
     },
@@ -650,6 +720,11 @@ async function observeAuthenticatedTransport(native, expectedUrl, mode) {
         : null;
       return {
         start_count: starts.length,
+        all_starts: starts.map((row) => ({
+          organization_header_fingerprint: row.organizationHeader,
+          conversation_fingerprint: row.conversation,
+          http_status: row.status,
+        })),
         organization_header_fingerprint: start?.organizationHeader ?? null,
         organization_header_matches_approved: Boolean(
           approvedOrganization && start?.organizationHeader === hash(approvedOrganization.id),
@@ -1159,6 +1234,7 @@ try {
       stage = MAGIC_LINK ? 'open_reviewer_magic_link' : 'open_reviewer_web_login';
       const web = await page.context().newPage();
       let memberTransport = null;
+      const memberTurns = {};
       try {
         if (!MAGIC_LINK) {
           await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
@@ -1362,6 +1438,9 @@ try {
             throw error;
           }
         }
+        const selectedOrganizationFingerprint = UNINTERRUPTED
+          ? null
+          : await selectedMemberOrganizationFingerprint(panel);
         const storageShape = await storedSessionShape(panel);
         report.account = {
           reviewer_fingerprint: hash(email),
@@ -1371,6 +1450,9 @@ try {
           canonical_extension_admin_check: canonicalAdminCheck,
           sign_out_visible: account.signOutVisible,
           default_organization_selected: account.organizationSelected,
+          ...(!UNINTERRUPTED && {
+            selected_organization_fingerprint: selectedOrganizationFingerprint,
+          }),
           organization_picker_available: account.organizationPickerAvailable,
           storage_shape: storageShape,
           ...(UNINTERRUPTED && {
@@ -1413,34 +1495,77 @@ try {
           result: null,
         };
 
-        stage = 'enter_three_stage_question';
-        const focused = await evaluate(
-          panel,
-          `(() => { const el = document.querySelector('textarea'); if (!el) return false; el.focus(); return document.activeElement === el; })()`,
-        );
-        assert.equal(focused, true, 'chat composer must receive trusted input');
-        await panel.send('Input.insertText', { text: QUESTION });
-        await waitFor(
-          'reviewer_chat_send_ready',
-          () => chatObservation(panel),
-          (state) => state?.sendEnabled,
-          10_000,
-        );
+        const typeQuestion = async (text, label) => {
+          stage = label;
+          let phase = 'focus';
+          try {
+            const focused = await evaluate(
+              panel,
+              `(() => {
+              const tab = [...document.querySelectorAll('button[role="tab"]')].find(el => el.title === 'Chat');
+              const pane = tab ? document.getElementById(tab.getAttribute('aria-controls') ?? '') : null;
+              const el = pane?.getAttribute('data-state') === 'active' ? pane.querySelector('textarea') : null;
+              if (!el || el.getBoundingClientRect().height <= 0) return false;
+              el.focus(); return document.activeElement === el;
+            })()`,
+            );
+            assert.equal(focused, true, 'member composer focus required');
+            phase = 'input';
+            await panel.send('Input.insertText', { text });
+            phase = 'send_readiness';
+            await waitFor(
+              'reviewer_chat_send_ready',
+              () => chatObservation(panel),
+              (state) => state?.sendEnabled,
+              10_000,
+            );
+          } catch {
+            const observed = await chatObservation(panel).catch(() => null);
+            report.composer_failure = {
+              phase,
+              composer_ready: observed?.composerReady === true,
+              send_enabled: observed?.sendEnabled === true,
+              send_control_count: observed?.sendControlCount ?? null,
+              streaming: observed?.streaming === true,
+            };
+            throw new Error('reviewer_composer_input_unverified');
+          }
+        };
+        await typeQuestion(QUESTION, 'enter_three_stage_question');
         report.screenshots.action = await capture(panel, artifacts, 'reviewer-chat-action');
 
         memberTransport = await observeAuthenticatedTransport(native, null, null);
+        const turns = memberTurns;
+        const awaitTurn = async (attempt, priorReplyCount, expectedTerms) => {
+          const observed = await waitFor(
+            'reviewer_chat_terminal_answer',
+            async () => {
+              await memberTransport.settle();
+              const state = await chatObservation(panel);
+              const verdict = classifyMemberChatTurn({
+                requests: memberTransport.turnRequests(),
+                attempt,
+                state,
+                priorReplyCount,
+                expectedTerms,
+              });
+              return { state, verdict };
+            },
+            (value) => value?.verdict !== 'in_progress',
+            180_000,
+          );
+          turns[attempt] = observed.verdict;
+          assert.equal(
+            observed.verdict,
+            'terminal_answer',
+            'reviewer_chat_terminal_answer_unverified',
+          );
+          return observed.state;
+        };
         stage = 'send_three_stage_question';
+        memberTransport.armTurn('opening');
         await click(panel, 'chat-send', '');
-        const completed = await waitFor(
-          'reviewer_real_chat_answer',
-          () => chatObservation(panel),
-          (state) =>
-            state?.composerReady &&
-            !state.streaming &&
-            state.completedReplyCount >= 1 &&
-            state.answerNamesWorkflowStages,
-          180_000,
-        );
+        const completed = await awaitTurn('opening', 0, ['Capture', 'Understand', 'Use']);
         stage = 'reviewer_chat_transport';
         const network = memberTransport.snapshot();
         report.chat_transport = network;
@@ -1456,6 +1581,46 @@ try {
           'Chat response must match the sent conversation',
         );
         assert.ok(network.backend_request_fingerprint, 'real member Chat backend request required');
+        await typeQuestion(
+          'Name only the second workflow stage from our previous answer.',
+          'enter_same_conversation_followup',
+        );
+        stage = 'send_same_conversation_followup';
+        memberTransport.armTurn('same_conversation_followup');
+        await click(panel, 'chat-send', '');
+        const followup = await awaitTurn(
+          'same_conversation_followup',
+          completed.completedReplyCount,
+          ['Understand'],
+        );
+        stage = 'reviewer_two_turn_terminal_proof';
+        const sequence = requireMemberChatSequence(memberTransport.turnRequests(), turns);
+        const afterFollowup = memberTransport.snapshot();
+        assert.equal(
+          afterFollowup.start_count,
+          2,
+          'member requires exactly two actual Chat starts',
+        );
+        assert.ok(
+          afterFollowup.all_starts.every(
+            (row) =>
+              row.http_status === 200 &&
+              row.organization_header_fingerprint === network.organization_header_fingerprint,
+          ),
+          'member followup requires same valid organization',
+        );
+        const organizationBinding = requireMemberOrganizationBinding(
+          selectedOrganizationFingerprint,
+          afterFollowup.all_starts,
+        );
+        report.chat_sequence = {
+          ...sequence,
+          ...organizationBinding,
+          turns,
+          requests: memberTransport.turnRequests(),
+          followup_completed_reply_count: followup.completedReplyCount,
+          same_organization: true,
+        };
         report.screenshots.result = await capture(panel, artifacts, 'reviewer-chat-result');
         report.screenshots.store_candidate_640x400 = await captureStoreCandidate(panel, artifacts);
         report.chat = {
@@ -1468,6 +1633,12 @@ try {
           demo_route: `${WEB_ORIGIN}${DEMO_PATH}`,
         };
       } finally {
+        if (memberTransport && !report.chat_sequence)
+          report.chat_sequence = {
+            requests: memberTransport.turnRequests(),
+            turns: memberTurns,
+            complete: false,
+          };
         await memberTransport?.stop();
         await web.close();
       }
