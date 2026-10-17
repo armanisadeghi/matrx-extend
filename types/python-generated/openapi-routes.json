@@ -1352,9 +1352,6 @@
  "/bandwidth-status/public/status": {
   "get": []
  },
- "/baremetrics/public/status": {
-  "get": []
- },
  "/beautiful-ai/public/status": {
   "get": []
  },
@@ -1422,9 +1419,6 @@
   "get": []
  },
  "/boldsign/public/status": {
-  "get": []
- },
- "/bombbomb/public/status": {
   "get": []
  },
  "/bookwyrm/public/instance": {
@@ -1991,6 +1985,12 @@
    "application/json"
   ]
  },
+ "/comparison/public/policy": {
+  "get": []
+ },
+ "/comparison/public/s/{slug}": {
+  "get": []
+ },
  "/comparison/quote": {
   "post": [
    "application/json"
@@ -2003,6 +2003,11 @@
  },
  "/comparison/runs/{run_id}": {
   "get": []
+ },
+ "/comparison/runs/{run_id}/share": {
+  "post": [],
+  "get": [],
+  "delete": []
  },
  "/compute-targets/": {
   "get": []
@@ -3964,9 +3969,6 @@
  "/helpwise/public/status": {
   "get": []
  },
- "/hepdata/public/record": {
-  "get": []
- },
  "/hex-pm/public/package": {
   "get": []
  },
@@ -4514,9 +4516,6 @@
   "get": []
  },
  "/launchpad/public/ubuntu-source": {
-  "get": []
- },
- "/learn-amp/public/status": {
   "get": []
  },
  "/learnworlds/public/status": {
@@ -5725,9 +5724,6 @@
  "/openssf-scorecard/public/repository": {
   "get": []
  },
- "/openssl-wiki/public/page": {
-  "get": []
- },
  "/openstack-wiki/public/page": {
   "get": []
  },
@@ -6195,9 +6191,6 @@
   "get": []
  },
  "/pytest-docs/public/getting-started": {
-  "get": []
- },
- "/python-docs/public/tutorial-introduction": {
   "get": []
  },
  "/qemu-wiki/public/page": {
@@ -8324,9 +8317,6 @@
  "/spotme/public/status": {
   "get": []
  },
- "/sprig/public/status": {
-  "get": []
- },
  "/sprout-social/public/status": {
   "get": []
  },
@@ -8716,9 +8706,6 @@
   "get": []
  },
  "/transistor/public/status": {
-  "get": []
- },
- "/translatewiki/public/page": {
   "get": []
  },
  "/travis-ci/public/status": {
