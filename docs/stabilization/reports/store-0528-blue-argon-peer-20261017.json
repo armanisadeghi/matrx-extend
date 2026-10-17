@@ -1,0 +1,106 @@
+{
+  "observed_at": "2026-10-17",
+  "scope": "Independent static review of exact v0.2.528 primary-item Store ZIP for Blue Argon remotely hosted executable code",
+  "status": "pass_with_limits",
+  "findings": [
+    {
+      "status": "pass",
+      "topic": "artifact_integrity",
+      "detail": "GitHub outer artifact digest, release receipt, Store ZIP digest, source SHA, v0.2.528 tag, and local release-tree hash verified."
+    },
+    {
+      "status": "pass",
+      "topic": "blue_argon_rejection",
+      "detail": "No rejected PDFObject 2.1.1 CDN URL, remote script loader, remote dynamic import, importScripts call, or remote worker source was found. PDFObject API identifiers in the bundled PDF generator do not load remote executable code; its pdfobjectnewwindow/pdfjsnewwindow branches throw that remote PDF viewers are unavailable."
+    },
+    {
+      "status": "pass",
+      "topic": "manifest_policy_baseline",
+      "detail": "The Store ZIP's normalized manifest policy surface exactly matches the approved 0.2.205 baseline. The Store manifest has no development key."
+    },
+    {
+      "status": "pass",
+      "topic": "hosted_risk_gate_and_packages",
+      "detail": "The exact hosted log records the CWS approval-risk gate passed and all 24 @ai-matrx packages at npm latest. The package-refresh commit is in the tagged source history."
+    }
+  ],
+  "evidence": {
+    "observed_at": "2026-10-17",
+    "scope": "Exact release 39079670382 artifact and Store ZIP",
+    "release": {
+      "run_id": 39079670382,
+      "artifact_id": 12118411986,
+      "version": "0.2.528",
+      "tag": "v0.2.528",
+      "source_commit": "0332db8b0b39dacff5b4503d3249807f9ae90913",
+      "workflow_run_head_sha": "bba999aec19a97e7e19bd501916cffd38502df8b",
+      "package_refresh_commit": "00903b777a4a060ed3c11f7325a20f37d6efe4d0",
+      "run_conclusion": "success",
+      "receipt_source_sha_matches_tag": true,
+      "source_commit_is_ancestor_of_origin_main": true,
+      "dispatch_sha_is_ancestor_of_release_source": true,
+      "package_refresh_is_ancestor_of_release_source": true,
+      "zip_sha256_expected": "1210ef8ed318836dfddf5ce6cb1277ee4f5591227db21ffa702ffa029f72baa2",
+      "zip_sha256_observed": "1210ef8ed318836dfddf5ce6cb1277ee4f5591227db21ffa702ffa029f72baa2",
+      "zip_sha256_receipt": "1210ef8ed318836dfddf5ce6cb1277ee4f5591227db21ffa702ffa029f72baa2",
+      "outer_artifact_digest_expected": "sha256:377aad1e3e272654057f182a99b61e8efae6278bc647fb61d765227430779cdf",
+      "outer_artifact_digest_observed": "sha256:377aad1e3e272654057f182a99b61e8efae6278bc647fb61d765227430779cdf",
+      "outer_artifact_digest_source": "Downloaded immutable GitHub Actions artifact 12118411986 and compared raw archive SHA-256 with GitHub artifact metadata.",
+      "receipt_tree_sha256": "4ad0f2d090f7dd48d110ddc4b5c1e5a50935bfea13c50ab68a990b7ae7ccd648",
+      "receipt_tree_sha256_recomputed_from_local_zip": "4ad0f2d090f7dd48d110ddc4b5c1e5a50935bfea13c50ab68a990b7ae7ccd648",
+      "store_zip_tree_sha256_recomputed": "490dae6f3c601925a887067776a15bd099ff21fb8c15d018e23a82a919e13077",
+      "zip_crc_check": "pass",
+      "store_zip_bytes": 41060421,
+      "store_zip_entries": 2383,
+      "local_zip_entries": 2398,
+      "emitted_javascript_files": 1242,
+      "emitted_html_files": 4,
+      "source_map_files_scanned": 1068
+    },
+    "rejection_specific_policy": {
+      "verdict": "PASS",
+      "prior_rejection_reference": "Google Blue Argon / routing ID FZSL rejection citing https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js",
+      "exact_zip_findings": "No cdnjs PDFObject 2.1.1 URL appears in emitted JavaScript, HTML, or source maps. No remote HTML script src, remote dynamic import, remote importScripts, remote Worker/SharedWorker source, or createElement(script) src-plus-appendChild loader was found. The bundled PDF helper includes API.PDFObject.convert and a pdfobjectnewwindow branch that throws: Remote PDF viewers are unavailable; use output('blob') or save().",
+      "runtime_code_tokens": {
+        "eval_call": 0,
+        "new_Function": 0,
+        "Chrome_Runtime_execution_tokens": 0,
+        "importScripts_call": 0,
+        "remote_dynamic_import": 0,
+        "remote_worker_source": 0,
+        "script_src_injection_loader": 0,
+        "rejected_pdfobject_cdn_url": 0
+      },
+      "scan_scope": "Every .js and .html file in the exact Store ZIP plus all included .map files for the rejected URL. Re-ran scripts/check-cws-release-risk.mjs against a temporary extraction of the exact Store ZIP; its manifest baseline and emitted-code gate passed. This is bounded static evidence, not proof of behavior for every runtime input."
+    },
+    "integrity_and_baseline": {
+      "verdict": "PASS",
+      "release_run_conclusion": "success",
+      "receipt_source_and_zip_digest_match": true,
+      "outer_artifact_digest_matches_download_and_GitHub_metadata": true,
+      "tag_resolves_to_receipt_source_commit": true,
+      "source_commit_is_ancestor_of_origin_main": true,
+      "package_refresh_commit_is_ancestor_of_tag": true,
+      "manifest_version": "0.2.528",
+      "manifest_version_field": 3,
+      "manifest_contains_key": false,
+      "approved_baseline_version": "0.2.205",
+      "manifest_policy_fields": "All fields selected by scripts/check-cws-release-risk.mjs exactly match config/chrome-web-store-approved-baseline.json. The gate intentionally compares only action.default_title from action.",
+      "hosted_release_evidence": "The exact hosted run log records Chrome Web Store package validation and approval-risk gate passed. It also reports all 24 @ai-matrx packages at npm latest."
+    },
+    "bounded_residual_risks": {
+      "verdict": "PASS_WITH_LIMITS",
+      "limits": [
+        "This is static review of the exact Store ZIP; it does not establish Store upload, submission, review state, or acceptance.",
+        "The release tree hash binds the full local build ZIP; the Store ZIP intentionally omits dev-only entries and has a separately recomputed tree hash.",
+        "The .528 candidate was later refused by Member A's exact-source admission due to post-tag lockfile drift; this ZIP review is useful artifact evidence but does not establish that .528 remains submission-ready or that native guest acceptance passed."
+      ]
+    },
+    "verification_method": "Downloaded the immutable GitHub Actions artifact and verified its raw outer SHA-256 against GitHub artifact metadata; verified the inner Store ZIP SHA-256 against the receipt and ZIP CRC; recomputed the receipt tree hash from the local ZIP and separately computed the Store ZIP tree; checked run conclusion, tag target, main ancestry, and package-refresh ancestry; parsed the exact Store manifest and compared the risk-gate policy projection with the approved baseline; scanned all emitted JS/HTML and source maps for the rejected PDFObject URL and remote executable-code paths; reran the risk gate on a temporary extraction; reviewed the hosted log for package and risk-gate results."
+  },
+  "files_touched": ["docs/stabilization/reports/store-0528-blue-argon-peer-20261017.json"],
+  "open_questions": [
+    "Member A native acceptance did not run for .528 after exact-source admission refused post-tag lockfile drift.",
+    "This report makes no claim about Store upload, submission, dashboard state, or Google acceptance."
+  ]
+}
