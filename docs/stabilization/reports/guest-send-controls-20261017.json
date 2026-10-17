@@ -36,7 +36,8 @@
       "bypass disabled state fails readiness test"
     ],
     "compile": "failed: local installed shared package export/type mismatch including @ai-matrx/data/realtime, content-ir/react, vault and createPackageWindows; unrelated to edited JavaScript driver paths",
-    "native_browser_runs_started": 0
+    "native_browser_runs_started": 0,
+    "member_admission_tests": "7 passed; exact six Chat harness paths allowed, unrelated and similarly named paths rejected; browser-directory wildcard broadening mutant RED and restored"
   },
   "native_acceptance": "UNVERIFIED: no package mutation and no pass inferred from source; independent peer review and guarded admission required before exact candidate guest/member reruns",
   "next_action": "Independent peer review of harness and narrow member admission repair, then guarded reruns using release_run_id 39049375284."

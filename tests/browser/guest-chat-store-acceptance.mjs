@@ -13,8 +13,8 @@ import {
   watchGuestAiRequests,
 } from './guest-chat-transport-observer.mjs';
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
-import { readPackageChatControls } from './package-chat-controls.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { readPackageChatControls } from './package-chat-controls.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');

@@ -159,17 +159,21 @@ test('harness and evidence commits preserve release eligibility but product edit
   assert.throws(() => requireReleaseMemberSource(false, []), /release_member_source_not_ancestor/);
 });
 
-test('reviewed guest-only driver repairs do not change the member release product', () => {
+test('reviewed package Chat driver repairs preserve immutable candidate eligibility', () => {
   requireReleaseMemberSource(true, [
     'tests/browser/guest-chat-store-acceptance.mjs',
     'tests/browser/guest-chat-store-sequence.test.mjs',
+    'tests/browser/guest-chat-store-screenshot.mjs',
+    'tests/browser/reviewer-chat-store-acceptance.mjs',
+    'tests/browser/settings-panel-driver.mjs',
+    'tests/browser/package-chat-controls.mjs',
+    'tests/browser/package-chat-controls.test.mjs',
   ]);
-  assert.throws(
-    () => requireReleaseMemberSource(true, ['tests/browser/reviewer-chat-store-acceptance.mjs']),
-    /release_member_product_changed/,
-  );
-  assert.throws(
-    () => requireReleaseMemberSource(true, ['src/features/chat/ChatView.tsx']),
-    /release_member_product_changed/,
-  );
+  for (const path of [
+    'tests/browser/unreviewed-driver.mjs',
+    'tests/browser/package-chat-controls-other.mjs',
+    'tests/browser/reviewer-chat-store-acceptance-extra.mjs',
+    'src/features/package-chat/host.ts',
+  ])
+    assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
 });

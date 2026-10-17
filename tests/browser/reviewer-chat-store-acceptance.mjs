@@ -19,8 +19,8 @@ import {
   supabaseOrigin,
 } from './member-native-auth-proof.mjs';
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
-import { readPackageChatControls } from './package-chat-controls.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { readPackageChatControls } from './package-chat-controls.mjs';
 import { storageShapeExpression } from './reviewer-chat-storage-shape.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 

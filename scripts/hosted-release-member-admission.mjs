@@ -110,7 +110,12 @@ export function requireReleaseMemberSource(ancestor, paths) {
         /^docs\/stabilization\//.test(path) ||
         /^scripts\/hosted-release-member-admission(?:\.test)?\.mjs$/.test(path) ||
         path === 'tests/browser/guest-chat-store-acceptance.mjs' ||
-        path === 'tests/browser/guest-chat-store-sequence.test.mjs',
+        path === 'tests/browser/guest-chat-store-sequence.test.mjs' ||
+        path === 'tests/browser/guest-chat-store-screenshot.mjs' ||
+        path === 'tests/browser/reviewer-chat-store-acceptance.mjs' ||
+        path === 'tests/browser/settings-panel-driver.mjs' ||
+        path === 'tests/browser/package-chat-controls.mjs' ||
+        path === 'tests/browser/package-chat-controls.test.mjs',
     ),
     'release_member_product_changed',
   );
