@@ -44,11 +44,12 @@
     "Native persistence gets no pass credit until guarded exact-artifact retest."
   ],
   "verification": {
-    "focused": "16 tests pass: node --test tests/browser/settings-reload-boundary.test.mjs tests/browser/settings-panel-driver.guest.test.mjs",
+    "focused": "18 tests pass: node --test tests/browser/settings-reload-boundary.test.mjs tests/browser/settings-panel-driver.guest.test.mjs",
     "red": "Before repair current guest DOM assertion failed with guest_panel_after_reload_not_observed:false.",
     "mutation": "plant.py constant successful return for reloadSettings is rejected; exact source restored.",
     "compile": "Blocked by pre-existing missing @ai-matrx package exports and resulting implicit-any errors in unrelated product paths.",
-    "native": "Pending; no browser/build/release launched."
+    "native": "Pending; no browser/build/release launched.",
+    "replacement_tab_guard": "Real replacement-tab helper refuses current guest DOM with zero or two Settings tabs before clicking. plant.py shortcut skipping replacement-tab readiness makes both named refusal assertions fail; original source restored identically."
   },
   "next_action": "Run guarded guest Settings native acceptance against reviewed exact artifact with repaired harness; verify warm and reload Theme persistence plus selected surrounding cases.",
   "transition_history": [

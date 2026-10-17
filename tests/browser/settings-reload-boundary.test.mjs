@@ -127,6 +127,14 @@ for (const scenario of [
   { name: 'current guest DOM', readyState: 'complete', guest: true, passes: true },
   { name: 'loading document', readyState: 'loading', guest: true, passes: false },
   { name: 'missing guest state', readyState: 'complete', guest: false, passes: false },
+  { name: 'missing Settings tab', readyState: 'complete', guest: true, tabCount: 0, passes: false },
+  {
+    name: 'duplicate Settings tabs',
+    readyState: 'complete',
+    guest: true,
+    tabCount: 2,
+    passes: false,
+  },
 ])
   test(`native Settings reload readiness: ${scenario.name}`, async () => {
     const source = await readFile(
@@ -145,7 +153,9 @@ for (const scenario of [
       readyState: scenario.readyState,
       body: { innerText: scenario.guest ? 'Organization\nSign in to choose' : 'Organization' },
       querySelectorAll: (selector) =>
-        selector === 'button[role="tab"][title="Settings"]' ? [settingsTab] : [],
+        selector === 'button[role="tab"][title="Settings"]'
+          ? Array(scenario.tabCount ?? 1).fill(settingsTab)
+          : [],
       querySelector: (selector) =>
         selector === 'button[title="Settings"][data-state="active"]' ? settingsTab : null,
     };
@@ -196,6 +206,15 @@ for (const scenario of [
       () => null,
       (error) => error.message,
     );
+    if (scenario.tabCount !== undefined) {
+      assert.match(
+        failure,
+        /replacement_settings_tab_ready_not_observed/,
+        'missing or duplicate Settings tabs must refuse reload before click',
+      );
+      assert.equal(trustedClicks, 0);
+      return;
+    }
     if (!scenario.passes) {
       assert.match(
         failure,
