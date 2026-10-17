@@ -124,12 +124,12 @@ const COST_NOISE = [
   /\bvisibility\s*:\s*str\b/g,
   /\bvisibility\s*=\s*['"]private['"]/g,
   /\bVISIBILITY_PROBE\s*=\s*lambda\s+_r:\s*visibility\b/g,
+  /\b_manifest\(\{['"]capture\.yml['"]:\s*_entry\(\[['"]push['"]\],\s*\[\],\s*legs\)\},\s*50,\s*visibility\)/g,
   /\b(?:visibility\s+says|visibility\s+mismatch|needs\s+visibility|visibility\s+must\s+match)\b/g,
   /\bvisibility\s+says\b/g,
   /\bset\s+visibility\s+to\b/g,
   /\bwithout\s+visibility\b/g,
   /\bk\s*!=\s*['"]visibility['"]/g,
-  /\b(?:visibility\s*\)|visibility\s*,|visibility\s*\})/g,
   /['"]visibility['"]\s*:\s*['"]private['"]/g,
 ];
 const CODE = /\.(py|ts|tsx|js|jsx|mjs|cjs|sql|rs|svelte|vue)$/;
@@ -380,6 +380,16 @@ function selfTest() {
       true,
     ],
     ['bracket row read in cost guard', { [COST_GUARD_FILE]: `row['${WORD}'];` }, true],
+    [
+      'row field passed to query in cost guard',
+      { [COST_GUARD_FILE]: `query.eq(row.${WORD});` },
+      true,
+    ],
+    [
+      'row variable passed to query in cost guard',
+      { [COST_GUARD_FILE]: `query.eq(${WORD});` },
+      true,
+    ],
     [
       'planted new file filtering on the column',
       { [plantNew]: `q.eq("${WORD}", "public");\n` },
