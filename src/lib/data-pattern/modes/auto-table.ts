@@ -28,8 +28,19 @@ export const autoTableConfigSchema = z.object({
     .optional(),
   /** Return the table's signature instead of its rows (used when saving). */
   describe_only: z.boolean().optional(),
+  /** Per-pattern override of {@link MIN_TABLE_MATCH} (0..1). */
+  min_match: z.number().min(0).max(1).optional(),
 });
 export type AutoTableConfig = z.infer<typeof autoTableConfigSchema>;
+
+/**
+ * The lowest combined score (0..1) at which a table counts as "the saved one".
+ * Below it replay returns NO rows plus the "not found" notice rather than an
+ * unrelated table. `runInPage` is serialized into the page and cannot close
+ * over this constant, so it carries the same literal (`MIN_MATCH`); the unit
+ * test fails if the two ever differ. `config.min_match` overrides per pattern.
+ */
+export const MIN_TABLE_MATCH = 0.5;
 
 export const autoTableMode: ExtractionMode<AutoTableConfig> = {
   id: 'auto_table',
@@ -74,7 +85,9 @@ export const autoTableMode: ExtractionMode<AutoTableConfig> = {
       header_join?: string;
       signature?: Signature;
       describe_only?: boolean;
+      min_match?: number;
     };
+    const MIN_MATCH = cfg.min_match ?? 0.5; // keep equal to MIN_TABLE_MATCH (unit-tested)
 
     // ── Which table? ────────────────────────────────────────────────────
     // A saved table is found by what it IS (header texts, caption, nearest
@@ -169,7 +182,11 @@ export const autoTableMode: ExtractionMode<AutoTableConfig> = {
       );
       const best = scored[0];
       const runnerUp = scored[1];
-      if (!best || best.score < 0.25) {
+      // With saved headers, header overlap is the evidence a table is the same one
+      // (a renamed caption or moved heading must not disqualify it); otherwise the
+      // combined score is all there is.
+      const strength = best ? (sig.headers.length > 0 ? best.headerScore : best.score) : 0;
+      if (!best || strength < MIN_MATCH) {
         notice =
           'The saved table was not found on this page, so nothing was captured. It was identified by its column headings' +
           (sig.headers.length > 0 ? ` (${sig.headers.slice(0, 4).join(', ')})` : '') +

@@ -909,6 +909,7 @@ export async function fetchPatternsForDomain(domain: string): Promise<Extraction
     .from('wbx_pattern')
     .select('*')
     .eq('domain', domain)
+    .is('deleted_at', null)
     .order('last_used_at', { ascending: false, nullsFirst: false });
   if (error) {
     // Pre-migration installs have no table — genuinely "no patterns".
@@ -980,7 +981,9 @@ export async function savePattern(p: SavePatternInput): Promise<{ id: string } |
 }
 
 /**
- * Hard-delete a saved pattern. Returns false (with a console.warn) on failure.
+ * Soft-delete a saved pattern (sets `deleted_at`, like notes and highlights —
+ * `extend.wbx_pattern` carries the base-entity `deleted_at` column). Returns
+ * false (with a console.warn) on failure or when no live row was affected.
  *
  * `authoredBy` is DD-131's actor declaration: `'agent'` when the `data_patterns`
  * tool deletes during a model's turn, `'person'` when someone clicks Delete in
@@ -989,9 +992,20 @@ export async function savePattern(p: SavePatternInput): Promise<{ id: string } |
  */
 export async function deletePattern(patternId: string, authoredBy: WriteActor): Promise<boolean> {
   const c = supabaseForActor(authoredBy);
-  const { error } = await c.schema(EXTEND_SCHEMA).from('wbx_pattern').delete().eq('id', patternId);
+  const now = new Date().toISOString();
+  const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_pattern')
+    .update({ deleted_at: now })
+    .eq('id', patternId)
+    .is('deleted_at', null)
+    .select('id');
   if (error) {
     console.warn('[matrx-extend] deletePattern error', error.message);
+    return false;
+  }
+  if (!data || data.length === 0) {
+    console.warn('[matrx-extend] deletePattern: no live pattern matched', patternId);
     return false;
   }
   return true;

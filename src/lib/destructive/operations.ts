@@ -77,7 +77,7 @@ export const DESTRUCTIVE_OPERATIONS: DestructiveOperation[] = [
     fn: 'deletePattern',
     module: 'src/lib/supabase/queries.ts',
     uiEntryPoints: ['deletePattern'],
-    destroys: 'One saved extraction pattern row (extend.wbx_pattern).',
+    destroys: 'One saved extraction pattern row (extend.wbx_pattern), soft-deleted via deleted_at.',
   },
   {
     fn: 'deleteScreenshot',

@@ -94,7 +94,9 @@ describe('D43 nested-list picking', () => {
     expect(pattern?.field_paths).toHaveLength(2);
     const rows = runPickedPattern(requireResult());
     expect(rows.map((row) => row.title)).toEqual(events.map(([title]) => title));
-    expect(rows.map((row) => row.url)).toEqual(events.map(([, url]) => url));
+    expect(rows.map((row) => row.url)).toEqual(
+      events.map(([, url]) => new URL(url, document.baseURI).href),
+    );
   });
 
   it('offers an explicit outer-card scope when a fresh title click also matches nested details', () => {
@@ -142,7 +144,7 @@ describe('D43 nested-list picking', () => {
     // D44 excludes detail items where neither selected field exists.
     expect(rows).toHaveLength(1);
     expect(rows[0]?.title).toBe('Neon Nights at Area15');
-    expect(rows[0]?.url).toBe('/events/neon-nights');
+    expect(rows[0]?.url).toBe(new URL('/events/neon-nights', document.baseURI).href);
   });
 
   it('warns on a missing seed and lets the new page choose and extract its own scope', () => {
@@ -180,7 +182,9 @@ describe('D43 nested-list picking', () => {
     expect(result()?.item_selector).toBe('article.talk');
     const rows = runPickedPattern(requireResult());
     expect(rows.map((row) => row.title)).toEqual(talks.map(([title]) => title));
-    expect(rows.map((row) => row.url)).toEqual(talks.map(([, url]) => url));
+    expect(rows.map((row) => row.url)).toEqual(
+      talks.map(([, url]) => new URL(url, document.baseURI).href),
+    );
   });
 
   it('cancels a seeded pick without publishing a result or leaving an overlay', () => {

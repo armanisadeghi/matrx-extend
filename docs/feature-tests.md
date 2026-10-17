@@ -3815,3 +3815,8 @@ Save an Instagram carousel to Swipe file. The card reads "N of M slides saved" (
   3. Try a GitHub file URL whose sibling raw `.md` exists.
 - **Expected:** The clean Markdown renders with a char count and source URL; Copy yields the full document. When nothing is served, a clear "No Markdown version found" message (never a silent empty).
 - **Edge cases worth poking:** A server that returns HTML with a 200 for the guessed `.md` must be rejected (content/body sniff), not shown as Markdown.
+
+### Saved patterns — delete, legacy tables, weak matches, absolute links
+- **What it does:** Delete pattern (Patterns tab) soft-deletes the saved pattern (sets `deleted_at`) and it disappears from the list; it no longer fails with "Delete failed". A saved table with no stored identity (saved before table matching) replays by position and says so. A saved table whose headers overlap less than half with every table on the page returns no rows plus "not found" instead of an unrelated table. Link/image fields (`href`, `src`, …) are returned as absolute URLs against the page.
+- **Steps:** Save any pattern, open Patterns, click Delete pattern. Replay a table pattern on a page where its headers are gone. Extract a list field set to `href` on a page with relative links.
+- **Expected:** Row removed with no error; "not found" notice with no rows; legacy notice "saved before table matching…" on old index-only table recipes; link values start with `https://`.

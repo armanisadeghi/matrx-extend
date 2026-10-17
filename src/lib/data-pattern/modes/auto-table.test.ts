@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { autoTableMode } from './auto-table';
+import { MIN_TABLE_MATCH, autoTableMode } from './auto-table';
 
 afterEach(() => {
   document.body.innerHTML = '';
@@ -114,5 +114,31 @@ describe('Tables — a saved table is found by what it is, not where it sits', (
   it('a pattern saved without a signature still runs by index', () => {
     document.body.innerHTML = PLANETS + FILMS;
     expect(run({ table_index: 1 }).rows[0]?.Title).toBe('Film A');
+  });
+});
+
+describe('Tables — a weak match is not a match', () => {
+  const sigOf = (headers: string[]) => ({ headers, columns: headers.length });
+  const tableOf = (headers: string[]) =>
+    `<table><thead><tr>${headers.map((h) => `<th>${h}</th>`).join('')}</tr></thead><tbody>
+      <tr>${headers.map(() => '<td>v</td>').join('')}</tr><tr>${headers.map(() => '<td>w</td>').join('')}</tr></tbody></table>`;
+
+  it('returns no rows and the not-found notice when only a third of the headers overlap', () => {
+    document.body.innerHTML = tableOf(['a', 'b', 'e', 'f']);
+    const out = run({ table_index: 0, signature: sigOf(['a', 'b', 'c', 'd']) });
+    expect(out.rows).toEqual([]);
+    expect(out.notice).toMatch(/not found on this page, so nothing was captured/);
+  });
+
+  it('still returns a plausible near match, with a notice', () => {
+    document.body.innerHTML = tableOf(['a', 'b', 'c', 'x']);
+    const out = run({ table_index: 0, signature: sigOf(['a', 'b', 'c', 'd']) });
+    expect(out.rows.length).toBe(2);
+    expect(out.notice).toMatch(/closest match/);
+  });
+
+  it('the in-page threshold equals the exported named constant', () => {
+    const m = /min_match\s*\?\?\s*([0-9.]+)/.exec(autoTableMode.runInPage.toString());
+    expect(Number(m?.[1])).toBe(MIN_TABLE_MATCH);
   });
 });

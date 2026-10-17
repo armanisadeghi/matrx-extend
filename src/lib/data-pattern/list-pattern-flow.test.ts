@@ -71,13 +71,21 @@ describe('List Pattern — find every similar sibling', () => {
     };
     const rows = listPatternMode.runInPage?.(cfg) as Record<string, string | null>[];
     expect(rows).toHaveLength(4);
-    expect(rows[0]).toMatchObject({ title: 'Widget A', price: '$9.99', link: '/a' });
-    expect(rows[3]).toMatchObject({ title: 'Widget D', price: '$39.99', link: '/d' });
+    expect(rows[0]).toMatchObject({
+      title: 'Widget A',
+      price: '$9.99',
+      link: new URL('/a', document.baseURI).href,
+    });
+    expect(rows[3]).toMatchObject({
+      title: 'Widget D',
+      price: '$39.99',
+      link: new URL('/d', document.baseURI).href,
+    });
     // The inline preview probe must agree with the runner (no second impl).
     expect(probeFirstRowInPage(cfg)).toMatchObject({
       title: 'Widget A',
       price: '$9.99',
-      link: '/a',
+      link: new URL('/a', document.baseURI).href,
     });
   });
 

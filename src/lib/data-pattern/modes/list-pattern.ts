@@ -76,7 +76,17 @@ export const listPatternMode: ExtractionMode<ListPatternConfig> = {
       transform: Transform | undefined,
     ): string => {
       let v = attr
-        ? (el.getAttribute(attr) ?? '').trim()
+        ? (() => {
+            const raw = (el.getAttribute(attr) ?? '').trim();
+            // A relative link/image path is useless once the row leaves the page.
+            if (!raw || !/^(?:href|src|data|poster|action|data-(?:href|src|url))$/i.test(attr))
+              return raw;
+            try {
+              return new URL(raw, document.baseURI).href;
+            } catch {
+              return raw;
+            }
+          })()
         : ((el as HTMLElement).innerText ?? el.textContent ?? '').trim();
       if (transform?.kind === 'regex' && transform.expr) {
         try {
@@ -181,7 +191,17 @@ export function probeFirstRowInPage(
     transform: Transform | undefined,
   ): string => {
     let v = attr
-      ? (el.getAttribute(attr) ?? '').trim()
+      ? (() => {
+          const raw = (el.getAttribute(attr) ?? '').trim();
+          // A relative link/image path is useless once the row leaves the page.
+          if (!raw || !/^(?:href|src|data|poster|action|data-(?:href|src|url))$/i.test(attr))
+            return raw;
+          try {
+            return new URL(raw, document.baseURI).href;
+          } catch {
+            return raw;
+          }
+        })()
       : ((el as HTMLElement).innerText ?? el.textContent ?? '').trim();
     if (transform?.kind === 'regex' && transform.expr) {
       try {

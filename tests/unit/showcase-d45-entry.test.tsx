@@ -138,7 +138,9 @@ async function startWithPreview() {
   const priorRows = JSON.parse((await screen.findByTestId('rows')).textContent ?? '[]') as Array<
     Record<string, unknown>
   >;
-  expect(priorRows.map((row) => row.link_url)).toEqual(urls);
+  expect(priorRows.map((row) => row.link_url)).toEqual(
+    urls.map((u) => new URL(u, document.baseURI).href),
+  );
   expect(screen.getByText(/1 selected field/i)).toBeTruthy();
   return priorRows;
 }
@@ -220,7 +222,9 @@ describe('D45 cancel is a picker transaction boundary', () => {
     const rows = JSON.parse((await screen.findByTestId('rows')).textContent ?? '[]') as Array<
       Record<string, unknown>
     >;
-    expect(rows.map((row) => row.link_url)).toEqual(urls);
+    expect(rows.map((row) => row.link_url)).toEqual(
+      urls.map((u) => new URL(u, document.baseURI).href),
+    );
     expect(rows.map((row) => row.field_1)).toEqual(titles);
   });
 

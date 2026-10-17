@@ -52,7 +52,9 @@ beforeEach(async () => {
             ? { last_active_organization_id: state.org }
             : path.endsWith('/wbx_pattern') && request.method === 'POST'
               ? { id: 'saved-pattern' }
-              : [];
+              : path.endsWith('/wbx_pattern') && request.method === 'PATCH'
+                ? [{ id: 'pattern-1' }]
+                : [];
       return new Response(JSON.stringify(rows), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -131,6 +133,32 @@ describe('Supabase outgoing organization boundary (real SDK and resolver)', () =
     if (!request) throw new Error('Data Save never reached fetch');
     expect(request.headers.get('X-Organization-Id')).toBe(captured);
     expect((await request.json()).organization_id).toBe(captured);
+  });
+
+  it('sends a bodiless DELETE with a JSON content type instead of failing "Unexpected end of input"', async () => {
+    const { organizationFetch } = await import('./organization-fetch');
+    const response = await organizationFetch(
+      'https://db.matrxserver.com/rest/v1/wbx_pattern?id=eq.1',
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: 'Bearer member-access-token',
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    expect(response.status).toBe(200);
+    expect(outgoing.at(-1)?.method).toBe('DELETE');
+    expect(outgoing.at(-1)?.headers.get('X-Organization-Id')).toBe(state.org);
+  });
+
+  it('soft-deletes a pattern by setting deleted_at through the real SDK', async () => {
+    const { deletePattern } = await import('./queries');
+    expect(await deletePattern('pattern-1', 'person')).toBe(true);
+    const request = outgoing.find((r) => new URL(r.url).pathname.endsWith('/wbx_pattern'));
+    if (!request) throw new Error('Delete never reached fetch');
+    expect(request.method).toBe('PATCH');
+    expect(typeof (await request.json()).deleted_at).toBe('string');
   });
 
   it('resolves first-load membership before attaching the organization to the ordinary read', async () => {

@@ -32,6 +32,14 @@ function extractRow(scope: Element | Document, fields: ExtractionPatternField[])
 }
 
 function readValue(el: Element, attr: string | undefined): string {
-  if (attr) return (el.getAttribute(attr) ?? '').trim();
+  if (attr) {
+    const raw = (el.getAttribute(attr) ?? '').trim();
+    if (!raw || !/^(?:href|src|data|poster|action|data-(?:href|src|url))$/i.test(attr)) return raw;
+    try {
+      return new URL(raw, document.baseURI).href;
+    } catch {
+      return raw;
+    }
+  }
   return ((el as HTMLElement).innerText ?? el.textContent ?? '').trim();
 }

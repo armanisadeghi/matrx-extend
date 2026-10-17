@@ -38,6 +38,7 @@ vi.mock('@/lib/supabase/client', () => {
       db.domain = domain;
       return client;
     },
+    is: () => client,
     order: async () => ({
       data: db.rows.filter((row) => row.domain === db.domain),
       error: null,

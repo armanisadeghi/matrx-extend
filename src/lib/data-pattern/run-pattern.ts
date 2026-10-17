@@ -68,6 +68,10 @@ export function isInteractiveOnlyKind(kind: string): boolean {
   return getMode(kind)?.interactiveOnly === true;
 }
 
+/** Shown on replay of an `auto_table` pattern saved before tables were matched by what they are. */
+export const LEGACY_TABLE_NOTICE =
+  'This table was saved before table matching, so it was found by its position on the page and may be a different table now. Re-save it to make it robust.';
+
 /**
  * Mode-aware pattern runner. Replaces inline chrome.scripting calls in DataView.
  * Looks up the pattern's kind in the registry, builds the per-mode config, and
@@ -90,6 +94,13 @@ export async function runPattern(
         list_root_selector: pattern.list_root_selector,
       })
     : (pattern.config ?? {});
+
+  // A legacy table recipe (index only, no signature, no selector) replays by
+  // position; say so up front, never silently.
+  if (pattern.kind === 'auto_table') {
+    const c = (config ?? {}) as { signature?: unknown; selector?: unknown };
+    if (!c.signature && !c.selector) onNotice?.(LEGACY_TABLE_NOTICE);
+  }
 
   if (mode.runInExtension) {
     if (!documentId)

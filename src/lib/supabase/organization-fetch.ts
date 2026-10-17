@@ -38,7 +38,12 @@ export const organizationFetch: typeof fetch = async (input, init) => {
   let body: unknown = null;
   const writes = !['GET', 'HEAD'].includes(request.method);
   if (writes && request.headers.get('Content-Type')?.includes('application/json')) {
-    body = await request.clone().json();
+    // A DELETE (or bodiless PATCH) still carries the SDK's JSON Content-Type
+    // but has NO body — parsing that throws "Unexpected end of input" and every
+    // such write fails. Read the text first; an empty body is simply "no
+    // organization declared in the payload".
+    const text = await request.clone().text();
+    body = text.trim() ? JSON.parse(text) : null;
   }
   const resolver = await import('@/lib/org/active-org');
   const organizationId =
