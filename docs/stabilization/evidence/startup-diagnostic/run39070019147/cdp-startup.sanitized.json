@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "outcome": "connected",
+  "initialStartupBoundary": {
+    "profileLock": "absent",
+    "childExitObserved": false,
+    "stderrClosed": false,
+    "stderrReadableEnded": false
+  },
+  "startupBoundary": null,
+  "phases": [
+    {
+      "phase": "endpoint_read",
+      "elapsedMs": 3173
+    },
+    {
+      "phase": "owner_check_started",
+      "elapsedMs": 3174
+    },
+    {
+      "phase": "owner_verified",
+      "elapsedMs": 3230
+    },
+    {
+      "phase": "socket_constructed",
+      "elapsedMs": 3239
+    },
+    {
+      "phase": "probe_tcp_connected",
+      "elapsedMs": 3254
+    },
+    {
+      "phase": "socket_open",
+      "elapsedMs": 4611
+    },
+    {
+      "phase": "connector_settled",
+      "elapsedMs": 4611
+    }
+  ],
+  "longestTimerDelayMs": 221,
+  "timerSamples": 26,
+  "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE"
+}

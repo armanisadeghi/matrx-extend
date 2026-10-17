@@ -1,0 +1,54 @@
+{
+  "observed_at": "2026-10-17",
+  "scope": "Independent static review of the exact 0.2.525 primary-item Store ZIP for Blue Argon remotely hosted code",
+  "release": {
+    "run_id": 39071652120,
+    "artifact_id": 12115765980,
+    "version": "0.2.525",
+    "tag": "v0.2.525",
+    "source_commit": "4ca7843684d0da9cb0757a12093f80c6e4c17772",
+    "workflow_run_head_sha": "0592caf5362e20dc15a7ad5b18470d859dbf3556",
+    "receipt_source_sha_matches_tag": true,
+    "source_commit_is_ancestor_of_origin_main": true,
+    "zip_sha256_expected": "a6dbb3db67130b5e3cc12d21234197c0d7f705272efc9a626b57a8135182d60b",
+    "zip_sha256_observed": "a6dbb3db67130b5e3cc12d21234197c0d7f705272efc9a626b57a8135182d60b",
+    "zip_receipt_sha256": "a6dbb3db67130b5e3cc12d21234197c0d7f705272efc9a626b57a8135182d60b",
+    "outer_artifact_digest_expected": "sha256:cd4ffac5c748bef4555bbc9bcd148f130140db7b0ca76b3d827f4e8e9cda4ed7",
+    "outer_artifact_digest_observed": "sha256:cd4ffac5c748bef4555bbc9bcd148f130140db7b0ca76b3d827f4e8e9cda4ed7",
+    "zip_bytes": 41051980,
+    "entries": 2375,
+    "emitted_javascript_and_html_files": 1241
+  },
+  "rejection_specific_policy": {
+    "verdict": "PASS",
+    "prior_rejection_reference": "Blue Argon, routing ID FZSL; the October 11 rejection identified https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js in a bundled jsPDF chunk",
+    "exact_zip_findings": "No cdnjs.cloudflare.com string or rejected PDFObject URL appears in the 1,241 emitted JavaScript and HTML files. The remaining PDFObject strings in chunks/pdf-BIJOqcW6.js are jsPDF API identifiers; the PDF viewer branches throw that remote PDF viewers are unavailable. No executable script element with a src assignment and appendChild, importScripts call, or HTTP(S) JavaScript/MJS loader URL was found.",
+    "runtime_code_tokens": {
+      "eval_call": 0,
+      "new_Function": 0,
+      "Chrome_Runtime_execution_tokens": 0
+    },
+    "scan_scope": "Every emitted .js and .html asset in the exact Store ZIP. The script-loader detector mirrors scripts/detect-remote-script-loader.mjs; prohibited runtime tokens mirror scripts/check-cws-release-risk.mjs. CDN/PDFObject and remote script-like URL scans were also run. This is bounded static evidence, not proof of runtime behavior for every possible input."
+  },
+  "integrity_and_baseline": {
+    "verdict": "PASS",
+    "release_run_conclusion": "success",
+    "receipt_source_and_zip_digest_match": true,
+    "outer_artifact_digest_matches_GitHub_metadata": true,
+    "tag_resolves_to_receipt_source_commit": true,
+    "manifest_version": "0.2.525",
+    "manifest_version_field": 3,
+    "approved_baseline_version": "0.2.205",
+    "manifest_policy_fields": "All policy fields selected by scripts/check-cws-release-risk.mjs match config/chrome-web-store-approved-baseline.json. The ZIP manifest includes action.default_icon paths; the approved policy surface and release gate intentionally compare only action.default_title.",
+    "hosted_release_evidence": "The exact run log records Chrome Web Store package validation passed and the approval-risk gate passed against the 0.2.205 policy baseline. It also records 357 test files and 2,490 tests passed and migration-ledger verification."
+  },
+  "bounded_residual_risks": {
+    "verdict": "PASS_WITH_LIMITS",
+    "limits": [
+      "This review inspected the exact Store ZIP statically; it did not exercise the extension in a browser or inspect the Store dashboard.",
+      "This package verdict establishes that the identified October 11 remote PDFObject loader is absent from the inspected emitted assets; it does not establish upload, submission, current review state, or Store acceptance.",
+      "No claim is made about a new publisher email or the status of any submission."
+    ]
+  },
+  "verification_method": "Fetched the immutable GitHub Actions artifact and verified its SHA-256 against GitHub artifact metadata; verified the inner Store ZIP SHA-256 against the release receipt; checked the tag target and source ancestry; parsed the exact ZIP manifest and compared its release-gate policy projection with the approved baseline; scanned every emitted JavaScript and HTML asset for the rejected URL, PDFObject/cdnjs references, remote script URLs, injected script loaders, importScripts, and prohibited runtime-code tokens; reviewed the exact hosted release log for package/risk gate results."
+}

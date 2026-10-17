@@ -1,0 +1,330 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0231",
+  "status": "matched_display_mode_pair_startup_pass_zero_product_credit",
+  "source_sha": "741d7771e2c45d020f63ef3b9f2a6ef8ab3ff86c",
+  "ci_run_id": 39069298115,
+  "development_artifact_id": 12114317599,
+  "development_artifact_digest": "sha256:c5aa22b642b700c3e9700ac8dcb6cad2f19f8c6ffb599599749136661aea243a",
+  "runner_label": "macos-15-intel",
+  "runs": [
+    {
+      "run_id": 39070019147,
+      "display_mode": "headed",
+      "workflow_conclusion": "success",
+      "result_artifact_id": 12114438213,
+      "result_artifact_digest": "sha256:4334043da13595920f60bd282deedc08a62c3d7be462e1e34168786c5e73eac3",
+      "runner_id": 1000110199,
+      "browser_launch": {
+        "requested_mode": "headed",
+        "observed_mode": "headed",
+        "verified_by": "Browser.getBrowserCommandLine"
+      },
+      "cdp_phases": [
+        {
+          "phase": "endpoint_read",
+          "elapsedMs": 3173
+        },
+        {
+          "phase": "owner_check_started",
+          "elapsedMs": 3174
+        },
+        {
+          "phase": "owner_verified",
+          "elapsedMs": 3230
+        },
+        {
+          "phase": "socket_constructed",
+          "elapsedMs": 3239
+        },
+        {
+          "phase": "probe_tcp_connected",
+          "elapsedMs": 3254
+        },
+        {
+          "phase": "socket_open",
+          "elapsedMs": 4611
+        },
+        {
+          "phase": "connector_settled",
+          "elapsedMs": 4611
+        }
+      ],
+      "longest_timer_delay_ms": 221,
+      "initial_boundary": {
+        "profileLock": "absent",
+        "childExitObserved": false,
+        "stderrClosed": false,
+        "stderrReadableEnded": false
+      },
+      "final_boundary": null,
+      "spawn_owner_verified": true,
+      "startup_endpoint_observations": [
+        {
+          "phase": "cdp_connected",
+          "endpointPresent": true,
+          "inspectionFailed": false,
+          "exitObserved": false,
+          "elapsedMs": 4620,
+          "polls": 0,
+          "at": "2026-10-17T21:20:35.945Z"
+        }
+      ],
+      "panel_ready_ms_after_spawn": 7061,
+      "panel_ready_at": "2026-10-17T21:20:38.338Z",
+      "completed_at": "2026-10-17T21:21:20.299Z",
+      "all_three_resource_finals_valid": true,
+      "resource_samples": [
+        {
+          "at": "2026-10-17T21:20:13.964Z",
+          "code": "RESOURCE_ADMITTED",
+          "cpu_busy_fraction": 0.12428571428571429,
+          "available_memory_gib": 12.6,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": []
+        },
+        {
+          "at": "2026-10-17T21:20:30.225Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "cpu_busy_fraction": 0.25,
+          "available_memory_gib": 12.6,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": []
+        },
+        {
+          "at": "2026-10-17T21:20:46.384Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "cpu_busy_fraction": 0.06,
+          "available_memory_gib": 12.46,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": []
+        },
+        {
+          "at": "2026-10-17T21:21:02.505Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "cpu_busy_fraction": 0.05,
+          "available_memory_gib": 12.46,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": []
+        },
+        {
+          "at": "2026-10-17T21:21:18.615Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "cpu_busy_fraction": 0.22,
+          "available_memory_gib": 12.46,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": []
+        }
+      ],
+      "cpu_startup_category_seconds": {
+        "ownedChromium": 0,
+        "ownedOther": 0.17,
+        "hostProvisioner": 0.62,
+        "otherHost": 9.74
+      },
+      "evidence_root": "docs/stabilization/evidence/startup-diagnostic/run39070019147",
+      "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39070019147"
+    },
+    {
+      "run_id": 39070661540,
+      "display_mode": "headless",
+      "workflow_conclusion": "success",
+      "result_artifact_id": 12115710369,
+      "result_artifact_digest": "sha256:41f2b26af856feb366d6c39d498bd22e19baf46ecd96bf43c9ded8ce4e638417",
+      "runner_id": 1000110202,
+      "browser_launch": {
+        "requested_mode": "headless",
+        "observed_mode": "headless",
+        "verified_by": "Browser.getBrowserCommandLine"
+      },
+      "cdp_phases": [
+        {
+          "phase": "endpoint_read",
+          "elapsedMs": 5037
+        },
+        {
+          "phase": "owner_check_started",
+          "elapsedMs": 5038
+        },
+        {
+          "phase": "owner_verified",
+          "elapsedMs": 5318
+        },
+        {
+          "phase": "socket_constructed",
+          "elapsedMs": 5332
+        },
+        {
+          "phase": "probe_tcp_connected",
+          "elapsedMs": 5348
+        },
+        {
+          "phase": "socket_open",
+          "elapsedMs": 8208
+        },
+        {
+          "phase": "connector_settled",
+          "elapsedMs": 8209
+        }
+      ],
+      "longest_timer_delay_ms": 82,
+      "initial_boundary": {
+        "profileLock": "absent",
+        "childExitObserved": false,
+        "stderrClosed": false,
+        "stderrReadableEnded": false
+      },
+      "final_boundary": null,
+      "spawn_owner_verified": true,
+      "startup_endpoint_observations": [
+        {
+          "phase": "cdp_connected",
+          "endpointPresent": true,
+          "inspectionFailed": false,
+          "exitObserved": false,
+          "elapsedMs": 8218,
+          "polls": 0,
+          "at": "2026-10-17T21:29:05.264Z"
+        }
+      ],
+      "panel_ready_ms_after_spawn": 17459,
+      "panel_ready_at": "2026-10-17T21:29:14.355Z",
+      "completed_at": "2026-10-17T21:30:32.647Z",
+      "all_three_resource_finals_valid": true,
+      "resource_samples": [
+        {
+          "at": "2026-10-17T21:28:30.393Z",
+          "code": "RESOURCE_ADMITTED",
+          "cpu_busy_fraction": 0.037142857142857144,
+          "available_memory_gib": 12.6,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": []
+        },
+        {
+          "at": "2026-10-17T21:28:46.678Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "cpu_busy_fraction": 0.59,
+          "available_memory_gib": 12.6,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": []
+        },
+        {
+          "at": "2026-10-17T21:29:03.136Z",
+          "code": "RESOURCE_CPU_PENDING",
+          "cpu_busy_fraction": 0.98,
+          "available_memory_gib": 12.6,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": ["RESOURCE_CPU_BUSY"]
+        },
+        {
+          "at": "2026-10-17T21:29:19.455Z",
+          "code": "RESOURCE_CPU_PENDING",
+          "cpu_busy_fraction": 0.04,
+          "available_memory_gib": 12.46,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": []
+        },
+        {
+          "at": "2026-10-17T21:29:35.740Z",
+          "code": "RESOURCE_CPU_PENDING",
+          "cpu_busy_fraction": 0.4,
+          "available_memory_gib": 12.46,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": []
+        },
+        {
+          "at": "2026-10-17T21:29:51.994Z",
+          "code": "RESOURCE_CPU_RECOVERED",
+          "cpu_busy_fraction": 0.07,
+          "available_memory_gib": 12.46,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": []
+        },
+        {
+          "at": "2026-10-17T21:30:08.195Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "cpu_busy_fraction": 0.05,
+          "available_memory_gib": 12.6,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": []
+        },
+        {
+          "at": "2026-10-17T21:30:24.471Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "cpu_busy_fraction": 0.08,
+          "available_memory_gib": 12.6,
+          "pressure_level": 1,
+          "swap_used_mib": 0,
+          "reasons": []
+        }
+      ],
+      "cpu_startup_category_seconds": {
+        "ownedChromium": 0,
+        "ownedOther": 0.3,
+        "hostProvisioner": 0.55,
+        "otherHost": 17.56
+      },
+      "evidence_root": "docs/stabilization/evidence/startup-diagnostic/run39070661540",
+      "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39070661540"
+    }
+  ],
+  "integrity": {
+    "same_source_and_development_artifact": true,
+    "only_dispatch_input_changed": "startup_display_mode",
+    "a_runs_serialized": true,
+    "no_product_or_member_credentials_staged": true,
+    "no_product_acceptance_assertions": true,
+    "no_deadline_cap_refusal_or_headless_default_changed": true,
+    "endpoint_deadline_ms": 8000,
+    "socket_open_timeout_ms": 5000,
+    "why_headless_8218_ms_is_valid": "Endpoint was read at 5037 ms within the 8000 ms endpoint budget. The separately timed socket open finished 2876 ms after construction, within its 5000 ms budget. Total startup is not constrained to 8000 ms.",
+    "startup_diagnostic_failure_hidden": false,
+    "successful_return_proof": "Both reports reached exercise_panel and completedAt without failureCode, verified actual browser display mode via Browser.getBrowserCommandLine, and all three resource journals finalized admitted=true/resourceInvalid=false/exitCode=0/decision=valid."
+  },
+  "conclusions": [
+    "Both headed and headless development-artifact starts genuinely succeeded on separate matched hosted runner instances. Display mode alone is insufficient to explain the older Store-artifact Chat endpoint timeouts.",
+    "Headless had a 98% CPU pending sample during late startup and recovered under the unchanged confirmation policy; high instantaneous CPU does not alone prove startup failure or require an invalid final.",
+    "Initial SingletonLock was absent and child/stderr pipe were live. Later command-line and spawned-owner checks passed. Successful startup intentionally does not await a final boundary snapshot; final stderr contents were not recorded.",
+    "Matched-process ownedChromium CPU delta zero does not mean zero browser CPU: Chromium appeared during each bracket. Samples bracket but do not fully measure the endpoint wait.",
+    "Different hosted VM instances remain a confounder; one successful pair does not establish deterministic behavior or a fixed environment.",
+    "No guest/member login, Chat send, assistant response or Settings reload acceptance was exercised."
+  ],
+  "next_action": {
+    "native_cdp": "Run guarded native acceptance on a fresh exact Store ZIP after its reviewed release receipt and admission pass, with no concurrent Mac heavy job. Retain launch/process/CDP timing and every resource phase; if endpoint startup fails again, compare package kind and profile/extension paths against this successful development-artifact pair before another retry.",
+    "settings_reload": "Isolate guest Settings T04 panel-document reload from run39070057081 (guest_panel_after_reload_not_observed=false) on the same exact artifact. Initial browser CDP already worked and full extension reload was not reached. Capture pre/post panel targetId, document/execution-context identity, Page.reload reply, navigation/lifecycle events, readiness/render state and resource markers to separate a stale observer from a loaded document stuck before Settings mount. Do not infer reload correctness from these startup passes.",
+    "state": "Keep EXT-D-0231 open; no timeout increase, headless-default change or product pass follows from this pair."
+  },
+  "guard_verification": {
+    "red": "Old route failed explicit headless diagnostic is unreachable.",
+    "green": "node --test scripts/hosted-remote-admission.test.mjs: 32/32; Biome passed; fresh independent peer A/B PASS.",
+    "mutants_killed": [
+      "constant result",
+      "explicit selection discarded",
+      "wrong default",
+      "display-mode refusal bypass",
+      "selected mode inverted"
+    ],
+    "commit": "741d7771e2c45d020f63ef3b9f2a6ef8ab3ff86c"
+  },
+  "evidence_comparison_settings": "docs/stabilization/runs/hosted-settings-controls-39070057081.json",
+  "settings_oracle_handoff": {
+    "status": "source discrepancy; original native document not yet replayed; no product verdict",
+    "warm_predicate": "tests/browser/settings-local-controls-acceptance.mjs:169 accepts old guest banner OR current Organization guidance.",
+    "reload_predicate": "tests/browser/settings-local-controls-acceptance.mjs:186 requires only old guest banner.",
+    "current_ui": "src/features/settings/SettingsView.tsx:269 renders Sign in to choose; old banner literal absent from src.",
+    "guard_fixture": "tests/browser/settings-reload-boundary.test.mjs:141 and207 provide the old banner, so they do not represent the current Settings-only document.",
+    "next_action": "Separate owner must prove a red current-DOM readiness case, fix the canonical reload/readiness oracle and siblings, obtain independent review, then run guarded native T04 retest. Preserve product behavior, deadlines and no-product-credit status until real retest."
+  }
+}

@@ -630,10 +630,20 @@
    "application/json"
   ]
  },
+ "/agent-studio/from-workspace": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/agent-studio/import/draft/{draft_id}": {
   "get": []
  },
  "/agent-studio/import/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-studio/missed-inputs": {
   "post": [
    "application/json"
   ]
@@ -1104,6 +1114,11 @@
    "application/json"
   ]
  },
+ "/airtable-import/tables": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/airtable/public/status": {
   "get": []
  },
@@ -1351,6 +1366,11 @@
  },
  "/bandwidth-status/public/status": {
   "get": []
+ },
+ "/base-snapshots/schedule": {
+  "put": [
+   "application/json"
+  ]
  },
  "/beautiful-ai/public/status": {
   "get": []
@@ -9602,7 +9622,8 @@
   ]
  },
  "/video-projects/{project_id}": {
-  "get": []
+  "get": [],
+  "delete": []
  },
  "/video-projects/{project_id}/outputs": {
   "post": [

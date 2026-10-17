@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-17T20:33:59Z",
+  "observed_at": "2026-10-17T21:44:44Z",
   "scope": "Primary Chrome Web Store item hnfolienncfklkgmdjjmhhegglimlamg",
-  "status": "0524_zip_validated_b_diagnostic_running_source_stale_after_c245_no_store_upload",
+  "status": "validated_0525_store_zip_guest_b_running_member_pending_dashboard_and_new_mail_unverified",
   "official_email": {
     "account": "publisher mailbox arman@armansadeghi.com",
     "search": "from:chromewebstore-noreply@google.com after:2026/10/11",
@@ -35,30 +35,30 @@
     "http_status": 200,
     "page_last_updated": "2026-10-15",
     "content_observed": "Extension-specific policy, automatic capture control, and Vault login handling are visible in public HTML.",
-    "source_comparison": "Current source still defaults automatic scrape capture off and offers signed-in Vault controls; Swipe Save sends a user-chosen supported post URL, and config reporting sends bounded key-read metadata. The live October 15 policy covers those reviewed flows. Exact 0.2.524 source/ZIP and native behavior require candidate acceptance; dashboard disclosure selections remain unverified."
+    "source_comparison": "Current source still defaults automatic scrape capture off and offers signed-in Vault controls; Swipe Save sends a user-chosen supported post URL, and config reporting sends bounded key-read metadata. The live October 15 policy covers those reviewed flows. Exact 0.2.525 source/ZIP and native behavior require candidate acceptance; dashboard disclosure selections remain unverified."
   },
   "source_and_release": {
-    "main_sha": "c2458892134251e6391f6100c14c70fb73ec04f2",
-    "source_version": "0.2.524",
+    "main_sha": "4ca7843684d0da9cb0757a12093f80c6e4c17772",
+    "source_version": "0.2.525",
     "main_synchronized_with_origin": true,
-    "latest_hosted_release_run": 39066435724,
-    "latest_hosted_release_version": "0.2.524",
-    "new_exact_source_store_zip": false,
-    "fresh_ci_run": 39065713090,
-    "fresh_ci_status_at_observation": "Exact pre-release 8f3f773b full CI 39065713090 passed both jobs. EXT-D-0230 and CDP diagnostic source peer A/B PASS. Guarded hosted release 39066435724 refreshed @ai-matrx packages and passed strict gates, then atomically pushed 0.2.524 tag/source 3fa1da6. Emitted lock has chat 0.8.164, design-system 0.86.184 and records 0.99.41.",
-    "risk_scan_on_new_exact_candidate": "Hosted Store package validation and remote-code approval-risk gate passed. Exact downloaded ZIP has 1,233 JavaScript assets and no rejected PDFObject/cdnjs loader hit. Independent exact-ZIP Blue Argon peer is pending.",
-    "guest_and_non_admin_acceptance_on_new_exact_candidate": "Guarded .524 guest B run 39067132410 was dispatched against immutable 3fa1da6 and is running, but a later runtime source commit c24588921 makes its result diagnostic for the next Store candidate. Non-admin .524 has not run. No current-source native acceptance credit.",
+    "latest_hosted_release_run": 39071652120,
+    "latest_hosted_release_version": "0.2.525",
+    "new_exact_source_store_zip": true,
+    "fresh_ci_run": 39070972199,
+    "fresh_ci_status_at_observation": "Exact pre-release 0592caf full CI 39070972199 passed both jobs. Contributor lock commit 40d52df was integrated before the atomic release tag; 40d is an ancestor of 4ca7843 and pnpm-lock.yaml is identical between them. Guarded hosted release 39071652120 refreshed @ai-matrx packages, reran strict gates and pushed 0.2.525 tag/source 4ca7843. Emitted lock includes chat 0.8.165, data 0.29.54, design-system 0.86.188, records-ui 0.116.5, records 0.99.44 and summon 0.1.9. No post-40d src runtime diff.",
+    "risk_scan_on_new_exact_candidate": "Hosted Store package validation and remote-code approval-risk gate passed. Exact downloaded ZIP has 1,237 JavaScript assets and no rejected PDFObject/cdnjs loader hit. Independent exact-ZIP Blue Argon/integrity peer is pending.",
+    "guest_and_non_admin_acceptance_on_new_exact_candidate": "Guarded exact .525 guest B run 39072176483 dispatched from frozen 4ca7843 source and is in progress; actual terminal replies and resource/server validity pending. Designated non-admin member A has not run on .525. No Store/native acceptance credit yet.",
     "cost_model_weekly_billed_usd": 55.97,
     "cost_model_ceiling_usd": 100,
     "cost_model_status": "pass",
-    "release_decision": "0.2.524 exact Store ZIP was packaged and passed hosted risk scan but is held/superseded for submission: post-release c24588921 changes package runtime `src/features/package-chat/ai-watch-opener.ts` and `src/lib/swipe-file/navigation.ts`. Do not upload .524. Revalidate latest synchronized source through exact CI and a new guarded hosted release, independent ZIP peer and native guest/non-admin acceptance; private dashboard/mail status still unverified.",
-    "latest_hosted_release_artifact_id": 12112863748,
-    "release_tag": "v0.2.524",
-    "store_zip_sha256": "0331d53b4661cf737a2e1eaa0c2cf56b9f8b6e19710ab4b0e892789aa172a134",
-    "store_zip_tree_sha256": "8d008bb1f6554c682ccf2211a973958b65bbb84d5d42f31f1590e2f71c5cc1fa",
-    "store_zip_receipt_source_sha": "3fa1da6dcf2ebc39b35e0e9f298c749398f419f8",
-    "release_artifact_outer_digest": "sha256:76bd03883b2ad477de1181fe3f1cd88c259c60025bad5551317fef60a1a5f443",
-    "aidream_type_source_sha": "1dee349a51f407e11439d206114aa870fe770058",
+    "release_decision": "0.2.525 exact Store ZIP was packaged and passed hosted risk scan; it includes the contributor 40d lock refresh. Not uploaded/submitted. Require independent exact-ZIP peer, resource-valid guest first/follow-up/reload and designated non-admin member first/follow-up terminal native acceptance with stable deployed server SHA, plus fresh permitted primary-item dashboard/mail status.",
+    "latest_hosted_release_artifact_id": 12115765980,
+    "release_tag": "v0.2.525",
+    "store_zip_sha256": "a6dbb3db67130b5e3cc12d21234197c0d7f705272efc9a626b57a8135182d60b",
+    "store_zip_tree_sha256": "dc83d494e026257b954d13cf995b1ec22de8e711ab7554912c1c9627ca5a2d47",
+    "store_zip_receipt_source_sha": "4ca7843684d0da9cb0757a12093f80c6e4c17772",
+    "release_artifact_outer_digest": "sha256:cd4ffac5c748bef4555bbc9bcd148f130140db7b0ca76b3d827f4e8e9cda4ed7",
+    "aidream_type_source_sha": "920b7cd330b791df0f4596fc2ada4acb253f301d",
     "aidream_sync_types_blob": "9ecb437683fbb56aa7f0cb0d6e00dfb588cd9144"
   },
   "publisher_api_v2": {
@@ -73,11 +73,11 @@
   },
   "reviewer_copy_checklist": {
     "single_purpose": "Existing public listing states the page-aware AI side-panel purpose; candidate source still exposes the documented guest tabs.",
-    "account_free_path": "Published 0.2.205 CRX unpacked passed three direct-v2 guest Chat turns in run 39049125532 on an earlier server. Exact 0.2.524 guarded guest B run 39067132410 is pending; proposed demo instructions remain testable steps, not a claimed pass. Omit Capture and SEO claims.",
+    "account_free_path": "Published 0.2.205 CRX unpacked passed three direct-v2 guest Chat turns in run 39049125532 on an earlier server. Exact 0.2.525 guarded guest B run 39072176483 is pending; proposed demo instructions remain testable steps, not a claimed pass. Omit Capture and SEO claims.",
     "privacy_link": "Live extension-specific policy URL returns HTTP 200; current source disclosures were compared, but dashboard field selections remain unverified.",
-    "remote_code_answer": "Exact 0.2.524 Store ZIP passed hosted risk gate and a bounded local rejected-loader scan; independent package peer is pending. Recheck dashboard answer before submission.",
-    "permissions_and_host_access": "Exact 0.2.524 ZIP manifest passed blocking hosted risk gate against approved 0.2.205 policy-surface baseline; independent ZIP/receipt comparison is pending.",
-    "screenshots_and_reviewer_instructions": "The four old screenshots have not been proven against 0.2.524. Reviewer instructions omit unverified Capture/SEO/Swipe. Dashboard fields remain unverified.",
+    "remote_code_answer": "Exact 0.2.525 Store ZIP passed hosted risk gate and a bounded local rejected-loader scan; independent package peer is pending. Recheck dashboard answer before submission.",
+    "permissions_and_host_access": "Exact 0.2.525 ZIP manifest passed blocking hosted risk gate against approved 0.2.205 policy-surface baseline; independent ZIP/receipt comparison is pending.",
+    "screenshots_and_reviewer_instructions": "The four old screenshots have not been proven against 0.2.525. Reviewer instructions omit unverified Capture/SEO/Swipe. Dashboard fields remain unverified.",
     "publication": "Check primary item, current revision, automatic publication and pending state through a permitted interface before replacing or submitting; fresh October 17 rejection mail is not verified."
   },
   "proposed_submission_copy_pending_exact_candidate_acceptance": {
@@ -85,10 +85,10 @@
     "reviewer_instructions": "No account is needed. Open https://www.aimatrx.com/matrx-extend-demo and click the toolbar icon. In Chat, ask \"What are the three workflow stages on this page?\" The answer should identify Capture, Understand, and Use. Guest AI offers limited free tries. Automatic page capture is off on a fresh install.",
     "listing_description_addition": "Signed-in users can save a supported social post or ad from the page they are viewing into a Swipe file collection, then review available media and transcripts. A visit alone never saves a post.",
     "privacy_field_delta": "The live October 15 extension policy already discloses user-chosen Swipe post URL submission, possible external social-data provider retrieval, shared cache retention, and signed-in configuration-read reporting with local queued records and no raw setting values, page content or visited-site list. Before submission, verify the primary dashboard's Website content, User activity and Personally identifiable information selections and purpose/third-party declarations still truthfully cover these flows; no new category is established from source review alone.",
-    "screenshots": "Keep Swipe Save, Scrape Capture, and SEO audit out of reviewer steps and screenshots until exact 0.2.524 native behavior on the reviewer demo page is verified. Check the four existing guest screenshots against exact candidate UI before reuse.",
+    "screenshots": "Keep Swipe Save, Scrape Capture, and SEO audit out of reviewer steps and screenshots until exact 0.2.525 native behavior on the reviewer demo page is verified. Check the four existing guest screenshots against exact candidate UI before reuse.",
     "basis": "src/config/sidepanel-visibility.ts exposes Swipe file only after sign-in; src/lib/swipe-file/save.ts sends a supported chosen URL to ingestPost and adds it to a selected collection; src/lib/config/reporting.ts reports bounded key-read metadata. Live privacy policy and demo page returned HTTP 200 on October 17."
   },
-  "next_action": "Preserve diagnostic evidence from .524 B run 39067132410. Review c24588921 package runtime delta, run exact-current CI and guarded next release from synchronized main. Recheck Blue Argon/integrity on that exact ZIP and complete resource-valid guest and designated non-admin member first/follow-up terminal acceptance with stable deployed server SHA. Fresh publisher Gmail and primary-item private dashboard status remain unknown after permitted timeout/refusal; resolve through permitted access before upload, preserving pending revision.",
+  "next_action": "Await guarded 0.2.525 guest B run 39072176483 with valid resources, stable server SHA and real first/follow-up/reload terminal replies, then independent product peer review. Run designated non-admin member A on the same immutable artifact with its reviewed two-turn oracle. Obtain independent exact-ZIP Blue Argon/integrity peer. Fresh publisher Gmail and primary-item private dashboard status remain unknown after permitted timeout/refusal; resolve through permitted access before any Store upload, preserving any pending revision.",
   "workspace_duplicate_archive": {
     "source": "docs/stabilization/resource-journals/settings-nav-preflight-20261017-01.jsonl",
     "archived_at": "node_modules/.cache/store-release-20261017/settings-journal-duplicate/settings-nav-preflight-20261017-01.jsonl",
@@ -146,23 +146,23 @@
     "reason": "New packaged guest Chat identity runtime fix at 64c7ce368 and subsequent refreshed @ai-matrx dependency lock require a new immutable Store ZIP. Older B no-send and A resource-invalid browser runs give no 0.2.523 acceptance credit."
   },
   "current_release_artifact": {
-    "release_run": 39066435724,
-    "artifact_id": 12112863748,
-    "artifact_outer_digest": "sha256:76bd03883b2ad477de1181fe3f1cd88c259c60025bad5551317fef60a1a5f443",
-    "source_sha": "3fa1da6dcf2ebc39b35e0e9f298c749398f419f8",
-    "tag": "v0.2.524",
-    "store_zip_sha256": "0331d53b4661cf737a2e1eaa0c2cf56b9f8b6e19710ab4b0e892789aa172a134",
-    "store_zip_tree_sha256": "8d008bb1f6554c682ccf2211a973958b65bbb84d5d42f31f1590e2f71c5cc1fa",
-    "store_zip_entries": 2368,
-    "javascript_files": 1233,
-    "manifest_version": "0.2.524",
+    "release_run": 39071652120,
+    "artifact_id": 12115765980,
+    "artifact_outer_digest": "sha256:cd4ffac5c748bef4555bbc9bcd148f130140db7b0ca76b3d827f4e8e9cda4ed7",
+    "source_sha": "4ca7843684d0da9cb0757a12093f80c6e4c17772",
+    "tag": "v0.2.525",
+    "store_zip_sha256": "a6dbb3db67130b5e3cc12d21234197c0d7f705272efc9a626b57a8135182d60b",
+    "store_zip_tree_sha256": "dc83d494e026257b954d13cf995b1ec22de8e711ab7554912c1c9627ca5a2d47",
+    "store_zip_entries": 2375,
+    "javascript_files": 1237,
+    "manifest_version": "0.2.525",
     "manifest_key_present": false,
     "hosted_risk_gate": "pass",
     "local_rejected_pdfobject_loader_hits": 0,
     "independent_zip_peer": "pending",
-    "native_guest_acceptance": "guarded_run_39067132410_diagnostic_in_progress_after_material_drift",
+    "native_guest_acceptance": "guarded_run_39072176483_in_progress",
     "native_member_acceptance": "pending",
-    "store_upload": "not_attempted_stale_source",
+    "store_upload": "not_attempted",
     "submission_eligible": false
   },
   "superseded_0523_candidate": {
@@ -172,8 +172,8 @@
     "reason": "Native guest 39064192181 stopped pre-Send on stale harness and member 39064545122 stopped at CDP startup, so neither supplied acceptance. Reviewed EXT-D-0230 harness and CDP diagnostic changes plus refreshed @ai-matrx package identity produced new immutable 0.2.524 candidate."
   },
   "current_server_observation": {
-    "sha_at_guest_preflight": "fe4f08e7210cb3ba5b0999b3e8eb71a7bae342af",
-    "relation_to_aidream_type_pin": "Ancestor of immutable pin 1dee349a by 11 commits; sync-types blob unchanged. No AI/mandate/chat API router change between previous fc8 server and fe4 deployment. Native run must recheck before and after."
+    "sha_at_latest_guest_preflight": "3585653d392db91ead2dd66cdc44b3addad5975d",
+    "relation_to_aidream_type_pin": "Ancestor of immutable pin 920b7cd3 by 13 commits; sync-types blob unchanged 9ecb4376. a9e→358 changed table automation/video API routers, not AI/mandate/chat router. Native runs must bind actual server SHA before and after; no acceptance if it moves mid-run."
   },
   "post_release_material_drift": {
     "commit": "c2458892134251e6391f6100c14c70fb73ec04f2",
@@ -184,5 +184,11 @@
     ],
     "classification": "Runtime package behavior changed after immutable 0.2.524 source 3fa1da6; .524 B remains diagnostic, not Store acceptance for current main. Contributor change preserved.",
     "required_action": "Exact-current CI and next guarded hosted release candidate before Store upload."
+  },
+  "superseded_0524_candidate": {
+    "version": "0.2.524",
+    "release_run": 39066435724,
+    "source_sha": "3fa1da6dcf2ebc39b35e0e9f298c749398f419f8",
+    "reason": "Runtime source c245 and later npm lock refresh 40d changed the package after .524. Guest B run 39067132410 was environment-failure zero-credit; no non-admin .524 acceptance. New guarded 0.2.525 package includes both changes."
   }
 }
