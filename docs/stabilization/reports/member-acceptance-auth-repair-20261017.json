@@ -106,5 +106,38 @@
       "active_run_id": "39052786157",
       "remaining": "Monitor actual guarded phase admission and first-party browser identity evidence; bind actual server SHA at browser/Chat time. No further retry after resource refusal/invalidity or same identity failure."
     }
+  },
+  "release_0521_member_attempt": {
+    "at": "2026-10-17T17:32:03.716Z",
+    "run_id": "39054156869",
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39054156869",
+    "version": "0.2.521",
+    "release_run_id": "39053548400",
+    "artifact_id": "12108945607",
+    "source_sha": "f5a2d49c7abc9d77c1e7e8298e52eba09b58d972",
+    "workflow_sha": "5e3bbc4821f60635a3d164960e57871ac14a7a72",
+    "store_zip_sha256": "4760d798f69769d0c33ad4f73a4aa457142c0fa959e56072c3949696e47072e9",
+    "github_artifact_digest": "sha256:71a6e7e11b3c16f990af65220779a5539c845faff20173caa5d00a4f2b6e9294",
+    "source_admission": "Clean synchronized main and full f5..HEAD delta admitted by strict helper; only peer-reviewed diagnostic harness changed after release.",
+    "verification": "Real CLI plan and guarded dispatch PASS; ONE A attempt. Fresh actual hosted phase guards decide resource admission and watchdog; no thresholds changed.",
+    "fixture": "Designated existing nonadmin account freshly recovered and reverified exact active organization before one-use link minted and staged via stdin; no credential values enter report.",
+    "b_overlap": "39054087178 isolated account-free guest B; release owner confirmed no shared member/admin fixture use.",
+    "server_at_dispatch": {
+      "git_sha": "cee530dbfa5f3cbafa3a945d02dd4f670400ebcb",
+      "built_at": "2026-10-17T17:16:05Z",
+      "branch": null,
+      "observed_at": "2026-10-17T17:32:03.719Z",
+      "source": "Direct /health/version observation; historical c05/.520 evidence is not reused."
+    },
+    "cleanup": "Complete: owned one-use GitHub secret deleted and secret listing confirms absent; private identity/link directory removed and absence verified.",
+    "native_product_verdict": "pending; prior .520 role/identity boundary results do not count for .521",
+    "next_action": "Confirm auth preflight then remove and verify temporary credentials, hand native run to root/release owner. Bind actual server SHA at browser/Chat and post-run. No retry after resource refusal or same failure without parent.",
+    "auth_preflight": "PASS: Require selected authentication before browser setup succeeded and run advanced to Wait for measured package readiness.",
+    "handoff": {
+      "owner": "root and root/store_rejection",
+      "active_run_id": "39054156869",
+      "native_product_verdict": "pending",
+      "remaining": "Monitor actual hosted phase resource gate/watchdog, real member behavior and diagnostics. Record actual server SHA at browser/Chat and post-run; no retry after resource refusal or same failure without parent."
+    }
   }
 }
