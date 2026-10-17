@@ -78,10 +78,147 @@ export async function main(walk) {
   });
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  await main(async ({ shot, text, log }) => {
-    await sleep(15000);
-    await shot('01-vault-open');
-    log((await text()).slice(0, 1500));
+/** Focus the visible field named `label` (aria-label, placeholder or its <label>) and type into it. */
+export async function typeInto(panel, label, value, { clear = true } = {}) {
+  const ok = await ev(panel, `(() => {
+    const L = ${JSON.stringify(label)};
+    const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && !e.closest('[inert]'); };
+    const nm = (e) => e.getAttribute('aria-label') || e.placeholder || e.labels?.[0]?.textContent?.trim() || '';
+    const el = [...document.querySelectorAll('input,textarea')].filter(vis).find((e) => nm(e) === L);
+    if (!el) return false; el.scrollIntoView({ block: 'center' }); el.focus(); if (${clear}) el.select(); return true; })()`);
+  if (!ok) return false;
+  await panel.send('Input.insertText', { text: value });
+  return true;
+}
+const menuItems = (P) => ev(P, `[...document.querySelectorAll('[role=menuitem],[role=menuitemradio],[role=menuitemcheckbox],[role=option]')].filter((e) => e.getBoundingClientRect().width > 0).map((e) => e.textContent.trim().slice(0, 40)).join(' | ')`);
+const short = async (text) => (await text()).replace(/\n/g, ' / ').slice(0, 500);
+export const fields = (panel) => ev(panel, `[...document.querySelectorAll('input,textarea,select,[role=combobox]')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; }).map((e) => (e.tagName + ':' + (e.type || '') + ':' + (e.getAttribute('aria-label') || e.placeholder || e.labels?.[0]?.textContent?.trim() || e.textContent?.trim().slice(0, 30) || '?'))).join(' | ')`);
+export const buttons = (panel) => ev(panel, `[...document.querySelectorAll('button,[role=menuitem],[role=tab],[role=option]')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && !e.closest('[inert]'); }).map((e) => (e.getAttribute('aria-label') || e.getAttribute('title') || e.textContent.trim()).slice(0, 40)).filter(Boolean).join(' | ')`);
+
+/** A private localhost login page; records what was submitted (no secrets leave the process). */
+export function startLoginSite() {
+  const seen = { posts: 0 };
+  const server = http.createServer((req, res) => {
+    if (req.method === 'POST') {
+      seen.posts += 1;
+      req.resume();
+      res.writeHead(200, { 'content-type': 'text/html' });
+      res.end('<!doctype html><title>Signed in</title><h1>Signed in</h1>');
+      return;
+    }
+    res.writeHead(200, { 'content-type': 'text/html' });
+    res.end(`<!doctype html><title>Walk Login</title><h1>Walk login</h1>
+<form method="post" action="/login"><label>Username <input id="u" name="username" autocomplete="username"></label>
+<label>Password <input id="p" name="password" type="password" autocomplete="current-password"></label>
+<button type="submit">Sign in</button></form>`);
   });
+  return new Promise((ok) => server.listen(0, '127.0.0.1', () => ok({ server, seen, url: `http://127.0.0.1:${server.address().port}/login` })));
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const site = await startLoginSite();
+  const step = async (name, fn) => {
+    try { return await fn(); } catch (e) { log(`STEP ${name} FAILED: ${String(e.message).slice(0, 400)}`); }
+  };
+  try {
+    await main(async (c) => {
+      const { page, shot, text, log: lg } = c;
+      const P = c.panel;
+      await page.goto(site.url);
+      await page.bringToFront().catch(() => {});
+      const t0 = Date.now();
+      await c.waitText(/All items/, 90000);
+      lg('VAULT_READY_MS', Date.now() - t0);
+      await sleep(1500);
+      await shot('02-page-view-no-items');
+      lg('TEXT', (await text()).replace(/\n/g, ' / ').slice(0, 700));
+      lg('BUTTONS', await buttons(P));
+      await step('turn-on-filling', async () => {
+        const pw = JSON.parse(await readFile(process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE, 'utf8')).password;
+        lg('PWFIELDS', await fields(P));
+        const pwLabel = (await fields(P)).split(' | ').find((f) => /password/i.test(f))?.split(':').slice(2).join(':');
+        lg('TYPED', pwLabel, await typeInto(P, pwLabel, pw));
+        lg('TURNON', await clickLabel(P, 'Turn on'));
+        await sleep(5000);
+        await shot('03-after-turn-on');
+        lg('TEXT', (await text()).replace(/\n/g, ' / ').slice(0, 500));
+      });
+      await step('save-a-login', async () => {
+        lg('CLICK', await clickLabel(P, 'Save a login'));
+        await sleep(2500);
+        await shot('04-save-a-login');
+        lg('FIELDS', await fields(P));
+        lg('BUTTONS', (await buttons(P)).split(' | ').slice(24).join(' | '));
+        lg('TEXT', (await text()).replace(/\n/g, ' / ').slice(0, 600));
+        await clickLabel(P, 'Website login', { sub: true });
+        await sleep(2000);
+      });
+      const tag = `ZZ walk ${Math.random().toString(36).slice(2, 8)}`;
+      const secret = `Wk-${crypto.randomUUID()}`;
+      await step('create-item', async () => {
+        await typeInto(P, 'Name', tag);
+        await typeInto(P, 'Username or email', 'walk-user');
+        await typeInto(P, 'Password', secret);
+        const web = (await ev(P, `[...document.querySelectorAll('input')].filter((e) => e.getAttribute('aria-label') === 'Website' || e.placeholder === 'Website').map((e) => e.value).join()`));
+        lg('WEBSITE_PREFILLED', web);
+        if (!web) await typeInto(P, 'Website', site.url);
+        await shot('06-form-filled');
+        lg('SAVE', await clickLabel(P, 'Save'));
+        await sleep(4000);
+        await shot('07-after-save');
+        lg('TEXT', (await text()).replace(/\n/g, ' / ').slice(0, 700));
+        lg('BUTTONS', (await buttons(P)).split(' | ').slice(24).join(' | '));
+      });
+      await step('item-with-owner-badge', async () => {
+        await shot('08-item-detail-owner-badge');
+      });
+      await step('confirm-dialog', async () => {
+        // Fault injection: the first reveal/copy is answered as the server answers a stale sign-in,
+        // so the package's own "Confirm it's you" dialog opens; the retry after it goes to the real server.
+        await ev(P, `(() => { const f = window.fetch; window.__armed = true; window.__urls = [];
+          window.fetch = async (input, init) => { const u = String(input?.url ?? input); window.__urls.push((init?.method || 'GET') + ' ' + u.replace(/[?].*/, '').slice(-80));
+            if (window.__armed && /reveal|secret|decrypt/i.test(u)) { window.__armed = false;
+              return new Response(JSON.stringify({ detail: { code: 'recent_auth_required', message: 'Recent authentication required' } }), { status: 403, headers: { 'content-type': 'application/json' } }); }
+            return f(input, init); }; return true; })()`);
+        lg('SHOW', await clickLabel(P, 'Show Password'));
+        await sleep(2500);
+        lg('URLS', JSON.stringify(await ev(P, 'window.__urls')));
+        lg('DIALOG', await ev(P, `[...document.querySelectorAll('[role=dialog],[role=alertdialog]')].map((d) => d.innerText.slice(0, 300)).join(' || ')`));
+        await shot('11a-confirm-its-you');
+      });
+      await step('reveal-copy', async () => {
+        lg('SHOW', await clickLabel(P, 'Show Password'));
+        await sleep(2500);
+        await shot('11-after-show-password');
+        lg('TEXT', await short(text));
+        lg('DIALOG', await ev(P, `[...document.querySelectorAll('[role=dialog],[role=alertdialog]')].map((d) => d.innerText.slice(0, 300)).join(' || ')`));
+        lg('COPY', await clickLabel(P, 'Copy Password'));
+        await sleep(2500);
+        await shot('12-after-copy-password');
+        lg('DIALOG', await ev(P, `[...document.querySelectorAll('[role=dialog],[role=alertdialog]')].map((d) => d.innerText.slice(0, 300)).join(' || ')`));
+        lg('TEXT', await short(text));
+      });
+      await step('page-view-match', async () => {
+        lg('BACK', await clickLabel(P, 'Back'));
+        await sleep(1500);
+        lg('SHOWMENU', await clickLabel(P, 'Show'));
+        await sleep(800);
+        lg('MENU', await menuItems(P));
+        lg('THISPAGE', await clickLabel(P, 'This page', { sel: '[role=menuitem],[role=menuitemradio],[role=option],[role=tab],button' }));
+        await sleep(4000);
+        await shot('10-page-view-match');
+        lg('TEXT', await short(text));
+      });
+      await step('fill', async () => {
+        lg('FILL', await clickLabel(P, 'Fill'));
+        await sleep(2500);
+        await shot('13-after-fill');
+        lg('PAGEFIELDS', JSON.stringify(await page.evaluate(() => ({ u: document.getElementById('u')?.value, pLen: document.getElementById('p')?.value.length }))));
+        lg('TEXT', await short(text));
+      });
+      globalThis.__walk = { tag, secret };
+    });
+  } finally {
+    site.server.close();
+  }
 }

@@ -132,7 +132,12 @@ function VaultWorkspace({ actor }: { actor: Actor }) {
       location={location}
       onLocationChange={(next, how) => {
         if (how === 'push') setMoved(true);
-        setLocation(next);
+        // @ai-matrx/vault 0.1.2 renders no detail pane while the page view is up (VaultApp's
+        // `detailHere` is false for a special view), so opening a match or "Save a login" from
+        // it left a blank panel. Take the item/new-item pane from All items until the package
+        // shows it beside the page view.
+        const opensPane = next.mode === 'new' || next.itemId !== null;
+        setLocation(next.view === 'page' && opensPane ? { ...next, view: 'all' } : next);
       }}
     />
   );
