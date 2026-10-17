@@ -121,6 +121,10 @@ export function requireReleaseMemberSource(ancestor, paths) {
         path === 'tests/browser/guest-chat-store-acceptance.mjs' ||
         path === 'tests/browser/guest-chat-store-sequence.test.mjs' ||
         path === 'tests/browser/guest-chat-store-screenshot.mjs' ||
+        path === 'tests/browser/guest-chat-completion-oracle.mjs' ||
+        path === 'tests/browser/guest-chat-completion-oracle.test.mjs' ||
+        path === 'tests/browser/guest-chat-transport-observer.mjs' ||
+        path === 'tests/browser/guest-chat-transport-observer.test.mjs' ||
         path === 'tests/browser/reviewer-chat-store-acceptance.mjs' ||
         path === 'tests/browser/reviewer-chat-identity-diagnostic.mjs' ||
         path === 'tests/browser/reviewer-chat-identity-diagnostic.test.mjs' ||

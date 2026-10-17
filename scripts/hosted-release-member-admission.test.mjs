@@ -208,3 +208,25 @@ test('exact member identity diagnostic delta is admitted without widening paths'
       `unreviewed path must refuse admission: ${path}`,
     );
 });
+
+// Break caught: the immutable member candidate cannot be retested after a
+// reviewed guest package oracle repair unless these four exact paths are admitted.
+test('reviewed guest package terminal oracle delta is admitted without wildcard paths', () => {
+  const oracleDelta = [
+    'tests/browser/guest-chat-completion-oracle.mjs',
+    'tests/browser/guest-chat-completion-oracle.test.mjs',
+    'tests/browser/guest-chat-transport-observer.mjs',
+    'tests/browser/guest-chat-transport-observer.test.mjs',
+  ];
+  requireReleaseMemberSource(true, oracleDelta);
+  for (const path of [
+    'tests/browser/guest-chat-other-oracle.mjs',
+    'tests/browser/guest-chat-transport-observer-copy.test.mjs',
+    'src/features/package-chat/host.ts',
+  ]) {
+    assert.throws(
+      () => requireReleaseMemberSource(true, [...oracleDelta, path]),
+      /release_member_product_changed/,
+    );
+  }
+});
