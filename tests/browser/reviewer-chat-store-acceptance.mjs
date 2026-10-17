@@ -19,6 +19,7 @@ import {
   supabaseOrigin,
 } from './member-native-auth-proof.mjs';
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
+import { readPackageChatControls } from './package-chat-controls.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { storageShapeExpression } from './reviewer-chat-storage-shape.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -364,18 +365,18 @@ async function chatObservation(panel) {
         .find((button) => button.title === 'Chat');
       const pane = chat ? document.getElementById(chat.getAttribute('aria-controls') ?? '') : null;
       const textarea = pane?.querySelector('textarea') ?? null;
-      const send = pane?.querySelector('button[title="Send"]') ?? null;
-      const stop = pane?.querySelector('button[title="Stop"]') ?? null;
-      const replyCopy = [...(pane?.querySelectorAll('button[title="Copy reply"]') ?? [])];
+      const controls = (${readPackageChatControls.toString()})(pane);
       return {
         selected: chat?.getAttribute('aria-selected') === 'true',
         paneVisible: Boolean(pane && pane.getAttribute('data-state') === 'active' && pane.getBoundingClientRect().height > 0),
         composerReady: textarea !== null && textarea.getBoundingClientRect().height > 0,
-        sendEnabled: Boolean(send && !send.disabled),
-        streaming: stop !== null,
-        completedReplyCount: replyCopy.length,
+        sendEnabled: controls.sendEnabled,
+        sendControlCount: controls.sendControlCount,
+        sendControlDisabled: controls.sendControlDisabled,
+        streaming: controls.streaming,
+        completedReplyCount: controls.replies.length,
         answerNamesWorkflowStages: ['Capture', 'Understand', 'Use'].every((term) =>
-          (pane?.innerText ?? '').includes(term),
+          (controls.replies.at(-1) ?? '').includes(term),
         ),
       };
     })()`,
@@ -1415,7 +1416,7 @@ try {
 
         memberTransport = await observeAuthenticatedTransport(native, null, null);
         stage = 'send_three_stage_question';
-        await click(panel, 'title', 'Send');
+        await click(panel, 'chat-send', '');
         const completed = await waitFor(
           'reviewer_real_chat_answer',
           () => chatObservation(panel),

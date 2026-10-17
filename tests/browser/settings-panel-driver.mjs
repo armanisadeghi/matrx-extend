@@ -474,6 +474,10 @@ export async function click(panel, kind, label, onPhase = undefined) {
         ? dialogs.flatMap((dialog) => [...dialog.querySelectorAll('button[title="Refresh"]')])
         : [];
     }
+    else if (kind === 'chat-send') {
+      const pane = ${activeTabPanelExpression('Chat')};
+      candidates = [...(pane?.querySelectorAll('button[aria-label="Send message"]') ?? [])];
+    }
     else if (kind === 'context-values') {
       const chatTab = [...document.querySelectorAll('button[role="tab"][title="Chat"]')]
         .find((el) => el.getAttribute('aria-selected') === 'true');

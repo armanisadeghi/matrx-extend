@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readPackageChatControls } from './package-chat-controls.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -44,8 +45,8 @@ async function observe(panel) {
         .find((button) => button.title === 'Chat');
       const pane = chat ? document.getElementById(chat.getAttribute('aria-controls') ?? '') : null;
       const active = pane?.getAttribute('data-state') === 'active' && visible(pane);
-      const replies = active ? [...pane.querySelectorAll('button[title="Copy reply"]')]
-        .map((button) => button.closest('div.group.space-y-2')?.innerText ?? '') : [];
+      const controls = (${readPackageChatControls.toString()})(pane);
+      const replies = controls.replies;
       const answer = replies.at(-1) ?? '';
       return chrome.storage.local.get([
         'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.org.active',
@@ -56,9 +57,10 @@ async function observe(panel) {
         chatVisible: visible(chat),
         chatSelected: chat?.getAttribute('aria-selected') === 'true',
         composerVisible: active && visible(pane.querySelector('textarea')),
-        sendEnabled: active && [...pane.querySelectorAll('button[title="Send"]')]
-          .some((button) => visible(button) && !button.disabled),
-        streaming: active && Boolean(pane.querySelector('button[title="Stop"]')),
+        sendEnabled: controls.sendEnabled,
+        sendControlCount: controls.sendControlCount,
+        sendControlDisabled: controls.sendControlDisabled,
+        streaming: controls.streaming,
         replyCount: replies.length,
         stagesInOrder: /Capture[\\s\\S]*Understand[\\s\\S]*Use/.test(answer),
         refusal: /(?:sign.?in|log.?in|authentication required|upgrade|subscribe|payment required|unauthori[sz]ed|forbidden|\\b401\\b|\\b403\\b)/i.test(answer),
@@ -163,7 +165,7 @@ try {
           10_000,
         );
         await assertDemoTabActive(attachWorker, web);
-        await click(panel, 'title', 'Send');
+        await click(panel, 'chat-send', '');
 
         stage = 'real_guest_answer';
         const answered = await waitFor(

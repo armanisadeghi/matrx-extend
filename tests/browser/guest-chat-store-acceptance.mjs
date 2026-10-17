@@ -13,6 +13,7 @@ import {
   watchGuestAiRequests,
 } from './guest-chat-transport-observer.mjs';
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
+import { readPackageChatControls } from './package-chat-controls.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -128,10 +129,8 @@ async function observe(panel, expected = {}) {
         .find((button) => button.title === 'Chat');
       const pane = chat ? document.getElementById(chat.getAttribute('aria-controls') ?? '') : null;
       const active = pane?.getAttribute('data-state') === 'active' && visible(pane);
-      const replies = active ? [...pane.querySelectorAll('button[title="Copy reply"]')]
-        .map((button) => [...(button.closest('div.group.space-y-2')
-          ?.querySelectorAll(':scope > div.min-w-0.text-foreground') ?? [])]
-          .map((part) => part.innerText ?? '').join('\\n')) : [];
+      const controls = (${readPackageChatControls.toString()})(pane);
+      const replies = controls.replies;
       const latestReply = replies.at(-1) ?? '';
       const visibleAlerts = active
         ? [...pane.querySelectorAll('[role="alert"]')].filter(visible)
@@ -154,9 +153,10 @@ async function observe(panel, expected = {}) {
         chatSelected: chat?.getAttribute('aria-selected') === 'true',
         paneVisible: Boolean(active),
         composerVisible: active && visible(pane.querySelector('textarea')),
-        sendEnabled: active && [...pane.querySelectorAll('button[title="Send"]')]
-          .some((button) => visible(button) && !button.disabled),
-        streaming: active && Boolean(pane.querySelector('button[title="Stop"]')),
+        sendEnabled: controls.sendEnabled,
+        sendControlCount: controls.sendControlCount,
+        sendControlDisabled: controls.sendControlDisabled,
+        streaming: controls.streaming,
         streamTrace: window.__guestChatStreamTrace?.snapshot() ?? null,
         replyCount: replies.length,
         answerContainsNonce: Boolean(${JSON.stringify(expected.nonce ?? null)}) &&
@@ -190,7 +190,7 @@ async function installStreamTrace(panel, fixture, fixtureTabId) {
     window.__guestChatStreamTrace?.stop();
     const makeCollector = (${createGuestStreamCollector.toString()});
     const collector = makeCollector({
-      replyCount: () => document.querySelectorAll('button[title="Copy reply"]').length,
+      replyCount: () => (${readPackageChatControls.toString()})(document.querySelector('[role="tabpanel"][data-state="active"]')).replies.length,
       now: Date.now,
       markers: ${JSON.stringify([fixture.openingCode, fixture.followupCode, fixture.title])},
       fixtureTabId: ${JSON.stringify(fixtureTabId)},
@@ -521,7 +521,7 @@ async function submitQuestion(panel, question, label) {
     (state) => state?.sendEnabled,
     10_000,
   );
-  await click(panel, 'title', 'Send');
+  await click(panel, 'chat-send', '');
 }
 
 async function requireActiveFixtureTab(attachWorker, page, fixture) {
