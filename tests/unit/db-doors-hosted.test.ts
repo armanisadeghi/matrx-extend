@@ -57,6 +57,13 @@ it('checks frozen candidate growth through an aidream symlink with only consumer
   expect(JSON.parse(planted.stdout).grown).toEqual([
     'matrx-extend:release-candidate-probe.ts: 1 direct database call(s), baseline 0',
   ]);
+  const directRestUrl = ['https://db.example', 'rest/v1/notes'].join('/');
+  writeFileSync(file, `export const rows = fetch("${directRestUrl}");`);
+  const directRest = run();
+  expect(directRest.status).toBe(1);
+  expect(JSON.parse(directRest.stdout).grown).toEqual([
+    'matrx-extend:release-candidate-probe.ts: 1 direct database call(s), baseline 0',
+  ]);
   writeFileSync(file, 'export const rows = [];');
   expect(JSON.parse(run().stdout).grown).toEqual([]);
 });

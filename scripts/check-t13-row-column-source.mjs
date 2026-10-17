@@ -46,8 +46,12 @@ const ROW = new RegExp(`(?<![A-Za-z0-9_\\-])${WORD}(?![A-Za-z0-9_\\-])`);
 // Remove only the recognized occurrence, never its entire source line. A CSS
 // property or diagnostic label must not conceal a database field beside it.
 const NOISE = [
+  // Erase complete diagnostic fields before the component CSS/DOM rules can
+  // leave an unqualified field name behind on the same line.
+  new RegExp(`\\b${WORD}\\s*:\\s*document\\.${WORD}State\\b`, 'g'),
+  new RegExp(`\\b${WORD}\\s*:\\s*style\\.${WORD}\\b`, 'g'),
   new RegExp(
-    `\\b(?:[A-Za-z_$][\\w$]*\\.)?(?:style|[A-Za-z_$][\\w$]*Style)\\s*(?:\\.\\s*${WORD}\\b|\\[\\s*${QUOTE}${WORD}${QUOTE}\\s*\\])`,
+    `\\b(?:[A-Za-z_$][\\w$]*\\.)?(?:style|[A-Za-z_$][\\w$]*Style)\\s*(?:\\?\\.\\s*${WORD}\\b|\\.\\s*${WORD}\\b|\\[\\s*${QUOTE}${WORD}${QUOTE}\\s*\\])`,
     'g',
   ),
   new RegExp(`getComputedStyle\\s*\\([^)]*\\)\\.${WORD}\\b`, 'g'),
@@ -65,6 +69,10 @@ const NOISE = [
   new RegExp(`ai[_-]${WORD}`, 'g'),
   new RegExp(`\\bconsole\\.log\\(\\s*(["'])(?:(?!\\1).)*${WORD}(?:(?!\\1).)*\\1`, 'g'),
   new RegExp(`document\\.${WORD}\\b`, 'g'),
+  new RegExp(
+    `(?<=['"]clipPath['"]\\s*,\\s*)['"]${WORD}['"](?=\\s*,\\s*['"]pointerEvents['"])`,
+    'g',
+  ),
   new RegExp(`\\b${WORD}\\s*:\\s*["'](?:other|unsupported)["']`, 'g'),
   new RegExp(`\\b(?:test|describe)\\s*\\(\\s*(["'])(?:(?!\\1).)*${WORD}(?:(?!\\1).)*\\1`, 'g'),
 ];
@@ -99,6 +107,30 @@ const BROWSER_NOISE = [
     `\\(\\{\\s*kind\\s*,\\s*${WORD}\\s*\\}\\)\\s*=>\\s*\\[\\s*kind\\s*,\\s*${WORD}\\s*\\]`,
     'g',
   ),
+];
+// GitHub repository visibility is a manifest/runner-cost field, not a row
+// access field. Scope these removals to the cost guard, and erase the matched
+// occurrence only so an adjacent row access is still counted.
+const COST_GUARD_FILE = 'scripts/check_workflow_runner_cost.py';
+const COST_NOISE = [
+  /`visibility`/g,
+  /--json visibility\b/g,
+  /['"]--json['"]\s*,\s*['"]visibility['"]/g,
+  /\b(?:manifest|v)\.get\(['"]visibility['"]/g,
+  /\bhit\[['"]visibility['"]\]/g,
+  /\bjson\.loads\(out\.stdout\)\[['"]visibility['"]\]/g,
+  /\bcache\[name\]\s*=\s*\{['"]visibility['"]/g,
+  /\breturn\s+\{['"]visibility['"]:\s*visibility\b/g,
+  /\bvisibility\s*:\s*str\b/g,
+  /\bvisibility\s*=\s*['"]private['"]/g,
+  /\bVISIBILITY_PROBE\s*=\s*lambda\s+_r:\s*visibility\b/g,
+  /\b_manifest\(\{['"]capture\.yml['"]:\s*_entry\(\[['"]push['"]\],\s*\[\],\s*legs\)\},\s*50,\s*visibility\)/g,
+  /\b(?:visibility\s+says|visibility\s+mismatch|needs\s+visibility|visibility\s+must\s+match)\b/g,
+  /\bvisibility\s+says\b/g,
+  /\bset\s+visibility\s+to\b/g,
+  /\bwithout\s+visibility\b/g,
+  /\bk\s*!=\s*['"]visibility['"]/g,
+  /['"]visibility['"]\s*:\s*['"]private['"]/g,
 ];
 const CODE = /\.(py|ts|tsx|js|jsx|mjs|cjs|sql|rs|svelte|vue)$/;
 const SKIP =
@@ -226,7 +258,7 @@ function withoutComments(text) {
   return output;
 }
 
-export function matchingLines(text) {
+export function matchingLines(text, rel = '') {
   const hits = [];
   const source = withoutComments(text);
   const originalLines = text.split('\n');
@@ -236,6 +268,8 @@ export function matchingLines(text) {
     // Test/SQL strings deliberately remain visible to the census. Only known
     // CSS/browser occurrences are erased, preserving every sibling reference.
     for (const pattern of NOISE) remainder = remainder.replace(pattern, '');
+    if (rel === COST_GUARD_FILE)
+      for (const pattern of COST_NOISE) remainder = remainder.replace(pattern, '');
     if (browserState)
       for (const pattern of BROWSER_NOISE) remainder = remainder.replace(pattern, '');
     if (ROW.test(remainder)) hits.push([i + 1, originalLines[i].trim()]);
@@ -255,7 +289,7 @@ export function scan(overrides = {}) {
       if (!existsSync(p) || !statSync(p).isFile()) continue;
       text = readFileSync(p, 'utf8');
     }
-    const hits = matchingLines(text);
+    const hits = matchingLines(text, rel);
     if (hits.length) found[rel] = hits;
   }
   return found;
@@ -323,6 +357,7 @@ function selfTest() {
   const baseline = loadBaseline();
   const someFile = Object.keys(baseline)[0];
   const real = readFileSync(join(ROOT, someFile), 'utf8');
+  const costReal = readFileSync(join(ROOT, COST_GUARD_FILE), 'utf8');
   const plantNew = 'src/__t13_selftest_plant__.ts';
   const embeddedComment = (statement) =>
     [
@@ -333,6 +368,28 @@ function selfTest() {
     ].join('\n');
   const cases = [
     ['real tree, no plant', {}, false],
+    ['GitHub repository cost field only', { [COST_GUARD_FILE]: costReal }, false],
+    [
+      'row query added to cost guard',
+      { [COST_GUARD_FILE]: `${costReal}\nquery.eq('${WORD}', 'internal');\n` },
+      true,
+    ],
+    [
+      'row read beside cost field',
+      { [COST_GUARD_FILE]: `manifest.get('${WORD}'); row.${WORD};` },
+      true,
+    ],
+    ['bracket row read in cost guard', { [COST_GUARD_FILE]: `row['${WORD}'];` }, true],
+    [
+      'row field passed to query in cost guard',
+      { [COST_GUARD_FILE]: `query.eq(row.${WORD});` },
+      true,
+    ],
+    [
+      'row variable passed to query in cost guard',
+      { [COST_GUARD_FILE]: `query.eq(${WORD});` },
+      true,
+    ],
     [
       'planted new file filtering on the column',
       { [plantNew]: `q.eq("${WORD}", "public");\n` },
@@ -437,6 +494,24 @@ function selfTest() {
       ['CSS property comparison', `style.${WORD} === 'hidden';`, false],
       ['CSS property write', `element.style.${WORD} = 'hidden';`, false],
       ['CSS bracket property write', `element.style['${WORD}'] = 'hidden';`, false],
+      ['optional computed CSS comparison', `style?.${WORD} === 'visible';`, false],
+      ['browser document state field', `const state = { ${WORD}: document.${WORD}State };`, false],
+      ['computed CSS field', `const state = { ${WORD}: style.${WORD} };`, false],
+      [
+        'animation CSS property list',
+        `const props = ['clipPath', '${WORD}', 'pointerEvents'];`,
+        false,
+      ],
+      [
+        'mixed computed CSS field and row read',
+        `const state = { ${WORD}: style.${WORD} }; row.${WORD};`,
+        true,
+      ],
+      [
+        'mixed CSS property list and row read',
+        `const props = ['clipPath', '${WORD}', 'pointerEvents']; row.${WORD};`,
+        true,
+      ],
       [
         'mixed CSS bracket property and query',
         `element.style['${WORD}'] = 'hidden'; query.eq('${WORD}', 'internal');`,
@@ -479,7 +554,14 @@ function selfTest() {
     `  ${realSplit.length ? 'FAIL' : 'ok  '} real tree has no split spelling outside the guard (${realSplit.length})`,
   );
   for (const [name, overrides, wantFail] of cases) {
-    const { grew } = verdict(scan(overrides), baseline);
+    // Plant cases must stand on their own. A pre-existing violation elsewhere
+    // must not make an unrelated positive fixture appear to prove detection.
+    const found = Object.keys(overrides).length
+      ? Object.fromEntries(
+          Object.entries(overrides).map(([rel, source]) => [rel, matchingLines(source, rel)]),
+        )
+      : scan();
+    const { grew } = verdict(found, baseline);
     const failed = grew.length > 0;
     const named = wantFail
       ? Object.keys(overrides).every((k) => grew.some((g) => g.includes(k)))
