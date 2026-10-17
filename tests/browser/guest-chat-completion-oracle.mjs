@@ -285,3 +285,39 @@ export function classifyPackageGuestTurn({
     ? 'terminal_answer'
     : 'terminal_wrong_answer';
 }
+
+/** Keep only composer mechanics; never retain the question or textarea value. */
+export function createGuestComposerProbe({ findComposer, activeElement, sendEnabled }) {
+  const observed = findComposer();
+  let inputEvents = 0;
+  let changeEvents = 0;
+  const onInput = (event) => {
+    if (event.target === observed) inputEvents++;
+  };
+  const onChange = (event) => {
+    if (event.target === observed) changeEvents++;
+  };
+  observed?.addEventListener('input', onInput);
+  observed?.addEventListener('change', onChange);
+  return {
+    snapshot() {
+      const current = findComposer();
+      return {
+        observedNodePresent: Boolean(observed),
+        observedNodeConnected: observed?.isConnected === true,
+        currentNodePresent: Boolean(current),
+        currentNodeSame: Boolean(current && current === observed),
+        currentNodeConnected: current?.isConnected === true,
+        currentNodeFocused: Boolean(current && activeElement() === current),
+        currentValueLength: typeof current?.value === 'string' ? current.value.length : null,
+        inputEvents,
+        changeEvents,
+        sendEnabled: sendEnabled(),
+      };
+    },
+    stop() {
+      observed?.removeEventListener('input', onInput);
+      observed?.removeEventListener('change', onChange);
+    },
+  };
+}

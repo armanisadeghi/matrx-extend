@@ -20,14 +20,16 @@ const followupScreenshot = source.indexOf('        report.followup_screenshot = 
 const cleanup = source.indexOf('      } catch (error) {', followupScreenshot);
 const tail = source.slice(followupScreenshot, cleanup);
 
-test('guest acceptance requires both offscreen HTTP observations before transport proof', () => {
-  const firstProof = source.indexOf("requireGuestTransport(report.guest_ai_requests, 'opening')");
-  const secondProof = source.indexOf(
-    "requireGuestTransport(report.guest_ai_requests, 'post_reload_new_conversation')",
-  );
-  const sameProof = source.indexOf(
-    "requireGuestTransport(report.guest_ai_requests, 'same_conversation_followup')",
-  );
+test('guest acceptance requires all three mode-aware HTTP observations before transport proof', () => {
+  const proofFor = (attempt) =>
+    source.search(
+      new RegExp(
+        `requireGuestTransport\\(\\s*report\\.guest_ai_requests,\\s*'${attempt}',\\s*transportMode,?\\s*\\)`,
+      ),
+    );
+  const firstProof = proofFor('opening');
+  const secondProof = proofFor('post_reload_new_conversation');
+  const sameProof = proofFor('same_conversation_followup');
   const identityProof = source.indexOf(
     'requireGuestConversationSequence(report.guest_ai_requests)',
   );
@@ -40,8 +42,8 @@ test('guest acceptance requires both offscreen HTTP observations before transpor
 });
 
 test('guest acceptance sends and verifies an independent same-conversation turn before reload', () => {
-  const boundary = source.indexOf(
-    'const sameConversationBoundary = await guestTurnBoundary(panel)',
+  const boundary = source.search(
+    /const sameConversationBoundary\s*=\s*await guestTurnBoundary\(\s*panel,\s*transportMode,?\s*\)/,
   );
   assert.ok(
     openingScreenshot < sameSend &&

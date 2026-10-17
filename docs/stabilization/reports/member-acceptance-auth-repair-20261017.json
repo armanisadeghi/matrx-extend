@@ -77,5 +77,34 @@
       "hosted-browser-39050392716-1",
       "hosted-guest-39050392716-1"
     ]
+  },
+  "identity_diagnostic_attempt": {
+    "at": "2026-10-17T17:13:31.155Z",
+    "resource_diagnostic_run": "39052505341",
+    "resource_diagnostic_verdict": "diagnostic-only, no admission; early CPU busy 0.94/0.82/0.65, last four 0.17/0.13/0.13/0.33 as observed by release owner",
+    "launch_authority": "Root explicitly authorized one just-in-time guarded A attempt; actual workflow phase guards decide resource admission and remain strict.",
+    "release_run_id": "39049375284",
+    "artifact_id": "12106724248",
+    "source_sha": "c1cf4ec05f78ab231789f9f399cf8fd71bfa8693",
+    "workflow_sha": "c7867b3d46bb154b07c0bf030438fdfb5905bef1",
+    "store_zip_sha256": "e2af49293cde029ee83bc1e31c6a6b0b9a3aaf1f073477a14fba70f2f15d7909",
+    "run_id": "39052786157",
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39052786157",
+    "fixture": "Existing designated reviewer privately recovered and freshly verified nonadmin with exact active organization; new one-use link minted only at owner-authorized launch time and staged via stdin.",
+    "verification": "Exact source delta passed at clean synchronized main; 14 admission/identity diagnostic tests passed; real CLI plan and guarded dispatch passed.",
+    "server_at_dispatch": {
+      "git_sha": "c05a727dbfaa6d5efbe2400cd0b438626f3b3d12",
+      "built_at": "2026-10-17T16:59:55Z",
+      "source": "Observed directly via /health/version after dispatch. Prior b3aca7d is superseded; browser/Chat-time server must be rebound by release owner."
+    },
+    "cleanup": "Complete: temporary GitHub secret deleted after auth preflight and listing verified absent; private identity/link directory removed and absence verified.",
+    "native_product_verdict": "pending; this attempt gathers first-party identity diagnostics and is not a product pass",
+    "stop_condition": "No repeat after resource refusal/invalidity or same identity failure.",
+    "auth_preflight": "PASS: Require selected authentication before browser setup completed successfully; advanced to Wait for measured package readiness.",
+    "handoff": {
+      "owner": "root and root/store_rejection",
+      "active_run_id": "39052786157",
+      "remaining": "Monitor actual guarded phase admission and first-party browser identity evidence; bind actual server SHA at browser/Chat time. No further retry after resource refusal/invalidity or same identity failure."
+    }
   }
 }
