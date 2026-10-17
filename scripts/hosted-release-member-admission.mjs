@@ -108,7 +108,9 @@ export function requireReleaseMemberSource(ancestor, paths) {
     paths.every(
       (path) =>
         /^docs\/stabilization\//.test(path) ||
-        /^scripts\/hosted-release-member-admission(?:\.test)?\.mjs$/.test(path),
+        /^scripts\/hosted-release-member-admission(?:\.test)?\.mjs$/.test(path) ||
+        path === 'tests/browser/guest-chat-store-acceptance.mjs' ||
+        path === 'tests/browser/guest-chat-store-sequence.test.mjs',
     ),
     'release_member_product_changed',
   );

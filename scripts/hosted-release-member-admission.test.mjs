@@ -158,3 +158,18 @@ test('harness and evidence commits preserve release eligibility but product edit
     assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
   assert.throws(() => requireReleaseMemberSource(false, []), /release_member_source_not_ancestor/);
 });
+
+test('reviewed guest-only driver repairs do not change the member release product', () => {
+  requireReleaseMemberSource(true, [
+    'tests/browser/guest-chat-store-acceptance.mjs',
+    'tests/browser/guest-chat-store-sequence.test.mjs',
+  ]);
+  assert.throws(
+    () => requireReleaseMemberSource(true, ['tests/browser/reviewer-chat-store-acceptance.mjs']),
+    /release_member_product_changed/,
+  );
+  assert.throws(
+    () => requireReleaseMemberSource(true, ['src/features/chat/ChatView.tsx']),
+    /release_member_product_changed/,
+  );
+});
