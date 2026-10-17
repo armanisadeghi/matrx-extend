@@ -38,8 +38,12 @@ const STABLE_HINT_DATA_ATTRS = [
 
 // Class names that look auto-generated (hash-style) shouldn't be used as
 // stable anchors. These tend to rotate every deploy on LinkedIn/Indeed/etc.
-const AUTOGEN_CLASS_RE =
-  /^(?:_[\w-]{4,}|[a-z]+_[a-zA-Z0-9_-]{6,}|[a-z]+-[A-Za-z0-9]{5,}|[a-z]{1,3}[A-Z][a-zA-Z0-9]{4,}|css-[a-z0-9]{4,}|jsx-\d+|sc-[a-zA-Z0-9]+|c-[a-zA-Z0-9]{6,}|[A-Za-z0-9_]*-sc-[a-z0-9]{5,}-\d+|(?=[a-zA-Z]*[A-Z])(?=[a-zA-Z]*[a-z])[a-zA-Z]{6})$/;
+// A hyphen/underscore suffix is a hash only when it LOOKS like one: it holds a
+// digit (`dcr-1t2r5md`, `css-1a2b3c`), a CSS-modules `__` tail, or no vowel at
+// all (`dcr-kwnnv`). Real words (`card-headline`, `headline-text`,
+// `product_title`) are the most stable anchors a page has and must survive.
+export const AUTOGEN_CLASS_RE =
+  /^(?:_[\w-]{4,}|[a-z]+_(?=[\w-]*(?:\d|__))[a-zA-Z0-9_-]{6,}|[a-z]+-(?=[A-Za-z]*\d)[A-Za-z0-9]{5,}|[a-z]{2,4}-[b-df-hj-np-tv-xzB-DF-HJ-NP-TV-XZ]{5,}|[a-z]{1,3}[A-Z][a-zA-Z0-9]{4,}|css-[a-z0-9]{4,}|jsx-\d+|sc-[a-zA-Z0-9]+|c-[a-zA-Z0-9]{6,}|[A-Za-z0-9_]*-sc-[a-z0-9]{5,}-\d+|(?=[a-zA-Z]*[A-Z])(?=[a-zA-Z]*[a-z])[a-zA-Z]{6})$/;
 
 const STATEFUL_CLASS_RE =
   /^(active|hover|focus|focused|selected|open|opened|closed|expanded|collapsed|hidden|visible|loading|disabled)$/i;
@@ -157,42 +161,41 @@ function isUniqueSelector(root: ParentNode, sel: string, el: Element): boolean {
   }
 }
 
-/** Absolute position path (`html > body > div:nth-child(2) ...`): unique by construction. */
-function absolutePathSelector(el: Element): string {
-  const parts: string[] = [];
-  let node: Element | null = el;
-  while (node && node.nodeType === 1 && node.tagName !== 'HTML') {
-    if (
-      node.id &&
-      isStableId(node.id) &&
-      isUniqueSelector(node.ownerDocument, `#${CSS.escape(node.id)}`, node)
-    ) {
-      parts.unshift(`#${CSS.escape(node.id)}`);
-      return parts.join(' > ');
-    }
-    const parent: Element | null = node.parentElement;
-    const idx = parent ? Array.from(parent.children).indexOf(node) + 1 : 1;
-    parts.unshift(`${node.tagName.toLowerCase()}:nth-child(${idx})`);
-    node = parent;
+function countMatches(sel: string, doc: Document): number {
+  try {
+    return doc.querySelectorAll(sel).length;
+  } catch {
+    return 0;
   }
-  parts.unshift('html');
-  return parts.join(' > ');
+}
+
+export interface VerifiedPath {
+  selector: string;
+  /** How many elements the selector names on this page; 1 means exact. */
+  matches: number;
 }
 
 /**
  * A path selector for `el` that is CHECKED against the live document: it
  * resolves to exactly `el` and nothing else. A saved list root that also
  * matched a twin list elsewhere on the page would replay on whichever the
- * browser found first. Deepens the readable path first, and only then falls
- * back to a positional path.
+ * browser found first. Deepens the readable path; it never falls back to a
+ * position-only chain (`div:nth-child(3) > …` from `html`), which breaks on
+ * the next page that has one more banner. When no readable path is unique the
+ * deepest one is returned with its match count, so the caller can say so.
  */
-export function verifiedPathSelector(el: Element): string {
+export function verifiedPath(el: Element): VerifiedPath {
   const doc = el.ownerDocument;
+  let sel = '';
   for (const depth of [5, 8, 12, 24]) {
-    const sel = elementPathSelector(el, depth);
-    if (isUniqueSelector(doc, sel, el)) return sel;
+    sel = elementPathSelector(el, depth);
+    if (isUniqueSelector(doc, sel, el)) return { selector: sel, matches: 1 };
   }
-  return absolutePathSelector(el);
+  return { selector: sel, matches: countMatches(sel, doc) };
+}
+
+export function verifiedPathSelector(el: Element): string {
+  return verifiedPath(el).selector;
 }
 
 /**
@@ -273,6 +276,14 @@ export interface ListPatternCandidate {
   itemSelector: string;
   itemCount: number;
   sampleItem: Element;
+  /**
+   * Elements the list root names on this page. Above 1, the container has
+   * look-alikes no readable selector can tell apart, and replay reads the
+   * first one; the picker says so instead of saving a position-only path.
+   */
+  rootMatches?: number;
+  /** Cards repeat across this many separate containers (scattered cards). */
+  containerCount?: number;
 }
 
 /** Find each repeated group containing the click, nearest first. */
@@ -280,6 +291,17 @@ export function inferListPatternCandidates(clicked: Element): ListPatternCandida
   const groups: ListPatternCandidate[] = [];
   let item: Element = clicked;
   let parent: Element | null = clicked.parentElement;
+
+  const push = (root: Element, itemSelector: string, itemCount: number, sample: Element) => {
+    const path = verifiedPath(root);
+    groups.push({
+      listRoot: path.selector,
+      itemSelector,
+      itemCount,
+      sampleItem: sample,
+      ...(path.matches > 1 ? { rootMatches: path.matches } : {}),
+    });
+  };
 
   while (parent) {
     const candidates = listItemFingerprintCandidates(item);
@@ -298,12 +320,7 @@ export function inferListPatternCandidates(clicked: Element): ListPatternCandida
         matches = [];
       }
       if (matches.length >= 2) {
-        groups.push({
-          listRoot: verifiedPathSelector(parent),
-          itemSelector: exactItemSelector(parent, fp, matches),
-          itemCount: matches.length,
-          sampleItem: item,
-        });
+        push(parent, exactItemSelector(parent, fp, matches), matches.length, item);
         matched = true;
         break;
       }
@@ -317,19 +334,158 @@ export function inferListPatternCandidates(clicked: Element): ListPatternCandida
       );
       // Two bare siblings is ordinary layout; a list of bare cards is three or more.
       if (same.length >= 3 && item.children.length > 0) {
-        groups.push({
-          listRoot: verifiedPathSelector(parent),
-          itemSelector: `:scope > ${tagName.toLowerCase()}`,
-          itemCount: Array.from(parent.children).filter((c) => c.tagName === tagName).length,
-          sampleItem: item,
-        });
+        push(
+          parent,
+          `:scope > ${tagName.toLowerCase()}`,
+          Array.from(parent.children).filter((c) => c.tagName === tagName).length,
+          item,
+        );
       }
     }
     // Climb up: the previous "item" becomes a level deeper into the candidate.
     item = parent;
     parent = parent.parentElement;
   }
+
+  // Cards that repeat across SEVERAL containers (a news front: one or two
+  // headlines per section, many sections) never form a big sibling group.
+  // Offer them as one list when that finds more cards than the nearest group.
+  const scattered = inferScatteredCards(clicked);
+  if (scattered) {
+    const nearest = groups[0];
+    const duplicate = groups.some(
+      (g) => g.itemCount === scattered.itemCount && g.sampleItem === scattered.sampleItem,
+    );
+    if (!duplicate && (!nearest || scattered.itemCount > nearest.itemCount)) {
+      // First when the nearest group is no real list (a pair), is dwarfed, or
+      // is a list of SECTIONS that each hold several of these cards.
+      const holds = nearest ? queryAll(nearest.sampleItem, scattered.itemSelector).length : 0;
+      if (
+        !nearest ||
+        nearest.itemCount < 3 ||
+        scattered.itemCount >= nearest.itemCount * 4 ||
+        holds >= 2
+      )
+        groups.unshift(scattered);
+      else groups.splice(1, 0, scattered);
+    }
+  }
   return groups;
+}
+
+const HEADING_SEL = 'h1,h2,h3,h4,h5,h6,[role="heading"]';
+
+/** Tag plus up to two stable classes — what one card's part has in common with the others'. */
+function shapeSignature(el: Element): string {
+  return el.tagName.toLowerCase() + classChunk(el);
+}
+
+function queryAll(scope: ParentNode, sel: string): Element[] {
+  try {
+    return Array.from(scope.querySelectorAll(sel));
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * The nearest container of every card that is safe to replay on another page
+ * built from the same template: a stable id, else `main`, else `body`. Never a
+ * position.
+ */
+function stableRootFor(items: Element[]): Element {
+  const doc = items[0]?.ownerDocument ?? document;
+  let lca: Element | null = items[0]?.parentElement ?? doc.body;
+  while (lca && !items.every((i) => lca?.contains(i))) lca = lca.parentElement;
+  let node: Element | null = lca;
+  while (node && node !== doc.body && node !== doc.documentElement) {
+    if (
+      node.id &&
+      STABLE_ID_RE.test(node.id) &&
+      isStableId(node.id) &&
+      isUniqueSelector(doc, `#${CSS.escape(node.id)}`, node)
+    )
+      return node;
+    if (node.tagName === 'MAIN' && doc.querySelectorAll('main').length === 1) return node;
+    node = node.parentElement;
+  }
+  return doc.body;
+}
+
+function rootSelectorFor(root: Element): string {
+  if (root.tagName === 'BODY') return 'body';
+  if (root.tagName === 'MAIN' && !(root.id && isStableId(root.id))) return 'main';
+  return `#${CSS.escape(root.id)}`;
+}
+
+/**
+ * Scattered cards: the same card structure under many different parents.
+ * The card is recognized by what it CARRIES, not where it sits: an anchor part
+ * (its heading, or the stable-classed element clicked) and the largest wrapper
+ * around it that holds exactly one such anchor on every card of the page. The
+ * saved recipe is `wrapper:has(anchor)` under a stable root — no positions, no
+ * generated ids, no build-hash classes — so the same template's next page
+ * replays it.
+ */
+export function inferScatteredCards(clicked: Element): ListPatternCandidate | null {
+  const doc = clicked.ownerDocument;
+  const anchors: Element[] = [];
+  const own = clicked.closest(HEADING_SEL);
+  if (own) anchors.push(own);
+  for (let n: Element | null = clicked, i = 0; n && n !== doc.body && i < 8; i++) {
+    const hs = queryAll(n, HEADING_SEL);
+    if (hs.length > 1) break;
+    if (hs.length === 1 && hs[0] && !anchors.includes(hs[0])) {
+      anchors.push(hs[0]);
+      break;
+    }
+    n = n.parentElement;
+  }
+  if (classChunk(clicked)) anchors.push(clicked);
+
+  for (const anchor of anchors) {
+    const found = scatteredFromAnchor(anchor);
+    if (found) return found;
+  }
+  return null;
+}
+
+function scatteredFromAnchor(anchor: Element): ListPatternCandidate | null {
+  const doc = anchor.ownerDocument;
+  const sigA = shapeSignature(anchor);
+  const anchorsOnPage = queryAll(doc, sigA);
+  if (anchorsOnPage.length < 3) return null;
+  let best: { sel: string; items: Element[]; sample: Element } | null = null;
+  for (let node: Element | null = anchor; node && node !== doc.body; node = node.parentElement) {
+    // A wrapper that already holds two anchors is a section, not a card.
+    if (queryAll(node, sigA).length > 1) break;
+    const sel = node === anchor ? sigA : `${shapeSignature(node)}:has(${sigA})`;
+    const items = queryAll(doc, sel);
+    if (items.length < 3) continue;
+    const oneEach = items.every((it) => it === anchor || queryAll(it, sigA).length <= 1);
+    const set = new Set(items);
+    const nested = items.some((it) => {
+      for (let up = it.parentElement; up; up = up.parentElement) if (set.has(up)) return true;
+      return false;
+    });
+    if (!oneEach || nested) continue;
+    // Most anchors on the page must sit in such a wrapper, or it is a variant.
+    if (items.length < anchorsOnPage.length * 0.6) continue;
+    best = { sel, items, sample: node };
+  }
+  if (!best) return null;
+  const parents = new Set(best.items.map((i) => i.parentElement));
+  if (parents.size < 2) return null;
+  const root = stableRootFor(best.items);
+  const exact = queryAll(root, best.sel);
+  if (exact.length !== best.items.length) return null;
+  return {
+    listRoot: rootSelectorFor(root),
+    itemSelector: best.sel,
+    itemCount: best.items.length,
+    sampleItem: best.sample,
+    containerCount: parents.size,
+  };
 }
 
 /** Preserve the nearest-match contract for noninteractive callers. */
@@ -359,15 +515,22 @@ export function relativeFieldSelector(target: Element, withinItem: Element): str
     parts.unshift(localFingerprint(node, true));
     node = node.parentElement;
   }
+  // The shortest tail of the path that still finds `target` first inside the
+  // item: a card's inner wrappers differ between its big and small variants,
+  // and a full child chain breaks on every one that is not the sample.
+  for (let k = 1; k <= parts.length; k++) {
+    const tail = parts.slice(-k).join(' ');
+    try {
+      if (withinItem.querySelector(tail) === target) return tail;
+    } catch {
+      // keep deepening
+    }
+  }
   const sel = parts.join(' > ');
-
-  // If the pure structural path matches multiple things in the item, that's
-  // OK for "first match wins" extraction — but check for sanity.
   try {
     if (withinItem.querySelectorAll(sel).length === 0) return null;
   } catch {
     return null;
   }
-
   return sel;
 }

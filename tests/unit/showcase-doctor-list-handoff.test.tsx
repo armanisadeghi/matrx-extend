@@ -240,28 +240,34 @@ describe('Showcase Doctor recommendation handoff', () => {
     expect(
       (screen.getByRole('button', { name: /^extract text$/i }) as HTMLButtonElement).disabled,
     ).toBe(false);
-    fireEvent.click(await screen.findByRole('button', { name: /name Neon Nights at Area15/i }));
+    fireEvent.click(
+      await screen.findByRole('button', { name: /^title Title \(name\) Neon Nights at Area15/i }),
+    );
     fireEvent.click(screen.getByRole('button', { name: /^Extract$/i }));
-    expect(await screen.findByText(/\[\{"name":"Neon Nights at Area15"/)).toBeTruthy();
+    expect(await screen.findByText(/\[\{"title":"Neon Nights at Area15"/)).toBeTruthy();
   });
 
   it('saves the executed field selection while later editor changes await another extraction', async () => {
     render(<TestSurface />);
     fireEvent.click(await screen.findByRole('button', { name: /5 repeating cards detected/i }));
-    fireEvent.click(await screen.findByRole('button', { name: /name Neon Nights at Area15/i }));
+    fireEvent.click(
+      await screen.findByRole('button', { name: /^title Title \(name\) Neon Nights at Area15/i }),
+    );
     fireEvent.click(screen.getByRole('button', { name: /^Extract$/i }));
 
     const savedConfig = await screen.findByTestId('saved-pattern-config');
-    expect(JSON.parse(savedConfig.textContent ?? '{}').field_paths[0].name).toBe('name');
-    fireEvent.change(screen.getByDisplayValue('name'), { target: { value: 'renamed_event' } });
+    expect(JSON.parse(savedConfig.textContent ?? '{}').field_paths[0].name).toBe('title');
+    fireEvent.change(screen.getByDisplayValue('title'), { target: { value: 'renamed_event' } });
     expect(screen.getByDisplayValue('renamed_event')).toBeTruthy();
-    expect(JSON.parse(savedConfig.textContent ?? '{}').field_paths[0].name).toBe('name');
+    expect(JSON.parse(savedConfig.textContent ?? '{}').field_paths[0].name).toBe('title');
   });
 
   it('does not capture an old run sample after Restart', async () => {
     render(<TestSurface />);
     fireEvent.click(await screen.findByRole('button', { name: /5 repeating cards detected/i }));
-    fireEvent.click(await screen.findByRole('button', { name: /name Neon Nights at Area15/i }));
+    fireEvent.click(
+      await screen.findByRole('button', { name: /^title Title \(name\) Neon Nights at Area15/i }),
+    );
     const normalExecute = page.executeScript.getMockImplementation();
     let resolveRun: ((result: { result: Record<string, unknown>[] }[]) => void) | undefined;
     page.executeScript.mockImplementation(

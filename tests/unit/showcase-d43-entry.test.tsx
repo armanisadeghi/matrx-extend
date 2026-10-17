@@ -127,7 +127,7 @@ describe('D43 Pick more fields user entry', () => {
     render(<ListPatternTab />);
     expect(await screen.findByText('#wideeventsList')).toBeTruthy();
     const urlSuggestion = await screen.findByRole('button', {
-      name: /link_url Link.*Details.*neon-nights/i,
+      name: /^link Link \(main\).*neon-nights/i,
     });
     fireEvent.click(urlSuggestion);
     await act(async () =>
@@ -154,9 +154,7 @@ describe('D43 Pick more fields user entry', () => {
     >;
     expect(rows).toHaveLength(5);
     expect(rows.map((row) => row.field_1)).toEqual(titles);
-    expect(rows.map((row) => row.link_url)).toEqual(
-      urls.map((u) => new URL(u, document.baseURI).href),
-    );
+    expect(rows.map((row) => row.link)).toEqual(urls.map((u) => new URL(u, document.baseURI).href));
     const saved = JSON.parse((await screen.findByTestId('saved-config')).textContent ?? '{}') as {
       list_root: string;
       item_selector: string;
@@ -164,7 +162,7 @@ describe('D43 Pick more fields user entry', () => {
     };
     expect(saved.list_root).toBe('#wideeventsList');
     expect(saved.item_selector).toBe('div.wideeventwrapper');
-    expect(saved.field_paths.map((field) => field.name)).toEqual(['link_url', 'field_1']);
+    expect(saved.field_paths.map((field) => field.name)).toEqual(['link', 'field_1']);
   });
 
   it('rejects a stale seeded picker completion after page change', async () => {

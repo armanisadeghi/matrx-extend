@@ -192,10 +192,16 @@ function selectScope(candidate: ListPatternCandidate, announce: boolean) {
   highlightSiblings();
   setBadge(`${candidate.itemCount} items`);
   if (announce) {
-    flashHint(
-      `${candidate.itemCount} matching items selected. Click fields inside one item, then Done.`,
-      'ok',
-    );
+    if (candidate.rootMatches && candidate.rootMatches > 1)
+      flashHint(
+        `${candidate.itemCount} items selected. This list looks like ${candidate.rootMatches - 1} other list(s) here; a saved pattern reads the first.`,
+        'warn',
+      );
+    else
+      flashHint(
+        `${candidate.itemCount} matching items selected. Click fields inside one item, then Done.`,
+        'ok',
+      );
     void chrome.runtime.sendMessage({
       __matrx: true,
       kind: 'data:list-picker-item-detected',
@@ -221,7 +227,8 @@ function showScopeChoices(candidates: ListPatternCandidate[]) {
     button.dataset.scopeChoice = String(index);
     const kind = candidate.sampleItem.tagName.toLowerCase() === 'li' ? 'list items' : 'cards';
     const sample = (candidate.sampleItem.textContent ?? '').trim().slice(0, 48);
-    button.textContent = `${candidate.itemCount} ${kind} (${candidate.itemSelector})`;
+    const spread = candidate.containerCount ? ` across ${candidate.containerCount} groups` : '';
+    button.textContent = `${candidate.itemCount} ${kind}${spread} (${candidate.itemSelector})`;
     const detail = document.createElement('small');
     detail.textContent = `${candidate.listRoot}${sample ? ` · ${sample}` : ''}`;
     button.appendChild(detail);
@@ -330,7 +337,8 @@ function highlightSiblings() {
   try {
     const root = document.querySelector(listRootSel);
     if (!root) return;
-    nodes = Array.from(root.querySelectorAll(itemSel)).filter((n) => n.parentElement === root);
+    // Exactly what replay extracts: scattered cards sit under many parents.
+    nodes = Array.from(root.querySelectorAll(itemSel));
   } catch {
     return;
   }

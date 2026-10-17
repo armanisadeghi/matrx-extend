@@ -131,14 +131,14 @@ async function startWithPreview() {
   expect(await screen.findByText('#wideeventsList')).toBeTruthy();
   fireEvent.click(
     await screen.findByRole('button', {
-      name: /link_url Link.*Details.*neon-nights/i,
+      name: /^link Link \(main\).*neon-nights/i,
     }),
   );
   fireEvent.click(screen.getByRole('button', { name: /^Extract$/i }));
   const priorRows = JSON.parse((await screen.findByTestId('rows')).textContent ?? '[]') as Array<
     Record<string, unknown>
   >;
-  expect(priorRows.map((row) => row.link_url)).toEqual(
+  expect(priorRows.map((row) => row.link)).toEqual(
     urls.map((u) => new URL(u, document.baseURI).href),
   );
   expect(screen.getByText(/1 selected field/i)).toBeTruthy();
@@ -222,9 +222,7 @@ describe('D45 cancel is a picker transaction boundary', () => {
     const rows = JSON.parse((await screen.findByTestId('rows')).textContent ?? '[]') as Array<
       Record<string, unknown>
     >;
-    expect(rows.map((row) => row.link_url)).toEqual(
-      urls.map((u) => new URL(u, document.baseURI).href),
-    );
+    expect(rows.map((row) => row.link)).toEqual(urls.map((u) => new URL(u, document.baseURI).href));
     expect(rows.map((row) => row.field_1)).toEqual(titles);
   });
 

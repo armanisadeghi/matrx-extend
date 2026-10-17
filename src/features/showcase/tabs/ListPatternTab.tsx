@@ -40,16 +40,6 @@ interface ListPickerResult {
   field_paths: FieldPath[];
 }
 
-const KIND_LABELS: Record<CandidateField['kind'], string> = {
-  microdata: 'Microdata',
-  'data-attr': 'Data attribute',
-  link: 'Link',
-  image: 'Image',
-  time: 'Time',
-  regex: 'Pattern',
-  text: 'Text',
-};
-
 export function ListPatternTab() {
   const tab = useActiveTab();
   const pageKey = tab.pageKey ?? '';
@@ -891,16 +881,6 @@ function CandidatesPanel({
 }) {
   const [open, setOpen] = useState(true);
 
-  const grouped = useMemo(() => {
-    const out = new Map<CandidateField['kind'], CandidateField[]>();
-    for (const c of candidates) {
-      const arr = out.get(c.kind) ?? [];
-      arr.push(c);
-      out.set(c.kind, arr);
-    }
-    return out;
-  }, [candidates]);
-
   return (
     <div className="space-y-1.5 rounded-xl bg-violet-500/5 ring-1 ring-violet-500/30 p-3">
       <button
@@ -947,31 +927,27 @@ function CandidatesPanel({
                 : 'No suggested fields found. Pick fields on the page or edit the selectors.'}
             </div>
           )}
-          {Array.from(grouped.entries()).map(([kind, items]) => (
-            <div key={kind} className="space-y-0.5">
-              <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                {KIND_LABELS[kind]}
-              </div>
-              {items.map((c, i) => (
-                <button
-                  // biome-ignore lint/suspicious/noArrayIndexKey: candidates render-only.
-                  key={i}
-                  type="button"
-                  onClick={() => onAdd(c)}
-                  className={cn(
-                    'group flex w-full items-center gap-1.5 rounded-md bg-background/40 px-2 py-1 text-left text-[11px] hover:bg-background/80',
-                  )}
-                >
-                  <Plus className="size-3 shrink-0 text-violet-500" />
-                  <span className="w-24 shrink-0 truncate font-mono">{c.name}</span>
-                  <span className="min-w-0 flex-1 truncate text-muted-foreground">{c.label}</span>
-                  <span className="shrink-0 truncate font-mono text-[10px] opacity-60">
-                    {c.sample_value}
-                  </span>
-                </button>
-              ))}
-            </div>
-          ))}
+          {/* Most useful first (title, main link, price/date, description, image). */}
+          <div className="space-y-0.5">
+            {candidates.map((c, i) => (
+              <button
+                // biome-ignore lint/suspicious/noArrayIndexKey: candidates render-only.
+                key={i}
+                type="button"
+                onClick={() => onAdd(c)}
+                className={cn(
+                  'group flex w-full items-center gap-1.5 rounded-md bg-background/40 px-2 py-1 text-left text-[11px] hover:bg-background/80',
+                )}
+              >
+                <Plus className="size-3 shrink-0 text-violet-500" />
+                <span className="w-24 shrink-0 truncate font-mono">{c.name}</span>
+                <span className="min-w-0 flex-1 truncate text-muted-foreground">{c.label}</span>
+                <span className="shrink-0 truncate font-mono text-[10px] opacity-60">
+                  {c.sample_value}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

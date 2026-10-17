@@ -249,8 +249,9 @@ export function pageDiagnosticInPage(): PageDiagnostic {
   // any user picking.
   const STATEFUL_RE =
     /^(active|hover|focus|focused|selected|open|opened|closed|expanded|collapsed|hidden|visible|loading|disabled)$/i;
+  // Same rule as selector-resilience's AUTOGEN_CLASS_RE (this probe cannot import).
   const AUTOGEN_RE =
-    /^(?:_[\w-]{4,}|[a-z]+_[a-zA-Z0-9_-]{6,}|[a-z]+-[A-Za-z0-9]{5,}|[a-z]{1,3}[A-Z][a-zA-Z0-9]{4,}|css-[a-z0-9]{4,}|jsx-\d+|sc-[a-zA-Z0-9]+|c-[a-zA-Z0-9]{6,}|[A-Za-z0-9_]*-sc-[a-z0-9]{5,}-\d+|(?=[a-zA-Z]*[A-Z])(?=[a-zA-Z]*[a-z])[a-zA-Z]{6})$/;
+    /^(?:_[\w-]{4,}|[a-z]+_(?=[\w-]*(?:\d|__))[a-zA-Z0-9_-]{6,}|[a-z]+-(?=[A-Za-z]*\d)[A-Za-z0-9]{5,}|[a-z]{2,4}-[b-df-hj-np-tv-xzB-DF-HJ-NP-TV-XZ]{5,}|[a-z]{1,3}[A-Z][a-zA-Z0-9]{4,}|css-[a-z0-9]{4,}|jsx-\d+|sc-[a-zA-Z0-9]+|c-[a-zA-Z0-9]{6,}|[A-Za-z0-9_]*-sc-[a-z0-9]{5,}-\d+|(?=[a-zA-Z]*[A-Z])(?=[a-zA-Z]*[a-z])[a-zA-Z]{6})$/;
   const SKIP_TAGS = new Set([
     'html',
     'head',
@@ -295,7 +296,9 @@ export function pageDiagnosticInPage(): PageDiagnostic {
     let linked = 0;
     let media = 0;
     let visible = 0;
+    let headings = 0;
     for (const item of sample) {
+      headings += item.querySelectorAll('h1,h2,h3,h4,h5,h6').length;
       text += Math.min((item.innerText ?? '').replace(/\s+/g, ' ').trim().length, 400);
       if (item.matches('a[href]') || item.querySelector('a[href]')) linked += 1;
       if (item.querySelector('img, picture, video')) media += 1;
@@ -308,6 +311,9 @@ export function pageDiagnosticInPage(): PageDiagnostic {
     factor *= 1 + (linked / n) * 0.5 + (media / n) * 0.5;
     factor *= visible / n < 0.5 ? 0.1 : 1;
     if (items[0]?.closest(CHROME_SEL)) factor *= 0.15;
+    // An item holding several headlines is a section of cards, not a card.
+    const perItem = headings / n;
+    if (perItem > 1.5) factor /= perItem;
     return Math.round(items.length * factor * 100) / 100;
   };
   const pathOf = (el: Element, depth: number, nth: boolean): string => {
@@ -391,6 +397,106 @@ export function pageDiagnosticInPage(): PageDiagnostic {
       groups.push({
         parent_selector: parentSel,
         item_selector: fp,
+        count: items.length,
+        sample_text: sampleText,
+        score: contentScore(items),
+      });
+    }
+  }
+  // ── Scattered cards: one card structure under MANY parents ──────────────
+  // A news front puts one or two headline cards in each of a dozen sections,
+  // so no single parent holds five siblings. Recognize the card by its
+  // heading's shape instead, and name the largest wrapper that holds exactly
+  // one such heading on every card: `wrapper:has(heading)` under a stable
+  // root. Mirrors inferScatteredCards in selector-resilience (no imports here).
+  {
+    const shape = (el: Element): string =>
+      el.tagName.toLowerCase() +
+      Array.from(el.classList)
+        .filter((c) => !STATEFUL_RE.test(c) && !AUTOGEN_RE.test(c))
+        .slice(0, 2)
+        .map((c) => `.${CSS.escape(c)}`)
+        .join('');
+    const all = (scope: ParentNode, sel: string): Element[] => {
+      try {
+        return Array.from(scope.querySelectorAll(sel));
+      } catch {
+        return [];
+      }
+    };
+    const bySig = new Map<string, Element[]>();
+    for (const h of all(document, 'h2,h3,h4,h5,[role="heading"]')) {
+      if (h.closest(CHROME_SEL)) continue;
+      const sig = shape(h);
+      const arr = bySig.get(sig) ?? [];
+      arr.push(h);
+      bySig.set(sig, arr);
+    }
+    const sigs = Array.from(bySig.entries())
+      .filter(([, hs]) => hs.length >= 5)
+      .sort((a, b) => b[1].length - a[1].length)
+      .slice(0, 6);
+    for (const [sigA, hs] of sigs) {
+      const visibleAnchor =
+        hs.find((h) => {
+          const r = h.getBoundingClientRect();
+          return r.width > 0 && r.height > 0;
+        }) ?? hs[0];
+      if (!visibleAnchor) continue;
+      let best: { sel: string; items: Element[] } | null = null;
+      for (
+        let node: Element | null = visibleAnchor;
+        node && node !== document.body;
+        node = node.parentElement
+      ) {
+        if (all(node, sigA).length > 1) break;
+        const sel = node === visibleAnchor ? sigA : `${shape(node)}:has(${sigA})`;
+        const items = all(document, sel);
+        if (items.length < 5 || items.length < hs.length * 0.6) continue;
+        if (node !== visibleAnchor && items.some((it) => all(it, sigA).length > 1)) continue;
+        const set = new Set(items);
+        const nested = items.some((it) => {
+          for (let up = it.parentElement; up; up = up.parentElement) if (set.has(up)) return true;
+          return false;
+        });
+        if (!nested) best = { sel, items };
+      }
+      if (!best) continue;
+      const { sel, items } = best;
+      if (new Set(items.map((i) => i.parentElement)).size < 2) continue;
+      const linked = items.filter((i) => i.matches('a[href]') || i.querySelector('a[href]'));
+      if (linked.length < items.length * 0.6) continue;
+      // Stable root: nearest common ancestor's stable id, else main, else body.
+      let root: Element | null = items[0]?.parentElement ?? document.body;
+      while (root && !items.every((i) => root?.contains(i))) root = root.parentElement;
+      let rootSel = 'body';
+      for (let n = root; n && n !== document.body; n = n.parentElement) {
+        if (
+          n.id &&
+          /^[a-z][a-z0-9_-]{0,29}$/i.test(n.id) &&
+          !/\d{4,}/.test(n.id) &&
+          document.querySelectorAll(`#${CSS.escape(n.id)}`).length === 1
+        ) {
+          rootSel = `#${CSS.escape(n.id)}`;
+          break;
+        }
+        if (n.tagName === 'MAIN' && document.querySelectorAll('main').length === 1) {
+          rootSel = 'main';
+          break;
+        }
+      }
+      const rootEl = document.querySelector(rootSel);
+      if (!rootEl || all(rootEl, sel).length !== items.length) continue;
+      const key = `${rootSel}|${sel}`;
+      if (seenSelectors.has(key)) continue;
+      seenSelectors.add(key);
+      const sampleText = ((items[0] as HTMLElement).innerText ?? '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 80);
+      groups.push({
+        parent_selector: rootSel,
+        item_selector: sel,
         count: items.length,
         sample_text: sampleText,
         score: contentScore(items),
