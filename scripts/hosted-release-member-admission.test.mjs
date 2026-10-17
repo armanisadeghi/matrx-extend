@@ -45,6 +45,137 @@ const admission = {
   secretNames: ['MATRX_REVIEWER_MAGIC_LINK_JSON'],
 };
 
+// Recorded Settings run terminated resource-invalid with zero product credit.
+// Only its reviewed immutable evidence commit is operational source, never later edits.
+test('completed Settings evidence admits only its immutable commit and refuses pending or renamed bytes', (t) => {
+  const source = '72fb54c95159b9f942bfbbc69f017c49b775a7c5';
+  const reviewed = '1d458dba919650fcb0f077c0a65f723bd9ef7cc0';
+  const paths = [
+    'docs/stabilization/defects/EXT-D-0232.json',
+    'docs/stabilization/runs/hosted-settings-controls-39074994379.json',
+    ...['browser', 'guest', 'package'].map(
+      (kind) => `docs/stabilization/resource-journals/hosted-${kind}-39074994379-1.jsonl`,
+    ),
+  ];
+  const repository = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+    encoding: 'utf8',
+  }).trim();
+  const cwd = mkdtempSync(join(tmpdir(), 'member-settings-evidence-'));
+  t.after(() => rmSync(cwd, { recursive: true, force: true }));
+  const git = (...args) =>
+    execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  git('clone', '--shared', '--no-checkout', repository, '.');
+  git('sparse-checkout', 'set', '--no-cone', ...paths.map((path) => `/${path}`));
+  git('checkout', '--detach', reviewed);
+  const moduleUrl = new URL('./hosted-release-member-admission.mjs', import.meta.url).href;
+  const prove = () =>
+    spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `import { proveSource } from ${JSON.stringify(moduleUrl)}; proveSource(${JSON.stringify(source)}, ${JSON.stringify(git('rev-parse', 'HEAD'))});`,
+      ],
+      { cwd, encoding: 'utf8' },
+    );
+  const refuse = (label) => {
+    const result = prove();
+    assert.notEqual(result.status, 0, label);
+    assert.match(result.stderr, /release_member_product_changed/, label);
+  };
+  const commit = () => {
+    git(
+      '-c',
+      'user.name=Admission guard',
+      '-c',
+      'user.email=guard@localhost',
+      'commit',
+      '-qam',
+      'evidence mutation',
+    );
+    return git('rev-parse', 'HEAD');
+  };
+  const baseline = prove();
+  assert.equal(
+    baseline.status,
+    0,
+    `completed reviewed evidence must be eligible: ${baseline.stderr}`,
+  );
+  for (const path of paths) {
+    const original = readFileSync(join(cwd, path));
+    writeFileSync(join(cwd, path), Buffer.concat([original, Buffer.from(' ')]));
+    refuse(`pending evidence refuses: ${path}`);
+    git('add', path);
+    refuse(`staged evidence refuses: ${path}`);
+    const changed = commit();
+    refuse(`later evidence rewrite refuses: ${path}`);
+    git('revert', '--no-commit', changed);
+    commit();
+    refuse(`reverted evidence rewrite refuses: ${path}`);
+    git('checkout', '--detach', reviewed);
+  }
+  const runPath = paths[1];
+  git('mv', '--sparse', runPath, runPath.replace('39074994379', '39074994380'));
+  commit();
+  refuse('renamed run cannot inherit reviewed evidence admission');
+  git('checkout', '--detach', reviewed);
+  writeFileSync(
+    join(cwd, runPath.replace('39074994379', '39074994380')),
+    readFileSync(join(cwd, runPath)),
+  );
+  refuse('untracked sibling run cannot inherit reviewed evidence admission');
+  for (const path of [...paths, 'docs/stabilization/runs/hosted-settings-controls-*.json'])
+    assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
+});
+
+test('Store repair receipt admits its reviewed commit but refuses every subsequent edit', (t) => {
+  const source = '72fb54c95159b9f942bfbbc69f017c49b775a7c5';
+  const reviewed = '66b9b1b1852036d8aa565715455f94935177c522';
+  const path = 'docs/stabilization/evidence/store-release-20261017/tool-drift-release-repair.json';
+  const repository = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+    encoding: 'utf8',
+  }).trim();
+  const cwd = mkdtempSync(join(tmpdir(), 'member-store-receipt-'));
+  t.after(() => rmSync(cwd, { recursive: true, force: true }));
+  const git = (...args) =>
+    execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  git('clone', '--shared', '--no-checkout', repository, '.');
+  git('sparse-checkout', 'set', '--no-cone', `/${path}`);
+  git('checkout', '--detach', reviewed);
+  const moduleUrl = new URL('./hosted-release-member-admission.mjs', import.meta.url).href;
+  const prove = () =>
+    spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `import { proveSource } from ${JSON.stringify(moduleUrl)}; proveSource(${JSON.stringify(source)}, ${JSON.stringify(git('rev-parse', 'HEAD'))});`,
+      ],
+      { cwd, encoding: 'utf8' },
+    );
+  assert.equal(prove().status, 0, 'reviewed Store evidence history is eligible');
+  writeFileSync(join(cwd, path), Buffer.concat([readFileSync(join(cwd, path)), Buffer.from(' ')]));
+  const refuse = () => {
+    const result = prove();
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /release_member_product_changed/);
+  };
+  refuse();
+  git('add', path);
+  refuse();
+  git(
+    '-c',
+    'user.name=Admission guard',
+    '-c',
+    'user.email=guard@localhost',
+    'commit',
+    '-qm',
+    'receipt rewrite',
+  );
+  refuse();
+  assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
+});
+
 test('exact member dispatch uses selected release rather than a current build', () => {
   const first = releaseMemberPlan(input, run, listing, receipt, sha);
   assert.ok(first.args.includes('release_run_id=39049375284'));

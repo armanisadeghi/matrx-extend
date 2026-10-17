@@ -231,6 +231,19 @@ export function proveSource(sourceSha, workflowSha) {
     'scripts/hosted-remote-admission.mjs',
     'scripts/hosted-remote-guest-chat-admission.test.mjs',
   ];
+  // Terminal resource-invalid Settings record (zero product credit). These
+  // bytes are reviewed at this immutable commit, not a general evidence namespace.
+  const reviewedSettingsRecord = '1d458dba919650fcb0f077c0a65f723bd9ef7cc0';
+  const reviewedSettingsPaths = [
+    'docs/stabilization/defects/EXT-D-0232.json',
+    'docs/stabilization/runs/hosted-settings-controls-39074994379.json',
+    'docs/stabilization/resource-journals/hosted-browser-39074994379-1.jsonl',
+    'docs/stabilization/resource-journals/hosted-guest-39074994379-1.jsonl',
+    'docs/stabilization/resource-journals/hosted-package-39074994379-1.jsonl',
+  ];
+  const reviewedStorePeer = '66b9b1b1852036d8aa565715455f94935177c522';
+  const reviewedStoreReceipt =
+    'docs/stabilization/evidence/store-release-20261017/tool-drift-release-repair.json';
   const commits = git(['rev-list', `${sourceSha}..${workflowSha}`])
     .split('\n')
     .filter(Boolean);
@@ -253,7 +266,10 @@ export function proveSource(sourceSha, workflowSha) {
       .split('\0')
       .filter(Boolean);
     return paths.filter(
-      (path) => commit !== reviewedGuestRoute || !reviewedGuestPaths.includes(path),
+      (path) =>
+        (commit !== reviewedGuestRoute || !reviewedGuestPaths.includes(path)) &&
+        (commit !== reviewedSettingsRecord || !reviewedSettingsPaths.includes(path)) &&
+        (commit !== reviewedStorePeer || path !== reviewedStoreReceipt),
     );
   });
   const pendingPaths = [
