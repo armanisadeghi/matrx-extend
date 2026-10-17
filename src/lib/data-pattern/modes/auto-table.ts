@@ -137,10 +137,14 @@ export const autoTableMode: ExtractionMode<AutoTableConfig> = {
     }
 
     // Body rows: prefer <tbody>; otherwise skip past the header rows we used.
+    // A header row that sits inside <tbody> (no <thead>) is never also a data row.
     const tbody = table.querySelector('tbody');
-    const bodyTrs = tbody
-      ? Array.from(tbody.querySelectorAll<HTMLTableRowElement>('tr'))
-      : Array.from(table.querySelectorAll<HTMLTableRowElement>('tr')).slice(headerTrs.length);
+    const headerSet = new Set<HTMLTableRowElement>(headerTrs);
+    const bodyTrs = (
+      tbody
+        ? Array.from(tbody.querySelectorAll<HTMLTableRowElement>('tr'))
+        : Array.from(table.querySelectorAll<HTMLTableRowElement>('tr'))
+    ).filter((tr) => !headerSet.has(tr));
 
     return bodyTrs.map((tr) => {
       const row: Record<string, string> = {};
