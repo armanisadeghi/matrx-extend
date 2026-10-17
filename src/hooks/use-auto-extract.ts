@@ -101,7 +101,10 @@ export function useAutoExtract(): void {
           });
 
           try {
-            const rows = await runPattern(pattern, tabId, documentId);
+            let runNotice: string | undefined;
+            const rows = await runPattern(pattern, tabId, documentId, (n) => {
+              runNotice = n;
+            });
             if (cancelled || currentPage.current !== pageKey || !isCurrentPageIdentity(pageKey))
               return;
             const outcome = classifySavedRun(pattern, url, rows);
@@ -112,7 +115,9 @@ export function useAutoExtract(): void {
               pageKey,
               rows,
               status: outcome.kind === 'matched' ? 'ok' : 'no_match',
-              ...(outcome.message && { note: outcome.message }),
+              ...((runNotice || outcome.message) && {
+                note: [runNotice, outcome.message].filter(Boolean).join(' '),
+              }),
               lastRunAt: Date.now(),
             });
             if (outcome.kind === 'matched') {

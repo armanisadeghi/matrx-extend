@@ -12,6 +12,22 @@ export const autoTableConfigSchema = z.object({
   header_rows: z.number().int().nonnegative().optional(),
   /** Separator used when merging multi-tier header text. Default ' - '. */
   header_join: z.string().optional(),
+  /**
+   * What the table looked like when it was saved. Replay finds the table by
+   * these stable signals; `table_index` is only the final tie-break.
+   */
+  signature: z
+    .object({
+      headers: z.array(z.string()),
+      caption: z.string().optional(),
+      heading: z.string().optional(),
+      id: z.string().optional(),
+      label: z.string().optional(),
+      columns: z.number().int().nonnegative().optional(),
+    })
+    .optional(),
+  /** Return the table's signature instead of its rows (used when saving). */
+  describe_only: z.boolean().optional(),
 });
 export type AutoTableConfig = z.infer<typeof autoTableConfigSchema>;
 
@@ -43,23 +59,135 @@ export const autoTableMode: ExtractionMode<AutoTableConfig> = {
   },
 
   runInPage: (config) => {
+    type Signature = {
+      headers: string[];
+      caption?: string;
+      heading?: string;
+      id?: string;
+      label?: string;
+      columns?: number;
+    };
     const cfg = (config ?? {}) as {
       table_index?: number;
       selector?: string;
       header_rows?: number;
       header_join?: string;
+      signature?: Signature;
+      describe_only?: boolean;
     };
 
+    // ── Which table? ────────────────────────────────────────────────────
+    // A saved table is found by what it IS (header texts, caption, nearest
+    // heading, human-typed id / aria-label), never by where it sits: a page
+    // that adds a table above it must not change which table is captured.
+    // Position is only the final tie-break. Self-contained: this function is
+    // serialized into the page.
+    const norm = (v: string | null | undefined): string =>
+      (v ?? '').replace(/\s+/g, ' ').trim().toLowerCase().slice(0, 120);
+    const describeTable = (t: HTMLTableElement): Signature => {
+      const headRows = t.querySelector('thead')
+        ? Array.from(t.querySelectorAll('thead tr'))
+        : [t.querySelector('tr')].filter((r): r is HTMLTableRowElement => r !== null);
+      const headers = headRows
+        .flatMap((r) => Array.from(r.querySelectorAll('th, td')))
+        .map((c) => norm((c as HTMLElement).innerText ?? c.textContent))
+        .filter(Boolean);
+      const sig: Signature = { headers };
+      const caption = norm(t.querySelector('caption')?.textContent);
+      if (caption) sig.caption = caption;
+      // Nearest heading above the table: walk back through siblings, then up.
+      let heading = '';
+      let node: Element | null = t;
+      for (let up = 0; node && !heading && up < 8 && node !== document.body; up++) {
+        for (
+          let prev: Element | null = node.previousElementSibling;
+          prev && !heading;
+          prev = prev.previousElementSibling
+        ) {
+          if (/^H[1-6]$/.test(prev.tagName)) heading = norm(prev.textContent);
+          else {
+            const inner = prev.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            const last = inner[inner.length - 1];
+            if (last) heading = norm(last.textContent);
+          }
+        }
+        node = node.parentElement;
+      }
+      if (heading) sig.heading = heading;
+      const stableId = t.id && t.id.length <= 60 && !/\d{4,}/.test(t.id) && !t.id.includes(':');
+      if (stableId) sig.id = t.id;
+      const label = norm(t.getAttribute('aria-label') || t.getAttribute('data-testid'));
+      if (label) sig.label = label;
+      sig.columns = headers.length;
+      return sig;
+    };
+    const toSet = (a: string[]) => new Set(a);
+    const jaccard = (a: string[], b: string[]): number => {
+      const x = toSet(a);
+      const y = toSet(b);
+      if (x.size === 0 && y.size === 0) return 1;
+      let hit = 0;
+      for (const v of x) if (y.has(v)) hit++;
+      return hit / (x.size + y.size - hit);
+    };
+    const usable = Array.from(document.querySelectorAll<HTMLTableElement>('table')).filter(
+      (t) => t.querySelectorAll('tr').length >= 2,
+    );
+
+    if (cfg.describe_only) {
+      const t = usable[cfg.table_index ?? 0];
+      return { __matrx_run: true, rows: [], signature: t ? describeTable(t) : null } as never;
+    }
+
     let table: HTMLTableElement | null = null;
+    let notice: string | undefined;
+    const savedIndex = cfg.table_index ?? 0;
     if (cfg.selector) {
       table = document.querySelector<HTMLTableElement>(cfg.selector);
+    } else if (!cfg.signature) {
+      table = usable[savedIndex] ?? null;
     } else {
-      const all = Array.from(document.querySelectorAll<HTMLTableElement>('table')).filter(
-        (t) => t.querySelectorAll('tr').length >= 2,
+      const sig = cfg.signature;
+      const scored = usable.map((t, index) => {
+        const d = describeTable(t);
+        const parts: Array<[number, number]> = [];
+        if (sig.headers.length > 0) parts.push([5, jaccard(sig.headers, d.headers)]);
+        if (sig.caption) parts.push([2, d.caption === sig.caption ? 1 : 0]);
+        if (sig.heading) parts.push([1.5, d.heading === sig.heading ? 1 : 0]);
+        if (sig.id) parts.push([2, d.id === sig.id ? 1 : 0]);
+        if (sig.label) parts.push([1, d.label === sig.label ? 1 : 0]);
+        if (sig.columns) parts.push([0.5, d.columns === sig.columns ? 1 : 0]);
+        const total = parts.reduce((n, [w]) => n + w, 0) || 1;
+        const score = parts.reduce((n, [w, v]) => n + w * v, 0) / total;
+        const headerScore = sig.headers.length > 0 ? jaccard(sig.headers, d.headers) : 0;
+        return { t, index, score, headerScore };
+      });
+      // Position never outranks a signal; it only separates equal scores.
+      scored.sort(
+        (a, b) =>
+          b.score - a.score || Math.abs(a.index - savedIndex) - Math.abs(b.index - savedIndex),
       );
-      table = all[cfg.table_index ?? 0] ?? null;
+      const best = scored[0];
+      const runnerUp = scored[1];
+      if (!best || best.score < 0.25) {
+        notice =
+          'The saved table was not found on this page, so nothing was captured. It was identified by its column headings' +
+          (sig.headers.length > 0 ? ` (${sig.headers.slice(0, 4).join(', ')})` : '') +
+          '.';
+      } else {
+        table = best.t;
+        const strong = best.headerScore >= 0.8 || best.score >= 0.7;
+        const tied = runnerUp && Math.abs(runnerUp.score - best.score) < 1e-9;
+        if (!strong) {
+          notice = `The saved table was not found exactly; this is the closest match (table ${best.index}). Check the result.`;
+        } else if (tied) {
+          notice = `Several tables look like the saved one; table ${best.index} was chosen by position. Check the result.`;
+        }
+      }
     }
-    if (!table) return [];
+    if (!table) {
+      return (notice ? { __matrx_run: true, rows: [], notice } : []) as never;
+    }
 
     const join = cfg.header_join ?? ' - ';
 
@@ -213,6 +341,6 @@ export const autoTableMode: ExtractionMode<AutoTableConfig> = {
       }
       out.push(row);
     }
-    return out;
+    return (notice ? { __matrx_run: true, rows: out, notice } : out) as never;
   },
 };

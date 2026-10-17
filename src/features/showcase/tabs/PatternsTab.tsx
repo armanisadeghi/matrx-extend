@@ -185,11 +185,15 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     setRunError(null);
     setRunNote(null);
     setRunInfo(null);
+    let runNotice: string | undefined;
     try {
       // 'user': handleRun is the Run control on a pattern row.
       const data = await runSavedPattern(p, tab.id, {
         onProgress: (note) => {
           if (isCurrent()) setRunNote(note);
+        },
+        onNotice: (notice) => {
+          runNotice = notice;
         },
         onReplayDocument: (documentId) => {
           if (replayOwner.current?.seq === seq) replayOwner.current.documentId = documentId;
@@ -204,7 +208,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
       setRows(data);
       setResultSource(sourceAtRun);
       const outcome = classifySavedRun(p, tab.url ?? '', data);
-      setRunInfo(outcome.message);
+      setRunInfo([runNotice, outcome.message].filter(Boolean).join(' ') || outcome.message);
       if (outcome.kind === 'matched') {
         const updateError = await bumpPatternRun(p.id, 'ok', data.length);
         if (isCurrent() && updateError) {

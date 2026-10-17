@@ -1394,6 +1394,9 @@ Every entry follows this shape:
     expanded — values still zip positionally. Open a follow-up if a
     real page hits this.
 
+- **Saved table replay finds its table by identity (not position):** Showcase → Tables → pick a table → Extract → Save pattern. The saved recipe remembers the table's column headings, caption, nearest heading and (human-typed) id. Replay on a page variant with another table inserted above it (e.g. a Wikipedia article with an extra table) → the SAME table is captured. If the table is gone → no rows and a notice says it was not found; if only a close match exists or look-alikes tie → rows plus a notice naming the choice. Never silently a different table.
+- **Click-a-card (List Pattern) selector is verified:** the list root resolves to exactly the clicked list (no twin list matched) and the item selector returns exactly the counted items (nested look-alikes excluded).
+
 ### Showcase — Framework tab (next_data)
 - **What it does:** Dumps __NEXT_DATA__/__NUXT_DATA__/Apollo/bpr-guid/window.*
   state into a navigable tree; click a node to set the key path, Extract.

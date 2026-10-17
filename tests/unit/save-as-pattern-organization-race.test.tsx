@@ -51,6 +51,7 @@ vi.mock('@/hooks/use-active-tab', () => ({
 vi.mock('@/lib/data-pattern/run-pattern', () => ({
   detectModeInPage: mocks.detectModeInPage,
   runMode: mocks.runMode,
+  describeTableSignature: vi.fn(async () => ({ headers: ['pickup_day'], columns: 1 })),
 }));
 vi.mock('@/hooks/use-user-tables', () => ({
   useUserTables: () => ({
@@ -265,7 +266,10 @@ describe('Showcase preview provenance', () => {
       expect(mocks.savePattern).toHaveBeenCalledWith(
         expect.objectContaining({
           kind: 'auto_table',
-          config: { table_index: previewIndex },
+          config: {
+            table_index: previewIndex,
+            signature: { headers: ['pickup_day'], columns: 1 },
+          },
         }),
       );
       expect(mocks.appendRows).toHaveBeenCalledWith('eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', ORG_A, [

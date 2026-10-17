@@ -1,4 +1,6 @@
+import { useActiveTab } from '@/hooks/use-active-tab';
 import { useExtraction } from '@/hooks/use-extraction';
+import { describeTableSignature } from '@/lib/data-pattern/run-pattern';
 import { Button } from '@ai-matrx/design-system';
 import { Loader2, PlayCircle } from 'lucide-react';
 import { useState } from 'react';
@@ -7,6 +9,7 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 
 export function TablesTab({ active = true }: { active?: boolean }) {
   const [tableIndex, setTableIndex] = useState(0);
+  const tab = useActiveTab();
   const { detection, rows, running, error, source, previewConfig, run } = useExtraction(
     'auto_table',
     {
@@ -55,7 +58,20 @@ export function TablesTab({ active = true }: { active?: boolean }) {
         )}
 
         <Button
-          onClick={() => void run({ table_index: tableIndex })}
+          onClick={() =>
+            void (async () => {
+              // Remember WHICH table this is (headers, caption, heading, id) so a saved
+              // pattern still finds it after the page adds or reorders tables.
+              const signature = tab.id
+                ? await describeTableSignature(
+                    tab.id,
+                    tableIndex,
+                    tab.documentId ?? undefined,
+                  ).catch(() => null)
+                : null;
+              await run({ table_index: tableIndex, ...(signature ? { signature } : {}) });
+            })()
+          }
           disabled={running || !detection?.available}
           className="w-full rounded-full"
         >

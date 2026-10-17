@@ -371,10 +371,14 @@ export function DataView() {
     setRows(null);
     setRunNote(null);
     setRunInfo(null);
+    let runNotice: string | undefined;
     try {
       const data = await runSavedPattern(pattern, tab.id, {
         onProgress: (note) => {
           if (isCurrent()) setRunNote(note);
+        },
+        onNotice: (notice) => {
+          runNotice = notice;
         },
         onReplayDocument: (documentId) => {
           if (replayOwner.current?.sequence === sequence)
@@ -389,7 +393,7 @@ export function DataView() {
       }
       setRows(data);
       const outcome = classifySavedRun(pattern, source.url ?? '', data);
-      setRunInfo(outcome.message);
+      setRunInfo([runNotice, outcome.message].filter(Boolean).join(' ') || outcome.message);
       if (outcome.kind === 'matched') {
         const updateError = await bumpPatternRun(pattern.id, 'ok', data.length);
         if (isCurrent() && updateError) {

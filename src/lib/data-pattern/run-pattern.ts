@@ -12,14 +12,39 @@ function safeArg(v: unknown): unknown {
   return v === undefined ? {} : v;
 }
 
-function extractionRows(
-  result: chrome.scripting.InjectionResult<ExtractedRow[]>[],
-): ExtractedRow[] {
-  const rows = result?.[0]?.result;
-  if (!Array.isArray(rows)) {
-    throw new Error('The page did not return an extraction result. Try running the pattern again.');
+/**
+ * A mode's in-page runner normally returns the rows. When it has something the
+ * person must be told (the saved table was not found exactly), it returns
+ * `{ __matrx_run: true, rows, notice }` instead; the notice travels to the
+ * caller's `onNotice` — a weak match is announced, never silent.
+ */
+type InPageRun = { __matrx_run: true; rows: ExtractedRow[]; notice?: string; signature?: unknown };
+
+function readRun(result: chrome.scripting.InjectionResult<unknown>[]): {
+  rows: ExtractedRow[];
+  notice?: string;
+  signature?: unknown;
+} {
+  const value = result?.[0]?.result;
+  if (Array.isArray(value)) return { rows: value as ExtractedRow[] };
+  if (value && typeof value === 'object' && (value as InPageRun).__matrx_run === true) {
+    const run = value as InPageRun;
+    return {
+      rows: run.rows,
+      ...(run.notice && { notice: run.notice }),
+      ...(run.signature !== undefined && { signature: run.signature }),
+    };
   }
-  return rows;
+  throw new Error('The page did not return an extraction result. Try running the pattern again.');
+}
+
+function extractionRows(
+  result: chrome.scripting.InjectionResult<unknown>[],
+  onNotice?: (notice: string) => void,
+): ExtractedRow[] {
+  const run = readRun(result);
+  if (run.notice) onNotice?.(run.notice);
+  return run.rows;
 }
 
 /**
@@ -52,6 +77,7 @@ export async function runPattern(
   pattern: ExtractionPattern,
   tabId: number,
   documentId?: string,
+  onNotice?: (notice: string) => void,
 ): Promise<ExtractedRow[]> {
   const mode = getMode(pattern.kind);
   if (!mode) throw new Error(`Unknown pattern kind: ${pattern.kind}`);
@@ -78,7 +104,7 @@ export async function runPattern(
     args: [safeArg(config)],
   });
 
-  return extractionRows(result);
+  return extractionRows(result, onNotice);
 }
 
 export async function detectModeInPage(
@@ -112,6 +138,7 @@ export async function runMode(
   tabId: number,
   config: unknown,
   documentId?: string,
+  onNotice?: (notice: string) => void,
 ): Promise<ExtractedRow[]> {
   const mode = getMode(modeId);
   if (!mode) throw new Error(`Unknown mode: ${modeId}`);
@@ -130,5 +157,24 @@ export async function runMode(
     func: mode.runInPage as (cfg: unknown) => ExtractedRow[],
     args: [safeArg(config)],
   });
-  return extractionRows(result);
+  return extractionRows(result, onNotice);
+}
+
+/**
+ * Describe the table the person picked so a saved pattern can find it again by
+ * what it is (headers, caption, heading, id) instead of its position.
+ */
+export async function describeTableSignature(
+  tabId: number,
+  tableIndex: number,
+  documentId?: string,
+): Promise<unknown | null> {
+  const mode = getMode('auto_table');
+  if (!mode?.runInPage) return null;
+  const result = await chrome.scripting.executeScript({
+    target: { tabId, ...(documentId && { documentIds: [documentId] }) },
+    func: mode.runInPage as (cfg: unknown) => ExtractedRow[],
+    args: [{ table_index: tableIndex, describe_only: true }],
+  });
+  return readRun(result).signature ?? null;
 }

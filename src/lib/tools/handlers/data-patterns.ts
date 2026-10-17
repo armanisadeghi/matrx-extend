@@ -283,6 +283,7 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
         // model's decision, not a second human action.
         const rows = await runSavedPattern(pattern, tabId, {
           onProgress: (note) => ctx.reportProgress?.(note),
+          onNotice: (notice) => ctx.reportProgress?.(notice),
           onReplayDocument: (id) => {
             replayEvidence.documentId = id;
           },

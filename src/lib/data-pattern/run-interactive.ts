@@ -42,6 +42,8 @@ import type { ExtractedRow } from './types';
 export interface InteractiveRunOptions {
   /** Live progress notes for the UI ("Reloading page…", "Listening…"). */
   onProgress?: (note: string) => void;
+  /** Something the person must be told about the result (a weak table match). */
+  onNotice?: (notice: string) => void;
   /** Service-worker attestation of the document produced by an approved replay. */
   onReplayDocument?: (documentId: string) => void;
   /** Interactive response window; Network setup is separately bounded by the same budget. */
@@ -581,5 +583,5 @@ export async function runSavedPattern(
     }
     return runNetworkCapturePattern(pattern.config, tabId, opts);
   }
-  return runPattern(pattern, tabId, opts.documentId);
+  return runPattern(pattern, tabId, opts.documentId, opts.onNotice);
 }
