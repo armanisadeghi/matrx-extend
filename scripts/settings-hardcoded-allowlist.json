@@ -36,6 +36,10 @@
     "id": "MIN_DURATION_S"
   },
   {
+    "file": "src/features/vault/extension-vault-host.ts",
+    "id": "CONNECT_WAIT_MS"
+  },
+  {
     "file": "src/hooks/use-agent-text-run.ts",
     "id": "STALL_MS"
   },

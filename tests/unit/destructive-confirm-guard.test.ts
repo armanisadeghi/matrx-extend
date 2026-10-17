@@ -243,9 +243,10 @@ describe('destructive controls confirm before they destroy', () => {
   }
 
   it('is actually looking at the destructive call sites', () => {
-    // The registry lists 19 operations; if the scan finds almost none, the
-    // entry-point names have drifted and this test has become a no-op.
-    expect(callSites).toBeGreaterThanOrEqual(18);
+    // The registry lists 17 UI-reachable operations (vault item/field deletes live in
+    // @ai-matrx/vault now, which owns their confirmation); if the scan finds almost none,
+    // the entry-point names have drifted and this test has become a no-op.
+    expect(callSites).toBeGreaterThanOrEqual(16);
   });
 
   it('no UI-side code reaches a destructive operation outside a confirmation', () => {
