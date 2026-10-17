@@ -9322,7 +9322,7 @@ export function parseMessageContent(content: unknown[]): MessagePart[] {
 // --- Message wrapper (matrx_ai.config.message_flags) ---
 
 /** The translator flags a message can carry. */
-export const MESSAGE_FLAG_KEYS = ["prefill", "cache_boundary", "example"] as const;
+export const MESSAGE_FLAG_KEYS = ["prefill", "example"] as const;
 export type MessageFlagKey = (typeof MESSAGE_FLAG_KEYS)[number];
 /** Stored form (`MessageFlags.as_dict`): only `true` means anything; absence is false. */
 export type MessageFlags = Partial<Record<MessageFlagKey, true>>;

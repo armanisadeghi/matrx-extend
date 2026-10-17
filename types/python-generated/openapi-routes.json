@@ -83,6 +83,16 @@
    "application/json"
   ]
  },
+ "/admin/ai-catalog/discovery/models/{model_id}/facts": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/ai-catalog/discovery/models/{model_id}/listing": {
+  "patch": [
+   "application/json"
+  ]
+ },
  "/admin/ai-catalog/discovery/models/{model_id}/placement": {
   "post": [
    "application/json"
@@ -633,6 +643,11 @@
    "application/json"
   ]
  },
+ "/agent-tests/checks/evaluate": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/agent-tests/checks/format": {
   "post": [
    "application/json"
@@ -691,6 +706,16 @@
  },
  "/aha/public/status": {
   "get": []
+ },
+ "/ai-catalog/discover/artifacts/{artifact_id}/sha256": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai-catalog/discover/probe": {
+  "post": [
+   "application/json"
+  ]
  },
  "/ai-catalog/discover/resolve": {
   "post": [
@@ -1018,6 +1043,9 @@
   "post": [
    "application/json"
   ]
+ },
+ "/ai/realtime-models": {
+  "get": []
  },
  "/ai/retry-now/{request_id}": {
   "post": []
@@ -1684,11 +1712,6 @@
  "/cataas/cat": {
   "get": []
  },
- "/catalog-resolver/resolve": {
-  "post": [
-   "application/json"
-  ]
- },
  "/catalogs/{app}": {
   "get": []
  },
@@ -1719,6 +1742,14 @@
   "get": []
  },
  "/chili-piper/public/status": {
+  "get": []
+ },
+ "/ci-spend/builds": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ci-spend/builds/rollup": {
   "get": []
  },
  "/ci-spend/costly": {
@@ -4233,6 +4264,25 @@
  },
  "/hubstaff/public/status": {
   "get": []
+ },
+ "/hugging-face/connection": {
+  "get": [],
+  "delete": []
+ },
+ "/hugging-face/connection/token": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hugging-face/oauth/authorize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hugging-face/oauth/complete": {
+  "post": [
+   "application/json"
+  ]
  },
  "/hugging-face/public/model": {
   "get": []
@@ -8587,6 +8637,24 @@
  "/toggl/public/status": {
   "get": []
  },
+ "/tool-battles": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/tool-battles/{battle_id}/cancel": {
+  "post": []
+ },
+ "/tool-battles/{battle_id}/promote": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/tool-battles/{battle_id}/run": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/tools/calls": {
   "post": [
    "application/json"
@@ -8599,6 +8667,24 @@
   "post": []
  },
  "/tools/catalog/search": {
+  "get": []
+ },
+ "/tools/catalog/{tool_ref}": {
+  "get": []
+ },
+ "/tools/developer/budgets": {
+  "get": [],
+  "put": [
+   "application/json"
+  ]
+ },
+ "/tools/developer/docs": {
+  "get": []
+ },
+ "/tools/developer/llms.txt": {
+  "get": []
+ },
+ "/tools/developer/usage": {
   "get": []
  },
  "/tools/screen-run": {
@@ -8618,6 +8704,9 @@
   "post": []
  },
  "/tools/test/{tool_name}": {
+  "get": []
+ },
+ "/tools/{tool_id}/agent-doc": {
   "get": []
  },
  "/tools/{tool_id}/run-form": {
