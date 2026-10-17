@@ -30,7 +30,7 @@ export function releaseMemberPlan(
   );
   assert.ok(
     String(run.id) === releaseRunId &&
-      run.name === 'Hosted release' &&
+      /^Hosted release(?: \(by [A-Za-z0-9_-]+\))?$/.test(run.name ?? '') &&
       run.path === '.github/workflows/release.yml' &&
       run.event === 'workflow_dispatch' &&
       run.head_branch === 'main' &&

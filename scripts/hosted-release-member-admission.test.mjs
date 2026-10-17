@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import {
   admitReleaseMember,
@@ -12,19 +13,18 @@ const archive = Buffer.from('captured artifact bytes represented at the hash sea
 const store = Buffer.from('Store package bytes represented at the hash seam');
 const hash = (value) => createHash('sha256').update(value).digest('hex');
 const input = { releaseRunId: '39049375284', artifactId: '12106724248', sourceSha: sha };
-const run = {
-  id: 39049375284,
-  name: 'Hosted release',
-  path: '.github/workflows/release.yml',
-  event: 'workflow_dispatch',
-  head_branch: 'main',
-  conclusion: 'success',
-};
+const captured = JSON.parse(
+  readFileSync(
+    new URL(
+      '../docs/stabilization/evidence/member-release-admission-20261017/release-api-metadata.json',
+      import.meta.url,
+    ),
+    'utf8',
+  ),
+);
+const run = captured.run;
 const artifact = {
-  workflow_run: { id: 39049375284 },
-  id: 12106724248,
-  name: 'matrx-extend-v0.2.520',
-  expired: false,
+  ...captured.listing.artifacts[0],
   digest: `sha256:${hash(archive)}`,
 };
 const listing = { total_count: 1, artifacts: [artifact] };
@@ -60,6 +60,7 @@ test('exact member dispatch uses selected release rather than a current build', 
 test('unpublished, substituted or ambiguous release cannot create a dispatch plan', () => {
   for (const changed of [
     { id: 999 },
+    { name: 'Another workflow (by store-rejection-retry-20261017)' },
     { conclusion: 'failure' },
     { event: 'push' },
     { head_branch: 'feature' },
