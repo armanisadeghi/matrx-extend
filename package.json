@@ -90,6 +90,7 @@
     "@ai-matrx/kit": "latest",
     "@ai-matrx/media": "latest",
     "@ai-matrx/records": "latest",
+    "@ai-matrx/summon": "latest",
     "@ai-matrx/vault": "latest",
     "@hookform/resolvers": "^3.10.0",
     "@joplin/turndown-plugin-gfm": "^1.0.68",

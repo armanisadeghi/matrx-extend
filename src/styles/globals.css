@@ -35,6 +35,7 @@
    `matrx-agent-fade-in`, `matrx-agent-spin`). Without it the picker renders
    unstyled — silently. */
 @import "@ai-matrx/agents/catalog/styles.css";
+@import "@ai-matrx/summon/styles.css";
 
 /* Tailwind must scan the packages' BUILT output — the semantic utility classes
    their components wear exist only if these are sources: the two directories holding every
