@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { recordIdentityWaitFailure } from './reviewer-chat-identity-diagnostic.mjs';
+import {
+  recordIdentityWaitFailure,
+  verifyReviewerRole,
+} from './reviewer-chat-identity-diagnostic.mjs';
 import { waitFor } from './settings-panel-driver.mjs';
 
 test('identity wait keeps its symbolic failure and observations when screenshot fails', async () => {
@@ -129,4 +132,45 @@ test('waitFor detached target retains safe category without relaxing acceptance'
       return true;
     },
   );
+});
+
+test('role failure captures final panel state while retaining role refusal', async () => {
+  for (const available of [true, false]) {
+    const report = { account: {}, screenshots: null };
+    await assert.rejects(
+      verifyReviewerRole({
+        report,
+        onStage() {},
+        userId: 'opaque-member',
+        adminCheck: {
+          verify: async () => {
+            throw new Error('private-secret');
+          },
+          networkSnapshot: () => ({ total_requests: 0 }),
+        },
+        failureObservations: {
+          observeAccount: async () => ({ organizationLoading: available, raw: 'private-secret' }),
+          observeStorage: async () =>
+            available ? { accessTokenPresent: true } : new Promise(() => {}),
+          captureScreenshot: async () => {
+            if (!available) throw new Error('private-secret');
+            return '/tmp/panel.png';
+          },
+          observationTimeoutMs: 10,
+        },
+      }),
+      { message: 'reviewer_canonical_role_unverified' },
+    );
+    assert.deepEqual(report.account.timeout_observation, { organizationLoading: available });
+    assert.deepEqual(
+      report.account.storage_shape,
+      available
+        ? { accessTokenPresent: true }
+        : { status: 'unavailable', category: 'observation_timeout' },
+    );
+    assert.equal(report.screenshots.timeout_panel_status, available ? 'captured' : 'unavailable');
+    assert.deepEqual(report.account.canonical_role_network, { total_requests: 0 });
+    assert.equal(report.account.identity_wait_failure_category, undefined);
+    assert.equal(JSON.stringify(report).includes('private-secret'), false);
+  }
 });

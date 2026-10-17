@@ -67,7 +67,7 @@ function waitCategory(error) {
   return 'identity_not_observed';
 }
 
-export async function recordIdentityWaitFailure({
+async function recordFailureObservation({
   report,
   waitError,
   observeAccount,
@@ -81,7 +81,7 @@ export async function recordIdentityWaitFailure({
   ]);
   report.account = {
     ...report.account,
-    identity_wait_failure_category: waitCategory(waitError),
+    ...(waitError && { identity_wait_failure_category: waitCategory(waitError) }),
     timeout_observation: account,
     storage_shape: storage,
   };
@@ -103,12 +103,22 @@ export async function recordIdentityWaitFailure({
   } finally {
     clearTimeout(screenshotTimer);
   }
+}
+
+export async function recordIdentityWaitFailure(options) {
+  await recordFailureObservation(options);
   throw new Error('reviewer_extension_identity_unverified');
 }
 
 // Identity readiness and canonical role proof are separate acceptance gates.
 // Persist the first success before entering the second, even when it fails.
-export async function verifyReviewerRole({ report, onStage, adminCheck, userId }) {
+export async function verifyReviewerRole({
+  report,
+  onStage,
+  adminCheck,
+  userId,
+  failureObservations,
+}) {
   report.account = { ...report.account, extension_identity_observed: true };
   onStage('extension_canonical_role_verify');
   try {
@@ -117,6 +127,9 @@ export async function verifyReviewerRole({ report, onStage, adminCheck, userId }
     report.account.canonical_role_observation = adminCheck.snapshot?.(userId) ?? {
       status: 'unavailable',
     };
+    if (adminCheck.networkSnapshot)
+      report.account.canonical_role_network = adminCheck.networkSnapshot();
+    if (failureObservations) await recordFailureObservation({ ...failureObservations, report });
     throw new Error('reviewer_canonical_role_unverified');
   }
 }

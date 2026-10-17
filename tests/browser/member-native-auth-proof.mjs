@@ -40,13 +40,38 @@ export async function supabaseOrigin(repo) {
 
 export function observeCanonicalAdminCheck(panel, origin, timeoutMs = 60_000) {
   const requests = new Map();
+  const boundaryRequests = new Map();
+  const roleMismatches = {};
+  let totalRequests = 0;
+  let databaseRequests = 0;
+  const boundaryPaths = new Map([
+    ['/rest/v1/rpc/mbr_for_user', 'memberships'],
+    ['/rest/v1/organizations', 'organizations'],
+    ['/rest/v1/user_preferences', 'account_choice'],
+    ['/rest/v1/admins', 'role'],
+  ]);
   const offRequest = panel.on('Network.requestWillBeSent', (event) => {
+    totalRequests += 1;
     try {
       const url = new URL(event.request.url);
       const profile = Object.entries(event.request.headers ?? {}).find(
         ([key]) => key.toLowerCase() === 'accept-profile',
       )?.[1];
       const userId = /^eq\.([0-9a-f-]{36})$/i.exec(url.searchParams.get('user_id') ?? '')?.[1];
+      if (url.origin === origin) databaseRequests += 1;
+      const boundary = boundaryPaths.get(url.pathname);
+      if (boundary && url.origin === origin)
+        boundaryRequests.set(event.requestId, { boundary, status: null, outcome: 'pending' });
+      if (url.pathname === '/rest/v1/admins') {
+        for (const [category, mismatched] of Object.entries({
+          origin: url.origin !== origin,
+          method: event.request.method !== 'GET',
+          schema: String(profile).toLowerCase() !== 'admin',
+          selection: url.searchParams.get('select') !== 'user_id',
+          user_filter: !UUID.test(userId ?? ''),
+        }))
+          if (mismatched) roleMismatches[category] = (roleMismatches[category] ?? 0) + 1;
+      }
       if (
         url.origin === origin &&
         url.pathname === '/rest/v1/admins' &&
@@ -61,10 +86,14 @@ export function observeCanonicalAdminCheck(panel, origin, timeoutMs = 60_000) {
     }
   });
   const offResponse = panel.on('Network.responseReceived', (event) => {
+    const boundary = boundaryRequests.get(event.requestId);
+    if (boundary) boundary.status = event.response.status;
     const request = requests.get(event.requestId);
     if (request) request.status = event.response.status;
   });
   const offFinished = panel.on('Network.loadingFinished', (event) => {
+    const boundary = boundaryRequests.get(event.requestId);
+    if (boundary) boundary.outcome = 'complete';
     const request = requests.get(event.requestId);
     if (!request) return;
     void panel
@@ -85,10 +114,33 @@ export function observeCanonicalAdminCheck(panel, origin, timeoutMs = 60_000) {
       });
   });
   const offFailed = panel.on('Network.loadingFailed', (event) => {
+    const boundary = boundaryRequests.get(event.requestId);
+    if (boundary) boundary.outcome = 'request_failed';
     const request = requests.get(event.requestId);
     if (request) request.outcome = 'request_failed';
   });
   return {
+    networkSnapshot() {
+      // Only finite boundary/status/outcome categories leave this observer.
+      const groups = new Map();
+      for (const entry of boundaryRequests.values()) {
+        const status =
+          Number.isInteger(entry.status) && entry.status >= 100 && entry.status <= 599
+            ? entry.status
+            : null;
+        const safe = { boundary: entry.boundary, status, outcome: entry.outcome };
+        const key = JSON.stringify(safe);
+        const group = groups.get(key) ?? { ...safe, count: 0 };
+        group.count += 1;
+        groups.set(key, group);
+      }
+      return {
+        total_requests: totalRequests,
+        database_requests: databaseRequests,
+        role_mismatches: { ...roleMismatches },
+        boundaries: [...groups.values()],
+      };
+    },
     snapshot(expectedUserId) {
       return {
         observed_request_count: requests.size,
