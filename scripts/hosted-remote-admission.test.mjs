@@ -1532,3 +1532,150 @@ test('hosted runner proves its actual immutable checkout before product acceptan
     rmSync(f.root, { recursive: true, force: true });
   }
 });
+
+// D231: the normal helper must reach only the admitted diagnostic; a skipped guard must never dispatch.
+test('startup diagnostic CLI dispatches exact admitted A route and refuses every unsafe boundary', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'startup-admission-'));
+  const log = join(dir, 'dispatch.json');
+  const counters = join(dir, 'counters.json');
+  const sha = 'a'.repeat(40);
+  const workflow = readFileSync(
+    new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+    'utf8',
+  );
+  const fake = `#!/usr/bin/env node
+const fs = require('node:fs');
+const cfg = JSON.parse(process.env.STARTUP_ADMISSION_STUB);
+const args = process.argv.slice(2);
+const counts = fs.existsSync(cfg.counters) ? JSON.parse(fs.readFileSync(cfg.counters)) : {};
+const count = key => { counts[key] = (counts[key] || 0) + 1; fs.writeFileSync(cfg.counters, JSON.stringify(counts)); return counts[key]; };
+if (process.argv[1].endsWith('/git')) {
+  if (args[0] === 'rev-parse') process.stdout.write(cfg.sha);
+  else if (args[0] === 'status') process.stdout.write(cfg.dirty || (count('status') > 1 && cfg.finalDirty ? ' M late-change.mjs' : ''));
+  else process.exit(99);
+} else if (args[0] === 'workflow') {
+  fs.writeFileSync(cfg.log, JSON.stringify(args)); process.exit(cfg.dispatchFailure ? 1 : 0);
+} else {
+  const endpoint = args[1]; let result;
+  if (endpoint.includes('/git/ref/')) result = { object: { sha: cfg.remoteSha || (count('remote') > 1 && cfg.finalDrift ? 'b'.repeat(40) : cfg.sha) } };
+  else if (endpoint.includes('/contents/')) result = { path: '.github/workflows/hosted-guest-acceptance.yml', type: 'file', encoding: 'base64', content: Buffer.from(cfg.workflow).toString('base64') };
+  else if (endpoint.includes('/actions/workflows/')) {
+    const runs = endpoint.includes('hosted-resource-diagnostic') ? (cfg.diagnosisRuns || []) : (cfg.runs || []);
+    result = { total_count: cfg.incomplete ? 101 : runs.length, workflow_runs: runs };
+  } else if (endpoint.includes('/artifacts?')) result = { artifacts: [{ id: cfg.wrongArtifact ? '12112098475' : '12112098474', expired: false, name: 'matrx-extend-development-test-' + cfg.sha + '-39065713090-1', digest: 'sha256:' + 'c'.repeat(64) }] };
+  else if (endpoint.endsWith('/actions/runs/39065713090')) result = { name: 'CI', path: '.github/workflows/ci.yml', event: 'push', head_branch: 'main', conclusion: cfg.ciFailure ? 'failure' : 'success', head_sha: cfg.sha, run_attempt: 1 };
+  else process.exit(98); // In particular, this route may never read/stage member credentials.
+  process.stdout.write(JSON.stringify(result));
+}
+`;
+  for (const name of ['gh', 'git']) {
+    writeFileSync(join(dir, name), fake);
+    chmodSync(join(dir, name), 0o700);
+  }
+  const fields = [
+    'acceptance_lane=A',
+    'acceptance_case=startup-resource-diagnostic',
+    'requested_by=extend-stabilization',
+    'scrape_auth_mode=guest',
+    'runner_label=macos-15-intel',
+    'startup_display_mode=headed',
+    'development_run_id=39065713090',
+    'development_artifact_id=12112098474',
+  ];
+  const input = {
+    '--lane': 'A',
+    '--case': 'startup-resource-diagnostic',
+    '--runner-label': 'macos-15-intel',
+    '--development-run-id': '39065713090',
+    '--development-artifact-id': '12112098474',
+    '--source-sha': sha,
+  };
+  const execute = (mode, state = {}, change = {}) => {
+    rmSync(log, { force: true });
+    rmSync(counters, { force: true });
+    return spawnSync(
+      process.execPath,
+      [
+        resolve('scripts/hosted-remote-admission.mjs'),
+        mode,
+        ...Object.entries({ ...input, ...change }).flat(),
+      ],
+      {
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          PATH: `${dir}:${process.env.PATH}`,
+          STARTUP_ADMISSION_STUB: JSON.stringify({
+            sha,
+            workflow,
+            log,
+            counters,
+            ...state,
+          }),
+        },
+      },
+    );
+  };
+  try {
+    const plan = execute('plan-startup-diagnostic');
+    assert.equal(plan.status, 0, plan.stderr);
+    assert.equal(JSON.parse(plan.stdout).verdict, 'DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE');
+    assert.throws(() => readFileSync(log), /ENOENT/, 'planning dispatched a browser job');
+    for (const [state, change, reason] of [
+      [{}, { '--lane': 'B' }, 'HOSTED_STARTUP_LANE_REFUSED'],
+      [{}, { '--case': 'member-chat' }, 'HOSTED_STARTUP_CASE_REFUSED'],
+      [{}, { '--runner-label': 'macos-15' }, 'HOSTED_STARTUP_RUNNER_REFUSED'],
+      [{}, { '--startup-display-mode': 'headless' }, 'HOSTED_ARGUMENT_INVALID'],
+      [{}, { '--release-run-id': '39063179335' }, 'HOSTED_ARGUMENT_INVALID'],
+      [{}, { '--source-sha': 'invalid' }, 'HOSTED_SOURCE_SHA_INVALID'],
+      [{}, { '--development-artifact-id': '0' }, 'HOSTED_ARTIFACT_ID_INVALID'],
+      [{ wrongArtifact: true }, {}, 'HOSTED_DEVELOPMENT_ARTIFACT_INVALID'],
+      [{ ciFailure: true }, {}, 'HOSTED_DEVELOPMENT_RUN_INVALID'],
+      [{ remoteSha: 'b'.repeat(40) }, {}, 'HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED'],
+      [{ dirty: ' M concurrent.mjs' }, {}, 'HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED'],
+      [{ workflow: `${workflow}\n# unreviewed` }, {}, 'HOSTED_WORKFLOW_BLOB_UNREVIEWED'],
+      [
+        { runs: [{ name: 'Native A · member-chat', status: 'queued' }] },
+        {},
+        'HOSTED_STARTUP_A_CAPACITY_REFUSED',
+      ],
+      [
+        {
+          diagnosisRuns: [{ name: 'Hosted resource diagnosis', status: 'in_progress' }],
+        },
+        {},
+        'HOSTED_STARTUP_A_CAPACITY_REFUSED',
+      ],
+      [{ incomplete: true }, {}, 'HOSTED_STARTUP_A_CAPACITY_REFUSED'],
+      [{ finalDrift: true }, {}, 'HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED'],
+      [{ finalDirty: true }, {}, 'HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED'],
+    ]) {
+      const result = execute('dispatch-startup-diagnostic', state, change);
+      assert.notEqual(result.status, 0, reason);
+      assert.match(result.stderr, new RegExp(reason));
+      assert.throws(() => readFileSync(log), /ENOENT/, `${reason} was bypassed with dispatch`);
+    }
+    for (const runs of [[], [{ name: 'Native B · guest-chat', status: 'in_progress' }]]) {
+      const result = execute('dispatch-startup-diagnostic', { runs });
+      assert.equal(result.status, 0, result.stderr);
+      assert.doesNotThrow(() => readFileSync(log), 'admitted startup diagnostic never dispatched');
+      assert.deepEqual(JSON.parse(readFileSync(log)), [
+        'workflow',
+        'run',
+        'hosted-guest-acceptance.yml',
+        '--ref',
+        'main',
+        ...fields.flatMap((field) => ['-f', field]),
+        '-R',
+        'armanisadeghi/matrx-extend',
+      ]);
+    }
+    const failure = execute('dispatch-startup-diagnostic', {
+      dispatchFailure: true,
+    });
+    assert.notEqual(failure.status, 0);
+    assert.match(failure.stderr, /HOSTED_DISPATCH_FAILED/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
