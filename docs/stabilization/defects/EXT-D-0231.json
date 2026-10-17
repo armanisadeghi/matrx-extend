@@ -22,7 +22,8 @@
   "evidence": [
     "docs/stabilization/runs/member-chat-v0523-run39064545122.json",
     "docs/stabilization/evidence/member-chat-v0523/run39064545122/startup-diagnostic.sanitized.json",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39064545122"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39064545122",
+    "docs/stabilization/runs/startup-diagnostic-run39068438114.json"
   ],
   "build_receipt": {
     "workflow_source_sha": "9cee8d002d88739717ec8e2d7160eded5736cba2",
@@ -64,7 +65,7 @@
     "Do not increase the endpoint deadline or infer a product failure from the current run.",
     "After the startup boundary is understood and eligible, pass a fresh guarded member Chat run with genuine non-admin auth, explicit selected organization matching request headers, first-message and same-conversation follow-up assistant content, terminal completion, stable server SHA, and valid resource finals."
   ],
-  "next_action": "Independently review the bounded startup diagnostic and focused red/green guard, then coordinate the existing startup-resource-diagnostic route with fresh admission. Do not repeat native member acceptance or increase the endpoint deadline before the discriminating evidence is reviewed.",
+  "next_action": "Independently review explicit display-mode admission, then run the controlled headed/headless diagnostic pair on one exact new CI artifact/source. Do not claim a fix or repeat member Chat before discriminating evidence.",
   "transition_history": [
     {
       "at": "2026-10-17T20:02:55Z",
@@ -74,7 +75,7 @@
     }
   ],
   "diagnosis_report": {
-    "status": "Instrumentation locally verified; causal hosted experiment pending independent review and coordinated admission.",
+    "status": "Guarded headed diagnostic startup passed with three valid resource finals; cause of failed headless Chat starts remains unconfirmed.",
     "hypotheses": [
       {
         "cause": "Delayed endpoint publication",
@@ -96,6 +97,6 @@
     "local_guard": "node --test tests/browser/native-cdp-startup-boundary.test.mjs tests/browser/native-cdp-startup-diagnostic.test.mjs tests/browser/vault-owned-cdp-diagnostic.test.cjs",
     "red_proof": "Missing startupBoundary produced the named assertion failure before instrumentation. Real temporary profile, Node child and stderr stream then distinguish live owner, exited child, foreign lock and closed pipe. Scratch-copy constant-result, constant-live-boundary and foreign-lock-misreported mutants all fail. EACCES, EIO and indefinitely pending diagnostic readlink preserve the real connector endpoint timeout; diagnostic snapshots are bounded by the existing cadence and the initial snapshot runs concurrently with connector startup. Distinct connector successes and original exception identity are preserved. Successful connector return never awaits diagnostic snapshots (final boundary is null on success); a deterministic microtask-order test proves exact result settlement before a pending readlink or timer can complete. Failure snapshots run in parallel within one existing cadence.",
     "sibling_census": "Native acceptance callers share connectNativeStartupOwnedCdp in native-sidepanel-qa-harness.mjs; the startup-resource-diagnostic route already adds post-timeout endpoint observations and startup-process-interval CPU brackets. Vault standalone connector remains unchanged.",
-    "next_guarded_experiment": "After independent review, coordinate one startup-resource-diagnostic hosted job on macos-15-intel, headed, through the existing admission path with an approved development artifact/source. This existing route is development-only; it is not an exact .523 Store member retry. Retain BROWSER_CDP_STARTUP_INTERVAL, BROWSER_STARTUP_CPU_INTERVAL, post-timeout endpoint observations and all resource finals. No member link or credentials. One job per host; no more than two lanes. Diagnose only with valid resource finals; retain invalid results as environmental evidence without product credit. Dispatch eligibility hold: the workflow case exists, but no startup-resource-diagnostic planner was found in hosted-remote-admission.mjs; identify the authorized admission path or independently review a narrow admission extension before dispatch. Direct gh/workflow invocation is not an alternative."
+    "next_guarded_experiment": "Extend only normal diagnostic admission to an explicit headed/headless choice, then run a controlled pair sequentially on lane A using the SAME new successful exact-head CI development artifact/source and unchanged profile/runner/deadline/resource policy."
   }
 }

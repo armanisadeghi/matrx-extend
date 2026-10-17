@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat opening, same-conversation follow-up, and post-reload new conversation",
+  "context_rule_read_observation_scope": "CDP observer attaches after panel load and runs through the optional Values control, all three guest sends, and panel reload; it cannot establish requests before attachment",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.524",
+    "tree_sha256": "3a4c5a8433df9a7d21dcad34c81900363a9ee511adcdd853e491cbd198a434f1",
+    "receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "server_version_before": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "fe4f08e7210cb3ba5b0999b3e8eb71a7bae342af"
+  },
+  "server_version_after": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "fe4f08e7210cb3ba5b0999b3e8eb71a7bae342af"
+  },
+  "guest": null,
+  "chat": null,
+  "screenshot": null,
+  "followup_screenshot": null,
+  "failure_stage": "owned_profile",
+  "failure_code": "owned_cdp_endpoint_timeout",
+  "failure_reason": "owned_cdp_endpoint_timeout",
+  "stage_progress": ["owned_profile"],
+  "guest_ai_requests": [],
+  "guest_ai_observer": null,
+  "guest_ai_transport_proven": false,
+  "composer_input_boundaries": [],
+  "context_rule_reads": [],
+  "grounding_diagnostics": {},
+  "server_version_stable": true
+}

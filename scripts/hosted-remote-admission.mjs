@@ -379,6 +379,150 @@ export function planHostedMemberData({
   };
 }
 
+/** D231: diagnostic only, using the existing guarded startup phase without authentication. */
+export function planHostedStartupDiagnostic({
+  lane,
+  acceptanceCase,
+  runnerLabel,
+  displayMode = 'headed',
+  ...input
+}) {
+  if (!['headed', 'headless'].includes(displayMode)) refuse('HOSTED_STARTUP_DISPLAY_MODE_REFUSED');
+  if (lane !== 'A') refuse('HOSTED_STARTUP_LANE_REFUSED');
+  if (acceptanceCase !== 'startup-resource-diagnostic') refuse('HOSTED_STARTUP_CASE_REFUSED');
+  if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_STARTUP_RUNNER_REFUSED');
+  if (!SHA.test(input.sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
+  planHostedMemberData({ ...input, lane });
+  return {
+    command: 'gh',
+    args: [
+      'workflow',
+      'run',
+      'hosted-guest-acceptance.yml',
+      '--ref',
+      'main',
+      ...[
+        'acceptance_lane=A',
+        'acceptance_case=startup-resource-diagnostic',
+        `requested_by=${DISPATCH_REQUESTER}`,
+        'scrape_auth_mode=guest',
+        'runner_label=macos-15-intel',
+        `startup_display_mode=${displayMode}`,
+        `development_run_id=${input.developmentRunId}`,
+        `development_artifact_id=${input.developmentArtifactId}`,
+      ].flatMap((field) => ['-f', field]),
+    ],
+  };
+}
+
+export function requireStartupDiagnosticDispatchAdmission({
+  localSha,
+  remoteSha,
+  sourceSha,
+  dirty,
+  runs,
+}) {
+  requireExactDispatchSource(localSha, remoteSha, dirty, sourceSha, 'HOSTED_STARTUP_SOURCE_DRIFT');
+  if (
+    !Array.isArray(runs) ||
+    runs.some((run) => run.status !== 'completed' && !/^Native B · /.test(run.name ?? ''))
+  )
+    refuse('HOSTED_STARTUP_A_CAPACITY_REFUSED');
+  return true;
+}
+
+function startupDiagnosticCli(mode, args) {
+  for (const key of args.keys())
+    if (
+      ![
+        '--lane',
+        '--case',
+        '--runner-label',
+        '--startup-display-mode',
+        '--development-run-id',
+        '--development-artifact-id',
+        '--source-sha',
+      ].includes(key)
+    )
+      refuse('HOSTED_ARGUMENT_INVALID');
+  const sourceSha = args.get('--source-sha');
+  const plan = planHostedStartupDiagnostic({
+    lane: args.get('--lane'),
+    acceptanceCase: args.get('--case'),
+    runnerLabel: args.get('--runner-label'),
+    displayMode: args.get('--startup-display-mode') ?? 'headed',
+    sourceSha,
+    developmentRunId: args.get('--development-run-id'),
+    developmentArtifactId: args.get('--development-artifact-id'),
+  });
+  const artifact = requireDevelopmentArtifact({
+    runId: args.get('--development-run-id'),
+    artifactId: args.get('--development-artifact-id'),
+    sourceSha,
+  });
+  if (mode === 'dispatch-startup-diagnostic') {
+    const state = () => ({
+      localSha: execFileSync('git', ['rev-parse', 'HEAD'], {
+        encoding: 'utf8',
+      }).trim(),
+      remoteSha: ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha,
+      dirty: execFileSync('git', ['status', '--porcelain'], {
+        encoding: 'utf8',
+      }).trim(),
+      sourceSha,
+    });
+    const initial = state();
+    requireExactDispatchSource(
+      initial.localSha,
+      initial.remoteSha,
+      initial.dirty,
+      sourceSha,
+      'HOSTED_STARTUP_SOURCE_DRIFT',
+    );
+    verifyHostedWorkflowCheckout({
+      path: '.github/workflows/hosted-guest-acceptance.yml',
+      head_sha: initial.remoteSha,
+    });
+    const runs = ['hosted-guest-acceptance.yml', 'hosted-resource-diagnostic.yml'].flatMap(
+      (workflow) =>
+        ['queued', 'in_progress', 'waiting', 'pending', 'requested'].flatMap((status) => {
+          const listing = ghJson(
+            `repos/${OWNER}/actions/workflows/${workflow}/runs?status=${status}&per_page=100`,
+          );
+          if (
+            !Array.isArray(listing.workflow_runs) ||
+            listing.total_count !== listing.workflow_runs.length
+          )
+            refuse('HOSTED_STARTUP_A_CAPACITY_REFUSED');
+          return listing.workflow_runs;
+        }),
+    );
+    requireStartupDiagnosticDispatchAdmission({ ...initial, runs });
+    const final = state();
+    requireExactDispatchSource(
+      final.localSha,
+      final.remoteSha,
+      final.dirty,
+      sourceSha,
+      'HOSTED_STARTUP_SOURCE_DRIFT',
+    );
+    const result = spawnSync(plan.command, [...plan.args, '-R', OWNER], {
+      stdio: 'inherit',
+    });
+    if (result.status !== 0) refuse('HOSTED_DISPATCH_FAILED');
+  }
+  process.stdout.write(
+    `${JSON.stringify({
+      mode,
+      plan,
+      artifact,
+      host: 'github-hosted',
+      localHeavyWork: false,
+      verdict: 'DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE',
+    })}\n`,
+  );
+}
+
 /** One reviewed, guest-only SEO target. Every alternate input is an explicit refusal. */
 export function planHostedGuestSeo({
   lane,
@@ -1353,6 +1497,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         process.stderr.write(`HOSTED_REMOTE_REFUSED ${error.message}\n`);
         process.exitCode = 1;
       });
+    } else if (mode === 'plan-startup-diagnostic' || mode === 'dispatch-startup-diagnostic') {
+      startupDiagnosticCli(mode, args);
     } else if (
       mode === 'plan' ||
       mode === 'dispatch' ||
