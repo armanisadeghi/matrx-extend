@@ -497,3 +497,87 @@ test('CLI rejects an unsupported runner before credential or network admission',
   assert.match(result.stderr, /release_member_runner_label_invalid/);
   assert.equal(result.stdout, '');
 });
+
+// Captured release ancestry: only the reviewed guest-route commit may change these scripts.
+test('member source proof admits immutable guest route and refuses every subsequent drift', (t) => {
+  const source = '580738d3c86f14cba3fa4c8157364340d46f78bb';
+  const reviewed = '1ec98baf21d2a6b8631971dd43c13fc199a6b2a4';
+  const repository = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+    encoding: 'utf8',
+  }).trim();
+  const cwd = mkdtempSync(join(tmpdir(), 'member-reviewed-route-'));
+  t.after(() => rmSync(cwd, { recursive: true, force: true }));
+  const git = (...args) =>
+    execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  git('clone', '--shared', '--no-checkout', repository, '.');
+  git(
+    'sparse-checkout',
+    'set',
+    '--no-cone',
+    '/scripts/hosted-remote-admission.mjs',
+    '/scripts/hosted-remote-guest-chat-admission.test.mjs',
+    '/package.json',
+    '/src/config/env.ts',
+    '/.github/workflows/hosted-guest-acceptance.yml',
+  );
+  git('checkout', '--detach', reviewed);
+  const moduleUrl = new URL('./hosted-release-member-admission.mjs', import.meta.url).href;
+  const prove = (head = git('rev-parse', 'HEAD')) =>
+    spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `import { proveSource } from ${JSON.stringify(moduleUrl)}; proveSource(${JSON.stringify(source)}, ${JSON.stringify(head)});`,
+      ],
+      { cwd, encoding: 'utf8' },
+    );
+  const refusal = (label) => {
+    const result = prove();
+    assert.notEqual(result.status, 0, label);
+    assert.match(result.stderr, /release_member_product_changed/, label);
+  };
+  assert.equal(
+    prove().status,
+    0,
+    'exact published release plus reviewed operational commit is eligible',
+  );
+  for (const path of [
+    'scripts/hosted-remote-admission.mjs',
+    'scripts/hosted-remote-guest-chat-admission.test.mjs',
+    'package.json',
+    'src/config/env.ts',
+    '.github/workflows/hosted-guest-acceptance.yml',
+  ]) {
+    const original = readFileSync(join(cwd, path));
+    writeFileSync(join(cwd, path), Buffer.concat([original, Buffer.from(' ')]));
+    refusal(`one-byte unstaged delta refuses: ${path}`);
+    git('add', path);
+    refusal(`one-byte staged delta refuses: ${path}`);
+    git(
+      '-c',
+      'user.name=Admission guard',
+      '-c',
+      'user.email=guard@localhost',
+      'commit',
+      '-qm',
+      'unreviewed delta',
+    );
+    const changed = git('rev-parse', 'HEAD');
+    refusal(`later committed delta refuses: ${path}`);
+    git('revert', '--no-commit', changed);
+    git(
+      '-c',
+      'user.name=Admission guard',
+      '-c',
+      'user.email=guard@localhost',
+      'commit',
+      '-qm',
+      'restore bytes',
+    );
+    refusal(`reverted delta still refuses: ${path}`);
+    git('checkout', '--detach', reviewed);
+  }
+  writeFileSync(join(cwd, 'scripts/unreviewed-operational.mjs'), 'export {};');
+  refusal('additional untracked script refuses');
+});

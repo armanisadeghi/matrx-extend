@@ -224,13 +224,38 @@ function admission() {
 
 export function proveSource(sourceSha, workflowSha) {
   execFileSync('git', ['merge-base', '--is-ancestor', sourceSha, workflowSha]);
-  const changedPaths = execFileSync(
-    'git',
-    ['log', '--no-renames', '--format=', '--name-only', '-z', `${sourceSha}..${workflowSha}`],
-    { encoding: 'utf8' },
-  )
-    .split('\0')
+  // SHA attests the reviewed two-file operational change, not a script namespace.
+  // Census every other commit (including reverted changes) and all pending bytes.
+  const reviewedGuestRoute = '1ec98baf21d2a6b8631971dd43c13fc199a6b2a4';
+  const reviewedGuestPaths = [
+    'scripts/hosted-remote-admission.mjs',
+    'scripts/hosted-remote-guest-chat-admission.test.mjs',
+  ];
+  const commits = git(['rev-list', `${sourceSha}..${workflowSha}`])
+    .split('\n')
     .filter(Boolean);
+  const changedPaths = commits.flatMap((commit) => {
+    const paths = execFileSync(
+      'git',
+      [
+        'diff-tree',
+        '--root',
+        '-m',
+        '-r',
+        '--no-commit-id',
+        '--no-renames',
+        '--name-only',
+        '-z',
+        commit,
+      ],
+      { encoding: 'utf8' },
+    )
+      .split('\0')
+      .filter(Boolean);
+    return paths.filter(
+      (path) => commit !== reviewedGuestRoute || !reviewedGuestPaths.includes(path),
+    );
+  });
   const pendingPaths = [
     ...execFileSync('git', ['diff', '--name-only', '-z', 'HEAD'], { encoding: 'utf8' }).split('\0'),
     ...execFileSync('git', ['ls-files', '--others', '--exclude-standard', '-z'], {
