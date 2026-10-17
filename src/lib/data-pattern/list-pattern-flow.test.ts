@@ -280,3 +280,43 @@ describe('List Pattern — find every similar sibling', () => {
     }
   });
 });
+
+describe('Click-a-card path builder — the selector matches exactly the intended set', () => {
+  const twin = (label: string) => `
+    <section>
+      <div class="x"><div class="y"><div class="z"><div class="w">
+        <ul class="results">
+          <li class="hit">${label} 1</li><li class="hit">${label} 2</li><li class="hit">${label} 3</li>
+        </ul>
+      </div></div></div></div>
+    </section>`;
+
+  it('a list root that would also match a twin list elsewhere is tightened to one element', () => {
+    document.body.innerHTML = `${twin('first')}${twin('second')}`;
+    const second = document.querySelectorAll('li.hit')[3] as Element;
+    const top = inferListPatternCandidates(second)[0];
+    if (!top) throw new Error('expected a group');
+    const all = document.querySelectorAll(top.listRoot);
+    expect(all.length).toBe(1);
+    expect(all[0]).toBe(second.parentElement);
+    const rows = listPatternMode.runInPage?.({
+      list_root: top.listRoot,
+      item_selector: top.itemSelector,
+      field_paths: [],
+    }) as Record<string, string>[];
+    expect(rows).toHaveLength(3);
+    expect(JSON.stringify(rows)).toContain('second 1');
+    expect(JSON.stringify(rows)).not.toContain('first');
+  });
+
+  it('an item selector that would sweep in nested look-alikes is pinned to the real items', () => {
+    document.body.innerHTML = `<ul class="menu" id="menu">
+      <li class="entry">A<ul><li class="entry">A-sub</li></ul></li>
+      <li class="entry">B</li><li class="entry">C</li></ul>`;
+    const top = inferListPatternCandidates(document.querySelector('li.entry') as Element)[0];
+    if (!top) throw new Error('expected a group');
+    expect(top.itemCount).toBe(3);
+    const root = document.querySelector(top.listRoot) as Element;
+    expect(root.querySelectorAll(top.itemSelector).length).toBe(top.itemCount);
+  });
+});

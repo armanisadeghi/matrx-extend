@@ -148,6 +148,73 @@ export function elementPathSelector(el: Element, depth = 5): string {
   return parts.join(' > ');
 }
 
+function isUniqueSelector(root: ParentNode, sel: string, el: Element): boolean {
+  try {
+    const all = root.querySelectorAll(sel);
+    return all.length === 1 && all[0] === el;
+  } catch {
+    return false;
+  }
+}
+
+/** Absolute position path (`html > body > div:nth-child(2) ...`): unique by construction. */
+function absolutePathSelector(el: Element): string {
+  const parts: string[] = [];
+  let node: Element | null = el;
+  while (node && node.nodeType === 1 && node.tagName !== 'HTML') {
+    if (
+      node.id &&
+      isStableId(node.id) &&
+      isUniqueSelector(node.ownerDocument, `#${CSS.escape(node.id)}`, node)
+    ) {
+      parts.unshift(`#${CSS.escape(node.id)}`);
+      return parts.join(' > ');
+    }
+    const parent: Element | null = node.parentElement;
+    const idx = parent ? Array.from(parent.children).indexOf(node) + 1 : 1;
+    parts.unshift(`${node.tagName.toLowerCase()}:nth-child(${idx})`);
+    node = parent;
+  }
+  parts.unshift('html');
+  return parts.join(' > ');
+}
+
+/**
+ * A path selector for `el` that is CHECKED against the live document: it
+ * resolves to exactly `el` and nothing else. A saved list root that also
+ * matched a twin list elsewhere on the page would replay on whichever the
+ * browser found first. Deepens the readable path first, and only then falls
+ * back to a positional path.
+ */
+export function verifiedPathSelector(el: Element): string {
+  const doc = el.ownerDocument;
+  for (const depth of [5, 8, 12, 24]) {
+    const sel = elementPathSelector(el, depth);
+    if (isUniqueSelector(doc, sel, el)) return sel;
+  }
+  return absolutePathSelector(el);
+}
+
+/**
+ * The item selector as replay will evaluate it (`querySelectorAll` from the
+ * list root, which also reaches nested descendants), checked against the
+ * items the user actually meant: the root's direct children that match.
+ * When nested look-alikes would be swept in, pin it to direct children.
+ */
+function exactItemSelector(root: Element, fp: string, intended: Element[]): string {
+  const same = (sel: string): boolean => {
+    try {
+      const got = Array.from(root.querySelectorAll(sel));
+      return got.length === intended.length && got.every((g, i) => g === intended[i]);
+    } catch {
+      return false;
+    }
+  };
+  if (same(fp)) return fp;
+  const scoped = `:scope > ${fp}`;
+  return same(scoped) ? scoped : fp;
+}
+
 /**
  * STRUCTURAL fingerprint for list-inference. Differs from localFingerprint:
  * intentionally ignores stable-anchor attributes (data-testid, data-jk,
@@ -232,8 +299,8 @@ export function inferListPatternCandidates(clicked: Element): ListPatternCandida
       }
       if (matches.length >= 2) {
         groups.push({
-          listRoot: elementPathSelector(parent),
-          itemSelector: fp,
+          listRoot: verifiedPathSelector(parent),
+          itemSelector: exactItemSelector(parent, fp, matches),
           itemCount: matches.length,
           sampleItem: item,
         });
@@ -251,7 +318,7 @@ export function inferListPatternCandidates(clicked: Element): ListPatternCandida
       // Two bare siblings is ordinary layout; a list of bare cards is three or more.
       if (same.length >= 3 && item.children.length > 0) {
         groups.push({
-          listRoot: elementPathSelector(parent),
+          listRoot: verifiedPathSelector(parent),
           itemSelector: `:scope > ${tagName.toLowerCase()}`,
           itemCount: Array.from(parent.children).filter((c) => c.tagName === tagName).length,
           sampleItem: item,
