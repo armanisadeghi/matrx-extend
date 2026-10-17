@@ -12,6 +12,7 @@ import {
   createGuestStreamCollector,
 } from './guest-chat-completion-oracle.mjs';
 import {
+  guestTransportModeForReceipt,
   requireGuestConversationSequence,
   requireGuestTransport,
   watchGuestAiRequests,
@@ -644,7 +645,7 @@ async function capture(panel, path) {
 try {
   report.server_version_before = await safeServerVersion();
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
-  const transportMode = receipt.kind === 'local_dev_unpacked' ? 'package' : 'legacy';
+  const transportMode = guestTransportModeForReceipt(receipt);
   const beforeFiles = await fileInventory(EXTENSION_DIR);
   assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'loaded extension initial tree');
   report.build = {

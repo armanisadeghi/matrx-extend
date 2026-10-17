@@ -2,10 +2,36 @@ import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import test from 'node:test';
 import {
+  guestTransportModeForReceipt,
   requireGuestConversationSequence,
   requireGuestTransport,
   watchGuestAiRequests,
 } from './guest-chat-transport-observer.mjs';
+
+// Break caught: the immutable .520 hosted release receipt must arm the panel
+// observer even though it is a release artifact, while the verified .205 stays legacy.
+test('receipt selects the observed transport by exact release and rejects unknown builds', () => {
+  for (const kind of ['native_store_zip_candidate_key_adapted', 'published_store_crx_unpacked']) {
+    assert.equal(guestTransportModeForReceipt({ kind, version: '0.2.205' }), 'legacy');
+    assert.equal(guestTransportModeForReceipt({ kind, version: '0.2.520' }), 'package');
+  }
+  assert.equal(
+    guestTransportModeForReceipt({ kind: 'local_dev_unpacked', version: '0.2.520' }),
+    'package',
+  );
+  for (const receipt of [
+    { kind: 'native_store_zip_candidate_key_adapted', version: '0.2.521' },
+    { kind: 'local_dev_unpacked', version: '0.2.205' },
+    { kind: 'unknown', version: '0.2.520' },
+    { kind: 'published_store_crx_unpacked' },
+    null,
+  ]) {
+    assert.throws(
+      () => guestTransportModeForReceipt(receipt),
+      /guest_transport_receipt_unrecognized/,
+    );
+  }
+});
 
 // Break caught: a turn loses its identity on the documented v2 404/405 route
 // fallback, accepts arbitrary duplicate POSTs, or never reaches a successful reply.

@@ -7,6 +7,26 @@ const API_PREFIX = '/api';
 const conversationFingerprint = (value) =>
   createHash('sha256').update(value).digest('hex').slice(0, 16);
 
+export function guestTransportModeForReceipt(receipt) {
+  const kind = receipt?.kind;
+  const version = receipt?.version;
+  if (
+    version === '0.2.205' &&
+    ['native_store_zip_candidate_key_adapted', 'published_store_crx_unpacked'].includes(kind)
+  )
+    return 'legacy';
+  if (
+    version === '0.2.520' &&
+    [
+      'native_store_zip_candidate_key_adapted',
+      'published_store_crx_unpacked',
+      'local_dev_unpacked',
+    ].includes(kind)
+  )
+    return 'package';
+  throw new Error('guest_transport_receipt_unrecognized');
+}
+
 function chatPathClass(url) {
   const pathname = new URL(url).pathname;
   if ([VERSIONED_CHAT_PATH, `${API_PREFIX}${VERSIONED_CHAT_PATH}`].includes(pathname)) {
