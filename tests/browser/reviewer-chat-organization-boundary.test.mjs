@@ -18,14 +18,23 @@ test('signed-in member reaches Chat without a persisted device organization over
   assert.ok(start > 0 && end > start, 'default Chat prerequisite must be located');
   for (const activeOrganizationPresent of [false, true]) {
     const clicks = [];
+    const waits = [];
     await runInNewContext(`(async () => { ${source.slice(start, end)} })()`, {
       assert,
       UNINTERRUPTED: false,
       storageShape: { activeOrganizationPresent },
       panel: {},
+      email: 'member',
+      report: { account: {} },
       stage: '',
+      waitFor: async (label, _read, accept) => {
+        waits.push(label);
+        assert.equal(accept({ swipeFileVisible: true }), true);
+        assert.equal(accept({ swipeFileVisible: false }), false);
+      },
       click: async (_panel, kind, label) => clicks.push([kind, label]),
     });
+    assert.deepEqual(waits, ['reviewer_swipe_file_tab_visible']);
     assert.deepEqual(
       clicks,
       [['title', 'Chat']],

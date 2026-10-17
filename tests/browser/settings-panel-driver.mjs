@@ -12,6 +12,18 @@ export async function evaluate(panel, expression) {
   return response.result?.value;
 }
 
+export function panelFailureCategory(error) {
+  const message = String(error?.message ?? '');
+  if (/Target closed|Session closed|WebSocket closed|detached|No target/i.test(message))
+    return 'panel_target_unavailable';
+  if (
+    message.includes('panel_runtime_exception') ||
+    /execution context was destroyed/i.test(message)
+  )
+    return 'panel_runtime_unavailable';
+  return 'panel_observation_unavailable';
+}
+
 export async function waitFor(
   label,
   read,
@@ -21,17 +33,22 @@ export async function waitFor(
 ) {
   const deadline = Date.now() + timeoutMs;
   let last;
+  let lastReadFailureCategory = null;
   do {
     try {
       last = await read();
+      lastReadFailureCategory = null;
     } catch (error) {
       // A panel reload briefly destroys its JavaScript execution context.
       last = { transient: String(error?.message ?? error) };
+      lastReadFailureCategory = panelFailureCategory(error);
     }
     if (accept(last)) return last;
     await new Promise((resolveWait) => setTimeout(resolveWait, 100));
   } while (Date.now() < deadline);
-  throw new Error(`${label}_not_observed:${JSON.stringify(diagnostic(last))}`);
+  const error = new Error(`${label}_not_observed:${JSON.stringify(diagnostic(last))}`);
+  error.waitFailureCategory = lastReadFailureCategory;
+  throw error;
 }
 
 // Profile is an account-menu destination with a TabsContent, not a tab-strip

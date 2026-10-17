@@ -21,6 +21,7 @@ import {
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
+import { recordIdentityWaitFailure } from './reviewer-chat-identity-diagnostic.mjs';
 import { storageShapeExpression } from './reviewer-chat-storage-shape.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -51,6 +52,7 @@ const SAFE_FAILURE_CODES = new Set([
   'native_sidepanel_local_build_receipt_missing',
   'native_sidepanel_local_build_provenance_refused',
   'approval_action_completion_not_observed',
+  'reviewer_extension_identity_unverified',
 ]);
 const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -1257,18 +1259,14 @@ try {
                 state.chatVisible,
               90_000,
             );
-          } catch {
-            const observed = await accountObservation(panel, email).catch(() => null);
-            const storage = await storedSessionShape(panel).catch(() => null);
-            report.account = {
-              ...report.account,
-              timeout_observation: observed,
-              storage_shape: storage,
-            };
-            report.screenshots = {
-              timeout_panel: await capture(panel, artifacts, 'reviewer-chat-timeout'),
-            };
-            throw new Error('reviewer_extension_identity_unverified');
+          } catch (error) {
+            await recordIdentityWaitFailure({
+              report,
+              waitError: error,
+              observeAccount: () => accountObservation(panel, email),
+              observeStorage: () => storedSessionShape(panel),
+              captureScreenshot: () => capture(panel, artifacts, 'reviewer-chat-timeout'),
+            });
           }
           canonicalAdminCheck = await adminCheck.verify(webIdentity.userId);
         } finally {
