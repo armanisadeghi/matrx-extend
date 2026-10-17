@@ -28,7 +28,7 @@
       "Dropped runtime listener cleanup: failed as required"
     ]
   },
-  "next_action": "After independent review, push the harness diagnostics; the release owner may admit a bounded native diagnostic run against the same immutable product artifact. Compare after-click store observations with terminal submission/pre-send/guest identity state before choosing a product repair.",
+  "next_action": "The release owner must use a fresh exact-main release ZIP for the next admitted bounded native diagnostic run: v0.2.527 is now source-ineligible after real package lockfile updates. Retain the old failure as historical evidence only unless a documented gate authorizes comparison. Inspect after-click store observations and terminal submission/pre-send/guest identity/runtime counts before choosing a product repair.",
   "owned_jobs": [],
   "independent_review": {
     "reviewer": "guest_524_native_acceptance",
