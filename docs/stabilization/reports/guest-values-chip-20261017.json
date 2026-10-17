@@ -1,0 +1,65 @@
+{
+  "task_id": "guest_values_chip_oct17",
+  "lane": "implementation",
+  "status": "source-reviewed-native-pending",
+  "observed_at": "2026-10-17T16:41:10.253943+00:00",
+  "original_run_id": "39049881169",
+  "original_artifact_id": "12107501959",
+  "candidate_version": "0.2.520",
+  "candidate_tree_sha256": "539ccb21f4a74b9ed12bc093dc59d010a4ecaeb4829db97a28193b8115e758d7",
+  "server_sha": "449381f9a8331874f87a45afa07739e203ffd1b1",
+  "original_verdict": "driver-prerequisite-failure-before-send; no candidate Chat behavior verdict",
+  "evidence": {
+    "receipt": "test-results/guest-chat-store-181bc779-c483-4b28-ae48-f691130f08e9.json in artifact 12107501959",
+    "screenshot": "test-results/native-sidepanel-qa-g7xH7p/guest-chat-failure.png in artifact 12107501959",
+    "observations": [
+      "Guest identity and visible selected Chat composer passed.",
+      "failure_stage=guest_values_chip_open; guest_ai_requests=[]; server identity stable.",
+      "Screenshot shows redesigned composer with Files, attachments, voice and send controls; no Values chip."
+    ]
+  },
+  "cause": "Acceptance hard-required a Values control that the package Chat composer does not render. ContextRulesComposerChip now renders only in PilotView; shared ContextRulesChip renders even zero rows, ruling out empty guest preview as the cause.",
+  "sibling_census": "Only this guest acceptance helper and shared native click selector reference context-values. Keep selector for published artifacts exposing the control; do not alter Pilot or product code.",
+  "repair": "Observe Values as optional across inspected package and published artifacts. Record present/exercised booleans. If present, require uniqueness and real open/close state transitions. Keep all three grounded terminal answers, direct guest route proof, conversation sequence, reload and owner-table network refusal intact.",
+  "changed_files": [
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/guest-chat-store-sequence.test.mjs",
+    "docs/stabilization/reports/guest-values-chip-20261017.json"
+  ],
+  "verification": [
+    {
+      "case": "guest sequence, completion and transport guards",
+      "command": "node --test tests/browser/guest-chat-store-sequence.test.mjs tests/browser/guest-chat-completion-oracle.test.mjs tests/browser/guest-chat-transport-observer.test.mjs",
+      "verdict": "28 pass"
+    },
+    {
+      "case": "strict-required regression mutation",
+      "verdict": "killed; absent-control case fails with original unique-presence assertion; plant.py restored byte-identical"
+    },
+    {
+      "case": "duplicate-control mutation",
+      "verdict": "killed; plant.py restored byte-identical"
+    },
+    {
+      "case": "constant-return gut check",
+      "verdict": "killed by present-control and refusal cases; plant.py restored byte-identical"
+    },
+    {
+      "case": "open-state and close-state bypass mutations",
+      "verdict": "both killed by failed-interaction tests; plant.py restored byte-identical"
+    },
+    {
+      "case": "pnpm compile",
+      "verdict": "fails on preexisting installed shared-package exports/types; no TypeScript product change"
+    }
+  ],
+  "independent_review": "root/guest_chat_harness_review_oct17: PASS; 28 guards pass; absence honestly reported, present control interactions remain strict; no native/product acceptance claim.",
+  "native_product_verdict": "unverified; no browser run launched",
+  "owned_jobs": [],
+  "commit_shas": [],
+  "limitations": [
+    "Local harness seam tests are supporting guards only; exact candidate still needs reviewed guarded native rerun.",
+    "Store package, authentication, route and resource admission paths unchanged."
+  ],
+  "next_action": "Parent/release owner admits guarded B rerun against unchanged .520 candidate; native Chat behavior remains unverified until three grounded terminal answers and transport/owner-table gates pass."
+}

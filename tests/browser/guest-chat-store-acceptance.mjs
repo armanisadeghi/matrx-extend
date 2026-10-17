@@ -88,7 +88,7 @@ const report = {
   scope:
     'fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat opening, same-conversation follow-up, and post-reload new conversation',
   context_rule_read_observation_scope:
-    'CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment',
+    'CDP observer attaches after panel load and runs through the optional Values control, all three guest sends, and panel reload; it cannot establish requests before attachment',
   status: 'unverified',
   build: null,
   server_version_before: null,
@@ -338,11 +338,19 @@ async function openAndCloseGuestValuesChip(panel) {
     } : { count: matches.length, expanded: null };
   })()`,
     );
-  assert.equal((await readChip())?.count, 1, 'guest Values chip must be uniquely present');
+  const count = (await readChip())?.count;
+  assert.ok(
+    Number.isInteger(count) && count >= 0 && count <= 1,
+    'guest Values chip must be absent or uniquely present',
+  );
+  // The package Chat composer has no Values chip. Published artifacts that
+  // expose it still exercise its real open/close path under the read observer.
+  if (count === 0) return { present: false, exercised: false };
   await click(panel, 'context-values', '');
   await waitFor('guest_values_chip_open', readChip, (state) => state?.expanded === 'true');
   await click(panel, 'context-values', '');
   await waitFor('guest_values_chip_closed', readChip, (state) => state?.expanded === 'false');
+  return { present: true, exercised: true };
 }
 
 async function installPageFixture(page, existingFixture = null) {
@@ -696,9 +704,9 @@ try {
         );
         assert.equal(before.replyCount, 0, 'fresh guest must have no prior reply');
 
-        markStage('guest_values_chip_open');
+        markStage('guest_values_chip_observation');
         contextReadWatch.arm('chip_open');
-        await openAndCloseGuestValuesChip(panel);
+        report.guest.values_control = await openAndCloseGuestValuesChip(panel);
         report.context_rule_reads = contextReadWatch.snapshot();
 
         markStage('guest_question');
@@ -932,7 +940,7 @@ try {
         assert.equal(
           report.context_rule_reads.some((request) => request.method === 'GET'),
           false,
-          'guest panel, Values chip, opening send, and post-reload send must not issue an owner-table GET',
+          'guest panel, optional Values control, and all three sends must not issue an owner-table GET',
         );
         report.guest_ai_transport_proven = true;
       } catch (error) {

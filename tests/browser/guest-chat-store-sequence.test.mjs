@@ -111,3 +111,67 @@ test('guest owner-table verdict executes after both Chat verdicts and screenshot
     assert.equal(report.followup_screenshot, captures[0]);
   }
 });
+
+// SUT: the actual optional-control driver. CDP/DOM and native clicks are its
+// external dependencies; selection, refusal, and the open/close sequence stay real.
+const valuesDriverSource = source.slice(
+  source.indexOf('async function openAndCloseGuestValuesChip('),
+  source.indexOf('async function installPageFixture('),
+);
+const valuesDriver = new Function(
+  'evaluate',
+  'click',
+  'waitFor',
+  'assert',
+  `${valuesDriverSource}; return openAndCloseGuestValuesChip;`,
+);
+
+function valuesControlHarness(count, blocked = null) {
+  let expanded = 'false';
+  const calls = [];
+  const buttons = Array.from({ length: count }, () => ({
+    getAttribute: (name) => (name === 'aria-label' ? '0 included' : expanded),
+  }));
+  // Sanitized DOM seam from the .520 failed screenshot: selected Chat and
+  // composer, no Values control. The .205 control uses the same accessible name.
+  const document = {
+    querySelector: () => ({ getAttribute: () => 'chat-pane' }),
+    getElementById: () => ({ querySelectorAll: () => buttons }),
+  };
+  const run = valuesDriver(
+    async (_panel, expression) => new Function('document', `return ${expression}`)(document),
+    async (_panel, kind, label) => {
+      calls.push([kind, label]);
+      if (blocked === 'open' || (blocked === 'close' && expanded === 'true')) return;
+      expanded = expanded === 'false' ? 'true' : 'false';
+    },
+    async (stage, read, accepts) => {
+      assert.ok(accepts(await read()), stage);
+    },
+    assert,
+  );
+  return { run: () => run({}), calls };
+}
+
+test('package guest Chat without Values continues without a fabricated control verdict', async () => {
+  const harness = valuesControlHarness(0);
+  assert.deepEqual(await harness.run(), { present: false, exercised: false });
+  assert.deepEqual(harness.calls, []);
+});
+
+test('published guest Chat Values must actually open and close when present', async () => {
+  const harness = valuesControlHarness(1);
+  assert.deepEqual(await harness.run(), { present: true, exercised: true });
+  assert.deepEqual(harness.calls, [
+    ['context-values', ''],
+    ['context-values', ''],
+  ]);
+});
+
+test('optional Values does not silently accept duplicate controls or a failed interaction', async () => {
+  const duplicates = valuesControlHarness(2);
+  await assert.rejects(duplicates.run, /absent or uniquely present/);
+  assert.deepEqual(duplicates.calls, []);
+  await assert.rejects(valuesControlHarness(1, 'open').run, /guest_values_chip_open/);
+  await assert.rejects(valuesControlHarness(1, 'close').run, /guest_values_chip_closed/);
+});
