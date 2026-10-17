@@ -139,5 +139,27 @@
       "native_product_verdict": "pending",
       "remaining": "Monitor actual hosted phase resource gate/watchdog, real member behavior and diagnostics. Record actual server SHA at browser/Chat and post-run; no retry after resource refusal or same failure without parent."
     }
+  },
+  "role_zero_request_diagnostic_admission": {
+    "at": "2026-10-17T17:46:15.334Z",
+    "status": "held-source-admission-refused",
+    "requested_release_run_id": "39053548400",
+    "requested_artifact_id": "12108945607",
+    "requested_product_source": "f5a2d49c7abc9d77c1e7e8298e52eba09b58d972",
+    "workflow_source": "245cacdcc",
+    "refusal": "release_member_product_changed",
+    "refused_paths": [
+      "pnpm-lock.yaml",
+      "docs/stabilization/reports/member-role-diagnostic-peer-20261017.json",
+      "docs/stabilization/reports/member-role-zero-request-20261017.json",
+      "docs/stabilization/reports/guest-0521-receipt-peer-20261017.json",
+      "docs/stabilization/reports/guest-0521-receipt-repair-20261017.json"
+    ],
+    "reason": "Current main includes material installed Chat package drift beyond immutable .521. Existing strict helper has no diagnostic-only mode; acceptance source admission must not be bypassed.",
+    "credentials": "No identity recovered, link minted, shared secret staged or browser run dispatched. Shared member secret listing confirms absent.",
+    "lane": "A idle; B 39054862325 isolated account-free guest run active",
+    "live_server_sha": "cee530dbfa5f3cbafa3a945d02dd4f670400ebcb",
+    "verdict": "No diagnostic/native/Store acceptance evidence produced.",
+    "next_action": "Root/release owner determines a supported diagnostic path or new exact release. No retry or bypass by this lane."
   }
 }
