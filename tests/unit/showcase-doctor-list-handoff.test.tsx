@@ -75,6 +75,7 @@ const diagnostic = {
         item_selector: detectedItem,
         count: 5,
         sample_text: 'Events at several Las Vegas venues',
+        score: 5,
       },
     ],
   },

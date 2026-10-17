@@ -224,15 +224,22 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
                   Repeating-card patterns
                 </div>
                 <div className="text-[10px] text-muted-foreground">
-                  Direct-child siblings under a common parent that share a structural fingerprint.
-                  The List Pattern tab can extract these.
+                  Click a group to extract it in List Pattern.
                 </div>
                 <div className="space-y-1">
                   {diag.sources.repeating_groups.map((g, i) => (
-                    <div
+                    <button
+                      type="button"
                       // biome-ignore lint/suspicious/noArrayIndexKey: render-only.
                       key={i}
-                      className="space-y-0.5 rounded-lg bg-background/40 px-2 py-1.5"
+                      onClick={() =>
+                        openRecommendation('list_pattern', {
+                          list_root: g.parent_selector,
+                          item_selector: g.item_selector,
+                        })
+                      }
+                      title="Extract this group in List Pattern"
+                      className="block w-full space-y-0.5 rounded-lg bg-background/40 px-2 py-1.5 text-left hover:bg-background/80"
                     >
                       <div className="flex items-center gap-2">
                         <span className="rounded-full bg-violet-500/15 px-1.5 py-px text-[10px] font-medium text-violet-700 dark:text-violet-400">
@@ -248,7 +255,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
                       <div className="truncate pl-1 font-mono text-[10px] opacity-50">
                         in {g.parent_selector}
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>

@@ -20,6 +20,12 @@ export interface RepeatingGroup {
   count: number;
   /** First ~80 chars of the first item's text — helps identify what they are. */
   sample_text: string;
+  /**
+   * Content score: count weighted by how much each item carries (text, link,
+   * image) and whether it is visible page content rather than navigation
+   * chrome. Groups are ranked by it, so a page's real cards outrank its menu.
+   */
+  score: number;
 }
 
 export interface PageDiagnostic {
@@ -271,7 +277,38 @@ export function pageDiagnosticInPage(): PageDiagnostic {
       return tag + classes.map((c) => `.${CSS.escape(c)}`).join('');
     }
     if (tag === 'li' || tag === 'article' || tag === 'tr' || tag === 'section') return tag;
-    return null;
+    // Classless repeat (utility-class sites leave the card wrapper bare):
+    // bucket by tag plus the tag sequence of its direct children.
+    if (el.children.length === 0) return null;
+    return `${BARE}${tag}|${Array.from(el.children)
+      .map((c) => c.tagName)
+      .join(',')}`;
+  };
+  const BARE = '\u0000bare:';
+  const CHROME_SEL =
+    'nav, header, footer, aside, [role="navigation"], [role="banner"], [role="contentinfo"], [role="menu"], [role="menubar"], [role="tablist"]';
+  // Weight a group by what its items carry, so content cards outrank menus,
+  // tag chips, and hidden language pickers that merely repeat more often.
+  const contentScore = (items: Element[]): number => {
+    const sample = items.slice(0, 10) as HTMLElement[];
+    let text = 0;
+    let linked = 0;
+    let media = 0;
+    let visible = 0;
+    for (const item of sample) {
+      text += Math.min((item.innerText ?? '').replace(/\s+/g, ' ').trim().length, 400);
+      if (item.matches('a[href]') || item.querySelector('a[href]')) linked += 1;
+      if (item.querySelector('img, picture, video')) media += 1;
+      const rect = item.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) visible += 1;
+    }
+    const n = sample.length || 1;
+    const avgText = text / n;
+    let factor = Math.min(Math.max(avgText / 40, 0.1), 4);
+    factor *= 1 + (linked / n) * 0.5 + (media / n) * 0.5;
+    factor *= visible / n < 0.5 ? 0.1 : 1;
+    if (items[0]?.closest(CHROME_SEL)) factor *= 0.15;
+    return Math.round(items.length * factor * 100) / 100;
   };
   const cssPath = (el: Element, depth = 4): string => {
     const parts: string[] = [];
@@ -312,8 +349,14 @@ export function pageDiagnosticInPage(): PageDiagnostic {
       arr.push(c);
       buckets.set(fp, arr);
     }
-    for (const [fp, items] of buckets) {
-      if (items.length < 5) continue;
+    for (const [bucket, bucketItems] of buckets) {
+      if (bucketItems.length < 5) continue;
+      // A bare-tag bucket is selected as every direct child with that tag.
+      const bareTag = bucket.startsWith(BARE) ? bucket.slice(BARE.length).split('|')[0] : null;
+      const fp = bareTag ? `:scope > ${bareTag}` : bucket;
+      const items = bareTag
+        ? Array.from(parent.children).filter((c) => c.tagName.toLowerCase() === bareTag)
+        : bucketItems;
       const parentSel = cssPath(parent);
       const key = `${parentSel}|${fp}`;
       if (seenSelectors.has(key)) continue;
@@ -325,10 +368,11 @@ export function pageDiagnosticInPage(): PageDiagnostic {
         item_selector: fp,
         count: items.length,
         sample_text: sampleText,
+        score: contentScore(items),
       });
     }
   }
-  groups.sort((a, b) => b.count - a.count);
+  groups.sort((a, b) => b.score - a.score || b.count - a.count);
   out.sources.repeating_groups = groups.slice(0, 5);
 
   // ── Body sample ─────────────────────────────────────────────────────────

@@ -20,6 +20,8 @@ describe('candidateMarkdownUrls', () => {
       noSignals,
     );
     expect(urls).toContain('https://ai.google.dev/gemini-api/docs/deprecations.md');
+    // Docs platforms that serve Markdown as plain text use `<page>.md.txt`.
+    expect(urls).toContain('https://ai.google.dev/gemini-api/docs/deprecations.md.txt');
     // llms.txt fallbacks at the site root.
     expect(urls).toContain('https://ai.google.dev/llms-full.txt');
     expect(urls).toContain('https://ai.google.dev/llms.txt');

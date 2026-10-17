@@ -74,7 +74,7 @@ export function detectMarkdownSignalsInPage(): MarkdownSignals {
  * list of candidate Markdown URLs to try. Cheapest / most-authoritative first:
  *   1. declared `<link rel=alternate type=text/markdown>`
  *   2. an on-page affordance href
- *   3. sibling `<url>.md` (and `<url>/index.md` for a directory-style URL)
+ *   3. sibling `<url>.md`, `<url>.md.txt` (and `<url>/index.md` for a directory-style URL)
  *   4. `/llms-full.txt` then `/llms.txt` at the site root (emerging standard)
  * The original URL (for Accept: text/markdown content-negotiation) is returned
  * separately since it reuses the same address with a different header.
@@ -103,6 +103,8 @@ export function candidateMarkdownUrls(pageUrl: string, signals: MarkdownSignals)
         push(new URL(`${path.replace(/\/$/, '')}.md`, url.origin).href);
       } else if (isDocLike) {
         push(new URL(`${path}.md`, url.origin).href);
+        // Docs platforms that serve Markdown as plain text name it `<page>.md.txt`.
+        push(new URL(`${path}.md.txt`, url.origin).href);
         push(new URL(`${path}/index.md`, url.origin).href);
       }
     } else {

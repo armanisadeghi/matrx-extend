@@ -101,7 +101,8 @@ export const listPatternMode: ExtractionMode<ListPatternConfig> = {
         const text = ((item as HTMLElement).innerText ?? item.textContent ?? '')
           .replace(/\s+/g, ' ')
           .trim();
-        const anchor = item.querySelector('a[href]');
+        // A card that IS the link (a bare `<a>` wrapper) carries its own href.
+        const anchor = item.matches('a[href]') ? item : item.querySelector('a[href]');
         const href = anchor?.getAttribute('href') ?? null;
         let link: string | null = null;
         if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
@@ -199,7 +200,7 @@ export function probeFirstRowInPage(
     const text = ((item as HTMLElement).innerText ?? item.textContent ?? '')
       .replace(/\s+/g, ' ')
       .trim();
-    const anchor = item.querySelector('a[href]');
+    const anchor = item.matches('a[href]') ? item : item.querySelector('a[href]');
     const href = anchor?.getAttribute('href') ?? null;
     let link: string | null = null;
     if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {

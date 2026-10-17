@@ -170,11 +170,26 @@ function listItemFingerprintCandidates(el: Element): string[] {
   }
   // Loosest fallback: just the tag. Matches a lot, but useful for repeating
   // <li>/<article>/<tr>-style lists where classes don't repeat.
-  if (tag === 'li' || tag === 'article' || tag === 'tr') {
+  if (SEMANTIC_ITEM_TAGS.has(tag)) {
     candidates.push(tag);
   }
   // Dedupe while preserving order.
   return Array.from(new Set(candidates));
+}
+
+/** Tags that read as list items on their own, even with no class. */
+const SEMANTIC_ITEM_TAGS = new Set(['li', 'article', 'tr']);
+
+/**
+ * Same-shape siblings: a classless card (`<a>`, `<div>`) carries no class to
+ * fingerprint, so its repeat is recognized by tag plus the tag sequence of its
+ * direct children. Utility-class sites (Tailwind) often put the classes one
+ * level down and leave the repeating wrapper bare.
+ */
+export function childShape(el: Element): string {
+  return Array.from(el.children)
+    .map((c) => c.tagName)
+    .join(',');
 }
 
 export interface ListPatternCandidate {
@@ -192,6 +207,7 @@ export function inferListPatternCandidates(clicked: Element): ListPatternCandida
 
   while (parent) {
     const candidates = listItemFingerprintCandidates(item);
+    let matched = false;
     for (const fp of candidates) {
       let matches: Element[] = [];
       try {
@@ -212,7 +228,25 @@ export function inferListPatternCandidates(clicked: Element): ListPatternCandida
           itemCount: matches.length,
           sampleItem: item,
         });
+        matched = true;
         break;
+      }
+    }
+    if (!matched && !SEMANTIC_ITEM_TAGS.has(item.tagName.toLowerCase())) {
+      // Classless repeat: same tag, same child shape, direct children only.
+      const tagName = item.tagName;
+      const shape = childShape(item);
+      const same = Array.from(parent.children).filter(
+        (c) => c.tagName === tagName && childShape(c) === shape,
+      );
+      // Two bare siblings is ordinary layout; a list of bare cards is three or more.
+      if (same.length >= 3 && item.children.length > 0) {
+        groups.push({
+          listRoot: elementPathSelector(parent),
+          itemSelector: `:scope > ${tagName.toLowerCase()}`,
+          itemCount: Array.from(parent.children).filter((c) => c.tagName === tagName).length,
+          sampleItem: item,
+        });
       }
     }
     // Climb up: the previous "item" becomes a level deeper into the candidate.

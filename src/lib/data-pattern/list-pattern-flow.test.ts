@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { inspectCardInPage } from './card-inspector';
 import { listPatternMode, probeFirstRowInPage } from './modes/list-pattern';
+import { pageDiagnosticInPage } from './page-diagnostic';
 import { inferListPatternCandidates, relativeFieldSelector } from './selector-resilience';
 
 /**
@@ -139,5 +140,48 @@ describe('List Pattern — find every similar sibling', () => {
     const selectors = inspection.candidates.map((c) => c.rel_selector);
     expect(selectors).toContain('span.price');
     expect(selectors).toContain('a.buy');
+  });
+
+  // Utility-class sites (Tailwind) leave the repeating card wrapper bare and
+  // put the classes one level down. The repeat is the bare tag + child shape.
+  const BARE_CARDS = `
+    <main>
+      <section class="week"><h2>This week</h2>
+        <div class="grid" id="bare">
+          ${['alpha/one', 'beta/two', 'gamma/three', 'delta/four', 'eps/five']
+            .map(
+              (name) =>
+                `<a href="/${name}"><div class="card border"><div class="head"><span class="name">${name}</span></div><p class="desc">About ${name} and why it is trending this week</p></div></a>`,
+            )
+            .join('')}
+        </div>
+      </section>
+      <section class="week"><h2>Last week</h2><div class="grid"></div></section>
+    </main>`;
+
+  it('finds classless card wrappers by tag and child shape', () => {
+    document.body.innerHTML = BARE_CARDS;
+    const span = document.querySelector('#bare a:nth-child(2) .name') as Element;
+    const candidates = inferListPatternCandidates(span);
+    const cards = candidates.find((c) => c.itemCount === 5 && c.itemSelector === ':scope > a');
+    if (!cards) throw new Error(`no card group in ${JSON.stringify(candidates.map((c) => c.itemSelector))}`);
+    const rows = listPatternMode.runInPage({
+      list_root: cards.listRoot,
+      item_selector: cards.itemSelector,
+      field_paths: [],
+    }) as Array<{ text: string; link: string | null }>;
+    expect(rows).toHaveLength(5);
+    expect(rows[0]?.text).toContain('alpha/one');
+    expect(rows[4]?.link).toContain('/eps/five');
+  });
+
+  it('Doctor ranks content cards above navigation menus that repeat more', () => {
+    document.body.innerHTML = `<nav><ul class="menu">${Array.from({ length: 30 }, (_, i) => `<li class="item"><a href="/n${i}">N${i}</a></li>`).join('')}</ul></nav>${BARE_CARDS}`;
+    const diag = pageDiagnosticInPage();
+    const top = diag.sources.repeating_groups[0];
+    expect(top?.item_selector).toBe(':scope > a');
+    expect(top?.count).toBe(5);
+    const list = diag.recommendations.find((r) => r.mode === 'list_pattern');
+    expect(list?.config).toMatchObject({ item_selector: ':scope > a' });
   });
 });

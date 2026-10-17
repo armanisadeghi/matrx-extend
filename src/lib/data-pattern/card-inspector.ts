@@ -188,7 +188,11 @@ export function inspectCardInPage(input: InspectInput): CardInspection {
   }
 
   // ── 3. Links ───────────────────────────────────────────────────────────
-  const links = Array.from(sample.querySelectorAll<HTMLAnchorElement>('a[href]'));
+  // The card itself may BE the link (a bare `<a>` wrapper) — offer its href first.
+  const links = [
+    ...(sample.matches('a[href]') ? [sample as HTMLAnchorElement] : []),
+    ...Array.from(sample.querySelectorAll<HTMLAnchorElement>('a[href]')),
+  ];
   for (const a of links) {
     const href = a.getAttribute('href') ?? '';
     if (!href || href.startsWith('#') || href.startsWith('javascript:')) continue;
