@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-17T15:38:11Z",
+  "observed_at": "2026-10-17T16:59:24Z",
   "scope": "Primary Chrome Web Store item hnfolienncfklkgmdjjmhhegglimlamg",
-  "status": "release_held_pending_current_source_gates_and_permitted_submission_access",
+  "status": "validated_store_zip_candidate_guest_harness_and_member_identity_unverified_permitted_submission_access_missing",
   "official_email": {
     "account": "publisher mailbox arman@armansadeghi.com",
     "search": "from:chromewebstore-noreply@google.com after:2026/10/11",
@@ -16,7 +16,7 @@
     "version_named": false,
     "reviewer_action": "Include all extension logic in the submitted package; appeal through Build > Status only if the decision is believed erroneous.",
     "newer_distinct_rejection_found": false,
-    "note": "This is the previously recorded message, not evidence of a new rejection. A Gmail search for rejected after 2026/10/13 returned no Store message."
+    "note": "Publisher Gmail exact-sender search found the prior October 11 10:10 PM Pacific notice only. Broader All Mail searches after October 13 for the exact phrase Chrome Web Store returned zero; rejection returned two unrelated messages and no Store notice."
   },
   "authenticated_dashboard": {
     "fresh_status": "unverified",
@@ -35,23 +35,28 @@
     "http_status": 200,
     "page_last_updated": "2026-10-15",
     "content_observed": "Extension-specific policy, automatic capture control, and Vault login handling are visible in public HTML.",
-    "source_comparison": "Current settings source defaults scrapeAutoOnLoad=false, captureLoginsEnabled=true, offerSavedLoginsEnabled=true, and defaultPermissionMode=ask; sidepanel audience exposes Chat, Scrape, Data, SEO, Settings to guests and Vault only after sign-in. Vault match request sends page URL metadata, and capture candidate write follows a user decision. This is source-level consistency, not exact emitted 0.2.519 or browser behavior proof."
+    "source_comparison": "Current source defaults automatic scrape capture off and offers signed-in Vault controls; its Swipe Save path sends a user-chosen supported post URL, and config reporting sends bounded key-read metadata. The live October 15 policy covers these flows. Exact 0.2.520 emitted and browser behavior remains under acceptance; dashboard disclosure selections remain unverified."
   },
   "source_and_release": {
-    "main_sha": "7f82489a25b47b9d62716d19c34c03b4bdf7de09",
-    "source_version": "0.2.519",
+    "main_sha": "a6b1af969b9b0acbfeb80718b0f11c4aabfb30a2",
+    "source_version": "0.2.520",
     "main_synchronized_with_origin": true,
-    "latest_hosted_release_run": 38080281242,
-    "latest_hosted_release_version": "0.2.479",
-    "new_exact_source_store_zip": false,
-    "fresh_ci_run": 39045858861,
-    "fresh_ci_status_at_observation": "in_progress",
-    "risk_scan_on_new_exact_candidate": "not_run",
-    "guest_and_non_admin_acceptance_on_new_exact_candidate": "not_run",
+    "latest_hosted_release_run": 39049375284,
+    "latest_hosted_release_version": "0.2.520",
+    "new_exact_source_store_zip": true,
+    "fresh_ci_run": 39048586917,
+    "fresh_ci_status_at_observation": "CI 39048586917 passed for material release source, guarded hosted release 39049375284 passed, and guest-harness full CI 39050577382 plus focused 39050577391 passed; later admission/control harness repair a6b1af969 passed independent peer but current-head CI remains pending.",
+    "risk_scan_on_new_exact_candidate": "passed; hosted risk gate and independent peer exact-ZIP Blue Argon scan; no PDFObject CDN loader",
+    "guest_and_non_admin_acceptance_on_new_exact_candidate": "guest B 39049881169 failed pre-send at stale Values-chip assertion; repaired B 39050692224 inserted question but stale Send title observer caused zero AI requests; no candidate Chat verdict. Member A 39049886121 lacked fixture, A 39050392716 was resource CPU_BUSY invalid, and healthy-resource A 39051109645 verified web sign-in but stopped at extension_identity_wait with unclassified failure before extension identity, non-admin role, tabs or Chat; no member product verdict. All runs used immutable .520 release package.",
     "cost_model_weekly_billed_usd": 55.97,
     "cost_model_ceiling_usd": 100,
     "cost_model_status": "pass",
-    "release_decision": "No hosted release dispatch yet; current CI and exact candidate acceptance are outstanding."
+    "release_decision": "0.2.520 guarded hosted package released and verified; do not upload or submit until exact-candidate guest/member native acceptance and permitted primary-item dashboard status.",
+    "latest_hosted_release_artifact_id": 12106724248,
+    "release_tag": "v0.2.520",
+    "store_zip_sha256": "e2af49293cde029ee83bc1e31c6a6b0b9a3aaf1f073477a14fba70f2f15d7909",
+    "store_zip_tree_sha256": "e11d1c952b6965162e8aadd8f5ca556fb874670e8425665f920208fc82027512",
+    "store_zip_receipt_source_sha": "c1cf4ec05f78ab231789f9f399cf8fd71bfa8693"
   },
   "publisher_api_v2": {
     "verified_publisher_id": false,
@@ -61,24 +66,24 @@
     "fetch_status_completed": false,
     "upload_or_submission_available_through_current_supported_path": false,
     "prior_access_audit": "docs/stabilization/reports/store-api-access-20261010.json",
-    "note": "The prior audit found a managed Google connection but could not inspect Store scope or invoke it through a supported trusted consumer. This lane had no Vault or trusted-server connector in its tool inventory. Missing repository secret does not establish missing Store scope. No new access was granted or inferred."
+    "note": "Authenticated personal Vault metadata shows a sealed managed Google connection for the publisher account, but exposes no Chrome Web Store scope or publisher ID; Vault searches for chrome/store found no named item. The authenticated integrations UI lists other Google products, not a Store product. No supported trusted Store status/upload consumer is exposed. This does not prove scope absent; no values were revealed or access granted."
   },
   "reviewer_copy_checklist": {
     "single_purpose": "Existing public listing states the page-aware AI side-panel purpose; candidate source still exposes the documented guest tabs.",
-    "account_free_path": "Demo URL returns HTTP 200; exact candidate guest Chat and Capture/SEO behavior still require native acceptance.",
+    "account_free_path": "Public demo URL returns HTTP 200. Published 0.2.205 CRX unpacked passed three grounded guest Chat turns with direct versioned HTTP 200 in run 39049125532. Exact 0.2.520 B runs 39049881169 and 39050692224 stopped at stale native harness selectors before any AI POST; no candidate Chat credit. The candidate uses an owned fixture, not the public demo URL; proposed demo Chat instructions are a testable reviewer path, not a claimed candidate pass. Capture and SEO demo steps are omitted.",
     "privacy_link": "Live extension-specific policy URL returns HTTP 200; final emitted behavior and dashboard disclosure fields require exact-candidate verification.",
-    "remote_code_answer": "Keep No only if exact Store ZIP scan confirms all executable logic packaged and no PDFObject CDN loader remains.",
-    "permissions_and_host_access": "Compare exact ZIP manifest to approved 0.2.205 baseline through the blocking Store risk gate; not yet run for a new candidate.",
-    "screenshots_and_reviewer_instructions": "Canonical four-image set and 440-character guest instructions are recorded; inspect against exact candidate UI before reusing. Dashboard values remain unverified.",
+    "remote_code_answer": "The exact 0.2.520 Store ZIP passed hosted risk gate and independent Blue Argon peer scan: packaged executable JS has no PDFObject CDN loader. Reconfirm dashboard remote-code answer against the exact package before submission.",
+    "permissions_and_host_access": "Exact ZIP manifest 0.2.520 passed blocking Store risk gate against approved 0.2.205 policy surface; independent peer verified the same Store ZIP SHA-256 as the release receipt.",
+    "screenshots_and_reviewer_instructions": "Canonical four-image set requires comparison against exact candidate UI; revised guest instructions use only the public demo Chat path as a testable reviewer action and omit unverified Scrape/SEO/Swipe steps. Dashboard values remain unverified.",
     "publication": "Check primary item, current revision, automatic publication and pending state through a permitted interface before replacing or submitting."
   },
   "proposed_submission_copy_pending_exact_candidate_acceptance": {
-    "reviewer_instructions_character_count": 449,
-    "reviewer_instructions": "No account is needed. Open https://www.aimatrx.com/matrx-extend-demo and click the toolbar icon. In Scrape, click Capture; in SEO, confirm the audit. In Chat ask \"What are the three workflow stages on this page?\" Expect Capture, Understand, and Use. Guest AI offers limited free tries. With a regular non-admin account, sign in: Chat stays available and signed-in tabs, including Swipe file, appear. Automatic page capture is off on a fresh install.",
+    "reviewer_instructions_character_count": 303,
+    "reviewer_instructions": "No account is needed. Open https://www.aimatrx.com/matrx-extend-demo and click the toolbar icon. In Chat, ask \"What are the three workflow stages on this page?\" The answer should identify Capture, Understand, and Use. Guest AI offers limited free tries. Automatic page capture is off on a fresh install.",
     "listing_description_addition": "Signed-in users can save a supported social post or ad from the page they are viewing into a Swipe file collection, then review available media and transcripts. A visit alone never saves a post.",
     "privacy_field_delta": "The live October 15 extension policy already discloses user-chosen Swipe post URL submission, possible external social-data provider retrieval, shared cache retention, and signed-in configuration-read reporting with local queued records and no raw setting values, page content or visited-site list. Before submission, verify the primary dashboard's Website content, User activity and Personally identifiable information selections and purpose/third-party declarations still truthfully cover these flows; no new category is established from source review alone.",
-    "screenshots": "Keep Swipe Save out of reviewer steps and screenshots until exact candidate native Save/review has passed. Check the four existing guest screenshots against the exact candidate UI before reuse.",
+    "screenshots": "Keep Swipe Save, Scrape Capture, and SEO audit out of reviewer steps and screenshots until exact 0.2.520 native behavior on the reviewer demo page is verified. Check the four existing guest screenshots against exact candidate UI before reuse.",
     "basis": "src/config/sidepanel-visibility.ts exposes Swipe file only after sign-in; src/lib/swipe-file/save.ts sends a supported chosen URL to ingestPost and adds it to a selected collection; src/lib/config/reporting.ts reports bounded key-read metadata. Live privacy policy and demo page returned HTTP 200 on October 17."
   },
-  "next_action": "After CI passes, coordinate a guarded hosted release for a new three-part version; scan its exact Store ZIP for remote code, then run actual candidate guest first/follow-up and non-admin member acceptance. Establish current primary dashboard status through permitted access before any upload; preserve any pending revision. API status/upload remains unavailable until exact publisher identity and existing Store scope are verified through a supported path."
+  "next_action": "Complete peer-reviewed strict current-package control selector and bounded admission repairs, with durable sanitized extension-identity diagnostics for member failures; then rerun exact .520 package in guarded B and A lanes. No browser path has candidate acceptance credit. Keep reviewer demo Scrape/SEO steps omitted. Verify primary dashboard status through permitted access before upload, preserving pending revision."
 }
