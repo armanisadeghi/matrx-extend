@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-13T04:22:46Z",
+  "updated_at": "2026-10-17T21:25:49Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
-  "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
+  "source_sha": "741d7771e2c45d020f63ef3b9f2a6ef8ab3ff86c",
   "modes": [
     "guest",
     "member",
@@ -6660,6 +6660,12 @@
           "label": "Chat version selector",
           "action": "Choose Current or New chat surface and verify the choice is retained when the side panel is reopened.",
           "source_anchor": "src/features/settings/SettingsView.tsx"
+        },
+        {
+          "id": "EXT-F-1003-C41",
+          "label": "Matrx 2 connection status",
+          "action": "Inspect the live Matrx 2 browser-connection status and settled account/session detail; distinguish checking, not running, connection off, connecting, disconnected, error, connected, different account, extension signed out, and device signed out states. This row reports status; no direct action is exposed here.",
+          "source_anchor": "src/features/settings/SettingsView.tsx:531"
         }
       ],
       "source_anchors": [
@@ -6830,26 +6836,30 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": 38342265985,
+              "status": "partial",
+              "run_id": 39070057081,
               "resource_valid": true,
-              "source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
-              "development_ci_run_id": 38341429896,
-              "development_artifact_id": 11787535752,
-              "build_version": "0.2.509",
-              "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
+              "source_sha": "741d7771e2c45d020f63ef3b9f2a6ef8ab3ff86c",
+              "development_ci_run_id": 39069298115,
+              "development_artifact_id": 12114317599,
+              "build_version": "0.2.524",
+              "tree_sha256": "46ba41cabedb32eb1cd0df741b951546d1d9dd437fd953b3a7fc311bed0af584",
               "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
-              "passed_criteria_count": 21,
+              "runner_id": 1000110200,
+              "passed_criteria_count": 1,
+              "unverified_criteria_count": 3,
               "passed_subtargets": [
-                "21/21 guest Theme criteria passed; the full-extension recheck began with absent Settings storage and visible System matched the effective default; changes survived worker/panel replacement and the original absent baseline was restored."
+                "Dark selection, stored value dark, document dark class, and rendered background matched during the warm Settings observation."
               ],
               "unverified": [
-                "System with dark OS preference; member/admin, Store, and wider Settings behavior."
+                "Nondefault theme persistence after panel reload; full extension reload; other 18 scheduled controls."
               ],
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-controls-38342265985.json"
+                "docs/stabilization/runs/hosted-settings-controls-39070057081.json",
+                "docs/stabilization/evidence/settings-controls-b-39070057081/native-report.sanitized.json",
+                "docs/stabilization/evidence/settings-controls-b-39070057081/native-side-panel.png"
               ],
-              "detail": "Bounded guest T04 pass on exact verified development artifact; run source 6f0a20f. The run is not latest-main or full Settings/Store coverage."
+              "detail": "Latest current-source guest attempt is partial: the warm Dark selection/render/storage criteria were observed, but the panel reload readiness check failed and persistence was not proved. The guest acceptance job failed after one recovery observation; this is not attributed to the theme product without a separate reproduction. No other scheduled control receives pass credit."
             }
           },
           "linked_defects": [
@@ -7290,6 +7300,34 @@
                 }
               },
               "reason": "Preserve the preceding bounded result when recording hosted run 38331187170."
+            },
+            {
+              "at": "2026-10-17T21:25:49Z",
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 38342265985,
+                "resource_valid": true,
+                "source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
+                "development_ci_run_id": 38341429896,
+                "development_artifact_id": 11787535752,
+                "build_version": "0.2.509",
+                "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
+                "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+                "passed_criteria_count": 21,
+                "passed_subtargets": [
+                  "21/21 guest Theme criteria passed; the full-extension recheck began with absent Settings storage and visible System matched the effective default; changes survived worker/panel replacement and the original absent baseline was restored."
+                ],
+                "unverified": [
+                  "System with dark OS preference; member/admin, Store, and wider Settings behavior."
+                ],
+                "evidence": [
+                  "docs/stabilization/runs/hosted-settings-controls-38342265985.json"
+                ],
+                "detail": "Bounded guest T04 pass on exact verified development artifact; run source 6f0a20f. The run is not latest-main or full Settings/Store coverage."
+              },
+              "superseded_at": "2026-10-17T21:25:49Z",
+              "reason": "Retained earlier exact-artifact bounded pass. Newer current-source run 39070057081 observes the Dark choice and rendered appearance but fails during panel reload, so persistence on the current source remains partial."
             }
           ],
           "attempt_history": [
@@ -15530,6 +15568,54 @@
             "panel-reopen",
             "preference-restoration"
           ]
+        },
+        {
+          "id": "EXT-F-1003-T96",
+          "title": "Matrx 2 connection status and settled account state",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C41"
+          ],
+          "preconditions": [
+            "Open the actual extension Settings > Desktop bridge on a verified build; record role, browser profile and resource/build receipt.",
+            "Wait for the Matrx 2 status read and live updates to settle; do not infer the connected state from another desktop row."
+          ],
+          "steps": [
+            "Inspect the Matrx 2 row while initial status is checking, then after a settled response.",
+            "For each state that is present in the controlled environment, compare the displayed text with the underlying connection state and account/session detail; record states unavailable in this environment as unverified."
+          ],
+          "expected": [
+            "The row truthfully distinguishes the Matrx 2 connection and session states. The status is independent of Matrx Local and does not imply a reconnect action."
+          ],
+          "dimensions": [
+            "initial-read",
+            "settled-live-state",
+            "role-visibility"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "remaining_criteria": [
+                "No actual Settings UI observation of the Matrx 2 status row or settled states."
+              ]
+            },
+            "member": {
+              "status": "unverified",
+              "remaining_criteria": [
+                "No actual signed-in member observation of the Matrx 2 status row or settled states."
+              ]
+            },
+            "admin": {
+              "status": "unverified",
+              "remaining_criteria": [
+                "No actual signed-in admin observation of the Matrx 2 status row or settled states."
+              ]
+            }
+          }
         }
       ],
       "cells": {
