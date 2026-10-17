@@ -2,8 +2,9 @@
 /** Lightweight Mac-side dispatch; package and browser work runs under GitHub-hosted permits. */
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mjs';
 import { sourceCompatibility } from './development-source-compatibility.mjs';
@@ -109,6 +110,222 @@ export function verifyHostedWorkflowCheckout(run, fetchContent = ghJson) {
     workflowSha: run.head_sha,
     workflowSourceSha256: createHash('sha256').update(bytes).digest('hex'),
   };
+}
+
+/** Exact released Store bytes on the isolated guest B lane; no credential staging. */
+export function planHostedGuestChat({
+  lane,
+  acceptanceCase,
+  runnerLabel,
+  releaseRunId,
+  artifactId,
+  sourceSha,
+  workflowRef = 'main',
+  workflow,
+}) {
+  if (lane !== 'B') refuse('HOSTED_CHAT_LANE_REFUSED');
+  if (acceptanceCase !== 'guest-chat') refuse('HOSTED_CHAT_CASE_REFUSED');
+  if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_CHAT_RUNNER_REFUSED');
+  if (!DECIMAL.test(releaseRunId ?? '') || !DECIMAL.test(artifactId ?? ''))
+    refuse('HOSTED_ARTIFACT_ID_INVALID');
+  if (!SHA.test(sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
+  if (workflowRef !== 'main') refuse('HOSTED_WORKFLOW_REF_REFUSED');
+  requireHostedWorkflowContract(
+    workflow ??
+      readFileSync(
+        new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+        'utf8',
+      ),
+  );
+  return {
+    command: 'gh',
+    args: [
+      'workflow',
+      'run',
+      'hosted-guest-acceptance.yml',
+      '--ref',
+      'main',
+      ...[
+        'acceptance_lane=B',
+        'acceptance_case=guest-chat',
+        'scrape_auth_mode=guest',
+        `requested_by=${DISPATCH_REQUESTER}`,
+        'runner_label=macos-15-intel',
+        `release_run_id=${releaseRunId}`,
+      ].flatMap((field) => ['-f', field]),
+    ],
+  };
+}
+
+// The frozen release may advance only across this reviewed route and sanitized records.
+// Browser harnesses, workflows, dependencies and product edits require a fresh release.
+export function requireGuestChatDispatchAdmission({
+  localSha,
+  remoteSha,
+  dirty,
+  sourceSha,
+  ancestor,
+  changedPaths,
+  runs,
+}) {
+  requireSynchronizedDispatchSource(localSha, remoteSha, dirty);
+  if (
+    !SHA.test(sourceSha ?? '') ||
+    ancestor !== true ||
+    !Array.isArray(changedPaths) ||
+    changedPaths.some(
+      (path) =>
+        !/^(?:scripts\/hosted-remote-(?:admission|guest-chat-admission)(?:\.test)?\.mjs|docs\/stabilization\/(?:runs|reports|defects)\/[a-z0-9-]+\.json)$/.test(
+          path,
+        ),
+    )
+  )
+    refuse('HOSTED_CHAT_RUNTIME_SOURCE_DRIFT');
+  if (
+    !Array.isArray(runs) ||
+    runs.some((run) => run.status !== 'completed' && !/^Native A · /.test(run.name ?? ''))
+  )
+    refuse('HOSTED_CHAT_B_CAPACITY_REFUSED');
+  return true;
+}
+
+async function guestChatCli(mode, args) {
+  for (const key of args.keys())
+    if (
+      ![
+        '--lane',
+        '--case',
+        '--runner-label',
+        '--release-run-id',
+        '--artifact-id',
+        '--source-sha',
+        '--workflow-ref',
+      ].includes(key)
+    )
+      refuse('HOSTED_ARGUMENT_INVALID');
+  const input = {
+    lane: args.get('--lane'),
+    acceptanceCase: args.get('--case'),
+    runnerLabel: args.get('--runner-label'),
+    releaseRunId: args.get('--release-run-id'),
+    artifactId: args.get('--artifact-id'),
+    sourceSha: args.get('--source-sha'),
+    workflowRef: args.get('--workflow-ref') ?? 'main',
+  };
+  const plan = planHostedGuestChat(input);
+  const git = (argv) => execFileSync('git', argv, { encoding: 'utf8' }).trim();
+  const admit = () => {
+    const localSha = git(['rev-parse', 'HEAD']);
+    const remoteSha = ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha;
+    const dirty = git(['status', '--porcelain']);
+    requireSynchronizedDispatchSource(localSha, remoteSha, dirty);
+    verifyHostedWorkflowCheckout({
+      path: '.github/workflows/hosted-guest-acceptance.yml',
+      head_sha: remoteSha,
+    });
+    const ancestor = spawnSync('git', ['merge-base', '--is-ancestor', input.sourceSha, remoteSha]);
+    const changedPaths = execFileSync(
+      'git',
+      ['log', '--no-renames', '--format=', '--name-only', '-z', `${input.sourceSha}..${remoteSha}`],
+      { encoding: 'utf8' },
+    )
+      .split('\0')
+      .filter(Boolean);
+    const runs = ['hosted-guest-acceptance.yml', 'hosted-resource-diagnostic.yml'].flatMap(
+      (workflow) =>
+        ['queued', 'in_progress', 'waiting', 'pending', 'requested'].flatMap((status) => {
+          const listing = ghJson(
+            `repos/${OWNER}/actions/workflows/${workflow}/runs?status=${status}&per_page=100`,
+          );
+          if (
+            !Array.isArray(listing.workflow_runs) ||
+            listing.total_count !== listing.workflow_runs.length
+          )
+            refuse('HOSTED_CHAT_B_CAPACITY_REFUSED');
+          return listing.workflow_runs;
+        }),
+    );
+    requireGuestChatDispatchAdmission({
+      localSha,
+      remoteSha,
+      dirty,
+      sourceSha: input.sourceSha,
+      ancestor: !ancestor.error && ancestor.status === 0,
+      changedPaths,
+      runs,
+    });
+    return remoteSha;
+  };
+  const workflowSha = admit();
+  // Reuse the existing release identity, published receipt, tag and archive-byte validators.
+  const { releaseMemberPlan, verifyReleaseMemberBytes } = await import(
+    './hosted-release-member-admission.mjs'
+  );
+  const run = ghJson(`repos/${OWNER}/actions/runs/${input.releaseRunId}`);
+  const listing = ghJson(
+    `repos/${OWNER}/actions/runs/${input.releaseRunId}/artifacts?per_page=100`,
+  );
+  let scratch;
+  try {
+    scratch = mkdtempSync(join(tmpdir(), 'guest-chat-admission-'));
+    const archive = execFileSync(
+      'gh',
+      ['api', `repos/${OWNER}/actions/artifacts/${input.artifactId}/zip`],
+      { maxBuffer: 256 * 1024 * 1024 },
+    );
+    const archivePath = join(scratch, 'artifact.zip');
+    writeFileSync(archivePath, archive, { mode: 0o600 });
+    const entries = execFileSync('unzip', ['-Z1', archivePath], { encoding: 'utf8' })
+      .trim()
+      .split('\n');
+    const matching = (name) => {
+      const matches = entries.filter((entry) => entry === name || entry.endsWith(`/${name}`));
+      if (matches.length !== 1) refuse('HOSTED_CHAT_ARCHIVE_ENTRY_AMBIGUOUS');
+      return matches[0];
+    };
+    const receipt = JSON.parse(
+      execFileSync('unzip', ['-p', archivePath, matching('release-receipt.json')], {
+        encoding: 'utf8',
+      }),
+    );
+    if (!/^\d+\.\d+\.\d+$/.test(receipt.version ?? '')) refuse('HOSTED_CHAT_VERSION_INVALID');
+    const tagRef = `refs/tags/v${receipt.version}`;
+    const tags = git(['ls-remote', 'origin', tagRef, `${tagRef}^{}`])
+      .split('\n')
+      .map((line) => line.split('\t'));
+    const tagSha =
+      tags.find(([, ref]) => ref === `${tagRef}^{}`)?.[0] ??
+      tags.find(([, ref]) => ref === tagRef)?.[0];
+    const release = releaseMemberPlan(input, run, listing, receipt, tagSha);
+    const store = execFileSync(
+      'unzip',
+      ['-p', archivePath, matching(`matrx-extend-${receipt.version}-store.zip`)],
+      { maxBuffer: 256 * 1024 * 1024 },
+    );
+    verifyReleaseMemberBytes(archive, release.artifact, receipt, store);
+    if (admit() !== workflowSha) refuse('HOSTED_CHAT_WORKFLOW_CHANGED');
+    if (mode === 'dispatch-guest-chat') {
+      const result = spawnSync(plan.command, [...plan.args, '-R', OWNER], { stdio: 'inherit' });
+      if (result.status !== 0) refuse('HOSTED_DISPATCH_FAILED');
+    }
+    process.stdout.write(
+      `${JSON.stringify({
+        mode,
+        plan,
+        workflowSha,
+        sourceSha: input.sourceSha,
+        releaseRunId: input.releaseRunId,
+        artifactId: input.artifactId,
+        version: receipt.version,
+        storeZipSha256: receipt.storeZip.sha256,
+        githubArtifactDigest: release.artifact.digest,
+        host: 'github-hosted',
+        localHeavyWork: false,
+      })}\n`,
+    );
+  } finally {
+    if (scratch) rmSync(scratch, { recursive: true, force: true });
+  }
 }
 
 export function planHostedMemberData({
@@ -1131,7 +1348,12 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   try {
     const mode = process.argv[2];
     const args = argsMap(process.argv.slice(3));
-    if (
+    if (mode === 'plan-guest-chat' || mode === 'dispatch-guest-chat') {
+      guestChatCli(mode, args).catch((error) => {
+        process.stderr.write(`HOSTED_REMOTE_REFUSED ${error.message}\n`);
+        process.exitCode = 1;
+      });
+    } else if (
       mode === 'plan' ||
       mode === 'dispatch' ||
       mode === 'plan-guest-seo' ||
