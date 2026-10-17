@@ -1980,6 +1980,21 @@
  "/comparison": {
   "get": []
  },
+ "/comparison/chat/start": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/comparison/discover": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/comparison/discover/plan": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/comparison/lookup": {
   "post": [
    "application/json"
