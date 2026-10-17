@@ -150,6 +150,27 @@ export const autoTableMode: ExtractionMode<AutoTableConfig> = {
     // rowspan cell (a Nobel year shared by two laureates) repeats its value
     // down the rows it spans, and colspan fills every column it covers, so
     // later cells never shift into the wrong column.
+    // A cell that holds a form control (a pricing table's disk-size input)
+    // shows its value on screen but has no text — read the control's value.
+    const cellText = (cell: HTMLElement): string => {
+      const controls = Array.from(
+        cell.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+          'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea',
+        ),
+      );
+      if (controls.length === 0) return (cell.innerText ?? cell.textContent ?? '').trim();
+      // Option lists are not cell text; drop the controls, keep labels.
+      const bare = cell.cloneNode(true) as HTMLElement;
+      for (const c of Array.from(bare.querySelectorAll('select, textarea, input'))) c.remove();
+      const label = (bare.textContent ?? '').replace(/\s+/g, ' ').trim();
+      const values = controls
+        .map((c) =>
+          c instanceof HTMLSelectElement ? (c.selectedOptions[0]?.textContent ?? c.value) : c.value,
+        )
+        .map((v) => v.trim())
+        .filter(Boolean);
+      return [label, ...values].filter(Boolean).join(' ').trim();
+    };
     const carry: Array<{ text: string; left: number } | undefined> = [];
     const out: Record<string, string>[] = [];
     for (const tr of bodyTrs) {
@@ -167,7 +188,7 @@ export const autoTableMode: ExtractionMode<AutoTableConfig> = {
       };
       for (const cell of cells) {
         fillCarried();
-        const text = (cell.innerText ?? cell.textContent ?? '').trim();
+        const text = cellText(cell);
         const colspan = Number.parseInt(cell.getAttribute('colspan') || '1', 10) || 1;
         const rowspan = Number.parseInt(cell.getAttribute('rowspan') || '1', 10) || 1;
         for (let dc = 0; dc < colspan; dc++) {

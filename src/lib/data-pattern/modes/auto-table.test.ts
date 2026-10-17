@@ -33,4 +33,16 @@ describe('Tables — header rows', () => {
       { Year: '1903', Name: 'Henri Becquerel, France', Country: 'Henri Becquerel, France' },
     ]);
   });
+
+  it('reads the value of a form control inside a cell', () => {
+    document.body.innerHTML = `<table><thead><tr><th>Memory</th><th>Disk</th></tr></thead><tbody>
+      <tr><td>1 GiB</td><td><label>GiB</label><input type="number" value="10"></td></tr>
+      <tr><td>2 GiB</td><td><select><option>30 GiB</option><option selected>60 GiB</option></select></td></tr>
+    </tbody></table>`;
+    const rows = autoTableMode.runInPage({ table_index: 0 }) as Array<Record<string, string>>;
+    expect(rows).toEqual([
+      { Memory: '1 GiB', Disk: 'GiB 10' },
+      { Memory: '2 GiB', Disk: '60 GiB' },
+    ]);
+  });
 });
