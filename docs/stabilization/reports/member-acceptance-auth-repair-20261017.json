@@ -161,5 +161,37 @@
     "live_server_sha": "cee530dbfa5f3cbafa3a945d02dd4f670400ebcb",
     "verdict": "No diagnostic/native/Store acceptance evidence produced.",
     "next_action": "Root/release owner determines a supported diagnostic path or new exact release. No retry or bypass by this lane."
+  },
+  "release_0522_member_attempt": {
+    "at": "2026-10-17T18:13:35.024Z",
+    "run_id": "39057139939",
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39057139939",
+    "version": "0.2.522",
+    "release_run_id": "39056398246",
+    "artifact_id": "12109816135",
+    "source_sha": "f4a72d5ddbb508f63eef71661547b80c23bb6ffe",
+    "workflow_sha": "4da74deae1e7977bfa0214e155bcd29dabf8e732",
+    "store_zip_sha256": "fe80e3025dead2e2f508f0c2ba44656f33fa069b454d7f1313061f44e7cd54b9",
+    "github_artifact_digest": "sha256:198f181c91d14120a9b30d453937b3e6a5085eaeb5c3914da7ba104645ac1b3d",
+    "source_admission": "Clean synchronized main and exact f4..HEAD source delta admitted; reviewed workflow and full A capacity census passed before mint/stage. No source/report commit before dispatch.",
+    "verification": "Real strict CLI plan and guarded dispatch PASS; actual fresh hosted phase resource gates and watchdog unchanged.",
+    "fixture": "Designated existing nonadmin account and exact active organization freshly verified before one-use link minted and staged only through stdin.",
+    "b_overlap": "39057016053 isolated account-free B; no shared member/admin fixture use.",
+    "server_at_dispatch": {
+      "git_sha": "94d5ef51313e436dab9c203c61252528c6490c4a",
+      "built_at": "2026-10-17T17:51:29Z",
+      "branch": null,
+      "observed_at": "2026-10-17T18:13:35.026Z",
+      "source": "Direct /health/version observation after dispatch; prior version evidence is historical only."
+    },
+    "cleanup": "Complete: temporary GitHub member secret deleted; listing confirms absent. Private identity and one-use link directory removed; absence verified.",
+    "native_product_verdict": "pending; no native or Store credit from dispatch/auth preflight",
+    "next_action": "Remove and verify temporary credentials after auth preflight, then root/release owner monitors native/resource result and server at browser/Chat and post-run. Stop on any refusal; no automatic retry.",
+    "auth_preflight": "PASS; selected authentication preflight succeeded and run advanced to fresh measured package readiness.",
+    "handoff": {
+      "owner": "root and root/store_rejection",
+      "active_run_id": "39057139939",
+      "remaining": "Monitor actual hosted resource phase admission/watchdog and native member result, bind actual server SHA at browser/Chat and post-run. No native or Store credit yet; no retries after guard refusal without parent."
+    }
   }
 }
