@@ -252,8 +252,8 @@ component, so all four must show identical rows in identical order.
 
 ### Vault Fill admission refusal
 - **Steps:** Open the Vault on a login page, then make its active-tab identity unavailable before clicking **Fill**.
-- **Expected:** The panel says “Could not start filling. Focus the login field, then try Fill again.” and sends no fill request.
-- **Covered by:** `src/features/vault/VaultView.focused-frame.test.tsx`.
+- **Expected:** The panel says filling did not start and sends no fill request.
+- **Covered by:** `src/features/vault/useVaultPage.ts` returns `not_started` when admission refuses; words come from `@ai-matrx/vault`.
 
 ### Firefox Vault capture status
 
@@ -265,7 +265,7 @@ component, so all four must show identical rows in identical order.
 
 - **Steps:** Open Vault on a page with a closed shadow-root login, then on a restricted browser page. Return to a supported login and focus its password field.
 - **Expected:** Inaccessible fields show manual-entry guidance without Fill or automatic Sign in. The supported page recovers its current Fill offer; a top-level ready offer retains Sign in. These checks never submit or save a login.
-- **Covered by:** `VaultView.focused-frame.test.tsx` and `vault-setup-recovery-acceptance.cjs`; browser acceptance is recorded separately.
+- **Covered by:** `vault-setup-recovery-acceptance.cjs`; browser acceptance is recorded separately.
 
 ### Panel-opening remedies from explicit clicks
 - **What it does:** Every explicit request to open Matrx reports the actual browser result. A toolbar-popup refusal stays visible in the popup; a context-menu refusal appears in a browser notification; a clicked Agenda notification remains visible with its toolbar remedy; and a clicked login-capture recovery card shows its remedy inside that same card.
@@ -2891,61 +2891,30 @@ Every entry follows this shape:
     the "deploy problem — do not retry" copy, no silent fallback.
 
 ### Vault — side-panel password manager
-- **What it does:** lists your saved logins (Mine + Shared with me) masked, surfaces
-  the logins the SERVER approves for the current tab with a one-click **Use here**,
-  reveals/copies a field on explicit request (auto-hides after 30s), toggles browser
-  fill, adds the current page as a login URL, and creates a login from the page.
-  Everyday management is here too: **Edit details** (name, login URLs, match rule,
-  notes), **change** / **add** / **remove** a field value, and **Delete** the login.
-  Sharing / transfer / ownership / attachments deliberately live on the web (`/vault`).
-- **Where to test:** sidepanel → Vault tab (vault icon, between Screenshots and Tools).
-  Signed in — the tab is hidden for guests and the panel refuses guest identity.
-- **Prereq:** at least one `website_login` item in the Vault with `browser_fill_enabled`
-  and a `login_urls` entry for the site you test on.
+- **What it does:** the Vault tab is the shared `@ai-matrx/vault` workspace (the same
+  screens as the web app's `/vault`): every item type, search, favorites, edit, reveal
+  and copy, one-time codes, sharing, import/export, trash. Beside a tab it opens on the
+  **page view**: the site, the logins the SERVER approves for it with **Fill** (into the
+  focused field) and **Sign in for me** (top frame only), "Save a login" prefilled with the
+  page, a generator that can fill the page's new-password boxes, plus the extension's
+  "Save this login?" and "Turn on filling in this browser" cards.
+- **Where to test:** sidepanel → Vault tab, signed in as admin@admin.com.
 - **Steps:**
-  1. Sign out (or use a guest profile) and open the Vault tab → sign-in prompt only;
-     no list, and no request to `/api/vault/*` in the Debug tab.
-  2. Sign in. Navigate to a saved site's https login page, open the Vault tab.
-     The top strip shows the host and your matching login(s).
-  3. Click **Use here** → the page fills and submits; the strip reports one of the
-     fixed statuses (Signed in / verification step / challenge / rejected / …).
-  4. Expand any item → fields show mask hints only. Click the eye → the value appears;
-     wait 30s → it hides itself. Click copy → the value lands on the clipboard.
-  5. Toggle **Browser fill** off → the item leaves the top strip. Toggle back on →
-     it returns.
-  6. On a page the item does not cover, expand it → **Use this login on &lt;host&gt;**;
-     click it → the page is added and the item now appears in the top strip.
-  7. On a login page with nothing saved → **Save this site** → fill name / username /
-     password → **Save to Vault** → the new item appears in Mine and in the top strip.
-  8. **Shared** tab → items others granted you; a shared item you cannot edit shows
-     its fill switch disabled and no Edit / pencil / trash controls.
-  9. Expand an item you own → pencil beside a field → type a new value → ✓ (or Enter)
-     → the mask hint updates; reveal shows the NEW value; the old one is gone.
-     Esc / ✕ discards the draft.
-  10. **Add a field** → name `security_answer`, a value → **Add field** → a new masked
-      row appears; a duplicate name is refused before any request.
-  11. Trash beside a field → "Remove “…”? Yes, remove" → the row disappears.
-  12. **Edit details** → change the name, add a second URL line, pick *Exact URL only*,
-      write a note → **Save** → the row re-renders with the new name/URLs/note and the
-      top strip re-resolves for the current page. An `http://` line is refused inline.
-      Clearing every URL turns browser fill off.
-  13. **Delete** → "Delete this login? Yes, delete" → the item leaves Mine and the
-      top strip; reload confirms it is gone server-side.
-- **Expected:** every value is masked until an explicit reveal; nothing you reveal
-  survives a tab switch (leaving the Vault tab unmounts it); the Debug tab shows
-  `→ POST vault/items/{item}/reveal` and `← vault reveal ok` but never a value; a
-  changed/added value shows only `→ PUT vault/items/{item}/fields/{field}/value` /
-  `→ POST vault/items/{item}/fields` with no body.
-- **Edge cases worth poking:**
-  - An http (non-loopback) page → "Browser login only runs on https pages", no matches
-    fetched, and creating from that page attaches no site.
-  - A sealed field → no eye/copy buttons and a "can never be shown" note.
-  - Two matching logins on one page → both listed, each with its own **Sign in**
-    (the agent path returns `selection_required` in the same situation).
-  - A login form with `method="get"`, or no method at all →
-    `unsafe_destination / unsafe_get_form` before any Vault materialization or fill.
-  - Sign out with the panel open → the next action reports
-    "Sign in to Matrx to use the Vault".
+  1. Signed out → the Vault tab shows the sign-in prompt only; no `/api/vault/*` request.
+  2. Signed in, on a saved site's https login page → the page view lists the match(es).
+     Click the username box on the site, then **Fill** → fields fill, "Filled" note shows.
+  3. **Sign in for me** on a top-frame login → the page submits; the outcome names
+     signed in / verification step / challenge / rejected.
+  4. On a `chrome://` page → page view says filling cannot target this page; no Fill.
+  5. Switch to All items → the full vault list; open an item → edit / reveal / copy work.
+  6. Submit a new login on a disposable site → the "Save this login?" card appears;
+     **Save** → the item appears in the list.
+  7. Generator on a sign-up page → **Fill page** fills the new-password boxes.
+- **Expected:** no screen shows a dead control; anything the extension cannot do
+  (confirm-it's-you dialog, passkey approval from the vault) is absent rather than broken.
+- **Covered by:** `tests/unit/vault-panel.test.ts` (routes, outcome maps, no persistence),
+  `tests/unit/credential-capture-prompt.test.ts` (capture host); the screens' own tests
+  live in `@ai-matrx/vault`.
 
 ### Privacy setting cases: Offer to save logins to the Vault (C07, T19/T20/T21)
 - **Where to test:** the actual extension after a fresh unpacked build, with a resource permit and complete build receipt for source/dirty-source and lockfile hashes, output hash, WXT mode, runtime extension ID, Chrome/profile, auth/role/organization, permissions, backend, fixture IDs, and timestamp. Wait for build completion; reload extension contexts and target tabs as needed, reopen the side panel, and verify the running build before acting. Use a controlled disposable HTTPS sign-in fixture with synthetic credentials and a submit counter. Record the original setting and field values first. For signed-in member/admin runs, use a case-owned matching Vault login and record its item ID for cleanup. Guest runs must stay signed out and must not create or assume a Vault identity.

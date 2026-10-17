@@ -1,19 +1,18 @@
 /**
- * Vault side-panel security suite.
+ * Vault side-panel security suite (the extension half).
  *
- * The panel is the first surface in this extension that shows a user their own
- * credentials. Three properties have to hold, and each one is cheap to break by
- * accident:
+ * The Vault screens are `@ai-matrx/vault`; this extension supplies the page-side
+ * abilities and the save-on-submit writes. Three properties have to hold here,
+ * and each one is cheap to break by accident:
  *
  *   1. **Nothing reaches the Vault without a real user JWT.** The extension's
  *      guest fingerprint identity is rejected server-side by design; the client
  *      must short-circuit BEFORE issuing a request so it never depends on that
  *      rejection landing.
- *   2. **A revealed value is transient and unlogged.** It lives in one
- *      auto-clearing holder, never in a log line, never in storage.
+ *   2. **Plaintext-bearing writes are silent and unlogged.**
  *   3. **The panel and the `credential_login` tool agree on what "fillable"
- *      and "already covered" mean.** Two copies of the destination rule is how
- *      a UI starts offering a fill the handler refuses.
+ *      means.** Two copies of the destination rule is how a UI starts offering
+ *      a fill the handler refuses.
  *
  * The final block greps the feature's own source, because a persistence call
  * added later would pass tsc, pass biome, and silently defeat (2).
@@ -22,16 +21,18 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
-  coversPage,
+  fillOutcomeOf,
+  matchErrorOf,
+  newPasswordFillOf,
+  newPasswordFindOf,
+  signInOutcomeOf,
+} from '@/features/vault/extension-vault-host';
+import {
   isFillablePageUrl,
   isSafeDestination,
-  loginUrlLabel,
   normalizeLoginUrl,
-  primaryHost,
-  withPageAdded,
 } from '@/lib/credentials/login-urls';
-import { createTransientSecret } from '@/lib/credentials/transient-secret';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const SENTINEL = 'ZZVAULTREVEALSENTINELZZ';
 const ITEM_ID = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
@@ -122,17 +123,11 @@ describe('vault routes — a real user JWT or nothing', () => {
     const vault = await import('@/lib/api/routes/vault');
 
     const results = await Promise.all([
-      vault.fetchMyVaultItems(),
-      vault.fetchVaultItemsSharedWithMe(),
       vault.fetchVaultItem(ITEM_ID),
-      vault.updateVaultItemMetadata(ITEM_ID, { browser_fill_enabled: true }),
       vault.createVaultItem({ display_name: 'x', fields: [{ field_key: 'password', value: 'x' }] }),
-      vault.revealVaultField(ITEM_ID, 'password'),
       vault.fetchBrowserLoginMatches('https://example.com/login'),
       vault.updateVaultFieldValue(ITEM_ID, 'field-1', 'x'),
       vault.addVaultField(ITEM_ID, { field_key: 'pin', value: 'x' }),
-      vault.deleteVaultField(ITEM_ID, 'field-1'),
-      vault.deleteVaultItem(ITEM_ID),
     ]);
 
     for (const result of results) {
@@ -151,7 +146,7 @@ describe('vault routes — a real user JWT or nothing', () => {
       [500, 'server_error'],
     ] as const) {
       respond = () => ({ ok: false, status, error: 'nope' });
-      const result = await vault.fetchMyVaultItems();
+      const result = await vault.fetchVaultItem(ITEM_ID);
       expect(result.ok).toBe(false);
       if (!result.ok) expect(result.failure.kind).toBe(kind);
     }
@@ -178,36 +173,11 @@ describe('vault routes — a real user JWT or nothing', () => {
   });
 });
 
-// ── 2. Reveal is transient, silent, and unlogged ────────────────────────────
+// ── 2. Plaintext-bearing writes are silent and unlogged ─────────────────────
 
-describe('reveal', () => {
-  it('returns the value to the caller and never puts it in a log line', async () => {
+describe('save-on-submit writes', () => {
+  it('sends the plaintext-bearing routes with silent:true and never logs the value', async () => {
     const vault = await import('@/lib/api/routes/vault');
-    respond = () => ({
-      ok: true,
-      status: 200,
-      data: { item_id: ITEM_ID, field_key: 'password', value: SENTINEL },
-    });
-
-    const result = await vault.revealVaultField(ITEM_ID, 'password');
-    expect(result.ok).toBe(true);
-    if (result.ok) expect(result.data).toBe(SENTINEL);
-
-    const loggedText = JSON.stringify(logCalls);
-    expect(loggedText).not.toContain(SENTINEL);
-  });
-
-  it('sends the plaintext-bearing routes with silent:true', async () => {
-    const vault = await import('@/lib/api/routes/vault');
-    respond = () => ({ ok: true, status: 200, data: { value: SENTINEL } });
-    await vault.revealVaultField(ITEM_ID, 'password');
-
-    // A malformed 2xx body makes the client's JSON parse error quote the body.
-    // `silent` is what keeps that quote out of the debug log.
-    const revealCall = calls.find((c) => c.path.endsWith('/reveal'));
-    expect(revealCall?.opts?.silent).toBe(true);
-
-    calls.length = 0;
     respond = () => ({ ok: true, status: 200, data: { id: ITEM_ID, display_name: 'x' } });
     await vault.createVaultItem({
       display_name: 'x',
@@ -229,74 +199,80 @@ describe('reveal', () => {
     expect(calls[0]?.path).toBe(`/api/vault/items/${ITEM_ID}/fields`);
     expect(calls[0]?.opts?.silent).toBe(true);
 
-    // Nothing on the management path ever quotes the value into the log.
-    expect(JSON.stringify(logCalls)).not.toContain(SENTINEL);
-  });
-
-  it('management routes hit the item/field paths and return no body to keep', async () => {
-    const vault = await import('@/lib/api/routes/vault');
-    respond = () => ({ ok: true, status: 204 });
-    const removedField = await vault.deleteVaultField(ITEM_ID, 'field-1');
-    const removedItem = await vault.deleteVaultItem(ITEM_ID);
-    expect(removedField).toEqual({ ok: true, data: undefined });
-    expect(removedItem).toEqual({ ok: true, data: undefined });
-    expect(calls.map((c) => `${c.method} ${c.path}`)).toEqual([
-      `DELETE /api/vault/items/${ITEM_ID}/fields/field-1`,
-      `DELETE /api/vault/items/${ITEM_ID}`,
-    ]);
-  });
-
-  it('refuses a non-string value instead of handing back a partial body', async () => {
-    const vault = await import('@/lib/api/routes/vault');
-    respond = () => ({ ok: true, status: 200, data: { value: { nested: SENTINEL } } });
-    const result = await vault.revealVaultField(ITEM_ID, 'password');
-    expect(result.ok).toBe(false);
     expect(JSON.stringify(logCalls)).not.toContain(SENTINEL);
   });
 });
 
-describe('createTransientSecret', () => {
-  beforeEach(() => vi.useFakeTimers());
-  afterEach(() => vi.useRealTimers());
+// ── 2b. The page abilities speak the package's codes ────────────────────────
 
-  it('clears itself after the window and reports the value gone', () => {
-    const seen: (string | null)[] = [];
-    const secret = createTransientSecret({ clearAfterMs: 30_000, onChange: (v) => seen.push(v) });
-
-    secret.hold(SENTINEL);
-    expect(secret.get()).toBe(SENTINEL);
-
-    vi.advanceTimersByTime(29_999);
-    expect(secret.get()).toBe(SENTINEL);
-
-    vi.advanceTimersByTime(1);
-    expect(secret.get()).toBeNull();
-    expect(seen).toEqual([SENTINEL, null]);
+describe('side-panel page abilities (@ai-matrx/vault host)', () => {
+  it('maps the focused-frame Fill reply onto the package outcome', () => {
+    expect(fillOutcomeOf('filled')).toBe('filled');
+    expect(fillOutcomeOf('partial_manual_check')).toBe('partial');
+    expect(fillOutcomeOf('stale')).toBe('no_field');
+    expect(fillOutcomeOf(undefined)).toBe('unavailable');
+    expect(fillOutcomeOf('something-new')).toBe('unavailable');
   });
 
-  it('replaces rather than accumulates, and restarts the clock', () => {
-    const secret = createTransientSecret({ clearAfterMs: 1000 });
-    secret.hold('first');
-    vi.advanceTimersByTime(900);
-    secret.hold('second');
-    // The FIRST value's timer must not fire and wipe the second early, and the
-    // second must not inherit the first's remaining 100ms.
-    vi.advanceTimersByTime(900);
-    expect(secret.get()).toBe('second');
-    vi.advanceTimersByTime(100);
-    expect(secret.get()).toBeNull();
+  it('maps every credential_login status onto a Sign in outcome, unknown last', () => {
+    expect(signInOutcomeOf('authenticated')).toBe('signed_in');
+    expect(signInOutcomeOf('needs_mfa')).toBe('needs_code');
+    expect(signInOutcomeOf('captcha_or_takeover')).toBe('challenge');
+    expect(signInOutcomeOf('credentials_rejected')).toBe('rejected');
+    expect(signInOutcomeOf('selection_required')).toBe('several');
+    expect(signInOutcomeOf('no_matching_login')).toBe('no_match');
+    expect(signInOutcomeOf('unsafe_destination')).toBe('unsafe');
+    expect(signInOutcomeOf('sign_in_required')).toBe('signed_out');
+    expect(signInOutcomeOf('vault_error')).toBe('unknown');
   });
 
-  it('clear() is idempotent and cancels the pending timer', () => {
-    const seen: (string | null)[] = [];
-    const secret = createTransientSecret({ clearAfterMs: 1000, onChange: (v) => seen.push(v) });
-    secret.hold(SENTINEL);
-    secret.clear();
-    secret.clear();
-    vi.advanceTimersByTime(5000);
-    expect(secret.get()).toBeNull();
-    // One hold, one clear — a second clear must not emit another change.
-    expect(seen).toEqual([SENTINEL, null]);
+  it('keeps a failed match read a failure, never an empty list', () => {
+    expect(matchErrorOf('sign_in_required')).toBe('sign_in_required');
+    expect(matchErrorOf('forbidden')).toBe('forbidden');
+    expect(matchErrorOf('fill_setup_required')).toBe('fill_setup_required');
+    expect(matchErrorOf('server_error')).toBe('server_error');
+  });
+
+  it('turns generation offers into targets and refusals into codes', () => {
+    expect(
+      newPasswordFindOf({
+        status: 'ready',
+        offers: [
+          {
+            id: 'o1',
+            origin: 'https://a.example.com',
+            frameId: 0,
+            fieldCount: 2,
+            constraints: [],
+            expiresAt: 1,
+          },
+          {
+            id: 'o2',
+            origin: 'https://b.example.com',
+            frameId: 3,
+            fieldCount: 1,
+            constraints: [],
+            expiresAt: 1,
+          },
+        ],
+      }),
+    ).toEqual({
+      status: 'ready',
+      targets: [
+        { id: 'o1', origin: 'https://a.example.com', fieldCount: 2, topFrame: true },
+        { id: 'o2', origin: 'https://b.example.com', fieldCount: 1, topFrame: false },
+      ],
+    });
+    expect(newPasswordFindOf({ status: 'no_targets', message: 'x' })).toEqual({ status: 'none' });
+    expect(newPasswordFindOf({ status: 'unsafe_destination', message: 'x' })).toEqual({
+      status: 'unsafe',
+    });
+    expect(newPasswordFindOf(null)).toEqual({ status: 'unavailable' });
+    expect(newPasswordFillOf({ status: 'filled', message: '' })).toBe('filled');
+    expect(newPasswordFillOf({ status: 'partial_manual_check', message: '' })).toBe('partial');
+    expect(newPasswordFillOf({ status: 'rolled_back', message: '' })).toBe('refused');
+    expect(newPasswordFillOf({ status: 'refused_unchanged', message: '' })).toBe('refused');
+    expect(newPasswordFillOf(null)).toBe('unavailable');
   });
 });
 
@@ -329,34 +305,6 @@ describe('destination rules', () => {
     expect(normalizeLoginUrl('garbage')).toBeNull();
   });
 
-  it('coversPage honours each match mode', () => {
-    const urls = ['https://a.example.com/login'];
-    expect(coversPage(urls, 'host', 'https://a.example.com/settings')).toBe(true);
-    expect(coversPage(urls, 'exact', 'https://a.example.com/settings')).toBe(false);
-    expect(coversPage(urls, 'exact', 'https://a.example.com/login?x=1')).toBe(true);
-    expect(coversPage(urls, 'never', 'https://a.example.com/login')).toBe(false);
-    expect(coversPage(urls, 'host', 'https://b.example.com/login')).toBe(false);
-    expect(coversPage(urls, 'host', null)).toBe(false);
-  });
-
-  it('withPageAdded is idempotent and stores the normalized form', () => {
-    const start = ['https://a.example.com/login'];
-    expect(withPageAdded(start, 'https://a.example.com/login?next=1')).toEqual(start);
-    expect(withPageAdded(start, 'https://b.example.com/signin?x=1')).toEqual([
-      'https://a.example.com/login',
-      'https://b.example.com/signin',
-    ]);
-    expect(withPageAdded(start, 'garbage')).toEqual(start);
-  });
-
-  it('derives display labels without throwing on junk', () => {
-    expect(primaryHost(['not-a-url', 'https://a.example.com/login'])).toBe('a.example.com');
-    expect(primaryHost([])).toBeNull();
-    expect(loginUrlLabel('https://a.example.com/login')).toBe('a.example.com/login');
-    expect(loginUrlLabel('https://a.example.com/')).toBe('a.example.com');
-    expect(loginUrlLabel('junk')).toBe('junk');
-  });
-
   it('is the SAME rule the credential_login handler enforces', () => {
     // The handler must import it, not re-declare it — a second copy is how a
     // panel starts advertising a fill the tool would refuse.
@@ -369,7 +317,7 @@ describe('destination rules', () => {
   });
 
   it('the panel fills through the shared handler, honouring its browser gate', () => {
-    const hook = readFileSync(join(process.cwd(), 'src/features/vault/useVault.ts'), 'utf8');
+    const hook = readFileSync(join(process.cwd(), 'src/features/vault/useVaultPage.ts'), 'utf8');
     // ONE fill implementation: the panel calls the handler, it does not
     // re-derive origins, re-detect fields, or call materialize itself.
     expect(hook).toContain('credential_login.run(');
@@ -385,9 +333,9 @@ describe('destination rules', () => {
 describe('no-persistence guard', () => {
   const FILES = [
     'src/lib/api/routes/vault.ts',
-    'src/lib/credentials/transient-secret.ts',
     'src/lib/credentials/login-urls.ts',
-    'src/features/vault/useVault.ts',
+    'src/features/vault/useVaultPage.ts',
+    'src/features/vault/extension-vault-host.ts',
     'src/features/vault/VaultView.tsx',
   ];
   // `chrome.tabs` is fine (opening the web vault); persistence is not.
@@ -407,23 +355,11 @@ describe('no-persistence guard', () => {
     });
   }
 
-  it('the panel holds a revealed value only in useTransientSecret', () => {
-    const view = readFileSync(join(process.cwd(), 'src/features/vault/VaultView.tsx'), 'utf8');
-    expect(view).toContain('useTransientSecret');
-    // The data hook must never see plaintext — reveal is called from the field
-    // component and its result goes straight into the transient holder.
-    const hook = readFileSync(join(process.cwd(), 'src/features/vault/useVault.ts'), 'utf8');
-    expect(hook).not.toContain('revealVaultField');
-  });
-
-  it('every typed-value input in the panel is masked and never autofilled', () => {
-    const view = readFileSync(join(process.cwd(), 'src/features/vault/VaultView.tsx'), 'utf8');
-    // New-login password, change-value draft, add-field value: all password-typed.
-    const masked = view.match(/type="password"/g) ?? [];
-    expect(masked.length).toBeGreaterThanOrEqual(3);
-    // Each masked box opts out of the browser's own password manager so the
-    // value does not get offered back to a page later.
-    const optOut = view.match(/autoComplete="new-password"/g) ?? [];
-    expect(optOut.length).toBe(masked.length);
+  it('the panel never reveals a value itself: the package screens own reveal', () => {
+    for (const file of ['src/features/vault/VaultView.tsx', 'src/features/vault/useVaultPage.ts']) {
+      const code = readFileSync(join(process.cwd(), file), 'utf8');
+      expect(code).not.toContain('materializeBrowserLogin');
+      expect(code).not.toMatch(/\/reveal\b/);
+    }
   });
 });

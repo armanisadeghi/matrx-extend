@@ -323,6 +323,8 @@ export default defineConfig({
         },
       },
     ],
+    // @ai-matrx/vault's import workers resolve by URL from its own dist; pre-bundling would break them.
+    optimizeDeps: { exclude: ['@ai-matrx/vault'] },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),

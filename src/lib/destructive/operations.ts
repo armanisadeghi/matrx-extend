@@ -123,18 +123,6 @@ export const DESTRUCTIVE_OPERATIONS: DestructiveOperation[] = [
     destroys: "A conversation's plan, all its tasks and all its to-dos.",
   },
   {
-    fn: 'deleteVaultItem',
-    module: 'src/lib/api/routes/vault.ts',
-    uiEntryPoints: ['removeVaultItem'],
-    destroys: 'A whole saved login and every field on it, server-side.',
-  },
-  {
-    fn: 'deleteVaultField',
-    module: 'src/lib/api/routes/vault.ts',
-    uiEntryPoints: ['removeVaultField'],
-    destroys: 'One field of a saved login, server-side.',
-  },
-  {
     fn: 'handleClearLocalDataConfirmed',
     module: 'src/features/settings/SettingsView.tsx',
     uiEntryPoints: ['handleClearLocalDataConfirmed'],

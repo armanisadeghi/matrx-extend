@@ -7,17 +7,14 @@
  *     POST  /api/vault/browser-login/{item_id}/materialize
  *     POST  /api/vault/browser-login/{item_id}/result
  *
- *   Item management (consumed by the Vault side panel):
- *     GET   /api/vault/items?principal_type=user
- *     GET   /api/vault/shared-with-me
+ *   Item writes (consumed by save-on-submit, `capture-candidates.ts`):
  *     GET   /api/vault/items/{item_id}
  *     POST  /api/vault/items
- *     PATCH /api/vault/items/{item_id}
- *     DELETE /api/vault/items/{item_id}
  *     POST  /api/vault/items/{item_id}/fields
  *     PUT   /api/vault/items/{item_id}/fields/{field_id}/value
- *     DELETE /api/vault/items/{item_id}/fields/{field_id}
- *     POST  /api/vault/items/{item_id}/reveal
+ *
+ *   The Vault screens (list, edit, reveal, delete, share) are `@ai-matrx/vault`
+ *   and ride its own client over the same `Api`; nothing here serves them.
  *
  * Four rules this module exists to enforce:
  *
@@ -30,11 +27,10 @@
  * 2. **No second HTTP client.** Everything goes through `apiGet` / `apiPost` /
  *    `apiPatch` so bearer injection, 401-refresh-retry, timeouts, and the
  *    structured `ApiResult` envelope stay in one place.
- * 3. **Nothing here logs a value.** `materialize` and `reveal` responses carry
- *    plaintext; this module never passes one to `log.*`, never stores one, and
- *    returns it straight to the caller that consumes it in local memory
- *    (`src/lib/tools/handlers/credential-login.ts` for the fill,
- *    `src/features/vault/` for an explicit human reveal). Both plaintext
+ * 3. **Nothing here logs a value.** `materialize` responses carry plaintext;
+ *    this module never passes one to `log.*`, never stores one, and returns it
+ *    straight to the caller that consumes it in local memory
+ *    (`src/lib/tools/handlers/credential-login.ts` for the fill). Plaintext
  *    routes pass `silent: true` so a malformed 2xx body can never be quoted
  *    into the debug log by the client's parse-error path.
  * 4. **Nothing here persists.** No `chrome.storage`, `localStorage`,
@@ -74,14 +70,8 @@ import {
   browserLoginResult,
   browserRecipeProposal,
   createItem,
-  deleteField,
-  deleteItem,
   getItem,
-  listItems,
-  reveal,
-  sharedWithMe,
   updateFieldValue,
-  updateItem,
 } from '@ai-matrx/api/account';
 
 /** One generated vault operation with its arguments applied. */
@@ -185,15 +175,6 @@ export type VaultCallFailure =
 
 /** Uniform envelope for every vault call. Never throws; never partially succeeds. */
 export type VaultResult<T> = { ok: true; data: T } | { ok: false; failure: VaultCallFailure };
-
-/** Human-readable copy for a failure. Static strings — never server text. */
-export function describeVaultFailure(failure: VaultCallFailure): string {
-  if (failure.kind === 'sign_in_required') return 'Sign in to Matrx to use the Vault.';
-  if (failure.kind === 'forbidden')
-    return 'The Vault refused this request. You may not have access to this item.';
-  if (failure.kind === 'fill_setup_required') return FILL_SETUP_REQUIRED_MESSAGE;
-  return `The Vault is unavailable right now (${failure.status}).`;
-}
 
 /**
  * True only when a genuine signed-in user token exists. The guest-fingerprint
@@ -678,11 +659,11 @@ export async function proposeLoginRecipe(
   return { ok: true, data };
 }
 
-// ── Item management (the Vault side panel) ──────────────────────────────────
+// ── Item writes for save-on-submit (`capture-candidates.ts`) ───────────────
 //
 // Everything below is MASKED. `VaultFieldSummary.value_hint` is a server-built
-// hint ("••••1234"), never a value. The single plaintext route is
-// `revealVaultField`, and its response is documented as transient.
+// hint ("••••1234"), never a value. The Vault screens themselves (list, edit,
+// reveal, delete) are `@ai-matrx/vault`, over its own client.
 
 /** What the actor may do with an item. Mirrors aidream `VaultCapabilities`. */
 export interface VaultCapabilities {
@@ -723,22 +704,8 @@ export interface VaultItemSummary {
   updated_at?: string;
 }
 
-interface VaultItemListResponse {
-  items: VaultItemSummary[];
-  count: number;
-}
-
 /** The destination-first login definition (ratified 2026-07-26). */
 export const WEBSITE_LOGIN_DEFINITION_KEY = 'website_login';
-
-/** Metadata the panel is allowed to PATCH. Values are NOT patchable from here. */
-export interface VaultItemMetadataPatch {
-  display_name?: string;
-  login_urls?: string[];
-  uri_match_mode?: 'host' | 'exact' | 'never';
-  notes?: string;
-  browser_fill_enabled?: boolean;
-}
 
 /** One field on a create request. `value` is plaintext travelling OUT, once. */
 export interface VaultFieldInput {
@@ -804,36 +771,7 @@ function normalizeItem(raw: unknown): VaultItemSummary | null {
   };
 }
 
-function normalizeList(data: unknown): VaultItemSummary[] | null {
-  if (!data || typeof data !== 'object') return null;
-  const items = (data as Partial<VaultItemListResponse>).items;
-  if (!Array.isArray(items)) return null;
-  return items.map(normalizeItem).filter((i): i is VaultItemSummary => i !== null);
-}
-
-/** The actor's OWN personal items. Explicit scope — never a bare list read. */
-export async function fetchMyVaultItems(): Promise<VaultResult<VaultItemSummary[]>> {
-  log.info('api', '→ GET vault/items');
-  const r = await vaultRun<unknown>((api, o) =>
-    listItems(api, { query: { principal_type: 'user' } }, o),
-  );
-  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
-  const items = normalizeList(r.data);
-  if (!items) return { ok: false, failure: { kind: 'server_error', status: 200 } };
-  return { ok: true, data: items };
-}
-
-/** Items OTHER people shared with the actor. A deliberately separate scope. */
-export async function fetchVaultItemsSharedWithMe(): Promise<VaultResult<VaultItemSummary[]>> {
-  log.info('api', '→ GET vault/shared-with-me');
-  const r = await vaultRun<unknown>((api, o) => sharedWithMe(api, undefined, o));
-  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
-  const items = normalizeList(r.data);
-  if (!items) return { ok: false, failure: { kind: 'server_error', status: 200 } };
-  return { ok: true, data: items };
-}
-
-/** One item, freshly masked. Used to refresh a row after a PATCH. */
+/** One item, freshly masked (save-on-submit reads the item it updates). */
 export async function fetchVaultItem(
   itemId: string,
   options?: VaultRequestOptions,
@@ -841,32 +779,6 @@ export async function fetchVaultItem(
   const r = await vaultRun<unknown>(
     (api, o) => getItem(api, { path: { item_id: itemId } }, o),
     options,
-  );
-  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
-  const item = normalizeItem(r.data);
-  if (!item) return { ok: false, failure: { kind: 'server_error', status: 200 } };
-  return { ok: true, data: item };
-}
-
-/**
- * Patch destination metadata (login URLs, match mode, browser-fill flag,
- * notes, name). Omitted keys are left alone by the server — this never blanks
- * a field it did not mention.
- */
-export async function updateVaultItemMetadata(
-  itemId: string,
-  patch: VaultItemMetadataPatch,
-): Promise<VaultResult<VaultItemSummary>> {
-  log.info('api', '→ PATCH vault/items/{item}');
-  const r = await vaultRun<unknown>((api, o) =>
-    updateItem(
-      api,
-      {
-        path: { item_id: itemId },
-        body: patch as unknown as Parameters<typeof updateItem>[1]['body'],
-      },
-      o,
-    ),
   );
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const item = normalizeItem(r.data);
@@ -951,54 +863,4 @@ export async function addVaultField(
   );
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   return { ok: true, data: undefined };
-}
-
-/** Remove ONE field from an item. Requires `can_edit`. */
-export async function deleteVaultField(
-  itemId: string,
-  fieldId: string,
-): Promise<VaultResult<void>> {
-  log.info('api', '→ DELETE vault/items/{item}/fields/{field}');
-  const r = await vaultRun<unknown>((api, o) =>
-    deleteField(api, { path: { item_id: itemId, field_id: fieldId } }, o),
-  );
-  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
-  return { ok: true, data: undefined };
-}
-
-/** Delete a whole item. Requires `can_manage`; the server audits the removal. */
-export async function deleteVaultItem(itemId: string): Promise<VaultResult<void>> {
-  log.info('api', '→ DELETE vault/items/{item}');
-  const r = await vaultRun<unknown>((api, o) => deleteItem(api, { path: { item_id: itemId } }, o));
-  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
-  return { ok: true, data: undefined };
-}
-
-/**
- * Explicit, audited reveal of ONE `revealable` field.
- *
- * The returned string is PLAINTEXT. It may live in component-local state
- * behind an auto-clear (`src/lib/credentials/transient-secret.ts`) and NOWHERE
- * else: not chrome.storage, not localStorage/sessionStorage/IndexedDB, not a
- * zustand store, not a tool result, not model context, not a log line.
- */
-export async function revealVaultField(
-  itemId: string,
-  fieldKey: string,
-): Promise<VaultResult<string>> {
-  log.info('api', '→ POST vault/items/{item}/reveal');
-  const r = await vaultRun<{ value?: unknown }>(
-    (api, o) => reveal(api, { path: { item_id: itemId }, body: { field_key: fieldKey } }, o),
-    // Plaintext body: a malformed 2xx must not be quoted into the debug log.
-    undefined,
-    true,
-  );
-  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
-  const value = r.data?.value;
-  if (typeof value !== 'string') {
-    // Deliberately does NOT log the body — it may hold a partial credential.
-    return { ok: false, failure: { kind: 'server_error', status: 200 } };
-  }
-  log.info('api', '← vault reveal ok');
-  return { ok: true, data: value };
 }

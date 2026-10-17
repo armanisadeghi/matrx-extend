@@ -224,22 +224,6 @@
     "id": "MAX_VALUE_LENGTH"
   },
   {
-    "file": "src/lib/credentials/generation-limits.ts",
-    "id": "MAX_PASSPHRASE_WORDS"
-  },
-  {
-    "file": "src/lib/credentials/generation-limits.ts",
-    "id": "MAX_PASSWORD_LENGTH"
-  },
-  {
-    "file": "src/lib/credentials/generation-limits.ts",
-    "id": "MIN_PASSPHRASE_WORDS"
-  },
-  {
-    "file": "src/lib/credentials/generation-limits.ts",
-    "id": "MIN_PASSWORD_LENGTH"
-  },
-  {
     "file": "src/lib/credentials/generation-targets.ts",
     "id": "GENERATED_SECRET_TTL_MS"
   },
@@ -258,10 +242,6 @@
   {
     "file": "src/lib/credentials/sensitive-fields.ts",
     "id": "MAX_SELECTORS_PER_TAB"
-  },
-  {
-    "file": "src/lib/credentials/transient-secret.ts",
-    "id": "REVEAL_CLEAR_MS"
   },
   {
     "file": "src/lib/debug/bridge-traffic.ts",

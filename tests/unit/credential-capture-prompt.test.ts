@@ -12,8 +12,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { CaptureExistingLogin, CapturePromptMeta } from '@/lib/credentials/capture-types';
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { createElement } from 'react';
+import { act, cleanup } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const captureBuild = vi.hoisted(() => ({ browser: 'chrome' as 'chrome' | 'firefox' | 'safari' }));
@@ -833,7 +832,7 @@ describe('content prompt — page overlay', () => {
     spy.mockRestore();
   });
 
-  it('keeps all same-site update targets searchable in the quiet panel', async () => {
+  it('offers every same-site update target to the Vault side panel and routes the chosen one', async () => {
     panelMeta = {
       candidateId: 'cap-panel-four-targets',
       tabId: 7,
@@ -846,62 +845,27 @@ describe('content prompt — page overlay', () => {
         { item_id: 'same-prefix-d', display_name: 'Example' },
       ],
     };
-    const { PendingCaptureCard } = await import('@/features/vault/PendingCaptureCard');
-    const view = render(createElement(PendingCaptureCard, { tabId: 7, onSaved: () => undefined }));
-    const { selectUpdateSelector, updateChoiceDiagnostic } = await import(
-      '../browser/firefox-vault/multi-account-acceptance.mjs'
-    );
+    const { createCaptureHost } = await import('@/features/vault/extension-vault-host');
+    const host = createCaptureHost(7);
+    const off = host.subscribe(() => undefined);
     await act(async () => {
       await Promise.resolve();
     });
-
-    expect(screen.getByLabelText('Search saved logins to update')).toBeTruthy();
-    const selected = view.getByRole('button', { name: /ID same-prefix-d/i });
-    expect(selected.textContent).toBe('UpdateExample· ID same-prefix-d');
-    const expected = [
-      { primary: 'Example', secondary: 'ID same-prefix-d' },
-      { primary: 'Example', secondary: 'ID same-prefix-a' },
-      { primary: 'Example', secondary: 'ID same-prefix-b' },
-      { primary: 'Example', secondary: 'ID same-prefix-c' },
-    ];
-    const heading = view.getByText('Save this login to your Vault?');
-    heading.getBoundingClientRect = () => ({ height: 1 }) as DOMRect;
-    const selector = selectUpdateSelector(document, expected);
-    expect(typeof selector).toBe('string');
-    const chosen = document.querySelector(selector as string);
-    expect(chosen).toBe(selected);
-    const diagnostic = updateChoiceDiagnostic(document, expected);
-    expect(diagnostic.headingCount).toBe(1);
-    expect(diagnostic.visibleHeadingCount).toBe(1);
-    expect(diagnostic.updateCount).toBe(4);
-    expect(
-      diagnostic.choices.map((choice) => choice.secondaryMatches.filter(Boolean).length),
-    ).toEqual([1, 1, 1, 1]);
-    expect(JSON.stringify(diagnostic)).not.toContain('Example');
-    expect(JSON.stringify(diagnostic)).not.toContain('same-prefix');
-
-    const extra = selected.cloneNode(true);
-    selected.parentElement?.append(extra);
-    expect(selectUpdateSelector(document, expected)).toBeNull();
-    extra.parentNode?.removeChild(extra);
-    const duplicate = view.getByRole('button', { name: /ID same-prefix-c/i });
-    const duplicateSuffix = duplicate.querySelectorAll('span')[1];
-    if (!duplicateSuffix) throw new Error('Update choice secondary label missing');
-    duplicateSuffix.textContent = '· ID same-prefix-d';
-    expect(selectUpdateSelector(document, expected)).toBeNull();
-    duplicateSuffix.textContent = '· ID same-prefix-c';
-    expect(selectUpdateSelector(document, expected)).toBeTruthy();
-    expect(screen.getAllByRole('button', { name: /update/i })).toHaveLength(4);
-    fireEvent.change(screen.getByLabelText('Search saved logins to update'), {
-      target: { value: 'example' },
+    const prompt = host.get();
+    expect(prompt).toEqual({
+      id: 'cap-panel-four-targets',
+      host: 'app.example.com',
+      username: USER,
+      existing: ['a', 'b', 'c', 'd'].map((x) => ({ itemId: `same-prefix-${x}`, name: 'Example' })),
     });
-    expect(screen.getAllByRole('button', { name: /update/i })).toHaveLength(4);
-    fireEvent.click(chosen as HTMLElement);
+    expect(JSON.stringify(prompt)).not.toContain('password');
+    await host.decide('cap-panel-four-targets', { action: 'update', itemId: 'same-prefix-d' });
     expect(panelDecisions.at(-1)).toEqual({
       candidateId: 'cap-panel-four-targets',
       action: 'update',
       itemId: 'same-prefix-d',
     });
+    off();
   });
 
   it('does not let an earlier completion timer dismiss a replacement prompt', async () => {
@@ -947,7 +911,7 @@ describe('content prompt — page overlay', () => {
     spy.mockRestore();
   });
 
-  it('drops an old decision result when a newer pending candidate replaces it', async () => {
+  it('refuses a decision for a candidate a newer one has replaced', async () => {
     panelMeta = {
       candidateId: 'cap-old',
       tabId: 7,
@@ -955,17 +919,12 @@ describe('content prompt — page overlay', () => {
       username: USER,
       existing: [{ item_id: 'item-old', display_name: 'Old' }],
     };
-    let releaseDecision!: (result: { ok: boolean; status: 'updated'; message: string }) => void;
-    decisionGate = new Promise((resolve) => {
-      releaseDecision = resolve;
-    });
-    const { PendingCaptureCard } = await import('@/features/vault/PendingCaptureCard');
-    render(createElement(PendingCaptureCard, { tabId: 7, onSaved: () => undefined }));
+    const { createCaptureHost } = await import('@/features/vault/extension-vault-host');
+    const host = createCaptureHost(7);
+    const off = host.subscribe(() => undefined);
     await act(async () => {
       await Promise.resolve();
     });
-    fireEvent.click(screen.getByRole('button', { name: /Old/i }));
-
     panelMeta = {
       candidateId: 'cap-new',
       tabId: 7,
@@ -977,35 +936,35 @@ describe('content prompt — page overlay', () => {
       panelChanged?.({ tabId: 7 });
       await Promise.resolve();
     });
-    const newer = screen.getByRole('button', { name: /^Update New$/i });
-    expect(newer).toHaveProperty('disabled', false);
-
-    releaseDecision({ ok: true, status: 'updated', message: 'Updated old login.' });
-    await act(async () => {
-      await Promise.resolve();
-    });
-    expect(screen.queryByText('Updated old login.')).toBeNull();
+    expect(host.get()?.id).toBe('cap-new');
+    await expect(host.decide('cap-old', { action: 'update', itemId: 'item-old' })).resolves.toBe(
+      'expired',
+    );
+    expect(panelDecisions).toHaveLength(0);
+    off();
   });
 
-  it('refuses a delayed status response after the panel switches tabs', async () => {
+  it("never shows another tab's pending candidate", async () => {
     let release!: (meta: CapturePromptMeta | null) => void;
     statusGateForTab7 = new Promise((resolve) => {
       release = resolve;
     });
-    const { PendingCaptureCard } = await import('@/features/vault/PendingCaptureCard');
-    const view = render(createElement(PendingCaptureCard, { tabId: 7, onSaved: () => undefined }));
-    view.rerender(createElement(PendingCaptureCard, { tabId: 8, onSaved: () => undefined }));
-    release({
+    const { createCaptureHost } = await import('@/features/vault/extension-vault-host');
+    const host = createCaptureHost(8);
+    const off = host.subscribe(() => undefined);
+    panelMeta = {
       candidateId: 'cap-stale-tab',
       tabId: 7,
       host: 'app.example.com',
       username: USER,
       existing: [{ item_id: 'item-stale', display_name: 'Stale' }],
-    });
+    };
+    release(panelMeta);
     await act(async () => {
       await Promise.resolve();
     });
-    expect(screen.queryByRole('button', { name: /Stale/i })).toBeNull();
+    expect(host.get()).toBeNull();
+    off();
   });
 
   it('resets page styles before applying the fixed top-right position', async () => {
@@ -1990,9 +1949,8 @@ describe('plaintext path stays off the bus and off every persistence API', () =>
     }
   });
 
-  it('the side-panel card talks metadata only (send/on) and holds no value', () => {
-    const src = code('src/features/vault/PendingCaptureCard.tsx');
-    expect(src).not.toContain('password');
+  it('the side-panel capture host talks metadata only (send/on) and holds no value', () => {
+    const src = code('src/features/vault/extension-vault-host.ts');
     expect(src).not.toContain('CREDENTIAL_CAPTURE_CANDIDATE');
     for (const api of ['chrome.storage', 'localStorage', 'sessionStorage', 'indexedDB']) {
       expect(src).not.toContain(api);
