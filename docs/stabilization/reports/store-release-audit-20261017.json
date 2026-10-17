@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-17T20:32:31Z",
+  "observed_at": "2026-10-17T20:33:59Z",
   "scope": "Primary Chrome Web Store item hnfolienncfklkgmdjjmhhegglimlamg",
-  "status": "validated_0524_store_zip_guest_b_dispatched_member_pending_dashboard_and_new_mail_unverified",
+  "status": "0524_zip_validated_b_diagnostic_running_source_stale_after_c245_no_store_upload",
   "official_email": {
     "account": "publisher mailbox arman@armansadeghi.com",
     "search": "from:chromewebstore-noreply@google.com after:2026/10/11",
@@ -38,20 +38,20 @@
     "source_comparison": "Current source still defaults automatic scrape capture off and offers signed-in Vault controls; Swipe Save sends a user-chosen supported post URL, and config reporting sends bounded key-read metadata. The live October 15 policy covers those reviewed flows. Exact 0.2.524 source/ZIP and native behavior require candidate acceptance; dashboard disclosure selections remain unverified."
   },
   "source_and_release": {
-    "main_sha": "3fa1da6dcf2ebc39b35e0e9f298c749398f419f8",
+    "main_sha": "c2458892134251e6391f6100c14c70fb73ec04f2",
     "source_version": "0.2.524",
     "main_synchronized_with_origin": true,
     "latest_hosted_release_run": 39066435724,
     "latest_hosted_release_version": "0.2.524",
-    "new_exact_source_store_zip": true,
+    "new_exact_source_store_zip": false,
     "fresh_ci_run": 39065713090,
     "fresh_ci_status_at_observation": "Exact pre-release 8f3f773b full CI 39065713090 passed both jobs. EXT-D-0230 and CDP diagnostic source peer A/B PASS. Guarded hosted release 39066435724 refreshed @ai-matrx packages and passed strict gates, then atomically pushed 0.2.524 tag/source 3fa1da6. Emitted lock has chat 0.8.164, design-system 0.86.184 and records 0.99.41.",
     "risk_scan_on_new_exact_candidate": "Hosted Store package validation and remote-code approval-risk gate passed. Exact downloaded ZIP has 1,233 JavaScript assets and no rejected PDFObject/cdnjs loader hit. Independent exact-ZIP Blue Argon peer is pending.",
-    "guest_and_non_admin_acceptance_on_new_exact_candidate": "One strict guarded native guest B run 39067132410 was dispatched from clean release source 3fa1da6 against release artifact 12112863748; result pending. Designated non-admin member A has not run on 0.2.524. No native acceptance credit yet.",
+    "guest_and_non_admin_acceptance_on_new_exact_candidate": "Guarded .524 guest B run 39067132410 was dispatched against immutable 3fa1da6 and is running, but a later runtime source commit c24588921 makes its result diagnostic for the next Store candidate. Non-admin .524 has not run. No current-source native acceptance credit.",
     "cost_model_weekly_billed_usd": 55.97,
     "cost_model_ceiling_usd": 100,
     "cost_model_status": "pass",
-    "release_decision": "0.2.524 exact Store ZIP packaged and hosted risk-scanned; not uploaded or submitted. Require independent exact-ZIP peer, resource-valid first/follow-up terminal native guest and designated non-admin member acceptance with stable deployed server SHA, and fresh permitted primary-item dashboard/mail status.",
+    "release_decision": "0.2.524 exact Store ZIP was packaged and passed hosted risk scan but is held/superseded for submission: post-release c24588921 changes package runtime `src/features/package-chat/ai-watch-opener.ts` and `src/lib/swipe-file/navigation.ts`. Do not upload .524. Revalidate latest synchronized source through exact CI and a new guarded hosted release, independent ZIP peer and native guest/non-admin acceptance; private dashboard/mail status still unverified.",
     "latest_hosted_release_artifact_id": 12112863748,
     "release_tag": "v0.2.524",
     "store_zip_sha256": "0331d53b4661cf737a2e1eaa0c2cf56b9f8b6e19710ab4b0e892789aa172a134",
@@ -88,7 +88,7 @@
     "screenshots": "Keep Swipe Save, Scrape Capture, and SEO audit out of reviewer steps and screenshots until exact 0.2.524 native behavior on the reviewer demo page is verified. Check the four existing guest screenshots against exact candidate UI before reuse.",
     "basis": "src/config/sidepanel-visibility.ts exposes Swipe file only after sign-in; src/lib/swipe-file/save.ts sends a supported chosen URL to ingestPost and adds it to a selected collection; src/lib/config/reporting.ts reports bounded key-read metadata. Live privacy policy and demo page returned HTTP 200 on October 17."
   },
-  "next_action": "Await guarded 0.2.524 guest B run 39067132410 with valid resource and stable deployed SHA, then independently inspect actual first/follow-up terminal replies. Run designated non-admin member A on the same immutable artifact with reviewed two-turn oracle, and obtain an independent exact-ZIP Blue Argon/integrity peer. Fresh publisher Gmail and primary-item private dashboard status remain unknown after permitted browser timeout/refusal; resolve through a permitted interface before any Store upload, preserving pending revision.",
+  "next_action": "Preserve diagnostic evidence from .524 B run 39067132410. Review c24588921 package runtime delta, run exact-current CI and guarded next release from synchronized main. Recheck Blue Argon/integrity on that exact ZIP and complete resource-valid guest and designated non-admin member first/follow-up terminal acceptance with stable deployed server SHA. Fresh publisher Gmail and primary-item private dashboard status remain unknown after permitted timeout/refusal; resolve through permitted access before upload, preserving pending revision.",
   "workspace_duplicate_archive": {
     "source": "docs/stabilization/resource-journals/settings-nav-preflight-20261017-01.jsonl",
     "archived_at": "node_modules/.cache/store-release-20261017/settings-journal-duplicate/settings-nav-preflight-20261017-01.jsonl",
@@ -160,9 +160,10 @@
     "hosted_risk_gate": "pass",
     "local_rejected_pdfobject_loader_hits": 0,
     "independent_zip_peer": "pending",
-    "native_guest_acceptance": "guarded_run_39067132410_in_progress",
+    "native_guest_acceptance": "guarded_run_39067132410_diagnostic_in_progress_after_material_drift",
     "native_member_acceptance": "pending",
-    "store_upload": "not_attempted"
+    "store_upload": "not_attempted_stale_source",
+    "submission_eligible": false
   },
   "superseded_0523_candidate": {
     "version": "0.2.523",
@@ -173,5 +174,15 @@
   "current_server_observation": {
     "sha_at_guest_preflight": "fe4f08e7210cb3ba5b0999b3e8eb71a7bae342af",
     "relation_to_aidream_type_pin": "Ancestor of immutable pin 1dee349a by 11 commits; sync-types blob unchanged. No AI/mandate/chat API router change between previous fc8 server and fe4 deployment. Native run must recheck before and after."
+  },
+  "post_release_material_drift": {
+    "commit": "c2458892134251e6391f6100c14c70fb73ec04f2",
+    "paths": [
+      "src/features/package-chat/ai-watch-opener.ts",
+      "src/lib/swipe-file/navigation.ts",
+      "src/lib/swipe-file/navigation.test.ts"
+    ],
+    "classification": "Runtime package behavior changed after immutable 0.2.524 source 3fa1da6; .524 B remains diagnostic, not Store acceptance for current main. Contributor change preserved.",
+    "required_action": "Exact-current CI and next guarded hosted release candidate before Store upload."
   }
 }
