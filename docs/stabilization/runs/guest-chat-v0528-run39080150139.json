@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "run_id": 39080150139,
+  "status": "native_guest_chat_failure_zero_credit",
+  "case_id": "EXT-F-2013-T10",
+  "observed_at": "2026-10-17T23:53:28Z",
+  "workflow_source_sha": "0332db8b0b39dacff5b4503d3249807f9ae90913",
+  "release": {
+    "version": "0.2.528",
+    "run_id": 39079670382,
+    "source_sha": "0332db8b0b39dacff5b4503d3249807f9ae90913",
+    "artifact_id": 12118411986,
+    "outer_digest": "sha256:377aad1e3e272654057f182a99b61e8efae6278bc647fb61d765227430779cdf",
+    "store_zip_sha256": "1210ef8ed318836dfddf5ce6cb1277ee4f5591227db21ffa702ffa029f72baa2",
+    "release_tree_sha256": "4ad0f2d090f7dd48d110ddc4b5c1e5a50935bfea13c50ab68a990b7ae7ccd648"
+  },
+  "hosted_result": {
+    "artifact_id": 12118429277,
+    "artifact_name": "hosted-guest-39080150139-1",
+    "artifact_sha256": "e335a0ce27fdf02e167cf221dbe9b82d8af4f5386aed3dcce4847407527dfe33",
+    "artifact_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39080150139/artifacts/12118429277",
+    "sanitized_result_path": "test-results/guest-chat-store-72e77737-424b-42fe-8a9d-3f4071b6bbf1.json"
+  },
+  "classification": "The native guest reached Chat and prepared a valid composer draft. A trusted click reached and bubbled from the connected Send button, but no submission state, user message, or chat POST followed. The diagnostic observed the React handler property but cannot establish that the handler body ran. No assistant reply or terminal completion was observed. Root cause remains unresolved between product behavior and the native harness; zero product acceptance credit.",
+  "first_failure": {
+    "stage": "real_guest_answer",
+    "code": "opening_guest_ai_transport_unobserved",
+    "last_reached_stage": "real_guest_answer",
+    "composer_draft_length": 139,
+    "send_enabled_before_and_after_click": true,
+    "native_click": {
+      "click_events": 1,
+      "trusted_click_events": 1,
+      "bubble_click_events": 1,
+      "intent_matched": true,
+      "button_connected": true,
+      "composer_length_after_click": 139,
+      "user_message_count_before_and_after": 0
+    },
+    "send_execution": {
+      "store_located": true,
+      "button_react_on_click_present": true,
+      "store_notifications_after_click": 1,
+      "pending_submission_observed": false,
+      "submission_phase": "idle",
+      "pre_send_status": null,
+      "pre_send_error_present": false,
+      "conversation_present": false,
+      "draft_length": 139,
+      "identity_ready": true,
+      "authenticated": false,
+      "access_token_present": false,
+      "fingerprint_present": true
+    },
+    "runtime_errors": {
+      "window_errors": 0,
+      "unhandled_rejections": 0
+    },
+    "network": {
+      "request_events": 24,
+      "response_events": 27,
+      "post_events": 0,
+      "chat_path_events": 0,
+      "chat_requests": 0
+    },
+    "expected": "The guest Send action creates a user message and a chat request, then renders assistant content and observes terminal completion.",
+    "observed": "The click was trusted and bubbled, but the draft remained and no submission, user message, chat request, assistant content, or terminal state appeared."
+  },
+  "conversation_checks": {
+    "opening_assistant_content": null,
+    "opening_terminal": false,
+    "same_conversation_followup_attempted": false,
+    "same_conversation_followup_content": null,
+    "post_reload_new_conversation_attempted": false,
+    "post_reload_assistant_content": null,
+    "verdict": "unverified; the opening send did not reach observed submission or transport"
+  },
+  "server": {
+    "sha_before": "a42c0fd0220e965abb7a628add95c4f93cb5ae92",
+    "sha_after": "a42c0fd0220e965abb7a628add95c4f93cb5ae92",
+    "stable": true
+  },
+  "resource_finals": {
+    "package": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "guest": { "resource_invalid": false, "exit_code": 1, "decision": "child_failed" }
+  },
+  "provenance_and_credit": {
+    "hosted_release_risk_and_store_package_gates": "pass",
+    "current_main_after_candidate": "065312d04",
+    "post_candidate_store_material_drift": [
+      "pnpm-lock.yaml: @ai-matrx/chat 0.172 to 0.173",
+      "pnpm-lock.yaml: @ai-matrx/records-ui 0.11 to 0.12"
+    ],
+    "store_acceptance_authorized": false,
+    "product_acceptance_credit": false,
+    "interpretation": "The native run is diagnostic evidence for the exact .528 package. Later Store-material lockfile drift makes .528 ineligible to authorize current Store acceptance; the pre-transport failure independently earns no product pass."
+  },
+  "evidence": [
+    "test-results/guest-chat-store-72e77737-424b-42fe-8a9d-3f4071b6bbf1.json",
+    "docs/stabilization/resource-journals/hosted-package-39080150139-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-browser-39080150139-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-guest-39080150139-1.jsonl",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39080150139"
+  ],
+  "next_action": "Use the sanitized native boundary evidence to diagnose why the observed Send click did not produce submission state. Test any harness hypothesis with forcing probes; distinguish handler invocation from handler-property presence. Repeat acceptance only against a fresh, source-eligible immutable Store release through normal guarded admission."
+}
