@@ -102,11 +102,40 @@ export function verifyReleaseMemberBytes(archiveBytes, artifact, receipt, storeB
   assert.equal(digest(storeBytes), receipt.storeZip.sha256, 'release_member_store_digest_mismatch');
 }
 
+function reviewedStabilizationPath(path) {
+  if (
+    [
+      'docs/stabilization/CHECKLIST.md',
+      'docs/stabilization/STATUS.md',
+      'docs/stabilization/STATUS.html',
+      'docs/stabilization/inventory.json',
+      'docs/stabilization/defects/EXT-D-0228.json',
+    ].includes(path)
+  )
+    return true;
+  if (
+    /^docs\/stabilization\/evidence\/guest-values-b-[1-9][0-9]{10}\/(?:result\.sanitized\.json|values-open\.png)$/.test(
+      path,
+    )
+  )
+    return true;
+  const memberEvidence =
+    /^docs\/stabilization\/evidence\/member-run([1-9][0-9]{10})-[0-9]{8}\/(.+)$/.exec(path);
+  return (
+    memberEvidence !== null &&
+    (memberEvidence[2] === 'native-summary.json' ||
+      new RegExp(
+        `^hosted-(?:browser|guest|package)-${memberEvidence[1]}-[1-9][0-9]*\\.sanitized\\.jsonl$`,
+      ).test(memberEvidence[2]))
+  );
+}
+
 export function requireReleaseMemberSource(ancestor, paths) {
   assert.equal(ancestor, true, 'release_member_source_not_ancestor');
   assert.ok(
     paths.every(
       (path) =>
+        reviewedStabilizationPath(path) ||
         /^docs\/stabilization\/reports\/[a-z0-9]+(?:-[a-z0-9]+)*\.json(?![\s\S])/.test(path) ||
         path ===
           'docs/stabilization/evidence/member-release-admission-20261017/release-api-metadata.json' ||
@@ -124,6 +153,8 @@ export function requireReleaseMemberSource(ancestor, paths) {
         path === 'tests/browser/prepare-reviewer-magic-link.test.mjs' ||
         path === 'tests/browser/member-native-auth-proof.mjs' ||
         path === 'tests/browser/member-native-auth-proof.test.mjs' ||
+        path === 'tests/browser/member-chat-completion-oracle.mjs' ||
+        path === 'tests/browser/member-chat-completion-oracle.test.mjs' ||
         path === 'tests/browser/reviewer-chat-store-acceptance.mjs' ||
         path === 'tests/browser/reviewer-chat-identity-diagnostic.mjs' ||
         path === 'tests/browser/reviewer-chat-identity-diagnostic.test.mjs' ||

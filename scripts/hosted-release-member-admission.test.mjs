@@ -405,3 +405,46 @@ test('reviewed fixture mint helper admits only its two exact paths', () => {
       path,
     );
 });
+
+// Break caught: reviewed member/guest harness and sanitized stabilization records
+// after v0.2.522 must not make the immutable Store candidate ineligible.
+test('strict post-release history admits reviewed harness and bounded stabilization evidence', () => {
+  requireReleaseMemberSource(true, [
+    'tests/browser/member-chat-completion-oracle.mjs',
+    'tests/browser/member-chat-completion-oracle.test.mjs',
+    'docs/stabilization/CHECKLIST.md',
+    'docs/stabilization/STATUS.md',
+    'docs/stabilization/STATUS.html',
+    'docs/stabilization/inventory.json',
+    'docs/stabilization/defects/EXT-D-0228.json',
+    'docs/stabilization/evidence/guest-values-b-39058763654/result.sanitized.json',
+    'docs/stabilization/evidence/guest-values-b-39058763654/values-open.png',
+    'docs/stabilization/evidence/member-run39058586019-20261017/native-summary.json',
+    'docs/stabilization/evidence/member-run39058586019-20261017/hosted-browser-39058586019-1.sanitized.jsonl',
+    'docs/stabilization/evidence/member-run39058586019-20261017/hosted-guest-39058586019-1.sanitized.jsonl',
+    'docs/stabilization/evidence/member-run39058586019-20261017/hosted-package-39058586019-1.sanitized.jsonl',
+  ]);
+});
+
+test('bounded stabilization paths refuse unsafe nesting and unrelated payloads', () => {
+  for (const path of [
+    'tests/browser/member-chat-completion-oracle-copy.mjs',
+    'docs/stabilization/defects/EXT-D-0229.json',
+    'docs/stabilization/evidence/guest-values-b-39058763654/nested/values-open.png',
+    'docs/stabilization/evidence/guest-values-b-39058763654/values-open.png.mjs',
+    'docs/stabilization/evidence/guest-values-b-39058763654/../package.json',
+    'docs/stabilization/evidence/guest-values-b-39058763654/private-link.json',
+    'docs/stabilization/evidence/member-run39058586019-20261017/hosted-browser-39058586020-1.sanitized.jsonl',
+    'docs/stabilization/evidence/member-run39058586019-20261017/hosted-browser-39058586019-1.jsonl',
+    'docs/stabilization/evidence/member-run39058586019-20261017/nested/native-summary.json',
+    'docs/stabilization/STATUS.ts',
+    'pnpm-lock.yaml',
+    '.github/workflows/hosted-guest-acceptance.yml',
+    'src/features/chat/ChatView.tsx',
+  ])
+    assert.throws(
+      () => requireReleaseMemberSource(true, [path]),
+      /release_member_product_changed/,
+      path,
+    );
+});
