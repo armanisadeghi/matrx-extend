@@ -1000,12 +1000,11 @@ export async function deletePattern(patternId: string, authoredBy: WriteActor): 
     .eq('id', patternId)
     .is('deleted_at', null)
     .select('id');
-  if (error) {
-    console.warn('[matrx-extend] deletePattern error', error.message);
-    return false;
-  }
-  if (!data || data.length === 0) {
-    console.warn('[matrx-extend] deletePattern: no live pattern matched', patternId);
+  if (error || !data || data.length === 0) {
+    console.warn(
+      '[matrx-extend] deletePattern',
+      error ? error.message : `no live pattern matched ${patternId}`,
+    );
     return false;
   }
   return true;

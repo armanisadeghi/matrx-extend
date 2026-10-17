@@ -34,12 +34,13 @@ export const autoTableConfigSchema = z.object({
 export type AutoTableConfig = z.infer<typeof autoTableConfigSchema>;
 
 /**
- * The lowest combined score (0..1) at which a table counts as "the saved one".
+ * The lowest header-overlap score (0..1) at which a table counts as "the saved one".
  * Below it replay returns NO rows plus the "not found" notice rather than an
  * unrelated table. `runInPage` is serialized into the page and cannot close
  * over this constant, so it carries the same literal (`MIN_MATCH`); the unit
  * test fails if the two ever differ. `config.min_match` overrides per pattern.
  */
+// KNOB MIRROR: the default for the per-pattern knob `config.min_match` above.
 export const MIN_TABLE_MATCH = 0.5;
 
 export const autoTableMode: ExtractionMode<AutoTableConfig> = {
