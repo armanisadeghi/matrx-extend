@@ -1,0 +1,36 @@
+{
+  "task": "hosted release tool-drift repair",
+  "hosted_run": "39074457108",
+  "source_sha": "0d3cdc1fa",
+  "status": "live_db_repaired_strict_gate_passed",
+  "cause": "Canonical matrx-records Notion find description changed without the matching live tool.definition JSON description update. Exact server declaration comparison correctly stopped release.",
+  "source": "aidream/packages/matrx-records/matrx_records/agent/args.py:1793 via agent/definition.py records_parameters",
+  "verification": {
+    "red": {
+      "command": "pnpm -s catalog:tools:drift:strict",
+      "exit": 1,
+      "finding": "records: DB action variants differ from canonical generated declaration"
+    },
+    "green": {
+      "command": "pnpm -s catalog:tools:drift:strict",
+      "exit": 0,
+      "finding": "No drift detected",
+      "advertised_tools": 83,
+      "database_definitions": 83,
+      "active_bindings": 83,
+      "surfaces": 2
+    },
+    "generated": ["pnpm -s catalog:tools:md", "pnpm -s docs:tools"],
+    "strict_gate_or_source_weakened": false
+  },
+  "release": "Not retried by repair lane; release owner independently verifies and owns hosted retry.",
+  "database": {
+    "table": "tool.definition",
+    "name": "records",
+    "path": ["$variants", "notion_sync", "find", "description"],
+    "before": "FIND A NOTION DATABASE BEFORE DRAFTING A MAPPING: its title (or part of it).",
+    "after": "FIND A NOTION DATABASE BEFORE DRAFTING A MAPPING: its title (or part of it), or its link or collection:// id when you have one (your Notion tools show it).",
+    "mutation": "Compare-and-set one JSON path against its old value, exactly one row returned; named actor provenance. Entire pre-update parameter object plus this sole change equalled the executing server declaration.",
+    "other_actions_or_fields_changed": false
+  }
+}

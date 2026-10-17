@@ -1,0 +1,104 @@
+{
+  "observed_at": "2026-10-17",
+  "scope": "Independent static review of the exact 0.2.527 primary-item Store ZIP for the Blue Argon remotely hosted code rejection",
+  "status": "pass_with_limits",
+  "findings": [
+    {
+      "status": "pass",
+      "topic": "artifact_integrity",
+      "detail": "GitHub outer artifact digest, receipt Store ZIP digest, receipt source SHA, receipt tree hash, v0.2.527 tag, and contributor lockfile identity all verified."
+    },
+    {
+      "status": "pass",
+      "topic": "blue_argon_rejection",
+      "detail": "No cdnjs.cloudflare.com string or rejected PDFObject URL appears in the 1,241 emitted JavaScript and HTML files. One `pdfobject` token occurs in chunks/pdf-BIJOqcW6.js as the jsPDF pdfobjectnewwindow output case; it throws `Remote PDF viewers are unavailable; use output('blob') or save().` No remote JavaScript/MJS URL, remote dynamic import, importScripts call, or executable script-element src loader was found."
+    },
+    {
+      "status": "pass",
+      "topic": "manifest_policy_baseline",
+      "detail": "All policy fields selected by scripts/check-cws-release-risk.mjs match config/chrome-web-store-approved-baseline.json. Store ZIP includes action.default_icon paths; the approved policy projection intentionally compares only action.default_title."
+    }
+  ],
+  "evidence": {
+    "observed_at": "2026-10-17",
+    "scope": "Independent static review of the exact 0.2.527 primary-item Store ZIP for the Blue Argon remotely hosted code rejection",
+    "release": {
+      "run_id": 39075092392,
+      "artifact_id": 12116911437,
+      "version": "0.2.527",
+      "tag": "v0.2.527",
+      "source_commit": "72fb54c95159b9f942bfbbc69f017c49b775a7c5",
+      "workflow_run_head_sha": "0d3cdc1fae475e197e6f06974ac9f5f40d489778",
+      "run_conclusion": "success",
+      "receipt_source_sha_matches_tag": true,
+      "source_commit_is_ancestor_of_origin_main": true,
+      "contributor_lock_commit": "b1c4f6bba4b8c8771cc54ebf30c4be6825076f38",
+      "contributor_lock_commit_is_tag_ancestor": true,
+      "lockfile_at_contributor_commit_equals_tag": true,
+      "lockfile_sha256_at_contributor_commit_and_tag": "777803ef218b7676f729bf65c8bc0d5e71d20c322c9e59235ff117b801cf9fc7",
+      "zip_sha256_expected": "ef70addf1c0049fd2afba10c34c1f70a8d0c10bdef97185e2cbb283bb6b74d66",
+      "zip_sha256_observed": "ef70addf1c0049fd2afba10c34c1f70a8d0c10bdef97185e2cbb283bb6b74d66",
+      "zip_sha256_receipt": "ef70addf1c0049fd2afba10c34c1f70a8d0c10bdef97185e2cbb283bb6b74d66",
+      "outer_artifact_digest_expected": "sha256:a43e9aad8509b0ad706477d7b6a1aeab263084f3e9e9ae7d1923a0f95472f07d",
+      "outer_artifact_digest_observed": "sha256:a43e9aad8509b0ad706477d7b6a1aeab263084f3e9e9ae7d1923a0f95472f07d",
+      "receipt_tree_sha256": "2a5d0117ec4950b98b202cb2920920a2e60198d58c7821acbf8e57144d768a67",
+      "receipt_tree_sha256_recomputed_from_local_bundle": "2a5d0117ec4950b98b202cb2920920a2e60198d58c7821acbf8e57144d768a67",
+      "zip_crc_check": "pass",
+      "zip_bytes": 41054917,
+      "entries": 2375,
+      "emitted_javascript_and_html_files": 1241,
+      "emitted_javascript_files": 1237,
+      "emitted_html_files": 4
+    },
+    "rejection_specific_policy": {
+      "verdict": "PASS",
+      "prior_rejection_reference": "Blue Argon, routing ID FZSL; the October 11 rejection cited https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js",
+      "exact_zip_findings": "No cdnjs.cloudflare.com string or rejected PDFObject URL appears in the 1,241 emitted JavaScript and HTML files. One `pdfobject` token occurs in chunks/pdf-BIJOqcW6.js as the jsPDF pdfobjectnewwindow output case; it throws `Remote PDF viewers are unavailable; use output('blob') or save().` No remote JavaScript/MJS URL, remote dynamic import, importScripts call, or executable script-element src loader was found.",
+      "runtime_code_tokens": {
+        "eval_call": 0,
+        "new_Function": 0,
+        "Chrome_Runtime_evaluate_call": 0,
+        "Chrome_Runtime_callFunctionOn_call": 0,
+        "Chrome_Runtime_compileScript_call": 0,
+        "importScripts_call": 0,
+        "remote_dynamic_import": 0,
+        "remote_js_or_mjs_url": 0,
+        "script_src_injection_loader": 0
+      },
+      "scan_scope": "Every emitted .js and .html asset in the exact Store ZIP. The injected-script detector mirrors scripts/detect-remote-script-loader.mjs; prohibited runtime-code tokens mirror scripts/check-cws-release-risk.mjs. URL path parsing and remote dynamic-import scan were also run. Static bounded evidence only."
+    },
+    "integrity_and_baseline": {
+      "verdict": "PASS",
+      "release_run_conclusion": "success",
+      "receipt_source_and_zip_digest_match": true,
+      "outer_artifact_digest_matches_GitHub_metadata": true,
+      "tag_resolves_to_receipt_source_commit": true,
+      "source_commit_is_ancestor_of_origin_main": true,
+      "contributor_lock_commit_is_ancestor_of_tag": true,
+      "contributor_lockfile_matches_tag_byte_for_byte": true,
+      "manifest_version": "0.2.527",
+      "manifest_version_field": 3,
+      "manifest_contains_key": false,
+      "approved_baseline_version": "0.2.205",
+      "manifest_policy_fields": "All policy fields selected by scripts/check-cws-release-risk.mjs match config/chrome-web-store-approved-baseline.json. Store ZIP includes action.default_icon paths; the approved policy projection intentionally compares only action.default_title.",
+      "hosted_release_evidence": "The exact run log records Chrome Web Store package validation and the approval-risk gate passed against the 0.2.205 policy baseline."
+    },
+    "bounded_residual_risks": {
+      "verdict": "PASS_WITH_LIMITS",
+      "limits": [
+        "This review inspected the exact Store ZIP statically; it did not exercise the extension in a browser or inspect the Store dashboard.",
+        "The scan establishes that the identified October 11 remote PDFObject loader is absent from this package's emitted JavaScript and HTML; it does not establish upload, submission, current review state, or Store acceptance.",
+        "Static string and loader scans are bounded evidence and cannot prove behavior for every runtime input."
+      ]
+    },
+    "verification_method": "Fetched GitHub artifact 12116911437 from the immutable hosted run; verified raw outer artifact SHA-256 against GitHub artifact metadata; verified extracted Store ZIP SHA-256 against receipt; checked ZIP CRC; recomputed receipt tree hash from the local bundle; checked v0.2.527 tag target, source ancestry, b1c4f6bba contributor lock ancestry and byte identity; parsed the exact ZIP manifest and compared its release-gate policy projection with the approved baseline; scanned every emitted JavaScript and HTML asset for the rejected URL, PDFObject/cdnjs references, remote JavaScript URLs and imports, importScripts calls, injected script loaders, and prohibited runtime-code calls; reviewed the exact hosted release log for package/risk gate results."
+  },
+  "files_touched": [
+    "docs/stabilization/reports/store-0527-blue-argon-peer-20261017.json",
+    "docs/stabilization/evidence/store-release-20261017/tool-drift-release-repair.json"
+  ],
+  "open_questions": [
+    "This static ZIP peer review does not establish upload, submission, current dashboard state, or Store acceptance.",
+    "The guarded member-A exact-source admission was blocked before launch by its source-drift guard; member-A acceptance remains open."
+  ]
+}
