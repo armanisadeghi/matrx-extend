@@ -130,6 +130,25 @@ export function inspectCardInPage(input: InspectInput): CardInspection {
           .slice(0, 1)[0];
         if (klass) part = `${tag}.${CSS.escape(klass)}`;
       }
+      // Siblings that share the tag + class (a card's "language" and "stars"
+      // spans) would collapse into one selector and both read the first, so
+      // pin the position among same-tag siblings.
+      const parentEl: Element | null = node.parentElement;
+      if (!ip && !node.id && parentEl) {
+        const probe = part;
+        const twins = Array.from(parentEl.children).filter((c) => {
+          try {
+            return c.matches(probe);
+          } catch {
+            return false;
+          }
+        });
+        // A long run of twins is a chip/tag list: keep it as one field.
+        if (twins.length > 1 && twins.length <= 3) {
+          const sameTag = Array.from(parentEl.children).filter((c) => c.tagName === node?.tagName);
+          part += `:nth-of-type(${sameTag.indexOf(node) + 1})`;
+        }
+      }
       parts.unshift(part);
       node = node.parentElement;
     }
@@ -327,7 +346,8 @@ export function inspectCardInPage(input: InspectInput): CardInspection {
         .map((n) => n.nodeValue ?? '')
         .join(''),
     );
-    if (!direct || direct.length > 160) continue;
+    // Descriptions run long; only whole-article walls of text are not a field.
+    if (!direct || direct.length > 1000) continue;
     const before = out.length;
     dedupePush({
       kind: 'text',

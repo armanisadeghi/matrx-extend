@@ -185,4 +185,26 @@ describe('List Pattern — find every similar sibling', () => {
     const list = diag.recommendations.find((r) => r.mode === 'list_pattern');
     expect(list?.config).toMatchObject({ item_selector: ':scope > a' });
   });
+
+  it('suggests each twin span and long descriptions as separate fields', () => {
+    const desc = 'A long description '.repeat(12).trim();
+    document.body.innerHTML = `<div id="g">${[1, 2, 3]
+      .map(
+        (i) =>
+          `<a href="/r${i}"><div class="card"><span class="name">repo${i}</span><div class="d"><span>${desc}</span></div><div class="meta"><span class="muted">typescript</span><span class="muted">${i}00k</span></div></div></a>`,
+      )
+      .join('')}</div>`;
+    const inspection = inspectCardInPage({ list_root: '#g', item_selector: ':scope > a' });
+    const values = inspection.candidates.map((c) => c.sample_value);
+    expect(values).toContain('typescript');
+    expect(values).toContain('100k');
+    expect(values.some((v) => v.startsWith('A long description'))).toBe(true);
+    const stars = inspection.candidates.find((c) => c.sample_value === '100k');
+    const rows = listPatternMode.runInPage({
+      list_root: '#g',
+      item_selector: ':scope > a',
+      field_paths: [{ name: 'stars', rel_selector: stars?.rel_selector ?? 'missing' }],
+    }) as Array<{ stars: string | null }>;
+    expect(rows.map((r) => r.stars)).toEqual(['100k', '200k', '300k']);
+  });
 });
