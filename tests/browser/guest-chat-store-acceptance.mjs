@@ -165,6 +165,7 @@ async function observe(panel, expected = {}) {
         sendControlDisabled: controls.sendControlDisabled,
         streaming: controls.streaming,
         streamTrace: window.__guestChatStreamTrace?.snapshot() ?? null,
+        sendExecution: window.__guestChatSendExecutionProbe?.snapshot() ?? null,
         replyCount: replies.length,
         answerContainsNonce: Boolean(${JSON.stringify(expected.nonce ?? null)}) &&
           latestReply.includes(${JSON.stringify(expected.nonce ?? '')}),
@@ -629,6 +630,7 @@ function diagnosticState(state, fixture) {
     latestAssistantReply: safeVisibleText(state.latestReplyText, fixture),
     visibleAlerts: (state.visibleAlertTexts ?? []).map((text) => safeVisibleText(text, fixture)),
     streamTrace: state.streamTrace,
+    sendExecution: state.sendExecution,
   };
 }
 
@@ -1019,6 +1021,9 @@ try {
       } finally {
         report.context_rule_reads = contextReadWatch?.snapshot() ?? [];
         contextReadWatch?.stop();
+        await evaluate(panel, 'window.__guestChatSendExecutionProbe?.stop()').catch((error) =>
+          cleanupErrors.push(error),
+        );
         try {
           await networkWatch?.stop();
         } catch (error) {

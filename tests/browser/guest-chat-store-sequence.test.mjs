@@ -420,7 +420,7 @@ for (const [breakAt, reason] of [
   ['missed_click', /exactly one click/],
   ['stale_click', /exactly one click/],
   ['untrusted_click', /trusted native click/],
-  ['stopped_click', /reach the React root/],
+  ['stopped_click', /bubble to the document/],
   ['click_intent', /committed input intent/],
 ]) {
   test(`refuses a guest submission with ${breakAt}`, async () => {

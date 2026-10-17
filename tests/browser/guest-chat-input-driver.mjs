@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createGuestComposerProbe, readGuestReactDraft } from './guest-chat-completion-oracle.mjs';
+import { createGuestSendExecutionProbe } from './guest-chat-send-execution-probe.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
 
 /** Captures the active pane and conversation, without exporting IDs or draft text. */
@@ -100,6 +101,7 @@ export function createGuestInputDriver({ evaluate, waitFor, observe, click, repo
       const hitsSend = (event) => event.target === send[0] || send[0].contains(event.target);
       const capture = (event) => {
         if (!hitsSend(event)) return;
+        window.__guestChatSendExecutionProbe?.begin();
         clickEvents += 1;
         const intent = window.__guestChatInputIntent?.();
         intentMatchedAtClick = intent ? ['sameActivePane', 'uniqueComposer', 'sameConversation', 'currentNodeConnected',
@@ -269,6 +271,15 @@ export function createGuestInputDriver({ evaluate, waitFor, observe, click, repo
       if (boundary) {
         boundary.intent_before_click = await evaluate(panel, 'window.__guestChatInputIntent()');
         requireCommittedIntent(boundary.intent_before_click, label);
+        boundary.execution_before_click = await evaluate(
+          panel,
+          `(() => {
+          window.__guestChatSendExecutionProbe?.stop();
+          const pane = document.getElementById(document.querySelector('button[role="tab"][title="Chat"]')?.getAttribute('aria-controls') ?? '');
+          window.__guestChatSendExecutionProbe = (${createGuestSendExecutionProbe.toString()})(pane?.querySelector('textarea'), pane?.querySelector('button[aria-label="Send message"]'), window);
+          return window.__guestChatSendExecutionProbe.snapshot();
+        })()`,
+        );
         const installed = await installGuestSendClickProbe(panel);
         assert.equal(installed?.installed, true, `${label} send click probe must attach`);
         boundary.click = { phases: [], beforeClick: installed.beforeClick, afterClick: null };
@@ -299,7 +310,7 @@ export function createGuestInputDriver({ evaluate, waitFor, observe, click, repo
         assert.equal(
           boundary.click.afterClick?.bubbleClickEvents,
           1,
-          `${label} Send must reach the React root`,
+          `${label} Send must bubble to the document`,
         );
       }
     } catch (error) {
@@ -311,6 +322,10 @@ export function createGuestInputDriver({ evaluate, waitFor, observe, click, repo
       throw error;
     } finally {
       if (boundary) {
+        boundary.execution_after_click = await evaluate(
+          panel,
+          'window.__guestChatSendExecutionProbe?.stopSubscription() ?? null',
+        ).catch(() => null);
         if (boundary.click && !boundary.click.afterClick)
           boundary.click.afterClick = await evaluate(
             panel,
