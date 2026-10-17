@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { classifyGuestTurn, createGuestStreamCollector } from './guest-chat-completion-oracle.mjs';
+import {
+  classifyGuestTurn,
+  classifyPackageGuestTurn,
+  createGuestStreamCollector,
+} from './guest-chat-completion-oracle.mjs';
 
 const expectedTerms = ['C82F4A', 'Capture', 'Understand', 'Use'];
 const suspended = {
@@ -100,6 +104,45 @@ test('stream errors remain terminal even without answer text', () => {
 function streamMessage(runId, type, payload = {}) {
   return { __matrx: true, kind: 'stream:chunk', payload: { runId, type, payload } };
 }
+
+// Break caught: a rendered old or optimistic answer cannot turn an HTTP-only
+// package request into a completed, page-grounded guest turn.
+test('package turn requires terminal wire success and a newly settled grounded assistant reply', () => {
+  const state = {
+    latestReplyText: 'Capture Understand Use OPEN-73',
+    replyCount: 2,
+    streaming: false,
+    errorNotice: false,
+    terminalAnswerError: false,
+    answerIsRefusal: false,
+  };
+  const request = {
+    attempt: 'opening',
+    status: 200,
+    loading_finished: true,
+    terminal_success: true,
+    stream_error: false,
+  };
+  const classify = (requests, observed = state) =>
+    classifyPackageGuestTurn({
+      requests,
+      attempt: 'opening',
+      state: observed,
+      priorReplyCount: 1,
+      expectedTerms: ['OPEN-73', 'Capture', 'Understand', 'Use'],
+      orderedTerms: ['Capture', 'Understand', 'Use'],
+    });
+  assert.equal(classify([{ ...request, status: 402 }]), 'terminal_error');
+  assert.equal(classify([{ ...request, terminal_success: false }]), 'in_progress');
+  assert.equal(classify([{ ...request, stream_error: true }]), 'terminal_error');
+  assert.equal(classify([request], { ...state, replyCount: 1 }), 'in_progress');
+  assert.equal(classify([request], { ...state, streaming: true }), 'in_progress');
+  assert.equal(
+    classify([request], { ...state, latestReplyText: 'Capture Understand Use' }),
+    'terminal_wrong_answer',
+  );
+  assert.equal(classify([request]), 'terminal_answer');
+});
 
 function streamEvent(runId, eventName, data) {
   return streamMessage(runId, 'event', { eventName, data });

@@ -303,6 +303,79 @@ test('transport proof refuses absent and statusless observations', () => {
   requireGuestTransport([{ attempt: 'opening', status: 200 }], 'opening');
 });
 
+// Break caught: package Chat's panel fetch can return an HTTP failure, an
+// unfinished NDJSON body, or an error before end while the UI still has text.
+test('package panel transport requires a correlated successful terminal NDJSON response', async () => {
+  const events = new EventEmitter();
+  const bodies = new Map();
+  const calls = [];
+  const panel = {
+    async send(method, { requestId } = {}) {
+      calls.push(method);
+      if (method === 'Network.getResponseBody')
+        return { body: bodies.get(requestId), base64Encoded: false };
+      return {};
+    },
+    on(name, listener) {
+      events.on(name, listener);
+      return () => events.off(name, listener);
+    },
+  };
+  const watch = await watchGuestAiRequests({
+    panel,
+    panelTarget: { url: 'chrome-extension://abc/sidepanel.html' },
+    mode: 'package',
+  });
+  assert.deepEqual(calls, ['Network.enable']);
+  const emit = async (id, status, body, label) => {
+    watch.arm(label);
+    bodies.set(id, body);
+    events.emit('Network.requestWillBeSent', {
+      requestId: id,
+      request: {
+        method: 'POST',
+        url: 'https://server.invalid/ai/mandates/extend.browser_chat',
+        postData: JSON.stringify({ conversation_id: `private-${id}`, is_new: true }),
+      },
+    });
+    events.emit('Network.responseReceived', { requestId: id, response: { status } });
+    events.emit('Network.loadingFinished', { requestId: id });
+    await watch.settle();
+  };
+  await emit('refused', 402, JSON.stringify({ error: 'guest_ai_allowance_used' }), 'refused');
+  await emit(
+    'unfinished',
+    200,
+    '{"event":"chunk","data":{"text":"plausible answer"}}\n',
+    'unfinished',
+  );
+  await emit(
+    'errored',
+    200,
+    '{"event":"error","data":{"message":"failed"}}\n{"event":"end","data":{"reason":"complete"}}\n',
+    'errored',
+  );
+  await emit(
+    'complete',
+    200,
+    '{"event":"completion","data":{"operation":"user_request","status":"success"}}\n{"event":"end","data":{"reason":"complete"}}\n',
+    'complete',
+  );
+  const rows = watch.snapshot();
+  for (const label of ['refused', 'unfinished', 'errored']) {
+    assert.throws(
+      () => requireGuestTransport(rows, label, 'package'),
+      new RegExp(`${label}_guest_ai_transport_unobserved`),
+    );
+  }
+  requireGuestTransport(rows, 'complete', 'package');
+  assert.equal(rows.find((row) => row.attempt === 'complete').terminal_success, true);
+  assert.equal(rows.find((row) => row.attempt === 'errored').stream_error, true);
+  assert.equal(JSON.stringify(rows).includes('plausible answer'), false);
+  assert.equal(JSON.stringify(rows).includes('private-'), false);
+  await watch.stop();
+});
+
 test('large offscreen POST body is inspected transiently without retaining guest text or ID', async () => {
   const events = new EventEmitter();
   const watch = await watchGuestAiRequests({

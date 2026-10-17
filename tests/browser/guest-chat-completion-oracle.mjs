@@ -246,3 +246,42 @@ export function classifyGuestTurn({
     ? 'terminal_answer'
     : 'terminal_wrong_answer';
 }
+
+/** Package Chat runs its own panel fetch; require the correlated wire end and a new settled reply. */
+export function classifyPackageGuestTurn({
+  requests,
+  attempt,
+  state,
+  priorReplyCount,
+  expectedTerms,
+  orderedTerms = [],
+}) {
+  const turn = requests.filter((request) => request.attempt === attempt);
+  if (
+    state.errorNotice ||
+    state.terminalAnswerError ||
+    state.answerIsRefusal ||
+    turn.some(
+      (request) => (request.status !== null && request.status !== 200) || request.stream_error,
+    )
+  )
+    return 'terminal_error';
+  if (
+    !turn.some(
+      (request) => request.status === 200 && request.loading_finished && request.terminal_success,
+    )
+  )
+    return 'in_progress';
+  if (state.streaming || state.replyCount <= priorReplyCount) return 'in_progress';
+  const text = state.latestReplyText ?? '';
+  let after = -1;
+  const inOrder = orderedTerms.every((term) => {
+    const position = text.indexOf(term, after + 1);
+    if (position < 0) return false;
+    after = position + term.length - 1;
+    return true;
+  });
+  return text.trim() && inOrder && expectedTerms.every((term) => text.includes(term))
+    ? 'terminal_answer'
+    : 'terminal_wrong_answer';
+}

@@ -42,7 +42,44 @@ function structuredErrorCode(body, base64Encoded) {
   }
 }
 
-export async function watchGuestAiRequests({ browserSession, attachOffscreen, panelTarget }) {
+function streamTerminal(body, base64Encoded) {
+  const decoded = base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body;
+  let terminal = false;
+  let error = false;
+  for (const line of decoded.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    let payload;
+    try {
+      payload = JSON.parse(line);
+    } catch {
+      error = true;
+      continue;
+    }
+    const kind = payload?.event;
+    const detail = payload?.data ?? payload;
+    if (
+      kind === 'error' ||
+      (kind === 'completion' &&
+        detail?.operation === 'user_request' &&
+        detail?.status !== 'success') ||
+      (kind === 'record_update' &&
+        /(?:^|\.)user_request$/.test(String(detail?.table ?? '')) &&
+        ['failed', 'cancelled'].includes(detail?.status)) ||
+      (kind === 'end' && ['error', 'failed', 'cancelled'].includes(detail?.reason))
+    )
+      error = true;
+    if (kind === 'end' && detail?.reason === 'complete') terminal = true;
+  }
+  return { terminal, error };
+}
+
+export async function watchGuestAiRequests({
+  browserSession,
+  attachOffscreen,
+  panelTarget,
+  panel,
+  mode = 'legacy',
+}) {
   const offscreenUrl = new URL('offscreen.html', panelTarget.url).href;
   const requests = new Map();
   const pendingCodes = new Set();
@@ -94,6 +131,11 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
           cdp_request_id: requestId,
           status: null,
           code: null,
+          ...(mode === 'package' && {
+            terminal_success: false,
+            stream_error: false,
+            loading_finished: false,
+          }),
           path_class: chatPathClass(request.url),
           ...safeConversationRequest(request.postData),
         },
@@ -123,10 +165,18 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
     send = (method, params) => browserSession.send(method, params, sessionId),
   ) => {
     const request = requests.get(`${sessionId}:${requestId}`)?.record;
-    if (!request || request.status === null || request.status < 400) return;
+    if (!request) return;
+    if (mode === 'legacy' && (request.status === null || request.status < 400)) return;
+    if (mode === 'package') request.loading_finished = true;
     const pending = send('Network.getResponseBody', { requestId })
       .then(({ body, base64Encoded }) => {
-        request.code = structuredErrorCode(body, base64Encoded);
+        if (request.status !== null && request.status >= 400) {
+          request.code = structuredErrorCode(body, base64Encoded);
+        } else {
+          const terminal = streamTerminal(body, base64Encoded);
+          request.terminal_success = terminal.terminal;
+          request.stream_error = terminal.error;
+        }
       })
       .catch(() => {});
     pendingCodes.add(pending);
@@ -178,6 +228,36 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
     }
   };
 
+  if (mode === 'package') {
+    assert.ok(panel, 'package_guest_panel_session_required');
+    await panel.send('Network.enable');
+    counters.network_enabled++;
+    confirmedSessions.add('panel');
+    const stops = [
+      panel.on('Network.requestWillBeSent', (event) => onRequest(event, 'panel', panel.send)),
+      panel.on('Network.responseReceived', (event) => onResponse(event, 'panel')),
+      panel.on('Network.loadingFinished', (event) => onFinished(event, 'panel', panel.send)),
+    ];
+    return {
+      arm(label) {
+        armedLabel = label;
+      },
+      snapshot() {
+        return [...requests.values()].map((entry) => ({ ...entry.record }));
+      },
+      async diagnostics() {
+        return { mode: 'panel', counters: { ...counters }, buffered_requests: requests.size };
+      },
+      async settle() {
+        await Promise.all([...pendingCodes, ...pendingBodies]);
+      },
+      async stop() {
+        armedLabel = null;
+        for (const stop of stops) stop();
+        await Promise.all([...pendingCodes, ...pendingBodies]);
+      },
+    };
+  }
   browserSession.on('Network.requestWillBeSent', onRequest);
   browserSession.on('Network.responseReceived', onResponse);
   browserSession.on('Network.loadingFinished', onFinished);
@@ -311,9 +391,18 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
   };
 }
 
-export function requireGuestTransport(requests, attempt) {
+export function requireGuestTransport(requests, attempt, mode = 'legacy') {
   assert.ok(
-    requests.some((request) => request.attempt === attempt && request.status !== null),
+    requests.some(
+      (request) =>
+        request.attempt === attempt &&
+        (mode === 'package'
+          ? request.status === 200 &&
+            request.loading_finished === true &&
+            request.terminal_success === true &&
+            request.stream_error === false
+          : request.status !== null),
+    ),
     `${attempt}_guest_ai_transport_unobserved`,
   );
 }

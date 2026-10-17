@@ -6,7 +6,11 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
-import { classifyGuestTurn, createGuestStreamCollector } from './guest-chat-completion-oracle.mjs';
+import {
+  classifyGuestTurn,
+  classifyPackageGuestTurn,
+  createGuestStreamCollector,
+} from './guest-chat-completion-oracle.mjs';
 import {
   requireGuestConversationSequence,
   requireGuestTransport,
@@ -209,17 +213,26 @@ async function installStreamTrace(panel, fixture, fixtureTabId) {
   assert.equal(installed, true, 'guest stream trace installed before send');
 }
 
-async function guestTurnBoundary(panel) {
+async function guestTurnBoundary(panel, mode = 'legacy') {
   const state = await observe(panel);
-  assert.ok(state.streamTrace, 'guest stream trace must exist before sending a question');
+  if (mode === 'legacy')
+    assert.ok(state.streamTrace, 'guest stream trace must exist before sending a question');
   return {
-    priorRunCount: state.streamTrace.runs.length,
+    priorRunCount: state.streamTrace?.runs.length ?? 0,
     priorReplyCount: state.replyCount,
-    priorToolEventCount: state.streamTrace.toolEvents.length,
+    priorToolEventCount: state.streamTrace?.toolEvents.length ?? 0,
   };
 }
 
-async function waitForTerminalAnswer(panel, expected, turnBoundary, probeToolBoundary = null) {
+async function waitForTerminalAnswer(
+  panel,
+  expected,
+  turnBoundary,
+  probeToolBoundary = null,
+  networkWatch = null,
+  attempt = null,
+  mode = 'legacy',
+) {
   let last = null;
   const timeline = [];
   const toolBoundaryChecks = [];
@@ -243,7 +256,7 @@ async function waitForTerminalAnswer(panel, expected, turnBoundary, probeToolBou
     const answerTerms = expected.fixtureHeading
       ? [expected.nonce, expected.fixtureHeading]
       : [expected.nonce, ...REQUIRED_ANSWER_TERMS];
-    const verdict = classifyGuestTurn({
+    let verdict = classifyGuestTurn({
       runs: state.streamTrace?.runs ?? [],
       assistantText: state.latestReplyText ?? '',
       replyCount: state.replyCount,
@@ -253,6 +266,16 @@ async function waitForTerminalAnswer(panel, expected, turnBoundary, probeToolBou
       errorNotice: state.errorNotice,
       terminalAnswerError: state.terminalAnswerError,
     });
+    if (mode === 'package') {
+      verdict = classifyPackageGuestTurn({
+        requests: networkWatch.snapshot(),
+        attempt,
+        state,
+        priorReplyCount: turnBoundary.priorReplyCount,
+        expectedTerms: answerTerms,
+        orderedTerms: expected.fixtureHeading ? [] : REQUIRED_ANSWER_TERMS,
+      });
+    }
     const previous = timeline.at(-1);
     if (
       !previous ||
@@ -621,6 +644,7 @@ async function capture(panel, path) {
 try {
   report.server_version_before = await safeServerVersion();
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
+  const transportMode = receipt.kind === 'local_dev_unpacked' ? 'package' : 'legacy';
   const beforeFiles = await fileInventory(EXTENSION_DIR);
   assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'loaded extension initial tree');
   report.build = {
@@ -710,7 +734,13 @@ try {
         report.context_rule_reads = contextReadWatch.snapshot();
 
         markStage('guest_question');
-        networkWatch = await watchGuestAiRequests({ browserSession, attachOffscreen, panelTarget });
+        networkWatch = await watchGuestAiRequests({
+          browserSession,
+          attachOffscreen,
+          panelTarget,
+          panel,
+          mode: transportMode,
+        });
         const fixtureSurvivedOpen = await readableFixturePresent(web, fixture);
         if (!fixtureSurvivedOpen) {
           await installPageFixture(web, fixture);
@@ -729,7 +759,7 @@ try {
           fixtureTabId,
         );
         await installStreamTrace(panel, fixture, fixtureTabId);
-        const openingBoundary = await guestTurnBoundary(panel);
+        const openingBoundary = await guestTurnBoundary(panel, transportMode);
         networkWatch.arm('opening');
         contextReadWatch.arm('opening_send');
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
@@ -740,6 +770,9 @@ try {
           { nonce: fixture.openingCode },
           openingBoundary,
           () => fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId),
+          networkWatch,
+          'opening',
+          transportMode,
         );
         report.grounding_diagnostics.opening = {
           toolEvents: openingTurn.toolEvents,
@@ -753,7 +786,7 @@ try {
         await networkWatch.settle();
         report.guest_ai_observer = await networkWatch.diagnostics();
         report.guest_ai_requests = networkWatch.snapshot();
-        requireGuestTransport(report.guest_ai_requests, 'opening');
+        requireGuestTransport(report.guest_ai_requests, 'opening', transportMode);
         report.context_rule_reads = contextReadWatch.snapshot();
         assert.ok(
           openingTurn.verdict === 'terminal_answer' &&
@@ -787,7 +820,7 @@ try {
         );
         const sameFixtureTabId = await requireActiveFixtureTab(attachWorker, web, fixture);
         assert.equal(sameFixtureTabId, fixtureTabId, 'same-conversation send must use opening tab');
-        const sameConversationBoundary = await guestTurnBoundary(panel);
+        const sameConversationBoundary = await guestTurnBoundary(panel, transportMode);
         networkWatch.arm('same_conversation_followup');
         contextReadWatch.arm('same_conversation_followup_send');
         await submitQuestion(panel, FOLLOWUP_QUESTION, 'same_conversation_followup_question');
@@ -797,6 +830,9 @@ try {
           { nonce: fixture.followupCode, fixtureHeading: fixture.title },
           sameConversationBoundary,
           () => fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId),
+          networkWatch,
+          'same_conversation_followup',
+          transportMode,
         );
         report.grounding_diagnostics.same_conversation_followup = {
           toolEvents: sameTurn.toolEvents,
@@ -808,7 +844,11 @@ try {
         report.failure_observation = diagnosticState(sameTurn.state, fixture);
         await networkWatch.settle();
         report.guest_ai_requests = networkWatch.snapshot();
-        requireGuestTransport(report.guest_ai_requests, 'same_conversation_followup');
+        requireGuestTransport(
+          report.guest_ai_requests,
+          'same_conversation_followup',
+          transportMode,
+        );
         assert.ok(
           sameTurn.verdict === 'terminal_answer' &&
             sameTurn.state.answerContainsNonce &&
@@ -885,7 +925,7 @@ try {
           followupFixtureTabId,
         );
         await installStreamTrace(panel, fixture, followupFixtureTabId);
-        const postReloadBoundary = await guestTurnBoundary(panel);
+        const postReloadBoundary = await guestTurnBoundary(panel, transportMode);
         await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question');
 
         markStage('real_guest_followup_answer');
@@ -894,6 +934,9 @@ try {
           { nonce: fixture.followupCode, fixtureHeading: fixture.title },
           postReloadBoundary,
           () => fixtureIdentitySnapshot(attachWorker, web, fixture, followupFixtureTabId),
+          networkWatch,
+          'post_reload_new_conversation',
+          transportMode,
         );
         report.grounding_diagnostics.followup = {
           toolEvents: followupTurn.toolEvents,
@@ -913,7 +956,11 @@ try {
         await networkWatch.settle();
         report.guest_ai_observer = await networkWatch.diagnostics();
         report.guest_ai_requests = networkWatch.snapshot();
-        requireGuestTransport(report.guest_ai_requests, 'post_reload_new_conversation');
+        requireGuestTransport(
+          report.guest_ai_requests,
+          'post_reload_new_conversation',
+          transportMode,
+        );
         requireGuestConversationSequence(report.guest_ai_requests);
         report.chat.same_conversation_identity_verified = true;
         report.context_rule_reads = contextReadWatch.snapshot();
