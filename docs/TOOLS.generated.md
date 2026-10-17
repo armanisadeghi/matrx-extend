@@ -7,7 +7,7 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-10-15T09:35:54.147Z
+Generated: 2026-10-17T01:28:31.566Z
 Total tools: 83
 
 ## ai
@@ -715,6 +715,7 @@ Actions:
 - signature_request: have somebody sign a document on a record
 - subscription_propose: notify or summarize when something happens
 - notion_sync: pull the latest from Notion into an imported table or page
+- data_sync: copy a connected source into existing tables by a mapping
 - enrich_propose: fill fields of rows from outside sources
 - entity_read / entity_write: platform records such as contacts
 - page_write, view_propose, template_propose, field_convert: page bodies (Notion blocks ok), saved views, row templates, automatic fields
@@ -723,7 +724,7 @@ record_write cells from Notion: file {"url"}, person {"email", "name"}, link {"m
 One call per intent, never one per field or row: {"action": "table_propose", "args": {"name": "Field Crews", "fields": [{"name": "region", "type": "text"}, {"name": "day rate", "type": "currency"}]}}; {"action": "record_write", "args": {"table_id": "<id>", "records": [{"region": "North", "day_rate": 1200}, {...}]}}; {"action": "record_read", "args": {"table_id": "<id>"}}.
 Reads span every organization the person belongs to. Tell the person `where.say` exactly. If an answer says `awaiting_approval`, name the change in ONE sentence ("The caption for <post> is waiting for your approval.") and stop; you are told when they decide.
 
-**Parameters:** `args` (object); `action` (string, required) = ["table_list","metadata_search","record_read","record_aggregate","record_write","record_delete","record_history","record_restore_version","field_propose","table_propose","form_propose","booking_propose","import_propose","dashboard_propose","pipeline_propose","document_propose","checklist_propose","capture_propose","enrich_propose","notion_sync","portal_propose","signature_request","subscription_propose","entity_read","entity_write","page_write","view_propose","template_propose","field_convert","guide"]
+**Parameters:** `args` (object); `action` (string, required) = ["table_list","metadata_search","record_read","record_aggregate","record_write","record_delete","record_history","record_restore_version","field_propose","table_propose","form_propose","booking_propose","import_propose","dashboard_propose","pipeline_propose","document_propose","checklist_propose","capture_propose","enrich_propose","notion_sync","data_sync","portal_propose","signature_request","subscription_propose","entity_read","entity_write","page_write","view_propose","template_propose","field_convert","guide"]
 
 ## tabs
 

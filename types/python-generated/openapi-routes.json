@@ -73,6 +73,34 @@
    "application/json"
   ]
  },
+ "/admin/ai-catalog/discovery/candidates/{candidate_id}/dismiss": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/ai-catalog/discovery/candidates/{candidate_id}/promote": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/ai-catalog/discovery/models/{model_id}/placement": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/ai-catalog/discovery/placement": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/ai-catalog/discovery/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/ai-catalog/discovery/variants/{variant_id}/test": {
+  "post": []
+ },
  "/admin/ai-catalog/provider-models/refresh": {
   "post": [
    "application/json"
@@ -408,6 +436,32 @@
  "/admin/system-errors/{error_id}": {
   "get": []
  },
+ "/admin/tool-control/endpoints/{endpoint_id}/cancel-verification": {
+  "post": []
+ },
+ "/admin/tool-control/endpoints/{endpoint_id}/turn-off": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/tool-control/endpoints/{endpoint_id}/turn-on": {
+  "post": []
+ },
+ "/admin/tool-control/endpoints/{endpoint_id}/verify": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/tool-control/providers/{slug}/state": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/tool-control/tools/{tool_id}/pause": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/admin/tool-routing/cache-bust": {
   "post": []
  },
@@ -579,6 +633,33 @@
    "application/json"
   ]
  },
+ "/agent-tests/checks/format": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-tests/checks/parse": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-tests/runs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-tests/runs/{run_id}/cancel": {
+  "post": []
+ },
+ "/agent-tests/runs/{run_id}/recheck": {
+  "post": []
+ },
+ "/agent-tests/runs/{run_id}/resume": {
+  "post": []
+ },
+ "/agent-tests/runs/{run_id}/stream": {
+  "get": []
+ },
  "/agent-usage/registry": {
   "get": []
  },
@@ -610,6 +691,16 @@
  },
  "/aha/public/status": {
   "get": []
+ },
+ "/ai-catalog/discover/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai-catalog/discover/search": {
+  "post": [
+   "application/json"
+  ]
  },
  "/ai-models": {
   "get": []
@@ -970,6 +1061,21 @@
  "/airmeet/public/status": {
   "get": []
  },
+ "/airtable-import/bases": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/airtable-import/import": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/airtable-import/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/airtable/public/status": {
   "get": []
  },
@@ -1192,6 +1298,14 @@
    "application/json"
   ]
  },
+ "/automations/hooks/{automation_id}/{secret}": {
+  "post": []
+ },
+ "/automations/script/run": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/aweber/public/status": {
   "get": []
  },
@@ -1294,6 +1408,17 @@
  "/box/oauth/callback": {
   "get": []
  },
+ "/brand-assists/{brand_id}/offers": {
+  "get": []
+ },
+ "/brand-assists/{brand_id}/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/brand-guide/{brand_id}/read-site": {
+  "post": []
+ },
  "/brand-intake/images/groups": {
   "post": [
    "application/json"
@@ -1322,6 +1447,20 @@
   "post": [
    "application/json"
   ]
+ },
+ "/brand-intake/promote/rules": {
+  "get": []
+ },
+ "/brand-intake/promote/{brand_id}": {
+  "post": []
+ },
+ "/brand-offerings/{brand_id}/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/brand-offerings/{brand_id}/refresh/quote": {
+  "get": []
  },
  "/brand-voice/extract": {
   "post": [
@@ -1370,6 +1509,14 @@
   ]
  },
  "/broker/usage": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/browser-manager/cloud-computer": {
+  "get": []
+ },
+ "/browser-manager/cloud-computer/wake": {
   "post": [
    "application/json"
   ]
@@ -1804,6 +1951,27 @@
   "post": [
    "application/json"
   ]
+ },
+ "/comparison": {
+  "get": []
+ },
+ "/comparison/lookup": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/comparison/quote": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/comparison/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/comparison/runs/{run_id}": {
+  "get": []
  },
  "/compute-targets/": {
   "get": []
@@ -2280,6 +2448,11 @@
    "application/json"
   ]
  },
+ "/data-sources/ingest-rows": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/data-sources/jobs/{job_id}": {
   "get": []
  },
@@ -2301,6 +2474,9 @@
    "application/json"
   ]
  },
+ "/data-sources/unlock/quote": {
+  "get": []
+ },
  "/databox/public/status": {
   "get": []
  },
@@ -2321,6 +2497,11 @@
  },
  "/decision-review/agents/{agent_id}/calibration": {
   "get": []
+ },
+ "/decision-review/agents/{agent_id}/reference-runs": {
+  "post": [
+   "application/json"
+  ]
  },
  "/dedup/files/{file_id}/set-canonical-extract": {
   "post": [
@@ -3164,6 +3345,11 @@
  "/gentoo-packages/public/package": {
   "get": []
  },
+ "/geo/validate-address": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/getresponse/public/status": {
   "get": []
  },
@@ -3706,6 +3892,9 @@
   "get": []
  },
  "/health": {
+  "get": []
+ },
+ "/health/config-attestation": {
   "get": []
  },
  "/health/database-identity": {
@@ -5411,6 +5600,11 @@
  "/obsidian/public/release": {
   "get": []
  },
+ "/office/convert-document": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
  "/office/generate": {
   "post": [
    "application/json"
@@ -6291,6 +6485,20 @@
  "/redact/sessions/{session_id}/revoke": {
   "post": []
  },
+ "/render-jobs/{run_id}/assets/{file_id}": {
+  "get": []
+ },
+ "/render-jobs/{run_id}/events": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/render-jobs/{run_id}/job": {
+  "get": []
+ },
+ "/render-jobs/{run_id}/output": {
+  "put": []
+ },
  "/render-status/public/status": {
   "get": []
  },
@@ -6774,6 +6982,9 @@
    "application/json"
   ]
  },
+ "/runs/{run_id}/values": {
+  "get": []
+ },
  "/runtime/executions/{execution_id}/events": {
   "get": []
  },
@@ -6948,6 +7159,16 @@
   ]
  },
  "/scraper-kinds/scrape-many": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/advanced-read": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/advanced-read/quote": {
   "post": [
    "application/json"
   ]
@@ -7955,6 +8176,9 @@
  "/social/posts/{post_id}/transcript": {
   "post": []
  },
+ "/social/posts/{post_id}/words": {
+  "post": []
+ },
  "/social/profiles/{profile_id}/avatar": {
   "get": []
  },
@@ -7970,6 +8194,11 @@
  },
  "/social/tracked/{tracked_account_id}": {
   "delete": []
+ },
+ "/social/video-structure/analyze": {
+  "post": [
+   "application/json"
+  ]
  },
  "/socio/public/status": {
   "get": []
@@ -8159,6 +8388,11 @@
   "get": []
  },
  "/synced-tables/cell": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/synced-tables/import-once": {
   "post": [
    "application/json"
   ]
@@ -8353,6 +8587,20 @@
  "/toggl/public/status": {
   "get": []
  },
+ "/tools/calls": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/tools/calls/{call_id}": {
+  "get": []
+ },
+ "/tools/calls/{call_id}/cancel": {
+  "post": []
+ },
+ "/tools/catalog/search": {
+  "get": []
+ },
  "/tools/screen-run": {
   "post": [
    "application/json"
@@ -8370,6 +8618,9 @@
   "post": []
  },
  "/tools/test/{tool_name}": {
+  "get": []
+ },
+ "/tools/{tool_id}/run-form": {
   "get": []
  },
  "/trainual/public/status": {
@@ -9232,6 +9483,61 @@
  "/vfairs/public/status": {
   "get": []
  },
+ "/video-director/{project_id}/clone-plan": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/video-generation/{project_id}/estimate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/video-generation/{project_id}/generate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/video-projects": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/video-projects/{project_id}": {
+  "get": []
+ },
+ "/video-projects/{project_id}/outputs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/video-projects/{project_id}/patches": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/video-projects/{project_id}/render-runs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/video-projects/{project_id}/variants": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/video-variants/{project_id}/batch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/video-variants/{project_id}/matrix": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/videolan-wiki/public/page": {
   "get": []
  },
@@ -9357,6 +9663,9 @@
   "post": [
    "application/json"
   ]
+ },
+ "/web/fetch-text": {
+  "get": []
  },
  "/web/link-preview": {
   "get": []

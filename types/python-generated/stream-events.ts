@@ -723,6 +723,69 @@ export interface DecisionAnswersData {
   cost_usd: number;
 }
 
+export interface DecisionReferenceItemData {
+  type?: "decision_reference_item";
+  run_id: string;
+  item_id: string;
+  question: string;
+  reference_id?: string | null;
+  reference_answer: boolean | number | string;
+  reference_verdict: string;
+  reference_p?: number | null;
+  reference_probability?: number | null;
+  reference_probabilities?: Record<string, number> | null;
+  reference_legend?: Record<string, string> | null;
+  item_verdict: string;
+  item_p_answer?: number | null;
+  item_probability?: number | null;
+  item_probabilities?: Record<string, number> | null;
+  item_confidence?: number | null;
+  agree: boolean;
+  already_checked?: boolean;
+  model?: string | null;
+  cost_usd: number;
+  latency_ms: number;
+}
+
+export interface DecisionReferenceItemFailedData {
+  type?: "decision_reference_item_failed";
+  run_id: string;
+  item_id: string;
+  question: string;
+  error: string;
+  status?: "failed" | "unanswerable" | "unbuildable" | "in_flight";
+  reference_id?: string | null;
+  already_checked?: boolean;
+}
+
+export interface DecisionReferenceRunDoneData {
+  type?: "decision_reference_run_done";
+  run_id: string;
+  done: number;
+  failed: number;
+  unanswerable?: number;
+  in_flight?: number;
+  agreement_rate?: number | null;
+  cost_usd: number;
+}
+
+export interface DecisionReferenceModel {
+  id: string;
+  name: string;
+}
+
+export interface DecisionReferenceRunStartedData {
+  type?: "decision_reference_run_started";
+  run_id: string;
+  agent_id: string;
+  item_count: number;
+  skipped_existing?: number;
+  in_flight?: number;
+  unbuildable?: number;
+  reference_model: DecisionReferenceModel;
+  judge_key: string;
+}
+
 export interface DictionaryPublishCompleteData {
   type?: "dictionary_publish_complete";
   status: string;
@@ -866,6 +929,13 @@ export interface FileSearchStartedData {
   regex?: boolean;
   case_sensitive?: boolean;
   total_pages: number;
+}
+
+export interface FirstTurnFilledData {
+  type?: "first_turn_filled";
+  system_instruction?: string | null;
+  messages?: Record<string, unknown>[];
+  wire_swaps?: string | null;
 }
 
 export interface FunctionResultData {
@@ -2536,6 +2606,10 @@ export type TypedDataPayload =
   | CutoverFinalSwitchResultData
   | CutoverFinalSwitchStageData
   | DecisionAnswersData
+  | DecisionReferenceItemData
+  | DecisionReferenceItemFailedData
+  | DecisionReferenceRunDoneData
+  | DecisionReferenceRunStartedData
   | DictionaryPublishCompleteData
   | ExtractionIndexCompleteData
   | ExtractionIndexProgressData
@@ -2546,6 +2620,7 @@ export type TypedDataPayload =
   | FileSearchCompleteData
   | FileSearchPageData
   | FileSearchStartedData
+  | FirstTurnFilledData
   | FunctionResultData
   | ImageDocumentDetectedData
   | ImageEditCompleteData
