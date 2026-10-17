@@ -1,0 +1,76 @@
+{
+  "observed_at": "2026-10-17T15:38:11Z",
+  "scope": "Primary Chrome Web Store item hnfolienncfklkgmdjjmhhegglimlamg",
+  "status": "release_held_pending_current_source_gates_and_permitted_submission_access",
+  "official_email": {
+    "account": "publisher mailbox arman@armansadeghi.com",
+    "search": "from:chromewebstore-noreply@google.com after:2026/10/11",
+    "result_count": 1,
+    "message_date_local": "2026-10-11 22:10 America/Los_Angeles",
+    "message_date_utc": "2026-10-12T05:10:00Z",
+    "subject": "Chrome Web Store: Rejection notification for Matrx Extend",
+    "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "policy": "Blue Argon: Manifest V3 remotely hosted code",
+    "violating_content": "chunks/jspdf.es.min-BeFHQiId.js references https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js",
+    "routing_id": "FZSL",
+    "version_named": false,
+    "reviewer_action": "Include all extension logic in the submitted package; appeal through Build > Status only if the decision is believed erroneous.",
+    "newer_distinct_rejection_found": false,
+    "note": "This is the previously recorded message, not evidence of a new rejection. A Gmail search for rejected after 2026/10/13 returned no Store message."
+  },
+  "authenticated_dashboard": {
+    "fresh_status": "unverified",
+    "reason": "Authenticated browser control refused the primary developer dashboard navigation as Not allowed. No bypass attempted.",
+    "last_recorded_status": "0.2.479 pending review alongside published 0.2.205 on 2026-10-11, before the rejection email",
+    "pending_revision_preserved": true
+  },
+  "public_listing": {
+    "url": "https://chromewebstore.google.com/detail/matrx-extend/hnfolienncfklkgmdjjmhhegglimlamg",
+    "observed_version": "0.2.205",
+    "displayed_updated_date": "2026-10-04",
+    "method": "Read-only public HTTPS GET; rendered page text and embedded manifest agree."
+  },
+  "privacy_policy": {
+    "url": "https://www.aimatrx.com/privacy-policy/extension",
+    "http_status": 200,
+    "page_last_updated": "2026-10-15",
+    "content_observed": "Extension-specific policy, automatic capture control, and Vault login handling are visible in public HTML.",
+    "source_comparison": "Current settings source defaults scrapeAutoOnLoad=false, captureLoginsEnabled=true, offerSavedLoginsEnabled=true, and defaultPermissionMode=ask; sidepanel audience exposes Chat, Scrape, Data, SEO, Settings to guests and Vault only after sign-in. Vault match request sends page URL metadata, and capture candidate write follows a user decision. This is source-level consistency, not exact emitted 0.2.519 or browser behavior proof."
+  },
+  "source_and_release": {
+    "main_sha": "7f82489a25b47b9d62716d19c34c03b4bdf7de09",
+    "source_version": "0.2.519",
+    "main_synchronized_with_origin": true,
+    "latest_hosted_release_run": 38080281242,
+    "latest_hosted_release_version": "0.2.479",
+    "new_exact_source_store_zip": false,
+    "fresh_ci_run": 39045858861,
+    "fresh_ci_status_at_observation": "in_progress",
+    "risk_scan_on_new_exact_candidate": "not_run",
+    "guest_and_non_admin_acceptance_on_new_exact_candidate": "not_run",
+    "cost_model_weekly_billed_usd": 55.97,
+    "cost_model_ceiling_usd": 100,
+    "cost_model_status": "pass",
+    "release_decision": "No hosted release dispatch yet; current CI and exact candidate acceptance are outstanding."
+  },
+  "publisher_api_v2": {
+    "verified_publisher_id": false,
+    "verified_store_scope": false,
+    "store_specific_repo_secret_name_observed": false,
+    "supported_release_workflow_api_step": false,
+    "fetch_status_completed": false,
+    "upload_or_submission_available_through_current_supported_path": false,
+    "prior_access_audit": "docs/stabilization/reports/store-api-access-20261010.json",
+    "note": "The prior audit found a managed Google connection but could not inspect Store scope or invoke it through a supported trusted consumer. This lane had no Vault or trusted-server connector in its tool inventory. Missing repository secret does not establish missing Store scope. No new access was granted or inferred."
+  },
+  "reviewer_copy_checklist": {
+    "single_purpose": "Existing public listing states the page-aware AI side-panel purpose; candidate source still exposes the documented guest tabs.",
+    "account_free_path": "Demo URL returns HTTP 200; exact candidate guest Chat and Capture/SEO behavior still require native acceptance.",
+    "privacy_link": "Live extension-specific policy URL returns HTTP 200; final emitted behavior and dashboard disclosure fields require exact-candidate verification.",
+    "remote_code_answer": "Keep No only if exact Store ZIP scan confirms all executable logic packaged and no PDFObject CDN loader remains.",
+    "permissions_and_host_access": "Compare exact ZIP manifest to approved 0.2.205 baseline through the blocking Store risk gate; not yet run for a new candidate.",
+    "screenshots_and_reviewer_instructions": "Canonical four-image set and 440-character guest instructions are recorded; inspect against exact candidate UI before reusing. Dashboard values remain unverified.",
+    "publication": "Check primary item, current revision, automatic publication and pending state through a permitted interface before replacing or submitting."
+  },
+  "next_action": "After CI passes, coordinate a guarded hosted release for a new three-part version; scan its exact Store ZIP for remote code, then run actual candidate guest first/follow-up and non-admin member acceptance. Establish current primary dashboard status through permitted access before any upload; preserve any pending revision. API status/upload remains unavailable until exact publisher identity and existing Store scope are verified through a supported path."
+}
