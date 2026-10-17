@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "run_id": 39046184558,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39046184558",
+  "case": "guest-chat",
+  "lane": "B",
+  "source_sha": "e8105866e8bc4e96ba759f4ff7e8a78bb8e61d23",
+  "published_store_version": "0.2.205",
+  "published_store_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+  "server_sha": "efe1eb6efead949c0b5cb179dc762a8674770cff",
+  "extension_provenance": "Published Store CRX adapted and loaded unpacked in hosted native Chromium; this is not Web Store-installed UI.",
+  "conclusion": "failure",
+  "failure_stage": "Observer assertion after browser product interaction",
+  "classification": "Resource-valid hosted run. Browser opening, same-conversation follow-up, and post-reload conversation produced terminal replies with grounded fixture checks. Observer reported failure because it required exactly one POST per turn; it did not record route paths. Captured requests were 404 then 200 with matching conversation fingerprint and is_new for each turn. Zero acceptance credit; preserve as failed historical evidence.",
+  "product_observation": "Three terminal answers completed in the visible side panel. First answer and same-conversation follow-up passed their grounded content checks. No claim of product pass follows from this run.",
+  "transport_observation": {
+    "opening": [404, 200],
+    "same_conversation_followup": [404, 200],
+    "post_reload_new_conversation": [404, 200],
+    "path_class": "not recorded by original observer",
+    "conversation_fingerprint_same_within_each_pair": true,
+    "is_new_same_within_each_pair": true
+  },
+  "evidence": "docs/stabilization/evidence/published-v0205-guest-chat/run39046184558",
+  "resource_valid": true,
+  "admitted": true,
+  "exit_code": 1,
+  "next_action": "Apply observer correction for exact documented v2 404/405 to canonical /ai 200 fallback and cross-link the Aidream route regression. Require independent review and a fresh guarded browser run before granting acceptance credit.",
+  "defect_ids": ["EXT-D-0226", "EXT-D-0227"]
+}

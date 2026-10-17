@@ -7,28 +7,48 @@ import {
   watchGuestAiRequests,
 } from './guest-chat-transport-observer.mjs';
 
-// Break caught: a second guest send silently starts a new conversation or
-// reuses the opening reply while the transport still returns HTTP 200.
-test('guest sequence requires one HTTP 200 POST per turn with continued then new identity', () => {
+// Break caught: a turn loses its identity on the documented v2 404/405 route
+// fallback, accepts arbitrary duplicate POSTs, or never reaches a successful reply.
+test('guest sequence accepts only one success or the documented v2 route fallback', () => {
   const opening = {
     attempt: 'opening',
     status: 200,
+    path_class: 'canonical',
     conversation_fingerprint: 'opening-fingerprint',
     is_new: true,
   };
   const same = {
     attempt: 'same_conversation_followup',
     status: 200,
+    path_class: 'canonical',
     conversation_fingerprint: 'opening-fingerprint',
     is_new: false,
   };
   const reloaded = {
     attempt: 'post_reload_new_conversation',
     status: 200,
+    path_class: 'canonical',
     conversation_fingerprint: 'reloaded-fingerprint',
     is_new: true,
   };
   requireGuestConversationSequence([opening, same, reloaded]);
+
+  const fallback = (attempt, status, path_class, conversation_fingerprint, is_new) => ({
+    attempt,
+    status,
+    path_class,
+    conversation_fingerprint,
+    is_new,
+  });
+  requireGuestConversationSequence([
+    fallback('opening', 404, 'versioned', 'opening-fingerprint', true),
+    opening,
+    fallback('same_conversation_followup', 405, 'versioned', 'opening-fingerprint', false),
+    same,
+    fallback('post_reload_new_conversation', 404, 'versioned', 'reloaded-fingerprint', true),
+    reloaded,
+  ]);
+
   assert.throws(
     () => requireGuestConversationSequence([opening, { ...same, is_new: true }, reloaded]),
     /followup_must_continue_conversation/,
@@ -57,7 +77,27 @@ test('guest sequence requires one HTTP 200 POST per turn with continued then new
   );
   assert.throws(
     () => requireGuestConversationSequence([opening, same, same, reloaded]),
-    /same_conversation_followup_requires_exactly_one_offscreen_post/,
+    /same_conversation_followup_fallback_must_be_v2_not_found_or_method_not_allowed/,
+  );
+  assert.throws(
+    () =>
+      requireGuestConversationSequence([
+        opening,
+        fallback('same_conversation_followup', 404, 'canonical', 'opening-fingerprint', false),
+        same,
+        reloaded,
+      ]),
+    /same_conversation_followup_fallback_must_be_v2_not_found_or_method_not_allowed/,
+  );
+  assert.throws(
+    () =>
+      requireGuestConversationSequence([
+        opening,
+        fallback('same_conversation_followup', 404, 'versioned', 'opening-fingerprint', false),
+        fallback('same_conversation_followup', 200, 'versioned', 'opening-fingerprint', false),
+        reloaded,
+      ]),
+    /same_conversation_followup_fallback_must_use_canonical_route/,
   );
 });
 
@@ -147,11 +187,12 @@ test('fresh offscreen target is observed before its first fetch, without precrea
   const first = watch.snapshot();
   requireGuestTransport(first, 'opening');
   assert.deepEqual(
-    first.map(({ attempt, cdp_request_id, status, code }) => ({
+    first.map(({ attempt, cdp_request_id, status, code, path_class }) => ({
       attempt,
       cdp_request_id,
       status,
       code,
+      path_class,
     })),
     [
       {
@@ -159,6 +200,7 @@ test('fresh offscreen target is observed before its first fetch, without precrea
         cdp_request_id: 'first-1',
         status: 402,
         code: 'guest_ai_allowance_used',
+        path_class: 'canonical',
       },
     ],
   );
@@ -169,6 +211,7 @@ test('fresh offscreen target is observed before its first fetch, without precrea
     'code',
     'conversation_fingerprint',
     'is_new',
+    'path_class',
     'request_at_utc',
     'status',
   ]);
@@ -178,11 +221,40 @@ test('fresh offscreen target is observed before its first fetch, without precrea
   assert.match(first[0].conversation_fingerprint, /^[0-9a-f]{16}$/);
 
   watch.arm('post_reload_new_conversation');
+  const observedBeforeWrongPrefix = watch.snapshot().length;
+  events.emit(
+    'Network.requestWillBeSent',
+    {
+      requestId: 'wrong-prefix',
+      request: {
+        method: 'POST',
+        url: 'https://server.invalid/wrong/api/v2/ai/mandates/extend.browser_chat',
+      },
+    },
+    'offscreen-session',
+  );
+  events.emit(
+    'Network.responseReceived',
+    {
+      requestId: 'wrong-prefix',
+      response: { status: 200 },
+    },
+    'offscreen-session',
+  );
+  assert.equal(
+    watch.snapshot().length,
+    observedBeforeWrongPrefix,
+    'wrong_route_prefix_must_not_be_observed',
+  );
+
   events.emit(
     'Network.requestWillBeSent',
     {
       requestId: 'second-2',
-      request: { method: 'POST', url: 'https://server.invalid/ai/mandates/extend.browser_chat' },
+      request: {
+        method: 'POST',
+        url: 'https://server.invalid/api/v2/ai/mandates/extend.browser_chat',
+      },
     },
     'offscreen-session',
   );
@@ -195,6 +267,11 @@ test('fresh offscreen target is observed before its first fetch, without precrea
     'offscreen-session',
   );
   requireGuestTransport(watch.snapshot(), 'post_reload_new_conversation');
+  assert.equal(
+    watch.snapshot().find((request) => request.attempt === 'post_reload_new_conversation')
+      ?.path_class,
+    'versioned',
+  );
   await watch.stop();
   assert.ok(
     calls.some(

@@ -2,8 +2,19 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 
 const CHAT_PATH = '/ai/mandates/extend.browser_chat';
+const VERSIONED_CHAT_PATH = `/v2${CHAT_PATH}`;
+const API_PREFIX = '/api';
 const conversationFingerprint = (value) =>
   createHash('sha256').update(value).digest('hex').slice(0, 16);
+
+function chatPathClass(url) {
+  const pathname = new URL(url).pathname;
+  if ([VERSIONED_CHAT_PATH, `${API_PREFIX}${VERSIONED_CHAT_PATH}`].includes(pathname)) {
+    return 'versioned';
+  }
+  if ([CHAT_PATH, `${API_PREFIX}${CHAT_PATH}`].includes(pathname)) return 'canonical';
+  return null;
+}
 
 function safeConversationRequest(postData) {
   try {
@@ -65,7 +76,7 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
     counters.request_events++;
     if (request?.method === 'POST') counters.post_events++;
     try {
-      if (new URL(request?.url).pathname.endsWith(CHAT_PATH)) counters.chat_path_events++;
+      if (chatPathClass(request?.url)) counters.chat_path_events++;
     } catch {}
     if (
       (!confirmedSessions.has(sessionId) && !candidateSessions.has(sessionId)) ||
@@ -74,7 +85,7 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
     )
       return;
     try {
-      if (!new URL(request.url).pathname.endsWith(CHAT_PATH)) return;
+      if (!chatPathClass(request.url)) return;
       const entry = {
         sessionId,
         record: {
@@ -83,6 +94,7 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
           cdp_request_id: requestId,
           status: null,
           code: null,
+          path_class: chatPathClass(request.url),
           ...safeConversationRequest(request.postData),
         },
       };
@@ -307,16 +319,38 @@ export function requireGuestTransport(requests, attempt) {
 }
 
 export function requireGuestConversationSequence(requests) {
-  const exactlyOne = (attempt) => {
+  const successfulRoute = (attempt) => {
     const rows = requests.filter((request) => request.attempt === attempt);
-    assert.equal(rows.length, 1, `${attempt}_requires_exactly_one_offscreen_post`);
-    assert.equal(rows[0].status, 200, `${attempt}_requires_http_200`);
-    assert.ok(rows[0].conversation_fingerprint, `${attempt}_conversation_identity_unobserved`);
-    return rows[0];
+    if (rows.length === 1) {
+      assert.equal(rows[0].status, 200, `${attempt}_requires_http_200`);
+      assert.ok(
+        ['canonical', 'versioned'].includes(rows[0].path_class),
+        `${attempt}_requires_known_chat_route`,
+      );
+      assert.ok(rows[0].conversation_fingerprint, `${attempt}_conversation_identity_unobserved`);
+      return rows[0];
+    }
+
+    assert.equal(rows.length, 2, `${attempt}_requires_one_success_or_v2_fallback`);
+    const [fallback, canonical] = rows;
+    assert.ok(
+      fallback.path_class === 'versioned' && [404, 405].includes(fallback.status),
+      `${attempt}_fallback_must_be_v2_not_found_or_method_not_allowed`,
+    );
+    assert.equal(canonical.path_class, 'canonical', `${attempt}_fallback_must_use_canonical_route`);
+    assert.equal(canonical.status, 200, `${attempt}_canonical_fallback_requires_http_200`);
+    assert.equal(
+      canonical.conversation_fingerprint,
+      fallback.conversation_fingerprint,
+      `${attempt}_fallback_must_keep_conversation_identity`,
+    );
+    assert.equal(canonical.is_new, fallback.is_new, `${attempt}_fallback_must_keep_is_new`);
+    assert.ok(canonical.conversation_fingerprint, `${attempt}_conversation_identity_unobserved`);
+    return canonical;
   };
-  const opening = exactlyOne('opening');
-  const same = exactlyOne('same_conversation_followup');
-  const reloaded = exactlyOne('post_reload_new_conversation');
+  const opening = successfulRoute('opening');
+  const same = successfulRoute('same_conversation_followup');
+  const reloaded = successfulRoute('post_reload_new_conversation');
   assert.equal(opening.is_new, true, 'opening_must_start_new_conversation');
   assert.equal(same.is_new, false, 'followup_must_continue_conversation');
   assert.equal(
