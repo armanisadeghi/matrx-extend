@@ -1341,6 +1341,15 @@
    "application/json"
   ]
  },
+ "/automations/app-triggers/terms": {
+  "get": []
+ },
+ "/automations/app-triggers/{automation_id}/check": {
+  "post": []
+ },
+ "/automations/app-triggers/{automation_id}/sync": {
+  "post": []
+ },
  "/automations/hooks/{automation_id}/{secret}": {
   "post": []
  },
