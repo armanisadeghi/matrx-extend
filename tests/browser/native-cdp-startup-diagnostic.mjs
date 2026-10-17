@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import * as fs from 'node:fs/promises';
 import { request } from 'node:http';
+import { join } from 'node:path';
 
 // Independent handshake only after the real connector has verified ownership.
 // No URL, port, path, headers, response body or exception text leaves this helper.
@@ -35,7 +36,8 @@ export async function observeNativeCdpStartup(
   options,
   connect,
   {
-    enabled = process.env.MATRX_CDP_STARTUP_DIAGNOSTIC === '1',
+    enabled = process.env.MATRX_CDP_STARTUP_DIAGNOSTIC === '1' ||
+      process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1',
     emit = (value) =>
       process.stderr.write(`BROWSER_CDP_STARTUP_INTERVAL ${JSON.stringify(value)}\n`),
   } = {},
@@ -63,6 +65,60 @@ export async function observeNativeCdpStartup(
   }, cadenceMs);
   const fileSystem = options.fileSystem ?? fs;
   const WebSocketCtor = options.WebSocketCtor ?? globalThis.WebSocket;
+  // Shape-only evidence: never read a foreign owner's process or attach to it.
+  // Two snapshots bound the extra I/O independently of endpoint poll frequency.
+  const startupBoundary = async () => {
+    const child = options.startupChild;
+    let profileLock = 'unavailable';
+    try {
+      const lock = await fileSystem.readlink(
+        join(options.preparedProfile.profile, 'SingletonLock'),
+      );
+      const owner = /-(\d+)$/.exec(lock)?.[1];
+      profileLock = !owner
+        ? 'malformed'
+        : !Number.isSafeInteger(child?.pid)
+          ? 'owner_uncompared'
+          : Number(owner) === child.pid
+            ? 'spawned_child'
+            : 'other_owner';
+    } catch (error) {
+      if (error?.code === 'ENOENT') profileLock = 'absent';
+    }
+    return {
+      profileLock,
+      childExitObserved: child ? child.exitCode !== null || child.signalCode !== null : null,
+      stderrClosed: child?.stderr ? child.stderr.destroyed : null,
+      stderrReadableEnded: child?.stderr ? child.stderr.readableEnded : null,
+    };
+  };
+  const boundedBoundary = async () => {
+    let snapshotTimer;
+    const unavailable = {
+      profileLock: 'unavailable',
+      childExitObserved: null,
+      stderrClosed: null,
+      stderrReadableEnded: null,
+    };
+    try {
+      return await Promise.race([
+        startupBoundary(),
+        new Promise((resolve) => {
+          snapshotTimer = setTimeout(() => resolve(unavailable), cadenceMs);
+        }),
+      ]);
+    } catch {
+      return unavailable;
+    } finally {
+      clearTimeout(snapshotTimer);
+    }
+  };
+  // Start alongside the connector: diagnostic I/O cannot delay its deadline.
+  let observedInitialBoundary = null;
+  const initialBoundaryPending = boundedBoundary().then((value) => {
+    observedInitialBoundary = value;
+    return value;
+  });
   let stopProbe;
   let outcome = 'failed';
   try {
@@ -114,11 +170,19 @@ export async function observeNativeCdpStartup(
     mark('connector_settled');
     clearInterval(timer);
     finished = true;
+    // Success returns immediately; no diagnostic filesystem wait belongs on its
+    // critical path. Failure retains bounded snapshots and the original error.
+    const [initialBoundary, finalBoundary] =
+      outcome === 'connected'
+        ? [observedInitialBoundary, null]
+        : await Promise.all([initialBoundaryPending, boundedBoundary()]);
     stopProbe?.();
     try {
       emit({
         schema: 1,
         outcome,
+        initialStartupBoundary: initialBoundary,
+        startupBoundary: finalBoundary,
         phases,
         longestTimerDelayMs: Math.max(0, Math.round(longestTimerDelayMs)),
         timerSamples,

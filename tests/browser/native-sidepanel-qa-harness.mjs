@@ -1688,7 +1688,11 @@ export async function runNativeSidepanelQa({
 
     try {
       onStage('cdp_connect');
-      cdp = await connectNativeStartupOwnedCdp({ preparedProfile, chromeExecutable });
+      cdp = await connectNativeStartupOwnedCdp({
+        preparedProfile,
+        chromeExecutable,
+        startupChild: child,
+      });
       if (launchError) throw launchError;
       const startupElapsedMs = Math.round(performance.now() - startupStartedAt);
       await recordStartupInterval('cdp_connected');

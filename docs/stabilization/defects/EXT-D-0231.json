@@ -35,16 +35,28 @@
     "installed_tree_sha256": "5cec4afe1cf1200d214e361850802cc67212866bb327a87e05706dc04a0c0ea0"
   },
   "resource_finals": {
-    "package": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
-    "browser": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
-    "acceptance": { "resource_invalid": true, "exit_code": 3, "decision": "invalid" }
+    "package": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid"
+    }
   },
   "reproducibility": "Observed once in guarded member lane A. The owned-CDP timeout has appeared in prior hosted lanes, but this record does not claim a deterministic member-specific reproduction or establish a causal mechanism.",
   "severity": "S2: a native member acceptance attempt cannot reach authentication or product behavior on this run.",
   "priority": "P1: diagnose before another member native acceptance attempt.",
   "state": "open",
   "owner": "hosted_cdp_startup_diagnosis",
-  "cause": "Unconfirmed. The owned browser process was observed but its DevTools endpoint was not. A later resource sample reported 100% CPU busy with high load after the endpoint timeout; this does not establish that CPU pressure caused the timeout. No endpoint deadline change is supported by this single invalid-resource run.",
+  "cause": "Unconfirmed. The failure boundary is endpoint publication (160 missing-file polls in 8001 ms; longest read 284 ms), before ownership validation, socket opening, authentication or product behavior. The later 100% CPU sample cannot establish startup pressure as the cause. Existing evidence has no pre-timeout profile-lock or stderr-stream lifecycle snapshots. Diagnostic instrumentation now records those bounded shape-only snapshots, without changing the 8000 ms endpoint deadline or resource guard.",
   "sibling_census": "Owned-CDP startup failures are recorded in other guarded hosted lanes and startup diagnostics. They precede application authentication and product assertions. EXT-D-0230 is a separate guest Chat composer-remount harness defect and was not reached here.",
   "acceptance_criteria": [
     "Form and independently review a falsifiable startup hypothesis from this boundary evidence before any retry.",
@@ -52,7 +64,7 @@
     "Do not increase the endpoint deadline or infer a product failure from the current run.",
     "After the startup boundary is understood and eligible, pass a fresh guarded member Chat run with genuine non-admin auth, explicit selected organization matching request headers, first-message and same-conversation follow-up assistant content, terminal completion, stable server SHA, and valid resource finals."
   ],
-  "next_action": "The owner will route a targeted owned-CDP startup diagnosis after the urgent EXT-D-0230 guest harness repair; no blind native retry is authorized by this evidence.",
+  "next_action": "Independently review the bounded startup diagnostic and focused red/green guard, then coordinate the existing startup-resource-diagnostic route with fresh admission. Do not repeat native member acceptance or increase the endpoint deadline before the discriminating evidence is reviewed.",
   "transition_history": [
     {
       "at": "2026-10-17T20:02:55Z",
@@ -60,5 +72,30 @@
       "to": "open",
       "reason": "Guarded lane A failed before authentication because owned Chrome did not expose its DevTools endpoint within the existing deadline; resource final invalid, no product behavior observed."
     }
-  ]
+  ],
+  "diagnosis_report": {
+    "status": "Instrumentation locally verified; causal hosted experiment pending independent review and coordinated admission.",
+    "hypotheses": [
+      {
+        "cause": "Delayed endpoint publication",
+        "prediction": "The existing diagnostic-only post-timeout observation window sees an endpoint while the same child remains alive; acceptance still fails at the unchanged deadline."
+      },
+      {
+        "cause": "Early child or stderr-pipe termination",
+        "prediction": "Final startup boundary shows child exit or closed stderr without endpoint publication; live-child/closed-pipe is distinguished from child exit."
+      },
+      {
+        "cause": "Profile initialization or lock ownership conflict",
+        "prediction": "Initial/final SingletonLock is absent throughout, or final owner differs from the spawned child. No foreign owner is inspected or attached."
+      },
+      {
+        "cause": "Host or browser startup pressure",
+        "prediction": "Existing process CPU bracket and timer lateness overlap the endpoint wait, with resource journal measurements bounding the same interval. A later high-load sample alone fails this prediction."
+      }
+    ],
+    "local_guard": "node --test tests/browser/native-cdp-startup-boundary.test.mjs tests/browser/native-cdp-startup-diagnostic.test.mjs tests/browser/vault-owned-cdp-diagnostic.test.cjs",
+    "red_proof": "Missing startupBoundary produced the named assertion failure before instrumentation. Real temporary profile, Node child and stderr stream then distinguish live owner, exited child, foreign lock and closed pipe. Scratch-copy constant-result, constant-live-boundary and foreign-lock-misreported mutants all fail. EACCES, EIO and indefinitely pending diagnostic readlink preserve the real connector endpoint timeout; diagnostic snapshots are bounded by the existing cadence and the initial snapshot runs concurrently with connector startup. Distinct connector successes and original exception identity are preserved. Successful connector return never awaits diagnostic snapshots (final boundary is null on success); a deterministic microtask-order test proves exact result settlement before a pending readlink or timer can complete. Failure snapshots run in parallel within one existing cadence.",
+    "sibling_census": "Native acceptance callers share connectNativeStartupOwnedCdp in native-sidepanel-qa-harness.mjs; the startup-resource-diagnostic route already adds post-timeout endpoint observations and startup-process-interval CPU brackets. Vault standalone connector remains unchanged.",
+    "next_guarded_experiment": "After independent review, coordinate one startup-resource-diagnostic hosted job on macos-15-intel, headed, through the existing admission path with an approved development artifact/source. This existing route is development-only; it is not an exact .523 Store member retry. Retain BROWSER_CDP_STARTUP_INTERVAL, BROWSER_STARTUP_CPU_INTERVAL, post-timeout endpoint observations and all resource finals. No member link or credentials. One job per host; no more than two lanes. Diagnose only with valid resource finals; retain invalid results as environmental evidence without product credit. Dispatch eligibility hold: the workflow case exists, but no startup-resource-diagnostic planner was found in hosted-remote-admission.mjs; identify the authorized admission path or independently review a narrow admission extension before dispatch. Direct gh/workflow invocation is not an alternative."
+  }
 }
