@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-17T17:41:44Z",
+  "observed_at": "2026-10-17T18:15:02Z",
   "scope": "Primary Chrome Web Store item hnfolienncfklkgmdjjmhhegglimlamg",
-  "status": "validated_0521_store_zip_guest_retest_running_member_role_unverified_dashboard_unverified",
+  "status": "validated_0522_store_zip_native_guest_and_member_running_dashboard_unverified",
   "official_email": {
     "account": "publisher mailbox arman@armansadeghi.com",
     "search": "from:chromewebstore-noreply@google.com after:2026/10/11",
@@ -35,28 +35,28 @@
     "http_status": 200,
     "page_last_updated": "2026-10-15",
     "content_observed": "Extension-specific policy, automatic capture control, and Vault login handling are visible in public HTML.",
-    "source_comparison": "Current source defaults automatic scrape capture off and offers signed-in Vault controls; its Swipe Save path sends a user-chosen supported post URL, and config reporting sends bounded key-read metadata. The live October 15 policy covers these flows. Exact 0.2.521 emitted and browser behavior remains under acceptance; dashboard disclosure selections remain unverified."
+    "source_comparison": "Current source defaults automatic scrape capture off and offers signed-in Vault controls; its Swipe Save path sends a user-chosen supported post URL, and config reporting sends bounded key-read metadata. The live October 15 policy covers these flows. Exact 0.2.522 emitted and browser behavior remains under acceptance; dashboard disclosure selections remain unverified."
   },
   "source_and_release": {
-    "main_sha": "db84f98b0cdcbd55ad39fd4504afd8d7ff1e829f",
-    "source_version": "0.2.521",
+    "main_sha": "195326a089660d05e1113ea601e0c75d594ca4bc",
+    "source_version": "0.2.522",
     "main_synchronized_with_origin": true,
-    "latest_hosted_release_run": 39053548400,
-    "latest_hosted_release_version": "0.2.521",
+    "latest_hosted_release_run": 39056398246,
+    "latest_hosted_release_version": "0.2.522",
     "new_exact_source_store_zip": true,
-    "fresh_ci_run": 39054029804,
-    "fresh_ci_status_at_observation": "Exact material-source CI 39052918930 passed at 8874de8b; guarded hosted release 39053548400 passed from f5a2d49c7; full CI 39054029804 passed at post-release harness 5e3bbc482; .521 receipt repair aabc34882 and independent peer db84f98b0 passed focused tests/review.",
-    "risk_scan_on_new_exact_candidate": "passed; hosted remote-loader risk gate and independent exact-ZIP Blue Argon peer audit found no rejected PDFObject CDN loader or reachable remote-code path; zip.js custom-codec route remains unreachable in this package",
-    "guest_and_non_admin_acceptance_on_new_exact_candidate": "Guest B 39054087178 stopped at .521 receipt classifier before browser product steps, resource-valid; peer-reviewed repair db84f98b0 enables guarded B retry 39054862325, currently running. Member A 39054156869 was resource-valid, web signed in and extension identity observed, but canonical role verification saw zero requests and stopped before Chat; Astra diagnosis owns this boundary. No .521 guest or member product acceptance credit.",
+    "fresh_ci_run": 39055809062,
+    "fresh_ci_status_at_observation": "Exact pre-release a873ace32 full CI 39055809062 passed; guarded hosted release 39056398246 reran strict gates and passed from release source/tag f4a72d5dd. Post-release source through 195326a08 changes only reviewed native harness, admission helper/tests and reports; no product runtime or dependency drift.",
+    "risk_scan_on_new_exact_candidate": "passed; hosted remote-loader risk gate and independent exact-ZIP Blue Argon/integrity review e25c98520 PASS with static-review limits; 1,236 packaged JS assets contain no rejected PDFObject cdnjs loader or reachable remote script path",
+    "guest_and_non_admin_acceptance_on_new_exact_candidate": "Exact .522 B 39057016053 and designated non-admin A 39057139939 are active on separate guarded hosted lanes, each selected release 39056398246. Server 94d5ef51313e436dab9c203c61252528c6490c4a was stable on repeated preflight. A auth preflight passed; the one-use secret and private link were deleted and absence verified. Neither run has terminal Chat/resource/post-run evidence yet; no .522 browser acceptance credit.",
     "cost_model_weekly_billed_usd": 55.97,
     "cost_model_ceiling_usd": 100,
     "cost_model_status": "pass",
-    "release_decision": "0.2.521 exact Store ZIP packaged and independently scanned; not uploaded or submitted. Require true native guest and non-admin member acceptance plus fresh permitted primary-item dashboard state.",
-    "latest_hosted_release_artifact_id": 12108945607,
-    "release_tag": "v0.2.521",
-    "store_zip_sha256": "4760d798f69769d0c33ad4f73a4aa457142c0fa959e56072c3949696e47072e9",
-    "store_zip_tree_sha256": "f627e8bd4391d739d0555a41fccae861d86dde9ba78f2316affac484ae66465e",
-    "store_zip_receipt_source_sha": "f5a2d49c7abc9d77c1e7e8298e52eba09b58d972"
+    "release_decision": "0.2.522 exact Store ZIP packaged and independently scanned; not uploaded or submitted. Require actual guest and non-admin member terminal browser acceptance with valid resource/server identity plus fresh permitted primary-item dashboard state.",
+    "latest_hosted_release_artifact_id": 12109816135,
+    "release_tag": "v0.2.522",
+    "store_zip_sha256": "fe80e3025dead2e2f508f0c2ba44656f33fa069b454d7f1313061f44e7cd54b9",
+    "store_zip_tree_sha256": "f521397efceb1cd9f2ecd3292d01256f33e575db29a6d28f184fc51f89fc6195",
+    "store_zip_receipt_source_sha": "f4a72d5ddbb508f63eef71661547b80c23bb6ffe"
   },
   "publisher_api_v2": {
     "verified_publisher_id": false,
@@ -70,11 +70,11 @@
   },
   "reviewer_copy_checklist": {
     "single_purpose": "Existing public listing states the page-aware AI side-panel purpose; candidate source still exposes the documented guest tabs.",
-    "account_free_path": "The published .205 CRX unpacked passed three direct-v2 guest Chat turns in run 39049125532 on an earlier server. Exact .521 B 39054087178 stopped at receipt classification before browser behavior; repaired B 39054862325 is running. The candidate has not passed the public demo path; proposed demo instructions remain a testable reviewer path only. Omit Capture and SEO claims.",
+    "account_free_path": "The published .205 CRX unpacked passed three direct-v2 guest Chat turns in run 39049125532 on an earlier server. Exact .522 B 39057016053 is active, so the candidate has not yet passed the public demo path; proposed demo instructions remain testable reviewer actions, not a claimed candidate pass. Omit Capture and SEO claims.",
     "privacy_link": "Live extension-specific policy URL returns HTTP 200; current source disclosures were compared, but dashboard field selections remain unverified.",
-    "remote_code_answer": "Exact .521 Store ZIP passed hosted risk gate and independent Blue Argon peer scan; no PDFObject CDN loader or reachable remote-code path. Preserve exact package and verify dashboard answer before submission.",
-    "permissions_and_host_access": "Exact .521 ZIP manifest passed blocking risk gate against approved .205 policy surface; independent peer verified the Store ZIP SHA-256 against the release receipt.",
-    "screenshots_and_reviewer_instructions": "The four old screenshots have not been proven against .521. Reviewer instructions omit unverified Capture/SEO/Swipe. Dashboard fields remain unverified.",
+    "remote_code_answer": "Exact .522 Store ZIP passed hosted risk gate and independent Blue Argon/integrity peer review; 1,236 packaged JS assets have no PDFObject CDN loader or reachable remote-code path. Recheck dashboard answer before submission.",
+    "permissions_and_host_access": "Exact .522 ZIP manifest passed blocking risk gate and independent peer comparison against approved .205 policy-surface baseline; peer verified ZIP SHA-256 against release receipt. Published .205 ZIP bytes were unavailable for direct comparison.",
+    "screenshots_and_reviewer_instructions": "The four old screenshots have not been proven against .522. Reviewer instructions omit unverified Capture/SEO/Swipe. Dashboard fields remain unverified.",
     "publication": "Check primary item, current revision, automatic publication and pending state through a permitted interface before replacing or submitting."
   },
   "proposed_submission_copy_pending_exact_candidate_acceptance": {
@@ -82,10 +82,10 @@
     "reviewer_instructions": "No account is needed. Open https://www.aimatrx.com/matrx-extend-demo and click the toolbar icon. In Chat, ask \"What are the three workflow stages on this page?\" The answer should identify Capture, Understand, and Use. Guest AI offers limited free tries. Automatic page capture is off on a fresh install.",
     "listing_description_addition": "Signed-in users can save a supported social post or ad from the page they are viewing into a Swipe file collection, then review available media and transcripts. A visit alone never saves a post.",
     "privacy_field_delta": "The live October 15 extension policy already discloses user-chosen Swipe post URL submission, possible external social-data provider retrieval, shared cache retention, and signed-in configuration-read reporting with local queued records and no raw setting values, page content or visited-site list. Before submission, verify the primary dashboard's Website content, User activity and Personally identifiable information selections and purpose/third-party declarations still truthfully cover these flows; no new category is established from source review alone.",
-    "screenshots": "Keep Swipe Save, Scrape Capture, and SEO audit out of reviewer steps and screenshots until exact 0.2.521 native behavior on the reviewer demo page is verified. Check the four existing guest screenshots against exact candidate UI before reuse.",
+    "screenshots": "Keep Swipe Save, Scrape Capture, and SEO audit out of reviewer steps and screenshots until exact 0.2.522 native behavior on the reviewer demo page is verified. Check the four existing guest screenshots against exact candidate UI before reuse.",
     "basis": "src/config/sidepanel-visibility.ts exposes Swipe file only after sign-in; src/lib/swipe-file/save.ts sends a supported chosen URL to ingestPost and adds it to a selected collection; src/lib/config/reporting.ts reports bounded key-read metadata. Live privacy policy and demo page returned HTTP 200 on October 17."
   },
-  "next_action": "Inspect guarded B 39054862325 for exact .521 guest first/follow-up terminal replies, grounded content, direct transport statuses, stable live server SHA, and valid resource journals; independently review. Diagnose the member canonical-role observation and rerun A only after peer-reviewed cause/repair and guarded admission. Do not upload/submit until both actual browser gates and fresh permitted primary-item dashboard status are verified.",
+  "next_action": "Read exact .522 B 39057016053 and A 39057139939 sanitized artifacts: valid resource finals, stable deployed SHA before/after, exact package/runtime identity, real first and follow-up terminal replies, grounded guest content, non-admin role and signed-in tabs. Obtain independent product peer on both. Keep reviewer demo Capture/SEO omitted. Verify primary dashboard current revision/status through permitted access before upload, preserving any pending revision.",
   "workspace_duplicate_archive": {
     "source": "docs/stabilization/resource-journals/settings-nav-preflight-20261017-01.jsonl",
     "archived_at": "node_modules/.cache/store-release-20261017/settings-journal-duplicate/settings-nav-preflight-20261017-01.jsonl",
@@ -94,28 +94,34 @@
     "verified_byte_identical": true
   },
   "superseded_candidate": {
-    "version": "0.2.520",
-    "release_run": 39049375284,
-    "reason": "Subsequent synchronized pnpm-lock dependency refresh changed emitted chat/data/records-ui runtime; previous exact ZIP and native attempts do not authorize 0.2.521."
+    "version": "0.2.521",
+    "release_run": 39053548400,
+    "reason": "Synchronized pnpm-lock refresh changed @ai-matrx/chat 0.8.160 to 0.8.161 after the .521 package. Changelog and source diff show a metadata/docs-only republish with no consumer action, but immutable emitted dependency identity changed, requiring exact .522 release and acceptance. Its B no-POST run also crossed a live server rollout; no release credit."
   },
   "current_guest_retry": {
-    "run_id": 39054862325,
-    "workflow_sha": "db84f98b0cdcbd55ad39fd4504afd8d7ff1e829f",
-    "release_run_id": 39053548400,
-    "server_sha_at_dispatch": "cee530dbfa5f3cbafa3a945d02dd4f670400ebcb",
+    "run_id": 39057016053,
+    "workflow_sha": "4da74deae1e7977bfa0214e155bcd29dabf8e732",
+    "release_run_id": 39056398246,
+    "server_sha_at_dispatch": "94d5ef51313e436dab9c203c61252528c6490c4a",
     "status": "in_progress",
     "product_credit": false
   },
   "current_member_diagnostic": {
-    "run_id": 39054156869,
-    "workflow_sha": "5e3bbc4821f60635a3d164960e57871ac14a7a72",
-    "release_run_id": 39053548400,
-    "server_sha_at_browser": "cee530dbfa5f3cbafa3a945d02dd4f670400ebcb",
-    "failure_stage": "extension_canonical_role_verify",
-    "observed_request_count": 0,
-    "web_signed_in": true,
-    "extension_identity_observed": true,
-    "resource_valid": true,
+    "run_id": 39057139939,
+    "workflow_sha": "4da74deae1e7977bfa0214e155bcd29dabf8e732",
+    "release_run_id": 39056398246,
+    "server_sha_at_dispatch": "94d5ef51313e436dab9c203c61252528c6490c4a",
+    "auth_preflight_passed": true,
+    "temporary_secret_cleanup_verified": true,
+    "status": "in_progress",
     "product_credit": false
+  },
+  "exact_zip_peer": {
+    "report": "docs/stabilization/reports/store-0522-blue-argon-peer-20261017.json",
+    "commit": "e25c985200b4b37244723077ef612a13872d1f3d",
+    "verdict": "PASS rejection-specific and integrity; PASS_WITH_LIMITS static reachability",
+    "javascript_files_scanned": 1236,
+    "zip_entries": 2374,
+    "zip_sha256": "fe80e3025dead2e2f508f0c2ba44656f33fa069b454d7f1313061f44e7cd54b9"
   }
 }
