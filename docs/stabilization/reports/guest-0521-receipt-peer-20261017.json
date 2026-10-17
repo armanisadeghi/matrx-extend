@@ -1,0 +1,25 @@
+{
+  "reviewer": "independent_peer",
+  "reviewed_commit": "aabc34882b4cf7285874bf6f15ef4d786fbd5d73",
+  "reviewed_at": "2026-10-17",
+  "verdicts": {
+    "A_functionality": {
+      "verdict": "PASS",
+      "evidence": "guestTransportModeForReceipt admits only native_store_zip_candidate_key_adapted at 0.2.521; the focused test retains 0.2.520 package and 0.2.205 legacy decisions and rejects unknown/future kinds and versions. 11/11 observer tests pass.",
+      "scope": "Receipt classification is verified. The hosted guest product acceptance did not run because prior run 39054087178 stopped at receipt classification."
+    },
+    "B_quality": {
+      "verdict": "PASS",
+      "evidence": "Product diff is one exact-version/exact-kind classifier branch plus focused positive and negative receipt assertions. Existing release behavior is preserved. The supplied repair report records red-before-fix, green-after-fix, and mutation/gut-check failures.",
+      "concerns": []
+    }
+  },
+  "rerun": {
+    "guest_B_acceptance_safe": true,
+    "reason": "Receipt gate now admits the exact 0.2.521 artifact receipt and keeps unsupported receipts closed; rerun is needed to reach untested guest product checks."
+  },
+  "checks": [
+    "node --test tests/browser/guest-chat-transport-observer.test.mjs: 11 passed, 0 failed",
+    "Reviewed exact diff and docs/stabilization/reports/guest-0521-receipt-repair-20261017.json"
+  ]
+}
