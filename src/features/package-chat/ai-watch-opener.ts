@@ -1,4 +1,5 @@
 import type { OpenAiWatchWindowOptions } from '@ai-matrx/chat/host/window-openers';
+import { formatLinkToken } from '@ai-matrx/summon/url';
 
 type CreateTab = (properties: { url: string }) => Promise<unknown>;
 
@@ -23,7 +24,7 @@ export function createAiWatchWindowOpener(createTab: CreateTab) {
     }
 
     const url = new URL('https://aimatrx.com/');
-    url.searchParams.set('panels', `ai-watch:${instance}`);
+    url.searchParams.set('panels', formatLinkToken({ key: 'ai-watch', id: instance }));
     void createTab({ url: url.toString() }).catch((error: unknown) => {
       console.error('Watch AI could not open in aimatrx.com.', error);
     });
