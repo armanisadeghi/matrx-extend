@@ -1,0 +1,22 @@
+{
+  "beforeStartedAt": "2026-10-17T20:57:15.303Z",
+  "beforeCompletedAt": "2026-10-17T20:57:15.330Z",
+  "afterStartedAt": "2026-10-17T20:57:21.389Z",
+  "afterCompletedAt": "2026-10-17T20:57:21.448Z",
+  "outcome": "cdp_connected",
+  "resolutionSeconds": 0.01,
+  "categoryTotalsSeconds": {
+    "ownedChromium": 0,
+    "ownedOther": 0.17,
+    "hostProvisioner": 0.11,
+    "otherHost": 14.78
+  },
+  "otherHostObservedProcessCount": 490,
+  "limitation": "ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time.",
+  "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE",
+  "appeared_process_counts": {
+    "total": 15,
+    "owned_at_end": 8
+  },
+  "interpretation": "ownedChromium=0 is matched-process delta only; Chromium appeared during the bracket. Never interpret it as zero Chromium CPU."
+}
