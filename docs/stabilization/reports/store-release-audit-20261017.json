@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-17T23:48:34Z",
+  "observed_at": "2026-10-17T23:50:00Z",
   "scope": "Primary Chrome Web Store item hnfolienncfklkgmdjjmhhegglimlamg",
   "status": "validated_0528_zip_stale_after_runtime_lock_drift_guest_diagnostic_member_refused_dashboard_mail_unknown",
   "official_email": {
@@ -46,7 +46,7 @@
     "new_exact_source_store_zip": false,
     "fresh_ci_run": 39079090871,
     "fresh_ci_status_at_observation": "Pre-release bba999aec exact CI 39079090871 passed both jobs. Full hosted release 39079670382 passed all strict gates after aidream a42c0fd deploy stabilized records registry and three independent strict drift checks. Post-tag origin/main 065312d changes only pnpm-lock.yaml but replaces @ai-matrx/chat 0.8.172 with 0.8.173 and @ai-matrx/records-ui 0.116.11 with 0.116.12; therefore .528 ZIP is not exact-current package source.",
-    "risk_scan_on_new_exact_candidate": "Hosted .528 Store package/risk gates passed. Exact ZIP scan and independent Blue Argon peer are separate; neither can transfer to a new package after the lock change.",
+    "risk_scan_on_new_exact_candidate": "Hosted .528 Store package/risk gates passed. Independent exact-ZIP peer PASS for rejection-specific Blue Argon and integrity, with bounded static limits (docs/stabilization/reports/store-0528-blue-argon-peer-20261017.json, e918e36ec). No rejected PDFObject CDN URL or remote executable loader found in exact ZIP; manifest policy fields match .205 baseline. The result does not transfer to a new ZIP after material lock drift.",
     "guest_and_non_admin_acceptance_on_new_exact_candidate": "Guarded .528 guest B run 39080150139 dispatched from frozen 0332db8 source; still in progress, diagnostic only after lock drift. Member A normal plan refused HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED before browser, no run ID; one-use credential/link removed. No native acceptance credit.",
     "cost_model_weekly_billed_usd": 55.97,
     "cost_model_ceiling_usd": 100,
@@ -75,7 +75,7 @@
     "single_purpose": "Existing public listing states the page-aware AI side-panel purpose; candidate source still exposes the documented guest tabs.",
     "account_free_path": "Published 0.2.205 CRX unpacked passed three direct-v2 guest Chat turns on an earlier server. Exact 0.2.528 guest B run 39080150139 is diagnostic only after dependency drift; no current Store-candidate native pass. Omit Capture and SEO claims.",
     "privacy_link": "Live extension-specific policy URL returns HTTP 200; current source disclosures were compared, but dashboard field selections remain unverified.",
-    "remote_code_answer": "Exact 0.2.528 Store ZIP passed hosted risk gate; independent package peer is pending. The ZIP is stale after the current lockfile changed and must be rescanned on the next candidate.",
+    "remote_code_answer": "Exact 0.2.528 Store ZIP passed hosted risk gate and independent bounded Blue Argon/integrity static review; it is stale after current lockfile changed. Rescan the next exact ZIP and verify dashboard answer before submission.",
     "permissions_and_host_access": "Exact 0.2.528 ZIP passed blocking hosted package/risk gates against approved 0.2.205 policy-surface baseline. Recheck the next exact ZIP.",
     "screenshots_and_reviewer_instructions": "The four old screenshots have not been proven against current exact package. Reviewer instructions omit unverified Capture/SEO/Swipe. Dashboard fields remain unverified.",
     "publication": "Verify the primary item, current revision, automatic publication and pending state through a permitted interface before replacing or submitting; fresh October 17 rejection mail is not verified."
@@ -158,11 +158,12 @@
     "manifest_version": "0.2.528",
     "manifest_key_present": false,
     "hosted_risk_gate": "pass",
-    "independent_zip_peer": "pending",
+    "independent_zip_peer": "pass_with_limits_static_rejection_specific_integrity_e918e36ec",
     "native_guest_acceptance": "guarded_run_39080150139_in_progress_diagnostic_only",
     "native_member_acceptance": "normal_plan_refused_source_drift_no_dispatch",
     "store_upload": "not_attempted",
-    "submission_eligible": false
+    "submission_eligible": false,
+    "independent_zip_peer_report": "docs/stabilization/reports/store-0528-blue-argon-peer-20261017.json"
   },
   "superseded_0523_candidate": {
     "version": "0.2.523",
