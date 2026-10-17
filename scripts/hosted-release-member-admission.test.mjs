@@ -448,3 +448,52 @@ test('bounded stabilization paths refuse unsafe nesting and unrelated payloads',
       path,
     );
 });
+
+test('member runner selection changes only the existing hosted architecture input', () => {
+  const intel = releaseMemberPlan(input, run, listing, receipt, sha);
+  const arm = releaseMemberPlan({ ...input, runnerLabel: 'macos-15' }, run, listing, receipt, sha);
+  assert.ok(intel.args.includes('runner_label=macos-15-intel'));
+  assert.ok(arm.args.includes('runner_label=macos-15'));
+  assert.deepEqual(
+    arm.args,
+    intel.args.map((arg) =>
+      arg === 'runner_label=macos-15-intel' ? 'runner_label=macos-15' : arg,
+    ),
+  );
+  assert.equal(arm.args.filter((arg) => arg === 'requested_by=release-member-admission').length, 1);
+  assert.ok(arm.args.includes('acceptance_lane=A'));
+  for (const runnerLabel of ['macos-latest', 'ubuntu-latest', '', null, 'macos-15-arm64'])
+    assert.throws(
+      () => releaseMemberPlan({ ...input, runnerLabel }, run, listing, receipt, sha),
+      /runner_label_invalid/,
+    );
+  assert.throws(
+    () =>
+      releaseMemberPlan(
+        { ...input, runnerLabel: 'macos-15' },
+        { ...run, conclusion: 'failure' },
+        listing,
+        receipt,
+        sha,
+      ),
+    /release_member_run_invalid/,
+  );
+});
+
+test('CLI rejects an unsupported runner before credential or network admission', () => {
+  const result = spawnSync(
+    process.execPath,
+    [
+      'scripts/hosted-release-member-admission.mjs',
+      'plan',
+      input.releaseRunId,
+      input.artifactId,
+      input.sourceSha,
+      'ubuntu-latest',
+    ],
+    { encoding: 'utf8' },
+  );
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /release_member_runner_label_invalid/);
+  assert.equal(result.stdout, '');
+});

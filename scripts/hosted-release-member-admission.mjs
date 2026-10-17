@@ -17,13 +17,20 @@ const HASH = /^[a-f0-9]{64}$/;
 const decimal = /^[1-9][0-9]*$/;
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
+/** Match the two existing hosted workflow architectures; resources are still guarded there. */
+export function releaseMemberRunnerLabel(value = 'macos-15-intel') {
+  assert.ok(['macos-15', 'macos-15-intel'].includes(value), 'release_member_runner_label_invalid');
+  return value;
+}
+
 export function releaseMemberPlan(
-  { releaseRunId, artifactId, sourceSha },
+  { releaseRunId, artifactId, sourceSha, runnerLabel },
   run,
   listing,
   receipt,
   tagSha,
 ) {
+  runnerLabel = releaseMemberRunnerLabel(runnerLabel);
   assert.ok(
     decimal.test(releaseRunId ?? '') && decimal.test(artifactId ?? '') && SHA.test(sourceSha ?? ''),
     'release_member_identity_invalid',
@@ -71,7 +78,7 @@ export function releaseMemberPlan(
         'acceptance_lane=A',
         'acceptance_case=member-chat',
         `release_run_id=${releaseRunId}`,
-        'runner_label=macos-15-intel',
+        `runner_label=${runnerLabel}`,
         'requested_by=release-member-admission',
       ].flatMap((value) => ['-f', value]),
       '-R',
@@ -236,9 +243,10 @@ export function proveSource(sourceSha, workflowSha) {
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   let scratch;
   try {
-    const [mode, releaseRunId, artifactId, sourceSha] = process.argv.slice(2);
+    const [mode, releaseRunId, artifactId, sourceSha, requestedRunner] = process.argv.slice(2);
+    const runnerLabel = releaseMemberRunnerLabel(requestedRunner);
     assert.ok(
-      ['plan', 'dispatch'].includes(mode) && process.argv.length === 6,
+      ['plan', 'dispatch'].includes(mode) && [6, 7].includes(process.argv.length),
       'release_member_arguments_invalid',
     );
     assert.ok(
@@ -281,7 +289,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       remoteTags.find(([, ref]) => ref === `${tagRef}^{}`)?.[0] ??
       remoteTags.find(([, ref]) => ref === tagRef)?.[0];
     const plan = releaseMemberPlan(
-      { releaseRunId, artifactId, sourceSha },
+      { releaseRunId, artifactId, sourceSha, runnerLabel },
       run,
       listing,
       receipt,
@@ -303,6 +311,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         artifactId,
         sourceSha,
         workflowSha,
+        runnerLabel,
         version: receipt.version,
         storeZipSha256: receipt.storeZip.sha256,
         githubArtifactDigest: plan.artifact.digest,
