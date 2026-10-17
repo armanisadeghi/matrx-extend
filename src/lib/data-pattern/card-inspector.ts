@@ -125,7 +125,10 @@ export function inspectCardInPage(input: InspectInput): CardInspection {
           .filter(
             (c) =>
               !/^(active|hover|focus|selected|open|expanded|hidden|loading)$/i.test(c) &&
-              !/^(?:_[\w-]{4,}|css-[a-z0-9]{4,}|jsx-\d+|sc-[a-zA-Z0-9]+)$/.test(c),
+              // Build-hashed names (CSS modules, styled-components) change every deploy.
+              !/^(?:_[\w-]{4,}|css-[a-z0-9]{4,}|jsx-\d+|sc-[a-zA-Z0-9]+|[A-Za-z0-9_]*-sc-[a-z0-9]{5,}-\d+|(?=[a-zA-Z]*[A-Z])(?=[a-zA-Z]*[a-z])[a-zA-Z]{6})$/.test(
+                c,
+              ),
           )
           .slice(0, 1)[0];
         if (klass) part = `${tag}.${CSS.escape(klass)}`;

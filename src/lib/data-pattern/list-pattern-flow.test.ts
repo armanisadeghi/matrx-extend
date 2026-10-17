@@ -228,4 +228,17 @@ describe('List Pattern — find every similar sibling', () => {
     }) as unknown[];
     expect(rows).toHaveLength(6);
   });
+
+  it('never anchors a saved pattern on build-hashed class names', () => {
+    const card = (i: number) =>
+      `<div class="Cardstyles__StyledCard-sc-4l5hhw-0 blrpEn plan"><h3 class="PlanTitle-sc-1pqhhsc-1 gaYvWM">Plan ${i} with a description long enough</h3><span class="price">$${i}</span><a href="/p${i}">Buy</a></div>`;
+    document.body.innerHTML = `<main><section class="Grid-sc-25e1a3be-0 iTkfvC" id="plans">${[1, 2, 3, 4, 5].map(card).join('')}</section></main>`;
+    const hashed = /-sc-|blrpEn|gaYvWM|iTkfvC/;
+    const picked = inferListPatternCandidates(document.querySelector('.price') as Element)[0];
+    expect(picked?.itemSelector).toBe('div.plan');
+    const group = pageDiagnosticInPage().sources.repeating_groups[0];
+    expect(group?.item_selector).toBe('div.plan');
+    const inspection = inspectCardInPage({ list_root: '#plans', item_selector: 'div.plan' });
+    for (const c of inspection.candidates) expect(c.rel_selector).not.toMatch(hashed);
+  });
 });

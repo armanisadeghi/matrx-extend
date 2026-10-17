@@ -250,7 +250,7 @@ export function pageDiagnosticInPage(): PageDiagnostic {
   const STATEFUL_RE =
     /^(active|hover|focus|focused|selected|open|opened|closed|expanded|collapsed|hidden|visible|loading|disabled)$/i;
   const AUTOGEN_RE =
-    /^(?:_[\w-]{4,}|[a-z]+_[a-zA-Z0-9_-]{6,}|[a-z]+-[A-Za-z0-9]{5,}|[a-z]{1,3}[A-Z][a-zA-Z0-9]{4,}|css-[a-z0-9]{4,}|jsx-\d+|sc-[a-zA-Z0-9]+|c-[a-zA-Z0-9]{6,})$/;
+    /^(?:_[\w-]{4,}|[a-z]+_[a-zA-Z0-9_-]{6,}|[a-z]+-[A-Za-z0-9]{5,}|[a-z]{1,3}[A-Z][a-zA-Z0-9]{4,}|css-[a-z0-9]{4,}|jsx-\d+|sc-[a-zA-Z0-9]+|c-[a-zA-Z0-9]{6,}|[A-Za-z0-9_]*-sc-[a-z0-9]{5,}-\d+|(?=[a-zA-Z]*[A-Z])(?=[a-zA-Z]*[a-z])[a-zA-Z]{6})$/;
   const SKIP_TAGS = new Set([
     'html',
     'head',
