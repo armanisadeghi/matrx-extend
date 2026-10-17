@@ -34,7 +34,7 @@
   "reproducibility": "Two exact-0.2.522 hosted B runs retained the opening draft with zero POST. The later run proves one trusted capture-and-bubble click on the connected enabled Send button; an independently reviewed harness fixture verified that instrumentation before the run.",
   "severity": "S1: guest Chat opening message cannot be sent in the tested Store candidate",
   "priority": "P0: diagnose and repair before guest Chat acceptance or Store submission",
-  "state": "open",
+  "state": "triaged",
   "owner": "guest_send_click_diagnosis",
   "cause": "Unresolved inside the shared package Send handler, React event delegation, or first-send dispatch path; a missed or synthetic browser click is ruled out by the trusted bubbling event.",
   "sibling_census": "The extension Chat tab mounts @ai-matrx/chat ChatNewClient for the guest opening turn and ChatConversationRoom for existing conversations. The same package composer is used for signed-in/member Chat; member behavior on this exact artifact has not been independently tested. Pilot uses a separate extension composer and is not evidence for this defect.",
@@ -56,6 +56,12 @@
       "from": null,
       "to": "open",
       "reason": "Resource-admitted native B run captured a trusted connected bubbling Send click but no submission, transport, run, reply, or UI error."
+    },
+    {
+      "at": "2026-10-17T19:00:48Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Two exact-candidate B runs reproduce the no-send symptom; severity and priority set while the React input-to-Redux and button handler boundaries remain under investigation."
     }
   ]
 }
