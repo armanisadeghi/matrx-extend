@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-17T16:59:24Z",
+  "observed_at": "2026-10-17T17:07:42Z",
   "scope": "Primary Chrome Web Store item hnfolienncfklkgmdjjmhhegglimlamg",
   "status": "validated_store_zip_candidate_guest_harness_and_member_identity_unverified_permitted_submission_access_missing",
   "official_email": {
@@ -47,7 +47,7 @@
     "fresh_ci_run": 39048586917,
     "fresh_ci_status_at_observation": "CI 39048586917 passed for material release source, guarded hosted release 39049375284 passed, and guest-harness full CI 39050577382 plus focused 39050577391 passed; later admission/control harness repair a6b1af969 passed independent peer but current-head CI remains pending.",
     "risk_scan_on_new_exact_candidate": "passed; hosted risk gate and independent peer exact-ZIP Blue Argon scan; no PDFObject CDN loader",
-    "guest_and_non_admin_acceptance_on_new_exact_candidate": "guest B 39049881169 failed pre-send at stale Values-chip assertion; repaired B 39050692224 inserted question but stale Send title observer caused zero AI requests; no candidate Chat verdict. Member A 39049886121 lacked fixture, A 39050392716 was resource CPU_BUSY invalid, and healthy-resource A 39051109645 verified web sign-in but stopped at extension_identity_wait with unclassified failure before extension identity, non-admin role, tabs or Chat; no member product verdict. All runs used immutable .520 release package.",
+    "guest_and_non_admin_acceptance_on_new_exact_candidate": "Guest B 39049881169 stopped pre-send at stale Values assertion; B 39050692224 stopped at stale Send title with zero observed old-surface requests. B 39051824706 used current Send control but ended unverified at opening_question_send_ready_not_observed; composer was empty at failure, stale offscreen observer cannot prove panel POST absence, and resource final was invalid (CPU_BUSY/HIGH_LOAD_BUSY, exit 3). Server b3aca7d stable. Member A 39049886121 lacked fixture; A 39050392716 resource CPU_BUSY invalid; healthy-resource A 39051109645 verified website sign-in but stopped at extension_identity_wait with missing diagnostics, before extension identity/non-admin tabs/Chat. No exact .520 browser acceptance credit.",
     "cost_model_weekly_billed_usd": 55.97,
     "cost_model_ceiling_usd": 100,
     "cost_model_status": "pass",
@@ -85,5 +85,12 @@
     "screenshots": "Keep Swipe Save, Scrape Capture, and SEO audit out of reviewer steps and screenshots until exact 0.2.520 native behavior on the reviewer demo page is verified. Check the four existing guest screenshots against exact candidate UI before reuse.",
     "basis": "src/config/sidepanel-visibility.ts exposes Swipe file only after sign-in; src/lib/swipe-file/save.ts sends a supported chosen URL to ingestPost and adds it to a selected collection; src/lib/config/reporting.ts reports bounded key-read metadata. Live privacy policy and demo page returned HTTP 200 on October 17."
   },
-  "next_action": "Complete peer-reviewed strict current-package control selector and bounded admission repairs, with durable sanitized extension-identity diagnostics for member failures; then rerun exact .520 package in guarded B and A lanes. No browser path has candidate acceptance credit. Keep reviewer demo Scrape/SEO steps omitted. Verify primary dashboard status through permitted access before upload, preserving pending revision."
+  "next_action": "After independent peer passes strict package-panel request/status/terminal SSE oracle and member identity diagnostics, rerun immutable .520 release through guarded B/A native lanes when resource admission is healthy. No previous run establishes candidate Chat. Keep reviewer demo Scrape/SEO steps omitted. Verify primary dashboard status through permitted access before upload, preserving pending revision.",
+  "workspace_duplicate_archive": {
+    "source": "docs/stabilization/resource-journals/settings-nav-preflight-20261017-01.jsonl",
+    "archived_at": "node_modules/.cache/store-release-20261017/settings-journal-duplicate/settings-nav-preflight-20261017-01.jsonl",
+    "sha256": "2ab4c7a7c64e3afe59ed2ebc94dca5fb08bd11947cf3393af571e3e6a7ca617f",
+    "tracked_sanitized_copy": "docs/stabilization/evidence/settings-navigation-lane-a-preflight-20261017/resource-journals/settings-nav-preflight-20261017-01.sanitized.jsonl",
+    "verified_byte_identical": true
+  }
 }
