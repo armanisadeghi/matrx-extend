@@ -40,7 +40,15 @@ test('guest send boundary distinguishes a reached button from a missed native cl
     const probe = install(async (_panel, expression) => window.eval(expression));
     assert.deepEqual(JSON.parse(JSON.stringify(await probe({}))), {
       installed: true,
-      beforeClick: { clickEvents: 0, composerLength: 22, userMessageCount: 0, sendEnabled: true },
+      beforeClick: {
+        clickEvents: 0,
+        bubbleClickEvents: 0,
+        trustedClickEvents: 0,
+        buttonConnected: true,
+        composerLength: 22,
+        userMessageCount: 0,
+        sendEnabled: true,
+      },
     });
     button.addEventListener('click', () => {
       pane.querySelector('textarea').value = '';
@@ -53,12 +61,35 @@ test('guest send boundary distinguishes a reached button from a missed native cl
     const result = await window.eval('window.__guestChatSendClickProbe.stop()');
     assert.deepEqual(JSON.parse(JSON.stringify(result)), {
       clickEvents: shouldClick ? 1 : 0,
+      bubbleClickEvents: shouldClick ? 1 : 0,
+      trustedClickEvents: 0,
+      buttonConnected: true,
       composerLength: shouldClick ? 0 : 22,
       userMessageCount: shouldClick ? 1 : 0,
       sendEnabled: true,
     });
     await window.happyDOM.abort();
   }
+});
+
+test('guest send boundary exposes a click stopped before the React root', async () => {
+  const body = source.slice(
+    source.indexOf('async function installGuestSendClickProbe('),
+    source.indexOf('async function submitQuestion('),
+  );
+  const install = new Function('evaluate', `${body}; return installGuestSendClickProbe;`);
+  const window = new Window();
+  window.document.body.innerHTML =
+    '<button role="tab" title="Chat" aria-controls="chat"></button><div id="chat" data-state="active"><textarea></textarea><button aria-label="Send message"></button></div>';
+  const button = window.document.querySelector('#chat button');
+  await install(async (_panel, expression) => window.eval(expression))({});
+  button.addEventListener('click', (event) => event.stopPropagation());
+  button.click();
+  const result = await window.eval('window.__guestChatSendClickProbe.stop()');
+  assert.equal(result.clickEvents, 1);
+  assert.equal(result.bubbleClickEvents, 0);
+  assert.equal(result.buttonConnected, true);
+  await window.happyDOM.abort();
 });
 
 test('guest send records native dispatch phases and reached-button outcome before answer wait', async () => {

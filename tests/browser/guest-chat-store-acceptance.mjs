@@ -566,14 +566,26 @@ async function installGuestSendClickProbe(panel) {
         : [];
       if (send.length !== 1) return { installed: false };
       let clickEvents = 0;
-      const listener = (event) => {
-        if (event.target === send[0] || send[0].contains(event.target)) clickEvents += 1;
+      let bubbleClickEvents = 0;
+      let trustedClickEvents = 0;
+      const hitsSend = (event) => event.target === send[0] || send[0].contains(event.target);
+      const capture = (event) => {
+        if (!hitsSend(event)) return;
+        clickEvents += 1;
+        if (event.isTrusted) trustedClickEvents += 1;
       };
-      document.addEventListener('click', listener, true);
+      const bubble = (event) => {
+        if (hitsSend(event)) bubbleClickEvents += 1;
+      };
+      document.addEventListener('click', capture, true);
+      document.addEventListener('click', bubble);
       const snapshot = () => {
         const composer = pane.querySelector('textarea');
         return {
           clickEvents,
+          bubbleClickEvents,
+          trustedClickEvents,
+          buttonConnected: send[0].isConnected && pane.contains(send[0]),
           composerLength: composer?.value?.length ?? 0,
           userMessageCount: pane.querySelectorAll('[role="article"][aria-label="Your message"]').length,
           sendEnabled: !send[0].disabled && send[0].getAttribute('aria-disabled') !== 'true',
@@ -581,7 +593,8 @@ async function installGuestSendClickProbe(panel) {
       };
       window.__guestChatSendClickProbe = {
         stop: () => {
-          document.removeEventListener('click', listener, true);
+          document.removeEventListener('click', capture, true);
+          document.removeEventListener('click', bubble);
           return snapshot();
         },
       };
