@@ -1,0 +1,68 @@
+{
+  "id": "EXT-D-0230",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "title": "Guest Chat acceptance rejects a legitimate composer remount before Send",
+  "surface": "Hosted native guest Chat acceptance harness",
+  "auth_mode": "fresh isolated guest profile",
+  "organization_context": "No account token, profile, or organization",
+  "preconditions": [
+    "Eligible 0.2.523 Store artifact from release run 39063179335 is loaded in the isolated hosted browser.",
+    "Fresh signed-out guest Chat is visible and the controlled article fixture is active.",
+    "Opening question is inserted through the native keyboard driver."
+  ],
+  "reproduction": [
+    "Run guarded native guest Chat acceptance run 39064192181 on macos-15-intel with the exact 0.2.523 artifact.",
+    "At guest_question, focus the composer and compare the pre-focus node identity with the current input node.",
+    "Observe the old node disconnecting and a new connected, focused composer holding the full 139-character question; DOM, React and Redux values match and Send is enabled.",
+    "Observe the harness aborting before Send because it requires the original DOM node to remain connected."
+  ],
+  "expected": "The harness follows the current connected composer across a legitimate remount and verifies the question, React value, Redux draft and Send readiness before attempting Send.",
+  "actual": "Run 39064192181 failed at guest_question with `keyboard comparison must retain the original composer node`. The current connected composer and all draft values matched; Send was enabled. Send was never clicked, zero Chat POSTs were observed, and no assistant response was tested. This is a harness defect and gives zero product Chat verdict.",
+  "evidence": [
+    "docs/stabilization/runs/guest-chat-v0523-run39064192181.json",
+    "docs/stabilization/evidence/guest-chat-v0523/run39064192181/result.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-v0523/run39064192181/screenshots/guest-chat-failure.png",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39064192181"
+  ],
+  "build_receipt": {
+    "workflow_source_sha": "1ec98baf21d2a6b8631971dd43c13fc199a6b2a4",
+    "release_run_id": 39063179335,
+    "artifact_id": 12112098474,
+    "artifact_version": "0.2.523",
+    "source_sha": "580738d3c86f14cba3fa4c8157364340d46f78bb",
+    "artifact_digest": "sha256:79cc91b07208759b3a7057e43891746c80783e6a8a46906ea9724f1725dd53fe",
+    "store_zip_sha256": "77242073a75df326b8b42ccf667854bf7f88c4e44017bc8c9f3a819521ba2fad",
+    "installed_tree_sha256": "5cec4afe1cf1200d214e361850802cc67212866bb327a87e05706dc04a0c0ea0",
+    "server_sha_before": "fc8c106fe09f85680c4a75d1824e74f1585ef262",
+    "server_sha_after": "fc8c106fe09f85680c4a75d1824e74f1585ef262"
+  },
+  "reproducibility": "Observed once in guarded native B run 39064192181. The composer identity assumption and failure are explicit in the sanitized result; product behavior was not reached.",
+  "severity": "S2: harness prevents the registered guest Chat acceptance from reaching Send on a legitimate composer remount",
+  "priority": "P1: repair before the next native guest acceptance attempt",
+  "state": "in-fix",
+  "owner": "guest_composer_replacement_guard",
+  "cause": "The browser harness treats DOM node identity as stable across focus and keyboard input. The observed composer remounted while preserving the expected draft in DOM, React and Redux. The guard should assert semantic current-composer continuity and content, not persistent node identity.",
+  "sibling_census": "Applies to the shared native guest Chat acceptance helper and any Chat cases that reuse its composer identity comparison. It does not establish a product composer defect and gives no member, signed-in, opening-turn, follow-up or reload behavior verdict.",
+  "acceptance_criteria": [
+    "Add a focused regression that reproduces a legitimate composer remount and fails under the old identity-only assertion.",
+    "Pass the repaired focused browser acceptance tests while preserving checks for current-node connectivity, expected value, React/Redux draft convergence and Send readiness.",
+    "Obtain independent review and exact-source focused CI evidence for the harness change.",
+    "Only after reviewed repair and fresh resource admission, repeat one guarded .523 native guest acceptance and require first answer, same-conversation follow-up, reload, and third new-conversation answer with terminal completion and valid resource finals."
+  ],
+  "next_action": "Fix and independently verify the remount-safe comparison; then await parent clearance and a fresh eligible admission before any native rerun.",
+  "transition_history": [
+    {
+      "at": "2026-10-17T19:59:06Z",
+      "from": null,
+      "to": "open",
+      "reason": "Guarded native run 39064192181 aborted before Send on an identity-only composer assertion while the replacement composer held a converged draft."
+    },
+    {
+      "at": "2026-10-17T20:25:00Z",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "Root cause confirmed as remount-sensitive browser harness assumption; Sol owns focused harness repair/tests."
+    }
+  ]
+}
