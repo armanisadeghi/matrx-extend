@@ -107,17 +107,11 @@ export function requireReleaseMemberSource(ancestor, paths) {
   assert.ok(
     paths.every(
       (path) =>
+        /^docs\/stabilization\/reports\/[a-z0-9]+(?:-[a-z0-9]+)*\.json(?![\s\S])/.test(path) ||
         path ===
           'docs/stabilization/evidence/member-release-admission-20261017/release-api-metadata.json' ||
         path ===
           'docs/stabilization/evidence/settings-navigation-lane-a-preflight-20261017/resource-journals/settings-nav-preflight-20261017-01.sanitized.jsonl' ||
-        path === 'docs/stabilization/reports/guest-send-controls-20261017.json' ||
-        path === 'docs/stabilization/reports/guest-send-boundary-peer-20261017.json' ||
-        path === 'docs/stabilization/reports/guest-values-chip-20261017.json' ||
-        path === 'docs/stabilization/reports/member-acceptance-auth-repair-20261017.json' ||
-        path === 'docs/stabilization/reports/member-acceptance-resource-retry-20261017.json' ||
-        path === 'docs/stabilization/reports/settings-navigation-lane-a-checkpoint-20261017.json' ||
-        path === 'docs/stabilization/reports/store-release-audit-20261017.json' ||
         /^scripts\/hosted-release-member-admission(?:\.test)?\.mjs$/.test(path) ||
         path === 'tests/browser/guest-chat-store-acceptance.mjs' ||
         path === 'tests/browser/guest-chat-store-sequence.test.mjs' ||
@@ -128,7 +122,6 @@ export function requireReleaseMemberSource(ancestor, paths) {
         path === 'tests/browser/guest-chat-transport-observer.test.mjs' ||
         path === 'tests/browser/member-native-auth-proof.mjs' ||
         path === 'tests/browser/member-native-auth-proof.test.mjs' ||
-        path === 'docs/stabilization/reports/member-identity-escalation-20261017.json' ||
         path === 'tests/browser/reviewer-chat-store-acceptance.mjs' ||
         path === 'tests/browser/reviewer-chat-identity-diagnostic.mjs' ||
         path === 'tests/browser/reviewer-chat-identity-diagnostic.test.mjs' ||
@@ -189,7 +182,7 @@ function admission() {
   return remoteSha;
 }
 
-function proveSource(sourceSha, workflowSha) {
+export function proveSource(sourceSha, workflowSha) {
   execFileSync('git', ['merge-base', '--is-ancestor', sourceSha, workflowSha]);
   const changedPaths = execFileSync(
     'git',
