@@ -137,16 +137,13 @@ describe('Supabase outgoing organization boundary (real SDK and resolver)', () =
 
   it('sends a bodiless DELETE with a JSON content type instead of failing "Unexpected end of input"', async () => {
     const { organizationFetch } = await import('./organization-fetch');
-    const response = await organizationFetch(
-      'https://db.matrxserver.com/rest/v1/wbx_pattern?id=eq.1',
-      {
-        method: 'DELETE',
-        headers: {
-          Authorization: 'Bearer member-access-token',
-          'Content-Type': 'application/json',
-        },
+    const response = await organizationFetch('https://db.matrxserver.com/wbx_pattern?id=eq.1', {
+      method: 'DELETE',
+      headers: {
+        Authorization: 'Bearer member-access-token',
+        'Content-Type': 'application/json',
       },
-    );
+    });
     expect(response.status).toBe(200);
     expect(outgoing.at(-1)?.method).toBe('DELETE');
     expect(outgoing.at(-1)?.headers.get('X-Organization-Id')).toBe(state.org);
