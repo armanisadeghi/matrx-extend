@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
 import { brokeredFetch } from '@/lib/broker/transport';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const cred = {
   credential_mode: 'proxied',

@@ -154,7 +154,9 @@ describe('transport mode dispatch', () => {
 
   it('brokeredFetch refuses a native credential', async () => {
     const native = makeCredential({ credential_mode: 'native_ephemeral' });
-    await expect(brokeredFetch(native, { body: {}, initiation: 'auto' })).rejects.toThrow(/native_ephemeral/);
+    await expect(brokeredFetch(native, { body: {}, initiation: 'auto' })).rejects.toThrow(
+      /native_ephemeral/,
+    );
   });
 
   it('brokeredFetch hits the credential endpoint with the Bearer grant', async () => {
