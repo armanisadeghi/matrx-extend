@@ -358,10 +358,13 @@ async function openAndCloseGuestValuesChip(panel) {
     const pane = chat ? document.getElementById(chat.getAttribute('aria-controls') ?? '') : null;
     const matches = [...(pane?.querySelectorAll('button[aria-label]') ?? [])]
       .filter((button) => /^[0-9]+ included$/.test(button.getAttribute('aria-label') ?? ''));
+    const openPanels = [...document.querySelectorAll('[role="dialog"][data-state="open"]')]
+      .filter((dialog) => dialog.querySelector('[aria-label="Send everything"]') &&
+        dialog.querySelector('[aria-label="Open full view"]'));
     return matches.length === 1 ? {
       count: 1,
-      expanded: matches[0].getAttribute('aria-expanded'),
-    } : { count: matches.length, expanded: null };
+      openPanelCount: openPanels.length,
+    } : { count: matches.length, openPanelCount: openPanels.length };
   })()`,
     );
   const count = (await readChip())?.count;
@@ -373,9 +376,20 @@ async function openAndCloseGuestValuesChip(panel) {
   // expose it still exercise its real open/close path under the read observer.
   if (count === 0) return { present: false, exercised: false };
   await click(panel, 'context-values', '');
-  await waitFor('guest_values_chip_open', readChip, (state) => state?.expanded === 'true');
-  await click(panel, 'context-values', '');
-  await waitFor('guest_values_chip_closed', readChip, (state) => state?.expanded === 'false');
+  await waitFor('guest_values_chip_open', readChip, (state) => state?.openPanelCount === 1);
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyDown',
+    key: 'Escape',
+    code: 'Escape',
+    windowsVirtualKeyCode: 27,
+  });
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    key: 'Escape',
+    code: 'Escape',
+    windowsVirtualKeyCode: 27,
+  });
+  await waitFor('guest_values_chip_closed', readChip, (state) => state?.openPanelCount === 0);
   return { present: true, exercised: true };
 }
 

@@ -281,30 +281,48 @@ const valuesDriver = new Function(
 );
 
 function valuesControlHarness(count, blocked = null) {
-  let expanded = 'false';
+  let open = false;
   const calls = [];
   const buttons = Array.from({ length: count }, () => ({
-    getAttribute: (name) => (name === 'aria-label' ? '0 included' : expanded),
+    getAttribute: (name) => (name === 'aria-label' ? '0 included' : null),
   }));
-  // Sanitized DOM seam from the .520 failed screenshot: selected Chat and
-  // composer, no Values control. The .205 control uses the same accessible name.
+  // The mobile package opens a BottomSheet while the face button has no
+  // aria-expanded. Its dialog contains these two Values-only controls.
   const document = {
     querySelector: () => ({ getAttribute: () => 'chat-pane' }),
     getElementById: () => ({ querySelectorAll: () => buttons }),
+    querySelectorAll: () =>
+      open
+        ? [
+            {
+              querySelector: (selector) =>
+                (blocked !== 'unrelated' && selector === '[aria-label="Send everything"]') ||
+                selector === '[aria-label="Open full view"]'
+                  ? {}
+                  : null,
+            },
+          ]
+        : [],
+  };
+  const panel = {
+    send: async (method, args) => {
+      calls.push([method, args.type]);
+      if (method === 'Input.dispatchKeyEvent' && args.type === 'keyUp' && blocked !== 'close')
+        open = false;
+    },
   };
   const run = valuesDriver(
     async (_panel, expression) => new Function('document', `return ${expression}`)(document),
     async (_panel, kind, label) => {
       calls.push([kind, label]);
-      if (blocked === 'open' || (blocked === 'close' && expanded === 'true')) return;
-      expanded = expanded === 'false' ? 'true' : 'false';
+      if (blocked !== 'open') open = true;
     },
     async (stage, read, accepts) => {
       assert.ok(accepts(await read()), stage);
     },
     assert,
   );
-  return { run: () => run({}), calls };
+  return { run: () => run(panel), calls };
 }
 
 test('package guest Chat without Values continues without a fabricated control verdict', async () => {
@@ -318,7 +336,8 @@ test('published guest Chat Values must actually open and close when present', as
   assert.deepEqual(await harness.run(), { present: true, exercised: true });
   assert.deepEqual(harness.calls, [
     ['context-values', ''],
-    ['context-values', ''],
+    ['Input.dispatchKeyEvent', 'keyDown'],
+    ['Input.dispatchKeyEvent', 'keyUp'],
   ]);
 });
 
@@ -327,5 +346,6 @@ test('optional Values does not silently accept duplicate controls or a failed in
   await assert.rejects(duplicates.run, /absent or uniquely present/);
   assert.deepEqual(duplicates.calls, []);
   await assert.rejects(valuesControlHarness(1, 'open').run, /guest_values_chip_open/);
+  await assert.rejects(valuesControlHarness(1, 'unrelated').run, /guest_values_chip_open/);
   await assert.rejects(valuesControlHarness(1, 'close').run, /guest_values_chip_closed/);
 });
