@@ -8,8 +8,8 @@ import {
   watchGuestAiRequests,
 } from './guest-chat-transport-observer.mjs';
 
-// Break caught: the immutable .520 hosted release receipt must arm the panel
-// observer even though it is a release artifact, while the verified .205 stays legacy.
+// Break caught: the exact .521 native Store ZIP receipt must arm the package
+// observer, while .520 remains supported and unknown releases stay closed.
 test('receipt selects the observed transport by exact release and rejects unknown builds', () => {
   for (const kind of ['native_store_zip_candidate_key_adapted', 'published_store_crx_unpacked']) {
     assert.equal(guestTransportModeForReceipt({ kind, version: '0.2.205' }), 'legacy');
@@ -19,8 +19,17 @@ test('receipt selects the observed transport by exact release and rejects unknow
     guestTransportModeForReceipt({ kind: 'local_dev_unpacked', version: '0.2.520' }),
     'package',
   );
+  assert.equal(
+    guestTransportModeForReceipt({
+      kind: 'native_store_zip_candidate_key_adapted',
+      version: '0.2.521',
+    }),
+    'package',
+  );
   for (const receipt of [
-    { kind: 'native_store_zip_candidate_key_adapted', version: '0.2.521' },
+    { kind: 'native_store_zip_candidate_key_adapted', version: '0.2.522' },
+    { kind: 'published_store_crx_unpacked', version: '0.2.521' },
+    { kind: 'local_dev_unpacked', version: '0.2.521' },
     { kind: 'local_dev_unpacked', version: '0.2.205' },
     { kind: 'unknown', version: '0.2.520' },
     { kind: 'published_store_crx_unpacked' },

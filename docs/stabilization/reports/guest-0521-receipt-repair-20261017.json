@@ -1,0 +1,19 @@
+{
+  "status": "repaired",
+  "run_id": "39054087178",
+  "release_run_id": "39053548400",
+  "artifact_id": "12108945607",
+  "version": "0.2.521",
+  "failure_stage": "receipt",
+  "failure_code": "guest_transport_receipt_unrecognized",
+  "cause": "The receipt classifier admitted 0.2.520 but did not admit the exact 0.2.521 native_store_zip_candidate_key_adapted release receipt, stopping before guest product checks.",
+  "repair": "Admit only native_store_zip_candidate_key_adapted at 0.2.521 as package transport; retain existing 0.2.520 and legacy decisions and reject other 0.2.521 kinds or future versions.",
+  "evidence": {
+    "failure_report": "node_modules/.cache/store-release-20261017/guest-b-39054087178/matrx-extend/matrx-extend/test-results/guest-chat-store-a6b3c9be-a3f0-4618-ad01-d4acf4bccf01.json",
+    "red_before_fix": "node --test tests/browser/guest-chat-transport-observer.test.mjs: 10 pass, 1 fail at exact 0.2.521 receipt",
+    "green_after_fix": "node --test tests/browser/guest-chat-transport-observer.test.mjs: 11 pass, 0 fail",
+    "mutation": "plant.py replaced the 0.2.521 branch with 0.2.522; receipt test failed and original source was restored byte-identically",
+    "gut_check": "plant.py forced a constant package return; receipt test failed on legacy expectation and original source was restored byte-identically"
+  },
+  "remaining": "The hosted guest acceptance must be rerun against the exact 0.2.521 artifact; this repair verifies receipt admission only."
+}

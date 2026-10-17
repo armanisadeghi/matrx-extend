@@ -24,6 +24,7 @@ export function guestTransportModeForReceipt(receipt) {
     ].includes(kind)
   )
     return 'package';
+  if (version === '0.2.521' && kind === 'native_store_zip_candidate_key_adapted') return 'package';
   throw new Error('guest_transport_receipt_unrecognized');
 }
 
