@@ -146,15 +146,52 @@ export const autoTableMode: ExtractionMode<AutoTableConfig> = {
         : Array.from(table.querySelectorAll<HTMLTableRowElement>('tr'))
     ).filter((tr) => !headerSet.has(tr));
 
-    return bodyTrs.map((tr) => {
-      const row: Record<string, string> = {};
-      const cells = Array.from(tr.querySelectorAll('th, td'));
-      for (let i = 0; i < cells.length; i++) {
-        const cell = cells[i] as HTMLElement;
-        const key = headers[i] ?? `col_${i + 1}`;
-        row[key] = cell.innerText?.trim() ?? '';
+    // Body cells are placed on the same column grid as the header: a
+    // rowspan cell (a Nobel year shared by two laureates) repeats its value
+    // down the rows it spans, and colspan fills every column it covers, so
+    // later cells never shift into the wrong column.
+    const carry: Array<{ text: string; left: number } | undefined> = [];
+    const out: Record<string, string>[] = [];
+    for (const tr of bodyTrs) {
+      const values: string[] = [];
+      const cells = Array.from(tr.children).filter(
+        (c) => c.tagName === 'TD' || c.tagName === 'TH',
+      ) as HTMLElement[];
+      let col = 0;
+      const fillCarried = () => {
+        for (let held = carry[col]; held && held.left > 0; held = carry[col]) {
+          values[col] = held.text;
+          held.left -= 1;
+          col += 1;
+        }
+      };
+      for (const cell of cells) {
+        fillCarried();
+        const text = (cell.innerText ?? cell.textContent ?? '').trim();
+        const colspan = Number.parseInt(cell.getAttribute('colspan') || '1', 10) || 1;
+        const rowspan = Number.parseInt(cell.getAttribute('rowspan') || '1', 10) || 1;
+        for (let dc = 0; dc < colspan; dc++) {
+          values[col + dc] = text;
+          carry[col + dc] = rowspan > 1 ? { text, left: rowspan - 1 } : undefined;
+        }
+        col += colspan;
       }
-      return row;
-    });
+      fillCarried();
+      // Trailing columns still held by an earlier rowspan.
+      for (let c = col; c < carry.length; c++) {
+        const held = carry[c];
+        if (held && held.left > 0) {
+          values[c] = held.text;
+          held.left -= 1;
+        }
+      }
+      if (!values.some((v) => v)) continue; // spacer / image-only rows carry no data
+      const row: Record<string, string> = {};
+      for (let i = 0; i < values.length; i++) {
+        row[headers[i] ?? `col_${i + 1}`] = values[i] ?? '';
+      }
+      out.push(row);
+    }
+    return out;
   },
 };

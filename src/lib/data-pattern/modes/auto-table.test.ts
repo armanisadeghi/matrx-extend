@@ -18,4 +18,19 @@ describe('Tables — header rows', () => {
       { Rank: '2', Release: 'Film B', Gross: '$5' },
     ]);
   });
+
+  it('repeats a rowspan cell down the rows it spans and skips empty rows', () => {
+    document.body.innerHTML = `<table><thead><tr><th>Year</th><th>Name</th><th>Country</th></tr></thead><tbody>
+      <tr><td rowspan="2">1902</td><td>Hendrik Lorentz</td><td>Netherlands</td></tr>
+      <tr><td>Pieter Zeeman</td><td>Netherlands</td></tr>
+      <tr><td></td><td></td><td></td></tr>
+      <tr><td>1903</td><td colspan="2">Henri Becquerel, France</td></tr>
+    </tbody></table>`;
+    const rows = autoTableMode.runInPage({ table_index: 0 }) as Array<Record<string, string>>;
+    expect(rows).toEqual([
+      { Year: '1902', Name: 'Hendrik Lorentz', Country: 'Netherlands' },
+      { Year: '1902', Name: 'Pieter Zeeman', Country: 'Netherlands' },
+      { Year: '1903', Name: 'Henri Becquerel, France', Country: 'Henri Becquerel, France' },
+    ]);
+  });
 });
