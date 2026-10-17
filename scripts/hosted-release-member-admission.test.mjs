@@ -382,3 +382,26 @@ test('source proof rejects renamed or reverted product paths and pending drift',
   assert.notEqual(untracked.status, 0);
   assert.match(untracked.stderr, /release_member_product_changed/);
 });
+
+// Break caught: reviewed fixture mint repair must be usable with the immutable release,
+// while similarly named helpers remain outside the reviewed source delta.
+test('reviewed fixture mint helper admits only its two exact paths', () => {
+  const reviewed = [
+    'tests/browser/prepare-reviewer-magic-link.mjs',
+    'tests/browser/prepare-reviewer-magic-link.test.mjs',
+  ];
+  requireReleaseMemberSource(true, reviewed);
+  for (const path of [
+    'tests/browser/prepare-reviewer-magic-link-copy.mjs',
+    'tests/browser/prepare-reviewer-magic-link-other.test.mjs',
+    'tests/browser/prepare-reviewer-magic-link.mjs/child',
+    'tests/browser/../browser/prepare-reviewer-magic-link.mjs',
+    'tests/browser/prepare-reviewer-magic-link.mjs\n',
+    'src/prepare-reviewer-magic-link.mjs',
+  ])
+    assert.throws(
+      () => requireReleaseMemberSource(true, [...reviewed, path]),
+      /release_member_product_changed/,
+      path,
+    );
+});

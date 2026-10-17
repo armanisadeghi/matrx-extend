@@ -120,6 +120,8 @@ export function requireReleaseMemberSource(ancestor, paths) {
         path === 'tests/browser/guest-chat-completion-oracle.test.mjs' ||
         path === 'tests/browser/guest-chat-transport-observer.mjs' ||
         path === 'tests/browser/guest-chat-transport-observer.test.mjs' ||
+        path === 'tests/browser/prepare-reviewer-magic-link.mjs' ||
+        path === 'tests/browser/prepare-reviewer-magic-link.test.mjs' ||
         path === 'tests/browser/member-native-auth-proof.mjs' ||
         path === 'tests/browser/member-native-auth-proof.test.mjs' ||
         path === 'tests/browser/reviewer-chat-store-acceptance.mjs' ||
