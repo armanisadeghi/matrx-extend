@@ -880,7 +880,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
       runningCount: 0, truncated: false, effects: [],
       sampledAt: finiteNumber(performance.now()),
       documentTimelineTime: finiteNumber(document.timeline?.currentTime),
-      visibility: ['visible', 'hidden', 'prerender'].includes(document.visibilityState)
+      documentVisibilityState: ['visible', 'hidden', 'prerender'].includes(document.visibilityState)
         ? document.visibilityState : 'other',
       focused: document.hasFocus(),
     };

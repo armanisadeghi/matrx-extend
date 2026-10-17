@@ -311,7 +311,7 @@ test('the actual selector reveals and hit-tests its owned offscreen option befor
     for (const { animationDiagnostic } of panel.pointerSamples) {
       assert.ok(Number.isFinite(animationDiagnostic.sampledAt));
       assert.ok(Number.isFinite(animationDiagnostic.documentTimelineTime));
-      assert.equal(animationDiagnostic.visibility, 'visible');
+      assert.equal(animationDiagnostic.documentVisibilityState, 'visible');
       assert.equal(animationDiagnostic.focused, true);
     }
   };

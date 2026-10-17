@@ -30,7 +30,7 @@ def read_coverage_audit():
 
 
 def current_store_release_lines():
-    """Select dated observations, never interpret listing visibility as review approval."""
+    """Select dated observations; listing presence does not imply review approval."""
     records = []
     for path in (BASE / "reports").glob("store-release-followthrough-????????.json"):
         try:

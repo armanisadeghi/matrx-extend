@@ -243,7 +243,7 @@ test('failed pointer retains first and last animation clocks without dispatching
       assert.equal(last.effects[0].elementSide, 'bottom');
       assert.ok(last.sampledAt >= first.sampledAt);
       assert.equal(typeof last.focused, 'boolean');
-      assert.ok(['visible', 'hidden', 'prerender', 'other'].includes(last.visibility));
+      assert.ok(['visible', 'hidden', 'prerender', 'other'].includes(last.documentVisibilityState));
       assert(!JSON.stringify(error.driverFailure).includes('private page content'));
       return true;
     });
