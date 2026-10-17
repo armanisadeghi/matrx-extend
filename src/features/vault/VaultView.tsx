@@ -18,7 +18,7 @@
 import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
-import { getMatrxApi } from '@/lib/api/matrx-api';
+import { createPackageApi } from '@/lib/api/matrx-api';
 import { hasRealUserToken } from '@/lib/api/routes/vault';
 import { getSupabase } from '@/lib/supabase/client';
 import { platformDb } from '@/lib/supabase/schemas';
@@ -87,8 +87,11 @@ function VaultWorkspace({ actor }: { actor: Actor }) {
 
   const port = useMemo(() => {
     const supabase = getSupabase();
-    return createApiVaultPort(getMatrxApi(), { userState: supabase, platformDoor: platformDb() });
-  }, []);
+    return createApiVaultPort(createPackageApi(actor.organizationId), {
+      userState: supabase,
+      platformDoor: platformDb(),
+    });
+  }, [actor.organizationId]);
   const knobs = useMemo(() => createVaultKnobs(getSupabase(), actor), [actor]);
   const fillSetup = useMemo(() => createFillSetupHost(openUrl), []);
   const capture = useMemo(() => createCaptureHost(tab.id), [tab.id]);

@@ -61,9 +61,11 @@ let instance: Api | null = null;
 function buildApi(
   credentials: NonNullable<CreateApiOptions['credentials']>,
   refreshCredentials: () => Promise<boolean>,
+  organizationId?: CreateApiOptions['organizationId'],
 ): Api {
   return createApi({
     credentials,
+    ...(organizationId ? { organizationId } : {}),
     resolveBaseUrl: () => currentBase || undefined,
     totalTimeoutMs: DEFAULT_TOTAL_TIMEOUT_MS,
     readyTimeoutMs: SESSION_READY_TIMEOUT_MS,
@@ -80,6 +82,27 @@ const refreshSession = async (): Promise<boolean> => {
 export function getMatrxApi(): Api {
   instance ??= buildApi(sessionCredentials, refreshSession);
   return instance;
+}
+
+/**
+ * The shared client for a package that makes its own calls (`@ai-matrx/vault`'s
+ * port) instead of going through `runOp`: it carries the signed-in person's
+ * organization on every request (the server refuses a request with none) and
+ * reads the backend URL as `runOp` does. The bearer, guest rule and 401 refresh
+ * are the shared ones.
+ */
+export function createPackageApi(organizationId: string): Api {
+  return buildApi(
+    {
+      ready: awaitSessionReady,
+      async get() {
+        currentBase = await getBackendUrl();
+        return sessionCredentials.get();
+      },
+    },
+    refreshSession,
+    () => organizationId,
+  );
 }
 
 /**

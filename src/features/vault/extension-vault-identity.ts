@@ -55,6 +55,8 @@ export function authenticatedAt(claims: TokenClaims): number {
 
 /** How long a browser sign-in may take before the dialog stops waiting for it. */
 const FRESH_SIGN_IN_WAIT_MS = 5 * 60_000;
+// KNOB MIRROR: how often the dialog rereads the stored bearer while the
+// browser sign-in is open — a protocol cadence, not an organization opinion.
 const POLL_MS = 1_000;
 const SIGNED_OUT = 'You are signed out. Sign in again.';
 const SAME_PERSON = 'That signed in a different account. Use the account this vault belongs to.';
