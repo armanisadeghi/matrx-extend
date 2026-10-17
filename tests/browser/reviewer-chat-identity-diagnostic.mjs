@@ -105,3 +105,18 @@ export async function recordIdentityWaitFailure({
   }
   throw new Error('reviewer_extension_identity_unverified');
 }
+
+// Identity readiness and canonical role proof are separate acceptance gates.
+// Persist the first success before entering the second, even when it fails.
+export async function verifyReviewerRole({ report, onStage, adminCheck, userId }) {
+  report.account = { ...report.account, extension_identity_observed: true };
+  onStage('extension_canonical_role_verify');
+  try {
+    return await adminCheck.verify(userId);
+  } catch {
+    report.account.canonical_role_observation = adminCheck.snapshot?.(userId) ?? {
+      status: 'unavailable',
+    };
+    throw new Error('reviewer_canonical_role_unverified');
+  }
+}

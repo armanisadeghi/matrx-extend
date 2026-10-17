@@ -125,6 +125,9 @@ export function requireReleaseMemberSource(ancestor, paths) {
         path === 'tests/browser/guest-chat-completion-oracle.test.mjs' ||
         path === 'tests/browser/guest-chat-transport-observer.mjs' ||
         path === 'tests/browser/guest-chat-transport-observer.test.mjs' ||
+        path === 'tests/browser/member-native-auth-proof.mjs' ||
+        path === 'tests/browser/member-native-auth-proof.test.mjs' ||
+        path === 'docs/stabilization/reports/member-identity-escalation-20261017.json' ||
         path === 'tests/browser/reviewer-chat-store-acceptance.mjs' ||
         path === 'tests/browser/reviewer-chat-identity-diagnostic.mjs' ||
         path === 'tests/browser/reviewer-chat-identity-diagnostic.test.mjs' ||

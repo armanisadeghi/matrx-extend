@@ -1,0 +1,59 @@
+{
+  "task_id": "member_identity_hard_escalation_oct17",
+  "status": "diagnostic-boundary-repaired-native-cause-unverified",
+  "owner": "root/member_identity_hard_escalation_oct17",
+  "feature_ids": ["EXT-F-0002"],
+  "case_ids": ["EXT-F-0002-T08"],
+  "runs": [
+    {
+      "id": "39051109645",
+      "artifact": "12107933162"
+    },
+    {
+      "id": "39052786157",
+      "artifact": "12107843833"
+    }
+  ],
+  "build": {
+    "version": "0.2.520",
+    "source": "c1cf4ec05f78ab231789f9f399cf8fd71bfa8693",
+    "tree_sha256": "539ccb21f4a74b9ed12bc093dc59d010a4ecaeb4829db97a28193b8115e758d7"
+  },
+  "confirmed_cause": "Runner leaves extension_identity_wait as its stage after identity succeeds, during canonical role verification and cleanup. Role failure has no allowed code and is collapsed into unclassified_failure. Successful identity is not persisted. Thus current receipts cannot distinguish identity wait from later role proof failure.",
+  "hypotheses": [
+    {
+      "cause": "true identity wait failure",
+      "prediction": "second run invokes identity diagnostic and records account/storage booleans",
+      "result": "not observed; cannot infer auth hang from these receipts"
+    },
+    {
+      "cause": "later canonical role proof failure",
+      "prediction": "identity succeeds then role verification times out, leaving unchanged stage and no timeout diagnostics",
+      "result": "reproduced at real observer boundary with missing and nonzero admin responses; matches receipt shape, but native exact role outcome was not captured"
+    },
+    {
+      "cause": "admin request contract drift",
+      "prediction": "exact .520 bundle query differs from observer request matching",
+      "result": "not supported: bundle and source both query admins select user_id with user_id equality and limit 1"
+    },
+    {
+      "cause": "cleanup or transport failure after identity success",
+      "prediction": "same stale stage possible after successful identity/role proof",
+      "result": "not excluded by prior sanitized receipts; no speculative product patch"
+    }
+  ],
+  "changes": "Persist identity success before distinct canonical-role stage; symbolic role failure plus sanitized current-user request status, row count and outcome. Shared observer snapshots contain no user IDs, headers, response bodies or credentials. Exact admission paths added, no wildcard.",
+  "verification": {
+    "focused": "21 behavior/admission tests pass; 6 touched source files pass scoped Biome check",
+    "mutation": "Prior direct verify boundary fails both new role boundary tests",
+    "admission_red": "New exact-file acceptance test failed against prior allowlist",
+    "compile": "Attempted, blocked by existing installed @ai-matrx package export/type failures; no TypeScript or runtime files changed",
+    "caller_mutation": "Replacing the actual reviewer caller with its prior direct adminCheck.verify call fails the new executable orchestration test (one failure); restoring the corrected caller passes all 21 tests."
+  },
+  "native_acceptance": "UNVERIFIED; no browser or release dispatched. Old screenshots precede sign-in and are not timeout captures.",
+  "inventory": "No product coverage or defect closure changed; diagnostic failure is recorded here under existing auth case. Product runtime defect unproven.",
+  "independent_review": "Parent fresh Luna peer PASS after caller-seam correction: independently confirmed stale direct-call mutant RED, focused 15/15 pass, role/privacy/admission intact. Native behavior remains unverified.",
+  "next_action": "Parent review this harness repair. Use next independently admitted exact candidate (.521 preparation supersedes .520) to observe classified boundary; no blind repeat of .520 and no product acceptance claim.",
+  "owned_jobs": [],
+  "credentials": "None staged or read by this lane."
+}

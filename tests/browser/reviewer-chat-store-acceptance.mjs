@@ -21,7 +21,10 @@ import {
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
-import { recordIdentityWaitFailure } from './reviewer-chat-identity-diagnostic.mjs';
+import {
+  recordIdentityWaitFailure,
+  verifyReviewerRole,
+} from './reviewer-chat-identity-diagnostic.mjs';
 import { storageShapeExpression } from './reviewer-chat-storage-shape.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -53,6 +56,7 @@ const SAFE_FAILURE_CODES = new Set([
   'native_sidepanel_local_build_provenance_refused',
   'approval_action_completion_not_observed',
   'reviewer_extension_identity_unverified',
+  'reviewer_canonical_role_unverified',
 ]);
 const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -1268,7 +1272,14 @@ try {
               captureScreenshot: () => capture(panel, artifacts, 'reviewer-chat-timeout'),
             });
           }
-          canonicalAdminCheck = await adminCheck.verify(webIdentity.userId);
+          canonicalAdminCheck = await verifyReviewerRole({
+            report,
+            onStage: (value) => {
+              stage = value;
+            },
+            adminCheck,
+            userId: webIdentity.userId,
+          });
         } finally {
           await adminCheck.stop();
         }

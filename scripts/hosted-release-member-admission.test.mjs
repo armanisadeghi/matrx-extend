@@ -230,3 +230,21 @@ test('reviewed guest package terminal oracle delta is admitted without wildcard 
     );
   }
 });
+
+test('role-proof diagnostic admits only reviewed exact files', () => {
+  const paths = [
+    'tests/browser/member-native-auth-proof.mjs',
+    'tests/browser/member-native-auth-proof.test.mjs',
+    'docs/stabilization/reports/member-identity-escalation-20261017.json',
+  ];
+  requireReleaseMemberSource(true, paths);
+  for (const extra of [
+    'tests/browser/member-native-auth-proof-copy.mjs',
+    'docs/stabilization/reports/member-identity-escalation-20261018.json',
+    'src/hooks/use-auth.ts',
+  ])
+    assert.throws(
+      () => requireReleaseMemberSource(true, [...paths, extra]),
+      /release_member_product_changed/,
+    );
+});

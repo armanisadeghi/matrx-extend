@@ -89,6 +89,14 @@ export function observeCanonicalAdminCheck(panel, origin, timeoutMs = 60_000) {
     if (request) request.outcome = 'request_failed';
   });
   return {
+    snapshot(expectedUserId) {
+      return {
+        observed_request_count: requests.size,
+        current_user_requests: [...requests.values()]
+          .filter((request) => request.userId === expectedUserId)
+          .map(({ status, rowCount, outcome }) => ({ status, row_count: rowCount, outcome })),
+      };
+    },
     async start() {
       await panel.send('Network.enable');
       await panel.send('Network.setCacheDisabled', { cacheDisabled: true });
