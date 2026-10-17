@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-product-oct17",
+  "lane": "hosted A, signed-in member account popover",
+  "model": "GPT-6",
+  "status": "waiting_for_exact_current_main_artifact",
+  "feature_ids": ["EXT-F-1001"],
+  "defect_ids": [],
+  "summary": "No native browser session started and no product credit earned. The approved lane A route is settings-account-popover-member, covering three existing member navigation cases. Guest Settings and guest Showcase/Scrape remain queued for lane B per the root task owner.",
+  "current_source": {
+    "head_sha": "e84f516b493e11672f76f86bd5d943c10b264324",
+    "working_tree": "clean except this checkpoint and the owned resource preflight journal",
+    "ci_run_id": "39049178507",
+    "ci_status_at_checkpoint": "pending",
+    "artifact_id": null
+  },
+  "superseded_artifacts": [
+    {
+      "ci_run_id": "39047881227",
+      "source_sha": "a1fdbf20272b54219f08f1683ca80f1153469504",
+      "artifact_id": "12106960848",
+      "status": "success",
+      "usable_for_current_main": false,
+      "reason": "origin/main advanced through a lockfile dependency update and then a documentation commit; the normal member Settings admission helper requires exact artifact source SHA equality with current origin/main."
+    },
+    {
+      "ci_run_id": "39048586917",
+      "source_sha": "1b761a39ba4e29cb9ad587a8a49ec6db3cfdedd5",
+      "status_at_checkpoint": "in_progress",
+      "usable_for_current_main": false,
+      "reason": "origin/main advanced to e84f516b after this CI run started."
+    }
+  ],
+  "resource_preflight": {
+    "run_id": "settings-nav-preflight-20261017-01",
+    "status": "valid",
+    "evidence": "docs/stabilization/evidence/settings-navigation-lane-a-preflight-20261017/resource-journals/settings-nav-preflight-20261017-01.sanitized.jsonl",
+    "admitted_at": "2026-10-17T16:08:40.369Z",
+    "system_free_gib": 43.3326148984375,
+    "available_memory_gib": 12.48,
+    "average_cpu_busy_fraction": 0.43857142857142856,
+    "reasons": [],
+    "note": "This was a host-local preflight only; hosted browser phases still need their own fresh guarded resource admission."
+  },
+  "hosted_run_state": {
+    "active_lane_a_at_last_check": false,
+    "release_lane_b": "root reports clear",
+    "browser_launched": false
+  },
+  "mapped_cells": [
+    {
+      "case_id": "EXT-F-1001-T20",
+      "behavior": "Member account popover Profile opens the Profile pane and closes the menu while the account stays signed in.",
+      "expected": "Profile is present for signed-in users and opens the Profile view; the menu closes.",
+      "target_driver_case": "settings-account-popover-member",
+      "current_run_status": "unverified",
+      "prior_evidence": "run 38211228069 on source 5743859143df2c281f579dc0318a2787be4fb11b; screenshots show startup and strict-verifier replay was not independently performed."
+    },
+    {
+      "case_id": "EXT-F-1001-T23",
+      "behavior": "Member account popover Preferences selects Settings, closes the menu, and retains the member identity.",
+      "expected": "Preferences is present for this role, opens Settings, and closes the popover.",
+      "target_driver_case": "settings-account-popover-member",
+      "current_run_status": "unverified",
+      "prior_evidence": "run 38211228069 on source 5743859143df2c281f579dc0318a2787be4fb11b; screenshots show startup and strict-verifier replay was not independently performed."
+    },
+    {
+      "case_id": "EXT-F-1001-T26",
+      "behavior": "Member Sign out closes the menu, clears identity, and leaves guest identity after panel reload.",
+      "expected": "The menu closes after activation; resulting account state is guest, including after the guest menu is reopened.",
+      "target_driver_case": "settings-account-popover-member",
+      "current_run_status": "unverified",
+      "prior_evidence": "run 38211228069 on source 5743859143df2c281f579dc0318a2787be4fb11b; cleanup was receipt-level only and strict-verifier replay was not independently performed."
+    }
+  ],
+  "guest_scope": {
+    "status": "queued_for_lane_b",
+    "planned_cases": ["EXT-F-1003-T40", "EXT-F-1003-T67", "EXT-F-1001-T01", "EXT-F-1001-T22", "EXT-F-1001-T25"],
+    "reason": "The approved guest Settings admission route is lane B; Arman’s current sequencing leaves it queued until after release-candidate guest Chat. This worker is currently authorized for lane A only. Do not route around the normal helper."
+  },
+  "additional_showcase_scrape_followup": {
+    "status": "not_run",
+    "reason": "Requested guest-mode follow-up uses the lane B guest route; lane A-only scope and the current exact artifact gate prevent an authorized dispatch."
+  },
+  "next_action": "After release-lane dispatch is stable and CI succeeds for the then-current origin/main SHA, verify no active Native A run and use the normal helper with that exact run and artifact: node scripts/hosted-remote-admission.mjs dispatch-settings-member --lane A --case settings-account-popover-member --runner-label macos-15-intel --development-run-id <successful-current-main-CI-run-id> --development-artifact-id <matching-development-artifact-id> --source-sha <current-origin-main-sha>. Do not dispatch if the helper refuses, origin/main moves, or exact artifact provenance fails."
+}
