@@ -11,6 +11,7 @@ import {
   classifyPackageGuestTurn,
   createGuestComposerProbe,
   createGuestStreamCollector,
+  readGuestReactDraft,
 } from './guest-chat-completion-oracle.mjs';
 import {
   guestTransportModeForReceipt,
@@ -617,7 +618,7 @@ async function installGuestSendClickProbe(panel) {
   );
 }
 
-async function submitQuestion(panel, question, label, mode) {
+async function submitQuestion(panel, question, label, mode, readDraft = readGuestReactDraft) {
   const boundary = mode === 'package' ? { attempt: label } : null;
   let phase = 'focus';
   if (boundary) report.composer_input_boundaries.push(boundary);
@@ -652,7 +653,83 @@ async function submitQuestion(panel, question, label, mode) {
     assert.equal(focused, true, `${label} guest Chat composer must focus`);
     phase = 'insert';
     await panel.send('Input.insertText', { text: question });
-    if (boundary) boundary.after_insert = await snapshot();
+    if (boundary) {
+      boundary.after_insert = await snapshot();
+      boundary.react_after_insert = await evaluate(
+        panel,
+        `(() => {
+        const chat = document.querySelector('button[role="tab"][title="Chat"]');
+        const pane = document.getElementById(chat?.getAttribute('aria-controls') ?? '');
+        return (${readDraft.toString()})(pane?.querySelector('textarea'), ${JSON.stringify(question)});
+      })()`,
+      );
+    }
+    // Compare input paths on the same mounted composer. Both are native CDP input;
+    // key events additionally traverse React's keyboard path. Never set DOM values.
+    if (boundary) {
+      phase = 'keyboard_comparison';
+      await panel.send('Input.dispatchKeyEvent', {
+        type: 'keyDown',
+        key: 'a',
+        code: 'KeyA',
+        modifiers: 4,
+        windowsVirtualKeyCode: 65,
+        commands: ['selectAll'],
+      });
+      await panel.send('Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        key: 'a',
+        code: 'KeyA',
+        modifiers: 4,
+        windowsVirtualKeyCode: 65,
+      });
+      await panel.send('Input.dispatchKeyEvent', {
+        type: 'keyDown',
+        key: 'Backspace',
+        code: 'Backspace',
+        windowsVirtualKeyCode: 8,
+      });
+      await panel.send('Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        key: 'Backspace',
+        code: 'Backspace',
+        windowsVirtualKeyCode: 8,
+      });
+      boundary.after_keyboard_clear = await snapshot();
+      assert.equal(
+        boundary.after_keyboard_clear?.currentValueLength,
+        0,
+        'keyboard comparison must clear the existing draft through native input',
+      );
+      for (const character of question) {
+        await panel.send('Input.dispatchKeyEvent', {
+          type: 'keyDown',
+          key: character,
+          text: character,
+        });
+        await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', key: character });
+      }
+      boundary.after_keyboard = await snapshot();
+      assert.equal(
+        boundary.after_keyboard?.currentNodeSame,
+        true,
+        'keyboard comparison must retain the original composer node',
+      );
+      assert.equal(
+        boundary.after_keyboard?.currentNodeFocused,
+        true,
+        'keyboard comparison must retain focus on the original composer',
+      );
+      boundary.react_after_keyboard = await evaluate(
+        panel,
+        `(() => {
+        const chat = document.querySelector('button[role="tab"][title="Chat"]');
+        const pane = document.getElementById(chat?.getAttribute('aria-controls') ?? '');
+        return (${readDraft.toString()})(pane?.querySelector('textarea'), ${JSON.stringify(question)});
+      })()`,
+      );
+      boundary.submitted_input_method = 'native_key_events_after_insert_text_comparison';
+    }
     phase = 'send_ready_wait';
     await waitFor(
       `${label}_send_ready`,

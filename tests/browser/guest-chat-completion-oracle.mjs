@@ -321,3 +321,44 @@ export function createGuestComposerProbe({ findComposer, activeElement, sendEnab
     },
   };
 }
+
+/** Read-only diagnostic: never invokes React handlers, dispatches, or exports text/IDs. */
+export function readGuestReactDraft(composer, expectedText) {
+  const propsKey = Object.keys(composer ?? {}).find((key) => key.startsWith('__reactProps$'));
+  const fiberKey = Object.keys(composer ?? {}).find((key) => key.startsWith('__reactFiber$'));
+  const props = propsKey ? composer[propsKey] : null;
+  let fiber = fiberKey ? composer[fiberKey] : null;
+  let conversationId = null;
+  const stores = new Set();
+  const seen = new Set();
+  while (fiber && !seen.has(fiber)) {
+    seen.add(fiber);
+    if (!conversationId && typeof fiber.memoizedProps?.conversationId === 'string')
+      conversationId = fiber.memoizedProps.conversationId;
+    for (let context = fiber.dependencies?.firstContext; context; context = context.next) {
+      const store = context.memoizedValue?.store;
+      if (typeof store?.getState === 'function') stores.add(store);
+    }
+    fiber = fiber.return;
+  }
+  const entries = [];
+  for (const store of stores) {
+    const entry = store.getState()?.instanceUserInput?.byConversationId?.[conversationId];
+    if (entry) entries.push(entry);
+  }
+  const entry = entries.length === 1 ? entries[0] : null;
+  return {
+    reactPropsAvailable: Boolean(props),
+    reactOnChangePresent: typeof props?.onChange === 'function',
+    reactValueLength: typeof props?.value === 'string' ? props.value.length : null,
+    reactValueMatchesExpected:
+      typeof props?.value === 'string' ? props.value === expectedText : null,
+    domMatchesExpected:
+      typeof composer?.value === 'string' ? composer.value === expectedText : null,
+    conversationLocated: Boolean(conversationId),
+    matchingStoreCount: entries.length,
+    reduxDraftLength: typeof entry?.text === 'string' ? entry.text.length : null,
+    reduxDraftMatchesExpected: typeof entry?.text === 'string' ? entry.text === expectedText : null,
+    submissionPhase: typeof entry?.submissionPhase === 'string' ? entry.submissionPhase : null,
+  };
+}

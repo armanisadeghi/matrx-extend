@@ -5,6 +5,7 @@ import {
   classifyPackageGuestTurn,
   createGuestComposerProbe,
   createGuestStreamCollector,
+  readGuestReactDraft,
 } from './guest-chat-completion-oracle.mjs';
 
 // Break caught: CDP text insertion can lose focus, emit an input event that
@@ -469,4 +470,45 @@ test('uncoded 409 remains pending while another delegated tool resolves', () => 
     }),
     'terminal_answer',
   );
+});
+
+// Break caught: DOM-only input must never be reported as a converged Redux draft.
+test('React draft diagnostic separates DOM-only, committed, missing and ambiguous stores', () => {
+  const question = 'Read the current page.';
+  for (const text of ['', question]) {
+    const entry = { text, submissionPhase: 'idle' };
+    const store = {
+      getState: () => ({ instanceUserInput: { byConversationId: { conversation: entry } } }),
+    };
+    const composer = {
+      value: question,
+      __reactProps$receipt: {
+        value: text,
+        onChange() {
+          throw Error('must not invoke');
+        },
+      },
+      __reactFiber$receipt: {
+        memoizedProps: { conversationId: 'conversation' },
+        dependencies: {
+          firstContext: { memoizedValue: { store }, next: null },
+        },
+        return: null,
+      },
+    };
+    const result = readGuestReactDraft(composer, question);
+    assert.equal(result.domMatchesExpected, true);
+    assert.equal(result.reactValueMatchesExpected, text === question);
+    assert.equal(result.reduxDraftMatchesExpected, text === question);
+    assert.equal(result.reduxDraftLength, text.length);
+    assert.equal(result.matchingStoreCount, 1);
+    assert.equal(JSON.stringify(result).includes(question), false);
+    const secondStore = { getState: store.getState };
+    composer.__reactFiber$receipt.dependencies.firstContext.next = {
+      memoizedValue: { store: secondStore },
+    };
+    assert.equal(readGuestReactDraft(composer, question).reduxDraftMatchesExpected, null);
+  }
+  assert.equal(readGuestReactDraft({ value: question }, question).reduxDraftMatchesExpected, null);
+  assert.equal(readGuestReactDraft(null, question).domMatchesExpected, null);
 });

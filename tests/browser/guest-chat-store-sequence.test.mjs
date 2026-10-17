@@ -100,6 +100,7 @@ test('guest send records native dispatch phases and reached-button outcome befor
   for (const reachedButton of [true, false]) {
     const report = { composer_input_boundaries: [] };
     let dispatched = false;
+    let draftLength = 139;
     const submit = new Function(
       'assert',
       'evaluate',
@@ -125,7 +126,12 @@ test('guest send records native dispatch phases and reached-button outcome befor
         return null;
       },
       async () => ({ currentValueLength: 0 }),
-      async () => ({ currentValueLength: 139, sendEnabled: true }),
+      async () => ({
+        currentValueLength: draftLength,
+        currentNodeSame: true,
+        currentNodeFocused: true,
+        sendEnabled: true,
+      }),
       async (_stage, read, accepts) => assert.equal(accepts(await read()), true),
       async () => ({ sendEnabled: true }),
       async () => ({
@@ -149,10 +155,17 @@ test('guest send records native dispatch phases and reached-button outcome befor
       report,
     );
     await submit(
-      { send: async () => ({}) },
+      {
+        send: async (method, args) => {
+          if (method === 'Input.dispatchKeyEvent' && args.key === 'Backspace') draftLength = 0;
+          if (method === 'Input.dispatchKeyEvent' && args.text) draftLength += args.text.length;
+          return {};
+        },
+      },
       'Read the current page.',
       'opening_question',
       'package',
+      () => ({}),
     );
     assert.deepEqual(report.composer_input_boundaries[0].click, {
       phases: ['press_attempted', 'press_returned', 'release_attempted', 'release_returned'],
