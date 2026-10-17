@@ -1,0 +1,81 @@
+{
+  "task_id": "member_acceptance_auth_oct17",
+  "status": "auth-preflight-repaired-native-run-handed-off",
+  "created_at": "2026-10-17T16:40:15.178379+00:00",
+  "original_run_id": "39049886121",
+  "first_failure": "hosted_member_link_secret_required",
+  "original_verdict": "invalid-infrastructure-pre-browser",
+  "cause": "MATRX_REVIEWER_MAGIC_LINK_JSON repository secret absent; workflow correctly mapped the missing secret to an empty MATRX_HOSTED_MEMBER_LINK_JSON and refused before browser setup.",
+  "ruled_out": [
+    "Wrong acceptance lane: A admission succeeded.",
+    "Wrong release selection: exact release artifact and provenance checks succeeded.",
+    "EXT-D-0218 OAuth storage: browser and driver were never started.",
+    "CI browser environment: all browser setup steps were skipped after missing fixture refusal."
+  ],
+  "repair": "Privately recover designated existing member by expected fingerprint; use existing fixture generator to verify current nonadmin role and exact active organization before minting; stage ephemeral fixture through stdin; dispatch using independently reviewed exact-release admission helper.",
+  "source_sha": "c1cf4ec05f78ab231789f9f399cf8fd71bfa8693",
+  "release_run_id": "39049375284",
+  "artifact_id": "12106724248",
+  "version": "0.2.520",
+  "store_zip_sha256": "e2af49293cde029ee83bc1e31c6a6b0b9a3aaf1f073477a14fba70f2f15d7909",
+  "github_artifact_digest": "sha256:e38b85edcb57734737a0916f15ea05d607c27199ecdc9d9a0cfb2160768ea2a2",
+  "workflow_sha": "529ae23db46a8e636a3e52eac00ff20b593ee99e",
+  "commit_shas": ["7bf2747c0", "529ae23db"],
+  "verification": [
+    {
+      "case": "focused admission behavior",
+      "verdict": "6 tests pass"
+    },
+    {
+      "case": "forcing-function mutations",
+      "verdict": "Auth admission bypass, archive verifier bypass, lane A to B, source proof bypass, run ID check deletion, workflow name check deletion all killed; plant.py restored source identically."
+    },
+    {
+      "case": "real CLI missing-secret plan",
+      "verdict": "refused hosted_member_link_secret_required after helper pushed"
+    },
+    {
+      "case": "initial positive CLI plan",
+      "verdict": "refused decorated release run name; secret and local link removed; captured actual metadata and anchored title grammar corrected and independently reviewed"
+    },
+    {
+      "case": "corrected real CLI plan",
+      "verdict": "pass exact receipt, artifact, source, hashes, workflow, source delta, A capacity and secret checks"
+    },
+    {
+      "case": "guarded dispatch",
+      "verdict": "pass",
+      "run_id": "39050392716"
+    },
+    {
+      "case": "original authentication preflight",
+      "run_id": "39050392716",
+      "verdict": "pass; Require selected authentication before browser setup completed successfully, advanced to measured package readiness"
+    },
+    {
+      "case": "surrounding release artifact and admission behavior tests",
+      "verdict": "10/10 pass"
+    }
+  ],
+  "independent_review": "root/member_release_admission_review_oct17: PASS; wrong run identity found and fixed before dispatch.",
+  "native_product_verdict": "pending in-flight run 39050392716; root/release owner explicitly owns remaining monitoring",
+  "secret_cleanup": "complete: owned ephemeral repository secret deleted after run 39050392716 authentication preflight succeeded; secret listing confirms absent",
+  "local_fixture_cleanup": "complete: owned private identity and single-use link directory removed and absence verified",
+  "limitations": [
+    "pnpm compile attempted; preexisting installed @ai-matrx package export/type resolution failures prevent green local typecheck; no TypeScript product files changed.",
+    "Current actual CI spend unavailable; static cost guard modeled $55.97/week and no open ci-breaker found."
+  ],
+  "next_action": "Release owner/root monitors run 39050392716 through native result and resource journal verification. No secret staging remains owned by this repair agent.",
+  "completed_at": "2026-10-17T16:41:13.095054+00:00",
+  "handoff": {
+    "owner": "root/store_rejection and root",
+    "active_run_id": "39050392716",
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39050392716",
+    "last_observed_step": "Wait for measured package readiness",
+    "resource_journal_prefixes": [
+      "hosted-package-39050392716-1",
+      "hosted-browser-39050392716-1",
+      "hosted-guest-39050392716-1"
+    ]
+  }
+}
