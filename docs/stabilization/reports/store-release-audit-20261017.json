@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-17T18:15:02Z",
+  "observed_at": "2026-10-17T18:33:09Z",
   "scope": "Primary Chrome Web Store item hnfolienncfklkgmdjjmhhegglimlamg",
-  "status": "validated_0522_store_zip_native_guest_and_member_running_dashboard_unverified",
+  "status": "validated_0522_store_zip_native_guest_no_send_member_retry_running_dashboard_unverified",
   "official_email": {
     "account": "publisher mailbox arman@armansadeghi.com",
     "search": "from:chromewebstore-noreply@google.com after:2026/10/11",
@@ -38,20 +38,20 @@
     "source_comparison": "Current source defaults automatic scrape capture off and offers signed-in Vault controls; its Swipe Save path sends a user-chosen supported post URL, and config reporting sends bounded key-read metadata. The live October 15 policy covers these flows. Exact 0.2.522 emitted and browser behavior remains under acceptance; dashboard disclosure selections remain unverified."
   },
   "source_and_release": {
-    "main_sha": "195326a089660d05e1113ea601e0c75d594ca4bc",
+    "main_sha": "1a458a4a7a1137350f4eccc10bb63758a5b5244f",
     "source_version": "0.2.522",
     "main_synchronized_with_origin": true,
     "latest_hosted_release_run": 39056398246,
     "latest_hosted_release_version": "0.2.522",
     "new_exact_source_store_zip": true,
     "fresh_ci_run": 39055809062,
-    "fresh_ci_status_at_observation": "Exact pre-release a873ace32 full CI 39055809062 passed; guarded hosted release 39056398246 reran strict gates and passed from release source/tag f4a72d5dd. Post-release source through 195326a08 changes only reviewed native harness, admission helper/tests and reports; no product runtime or dependency drift.",
+    "fresh_ci_status_at_observation": "Exact pre-release a873ace32 full CI 39055809062 passed; guarded hosted release 39056398246 reran strict gates and passed from release source/tag f4a72d5dd. Post-release source through 1a458a4a7 changes only reviewed native harness, admission/fixture helpers and tests, and reports; no product runtime or dependency drift.",
     "risk_scan_on_new_exact_candidate": "passed; hosted remote-loader risk gate and independent exact-ZIP Blue Argon/integrity review e25c98520 PASS with static-review limits; 1,236 packaged JS assets contain no rejected PDFObject cdnjs loader or reachable remote script path",
-    "guest_and_non_admin_acceptance_on_new_exact_candidate": "Exact .522 B 39057016053 and designated non-admin A 39057139939 are active on separate guarded hosted lanes, each selected release 39056398246. Server 94d5ef51313e436dab9c203c61252528c6490c4a was stable on repeated preflight. A auth preflight passed; the one-use secret and private link were deleted and absence verified. Neither run has terminal Chat/resource/post-run evidence yet; no .522 browser acceptance credit.",
+    "guest_and_non_admin_acceptance_on_new_exact_candidate": "Exact .522 guest B 39057016053 failed at receipt classification before browser; reviewed class repair enabled B 39057768241, which reached healthy native Chat but left 139-character opening question in composer after one Send click, with zero user messages, zero POST/chat-path requests, zero run/reply and no UI error. Package/browser resource finals valid; guest resource final admitted child_failed, resourceInvalid=false. Server 04864368c09a88347c1d4fc9b5f02f7af34bc717 stable before/after. Product-vs-driver click cause under focused diagnosis; no guest acceptance credit. Member A 39057139939 lacked a usable active organization because designated test membership pointed to an archived org; fixture was repaired and verified via canonical path. A guarded retest 39058586019 dispatched on separate A host from reviewed workflow 1a458a4a7 against unchanged .522 release; native outcome pending. No member acceptance credit. Current member driver does not assert a same-conversation follow-up terminal reply; even a first-turn pass in this run is diagnostic until that harness gap is reviewed and retested.",
     "cost_model_weekly_billed_usd": 55.97,
     "cost_model_ceiling_usd": 100,
     "cost_model_status": "pass",
-    "release_decision": "0.2.522 exact Store ZIP packaged and independently scanned; not uploaded or submitted. Require actual guest and non-admin member terminal browser acceptance with valid resource/server identity plus fresh permitted primary-item dashboard state.",
+    "release_decision": "0.2.522 exact Store ZIP packaged and independently scanned; not uploaded or submitted. Guest B has a resource-valid pre-transport no-send failure awaiting focused causal diagnosis and retest; designated non-admin A retest is running. Require actual guest and non-admin member terminal browser acceptance with valid resource/server identity plus fresh permitted primary-item dashboard state. Current member driver also needs a reviewed same-conversation follow-up terminal assertion before A can supply release credit.",
     "latest_hosted_release_artifact_id": 12109816135,
     "release_tag": "v0.2.522",
     "store_zip_sha256": "fe80e3025dead2e2f508f0c2ba44656f33fa069b454d7f1313061f44e7cd54b9",
@@ -70,7 +70,7 @@
   },
   "reviewer_copy_checklist": {
     "single_purpose": "Existing public listing states the page-aware AI side-panel purpose; candidate source still exposes the documented guest tabs.",
-    "account_free_path": "The published .205 CRX unpacked passed three direct-v2 guest Chat turns in run 39049125532 on an earlier server. Exact .522 B 39057016053 is active, so the candidate has not yet passed the public demo path; proposed demo instructions remain testable reviewer actions, not a claimed candidate pass. Omit Capture and SEO claims.",
+    "account_free_path": "Published .205 CRX unpacked passed three direct-v2 guest Chat turns in run 39049125532 on an earlier server. Exact .522 B 39057768241 reached healthy native Chat but did not send the opening question; no candidate demo path pass. Proposed demo instructions remain unverified test steps. Omit Capture and SEO claims.",
     "privacy_link": "Live extension-specific policy URL returns HTTP 200; current source disclosures were compared, but dashboard field selections remain unverified.",
     "remote_code_answer": "Exact .522 Store ZIP passed hosted risk gate and independent Blue Argon/integrity peer review; 1,236 packaged JS assets have no PDFObject CDN loader or reachable remote-code path. Recheck dashboard answer before submission.",
     "permissions_and_host_access": "Exact .522 ZIP manifest passed blocking risk gate and independent peer comparison against approved .205 policy-surface baseline; peer verified ZIP SHA-256 against release receipt. Published .205 ZIP bytes were unavailable for direct comparison.",
@@ -85,7 +85,7 @@
     "screenshots": "Keep Swipe Save, Scrape Capture, and SEO audit out of reviewer steps and screenshots until exact 0.2.522 native behavior on the reviewer demo page is verified. Check the four existing guest screenshots against exact candidate UI before reuse.",
     "basis": "src/config/sidepanel-visibility.ts exposes Swipe file only after sign-in; src/lib/swipe-file/save.ts sends a supported chosen URL to ingestPost and adds it to a selected collection; src/lib/config/reporting.ts reports bounded key-read metadata. Live privacy policy and demo page returned HTTP 200 on October 17."
   },
-  "next_action": "Read exact .522 B 39057016053 and A 39057139939 sanitized artifacts: valid resource finals, stable deployed SHA before/after, exact package/runtime identity, real first and follow-up terminal replies, grounded guest content, non-admin role and signed-in tabs. Obtain independent product peer on both. Keep reviewer demo Capture/SEO omitted. Verify primary dashboard current revision/status through permitted access before upload, preserving any pending revision.",
+  "next_action": "Diagnose exact .522 B 39057768241 no-send boundary using sanitized click/POST/composer screenshot and resource evidence; do not blind retry. Read bounded A 39058586019 terminal artifact and verify non-admin role, actual Chat first/follow-up terminal replies, resource validity and stable deployed SHA. Obtain independent product peer on any passing native run. Verify primary dashboard current revision/status through permitted access before upload, preserving any pending revision. Member A current driver verifies only the first turn; add and independently review a strict follow-up terminal assertion before acceptance retest.",
   "workspace_duplicate_archive": {
     "source": "docs/stabilization/resource-journals/settings-nav-preflight-20261017-01.jsonl",
     "archived_at": "node_modules/.cache/store-release-20261017/settings-journal-duplicate/settings-nav-preflight-20261017-01.jsonl",
@@ -99,22 +99,34 @@
     "reason": "Synchronized pnpm-lock refresh changed @ai-matrx/chat 0.8.160 to 0.8.161 after the .521 package. Changelog and source diff show a metadata/docs-only republish with no consumer action, but immutable emitted dependency identity changed, requiring exact .522 release and acceptance. Its B no-POST run also crossed a live server rollout; no release credit."
   },
   "current_guest_retry": {
-    "run_id": 39057016053,
-    "workflow_sha": "4da74deae1e7977bfa0214e155bcd29dabf8e732",
+    "run_id": 39057768241,
+    "workflow_sha": "ff1b3f52b03c4e030ce1ec6e9974d211a76fe219",
     "release_run_id": 39056398246,
-    "server_sha_at_dispatch": "94d5ef51313e436dab9c203c61252528c6490c4a",
-    "status": "in_progress",
-    "product_credit": false
+    "artifact_id": 12110318289,
+    "server_sha_before": "04864368c09a88347c1d4fc9b5f02f7af34bc717",
+    "server_sha_after": "04864368c09a88347c1d4fc9b5f02f7af34bc717",
+    "status": "failure",
+    "failure_code": "opening_guest_ai_transport_unobserved",
+    "composer_length_after_click": 139,
+    "click_events": 1,
+    "post_events": 0,
+    "user_message_count": 0,
+    "assistant_reply_count": 0,
+    "resource_package_final": "valid",
+    "resource_browser_final": "valid",
+    "resource_guest_final": "child_failed; resourceInvalid=false",
+    "product_credit": false,
+    "diagnosis": "No-send at UI/click boundary; product-versus-driver cause unresolved."
   },
   "current_member_diagnostic": {
-    "run_id": 39057139939,
-    "workflow_sha": "4da74deae1e7977bfa0214e155bcd29dabf8e732",
+    "run_id": 39058586019,
+    "workflow_sha": "1a458a4a7a1137350f4eccc10bb63758a5b5244f",
     "release_run_id": 39056398246,
-    "server_sha_at_dispatch": "94d5ef51313e436dab9c203c61252528c6490c4a",
-    "auth_preflight_passed": true,
-    "temporary_secret_cleanup_verified": true,
+    "server_sha_at_dispatch": "04864368c09a88347c1d4fc9b5f02f7af34bc717",
     "status": "in_progress",
-    "product_credit": false
+    "product_credit": false,
+    "fixture_repair": "Designated reviewer now has exactly one usable active organization, role member; browser/RLS/Chat proof pending.",
+    "acceptance_limit": "Current member driver lacks same-conversation follow-up terminal assertion; first-turn success alone is diagnostic and needs reviewed harness retest."
   },
   "exact_zip_peer": {
     "report": "docs/stabilization/reports/store-0522-blue-argon-peer-20261017.json",
