@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-17T23:50:00Z",
+  "observed_at": "2026-10-17T23:55:37Z",
   "scope": "Primary Chrome Web Store item hnfolienncfklkgmdjjmhhegglimlamg",
-  "status": "validated_0528_zip_stale_after_runtime_lock_drift_guest_diagnostic_member_refused_dashboard_mail_unknown",
+  "status": "validated_0528_zip_stale_guest_zero_credit_member_refused_dashboard_mail_unknown",
   "official_email": {
     "account": "publisher mailbox arman@armansadeghi.com",
     "search": "from:chromewebstore-noreply@google.com after:2026/10/11",
@@ -47,11 +47,11 @@
     "fresh_ci_run": 39079090871,
     "fresh_ci_status_at_observation": "Pre-release bba999aec exact CI 39079090871 passed both jobs. Full hosted release 39079670382 passed all strict gates after aidream a42c0fd deploy stabilized records registry and three independent strict drift checks. Post-tag origin/main 065312d changes only pnpm-lock.yaml but replaces @ai-matrx/chat 0.8.172 with 0.8.173 and @ai-matrx/records-ui 0.116.11 with 0.116.12; therefore .528 ZIP is not exact-current package source.",
     "risk_scan_on_new_exact_candidate": "Hosted .528 Store package/risk gates passed. Independent exact-ZIP peer PASS for rejection-specific Blue Argon and integrity, with bounded static limits (docs/stabilization/reports/store-0528-blue-argon-peer-20261017.json, e918e36ec). No rejected PDFObject CDN URL or remote executable loader found in exact ZIP; manifest policy fields match .205 baseline. The result does not transfer to a new ZIP after material lock drift.",
-    "guest_and_non_admin_acceptance_on_new_exact_candidate": "Guarded .528 guest B run 39080150139 dispatched from frozen 0332db8 source; still in progress, diagnostic only after lock drift. Member A normal plan refused HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED before browser, no run ID; one-use credential/link removed. No native acceptance credit.",
+    "guest_and_non_admin_acceptance_on_new_exact_candidate": "Guarded .528 guest B run 39080150139 failed opening real guest send with valid package/browser/guest resources and stable aidream a42 server. Trusted connected Send click bubbled; 139-character draft remained, phase idle, no user message, chat POST or assistant reply. Product-versus-harness cause is not established; zero acceptance credit. Member A normal plan refused HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED before browser/run ID; one-use credential/link removed.",
     "cost_model_weekly_billed_usd": 55.97,
     "cost_model_ceiling_usd": 100,
     "cost_model_status": "pass",
-    "release_decision": "0.2.528 hosted package succeeded and was never uploaded. The post-tag Chat and Records UI lockfile updates make it stale for Store submission. Hold next guarded release until .528 guest B result is classified; then exact-current CI/release and fresh guest/member native acceptance. Authenticated dashboard and new Gmail notice remain unknown.",
+    "release_decision": "0.2.528 hosted ZIP passed gates and independent bounded static Blue Argon/integrity review, but post-tag Chat and Records UI lock changes make it stale for Store submission. Resource-valid guest B failed before transport with no terminal answer, and member A did not dispatch. Hold next guarded release for reviewed canonical guest-send diagnosis/fix, then package exact-current source and rerun guest/member acceptance. Authenticated dashboard and new Gmail notice remain unknown.",
     "latest_hosted_release_artifact_id": 12118411986,
     "release_tag": "v0.2.528",
     "store_zip_sha256": "1210ef8ed318836dfddf5ce6cb1277ee4f5591227db21ffa702ffa029f72baa2",
@@ -88,7 +88,7 @@
     "screenshots": "Keep Swipe Save, Scrape Capture, and SEO audit out of reviewer steps and screenshots until exact current candidate native behavior on the reviewer demo page is verified. Check the four existing guest screenshots against exact candidate UI before reuse.",
     "basis": "src/config/sidepanel-visibility.ts exposes Swipe file only after sign-in; src/lib/swipe-file/save.ts sends a supported chosen URL to ingestPost and adds it to a selected collection; src/lib/config/reporting.ts reports bounded key-read metadata. Live privacy policy and demo page returned HTTP 200 on October 17."
   },
-  "next_action": "Classify guarded .528 guest B diagnostic run 39080150139. The exact-current lock replaces Chat .172→.173 and Records UI .11→.12; check package consumer actions, exact-head CI and guarded next release after any guest product fix. Require exact new ZIP risk/independent peer, guest first/follow-up/reload and non-admin member first/follow-up acceptance, and permitted fresh private Store/Gmail status before upload.",
+  "next_action": "Complete independently reviewed canonical @ai-matrx/chat guest-send diagnosis/fix and same-session package publish/adoption if proven. Then exact-current CI, guarded hosted next release, independent exact-ZIP Blue Argon scan, and native resource-valid guest first/follow-up/reload plus non-admin member first/follow-up terminal acceptance with stable deployed SHA. Verify current authenticated publisher Gmail/dashboard via permitted access before any Store upload; current private state remains unknown.",
   "workspace_duplicate_archive": {
     "source": "docs/stabilization/resource-journals/settings-nav-preflight-20261017-01.jsonl",
     "archived_at": "node_modules/.cache/store-release-20261017/settings-journal-duplicate/settings-nav-preflight-20261017-01.jsonl",
@@ -159,11 +159,12 @@
     "manifest_key_present": false,
     "hosted_risk_gate": "pass",
     "independent_zip_peer": "pass_with_limits_static_rejection_specific_integrity_e918e36ec",
-    "native_guest_acceptance": "guarded_run_39080150139_in_progress_diagnostic_only",
+    "native_guest_acceptance": "run_39080150139_failure_zero_credit_resource_valid_pre_transport_no_send",
     "native_member_acceptance": "normal_plan_refused_source_drift_no_dispatch",
     "store_upload": "not_attempted",
     "submission_eligible": false,
-    "independent_zip_peer_report": "docs/stabilization/reports/store-0528-blue-argon-peer-20261017.json"
+    "independent_zip_peer_report": "docs/stabilization/reports/store-0528-blue-argon-peer-20261017.json",
+    "native_guest_receipt": "docs/stabilization/runs/guest-chat-v0528-run39080150139.json"
   },
   "superseded_0523_candidate": {
     "version": "0.2.523",
@@ -208,7 +209,7 @@
     "version": "0.2.528",
     "release_run": 39079670382,
     "source_sha": "0332db8b0b39dacff5b4503d3249807f9ae90913",
-    "reason": "Origin/main 065312d updated pnpm-lock package identity after tag: Chat 0.8.172→0.8.173 and Records UI 0.116.11→0.116.12. Member A strict plan refused before dispatch; guest B remains diagnostic."
+    "reason": "Origin/main 065312d updated pnpm-lock package identity after tag: Chat 0.8.172→0.8.173 and Records UI 0.116.11→0.116.12. Member A strict plan refused before dispatch. Guest B 39080150139 failed first send with valid resources and stable server, no POST/assistant, zero acceptance credit; cause under diagnosis."
   },
   "post_0528_lock_delta": {
     "remote_main": "065312d045f51f68fa29dbda256dc03c9fc697d5",
