@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import test from 'node:test';
+import { Window } from 'happy-dom';
 
 const source = await readFile(
   new URL('./guest-chat-store-acceptance.mjs', import.meta.url),
@@ -19,6 +20,126 @@ const followupVerdict = source.indexOf("'new guest conversation after reload mus
 const followupScreenshot = source.indexOf('        report.followup_screenshot = await capture(');
 const cleanup = source.indexOf('      } catch (error) {', followupScreenshot);
 const tail = source.slice(followupScreenshot, cleanup);
+
+// A native send dispatch can return successfully while no click reaches the
+// package button. The boundary must retain that difference without message text.
+test('guest send boundary distinguishes a reached button from a missed native click', async () => {
+  const body = source.slice(
+    source.indexOf('async function installGuestSendClickProbe('),
+    source.indexOf('async function submitQuestion('),
+  );
+  assert.ok(body.startsWith('async function installGuestSendClickProbe('));
+  const install = new Function('evaluate', `${body}; return installGuestSendClickProbe;`);
+  for (const shouldClick of [true, false]) {
+    const window = new Window();
+    window.document.body.innerHTML =
+      '<button role="tab" title="Chat" aria-controls="chat"></button><div id="chat" data-state="active"><textarea></textarea><button aria-label="Send message"></button></div>';
+    const pane = window.document.getElementById('chat');
+    const button = pane.querySelector('button');
+    pane.querySelector('textarea').value = 'Read the current page.';
+    const probe = install(async (_panel, expression) => window.eval(expression));
+    assert.deepEqual(JSON.parse(JSON.stringify(await probe({}))), {
+      installed: true,
+      beforeClick: { clickEvents: 0, composerLength: 22, userMessageCount: 0, sendEnabled: true },
+    });
+    button.addEventListener('click', () => {
+      pane.querySelector('textarea').value = '';
+      pane.insertAdjacentHTML(
+        'beforeend',
+        '<article role="article" aria-label="Your message"></article>',
+      );
+    });
+    if (shouldClick) button.click();
+    const result = await window.eval('window.__guestChatSendClickProbe.stop()');
+    assert.deepEqual(JSON.parse(JSON.stringify(result)), {
+      clickEvents: shouldClick ? 1 : 0,
+      composerLength: shouldClick ? 0 : 22,
+      userMessageCount: shouldClick ? 1 : 0,
+      sendEnabled: true,
+    });
+    await window.happyDOM.abort();
+  }
+});
+
+test('guest send records native dispatch phases and reached-button outcome before answer wait', async () => {
+  const body = source.slice(
+    source.indexOf('async function submitQuestion('),
+    source.indexOf('async function requireActiveFixtureTab('),
+  );
+  for (const reachedButton of [true, false]) {
+    const report = { composer_input_boundaries: [] };
+    let dispatched = false;
+    const submit = new Function(
+      'assert',
+      'evaluate',
+      'installGuestComposerProbe',
+      'guestComposerSnapshot',
+      'waitFor',
+      'observe',
+      'installGuestSendClickProbe',
+      'click',
+      'report',
+      `${body}; return submitQuestion;`,
+    )(
+      assert,
+      async (_panel, expression) => {
+        if (expression.includes('textarea?.focus()')) return true;
+        if (expression.includes('__guestChatSendClickProbe?.stop()'))
+          return {
+            clickEvents: dispatched && reachedButton ? 1 : 0,
+            composerLength: 139,
+            userMessageCount: 0,
+            sendEnabled: true,
+          };
+        return null;
+      },
+      async () => ({ currentValueLength: 0 }),
+      async () => ({ currentValueLength: 139, sendEnabled: true }),
+      async (_stage, read, accepts) => assert.equal(accepts(await read()), true),
+      async () => ({ sendEnabled: true }),
+      async () => ({
+        installed: true,
+        beforeClick: {
+          clickEvents: 0,
+          composerLength: 139,
+          userMessageCount: 0,
+          sendEnabled: true,
+        },
+      }),
+      async (_panel, kind, label, onPhase) => {
+        assert.equal(kind, 'chat-send');
+        assert.equal(label, '');
+        onPhase('press_attempted');
+        onPhase('press_returned');
+        onPhase('release_attempted');
+        onPhase('release_returned');
+        dispatched = true;
+      },
+      report,
+    );
+    await submit(
+      { send: async () => ({}) },
+      'Read the current page.',
+      'opening_question',
+      'package',
+    );
+    assert.deepEqual(report.composer_input_boundaries[0].click, {
+      phases: ['press_attempted', 'press_returned', 'release_attempted', 'release_returned'],
+      beforeClick: {
+        clickEvents: 0,
+        composerLength: 139,
+        userMessageCount: 0,
+        sendEnabled: true,
+      },
+      afterClick: {
+        clickEvents: reachedButton ? 1 : 0,
+        composerLength: 139,
+        userMessageCount: 0,
+        sendEnabled: true,
+      },
+    });
+  }
+});
 
 test('guest acceptance requires all three mode-aware HTTP observations before transport proof', () => {
   const proofFor = (attempt) =>

@@ -554,6 +554,42 @@ async function guestComposerSnapshot(panel) {
   return evaluate(panel, 'window.__guestChatComposerProbe?.snapshot() ?? null');
 }
 
+async function installGuestSendClickProbe(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      window.__guestChatSendClickProbe?.stop();
+      const chat = document.querySelector('button[role="tab"][title="Chat"]');
+      const pane = document.getElementById(chat?.getAttribute('aria-controls') ?? '');
+      const send = pane?.getAttribute('data-state') === 'active'
+        ? [...pane.querySelectorAll('button[aria-label="Send message"]')]
+        : [];
+      if (send.length !== 1) return { installed: false };
+      let clickEvents = 0;
+      const listener = (event) => {
+        if (event.target === send[0] || send[0].contains(event.target)) clickEvents += 1;
+      };
+      document.addEventListener('click', listener, true);
+      const snapshot = () => {
+        const composer = pane.querySelector('textarea');
+        return {
+          clickEvents,
+          composerLength: composer?.value?.length ?? 0,
+          userMessageCount: pane.querySelectorAll('[role="article"][aria-label="Your message"]').length,
+          sendEnabled: !send[0].disabled && send[0].getAttribute('aria-disabled') !== 'true',
+        };
+      };
+      window.__guestChatSendClickProbe = {
+        stop: () => {
+          document.removeEventListener('click', listener, true);
+          return snapshot();
+        },
+      };
+      return { installed: true, beforeClick: snapshot() };
+    })()`,
+  );
+}
+
 async function submitQuestion(panel, question, label, mode) {
   const boundary = mode === 'package' ? { attempt: label } : null;
   let phase = 'focus';
@@ -599,7 +635,14 @@ async function submitQuestion(panel, question, label, mode) {
     );
     if (boundary) boundary.wait = { outcome: 'send_ready', snapshot: await snapshot() };
     phase = 'click';
-    await click(panel, 'chat-send', '');
+    if (boundary) {
+      const installed = await installGuestSendClickProbe(panel);
+      assert.equal(installed?.installed, true, `${label} send click probe must attach`);
+      boundary.click = { phases: [], beforeClick: installed.beforeClick, afterClick: null };
+    }
+    await click(panel, 'chat-send', '', (step) => {
+      if (boundary) boundary.click.phases.push(step);
+    });
   } catch (error) {
     if (boundary && !boundary.wait)
       boundary.wait = {
@@ -609,6 +652,11 @@ async function submitQuestion(panel, question, label, mode) {
     throw error;
   } finally {
     if (boundary) {
+      if (boundary.click)
+        boundary.click.afterClick = await evaluate(
+          panel,
+          'window.__guestChatSendClickProbe?.stop() ?? null',
+        ).catch(() => null);
       await evaluate(panel, 'window.__guestChatComposerProbe?.stop()').catch(() => {});
     }
   }
