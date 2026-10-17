@@ -1620,12 +1620,18 @@ if (process.argv[1].endsWith('/git')) {
     const plan = execute('plan-startup-diagnostic');
     assert.equal(plan.status, 0, plan.stderr);
     assert.equal(JSON.parse(plan.stdout).verdict, 'DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE');
+    const headlessPlan = execute(
+      'plan-startup-diagnostic',
+      {},
+      { '--startup-display-mode': 'headless' },
+    );
+    assert.equal(headlessPlan.status, 0, 'explicit headless diagnostic is unreachable');
     assert.throws(() => readFileSync(log), /ENOENT/, 'planning dispatched a browser job');
     for (const [state, change, reason] of [
       [{}, { '--lane': 'B' }, 'HOSTED_STARTUP_LANE_REFUSED'],
       [{}, { '--case': 'member-chat' }, 'HOSTED_STARTUP_CASE_REFUSED'],
       [{}, { '--runner-label': 'macos-15' }, 'HOSTED_STARTUP_RUNNER_REFUSED'],
-      [{}, { '--startup-display-mode': 'headless' }, 'HOSTED_ARGUMENT_INVALID'],
+      [{}, { '--startup-display-mode': 'notes-cdp' }, 'HOSTED_STARTUP_DISPLAY_MODE_REFUSED'],
       [{}, { '--release-run-id': '39063179335' }, 'HOSTED_ARGUMENT_INVALID'],
       [{}, { '--source-sha': 'invalid' }, 'HOSTED_SOURCE_SHA_INVALID'],
       [{}, { '--development-artifact-id': '0' }, 'HOSTED_ARTIFACT_ID_INVALID'],
@@ -1655,8 +1661,17 @@ if (process.argv[1].endsWith('/git')) {
       assert.match(result.stderr, new RegExp(reason));
       assert.throws(() => readFileSync(log), /ENOENT/, `${reason} was bypassed with dispatch`);
     }
-    for (const runs of [[], [{ name: 'Native B · guest-chat', status: 'in_progress' }]]) {
-      const result = execute('dispatch-startup-diagnostic', { runs });
+    for (const [runs, displayMode] of [
+      [[], undefined],
+      [[], 'headed'],
+      [[], 'headless'],
+      [[{ name: 'Native B · guest-chat', status: 'in_progress' }], 'headless'],
+    ]) {
+      const result = execute(
+        'dispatch-startup-diagnostic',
+        { runs },
+        displayMode ? { '--startup-display-mode': displayMode } : {},
+      );
       assert.equal(result.status, 0, result.stderr);
       assert.doesNotThrow(() => readFileSync(log), 'admitted startup diagnostic never dispatched');
       assert.deepEqual(JSON.parse(readFileSync(log)), [
@@ -1665,7 +1680,13 @@ if (process.argv[1].endsWith('/git')) {
         'hosted-guest-acceptance.yml',
         '--ref',
         'main',
-        ...fields.flatMap((field) => ['-f', field]),
+        ...fields
+          .map((field) =>
+            field === 'startup_display_mode=headed' && displayMode === 'headless'
+              ? 'startup_display_mode=headless'
+              : field,
+          )
+          .flatMap((field) => ['-f', field]),
         '-R',
         'armanisadeghi/matrx-extend',
       ]);

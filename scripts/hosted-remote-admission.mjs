@@ -380,7 +380,14 @@ export function planHostedMemberData({
 }
 
 /** D231: diagnostic only, using the existing guarded startup phase without authentication. */
-export function planHostedStartupDiagnostic({ lane, acceptanceCase, runnerLabel, ...input }) {
+export function planHostedStartupDiagnostic({
+  lane,
+  acceptanceCase,
+  runnerLabel,
+  displayMode = 'headed',
+  ...input
+}) {
+  if (!['headed', 'headless'].includes(displayMode)) refuse('HOSTED_STARTUP_DISPLAY_MODE_REFUSED');
   if (lane !== 'A') refuse('HOSTED_STARTUP_LANE_REFUSED');
   if (acceptanceCase !== 'startup-resource-diagnostic') refuse('HOSTED_STARTUP_CASE_REFUSED');
   if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_STARTUP_RUNNER_REFUSED');
@@ -400,7 +407,7 @@ export function planHostedStartupDiagnostic({ lane, acceptanceCase, runnerLabel,
         `requested_by=${DISPATCH_REQUESTER}`,
         'scrape_auth_mode=guest',
         'runner_label=macos-15-intel',
-        'startup_display_mode=headed',
+        `startup_display_mode=${displayMode}`,
         `development_run_id=${input.developmentRunId}`,
         `development_artifact_id=${input.developmentArtifactId}`,
       ].flatMap((field) => ['-f', field]),
@@ -431,6 +438,7 @@ function startupDiagnosticCli(mode, args) {
         '--lane',
         '--case',
         '--runner-label',
+        '--startup-display-mode',
         '--development-run-id',
         '--development-artifact-id',
         '--source-sha',
@@ -442,6 +450,7 @@ function startupDiagnosticCli(mode, args) {
     lane: args.get('--lane'),
     acceptanceCase: args.get('--case'),
     runnerLabel: args.get('--runner-label'),
+    displayMode: args.get('--startup-display-mode') ?? 'headed',
     sourceSha,
     developmentRunId: args.get('--development-run-id'),
     developmentArtifactId: args.get('--development-artifact-id'),
