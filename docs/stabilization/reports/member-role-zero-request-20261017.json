@@ -1,0 +1,52 @@
+{
+  "status": "diagnostic-repair-ready-for-independent-review; original native failure unresolved",
+  "owner": "member_role_zero_request_escalation",
+  "run_id": "39054156869",
+  "release_run_id": "39053548400",
+  "artifact_id": "12108945607",
+  "version": "0.2.521",
+  "product_source": "f5a2d49c",
+  "observed": {
+    "resource_final": "valid",
+    "extension_identity_observed": true,
+    "failure_stage": "extension_canonical_role_verify",
+    "failure_code": "reviewer_canonical_role_unverified",
+    "matched_role_requests": 0
+  },
+  "confirmed_cause": "Evidence loss in the harness: only exact-match admin queries were counted; role verification failure did not retain final panel/storage observations or a failure-time screenshot. A zero count cannot distinguish a pre-fetch bootstrap failure from a filtered network request.",
+  "ruled_out": [
+    "Exact Store ZIP database origin matches the observer origin.",
+    "Exact Store ZIP checkIsAdmin uses admins, select=user_id, user_id equality and limit=1, matching the observer shape.",
+    "Native target session event forwarding retains CDP session identity."
+  ],
+  "hypotheses": [
+    {
+      "cause": "Organization bootstrap refuses or stalls before the role fetch",
+      "prediction": "Same-package run shows membership, organization or account-choice failed/pending boundary and no role boundary.",
+      "test": "Read allowlisted boundary summary and final organization loading boolean."
+    },
+    {
+      "cause": "Role request emitted but filtered by observer",
+      "prediction": "Role mismatch category is nonzero.",
+      "test": "Read role origin/method/schema/selection/user_filter counters; do not relax acceptance."
+    },
+    {
+      "cause": "Panel network observation or execution becomes unavailable",
+      "prediction": "No request evidence and unavailable final panel/storage categories.",
+      "test": "Read total request count and bounded final observations."
+    }
+  ],
+  "change": "Allowlisted aggregate network boundary/status/outcome and mismatch categories plus bounded final panel/storage observations and screenshot on role failure. Acceptance predicate and real role-response requirement remain unchanged.",
+  "verification": {
+    "red": "Both new diagnostic assertions failed on old implementation (8 existing tests passed).",
+    "green": "10 focused node tests passed, including actual caller orchestration and unchanged zero-row success/nonzero-row refusal.",
+    "mutation": "plant.py killed constant network snapshot, constant final-state recorder, and forced HTTP 200 mutations; all restored.",
+    "compile": "Failed in untouched product files due to missing installed @ai-matrx package entrypoints/types; no product TypeScript edited.",
+    "native": "Not run; no product pass or release claim."
+  },
+  "next_owner": "Root stabilization owner assigns independent peer, then guarded lane A on the same exact .521 artifact with this diagnostic harness.",
+  "limits": [
+    "No product root cause established from retained evidence.",
+    "No heavy/browser job launched; no Store action; no credentials copied."
+  ]
+}

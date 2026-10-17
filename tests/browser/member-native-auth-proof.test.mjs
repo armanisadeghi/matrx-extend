@@ -22,6 +22,7 @@ function panelWithRows(rows, userId = USER) {
   };
   return {
     panel,
+    emitter,
     emit() {
       emitter.emit('Network.requestWillBeSent', {
         requestId: 'owned-admin-read',
@@ -101,6 +102,12 @@ test('role proof failure after identity success is classified separately with sa
       web_signed_in: true,
       extension_identity_observed: true,
       canonical_role_observation: expected,
+      canonical_role_network: {
+        total_requests: emit ? 1 : 0,
+        database_requests: emit ? 1 : 0,
+        role_mismatches: {},
+        boundaries: emit ? [{ boundary: 'role', status: 200, outcome: 'complete', count: 1 }] : [],
+      },
     });
     assert.equal(JSON.stringify(report).includes(USER), false);
     await proof.stop();
@@ -148,7 +155,10 @@ test('actual reviewer orchestration preserves identity success when canonical ro
     'adminCheck',
     'report',
     'webIdentity',
-    `let stage; let canonicalAdminCheck;
+    'accountObservation',
+    'storedSessionShape',
+    'capture',
+    `const panel = {}; const email = 'opaque'; const artifacts = {}; let stage; let canonicalAdminCheck;
      try { ${source.slice(start, end)} }
      catch (error) { return { stage, code: error.message }; }
      return { stage, result: canonicalAdminCheck };`,
@@ -159,9 +169,18 @@ test('actual reviewer orchestration preserves identity success when canonical ro
   const report = { account: { web_signed_in: true } };
   // Identity's prior gate has succeeded. The real role observer gets no request,
   // reproducing the later failure that the old caller mislabeled as identity.
-  const outcome = await execute(async () => ({}), verifyReviewerRole, proof, report, {
-    userId: USER,
-  });
+  const outcome = await execute(
+    async () => ({}),
+    verifyReviewerRole,
+    proof,
+    report,
+    {
+      userId: USER,
+    },
+    async () => ({ organizationLoading: true }),
+    async () => ({ profilePresent: true }),
+    async () => '/tmp/role.png',
+  );
   assert.deepEqual(outcome, {
     stage: 'extension_canonical_role_verify',
     code: 'reviewer_canonical_role_unverified',
@@ -170,6 +189,65 @@ test('actual reviewer orchestration preserves identity success when canonical ro
     web_signed_in: true,
     extension_identity_observed: true,
     canonical_role_observation: { observed_request_count: 0, current_user_requests: [] },
+    canonical_role_network: {
+      total_requests: 0,
+      database_requests: 0,
+      role_mismatches: {},
+      boundaries: [],
+    },
+    timeout_observation: { organizationLoading: true },
+    storage_shape: { profilePresent: true },
+  });
+  assert.deepEqual(report.screenshots, {
+    timeout_panel: '/tmp/role.png',
+    timeout_panel_status: 'captured',
   });
   await proof.stop();
+});
+
+// A member signs in on the native panel, but organization bootstrap can refuse
+// before the role request or a mismatched role request can escape the oracle.
+test('role diagnostics separate pre-fetch bootstrap refusal from filtered role requests', async () => {
+  const candidate = panelWithRows([]);
+  const proof = observeCanonicalAdminCheck(candidate.panel, ORIGIN, 1);
+  await proof.start();
+  const request = (id, path, headers = {}) =>
+    candidate.emitter.emit('Network.requestWillBeSent', {
+      requestId: id,
+      request: { url: `${ORIGIN}${path}`, method: 'GET', headers },
+    });
+  request('bootstrap', '/rest/v1/rpc/mbr_for_user?private=secret');
+  candidate.emitter.emit('Network.responseReceived', {
+    requestId: 'bootstrap',
+    response: { status: 403 },
+  });
+  candidate.emitter.emit('Network.loadingFinished', { requestId: 'bootstrap' });
+  request('role', `/rest/v1/admins?select=user_id&user_id=eq.${USER}`, {
+    'Accept-Profile': 'public',
+    Authorization: 'private-secret',
+  });
+  assert.deepEqual(proof.networkSnapshot?.(), {
+    total_requests: 2,
+    database_requests: 2,
+    role_mismatches: { schema: 1 },
+    boundaries: [
+      { boundary: 'memberships', status: 403, outcome: 'complete', count: 1 },
+      { boundary: 'role', status: null, outcome: 'pending', count: 1 },
+    ],
+  });
+  await assert.rejects(proof.verify(USER));
+  assert.equal(JSON.stringify(proof.networkSnapshot()).includes('secret'), false);
+  await proof.stop();
+  const good = panelWithRows([]);
+  const observed = observeCanonicalAdminCheck(good.panel, ORIGIN, 200);
+  await observed.start();
+  good.emit();
+  await observed.verify(USER);
+  assert.deepEqual(observed.networkSnapshot(), {
+    total_requests: 1,
+    database_requests: 1,
+    role_mismatches: {},
+    boundaries: [{ boundary: 'role', status: 200, outcome: 'complete', count: 1 }],
+  });
+  await observed.stop();
 });

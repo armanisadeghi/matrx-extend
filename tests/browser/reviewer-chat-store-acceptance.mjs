@@ -1279,6 +1279,11 @@ try {
             },
             adminCheck,
             userId: webIdentity.userId,
+            failureObservations: {
+              observeAccount: () => accountObservation(panel, email),
+              observeStorage: () => storedSessionShape(panel),
+              captureScreenshot: () => capture(panel, artifacts, 'reviewer-role-timeout'),
+            },
           });
         } finally {
           await adminCheck.stop();
