@@ -9,6 +9,7 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import {
   classifyGuestTurn,
   classifyPackageGuestTurn,
+  createGuestComposerProbe,
   createGuestStreamCollector,
 } from './guest-chat-completion-oracle.mjs';
 import {
@@ -110,6 +111,7 @@ const report = {
   guest_ai_requests: [],
   guest_ai_observer: null,
   guest_ai_transport_proven: false,
+  composer_input_boundaries: [],
   context_rule_reads: [],
   grounding_diagnostics: {},
 };
@@ -526,26 +528,90 @@ async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId
   }
 }
 
-async function submitQuestion(panel, question, label) {
-  const focused = await evaluate(
+async function installGuestComposerProbe(panel) {
+  return evaluate(
     panel,
     `(() => {
+      window.__guestChatComposerProbe?.stop();
+      const makeProbe = (${createGuestComposerProbe.toString()});
+      const readControls = (${readPackageChatControls.toString()});
+      const pane = () => {
+        const chat = document.querySelector('button[role="tab"][title="Chat"]');
+        const current = document.getElementById(chat?.getAttribute('aria-controls') ?? '');
+        return current?.getAttribute('data-state') === 'active' ? current : null;
+      };
+      window.__guestChatComposerProbe = makeProbe({
+        findComposer: () => pane()?.querySelector('textarea') ?? null,
+        activeElement: () => document.activeElement,
+        sendEnabled: () => readControls(pane()).sendEnabled,
+      });
+      return window.__guestChatComposerProbe.snapshot();
+    })()`,
+  );
+}
+
+async function guestComposerSnapshot(panel) {
+  return evaluate(panel, 'window.__guestChatComposerProbe?.snapshot() ?? null');
+}
+
+async function submitQuestion(panel, question, label, mode) {
+  const boundary = mode === 'package' ? { attempt: label } : null;
+  let phase = 'focus';
+  if (boundary) report.composer_input_boundaries.push(boundary);
+  const snapshot = async () => {
+    if (!boundary) return;
+    try {
+      return await guestComposerSnapshot(panel);
+    } catch {
+      boundary.probe_failure = 'snapshot_unavailable';
+      return null;
+    }
+  };
+  if (boundary) {
+    try {
+      boundary.before_focus = await installGuestComposerProbe(panel);
+    } catch {
+      boundary.probe_failure = 'install_unavailable';
+    }
+  }
+  try {
+    const focused = await evaluate(
+      panel,
+      `(() => {
       const chat = document.querySelector('button[role="tab"][title="Chat"]');
       const pane = document.getElementById(chat?.getAttribute('aria-controls') ?? '');
       const textarea = pane?.querySelector('textarea');
       textarea?.focus();
       return textarea !== null && document.activeElement === textarea;
     })()`,
-  );
-  assert.equal(focused, true, `${label} guest Chat composer must focus`);
-  await panel.send('Input.insertText', { text: question });
-  await waitFor(
-    `${label}_send_ready`,
-    () => observe(panel),
-    (state) => state?.sendEnabled,
-    10_000,
-  );
-  await click(panel, 'chat-send', '');
+    );
+    if (boundary) boundary.after_focus = await snapshot();
+    assert.equal(focused, true, `${label} guest Chat composer must focus`);
+    phase = 'insert';
+    await panel.send('Input.insertText', { text: question });
+    if (boundary) boundary.after_insert = await snapshot();
+    phase = 'send_ready_wait';
+    await waitFor(
+      `${label}_send_ready`,
+      () => observe(panel),
+      (state) => state?.sendEnabled,
+      10_000,
+    );
+    if (boundary) boundary.wait = { outcome: 'send_ready', snapshot: await snapshot() };
+    phase = 'click';
+    await click(panel, 'chat-send', '');
+  } catch (error) {
+    if (boundary && !boundary.wait)
+      boundary.wait = {
+        outcome: phase === 'send_ready_wait' ? 'send_not_ready' : `${phase}_failed`,
+        snapshot: await snapshot(),
+      };
+    throw error;
+  } finally {
+    if (boundary) {
+      await evaluate(panel, 'window.__guestChatComposerProbe?.stop()').catch(() => {});
+    }
+  }
 }
 
 async function requireActiveFixtureTab(attachWorker, page, fixture) {
@@ -763,7 +829,7 @@ try {
         const openingBoundary = await guestTurnBoundary(panel, transportMode);
         networkWatch.arm('opening');
         contextReadWatch.arm('opening_send');
-        await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
+        await submitQuestion(panel, FIRST_QUESTION, 'opening_question', transportMode);
 
         markStage('real_guest_answer');
         const openingTurn = await waitForTerminalAnswer(
@@ -824,7 +890,12 @@ try {
         const sameConversationBoundary = await guestTurnBoundary(panel, transportMode);
         networkWatch.arm('same_conversation_followup');
         contextReadWatch.arm('same_conversation_followup_send');
-        await submitQuestion(panel, FOLLOWUP_QUESTION, 'same_conversation_followup_question');
+        await submitQuestion(
+          panel,
+          FOLLOWUP_QUESTION,
+          'same_conversation_followup_question',
+          transportMode,
+        );
         markStage('real_same_conversation_followup_answer');
         const sameTurn = await waitForTerminalAnswer(
           panel,
@@ -927,7 +998,7 @@ try {
         );
         await installStreamTrace(panel, fixture, followupFixtureTabId);
         const postReloadBoundary = await guestTurnBoundary(panel, transportMode);
-        await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question');
+        await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question', transportMode);
 
         markStage('real_guest_followup_answer');
         const followupTurn = await waitForTerminalAnswer(

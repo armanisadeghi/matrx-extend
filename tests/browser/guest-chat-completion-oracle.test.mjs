@@ -3,8 +3,65 @@ import test from 'node:test';
 import {
   classifyGuestTurn,
   classifyPackageGuestTurn,
+  createGuestComposerProbe,
   createGuestStreamCollector,
 } from './guest-chat-completion-oracle.mjs';
+
+// Break caught: CDP text insertion can lose focus, emit an input event that
+// React later clears, or leave a nonempty composer with Send still disabled.
+test('composer probe distinguishes focus loss, cleared input, and disabled send without text', () => {
+  const composer = new EventTarget();
+  composer.isConnected = true;
+  composer.value = '';
+  let focused = composer;
+  let enabled = false;
+  let current = composer;
+  const probe = createGuestComposerProbe({
+    findComposer: () => current,
+    activeElement: () => focused,
+    sendEnabled: () => enabled,
+  });
+  assert.deepEqual(probe.snapshot(), {
+    observedNodePresent: true,
+    observedNodeConnected: true,
+    currentNodePresent: true,
+    currentNodeSame: true,
+    currentNodeConnected: true,
+    currentNodeFocused: true,
+    currentValueLength: 0,
+    inputEvents: 0,
+    changeEvents: 0,
+    sendEnabled: false,
+  });
+  focused = null;
+  assert.equal(probe.snapshot().currentNodeFocused, false);
+  assert.equal(probe.snapshot().inputEvents, 0);
+  composer.value = 'Capture Understand Use';
+  composer.dispatchEvent(new Event('input'));
+  composer.value = '';
+  const cleared = probe.snapshot();
+  assert.equal(cleared.inputEvents, 1);
+  assert.equal(cleared.currentValueLength, 0);
+  focused = composer;
+  composer.value = 'Capture Understand Use';
+  composer.dispatchEvent(new Event('change'));
+  const disabled = probe.snapshot();
+  assert.equal(disabled.currentValueLength, 22);
+  assert.equal(disabled.changeEvents, 1);
+  assert.equal(disabled.sendEnabled, false);
+  assert.equal(JSON.stringify(disabled).includes('Capture'), false);
+  current = new EventTarget();
+  current.isConnected = true;
+  current.value = '';
+  composer.isConnected = false;
+  assert.equal(probe.snapshot().observedNodeConnected, false);
+  assert.equal(probe.snapshot().currentNodeSame, false);
+  enabled = true;
+  assert.equal(probe.snapshot().sendEnabled, true);
+  probe.stop();
+  composer.dispatchEvent(new Event('input'));
+  assert.equal(probe.snapshot().inputEvents, 1);
+});
 
 const expectedTerms = ['C82F4A', 'Capture', 'Understand', 'Use'];
 const suspended = {
