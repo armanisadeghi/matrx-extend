@@ -123,79 +123,98 @@ test('replacement-panel probe admits only fixed typed fields into receipt', asyn
   }
 });
 
-test('successful native Settings reload sends no diagnostic command before Page.reload', async () => {
-  const source = await readFile(
-    new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
-    'utf8',
-  );
-  const start = source.indexOf('async function settings(panel, onStep = () => {}) {');
-  const end = source.indexOf('\nasync function guestSections(', start);
-  assert.ok(start >= 0 && end > start);
-  const commands = [];
-  const settingsTab = {
-    getBoundingClientRect: () => ({ width: 28, height: 28 }),
-    closest: () => null,
-  };
-  const document = {
-    readyState: 'complete',
-    body: { innerText: "You're using Matrx as a guest." },
-    querySelectorAll: (selector) =>
-      selector === 'button[role="tab"][title="Settings"]' ? [settingsTab] : [],
-    querySelector: (selector) =>
-      selector === 'button[title="Settings"][data-state="active"]' ? settingsTab : null,
-  };
-  const panel = {
-    async send(method, params) {
-      commands.push(method);
-      if (method === 'Page.reload') return {};
-      if (method === 'Target.getTargetInfo') throw new Error('diagnostic lookup unavailable');
-      assert.equal(method, 'Runtime.evaluate');
-      const value = await runInNewContext(params.expression, {
-        document,
-        getComputedStyle: () => ({ visibility: 'visible', display: 'block' }),
-      });
-      return { result: { value } };
-    },
-  };
-  let trustedClicks = 0;
-  let diagnosticCalls = 0;
-  const opening = source.slice(start, end);
-  const subject =
-    process.env.SETTINGS_NEGATIVE_CONTROL_PREFLIGHT === '1'
-      ? opening.replace(
-          'async function reloadSettings(panel) {',
-          "async function reloadSettings(panel) { await panel.send('Target.getTargetInfo');",
-        )
-      : opening;
-  const reloadSettings = new Function(
-    'waitForReplacementSettingsTab',
-    'click',
-    'waitFor',
-    'evaluate',
-    'observeSettingsReacquisition',
-    'EXTENSION_ID',
-    `${subject}\nreturn reloadSettings;`,
-  )(
-    (ownedPanel) => waitForReplacementSettingsTab(ownedPanel, 120),
-    async () => {
-      trustedClicks++;
-    },
-    waitFor,
-    evaluate,
-    async () => {
-      diagnosticCalls++;
-    },
-    'owned-extension',
-  );
-  await reloadSettings(panel);
-  assert.equal(commands[0], 'Page.reload');
-  assert.equal(
-    commands.every((method) => ['Page.reload', 'Runtime.evaluate'].includes(method)),
-    true,
-  );
-  assert.equal(trustedClicks, 1);
-  assert.equal(diagnosticCalls, 0);
-});
+for (const scenario of [
+  { name: 'current guest DOM', readyState: 'complete', guest: true, passes: true },
+  { name: 'loading document', readyState: 'loading', guest: true, passes: false },
+  { name: 'missing guest state', readyState: 'complete', guest: false, passes: false },
+])
+  test(`native Settings reload readiness: ${scenario.name}`, async () => {
+    const source = await readFile(
+      new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
+      'utf8',
+    );
+    const start = source.indexOf('async function settings(panel, onStep = () => {}) {');
+    const end = source.indexOf('\nasync function guestSections(', start);
+    assert.ok(start >= 0 && end > start);
+    const commands = [];
+    const settingsTab = {
+      getBoundingClientRect: () => ({ width: 28, height: 28 }),
+      closest: () => null,
+    };
+    const document = {
+      readyState: scenario.readyState,
+      body: { innerText: scenario.guest ? 'Organization\nSign in to choose' : 'Organization' },
+      querySelectorAll: (selector) =>
+        selector === 'button[role="tab"][title="Settings"]' ? [settingsTab] : [],
+      querySelector: (selector) =>
+        selector === 'button[title="Settings"][data-state="active"]' ? settingsTab : null,
+    };
+    const panel = {
+      async send(method, params) {
+        commands.push(method);
+        if (method === 'Page.reload') return {};
+        if (method === 'Target.getTargetInfo') throw new Error('diagnostic lookup unavailable');
+        assert.equal(method, 'Runtime.evaluate');
+        const value = await runInNewContext(params.expression, {
+          document,
+          getComputedStyle: () => ({ visibility: 'visible', display: 'block' }),
+        });
+        return { result: { value } };
+      },
+    };
+    let trustedClicks = 0;
+    let diagnosticCalls = 0;
+    const opening = source.slice(start, end);
+    const subject =
+      process.env.SETTINGS_NEGATIVE_CONTROL_PREFLIGHT === '1'
+        ? opening.replace(
+            'async function reloadSettings(panel) {',
+            "async function reloadSettings(panel) { await panel.send('Target.getTargetInfo');",
+          )
+        : opening;
+    const reloadSettings = new Function(
+      'waitForReplacementSettingsTab',
+      'click',
+      'waitFor',
+      'evaluate',
+      'observeSettingsReacquisition',
+      'EXTENSION_ID',
+      `${subject}\nreturn reloadSettings;`,
+    )(
+      (ownedPanel) => waitForReplacementSettingsTab(ownedPanel, 120),
+      async () => {
+        trustedClicks++;
+      },
+      (name, read, accept) => waitFor(name, read, accept, 120),
+      evaluate,
+      async () => {
+        diagnosticCalls++;
+      },
+      'owned-extension',
+    );
+    const failure = await reloadSettings(panel).then(
+      () => null,
+      (error) => error.message,
+    );
+    if (!scenario.passes) {
+      assert.match(
+        failure,
+        scenario.readyState === 'loading'
+          ? /panel_document_after_reload_not_observed/
+          : /guest_settings_not_observed/,
+      );
+      assert.equal(trustedClicks, scenario.readyState === 'loading' ? 0 : 1);
+      return;
+    }
+    assert.equal(failure, null, 'current guest DOM must finish native Settings reload readiness');
+    assert.equal(commands[0], 'Page.reload');
+    assert.equal(
+      commands.every((method) => ['Page.reload', 'Runtime.evaluate'].includes(method)),
+      true,
+    );
+    assert.equal(trustedClicks, 1);
+    assert.equal(diagnosticCalls, 0);
+  });
 
 test('failed native Settings panel reload serializes the owned document and context boundary', async () => {
   const extensionId = 'owned-extension';
@@ -204,7 +223,7 @@ test('failed native Settings panel reload serializes the owned document and cont
     URL: panelUrl,
     readyState: 'complete',
     visibilityState: 'visible',
-    body: { innerText: "You're using Matrx as a guest." },
+    body: { innerText: 'Organization\nSign in to choose' },
     querySelectorAll: (selector) => (selector === '#app' ? [{}] : []),
   };
   const chrome = {

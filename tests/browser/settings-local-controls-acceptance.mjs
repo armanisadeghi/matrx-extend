@@ -177,15 +177,8 @@ async function reloadSettings(panel) {
   try {
     await panel.send('Page.reload', { ignoreCache: true });
     await waitFor(
-      'guest_panel_after_reload',
-      () =>
-        evaluate(
-          panel,
-          `(() => {
-    const text = document.body?.innerText ?? '';
-    return document.readyState === 'complete' && text.includes("You're using Matrx as a guest.");
-  })()`,
-        ),
+      'panel_document_after_reload',
+      () => evaluate(panel, `document.readyState === 'complete'`),
       (v) => v === true,
     );
     await settings(panel);
