@@ -164,7 +164,8 @@ describe('List Pattern — find every similar sibling', () => {
     const span = document.querySelector('#bare a:nth-child(2) .name') as Element;
     const candidates = inferListPatternCandidates(span);
     const cards = candidates.find((c) => c.itemCount === 5 && c.itemSelector === ':scope > a');
-    if (!cards) throw new Error(`no card group in ${JSON.stringify(candidates.map((c) => c.itemSelector))}`);
+    if (!cards)
+      throw new Error(`no card group in ${JSON.stringify(candidates.map((c) => c.itemSelector))}`);
     const rows = listPatternMode.runInPage({
       list_root: cards.listRoot,
       item_selector: cards.itemSelector,
