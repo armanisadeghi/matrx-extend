@@ -1,0 +1,41 @@
+{
+  "package": {
+    "schema": 1,
+    "at": "2026-10-17T21:24:39.575Z",
+    "runId": "hosted-package-39070661540-1",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid",
+    "code": "RESOURCE_FINAL_DECISION",
+    "raw_sha256": "e2717a6a8b24d771da35c63843fa7a6da104a127ab4e5b6717eb07475ee0862c",
+    "sanitized_sha256": "e2717a6a8b24d771da35c63843fa7a6da104a127ab4e5b6717eb07475ee0862c",
+    "omitted_process_interval_brackets": 0
+  },
+  "browser": {
+    "schema": 1,
+    "at": "2026-10-17T21:26:45.461Z",
+    "runId": "hosted-browser-39070661540-1",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid",
+    "code": "RESOURCE_FINAL_DECISION",
+    "raw_sha256": "406b9145d039fd8d584f5497c374c9d05c3a46c11af639862c6f00130e24f473",
+    "sanitized_sha256": "406b9145d039fd8d584f5497c374c9d05c3a46c11af639862c6f00130e24f473",
+    "omitted_process_interval_brackets": 0
+  },
+  "startup": {
+    "schema": 1,
+    "at": "2026-10-17T21:30:32.798Z",
+    "runId": "hosted-startup-39070661540-1",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid",
+    "code": "RESOURCE_FINAL_DECISION",
+    "raw_sha256": "01b44a2c38e663cd980a4b0d39be4596de131302aaf86b812fa1e74f065a0fcc",
+    "sanitized_sha256": "fab2c1eb1826d52d3ce912f2d7f8b85f8a4b5c4e670bff35ecf2626c040dee35",
+    "omitted_process_interval_brackets": 7
+  }
+}

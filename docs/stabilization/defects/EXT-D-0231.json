@@ -23,7 +23,8 @@
     "docs/stabilization/runs/member-chat-v0523-run39064545122.json",
     "docs/stabilization/evidence/member-chat-v0523/run39064545122/startup-diagnostic.sanitized.json",
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/39064545122",
-    "docs/stabilization/runs/startup-diagnostic-run39068438114.json"
+    "docs/stabilization/runs/startup-diagnostic-run39068438114.json",
+    "docs/stabilization/runs/startup-display-pair-741d7771e.json"
   ],
   "build_receipt": {
     "workflow_source_sha": "9cee8d002d88739717ec8e2d7160eded5736cba2",
@@ -65,7 +66,7 @@
     "Do not increase the endpoint deadline or infer a product failure from the current run.",
     "After the startup boundary is understood and eligible, pass a fresh guarded member Chat run with genuine non-admin auth, explicit selected organization matching request headers, first-message and same-conversation follow-up assistant content, terminal completion, stable server SHA, and valid resource finals."
   ],
-  "next_action": "Independently review explicit display-mode admission, then run the controlled headed/headless diagnostic pair on one exact new CI artifact/source. Do not claim a fix or repeat member Chat before discriminating evidence.",
+  "next_action": "Run guarded native acceptance on a fresh exact Store ZIP after its reviewed release receipt and admission pass, with no concurrent Mac heavy job. Retain launch/process/CDP timing and every resource phase; if endpoint startup fails again, compare package kind and profile/extension paths against this successful development-artifact pair before another retry.",
   "transition_history": [
     {
       "at": "2026-10-17T20:02:55Z",
@@ -75,7 +76,7 @@
     }
   ],
   "diagnosis_report": {
-    "status": "Guarded headed diagnostic startup passed with three valid resource finals; cause of failed headless Chat starts remains unconfirmed.",
+    "status": "Matched headed/headless diagnostics genuinely passed on the same exact CI development artifact/source, with valid resource finals; intermittent Store/native endpoint timeout remains unconfirmed.",
     "hypotheses": [
       {
         "cause": "Delayed endpoint publication",
@@ -97,6 +98,6 @@
     "local_guard": "node --test tests/browser/native-cdp-startup-boundary.test.mjs tests/browser/native-cdp-startup-diagnostic.test.mjs tests/browser/vault-owned-cdp-diagnostic.test.cjs",
     "red_proof": "Missing startupBoundary produced the named assertion failure before instrumentation. Real temporary profile, Node child and stderr stream then distinguish live owner, exited child, foreign lock and closed pipe. Scratch-copy constant-result, constant-live-boundary and foreign-lock-misreported mutants all fail. EACCES, EIO and indefinitely pending diagnostic readlink preserve the real connector endpoint timeout; diagnostic snapshots are bounded by the existing cadence and the initial snapshot runs concurrently with connector startup. Distinct connector successes and original exception identity are preserved. Successful connector return never awaits diagnostic snapshots (final boundary is null on success); a deterministic microtask-order test proves exact result settlement before a pending readlink or timer can complete. Failure snapshots run in parallel within one existing cadence.",
     "sibling_census": "Native acceptance callers share connectNativeStartupOwnedCdp in native-sidepanel-qa-harness.mjs; the startup-resource-diagnostic route already adds post-timeout endpoint observations and startup-process-interval CPU brackets. Vault standalone connector remains unchanged.",
-    "next_guarded_experiment": "Extend only normal diagnostic admission to an explicit headed/headless choice, then run a controlled pair sequentially on lane A using the SAME new successful exact-head CI development artifact/source and unchanged profile/runner/deadline/resource policy."
+    "next_guarded_experiment": "Run guarded native acceptance on a fresh exact Store ZIP after its reviewed release receipt and admission pass, with no concurrent Mac heavy job. Retain launch/process/CDP timing and every resource phase; if endpoint startup fails again, compare package kind and profile/extension paths against this successful development-artifact pair before another retry."
   }
 }
