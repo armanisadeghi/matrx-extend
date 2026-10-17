@@ -3,9 +3,14 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import test from 'node:test';
 import { Window } from 'happy-dom';
+import { createGuestInputDriver } from './guest-chat-input-driver.mjs';
 
 const source = await readFile(
   new URL('./guest-chat-store-acceptance.mjs', import.meta.url),
+  'utf8',
+);
+const inputSource = await readFile(
+  new URL('./guest-chat-input-driver.mjs', import.meta.url),
   'utf8',
 );
 const openingVerdict = source.indexOf("'real guest answer must contain the page-specific code");
@@ -24,9 +29,9 @@ const tail = source.slice(followupScreenshot, cleanup);
 // A native send dispatch can return successfully while no click reaches the
 // package button. The boundary must retain that difference without message text.
 test('guest send boundary distinguishes a reached button from a missed native click', async () => {
-  const body = source.slice(
-    source.indexOf('async function installGuestSendClickProbe('),
-    source.indexOf('async function submitQuestion('),
+  const body = inputSource.slice(
+    inputSource.indexOf('async function installGuestSendClickProbe('),
+    inputSource.indexOf('async function submitQuestion('),
   );
   assert.ok(body.startsWith('async function installGuestSendClickProbe('));
   const install = new Function('evaluate', `${body}; return installGuestSendClickProbe;`);
@@ -44,6 +49,7 @@ test('guest send boundary distinguishes a reached button from a missed native cl
         clickEvents: 0,
         bubbleClickEvents: 0,
         trustedClickEvents: 0,
+        intentMatchedAtClick: null,
         buttonConnected: true,
         composerLength: 22,
         userMessageCount: 0,
@@ -63,6 +69,7 @@ test('guest send boundary distinguishes a reached button from a missed native cl
       clickEvents: shouldClick ? 1 : 0,
       bubbleClickEvents: shouldClick ? 1 : 0,
       trustedClickEvents: 0,
+      intentMatchedAtClick: null,
       buttonConnected: true,
       composerLength: shouldClick ? 0 : 22,
       userMessageCount: shouldClick ? 1 : 0,
@@ -73,9 +80,9 @@ test('guest send boundary distinguishes a reached button from a missed native cl
 });
 
 test('guest send boundary exposes a click stopped before the React root', async () => {
-  const body = source.slice(
-    source.indexOf('async function installGuestSendClickProbe('),
-    source.indexOf('async function submitQuestion('),
+  const body = inputSource.slice(
+    inputSource.indexOf('async function installGuestSendClickProbe('),
+    inputSource.indexOf('async function submitQuestion('),
   );
   const install = new Function('evaluate', `${body}; return installGuestSendClickProbe;`);
   const window = new Window();
@@ -90,99 +97,6 @@ test('guest send boundary exposes a click stopped before the React root', async 
   assert.equal(result.bubbleClickEvents, 0);
   assert.equal(result.buttonConnected, true);
   await window.happyDOM.abort();
-});
-
-test('guest send records native dispatch phases and reached-button outcome before answer wait', async () => {
-  const body = source.slice(
-    source.indexOf('async function submitQuestion('),
-    source.indexOf('async function requireActiveFixtureTab('),
-  );
-  for (const reachedButton of [true, false]) {
-    const report = { composer_input_boundaries: [] };
-    let dispatched = false;
-    let draftLength = 139;
-    const submit = new Function(
-      'assert',
-      'evaluate',
-      'installGuestComposerProbe',
-      'guestComposerSnapshot',
-      'waitFor',
-      'observe',
-      'installGuestSendClickProbe',
-      'click',
-      'report',
-      `${body}; return submitQuestion;`,
-    )(
-      assert,
-      async (_panel, expression) => {
-        if (expression.includes('textarea?.focus()')) return true;
-        if (expression.includes('__guestChatSendClickProbe?.stop()'))
-          return {
-            clickEvents: dispatched && reachedButton ? 1 : 0,
-            composerLength: 139,
-            userMessageCount: 0,
-            sendEnabled: true,
-          };
-        return null;
-      },
-      async () => ({ currentValueLength: 0 }),
-      async () => ({
-        currentValueLength: draftLength,
-        currentNodeSame: true,
-        currentNodeFocused: true,
-        sendEnabled: true,
-      }),
-      async (_stage, read, accepts) => assert.equal(accepts(await read()), true),
-      async () => ({ sendEnabled: true }),
-      async () => ({
-        installed: true,
-        beforeClick: {
-          clickEvents: 0,
-          composerLength: 139,
-          userMessageCount: 0,
-          sendEnabled: true,
-        },
-      }),
-      async (_panel, kind, label, onPhase) => {
-        assert.equal(kind, 'chat-send');
-        assert.equal(label, '');
-        onPhase('press_attempted');
-        onPhase('press_returned');
-        onPhase('release_attempted');
-        onPhase('release_returned');
-        dispatched = true;
-      },
-      report,
-    );
-    await submit(
-      {
-        send: async (method, args) => {
-          if (method === 'Input.dispatchKeyEvent' && args.key === 'Backspace') draftLength = 0;
-          if (method === 'Input.dispatchKeyEvent' && args.text) draftLength += args.text.length;
-          return {};
-        },
-      },
-      'Read the current page.',
-      'opening_question',
-      'package',
-      () => ({}),
-    );
-    assert.deepEqual(report.composer_input_boundaries[0].click, {
-      phases: ['press_attempted', 'press_returned', 'release_attempted', 'release_returned'],
-      beforeClick: {
-        clickEvents: 0,
-        composerLength: 139,
-        userMessageCount: 0,
-        sendEnabled: true,
-      },
-      afterClick: {
-        clickEvents: reachedButton ? 1 : 0,
-        composerLength: 139,
-        userMessageCount: 0,
-        sendEnabled: true,
-      },
-    });
-  }
 });
 
 test('guest acceptance requires all three mode-aware HTTP observations before transport proof', () => {
@@ -361,4 +275,180 @@ test('optional Values does not silently accept duplicate controls or a failed in
   await assert.rejects(valuesControlHarness(1, 'open').run, /guest_values_chip_open/);
   await assert.rejects(valuesControlHarness(1, 'unrelated').run, /guest_values_chip_open/);
   await assert.rejects(valuesControlHarness(1, 'close').run, /guest_values_chip_closed/);
+});
+
+// EXT-D-0230: a focus-driven React remount must preserve the user intent, not node identity.
+// SUT: the guest submission driver. DOM, probe, and draft inspection run for real;
+// only native CDP input/pointer delivery are emulated at the browser boundary.
+function harness({ remount = true, breakAt = null } = {}) {
+  const window = new Window();
+  window.document.body.innerHTML =
+    '<button role="tab" title="Chat" aria-controls="chat"></button><div id="chat" data-state="active"><textarea></textarea><button aria-label="Send message" disabled></button></div>';
+  const pane = window.document.getElementById('chat');
+  let reduxText = '';
+  let conversationId = 'opening-guest-conversation';
+  const store = {
+    getState: () => ({
+      instanceUserInput: {
+        byConversationId: { [conversationId]: { text: reduxText, submissionPhase: 'idle' } },
+      },
+    }),
+  };
+  let nativeClicks = 0;
+  let sentText = null;
+  const report = { composer_input_boundaries: [] };
+  const textarea = () => pane.querySelector('textarea');
+  const commit = (text) => {
+    textarea().value = text;
+    textarea().__reactProps$guest = { value: breakAt === 'react' ? '' : text, onChange() {} };
+    textarea().__reactFiber$guest = {
+      memoizedProps: { conversationId },
+      dependencies: { firstContext: { memoizedValue: { store } } },
+    };
+    reduxText = breakAt === 'redux' ? '' : text;
+    pane.querySelector('button').disabled = !text;
+  };
+  commit('');
+  textarea().addEventListener(
+    'focus',
+    () => {
+      if (!remount) return;
+      queueMicrotask(() => {
+        const replacement = window.document.createElement('textarea');
+        textarea().replaceWith(replacement);
+        if (breakAt === 'conversation') conversationId = 'different-guest-conversation';
+        commit('');
+        if (breakAt === 'pane') pane.setAttribute('data-state', 'inactive');
+        if (breakAt === 'duplicate') pane.append(window.document.createElement('textarea'));
+        if (breakAt !== 'focus') replacement.focus();
+      });
+    },
+    { once: true },
+  );
+  const evaluate = async (_panel, expression) => window.eval(expression);
+  const submit = createGuestInputDriver({
+    evaluate,
+    waitFor: async (label, read, accept) => assert.ok(accept(await read()), label),
+    observe: async () => ({ sendEnabled: !pane.querySelector('button').disabled }),
+    click: async (_panel, kind, _label, onPhase) => {
+      assert.equal(kind, 'chat-send');
+      nativeClicks++;
+      onPhase('press_attempted');
+      onPhase('press_returned');
+      onPhase('release_attempted');
+      onPhase('release_returned');
+      if (breakAt === 'missed_click') return;
+      if (breakAt === 'stale_click') {
+        const stale = pane.querySelector('button');
+        stale.replaceWith(stale.cloneNode(true));
+        stale.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+        return;
+      }
+      if (breakAt === 'click_intent') commit('A different question.');
+      const event = new window.MouseEvent('click', { bubbles: true });
+      Object.defineProperty(event, 'isTrusted', { value: breakAt !== 'untrusted_click' });
+      pane.querySelector('button').dispatchEvent(event);
+    },
+    report,
+  });
+  pane.querySelector('button').addEventListener('click', (event) => {
+    if (breakAt === 'stopped_click') event.stopPropagation();
+  });
+  // React's delegated send handler is at an ancestor, not the native button.
+  pane.addEventListener('click', () => {
+    sentText = textarea().value;
+  });
+  const panel = {
+    send: async (method, args) => {
+      if (breakAt === 'focus' && window.document.activeElement !== textarea()) return;
+      if (method === 'Input.insertText') commit(args.text);
+      if (
+        method === 'Input.dispatchKeyEvent' &&
+        args.type === 'keyDown' &&
+        args.key === 'Backspace'
+      )
+        commit('');
+      if (method === 'Input.dispatchKeyEvent' && args.text && breakAt !== 'skip_keyboard')
+        commit(textarea().value + (breakAt === 'wrong_dom' ? '?' : args.text));
+    },
+  };
+  return {
+    run: (question) => submit(panel, question, 'opening_question', 'package'),
+    report,
+    sent: () => sentText,
+    clicks: () => nativeClicks,
+    close: () => window.happyDOM.abort(),
+  };
+}
+
+for (const question of [
+  'Read the current page.',
+  'Name the heading above the check codes.',
+  'Read the unique opening check code from the article on my current tab. What are the three workflow stages in order? Include the exact code.',
+]) {
+  test(`focused composer replacement submits the committed intent (${question.length} characters)`, async () => {
+    const driver = harness();
+    try {
+      await driver.run(question);
+      assert.equal(driver.sent(), question);
+      assert.equal(driver.clicks(), 1);
+      assert.deepEqual(driver.report.composer_input_boundaries[0].click.phases, [
+        'press_attempted',
+        'press_returned',
+        'release_attempted',
+        'release_returned',
+      ]);
+      assert.equal(
+        driver.report.composer_input_boundaries[0].after_keyboard.currentNodeSame,
+        false,
+      );
+    } finally {
+      await driver.close();
+    }
+  });
+}
+
+for (const [breakAt, reason] of [
+  ['focus', /currentNodeFocused/],
+  ['pane', /sameActivePane/],
+  ['conversation', /sameConversation/],
+  ['duplicate', /uniqueComposer/],
+  ['react', /reactValueMatchesExpected/],
+  ['redux', /reduxDraftMatchesExpected/],
+  ['wrong_dom', /domMatchesExpected/],
+  ['skip_keyboard', /domMatchesExpected/],
+  ['missed_click', /exactly one click/],
+  ['stale_click', /exactly one click/],
+  ['untrusted_click', /trusted native click/],
+  ['stopped_click', /reach the React root/],
+  ['click_intent', /committed input intent/],
+]) {
+  test(`refuses a guest submission with ${breakAt}`, async () => {
+    const driver = harness({ breakAt });
+    try {
+      await assert.rejects(() => driver.run('Read the current page.'), reason);
+      if (!breakAt.endsWith('click') && breakAt !== 'click_intent') {
+        assert.equal(driver.clicks(), 0);
+        assert.equal(driver.sent(), null);
+      }
+      if (['click_intent', 'untrusted_click', 'missed_click', 'stopped_click'].includes(breakAt))
+        assert.equal(driver.sent(), null);
+    } finally {
+      await driver.close();
+    }
+  });
+}
+
+test('a composer that stays mounted still receives the native Send', async () => {
+  const driver = harness({ remount: false });
+  try {
+    await driver.run('Name the workflow stages.');
+    assert.equal(driver.sent(), 'Name the workflow stages.');
+    assert.equal(driver.report.composer_input_boundaries[0].after_keyboard.currentNodeSame, true);
+    assert.equal(driver.report.composer_input_boundaries[0].click.afterClick.trustedClickEvents, 1);
+    assert.equal(JSON.stringify(driver.report).includes('Name the workflow stages.'), false);
+    assert.equal(JSON.stringify(driver.report).includes('opening-guest-conversation'), false);
+  } finally {
+    await driver.close();
+  }
 });
