@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { classifyPackageGuestTurn as classifyMemberChatTurn } from './guest-chat-completion-oracle.mjs';
-import { requireMemberChatSequence } from './member-chat-completion-oracle.mjs';
+import {
+  requireMemberChatSequence,
+  requireMemberOrganizationBinding,
+} from './member-chat-completion-oracle.mjs';
 
 // A signed-in reviewer asks about Capture/Understand/Use, then asks which stage is second.
 const row = {
@@ -99,4 +102,33 @@ test('two member turns require same request conversation and new-to-existing tra
       }),
     /assistant_content_unverified/,
   );
+});
+
+test('a different valid organization shared by both headers still fails selected UI binding', () => {
+  const selected = 'c61c7d9a9d805d4e';
+  const starts = [
+    { http_status: 200, organization_header_fingerprint: selected },
+    { http_status: 200, organization_header_fingerprint: selected },
+  ];
+  assert.deepEqual(requireMemberOrganizationBinding(selected, starts), {
+    selected_organization_fingerprint: selected,
+    both_headers_match_selection: true,
+  });
+  const wrong = starts.map((row) => ({
+    ...row,
+    organization_header_fingerprint: '5687839f735578e9',
+  }));
+  assert.throws(
+    () => requireMemberOrganizationBinding(selected, wrong),
+    /header_must_match_selected_organization/,
+  );
+  assert.throws(
+    () => requireMemberOrganizationBinding(selected, [starts[0], wrong[1]]),
+    /header_must_match_selected_organization/,
+  );
+  assert.throws(
+    () => requireMemberOrganizationBinding(null, starts),
+    /selected_organization_unobserved/,
+  );
+  assert.throws(() => requireMemberOrganizationBinding(selected, [starts[0]]), /two_starts/);
 });

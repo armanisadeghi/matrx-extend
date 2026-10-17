@@ -14,7 +14,10 @@ import { fileURLToPath } from 'node:url';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { classifyPackageGuestTurn as classifyMemberChatTurn } from './guest-chat-completion-oracle.mjs';
 import { watchGuestAiRequests } from './guest-chat-transport-observer.mjs';
-import { requireMemberChatSequence } from './member-chat-completion-oracle.mjs';
+import {
+  requireMemberChatSequence,
+  requireMemberOrganizationBinding,
+} from './member-chat-completion-oracle.mjs';
 import {
   authenticatedWebIdentity,
   observeCanonicalAdminCheck,
@@ -245,6 +248,52 @@ async function captureStoreCandidate(panel, artifacts) {
     return await capture(panel, artifacts, 'reviewer-chat-store-640x400');
   } finally {
     await panel.send('Emulation.clearDeviceMetricsOverride');
+  }
+}
+
+/** Observe the checked option's real UUID; only its fingerprint enters evidence. */
+async function selectedMemberOrganizationFingerprint(panel) {
+  await click(panel, 'organization', '');
+  try {
+    const selected = await waitFor(
+      'member_selected_organization_option',
+      () =>
+        evaluate(
+          panel,
+          `(() => {
+      const organization = [...document.querySelectorAll('button[aria-expanded]')]
+        .find(button => button.textContent.trim() === 'Organization');
+      const orgSection = organization?.parentElement?.nextElementSibling;
+      const pickers = ${actingOrganizationPickersExpression()};
+      const picker = pickers.length === 1 ? pickers[0] : null;
+      const list = picker ? document.getElementById(picker.getAttribute('aria-controls') ?? '') : null;
+      const checked = [...(list?.querySelectorAll('[role="option"][data-state="checked"][data-value]') ?? [])];
+      return { pickerCount: pickers.length, checkedCount: checked.length,
+        value: checked.length === 1 ? checked[0].getAttribute('data-value') : null,
+        labelMatches: checked.length === 1 && checked[0].textContent.trim() === picker?.textContent.trim() };
+    })()`,
+        ),
+      (value) =>
+        value?.pickerCount === 1 &&
+        value.checkedCount === 1 &&
+        value.labelMatches &&
+        UUID.test(value.value ?? ''),
+      10_000,
+    );
+    return hash(selected.value);
+  } finally {
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
   }
 }
 
@@ -1389,6 +1438,9 @@ try {
             throw error;
           }
         }
+        const selectedOrganizationFingerprint = UNINTERRUPTED
+          ? null
+          : await selectedMemberOrganizationFingerprint(panel);
         const storageShape = await storedSessionShape(panel);
         report.account = {
           reviewer_fingerprint: hash(email),
@@ -1398,6 +1450,9 @@ try {
           canonical_extension_admin_check: canonicalAdminCheck,
           sign_out_visible: account.signOutVisible,
           default_organization_selected: account.organizationSelected,
+          ...(!UNINTERRUPTED && {
+            selected_organization_fingerprint: selectedOrganizationFingerprint,
+          }),
           organization_picker_available: account.organizationPickerAvailable,
           storage_shape: storageShape,
           ...(UNINTERRUPTED && {
@@ -1554,8 +1609,13 @@ try {
           ),
           'member followup requires same valid organization',
         );
+        const organizationBinding = requireMemberOrganizationBinding(
+          selectedOrganizationFingerprint,
+          afterFollowup.all_starts,
+        );
         report.chat_sequence = {
           ...sequence,
+          ...organizationBinding,
           turns,
           requests: memberTransport.turnRequests(),
           followup_completed_reply_count: followup.completedReplyCount,

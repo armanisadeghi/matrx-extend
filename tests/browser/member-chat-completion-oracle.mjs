@@ -45,3 +45,25 @@ export function requireMemberChatSequence(requests, turns) {
     completed_turns: 2,
   };
 }
+
+/** Bind both authenticated requests to the checked native organization option. */
+export function requireMemberOrganizationBinding(selectedFingerprint, starts) {
+  assert.match(
+    selectedFingerprint ?? '',
+    /^[a-f0-9]{16}$/,
+    'member_selected_organization_unobserved',
+  );
+  assert.equal(starts.length, 2, 'member_org_binding_requires_two_starts');
+  for (const start of starts) {
+    assert.equal(start.http_status, 200, 'member_org_binding_requires_successful_start');
+    assert.equal(
+      start.organization_header_fingerprint,
+      selectedFingerprint,
+      'member_header_must_match_selected_organization',
+    );
+  }
+  return {
+    selected_organization_fingerprint: selectedFingerprint,
+    both_headers_match_selection: true,
+  };
+}

@@ -2,6 +2,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
+import {
+  requireMemberChatSequence,
+  requireMemberOrganizationBinding,
+} from './member-chat-completion-oracle.mjs';
 
 const source = await readFile(
   new URL('./reviewer-chat-store-acceptance.mjs', import.meta.url),
@@ -73,4 +77,58 @@ test('member Chat verdict refuses absent, rejected or uncorrelated organization 
   ])
     assert.throws(() => oracle({ ...accepted, ...changed }), { code: 'ERR_ASSERTION' });
   assert.throws(() => oracle({}), { code: 'ERR_ASSERTION' });
+});
+
+// Break caught: two valid matching request headers can still target the wrong UI org.
+test('actual two-turn member verdict binds both headers to the checked UI organization', () => {
+  const start = source.indexOf('        const sequence = requireMemberChatSequence(');
+  const end = source.indexOf('        report.screenshots.result', start);
+  assert.ok(start > 0 && end > start, 'member two-turn verdict seam must exist');
+  const selected = 'c61c7d9a9d805d4e';
+  const transport = (fingerprint) => ({
+    start_count: 2,
+    all_starts: [
+      { http_status: 200, organization_header_fingerprint: fingerprint },
+      { http_status: 200, organization_header_fingerprint: fingerprint },
+    ],
+  });
+  const requests = [
+    {
+      attempt: 'opening',
+      is_new: true,
+      status: 200,
+      loading_finished: true,
+      terminal_success: true,
+      stream_error: false,
+      path_class: 'canonical',
+      conversation_fingerprint: 'ec8c373c1df3c614',
+    },
+    {
+      attempt: 'same_conversation_followup',
+      is_new: false,
+      status: 200,
+      loading_finished: true,
+      terminal_success: true,
+      stream_error: false,
+      path_class: 'canonical',
+      conversation_fingerprint: 'ec8c373c1df3c614',
+    },
+  ];
+  const verdict = (fingerprint) => {
+    const report = {};
+    runInNewContext(source.slice(start, end), {
+      assert,
+      report,
+      selectedOrganizationFingerprint: selected,
+      requireMemberChatSequence,
+      requireMemberOrganizationBinding,
+      memberTransport: { turnRequests: () => requests, snapshot: () => transport(fingerprint) },
+      network: { organization_header_fingerprint: fingerprint },
+      turns: { opening: 'terminal_answer', same_conversation_followup: 'terminal_answer' },
+      followup: { completedReplyCount: 2 },
+    });
+    return report.chat_sequence;
+  };
+  assert.equal(verdict(selected).both_headers_match_selection, true);
+  assert.throws(() => verdict('5687839f735578e9'), /header_must_match_selected_organization/);
 });
