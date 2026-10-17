@@ -1,0 +1,64 @@
+{
+  "id": "EXT-D-0231",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "title": "Hosted member Chat lane times out before the owned Chrome CDP endpoint appears",
+  "surface": "Guarded hosted native member Chat acceptance",
+  "auth_mode": "designated existing non-admin reviewer; native authentication not reached",
+  "organization_context": "Approved organization fixture and membership passed the private preflight; the extension did not launch, so no organization was selected and no organization header was observed.",
+  "preconditions": [
+    "Release v0.2.523 Store artifact 12112098474 is verified against source 580738d3c86f14cba3fa4c8157364340d46f78bb.",
+    "Guarded lane A source, capacity, exact artifact and reviewer-link checks pass.",
+    "The designated reviewer identity passes the existing private non-admin and approved-organization dry run; a fresh one-use link is staged only for this workflow and removed after terminal failure."
+  ],
+  "reproduction": [
+    "Dispatch lane A member-chat through scripts/hosted-release-member-admission.mjs for release run 39063179335 and artifact 12112098474.",
+    "Observe package and browser preparation finish with valid resource finals; the native step enters owned_profile.",
+    "Observe owned Chrome spawn without launch failure, stderr, crash or sandbox indicators, followed by no DevTools endpoint after about 8 seconds.",
+    "Observe the runner summary end unverified at owned_profile and the acceptance resource journal finalize invalid after the child exits."
+  ],
+  "expected": "The admitted owned browser exposes its CDP endpoint so native extension authentication and the member Chat acceptance can begin, or the startup failure is precisely classified without claiming product behavior.",
+  "actual": "Run 39064545122 ended with summary failure_code unclassified_failure and BROWSER_STARTUP_FAILURE owned_cdp_endpoint_timeout at 8019 ms. Chromium was observed spawned; stderr and listed launch/crash/sandbox indicators were absent; 160 endpoint polls elapsed about 8001 ms. No reviewer authentication, Chat UI, selected organization, API request/header, message, assistant reply or terminal event was observed. The guest resource final was admitted=true, resourceInvalid=true, exitCode=3, decision=invalid; package and browser finals were valid.",
+  "evidence": [
+    "docs/stabilization/runs/member-chat-v0523-run39064545122.json",
+    "docs/stabilization/evidence/member-chat-v0523/run39064545122/startup-diagnostic.sanitized.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39064545122"
+  ],
+  "build_receipt": {
+    "workflow_source_sha": "9cee8d002d88739717ec8e2d7160eded5736cba2",
+    "release_run_id": 39063179335,
+    "artifact_id": 12112098474,
+    "artifact_version": "0.2.523",
+    "source_sha": "580738d3c86f14cba3fa4c8157364340d46f78bb",
+    "artifact_digest": "sha256:79cc91b07208759b3a7057e43891746c80783e6a8a46906ea9724f1725dd53fe",
+    "store_zip_sha256": "77242073a75df326b8b42ccf667854bf7f88c4e44017bc8c9f3a819521ba2fad",
+    "installed_tree_sha256": "5cec4afe1cf1200d214e361850802cc67212866bb327a87e05706dc04a0c0ea0"
+  },
+  "resource_finals": {
+    "package": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "acceptance": { "resource_invalid": true, "exit_code": 3, "decision": "invalid" }
+  },
+  "reproducibility": "Observed once in guarded member lane A. The owned-CDP timeout has appeared in prior hosted lanes, but this record does not claim a deterministic member-specific reproduction or establish a causal mechanism.",
+  "severity": "S2: a native member acceptance attempt cannot reach authentication or product behavior on this run.",
+  "priority": "P1: diagnose before another member native acceptance attempt.",
+  "state": "open",
+  "owner": "hosted_cdp_startup_diagnosis",
+  "cause": "Unconfirmed. The owned browser process was observed but its DevTools endpoint was not. A later resource sample reported 100% CPU busy with high load after the endpoint timeout; this does not establish that CPU pressure caused the timeout. No endpoint deadline change is supported by this single invalid-resource run.",
+  "sibling_census": "Owned-CDP startup failures are recorded in other guarded hosted lanes and startup diagnostics. They precede application authentication and product assertions. EXT-D-0230 is a separate guest Chat composer-remount harness defect and was not reached here.",
+  "acceptance_criteria": [
+    "Form and independently review a falsifiable startup hypothesis from this boundary evidence before any retry.",
+    "Use a fresh guarded startup diagnostic with retained sanitized endpoint observations and valid resource finals to distinguish endpoint publication from high-CPU host pressure.",
+    "Do not increase the endpoint deadline or infer a product failure from the current run.",
+    "After the startup boundary is understood and eligible, pass a fresh guarded member Chat run with genuine non-admin auth, explicit selected organization matching request headers, first-message and same-conversation follow-up assistant content, terminal completion, stable server SHA, and valid resource finals."
+  ],
+  "next_action": "The owner will route a targeted owned-CDP startup diagnosis after the urgent EXT-D-0230 guest harness repair; no blind native retry is authorized by this evidence.",
+  "transition_history": [
+    {
+      "at": "2026-10-17T20:02:55Z",
+      "from": null,
+      "to": "open",
+      "reason": "Guarded lane A failed before authentication because owned Chrome did not expose its DevTools endpoint within the existing deadline; resource final invalid, no product behavior observed."
+    }
+  ]
+}

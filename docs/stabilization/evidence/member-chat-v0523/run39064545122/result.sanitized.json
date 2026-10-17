@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned Chrome-for-Testing profile; real non-admin login; native signed-in Chat",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.523",
+    "tree_sha256": "5cec4afe1cf1200d214e361850802cc67212866bb327a87e05706dc04a0c0ea0",
+    "receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "account": null,
+  "authentication_method": null,
+  "chat": null,
+  "screenshots": null,
+  "failure_stage": "owned_profile",
+  "failure_code": "unclassified_failure"
+}

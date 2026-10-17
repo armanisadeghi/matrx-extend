@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 39064545122,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39064545122",
+  "workflow_source_sha": "9cee8d002d88739717ec8e2d7160eded5736cba2",
+  "run_conclusion": "failure",
+  "case": "member-chat",
+  "lane": "A",
+  "runner": "macos-15-intel",
+  "product_credit": "none",
+  "failure": {
+    "summary_status": "unverified",
+    "summary_stage": "owned_profile",
+    "summary_code": "unclassified_failure",
+    "startup_code": "owned_cdp_endpoint_timeout",
+    "startup_elapsed_ms": 8019,
+    "spawn_observed": true,
+    "launch_failed": false,
+    "exit_code_at_timeout": null,
+    "signal_code_at_timeout": null,
+    "stderr_flags": {
+      "had_stderr": false,
+      "code_signature": false,
+      "dynamic_loader": false,
+      "permission_denied": false,
+      "sandbox": false,
+      "crash": false,
+      "devtools_listening": false
+    },
+    "endpoint_wait": {
+      "polls": 160,
+      "elapsed_ms": 8001,
+      "longest_read_ms": 284
+    }
+  },
+  "product_interaction": {
+    "member_authentication_reached": false,
+    "selected_organization_observed": false,
+    "organization_api_headers_observed": false,
+    "first_message_sent": false,
+    "chat_requests": 0,
+    "assistant_content": null,
+    "same_conversation_followup_sent": false,
+    "terminal_assistant_state": null,
+    "server_sha_before": null,
+    "server_sha_after": null,
+    "reason_unavailable": "The owned Chrome profile never exposed a DevTools endpoint; authentication, extension UI and backend requests did not start."
+  },
+  "release_artifact": {
+    "release_run_id": 39063179335,
+    "artifact_id": 12112098474,
+    "version": "0.2.523",
+    "source_sha": "580738d3c86f14cba3fa4c8157364340d46f78bb",
+    "release_artifact_digest": "sha256:79cc91b07208759b3a7057e43891746c80783e6a8a46906ea9724f1725dd53fe",
+    "store_zip_sha256": "77242073a75df326b8b42ccf667854bf7f88c4e44017bc8c9f3a819521ba2fad",
+    "installed_tree_sha256": "5cec4afe1cf1200d214e361850802cc67212866bb327a87e05706dc04a0c0ea0",
+    "receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "hosted_result_artifact": {
+    "id": 12113355228,
+    "name": "hosted-guest-39064545122-1",
+    "digest": "sha256:deb981bb17f50a1065585a2e8cc7d58a9b4a013989eb33d4d361cc731d18da68",
+    "size_bytes": 4358
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "resource-journals/hosted-package-39064545122-1.jsonl",
+      "journal_sha256": "69ba37a2c751f24978ab38388a000aab9a38d324659187495f3c54c46440c6c3"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "resource-journals/hosted-browser-39064545122-1.jsonl",
+      "journal_sha256": "26446652f594f8f26605dea570217fcf60d340491341169583e9dfd344e41e3c"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid",
+      "journal": "resource-journals/hosted-guest-39064545122-1.jsonl",
+      "journal_sha256": "ed44e315f415efdbed42bc8f9536d5f1344e1a18e07a38bddc09062c1a49dd03"
+    }
+  },
+  "resource_observations": {
+    "acceptance_admitted_at": "2026-10-17T20:02:16.024Z",
+    "admission_cpu_busy_fraction": 0.06285714285714286,
+    "admission_one_minute_load": 0.93,
+    "unsafe_sample_at": "2026-10-17T20:02:33.860Z",
+    "unsafe_reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+    "unsafe_cpu_busy_fraction": 1,
+    "unsafe_one_minute_load": 12.49,
+    "logical_cpus": 4,
+    "interpretation": "A high-CPU sample was recorded after the CDP timeout. The acceptance wrapper finalized invalid after the child exited; these observations do not establish that CPU load caused the earlier endpoint timeout."
+  },
+  "fixture_cleanup": {
+    "temporary_github_secret_deleted": true,
+    "secret_name_absence_verified": true,
+    "local_one_use_link_file_absent": true,
+    "credential_or_link_values_recorded": false
+  },
+  "classification": "Unexplained hosted browser startup/environment failure before member authentication. Separate from EXT-D-0230's guest composer-remount harness failure, which this member run never reached.",
+  "evidence": [
+    "result.sanitized.json",
+    "resource-journals/hosted-package-39064545122-1.jsonl",
+    "resource-journals/hosted-browser-39064545122-1.jsonl",
+    "resource-journals/hosted-guest-39064545122-1.jsonl"
+  ],
+  "next_action": "Diagnose the owned Chromium CDP startup boundary under a newly reviewed guard after the urgent guest Chat harness repair. Do not increase the endpoint deadline or repeat the native run without a discriminating hypothesis and fresh admission."
+}
