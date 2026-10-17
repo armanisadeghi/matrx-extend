@@ -9579,6 +9579,12 @@
    "application/json"
   ]
  },
+ "/video-director/{project_id}/teleprompter": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
  "/video-generation/{project_id}/estimate": {
   "post": [
    "application/json"
