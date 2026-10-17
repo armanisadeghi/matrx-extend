@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0227-api-route-retest-20261017",
+  "defect_id": "EXT-D-0227",
+  "feature_id": "EXT-F-2013",
+  "case_id": "EXT-F-2013-T10",
+  "status": "api_route_verified_browser_pending",
+  "observed_at_utc": "2026-10-17T16:22:36Z",
+  "deployment": {
+    "workflow_run_id": 39047623196,
+    "workflow_url": "https://github.com/AI-Matrix-Engine/aidream/actions/runs/39047623196",
+    "conclusion": "success",
+    "live_git_sha": "449381f9a8331874f87a45afa07739e203ffd1b1",
+    "health_version_samples": 5,
+    "health_version_matching_samples": 5
+  },
+  "probe": {
+    "method": "POST",
+    "body": "empty JSON",
+    "auth": "none; no guest fingerprint or bearer credential",
+    "samples_per_route": 10,
+    "status_counts": {
+      "/api/v2/ai/mandates/extend.browser_chat": { "401": 10 },
+      "/api/ai/mandates/extend.browser_chat": { "401": 10 },
+      "/api/v2/ai/agent/{agent_id}": { "401": 10 },
+      "/api/v2/ai/conversations/{conversation_id}/resume": { "404": 10 }
+    },
+    "interpretation": "Both versioned starts reach the existing authentication boundary; the original v2 Mandate 404 is absent after rollout. Continuation remains unversioned."
+  },
+  "api_only": true,
+  "browser_opened": false,
+  "guest_turn_or_terminal_answer_verified": false,
+  "credentials_or_auth_values_recorded": false,
+  "raw_network_or_transcript_recorded": false,
+  "next_action": "Run guarded published 0.2.205 guest Chat opening, same-conversation follow-up, and post-reload turn against this server image. Require direct v2 HTTP 200 and terminal answers before closing EXT-D-0227."
+}

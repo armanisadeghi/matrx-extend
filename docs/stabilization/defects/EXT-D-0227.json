@@ -20,7 +20,8 @@
   "evidence": [
     "docs/stabilization/runs/guest-chat-store-39046184558.json",
     "docs/stabilization/evidence/published-v0205-guest-chat/run39046184558/guest-chat-result.sanitized.json",
-    "aidream/api/tests/test_v2_ai_start_routes.py (server regression test; pending merge SHA)",
+    "aidream/api/tests/test_v2_ai_start_routes.py (server regression test; deployed merge SHA 449381f9a8331874f87a45afa07739e203ffd1b1)",
+    "docs/stabilization/runs/ext-d-0227-api-route-retest-20261017.json",
     "/Volumes/Samsung2TB/code/matrx-common-docs/systems/apps/extension/WIRE_CONTRACT.md"
   ],
   "build_receipt": {
@@ -31,13 +32,13 @@
     "extension_source_sha": "e8105866e8bc4e96ba759f4ff7e8a78bb8e61d23",
     "live_server_sha": "efe1eb6efead949c0b5cb179dc762a8674770cff"
   },
-  "reproducibility": "All three turns in resource-valid run 39046184558 observed 404 then 200, preserving conversation fingerprint and is_new per pair. Aidream route test is red when the mount is absent and passes 2/2 with the candidate patch.",
+  "reproducibility": "All three turns in resource-valid run 39046184558 observed 404 then 200, preserving conversation fingerprint and is_new per pair. Aidream route test was red with the v2 mount absent and passes with the narrowed shared start router. Post-deploy API-only retest observed 10/10 v2 Mandate requests reaching auth instead of 404.",
   "severity": "S2: extra failed request on every guest start; published client fallback succeeds",
   "priority": "P1: restore documented route for current published clients",
   "state": "in-fix",
-  "owner": "root/aidream_v2_route_oct17",
+  "owner": "root",
   "cause": "Aidream deleted its hidden `/v2/ai` start alias while published extension clients continued to use versioned agent and Mandate start paths. The canonical `/ai` route remains available for client fallback.",
-  "sibling_census": "Separate extension observer fault EXT-D-0226 incorrectly required one POST and failed to record route class; that observer is being repaired independently. Aidream candidate currently mounts the full AI router under `/v2/ai`, while extension WIRE_CONTRACT.md explicitly versions only the two start routes; peer review requested narrowing and negative coverage for all other routes. Server source/test pending this review and merge.",
+  "sibling_census": "Separate extension observer fault EXT-D-0226 incorrectly required one POST and failed to record route class. Aidream now shares only agent and Mandate start handlers under `/ai` and `/v2/ai`; route tests verify tool results, resume, inbox, warm, and cancel remain unversioned.",
   "acceptance_criteria": [
     "Only documented v2 agent and Mandate start routes are mounted with identical endpoint behavior and guest gate.",
     "Other AI operations remain at the unversioned paths in the extension wire contract.",
@@ -45,12 +46,13 @@
     "Fresh guarded published Store browser run verifies direct versioned 200 for opening, same-conversation follow-up and new conversation after reload; original 39046184558 remains failed and zero-credit."
   ],
   "source_verification": {
-    "aidream_focused_test": "2/2 pass on candidate",
-    "independent_source_review": "reviewed; narrowing and negative route tests requested",
-    "live_browser": "404-to-200 fallback observed in run 39046184558; clean direct-v2 pass pending",
-    "release": "pending candidate completion and safe integration boundary"
+    "aidream_focused_test": "46/46 targeted pass with red-before-fix route proof",
+    "independent_source_review": "passed after narrowing v2 aliases to start routes",
+    "live_api_route": "deployed SHA 449381f9a8331874f87a45afa07739e203ffd1b1; 10/10 v2 Mandate start probes reached 401 auth gate, canonical Mandate and v2 agent matched; v2 resume stayed 404",
+    "live_browser": "404-to-200 fallback observed in original run 39046184558; clean direct-v2 guest terminal pass pending",
+    "release": "Aidream guarded deploy run 39047623196 succeeded; API-only receipt recorded"
   },
-  "next_action": "Narrow Aidream route mount to the two documented start paths and add negative tests for other route classes; then merge through the server owner and run fresh guarded browser acceptance.",
+  "next_action": "Run fresh guarded published 0.2.205 guest Chat opening, same-conversation follow-up, and post-reload turn; require direct v2 HTTP 200 and terminal answers before closure.",
   "transition_history": [
     {
       "at": "2026-10-17T15:48:17Z",
