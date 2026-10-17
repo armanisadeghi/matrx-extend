@@ -107,7 +107,16 @@ export function requireReleaseMemberSource(ancestor, paths) {
   assert.ok(
     paths.every(
       (path) =>
-        /^docs\/stabilization\//.test(path) ||
+        path ===
+          'docs/stabilization/evidence/member-release-admission-20261017/release-api-metadata.json' ||
+        path ===
+          'docs/stabilization/evidence/settings-navigation-lane-a-preflight-20261017/resource-journals/settings-nav-preflight-20261017-01.sanitized.jsonl' ||
+        path === 'docs/stabilization/reports/guest-send-controls-20261017.json' ||
+        path === 'docs/stabilization/reports/guest-values-chip-20261017.json' ||
+        path === 'docs/stabilization/reports/member-acceptance-auth-repair-20261017.json' ||
+        path === 'docs/stabilization/reports/member-acceptance-resource-retry-20261017.json' ||
+        path === 'docs/stabilization/reports/settings-navigation-lane-a-checkpoint-20261017.json' ||
+        path === 'docs/stabilization/reports/store-release-audit-20261017.json' ||
         /^scripts\/hosted-release-member-admission(?:\.test)?\.mjs$/.test(path) ||
         path === 'tests/browser/guest-chat-store-acceptance.mjs' ||
         path === 'tests/browser/guest-chat-store-sequence.test.mjs' ||

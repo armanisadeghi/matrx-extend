@@ -177,3 +177,13 @@ test('reviewed package Chat driver repairs preserve immutable candidate eligibil
   ])
     assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
 });
+
+test('member admission rejects unreviewed stabilization documents', () => {
+  for (const path of [
+    'docs/stabilization/release-workflow-change.json',
+    'docs/stabilization/reports/unreviewed.json',
+    'docs/stabilization/reports/guest-send-controls-20261018.json',
+    'docs/stabilization/evidence/unreviewed/receipt.json',
+  ])
+    assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
+});

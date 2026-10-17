@@ -70,8 +70,7 @@ test('answer observation excludes user text and action labels, includes each rea
   await window.happyDOM.abort();
 });
 
-test('trusted send pointer finds only the active Chat composer and dispatches native input', async () => {
-  const { click } = await import('./settings-panel-driver.mjs');
+function nativePointerSurface() {
   const { window, pane } = surface();
   pane.setAttribute('role', 'tabpanel');
   window.document.body.insertAdjacentHTML(
@@ -96,6 +95,12 @@ test('trusted send pointer finds only the active Chat composer and dispatches na
       return {};
     },
   };
+  return { window, pane, target, rect, events, panel };
+}
+
+test('trusted send pointer finds only the active Chat composer and dispatches native input', async () => {
+  const { click } = await import('./settings-panel-driver.mjs');
+  const { window, rect, events, panel } = nativePointerSurface();
   await click(panel, 'chat-send', '');
   assert.deepEqual(
     events.map((event) => event.type),
@@ -147,3 +152,30 @@ test('guest driver consumes package controls without dropping the terminal strea
   assert.equal((await observe(null)).sendEnabled, false);
   await window.happyDOM.abort();
 });
+
+test('send pointer refuses an ARIA-disabled flip after readiness before trusted input', async () => {
+  const { click } = await import('./settings-panel-driver.mjs');
+  const { window, pane, target, events, panel } = nativePointerSurface();
+  assert.equal(readPackageChatControlsWithWindow(window, pane).sendEnabled, true);
+  const originalSend = panel.send;
+  let pointerSamples = 0;
+  panel.send = async (method, args) => {
+    if (method === 'Runtime.evaluate' && ++pointerSamples === 2)
+      target.setAttribute('aria-disabled', 'true');
+    return originalSend(method, args);
+  };
+  await assert.rejects(click(panel, 'chat-send', ''), (error) => {
+    assert.equal(error.driverFailure?.code, 'pointer_stable_hit_not_observed');
+    assert.equal(error.driverFailure?.targetDisabled, true);
+    return true;
+  });
+  assert.deepEqual(events, []);
+  await window.happyDOM.abort();
+});
+
+function readPackageChatControlsWithWindow(window, pane) {
+  return runInNewContext(`(${readPackageChatControls.toString()})(pane)`, {
+    pane,
+    getComputedStyle: (node) => window.getComputedStyle(node),
+  });
+}

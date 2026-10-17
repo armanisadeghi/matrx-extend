@@ -713,7 +713,9 @@ export async function click(panel, kind, label, onPhase = undefined) {
     }
     const selected = points.find((point) => hitsTarget(document.elementFromPoint(point.x, point.y)));
     const { x, y } = selected ?? originalCenter;
-    const hitTarget = Boolean(selected) && !target.disabled;
+    const targetDisabled = Boolean(target.disabled) ||
+      (kind === 'chat-send' && target.getAttribute('aria-disabled') === 'true');
+    const hitTarget = Boolean(selected) && !targetDisabled;
     const hitCategory = (hit) => {
       if (!hit) return 'none';
       if (hitsTarget(hit)) return 'target';
@@ -856,7 +858,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
       first_interior_occluder: occluder(interiorHits.find((hit) => hit && !hitsTarget(hit))),
       selected_point_available: Boolean(selected),
       selected_point: selected ?? null,
-      target_disabled: Boolean(target.disabled),
+      target_disabled: targetDisabled,
       target_pointer_events_none: getComputedStyle(target).pointerEvents === 'none',
     };
     sampleFailureStage = 'animation_observation';
