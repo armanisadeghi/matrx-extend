@@ -1244,6 +1244,13 @@ Every entry follows this shape:
   Click the "JSON-LD tab" recommendation.
 - **Expected:** Showcase switches to the JSON-LD sub-tab. Re-probe works.
   On chrome:// pages a readable error shows (no spinner hang).
+- **Every group is an option:** On zread.ai/trending, the "Repeating-card
+  patterns" list shows the repo cards (`:scope > a`) first, ahead of tag chips
+  and menus. Click any group: List Pattern opens seeded with it. Add suggested
+  fields (name, description, language, stars each its own column), Extract,
+  Save pattern; on another page of the same template, Patterns → Run returns
+  that page's rows. Saved selectors never contain build hashes (`-sc-…`,
+  `blrpEn`) or generated ids (long digit runs).
 - **Repeating-list case:** On a page with at least five matching cards, click
   Doctor's List Pattern recommendation. List Pattern shows the detected root
   and item selectors immediately, suggests fields, and keeps Extract unavailable
