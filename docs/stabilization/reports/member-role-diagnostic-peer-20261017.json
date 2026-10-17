@@ -1,0 +1,27 @@
+{
+  "reviewed_commit": "d679d350ba1e8dd5cb3ec63b90ebf6fb28fb2167",
+  "reviewed_at": "2026-10-17",
+  "reviewer_role": "independent_peer",
+  "verdicts": {
+    "A": {
+      "result": "PASS",
+      "reason": "The harness retains aggregate request totals, same-origin database totals, allowlisted membership/organization/account-choice/role boundary counts with HTTP status and completion outcome, plus finite role mismatch categories. On role failure it records sanitized account/storage booleans and a bounded screenshot attempt. The canonical role predicate still requires a matching request for the current extension user, HTTP 200, complete response, and zero rows; identity success remains separate from Chat acceptance. This evidence can distinguish pre-fetch bootstrap failure, request-shape mismatch, and unavailable panel observation without weakening either gate.",
+      "rerun_decision": "Safe to run guarded lane A on the same exact 0.2.521 artifact with this diagnostic harness. The rerun is still required to establish native Chat acceptance."
+    },
+    "B": {
+      "result": "PASS",
+      "reason": "The change is test/harness/report-only; no product runtime files changed. The focused tests exercise actual observer and reviewer orchestration paths, including secret exclusion, bootstrap status, mismatched schema, final observations, screenshot failure, and preserved refusal behavior. Independent focused run passed 10/10 tests. The source report records RED on the old implementation, GREEN after the repair, and plant.py mutation kills for constant snapshots/final recorder and forced HTTP 200; these mutation claims were reviewed from the source report and were not re-planted in this peer pass."
+    }
+  },
+  "findings": [],
+  "checks": {
+    "command": "node --test tests/browser/member-native-auth-proof.test.mjs tests/browser/reviewer-chat-identity-diagnostic.test.mjs",
+    "result": "10 passed, 0 failed",
+    "diff_check": "clean",
+    "scope": "No browser/heavy job and no source edits performed."
+  },
+  "limitations": [
+    "No native browser run was performed in this review.",
+    "The original 0.2.521 Chat result remains unverified; this review approves only a guarded same-package diagnostic rerun, not Store release or acceptance."
+  ]
+}
