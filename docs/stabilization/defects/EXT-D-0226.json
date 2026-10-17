@@ -1,0 +1,72 @@
+{
+  "id": "EXT-D-0226",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "title": "Guest Chat observer rejects documented versioned-route fallback after successful replies",
+  "surface": "Hosted native guest Chat acceptance observer",
+  "auth_mode": "guest; fresh isolated hosted profile",
+  "organization_context": "No account token, profile, or organization; public guest route",
+  "preconditions": [
+    "Published Store CRX 0.2.205 loaded unpacked in hosted native Chromium under its Store identity.",
+    "Live Aidream server SHA efe1eb6efead949c0b5cb179dc762a8674770cff serves canonical /ai route but lacks the documented /v2/ai alias."
+  ],
+  "reproduction": [
+    "Run hosted guest Chat acceptance 39046184558 against the fixed published Store CRX and the live server.",
+    "Opening, same-conversation follow-up, and post-reload turns each emit two observed requests, status 404 then 200; each pair retains the same conversation fingerprint and is_new value.",
+    "The side panel displays three terminal answers, while requireGuestConversationSequence fails because it requires exactly one POST per turn."
+  ],
+  "expected": "Observer records only sanitized route class and accepts a single successful canonical or versioned route, or exactly versioned /v2/ai 404/405 followed by canonical /ai 200 with the same conversation identity and is_new. It rejects arbitrary duplicates, wrong-path fallback, and mismatched turn state.",
+  "actual": "Original observer omitted route path and required exactly one POST. The resource-valid browser run therefore failed its observer assertion despite three completed terminal answers. Run retains zero acceptance credit.",
+  "evidence": [
+    "docs/stabilization/runs/guest-chat-store-39046184558.json",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run39046184558/guest-chat-result.sanitized.json",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run39046184558/resource-journals/hosted-browser.jsonl",
+    "tests/browser/guest-chat-transport-observer.mjs",
+    "tests/browser/guest-chat-transport-observer.test.mjs"
+  ],
+  "build_receipt": {
+    "source_sha": "e8105866e8bc4e96ba759f4ff7e8a78bb8e61d23",
+    "run_id": 39046184558,
+    "artifact_version": "0.2.205",
+    "artifact_kind": "published_store_crx_unpacked",
+    "artifact_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "live_server_sha": "efe1eb6efead949c0b5cb179dc762a8674770cff"
+  },
+  "reproducibility": "Original observer failed deterministically on the captured two-request-per-turn sequence. Corrected observer focused tests pass 9/9; forcing mutation requiring one request returns expected RED and restores source byte-identically via plant.py. Independent review and fresh browser retest pending.",
+  "severity": "S2: hosted acceptance false failure and zero credit",
+  "priority": "P1: repair observer before next guarded guest Chat run",
+  "state": "in-fix",
+  "owner": "root/public_guest_oct17",
+  "cause": "Observer matched requests only by canonical suffix and dropped route class, then asserted exactly one POST. The client\u2019s supported fallback produces a versioned-route rejection followed by canonical retry when the versioned alias is unavailable.",
+  "sibling_census": "Observer guard is specific to EXT-F-2013-T10. Separate Aidream defect is the removed /v2/ai router alias (deletion commit 64bf4f37f9), causing the first 404; server owner is restoring the alias. Extension correction accepts only documented 404/405 versioned to 200 canonical fallback and does not mask arbitrary duplicates. Cross-repo server defect is EXT-D-0227; its route test is aidream/api/tests/test_v2_ai_start_routes.py and its candidate patch remains under peer review.",
+  "acceptance_criteria": [
+    "Capture sanitized path class for each matching request without retaining raw URLs or auth values.",
+    "Accept only one 200 on a known chat route or exactly v2 404/405 then canonical 200 with matching conversation fingerprint and is_new.",
+    "Reject arbitrary duplicate success, wrong-path fallback, non-404/405 first status, and conversation/is_new mismatch.",
+    "Focused tests pass and forcing mutation proves failure before independent source review.",
+    "A fresh guarded native browser run must pass before any acceptance credit; distinguish public CRX loaded unpacked from Web Store-installed UI."
+  ],
+  "source_verification": {
+    "focused_tests": "9/9 pass",
+    "forcing_mutation": "RED, expected assertion; restored byte-identically",
+    "biome": "pass on owned files",
+    "independent_source_review": "pending",
+    "native_acceptance": "original run failed observer and remains zero credit; fresh guarded run pending",
+    "release": "no commit/push; awaiting safe source boundary"
+  },
+  "next_action": "Complete independent transport-semantics review, then coordinate source integration with release owner. On a fresh guarded run, verify route class, browser terminal reply and same-conversation follow-up. Do not promote original run to pass.",
+  "transition_history": [
+    {
+      "at": "2026-10-17T15:48:17Z",
+      "from": null,
+      "to": "open",
+      "reason": "Resource-valid published Store CRX hosted run returned terminal answers but observer assertion failed on two requests per turn."
+    },
+    {
+      "at": "2026-10-17T16:20:00Z",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "Confirmed client\u2019s documented fallback and live server\u2019s removed alias; narrow sanitized observer guard and forced RED/GREEN tests added."
+    }
+  ]
+}

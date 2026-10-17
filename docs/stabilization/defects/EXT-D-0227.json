@@ -1,0 +1,68 @@
+{
+  "id": "EXT-D-0227",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "title": "Aidream omits the published guest Chat v2 start route and returns 404 before canonical fallback",
+  "surface": "Aidream AI agent and Mandate start routes",
+  "auth_mode": "guest; published extension unauthenticated Chat",
+  "organization_context": "Public guest route; no authenticated organization header or user session",
+  "preconditions": [
+    "Published extension start contract selects POST /v2/ai/mandates/extend.browser_chat for the guest Chat turn.",
+    "Live Aidream server SHA efe1eb6efead949c0b5cb179dc762a8674770cff mounts the AI router at /ai but not the documented v2 start paths."
+  ],
+  "reproduction": [
+    "Use published Store CRX 0.2.205 in a clean guest profile and send a page-grounded Chat turn.",
+    "The v2 start request returns HTTP 404; the client fallback retries canonical /ai and receives HTTP 200.",
+    "Repeat with same-conversation follow-up and after panel reload; each turn has the same 404-to-200 sequence, while the browser receives terminal answers."
+  ],
+  "expected": "Both published start paths (`POST /v2/ai/agent/{agent_id}` and `POST /v2/ai/mandates/{mandate_key}`) resolve to the same handlers and guest gate as their canonical `/ai` counterparts. Other operations remain on the unversioned routes named by the extension wire contract.",
+  "actual": "Live server has no v2 start mount; each guest turn first receives a 404, adding an unnecessary request and relying on the client fallback. The fallback did return a successful answer in run 39046184558.",
+  "evidence": [
+    "docs/stabilization/runs/guest-chat-store-39046184558.json",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run39046184558/guest-chat-result.sanitized.json",
+    "aidream/api/tests/test_v2_ai_start_routes.py (server regression test; pending merge SHA)",
+    "/Volumes/Samsung2TB/code/matrx-common-docs/systems/apps/extension/WIRE_CONTRACT.md"
+  ],
+  "build_receipt": {
+    "extension_version": "0.2.205",
+    "extension_kind": "published_store_crx_unpacked",
+    "extension_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "hosted_run_id": 39046184558,
+    "extension_source_sha": "e8105866e8bc4e96ba759f4ff7e8a78bb8e61d23",
+    "live_server_sha": "efe1eb6efead949c0b5cb179dc762a8674770cff"
+  },
+  "reproducibility": "All three turns in resource-valid run 39046184558 observed 404 then 200, preserving conversation fingerprint and is_new per pair. Aidream route test is red when the mount is absent and passes 2/2 with the candidate patch.",
+  "severity": "S2: extra failed request on every guest start; published client fallback succeeds",
+  "priority": "P1: restore documented route for current published clients",
+  "state": "in-fix",
+  "owner": "root/aidream_v2_route_oct17",
+  "cause": "Aidream deleted its hidden `/v2/ai` start alias while published extension clients continued to use versioned agent and Mandate start paths. The canonical `/ai` route remains available for client fallback.",
+  "sibling_census": "Separate extension observer fault EXT-D-0226 incorrectly required one POST and failed to record route class; that observer is being repaired independently. Aidream candidate currently mounts the full AI router under `/v2/ai`, while extension WIRE_CONTRACT.md explicitly versions only the two start routes; peer review requested narrowing and negative coverage for all other routes. Server source/test pending this review and merge.",
+  "acceptance_criteria": [
+    "Only documented v2 agent and Mandate start routes are mounted with identical endpoint behavior and guest gate.",
+    "Other AI operations remain at the unversioned paths in the extension wire contract.",
+    "Route regression test fails before alias restoration and passes after; focused Aidream suite is green.",
+    "Fresh guarded published Store browser run verifies direct versioned 200 for opening, same-conversation follow-up and new conversation after reload; original 39046184558 remains failed and zero-credit."
+  ],
+  "source_verification": {
+    "aidream_focused_test": "2/2 pass on candidate",
+    "independent_source_review": "reviewed; narrowing and negative route tests requested",
+    "live_browser": "404-to-200 fallback observed in run 39046184558; clean direct-v2 pass pending",
+    "release": "pending candidate completion and safe integration boundary"
+  },
+  "next_action": "Narrow Aidream route mount to the two documented start paths and add negative tests for other route classes; then merge through the server owner and run fresh guarded browser acceptance.",
+  "transition_history": [
+    {
+      "at": "2026-10-17T15:48:17Z",
+      "from": null,
+      "to": "open",
+      "reason": "Published client v2 start returned 404 on all three turns in a resource-valid hosted run."
+    },
+    {
+      "at": "2026-10-17T16:35:00Z",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "Confirmed live server lacks v2 start routes; server lane added candidate mount and 2/2 route tests, peer review identified over-broad alias scope."
+    }
+  ]
+}
