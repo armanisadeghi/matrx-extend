@@ -3,11 +3,13 @@
 import { createHash } from 'node:crypto';
 import { readFile, stat, writeFile } from 'node:fs/promises';
 import { createClient } from '@supabase/supabase-js';
-import { requireExpectedMemberOrganizationId } from './data-member-pattern-cleanup.mjs';
 
 const IDENTITY_FILE = process.env.MATRX_REVIEWER_IDENTITY_FILE;
 const ADMIN_ENV_FILE = process.env.MATRX_ADMIN_ENV_FILE;
 const LINK_FILE = process.env.MATRX_REVIEWER_MAGIC_LINK_FILE;
+const ORGANIZATION_CONFIG_FILE =
+  process.env.MATRX_REVIEWER_ORGANIZATION_CONFIG_FILE ??
+  'test-results/files-saved-private-config.json';
 const PROJECT_REF = 'brsgrqvjdzwihsvnfqkf';
 const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
 const WEB_ORIGIN = 'https://www.aimatrx.com';
@@ -71,26 +73,49 @@ async function main() {
     .eq('user_id', identity.id);
   stage = 'admin_role';
   if (roleError || count !== 0) throw new Error('reviewer_nonadmin_role_unverified');
-  const { data: memberships, error: membershipError } = await admin
-    .schema('iam')
-    .from('memberships')
-    .select('container_id')
-    .eq('user_id', identity.id)
-    .eq('container_type', 'organization')
-    .eq('status', 'active');
-  if (membershipError || memberships?.length !== 1)
-    throw new Error('reviewer_organization_membership_unverified');
-  const organizationId = requireExpectedMemberOrganizationId({
-    organization_id: memberships[0].container_id,
-  });
+  stage = 'approved_organization';
+  const approval = await privateJson(ORGANIZATION_CONFIG_FILE);
+  if (
+    approval.reviewer_email_fingerprint !== REVIEWER_FINGERPRINT ||
+    typeof approval.approved_organization_id !== 'string' ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      approval.approved_organization_id,
+    )
+  )
+    throw new Error('reviewer_approved_organization_unverified');
+  const organizationId = approval.approved_organization_id;
   const { data: organization, error: organizationError } = await admin
     .schema('iam')
     .from('organizations')
-    .select('name')
+    .select('id, archived_at, settings')
     .eq('id', organizationId)
     .single();
-  if (organizationError || organization?.name !== "Matrx's Org")
+  if (
+    organizationError ||
+    organization?.id !== organizationId ||
+    organization.archived_at !== null ||
+    organization.settings?.test_fixture !== true
+  )
     throw new Error('reviewer_test_organization_unverified');
+  // A historical membership in an archived organization may still be active.
+  // Bind the live membership to the explicitly approved fixture, not a count
+  // of every organization the reviewer has ever joined or a stale pinned id.
+  const { data: memberships, error: membershipError } = await admin
+    .schema('iam')
+    .from('memberships')
+    .select('container_id, role')
+    .eq('user_id', identity.id)
+    .eq('container_type', 'organization')
+    .eq('container_id', organizationId)
+    .eq('status', 'active')
+    .is('deleted_at', null);
+  if (
+    membershipError ||
+    memberships?.length !== 1 ||
+    memberships[0].container_id !== organizationId ||
+    memberships[0].role !== 'member'
+  )
+    throw new Error('reviewer_organization_membership_unverified');
   if (process.env.MATRX_REVIEWER_DRY_RUN === '1') {
     process.stdout.write('READY existing_reviewer_nonadmin_authority\n');
     return;
