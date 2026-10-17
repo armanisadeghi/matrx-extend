@@ -12,7 +12,7 @@ import {
   cancelListPickerSession,
   startListPickerSession,
 } from '@/lib/data-pattern/list-picker-session';
-import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
+import { probeFirstRowInPage, uniqueFieldName } from '@/lib/data-pattern/modes/list-pattern';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { cn } from '@/lib/utils';
@@ -504,12 +504,18 @@ export function ListPatternTab() {
 
   const addCandidate = (c: CandidateField) => {
     if (!config) return;
+    // Every field is its own column: a second "text_muted_foreground" would
+    // overwrite the first in every row, so suffix repeated names.
+    const name = uniqueFieldName(
+      config.field_paths.map((f) => f.name),
+      c.name,
+    );
     const next = {
       ...config,
       field_paths: [
         ...config.field_paths,
         {
-          name: c.name,
+          name,
           rel_selector: c.rel_selector,
           attr: c.attr,
           transform: c.transform,

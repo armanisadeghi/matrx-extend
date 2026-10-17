@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { inspectCardInPage } from './card-inspector';
-import { listPatternMode, probeFirstRowInPage } from './modes/list-pattern';
+import { listPatternMode, probeFirstRowInPage, uniqueFieldName } from './modes/list-pattern';
 import { pageDiagnosticInPage } from './page-diagnostic';
 import { inferListPatternCandidates, relativeFieldSelector } from './selector-resilience';
 
@@ -206,5 +206,10 @@ describe('List Pattern — find every similar sibling', () => {
       field_paths: [{ name: 'stars', rel_selector: stars?.rel_selector ?? 'missing' }],
     }) as Array<{ stars: string | null }>;
     expect(rows.map((r) => r.stars)).toEqual(['100k', '200k', '300k']);
+  });
+
+  it('never gives two added fields the same column name', () => {
+    expect(uniqueFieldName(['text_muted', 'text_muted_2'], 'text_muted')).toBe('text_muted_3');
+    expect(uniqueFieldName(['a'], 'b')).toBe('b');
   });
 });

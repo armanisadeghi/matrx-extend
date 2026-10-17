@@ -226,3 +226,11 @@ export function probeFirstRowInPage(
   }
   return matchedElement ? row : null;
 }
+
+/** A column name not already used: `name`, else `name_2`, `name_3`, … */
+export function uniqueFieldName(existing: readonly string[], name: string): string {
+  const taken = new Set(existing);
+  let out = name;
+  for (let n = 2; taken.has(out); n += 1) out = `${name}_${n}`;
+  return out;
+}
