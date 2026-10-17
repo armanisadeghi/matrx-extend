@@ -9,10 +9,10 @@
  * new-password boxes (`useVaultPage.ts`, `extension-vault-host.ts`) — and opens
  * on the page view when a tab is there.
  *
- * Not offered here: confirming it's you for a secret (`identity`) and approving
- * a browser with a passkey from the vault (`passkeys`). Both need a supabase-js
- * session; this extension signs in through the Matrx OAuth client, so the
- * package hides those controls rather than showing dead ones.
+ * Confirming it's you for a secret (`identity`) re-runs this extension's own
+ * Matrx sign-in and waits for the fresh bearer (`extension-vault-identity.ts`).
+ * Not offered here: approving a browser with a passkey from the vault
+ * (`passkeys`) — it needs an aimatrx.com page, so the package hides it.
  */
 
 import { useActiveOrganization } from '@/hooks/use-active-organization';
@@ -39,6 +39,7 @@ import {
   createFillSetupHost,
   createNewPasswordFieldsHost,
 } from './extension-vault-host';
+import { extensionVaultIdentity } from './extension-vault-identity';
 import { usePanelAdmission } from './usePanelAdmission';
 import { useVaultPage } from './useVaultPage';
 
@@ -101,6 +102,7 @@ function VaultWorkspace({ actor }: { actor: Actor }) {
     () => ({
       knobs,
       openUrl,
+      identity: extensionVaultIdentity,
       fillSetup,
       capture,
       newPasswordFields,
