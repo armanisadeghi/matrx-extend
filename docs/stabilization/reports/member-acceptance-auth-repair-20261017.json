@@ -193,5 +193,48 @@
       "active_run_id": "39057139939",
       "remaining": "Monitor actual hosted resource phase admission/watchdog and native member result, bind actual server SHA at browser/Chat and post-run. No native or Store credit yet; no retries after guard refusal without parent."
     }
+  },
+  "repaired_fixture_0522_attempt": {
+    "at": "2026-10-17T18:44:33.208Z",
+    "run_id": "39058586019",
+    "release_run_id": "39056398246",
+    "artifact_id": "12109816135",
+    "release_source": "f4a72d5ddbb508f63eef71661547b80c23bb6ffe",
+    "workflow_source": "1a458a4a7a1137350f4eccc10bb63758a5b5244f",
+    "store_zip_sha256": "fe80e3025dead2e2f508f0c2ba44656f33fa069b454d7f1313061f44e7cd54b9",
+    "archive_artifact_id": "12109774252",
+    "archive_digest": "sha256:8dd8bd08d18770c654f2b7df17796db633f03fadf203d12d47f2cea1324de93c",
+    "verdict": "invalid-resource; no Chat product verdict",
+    "native_boundary": {
+      "failure_stage": "enter_three_stage_question",
+      "failure_code": "unclassified_failure",
+      "send_click_reached": false,
+      "first_answer": "unverified",
+      "same_conversation_followup": "not covered by run driver",
+      "web_and_extension_signed_in": true,
+      "canonical_nonadmin_proof": "matched current user, HTTP200, zero admin assignment rows",
+      "organization_selected": true,
+      "fixture_pre_mint_proof": "approved active test_fixture organization and member role privately read back by reviewed mint helper"
+    },
+    "resources": {
+      "package": "valid exit0",
+      "browser": "valid exit0",
+      "native": "admitted=true resourceInvalid=true exit3; CPU_HIGH_LOAD_BUSY busy0.68/load8.56/4CPU before child exit1"
+    },
+    "server": {
+      "dispatch": "04864368c09a88347c1d4fc9b5f02f7af34bc717",
+      "browser": "894d635ed8020549ddc536a5504050512f17744a",
+      "post_run": "894d635ed8020549ddc536a5504050512f17744a"
+    },
+    "cleanup": "Temporary member secret deleted after auth preflight; listing absent verified. Private identity and one-use link directory removed and absence verified.",
+    "evidence_directory": "docs/stabilization/evidence/member-run39058586019-20261017",
+    "coverage_repair": {
+      "status": "source-verified; independent peer and new native run pending",
+      "behavior": "Two named member turns require actual HTTP200 completed SSE without stream error and fresh assistant content; followup must preserve hashed conversation, switch is_new true to false, and retain same valid organization header.",
+      "tests": "10 focused tests pass; constant-success sequence and terminal-check deletion mutants killed and restored byte-identically.",
+      "scope": "Member driver/oracle/test only; no product change; no rerun dispatched.",
+      "checks": "Owned-file Biome and node syntax pass. Full lint blocked only by guest lane Escape-event formatting at check time. pnpm compile fails on existing package export/type resolution errors."
+    },
+    "next_action": "Root assigns fresh independent peer on immutable commit before any rerun/source admission. No native pass, no Store upload."
   }
 }

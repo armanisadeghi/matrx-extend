@@ -47,7 +47,7 @@ test('signed-in member reaches Chat without a persisted device organization over
 // remains mandatory even when the UI has rendered a completed answer.
 test('member Chat verdict refuses absent, rejected or uncorrelated organization transport', () => {
   const start = source.indexOf('        const network = memberTransport.snapshot();');
-  const end = source.indexOf('        report.screenshots.result', start);
+  const end = source.indexOf('        await typeQuestion(', start);
   assert.ok(start > 0 && end > start, 'member transport oracle must be located');
   const oracle = (network) =>
     runInNewContext(source.slice(start, end), {
