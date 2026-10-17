@@ -304,13 +304,14 @@ Every entry follows this shape:
 - **Where to test:** a fresh isolated Chrome profile with no AI Matrx sign-in.
 - **Steps:**
   1. Open the Matrx Extend side panel.
-  2. Confirm Chat is selected. Send a short message and wait for a real assistant response.
+  2. Confirm Chat is selected. Type a short message, click Send, and wait for a real assistant response. The guest must not be asked to select an organization.
   3. While the reply is running, queue a follow-up, edit it, cancel a queued item, and stop the running reply. Send another follow-up in that conversation, then open Scrape, Data, SEO, and Settings.
      If a browser tool is delegated, complete it and confirm the assistant continues after the tool result.
   4. Reload the side panel while still signed out.
   5. Open the Values chip, turn a value off, send another turn, and confirm the choice stays local to this guest session.
   6. For an already-used guest profile, send one message after its current platform-configured points usage is over the enforced allowance. Do not assume a fixed number of requests; the platform setting and accumulated usage determine when the refusal occurs.
   7. Sign in, leave an account draft and selected Agent, sign out, then reopen Chat.
+  8. In the controlled member fixture with no available organization, attempt Send and confirm it refuses rather than using the guest identity.
 - **Expected:** The guest can send and receive both turns without signing in or
   choosing an organization. Chat remains in navigation after reload. Account-only
   agent selection and saved history stay behind sign-in; the old account draft,
@@ -323,6 +324,7 @@ Every entry follows this shape:
 - **Covered by:** `tests/unit/sidepanel-visibility.test.ts`,
   `tests/unit/chat-guest-boundary.test.ts`,
   `src/state/context-rules.guest.test.ts`,
+  `src/features/package-chat/host-guest-identity.test.ts` (the real package organization gate accepts the extension guest fingerprint, refuses a member without an organization, and follows sign-in/sign-out),
   `src/lib/api/routes/guest-chat-transport.test.ts` (guest fingerprint and signed-in organization transport; execution pending resource admission); browser send and
   response require a live guest run.
 - **Verification status:** the 402 classification has focused source tests; native

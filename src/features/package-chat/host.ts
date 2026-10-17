@@ -28,12 +28,18 @@ import type {
   ChatOrgPort,
   ChatOrganization,
 } from '@ai-matrx/chat/host';
-import { createMemoryNavigation, createPackageWindows, createWebPrefs } from '@ai-matrx/chat/host';
+import {
+  createMemoryNavigation,
+  createPackageWindows,
+  createWebPrefs,
+  resolveChatHost,
+} from '@ai-matrx/chat/host';
 import { withReferral } from '@ai-matrx/kit/outbound';
 import { createAiWatchWindowOpener } from './ai-watch-opener';
 import { browserDomContextSource, isBrowserDeviceRef } from './browser-dom-source';
 import { registerExtensionComposerExtensions } from './composer-extensions';
 import { extensionPageContextSource } from './context-source';
+import { createExtensionChatIdentity } from './identity';
 import { extensionKnobs } from './knobs';
 import { registerExtensionToolRenderers } from './tool-renderers';
 
@@ -128,7 +134,7 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
   registerExtensionComposerExtensions();
   const [baseUrl, org] = await Promise.all([getApiBaseUrl(), Promise.resolve(createPanelOrg())]);
   const [initial] = await Promise.all([readStoredAddress(), org.refresh()]);
-  return {
+  const host: ChatHost = {
     db: getSupabase(),
     accessToken: readBearer,
     sourceApp: 'matrx-extend',
@@ -176,4 +182,9 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
       },
     },
   };
+  const resolved = resolveChatHost(host);
+  host.identity = await createExtensionChatIdentity(resolved.identity, (error) =>
+    resolved.diagnostics.capture(error, { area: 'identity', code: 'extension-session-unreadable' }),
+  );
+  return host;
 }
