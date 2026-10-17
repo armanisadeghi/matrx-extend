@@ -122,6 +122,9 @@ export function requireReleaseMemberSource(ancestor, paths) {
         path === 'tests/browser/guest-chat-store-sequence.test.mjs' ||
         path === 'tests/browser/guest-chat-store-screenshot.mjs' ||
         path === 'tests/browser/reviewer-chat-store-acceptance.mjs' ||
+        path === 'tests/browser/reviewer-chat-identity-diagnostic.mjs' ||
+        path === 'tests/browser/reviewer-chat-identity-diagnostic.test.mjs' ||
+        path === 'tests/browser/reviewer-chat-organization-boundary.test.mjs' ||
         path === 'tests/browser/settings-panel-driver.mjs' ||
         path === 'tests/browser/package-chat-controls.mjs' ||
         path === 'tests/browser/package-chat-controls.test.mjs',
