@@ -212,4 +212,20 @@ describe('List Pattern — find every similar sibling', () => {
     expect(uniqueFieldName(['text_muted', 'text_muted_2'], 'text_muted')).toBe('text_muted_3');
     expect(uniqueFieldName(['a'], 'b')).toBe('b');
   });
+
+  it('Doctor names the exact list root when an earlier sibling looks the same', () => {
+    document.body.innerHTML = `<main><div class="box"><div><h2>Trending</h2><span>filters</span></div><div>${Array.from(
+      { length: 6 },
+      (_, i) =>
+        `<article class="row"><h2><a href="/r${i}">repo ${i} with a long enough title</a></h2><p>Description for repo ${i}</p></article>`,
+    ).join('')}</div></div></main>`;
+    const top = pageDiagnosticInPage().sources.repeating_groups[0];
+    if (!top) throw new Error('no group');
+    const rows = listPatternMode.runInPage({
+      list_root: top.parent_selector,
+      item_selector: top.item_selector,
+      field_paths: [],
+    }) as unknown[];
+    expect(rows).toHaveLength(6);
+  });
 });

@@ -310,7 +310,7 @@ export function pageDiagnosticInPage(): PageDiagnostic {
     if (items[0]?.closest(CHROME_SEL)) factor *= 0.15;
     return Math.round(items.length * factor * 100) / 100;
   };
-  const cssPath = (el: Element, depth = 4): string => {
+  const pathOf = (el: Element, depth: number, nth: boolean): string => {
     const parts: string[] = [];
     let node: Element | null = el;
     while (node && parts.length < depth) {
@@ -322,10 +322,34 @@ export function pageDiagnosticInPage(): PageDiagnostic {
       const klass = Array.from(node.classList)
         .filter((c) => !STATEFUL_RE.test(c) && !AUTOGEN_RE.test(c))
         .slice(0, 1);
-      parts.unshift(klass.length > 0 ? `${tag}.${CSS.escape(klass[0] ?? '')}` : tag);
-      node = node.parentElement;
+      let part = klass.length > 0 ? `${tag}.${CSS.escape(klass[0] ?? '')}` : tag;
+      const parentEl: Element | null = node.parentElement;
+      if (nth && parentEl) {
+        const sameTag = Array.from(parentEl.children).filter((c) => c.tagName === node?.tagName);
+        if (sameTag.length > 1) part += `:nth-of-type(${sameTag.indexOf(node) + 1})`;
+      }
+      parts.unshift(part);
+      node = parentEl;
     }
     return parts.join(' > ');
+  };
+  // The list root is replayed with document.querySelector, so the path must
+  // resolve to THIS parent — a short path can name an earlier look-alike
+  // (GitHub's trending Box has a header div before the rows div).
+  const cssPath = (el: Element): string => {
+    for (const [depth, nth] of [
+      [4, false],
+      [4, true],
+      [8, true],
+    ] as const) {
+      const path = pathOf(el, depth, nth);
+      try {
+        if (document.querySelector(path) === el) return path;
+      } catch {
+        // fall through to a longer path
+      }
+    }
+    return pathOf(el, 12, true);
   };
 
   const groups: RepeatingGroup[] = [];
