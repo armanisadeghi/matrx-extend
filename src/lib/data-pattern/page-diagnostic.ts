@@ -314,7 +314,8 @@ export function pageDiagnosticInPage(): PageDiagnostic {
     const parts: string[] = [];
     let node: Element | null = el;
     while (node && parts.length < depth) {
-      if (node.id) {
+      // Generated ids (long digit runs, React `:r1:`) differ per page/render.
+      if (node.id && node.id.length <= 60 && !/\d{4,}/.test(node.id) && !node.id.includes(':')) {
         parts.unshift(`#${CSS.escape(node.id)}`);
         break;
       }

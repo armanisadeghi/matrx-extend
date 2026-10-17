@@ -46,6 +46,15 @@ const STATEFUL_CLASS_RE =
 
 const STABLE_ID_RE = /^[a-z][a-z0-9_-]{0,29}$/i; // human-typed id, no random suffix
 
+/**
+ * An id worth anchoring a saved pattern on: no long digit run (Shopify's
+ * `shopify-section-template--16476858417232__grid` differs per page), no
+ * React `:r1:` ids, nothing absurdly long. A generated id names one render.
+ */
+export function isStableId(id: string): boolean {
+  return id.length > 0 && id.length <= 60 && !/\d{4,}/.test(id) && !id.includes(':');
+}
+
 function isAutogenClass(c: string): boolean {
   return AUTOGEN_CLASS_RE.test(c);
 }
@@ -90,7 +99,7 @@ function stableAnchor(el: Element): string | null {
   if (itemtype) return `[itemtype="${itemtype.replace(/"/g, '\\"')}"]`;
   const itemprop = el.getAttribute('itemprop');
   if (itemprop) return `[itemprop="${itemprop}"]`;
-  if (el.id && STABLE_ID_RE.test(el.id)) {
+  if (el.id && STABLE_ID_RE.test(el.id) && isStableId(el.id)) {
     return `#${CSS.escape(el.id)}`;
   }
   return null;
@@ -129,7 +138,7 @@ export function elementPathSelector(el: Element, depth = 5): string {
   const parts: string[] = [];
   let node: Element | null = el;
   while (node && node.nodeType === 1 && parts.length < depth) {
-    if (node.id) {
+    if (node.id && isStableId(node.id)) {
       parts.unshift(`#${CSS.escape(node.id)}`);
       break;
     }
@@ -272,7 +281,11 @@ export function relativeFieldSelector(target: Element, withinItem: Element): str
   const parts: string[] = [];
   let node: Element | null = target;
   while (node && node !== withinItem && node.nodeType === 1) {
-    if (node.id && withinItem.querySelectorAll(`#${CSS.escape(node.id)}`).length === 1) {
+    if (
+      node.id &&
+      isStableId(node.id) &&
+      withinItem.querySelectorAll(`#${CSS.escape(node.id)}`).length === 1
+    ) {
       parts.unshift(`#${CSS.escape(node.id)}`);
       break;
     }

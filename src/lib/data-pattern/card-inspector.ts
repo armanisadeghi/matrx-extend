@@ -118,7 +118,12 @@ export function inspectCardInPage(input: InspectInput): CardInspection {
       const ip = node.getAttribute('itemprop');
       if (ip) {
         part = `${tag}[itemprop="${ip}"]`;
-      } else if (node.id) {
+      } else if (
+        node.id &&
+        node.id.length <= 60 &&
+        !/\d{4,}/.test(node.id) &&
+        !node.id.includes(':')
+      ) {
         part = `${tag}#${CSS.escape(node.id)}`;
       } else if (node.classList.length > 0) {
         const klass = Array.from(node.classList)
@@ -137,7 +142,7 @@ export function inspectCardInPage(input: InspectInput): CardInspection {
       // spans) would collapse into one selector and both read the first, so
       // pin the position among same-tag siblings.
       const parentEl: Element | null = node.parentElement;
-      if (!ip && !node.id && parentEl) {
+      if (!ip && !part.includes('#') && parentEl) {
         const probe = part;
         const twins = Array.from(parentEl.children).filter((c) => {
           try {

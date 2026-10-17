@@ -241,4 +241,42 @@ describe('List Pattern — find every similar sibling', () => {
     const inspection = inspectCardInPage({ list_root: '#plans', item_selector: 'div.plan' });
     for (const c of inspection.candidates) expect(c.rel_selector).not.toMatch(hashed);
   });
+
+  it('never anchors a list root on a generated id that differs per page', () => {
+    const grid = (sectionId: string, names: string[]) =>
+      `<div id="${sectionId}" class="shopify-section"><div class="wrap"><div class="grid">${names
+        .map(
+          (n) =>
+            `<div class="group relative"><a href="/products/${n}">${n} product name here</a><span class="price">$1</span></div>`,
+        )
+        .join('')}</div></div></div>`;
+    document.body.innerHTML = grid('shopify-section-template--16476858417232__grid', [
+      'a1',
+      'a2',
+      'a3',
+      'a4',
+      'a5',
+    ]);
+    const top = pageDiagnosticInPage().sources.repeating_groups[0];
+    const picked = inferListPatternCandidates(document.querySelector('.price') as Element)[0];
+    expect(top?.parent_selector).not.toMatch(/16476858417232/);
+    expect(picked?.listRoot).not.toMatch(/16476858417232/);
+    // Same template, another collection page: a different generated id.
+    document.body.innerHTML = grid('shopify-section-template--16476860317776__grid', [
+      'b1',
+      'b2',
+      'b3',
+      'b4',
+      'b5',
+      'b6',
+    ]);
+    for (const root of [top?.parent_selector, picked?.listRoot]) {
+      const rows = listPatternMode.runInPage({
+        list_root: root ?? '',
+        item_selector: 'div.group',
+        field_paths: [],
+      }) as unknown[];
+      expect(rows).toHaveLength(6);
+    }
+  });
 });
