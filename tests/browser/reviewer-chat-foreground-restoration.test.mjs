@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict';
+import { access, mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
+import { restoreMemberForegroundWithReport } from './member-chat-visible-proof.mjs';
 import {
   recordMemberForegroundVisibility,
   restoreMemberForeground,
 } from './member-foreground-diagnostic.mjs';
 
-function foregroundCase({ failAt = null, visible = true } = {}) {
+function foregroundCase({ failAt = null, visible = true, reportOutput = null } = {}) {
   const events = [];
   let webClosed = false;
   let rootActive = false;
@@ -68,8 +72,8 @@ function foregroundCase({ failAt = null, visible = true } = {}) {
   return {
     events,
     diagnostic,
-    run: () =>
-      restoreMemberForeground({
+    run: () => {
+      const options = {
         web,
         page,
         native,
@@ -82,7 +86,16 @@ function foregroundCase({ failAt = null, visible = true } = {}) {
           events.push('report_saved');
         },
         now: () => ++tick,
-      }),
+      };
+      if (!reportOutput) return restoreMemberForeground(options);
+      const { diagnostic: _diagnostic, onFailure: _onFailure, ...runnerOptions } = options;
+      return restoreMemberForegroundWithReport({
+        ...runnerOptions,
+        output: reportOutput.output,
+        report: reportOutput.report,
+        stage: 'reviewer_native_panel_foreground',
+      }).finally(() => events.push('report_saved'));
+    },
   };
 }
 
@@ -105,6 +118,58 @@ test('member foreground performs all four real operations in order and accepts v
     ],
   );
   assert.equal(scenario.diagnostic.failure_class, null);
+});
+
+test('member foreground persists a bounded failure before native cleanup', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'member-foreground-report-'));
+  try {
+    const output = join(directory, 'report.json');
+    const report = { status: 'unverified', foreground_diagnostic: null };
+    const scenario = foregroundCase({ failAt: 'panel_reopen', reportOutput: { output, report } });
+    report.foreground_diagnostic = scenario.diagnostic;
+    await assert.rejects(scenario.run, /native_sidepanel_open_refused/);
+    const persisted = JSON.parse(await readFile(output, 'utf8'));
+    scenario.events.push('native_cleanup');
+    assert.deepEqual(scenario.events.slice(-3), ['panel_reopen', 'report_saved', 'native_cleanup']);
+    assert.equal(persisted.failure_stage, 'reviewer_native_panel_foreground');
+    assert.equal(persisted.failure_code, 'unclassified_failure');
+    assert.equal(persisted.foreground_diagnostic.failure_substep, 'panel_reopen');
+    assert.equal(persisted.foreground_diagnostic.failure_class, 'opener_refused');
+    assert.equal(persisted.foreground_diagnostic.failure_snapshot.exact_panel_target_present, true);
+    assert.doesNotMatch(JSON.stringify(persisted), /private|must-not-enter-report/);
+    const otherOutput = join(directory, 'closed-target.json');
+    const otherReport = { status: 'unverified', foreground_diagnostic: null };
+    const closed = foregroundCase({
+      failAt: 'web_close',
+      reportOutput: { output: otherOutput, report: otherReport },
+    });
+    otherReport.foreground_diagnostic = closed.diagnostic;
+    await assert.rejects(closed.run, /Target closed/);
+    const otherPersisted = JSON.parse(await readFile(otherOutput, 'utf8'));
+    assert.equal(otherPersisted.foreground_diagnostic.failure_substep, 'web_close');
+    assert.equal(otherPersisted.foreground_diagnostic.failure_class, 'target_closed');
+    assert.equal(
+      otherPersisted.foreground_diagnostic.failure_snapshot.exact_panel_target_present,
+      false,
+    );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('member foreground writes no failure report when visibility is restored', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'member-foreground-success-'));
+  try {
+    const output = join(directory, 'report.json');
+    const report = { status: 'unverified', foreground_diagnostic: null };
+    const scenario = foregroundCase({ reportOutput: { output, report } });
+    report.foreground_diagnostic = scenario.diagnostic;
+    await scenario.run();
+    await assert.rejects(access(output), { code: 'ENOENT' });
+    assert.equal(report.foreground_diagnostic.failure_substep, null);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 test('member foreground captures failing substep and fixed class without raw opener detail', async () => {

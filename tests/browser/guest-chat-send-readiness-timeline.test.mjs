@@ -9,12 +9,12 @@ test('failure report keeps the exact Send and initialization-shell evidence', ()
     'utf8',
   );
   const body = source.match(
-    /function diagnosticState\(state, fixture\) \{[\s\S]*?\n\}\n\nasync function capture/,
+    /function diagnosticState\(state, fixture\) \{[\s\S]*?\n\}\n\ntry \{/,
   )?.[0];
   assert.ok(body, 'acceptance diagnostic transform must be present');
   const diagnosticState = new Function(
     'safeVisibleText',
-    `${body.slice(0, -'\n\nasync function capture'.length)}; return diagnosticState;`,
+    `${body.slice(0, -'\n\ntry {'.length)}; return diagnosticState;`,
   )(() => '[redacted]');
   const state = {
     composerLength: 139,

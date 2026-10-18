@@ -6,7 +6,11 @@ import { mkdir, readFile, readdir, rename, unlink, writeFile } from 'node:fs/pro
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
-import { prepareGuestAnswerScreenshot } from './guest-answer-screenshot.mjs';
+import {
+  captureGuestAnswer,
+  recordGuestAnswerScreenshotFailure,
+  writeGuestAcceptanceReport,
+} from './guest-answer-report-boundary.mjs';
 import {
   classifyFixtureUrlMatch,
   classifyGuestTurn,
@@ -804,56 +808,6 @@ function safeFailure(error) {
   return { code, reason };
 }
 
-function safeAnswerScreenshotDiagnostic(error) {
-  const source = error instanceof Error ? error.guestAnswerScreenshotDiagnostic : null;
-  if (!source || typeof source !== 'object') return null;
-  const flag = (value) => value === true;
-  const number = (value) =>
-    typeof value === 'number' && Number.isFinite(value) && Math.abs(value) <= 100_000
-      ? Math.round(value * 100) / 100
-      : null;
-  const rect = (value) =>
-    value && typeof value === 'object'
-      ? {
-          left: number(value.left),
-          right: number(value.right),
-          top: number(value.top),
-          bottom: number(value.bottom),
-        }
-      : null;
-  const checks = source.checks ?? {};
-  const safeChecks = {
-    article_intersects_viewport: flag(checks.articleIntersectsViewport),
-    code_in_answer_text: flag(checks.codeInAnswerText),
-    heading_in_answer_text: flag(checks.headingInAnswerText),
-    focused_text_found: flag(checks.focusedTextFound),
-    focused_text_in_viewport: flag(checks.focusedTextInViewport),
-    focused_text_unclipped: flag(checks.focusedTextUnclipped),
-  };
-  return {
-    checks: safeChecks,
-    failed_checks: Object.entries(safeChecks)
-      .filter(([, passed]) => !passed)
-      .map(([name]) => name),
-    viewport: {
-      width: number(source.viewport?.width),
-      height: number(source.viewport?.height),
-    },
-    article: rect(source.article),
-    line: rect(source.line),
-    clipped_by: source.clippedBy
-      ? { depth: number(source.clippedBy.depth), rect: rect(source.clippedBy.rect) }
-      : null,
-    scroll_ancestors: Array.isArray(source.scrollAncestors)
-      ? source.scrollAncestors.slice(0, 8).map((item) => ({
-          depth: number(item.depth),
-          top: number(item.top),
-          height: number(item.height),
-        }))
-      : [],
-  };
-}
-
 function safeValuesCloseDiagnostic(error) {
   const state = error instanceof Error ? error.guestValuesCloseState : null;
   if (!state || typeof state !== 'object') return null;
@@ -922,24 +876,6 @@ function diagnosticState(state, fixture) {
     streamTrace: state.streamTrace,
     sendExecution: state.sendExecution,
   };
-}
-
-async function capture(panel, path, expectedAnswer = null) {
-  if (expectedAnswer) {
-    const proof = await evaluate(
-      panel,
-      `(${prepareGuestAnswerScreenshot.toString()})(${JSON.stringify(expectedAnswer)})`,
-    );
-    try {
-      assert.equal(proof.eligible, true, `answer screenshot ineligible: ${proof.reason}`);
-    } catch (error) {
-      error.guestAnswerScreenshotDiagnostic = proof.diagnostic;
-      throw error;
-    }
-  }
-  const { data } = await panel.send('Page.captureScreenshot', { format: 'png' });
-  await writeFile(path, Buffer.from(data, 'base64'), { mode: 0o600 });
-  return path;
 }
 
 try {
@@ -1134,12 +1070,16 @@ try {
             !answered.answerIsRefusal && !answered.terminalAnswerError && !answered.errorNotice,
           followup_completed_after_reload: false,
         };
-        report.screenshot = await capture(panel, join(artifacts, 'guest-chat-real-answer.png'), {
-          code: fixture.openingCode,
-        });
+        report.screenshot = await captureGuestAnswer(
+          panel,
+          join(artifacts, 'guest-chat-real-answer.png'),
+          {
+            code: fixture.openingCode,
+          },
+        );
         for (const stageName of REQUIRED_ANSWER_TERMS) {
           report.opening_stage_screenshots.push(
-            await capture(
+            await captureGuestAnswer(
               panel,
               join(artifacts, `guest-chat-opening-${stageName.toLowerCase()}.png`),
               {
@@ -1209,12 +1149,12 @@ try {
         report.chat.same_conversation_followup_completed = true;
         report.chat.same_conversation_followup_reply_count = sameTurn.state.replyCount;
         report.chat.same_conversation_followup_contains_page_code = true;
-        report.same_conversation_screenshot = await capture(
+        report.same_conversation_screenshot = await captureGuestAnswer(
           panel,
           join(artifacts, 'guest-chat-same-conversation-followup.png'),
           { code: fixture.followupCode, heading: fixture.title },
         );
-        report.same_conversation_heading_screenshot = await capture(
+        report.same_conversation_heading_screenshot = await captureGuestAnswer(
           panel,
           join(artifacts, 'guest-chat-same-conversation-heading.png'),
           { code: fixture.followupCode, heading: fixture.title, focus: fixture.title },
@@ -1328,12 +1268,12 @@ try {
         report.chat.followup_contains_unpredictable_page_code = followup.answerContainsNonce;
         report.chat.followup_names_fixture_heading = followup.answerContainsFixtureHeading;
         report.chat.followup_completed_after_reload = true;
-        report.followup_screenshot = await capture(
+        report.followup_screenshot = await captureGuestAnswer(
           panel,
           join(artifacts, 'guest-chat-real-followup-answer.png'),
           { code: fixture.followupCode, heading: fixture.title },
         );
-        report.followup_heading_screenshot = await capture(
+        report.followup_heading_screenshot = await captureGuestAnswer(
           panel,
           join(artifacts, 'guest-chat-followup-heading.png'),
           { code: fixture.followupCode, heading: fixture.title, focus: fixture.title },
@@ -1355,7 +1295,7 @@ try {
         const failure = safeFailure(error);
         report.failure_code = failure.code;
         report.failure_reason = failure.reason;
-        report.answer_screenshot_diagnostic = safeAnswerScreenshotDiagnostic(error);
+        recordGuestAnswerScreenshotFailure(report, error);
         report.values_close_diagnostic = safeValuesCloseDiagnostic(error);
         report.failure_observation = diagnosticState(
           await observe(panel, {
@@ -1368,7 +1308,7 @@ try {
         report.guest_ai_observer = (await networkWatch?.diagnostics()) ?? null;
         report.guest_ai_requests = networkWatch?.snapshot() ?? [];
         try {
-          report.failure_screenshot = await capture(
+          report.failure_screenshot = await captureGuestAnswer(
             panel,
             join(artifacts, 'guest-chat-failure.png'),
           );
@@ -1441,8 +1381,7 @@ if (
   report.failure_code = 'backend_version_changed_during_acceptance';
   report.failure_reason = 'backend_version_changed_during_acceptance';
 }
-await mkdir(dirname(OUTPUT), { recursive: true, mode: 0o700 });
-await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
+await writeGuestAcceptanceReport(OUTPUT, report);
 await unlink(CHECKPOINT_OUTPUT).catch((error) => {
   if (error.code !== 'ENOENT') throw error;
 });

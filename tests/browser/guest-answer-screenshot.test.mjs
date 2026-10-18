@@ -1,7 +1,15 @@
 import assert from 'node:assert/strict';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
+import {
+  captureGuestAnswer,
+  recordGuestAnswerScreenshotFailure,
+  writeGuestAcceptanceReport,
+} from './guest-answer-report-boundary.mjs';
 import { prepareGuestAnswerScreenshot } from './guest-answer-screenshot.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
 
@@ -18,6 +26,72 @@ function installTextRanges(window) {
     },
   });
 }
+
+test('guest rejection writes bounded screenshot diagnostic and never calls CDP capture', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'guest-screenshot-boundary-'));
+  const window = new Window();
+  try {
+    window.document.body.innerHTML = `<button role="tab" title="Chat" aria-selected="true" aria-controls="chat"></button>
+      <div id="chat" data-state="active"><article role="article" aria-label="Assistant answer"><div data-message-content>PRIVATE_REPLY Bearer PRIVATE_AUTH CODE-791</div></article></div>`;
+    for (const element of window.document.querySelectorAll('*')) {
+      element.getBoundingClientRect = () => ({
+        left: 0,
+        right: 250,
+        top: 10,
+        bottom: 90,
+        width: 250,
+        height: 80,
+      });
+      element.scrollIntoView = () => {};
+    }
+    Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 400 });
+    Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 300 });
+    installTextRanges(window);
+    let captured = 0;
+    const panel = {
+      async send(method, options) {
+        if (method === 'Runtime.evaluate') {
+          const value = runInNewContext(options.expression, {
+            document: window.document,
+            getComputedStyle: (element) => window.getComputedStyle(element),
+          });
+          if (value.diagnostic) value.diagnostic.raw_reply = 'PRIVATE_REPLY Bearer PRIVATE_AUTH';
+          return { result: { value } };
+        }
+        captured++;
+        return { data: Buffer.from('image').toString('base64') };
+      },
+    };
+    const output = join(directory, 'report.json');
+    const screenshot = join(directory, 'answer.png');
+    const report = { status: 'unverified', answer_screenshot_diagnostic: null };
+    await assert.rejects(async () => {
+      try {
+        await captureGuestAnswer(panel, screenshot, { code: 'OTHER-482' });
+      } catch (error) {
+        recordGuestAnswerScreenshotFailure(report, error);
+        throw error;
+      }
+    }, /answer screenshot ineligible/);
+    await writeGuestAcceptanceReport(output, report);
+    const serialized = await readFile(output, 'utf8');
+    const persisted = JSON.parse(serialized);
+    assert.equal(captured, 0);
+    assert.doesNotMatch(serialized, /PRIVATE_REPLY|PRIVATE_AUTH|CODE-791|Bearer/);
+    assert.equal(persisted.answer_screenshot_diagnostic.checks.code_in_answer_text, false);
+    assert.deepEqual(persisted.answer_screenshot_diagnostic.failed_checks, [
+      'code_in_answer_text',
+      'focused_text_found',
+      'focused_text_in_viewport',
+    ]);
+    assert.equal(await captureGuestAnswer(panel, screenshot, { code: 'CODE-791' }), screenshot);
+    assert.equal(captured, 1);
+    assert.equal(await readFile(screenshot, 'utf8'), 'image');
+  } finally {
+    await window.happyDOM.abort();
+    await rm(directory, { recursive: true, force: true });
+  }
+});
 
 test('horizontally clipped requested code cannot authorize a panel screenshot', async () => {
   const window = new Window();

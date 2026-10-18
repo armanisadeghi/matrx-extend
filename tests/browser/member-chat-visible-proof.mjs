@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
+import { restoreMemberForeground } from './member-foreground-diagnostic.mjs';
 
 const SAFE_REASONS = new Set([
   'eligible',
@@ -48,6 +49,20 @@ export function recordReviewerFailure(report, stage, error) {
 export async function writeReviewerReport(output, report) {
   await mkdir(dirname(output), { recursive: true, mode: 0o700 });
   await writeFile(output, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
+}
+
+/** Persist the foreground failure while its native targets are still owned. */
+export async function persistMemberForegroundFailure(output, report, stage, error) {
+  recordReviewerFailure(report, stage, error);
+  await writeReviewerReport(output, report);
+}
+
+export async function restoreMemberForegroundWithReport({ output, report, stage, ...options }) {
+  await restoreMemberForeground({
+    ...options,
+    diagnostic: report.foreground_diagnostic,
+    onFailure: (error) => persistMemberForegroundFailure(output, report, stage, error),
+  });
 }
 
 /** Keep only fixed diagnostic values; browser DOM text never enters the report. */

@@ -21,13 +21,11 @@ import {
 import {
   captureReviewerPanel as capture,
   recordReviewerFailure,
+  restoreMemberForegroundWithReport,
   runMemberAnswerProofBoundary,
   writeReviewerReport,
 } from './member-chat-visible-proof.mjs';
-import {
-  recordMemberForegroundVisibility,
-  restoreMemberForeground,
-} from './member-foreground-diagnostic.mjs';
+import { recordMemberForegroundVisibility } from './member-foreground-diagnostic.mjs';
 import {
   authenticatedWebIdentity,
   observeCanonicalAdminCheck,
@@ -1505,18 +1503,16 @@ try {
           failure_class: null,
           failure_snapshot: null,
         };
-        await restoreMemberForeground({
+        await restoreMemberForegroundWithReport({
           web,
           page,
           native,
           panel,
           waitFor,
           evaluate,
-          diagnostic: report.foreground_diagnostic,
-          onFailure: async (error) => {
-            recordReviewerFailure(report, stage, error);
-            await writeReviewerReport(OUTPUT, report);
-          },
+          output: OUTPUT,
+          report,
+          stage,
         });
 
         stage = 'signed_in_swipe_file_tab';
