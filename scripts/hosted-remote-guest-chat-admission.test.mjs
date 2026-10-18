@@ -7,6 +7,7 @@ import { join, resolve } from 'node:path';
 import { test } from 'node:test';
 import {
   planHostedGuestChat,
+  planHostedPublishedGuestChat,
   requireGuestChatDispatchAdmission,
 } from './hosted-remote-admission.mjs';
 const sha = '8f879d15b1fb5293d73a2f4d1a4e4c37e79d4e6f';
@@ -22,6 +23,35 @@ const workflow = readFileSync(
   new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
   'utf8',
 );
+test('published guest Chat plan pins the public item and uses only isolated guest B', () => {
+  const target = {
+    lane: 'B',
+    acceptanceCase: 'guest-chat',
+    runnerLabel: 'macos-15-intel',
+    publicVersion: '0.2.205',
+    publicId: 'hnfolienncfklkgmdjjmhhegglimlamg',
+    sourceSha: sha,
+  };
+  const fields = planHostedPublishedGuestChat(target).args.filter((_, i, a) => a[i - 1] === '-f');
+  assert.deepEqual(fields, [
+    'acceptance_lane=B',
+    'acceptance_case=guest-chat',
+    'scrape_auth_mode=guest',
+    'requested_by=extend-stabilization',
+    'runner_label=macos-15-intel',
+    'published_store_crx=true',
+  ]);
+  for (const changed of [
+    { lane: 'A' },
+    { acceptanceCase: 'member-chat' },
+    { publicVersion: '0.2.206' },
+    { publicId: 'a'.repeat(32) },
+    { sourceSha: undefined },
+    { workflowRef: 'feature' },
+    { workflow: `${workflow}\n# drift` },
+  ])
+    assert.throws(() => planHostedPublishedGuestChat({ ...target, ...changed }));
+});
 test('guest chat release plan cannot become member, development, diagnostic or unreviewed workflow dispatch', () => {
   const fields = planHostedGuestChat(input).args.filter((_, i, a) => a[i - 1] === '-f');
   assert.deepEqual(fields, [
@@ -253,6 +283,72 @@ else {const e=a[1];let r;
     const failed = execute('dispatch-guest-chat', { dispatchFailure: true });
     assert.notEqual(failed.status, 0);
     assert.match(failed.stderr, /HOSTED_DISPATCH_FAILED/);
+    rmSync(log);
+    const executePublished = (mode, changes = {}, extras = []) =>
+      spawnSync(
+        process.execPath,
+        [
+          resolve('scripts/hosted-remote-admission.mjs'),
+          mode,
+          '--lane',
+          'B',
+          '--case',
+          'guest-chat',
+          '--public-version',
+          changes.publicVersion ?? '0.2.205',
+          '--public-id',
+          changes.publicId ?? 'hnfolienncfklkgmdjjmhhegglimlamg',
+          '--source-sha',
+          sha,
+          ...extras,
+        ],
+        {
+          encoding: 'utf8',
+          env: {
+            ...process.env,
+            PATH: `${dir}:${process.env.PATH}`,
+            GUEST_CHAT_ADMISSION_STUB: JSON.stringify({ ...cfg, ...changes }),
+          },
+        },
+      );
+    const publicPlan = executePublished('plan-published-guest-chat');
+    assert.equal(publicPlan.status, 0, publicPlan.stderr);
+    assert.equal(
+      JSON.parse(publicPlan.stdout).crxSha256,
+      '7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23',
+    );
+    assert.equal(existsSync(log), false);
+    for (const [changes, extras, reason] of [
+      [{ dirty: ' M src/main.ts' }, [], 'SOURCE_NOT_SYNCHRONIZED'],
+      [{ remoteSha: 'a'.repeat(40) }, [], 'SOURCE_NOT_SYNCHRONIZED'],
+      [{ paths: ['tests/browser/guest-chat-store-acceptance.mjs'] }, [], 'RUNTIME_SOURCE_DRIFT'],
+      [{ workflow: `${workflow}\n# drift` }, [], 'WORKFLOW_BLOB_UNREVIEWED'],
+      [{ runs: [{ name: 'Native B · guest-chat', status: 'queued' }] }, [], 'B_CAPACITY_REFUSED'],
+      [{ publicVersion: '0.2.206' }, [], 'PUBLIC_TARGET_REFUSED'],
+      [{ publicId: 'a'.repeat(32) }, [], 'PUBLIC_TARGET_REFUSED'],
+      [{}, ['--release-run-id', input.releaseRunId], 'ARGUMENT_INVALID'],
+    ]) {
+      const refused = executePublished('dispatch-published-guest-chat', changes, extras);
+      assert.notEqual(refused.status, 0, reason);
+      assert.match(refused.stderr, new RegExp(reason));
+      assert.equal(existsSync(log), false, 'refused public route dispatched');
+    }
+    const published = executePublished('dispatch-published-guest-chat', {
+      runs: [{ name: 'Native A · member-chat', status: 'in_progress' }],
+    });
+    assert.equal(published.status, 0, published.stderr);
+    assert.deepEqual(JSON.parse(readFileSync(log)), [
+      ...planHostedPublishedGuestChat({
+        lane: 'B',
+        acceptanceCase: 'guest-chat',
+        publicVersion: '0.2.205',
+        publicId: 'hnfolienncfklkgmdjjmhhegglimlamg',
+        sourceSha: sha,
+      }).args,
+      '-R',
+      'armanisadeghi/matrx-extend',
+    ]);
+    rmSync(log);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

@@ -8,6 +8,10 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mjs';
 import { sourceCompatibility } from './development-source-compatibility.mjs';
+import {
+  PUBLISHED_STORE_CRX,
+  requirePublishedStoreCrxTarget,
+} from './published-store-crx-target.mjs';
 
 const OWNER = 'armanisadeghi/matrx-extend';
 const PHASES = ['hosted-package', 'hosted-browser', 'hosted-guest'];
@@ -158,6 +162,52 @@ export function planHostedGuestChat({
   };
 }
 
+/** Public Store bytes, pinned by the hosted CRX importer; no release/development artifact. */
+export function planHostedPublishedGuestChat({
+  lane,
+  acceptanceCase,
+  runnerLabel = 'macos-15-intel',
+  publicVersion,
+  publicId,
+  sourceSha,
+  workflowRef = 'main',
+  workflow,
+}) {
+  if (lane !== 'B') refuse('HOSTED_CHAT_LANE_REFUSED');
+  if (acceptanceCase !== 'guest-chat') refuse('HOSTED_CHAT_CASE_REFUSED');
+  if (runnerLabel !== 'macos-15-intel' && runnerLabel !== 'macos-15')
+    refuse('HOSTED_CHAT_RUNNER_REFUSED');
+  if (publicVersion !== PUBLISHED_STORE_CRX.version || publicId !== PUBLISHED_STORE_CRX.id)
+    refuse('HOSTED_CHAT_PUBLIC_TARGET_REFUSED');
+  if (!SHA.test(sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
+  if (workflowRef !== 'main') refuse('HOSTED_WORKFLOW_REF_REFUSED');
+  requireHostedWorkflowContract(
+    workflow ??
+      readFileSync(
+        new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+        'utf8',
+      ),
+  );
+  return {
+    command: 'gh',
+    args: [
+      'workflow',
+      'run',
+      'hosted-guest-acceptance.yml',
+      '--ref',
+      'main',
+      ...[
+        'acceptance_lane=B',
+        'acceptance_case=guest-chat',
+        'scrape_auth_mode=guest',
+        `requested_by=${DISPATCH_REQUESTER}`,
+        `runner_label=${runnerLabel}`,
+        'published_store_crx=true',
+      ].flatMap((field) => ['-f', field]),
+    ],
+  };
+}
+
 // The frozen release may advance only across this reviewed route and sanitized records.
 // Browser harnesses, workflows, dependencies and product edits require a fresh release.
 export function requireGuestChatDispatchAdmission({
@@ -191,16 +241,19 @@ export function requireGuestChatDispatchAdmission({
 }
 
 async function guestChatCli(mode, args) {
+  const published =
+    mode === 'plan-published-guest-chat' || mode === 'dispatch-published-guest-chat';
   for (const key of args.keys())
     if (
       ![
         '--lane',
         '--case',
         '--runner-label',
-        '--release-run-id',
-        '--artifact-id',
         '--source-sha',
         '--workflow-ref',
+        ...(published
+          ? ['--public-version', '--public-id']
+          : ['--release-run-id', '--artifact-id']),
       ].includes(key)
     )
       refuse('HOSTED_ARGUMENT_INVALID');
@@ -212,8 +265,10 @@ async function guestChatCli(mode, args) {
     artifactId: args.get('--artifact-id'),
     sourceSha: args.get('--source-sha'),
     workflowRef: args.get('--workflow-ref') ?? 'main',
+    publicVersion: args.get('--public-version'),
+    publicId: args.get('--public-id'),
   };
-  const plan = planHostedGuestChat(input);
+  const plan = published ? planHostedPublishedGuestChat(input) : planHostedGuestChat(input);
   const git = (argv) => execFileSync('git', argv, { encoding: 'utf8' }).trim();
   const admit = () => {
     const localSha = git(['rev-parse', 'HEAD']);
@@ -258,6 +313,31 @@ async function guestChatCli(mode, args) {
     return remoteSha;
   };
   const workflowSha = admit();
+  if (published) {
+    await requirePublishedStoreCrxTarget(
+      input.publicVersion,
+      new URL('../config/chrome-web-store-approved-baseline.json', import.meta.url),
+    );
+    if (admit() !== workflowSha) refuse('HOSTED_CHAT_WORKFLOW_CHANGED');
+    if (mode === 'dispatch-published-guest-chat') {
+      const result = spawnSync(plan.command, [...plan.args, '-R', OWNER], { stdio: 'inherit' });
+      if (result.status !== 0) refuse('HOSTED_DISPATCH_FAILED');
+    }
+    process.stdout.write(
+      `${JSON.stringify({
+        mode,
+        plan,
+        workflowSha,
+        sourceSha: input.sourceSha,
+        publicVersion: PUBLISHED_STORE_CRX.version,
+        publicId: PUBLISHED_STORE_CRX.id,
+        crxSha256: PUBLISHED_STORE_CRX.crxSha256,
+        host: 'github-hosted',
+        localHeavyWork: false,
+      })}\n`,
+    );
+    return;
+  }
   // Reuse the existing release identity, published receipt, tag and archive-byte validators.
   const { releaseMemberPlan, verifyReleaseMemberBytes } = await import(
     './hosted-release-member-admission.mjs'
@@ -1493,7 +1573,14 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   try {
     const mode = process.argv[2];
     const args = argsMap(process.argv.slice(3));
-    if (mode === 'plan-guest-chat' || mode === 'dispatch-guest-chat') {
+    if (
+      [
+        'plan-guest-chat',
+        'dispatch-guest-chat',
+        'plan-published-guest-chat',
+        'dispatch-published-guest-chat',
+      ].includes(mode)
+    ) {
       guestChatCli(mode, args).catch((error) => {
         process.stderr.write(`HOSTED_REMOTE_REFUSED ${error.message}\n`);
         process.exitCode = 1;

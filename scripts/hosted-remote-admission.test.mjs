@@ -67,6 +67,7 @@ test('standalone hosted CLI reaches admission refusals without installed package
       'hosted-remote-admission.mjs',
       'copy-hosted-resource-journal.mjs',
       'development-source-compatibility.mjs',
+      'published-store-crx-target.mjs',
     ])
       copyFileSync(new URL(name, import.meta.url), join(scratch, 'scripts', name));
     copyFileSync(
