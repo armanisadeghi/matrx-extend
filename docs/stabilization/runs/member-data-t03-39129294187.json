@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_member_data_case_run",
+  "run_id": 39129294187,
+  "title": "Member Data T03 stopped before product interaction",
+  "status": "resource_valid_setup_failure_zero_product_credit",
+  "provenance": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "lane": "A",
+    "case_id": "EXT-F-2005-T03",
+    "workflow_conclusion": "failure",
+    "source_sha": "2ccb9eeb046c02477d4e3369d57dcc030df38cf4",
+    "source_ci_run_id": 39128467009,
+    "source_artifact_id": 12136938674,
+    "source_artifact_digest": "sha256:11a58046124718ab7016b95256f10cd9811a58445f8d5f3086cdddf9487d3812",
+    "source_version": "0.2.543",
+    "source_tree_sha256": "ee99b2189500355cfc6c4623e467cf08d3702ca7be67a12d72f81d122c4bb6b2",
+    "hosted_artifact_id": 12138100204,
+    "hosted_artifact_name": "hosted-guest-39129294187-1",
+    "hosted_artifact_size_bytes": 39600,
+    "hosted_artifact_digest": "sha256:1ddf459e79d7968f829b426629cc0df90be2c679c7884a2818354db696e7f28b",
+    "hosted_artifact_expired": false,
+    "hosted_artifact_created_at_utc": "2026-10-18T13:03:32Z",
+    "artifact_report_summary_source": "sanitized source notes supplied with this record task; artifact metadata independently confirmed",
+    "native_report_locally_inspected": false,
+    "publish_state": "not established by this run"
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "case_verdict": {
+    "case_id": "EXT-F-2005-T03",
+    "mode": "member",
+    "status": "unverified",
+    "failure_stage": "member_auth / member_organization_selection",
+    "native_observations": "empty",
+    "actions_observed": [],
+    "actions_not_evidenced": [
+      "Pattern picker interaction",
+      "Save",
+      "Extraction",
+      "Clipboard",
+      "Cancel",
+      "Extension reload"
+    ],
+    "failure_detail": "The sanitized source notes report a native_acceptance_error without a detailed cause. Do not infer an authentication or product defect.",
+    "product_credit": "zero; failure occurred before product interaction"
+  },
+  "defect_and_retest_state": {
+    "defect_ids": ["EXT-D-0053", "EXT-D-0054"],
+    "defect_transition": "none",
+    "retest_state": "unchanged; this run neither reproduces nor clears either defect",
+    "overall_health_claim": false
+  },
+  "next_action": "Restore a usable existing member session through the authorized path, then perform a fresh resource-admitted exact-artifact member run. Record only the named case actions and sanitized outcomes; obtain independent review before changing inventory or defect state."
+}

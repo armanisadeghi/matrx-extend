@@ -166,21 +166,32 @@ export async function observeSettingsReacquisition(panel, extensionId) {
         let contexts = null;
         let contextQueryFailed = false;
         if (typeof runtime?.getContexts === 'function') {
-          try { contexts = await runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }); }
+          try { contexts = await runtime.getContexts({ contextTypes: ['SIDE_PANEL', 'BACKGROUND'] }); }
           catch { contextQueryFailed = true; }
         }
+        const bounded = (value) => Math.min(100, value);
+        const roots = [...document.querySelectorAll('#app')];
         return {
+          rootChildElementCount: bounded(roots.reduce((count, root) => count + (root.childElementCount ?? 0), 0)),
+          reactRootAttached: roots.some((root) => Object.keys(root).some((key) => key.startsWith('__reactContainer$'))),
+          // No public store marker exists. Do not claim hydration from DOM presence.
+          hydrationStateObservable: false,
+          tabTriggerCount: bounded(document.querySelectorAll('button[role="tab"]').length),
+          activePaneCount: bounded(document.querySelectorAll('[role="tabpanel"][data-state="active"]').length),
+          loadingIndicatorCount: bounded(document.querySelectorAll('#app .animate-spin, #app .animate-pulse').length),
+          renderErrorPresent: [...document.querySelectorAll('#app p')].some((node) => node.textContent?.trim() === 'The panel hit a render error'),
+          serviceWorkerContextCount: contexts === null ? null : bounded(contexts.filter((entry) => entry.contextType === 'BACKGROUND' && entry.contextId).length),
           expectedPanelUrl: document.URL === expectedUrl,
           readyState: document.readyState,
           visible: document.visibilityState === 'visible',
           runtimeIdMatches: runtime?.id === expectedId,
-          rootCount: document.querySelectorAll('#app').length,
-          settingsTabCount: document.querySelectorAll('button[role="tab"][title="Settings"]').length,
+          rootCount: bounded(roots.length),
+          settingsTabCount: bounded(document.querySelectorAll('button[role="tab"][title="Settings"]').length),
           contextQueryAvailable: typeof runtime?.getContexts === 'function',
           contextQueryFailed,
-          exactSidePanelContextCount: contexts?.filter((entry) =>
+          exactSidePanelContextCount: contexts === null ? null : bounded(contexts.filter((entry) =>
             entry.contextType === 'SIDE_PANEL' && entry.documentUrl === expectedUrl &&
-            entry.tabId === -1).length ?? null,
+            entry.tabId === -1).length),
         };
       })()`,
     );
@@ -189,12 +200,25 @@ export async function observeSettingsReacquisition(panel, extensionId) {
       ['loading', 'interactive', 'complete'].includes(sample.readyState) &&
       typeof sample.visible === 'boolean' &&
       typeof sample.runtimeIdMatches === 'boolean' &&
-      safeCount(sample.rootCount) !== null &&
-      safeCount(sample.settingsTabCount) !== null &&
+      [
+        'rootCount',
+        'settingsTabCount',
+        'rootChildElementCount',
+        'tabTriggerCount',
+        'activePaneCount',
+        'loadingIndicatorCount',
+      ].every((key) => safeCount(sample[key]) !== null && sample[key] <= 100) &&
+      ['reactRootAttached', 'hydrationStateObservable', 'renderErrorPresent'].every(
+        (key) => typeof sample[key] === 'boolean',
+      ) &&
+      (sample.serviceWorkerContextCount === null ||
+        (safeCount(sample.serviceWorkerContextCount) !== null &&
+          sample.serviceWorkerContextCount <= 100)) &&
       typeof sample.contextQueryAvailable === 'boolean' &&
       typeof sample.contextQueryFailed === 'boolean' &&
       (sample.exactSidePanelContextCount === null ||
-        safeCount(sample.exactSidePanelContextCount) !== null)
+        (safeCount(sample.exactSidePanelContextCount) !== null &&
+          sample.exactSidePanelContextCount <= 100))
     ) {
       result.renderer = {
         sampled: true,
@@ -203,6 +227,14 @@ export async function observeSettingsReacquisition(panel, extensionId) {
         visible: sample.visible,
         runtimeIdMatches: sample.runtimeIdMatches,
         rootCount: sample.rootCount,
+        rootChildElementCount: sample.rootChildElementCount,
+        reactRootAttached: sample.reactRootAttached,
+        hydrationStateObservable: sample.hydrationStateObservable,
+        tabTriggerCount: sample.tabTriggerCount,
+        activePaneCount: sample.activePaneCount,
+        loadingIndicatorCount: sample.loadingIndicatorCount,
+        renderErrorPresent: sample.renderErrorPresent,
+        serviceWorkerContextCount: sample.serviceWorkerContextCount,
         settingsTabCount: sample.settingsTabCount,
         contextQueryAvailable: sample.contextQueryAvailable,
         contextQueryFailed: sample.contextQueryFailed,

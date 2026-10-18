@@ -5,7 +5,49 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { containsScriptSrcLoader } from './detect-remote-script-loader.mjs';
+import {
+  containsGistSrcDocScript,
+  containsScriptSrcLoader,
+} from './detect-remote-script-loader.mjs';
+
+test('flags the tldraw Gist iframe remote script in source and minified output', () => {
+  const installed =
+    'const iframe={srcDoc: `<html><body><script src=${`https://gist.github.com/${id}.js`}></script></body></html>`}';
+  const minified = 'const i={srcDoc:`<script src=${`https://gist.github.com/${e}.js`}></script>`}';
+  assert.equal(containsGistSrcDocScript(installed), true);
+  assert.equal(containsGistSrcDocScript(minified), true);
+  assert.equal(
+    containsGistSrcDocScript(
+      'const i={srcDoc:`<script type="text/javascript" src=${`https://gist.github.com/${e}.js`}></script>`}',
+    ),
+    true,
+  );
+});
+
+test('allows Gist navigation, API URLs, and srcDoc without a remote script', () => {
+  assert.equal(containsGistSrcDocScript('href:"https://gist.github.com/"+id'), false);
+  assert.equal(containsGistSrcDocScript('fetch("https://gist.github.com/api/gists")'), false);
+  assert.equal(containsGistSrcDocScript('const i={srcDoc:"<p>Gist preview</p>"}'), false);
+  assert.equal(containsGistSrcDocScript('const i={srcDoc:"<script>local()</script>"}'), false);
+  assert.equal(
+    containsGistSrcDocScript(
+      'const iframe={srcDoc:"<p>Gist preview</p>"};const help=`<script src=https://gist.github.com/7.js></script>`',
+    ),
+    false,
+  );
+  assert.equal(
+    containsGistSrcDocScript(
+      'const i={srcDoc:`<script data-src="https://gist.github.com/7.js"></script>`}',
+    ),
+    false,
+  );
+  assert.equal(
+    containsGistSrcDocScript(
+      'const i={srcDoc:"<script src=/local.js></script><a href=https://gist.github.com/7>Open</a>"}',
+    ),
+    false,
+  );
+});
 
 test('flags the rejected branch with every legal minified identifier shape', () => {
   // Alpha-renaming the captured jsPDF script handle changes no executable behavior.
@@ -85,6 +127,13 @@ test('the Store emitted-code gate refuses the rejected loader when its script ha
       rejected.stderr,
       /jspdf\.js creates an executable script element and assigns its src/,
     );
+    writeFileSync(
+      chunk,
+      'const i={srcDoc:`<script src=${`https://gist.github.com/${e}.js`}></script>`}',
+    );
+    const gistRejected = runGate();
+    assert.equal(gistRejected.status, 1);
+    assert.match(gistRejected.stderr, /jspdf\.js embeds a remote Gist script in iframe srcDoc/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }

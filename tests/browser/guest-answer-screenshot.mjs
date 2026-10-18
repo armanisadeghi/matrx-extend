@@ -40,6 +40,8 @@ export function prepareGuestAnswerScreenshot({ code, heading = null }) {
   ].filter(visible);
   // This function is serialized alone into the native page. Keep the .205
   // completed MessageRow primitive aligned with readPackageChatControls.
+  // Copy reply is a completion marker inside an opacity-0 hover toolbar.
+  // Require the row and prose to be painted, not the marker itself.
   const rows = articles.length
     ? articles
     : [
@@ -49,7 +51,7 @@ export function prepareGuestAnswerScreenshot({ code, heading = null }) {
               'button[title="Copy reply"], button[data-matrx-title="Copy reply"]',
             ),
           ]
-            .filter((button) => visible(button) && !button.closest('[class~="group/toolcard"]'))
+            .filter((button) => !button.closest('[class~="group/toolcard"]'))
             .map((button) => button.closest('div.group.space-y-2'))
             .filter(
               (row) =>

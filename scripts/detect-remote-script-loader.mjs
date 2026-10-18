@@ -12,3 +12,34 @@ export function containsScriptSrcLoader(source) {
   }
   return false;
 }
+
+/** Detect tldraw's Gist iframe HTML that executes a remotely hosted .js file. */
+export function containsGistSrcDocScript(source) {
+  if (!source.includes('srcDoc') || !source.includes('gist.github.com')) return false;
+  const file = ts.createSourceFile(
+    'emitted.js',
+    source,
+    ts.ScriptTarget.Latest,
+    false,
+    ts.ScriptKind.JS,
+  );
+  const nodes = [file];
+  while (nodes.length > 0) {
+    const node = nodes.pop();
+    if (
+      ts.isPropertyAssignment(node) &&
+      (ts.isIdentifier(node.name) || ts.isStringLiteral(node.name)) &&
+      node.name.text === 'srcDoc' &&
+      /<script\b[^>]{0,160}\ssrc\s*=[^<>]{0,160}https:\/\/gist\.github\.com\//.test(
+        node.initializer.getText(file),
+      )
+    ) {
+      return true;
+    }
+    ts.forEachChild(node, (child) => {
+      nodes.push(child);
+    });
+  }
+  return false;
+}
+import ts from 'typescript';

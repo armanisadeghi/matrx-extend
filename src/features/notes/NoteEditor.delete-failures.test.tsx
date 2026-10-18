@@ -85,6 +85,37 @@ describe('Notes deletion failure', () => {
     expect(useNotesUiStore.getState().selectedNoteId).toBe(noteId);
   });
 
+  it('keeps a pending dental intake draft available when the repaired delete query throws', async () => {
+    api.delete.mockRejectedValueOnce(new Error('Note not deleted')).mockResolvedValueOnce(true);
+    mount();
+    const body = await screen.findByDisplayValue('Call new patient.');
+    vi.useFakeTimers();
+    fireEvent.change(body, {
+      target: { value: 'Call new patient and confirm insurance coverage.' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Delete note' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Delete$/ }));
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(
+      screen.getByDisplayValue('Call new patient and confirm insurance coverage.'),
+    ).toBeTruthy();
+    expect(useNotesUiStore.getState().selectedNoteId).toBe(noteId);
+    expect(screen.getByRole('button', { name: 'Retry delete' })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Retry delete' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Delete$/ }));
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(useNotesUiStore.getState().selectedNoteId).toBeNull();
+    expect(api.delete).toHaveBeenCalledTimes(2);
+  });
+
   it('does not flush a pending draft after confirmed deletion unmounts the editor', async () => {
     api.delete.mockResolvedValue(true);
     const view = mount();

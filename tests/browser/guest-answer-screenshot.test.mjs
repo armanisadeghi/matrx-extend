@@ -141,3 +141,63 @@ test('Store completed answer screenshot reads direct Markdown and refuses non-an
   assert.equal(verify('NEXT-865'), false, 'a streaming run is not terminal evidence');
   await window.happyDOM.abort();
 });
+
+// v0.2.205 PilotView MessageRow renders completed actions in an opacity-0
+// group-hover:opacity-100 toolbar. Its Copy reply marks completion, not paint.
+test('Store screenshot accepts painted answer when completed toolbar is unhovered', async () => {
+  const window = new Window();
+  window.document.body.innerHTML = `
+    <button role="tab" title="Chat" aria-selected="true" aria-controls="chat"></button>
+    <div id="chat" data-state="active">
+      <div class="group space-y-2" id="answer">
+        <div class="min-w-0 text-foreground">Capture Understand Use OPEN-791</div>
+        <div class="mt-1 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100" style="opacity:0">
+          <button title="Copy reply"></button>
+        </div>
+      </div>
+    </div>`;
+  for (const element of window.document.querySelectorAll('*')) {
+    element.getBoundingClientRect = () => ({
+      left: 0,
+      right: 250,
+      top: 20,
+      bottom: 100,
+      width: 250,
+      height: 80,
+    });
+    element.scrollIntoView = () => {};
+  }
+  Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 400 });
+  Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 300 });
+  const context = {
+    document: window.document,
+    pane: window.document.getElementById('chat'),
+    getComputedStyle: (element) => window.getComputedStyle(element),
+  };
+  const verify = () =>
+    runInNewContext(`(${prepareGuestAnswerScreenshot.toString()})({code:'OPEN-791'})`, context);
+  const read = () => runInNewContext(`(${readPackageChatControls.toString()})(pane)`, context);
+  assert.deepEqual(Array.from(read().replies), ['Capture Understand Use OPEN-791']);
+  assert.equal(verify().eligible, true, 'painted completed reply must not require hover');
+  const toolbar = window.document.querySelector('#answer > div:last-child');
+  toolbar.style.opacity = '1';
+  assert.equal(verify().eligible, true, 'hovered completion marker has identical meaning');
+  toolbar.style.opacity = '0';
+  const body = window.document.querySelector('#answer > .min-w-0');
+  body.style.opacity = '0';
+  assert.equal(verify().eligible, false, 'unpainted prose cannot provide proof');
+  body.style.opacity = '1';
+  window.document.getElementById('answer').style.opacity = '0';
+  assert.equal(verify().eligible, false, 'unpainted row cannot provide proof');
+  window.document.getElementById('answer').style.opacity = '1';
+  context.pane.style.opacity = '0';
+  assert.equal(verify().eligible, false, 'unpainted pane cannot provide proof');
+  context.pane.style.opacity = '1';
+  toolbar.querySelector('button').remove();
+  assert.equal(
+    verify().eligible,
+    false,
+    'pending row without completed actions cannot provide proof',
+  );
+  await window.happyDOM.abort();
+});

@@ -1,0 +1,113 @@
+{
+  "status": "blocked-hosted-dispatch-spend",
+  "checked_at": "2026-10-18T17:25:00.140373+00:00",
+  "owner": "store_resubmission_oct18",
+  "primary_item": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "dashboard": {
+    "source": "parent authenticated IAB observation 2026-10-18 about 17:20 UTC",
+    "publisher": "Matrx",
+    "published_version": "0.2.205",
+    "draft_version": "0.2.479",
+    "draft_state": "Rejected",
+    "rejection": "Including remotely hosted code in a Manifest V3 item",
+    "upload_enabled": true,
+    "new_upload": false,
+    "new_submission": false,
+    "auto_publish_required": true
+  },
+  "source": {
+    "version": "0.2.544",
+    "version_tag_sha": "60230ef8ff40be9e687e3e3bb9e6bdc26f6f6f99",
+    "workflow_sha": "18aceaf85220a812feae66a5e64ba22b1a458513",
+    "current_guarded_release_artifact": null
+  },
+  "latest_guarded_release": {
+    "version": "0.2.543",
+    "run_id": 39124994461,
+    "artifact_id": 12136100758,
+    "tag_sha": "41a9e567ba4a6a6949b992295b6e694aeaf22c48",
+    "outer_sha256": "b9a22685aeee7965ef5c111b3e2b163596b249dbfa185d224d9a4e20eba98e3a",
+    "eligible": false,
+    "reason": "Behind current source/packages; no current exact artifact acceptance"
+  },
+  "checks": [
+    {
+      "command": "python3 scripts/check_workflow_runner_cost.py",
+      "verdict": "fail",
+      "modeled_weekly_usd": 149.44,
+      "ceiling_usd": 100,
+      "issues": [
+        "aidream private modeled total exceeds shared ceiling",
+        "aidream/extension guard twin drift"
+      ]
+    },
+    {
+      "command": "pnpm check:matrx-packages",
+      "verdict": "fail",
+      "scope": "local installed graph",
+      "issues": [
+        "stale/duplicate nested package copies",
+        "not a current lockfile or fresh hosted-install verdict"
+      ]
+    },
+    {
+      "command": "runtime src forbidden-code token scan excluding tests/docs",
+      "verdict": "no matches",
+      "scope": "source only; emitted candidate remains unverified"
+    },
+    {
+      "command": "manifest source diff since approved baseline",
+      "verdict": "no permission/policy additions found",
+      "scope": "source only"
+    },
+    {
+      "command": "anonymous direct HTTPS GET demo and privacy",
+      "verdict": "200 both",
+      "demo_stages": ["Capture", "Understand", "Use"]
+    }
+  ],
+  "policy": {
+    "classification": "routine candidate with unchanged source manifest surface; final emitted/semantic audit pending",
+    "public_tabs": ["chat", "scrape", "data", "seo", "settings"],
+    "admin_exclusions": ["pilot", "showcase", "broker", "debug"],
+    "changes_since_baseline": [
+      "signed-in Swipe File capture workflow",
+      "shared Chat/Vault package adoption",
+      "PDFObject CDN and tldraw remote code source repair"
+    ],
+    "official_remote_code_reference": "https://developer.chrome.com/docs/extensions/develop/migrate/remote-hosted-code"
+  },
+  "acceptance": {
+    "latest_public_guest_run": 39131112338,
+    "verdict": "invalid-resource; zero credit",
+    "helper_repair_sha": "18aceaf85220a812feae66a5e64ba22b1a458513",
+    "current_guest": false,
+    "current_member": false,
+    "requirements": [
+      "exact Store payload",
+      "stable server SHA before and after",
+      "resource-valid opening terminal answer",
+      "same-conversation follow-up terminal answer",
+      "post-reload terminal content",
+      "non-admin opening/follow-up",
+      "independent acceptance review"
+    ]
+  },
+  "ownership": {
+    "final_dashboard": "parent chat authenticated IAB tab 7",
+    "child_ui": "IAB tabs scoped to child; no authenticated tab available",
+    "alternate_browser_attempted": false,
+    "active_owned_jobs": [],
+    "parent_jobs_observed": ["39148465543 in_progress at last read; parent-owned CI"]
+  },
+  "next_actions": [
+    "clear genuine aidream spend gate and guard twin drift",
+    "sync exact source and latest packages",
+    "dispatch guarded release.yml once with requested_by",
+    "validate release receipt/tag/store ZIP SHA and emitted risk scan",
+    "dispatch admitted guest B and member A acceptance with fixture serialization",
+    "parent upload exact eligible Store ZIP to primary item; preserve automatic publishing; verify Pending review"
+  ],
+  "canonical_commit": "bf480303b",
+  "open_questions": []
+}
