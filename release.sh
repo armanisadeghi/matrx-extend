@@ -418,6 +418,7 @@ CHECKS=()
 # Package freshness is cheap and can invalidate the candidate independently of
 # compilation or tests. Check it first on every candidate, including race retries.
 CHECKS+=("matrx-packages|300|ERROR|@ai-matrx packages are stale or pinned|pnpm sync:matrx-packages|pnpm -s check:matrx-packages")
+CHECKS+=("chat-package-link|60|ERROR|Published Chat package cannot link against installed siblings|pnpm sync:matrx-packages|pnpm -s check:chat-package-link")
 $SKIP_TYPECHECK || CHECKS+=("typecheck|600|ERROR|typecheck failed|pnpm compile|pnpm -s compile")
 CHECKS+=("lint|300|ERROR|Biome lint or formatting failed|pnpm lint|pnpm -s lint")
 CHECKS+=(

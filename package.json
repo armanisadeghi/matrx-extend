@@ -19,6 +19,7 @@
     "zip:store": "pnpm prezip && MATRX_CWS_BUILD=1 wxt zip && node scripts/check-store-package.mjs && node --test scripts/detect-remote-script-loader.test.mjs && node scripts/check-cws-release-risk.mjs",
     "zip:firefox": "wxt zip -b firefox --mv3",
     "compile": "tsc --noEmit",
+    "check:chat-package-link": "node scripts/check-chat-package-link.mjs",
     "lint": "biome check . --max-diagnostics=10000",
     "check:native-callback-bindings": "biome lint --only=correctness/noUndeclaredVariables --error-on-warnings tests/browser/*native-acceptance.mjs tests/browser/settings-local-controls-acceptance.mjs",
     "lint:fix": "biome check --write .",
