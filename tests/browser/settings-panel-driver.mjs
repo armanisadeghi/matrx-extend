@@ -494,6 +494,9 @@ export async function click(panel, kind, label, onPhase = undefined) {
     else if (kind === 'chat-send') {
       const pane = ${activeTabPanelExpression('Chat')};
       candidates = [...(pane?.querySelectorAll('button[aria-label="Send message"]') ?? [])];
+      if (pane?.querySelectorAll('textarea').length === 1)
+        candidates.push(...[...pane.querySelectorAll('button:not([aria-label])[title="Send"], button:not([aria-label]):not([title])[data-matrx-title="Send"]')]
+          .filter((button) => button.querySelector('svg.lucide-arrow-up')));
     }
     else if (kind === 'context-values') {
       const chatTab = [...document.querySelectorAll('button[role="tab"][title="Chat"]')]

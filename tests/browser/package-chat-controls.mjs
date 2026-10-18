@@ -9,11 +9,25 @@ export function readPackageChatControls(pane) {
     );
   };
   const active = pane?.getAttribute('data-state') === 'active' && visible(pane);
+  // Public .205 uses a title plus ArrowUp; newer package builds expose an aria label.
+  // Require its icon and composer, and never override an explicit non-send label.
+  const publicSends =
+    active && pane.querySelectorAll('textarea').length === 1
+      ? [
+          ...pane.querySelectorAll(
+            'button:not([aria-label])[title="Send"], button:not([aria-label]):not([title])[data-matrx-title="Send"]',
+          ),
+        ].filter((button) => button.querySelector('svg.lucide-arrow-up') && visible(button))
+      : [];
   const sends = active
-    ? [...pane.querySelectorAll('button[aria-label="Send message"]')].filter(visible)
+    ? [...pane.querySelectorAll('button[aria-label="Send message"]')]
+        .filter(visible)
+        .concat(publicSends)
     : [];
   const sendLike = active
-    ? [...pane.querySelectorAll('button[aria-label^="Send message"]')].filter(visible)
+    ? [...pane.querySelectorAll('button[aria-label^="Send message"]')]
+        .filter(visible)
+        .concat(publicSends)
     : [];
   // Keep only bounded, known control states; never export arbitrary DOM labels.
   const sendLikeControls = sendLike.slice(0, 4).map((button) => {
@@ -21,7 +35,7 @@ export function readPackageChatControls(pane) {
     const ariaDisabled = button.getAttribute('aria-disabled');
     return {
       label:
-        label === 'Send message'
+        label === 'Send message' || publicSends.includes(button)
           ? 'send'
           : label === 'Send message (still initializing)'
             ? 'initializing'

@@ -332,3 +332,46 @@ test('assistant prose excludes pending and expanded tool cards plus hidden plain
   );
   await window.happyDOM.abort();
 });
+
+// Public v0.2.205 ChatView.tsx at 2f68bc4: normal composer submit branch.
+// Lucide ArrowUp renders the arrow-up class; title is migrated by tooltip setup.
+test('public .205 composer icon send is ready, while title decoys and ambiguous sends fail closed', async () => {
+  const { window, pane, read } = surface({ name: 'unrelated' });
+  const button = pane.querySelector('button');
+  button.outerHTML =
+    '<button type="button" title="Send"><svg class="lucide lucide-arrow-up size-4"></svg></button>';
+  const send = pane.querySelector('button');
+  send.getBoundingClientRect = () => ({ width: 30, height: 30 });
+  assert.equal(read().sendEnabled, true);
+  assert.equal(read().sendLikeControlCount, 1);
+  send.disabled = true;
+  assert.equal(read().sendEnabled, false);
+  send.disabled = false;
+  send.removeAttribute('title');
+  send.setAttribute('data-matrx-title', 'Send');
+  assert.equal(read().sendEnabled, true);
+  send.insertAdjacentHTML('afterend', '<button title="Send"></button>');
+  assert.equal(read().sendControlCount, 1, 'title-only decoy is excluded');
+  send.insertAdjacentHTML('afterend', send.outerHTML);
+  send.nextElementSibling.getBoundingClientRect = () => ({ width: 30, height: 30 });
+  assert.equal(read().sendEnabled, false, 'two actual icon sends are ambiguous');
+  pane.querySelectorAll('button')[1].remove();
+  send.setAttribute('aria-label', 'Queue message');
+  assert.equal(read().sendEnabled, false, 'an explicit non-send label wins over title');
+  await window.happyDOM.abort();
+});
+
+test('public .205 icon send reaches trusted pointer input and refuses a title-only decoy', async () => {
+  const { click } = await import('./settings-panel-driver.mjs');
+  const { window, target, events, panel } = nativePointerSurface();
+  target.removeAttribute('aria-label');
+  target.title = 'Send';
+  target.innerHTML = '<svg class="lucide lucide-arrow-up size-4"></svg>';
+  await click(panel, 'chat-send', '');
+  assert.equal(events.length, 2);
+  target.innerHTML = '';
+  events.length = 0;
+  await assert.rejects(click(panel, 'chat-send', ''));
+  assert.equal(events.length, 0);
+  await window.happyDOM.abort();
+});
