@@ -282,6 +282,41 @@ LOCAL_HEAD="$(git rev-parse HEAD)"
 if [[ "$(git rev-parse --abbrev-ref HEAD)" != "$BRANCH" ]]; then
     hard_stop "checkout is not on $BRANCH; local commits were preserved and nothing was published"
 fi
+LOCK_RECONCILIATIONS=0
+LOCK_RECONCILIATION_LIMIT="${RELEASE_LOCK_RECONCILIATION_LIMIT:-2}"
+[[ "$LOCK_RECONCILIATION_LIMIT" =~ ^[1-9][0-9]*$ ]] \
+    || hard_stop "RELEASE_LOCK_RECONCILIATION_LIMIT must be a positive integer — nothing was pushed"
+reconcile_lock_conflict() {  # remote local → merge histories, refresh latest, then revalidate
+    local remote="$1" local_head="$2" tree merge_sha paths=() p
+    (( LOCK_RECONCILIATIONS < LOCK_RECONCILIATION_LIMIT )) || \
+        hard_stop "concurrent lock updates exceeded $LOCK_RECONCILIATION_LIMIT reconciliations — nothing was pushed"
+    tree="$(node scripts/release-lock-conflict.mjs "$remote" "$local_head" 2>> "$RELEASE_LOG_FILE")" \
+        || hard_stop "local commits conflict with $REMOTE/$BRANCH outside a safe @ai-matrx lock refresh — nothing was pushed"
+    LOCK_RECONCILIATIONS=$((LOCK_RECONCILIATIONS + 1))
+    merge_sha="$(git commit-tree "$tree" -p "$remote" -p "$local_head" -m "Merge $REMOTE/$BRANCH (reconcile @ai-matrx lock refresh)")" \
+        || hard_stop "could not record both sides of the lock reconciliation — nothing was pushed"
+    quiet git merge --ff-only "$merge_sha" \
+        || hard_stop "could not fast-forward the checkout to the reconciled lock tree — nothing was pushed"
+    # The remote lock is only a seed. Regenerate the graph against npm latest,
+    # including the local contributor's @ai-matrx changes, before any gate runs.
+    ( cd "$REPO_ROOT" && bounded 1200 pnpm -s sync:matrx-packages ) >> "$RELEASE_LOG_FILE" 2>&1 \
+        || hard_stop "could not regenerate the reconciled @ai-matrx lock at npm latest — nothing was pushed"
+    if [[ -f "$REPO_ROOT/scripts/check-matrx-imports.mjs" ]]; then
+        ( cd "$REPO_ROOT" && bounded 300 node scripts/check-matrx-imports.mjs ) >> "$RELEASE_LOG_FILE" 2>&1 \
+            || hard_stop "reconciled @ai-matrx packages break a source import — nothing was pushed"
+    fi
+    git diff --quiet HEAD -- package.json \
+        || hard_stop "package manifest changed during lock reconciliation — nothing was pushed"
+    for p in pnpm-lock.yaml; do
+        git diff --quiet HEAD -- "$p" 2>/dev/null || paths+=("$p")
+    done
+    if [[ ${#paths[@]} -gt 0 ]]; then
+        quiet git commit --only -m "chore(deps): regenerate reconciled @ai-matrx lock at npm latest" -- "${paths[@]}" \
+            || hard_stop "could not commit the regenerated lock — nothing was pushed"
+    fi
+    LOCAL_HEAD="$(git rev-parse HEAD)"
+    finding "WARNING" "Packages" "concurrent @ai-matrx lock updates reconciled at npm latest; all release gates will rerun" ""
+}
 base_tree() {  # sets BASE, BASE_TREE, PARENTS
     BASE="$(git rev-parse "$REMOTE/$BRANCH")"
     PARENTS=(-p "$BASE")
@@ -293,7 +328,8 @@ base_tree() {  # sets BASE, BASE_TREE, PARENTS
         BASE_TREE="$merged"
         PARENTS=(-p "$BASE" -p "$LOCAL_HEAD")
     else
-        hard_stop "local commits conflict with $REMOTE/$BRANCH — resolve the conflict before release; no commits were discarded or pushed"
+        reconcile_lock_conflict "$BASE" "$LOCAL_HEAD"
+        base_tree
     fi
 }
 dependency_inputs_changed() {  # 0 when BASE_TREE's dependency inputs differ from LOCAL_HEAD's (what is installed)
