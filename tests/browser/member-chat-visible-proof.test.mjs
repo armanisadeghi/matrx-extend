@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -51,6 +52,9 @@ test('runner persists a real CDP panel image and sanitized failure report before
     );
     assert.equal(captureObservedReport, true);
     assert.equal(captureCallCount, 1);
+    const imagePath = join(artifacts, 'reviewer-chat-visible-answer-proof.png');
+    assert.equal(existsSync(imagePath), true, 'member_visible_proof_screenshot_missing');
+    assert.equal(existsSync(output), true, 'member_visible_proof_failure_report_missing');
     const evidence = await readFile(output, 'utf8');
     const persisted = JSON.parse(evidence);
     assert.deepEqual(persisted.member_answer_proof, {
@@ -63,10 +67,7 @@ test('runner persists a real CDP panel image and sanitized failure report before
     assert.equal(persisted.failure_stage, 'reviewer_two_turn_terminal_proof');
     assert.equal(persisted.failure_code, 'reviewer_chat_visible_answer_unverified');
     assert.equal(persisted.screenshots.result, null);
-    assert.equal(
-      persisted.screenshots.visible_answer_proof,
-      join(artifacts, 'reviewer-chat-visible-answer-proof.png'),
-    );
+    assert.equal(persisted.screenshots.visible_answer_proof, imagePath);
     assert.deepEqual(await readFile(persisted.screenshots.visible_answer_proof), png);
     assert.equal((await stat(persisted.screenshots.visible_answer_proof)).mode & 0o777, 0o600);
     assert.equal((await stat(output)).mode & 0o777, 0o600);
