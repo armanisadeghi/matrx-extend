@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-18T18:22:00Z",
+  "defect_id": "EXT-D-0147",
+  "source_commit": "43a88c761",
+  "status": "independent-source-pass-native-unverified",
+  "changes": "onbox_ai_available uses the client discovery for LanguageModel and six independent task globals; legacy ai exposure retained.",
+  "verification": [
+    "Six dedicated-global regression cases RED before repair, GREEN after",
+    "Independent peer: two focused suites, 14 tests pass",
+    "Independent peer: compile pass",
+    "Full lint exit 0"
+  ],
+  "peer": "d147_hint_peer",
+  "limitations": [
+    "Exposure is not actual API availability",
+    "Manual panel and worker dispatch remain distinct",
+    "No native or release acceptance; D147 remains in-fix"
+  ]
+}

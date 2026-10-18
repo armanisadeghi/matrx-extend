@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-18T11:18:07Z",
+  "updated_at": "2026-10-18T18:13:53Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -23344,7 +23344,11 @@
           "label": "Open landed Source in web app",
           "action": "Open the newly landed Source from the Save success state.",
           "source_anchor": "src/features/scrape/ScrapeView.tsx:608",
-          "source_applicable": true
+          "source_applicable": true,
+          "modes": [
+            "member",
+            "admin"
+          ]
         },
         {
           "id": "EXT-F-1007-C22",
@@ -23372,7 +23376,11 @@
           "label": "Save edited article text as Source content",
           "action": "Apply an article markdown edit, then save; verify the landed Source uses the edited text while its original capture remains unchanged.",
           "source_anchor": "src/lib/sources/save-capture.ts:100",
-          "source_applicable": true
+          "source_applicable": true,
+          "modes": [
+            "member",
+            "admin"
+          ]
         },
         {
           "id": "EXT-F-1007-C26",
@@ -23390,31 +23398,47 @@
         {
           "id": "EXT-F-1007-C28",
           "label": "Show not-yet-a-Source state with its next action",
-          "action": "An absent Source is described as not yet a Source with the correct next action; a known Source shows saved status; unknown lookup state is explicit and never presented as not-yet-saved."
+          "action": "An absent Source is described as not yet a Source with the correct next action; a known Source shows saved status; unknown lookup state is explicit and never presented as not-yet-saved.",
+          "modes": [
+            "member",
+            "admin"
+          ]
         },
         {
           "id": "EXT-F-1007-C29",
           "label": "Close Save Source without saving",
           "action": "Dismiss the pre-save dialog without sending a Source write; keep the capture available.",
-          "source_anchor": "src/features/scrape/FileSourcePanel.tsx"
+          "source_anchor": "src/features/scrape/SaveSourceForm.tsx:340"
         },
         {
           "id": "EXT-F-1007-C30",
           "label": "Choose Source destinations before saving",
           "action": "Open destination search on demand, select or remove registered places, then include the choices in the Source landing.",
-          "source_anchor": "src/features/scrape/FileSourcePanel.tsx"
+          "source_anchor": "src/features/scrape/FileSourcePanel.tsx",
+          "modes": [
+            "member",
+            "admin"
+          ]
         },
         {
           "id": "EXT-F-1007-C31",
           "label": "Choose optional media Library for Source",
           "action": "Open the optional Library selector on demand; choose a Library or No Library and verify the landing association.",
-          "source_anchor": "src/features/scrape/FileSourcePanel.tsx"
+          "source_anchor": "src/features/scrape/FileSourcePanel.tsx",
+          "modes": [
+            "member",
+            "admin"
+          ]
         },
         {
           "id": "EXT-F-1007-C32",
           "label": "Keep in-flight Source save bound to capture and organization",
           "action": "Late save completion after workspace or capture switch cannot claim the wrong saved state.",
-          "source_anchor": "src/features/scrape/ScrapeView.tsx"
+          "source_anchor": "src/features/scrape/ScrapeView.tsx",
+          "modes": [
+            "member",
+            "admin"
+          ]
         },
         {
           "id": "EXT-F-1007-C33",
@@ -23486,6 +23510,16 @@
           "source_anchor": "src/features/scrape/ScrapeView.tsx:1030-1036",
           "modes": [
             "guest",
+            "member",
+            "admin"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-C42",
+          "label": "Close File elsewhere without filing",
+          "action": "Open File elsewhere after a Source lands, then close the filing panel without attaching a place or Library; confirm the panel closes and the Source remains available.",
+          "source_anchor": "src/features/scrape/FileSourcePanel.tsx:185",
+          "modes": [
             "member",
             "admin"
           ]
@@ -28660,6 +28694,55 @@
               "detail": "New source-to-case coverage; no native run."
             }
           }
+        },
+        {
+          "id": "EXT-F-1007-T43",
+          "title": "Close Save Source without saving",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C29"
+          ],
+          "preconditions": [
+            "Open Save Source for a current capture in a guest, member, or admin session."
+          ],
+          "steps": [
+            "Close using the dialog close button and confirm no Source write occurred. Reopen Save Source, press Escape, and confirm it closes without a write."
+          ],
+          "expected": [
+            "Both dismissal paths close the dialog and retain the current capture; neither lands or changes a Source, including for a guest."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-T44",
+          "title": "Close File elsewhere without filing",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C42"
+          ],
+          "preconditions": [
+            "Open File elsewhere for a landed Source as a signed-in member or admin."
+          ],
+          "steps": [
+            "Close the filing panel before selecting a destination or Library. Reopen it and verify the same Source is still available."
+          ],
+          "expected": [
+            "The filing panel closes without attaching a destination or Library; the landed Source remains available."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ]
         }
       ],
       "cells": {

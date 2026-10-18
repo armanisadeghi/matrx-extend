@@ -22,6 +22,7 @@
  */
 
 import { getAccessToken } from '@/lib/auth/flow';
+import { hasOnboxAiGlobal } from '@/lib/onbox-ai/client';
 import { useAuthStore } from '@/state/auth';
 import { useChatStore } from '@/state/chat';
 import { useDesktopStore } from '@/state/desktop';
@@ -95,7 +96,7 @@ async function detectOnboxAi(): Promise<boolean> {
     // The full availability probe is the agent's `ai_check_availability`
     // tool; we just need a yes/no signal here for routing.
     const g = globalThis as unknown as Record<string, unknown>;
-    if (typeof g.LanguageModel !== 'undefined') return true;
+    if (hasOnboxAiGlobal()) return true;
     if (typeof g.ai === 'object' && g.ai !== null) return true;
     return false;
   } catch {

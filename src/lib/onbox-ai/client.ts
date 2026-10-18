@@ -130,6 +130,11 @@ function getAi(): AnyAi | null {
   return Object.keys(ai).length > 0 ? ai : null;
 }
 
+/** Lightweight exposure hint; actual task availability is checked per API. */
+export function hasOnboxAiGlobal(): boolean {
+  return getAi() !== null;
+}
+
 export function checkAvailability(
   capability?: Exclude<keyof AnyAi, 'translator'>,
 ): Promise<Availability>;
