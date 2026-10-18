@@ -108,6 +108,14 @@ export function sanitizeMemberAnswerDiagnostic(proof) {
   };
 }
 
+/** Fixed categories only; browser exception messages may include page text or credentials. */
+function probeExceptionCategory(error) {
+  if (error?.name === 'TimeoutError' || /timed? out/i.test(error?.message ?? '')) return 'timeout';
+  if (/target closed|session closed|connection closed|disconnected/i.test(error?.message ?? ''))
+    return 'transport_closed';
+  return error instanceof Error ? 'evaluation_error' : 'non_error_throw';
+}
+
 /** Persist the panel proof before the strict eligibility assertion can abort acceptance. */
 export async function requireMemberAnswerEvidence({
   panel,
@@ -117,9 +125,28 @@ export async function requireMemberAnswerEvidence({
   evaluateProof,
   capture,
 }) {
-  const proof = await evaluateProof(panel, expectedTerms, 'immediate');
+  report.member_answer_diagnostic = { phase_timing: {} };
+  const probe = async (phase) => {
+    const startedAt = new Date();
+    const startedMs = performance.now();
+    let exceptionCategory = null;
+    try {
+      return await evaluateProof(panel, expectedTerms, phase);
+    } catch (error) {
+      exceptionCategory = probeExceptionCategory(error);
+      throw error;
+    } finally {
+      report.member_answer_diagnostic.phase_timing[phase] = {
+        started_at_utc: startedAt.toISOString(),
+        finished_at_utc: new Date().toISOString(),
+        elapsed_ms: Math.max(0, Math.round(performance.now() - startedMs)),
+        exception_category: exceptionCategory,
+      };
+    }
+  };
+  const proof = await probe('immediate');
   report.member_answer_proof = sanitizeMemberAnswerProof(proof);
-  report.member_answer_diagnostic = { immediate: sanitizeMemberAnswerDiagnostic(proof) };
+  report.member_answer_diagnostic.immediate = sanitizeMemberAnswerDiagnostic(proof);
   let screenshotCaptured = false;
   try {
     report.screenshots.visible_answer_proof = await capture(
@@ -133,13 +160,13 @@ export async function requireMemberAnswerEvidence({
   }
   if (proof?.eligible !== true) {
     try {
-      const nextFrame = await evaluateProof(panel, expectedTerms, 'next_frame');
+      const nextFrame = await probe('next_frame');
       report.member_answer_diagnostic.next_frame = sanitizeMemberAnswerDiagnostic(nextFrame);
     } catch {
       report.member_answer_diagnostic.next_frame_failed = true;
     }
     try {
-      const scrolled = await evaluateProof(panel, expectedTerms, 'scroll_bottom');
+      const scrolled = await probe('scroll_bottom');
       report.member_answer_diagnostic.scroll_bottom = sanitizeMemberAnswerDiagnostic(scrolled);
       try {
         report.screenshots.visible_answer_after_scroll = await capture(

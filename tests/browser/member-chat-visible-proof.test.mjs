@@ -85,6 +85,13 @@ test('runner persists a real CDP panel image and sanitized failure report before
     assert.equal(report.member_answer_diagnostic?.immediate?.rejected_ancestor?.depth, 2);
     assert.equal(report.member_answer_diagnostic?.next_frame?.painted, true);
     assert.equal(report.member_answer_diagnostic?.scroll_bottom?.painted, true);
+    for (const phase of ['immediate', 'next_frame', 'scroll_bottom']) {
+      const timing = report.member_answer_diagnostic.phase_timing[phase];
+      assert.match(timing.started_at_utc, /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/);
+      assert.match(timing.finished_at_utc, /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/);
+      assert.ok(timing.elapsed_ms >= 0);
+      assert.equal(timing.exception_category, null);
+    }
     const imagePath = join(artifacts, 'reviewer-chat-visible-answer-proof.png');
     assert.equal(existsSync(imagePath), true, 'member_visible_proof_screenshot_missing');
     assert.equal(existsSync(output), true, 'member_visible_proof_failure_report_missing');
@@ -175,5 +182,49 @@ test('a failed diagnostic probe cannot turn an unpainted answer into acceptance'
   assert.deepEqual(phases, ['immediate', 'next_frame', 'scroll_bottom']);
   assert.equal(report.member_answer_diagnostic.next_frame_failed, true);
   assert.equal(report.member_answer_diagnostic.scroll_probe_failed, true);
+  assert.equal(report.member_answer_diagnostic.phase_timing.immediate.exception_category, null);
+  assert.equal(
+    report.member_answer_diagnostic.phase_timing.next_frame.exception_category,
+    'evaluation_error',
+  );
+  assert.equal(
+    report.member_answer_diagnostic.phase_timing.scroll_bottom.exception_category,
+    'evaluation_error',
+  );
   assert.doesNotMatch(JSON.stringify(report), /private browser failure/);
+});
+
+test('diagnostic probe categories distinguish transport loss from timeout without leaking exception text', async () => {
+  const report = { screenshots: {} };
+  const secret = 'Bearer hidden-value';
+  await assert.rejects(
+    requireMemberAnswerEvidence({
+      panel: {},
+      expectedTerms: ['Understand'],
+      report,
+      artifacts: '/unused',
+      evaluateProof: async (_panel, _terms, phase) => {
+        if (phase === 'next_frame') throw new Error(`Target closed ${secret}`);
+        if (phase === 'scroll_bottom')
+          throw Object.assign(new Error(secret), { name: 'TimeoutError' });
+        return {
+          eligible: false,
+          reason: 'answer_unpainted',
+          painted: false,
+          term_visible: [true],
+        };
+      },
+      capture: async () => '/unused/proof.png',
+    }),
+    /reviewer_chat_visible_answer_unverified/,
+  );
+  assert.equal(
+    report.member_answer_diagnostic.phase_timing.next_frame.exception_category,
+    'transport_closed',
+  );
+  assert.equal(
+    report.member_answer_diagnostic.phase_timing.scroll_bottom.exception_category,
+    'timeout',
+  );
+  assert.doesNotMatch(JSON.stringify(report), /Bearer|hidden-value|Target closed|TimeoutError/);
 });
