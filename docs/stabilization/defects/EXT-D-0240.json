@@ -32,12 +32,12 @@
   "reproducibility": "Both final images lack readable assistant text; focused harness regression exercises clipped and occluded latest answers.",
   "severity": "S2: acceptance reported a pass without visual proof of the answer.",
   "priority": "P1: retest Member A on corrected native harness before product credit.",
-  "state": "fixed",
-  "owner": "member_visible_reply_proof_fix",
+  "state": "in-fix",
+  "owner": "member_answer_proof_repair",
   "cause": "The final capture path did not position the answer and the terminal DOM oracle did not test viewport clipping or occlusion.",
   "sibling_census": "Both final Member images, normal and 640x400 Store candidate, now use the same latest-answer proof after each viewport size is applied. Transport and terminal assertions remain intact.",
   "fix_sha": null,
-  "original_retest_runs": [39107538580],
+  "original_retest_runs": [39107538580, 39154980480],
   "surrounding_retest_runs": [],
   "reviewer": "Fresh independent peer A/B PASS after Range glyph and ancestor-opacity repairs; native retest pending.",
   "acceptance_criteria": [
@@ -48,13 +48,13 @@
   "verification": {
     "focused": "Focused package controls 8/8; independent combined suite 34/34; pnpm compile, focused Biome, diff check, and frozen .537 source admission pass.",
     "peer": "Fresh independent final peer A/B PASS.",
-    "native": "Pending corrected guarded native retest; run 39107538580 receives zero visible-answer credit."
+    "native": "Exact .546 native retest rejects answer_unpainted: ancestor opacity is zero. Two HTTP 200 terminal replies are diagnostic only; paint cause unresolved."
   },
   "limitations": [
     "Historical run 39107538580 keeps its valid HTTP and terminal diagnostic evidence, but no visible-answer credit.",
     "This source-only harness repair does not establish product success until a fresh native retest."
   ],
-  "next_action": "Obtain independent source review, commit the reviewed test-only repair, then rerun guarded Member A and inspect both retained images.",
+  "next_action": "Complete independently reviewed source repair, then one guarded exact-artifact native retest; retain and independently inspect actual answer images before closure.",
   "transition_history": [
     {
       "at": "2026-10-18T00:00:00Z",
@@ -73,6 +73,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Visual-proof harness gate, regression coverage, and independent A/B source review pass; native retest remains pending."
+    },
+    {
+      "at": "2026-10-18T18:53:00Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Exact .546 native retest rejects answer_unpainted: ancestor opacity is zero. Two HTTP 200 terminal replies are diagnostic only; paint cause unresolved."
+    },
+    {
+      "at": "2026-10-18T18:53:00Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Focused evidence repair/diagnosis assigned; fresh independent review and native retest required."
     }
   ]
 }

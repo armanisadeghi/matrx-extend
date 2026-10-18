@@ -223,9 +223,13 @@ test('guest owner-table verdict executes after both Chat verdicts and screenshot
       );
     if (fails) await assert.rejects(execute, /owner-table GET/);
     else await execute();
-    assert.deepEqual(captures, [join('/artifact', 'guest-chat-real-followup-answer.png')]);
+    assert.deepEqual(captures, [
+      join('/artifact', 'guest-chat-real-followup-answer.png'),
+      join('/artifact', 'guest-chat-followup-heading.png'),
+    ]);
     assert.deepEqual(report.context_rule_reads, reads);
     assert.equal(report.followup_screenshot, captures[0]);
+    assert.equal(report.followup_heading_screenshot, captures[1]);
   }
 });
 

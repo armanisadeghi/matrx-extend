@@ -1,5 +1,5 @@
 /** Position and verify the actual answer before a native panel screenshot. */
-export function prepareGuestAnswerScreenshot({ code, heading = null }) {
+export function prepareGuestAnswerScreenshot({ code, heading = null, focus = code }) {
   const pane = [...document.querySelectorAll('button[role="tab"]')]
     .filter((tab) => tab.title === 'Chat' && tab.getAttribute('aria-selected') === 'true')
     .map((tab) => document.getElementById(tab.getAttribute('aria-controls') ?? ''))
@@ -65,12 +65,9 @@ export function prepareGuestAnswerScreenshot({ code, heading = null }) {
   const article = rows.at(-1);
   if (!article) return { eligible: false, reason: 'missing_answer' };
   article.scrollIntoView({ block: 'center', inline: 'nearest' });
-  const rect = article.getBoundingClientRect();
   const style = getComputedStyle(article);
   const viewportWidth = document.documentElement.clientWidth;
   const viewportHeight = document.documentElement.clientHeight;
-  const intersectWidth = Math.min(rect.right, viewportWidth) - Math.max(rect.left, 0);
-  const intersectHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
   const text = [
     ...article.querySelectorAll(
       articles.length ? '[data-message-content]' : ':scope > div.min-w-0.text-foreground',
@@ -88,6 +85,97 @@ export function prepareGuestAnswerScreenshot({ code, heading = null }) {
       return copy.innerText ?? copy.textContent ?? '';
     })
     .join('\n');
+  // A long answer can intersect the panel while its requested line is far
+  // below the screenshot. Locate the painted text itself, then scroll its
+  // existing container until that line is inside the native panel viewport.
+  const bodies = [
+    ...article.querySelectorAll(
+      articles.length ? '[data-message-content]' : ':scope > div.min-w-0.text-foreground',
+    ),
+  ].filter(visible);
+  let focusedRange = null;
+  let focusedElement = null;
+  for (const body of bodies) {
+    const walker = document.createTreeWalker(body, 4);
+    const nodes = [];
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (
+        !visible(node.parentElement) ||
+        node.parentElement.closest('[class~="group/toolcard"], [data-testid="tool-line"]')
+      )
+        continue;
+      nodes.push(node);
+    }
+    const joined = nodes.map((node) => node.textContent ?? '').join('');
+    const index = joined.indexOf(focus);
+    if (index < 0) continue;
+    let offset = 0;
+    let start = null;
+    let end = null;
+    for (const node of nodes) {
+      const length = node.textContent?.length ?? 0;
+      if (!start && index < offset + length) start = [node, index - offset];
+      if (index + focus.length <= offset + length) {
+        end = [node, index + focus.length - offset];
+        break;
+      }
+      offset += length;
+    }
+    if (!start || !end) continue;
+    const range = document.createRange();
+    range.setStart(...start);
+    range.setEnd(...end);
+    focusedRange = range;
+    focusedElement = start[0].parentElement;
+    focusedElement.scrollIntoView({ block: 'center', inline: 'nearest' });
+    if (focusedRange) break;
+  }
+  const rangeRect = () => focusedRange?.getBoundingClientRect?.() ?? null;
+  if (focusedRange) {
+    for (let ancestor = focusedElement; ancestor; ancestor = ancestor.parentElement) {
+      const css = getComputedStyle(ancestor);
+      const clip = ancestor.getBoundingClientRect();
+      if (/(auto|scroll)/.test(css.overflowY) && ancestor.scrollHeight > ancestor.clientHeight) {
+        const line = rangeRect();
+        if (line && (line.top < clip.top || line.bottom > clip.bottom)) {
+          ancestor.scrollTop += (line.top + line.bottom - clip.top - clip.bottom) / 2;
+        }
+      }
+      if (/(auto|scroll)/.test(css.overflowX) && ancestor.scrollWidth > ancestor.clientWidth) {
+        const line = rangeRect();
+        if (line && (line.left < clip.left || line.right > clip.right)) {
+          ancestor.scrollLeft += (line.left + line.right - clip.left - clip.right) / 2;
+        }
+      }
+    }
+  }
+  const line = rangeRect();
+  const lineInsideClip = (element) => {
+    for (let node = element; node; node = node.parentElement) {
+      const css = getComputedStyle(node);
+      const clip = node.getBoundingClientRect();
+      if (
+        (/(auto|scroll|hidden|clip)/.test(css.overflowY) &&
+          (line.top < clip.top || line.bottom > clip.bottom)) ||
+        (/(auto|scroll|hidden|clip)/.test(css.overflowX) &&
+          (line.left < clip.left || line.right > clip.right))
+      )
+        return false;
+    }
+    return true;
+  };
+  const lineVisible =
+    line &&
+    line.width > 0 &&
+    line.height > 0 &&
+    line.left >= 0 &&
+    line.right <= viewportWidth &&
+    line.top >= 0 &&
+    line.bottom <= viewportHeight &&
+    lineInsideClip(focusedElement);
+  const rect = article.getBoundingClientRect();
+  const intersectWidth = Math.min(rect.right, viewportWidth) - Math.max(rect.left, 0);
+  const intersectHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
   return {
     eligible:
       rect.width > 0 &&
@@ -97,7 +185,8 @@ export function prepareGuestAnswerScreenshot({ code, heading = null }) {
       style.display !== 'none' &&
       style.visibility !== 'hidden' &&
       text.includes(code) &&
-      (heading === null || text.includes(heading)),
+      (heading === null || text.includes(heading)) &&
+      lineVisible,
     reason: 'answer_outside_viewport_or_fixture_missing',
   };
 }

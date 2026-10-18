@@ -106,6 +106,9 @@ const report = {
   guest: null,
   chat: null,
   screenshot: null,
+  opening_stage_screenshots: [],
+  same_conversation_heading_screenshot: null,
+  followup_heading_screenshot: null,
   followup_screenshot: null,
   failure_stage: null,
   failure_code: null,
@@ -915,6 +918,18 @@ try {
         report.screenshot = await capture(panel, join(artifacts, 'guest-chat-real-answer.png'), {
           code: fixture.openingCode,
         });
+        for (const stageName of REQUIRED_ANSWER_TERMS) {
+          report.opening_stage_screenshots.push(
+            await capture(
+              panel,
+              join(artifacts, `guest-chat-opening-${stageName.toLowerCase()}.png`),
+              {
+                code: fixture.openingCode,
+                focus: stageName,
+              },
+            ),
+          );
+        }
 
         markStage('same_conversation_followup_question');
         assert.equal(
@@ -979,6 +994,11 @@ try {
           panel,
           join(artifacts, 'guest-chat-same-conversation-followup.png'),
           { code: fixture.followupCode, heading: fixture.title },
+        );
+        report.same_conversation_heading_screenshot = await capture(
+          panel,
+          join(artifacts, 'guest-chat-same-conversation-heading.png'),
+          { code: fixture.followupCode, heading: fixture.title, focus: fixture.title },
         );
 
         markStage('real_panel_reload');
@@ -1093,6 +1113,11 @@ try {
           panel,
           join(artifacts, 'guest-chat-real-followup-answer.png'),
           { code: fixture.followupCode, heading: fixture.title },
+        );
+        report.followup_heading_screenshot = await capture(
+          panel,
+          join(artifacts, 'guest-chat-followup-heading.png'),
+          { code: fixture.followupCode, heading: fixture.title, focus: fixture.title },
         );
         report.guest_ai_transport_proven = true;
 
