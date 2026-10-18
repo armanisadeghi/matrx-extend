@@ -116,7 +116,7 @@ export function verifyHostedWorkflowCheckout(run, fetchContent = ghJson) {
 export function planHostedGuestChat({
   lane,
   acceptanceCase,
-  runnerLabel,
+  runnerLabel = 'macos-15-intel',
   releaseRunId,
   artifactId,
   sourceSha,
@@ -125,7 +125,8 @@ export function planHostedGuestChat({
 }) {
   if (lane !== 'B') refuse('HOSTED_CHAT_LANE_REFUSED');
   if (acceptanceCase !== 'guest-chat') refuse('HOSTED_CHAT_CASE_REFUSED');
-  if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_CHAT_RUNNER_REFUSED');
+  if (runnerLabel !== 'macos-15-intel' && runnerLabel !== 'macos-15')
+    refuse('HOSTED_CHAT_RUNNER_REFUSED');
   if (!DECIMAL.test(releaseRunId ?? '') || !DECIMAL.test(artifactId ?? ''))
     refuse('HOSTED_ARTIFACT_ID_INVALID');
   if (!SHA.test(sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
@@ -150,7 +151,7 @@ export function planHostedGuestChat({
         'acceptance_case=guest-chat',
         'scrape_auth_mode=guest',
         `requested_by=${DISPATCH_REQUESTER}`,
-        'runner_label=macos-15-intel',
+        `runner_label=${runnerLabel}`,
         `release_run_id=${releaseRunId}`,
       ].flatMap((field) => ['-f', field]),
     ],
@@ -206,7 +207,7 @@ async function guestChatCli(mode, args) {
   const input = {
     lane: args.get('--lane'),
     acceptanceCase: args.get('--case'),
-    runnerLabel: args.get('--runner-label'),
+    runnerLabel: args.get('--runner-label') ?? 'macos-15-intel',
     releaseRunId: args.get('--release-run-id'),
     artifactId: args.get('--artifact-id'),
     sourceSha: args.get('--source-sha'),

@@ -402,6 +402,7 @@ export async function main(): Promise<number> {
       console.log('drift-check: private tool catalog verified through Supabase Management API');
     } catch (managementError) {
       if (strict) {
+        console.error('drift-check: verification unavailable (catalog-read)');
         console.error(
           `drift-check (--strict): could not read the DB — FAILING. Publishable read: ${(err as Error).message}; Management API read: ${String(managementError)}`,
         );
@@ -488,6 +489,7 @@ export async function main(): Promise<number> {
           issues.push('server-owned tool still has a local executor');
         if (l.tier !== d.tier) issues.push('manual catalog tier differs from DB');
       } catch (error) {
+        if (strict) console.error('drift-check: verification unavailable (server-contract)');
         console.error(`drift-check: ${name} server contract UNVERIFIED: ${String(error)}`);
         return strict ? 3 : 0;
       }
@@ -574,7 +576,10 @@ export async function main(): Promise<number> {
       `Surface inclusion UNVERIFIED for ${unverifiedSurface.join(', ')}; declared bundles: ${[...declaredBundles].join(', ')}. Verify tool.bundle membership through platform.associations or declare direct inclusion.`,
     );
   }
-  if (totalProblems === 0 && unverifiedSurface.length) return strict ? 3 : 0;
+  if (totalProblems === 0 && unverifiedSurface.length) {
+    if (strict) console.error('drift-check: verification unavailable (bundle-membership)');
+    return strict ? 3 : 0;
+  }
 
   if (totalProblems === 0) {
     console.log('\x1b[1;92m✓ No drift detected.\x1b[0m');

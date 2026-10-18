@@ -1,0 +1,53 @@
+{
+  "id": "EXT-D-0237",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "title": "Guest Chat admission refuses the supported ARM64 hosted runner",
+  "surface": "Guarded hosted guest Chat dispatch planner",
+  "auth_mode": "fresh guest profile",
+  "organization_context": "No account token, profile or organization",
+  "preconditions": [
+    "The exact v0.2.533 release artifact is available from run 39098498144.",
+    "The hosted acceptance workflow supports both macos-15-intel and macos-15, each with its own fresh resource admission."
+  ],
+  "reproduction": [
+    "Plan a B-lane guest-chat dispatch for the v0.2.533 release with runner_label=macos-15.",
+    "The original planner rejects it with HOSTED_CHAT_RUNNER_REFUSED before dispatch, even though the workflow accepts that exact label.",
+    "Hosted Intel attempts 39096823813 and 39099012761 independently reached real Chat but ended resourceInvalid=true with RESOURCE_CPU_CONFIRMATION_EXPIRED. Neither is a resource-valid product pass."
+  ],
+  "expected": "The normal admission path accepts only the two reviewed standard macOS labels, forwards the selected label, and preserves release provenance, lane capacity, workflow-byte and source-drift checks before dispatch.",
+  "actual": "The planner previously required and sent macos-15-intel. It blocked the supported ARM64 comparison after repeated Intel CPU confirmation expiry.",
+  "evidence": [
+    "scripts/hosted-remote-guest-chat-admission.test.mjs",
+    "docs/stabilization/evidence/guest-chat-v0532/run39096823813/hosted-guest-39096823813-1.jsonl",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39099012761",
+    "docs/stabilization/runs/guest-chat-v0533-run39099012761.json"
+  ],
+  "reproducibility": "The focused planner and CLI tests failed with HOSTED_CHAT_RUNNER_REFUSED before the repair and pass after it; the two Intel resource verdicts remain immutable.",
+  "severity": "S2: guarded current-candidate guest Chat comparison blocked on the supported alternate runner.",
+  "priority": "P1: admit one exact-artifact ARM64 comparison while preserving all resource thresholds.",
+  "state": "fixed",
+  "owner": "hosted_cpu_guard_diagnosis",
+  "cause": "planHostedGuestChat checked for Intel only and serialized runner_label=macos-15-intel instead of the validated selected label.",
+  "sibling_census": "The guest Chat route alone is changed. The hosted workflow already permits and architecture-checks macos-15; other admission routes retain their existing runner contracts.",
+  "fix_sha": null,
+  "original_retest_runs": [39096823813, 39099012761],
+  "surrounding_retest_runs": [],
+  "reviewer": "Independent peer verdicts A PASS and B PASS on exact v0.2.533 non-live admission proof; native ARM64 comparison pending.",
+  "acceptance_criteria": [
+    "Exact macos-15 and macos-15-intel labels produce matching dispatch inputs; omission defaults to Intel.",
+    "Unsupported labels and changed product-driver bytes are refused before any dispatch.",
+    "A fresh guarded ARM64 run produces a completed valid resource journal and independently reviewed native guest Chat evidence before current-candidate product credit."
+  ],
+  "verification": {
+    "red": "Focused test failed on the original planner and CLI with HOSTED_CHAT_RUNNER_REFUSED for macos-15.",
+    "focused": "Three focused tests pass; one opt-in live proof is skipped. Biome check and workflow cost guard pass.",
+    "peer": "Independent peer A PASS and B PASS after v0.2.533 fixture and source-drift check.",
+    "native": "Pending one guarded ARM64 comparison; no heavy run was dispatched in this repair lane."
+  },
+  "limitations": [
+    "The source repair permits a new measurement; it does not change CPU, load, watchdog or confirmation thresholds.",
+    "The earlier Intel Chat report and screenshots cannot override an invalid resource verdict."
+  ],
+  "next_action": "Release owner uses the normal guarded admission path for one serial macos-15 run of the exact v0.2.533 artifact, checks completed resource journals and native report, then seeks independent live review."
+}

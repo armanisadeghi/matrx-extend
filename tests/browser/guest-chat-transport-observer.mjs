@@ -80,6 +80,11 @@ function chatPathClass(url) {
   return null;
 }
 
+function conversationTurnId(url) {
+  const match = new URL(url).pathname.match(/^\/(?:api\/)?ai\/conversations\/([^/]+)$/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 function safeConversationRequest(postData) {
   try {
     const body = JSON.parse(postData);
@@ -93,6 +98,21 @@ function safeConversationRequest(postData) {
   } catch {
     return { conversation_fingerprint: null, is_new: null };
   }
+}
+
+function persistedTurnIdentity(turnId, bodyIdentity) {
+  const pathFingerprint = conversationFingerprint(turnId);
+  return {
+    // The URL owns this route's conversation identity. A contradictory body
+    // must not make the observed request look correlated with either turn.
+    conversation_fingerprint:
+      bodyIdentity.conversation_fingerprint &&
+      bodyIdentity.conversation_fingerprint !== pathFingerprint
+        ? null
+        : pathFingerprint,
+    // The continuation request omits is_new; the route itself means false.
+    is_new: bodyIdentity.is_new ?? false,
+  };
 }
 
 function structuredErrorCode(body, base64Encoded) {
@@ -223,7 +243,8 @@ export async function watchGuestAiRequests({
     counters.request_events++;
     if (request?.method === 'POST') counters.post_events++;
     try {
-      if (chatPathClass(request?.url)) counters.chat_path_events++;
+      if (chatPathClass(request?.url) || (mode === 'package' && conversationTurnId(request?.url)))
+        counters.chat_path_events++;
     } catch {}
     if (
       (!confirmedSessions.has(sessionId) && !candidateSessions.has(sessionId)) ||
@@ -232,10 +253,12 @@ export async function watchGuestAiRequests({
     )
       return;
     try {
+      const turnId = mode === 'package' ? conversationTurnId(request.url) : null;
       const continuation =
         mode === 'package' &&
         new URL(request.url).pathname.match(/\/ai\/conversations\/([^/]+)\/(resume|tool_results)$/);
-      if (!chatPathClass(request.url) && !continuation) return;
+      if (!chatPathClass(request.url) && !turnId && !continuation) return;
+      const bodyIdentity = safeConversationRequest(request.postData);
       const entry = {
         kind: continuation ? continuation[2] : 'start',
         sessionId,
@@ -250,8 +273,9 @@ export async function watchGuestAiRequests({
             stream_error: false,
             loading_finished: false,
           }),
-          path_class: chatPathClass(request.url),
-          ...safeConversationRequest(request.postData),
+          path_class: turnId ? 'conversation' : chatPathClass(request.url),
+          ...bodyIdentity,
+          ...(turnId && persistedTurnIdentity(turnId, bodyIdentity)),
           ...(continuation && {
             conversation_fingerprint: conversationFingerprint(decodeURIComponent(continuation[1])),
           }),
@@ -261,8 +285,11 @@ export async function watchGuestAiRequests({
       if (typeof request.postData !== 'string') {
         const pending = send('Network.getRequestPostData', { requestId })
           .then(({ postData }) => {
-            if (entry.kind === 'start')
-              Object.assign(entry.record, safeConversationRequest(postData));
+            if (entry.kind === 'start') {
+              const identity = safeConversationRequest(postData);
+              Object.assign(entry.record, identity);
+              if (turnId) Object.assign(entry.record, persistedTurnIdentity(turnId, identity));
+            }
           })
           .catch(() => {});
         pendingBodies.add(pending);
@@ -642,7 +669,10 @@ export function requireGuestConversationSequence(requests) {
     if (rows.length === 1) {
       assert.equal(rows[0].status, 200, `${attempt}_requires_http_200`);
       assert.ok(
-        ['canonical', 'versioned'].includes(rows[0].path_class),
+        (attempt === 'same_conversation_followup'
+          ? ['canonical', 'versioned', 'conversation']
+          : ['canonical', 'versioned']
+        ).includes(rows[0].path_class),
         `${attempt}_requires_known_chat_route`,
       );
       assert.ok(rows[0].conversation_fingerprint, `${attempt}_conversation_identity_unobserved`);

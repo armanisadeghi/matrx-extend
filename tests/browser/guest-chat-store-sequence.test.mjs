@@ -165,6 +165,7 @@ test('guest owner-table verdict executes after both Chat verdicts and screenshot
     'report',
     'contextReadWatch',
     'assert',
+    'fixture',
     `return (async () => { ${tail} })();`,
   );
   for (const [reads, fails] of [
@@ -189,6 +190,7 @@ test('guest owner-table verdict executes after both Chat verdicts and screenshot
         report,
         { snapshot: () => reads.map((read) => ({ ...read })) },
         assert,
+        { followupCode: 'NEW-791', title: 'Field guide' },
       );
     if (fails) await assert.rejects(execute, /owner-table GET/);
     else await execute();

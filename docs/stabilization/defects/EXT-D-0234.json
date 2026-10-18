@@ -1,0 +1,80 @@
+{
+  "id": "EXT-D-0234",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "title": "Guest Chat observer misses persisted same-conversation sends",
+  "surface": "Package Chat native side panel acceptance harness",
+  "auth_mode": "guest",
+  "organization_context": "Fresh fingerprint guest with no bearer, profile or selected organization.",
+  "preconditions": [
+    "Exact v0.2.531 key-adapted Store candidate in an owned fresh guest profile.",
+    "Controlled readable page with unpredictable opening and follow-up codes."
+  ],
+  "reproduction": [
+    "Send an opening question and observe its canonical mandate POST, delegated result, correlated resume and terminal answer.",
+    "Send a follow-up in that same conversation. The native Send reaches React, clears the draft and renders a new assistant reply.",
+    "Observe that the harness records only the opening Chat route and ends with same_conversation_followup_guest_ai_transport_unobserved."
+  ],
+  "expected": "The observer captures the persisted follow-up POST, proves HTTP 200 and semantic terminal success, and checks is_new=false with the opening conversation identity before crediting the reply.",
+  "actual": "Run 39093788557 recorded a grounded follow-up reply and no correlated follow-up request. The observer classified only /ai/mandates/extend.browser_chat and /resume or /tool_results; package Chat sends persisted turns to /ai/conversations/{id}.",
+  "evidence": [
+    "docs/stabilization/evidence/guest-chat-v0531/run39093788557/native-report.sanitized.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39093788557",
+    "docs/stabilization/reports/guest-chat-v0531-failure-peer-20261018.json",
+    "tests/browser/guest-chat-transport-observer.test.mjs"
+  ],
+  "build_receipt": {
+    "source_sha": "eb702c98ad3392d0381f41c9dbe88be101ab2d38",
+    "version": "0.2.531",
+    "kind": "native_store_zip_candidate_key_adapted",
+    "loaded_tree_sha256": "db2478e506de8cb1fb3125b193c1362eddbea13d93c03178b2452f36acc82286",
+    "server_sha": "ce6f3430911821130a55545b7b3a10d6c7f68a8b"
+  },
+  "reproducibility": "One resource-valid native occurrence; deterministic observer test fails with the original classifier and passes with the precise conversation route recognized. The historical peer confirmed that the exact .531 bundle contains the persisted continuation route, but the native follow-up request itself was not captured.",
+  "severity": "S2: acceptance cannot verify a working guest follow-up and could miss its transport failure.",
+  "priority": "P1: restore strict guest Chat acceptance before declaring the next candidate healthy.",
+  "state": "in-fix",
+  "owner": "guest_followup_observer_diagnosis",
+  "cause": "The Chat tab mounts PackageChatView and @ai-matrx/chat, whose persisted continuation goes to POST /ai/conversations/{id}. The package transport observer did not classify that exact route as a user turn. Legacy use-chat-stream belongs to another surface and does not own this Chat tab.",
+  "sibling_census": "The opening mandate path, resumed delegated turn and tool-result path were already recognized. The same-conversation persisted user turn is the missing route; post-reload starts a new mandate path. Both package routes remain subject to HTTP, terminal stream and identity checks.",
+  "fix_sha": null,
+  "original_retest_runs": [39093788557],
+  "surrounding_retest_runs": [],
+  "reviewer": "Independent source and native retest pending.",
+  "acceptance_criteria": [
+    "The exact persisted follow-up route is captured without accepting neighboring paths or unrelated conversations.",
+    "The follow-up requires HTTP 200, its own semantic terminal completion and the opening conversation fingerprint with is_new=false.",
+    "An independently reviewed, resource-valid native retest proves opening, same-conversation follow-up and post-reload new conversation on one exact artifact."
+  ],
+  "verification": {
+    "red": "Focused node test failed on original observer with same_conversation_followup_guest_ai_transport_unobserved.",
+    "focused": "70 guest Chat observer, completion and sequence tests pass after source fix; pnpm compile and focused Biome pass.",
+    "mutation": "plant.py removing conversation-route recognition returns the named transport RED; removing the contradictory-body check fails its identity assertion; admitting GET or an unrelated path fails the exclusion assertion. Each plant restored source identically.",
+    "native": "Pending corrected-artifact hosted native retest; .531 remains unverified."
+  },
+  "limitations": [
+    "Run 39093788557 did not retain the follow-up request URL or ID; answerContainsNonce=false also conflicts with the sanitized visible reply. Native transport, terminal completion and exact grounding cannot be retrospectively credited.",
+    "No new browser, release or Store action was launched in this diagnosis lane."
+  ],
+  "next_action": "Independent review of this source and guard, then release owner dispatches one guarded hosted candidate retest. Keep this defect in-fix until strict native evidence passes.",
+  "transition_history": [
+    {
+      "at": "2026-10-18T03:44:24Z",
+      "from": null,
+      "to": "open",
+      "reason": "The exact .531 native receipt shows grounded follow-up prose but no correlated follow-up transport observation."
+    },
+    {
+      "at": "2026-10-18T03:44:24Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Mounted package Chat continuation route is absent from the observer classifier; a focused RED reproduces the receipt failure code."
+    },
+    {
+      "at": "2026-10-18T03:44:24Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Narrow observer source repair and guard are green; independent review and native retest remain pending."
+    }
+  ]
+}
