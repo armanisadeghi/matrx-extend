@@ -5,6 +5,7 @@
  * Usage: MATRX_VAULT_WALK_RECEIPT=<local-dev receipt> MATRX_VAULT_WALK_SHOTS=<dir> node vault-package-panel-walk.mjs [step...]
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
 import http from 'node:http';
 import { join, resolve } from 'node:path';
 import { attachTargetSession, runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -534,6 +535,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   } finally {
     // Cleanup runs inside a fresh browser session only if the main walk could not; the in-walk finalizer below handles the normal path.
     site.server.close();
+    // Browser-free final sweep (password sign-in): the count printed here is the cleanup proof.
+    const sweep = spawnSync('node', [join(import.meta.dirname, 'vault-walk-cleanup.mjs')], {
+      encoding: 'utf8',
+      env: process.env,
+    });
+    log('FINAL_SWEEP', (sweep.stdout || sweep.stderr || '').trim().slice(0, 200));
+    check(
+      'final sweep: ZZ walk items remaining = 0',
+      sweep.status === 0 && /"remainingAfterLastPass":0/.test(sweep.stdout),
+    );
     await writeFile(join(SHOTS, 'results.json'), JSON.stringify({ tag, results }, null, 2)).catch(
       () => {},
     );
