@@ -36,7 +36,7 @@
   "reproducibility": "One guarded native run exhibits the false report field; source inspection identifies the deterministic missing member config load and missing hosted staging branch.",
   "severity": "S2: member organization evidence is inaccurately reported and the approved-config check is absent from the native gate; no organization product defect is established.",
   "priority": "P1: repair the current Member Chat acceptance boundary before a new Store verdict.",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "member_answer_proof_repair",
   "allowed_files": [
     "scripts/hosted-guest-acceptance.mjs",
@@ -49,7 +49,7 @@
   "fix_sha": "31a521e77",
   "original_retest_runs": [39154980480, 39158481456],
   "surrounding_retest_runs": [],
-  "reviewer": "Fresh independent source peer PASS; native pending.",
+  "reviewer": "Fresh source peer: preflight/classification assertions pass, quality pass with bounded pattern scope note; native unknown.",
   "acceptance_criteria": [
     "Hosted member runner stages a mode-0600 private approved-organization config in its isolated runtime and removes it after execution.",
     "Member driver reads that exact runtime config and compares the checked UI UUID fingerprint and actual start request header against its approved ID; a missing or different value fails.",
@@ -57,14 +57,15 @@
   ],
   "verification": {
     "source": "Candidate source adds private hosted staging, child path forwarding, member config load, checked-UI comparison, and actual-header assertion. The actual production source seams are exercised with in-memory removed-staging, removed-forwarding, removed-loading, and hardcoded-true mutants that fail the named proof. Focused organization tests 6/6 pass; full focused suite, compile and scoped Biome passed before this final test addition.",
-    "native": "Run39158481456 stopped before driver launch with hosted_profile_org_secret_required. Resource finals valid, child failed. No Chat replies, organization headers or paint evidence; zero product credit."
+    "native": "Run39158481456 stopped before driver launch with hosted_profile_org_secret_required. Resource finals valid, child failed. No Chat replies, organization headers or paint evidence; zero product credit.",
+    "preflight": "Approved-organization secret name exists. Canonical existing private fixture was validated and provisioned by implementation owner without logging values. Source rejects its absence before hosted member work. Reviewer link is minted separately at point of use."
   },
   "limitations": [
     "The approved-config fingerprint was triangulated outside the failed member process; that process did not load the config, so the original run cannot count as approved-config proof.",
     "The original run failed visible-answer proof at an opacity-zero ancestor. This separate defect repair cannot grant Member Chat product acceptance.",
     "No hosted/native retry or release has been run on the candidate source."
   ],
-  "next_action": "Complete fresh peer review of preflight fixture presence and bounded source-admission records, then one guarded exact-Store member retest. Do not infer product behavior from setup refusal.",
+  "next_action": "Run one guarded exact-Store member retest using the existing designated reviewer, then independent original/surrounding-case review. Close only after actual Chat replies, approved organization headers, visible paint and valid resource finals.",
   "transition_history": [
     {
       "at": "2026-10-18T18:54:31Z",
@@ -101,6 +102,13 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Existing validated approved member fixture provisioned privately; cheap admission presence guard and independent review underway before another native run."
+    },
+    {
+      "at": "2026-10-18T19:42:24.900879+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Existing approved fixture privately provisioned; source preflight independently tested with28passingchecks and missing-fixture refusals. Ephemeral reviewer-link absence between runs is expected; fresh native acceptance remains pending."
     }
-  ]
+  ],
+  "preflight_fix_sha": "916e14771"
 }
