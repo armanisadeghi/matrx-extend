@@ -43,7 +43,7 @@ const admission = {
   remoteSha: sha,
   dirty: '',
   runs: [],
-  secretNames: ['MATRX_REVIEWER_MAGIC_LINK_JSON'],
+  secretNames: ['MATRX_REVIEWER_MAGIC_LINK_JSON', 'MATRX_PROFILE_APPROVED_ORGANIZATION_JSON'],
 };
 
 // Recorded Settings run terminated resource-invalid with zero product credit.
@@ -255,7 +255,19 @@ test('artifact metadata from a different run cannot be used for the selected rel
 });
 test('missing credential reproduces original pre-browser refusal while independent B is admitted', () => {
   assert.throws(
-    () => admitReleaseMember({ ...admission, secretNames: [] }),
+    () =>
+      admitReleaseMember({
+        ...admission,
+        secretNames: ['MATRX_REVIEWER_MAGIC_LINK_JSON'],
+      }),
+    /release_member_approved_organization_secret_required/,
+  );
+  assert.throws(
+    () =>
+      admitReleaseMember({
+        ...admission,
+        secretNames: ['MATRX_PROFILE_APPROVED_ORGANIZATION_JSON'],
+      }),
     /hosted_member_link_secret_required/,
   );
   admitReleaseMember({
@@ -323,7 +335,7 @@ test('reviewed package Chat driver repairs preserve immutable candidate eligibil
 // must not be mistaken for a change to the frozen Store extension.
 test('Member A source proof admits its exact reviewed diagnostic and status delta', (t) => {
   const source = 'de066a247ae7fa74015bc143bbc13e4128f742e4';
-  const workflow = '5ae3851b4af89e706a00ed69439ff9b06317af3e';
+  const workflow = '2b32e0ab11f169b46a0430ef9ee1f5b6f5cd03e9';
   const repository = execFileSync('git', ['rev-parse', '--show-toplevel'], {
     encoding: 'utf8',
   }).trim();
@@ -350,10 +362,18 @@ test('Member A source proof admits its exact reviewed diagnostic and status delt
     proof.subsequentChangedPaths.includes('tests/browser/member-chat-visible-proof.test.mjs'),
   );
   assert.ok(proof.subsequentChangedPaths.includes('docs/stabilization/COORDINATOR.md'));
+  assert.ok(
+    proof.subsequentChangedPaths.includes(
+      'docs/stabilization/runs/member-chat-store-v0547-run39158481456.json',
+    ),
+  );
   requireReleaseMemberSource(true, proof.subsequentChangedPaths);
   for (const path of [
     'tests/browser/member-chat-visible-proof-copy.mjs',
     'docs/stabilization/COORDINATOR-copy.md',
+    'docs/stabilization/runs/member-chat-store-v0547-run39158481456.json.mjs',
+    'docs/stabilization/runs/member-chat-store-v0547-run39158481456-private.json',
+    'docs/stabilization/runs/member-chat-store-v0547-run39158481456.json/child',
     'src/config/env.ts',
     'pnpm-lock.yaml',
     'package.json',
@@ -367,9 +387,9 @@ test('Member A source proof admits its exact reviewed diagnostic and status delt
     );
 });
 
-// Break caught: the completed public guest receipt and its three resource
-// journals are evidence for one run, never a product-source delta or a folder wildcard.
-test('public guest run 39156655719 admits only its receipt and matching journals', (t) => {
+// Break caught: public guest receipts, matching journals, and named screenshots
+// from two actual runs are evidence, never product source or a folder wildcard.
+test('public guest run receipts admit matching journals and named screenshots', (t) => {
   const source = 'de066a247ae7fa74015bc143bbc13e4128f742e4';
   const workflow = '5ae3851b4af89e706a00ed69439ff9b06317af3e';
   const repository = execFileSync('git', ['rev-parse', '--show-toplevel'], {
@@ -379,13 +399,19 @@ test('public guest run 39156655719 admits only its receipt and matching journals
   t.after(() => rmSync(cwd, { recursive: true, force: true }));
   execFileSync('git', ['clone', '--shared', '--no-checkout', repository, '.'], { cwd });
   execFileSync('git', ['checkout', '--detach', workflow], { cwd });
-  const paths = [
-    'docs/stabilization/runs/public-guest-chat-0.2.205-39156655719.json',
+  const paths = ['39156655719', '39158476768'].flatMap((runId) => [
+    `docs/stabilization/runs/public-guest-chat-0.2.205-${runId}.json`,
     ...['package', 'browser', 'guest'].map(
       (kind) =>
-        `docs/stabilization/evidence/published-v0205-guest-chat/run39156655719/resource-journals/hosted-${kind}-39156655719-1.sanitized.jsonl`,
+        `docs/stabilization/evidence/published-v0205-guest-chat/run${runId}/resource-journals/hosted-${kind}-${runId}-1.sanitized.jsonl`,
     ),
-  ];
+    ...(runId === '39158476768'
+      ? ['native-side-panel.png', 'normal-target-after-open.png'].map(
+          (name) =>
+            `docs/stabilization/evidence/published-v0205-guest-chat/run${runId}/screenshots/${name}`,
+        )
+      : []),
+  ]);
   for (const path of paths) {
     mkdirSync(dirname(join(cwd, path)), { recursive: true });
     // Admission reads Git path provenance, not the evidence payload bytes.
@@ -405,11 +431,12 @@ test('public guest run 39156655719 admits only its receipt and matching journals
   assert.deepEqual(JSON.parse(result.stdout).pendingPaths.sort(), paths.sort());
   for (const path of [
     'docs/stabilization/runs/public-guest-chat-0.2.206-39156655719.json',
-    'docs/stabilization/runs/public-guest-chat-0.2.205-39156655720.json',
+    'docs/stabilization/runs/public-guest-chat-0.2.205-39156655719-private.json',
+    'docs/stabilization/runs/public-guest-chat-0.2.205-39156655719.json.mjs',
     'docs/stabilization/evidence/published-v0205-guest-chat/run39156655719/resource-journals/hosted-package-39156655720-1.sanitized.jsonl',
-    'docs/stabilization/evidence/published-v0205-guest-chat/run39156655720/resource-journals/hosted-package-39156655720-1.sanitized.jsonl',
     'docs/stabilization/evidence/published-v0205-guest-chat/run39156655719/resource-journals/hosted-other-39156655719-1.sanitized.jsonl',
-    'docs/stabilization/evidence/published-v0205-guest-chat/run39156655719/resource-journals/hosted-browser-39156655719-2.sanitized.jsonl',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39158476768/screenshots/private-config.png',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39158476768/resource-policy.json',
     'src/config/env.ts',
     'pnpm-lock.yaml',
     'package.json',

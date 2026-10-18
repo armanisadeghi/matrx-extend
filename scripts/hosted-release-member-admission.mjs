@@ -95,6 +95,10 @@ export function admitReleaseMember({ localSha, remoteSha, dirty, runs, secretNam
     'release_member_lane_a_busy',
   );
   assert.ok(
+    Array.isArray(secretNames) && secretNames.includes('MATRX_PROFILE_APPROVED_ORGANIZATION_JSON'),
+    'release_member_approved_organization_secret_required',
+  );
+  assert.ok(
     Array.isArray(secretNames) && secretNames.includes('MATRX_REVIEWER_MAGIC_LINK_JSON'),
     'hosted_member_link_secret_required',
   );
@@ -127,16 +131,26 @@ function reviewedStabilizationPath(path) {
     )
   )
     return true;
-  // This recorded public guest run is source evidence, regardless of its
-  // acceptance verdict. Match the frozen version and run ID in every path.
+  // Run receipts and sanitized evidence are non-runtime records, regardless
+  // of the run verdict. Journal directory and filename must name one run.
+  if (
+    /^docs\/stabilization\/runs\/member-chat-store-v[0-9]{4}-run[1-9][0-9]{10,}\.json$/.test(path)
+  )
+    return true;
   const publicGuestReceipt =
-    /^docs\/stabilization\/runs\/public-guest-chat-0\.2\.205-([1-9][0-9]{10})\.json$/.exec(path);
-  if (publicGuestReceipt?.[1] === '39156655719') return true;
+    /^docs\/stabilization\/runs\/public-guest-chat-0\.2\.205-[1-9][0-9]{10,}\.json$/.test(path);
+  if (publicGuestReceipt) return true;
   const publicGuestJournal =
-    /^docs\/stabilization\/evidence\/published-v0205-guest-chat\/run([1-9][0-9]{10})\/resource-journals\/hosted-(?:package|browser|guest)-\1-1\.sanitized\.jsonl$/.exec(
+    /^docs\/stabilization\/evidence\/published-v0205-guest-chat\/run([1-9][0-9]{10,})\/resource-journals\/hosted-(?:package|browser|guest)-\1-[1-9][0-9]*\.sanitized\.jsonl$/.test(
       path,
     );
-  if (publicGuestJournal?.[1] === '39156655719') return true;
+  if (publicGuestJournal) return true;
+  if (
+    /^docs\/stabilization\/evidence\/published-v0205-guest-chat\/run[1-9][0-9]{10,}\/screenshots\/(?:native-side-panel|normal-target-after-open)\.png$/.test(
+      path,
+    )
+  )
+    return true;
   const memberEvidence =
     /^docs\/stabilization\/evidence\/member-run([1-9][0-9]{10})-[0-9]{8}\/(.+)$/.exec(path);
   return (
