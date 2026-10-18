@@ -145,362 +145,344 @@ export const buttons = (panel) =>
     `[...document.querySelectorAll('button,[role=menuitem],[role=tab],[role=option]')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && !e.closest('[inert]'); }).map((e) => (e.getAttribute('aria-label') || e.getAttribute('title') || e.textContent.trim()).slice(0, 40)).filter(Boolean).join(' | ')`,
   );
 
-/** A private localhost login page; records what was submitted (no secrets leave the process). */
+/**
+ * A private localhost site. /login = sign-in form (records what was posted), /signup = a
+ * new-password form (autocomplete=new-password). Nothing leaves the process.
+ */
 export function startLoginSite() {
-  const seen = { posts: 0 };
+  const seen = { posts: [] };
   const server = http.createServer((req, res) => {
     if (req.method === 'POST') {
-      seen.posts += 1;
-      req.resume();
-      res.writeHead(200, { 'content-type': 'text/html' });
-      res.end('<!doctype html><title>Signed in</title><h1>Signed in</h1>');
+      let body = '';
+      req.on('data', (c) => {
+        body += c;
+      });
+      req.on('end', () => {
+        seen.posts.push(new URLSearchParams(body).get('username'));
+        res.writeHead(200, { 'content-type': 'text/html' });
+        res.end('<!doctype html><title>Signed in</title><h1>Signed in</h1>');
+      });
       return;
     }
     res.writeHead(200, { 'content-type': 'text/html' });
-    res.end(`<!doctype html><title>Walk Login</title><h1>Walk login</h1>
+    if (req.url?.startsWith('/signup'))
+      res.end(`<!doctype html><title>Walk Signup</title><h1>Walk signup</h1>
+<form method="post" action="/signup"><label>Email <input id="e" name="email" autocomplete="email"></label>
+<label>New password <input id="np" name="password" type="password" autocomplete="new-password"></label>
+<button type="submit">Create account</button></form>`);
+    else
+      res.end(`<!doctype html><title>Walk Login</title><h1>Walk login</h1>
 <form method="post" action="/login"><label>Username <input id="u" name="username" autocomplete="username"></label>
 <label>Password <input id="p" name="password" type="password" autocomplete="current-password"></label>
 <button type="submit">Sign in</button></form>`);
   });
   return new Promise((ok) =>
-    server.listen(0, '127.0.0.1', () =>
-      ok({ server, seen, url: `http://127.0.0.1:${server.address().port}/login` }),
-    ),
+    server.listen(0, '127.0.0.1', () => {
+      const origin = `http://127.0.0.1:${server.address().port}`;
+      ok({ server, seen, origin, url: `${origin}/login`, signup: `${origin}/signup` });
+    }),
   );
+}
+
+/** Learn the panel's own request headers (bearer + organization) from its next vault call. */
+export async function hookPanelAuth(panel) {
+  await ev(
+    panel,
+    `(() => { if (window.__walkHook) return true; window.__walkHook = true; const f = window.fetch;
+    window.fetch = async (input, init) => { try { const u = String(input?.url ?? input);
+      if (/server\.app\.matrxserver\.com/.test(u)) { const h = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined));
+        if (h.get('authorization') && h.get('x-organization-id')) window.__walkAuth = { a: h.get('authorization'), o: h.get('x-organization-id') }; } } catch {}
+      return f(input, init); }; return true; })()`,
+  );
+}
+export async function panelAuthReady(panel, ms = 60000) {
+  const end = Date.now() + ms;
+  while (Date.now() < end) {
+    if (await ev(panel, '!!window.__walkAuth')) return true;
+    await clickLabel(panel, 'Check again');
+    await sleep(2500);
+  }
+  return false;
+}
+
+/** The vault's own HTTP API, called from the panel with the headers the panel itself sent. */
+export const vaultApi = (panel, method, path, body) =>
+  ev(
+    panel,
+    `(async () => {
+    const au = window.__walkAuth; if (!au) return { status: 0, json: null, text: 'no_panel_auth_captured' };
+    const r = await fetch('https://server.app.matrxserver.com/vault' + ${JSON.stringify(path)}, {
+      method: ${JSON.stringify(method)},
+      headers: { authorization: au.a, 'x-organization-id': au.o, 'content-type': 'application/json' },
+      ...(${JSON.stringify(body ?? null)} ? { body: ${JSON.stringify(JSON.stringify(body ?? null))} } : {}) });
+    const t = await r.text(); let j = null; try { j = JSON.parse(t); } catch {}
+    return { status: r.status, json: j, text: j ? '' : t.slice(0, 200) }; })()`,
+  );
+
+/** Every item of ours whose name starts "ZZ walk" or whose website is on `origin`; DELETE each; return how many remain. */
+export async function cleanupWalkItems(panel, origin, lg = () => {}) {
+  const mine = async () => {
+    const r = await vaultApi(panel, 'GET', '/items');
+    if (r.status !== 200)
+      throw new Error(
+        `cleanup_list_${r.status}: ${r.text} ${JSON.stringify(r.json).slice(0, 300)}`,
+      );
+    return r.json.items.filter(
+      (i) =>
+        /^ZZ walk/.test(i.name ?? '') ||
+        (origin && JSON.stringify(i).includes(origin.replace('http://', ''))),
+    );
+  };
+  for (const it of await mine()) {
+    const d = await vaultApi(panel, 'DELETE', `/items/${it.id}`);
+    lg('CLEAN_DELETE', it.name, d.status);
+  }
+  return (await mine()).length;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const site = await startLoginSite();
+  const results = [];
+  const check = (name, ok, detail = '') => {
+    results.push({ name, ok: !!ok, detail });
+    log(`CHECK ${ok ? 'PASS' : 'FAIL'} ${name} ${detail}`);
+  };
   const step = async (name, fn) => {
     try {
       return await fn();
     } catch (e) {
-      log(`STEP ${name} FAILED: ${String(e.message).slice(0, 400)}`);
+      check(`step:${name}`, false, String(e.message).slice(0, 300));
     }
   };
+  const tag = `ZZ walk ${Math.random().toString(36).slice(2, 8)}`;
+  const user1 = `walk-user-${Math.random().toString(36).slice(2, 6)}`;
+  const secret1 = `Wk-${crypto.randomUUID()}`;
+  const user2 = `walk-two-${Math.random().toString(36).slice(2, 6)}`;
+  const secret2 = `Wk2-${crypto.randomUUID()}`;
   try {
     await main(async (c) => {
       const { page, shot, text, log: lg } = c;
       const P = c.panel;
+      const buttonsNow = () => buttons(P);
+      const dialogs = () =>
+        ev(
+          P,
+          `[...document.querySelectorAll('[role=dialog],[role=alertdialog]')].map((d) => d.innerText.slice(0, 200)).join(' || ')`,
+        );
+      await c.waitText(/All items/, 90000).catch(() => {});
       await page.goto(site.url);
       await page.bringToFront().catch(() => {});
-      await ev(
-        P,
-        `(() => { const f = window.fetch; window.__net = []; window.fetch = async (input, init) => { const u = String(input?.url ?? input); const r = await f(input, init);
-        if (/browser-login/.test(u)) { let b = ''; try { b = (await r.clone().text()).slice(0, 300); } catch {} window.__net.push((init?.method || 'GET') + ' ' + u.replace(/^.*matrxserver.com/, '').replace(/[?].*/, '') + ' ' + r.status + ' ' + b.replace(/"(item_id|id)":"[^"]*"/g, '"$1":"…"')); }
-        return r; }; return true; })()`,
-      );
-      const t0 = Date.now();
-      await c.waitText(/All items/, 90000);
-      lg('VAULT_READY_MS', Date.now() - t0);
+      await c.waitText(/This site/, 90000);
       await sleep(1500);
-      await shot('02-page-view-no-items');
-      lg('TEXT', (await text()).replace(/\n/g, ' / ').slice(0, 700));
-      lg('BUTTONS', await buttons(P));
-      await step('turn-on-filling', async () => {
-        const pw = JSON.parse(
-          await readFile(process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE, 'utf8'),
-        ).password;
-        lg('PWFIELDS', await fields(P));
-        const pwLabel = (await fields(P))
-          .split(' | ')
-          .find((f) => /password/i.test(f))
-          ?.split(':')
-          .slice(2)
-          .join(':');
-        lg('TYPED', pwLabel, await typeInto(P, pwLabel, pw));
-        lg('TURNON', await clickLabel(P, 'Turn on'));
-        await sleep(5000);
-        await shot('03-after-turn-on');
-        lg('TEXT', (await text()).replace(/\n/g, ' / ').slice(0, 500));
-      });
-      await step('save-a-login', async () => {
-        lg('CLICK', await clickLabel(P, 'Save a login'));
-        await sleep(2500);
-        await shot('04-save-a-login');
-        lg('FIELDS', await fields(P));
-        lg('BUTTONS', (await buttons(P)).split(' | ').slice(24).join(' | '));
-        lg('TEXT', (await text()).replace(/\n/g, ' / ').slice(0, 600));
-        await clickLabel(P, 'Website login', { sub: true });
-        await sleep(2000);
-      });
-      const tag = `ZZ walk ${Math.random().toString(36).slice(2, 8)}`;
-      const secret = `Wk-${crypto.randomUUID()}`;
-      await step('create-item', async () => {
-        await typeInto(P, 'Name', tag);
-        await typeInto(P, 'Username or email', 'walk-user');
-        await typeInto(P, 'Password', secret);
-        const web = await ev(
-          P,
-          `[...document.querySelectorAll('input')].filter((e) => e.getAttribute('aria-label') === 'Website' || e.placeholder === 'Website').map((e) => e.value).join()`,
-        );
-        lg('WEBSITE_PREFILLED', web);
-        if (!web) await typeInto(P, 'Website', site.url);
-        await shot('06-form-filled');
-        lg('SAVE', await clickLabel(P, 'Save'));
-        await sleep(4000);
-        await shot('07-after-save');
-        lg('TEXT', (await text()).replace(/\n/g, ' / ').slice(0, 700));
-        lg('BUTTONS', (await buttons(P)).split(' | ').slice(24).join(' | '));
-      });
-      await step('item-with-owner-badge', async () => {
-        await shot('08-item-detail-owner-badge');
-      });
-      await step('fill-in-browser', async () => {
-        lg('MOREACTIONS', await clickLabel(P, 'More actions'));
-        await sleep(800);
-        lg('MENU', await menuItems(P));
-        lg('SETTINGS', await clickLabel(P, 'Settings', { sel: '[role=menuitem]' }));
-        await sleep(1500);
-        const sw = () =>
-          ev(
-            P,
-            `[...document.querySelectorAll('[role=switch]')].map((e) => (e.getAttribute('aria-label') || '?') + '=' + e.getAttribute('aria-checked')).join(' | ')`,
-          );
-        lg('SWITCHES', await sw());
-        lg('TOGGLE', await clickLabel(P, 'Fill in browser', { sel: '[role=switch]' }));
-        await sleep(2500);
-        lg('SWITCHES', await sw());
-        lg('DONE', await clickLabel(P, 'Done'));
-        await sleep(800);
-        await shot('08b-fill-in-browser');
-      });
-      await step('confirm-dialog', async () => {
-        // Fault injection: the first reveal/copy is answered as the server answers a stale sign-in,
-        // so the package's own "Confirm it's you" dialog opens; the retry after it goes to the real server.
-        await ev(
-          P,
-          `(() => { const f = window.fetch; window.__armed = true; window.__urls = [];
-          window.fetch = async (input, init) => { const u = String(input?.url ?? input); window.__urls.push((init?.method || 'GET') + ' ' + u.replace(/[?].*/, '').slice(-80));
-            if (window.__armed && /reveal|secret|decrypt/i.test(u)) { window.__armed = false;
-              return new Response(JSON.stringify({ detail: { code: 'recent_auth_required', message: 'Recent authentication required' } }), { status: 403, headers: { 'content-type': 'application/json' } }); }
-            return f(input, init); }; return true; })()`,
-        );
-        lg('SHOW', await clickLabel(P, 'Show Password'));
-        await sleep(2500);
-        lg('URLS', JSON.stringify(await ev(P, 'window.__urls')));
-        lg(
-          'DIALOG',
-          await ev(
-            P,
-            `[...document.querySelectorAll('[role=dialog],[role=alertdialog]')].map((d) => d.innerText.slice(0, 300)).join(' || ')`,
-          ),
-        );
-        await shot('11a-confirm-its-you');
-        lg('CONTINUE', await clickLabel(P, 'Continue with Browser'));
-        let consent;
-        for (let i = 0; i < 40 && !consent; i++) {
-          await sleep(1000);
-          consent = (await c.browserSession.send('Target.getTargets')).targetInfos.find(
-            (t) => /\/oauth\/consent|\/login/.test(t.url) && /aimatrx/.test(t.url),
-          );
-        }
-        lg('CONSENT_TARGET', consent ? consent.url.replace(/[?#].*/, '') : 'none');
-        const tokinfo = () =>
-          ev(
-            P,
-            `chrome.storage.local.get('matrx.auth.accessToken').then((r) => { const t = r['matrx.auth.accessToken']; if (!t) return null; const c = JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/') + '==')); return { iat: c.iat, amr: c.amr, now: Math.floor(Date.now() / 1000) }; })`,
-          );
-        if (consent) {
-          try {
-            const cs = await attachTargetSession(c.browserSession, consent.targetId);
-            await sleep(1500);
-            const shotC = await cs.send('Page.captureScreenshot', { format: 'png' });
-            await writeFile(
-              join(SHOTS, '11c-oauth-consent.png'),
-              Buffer.from(shotC.data, 'base64'),
-            );
-            const clicked = await cs.send('Runtime.evaluate', {
-              expression: `(() => { const b = [...document.querySelectorAll('button')].find((x) => x.textContent.trim() === 'Authorize'); if (b) b.click(); return b ? 'clicked' : document.body.innerText.slice(0, 200); })()`,
-              returnByValue: true,
-            });
-            lg('AUTHORIZE', JSON.stringify(clicked.result?.value));
-          } catch (e) {
-            lg('CONSENT_ATTACH', String(e.message));
-          }
-        }
-        lg('TOKEN_BEFORE_WAIT', JSON.stringify(await tokinfo()));
-        const t1 = Date.now();
-        for (let i = 0; i < 60; i++) {
-          await sleep(1000);
-          const open = await ev(
-            P,
-            `document.querySelectorAll('[role=dialog],[role=alertdialog]').length`,
-          );
-          if (!open) break;
-        }
-        lg('CONFIRM_MS', Date.now() - t1);
-        await sleep(2000);
-        await shot('11b-after-continue-with-browser');
-        lg('TEXT', await short(text));
-        lg(
-          'DIALOG',
-          await ev(
-            P,
-            `[...document.querySelectorAll('[role=dialog],[role=alertdialog]')].map((d) => d.innerText.slice(0, 300)).join(' || ')`,
-          ),
-        );
-      });
-      await step('reveal-copy', async () => {
-        lg('SHOW', await clickLabel(P, 'Show Password'));
-        await sleep(2500);
-        await shot('11-after-show-password');
-        lg('TEXT', await short(text));
-        lg(
-          'DIALOG',
-          await ev(
-            P,
-            `[...document.querySelectorAll('[role=dialog],[role=alertdialog]')].map((d) => d.innerText.slice(0, 300)).join(' || ')`,
-          ),
-        );
-        lg('COPY', await clickLabel(P, 'Copy Password'));
-        await sleep(2500);
-        await shot('12-after-copy-password');
-        lg(
-          'DIALOG',
-          await ev(
-            P,
-            `[...document.querySelectorAll('[role=dialog],[role=alertdialog]')].map((d) => d.innerText.slice(0, 300)).join(' || ')`,
-          ),
-        );
-        lg('TEXT', await short(text));
-      });
-      await step('page-view-match', async () => {
-        lg('BACK', await clickLabel(P, 'Back'));
-        await sleep(1500);
-        lg('SHOWMENU', await clickLabel(P, 'Show'));
-        await sleep(800);
-        lg('MENU', await menuItems(P));
-        lg(
-          'THISPAGE',
-          await clickLabel(P, 'This page', {
-            sel: '[role=menuitem],[role=menuitemradio],[role=option],[role=tab],button',
-          }),
-        );
-        await sleep(4000);
-        await shot('10-page-view-match');
-        lg('TEXT', await short(text));
-        lg('NET', JSON.stringify(await ev(P, 'window.__net')));
-        lg('CHECKAGAIN', await clickLabel(P, 'Check again'));
-        await sleep(4000);
-        await shot('10b-page-view-after-check-again');
-        lg('NET', JSON.stringify(await ev(P, 'window.__net')));
-        lg('TEXT', await short(text));
-        lg('BUTTONS', (await buttons(P)).split(' | ').slice(24).join(' | ').slice(0, 300));
-      });
-      await step('fill', async () => {
-        await page.bringToFront().catch(() => {});
-        await page.click('#u');
-        await sleep(2500);
-        await shot('13a-before-fill');
-        lg('TEXT', await short(text));
-        lg('BUTTONS', (await buttons(P)).split(' | ').slice(24).join(' | ').slice(0, 300));
-        let ready = false;
-        for (let i = 0; i < 30 && !ready; i++) {
-          ready = /Fill ZZ walk/.test(await buttons(P));
-          if (!ready) await sleep(1000);
-        }
-        lg('FILL_OFFER_READY', ready);
-        await shot('13b-fill-offer');
-        lg('FILL', await clickLabel(P, 'Fill ZZ walk', { sub: true }));
-        await sleep(2500);
-        await shot('13-after-fill');
-        lg(
-          'PAGEFIELDS',
-          JSON.stringify(
-            await page.evaluate(() => ({
-              u: document.getElementById('u')?.value,
-              pLen: document.getElementById('p')?.value.length,
-            })),
-          ),
-        );
-        lg('TEXT', await short(text));
-      });
-      await step('generator', async () => {
-        lg('GEN', await clickLabel(P, 'Generate'));
-        await sleep(2500);
-        await shot('14-generator');
-        lg('TEXT', await short(text));
-        lg('BUTTONS', (await buttons(P)).split(' | ').slice(24).join(' | ').slice(0, 400));
-        await clickLabel(P, 'Close').catch(() => {});
-        await page.keyboard.press('Escape').catch(() => {});
-      });
-      await step('capture', async () => {
-        await page.bringToFront().catch(() => {});
-        await page.fill('#u', 'walk-user-two');
-        await page.fill('#p', `Wk-${crypto.randomUUID()}`);
-        await page.click('button[type=submit]');
-        await sleep(6000);
-        await shot('15-after-submit-capture');
-        lg('TEXT', await short(text));
-        lg('BUTTONS', (await buttons(P)).split(' | ').slice(24).join(' | ').slice(0, 400));
-        lg('POSTS', site.seen.posts);
-      });
-      await step('cleanup', async () => {
-        await page.goto(site.url);
-        await sleep(2000);
-        await clickLabel(P, 'Show');
-        await sleep(600);
-        await clickLabel(P, 'Every category', {
-          sub: true,
-          sel: '[role=menuitem],[role=menuitemradio],[role=option]',
+      await hookPanelAuth(P);
+      check('captured panel auth headers', await panelAuthReady(P));
+      // Anything left by an earlier run is removed first so counts are exact.
+      lg('PRECLEAN_REMAINING', await cleanupWalkItems(P, site.origin, lg));
+      await shot('01-page-view');
+      try {
+        await step('turn-on-filling', async () => {
+          const needs = /Turn on filling/.test(await text());
+          if (!needs) return lg('FILLING_ALREADY_ON');
+          const pw = JSON.parse(
+            await readFile(process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE, 'utf8'),
+          ).password;
+          const label = (await fields(P))
+            .split(' | ')
+            .find((f) => /password/i.test(f))
+            ?.split(':')
+            .slice(2)
+            .join(':');
+          await typeInto(P, label, pw);
+          await clickLabel(P, 'Turn on');
+          await waitText(P, /^(?![\s\S]*Turn on filling)[\s\S]*$/, 40000);
+          await shot('02-filling-on');
         });
-        await sleep(2500);
-        lg('FIELDS', await fields(P));
-        const searchLabel = (await fields(P))
-          .split(' | ')
-          .find((f) => /^INPUT:search/.test(f))
-          ?.split(':')
-          .slice(2)
-          .join(':');
-        for (let n = 0; n < 40; n++) {
-          await typeInto(P, searchLabel, 'ZZ walk');
-          await sleep(1500);
-          const row = await ev(
-            P,
-            `(() => { const e = [...document.querySelectorAll('button,[role=option],[role=row],li,a')].filter((x) => x.getBoundingClientRect().width > 0 && /^\\W*\\w?\\s*ZZ walk/.test(x.textContent.trim()) && x.textContent.length < 120)[0]; return e ? e.textContent.trim().slice(0, 40) : null; })()`,
-          );
-          if (!row) break;
-          const name = row.replace(/^\\W*[A-Z]?(?=ZZ walk)/, '');
-          lg(
-            'CLEAN_OPEN',
-            row,
-            await clickLabel(P, 'ZZ walk', {
-              sub: true,
-              sel: 'button,[role=option],[role=row],li,a',
-            }),
-          );
-          await sleep(1800);
-          await clickLabel(P, 'More actions');
-          await sleep(500);
-          await clickLabel(P, 'Delete', { sel: '[role=menuitem]' });
-          await sleep(1000);
-          if (n === 0) {
-            await shot('16-delete-confirm');
-            lg(
-              'DIALOG',
-              await ev(
-                P,
-                `[...document.querySelectorAll('[role=dialog],[role=alertdialog]')].map((d) => d.innerText.slice(0, 200)).join(' || ')`,
-              ),
-            );
-          }
-          const labels = await ev(
-            P,
-            `[...document.querySelectorAll('[role=dialog] button,[role=alertdialog] button')].map((b) => b.textContent.trim()).join('|')`,
-          );
-          lg('DLG_BUTTONS', labels);
-          const confirmLabel = labels.split('|').find((l) => /delete|trash/i.test(l));
-          if (confirmLabel)
-            await clickLabel(P, confirmLabel, {
-              sel: '[role=dialog] button,[role=alertdialog] button',
-            });
+
+        await step('create-login', async () => {
+          await clickLabel(P, 'Save a login');
           await sleep(2000);
-        }
-        lg('CLEAN_DONE', await short(text));
-      });
+          await clickLabel(P, 'Website login', { sub: true });
+          await sleep(2000);
+          await typeInto(P, 'Name', tag);
+          await typeInto(P, 'Username or email', user1);
+          await typeInto(P, 'Password', secret1);
+          const web = await ev(
+            P,
+            `[...document.querySelectorAll('input')].filter((e) => e.getAttribute('aria-label') === 'Website' || e.placeholder === 'Website').map((e) => e.value).join()`,
+          );
+          if (!web) await typeInto(P, 'Website', site.url);
+          await clickLabel(P, 'Save');
+          await waitText(P, new RegExp(tag), 30000);
+          await shot('03-login-saved');
+          const list = await vaultApi(P, 'GET', '/items');
+          const it = list.json?.items?.find((i) => i.name === tag);
+          check('created item exists in vault', !!it, `name=${tag}`);
+          // the item must be switched on for browser fill (default on; this walk never flips it)
+          await clickLabel(P, 'Back');
+          await sleep(1500);
+        });
+
+        // ---------- PROOF 1: FILL ----------
+        await step('fill', async () => {
+          await page.goto(site.url);
+          await page.bringToFront().catch(() => {});
+          await clickLabel(P, 'Check again');
+          const fillBtn = new RegExp(`Fill ${tag}`);
+          // A page check in flight must never offer a pressable Fill.
+          let sawChecking = false;
+          let fillWhileChecking = false;
+          let ready = false;
+          const end = Date.now() + 90000;
+          while (Date.now() < end && !ready) {
+            await page.click('#u').catch(() => {});
+            await sleep(1200);
+            const t = await text();
+            const b = await buttonsNow();
+            if (/Checking this page|Checking saved logins/.test(t)) {
+              sawChecking = true;
+              if (fillBtn.test(b)) fillWhileChecking = true;
+            }
+            ready = fillBtn.test(b) && !/Checking this page/.test(t);
+          }
+          check('fill offered after page check settled', ready);
+          check(
+            'Fill never pressable while "Checking this page"',
+            !fillWhileChecking,
+            `sawChecking=${sawChecking}`,
+          );
+          check(
+            'saved login listed under This site',
+            /This site[\s\S]*ZZ walk/.test(await text()) || ready,
+          );
+          await shot('04-fill-offer');
+          check('pressed Fill', await clickLabel(P, `Fill ${tag}`, { sub: true }));
+          let got = { u: '', p: '' };
+          for (let i = 0; i < 20; i++) {
+            await sleep(750);
+            got = await page.evaluate(() => ({
+              u: document.getElementById('u')?.value ?? '',
+              p: document.getElementById('p')?.value ?? '',
+            }));
+            if (got.u && got.p) break;
+          }
+          await shot('05-after-fill');
+          check(
+            'username field filled and equals saved value',
+            got.u !== '' && got.u === user1,
+            `len=${got.u.length}`,
+          );
+          check(
+            'password field filled and equals saved value',
+            got.p !== '' && got.p === secret1,
+            `len=${got.p.length}`,
+          );
+          lg('PANEL_SAID', (await text()).replace(/\n/g, ' / ').slice(0, 300));
+        });
+
+        // ---------- PROOF 3: GENERATOR FILL PAGE ----------
+        await step('generator-fill-page', async () => {
+          await page.goto(site.signup);
+          await page.bringToFront().catch(() => {});
+          await clickLabel(P, 'Check again');
+          await sleep(3000);
+          await page.click('#np').catch(() => {});
+          await waitText(P, /New password/, 30000);
+          check('opened Generate', await clickLabel(P, 'Generate'));
+          await sleep(2500);
+          await shot('06-generator-open');
+          check('pressed Fill page', await clickLabel(P, 'Fill page'));
+          let v = '';
+          for (let i = 0; i < 20 && !v; i++) {
+            await sleep(750);
+            v = await page.evaluate(() => document.getElementById('np')?.value ?? '');
+          }
+          await shot('07-generator-filled');
+          check('new-password field filled by generator', v.length >= 12, `len=${v.length}`);
+          lg('PANEL_SAID', (await text()).replace(/\n/g, ' / ').slice(0, 300));
+        });
+
+        // ---------- PROOF 2: SAVE-THIS-LOGIN ----------
+        await step('capture', async () => {
+          await page.goto(site.url);
+          await page.bringToFront().catch(() => {});
+          await sleep(2000);
+          await page.fill('#u', user2);
+          await page.fill('#p', secret2);
+          await Promise.all([
+            page.waitForLoadState('domcontentloaded').catch(() => {}),
+            page.click('button[type=submit]'),
+          ]);
+          check('site received the submit', site.seen.posts.includes(user2));
+          await page.bringToFront().catch(() => {});
+          let offered = false;
+          for (let i = 0; i < 40 && !offered; i++) {
+            await sleep(1000);
+            offered = /Save this login\?/.test(await text());
+          }
+          await shot('08-save-offer');
+          check(
+            'panel offers to save this login',
+            offered,
+            (await text()).replace(/\n/g, ' / ').slice(0, 200),
+          );
+          check('offer names the new username', new RegExp(user2).test(await text()));
+          const before = (await vaultApi(P, 'GET', '/items')).json.items.length;
+          const labels = await buttonsNow();
+          const accept = /Save as new/.test(labels) ? 'Save as new' : 'Save';
+          check('accepted offer', await clickLabel(P, accept));
+          await waitText(P, /Saved to your vault/, 40000).catch(() => {});
+          await shot('09-after-save');
+          const after = (await vaultApi(P, 'GET', '/items')).json.items;
+          const fresh = after.filter(
+            (i) => JSON.stringify(i).includes(site.origin.replace('http://', '')) && i.name !== tag,
+          );
+          check(
+            'new item exists in vault',
+            after.length === before + 1 && fresh.length === 1,
+            `before=${before} after=${after.length}`,
+          );
+          const detail = fresh[0] ? (await vaultApi(P, 'GET', `/items/${fresh[0].id}`)).json : null;
+          const blob = JSON.stringify(detail ?? {});
+          check(
+            'new item has the right website',
+            blob.includes(`${site.origin.replace('http://', '')}`),
+            '',
+          );
+          check('new item has the right username', blob.includes(user2));
+          lg('NEW_ITEM_NAME', fresh[0]?.name);
+          // offered back on that page
+          await page.goto(site.url);
+          await page.bringToFront().catch(() => {});
+          await clickLabel(P, 'Check again');
+          const re = new RegExp(
+            `Fill ${(fresh[0]?.name ?? 'x').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
+          );
+          let back = false;
+          for (let i = 0; i < 40 && !back; i++) {
+            await page.click('#u').catch(() => {});
+            await sleep(1500);
+            back = re.test(await buttonsNow()) && !/Checking this page/.test(await text());
+          }
+          await shot('10-offered-back');
+          check('new login offered back on that page (Fill button)', back);
+        });
+      } finally {
+        const remaining = await cleanupWalkItems(P, site.origin, lg).catch(
+          (e) => `err:${e.message}`,
+        );
+        check(
+          'cleanup: ZZ walk / walk-site items remaining = 0',
+          remaining === 0,
+          String(remaining),
+        );
+      }
     });
   } finally {
+    // Cleanup runs inside a fresh browser session only if the main walk could not; the in-walk finalizer below handles the normal path.
     site.server.close();
+    await writeFile(join(SHOTS, 'results.json'), JSON.stringify({ tag, results }, null, 2)).catch(
+      () => {},
+    );
   }
+  process.exitCode = results.some((r) => !r.ok) ? 1 : 0;
 }
