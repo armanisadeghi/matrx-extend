@@ -361,13 +361,31 @@ async function openAndCloseGuestValuesChip(panel) {
     const pane = chat ? document.getElementById(chat.getAttribute('aria-controls') ?? '') : null;
     const matches = [...(pane?.querySelectorAll('button[aria-label]') ?? [])]
       .filter((button) => /^[0-9]+ included$/.test(button.getAttribute('aria-label') ?? ''));
+    const visible = (element) => {
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0 ||
+        element.checkVisibility?.({ checkOpacity: true, checkVisibilityCSS: true }) === false)
+        return false;
+      for (let current = element; current; current = current.parentElement) {
+        const style = getComputedStyle(current);
+        if (style.display === 'none' || style.visibility === 'hidden' ||
+          style.visibility === 'collapse' || Number(style.opacity) === 0)
+          return false;
+      }
+      return true;
+    };
+    // The master switch is optional: this host supplies neither onToggleAll
+    // nor onSetInclude. Open full view identifies the actual Values popover.
     const openPanels = [...document.querySelectorAll('[role="dialog"][data-state="open"]')]
-      .filter((dialog) => dialog.querySelector('[aria-label="Send everything"]') &&
-        dialog.querySelector('[aria-label="Open full view"]'));
-    return matches.length === 1 ? {
-      count: 1,
-      openPanelCount: openPanels.length,
-    } : { count: matches.length, openPanelCount: openPanels.length };
+      .filter((dialog) => dialog.querySelector('[aria-label="Open full view"]'));
+    const visibleOpenPanels = openPanels.filter((dialog) => visible(dialog) &&
+      visible(dialog.querySelector('[aria-label="Open full view"]')));
+    return {
+      count: matches.length,
+      openPanelCount: visibleOpenPanels.length,
+      openStatePanelCount: openPanels.length,
+    };
   })()`,
     );
   const count = (await readChip())?.count;
@@ -392,7 +410,7 @@ async function openAndCloseGuestValuesChip(panel) {
     code: 'Escape',
     windowsVirtualKeyCode: 27,
   });
-  await waitFor('guest_values_chip_closed', readChip, (state) => state?.openPanelCount === 0);
+  await waitFor('guest_values_chip_closed', readChip, (state) => state?.openStatePanelCount === 0);
   return { present: true, exercised: true };
 }
 

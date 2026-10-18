@@ -216,37 +216,59 @@ const valuesDriver = new Function(
 
 function valuesControlHarness(count, blocked = null) {
   let open = false;
+  let hiddenAfterEscape = false;
   const calls = [];
   const buttons = Array.from({ length: count }, () => ({
     getAttribute: (name) => (name === 'aria-label' ? '0 included' : null),
   }));
-  // The mobile package opens a BottomSheet while the face button has no
-  // aria-expanded. Its dialog contains these two Values-only controls.
+  // The Store's desktop Values popover has Open full view, but this host omits
+  // onToggleAll/onSetInclude, so the optional Send everything switch is absent.
+  const hiddenAncestor = { parentElement: null };
+  const dialog = {
+    parentElement: blocked === 'ancestor-opacity-hidden' ? hiddenAncestor : null,
+    getBoundingClientRect: () => ({ width: blocked === 'zero-size' ? 0 : 340, height: 260 }),
+    checkVisibility: () => blocked !== 'check-visibility-hidden',
+    querySelector: (selector) =>
+      selector === '[aria-label="Open full view"]' && blocked !== 'unrelated'
+        ? {
+            getBoundingClientRect: () => ({
+              width: blocked === 'button-zero-size' ? 0 : 28,
+              height: 28,
+            }),
+          }
+        : null,
+  };
   const document = {
     querySelector: () => ({ getAttribute: () => 'chat-pane' }),
     getElementById: () => ({ querySelectorAll: () => buttons }),
-    querySelectorAll: () =>
-      open
-        ? [
-            {
-              querySelector: (selector) =>
-                (blocked !== 'unrelated' && selector === '[aria-label="Send everything"]') ||
-                selector === '[aria-label="Open full view"]'
-                  ? {}
-                  : null,
-            },
-          ]
+    querySelectorAll: (selector) =>
+      open &&
+      (selector === '[role="dialog"]' ||
+        (selector === '[role="dialog"][data-state="open"]' && blocked !== 'closed-remnant'))
+        ? [dialog]
         : [],
   };
   const panel = {
     send: async (method, args) => {
       calls.push([method, args.type]);
-      if (method === 'Input.dispatchKeyEvent' && args.type === 'keyUp' && blocked !== 'close')
-        open = false;
+      if (method === 'Input.dispatchKeyEvent' && args.type === 'keyUp') {
+        if (blocked === 'hidden-close') hiddenAfterEscape = true;
+        else if (blocked !== 'close') open = false;
+      }
     },
   };
   const run = valuesDriver(
-    async (_panel, expression) => new Function('document', `return ${expression}`)(document),
+    async (_panel, expression) =>
+      new Function('document', 'getComputedStyle', `return ${expression}`)(document, (element) => ({
+        display: blocked === 'display-none' ? 'none' : 'block',
+        visibility: blocked === 'visibility-hidden' ? 'hidden' : 'visible',
+        opacity:
+          ((blocked === 'opacity-hidden' || (blocked === 'hidden-close' && hiddenAfterEscape)) &&
+            element === dialog) ||
+          (blocked === 'ancestor-opacity-hidden' && element === hiddenAncestor)
+            ? '0'
+            : '1',
+      })),
     async (_panel, kind, label) => {
       calls.push([kind, label]);
       if (blocked !== 'open') open = true;
@@ -281,7 +303,22 @@ test('optional Values does not silently accept duplicate controls or a failed in
   assert.deepEqual(duplicates.calls, []);
   await assert.rejects(valuesControlHarness(1, 'open').run, /guest_values_chip_open/);
   await assert.rejects(valuesControlHarness(1, 'unrelated').run, /guest_values_chip_open/);
+  await assert.rejects(valuesControlHarness(1, 'closed-remnant').run, /guest_values_chip_open/);
+  await assert.rejects(valuesControlHarness(1, 'zero-size').run, /guest_values_chip_open/);
+  await assert.rejects(valuesControlHarness(1, 'button-zero-size').run, /guest_values_chip_open/);
+  await assert.rejects(valuesControlHarness(1, 'display-none').run, /guest_values_chip_open/);
+  await assert.rejects(valuesControlHarness(1, 'visibility-hidden').run, /guest_values_chip_open/);
+  await assert.rejects(valuesControlHarness(1, 'opacity-hidden').run, /guest_values_chip_open/);
+  await assert.rejects(
+    valuesControlHarness(1, 'ancestor-opacity-hidden').run,
+    /guest_values_chip_open/,
+  );
+  await assert.rejects(
+    valuesControlHarness(1, 'check-visibility-hidden').run,
+    /guest_values_chip_open/,
+  );
   await assert.rejects(valuesControlHarness(1, 'close').run, /guest_values_chip_closed/);
+  await assert.rejects(valuesControlHarness(1, 'hidden-close').run, /guest_values_chip_closed/);
 });
 
 // EXT-D-0230: a focus-driven React remount must preserve the user intent, not node identity.
