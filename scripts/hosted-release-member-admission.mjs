@@ -118,6 +118,7 @@ function reviewedStabilizationPath(path) {
       'docs/stabilization/inventory.json',
       'docs/stabilization/defects/EXT-D-0228.json',
       'docs/stabilization/defects/EXT-D-0239.json',
+      'docs/stabilization/defects/EXT-D-0240.json',
     ].includes(path)
   )
     return true;

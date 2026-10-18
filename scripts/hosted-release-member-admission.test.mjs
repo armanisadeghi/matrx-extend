@@ -368,16 +368,17 @@ test('exact member identity diagnostic delta is admitted without widening paths'
 });
 
 // The Member A false-negative repair and its durable defect record remain test-only.
-test('member follow-up harness defect admits only exact test and record paths', () => {
+test('member harness defects admit only exact reviewed test and record paths', () => {
   const reviewed = [
     'tests/browser/reviewer-chat-organization-boundary.test.mjs',
     'docs/stabilization/defects/EXT-D-0239.json',
+    'docs/stabilization/defects/EXT-D-0240.json',
   ];
   requireReleaseMemberSource(true, reviewed);
   for (const path of [
     'tests/browser/reviewer-chat-organization-boundary-copy.test.mjs',
     'docs/stabilization/defects/EXT-D-0239.json.bak',
-    'docs/stabilization/defects/EXT-D-0240.json',
+    'docs/stabilization/defects/EXT-D-0241.json',
     'docs/stabilization/defects/../package.json',
     'src/features/chat/ChatView.tsx',
   ])
