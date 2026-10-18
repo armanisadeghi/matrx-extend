@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-18T18:09:51Z",
+  "status": "release-dispatch-held",
+  "policy": "common-docs/policies/ci-spend.md: $100/week total across repositories; no bypass of a spending block",
+  "modeled_billed_usd_per_week": 149.44,
+  "ceiling_usd_per_week": 100,
+  "release_effect": "No guarded Store ZIP can be dispatched or submitted while this gate is red. The latest guarded v0.2.543 release artifact is behind synchronized source and has no exact-artifact guest/member acceptance.",
+  "store_last_authenticated_observation": {
+    "published": "0.2.205",
+    "rejected_draft": "0.2.479",
+    "reason": "Including remotely hosted code in a Manifest V3 item",
+    "new_upload_or_submission": false
+  },
+  "guard_repair": {
+    "peer_review": "PASS after a fresh measured-spend gap was repaired; see local /tmp/ci-guard-peer-review.md",
+    "identical_script_sha256": "f4ed110bc80f92474bce4dda8d5aa0f24a60897d5124302fa75c46e6237361ca",
+    "local_commits": {
+      "aidream": "8c63365c00",
+      "ai-matrx": "b982abf584",
+      "matrx-extend": "17c1316ab",
+      "matrx-local": "35cb2d10",
+      "matrx-sandbox": "403f5b3",
+      "matrx-ship": "2685e23"
+    },
+    "remote_push_state": "held: each push can launch paid workflows while the spending gate is red",
+    "validation": "Six self-test suites passed. Fresh private $150/week measured spend blocks even with a $0.60 forecast; stale and free-public measurements do not falsely block. Ordinary and --base HEAD checks still refuse the actual $149.44/week forecast."
+  },
+  "cost_reduction_review": "No safe small cut of at least $49.44/week was found without removing package-isolation or distinct real-browser checks; see local /tmp/aidream-ci-cost-reduction.md.",
+  "development_artifact": {
+    "version": "0.2.544",
+    "source_sha": "5c5b1d0ab6d57a02fc72d0b538104692ffb44d55",
+    "ci_run": 39151181881,
+    "local_promotion_report": "docs/stabilization/reports/dev-artifact-refresh-20261018.json",
+    "emitted_javascript_scanned": 1277,
+    "remote_script_loader_hits": 0,
+    "limitation": "Development unpacked payload only; not a Store ZIP or Chrome-loaded verification."
+  },
+  "next_action": "After an authorized ceiling/cadence resolution, reconcile and push all six local guard commits, dispatch a new guarded release from synchronized main, scan the exact Store ZIP, obtain resource-valid real guest and non-admin acceptance with independent review, then upload and submit in the authenticated primary-item dashboard. Keep current rejection and no-submission state explicit until then."
+}
