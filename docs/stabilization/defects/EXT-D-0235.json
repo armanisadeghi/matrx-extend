@@ -38,7 +38,7 @@
   "owner": "guest_answer_visual_evidence_fix",
   "cause": "The observer's visible predicate checks nonzero bounds and computed display/visibility, while capture() saves the current viewport without positioning the answer or checking viewport intersection.",
   "sibling_census": "The same capture path writes opening, same-conversation follow-up and post-reload answer screenshots. All three now pass the same latest-article viewport and fixture-text gate; diagnostic failure screenshots retain their unrestricted capture path.",
-  "fix_sha": null,
+  "fix_sha": "0db6cf073",
   "original_retest_runs": [39096823813],
   "surrounding_retest_runs": [],
   "reviewer": "Independent focused peer review: behavior PASS, code quality PASS; native retest pending.",
