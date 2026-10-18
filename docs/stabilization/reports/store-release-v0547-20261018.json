@@ -1,0 +1,66 @@
+{
+  "task_id": "store-release-owner-replacement-20261018",
+  "status": "artifact-verified-acceptance-pending",
+  "previous_candidate": {
+    "version": "0.2.546",
+    "release_run_id": 39154140054,
+    "source_sha": "1695c3be6460ae48a540ffe3d0a55991bc8c4748",
+    "eligibility": "stale after source harness repairs and design-system package update"
+  },
+  "current_source_sha_at_dispatch": "68c45bf59c4c4444ba7c73bfea684e4273fc5386",
+  "aidream_immutable_sha": "c1c6682f362718a5253edd82987afd181f3c9c73",
+  "new_release_run_id": 39156656684,
+  "new_release_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39156656684",
+  "requested_by": "store_release_owner_oct18",
+  "new_version": "0.2.547",
+  "new_artifact_id": 12146969871,
+  "new_store_zip_sha256": "a82c32964edc9c240dfb7f17e109ae979420b2c076a5832721272c50741882e8",
+  "package_delta": {
+    "package": "@ai-matrx/design-system",
+    "from": "0.86.200",
+    "to": "0.86.201",
+    "published_git_head": "07a006da651bfeecc6decc154e54ff801de51f8e",
+    "shipped_source_changed": true,
+    "consumer_action": "RecordId replaces hand-built ID displays; one existing admin-only Debug model ID text use is a separate UI follow-up, with no removed export or API migration required for this release.",
+    "at_release": [
+      {
+        "package": "@ai-matrx/chat",
+        "from": "0.8.194",
+        "to": "0.8.195",
+        "published_git_head": "ca14343b809019a9bf93f559811ea02cd998ea85",
+        "consumer_action": "removed ShortId subpath; extension has no ShortId import; other guidance is frontend-only"
+      },
+      {
+        "package": "@ai-matrx/media",
+        "from": "0.15.118",
+        "to": "0.15.119",
+        "published_git_head": "fa02d80b578490f94648af1c48b1fd0ae5212d10",
+        "consumer_action": "none for changed inline-media-ref source"
+      }
+    ]
+  },
+  "spend": "Existing standard ubuntu-latest release workflow in public repository; unpaid. The $100/week ceiling remains unchanged for paid work. No billing refusal observed.",
+  "acceptance": "pending fresh exact 0.2.547 Store ZIP guest/member native runs and independent review; earlier .546 runs stale",
+  "store_upload_or_submission": false,
+  "credentials_recorded": false,
+  "new_source_sha": "de066a247ae7fa74015bc143bbc13e4128f742e4",
+  "github_artifact_digest": "sha256:2c8350e7a2385309e3d309a5f394df22764326e56b0bb36a86324c0b5cc0cf54",
+  "receipt_tree_sha256": "99018b64011107f3fc6e47a7467be7c0a02199d681cf2f96ef63b2b423789fa0",
+  "local_zip_sha256": "e2ff638dbd062804ad3fc31e6d98c598b94e8d39e4cd625700ca45c6d5402a60",
+  "release_all_steps": "success",
+  "artifact_verification": {
+    "archive_digest_matches_api": true,
+    "store_zip_digest_matches_receipt": true,
+    "tag_matches_receipt_source": true,
+    "remote_main_at_verification_matches_tag": true,
+    "exact_store_manifest_version": "0.2.547",
+    "approved_policy_surface_match": true,
+    "manifest_key_absent": true,
+    "toolbar_popup_absent": true,
+    "emitted_javascript_files_scanned": 1272,
+    "remote_code_gate": "pass",
+    "rejected_pdfobject_cdn_url_absent": true,
+    "runtime_adaptation": "only matching local ZIP public key added to extracted Store tree for Chrome testing; original Store ZIP unchanged"
+  },
+  "checkout_note": "Remote main/tag verified at de066a247; local shared checkout has four concurrent uncommitted browser-test files, preserved. Do not fast-forward or mutate those paths."
+}
