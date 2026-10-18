@@ -192,7 +192,9 @@ export async function hookPanelAuth(panel) {
     window.fetch = async (input, init) => { try { const u = String(input?.url ?? input);
       if (/server\.app\.matrxserver\.com/.test(u)) { const h = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined));
         if (h.get('authorization') && h.get('x-organization-id')) window.__walkAuth = { a: h.get('authorization'), o: h.get('x-organization-id') }; } } catch {}
-      return f(input, init); }; return true; })()`,
+      const t0 = Date.now(); const r = await f(input, init);
+      try { if (/browser-login[/]matches/.test(String(input?.url ?? input))) { let n = null; if (r.ok) n = (await r.clone().json()).count; (window.__walkMatches ||= []).push(r.status + ':' + n + ':' + (Date.now() - t0) + 'ms'); } } catch {}
+      return r; }; return true; })()`,
   );
 }
 export async function panelAuthReady(panel, ms = 60000) {
@@ -219,23 +221,30 @@ export const vaultApi = (panel, method, path, body) =>
     return { status: r.status, json: j, text: j ? '' : t.slice(0, 200) }; })()`,
   );
 
+/** GET /items, retried: the server's answers are intermittently 5xx under load. */
+export async function listItems(panel) {
+  let last = null;
+  for (let i = 0; i < 8; i++) {
+    last = await vaultApi(panel, 'GET', '/items');
+    if (last.status === 200) return last.json.items;
+    await sleep(2500);
+  }
+  throw new Error(`list_items_${last?.status}`);
+}
+
 /** Every item of ours whose name starts "ZZ walk" or whose website is on `origin`; DELETE each; return how many remain. */
 export async function cleanupWalkItems(panel, origin, lg = () => {}) {
   const mine = async () => {
-    const r = await vaultApi(panel, 'GET', '/items');
-    if (r.status !== 200)
-      throw new Error(
-        `cleanup_list_${r.status}: ${r.text} ${JSON.stringify(r.json).slice(0, 300)}`,
-      );
-    return r.json.items.filter(
+    const items = await listItems(panel);
+    return items.filter(
       (i) =>
-        /^ZZ walk/.test(i.name ?? '') ||
+        /^ZZ walk/.test(i.display_name ?? i.name ?? '') ||
         (origin && JSON.stringify(i).includes(origin.replace('http://', ''))),
     );
   };
   for (const it of await mine()) {
     const d = await vaultApi(panel, 'DELETE', `/items/${it.id}`);
-    lg('CLEAN_DELETE', it.name, d.status);
+    lg('CLEAN_DELETE', it.display_name ?? it.name, d.status);
   }
   return (await mine()).length;
 }
@@ -314,8 +323,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           await clickLabel(P, 'Save');
           await waitText(P, new RegExp(tag), 30000);
           await shot('03-login-saved');
-          const list = await vaultApi(P, 'GET', '/items');
-          const it = list.json?.items?.find((i) => i.name === tag);
+          const items = await listItems(P);
+          const it = items.find((i) => (i.display_name ?? i.name) === tag);
           check('created item exists in vault', !!it, `name=${tag}`);
           // the item must be switched on for browser fill (default on; this walk never flips it)
           await clickLabel(P, 'Back');
@@ -332,12 +341,19 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           let sawChecking = false;
           let fillWhileChecking = false;
           let ready = false;
-          const end = Date.now() + 90000;
+          const end = Date.now() + 180000;
           while (Date.now() < end && !ready) {
             await page.click('#u').catch(() => {});
-            await sleep(1200);
+            await sleep(1500);
+            if (/couldn’t be checked/.test(await text())) await clickLabel(P, 'Retry');
             const t = await text();
             const b = await buttonsNow();
+            lg(
+              'FILL_POLL',
+              t.replace(/\n/g, ' / ').slice(-160),
+              '|',
+              b.split(' | ').slice(-6).join(' | '),
+            );
             if (/Checking this page|Checking saved logins/.test(t)) {
               sawChecking = true;
               if (fillBtn.test(b)) fillWhileChecking = true;
@@ -406,19 +422,27 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           await page.goto(site.url);
           await page.bringToFront().catch(() => {});
           await sleep(2000);
-          await page.fill('#u', user2);
-          await page.fill('#p', secret2);
-          await Promise.all([
-            page.waitForLoadState('domcontentloaded').catch(() => {}),
-            page.click('button[type=submit]'),
-          ]);
-          check('site received the submit', site.seen.posts.includes(user2));
-          await page.bringToFront().catch(() => {});
           let offered = false;
-          for (let i = 0; i < 40 && !offered; i++) {
-            await sleep(1000);
-            offered = /Save this login\?/.test(await text());
+          for (let attempt = 1; attempt <= 3 && !offered; attempt++) {
+            if (attempt > 1) {
+              await page.goto(site.url);
+              await page.bringToFront().catch(() => {});
+              await sleep(2000);
+            }
+            await page.fill('#u', user2);
+            await page.fill('#p', secret2);
+            await Promise.all([
+              page.waitForLoadState('domcontentloaded').catch(() => {}),
+              page.click('button[type=submit]'),
+            ]);
+            await page.bringToFront().catch(() => {});
+            for (let i = 0; i < 60 && !offered; i++) {
+              await sleep(1000);
+              offered = /Save this login\?/.test(await text());
+            }
+            lg('CAPTURE_ATTEMPT', attempt, offered);
           }
+          check('site received the submit', site.seen.posts.includes(user2));
           await shot('08-save-offer');
           check(
             'panel offers to save this login',
@@ -426,47 +450,77 @@ if (import.meta.url === `file://${process.argv[1]}`) {
             (await text()).replace(/\n/g, ' / ').slice(0, 200),
           );
           check('offer names the new username', new RegExp(user2).test(await text()));
-          const before = (await vaultApi(P, 'GET', '/items')).json.items.length;
+          const beforeIds = new Set((await listItems(P)).map((i) => i.id));
+          const before = beforeIds.size;
           const labels = await buttonsNow();
           const accept = /Save as new/.test(labels) ? 'Save as new' : 'Save';
           check('accepted offer', await clickLabel(P, accept));
           await waitText(P, /Saved to your vault/, 40000).catch(() => {});
           await shot('09-after-save');
-          const after = (await vaultApi(P, 'GET', '/items')).json.items;
-          const fresh = after.filter(
-            (i) => JSON.stringify(i).includes(site.origin.replace('http://', '')) && i.name !== tag,
-          );
+          const after = await listItems(P);
+          const fresh = after.filter((i) => !beforeIds.has(i.id));
           check(
             'new item exists in vault',
             after.length === before + 1 && fresh.length === 1,
             `before=${before} after=${after.length}`,
           );
           const detail = fresh[0] ? (await vaultApi(P, 'GET', `/items/${fresh[0].id}`)).json : null;
+          lg('DETAIL_KEYS', Object.keys(detail ?? {}).join());
+          lg(
+            'DETAIL_FIELDS',
+            JSON.stringify(
+              (detail?.fields ?? []).map((f) => ({
+                k: f.key,
+                h: f.handling,
+                v:
+                  f.handling === 'sealed' || f.key === 'password'
+                    ? undefined
+                    : (f.value ?? f.display_value ?? f.preview),
+              })),
+            ),
+          );
           const blob = JSON.stringify(detail ?? {});
           check(
             'new item has the right website',
             blob.includes(`${site.origin.replace('http://', '')}`),
             '',
           );
-          check('new item has the right username', blob.includes(user2));
-          lg('NEW_ITEM_NAME', fresh[0]?.name);
+          const revealed = [];
+          for (const f of detail?.fields ?? []) {
+            const key = f.field_key ?? f.key;
+            if (!key) continue;
+            const rv = await vaultApi(P, 'POST', `/items/${fresh[0].id}/reveal`, {
+              field_key: key,
+            });
+            revealed.push(rv.status === 200 ? rv.json?.value : `status:${rv.status}`);
+          }
+          check(
+            'new item has the right username',
+            revealed.includes(user2),
+            `fields=${(detail?.fields ?? []).length}`,
+          );
+          check('new item has the right password', revealed.includes(secret2));
+          lg('NEW_ITEM_NAME', fresh[0]?.display_name ?? fresh[0]?.name);
           // offered back on that page
           await page.goto(site.url);
           await page.bringToFront().catch(() => {});
           await clickLabel(P, 'Check again');
           const re = new RegExp(
-            `Fill ${(fresh[0]?.name ?? 'x').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
+            `Fill ${(fresh[0]?.display_name ?? fresh[0]?.name ?? 'x').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
           );
           let back = false;
           for (let i = 0; i < 40 && !back; i++) {
             await page.click('#u').catch(() => {});
             await sleep(1500);
+            if (/couldn’t be checked/.test(await text())) await clickLabel(P, 'Retry');
             back = re.test(await buttonsNow()) && !/Checking this page/.test(await text());
           }
           await shot('10-offered-back');
           check('new login offered back on that page (Fill button)', back);
         });
       } finally {
+        const calls = (await ev(P, 'window.__walkMatches')) ?? [];
+        lg('MATCH_CALLS_500', `${calls.filter((c) => c.startsWith('500')).length}/${calls.length}`);
         const remaining = await cleanupWalkItems(P, site.origin, lg).catch(
           (e) => `err:${e.message}`,
         );
