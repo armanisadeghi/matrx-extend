@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-18T17:59:14Z",
+  "purpose": "Current exact-source development artifact and Chrome installation boundary",
+  "source_sha": "5c5b1d0ab6d57a02fc72d0b538104692ffb44d55",
+  "origin_main_sha_at_promotion": "5c5b1d0ab6d57a02fc72d0b538104692ffb44d55",
+  "working_tree_at_promotion": "clean",
+  "ci_run_id": 39151181881,
+  "ci_conclusion": "success",
+  "artifact_id": 12145422780,
+  "artifact_digest": "sha256:c94057e94eed1066ab45957f142d289d88f48288a98b62a679579ad446e8f912",
+  "version": "0.2.544",
+  "promotion": {
+    "compatibility": "exact-source",
+    "filesystem_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "tree_sha256": "e6b2c3f115ba2b5db86cdfb1ded8de7ba18eacb65bf6fbe3e1b42ca3668004f0",
+    "receipt": "test-results/ci-dev-promotion-receipt.json",
+    "result": "CI_DEV_PROMOTED",
+    "file_count": 2453
+  },
+  "chrome_installation": {
+    "loaded_version": "UNVERIFIED",
+    "loaded_path": "UNVERIFIED",
+    "pin": "UNVERIFIED",
+    "observation": "Prior automation refusal prevented verification of the Chrome installation state."
+  },
+  "store_eligibility": {
+    "eligible": false,
+    "reason": "Development artifact is not a Store ZIP and cannot be submitted."
+  },
+  "product_acceptance": "Not established by artifact import or promotion.",
+  "resource_limit": {
+    "volume": "Internal Data volume",
+    "free_space": "2.1 GiB",
+    "native_test_threshold": "20 GiB",
+    "native_testing_admitted": false
+  },
+  "disk_groom": {
+    "command": "groom.py daily --apply",
+    "result": "completed_with_item_failures",
+    "reported_freed": "0 B",
+    "detail": "The run attempted stale system-temp cleanup; macOS returned Operation not permitted for the listed daemon-owned temp entries. No space was recovered, and the internal Data volume remained at 2.1 GiB free."
+  }
+}
