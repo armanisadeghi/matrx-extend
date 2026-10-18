@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-18T00:22:14Z",
+  "observed_at": "2026-10-18T00:22:36Z",
   "scope": "Primary Chrome Web Store item hnfolienncfklkgmdjjmhhegglimlamg",
   "status": "held_canonical_guest_fix_package_publish_failure_no_adoption_no_upload",
   "official_email": {
@@ -38,7 +38,7 @@
     "source_comparison": "Current source still defaults automatic scrape capture off and offers signed-in Vault controls; Swipe Save sends a user-chosen supported post URL, and config reporting sends bounded key-read metadata. The live October 15 policy covers those reviewed flows. Exact 0.2.528 native behavior and dashboard disclosure selections remain unverified."
   },
   "source_and_release": {
-    "main_sha": "9a376fe6409be53af1f656c3f622ed70169818ee",
+    "main_sha": "66e31e8ab",
     "source_version": "0.2.528",
     "main_synchronized_with_origin": true,
     "latest_hosted_release_run": 39079670382,
@@ -231,9 +231,10 @@
     "chat_npm_latest_git_head": "4ca1db5d26f3084b562326cd7f137a6759ed5f79",
     "chat_publish_job": "117541488611 L1 failed isolated packed-chat install with E404 fetching advertised Agents 0.59.138 tarball",
     "causal_limit": "Observed dependency fetch failure; no claim about permanent registry cause or the guest product fix correctness from this publish attempt.",
-    "extension_main": "9a376fe6409be53af1f656c3f622ed70169818ee",
+    "extension_main": "66e31e8ab",
     "extension_adoption": "not_attempted",
     "next_release_dispatch": "held",
-    "store_upload": "not_attempted"
+    "store_upload": "not_attempted",
+    "concurrent_lock_refresh": "Contributor f87827396 (merged b3f74a84c) changed pnpm-lock.yaml after this audit commit; safely integrated at 66e31e8ab. Importer still has Agents 0.59.137 and Chat 0.8.173, so reviewed fix pair remains unadopted. Other package graph changes need exact-current CI before future release."
   }
 }
