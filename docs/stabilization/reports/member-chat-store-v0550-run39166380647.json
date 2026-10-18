@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "task_id": "member-chat-store-v0550-native-a-20261018",
+  "status": "zero-credit-resource-invalid",
+  "run": {
+    "id": 39166380647,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39166380647",
+    "lane": "A",
+    "case": "member-chat",
+    "runner_label": "macos-15-intel",
+    "conclusion": "failure",
+    "release_version": "0.2.550",
+    "release_run_id": 39165462442,
+    "release_artifact_id": 12150453061,
+    "product_source_sha": "9cc1694286476d5818d219caf2127c1129d9d6d3",
+    "store_zip_sha256": "86b3379d29b1fd8d1d374a234b2204c7de80cd3221fbcbd170c0b4a7b1cc8130",
+    "acceptance_artifact_id": 12150473146,
+    "acceptance_artifact_digest_verified": true
+  },
+  "preparation": {
+    "live_reviewer_dry_run": "passed: existing enabled non-admin identity and approved active test-fixture membership",
+    "approved_organization_secret": "already present before this lane; retained",
+    "one_use_reviewer_link": "generated at point of use, staged through stdin, removed after terminal run"
+  },
+  "resource_verdict": {
+    "package": "valid",
+    "browser": "valid",
+    "acceptance": "invalid",
+    "resource_invalid": true,
+    "timeline_utc": [
+      {
+        "at": "2026-10-18T21:13:38.356Z",
+        "event": "acceptance admitted"
+      },
+      {
+        "at": "2026-10-18T21:13:54.631Z",
+        "event": "RESOURCE_CPU_PENDING",
+        "cpu_busy_fraction": 0.93,
+        "one_minute_load": 1.3,
+        "logical_cpus": 4,
+        "available_memory_gib": 12.46,
+        "swap_used_mib": 0
+      },
+      {
+        "at": "2026-10-18T21:14:08.348Z",
+        "event": "child exited before acceptance completed",
+        "child_exit_code": 1
+      },
+      {
+        "at": "2026-10-18T21:14:08.461Z",
+        "event": "resource-invalid final",
+        "exit_code": 3
+      }
+    ],
+    "startup_interval_diagnostic": "Sanitized category totals show owned Chromium 2.06 CPU-seconds, other owned work 0.65, host provisioning 0.33, and other host work 0.59 during the bracket."
+  },
+  "native_observations": {
+    "web_and_extension_login": true,
+    "canonical_nonadmin_proof": "HTTP 200; zero admin assignments for the current extension identity",
+    "selected_organization_matches_approved_fixture": true,
+    "chat_driver_started": false,
+    "opening_and_follow_up_replies": "not observed",
+    "terminal_completion": "not observed",
+    "request_organization_headers": "not observed",
+    "visible_answer": "not evaluated; private screenshot shows generic loading skeleton"
+  },
+  "cleanup": {
+    "temporary_github_magic_link_secret_absent": true,
+    "local_one_use_link_file_absent": true,
+    "preexisting_approved_organization_secret_retained": true,
+    "fixture_mutation_or_chat_write": "none observed",
+    "runner_terminal": true
+  },
+  "limitations": [
+    "The native driver failed at reviewer_native_panel_foreground with unclassified_failure; no product cause is established.",
+    "CPU pressure was sampled during Chromium startup. The run is resource-invalid and cannot establish product behavior.",
+    "No retry is authorized without a new owner ruling.",
+    "Cross-repository CI spend-watch status was unavailable; public hosted runner cost is $0 billed per the current reviewed manifest, without implying the weekly watch is green."
+  ],
+  "next_action": "Keep Member A acceptance unverified and hand the private artifact to the assigned independent reviewer."
+}
