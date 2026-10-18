@@ -43,7 +43,7 @@ const admission = {
   remoteSha: sha,
   dirty: '',
   runs: [],
-  secretNames: ['MATRX_REVIEWER_MAGIC_LINK_JSON'],
+  secretNames: ['MATRX_REVIEWER_MAGIC_LINK_JSON', 'MATRX_PROFILE_APPROVED_ORGANIZATION_JSON'],
 };
 
 // Recorded Settings run terminated resource-invalid with zero product credit.
@@ -255,7 +255,19 @@ test('artifact metadata from a different run cannot be used for the selected rel
 });
 test('missing credential reproduces original pre-browser refusal while independent B is admitted', () => {
   assert.throws(
-    () => admitReleaseMember({ ...admission, secretNames: [] }),
+    () =>
+      admitReleaseMember({
+        ...admission,
+        secretNames: ['MATRX_REVIEWER_MAGIC_LINK_JSON'],
+      }),
+    /release_member_approved_organization_secret_required/,
+  );
+  assert.throws(
+    () =>
+      admitReleaseMember({
+        ...admission,
+        secretNames: ['MATRX_PROFILE_APPROVED_ORGANIZATION_JSON'],
+      }),
     /hosted_member_link_secret_required/,
   );
   admitReleaseMember({

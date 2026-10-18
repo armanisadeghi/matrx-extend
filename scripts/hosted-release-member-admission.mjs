@@ -95,6 +95,10 @@ export function admitReleaseMember({ localSha, remoteSha, dirty, runs, secretNam
     'release_member_lane_a_busy',
   );
   assert.ok(
+    Array.isArray(secretNames) && secretNames.includes('MATRX_PROFILE_APPROVED_ORGANIZATION_JSON'),
+    'release_member_approved_organization_secret_required',
+  );
+  assert.ok(
     Array.isArray(secretNames) && secretNames.includes('MATRX_REVIEWER_MAGIC_LINK_JSON'),
     'hosted_member_link_secret_required',
   );
