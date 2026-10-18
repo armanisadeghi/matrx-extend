@@ -1487,6 +1487,18 @@ try {
           return;
         }
 
+        stage = 'reviewer_native_panel_foreground';
+        // Restore the native member panel after web authentication.
+        await web.close();
+        await page.bringToFront();
+        await native.reopenPanel();
+        await waitFor(
+          'reviewer_native_panel_foreground',
+          () => evaluate(panel, 'document.visibilityState'),
+          (visibility) => visibility === 'visible',
+          10_000,
+        );
+
         stage = 'signed_in_swipe_file_tab';
         await waitFor(
           'reviewer_swipe_file_tab_visible',
@@ -1689,7 +1701,7 @@ try {
             complete: false,
           };
         await memberTransport?.stop();
-        await web.close();
+        if (!web.isClosed()) await web.close();
       }
     },
   });
