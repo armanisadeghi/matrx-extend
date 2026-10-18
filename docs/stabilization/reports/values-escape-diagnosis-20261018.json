@@ -1,0 +1,49 @@
+{
+  "task_id": "EXT-D-0244",
+  "lane": "bounded source and evidence diagnosis",
+  "status": "hypothesis_only_current_candidate_unobserved",
+  "observed_product_behavior": {
+    "build": "adapted public 0.2.205 CRX, sha256 7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "run_id": 39160396058,
+    "evidence": "docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/receipt.sanitized.json",
+    "fact": "one trusted Escape keydown (document focused) left one visible Values popover open with focus inside; independent screenshot confirms the open surface",
+    "limit": "one observation, no pre-Escape tooltip/layer snapshot, no repeatability or current-candidate result",
+    "product_source_sha": "2f68bc4f",
+    "workflow_driver_source_sha": "8d401a3478a0c8bf6987db6a7cfca4f37edd0f9b"
+  },
+  "surface_correction": {
+    "fact": "The failing driver clicks the compact ContextRulesChip and queries an open role=dialog containing the Open full view button. It never clicks Open full view. The failing surface is the compact Values popover, not the full-view controlled Dialog.",
+    "source": "tests/browser/guest-chat-store-acceptance.mjs:501-590; src/features/chat/ContextRulesComposerChip.tsx:196-219"
+  },
+  "source_findings": [
+    "The 8d401a3 SHA identifies the hosted workflow/driver source, not the public205 product source. Public205 product source is 2f68bc4f. Current host code and published205 product code were not established equivalent by this investigation.",
+    "The shared @ai-matrx/agents ContextRulesChip renders Popover from @ai-matrx/design-system and wraps the Open full view icon button in Tooltip. The nameless face also has a Tooltip.",
+    "Radix PopoverContent and TooltipContent both install DismissableLayer. DismissableLayer handles Escape only for its highest layer. A tooltip above the popover could consume one Escape and leave the popover open.",
+    "The screenshot shows a focus ring on Open full view after failure. It does not show whether its tooltip was open before Escape.",
+    "Current node_modules versions seen locally: @ai-matrx/agents 0.59.149, @ai-matrx/design-system 0.86.199. These do not establish the exact public205 or next release dependency versions."
+  ],
+  "ranked_hypotheses": [
+    {
+      "hypothesis": "The Open full view tooltip becomes the highest dismissible layer when the popover gives its first focusable button focus; the first Escape dismisses only that tooltip.",
+      "prediction": "Before Escape, a tooltip is open and the focused element is its trigger; after one Escape, the tooltip closes but the popover stays; a second Escape, with no tooltip reopened, closes the popover.",
+      "one_variable_test": "In an admitted exact-artifact native run, record semantic counts for open tooltips and Values popover, active element relation, and key event defaultPrevented immediately before and after Escape; compare with tooltip suppressed or focus moved to a non-tooltip element before a single Escape."
+    },
+    {
+      "hypothesis": "A different topmost dismissible layer is consuming Escape.",
+      "prediction": "A non-Values layer is open before Escape and closes first; Values remains, then closes on the next Escape.",
+      "one_variable_test": "Record all open overlay roles/data-state by safe fixed categories before and after each trusted Escape, with no page text."
+    },
+    {
+      "hypothesis": "The Popover dismissal callback is not reached despite it being the topmost layer.",
+      "prediction": "Only Values is open before Escape, but one trusted keydown leaves it open; an instrumented package onEscapeKeyDown/onOpenChange trace shows whether the boundary receives the event and whether state changes or reopens.",
+      "one_variable_test": "After excluding competing layers, trace only the Popover escape callback and onOpenChange on an exact current artifact."
+    }
+  ],
+  "unfakeable_reproduction": "Use the existing guarded hosted/native acceptance path against one exact CRX receipt and fresh guest profile. Assert the compact Values popover opens, capture safe layer/focus state before Escape, dispatch Input.dispatchKeyEvent keyDown/keyUp for Escape, assert the document received a trusted keydown, then assert the Values popover is actually absent (role=dialog data-state=open count zero) and capture focus. Run the same with tooltip suppressed/focus moved, then separately open the full-view Dialog and test its Escape. Preserve artifact hash, source SHA, package versions, resource journal, and sanitized screenshots. A DOM-only simulated key or a mocked Popover is not product proof.",
+  "next_minimal_action": "First add diagnostic-only safe pre/post layer and focus capture to the native Values probe, then run it once against an exact current guarded artifact. If the tooltip-layer prediction is confirmed, fix the shared @ai-matrx/agents/design-system interaction, add a guard at that shared seam, publish/adopt the package in the same session, and retest compact and full-view dismissal. If disproved, localize the first callback boundary before editing.",
+  "files_changed": [
+    "/tmp/values-escape-diagnosis-20261018.json"
+  ],
+  "runtime_edits": false,
+  "browser_or_hosted_runs": false
+}
