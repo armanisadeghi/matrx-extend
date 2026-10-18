@@ -74,3 +74,35 @@ it('advertises held required and optional permissions without inventing absent g
   expect(state.optional_permissions_granted).toEqual(['debugger', 'tabs', 'cookies']);
   expect(state.optional_permissions_granted).not.toContain('clipboardRead');
 });
+
+it.each(['Summarizer', 'Translator', 'LanguageDetector', 'Proofreader', 'Writer', 'Rewriter'])(
+  'advertises a dedicated %s global without LanguageModel',
+  async (api) => {
+    const globals = globalThis as Record<string, unknown>;
+    const prior = Object.getOwnPropertyDescriptor(globalThis, api);
+    const priorLanguageModel = Object.getOwnPropertyDescriptor(globalThis, 'LanguageModel');
+    const priorAi = Object.getOwnPropertyDescriptor(globalThis, 'ai');
+    Object.defineProperty(globalThis, 'LanguageModel', { configurable: true, value: undefined });
+    Object.defineProperty(globalThis, 'ai', { configurable: true, value: undefined });
+    Object.defineProperty(globalThis, api, {
+      configurable: true,
+      value: { availability: () => 'available' },
+    });
+    try {
+      const state = await buildBrowserDomState({
+        surface: 'assistant',
+        activeTab: null,
+        pageLang: null,
+      });
+      expect(state.onbox_ai_available).toBe(true);
+    } finally {
+      if (prior) Object.defineProperty(globalThis, api, prior);
+      else delete globals[api];
+      if (priorLanguageModel)
+        Object.defineProperty(globalThis, 'LanguageModel', priorLanguageModel);
+      else delete globals.LanguageModel;
+      if (priorAi) Object.defineProperty(globalThis, 'ai', priorAi);
+      else delete globals.ai;
+    }
+  },
+);
