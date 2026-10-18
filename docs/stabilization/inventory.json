@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-18T08:56:47Z",
+  "updated_at": "2026-10-18T09:12:02Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "741d7771e2c45d020f63ef3b9f2a6ef8ab3ff86c",
@@ -44754,13 +44754,18 @@
             "admin"
           ],
           "preconditions": [
-            "Controlled active-page URL matching a configured live-data source; signed-in members/admins with a usable organization and authorized live-data access; genuinely signed-out guest profile."
+            "Use the documented matching page https://www.trustpilot.com/review/allbirds.com with a live-data catalog entry. Have a genuinely signed-out guest profile plus separate signed-in member and admin profiles; each signed-in run needs its own usable organization and authorized live-data access. Use an owned test organization with sufficient authorized points for the table-creation action. If the documented URL no longer matches the current catalog or an owned test organization is unavailable, leave that role unverified and record the prerequisite; do not substitute an uncontrolled destination."
           ],
           "steps": [
-            "As guest, open Data on a matching URL and inspect the offer area. As member and admin, inspect the matching source label, record input, configured limit and points estimate; run Get as table and capture progress, refusal, result rows and Open table destination. Repeat with a URL that does not match a source and with a refused fetch."
+            "Guest: open Data on the documented matching URL and confirm the live-data offer is absent. Do not attempt a fetch.",
+            "Member: open Data on the matching URL; record the source label, default record count, configured maximum and points quote. Set Records to 5, click Get as table, and capture the visible progress and either the explicit refusal (including any named limit) or the result name, row count and Open table destination. On success, open the resulting table and verify its URL identifies the returned table.",
+            "As the same member, open Data on https://google.com/search and confirm the offer is absent. Repeat the matching and non-matching checks independently as admin; do not inherit the member result.",
+            "Record guest, member and admin outcomes independently. Treat fetch refusal and successful table creation as distinct outcomes; do not infer either from the source or from the other role."
           ],
           "expected": [
-            "Guest sees no live-data offer. A matching signed-in URL exposes the source offer; a non-matching URL does not. The fetch result or refusal is explicit, and success exposes the created table link. These are source-derived expectations only; runtime behavior remains unverified."
+            "Guest has no live-data offer on the matching URL.",
+            "Member and admin independently see the offer on the matching URL and no offer on the non-matching URL. The offer shows the source, record count, configured limit and points estimate before the click. The click produces visible progress followed by either a clear refusal or a result whose table name, row count and destination link match the created table.",
+            "All three role outcomes remain unverified until observed in the actual side panel; source and documentation are not runtime proof."
           ],
           "dimensions": [
             "guest",
@@ -44769,8 +44774,21 @@
             "organization",
             "network"
           ],
-          "verification_status": "Source inventory added from current UI implementation; no runtime behavior verdict.",
-          "results": {}
+          "verification_status": "UNVERIFIED: executable role-specific procedure reconciled with docs/feature-tests.md; no runtime behavior verdict.",
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "No native observation on the matching live-data URL; guest offer visibility remains unverified."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "No native fetch, refusal, result, or table-destination observation for a member profile."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "No native fetch, refusal, result, or table-destination observation for an admin profile."
+            }
+          }
         }
       ],
       "cells": {
