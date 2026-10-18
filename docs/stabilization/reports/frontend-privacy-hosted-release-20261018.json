@@ -35,7 +35,17 @@
   "sourceFixCommit": "27451177a4",
   "testContractCommit": "2a326c1520",
   "requiredSourceVerification": "fresh independent A/B PASS; 19 static assertions, hosted guard, RED-before/GREEN-after actual migration-race fixture and ordinary ship-path fixture pass",
-  "livePolicy": "UNVERIFIED: native Chrome still showed October 15; no production claim",
+  "livePolicy": "PASS bounded: actual Chrome screenshots show October18, full-URL/source/record-count fetch, optional estimate/final billing, saved fetch record/shared cache and Trash retention clauses. Public www /api/version identifies deployed d9e3443e and dpl_28BeTpQLDekXVgvepK9xgYzsS9v6.",
   "owner": "root; credential cleanup delegated to vault_recent_auth_recovery only after terminal confirmation",
-  "observedAt": "2026-10-18T20:26:33Z"
+  "observedAt": "2026-10-18T20:26:33Z",
+  "deployment": {
+    "sourceSha": "d9e3443e0270849eb0a0557c1e8e711eead7eb92",
+    "githubDeploymentId": 7160348194,
+    "githubEnvironment": "Production \u2013 ai-matrx",
+    "vercelDeploymentId": "dpl_28BeTpQLDekXVgvepK9xgYzsS9v6",
+    "publicVersionEndpoint": "https://www.aimatrx.com/api/version",
+    "githubVercelStatus": "success: Deployment has completed",
+    "workflowState": "in_progress: full after-phase still pending; temporary secrets retained until terminal"
+  },
+  "uiEvidence": "evidence/live-extension-policy-20261018/{header,data,retention}.png; accessibility after reload returned stale October15 while current native screenshot showed October18. Visual proof used."
 }
