@@ -50,10 +50,10 @@
     "An independent source review precedes push; guarded exact-source native T10 retest remains required."
   ],
   "source_verification": {
-    "focused_tests": "35/35 pass",
+    "focused_tests": "37/37 pass: node --test tests/browser/settings-guest-preference-batch.test.mjs tests/browser/settings-full-extension-rechecks.test.mjs",
     "compile": "pass",
     "lint": "pass with existing repository warnings",
-    "independent_source_review": "pending",
+    "independent_source_review": "PASS: commit a19f0f24d is on current main and is an ancestor of v0.2.536 commit af8d43422. Baseline restoration precedes T10 capture; focused coverage verifies implicit Ask with absent key/container, Act choice, new-chat inheritance, full-extension replacement, and T04/T67 sibling cases. This is source/orchestration evidence only; native behavior remains unverified.",
     "native_acceptance": "blocked before browser launch: valid resource preflight refused RESOURCE_DISK_LOW at 6.08 GiB system/safety free space, below the 20 GiB minimum; no product state observed and no T10 credit",
     "release": "pending"
   },
