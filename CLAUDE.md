@@ -1,9 +1,9 @@
-# matrx-extend — CLAUDE.md
+# Matrx Sandbox
 
 <!-- nine-laws:start -->
 ## The laws (synced from `common-docs/policies/the-nine-laws.md` — edit there, never here)
 
-1. **Done means verified, then handoff.** Build it, check types and regressions, use it in localhost as a user would, get an independent check, commit and push. Deploy agents own releases. `common-docs/policies/reality-is-the-referee.md`
+1. **Done means verified, then handoff.** Build it, check types and regressions, use it on the live site as a user would (localhost only for a quick fix-and-look loop), get an independent check, commit and push. Deploy agents own releases. `common-docs/policies/reality-is-the-referee.md`
 2. **Attack before you trust.** Plans are attacked before commitment; "done" is re-verified by someone outside the builder's frame.
 3. **Fix the class, never the instance.** Root cause, find the siblings, add a guard proven to fail then pass. A bug you hit yourself is fixed now.
 4. **Nothing fails silently.** A stand-in announces itself; a screen is honest or absent; never hide a feature to dodge a defect — fix it. In-app text is layout, not prose. `common-docs/policies/interface-text-is-layout.md`
@@ -20,269 +20,86 @@
 Also binding: the Data Doctrine (`common-docs/systems/architecture/database/DECISIONS.md`), the access ladder (`common-docs/policies/access-ladder.md`), canonical-first triage (`common-docs/policies/canonical-first-triage.md`), agents never author agents (`common-docs/policies/agents-never-author-agents.md`), and the domain tree (`common-docs/policies/domain-tree.md`).
 <!-- nine-laws:end -->
 
-- 🚨 **The active organization is never a list filter** (Arman, 2026-09-30): lists and reads show everything the person can see across all their organizations; an org filter is a visible page-local control defaulting to **All organizations**; the active org is only where new things are saved and which org a server call runs in — every write/API call must carry it. Law: `../common-docs/policies/access-ladder.md`.
-
 **Cloud task autonomy:** A task request authorizes routine in-scope edits, verification, exact-path commits, and pushes. Continue without a conversational confirmation pause; honor explicit hold points and human-only gates. [Completion policy](../common-docs/policies/reality-is-the-referee.md).
 
 
-**You are here to do CHROME-EXTENSION work** (charter: `/Users/armanisadeghi/code/common-docs/policies/document-types.md`).
-This file carries the extension-specific rules that prevent this repo's mistakes, plus pointers
-to the shared systems it consumes — never feature narratives, shipped-work history, rule bodies
-with a canonical doc, or platform doctrine. Feature state lives in
-[/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md) (update THAT, not this, when you ship).
-Budget: ≤200 lines; over budget = relocate, don't append.
+**Purpose of this file (per the [CLAUDE.md charter](/Users/armanisadeghi/code/common-docs/policies/document-types.md)):** you are doing sandbox work — the container image and/or the orchestrator for isolated agent machines on AWS (EC2 + hosted tiers). This file carries the sandbox-specific rules, the confusions that actually bite here, and pointers to the shared systems this repo integrates with. It does NOT carry feature detail (the docs table below does), API surfaces, deploy runbooks, or platform-rule bodies — those live in their canonical docs, one-liner + link here. Adding a line requires: "would removing it cause an agent to make a mistake in THIS repo?" Budget: ≤200 lines.
 
-## What this repo is
+**What this is:** on-demand, isolated Unix sandboxes for AI agent execution. Each sandbox is a Docker container that *appears as a dedicated machine* to the agent — full shell, filesystem, browser, internet. **Two tiers, same orchestrator code:** EC2-tier (template-specific retained homes; not universally S3-backed) and hosted-tier (the `/srv` dev server, per-(user, organization) persistent volumes). The frontend picks the tier at create time.
 
-Chrome extension (WXT, MV3, React sidepanel) — the browser-agent harness for AI Matrx.
-A **streaming client of the aidream server** (SSE chat runs, tool dispatch); all **data goes
-direct to Supabase** (never through the Python server); **tool definitions and descriptions
-live in the shared DB**, not here. The user is a brilliant, absolutely non-technical Subject
-Matter Expert: `/Users/armanisadeghi/code/common-docs/systems/ai-dream-platform/USER.md`.
-
-🚨 **Cross-repo system-of-record: `/Users/armanisadeghi/code/common-docs/systems/clients/extension/` — read it before touching this feature in ANY repo.** `STATE.md` (what exists) · `CHANNELS.md` (every cross-repo channel) · `WIRE_CONTRACT.md` · `ARCHITECTURE.md` · `DECISIONS.md` · `HANDOFF.md` · `CHROME-WEB-STORE.md`. Nothing in this repo restates them.
-- Outbound work to a sibling → invoke `connect-aidream` · `connect-local` · `connect-frontend`.
-
-Independent bug-fix agents: use [.claude/skills/matrx-extend-bugfix/SKILL.md](.claude/skills/matrx-extend-bugfix/SKILL.md) for ownership, tests, shared-main integration, and release follow-through when the coordinator is unavailable.
-
-## Shared checkout — many concurrent writers is NORMAL
-
-Arman plus dozens of agents edit this checkout simultaneously; `origin/main` is the only sync
-point. Commit and push as you go; never run tree-wide destructive git; never request your own
-branch/worktree. Full ruling: workspace root [`../CLAUDE.md`](../CLAUDE.md) § Shared checkout.
-
-**Release: you own it.** This repo is NOT on the twice-hourly release train. Once verified,
-release from synchronized `origin/main` through the authorized path; do not leave it for a
-release agent. On this Mac, the workspace root prohibits manual local build/release commands:
-dispatch and verify the guarded hosted `.github/workflows/release.yml` instead of running
-`./release.sh` here. Where local release is allowed, `./release.sh` remains the path. Expected
-cadence is about one release a day; the daily sweep is only a safety net.
-
-## Platform laws (one-liners — the rule bodies live at the links)
+## Platform laws (one-liner each — the body lives in the canonical doc)
 
 - **The Platform List is Arman's alone.** Never read it at session start: a hook on Arman's Mac tells the first attended session of the day when a row is due, and only that session tells him (he snoozes by naming a new date). Only Arman adds, kills, or removes a row. Agents suggest in plain English and never write copies, histories, or "deleted" notes anywhere. Skill: `platform-list`.
-- **Mandates / no hardcoded agents.** Which agent/version/model runs is a DATABASE
-  answer resolved at run time by `mandate_key` — never a constant. This repo has ZERO
-  Mandate coverage and known hardcoded agent UUIDs (`AiExtractTab.tsx`,
-  `lib/agenda/constants.ts`; rollout rows E1/E2). Law:
-  `/Users/armanisadeghi/code/common-docs/systems/mandates/STATE.md` · why clients
-  drift: `/Users/armanisadeghi/code/common-docs/policies/clients-consume-never-reimplement.md`
-- **No unapproved schedules.** Every scheduled task exists only with Arman's approval
-  by name and interval, registered + claimed via `schedule_claim`:
-  `/Users/armanisadeghi/code/common-docs/operations/scheduled-tasks.md`
-- **THE USER-INPUT LAW.** Structured information is never passed as user text — it
-  becomes named variables or context:
-  `/Users/armanisadeghi/code/common-docs/systems/agents/agent-variable-binding/FEATURE.md`
-- **Limits are knobs, agents set them.** Never hardcode a cap/timeout/quota as a
-  constant: `/Users/armanisadeghi/code/common-docs/policies/limits-are-knobs-agents-set-them.md`
-- **No legacy — UNTIL GO-LIVE** (~90 days from 2026-09-10; nobody outside us depends on us yet). No
-  shims, no compatibility layers, no dead code left behind; every touched package moves to latest.
-  Revisited on go-live day when customer-facing edges get versioned stability — never permanent:
-  `/Users/armanisadeghi/code/common-docs/policies/no-legacy.md` + `/Users/armanisadeghi/code/common-docs/policies/pre-launch-mode.md`
+- **Shared checkout, many concurrent writers — NORMAL, never a finding.** `origin/main` is the only sync point: commit+push as you go in small batches; never tree-wide destructive git (blanket `stash`/`checkout -- .`/`reset --hard`/`clean`/dirty `pull --rebase` — pathspec-scope to your own files); never complain about concurrent editors or request your own PR/branch/worktree. Canonical: [shared-checkout.md](/Users/armanisadeghi/code/common-docs/policies/shared-checkout.md).
+- **Mandates — no hardcoded agents.** Anywhere software invokes intelligence, the agent/workflow is chosen live from a UI, never welded into code. Canonical: [mandates/STATE.md](/Users/armanisadeghi/code/common-docs/systems/mandates/STATE.md).
+- **No unapproved schedules.** No automated schedule or interval exists unless Arman approved its exact name and interval in the register; code or an enabled DB row does not grant approval. Register: [operations/scheduled-tasks.md](/Users/armanisadeghi/code/common-docs/operations/scheduled-tasks.md).
+- **The user-input law.** `user_input` carries only what a human actually typed, dictated, or said — nothing structured, ever. Canonical: [agent-variable-binding/FEATURE.md](/Users/armanisadeghi/code/common-docs/systems/agent-variable-binding/FEATURE.md) § THE USER-INPUT LAW.
+- **Limits are knobs, and agents set them.** Every limit/quota/ceiling/gate is a per-feature admin-adjustable knob with an agent-chosen starting value — never a hardcoded constant, a TBD placeholder, or an absent control. Canonical: [limits-are-knobs-agents-set-them.md](/Users/armanisadeghi/code/common-docs/policies/limits-are-knobs-agents-set-them.md).
+- **We don't do legacy.** A replaced system is migrated, repointed, and DELETED — never frozen, never run beside its replacement, never a keep-or-kill question. Canonical: [no-legacy.md](/Users/armanisadeghi/code/common-docs/policies/no-legacy.md).
 - **The access ladder decides who can open a record.** Every table starts at Organization; only Arman approves Confidential or Private; sharing sits outside the ladder; children inherit their parent; organizations are unlimited and equal, with no personal type. → `/Users/armanisadeghi/code/common-docs/policies/access-ladder.md`
-- **Human steps are guided sessions:**
-  `/Users/armanisadeghi/code/common-docs/policies/talk-to-arman-like-a-person.md`
-
-## Hard rules for this repo
-
-**Agent-start contract.** Every agent-start request sends `conversation_id` (client-minted,
-always) + `is_new` + `store`; aidream 422s anything else. `AgentStartRequest` in
-[src/lib/api/routes/ai.ts](./src/lib/api/routes/ai.ts) marks all three required. Contract:
-`/Users/armanisadeghi/code/common-docs/systems/agents/conversation-start-contract/FEATURE.md`.
-
-**Organization on every request.** Identity and organization travel together: every
-authenticated backend call carries `X-Organization-Id` and every org-scoped write sends
-the same id. The server refuses an authenticated request without one at the top
-(`aidream@8e5ee0b93`) and never picks one for you. The ONE resolver is
-[src/lib/org/active-org.ts](./src/lib/org/active-org.ts) — never resolve an org at a call
-site, never fall back to the signup or system organization, and never re-add a `whoami` round trip to
-ask the server which org it "carried". A new sink attaches the header or refuses to send.
-**The active organization is set once at load and is never none** (Arman, 2026-10-07): this
-device's last choice → the account's last active organization → its start-up organization → the
-first organization, each only if a current membership. The resolver is the only reader of the two
-account columns; a switch writes the device choice AND `users.set_last_active_organization`.
-There is no hold and no picker; only zero memberships refuses (with a create/join remedy). "Default
-organization" is a retired term in code.
-Guard: `pnpm check:org-default-ban`. Register row EX-T05: `../common-docs/systems/architecture/database/projects/no-db-assigned-org/PLAN.md`.
-
-**Tool system.**
-- Canonical vocabulary (Tool / Registered / Inline / Executor / Binding / Surface /
-  Arming / Bundle / Gate) — copy verbatim, never paraphrase:
-  [common-docs/systems/agents/agent-tools/DECISIONS.md](common-docs/systems/agents/agent-tools/DECISIONS.md)
-  · registry schema: `/Users/armanisadeghi/code/common-docs/systems/agents/agent-tools/STATE.md`.
-- Registered tools live in `tool.definition` + `tool.binding`
-  (`executor_name='chrome-extension'`) + `tool.surface_defaults`. These tables were
-  renamed TWICE (`tl_*` → `tool_*` → `tool.*` schema); only the last names exist.
-- **Descriptions live ONLY in the DB** (common-docs/systems/agents/agent-tools/STATE.md):
-  never add a `description` to a `ToolHandler` or `.describe()` to its Zod args. UI reads them live
-  via [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts). To change a tool: change
-  `tool.definition` first, then align the Zod until `pnpm catalog:tools:drift` is quiet.
-- Categories ([src/lib/tools/categories.ts](./src/lib/tools/categories.ts)) are pure UX —
-  grouping + discovery, NEVER routing. The advertised surface is `CANONICAL_SURFACE`; the live
-  roster is `pnpm catalog:tools:md` → [types/tool-catalog.md](./types/tool-catalog.md). Don't
-  hand-maintain tool tables.
-- After any handler change: `pnpm catalog:tools:md` + `pnpm docs:tools`, commit the
-  regenerated files. DB drift gate: `scripts/check-tool-db-drift.ts` (in `release.sh`).
-
-**Database.** Full rules: [docs/DATABASE.md](./docs/DATABASE.md). The hazards:
-- ONE connection, ONE variable name: `WXT_SUPABASE_URL` / `WXT_SUPABASE_PUBLISHABLE_KEY`,
-  required, no fallback chains. Law:
-  `/Users/armanisadeghi/code/common-docs/policies/package-vs-implementation.md`.
-- The DB is multi-schema; `public` is NOT where our tables live, and nothing in the
-  build catches a wrong schema (it 404s at runtime with PGRST205). Never hand-write
-  `.schema('x')` — use the accessors in
-  [src/lib/supabase/schemas.ts](./src/lib/supabase/schemas.ts) (`extendDb()`,
-  `schedulerDb()`, `workbenchDb()`, `chatDb()`, `usersDb()`, `adminDb()`, `toolDb()`,
-  `aiDb()`). RPCs did NOT move — call `.rpc()` on the plain client. Gate:
-  `pnpm check:schema-routing` (strict in CI + `release.sh`).
-- Ownership columns differ per table (some `created_by`, some kept `user_id`, two have
-  neither) — check [docs/DATABASE.md](./docs/DATABASE.md) before filtering; guessing
-  corrupts data. Every org-scoped INSERT sends an explicit `organization_id`; database
-  assignment is forbidden. Emergency: `../common-docs/systems/architecture/database/projects/no-db-assigned-org/PLAN.md`.
-- **Arman's preference (2026-09-18): change the database directly through the Supabase MCP** (project `brsgrqvjdzwihsvnfqkf`). The database is the source of truth, and type/model generation PULLS from it into the codebase. A migration FILE is fine only if you OWN it end to end: write it, apply it, regenerate, and confirm it broke nothing. If you will not own it end to end, use the MCP. **Never hand Arman a command to run — he does not use terminals.**
-- A `.sql` file in `migrations/` changes nothing until applied from aidream
-  (`python db/apply_migrations.py --source matrx-extend`). Verify: `pnpm check:migrations`.
-
-**Tab context.**
-- Handlers never query the active tab — use `getAssignedTab(ctx)` /
-  `getAssignedTabId(ctx)` from
-  [src/lib/tools/handlers/_active-tab.ts](./src/lib/tools/handlers/_active-tab.ts).
-  The agent stays pinned to its per-turn assigned tab even when the user switches.
-- Request assembly resolves the active tab ONCE per send (`resolveActiveTab()`) and
-  threads it through; a second query reintroduces a cross-tab race. Contract:
-  [/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md §1](/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md).
-
-**Context keys are public API.** Engineers template `{{page_brief.title}}` into
-prompts; renames are breaking changes. Key catalog + the bundling rules (menu cost,
-one source of truth per fact, no shallow empty keys, confidence gating):
-[/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md §2](/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md) — update it
-in the same commit as any key change.
-
-**Structured content: NEVER parse a stream here.** `render_block` envelopes render through the
-SHARED packages (`@ai-matrx/content-ir` + `@ai-matrx/content-ir/react`) — wiring
-[src/lib/content-ir/](./src/lib/content-ir/), components + dispatch
-[src/components/kinds/](./src/components/kinds/). Detection is SERVER-SIDE for thin clients by
-design; a client-side kind parser is the banned "bespoke stream renderer". A kind draws as a real
-component only when a `content_ir.kind_component` row (`platform='chrome-extension'`) names a key
-in `dispatch.tsx` — two explicit halves, no silent fallback; anything else gets the generic floor.
-Both packages are exact public npm dependencies; committed package tarballs are forbidden. SoR:
-`common-docs/systems/architecture/content-ir/FEATURE.md`. Raw stream / markdown parsing
-([src/lib/api/stream.ts](./src/lib/api/stream.ts),
-[src/components/markdown/block-parser.ts](./src/components/markdown/block-parser.ts)) is next to
-adopt the kernel — read `common-docs/systems/architecture/content-ir/projects/unified-content-pipeline/PLAN.md` first. Stream-silence rule: any event that implies expected silence (like
-`provider_retry` backoff) must `hold()` the stall watchdog
-([src/lib/stream/provider-retry.ts](./src/lib/stream/provider-retry.ts)) or it reads
-as a hang and kills a healthy run.
-
-**Build/toolchain gotchas** (bodies + verification steps in
-[docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)):
-- Env vars: literal `import.meta.env.WXT_*` reads inside per-var getters in
-  `src/config/env.ts` — never dynamic access, never a generic `getEnv(key)`.
-- No top-level `chrome.*` reads — catalog scripts import every handler under `tsx`.
-- `chrome.scripting.executeScript` args must be JSON-serializable — coerce optional
-  args with `?? null`, never pass `undefined`.
-- TypeScript is a DUAL install: native TS 7 provides `tsc`; `typescript` resolves to
-  the 6.0 API for `openapi-typescript`. Never `pnpm add typescript@latest`, never
-  invoke `tsc` by path, never set `typescript.tsdk` in VS Code.
-  `exactOptionalPropertyTypes` is on: for serialized/persisted objects, omit the key
-  (`...(x !== undefined && { key: x })`) — never widen the type.
-- After any handler/config/env change, run `pnpm catalog:tools:md`; a crash means a
-  new top-level import offender.
-
-**Sensitive flows — read the linked contract before touching:**
-- `google_email_send`: the review card IS the authorization; never add a server
-  binding or a consent-style argument. Repo detail:
-  [/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md) § Reviewed Gmail send · cross-repo:
-  `/Users/armanisadeghi/code/common-docs/systems/integrations/google/FEATURE.md`.
-- `credential_login` + Vault: plaintext credentials never egress (grep-guarded tests);
-  redaction contract in [src/lib/credentials/sensitive-fields.ts](./src/lib/credentials/sensitive-fields.ts).
-  Handoff: `/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/REGISTER.md`.
-- `capture_prospect`: posts to the platform's ONE prospect-import path; never a second
-  create path, never a client-side normalizer. Contract:
-  `/Users/armanisadeghi/code/common-docs/projects/outreach-system/INTEGRATION_MAP.md` (IC-10).
-- Token broker: consume [src/lib/broker/](./src/lib/broker/) (its FEATURE.md is the
-  contract) — never hand-roll a mint call, cache, or gateway URL. System:
-  `/Users/armanisadeghi/code/common-docs/systems/architecture/token-broker/FEATURE.md`.
-
-## Release gate auth
-
-The strict tool-drift check needs a server token on BOTH release paths: CI mints it in `scripts/release-with-gate-auth.mjs`; local `./ship.sh` calls `release.sh` directly, so `release.sh` mints its own (`mint_gate_auth` → `--print-env`) from the gitignored `.env.release.local` (`AIDREAM_API_URL`, `AIDREAM_GATE_USERNAME`/`PASSWORD`/`ORGANIZATION_ID` — the admin@admin.com test account and a member org). Changing either path keeps the other minting; never make the gate advisory. Guard: `tests/unit/release-gate-auth-path.test.ts`.
-
-`pnpm -s lint` (`biome check .`) is a mandatory release check over EVERY tracked file, `.research/*.json` evidence included: run `pnpm exec biome format --write <file>` on anything you commit (an unformatted `.research` JSON stopped v0.2.179).
-
-## Conventions
-
-- Admin-only first for risky new capabilities; promote to GA after testing. Scary
-  permissions → `optional_permissions` + runtime request from Settings.
-- Feature-detect every API; return `{ ok: false, reason: 'unavailable' }`, never
-  throw. Privileged tier always prompts — even in Act mode; no silent writes.
-- Reuse existing primitives (`src/lib/scrape/`, `src/lib/data-pattern/`, `src/lib/chat/context/`) before building a new extractor/collector/parser.
-- Every user-visible change updates [docs/feature-tests.md](./docs/feature-tests.md) (what it does → where to test → steps → expected) before commit.
-- Web Store identity: dev and Store builds have different extension IDs;
-  `EXPECTED_EXTENSION_IDS` in [src/config/identity.ts](./src/config/identity.ts) and
-  the Supabase redirect-URL allowlist are the same set — new build channel = update
-  both. Incident: [.research/v0.1.4-auth-incident.md](./.research/v0.1.4-auth-incident.md).
-
-## Architecture in one glance
-
-```
-sidepanel (React) ─STREAM_START→ SW ─STREAM_RUN→ offscreen (holds long SSE; SW dies >30s)
-SW tool dispatcher (src/lib/tools/dispatch.ts): validate args (Zod) → permission gate
-(read / action / ask-user / privileged × Ask/Act mode) → handler → POST tool result →
-broadcast TOOL_TIMELINE_EVENT
-```
-
-Key files: registry + handlers under [src/lib/tools/](./src/lib/tools/) · chat context
-[src/lib/chat/context/](./src/lib/chat/context/) · approval cards
-`src/features/chat/Agent*Card.tsx` · manual tool runner `src/features/tools/ToolsView.tsx`.
-
-## Commands
-
-```bash
-pnpm dev                  # WXT dev server
-pnpm compile              # typecheck (~1s, native TS 7)
-pnpm catalog:tools:md     # regenerate tool catalog (docs:tools for DB-sourced docs)
-pnpm check:schema-routing # schema-routing gate (check:migrations for the ledger)
-./release.sh              # release (runs the strict gates)
-```
+- **One database, addressed only by URL** (`https://db.matrxserver.com`, never by project ref) — this repo's known exception to the connection-variable rule is below in Working Here.
+- **Every sandbox write carries an explicit `organization_id`.** The create request, persisted model, and Postgres payload must refuse absence; the database never assigns it. Emergency work order: [no-db-assigned-org PLAN](/Users/armanisadeghi/code/common-docs/systems/architecture/database/projects/no-db-assigned-org/PLAN.md).
 
 ## Where the detail lives
 
-[/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md) — living feature state; update on every
-ship · [docs/DATABASE.md](./docs/DATABASE.md) — DB rules ·
-[docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md) — setup, commands, conventions, TS
-toolchain · [/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md](/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md) —
-wire contract · [docs/feature-tests.md](./docs/feature-tests.md) — how to verify
-anything · [docs/TOOLS.generated.md](./docs/TOOLS.generated.md) — tool descriptions
-(generated).
+| Question | Read |
+|---|---|
+| Current cross-repo routing, retained-home preservation and independent acceptance | [sandbox STATE](../common-docs/systems/architecture/sandboxes/STATE.md) |
+| End-to-end architecture, storage tiers, lifecycle, deploy pipeline | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| **Day-to-day operations** (deploy, recovery, monitoring, key rotation, URLs, secrets) | [docs/OPERATIONS.md](docs/OPERATIONS.md) |
+| HTTP API surface for clients (orchestrator endpoints + in-container fs/pty/git/processes/ports daemon) | [SANDBOX_CLIENT_GUIDE.md](SANDBOX_CLIENT_GUIDE.md) — cross-check before relying on an endpoint; not all of it may be implemented |
+| User data persistence (what's saved, where, session-report, auto-stash) | [docs/PERSISTENCE_PLAN.md](docs/PERSISTENCE_PLAN.md) |
+| AI Dream ↔ Sandbox integration (cloud-files bridge, `mtx` CLI, service-token auth) | [docs/AIDREAM_INTEGRATION.md](docs/AIDREAM_INTEGRATION.md) |
+| Files: the sandbox still rides aidream's `/cloud-files/*` bridge and is NOT cut over to the file service | `/Users/armanisadeghi/code/common-docs/systems/files/file-service/STATE.md` — read it before touching file traffic in ANY repo |
+| Cloud-files replica implementation (watcher, replay, system-path boundary, retries) | [sandbox-image/sdk/matrx_agent/cloud_sync/FEATURE.md](sandbox-image/sdk/matrx_agent/cloud_sync/FEATURE.md) |
+| Zero-drift migration (version stamping, drift detection, safe image swap, auto-migrate) | [docs/ZERO_DRIFT.md](docs/ZERO_DRIFT.md) |
+| Adding tools/SDKs to the sandbox image | [sandbox-image/ADDING_UTILITIES.md](sandbox-image/ADDING_UTILITIES.md) |
+| Repository layout in detail | [docs/DIRECTORY_STRUCTURE.md](docs/DIRECTORY_STRUCTURE.md) |
+| AI Work Hub provider runtime (product plan this repo hosts the runtime for) | [ai-work-hub PLAN](/Users/armanisadeghi/code/common-docs/systems/chat/ai-work/projects/ai-work-hub/PLAN.md) |
+| Persistent Cloud Browser (sandbox-sidecar browser plan) | [persistent-cloud-browser PLAN](/Users/armanisadeghi/code/common-docs/systems/web/persistent-cloud-browser/FEATURE.md) |
+| Live infra dashboard (recommended first stop) | `/administration/sandbox-infra` in matrx-frontend |
 
-File traffic: this extension is **not** cut over to the standalone file service — its
-`/files`, `/assets` and `/share` calls still ride the general backend base URL.
-Cross-repo system-of-record:
-[/Users/armanisadeghi/code/common-docs/systems/files/file-service/STATE.md](/Users/armanisadeghi/code/common-docs/systems/files/file-service/STATE.md)
-— read it before touching this feature in ANY repo.
+**Terminology:** canonical platform vocabulary (Server / Project / Deployment / Sandbox / Template / Image; Manager vs Orchestrator vs Deploy) is [matrx-ship NAMING.md](../matrx-ship/NAMING.md) — where this file differs, NAMING.md wins. "Tier" = where a Sandbox runs (`ec2`/`hosted`); the `matrx-sandbox` *container* on the dev server is a Ship Deployment (version tracking), not a Sandbox.
 
-- **Logging into any Matrx UI**: sign in as `admin@admin.com` — the password is `AI_ADMIN_PASSWORD` in the `.env` of `aidream` or `matrx-frontend` (`AI_ADMIN_USERNAME` holds the email).
+## The classic confusion: three deployments + a name collision
 
-## 🚨 THE LATEST LAW — @ai-matrx packages are NEVER pinned (pre-launch rule)
+| Deployment | Where | What | Deploy trigger |
+|---|---|---|---|
+| **EC2 tier** (`tier: "ec2"`) | EC2 | Orchestrator (FastAPI) + on-demand sandbox containers. Template-specific retained homes + shared platform Postgres; S3 only where the template supports it. | Push to `main` → GitHub Actions → ECR build → SSM deploy → health-check loop ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) |
+| **Hosted tier** (`tier: "hosted"`) | `/srv` dev server | Orchestrator at `https://orchestrator.dev.codematrx.com` + spawned sandboxes. Per-(user, organization) Docker volumes (`matrx-user-<uid>-org-<oid>` at `/home/agent`) survive container destroy; pre-2026-09-17 per-user volumes are preserved, never adopted ([OPERATIONS.md](docs/OPERATIONS.md)). Same Postgres `sandbox_instances` table as EC2 — one source of truth. Boot + 60s liveness reconcile from `docker ps` ([docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#status-reconciliation-boot--periodic-liveness)). | Push to `main` — the host **self-deploys** via `matrx-hosted-deploy.timer`, a 2-min poller running [scripts/deploy-hosted.sh](scripts/deploy-hosted.sh). ⚠️ the poller `git reset --hard`s that checkout every tick — commit+push as you go, or `systemctl stop matrx-hosted-deploy.timer` while editing there. |
+| **Static "starter pool"** — retired 2026-10-16 | — | `sandbox-1`…`sandbox-5` and their compose file are gone; only `sandbox-local/`'s Dockerfile + entrypoint scripts remain (the aidream image reuses them). | — |
 
-**Pre-launch rule:** absolute until go-live (~90 days from 2026-09-10) because no customer code depends
-on us yet; on go-live day the customer-facing edges get a versioned path while internals stay on latest.
-Never quote it as permanent: `../common-docs/policies/pre-launch-mode.md`.
+Name collision on the dev server — two things called "sandbox":
+- `matrx-sandbox` container → Ship instance, **version tracking only**, not the runtime. Pushing here does NOT auto-reach EC2 production either — that's the separate GHA pipeline.
+- `matrx-orchestrator` → hosted-tier orchestrator (spawns/manages sandboxes).
 
-Every `@ai-matrx/*` dependency in this repo is declared `"latest"` — never a version, never a
-range. Guard: `pnpm check:matrx-packages` (fails on any pin AND on an installed version that
-is behind npm latest; `check:matrx-latest` is an alias). It is BLOCKING in `release.sh` — this
-repo cannot ship stale. Version problems are fixed by
-releasing forward, never by pinning — a pin licenses silent drift and workaround code (the
-disaster that nearly killed AI Dream). Law + rationale:
-`../common-docs/policies/typescript-package-standard.md` § THE LATEST LAW.
+## The three code surfaces
 
-**THE SAME-SESSION LAW:** a fix that belongs in an `@ai-matrx/*` package is made IN the
-package (`aidream/apps/shared/<name>`), released, and adopted in the same session — never
-massaged in host code, never left edited-unpublished. **THE CATCH-UP RULE:** working here,
-refresh `@ai-matrx/*` to latest and reconcile per each package's CHANGELOG `Consumer action`s
-before this repo's next release. Both: same policy, § THE SAME-SESSION LAW + § THE CATCH-UP
-RULE.
+1. **[sandbox-image/](sandbox-image/)** — the container (Ubuntu 22.04, Python 3.11, Node 20, Chromium/Playwright, AWS CLI, `matrx_agent` SDK in [sdk/](sandbox-image/sdk/), lifecycle scripts in [scripts/](sandbox-image/scripts/)). For templates that enable S3 storage: **hot** = `/home/agent/`, synced with `s3://bucket/users/{uid}/hot/` at start/graceful stop; **cold** = `/data/cold/`, lazy FUSE mount via mountpoint-s3. Inspect the actual template and mounts; a tier label does not prove home backup.
+2. **[orchestrator/](orchestrator/)** — FastAPI control plane: [main.py](orchestrator/orchestrator/main.py) (lifespan, `/drift`, `/migrate-all`), [sandbox_manager.py](orchestrator/orchestrator/sandbox_manager.py) (container lifecycle), [store.py](orchestrator/orchestrator/store.py) (`SandboxStore` ABC → InMemory/Postgres), [storage.py](orchestrator/orchestrator/storage.py) (S3), [middleware/](orchestrator/orchestrator/middleware/) (`X-API-Key` auth), [routes/](orchestrator/orchestrator/routes/). Routes proxy the richer fs/pty/git API into the in-container `matrx_agent` daemon.
+3. **[infra/](infra/)** — Terraform for the production EC2 host/S3/IAM. NOT for the `/srv` dev server (that's Matrx-Ship-bootstrapped).
+
+## Working here — the rules that bite
+
+- **Routine Manager/orchestrator restarts are pre-approved agent operations. Never ask Arman for a maintenance window.** Use the approved deployment/recovery path and its migration locks; never bypass an active image update with a direct control restart. Leave `sbx-*` containers running and stay until health is restored. Hosted-orchestrator boot reconciliation can take several minutes with hundreds of sandboxes; `starting`/`unhealthy` during that bounded startup is not completion. Verify `/health`, the container health state, and the running sandbox count before leaving.
+- **🚨 The orchestrator REFUSES TO START on a bad store config — `MATRX_SANDBOX_STORE` has NO default.** Unset, misspelled, or `memory` on a deployed host ⇒ `RuntimeError` at boot naming the variable, accepted values (`postgres` | `memory`), and the fix ([config.py `resolve_sandbox_store`](orchestrator/orchestrator/config.py), enforced in [store.py `create_store`](orchestrator/orchestrator/store.py), resolved first in `main.py`'s lifespan so no `except` swallows it). `memory` is a local-dev/test opt-in only (`MATRX_STAGE=local` or pytest), announced by a boot banner and on `/health`. `is_deployed_host` fails CLOSED: unset/unknown `MATRX_STAGE` counts as deployed. Both deploy scripts pre-flight `postgres` so the refusal lands before the container swap. Guard tests: [test_store_config_guard.py](orchestrator/tests/test_store_config_guard.py). Don't weaken any of this — it replaced a silent `memory` default that lost every `sandbox_instances` row on restart.
+- **Readiness is a PHASE the box reports — never a wall clock here.** A hardcoded 120s wait killed healthy EC2 boxes mid home-restore and burned the owner's admission slot. Budgets are the knobs `infrastructure.sandbox.ready_timeout_seconds` / `home_sync_timeout_seconds`, they restart on every phase change and file batch, a box goes live the moment its SDK answers (with the remaining sync shown, never hidden), and a give-up names its phase and count. Never put a number back: [boot_readiness.py](orchestrator/orchestrator/boot_readiness.py), [boot-phase.sh](sandbox-image/scripts/boot-phase.sh), guards in `tests/test_boot_readiness_phases.py`.
+- **No silent defaults, generally.** Any config value whose *absence* degrades a deployed host (S3 bucket, hosted-tier AWS creds, AI Dream service token, access-token secret, host tier) is listed in `main.py::_degraded_config_warnings` and screams `DEGRADED CONFIG:` at boot — non-fatal, never silent. New optional-but-consequential setting → add it there.
+- **Platform env: the forward set is an ALLOWLIST, the census is ONE function, and a pre-fix box must be RECREATED.** The aidream `.env` / `aidream_passthrough_env` registry is consulted only for the `aidream` template, and a name forwards only if it is on `sandbox_manager.PLATFORM_ENV_ALLOWLIST` — everything else is dropped, COUNTED and NAMED in the boot report. 🚨 Never "just add a pattern": the denylist this replaced was fail-open and put a live `ANTHROPIC_KEY` plus 13 other secret-shaped names in hosted boxes while reporting `denied_count=72` (XT-10, feedback 34dcf28a). The secondary guard is a POSITIVE check — an allowlist entry must be in `PLATFORM_ENV_PUBLIC_BASICS` or end in `_URL` with a bare http(s) value, and the HOST's actual value is read too, because a secret can be spelled innocently; it runs against the LIVE global on every decision. **One census function**, `vault_env_refresh.unentitled_platform_env_names`, judges EVERY template the same way (entitled = the person's vault ∪ `ORCHESTRATOR_MANAGED_ENV` ∪ the allowlist ∪ the aidream path overrides) and both doors call it — the binding sweep and `/sandboxes/{id}/diagnostics`; they drifted once and the diagnostic cried seven false leaks on clean boxes. **A sweep can never clean a box:** `Config.Env` and `/proc/1/environ` cannot be rewritten in place, so a box born before the fix is only cured by `POST /sandboxes/{id}/migrate` (recreates the container from the same home, same `sandbox_id`); the fleet census is `GET /platform-env-census`. **The orchestrator never returns env VALUES** — `agent-env` answers names, presence and length, on the success AND the error paths. **Still open, and never call it closed:** `MATRX_AIDREAM_SERVICE_TOKEN` (the ONE shared AI Dream service token) and the hosted-tier AWS pair enter every box by design through `ORCHESTRATOR_MANAGED_ENV`; per-box scoped tokens are the fix. Guards: `tests/test_platform_env_allowlist.py` + `tests/test_platform_env_isolation.py`. Incident: [docs/incidents/2026-09-13-platform-env-leak.md](docs/incidents/2026-09-13-platform-env-leak.md).
+- **A box's environment is REFRESHED at binding, never frozen at birth.** The container env is the snapshot it was created with and cannot be rewritten in place, so every binding republishes the person's current vault values, the box's identity, and `/opt/sandbox/scripts` into files every shell sources — and UNSETS names the vault dropped plus platform credentials that leaked into pre-2026-09-13 boxes. Names only, never values, on the binding report. Knobs `vault_env_refresh_on_binding` and `clear_leaked_platform_env_on_binding`. 🚨 The sweep's protected set is `sandbox_manager.ORCHESTRATOR_MANAGED_ENV` and `create_sandbox` REFUSES to boot if its own env dict grows a key missing from it — a managed name outside that set would be cleared out of every live box. [vault_env_refresh.py](orchestrator/orchestrator/vault_env_refresh.py), [sdk_refresh.py](orchestrator/orchestrator/sdk_refresh.py), guards in `tests/test_github_credential_and_vault_env.py`.
+- **A box's git credential is the person's, never the platform's.** `https://github.com` resolves through the AI Dream bridge for the box's `USER_ID`, with the person's own `GITHUB_TOKEN` vault item as the ONE fallback. `GH_TOKEN` / `GITHUB_PAT` / `MATRX_GITHUB_TOKEN` are retired (2026-09-18): each named whatever the container was born carrying, so a bridge failure silently became a push with a revoked token. A refusal prints the server's exact words and EXITS NON-ZERO — never `exit 0`, which let git bury the reason under its own "authentication failed". [matrx-git-credential-env](sandbox-image/scripts/matrx-git-credential-env).
+- **The SHELL sees the same identity the daemon sees, or says why not.** sshd passes the container env to nothing it starts, so every entrypoint publishes `USER_ID`, `ORGANIZATION_ID`, `MATRX_AIDREAM_URL` and the service token to `/etc/matrx/bridge-env.sh` ([write-bridge-env.sh](sandbox-image/scripts/write-bridge-env.sh), which also carries the ruling on why a shell may hold the token), read by `bridge-headers.sh` and `matrx_agent.bridge_headers` and never overriding the process env. A box carrying SOME identity and missing the rest is a provisioning defect and refuses LOUDLY; the quiet path is only for a box carrying none — and never when `/etc/matrx/bridge-env.FAILED` exists, which the writer leaves when it could not publish (entrypoints report that failure and keep booting; they never `|| true` it).
+- **The warm pool is RETIRED (2026-09-17)** — `POST /sandboxes/claim` cold-creates, a boot sweep removes leftover unclaimed warm containers, and the `warm_pool_*` settings are inert. A container pre-booted before it has an owner can never be given a user and an organization afterwards ([orchestrator/pool.py](orchestrator/orchestrator/pool.py)).
+- **API key auth:** `MATRX_API_KEY` unset = unauthenticated mode (screaming banner on a deployed host, plain warning locally — [middleware/auth.py](orchestrator/orchestrator/middleware/auth.py)). Never run that in production.
+- **The store has two implementations** — `InMemorySandboxStore` (tests) and `PostgresSandboxStore` (prod, Supabase, RLS per `user_id`). Don't add fields to one without the other.
+- **Package / Implementation Separation — read before touching ANY database or connection config.** One connection, one set of variable names; a different database is a change of VALUES, never a new variable name. ⚠️ This repo's orchestrator predates the rule and reaches the same platform Supabase through its own `MATRX_DATABASE_URL` + `MATRX_SANDBOX_STORE` ([config.py](orchestrator/orchestrator/config.py), [store.py](orchestrator/orchestrator/store.py)) — a known second name for the one connection; don't copy the pattern and don't add a third. Connection strings this repo handles for OTHER services (Coolify/host-managed Postgres, template files) are out of scope. Canonical: [package-vs-implementation.md](/Users/armanisadeghi/code/common-docs/policies/package-vs-implementation.md).
+- **THE HOME OWNERSHIP LAW: nothing under `/home/agent` may be root-owned, and `ensure-layout.sh` is the ONE chokepoint that enforces it.** Boot steps that run as root populate the home (`hot-sync.sh down` restores the whole home from S3 as root; template copies; installs), so every one of them must run BEFORE `ensure-layout.sh`, whose tail repairs every root-owned path and says so. Never add a root write to the home after it, and never "fix" a permission error by chowning one path. Guard: `sandbox-image/scripts/check-home-ownership.sh`, run by `smoke-test.sh`. The class shipped once (2026-09-12 `03bf8ed` deleted the blanket chown; every fresh EC2 box from 2026-09-14 on had a root-owned `~/projects` and `mtx new` died on it).
+- **`mountpoint-s3` is x86_64 only** — a native Apple Silicon build skips cold-mount install; cross-build with `docker buildx build --platform linux/amd64 …`. Sandbox containers need the `SYS_ADMIN` cap and `/dev/fuse` for it (Docker run flags on EC2 and in the orchestrator).
+- **Cold writes can be lost on hard crash** — FUSE flushes on graceful shutdown only; treat `/data/cold/` as eventually-consistent.
+- **Images are ~2.9 GB and slow to build** — prefer modifying the SDK or scripts over rebuilding the base; the `/srv` deploy poller rebuilds `matrx-sandbox:core`/`:local` automatically on push (path-diff triggered), manual build is a local-iteration fallback only.
+
+## Tasks-in-flight docs (repo root)
+
+[ARMAN_TASKS.md](ARMAN_TASKS.md), [LOCAL_AGENT_TASKS.md](LOCAL_AGENT_TASKS.md), [CLAUDE_CODE_AGENT_TASKS.md](CLAUDE_CODE_AGENT_TASKS.md), [MULTI_IMAGE_CONCEPT.md](MULTI_IMAGE_CONCEPT.md), [SANDBOX_API_WISHLIST.md](SANDBOX_API_WISHLIST.md) — planning/TODO docs that may or may not be current; read with skepticism.
 
 Cross-repo system-of-record: /Users/armanisadeghi/code/common-docs/policies/ai-model-and-spend-rules.md — read it before picking a model or running work that spends; system-agent links use `https://manage.aimatrx.com/administration/agents/system-agents/agents/<id>/build`.
