@@ -1,0 +1,17 @@
+{
+  "task": "Store 0.2.548 exact artifact peer review",
+  "verdicts": {
+    "artifact_integrity": "PASS",
+    "package_quality_static": "PASS_BOUNDED",
+    "native_functional_acceptance": "PENDING"
+  },
+  "provenance": "Run 39160321437 succeeded; GitHub artifact 12148533135 API SHA-256 matched downloaded outer archive; tag v0.2.548 points to receipt source 093566e1c5dac768a70c8b8574a8aad948b9bd2a, which is an ancestor of remote main.",
+  "receipt": "Remote/local Store ZIP SHA-256 matched receipt and archived local ZIP (6064c42c133b0807740b5a18d7f46555948b5476587df36e4e3b73ec65d7abec); local ZIP SHA-256 and extracted tree hash matched receipt.",
+  "zip": "CRC/integrity passed; manifest version 0.2.548; development key and toolbar popup absent; 2,442 entries including 1,272 JavaScript files.",
+  "risk_gate": "scripts/check-cws-release-risk.mjs passed against exact ZIP extraction; manifest policy surface matches published 0.2.205 baseline; no rejected PDFObject CDN URL found.",
+  "acceptance_boundary": "No native guest/member interaction or Store dashboard action was performed; artifact checks do not establish runtime acceptance or Google approval.",
+  "evidence": [
+    "docs/stabilization/reports/store-release-v0548-20261018.json",
+    "test-results/store-release-current-main-cut/matrx-extend-v0.2.548/.output/matrx-extend-0.2.548-store.zip"
+  ]
+}
