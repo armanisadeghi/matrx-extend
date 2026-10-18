@@ -344,6 +344,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           let ready = false;
           const end = Date.now() + 180000;
           while (Date.now() < end && !ready) {
+            await page.click('h1').catch(() => {});
             await page.click('#u').catch(() => {});
             await sleep(1500);
             if (/couldn’t be checked/.test(await text())) await clickLabel(P, 'Retry');
@@ -424,7 +425,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           await page.bringToFront().catch(() => {});
           await sleep(2000);
           let offered = false;
-          for (let attempt = 1; attempt <= 3 && !offered; attempt++) {
+          for (let attempt = 1; attempt <= 6 && !offered; attempt++) {
             if (attempt > 1) {
               await page.goto(site.url);
               await page.bringToFront().catch(() => {});
@@ -511,6 +512,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           );
           let back = false;
           for (let i = 0; i < 40 && !back; i++) {
+            await page.click('h1').catch(() => {});
             await page.click('#u').catch(() => {});
             await sleep(1500);
             if (/couldn’t be checked/.test(await text())) await clickLabel(P, 'Retry');
