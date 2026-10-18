@@ -1,0 +1,78 @@
+{
+  "id": "EXT-D-0240",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T02"],
+  "title": "Member Chat native result screenshots omit the asserted assistant answer",
+  "surface": "Hosted native Member A Chat visual evidence",
+  "auth_mode": "member",
+  "organization_context": "Signed-in member; same selected organization on both requests",
+  "preconditions": [
+    "Guarded v0.2.537 Member rerun 39107538580 completes opening and follow-up turns.",
+    "Both non-admin requests return HTTP 200 with terminal semantic answers and resource finals."
+  ],
+  "reproduction": [
+    "Inspect hosted run 39107538580 reviewer-chat-result.png and reviewer-chat-store-640x400.png.",
+    "Both images show a blank scroller and composer; neither visibly proves the asserted answer.",
+    "capture() screenshots without scrolling, while the DOM oracle accepts bounds and display without viewport or occlusion checks."
+  ],
+  "expected": "Each final Member screenshot contains the latest assistant answer in the unobstructed viewport above the composer, with the expected reply text visible.",
+  "actual": "The native report passed transport and terminal assertions but both retained final screenshots omit readable answer text. Independent native review marks user-visible answer UNVERIFIED; run 39107538580 earns zero visible-answer credit.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39107538580",
+    "Hosted run 39107538580: reviewer-chat-result.png",
+    "Hosted run 39107538580: reviewer-chat-store-640x400.png"
+  ],
+  "build_receipt": {
+    "version": "0.2.537",
+    "native_run_id": 39107538580,
+    "native_evidence_artifact_id": 12128838177,
+    "loaded_extension_source_sha": "1b612c67410576b5d077fe20bee4fd33455d987d",
+    "workflow_head_sha": "1858169870b64f0b3fc29373ad743ac7d5906a9f"
+  },
+  "reproducibility": "Both final images lack readable assistant text; focused harness regression exercises clipped and occluded latest answers.",
+  "severity": "S2: acceptance reported a pass without visual proof of the answer.",
+  "priority": "P1: retest Member A on corrected native harness before product credit.",
+  "state": "fixed",
+  "owner": "member_visible_reply_proof_fix",
+  "cause": "The final capture path did not position the answer and the terminal DOM oracle did not test viewport clipping or occlusion.",
+  "sibling_census": "Both final Member images, normal and 640x400 Store candidate, now use the same latest-answer proof after each viewport size is applied. Transport and terminal assertions remain intact.",
+  "fix_sha": null,
+  "original_retest_runs": [39107538580],
+  "surrounding_retest_runs": [],
+  "reviewer": "Fresh independent peer A/B PASS after Range glyph and ancestor-opacity repairs; native retest pending.",
+  "acceptance_criteria": [
+    "A clipped or composer-occluded answer fails the screenshot gate despite DOM text and positive bounds.",
+    "Both final Member captures scroll and verify the latest assistant reply in the unobstructed viewport with expected text.",
+    "Independent native retest visibly confirms both screenshots and all resource finals before Member A product credit."
+  ],
+  "verification": {
+    "focused": "Focused package controls 8/8; independent combined suite 34/34; pnpm compile, focused Biome, diff check, and frozen .537 source admission pass.",
+    "peer": "Fresh independent final peer A/B PASS.",
+    "native": "Pending corrected guarded native retest; run 39107538580 receives zero visible-answer credit."
+  },
+  "limitations": [
+    "Historical run 39107538580 keeps its valid HTTP and terminal diagnostic evidence, but no visible-answer credit.",
+    "This source-only harness repair does not establish product success until a fresh native retest."
+  ],
+  "next_action": "Obtain independent source review, commit the reviewed test-only repair, then rerun guarded Member A and inspect both retained images.",
+  "transition_history": [
+    {
+      "at": "2026-10-18T00:00:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Independent native review found blank result images in run 39107538580."
+    },
+    {
+      "at": "2026-10-18T00:00:00Z",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "Focused visual-proof harness correction started; fresh independent review and native retest remain pending."
+    },
+    {
+      "at": "2026-10-18T00:00:00Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Visual-proof harness gate, regression coverage, and independent A/B source review pass; native retest remains pending."
+    }
+  ]
+}

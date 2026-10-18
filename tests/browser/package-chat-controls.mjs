@@ -66,3 +66,75 @@ export function readPackageChatControls(pane) {
     assistantDom: { assistantArticleCount, toolCardCount, toolOnlyArticleCount },
   };
 }
+
+/** Position the last assistant body and require readable proof above the composer. */
+export function prepareMemberAnswerScreenshot(expectedTerms) {
+  const tab = [...document.querySelectorAll('button[role="tab"]')].find(
+    (candidate) => candidate.title === 'Chat' && candidate.getAttribute('aria-selected') === 'true',
+  );
+  const pane = tab && document.getElementById(tab.getAttribute('aria-controls') ?? '');
+  if (pane?.getAttribute('data-state') !== 'active')
+    return { eligible: false, reason: 'chat_inactive' };
+  const articles = [
+    ...pane.querySelectorAll(
+      '[role="article"][aria-label="Assistant answer"], [role="article"][aria-label="Assistant answer, pinned"]',
+    ),
+  ].filter((article) => !article.closest('[inert]'));
+  const body = articles.at(-1)?.querySelector('[data-message-content]');
+  if (!body) return { eligible: false, reason: 'answer_missing' };
+  body.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+  const composer = pane.querySelector('textarea');
+  const composerTop = composer?.getBoundingClientRect().top ?? 0;
+  let painted = false;
+  for (let element = body; element; element = element.parentElement) {
+    const style = getComputedStyle(element);
+    if (
+      style.display === 'none' ||
+      style.visibility === 'hidden' ||
+      style.visibility === 'collapse' ||
+      (style.opacity !== '' && Number(style.opacity) === 0)
+    )
+      break;
+    if (element === pane) {
+      painted = true;
+      break;
+    }
+  }
+  const usableBottom = Math.min(document.documentElement.clientHeight, composerTop);
+  const termVisible = (term) => {
+    const walker = document.createTreeWalker(body, 4);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const start = node.textContent?.indexOf(term) ?? -1;
+      if (start < 0) continue;
+      const range = document.createRange();
+      range.setStart(node, start);
+      range.setEnd(node, start + term.length);
+      const rects = [...range.getClientRects()];
+      if (rects.length === 0) continue;
+      if (
+        rects.every((rect) => {
+          if (
+            rect.width <= 0 ||
+            rect.height <= 0 ||
+            rect.left < 0 ||
+            rect.right > document.documentElement.clientWidth ||
+            rect.top < 0 ||
+            rect.bottom > usableBottom
+          )
+            return false;
+          const hit = document.elementFromPoint(
+            (rect.left + rect.right) / 2,
+            (rect.top + rect.bottom) / 2,
+          );
+          return hit !== null && (body === hit || body.contains(hit));
+        })
+      )
+        return true;
+    }
+    return false;
+  };
+  return {
+    eligible: painted && expectedTerms.length > 0 && expectedTerms.every(termVisible),
+    reason: 'answer_not_readable_above_composer',
+  };
+}

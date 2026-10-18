@@ -25,7 +25,10 @@ import {
 } from './member-native-auth-proof.mjs';
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { readPackageChatControls } from './package-chat-controls.mjs';
+import {
+  prepareMemberAnswerScreenshot,
+  readPackageChatControls,
+} from './package-chat-controls.mjs';
 import {
   recordIdentityWaitFailure,
   verifyReviewerRole,
@@ -64,6 +67,7 @@ const SAFE_FAILURE_CODES = new Set([
   'reviewer_canonical_role_unverified',
   'reviewer_composer_input_unverified',
   'reviewer_chat_terminal_answer_unverified',
+  'reviewer_chat_visible_answer_unverified',
 ]);
 const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -237,7 +241,7 @@ async function capture(panel, artifacts, label) {
 }
 
 /** A panel-only Store candidate; functional acceptance is complete before resizing. */
-async function captureStoreCandidate(panel, artifacts) {
+async function captureStoreCandidate(panel, artifacts, expectedTerms) {
   await panel.send('Emulation.setDeviceMetricsOverride', {
     width: 640,
     height: 400,
@@ -245,10 +249,20 @@ async function captureStoreCandidate(panel, artifacts) {
     mobile: false,
   });
   try {
+    await requireMemberAnswerScreenshot(panel, expectedTerms);
     return await capture(panel, artifacts, 'reviewer-chat-store-640x400');
   } finally {
     await panel.send('Emulation.clearDeviceMetricsOverride');
   }
+}
+
+async function requireMemberAnswerScreenshot(panel, expectedTerms) {
+  const proof = await evaluate(
+    panel,
+    `(${prepareMemberAnswerScreenshot.toString()})(${JSON.stringify(expectedTerms)})`,
+  );
+  assert.equal(proof?.eligible, true, 'reviewer_chat_visible_answer_unverified');
+  return proof;
 }
 
 /** Observe the checked option's real UUID; only its fingerprint enters evidence. */
@@ -1646,8 +1660,11 @@ try {
           followup_completed_reply_count: followup.completedReplyCount,
           same_organization: true,
         };
+        await requireMemberAnswerScreenshot(panel, ['Understand']);
         report.screenshots.result = await capture(panel, artifacts, 'reviewer-chat-result');
-        report.screenshots.store_candidate_640x400 = await captureStoreCandidate(panel, artifacts);
+        report.screenshots.store_candidate_640x400 = await captureStoreCandidate(panel, artifacts, [
+          'Understand',
+        ]);
         report.chat = {
           visible: true,
           question_fingerprint: hash(QUESTION),

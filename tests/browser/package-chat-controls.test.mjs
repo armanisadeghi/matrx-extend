@@ -2,7 +2,68 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
-import { readPackageChatControls } from './package-chat-controls.mjs';
+import {
+  prepareMemberAnswerScreenshot,
+  readPackageChatControls,
+} from './package-chat-controls.mjs';
+
+test('Member screenshot refuses clipped or composer-occluded answer and accepts readable latest reply', async () => {
+  const window = new Window();
+  window.document.body.innerHTML = `<button role="tab" title="Chat" aria-selected="true" aria-controls="chat"></button>
+    <div id="chat" data-state="active"><article role="article" aria-label="Assistant answer"><div data-message-content>Old answer</div></article>
+    <article role="article" aria-label="Assistant answer"><div data-message-content>Understand the workflow</div></article>
+    <textarea></textarea></div>`;
+  const body = window.document.querySelectorAll('[data-message-content]')[1];
+  const composer = window.document.querySelector('textarea');
+  let top = 600;
+  let termTop = 600;
+  const composerTop = 260;
+  let hit = body;
+  body.getBoundingClientRect = () => ({
+    left: 10,
+    right: 210,
+    top,
+    bottom: top + 80,
+    width: 200,
+    height: 80,
+  });
+  composer.getBoundingClientRect = () => ({ top: composerTop });
+  body.scrollIntoView = () => {};
+  window.document.createRange = () => ({
+    setStart() {},
+    setEnd() {},
+    getClientRects: () => [
+      { left: 20, right: 110, top: termTop, bottom: termTop + 18, width: 90, height: 18 },
+    ],
+  });
+  window.document.elementFromPoint = () => hit;
+  Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 400 });
+  Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 300 });
+  const check = (terms = ['Understand']) =>
+    runInNewContext(`(${prepareMemberAnswerScreenshot.toString()})(terms)`, {
+      document: window.document,
+      getComputedStyle: (node) => window.getComputedStyle(node),
+      terms,
+    });
+  assert.equal(check().eligible, false, 'offscreen text must fail');
+  top = 270;
+  termTop = 270;
+  assert.equal(check().eligible, false, 'composer-covered text must fail');
+  top = 80;
+  termTop = 280;
+  assert.equal(check().eligible, false, 'visible body with clipped term must fail');
+  termTop = 80;
+  hit = composer;
+  assert.equal(check().eligible, false, 'overlay-covered text must fail');
+  hit = body;
+  assert.equal(check().eligible, true, 'readable latest answer must pass');
+  body.parentElement.style.opacity = '0';
+  assert.equal(check().eligible, false, 'transparent assistant ancestor must fail');
+  body.parentElement.style.opacity = '1';
+  assert.equal(check().eligible, true, 'restored assistant paint must pass');
+  assert.equal(check(['Capture']).eligible, false, 'wrong answer text must fail');
+  await window.happyDOM.abort();
+});
 
 // Markup contracts recovered from the immutable .520 Store ZIP, release 39049375284:
 // Send/Stop aria labels; assistant article + data-message-content, never action-bar text.
