@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-18T02:45:45.633361+00:00",
+  "updated_at": "2026-10-18T05:15:45+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "741d7771e2c45d020f63ef3b9f2a6ef8ab3ff86c",
@@ -50152,7 +50152,8 @@
             "EXT-D-0228",
             "EXT-D-0229",
             "EXT-D-0233",
-            "EXT-D-0235"
+            "EXT-D-0235",
+            "EXT-D-0237"
           ],
           "results": {
             "guest": {
