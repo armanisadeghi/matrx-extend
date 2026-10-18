@@ -9,6 +9,7 @@ import {
   createGuestStreamCollector,
   readGuestReactDraft,
 } from './guest-chat-completion-oracle.mjs';
+import * as guestChatOracle from './guest-chat-completion-oracle.mjs';
 
 // Break caught: a rendered tool badge saying "Used" must not become the "Use" stage.
 test('browser-serializable stage matcher accepts whole words in order', () => {
@@ -82,6 +83,55 @@ test('composer probe distinguishes focus loss, cleared input, and disabled send 
 });
 
 const expectedTerms = ['C82F4A', 'Capture', 'Understand', 'Use'];
+
+test('serialized browser collector records URL components with its injected classifier', () => {
+  const browserFactory = runInNewContext(`(${createGuestStreamCollector.toString()})`, { URL });
+  const browserClassifier = runInNewContext(
+    `(${guestChatOracle.classifyFixtureUrlMatch.toString()})`,
+    { URL },
+  );
+  const collector = browserFactory({
+    fixtureTabId: 21,
+    fixtureUrl: 'https://example.invalid/article?case=private#fixture-secret',
+    classifyUrlMatch: browserClassifier,
+  });
+  collector.accept({
+    __matrx: true,
+    kind: 'tool:timeline-event',
+    payload: {
+      callId: 'fixture-call',
+      toolName: 'get_page_text',
+      phase: 'started',
+      args: { tab_id: '21' },
+    },
+  });
+  collector.accept({
+    __matrx: true,
+    kind: 'tool:timeline-event',
+    payload: {
+      callId: 'fixture-call',
+      toolName: 'get_page_text',
+      phase: 'completed',
+      output: { url: 'https://example.invalid/article?case=private' },
+    },
+  });
+  const snapshot = JSON.parse(JSON.stringify(collector.snapshot()));
+  const event = snapshot.toolEvents.at(-1);
+  assert.equal(event.resultUrlMatchesFixture, false);
+  assert.deepEqual(event.resultUrlComponents, {
+    exactMatch: false,
+    originMatch: true,
+    pathnameMatch: true,
+    searchMatch: true,
+    hashMatch: false,
+    expectedHasSearch: true,
+    actualHasSearch: true,
+    expectedHasHash: true,
+    actualHasHash: false,
+  });
+  assert.doesNotMatch(JSON.stringify(snapshot), /example\.invalid|private|fixture-secret/);
+});
+
 const suspended = {
   done: true,
   delegated: true,
@@ -288,7 +338,7 @@ test('tool diagnostics retain target and marker booleans without tool content', 
       toolName: 'get_page_text',
       phase: 'completed',
       output: {
-        url: 'https://www.aimatrx.com/matrx-extend-demo#fixture',
+        url: 'https://www.aimatrx.com/matrx-extend-demo',
         text: 'OPEN-73 Fixture heading NEVER-STORE',
       },
     },
@@ -298,13 +348,69 @@ test('tool diagnostics retain target and marker booleans without tool content', 
     name: 'get_page_text',
     phase: 'completed',
     target: 'fixture_tab',
-    resultUrlMatchesFixture: true,
+    resultUrlMatchesFixture: false,
+    resultUrlComponents: {
+      exactMatch: false,
+      originMatch: true,
+      pathnameMatch: true,
+      searchMatch: true,
+      hashMatch: false,
+      expectedHasSearch: false,
+      actualHasSearch: false,
+      expectedHasHash: true,
+      actualHasHash: false,
+    },
     resultContainsOpeningCode: true,
     resultContainsFollowupCode: false,
     resultContainsFixtureHeading: true,
   });
   assert.equal(JSON.stringify(collector.snapshot()).includes('NEVER-STORE'), false);
   assert.equal(JSON.stringify(collector.snapshot()).includes('OPEN-73'), false);
+});
+
+test('tool URL receipt separates path and search drift without retaining values', () => {
+  const collector = createGuestStreamCollector({
+    fixtureTabId: 21,
+    fixtureUrl: 'https://example.invalid/owned/article?case=private#fixture-secret',
+  });
+  collector.accept({
+    __matrx: true,
+    kind: 'tool:timeline-event',
+    payload: {
+      callId: 'fixture-call',
+      toolName: 'get_page_text',
+      phase: 'started',
+      args: { tab_id: '21' },
+    },
+  });
+  collector.accept({
+    __matrx: true,
+    kind: 'tool:timeline-event',
+    payload: {
+      callId: 'fixture-call',
+      toolName: 'get_page_text',
+      phase: 'completed',
+      output: { url: 'https://example.invalid/other/article?case=changed#other-secret' },
+    },
+  });
+  const snapshot = JSON.parse(JSON.stringify(collector.snapshot()));
+  const event = snapshot.toolEvents.at(-1);
+  assert.equal(event.resultUrlMatchesFixture, false);
+  assert.deepEqual(event.resultUrlComponents, {
+    exactMatch: false,
+    originMatch: true,
+    pathnameMatch: false,
+    searchMatch: false,
+    hashMatch: false,
+    expectedHasSearch: true,
+    actualHasSearch: true,
+    expectedHasHash: true,
+    actualHasHash: true,
+  });
+  assert.doesNotMatch(
+    JSON.stringify(snapshot),
+    /example\.invalid|private|fixture-secret|other-secret/,
+  );
 });
 
 test('collector keeps failed user-request completion terminal even after end complete', () => {

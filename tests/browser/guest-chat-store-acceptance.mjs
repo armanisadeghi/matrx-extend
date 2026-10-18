@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { prepareGuestAnswerScreenshot } from './guest-answer-screenshot.mjs';
 import {
+  classifyFixtureUrlMatch,
   classifyGuestTurn,
   classifyPackageGuestTurn,
   containsOrderedWholeTerms,
@@ -210,6 +211,7 @@ async function installStreamTrace(panel, fixture, fixtureTabId) {
       markers: ${JSON.stringify([fixture.openingCode, fixture.followupCode, fixture.title])},
       fixtureTabId: ${JSON.stringify(fixtureTabId)},
       fixtureUrl: ${JSON.stringify(fixture.url)},
+      classifyUrlMatch: (${classifyFixtureUrlMatch.toString()}),
     });
     const listener = (message) => collector.accept(message);
     chrome.runtime.onMessage.addListener(listener);
@@ -564,8 +566,10 @@ async function readableFixturePresent(page, fixture) {
 
 async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId, panel = null) {
   const readable = await readableFixturePresent(page, fixture).catch(() => false);
-  const pageUrlMatches = page.url() === fixture.url;
-  const base = { readableMarkerPresent: readable, pageUrlMatches };
+  const pageUrl = page.url();
+  const pageUrlComponents = classifyFixtureUrlMatch(fixture.url, pageUrl);
+  const pageUrlMatches = pageUrlComponents.exactMatch;
+  const base = { readableMarkerPresent: readable, pageUrlMatches, pageUrlComponents };
   let worker = null;
   try {
     worker = await attachWorker();
@@ -578,6 +582,7 @@ async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId
       returnByValue: true,
     });
     const active = response.result?.value ?? {};
+    const activeUrlComponents = classifyFixtureUrlMatch(fixture.url, active.url);
     let assignedTabMatchesFixture = null;
     if (panel) {
       const runIds = await evaluate(panel, 'window.__guestChatStreamTrace?.runIds() ?? []');
@@ -599,7 +604,8 @@ async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId
     return {
       ...base,
       activeTabMatchesFixture: active.id === fixtureTabId,
-      activeUrlMatchesFixture: active.url === fixture.url,
+      activeUrlMatchesFixture: activeUrlComponents.exactMatch,
+      activeUrlComponents,
       assignedTabMatchesFixture,
     };
   } catch {
@@ -607,6 +613,7 @@ async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId
       ...base,
       activeTabMatchesFixture: null,
       activeUrlMatchesFixture: null,
+      activeUrlComponents: classifyFixtureUrlMatch(fixture.url, null),
       assignedTabMatchesFixture: null,
       identityProbeAvailable: false,
     };

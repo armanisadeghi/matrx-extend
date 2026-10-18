@@ -1,10 +1,44 @@
 /** Safe browser stream collector; also exercised directly by node tests. */
+export function classifyFixtureUrlMatch(expectedUrl, actualUrl) {
+  const comparable = typeof expectedUrl === 'string' && typeof actualUrl === 'string';
+  const result = {
+    exactMatch: comparable ? actualUrl === expectedUrl : null,
+    originMatch: null,
+    pathnameMatch: null,
+    searchMatch: null,
+    hashMatch: null,
+    expectedHasSearch: null,
+    actualHasSearch: null,
+    expectedHasHash: null,
+    actualHasHash: null,
+  };
+  if (!comparable) return result;
+
+  try {
+    const expected = new URL(expectedUrl);
+    const actual = new URL(actualUrl);
+    result.originMatch = actual.origin === expected.origin;
+    result.pathnameMatch = actual.pathname === expected.pathname;
+    result.searchMatch = actual.search === expected.search;
+    result.hashMatch = actual.hash === expected.hash;
+    result.expectedHasSearch = expected.search.length > 0;
+    result.actualHasSearch = actual.search.length > 0;
+    result.expectedHasHash = expected.hash.length > 0;
+    result.actualHasHash = actual.hash.length > 0;
+  } catch {
+    // Keep malformed or non-URL values out of the receipt; exact equality above
+    // remains available while component classification stays unknown.
+  }
+  return result;
+}
+
 export function createGuestStreamCollector({
   replyCount = () => 0,
   now = Date.now,
   markers = [],
   fixtureTabId = null,
   fixtureUrl = null,
+  classifyUrlMatch = classifyFixtureUrlMatch,
 } = {}) {
   const runs = new Map();
   const order = [];
@@ -70,6 +104,7 @@ export function createGuestStreamCollector({
                 ? 'fixture_tab'
                 : 'different_tab',
           resultUrlMatchesFixture: typeof resultUrl === 'string' ? resultUrl === fixtureUrl : null,
+          resultUrlComponents: classifyUrlMatch(fixtureUrl, resultUrl),
           resultContainsOpeningCode: hasResult
             ? Boolean(markers[0] && result.includes(markers[0]))
             : null,
@@ -151,6 +186,7 @@ export function createGuestStreamCollector({
             target: 'server_event_target_unobserved',
             resultUrlMatchesFixture:
               typeof resultUrl === 'string' ? resultUrl === fixtureUrl : null,
+            resultUrlComponents: classifyUrlMatch(fixtureUrl, resultUrl),
             resultContainsOpeningCode: hasStreamedOutput
               ? Boolean(markers[0] && result.includes(markers[0]))
               : null,
