@@ -683,6 +683,8 @@ for (const line of input.split('\n')) {
 NODE
                 elif [[ "$name" == db-doors ]]; then
                     node "$CHECK_SNAP/scripts/release-db-door-diagnostics.mjs" "$JOBS/check-$name.out"
+                elif [[ "$name" == tool-drift ]]; then
+                    node "$CHECK_SNAP/scripts/release-tool-drift-diagnostics.mjs" "$JOBS/check-$name.out"
                 elif [[ "$name" == lint ]]; then
                     ( cd "$CHECK_SNAP" && node_modules/.bin/biome check --reporter=json . ) \
                         > "$JOBS/check-lint.json" 2>/dev/null || true

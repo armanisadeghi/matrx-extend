@@ -434,7 +434,8 @@
             "Valid canonical metadata does not make registry rows unreadable; malformed parameters or genuine schema mismatch prevent publication."
           ],
           "defect_ids": [
-            "EXT-D-0090"
+            "EXT-D-0090",
+            "EXT-D-0236"
           ],
           "results": {
             "guest": {
@@ -460,6 +461,13 @@
             }
           },
           "previous_results": [
+            {
+              "mode": "guest",
+              "status": "fail",
+              "run_id": "39097720360",
+              "detail": "Shared hosted strict tool catalog gate exited 3 before v0.2.533 publication. The sanitized artifact did not retain the failing verification boundary; this is an auth-independent release gate observation, not a native guest result.",
+              "evidence": "docs/stabilization/defects/EXT-D-0236.json"
+            },
             {
               "mode": "guest",
               "status": "fail",
