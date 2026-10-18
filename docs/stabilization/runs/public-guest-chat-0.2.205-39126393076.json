@@ -10,19 +10,24 @@
   "run": {
     "run_id": 39126393076,
     "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39126393076",
-    "workflow_conclusion": "in_progress",
+    "workflow_conclusion": "failure",
     "workflow_head_sha": "e16f07452d4caff30755e3cc41c5eb4d360e385b",
     "source_sha": "e16f07452d4caff30755e3cc41c5eb4d360e385b",
+    "evidence_artifact_id": 12135924975,
+    "evidence_artifact_name": "hosted-guest-39126393076-1",
+    "evidence_artifact_digest": "sha256:ab6a0c1eaefa4b7567061aa6330d1fc785d4fa87d8962d62b0a6cfcfa8e070ba",
+    "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "runtime_receipt_kind": "published_store_crx_unpacked",
     "runner_label": "macos-15-intel",
     "acceptance_lane": "B",
     "acceptance_case": "guest-chat",
     "provenance_mode": "published_store_crx",
-    "product_verdict": "pending"
+    "product_verdict": "zero_credit_unverified"
   },
   "checkpoint": {
-    "last_observed_at_utc": "2026-10-18T12:17:37Z",
-    "last_completed_step": "Wait for measured browser readiness",
-    "active_step": "Prepare full Chromium under a fresh owned permit",
+    "last_observed_at_utc": "2026-10-18T12:21:16Z",
+    "last_completed_step": "Exercise the selected Chrome side-panel case",
+    "active_step": null,
     "passed_preflights": [
       "guest lane serialization",
       "published Store target and provenance mode",
@@ -31,10 +36,52 @@
       "pinned browser driver resource readiness"
     ],
     "product_evidence_obtained": false,
-    "next_action": "Continue monitoring the hosted workflow to terminal; download the uploaded browser result and screenshots; verify first reply, same-conversation follow-up, post-reload terminal and grounded content, bind browser-time server SHA before/after, and validate package/browser/guest resource finals before recording any product verdict."
+    "next_action": "Do not retry until the public-version Send control observer gap is fixed against v0.2.205 source and the fix passes fresh independent review; then dispatch a new guarded public run."
   },
+  "terminal_observation": {
+    "failure_stage": "guest_question",
+    "failure_code": "opening_question_send_ready_not_observed",
+    "composer_length": 139,
+    "readiness_observed_for_ms": 9995,
+    "send_control_count": 0,
+    "send_like_control_count": 0,
+    "initialization_shell_visible": false,
+    "send_click_observed": false,
+    "guest_ai_request_count": 0,
+    "server_version_status_before_after": 200,
+    "server_git_sha_before_after": "2a50e76a6552c2244892cf728dfd0a93688ea978",
+    "server_version_stable": true,
+    "observer_diagnosis": "The failure screenshot shows a visible black up-arrow send control. The exact v0.2.205 source renders this control as a button with title=Send and no aria-label; the current observer only recognizes aria-label=Send message. The run therefore ended before click or request, consistent with an observer selector compatibility gap."
+  },
+  "resource_finals": {
+    "package": {
+      "journal": "docs/stabilization/evidence/published-v0205-guest-chat/run39126393076/resource-journals/hosted-package-39126393076-1.sanitized.jsonl",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "browser": {
+      "journal": "docs/stabilization/evidence/published-v0205-guest-chat/run39126393076/resource-journals/hosted-browser-39126393076-1.sanitized.jsonl",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "guest": {
+      "journal": "docs/stabilization/evidence/published-v0205-guest-chat/run39126393076/resource-journals/hosted-guest-39126393076-1.sanitized.jsonl",
+      "decision": "invalid",
+      "resource_invalid": true,
+      "exit_code": 3,
+      "child_exit_code": 1
+    }
+  },
+  "evidence_source": "docs/stabilization/evidence/published-v0205-guest-chat/run39126393076/native-report.sanitized.json",
+  "failure_screenshot": "docs/stabilization/evidence/published-v0205-guest-chat/run39126393076/screenshots/guest-chat-failure.png",
   "evidence_limits": [
     "Workflow status and HTTP responses alone do not establish product acceptance.",
+    "No guest send was clicked; no HTTP request, server reply, tool event, or page answer was observed.",
+    "The public UI's send control was visible in the screenshot but not recognized by the observer; this run does not establish a product send failure or success.",
+    "The guest resource phase is invalid because the child exited 1; package and browser phases are valid.",
+    "The startup diagnostic workflow step was skipped.",
     "This run targets the approved public 0.2.205 CRX and does not establish current Chrome Web Store dashboard state or a new submission."
   ]
 }

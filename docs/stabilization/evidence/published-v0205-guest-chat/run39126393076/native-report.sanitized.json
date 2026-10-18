@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "run_id": "39126393076",
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39126393076",
+  "workflow_conclusion": "failure",
+  "source_sha": "e16f07452d4caff30755e3cc41c5eb4d360e385b",
+  "public_candidate": {
+    "version": "0.2.205",
+    "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "evidence_artifact_id": 12135924975,
+    "evidence_artifact_sha256": "sha256:ab6a0c1eaefa4b7567061aa6330d1fc785d4fa87d8962d62b0a6cfcfa8e070ba",
+    "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "receipt_kind": "published_store_crx_unpacked"
+  },
+  "server": {
+    "version_status_before": 200,
+    "git_sha_before": "2a50e76a6552c2244892cf728dfd0a93688ea978",
+    "version_status_after": 200,
+    "git_sha_after": "2a50e76a6552c2244892cf728dfd0a93688ea978",
+    "stable": true
+  },
+  "product": {
+    "status": "unverified",
+    "credit": "zero; no send or reply observed",
+    "failure_stage": "guest_question",
+    "failure_code": "opening_question_send_ready_not_observed",
+    "guest_fresh": true,
+    "chat_visible": true,
+    "stage_progress": [
+      "owned_profile",
+      "fresh_guest",
+      "owned_article_page",
+      "page_specific_fixture",
+      "guest_chat_open",
+      "guest_question"
+    ],
+    "opening_send": {
+      "composer_visible": true,
+      "composer_length": 139,
+      "send_enabled": false,
+      "send_control_count": 0,
+      "send_like_control_count": 0,
+      "initialization_shell_visible": false,
+      "readiness_observation_ms": 9995,
+      "click_observed": false
+    },
+    "guest_ai_request_count": 0,
+    "guest_ai_transport_proven": false,
+    "context_rule_read_count": 0,
+    "screenshot": "guest-chat-failure.png"
+  },
+  "resource_finals": {
+    "package": {
+      "schema": 1,
+      "at": "2026-10-18T12:16:51.499Z",
+      "runId": "hosted-package-39126393076-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "browser": {
+      "schema": 1,
+      "at": "2026-10-18T12:18:53.877Z",
+      "runId": "hosted-browser-39126393076-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "guest": {
+      "schema": 1,
+      "at": "2026-10-18T12:21:06.365Z",
+      "runId": "hosted-guest-39126393076-1",
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "source_diagnosis": {
+    "published_tag_source": "v0.2.205 at 2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "send_control_markup": "Normal send control is a button with title=Send, disabled={!hasText}, and an ArrowUp icon; it has no aria-label.",
+    "observer_mismatch": "Current observer searches only aria-label=Send message or aria-label prefix Send message, so it reports zero controls on this version.",
+    "disposition": "Harness observer selector compatibility gap; no conclusion about successful public product sending because the run ended before click."
+  },
+  "evidence_limits": [
+    "No guest send was clicked; no HTTP request, server reply, tool event, or page answer was observed.",
+    "The run is resource-invalid because the guest child exited 1; the final guest phase reports resourceInvalid=true and exitCode=3. Package and browser phases are valid.",
+    "The screenshot shows the visible control; exact older-version title/markup is independently verifiable from the v0.2.205 ChatView source.",
+    "The startup diagnostic step was skipped; no Store dashboard state is inferred."
+  ]
+}
