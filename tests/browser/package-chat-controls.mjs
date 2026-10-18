@@ -12,6 +12,27 @@ export function readPackageChatControls(pane) {
   const sends = active
     ? [...pane.querySelectorAll('button[aria-label="Send message"]')].filter(visible)
     : [];
+  const sendLike = active
+    ? [...pane.querySelectorAll('button[aria-label^="Send message"]')].filter(visible)
+    : [];
+  // Keep only bounded, known control states; never export arbitrary DOM labels.
+  const sendLikeControls = sendLike.slice(0, 4).map((button) => {
+    const label = button.getAttribute('aria-label');
+    const ariaDisabled = button.getAttribute('aria-disabled');
+    return {
+      label:
+        label === 'Send message'
+          ? 'send'
+          : label === 'Send message (still initializing)'
+            ? 'initializing'
+            : 'other_send_like',
+      disabled: button.disabled === true,
+      ariaDisabled:
+        ariaDisabled === null || ariaDisabled === 'true' || ariaDisabled === 'false'
+          ? ariaDisabled
+          : 'other',
+    };
+  });
   let toolCardCount = 0;
   let toolOnlyArticleCount = 0;
   let assistantArticleCount = 0;
@@ -60,6 +81,11 @@ export function readPackageChatControls(pane) {
       sends.length === 1
         ? sends[0].disabled || sends[0].getAttribute('aria-disabled') === 'true'
         : null,
+    sendLikeControlCount: sendLike.length,
+    sendLikeControls,
+    initializationShellVisible: sendLike.some(
+      (button) => button.getAttribute('aria-label') === 'Send message (still initializing)',
+    ),
     streaming:
       active && [...pane.querySelectorAll('button[aria-label="Stop the run"]')].some(visible),
     replies: answers,

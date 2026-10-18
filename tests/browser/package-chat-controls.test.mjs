@@ -127,6 +127,45 @@ test('send readiness exposes missing versus disabled control without accepting a
   await window.happyDOM.abort();
 });
 
+test('send readiness distinguishes the package initialization shell from a disabled ready control', async () => {
+  const { window, pane, read } = surface({
+    name: 'Send message (still initializing)',
+    disabled: true,
+  });
+  const shell = read();
+  assert.equal(shell.sendEnabled, false);
+  assert.equal(shell.sendControlCount, 0);
+  assert.equal(shell.sendLikeControlCount, 1);
+  assert.equal(shell.initializationShellVisible, true);
+  assert.deepEqual(
+    Array.from(shell.sendLikeControls, (control) => ({ ...control })),
+    [{ label: 'initializing', disabled: true, ariaDisabled: null }],
+  );
+
+  const send = pane.querySelector('button');
+  send.setAttribute('aria-label', 'Send message');
+  send.setAttribute('aria-disabled', 'true');
+  const disabled = read();
+  assert.equal(disabled.sendControlCount, 1);
+  assert.equal(disabled.sendControlDisabled, true);
+  assert.equal(disabled.initializationShellVisible, false);
+  assert.deepEqual(
+    Array.from(disabled.sendLikeControls, (control) => ({ ...control })),
+    [{ label: 'send', disabled: true, ariaDisabled: 'true' }],
+  );
+
+  send.disabled = false;
+  send.setAttribute('aria-disabled', 'false');
+  const ready = read();
+  assert.equal(ready.sendEnabled, true);
+  assert.equal(ready.sendControlDisabled, false);
+  assert.deepEqual(
+    Array.from(ready.sendLikeControls, (control) => ({ ...control })),
+    [{ label: 'send', disabled: false, ariaDisabled: 'false' }],
+  );
+  await window.happyDOM.abort();
+});
+
 test('answer observation excludes user text and action labels, includes each real assistant body and real stop state', async () => {
   const { window, pane, read } = surface({
     extra: `
@@ -227,9 +266,18 @@ test('guest driver consumes package controls without dropping the terminal strea
   const ready = await observe(null);
   assert.equal(ready.sendEnabled, true);
   assert.equal(ready.sendControlCount, 1);
+  assert.equal(ready.sendLikeControlCount, 1);
+  assert.equal(ready.initializationShellVisible, false);
   assert.equal(ready.streamTrace.runs[0].done, true);
-  pane.querySelector('button').disabled = true;
-  assert.equal((await observe(null)).sendEnabled, false);
+  const send = pane.querySelector('button');
+  send.disabled = true;
+  assert.equal((await observe(null)).sendControlDisabled, true);
+  send.setAttribute('aria-label', 'Send message (still initializing)');
+  const shell = await observe(null);
+  assert.equal(shell.sendEnabled, false);
+  assert.equal(shell.sendControlCount, 0);
+  assert.equal(shell.sendLikeControlCount, 1);
+  assert.equal(shell.initializationShellVisible, true);
   await window.happyDOM.abort();
 });
 
