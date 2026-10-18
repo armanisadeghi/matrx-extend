@@ -134,6 +134,8 @@ test('member Settings acceptance admits the verified load-ladder organization', 
   assert.match(requestProof[0], /await refreshMemberLogicalOrganizationGet\(panel, observer\)/);
   assert.match(requestProof[0], /await observer\.verify\(\)/);
 });
+import { recordDataMemberDriverDiagnostic } from './data-member-driver-diagnostic.mjs';
+import { runMemberAuthBoundary } from './settings-member-auth-diagnostic.mjs';
 import { click } from './settings-panel-driver.mjs';
 
 function optionPanel({
@@ -735,3 +737,156 @@ for (const observerPresent of [false, true]) {
     assert.deepEqual(stages, observerPresent ? ['member_credential_validation'] : []);
   });
 }
+
+test('organization diagnostics distinguish successful option click from trigger dispatch failure without exposing labels', async () => {
+  const successful = [];
+  await selectOrganization(optionPanel({ names: ['Approved'] }), 'Approved', (value) =>
+    successful.push(value),
+  );
+  assert.equal(successful[0].phase, 'organization_trigger_click');
+  assert.equal(successful[0].trigger_count, 1);
+  assert.equal(successful[0].visible_trigger_count, 1);
+  assert.ok(
+    successful.some(
+      (value) =>
+        value.phase === 'organization_option_visibility' && value.exact_visible_match_count === 1,
+    ),
+  );
+  assert.deepEqual(successful.at(-1), { phase: 'organization_option_click', click_settled: true });
+  const panel = optionPanel({ names: ['Approved'] });
+  const send = panel.send.bind(panel);
+  panel.send = async (method, args) => {
+    if (method === 'Input.dispatchMouseEvent') {
+      const error = new Error('private identity token organization');
+      error.driverFailure = { code: 'pointer_press_dispatch_failed', secret: 'private' };
+      throw error;
+    }
+    return send(method, args);
+  };
+  const failed = [];
+  await assert.rejects(selectOrganization(panel, 'Approved', (value) => failed.push(value)));
+  assert.deepEqual(failed.at(-1), {
+    phase: 'organization_trigger_click',
+    failure_code: 'pointer_press_dispatch_failed',
+  });
+  assert.equal(JSON.stringify([...successful, ...failed]).includes('Approved'), false);
+  assert.equal(JSON.stringify([...successful, ...failed]).includes('private'), false);
+});
+
+test('Data acceptance aggregates organization diagnostics across real auth boundary success and failure', async () => {
+  const source = await readFile(
+    new URL('./data-member-native-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const setupStart = source.indexOf("      report.stage = 'member_auth';");
+  const setupEnd = source.indexOf('      await activatePanel();', setupStart);
+  assert.ok(setupStart >= 0 && setupEnd > setupStart);
+  const catchStart = source.lastIndexOf('} catch (error) {') + '} catch (error) {'.length;
+  const catchEnd = source.indexOf('} finally {', catchStart);
+  const safeFailureStart = source.indexOf('function safeFailureCode(error) {');
+  const safeFailureEnd = source.indexOf('\nasync function deleteSavedPattern', safeFailureStart);
+  const execute = new Function(
+    'deps',
+    `
+    const { report, requireResourceHealth, signInSettings, recordDataMemberDriverDiagnostic,
+      process, assert, UUID, REPO, page, panel } = deps;
+    ${source.slice(safeFailureStart, safeFailureEnd)}
+    return (async () => {
+      try { ${source.slice(setupStart, setupEnd)} }
+      catch (error) { ${source.slice(catchStart, catchEnd)} }
+      return JSON.parse(JSON.stringify(report));
+    })();
+  `,
+  );
+  for (const failedPress of [null, 1, 2]) {
+    const panel = optionPanel({ names: ['Northline Furnishings internal organization'] });
+    const send = panel.send.bind(panel);
+    let presses = 0;
+    panel.send = async (method, args) => {
+      if (method === 'Input.dispatchMouseEvent' && args.type === 'mousePressed') {
+        presses += 1;
+        if (presses === failedPress) {
+          const error = new Error(
+            'private-access-token https://private.invalid/session Northline Furnishings internal organization',
+          );
+          error.driverFailure = {
+            code: 'pointer_press_dispatch_failed',
+            secret: 'private-access-token',
+          };
+          throw error;
+        }
+      }
+      return send(method, args);
+    };
+    const stderr = [];
+    const processBoundary = {
+      env: {},
+      stderr: { write: (value) => stderr.push(value) },
+      exitCode: 0,
+    };
+    const result = await execute({
+      report: { status: 'unverified', authentication: null },
+      requireResourceHealth: async () => {},
+      signInSettings: async ({ onStage, onAuthDiagnostic }) => {
+        await runMemberAuthBoundary('member_organization_selection', onStage, () =>
+          selectOrganization(
+            panel,
+            'Northline Furnishings internal organization',
+            onAuthDiagnostic,
+          ),
+        );
+        return {
+          web_signed_in: true,
+          extension_signed_in: true,
+          admin_role: false,
+          canonical_nonadmin_check: { returned_rows: 0 },
+          organization_selected: true,
+          organization_resolution: 'device_choice',
+          organizationId: '123e4567-e89b-42d3-a456-426614174001',
+        };
+      },
+      recordDataMemberDriverDiagnostic,
+      process: processBoundary,
+      assert,
+      UUID: /^[0-9a-f-]{36}$/,
+      REPO: '',
+      page: {},
+      panel,
+    });
+    assert.equal(result.auth_stage, 'member_organization_selection');
+    assert.equal(result.auth_diagnostic.trigger_count, 1);
+    assert.equal(result.auth_diagnostic.visible_trigger_count, 1);
+    if (failedPress === null) {
+      assert.equal(result.status, 'unverified');
+      assert.equal(result.authentication.organization_selected, true);
+      assert.equal(result.auth_diagnostic.phase, 'organization_option_click');
+      assert.equal(result.auth_diagnostic.click_settled, true);
+      assert.equal(result.auth_diagnostic.exact_visible_match_count, 1);
+      assert.equal(processBoundary.exitCode, 0);
+      assert.deepEqual(stderr, []);
+    } else {
+      assert.equal(result.status, 'fail');
+      assert.equal(result.failure_stage, 'member_auth');
+      assert.equal(result.authentication, null);
+      assert.equal(result.error_code, 'pointer_press_dispatch_failed');
+      assert.equal(result.auth_diagnostic.failure_code, 'pointer_press_dispatch_failed');
+      assert.equal(
+        result.auth_diagnostic.phase,
+        failedPress === 1 ? 'organization_trigger_click' : 'organization_option_click',
+      );
+      assert.equal(result.auth_diagnostic.click_settled, false);
+      assert.equal(processBoundary.exitCode, 1);
+      assert.deepEqual(stderr, [
+        'DATA_MEMBER_ACCEPTANCE_FAILED member_auth pointer_press_dispatch_failed\n',
+      ]);
+    }
+    const serialized = JSON.stringify({ result, stderr });
+    for (const forbidden of [
+      'Northline Furnishings',
+      'private-access-token',
+      'https://private.invalid',
+      '123e4567-e89b-42d3-a456-426614174001',
+    ])
+      assert.equal(serialized.includes(forbidden), false);
+  }
+});
