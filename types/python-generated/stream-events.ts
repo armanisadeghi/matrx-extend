@@ -4387,6 +4387,14 @@ export interface WorkflowStepRenderBlock {
   metadata?: Record<string, unknown>;
 }
 
+/** A mandate run PARKED for a person's answer — the frontend renders the server's sentence plus the served inputs as a form whose Continue posts `POST /mandates/runs/{request_id}/answer` and streams the resumed run. Until 2026-10-17 it fell to the Unknown Data Event card. */
+export interface MandateInputRequiredRenderBlock {
+  type: "mandate_input_required";
+  content: string;
+  data: MandateInputRequiredData;
+  metadata?: Record<string, unknown>;
+}
+
 /** Web search failure event. */
 export interface SearchErrorRenderBlock {
   type: "search_error";
@@ -4474,6 +4482,7 @@ export interface UnknownDataEventRenderBlock {
 export type ServerProtocolRenderBlock =
   | FunctionResultRenderBlock
   | WorkflowStepRenderBlock
+  | MandateInputRequiredRenderBlock
   | SearchErrorRenderBlock
   | StructuredInputWarningRenderBlock
   | PodcastStageRenderBlock
@@ -4485,7 +4494,7 @@ export type ServerProtocolRenderBlock =
   | DirectiveReceiptRenderBlock;
 
 export const SERVER_PROTOCOL_RENDER_BLOCK_TYPES = new Set<string>([
-  "function_result", "workflow_step", "search_error", "structured_input_warning", "podcast_stage", "podcast_complete", "scrape_batch_complete", "value_store_stored", "context_groomed", "search_replace", "directive_receipt",
+  "function_result", "workflow_step", "mandate_input_required", "search_error", "structured_input_warning", "podcast_stage", "podcast_complete", "scrape_batch_complete", "value_store_stored", "context_groomed", "search_replace", "directive_receipt",
 ]);
 
 /** Generated-media delivery blocks — generic media primitives. */

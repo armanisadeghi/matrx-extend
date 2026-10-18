@@ -1672,6 +1672,11 @@
    "application/json"
   ]
  },
+ "/browser-worker/lease-check": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/bubble-status/public/status": {
   "get": []
  },
@@ -7351,6 +7356,11 @@
  },
  "/scummvm-wiki/public/page": {
   "get": []
+ },
+ "/search-decide/run": {
+  "post": [
+   "application/json"
+  ]
  },
  "/search-kinds/image": {
   "post": [
