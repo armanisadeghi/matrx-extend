@@ -28984,6 +28984,11 @@
           "id": "EXT-F-1008-C15",
           "label": "Retry active-page identity",
           "action": "When the active page identity is unresolved, choose Retry and confirm the SEO audit action becomes available after identity resolves."
+        },
+        {
+          "id": "EXT-F-1008-C16",
+          "label": "Retry failed history read",
+          "action": "When saved audits fail to load, choose Retry history and confirm the read reloads and recovers into the correct empty or populated state."
         }
       ],
       "source_anchors": [
@@ -29009,7 +29014,12 @@
         "src/features/seo/SeoView.tsx:359",
         "src/features/seo/SeoDetails.tsx:104",
         "src/features/seo/SeoDetails.tsx:108",
-        "src/features/seo/SeoDetails.tsx:118"
+        "src/features/seo/SeoDetails.tsx:118",
+        "src/features/seo/SeoView.tsx:74",
+        "src/features/seo/SeoView.tsx:226",
+        "src/features/seo/SeoView.tsx:256",
+        "src/features/seo/SeoView.tsx:260",
+        "src/lib/supabase/queries.ts:1154"
       ],
       "dependency_class": "database",
       "wave": "B",
@@ -32747,6 +32757,46 @@
             "reload",
             "identity_unavailable_then_recovered"
           ]
+        },
+        {
+          "id": "EXT-F-1008-T16",
+          "title": "Retry failed audit history read",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1008-C16"
+          ],
+          "preconditions": [
+            "Open SEO on a controlled HTTP(S) page and make the history query return an error, then make a successful empty or populated response available for retry."
+          ],
+          "steps": [
+            "Confirm the history error message and Retry history button appear.",
+            "Choose Retry history and confirm loading is shown while the new read is pending.",
+            "Complete the retry with an empty result, then repeat with saved rows if the fixture supports both outcomes."
+          ],
+          "expected": [
+            "Retry starts a fresh history read; the loading indicator is shown, the error clears after success, and the UI displays the resulting empty state or saved rows."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "history_read_error_then_recovery"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified"
+            },
+            "member": {
+              "status": "unverified"
+            },
+            "admin": {
+              "status": "unverified"
+            }
+          },
+          "verification_status": "source-confirmed-retry-control; runtime behavior unverified for guest, member and admin"
         }
       ],
       "cells": {

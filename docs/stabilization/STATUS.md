@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-18 09:14 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-18T09:12:02Z. 207 features · 814 cases · 1402 controls · 239 linked defect records.
+Generated 2026-10-18 09:27 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-18T09:12:02Z. 207 features · 815 cases · 1403 controls · 239 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1305** — Pass: 100 · Partial: 97 · Fail: 1 · Unverified: 1105 · N/A: 2.
-Unverified splits into **156 explicitly marked unverified** and **949 with no result record**.
+Applicable case-by-role slots: **1308** — Pass: 100 · Partial: 97 · Fail: 1 · Unverified: 1108 · N/A: 2.
+Unverified splits into **159 explicitly marked unverified** and **949 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -26,7 +26,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
 | [Scrape](#scrape) | 1 | 7 pass · 7 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 27 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 37 unverified · 0 deferred; 0/1 full | pass 7, partial 17, fail 0, unverified 78, n/a 0 | 12 |
-| [SEO](#seo) | 1 | 0 pass · 7 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 7, fail 0, unverified 38, n/a 0 | 2 |
+| [SEO](#seo) | 1 | 0 pass · 7 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 7, fail 0, unverified 41, n/a 0 | 2 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 6 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 2 |
@@ -1004,7 +1004,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Audit page SEO and manage audit history (EXT-F-1008)
 
-**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 15. **Controls:** 15.
+**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 16. **Controls:** 16.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0198, EXT-D-0199
 
@@ -1027,6 +1027,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1008-T13 Stage all SEO fixes in Chat | Unverified | Unverified | Unverified | EXT-F-1008-C13 |
 | EXT-F-1008-T14 Copy missing social meta tags | Partial | Unverified | Unverified | EXT-F-1008-C14 |
 | EXT-F-1008-T15 Retry active-page identity | Unverified | Unverified | Unverified | EXT-F-1008-C15 |
+| EXT-F-1008-T16 Retry failed audit history read | Unverified | Unverified | Unverified | EXT-F-1008-C16 |
 
 **Recorded case details and evidence:**
 
