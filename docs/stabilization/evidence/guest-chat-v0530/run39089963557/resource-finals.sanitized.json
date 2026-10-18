@@ -1,0 +1,20 @@
+{
+  "package": {
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid"
+  },
+  "browser": {
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid"
+  },
+  "guest": {
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 1,
+    "decision": "child_failed"
+  }
+}
