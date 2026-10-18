@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "reviewed_at": "2026-10-18",
+  "scope": "Independent source and guard review of fingerprint-guest Chat startup repair in aidream packages and Matrx Extend integration notes.",
+  "verdict_a_spec_behavior": {
+    "status": "PARTIAL",
+    "evidence": [
+      "The focused real-thunk/reducer test covers chat.default_new_chat, extend.browser_chat, and local.cloud_chat; it asserts successful local conversation registration and zero anonymous Supabase rpc/schema/from calls.",
+      "Missing or invalidated generated seed data and a guest without a fingerprint are explicit refusal cases.",
+      "The source guard admits only a signed-out fingerprint guest with a matching generated mandate seed; account-only paths retain their normal run-tier read and server mandate execution."
+    ],
+    "open_acceptance": "Native extension proof remains a downstream release gate: on the exact published/adopted packages and immutable artifact, verify first-message POST, visible assistant terminal reply, same-conversation follow-up, reload/new conversation, and signed-in positive control. Browser acceptance was outside this verifier lane."
+  },
+  "verdict_b_doctrine_quality": {
+    "status": "PASS",
+    "evidence": [
+      "Generated seed keys come from the canonical live-binding generator. Read-only live provenance matched four current mandate Holder rows; the regenerated seed hash and ownerId null values match current agent.definition.created_by values.",
+      "Focused regression was RED before the fix (4 failed, 1 passed) and GREEN after it (6 passed). Two protected plant.py mutations were caught: skipping conversation registration (4 failed, 2 passed) and skipping run-tier work (5 failed, 1 passed). Both mutations were restored.",
+      "@ai-matrx/chat typecheck passed with zero package errors; @ai-matrx/agents tsc --noEmit passed. Resource journals mark GREEN and both package typechecks valid.",
+      "Missing-data errors flow through the existing launch error surface; no guest branch silently falls through to an account-only read. Resource policy additions match the focused Jest, package typecheck, and frozen install invocations."
+    ],
+    "source_findings": []
+  },
+  "evidence_paths": [
+    "docs/stabilization/runs/guest-chat-first-paint-repair-20261018.json",
+    "docs/stabilization/resource-journals/guest-chat-green-20261018.jsonl",
+    "docs/stabilization/resource-journals/guest-chat-launch-mutant-20261018.jsonl",
+    "docs/stabilization/resource-journals/guest-chat-tier-mutant-20261018.jsonl",
+    "docs/stabilization/resource-journals/guest-chat-types-20261018.jsonl",
+    "docs/stabilization/resource-journals/guest-chat-agents-types-20261018.jsonl"
+  ],
+  "reviewed_source_commits": {
+    "aidream": "83e05302e51239100fdc78202a859b9b3b275e4f",
+    "matrx_extend": "8c1a6deb554529878409146c3c15493e9533e19a"
+  },
+  "reviewer": "guest_fix_peer_review"
+}
