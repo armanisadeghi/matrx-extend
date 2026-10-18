@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-18T05:15:45+00:00",
+  "updated_at": "2026-10-18T08:56:47Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "741d7771e2c45d020f63ef3b9f2a6ef8ab3ff86c",
@@ -23419,6 +23419,12 @@
             "member",
             "admin"
           ]
+        },
+        {
+          "id": "EXT-F-1007-C40",
+          "label": "Open captured image",
+          "action": "Open a captured image from each displayed size tier and verify its destination.",
+          "source_anchor": "src/features/scrape/ScrapeView.tsx:1028"
         }
       ],
       "source_anchors": [
@@ -28496,6 +28502,52 @@
             "admin": {
               "status": "unverified",
               "detail": "New source-census case; no product run."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-1007-T41",
+          "title": "Open captured images from every displayed size tier",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C40"
+          ],
+          "preconditions": [
+            "Use a receipt-bound current extension build and an ordinary HTTPS page with at least one captured large, medium, and icon/favicon image; record the actual guest/member/admin role and organization where signed in.",
+            "Record each image URL before interaction and confirm all three entries appear in the Scrape Images pane."
+          ],
+          "steps": [
+            "Open the Scrape tab, capture the controlled page, and select Images.",
+            "Click one image in each displayed size tier, recording the opened tab URL and confirming it matches that image’s captured src.",
+            "Return to the original page and side panel after each open; confirm Scrape remains on the same capture and Images remains selected.",
+            "Repeat after a full extension reload and controlled page reload. If a tier is absent from the controlled capture, record that substep unavailable and do not count it as passed."
+          ],
+          "expected": [
+            "Each available image opens its own captured src in a browser tab.",
+            "Returning to the original tab preserves the same capture and selected Images pane; opening an image does not remove or alter the captured entry."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "image-size-tier",
+            "tab-navigation"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "No native product run recorded for opening images."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "No native product run recorded for opening images."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "No native product run recorded for opening images."
             }
           }
         }

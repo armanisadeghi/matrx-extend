@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-18 05:49 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-18T05:15:45+00:00. 207 features · 813 cases · 1401 controls · 237 linked defect records.
+Generated 2026-10-18 08:56 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-18T08:56:47Z. 207 features · 814 cases · 1402 controls · 239 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1302** — Pass: 100 · Partial: 97 · Fail: 1 · Unverified: 1102 · N/A: 2.
-Unverified splits into **150 explicitly marked unverified** and **952 with no result record**.
+Applicable case-by-role slots: **1305** — Pass: 100 · Partial: 97 · Fail: 1 · Unverified: 1105 · N/A: 2.
+Unverified splits into **153 explicitly marked unverified** and **952 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -25,7 +25,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 7 pass · 7 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 26 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 36 unverified · 0 deferred; 0/1 full | pass 7, partial 17, fail 0, unverified 75, n/a 0 | 12 |
+| [Scrape](#scrape) | 1 | 7 pass · 7 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 27 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 37 unverified · 0 deferred; 0/1 full | pass 7, partial 17, fail 0, unverified 78, n/a 0 | 12 |
 | [SEO](#seo) | 1 | 0 pass · 7 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 7, fail 0, unverified 38, n/a 0 | 2 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 6 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -47,7 +47,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 0 |
-| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 0 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 1, partial 1, fail 1, unverified 24, n/a 0 | 15 |
+| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 0 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 1, partial 1, fail 1, unverified 24, n/a 0 | 17 |
 | [Pilot (deferred wave D)](#pilot-deferred-wave-d) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 5, n/a 0 | 1 |
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
@@ -892,7 +892,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Capture and manage current page scrape (EXT-F-1007)
 
-**Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 40. **Controls:** 39.
+**Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 41. **Controls:** 40.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138, EXT-D-0139, EXT-D-0166, EXT-D-0187, EXT-D-0192, EXT-D-0217
 
@@ -940,6 +940,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1007-T38 member: Retry or dismiss a failed Diagnose picker launch | N/A | Unverified | N/A | EXT-F-1007-C16, EXT-F-1007-C37 |
 | EXT-F-1007-T39 admin: Retry or dismiss a failed Diagnose picker launch | N/A | N/A | Unverified | EXT-F-1007-C16, EXT-F-1007-C37 |
 | EXT-F-1007-T40 Open a Source recognized across accessible organizations | N/A | Unverified | Unverified | EXT-F-1007-C39 |
+| EXT-F-1007-T41 Open captured images from every displayed size tier | Unverified | Unverified | Unverified | EXT-F-1007-C40 |
 
 **Recorded case details and evidence:**
 
@@ -1740,9 +1741,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Fail · member: Partial · admin: Unverified. **Cases:** 12. **Controls:** 138.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096, EXT-D-0156, EXT-D-0211, EXT-D-0226, EXT-D-0227, EXT-D-0228, EXT-D-0229, EXT-D-0230, EXT-D-0231, EXT-D-0233, EXT-D-0234, EXT-D-0235, EXT-D-0237
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096, EXT-D-0156, EXT-D-0211, EXT-D-0226, EXT-D-0227, EXT-D-0228, EXT-D-0229, EXT-D-0230, EXT-D-0231, EXT-D-0233, EXT-D-0234, EXT-D-0235, EXT-D-0237, EXT-D-0239, EXT-D-0240
 
-**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (closed), [EXT-D-0211](defects/EXT-D-0211.json) (fixed), [EXT-D-0226](defects/EXT-D-0226.json) (in-fix), [EXT-D-0227](defects/EXT-D-0227.json) (in-fix), [EXT-D-0228](defects/EXT-D-0228.json) (in-fix), [EXT-D-0229](defects/EXT-D-0229.json) (in-fix), [EXT-D-0230](defects/EXT-D-0230.json) (in-fix), [EXT-D-0231](defects/EXT-D-0231.json) (open), [EXT-D-0233](defects/EXT-D-0233.json) (in-fix), [EXT-D-0234](defects/EXT-D-0234.json) (in-fix), [EXT-D-0235](defects/EXT-D-0235.json) (fixed), [EXT-D-0237](defects/EXT-D-0237.json) (fixed)
+**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (closed), [EXT-D-0211](defects/EXT-D-0211.json) (fixed), [EXT-D-0226](defects/EXT-D-0226.json) (in-fix), [EXT-D-0227](defects/EXT-D-0227.json) (in-fix), [EXT-D-0228](defects/EXT-D-0228.json) (in-fix), [EXT-D-0229](defects/EXT-D-0229.json) (in-fix), [EXT-D-0230](defects/EXT-D-0230.json) (in-fix), [EXT-D-0231](defects/EXT-D-0231.json) (open), [EXT-D-0233](defects/EXT-D-0233.json) (in-fix), [EXT-D-0234](defects/EXT-D-0234.json) (in-fix), [EXT-D-0235](defects/EXT-D-0235.json) (fixed), [EXT-D-0237](defects/EXT-D-0237.json) (fixed), [EXT-D-0239](defects/EXT-D-0239.json) (fixed), [EXT-D-0240](defects/EXT-D-0240.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
