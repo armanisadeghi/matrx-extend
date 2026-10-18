@@ -437,6 +437,11 @@
  "/admin/stats": {
   "get": []
  },
+ "/admin/system-context/cache-reset": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/admin/system-errors/open-outages": {
   "get": []
  },
@@ -1745,6 +1750,9 @@
   "post": [
    "application/json"
   ]
+ },
+ "/cb-{stream_session_id}/matrx-cookie": {
+  "post": []
  },
  "/cb-{stream_session_id}/renew": {
   "post": []
@@ -6572,6 +6580,9 @@
  "/redact/sessions/{session_id}/revoke": {
   "post": []
  },
+ "/render-jobs/standby/next": {
+  "get": []
+ },
  "/render-jobs/{run_id}/assets/{file_id}": {
   "get": []
  },
@@ -9602,6 +9613,17 @@
  },
  "/vfairs/public/status": {
   "get": []
+ },
+ "/video-director/formats": {
+  "get": []
+ },
+ "/video-director/formats/{format_id}/preview": {
+  "get": []
+ },
+ "/video-director/from-format": {
+  "post": [
+   "application/json"
+  ]
  },
  "/video-director/{project_id}/clone-plan": {
   "post": [
