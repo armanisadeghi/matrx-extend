@@ -1,28 +1,29 @@
 {
   "id": "EXT-D-0244",
   "feature_id": "EXT-F-2013",
-  "surface": "Chat context Values dialog",
+  "surface": "Chat context compact Values popover",
   "auth_mode": "guest",
   "case_ids": ["EXT-F-2013-T13"],
   "control_ids": ["EXT-F-2013-C139", "EXT-F-2013-C140"],
-  "title": "Values dialog remains open after trusted Escape in public205 guest run",
+  "title": "Compact Values popover remains open after trusted Escape in public205 guest run",
   "reproduction": [
     "Import the exact public0.2.205 CRX (SHA2567f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23), load unpacked under the resource guard in a fresh guest profile, and reload from its recorded receipt.",
-    "Open Chat and complete the controlled three-turn fixture flow as run39160396058. Open Values and focus inside the dialog.",
+    "Open Chat and complete the controlled three-turn fixture flow as run39160396058. Click the compact Values chip and focus inside its popover; do not click Open full view.",
     "Dispatch trusted Escape, then inspect actual dialog open state and focus; native evidence records one trusted Escape and one remaining open dialog."
   ],
-  "expected": "Escape dismisses the focused Values dialog.",
-  "actual": "The Values dialog remains visibly open with focus inside after a trusted Escape.",
+  "expected": "Escape dismisses the focused compact Values popover.",
+  "actual": "The compact Values popover remains visibly open with focus inside after one trusted Escape.",
   "evidence": [
     "docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json",
     "docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json",
-    "docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/screenshots/values-chip-failure.png"
+    "docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/screenshots/values-chip-failure.png",
+    "docs/stabilization/reports/values-escape-diagnosis-20261018.json"
   ],
   "severity": "S3: context inspection dialog dismissal by Escape fails; the three Chat replies completed.",
   "priority": "P2: verify current candidate and repair through the owning shared component if it reproduces.",
   "state": "open",
   "owner": "stabilization-coordinator",
-  "reproducibility": "One resource-valid native observation independently confirmed; repeatability/root cause and current548 remain unverified.",
+  "reproducibility": "One resource-valid public205 observation independently confirmed. Current candidate and repeatability remain unverified; the full-view Dialog was not tested.",
   "build_version": "0.2.205 public CRX adapted unpacked",
   "server_sha": "a61289ffa374eb4b1a2ff8181d9db42e947f039a",
   "transition_history": [
@@ -33,5 +34,5 @@
       "reason": "Independent screenshot and DOM/event review confirms the observed dialog did not close; no cause or current-build equivalence inferred."
     }
   ],
-  "next_action": "Inspect exact548 GuestB Values outcome; reproduce independently before triage/fix. Keep original public205 evidence and separate T10 Chat pass."
+  "next_action": "On the exact current candidate, record safe open-layer/focus state before and after trusted Escape in the compact Values popover; discriminate a tooltip consuming the first Escape from a Popover dismissal failure. Test full-view Dialog separately. Keep current-build and root-cause claims unverified until observed."
 }

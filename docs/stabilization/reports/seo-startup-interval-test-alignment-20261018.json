@@ -1,0 +1,16 @@
+{
+  "status": "independently-reviewed-pass",
+  "scope": "Hosted SEO startup interval workflow test assertion only; no runtime or workflow change.",
+  "trigger": "Exact-head CI 39164982716 failed focused acceptance test 59 because its old literal mapping assertion excluded reviewed guest/member Chat diagnostic triggers.",
+  "repair": "Evaluate the workflow's actual startup interval input mapping. SEO resource, guest Chat and member Chat must enable it; ordinary SEO and guest Data must leave it disabled.",
+  "red": "CI 39164982716: scripts/hosted-seo-route.test.mjs:620 failed on the stale literal assertion.",
+  "green": "node --test scripts/hosted-seo-route.test.mjs scripts/hosted-notes-startup-diagnostic-route.test.mjs: 29 pass, 0 fail; Biome and git diff --check pass.",
+  "mutation_check": "Five in-memory mutants rejected: constant on, constant off, dropped SEO resource, dropped guest Chat, dropped member Chat.",
+  "sibling_census": "Only one stale literal startup interval assertion found across scripts, tests and the hosted workflow.",
+  "independent_review": {
+    "spec": "pass",
+    "quality": "pass-with-scope-note",
+    "scope_note": "Mutation check evaluated the actual assertion logic in memory; it did not run a full mutated suite. Negative coverage samples guest Data rather than every unrelated case."
+  },
+  "product_acceptance_claim": false
+}

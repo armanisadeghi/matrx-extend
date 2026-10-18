@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_store_candidate_guest_chat_run",
+  "run_id": 39163043567,
+  "observed_at_utc": "2026-10-18T20:31:01Z",
+  "title": "Store candidate v0.2.549 Guest Chat B \u2014 owned CDP endpoint timeout before product interaction",
+  "status": "unverified_environment_failure",
+  "provenance": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39163043567",
+    "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39163043567/job/117780181511",
+    "workflow_conclusion": "failure",
+    "workflow_source_sha": "f48ee4d814c6e9c4ac5e2646138cc09c2663af11",
+    "product_source_sha": "6f16e464b7b40450e8aebfbfcb47f1b2bc22cde3",
+    "lane": "B",
+    "case": "guest-chat",
+    "runner_label": "macos-15-intel",
+    "requested_by": "extend-stabilization",
+    "release_run_id": 39162306660,
+    "release_artifact_id": 12148972994,
+    "version": "0.2.549",
+    "store_zip_sha256": "34eefa0a78c237c7411b9ea5b60a54a1d8a0cb60a5e375fe97f64c38ccd5a345",
+    "runtime_sha256": "b2fd973f30ed23aa2d1700705a3d1d4ffc8851e340e065c6289383b11f96301e",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "evidence_artifact": {
+      "id": 12149956840,
+      "name": "hosted-guest-39163043567-1",
+      "digest": "sha256:538a73b6f218f85d7b5a1e4af05ccf5351feeb18a2b754ab261cc1469f9db335",
+      "native_report_present": true,
+      "sanitized_receipt": "../evidence/guest-chat-v0549/run39163043567/receipt.sanitized.json",
+      "private_raw_evidence": "/tmp/guest-chat-private-39163043567"
+    }
+  },
+  "case_observation": {
+    "fresh_guest_setup_reached": false,
+    "chat_visible": false,
+    "opening_request_sent": false,
+    "terminal_opening_reply_observed": false,
+    "same_conversation_followup_observed": false,
+    "post_reload_new_conversation_observed": false,
+    "completed_reply_count": 0,
+    "values_dismissal_ext_d_0244": "unobserved",
+    "screenshot_count": 0,
+    "product_acceptance_credit": 0
+  },
+  "server": {
+    "git_sha_before": "1fb29f12eec177543d4c5802906d0b03d682eb19",
+    "git_sha_after": "1fb29f12eec177543d4c5802906d0b03d682eb19",
+    "stable": true,
+    "before_status": 200,
+    "after_status": 200
+  },
+  "failure": {
+    "stage": "owned_profile",
+    "code": "owned_cdp_endpoint_timeout",
+    "diagnostic": "Browser process spawned, but the owned CDP endpoint did not become available within 8,004 ms; 207 polls, longest read 263 ms, no stderr.",
+    "resource_invalid": false,
+    "product_defect_claimed": false
+  },
+  "resource_finals": {
+    "hosted-package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "cleanup": {
+    "terminal_workflow_job": true,
+    "hosted_runner_ephemeral": true,
+    "personal_store_copy_changed": false,
+    "additional_dispatches": 0,
+    "private_raw_evidence_retained_for_independent_review": true
+  },
+  "limitations": [
+    "No guest Chat behavior was exercised because Chrome's owned CDP endpoint timed out before profile setup.",
+    "EXT-D-0244 Values dismissal remains unobserved.",
+    "The run is bound to v0.2.549; later @ai-matrx package movement on current main is not covered by this artifact."
+  ],
+  "next_action": "Preserve as zero-credit environment evidence. Do not retry without a reviewed discriminating recovery plan; obtain a fresh release cut before any current-main eligibility claim.",
+  "verification": {
+    "base_full_lint": {
+      "status": "pass_reported_by_member_owner",
+      "commit": "09453538191c797beada3698511bff73cc897e5c",
+      "tracked_files": 3074,
+      "scope_note": "Pre-existing base only; excludes this run evidence delta."
+    },
+    "new_evidence_json_biome_format": {
+      "status": "pass",
+      "files": [
+        "docs/stabilization/runs/guest-chat-store-v0549-run39163043567.json",
+        "docs/stabilization/evidence/guest-chat-v0549/run39163043567/receipt.sanitized.json"
+      ]
+    },
+    "local_full_lint": {
+      "status": "refused_by_resource_guard",
+      "attempts": 2,
+      "second_refusal": "RESOURCE_DISK_LOW",
+      "available_profile_and_system_free_gib": 3.764,
+      "required_free_gib": 20,
+      "lint_process_started": false,
+      "bypass_used": false,
+      "journals": [
+        "docs/stabilization/evidence/guest-chat-v0549/run39163043567/resource-journals/local-lint-profile-preflight-refused.sanitized.jsonl",
+        "docs/stabilization/evidence/guest-chat-v0549/run39163043567/resource-journals/local-lint-disk-low-refused.sanitized.jsonl"
+      ]
+    },
+    "full_tracked_lint_for_new_delta": "Pending guarded release/full CI; not claimed as passed locally."
+  }
+}

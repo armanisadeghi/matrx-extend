@@ -57,15 +57,15 @@
   ],
   "verification": {
     "source": "Candidate source adds private hosted staging, child path forwarding, member config load, checked-UI comparison, and actual-header assertion. The actual production source seams are exercised with in-memory removed-staging, removed-forwarding, removed-loading, and hardcoded-true mutants that fail the named proof. Focused organization tests 6/6 pass; full focused suite, compile and scoped Biome passed before this final test addition.",
-    "native": "Run39158481456 stopped before driver launch with hosted_profile_org_secret_required. Resource finals valid, child failed. No Chat replies, organization headers or paint evidence; zero product credit.",
+    "native": "Exact .548 run39161061154 proves canonical non-admin zero rows, two actual HTTP200 terminal replies, and both actual Chat headers matching approved selected organization. Separate strict paint/scroll proof failed. Exact .549 run39163095942 in progress; no full Member Chat pass.",
     "preflight": "Approved-organization secret name exists. Canonical existing private fixture was validated and provisioned by implementation owner without logging values. Source rejects its absence before hosted member work. Reviewer link is minted separately at point of use."
   },
   "limitations": [
     "The approved-config fingerprint was triangulated outside the failed member process; that process did not load the config, so the original run cannot count as approved-config proof.",
     "The original run failed visible-answer proof at an opacity-zero ancestor. This separate defect repair cannot grant Member Chat product acceptance.",
-    "No hosted/native retry or release has been run on the candidate source."
+    "Current original/surrounding visible-answer acceptance remains pending; .548 actual organization headers do not grant full Member Chat acceptance."
   ],
-  "next_action": "Run one guarded exact-Store member retest using the existing designated reviewer, then independent original/surrounding-case review. Close only after actual Chat replies, approved organization headers, visible paint and valid resource finals.",
+  "next_action": "Independently review terminal exact .549 member run39163095942 original/surrounding cases, strict readable screenshots and resource finals before closing.",
   "transition_history": [
     {
       "at": "2026-10-18T18:54:31Z",

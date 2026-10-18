@@ -646,10 +646,21 @@ test('hosted workflow admits guest SEO on lane B with one exact development arti
     workflow,
     /SEO_INTERRUPT_AFTER_TARGET: \$\{\{ inputs\.seo_diagnostic == 'interrupt-manual' && 'manual_button_returns_to_current_page' \|\| 'none' \}\}/,
   );
-  assert.match(
-    workflow,
-    /MATRX_STARTUP_INTERVAL_DIAGNOSTIC: \$\{\{ inputs\.seo_diagnostic == 'resource' && '1' \|\| '0' \}\}/,
-  );
+  // Break: the hosted env stops enabling SEO resource or Chat startup intervals.
+  const intervalMapping = workflow.match(
+    /^\s*MATRX_STARTUP_INTERVAL_DIAGNOSTIC: \$\{\{ (.+) \}\}$/m,
+  )?.[1];
+  assert.ok(intervalMapping, 'hosted startup interval input mapping is missing');
+  const startupInterval = (seoDiagnostic, acceptanceCase) =>
+    new Function('inputs', `return (${intervalMapping});`)({
+      seo_diagnostic: seoDiagnostic,
+      acceptance_case: acceptanceCase,
+    });
+  assert.equal(startupInterval('resource', 'guest-seo'), '1');
+  assert.equal(startupInterval('none', 'guest-chat'), '1');
+  assert.equal(startupInterval('none', 'member-chat'), '1');
+  assert.equal(startupInterval('none', 'guest-seo'), '0');
+  assert.equal(startupInterval('none', 'guest-data'), '0');
   assert.match(workflow, /MATRX_HOSTED_SEO_CASE_SCOPE: \$\{\{ inputs\.seo_case_scope \}\}/);
   assert.equal(
     (

@@ -16,11 +16,11 @@
     "Read Google's official rejection email for primary item hnfolienncfklkgmdjjmhhegglimlamg, routing ID FZSL. It cites Manifest V3 remotely hosted code and this jsPDF chunk."
   ],
   "expected": "Every executable path shipped in the Store package is local. The package gate rejects a remotely sourced script loader, and a new candidate passes full release and guest/non-admin acceptance before submission.",
-  "actual": "The submitted package included a branch that can inject https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js. Google rejected its most recent submission; the email does not name the version. The last authenticated dashboard observation showed 0.2.479 pending and 0.2.205 published, but the post-email dashboard transition remains unverified.",
+  "actual": "Google rejected draft0.2.479 for the jsPDF PDFObject CDN script loader; authenticated primary dashboard now confirms Published0.2.205 / Draft0.2.479 Rejected / Upload enabled. No replacement submission exists.",
   "cause": "The shared @ai-matrx/print package bundled jsPDF's unused PDFObject viewer branches, while the extension Store risk gate recognized only several string-evaluation tokens and missed executable script-src loading.",
   "severity": "S1: Google rejected the Store update, preventing distribution of later fixes; the rejected code path is not known to run in normal PDF use",
   "priority": "P0: restore a policy-compliant candidate and resubmit after all release gates",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "matrx_extend_release_recovery",
   "evidence": [
     "/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md",
@@ -28,9 +28,10 @@
     "scripts/detect-remote-script-loader.mjs",
     "scripts/detect-remote-script-loader.test.mjs",
     "docs/stabilization/reports/d204-rhc-gate-20261018.json",
-    "https://github.com/AI-Matrix-Engine/aidream/actions/runs/38212403015"
+    "https://github.com/AI-Matrix-Engine/aidream/actions/runs/38212403015",
+    "docs/stabilization/reports/release549-fresh-artifact-peer-20261018.json"
   ],
-  "source_repair": "Aidream commit ebaa05766f removes the jsPDF remote-viewer loader before bundling and checks the exact upstream interval; extension commit 2bbc571a5 adds a Store gate that detects the rejected emitted loader. The print L0 job in aidream run 38216542992 succeeded and npm serves @ai-matrx/print 0.12.33. Its published ESM/CJS PDF modules have no CDN/PDFObject loader URL and throw for unavailable remote-viewer modes. Extension commit 6f18f9ec0 adopts the current 22-package graph, including print 0.12.33; 32190201a implements the chat package's required host opener. Independent source review passed, and exact-main focused acceptance 38219886831 plus full CI 38219886843 passed. No current exact-source replacement Store ZIP has been scanned, so the original package-level defect has not yet passed retest. Follow-up extension commit 8c5e70d04 closes a concrete minifier-identifier evasion: the same rejected loader escaped the scan when its script handle was renamed to $, $c or c$. A red/green four-test suite exercises the detector and actual Store gate acceptance/refusal, and fresh independent source review passed. This is gate coverage only, not proof of a clean replacement ZIP or Store acceptance.",
+  "source_repair": "Aidream commit ebaa05766f removes the jsPDF remote-viewer loader before bundling and checks the exact upstream interval; extension commit 2bbc571a5 adds a Store gate that detects the rejected emitted loader. The print L0 job in aidream run 38216542992 succeeded and npm serves @ai-matrx/print 0.12.33. Its published ESM/CJS PDF modules have no CDN/PDFObject loader URL and throw for unavailable remote-viewer modes. Extension commit 6f18f9ec0 adopts the current 22-package graph, including print 0.12.33; 32190201a implements the chat package's required host opener. Independent source review passed, and exact-main focused acceptance 38219886831 plus full CI 38219886843 passed. No current exact-source replacement Store ZIP has been scanned, so the original package-level defect has not yet passed retest. Follow-up extension commit 8c5e70d04 closes a concrete minifier-identifier evasion: the same rejected loader escaped the scan when its script handle was renamed to $, $c or c$. A red/green four-test suite exercises the detector and actual Store gate acceptance/refusal, and fresh independent source review passed. This is gate coverage only, not proof of a clean replacement ZIP or Store acceptance. Guarded release39162306660 produced0.2.549 with all required package gates passing. Fresh independent artifact review scanned1272 emitted JavaScript files: no forbidden runtime tokens, rejected PDFObject CDN URL or detected script-src loader; bounded static integrity/quality PASS. This supersedes the older no-Store-ZIP observation. The artifact is now stale after design-system206 adoption and is not eligible for upload.",
   "development_artifact_probe": {
     "ci_run_id": 38222475549,
     "source_sha": "a9443644c2e4d6f7865fcf1d8bdc684687a698d8",
@@ -42,7 +43,7 @@
     "remote_viewer_modes_throw": true,
     "limit": "Digest-verified development artifact only; the Store ZIP, release gate, guest/non-admin acceptance, and Google resubmission remain unverified."
   },
-  "release_blocker": "The required cross-repo CI spend gate reports $250.04 billed weekly from aidream against Arman's $100 ceiling, while this public extension workflow is estimated at $0 billed. Do not bypass the gate or dispatch release work without an owner ruling. The post-rejection authenticated primary Store item state remains unverified after Browser Use refused the extensions gallery; the versionless email does not establish which version was rejected.",
+  "release_blocker": "Current synchronized-main candidate, exact-candidate guest/non-admin and reviewer-path acceptance remain pending. Public standard hosted workflows are unpaid and the reviewed release path is available; paid work remains capped at$100/week. Live October18 privacy disclosures are verified. No current human-only access blocker.",
   "ci_spend_audit": {
     "source": "Read-only GitHub Actions workflow-run and job API for AI-Matrix-Engine/aidream; current manifests in aidream/.github/ci-cost.json",
     "window_utc": "2026-10-12T06:43:21Z through 2026-10-12T08:43:14Z",
@@ -56,7 +57,7 @@
     "estimated_started_job_cost_usd_in_window": 1.806,
     "limits": "The two-hour window is bursty; four publish jobs were still running. Per-job whole-minute rounding estimates billed time because the Jobs API does not report billed milliseconds. It cannot establish a weekly rate or clear the $100 gate. The cost manifest appears to count skipped jobs in some workflows, but no validated full-week correction exists."
   },
-  "next_action": "The source-level emitted-JavaScript gate now detects the tldraw Gist script embedded in iframe srcDoc, and the known jsPDF PDFObject remote-loader test remains covered; commit e3a7e9c37fd40d6cb07b764cdaf3555da09a9b6d is pushed on origin/main and has independent source review. This is narrow static gate evidence only. No current Store ZIP has been built or scanned, and no release, guest/non-admin acceptance, or Store submission has occurred; D0204 remains in-fix. Once the spend gate is clear or Arman authorizes a narrow exception, use guarded hosted release on the latest synchronized main, scan the exact Store ZIP for both remote-code patterns, complete real guest/non-admin acceptance and independent review, reconfirm the authenticated primary dashboard state before upload, then submit the policy-compliant candidate. The authenticated dashboard already showed v0.2.205 published and v0.2.479 rejected on 2026-10-18.",
+  "next_action": "Prepare the next current-main guarded hosted release after the workflow/test integration repair passes full CI; independently rescan exact emitted package, complete native acceptance and recheck source/runtime eligibility before upload and automatic submission. Keep D0204 fixed, not closed, until its required replacement-candidate retest and surrounding acceptance complete.",
   "transition_history": [
     {
       "at": "2026-10-12T05:10:00Z",
@@ -75,6 +76,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Source repairs and independent reviews are pushed, but hosted package build/publish was refused before execution by GitHub billing."
+    },
+    {
+      "at": "2026-10-18T20:52:11.453215+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Published package repair adopted; exact0.2.549 Store ZIP independently scans clean for the original rejected CDN loader and emitted script-src patterns. Current-candidate surrounding acceptance and resubmission remain pending."
     }
   ]
 }

@@ -32,12 +32,12 @@
   "reproducibility": "Both final images lack readable assistant text; focused harness regression exercises clipped and occluded latest answers.",
   "severity": "S2: acceptance reported a pass without visual proof of the answer.",
   "priority": "P1: retest Member A on corrected native harness before product credit.",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "member_answer_proof_repair",
-  "cause": "Prior screenshots did not prove paint; current .546 evidence identifies opacity-zero animated transcript ancestor. Member authentication opens another web tab without explicit target foreground restoration; causal role still unproven.",
+  "cause": "Retained exact .548 run39161061154 kept the authentication web tab open while the side-panel document was hidden. Completed replies were not readable in screenshots. The harness now closes that owned auth tab, foregrounds the fixture tab, reopens its exact native panel and requires visible document before Chat; actual repaired native result pending.",
   "sibling_census": "Both final Member images, normal and 640x400 Store candidate, now use the same latest-answer proof after each viewport size is applied. Transport and terminal assertions remain intact.",
-  "fix_sha": null,
-  "original_retest_runs": [39107538580, 39154980480],
+  "fix_sha": "2bd2fa675",
+  "original_retest_runs": [39107538580, 39154980480, 39161061154],
   "surrounding_retest_runs": [],
   "reviewer": "Fresh independent peer A/B PASS after Range glyph and ancestor-opacity repairs; native retest pending.",
   "acceptance_criteria": [
@@ -47,15 +47,15 @@
   ],
   "verification": {
     "focused": "25 member/org/control focused tests pass; compile and focused/full Biome pass. Source diagnostics preserve strict paint rejection; scrollTop and primary failure preservation RED\u2192GREEN.",
-    "peer": "Fresh independent diagnostics peer PASS, reports/member-diagnostics-peer-20261018.json; 21focusedtests pass. Actual product paint and foreground cause remain unverified.",
-    "native": "Exact .546 native retest rejects answer_unpainted: ancestor opacity is zero. Two HTTP 200 terminal replies are diagnostic only; paint cause unresolved.",
+    "peer": "reports/member-foreground-fresh-peer-20261018.json: focused guard RED on prior source, GREEN on repair, hidden refusal preserved, quality PASS; native pending.",
+    "native": "Exact .548 run39161061154: two actual HTTP200 terminal replies and approved-org headers; strict visible proof fails hidden document/opacity/scroll. Exact .549 run39163095942 is in progress, not a pass.",
     "admission_source": "Independent peer PASS, 28 clean-clone tests; reviewed helper/status/defect/evidence paths admitted, real product/config/lock/workflow drift still refused; storeEligibility remains false. Native pending."
   },
   "limitations": [
     "Historical run 39107538580 keeps its valid HTTP and terminal diagnostic evidence, but no visible-answer credit.",
     "This source-only harness repair does not establish product success until a fresh native retest."
   ],
-  "next_action": "Guarded native Member A on exact latest .547 ZIP with reviewed visibility/focus/hashed candidate/animation diagnostics. Inspect immediate and diagnostic images; retain strict rejection. If hidden document/opacity persists, use actual target activation to discriminate before runtime repair.",
+  "next_action": "Review terminal exact .549 member run39163095942 independently; require readable original/surrounding answers and valid resource finals before closure.",
   "transition_history": [
     {
       "at": "2026-10-18T00:00:00Z",
@@ -86,6 +86,12 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Focused evidence repair/diagnosis assigned; fresh independent review and native retest required."
+    },
+    {
+      "at": "2026-10-18T20:26:33Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Native foreground restoration source independently reviewed, focused RED-before/GREEN-after and hidden refusal pass; exact .549 native retest in progress, no functional acceptance yet."
     }
   ]
 }
