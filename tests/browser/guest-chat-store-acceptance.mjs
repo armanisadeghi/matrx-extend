@@ -26,6 +26,10 @@ import { requireNativeResourceHealth } from './native-resource-boundary.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import {
+  runStoreReviewerPrelude,
+  storeReviewerAcceptanceStatus,
+} from './store-reviewer-demo-path.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const RECEIPT = resolve(
@@ -98,7 +102,7 @@ let stage = 'receipt';
 const report = {
   schema_version: 1,
   scope:
-    'fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat opening, same-conversation follow-up, and post-reload new conversation',
+    'fresh owned guest profile; exact Store candidates exercise Settings, Capture, SEO, and Data on the public demo before the unpredictable owned Chat article fixture; real Chat opening, same-conversation follow-up, and post-reload new conversation',
   context_rule_read_observation_scope:
     'CDP observer attaches after panel load and runs through the optional Values control, all three guest sends, and panel reload; it cannot establish requests before attachment',
   status: 'unverified',
@@ -106,6 +110,7 @@ const report = {
   server_version_before: null,
   server_version_after: null,
   guest: null,
+  reviewer_demo: null,
   chat: null,
   screenshot: null,
   opening_stage_screenshots: [],
@@ -167,9 +172,12 @@ async function writeGuestCheckpoint(
     build: {
       version: /^\d+\.\d+\.\d+$/.test(build?.version ?? '') ? build.version : null,
       tree_sha256: /^[0-9a-f]{64}$/i.test(build?.tree_sha256 ?? '') ? build.tree_sha256 : null,
-      receipt_kind: ['release', 'published_store_crx_unpacked', 'local_dev_unpacked'].includes(
-        build?.receipt_kind,
-      )
+      receipt_kind: [
+        'native_store_zip_candidate_key_adapted',
+        'release',
+        'published_store_crx_unpacked',
+        'local_dev_unpacked',
+      ].includes(build?.receipt_kind)
         ? build.receipt_kind
         : null,
     },
@@ -884,7 +892,8 @@ try {
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
   const transportMode = guestTransportModeForReceipt(receipt);
   const beforeFiles = await fileInventory(EXTENSION_DIR);
-  assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'loaded extension initial tree');
+  const runtimeTreeSha256 = hashReleaseTree(EXTENSION_DIR);
+  assert.equal(runtimeTreeSha256, receipt.treeSha256, 'loaded extension initial tree');
   report.build = {
     version: receipt.version,
     tree_sha256: receipt.treeSha256,
@@ -959,6 +968,14 @@ try {
           (count) => count === 1,
           10_000,
         );
+        report.reviewer_demo = await runStoreReviewerPrelude({
+          page: web,
+          panel,
+          receipt,
+          runtimeTreeSha256,
+          onStage: markStage,
+          screenshot: (name) => capture(panel, join(artifacts, name)),
+        });
 
         markStage('page_specific_fixture');
         fixture = await installPageFixture(web);
@@ -1341,7 +1358,12 @@ try {
   assert.equal(afterTreeSha256, receipt.treeSha256, 'loaded extension tree changed');
   report.build.extension_id = run.extensionId;
   report.build.artifact_unchanged = true;
-  report.status = 'pass';
+  report.status = storeReviewerAcceptanceStatus(receipt, report.reviewer_demo);
+  if (report.status !== 'pass') {
+    report.failure_stage = 'reviewer_public_demo';
+    report.failure_code = 'reviewer_demo_incomplete';
+    report.failure_reason = 'reviewer_demo_incomplete';
+  }
 } catch (error) {
   report.failure_stage = stage;
   const failure = safeFailure(error);

@@ -1,0 +1,77 @@
+{
+  "id": "member-chat-store-v0550-run39166380647",
+  "feature_id": "EXT-F-2013",
+  "case_id": "EXT-F-2013-T02",
+  "run_id": 39166380647,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39166380647",
+  "workflow_sha": "d35d4ad971336cf65c5a8acb5a92b29d43eacb99",
+  "release_run_id": 39165462442,
+  "release_artifact_id": 12150453061,
+  "release_artifact_digest": "sha256:3a9e0737f092c06f9f507d9d0fb39ddb6e5a852ffaef70b095ccaec43197daf2",
+  "extension_version": "0.2.550",
+  "product_source_sha": "9cc1694286476d5818d219caf2127c1129d9d6d3",
+  "store_zip_sha256": "86b3379d29b1fd8d1d374a234b2204c7de80cd3221fbcbd170c0b4a7b1cc8130",
+  "workflow_run_sha": "d35d4ad971336cf65c5a8acb5a92b29d43eacb99",
+  "native_evidence_artifact_id": 12150473146,
+  "native_evidence_artifact_digest": "sha256:8251705877c7b06e54f8ba111a1e38a3fa949975e263c66f43835d1076eca3b4",
+  "verdict": "resource-invalid-zero-product-credit",
+  "failure": {
+    "step": "Exercise the selected Chrome side-panel case",
+    "stage": "reviewer_native_panel_foreground",
+    "code": "unclassified_failure",
+    "child_exit_code": 1,
+    "resource_exit_code": 3,
+    "resource_invalid": true
+  },
+  "observations": {
+    "live_nonadmin_preparation": "pass: existing confirmed reviewer, zero admin assignments, active member role in approved test fixture",
+    "web_and_extension_sign_in": true,
+    "canonical_extension_admin_check": "matched current extension user; HTTP 200; zero admin rows",
+    "selected_organization_matches_approved_fixture": true,
+    "chat_request_started": false,
+    "opening_reply": "not_observed",
+    "follow_up_reply": "not_observed",
+    "terminal_completion": "not_observed",
+    "chat_organization_headers": "not_observed",
+    "visible_answer_acceptance": "not_evaluated; captured panel remained on a generic loading skeleton"
+  },
+  "resource_finals": {
+    "package": { "decision": "valid", "exit_code": 0 },
+    "browser": { "decision": "valid", "exit_code": 0 },
+    "guest": { "decision": "invalid", "resource_invalid": true, "exit_code": 3 },
+    "resource_invalid": true
+  },
+  "diagnostics": {
+    "cpu_pending_at": "2026-10-18T21:13:54.631Z",
+    "cpu_busy_fraction": 0.93,
+    "one_minute_load": 1.3,
+    "logical_cpus": 4,
+    "available_memory_gib": 12.46,
+    "swap_used_mib": 0,
+    "startup_diagnostic": "docs/stabilization/evidence/member-chat-store-v0550/run39166380647/startup-diagnostic.sanitized.json",
+    "interpretation": "CPU pressure was sampled during owned Chromium startup; no product interaction or Chat request occurred."
+  },
+  "evidence": {
+    "native_summary": "docs/stabilization/evidence/member-chat-store-v0550/run39166380647/native-summary.sanitized.json",
+    "resource_journals": [
+      "docs/stabilization/evidence/member-chat-store-v0550/run39166380647/resource-journals/hosted-package-39166380647-1.sanitized.jsonl",
+      "docs/stabilization/evidence/member-chat-store-v0550/run39166380647/resource-journals/hosted-browser-39166380647-1.sanitized.jsonl",
+      "docs/stabilization/evidence/member-chat-store-v0550/run39166380647/resource-journals/hosted-guest-39166380647-1.sanitized.jsonl"
+    ],
+    "private_screenshots": "native panel and target screenshots in the verified private raw archive"
+  },
+  "cleanup": {
+    "reviewer_magic_link_secret_removed_and_absence_verified": true,
+    "local_magic_link_file_removed_and_absence_verified": true,
+    "approved_organization_secret_present_and_unchanged": true,
+    "approved_fixture_file": "read-only; no fixture mutation observed",
+    "hosted_runner_terminal": true
+  },
+  "limitations": [
+    "No assistant message, follow-up, visible response, terminal Chat completion, or Chat request organization header was observed.",
+    "Resource-invalid outcome earns no member Chat product acceptance; it is not evidence of product failure.",
+    "The CI spend watch was unavailable in this session. The run used the public repository's reviewed $0-billed hosted lane; the watch was not claimed green.",
+    "No retry was started."
+  ],
+  "next_action": "Keep member Chat v0.2.550 unverified. Obtain a new owner ruling before any further acceptance dispatch."
+}

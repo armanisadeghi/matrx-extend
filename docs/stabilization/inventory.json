@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-18T20:03:46.716563+00:00",
+  "updated_at": "2026-10-18T21:14:29.468514+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -1592,6 +1592,13 @@
           "label": "Build the exact candidate against its locked package graph",
           "action": "The applicable CI WXT build consumes the frozen lockfile graph and the exact checked-out candidate; missing package exports fail the build and leave the artifact gate red.",
           "source_anchor": ".github/workflows/ci.yml:197"
+        },
+        {
+          "id": "EXT-F-0003-C16",
+          "label": "Run the exact Store guest reviewer walkthrough",
+          "kind": "automation",
+          "action": "Use a receipt-verified exact Store payload in an admitted fresh guest profile; record each public demo control separately and refuse aggregate acceptance when any required proof is absent.",
+          "source": "tests/browser/guest-chat-store-acceptance.mjs; tests/browser/store-reviewer-demo-path.mjs"
         }
       ],
       "source_anchors": [
@@ -2280,6 +2287,44 @@
             "EXT-D-0214",
             "EXT-D-0215"
           ]
+        },
+        {
+          "id": "EXT-F-0003-T14",
+          "title": "Exact Store guest public-demo reviewer walkthrough",
+          "modes": [
+            "guest"
+          ],
+          "control_ids": [
+            "EXT-F-0003-C16"
+          ],
+          "preconditions": [
+            "Use the successful synchronized-main guarded hosted release artifact with independently verified source, version and Store ZIP digest; load through the existing keyed adaptation/receipt contract and reload in the owned fresh guest profile.",
+            "Pass current per-host resource admission and capture complete valid resource finals; never substitute a CI development artifact or infer Store-installed behavior from an adapted ZIP."
+          ],
+          "steps": [
+            "Open the actual https://www.aimatrx.com/matrx-extend-demo, without login or DOM fixture replacement, and record the exact page and artifact identities.",
+            "Before invoking capture, confirm automatic capture is OFF in visible Settings and its actual stored state; observe the pre-action capture baseline.",
+            "Capture the demo and inspect its real Article, Links and Schema output.",
+            "Open SEO and inspect the real audit for that same demo page.",
+            "Use Data to select the expected workflow-table field, verify its selector resolves to the intended cell, then cancel and verify selection cleanup.",
+            "Preserve separate failures and actual-state screenshots, restore the owned Chat page, and run the unchanged strict nonce/transport/terminal/visible-paint Chat checks even if an independent reviewer control failed."
+          ],
+          "expected": [
+            "Every required reviewer control has actual native proof on the exact Store payload and real public demo; missing/failing controls prevent aggregate release acceptance.",
+            "Settings, Scrape, SEO and Data checks map only to bounded portions of EXT-F-1003-T40, EXT-F-1007-T01/T08, EXT-F-1008-T01 and EXT-F-2005-T01; they do not pass those full features or other modes.",
+            "The existing strict Chat proof and resource/provenance guards remain intact; source/unit checks never count as product behavior passes."
+          ],
+          "dimensions": [
+            "exact-store-zip",
+            "guest",
+            "real-public-demo",
+            "settings-baseline",
+            "scrape",
+            "seo",
+            "data-picker",
+            "independent-native-retest"
+          ],
+          "defect_ids": []
         }
       ],
       "cells": {
@@ -2325,7 +2370,7 @@
             "release-stabilization-027",
             "37269797985"
           ],
-          "retest_status": "D140 closed after source02f2b67b, independentpeer a0e98cd1 and fullCI37269797985. D0204 source repair and Store gate are peer-reviewed, but package publish, corrected Store ZIP, resubmission and retest are blocked/unverified; no new product case pass."
+          "retest_status": "D140 remains closed on its recorded bounded evidence. D0204 is fixed: exact0.2.549/0.2.550 emitted Store packages have independent clean remote-code scans;0.2.550 full hosted release gates pass. Exact0.2.550 guest/member native runs are in progress. T14 public-demo walkthrough source is under integration; actual fresh-candidate native proof and Store submission remain pending. No new full feature/mode pass."
         },
         "member": {
           "test_status": "partial",
@@ -2369,7 +2414,7 @@
             "release-stabilization-027",
             "37269797985"
           ],
-          "retest_status": "D140 closed after source02f2b67b, independentpeer a0e98cd1 and fullCI37269797985. D0204 source repair and Store gate are peer-reviewed, but package publish, corrected Store ZIP, resubmission and retest are blocked/unverified; no new product case pass."
+          "retest_status": "D140 remains closed on its recorded bounded evidence. D0204 is fixed: exact0.2.549/0.2.550 emitted Store packages have independent clean remote-code scans;0.2.550 full hosted release gates pass. Exact0.2.550 guest/member native runs are in progress. T14 public-demo walkthrough source is under integration; actual fresh-candidate native proof and Store submission remain pending. No new full feature/mode pass."
         },
         "admin": {
           "test_status": "partial",
@@ -2412,12 +2457,13 @@
             "release-stabilization-027",
             "37269797985"
           ],
-          "retest_status": "D140 closed after source02f2b67b, independentpeer a0e98cd1 and fullCI37269797985. D0204 source repair and Store gate are peer-reviewed, but package publish, corrected Store ZIP, resubmission and retest are blocked/unverified; no new product case pass."
+          "retest_status": "D140 remains closed on its recorded bounded evidence. D0204 is fixed: exact0.2.549/0.2.550 emitted Store packages have independent clean remote-code scans;0.2.550 full hosted release gates pass. Exact0.2.550 guest/member native runs are in progress. T14 public-demo walkthrough source is under integration; actual fresh-candidate native proof and Store submission remain pending. No new full feature/mode pass."
         }
       },
       "readiness_gaps": [
         "Real successful release proven; exhaustive operational feature acceptance still needs per-case evidence reconciliation.",
-        "T08 CI lint parity requires the root-owned guarded red/green release fixture before full feature cells can pass."
+        "T08 CI lint parity requires the root-owned guarded red/green release fixture before full feature cells can pass.",
+        "EXT-F-0003-T14 requires actual exact-candidate native public-demo walkthrough evidence; source implementation and source reviews do not close this gap."
       ],
       "current_source_behavior": "Release005 green, main/tag760c7a1 published, both zip and unpacked tree hashes verified. No Store upload or loaded runtime proof.",
       "unverified_leads": [
