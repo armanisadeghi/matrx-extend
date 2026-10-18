@@ -1,0 +1,14 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "artifact_integrity_A": "PASS: GitHub API artifact 12148972994 digest 350df077…d7740 matches downloaded archive; outer ZIP integrity passes; embedded source receipt names 6f16e464b7b40450e8aebfbfcb47f1b2bc22cde3; tag v0.2.549 is an ancestor of origin/main.",
+  "store_zip": "/tmp/release549-review/matrx-extend-0.2.549-store.zip",
+  "local_zip": "/tmp/release549-review/.output/matrx-extend-0.2.549-local.zip",
+  "store_sha256": "34eefa0a78c237c7411b9ea5b60a54a1d8a0cb60a5e375fe97f64c38ccd5a345 (receipt match; inner ZIP integrity passes)",
+  "static_quality_B": "PASS: projected manifest exactly matches published 0.2.205 policy surface; no dev key or popup; scanned 1,272 emitted JS files, no forbidden runtime tokens or detected script-src loader.",
+  "pdfobject_review": "PDFObject identifier is in bundled chunks/pdf-CBHJ3iyX.js (jsPDF); no PDFObject CDN URL or executable remote script loader found.",
+  "source_review": "2bd2fa675 changes the reviewer browser harness and report only; current main adds only the release receipt beyond tag. No extension runtime source delta in those changes.",
+  "packages": "Candidate package.json declares @ai-matrx/* latest; lock contains associations 0.14.73, design-system 0.86.205, records-ui 0.116.24. Release job refresh step and hosted receipt gates report success; records-ui refresh accompanies design-system as recorded.",
+  "package_limit": "Local node_modules are stale (associations 0.14.72, design-system 0.86.199; records-ui absent), so I did not independently query npm latest or rerun the latest gate.",
+  "acceptance": "FUNCTIONAL ACCEPTANCE PENDING: exact-candidate guest and non-admin member visible native replies remain unverified; no Store submission claim.",
+  "artifacts_retained": true
+}

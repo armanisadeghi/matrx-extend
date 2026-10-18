@@ -1,0 +1,41 @@
+{
+  "repository": "armanisadeghi/ai-matrx",
+  "created": [
+    {
+      "name": "AIDREAM_REPO_TOKEN",
+      "createdAt": "2026-10-18T20:18:50.503Z",
+      "source": "Vault GITHUB_PAT / AI Matrx",
+      "capability": "GET private aidream repository 200; classic PAT",
+      "githubUpdatedAt": "2026-10-18T20:18:50Z"
+    },
+    {
+      "name": "VERCEL_TOKEN",
+      "createdAt": "2026-10-18T20:21:30.746Z",
+      "source": "Vault Vercel \u2014 custom domains / AI Matrx",
+      "capability": "Official current-token metadata 200, team scope; deployment read 200",
+      "githubUpdatedAt": "2026-10-18T20:21:31Z"
+    }
+  ],
+  "cleanupAfter": "Parent confirms terminal hosted release run",
+  "status": "both temporary secrets adopted; awaiting terminal run for cleanup",
+  "cleanup": {
+    "valueHidden": true,
+    "clipboardEmpty": true,
+    "plaintextFiles": false
+  },
+  "verifiedAt": "2026-10-18T20:21:37.072Z",
+  "verifiedNames": [
+    "AIDREAM_REPO_TOKEN",
+    "VERCEL_TOKEN"
+  ],
+  "task": "extension privacy hosted release",
+  "workflowRunId": 39162960893,
+  "workflowUrl": "https://github.com/armanisadeghi/ai-matrx/actions/runs/39162960893",
+  "sourceSha": "1ba1515949266b73f33f879c9c15aa45ed03b430",
+  "sourceFixCommit": "27451177a4",
+  "testContractCommit": "2a326c1520",
+  "requiredSourceVerification": "fresh independent A/B PASS; 19 static assertions, hosted guard, RED-before/GREEN-after actual migration-race fixture and ordinary ship-path fixture pass",
+  "livePolicy": "UNVERIFIED: native Chrome still showed October 15; no production claim",
+  "owner": "root; credential cleanup delegated to vault_recent_auth_recovery only after terminal confirmation",
+  "observedAt": "2026-10-18T20:26:33Z"
+}
