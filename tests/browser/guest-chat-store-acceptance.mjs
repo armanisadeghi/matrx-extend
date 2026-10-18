@@ -385,6 +385,10 @@ async function openAndCloseGuestValuesChip(panel) {
       count: matches.length,
       openPanelCount: visibleOpenPanels.length,
       openStatePanelCount: openPanels.length,
+      escapeKeyDownCount: document.__guestValuesEscapeProbe?.keyDownCount ?? 0,
+      trustedEscapeKeyDownCount: document.__guestValuesEscapeProbe?.trustedKeyDownCount ?? 0,
+      documentFocused: document.hasFocus(),
+      focusInsidePopover: openPanels.some((dialog) => dialog.contains(document.activeElement)),
     };
   })()`,
     );
@@ -398,20 +402,53 @@ async function openAndCloseGuestValuesChip(panel) {
   if (count === 0) return { present: false, exercised: false };
   await click(panel, 'context-values', '');
   await waitFor('guest_values_chip_open', readChip, (state) => state?.openPanelCount === 1);
-  await panel.send('Input.dispatchKeyEvent', {
-    type: 'keyDown',
-    key: 'Escape',
-    code: 'Escape',
-    windowsVirtualKeyCode: 27,
-  });
-  await panel.send('Input.dispatchKeyEvent', {
-    type: 'keyUp',
-    key: 'Escape',
-    code: 'Escape',
-    windowsVirtualKeyCode: 27,
-  });
-  await waitFor('guest_values_chip_closed', readChip, (state) => state?.openStatePanelCount === 0);
-  return { present: true, exercised: true };
+  await evaluate(
+    panel,
+    `(() => {
+    const probe = { keyDownCount: 0, trustedKeyDownCount: 0 };
+    const onKeyDown = (event) => {
+      if (event.key !== 'Escape') return;
+      probe.keyDownCount++;
+      if (event.isTrusted) probe.trustedKeyDownCount++;
+    };
+    document.addEventListener('keydown', onKeyDown, true);
+    probe.stop = () => document.removeEventListener('keydown', onKeyDown, true);
+    document.__guestValuesEscapeProbe = probe;
+  })()`,
+  );
+  try {
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+    const closed = await waitFor(
+      'guest_values_chip_closed',
+      readChip,
+      (state) => state?.openStatePanelCount === 0 && state.escapeKeyDownCount > 0,
+    );
+    return {
+      present: true,
+      exercised: true,
+      escape_keydown_count: closed.escapeKeyDownCount,
+      trusted_escape_keydown_count: closed.trustedEscapeKeyDownCount,
+    };
+  } finally {
+    await evaluate(
+      panel,
+      `(() => {
+      document.__guestValuesEscapeProbe?.stop();
+      delete document.__guestValuesEscapeProbe;
+    })()`,
+    ).catch(() => {});
+  }
 }
 
 async function installPageFixture(page, existingFixture = null) {
@@ -755,11 +792,6 @@ try {
         );
         assert.equal(before.replyCount, 0, 'fresh guest must have no prior reply');
 
-        markStage('guest_values_chip_observation');
-        contextReadWatch.arm('chip_open');
-        report.guest.values_control = await openAndCloseGuestValuesChip(panel);
-        report.context_rule_reads = contextReadWatch.snapshot();
-
         markStage('guest_question');
         networkWatch = await watchGuestAiRequests({
           browserSession,
@@ -1019,13 +1051,17 @@ try {
           join(artifacts, 'guest-chat-real-followup-answer.png'),
           { code: fixture.followupCode, heading: fixture.title },
         );
+        report.guest_ai_transport_proven = true;
+
+        markStage('guest_values_chip_observation');
+        contextReadWatch.arm('chip_open');
+        report.guest.values_control = await openAndCloseGuestValuesChip(panel);
         report.context_rule_reads = contextReadWatch.snapshot();
         assert.equal(
           report.context_rule_reads.some((request) => request.method === 'GET'),
           false,
           'guest panel, optional Values control, and all three sends must not issue an owner-table GET',
         );
-        report.guest_ai_transport_proven = true;
       } catch (error) {
         primaryError = error;
         report.failure_stage = stage;

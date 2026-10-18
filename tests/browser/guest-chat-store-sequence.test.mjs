@@ -31,6 +31,30 @@ const followupScreenshot = source.indexOf('        report.followup_screenshot = 
 const cleanup = source.indexOf('      } catch (error) {', followupScreenshot);
 const tail = source.slice(followupScreenshot, cleanup);
 
+// A failed optional Values close must never prevent the three real guest Chat
+// turns from being sent and judged. Values still runs before the final verdict.
+test('guest Values observation follows all strict Chat proofs', () => {
+  const transportProof = source.indexOf('report.guest_ai_transport_proven = true');
+  const valuesStage = source.indexOf("markStage('guest_values_chip_observation')");
+  const valuesCall = source.indexOf(
+    'report.guest.values_control = await openAndCloseGuestValuesChip(panel)',
+  );
+  const ownerReadVerdict = source.indexOf(
+    "'guest panel, optional Values control, and all three sends must not issue an owner-table GET'",
+  );
+  assert.ok(
+    openingVerdict > 0 &&
+      sameVerdict > openingVerdict &&
+      followupVerdict > sameVerdict &&
+      transportProof > followupVerdict &&
+      valuesStage > transportProof &&
+      valuesCall > valuesStage &&
+      ownerReadVerdict > valuesCall &&
+      cleanup > ownerReadVerdict,
+    'Values must remain a strict UI check after all three Chat answers and before owner-read verdict',
+  );
+});
+
 // A native send dispatch can return successfully while no click reaches the
 // package button. The boundary must retain that difference without message text.
 test('guest send boundary distinguishes a reached button from a missed native click', async () => {
@@ -166,6 +190,8 @@ test('guest owner-table verdict executes after both Chat verdicts and screenshot
     'contextReadWatch',
     'assert',
     'fixture',
+    'markStage',
+    'openAndCloseGuestValuesChip',
     `return (async () => { ${tail} })();`,
   );
   for (const [reads, fails] of [
@@ -176,6 +202,7 @@ test('guest owner-table verdict executes after both Chat verdicts and screenshot
     const report = {
       opening_turn_verdict: 'terminal_answer',
       followup_turn_verdict: 'terminal_answer',
+      guest: {},
     };
     const captures = [];
     const execute = () =>
@@ -188,9 +215,11 @@ test('guest owner-table verdict executes after both Chat verdicts and screenshot
           return path;
         },
         report,
-        { snapshot: () => reads.map((read) => ({ ...read })) },
+        { arm: () => {}, snapshot: () => reads.map((read) => ({ ...read })) },
         assert,
         { followupCode: 'NEW-791', title: 'Field guide' },
+        () => {},
+        async () => ({ present: true, exercised: true }),
       );
     if (fails) await assert.rejects(execute, /owner-table GET/);
     else await execute();
@@ -217,6 +246,7 @@ const valuesDriver = new Function(
 function valuesControlHarness(count, blocked = null) {
   let open = false;
   let hiddenAfterEscape = false;
+  let onKeyDown = null;
   const calls = [];
   const buttons = Array.from({ length: count }, () => ({
     getAttribute: (name) => (name === 'aria-label' ? '0 included' : null),
@@ -226,6 +256,7 @@ function valuesControlHarness(count, blocked = null) {
   const hiddenAncestor = { parentElement: null };
   const dialog = {
     parentElement: blocked === 'ancestor-opacity-hidden' ? hiddenAncestor : null,
+    contains: () => true,
     getBoundingClientRect: () => ({ width: blocked === 'zero-size' ? 0 : 340, height: 260 }),
     checkVisibility: () => blocked !== 'check-visibility-hidden',
     querySelector: (selector) =>
@@ -239,6 +270,14 @@ function valuesControlHarness(count, blocked = null) {
         : null,
   };
   const document = {
+    activeElement: null,
+    hasFocus: () => blocked !== 'unfocused',
+    addEventListener: (type, listener) => {
+      if (type === 'keydown') onKeyDown = listener;
+    },
+    removeEventListener: (type, listener) => {
+      if (type === 'keydown' && onKeyDown === listener) onKeyDown = null;
+    },
     querySelector: () => ({ getAttribute: () => 'chat-pane' }),
     getElementById: () => ({ querySelectorAll: () => buttons }),
     querySelectorAll: (selector) =>
@@ -251,9 +290,15 @@ function valuesControlHarness(count, blocked = null) {
   const panel = {
     send: async (method, args) => {
       calls.push([method, args.type]);
+      if (
+        method === 'Input.dispatchKeyEvent' &&
+        args.type === 'keyDown' &&
+        blocked !== 'key-missed'
+      )
+        onKeyDown?.({ key: 'Escape', isTrusted: true });
       if (method === 'Input.dispatchKeyEvent' && args.type === 'keyUp') {
         if (blocked === 'hidden-close') hiddenAfterEscape = true;
-        else if (blocked !== 'close') open = false;
+        else if (blocked !== 'close' && blocked !== 'key-missed') open = false;
       }
     },
   };
@@ -274,7 +319,9 @@ function valuesControlHarness(count, blocked = null) {
       if (blocked !== 'open') open = true;
     },
     async (stage, read, accepts) => {
-      assert.ok(accepts(await read()), stage);
+      const state = await read();
+      assert.ok(accepts(state), stage);
+      return state;
     },
     assert,
   );
@@ -289,7 +336,12 @@ test('package guest Chat without Values continues without a fabricated control v
 
 test('published guest Chat Values must actually open and close when present', async () => {
   const harness = valuesControlHarness(1);
-  assert.deepEqual(await harness.run(), { present: true, exercised: true });
+  assert.deepEqual(await harness.run(), {
+    present: true,
+    exercised: true,
+    escape_keydown_count: 1,
+    trusted_escape_keydown_count: 1,
+  });
   assert.deepEqual(harness.calls, [
     ['context-values', ''],
     ['Input.dispatchKeyEvent', 'keyDown'],
@@ -318,6 +370,7 @@ test('optional Values does not silently accept duplicate controls or a failed in
     /guest_values_chip_open/,
   );
   await assert.rejects(valuesControlHarness(1, 'close').run, /guest_values_chip_closed/);
+  await assert.rejects(valuesControlHarness(1, 'key-missed').run, /guest_values_chip_closed/);
   await assert.rejects(valuesControlHarness(1, 'hidden-close').run, /guest_values_chip_closed/);
 });
 
