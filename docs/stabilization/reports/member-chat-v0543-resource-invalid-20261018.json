@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "task_id": "member-chat-v0543-native-a-20261018",
+  "status": "zero-credit-resource-invalid",
+  "run": {
+    "id": 39125954356,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39125954356",
+    "lane": "A",
+    "case": "member-chat",
+    "runner_label": "macos-15-intel",
+    "conclusion": "failure",
+    "acceptance_artifact_id": 12136575828,
+    "acceptance_artifact_sha256": "725d4612d74381ccf8521fe764301e79b83834ae5e45922afbc7b39f839b0c38"
+  },
+  "candidate": {
+    "version": "0.2.543",
+    "release_run_id": 39124994461,
+    "release_artifact_id": 12136100758,
+    "release_artifact_sha256": "sha256:b9a22685aeee7965ef5c111b3e2b163596b249dbfa185d224d9a4e20eba98e3a",
+    "store_zip_sha256": "cf9a62b2db91f23a65bc5ce11f481a5d73e0fe1e0f5a9588c7afa383fbf75e83",
+    "product_source_sha": "41a9e567ba4a6a6949b992295b6e694aeaf22c48",
+    "workflow_source_sha": "41a9e567ba4a6a6949b992295b6e694aeaf22c48",
+    "admission": "Strict release-member plan and dispatch passed exact source, artifact bytes, receipt, tag, synchronized main, lane census, and reviewer-secret checks."
+  },
+  "fixture_and_credentials": {
+    "reviewer_dry_run": "Passed for the designated existing non-admin reviewer and the approved active test-fixture organization.",
+    "authentication_preflight": "Passed before browser setup.",
+    "temporary_github_secret": "Staged from stdin only; deleted after authentication preflight; subsequent secret-name lookup confirmed absent.",
+    "local_one_use_link": "Removed immediately after staging and verified absent.",
+    "credential_values_retained": false
+  },
+  "resource_verdict": {
+    "package": { "decision": "valid", "exit_code": 0 },
+    "browser": { "decision": "valid", "exit_code": 0 },
+    "acceptance": { "decision": "invalid", "resource_invalid": true, "exit_code": 3 },
+    "timeline_utc": [
+      {
+        "at": "2026-10-18T12:13:49.529Z",
+        "event": "acceptance admitted",
+        "cpu_busy_fraction": 0.2543,
+        "one_minute_load": 1.86,
+        "logical_cpus": 4,
+        "available_memory_gib": 12.6
+      },
+      {
+        "at": "2026-10-18T12:14:05.646Z",
+        "event": "RESOURCE_CPU_PENDING",
+        "cpu_busy_fraction": 1.0,
+        "one_minute_load": 2.29,
+        "logical_cpus": 4,
+        "available_memory_gib": 12.6,
+        "swap_used_mib": 0
+      },
+      {
+        "at": "2026-10-18T12:14:05.748Z",
+        "event": "process attribution",
+        "top_owned_processes": [
+          { "process": "Chromium", "cpu_percent": 54.8 },
+          { "process": "Chromium Helper", "cpu_percent": 34.7 },
+          { "process": "Chromium Helper", "cpu_percent": 34.1 },
+          { "process": "Chromium Helper", "cpu_percent": 32.8 }
+        ],
+        "note": "Several macOS background services were also consuming CPU."
+      },
+      {
+        "at": "2026-10-18T12:14:21.705Z",
+        "event": "RESOURCE_WATCH_UNSAFE",
+        "cpu_busy_fraction": 0.77,
+        "one_minute_load": 3.57,
+        "logical_cpus": 4,
+        "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+      },
+      {
+        "at": "2026-10-18T12:14:21.874Z",
+        "event": "safe-boundary stop requested; SIGTERM sent to owned process group"
+      },
+      {
+        "at": "2026-10-18T12:14:31.976Z",
+        "event": "SIGKILL escalation for owned process group"
+      },
+      {
+        "at": "2026-10-18T12:14:32.443Z",
+        "event": "resource-invalid final",
+        "exit_code": 3
+      }
+    ],
+    "sanitized_journal_evidence": "test-results/member-chat-v0543-run39125954356/resource-evidence.sanitized.json",
+    "interpretation": "The acceptance watchdog stopped the owned browser group after sustained CPU pressure. This run cannot establish a product or harness failure."
+  },
+  "native_evidence": {
+    "native_report_in_uploaded_artifact": false,
+    "two_terminal_same_conversation_replies": "unverified",
+    "strict_visible_answer_proof": "absent",
+    "immediate_frame_scroll_timing_and_exception_diagnostics": "absent",
+    "uploaded_artifact_contents": "Three resource journals and two panel screenshots; no reviewer-chat-store report.",
+    "product_credit": "none"
+  },
+  "prior_run_comparison": {
+    "run_id": 39124035945,
+    "version": "0.2.542",
+    "runner": "macos-15 ARM64",
+    "resource_failure": "CPU busy 0.94 on three logical CPUs; attribution included two Metal compiler services at 82.5% and 76.7%, plus Chromium processes.",
+    "native_limit": "Two HTTP 200 terminal replies were recorded, but the final visible-answer proof was ineligible (answer_unpainted); immediate/frame/scroll proof lacked a timestamp and the resource final was invalid.",
+    "comparison": "The .543 Intel run avoided the prior Metal-compiler-heavy profile but still encountered host CPU pressure during owned Chromium work. Changing runner architecture alone did not provide a resource-valid acceptance."
+  },
+  "next_action": "No retry and no product fix from this evidence. Keep the candidate's member Chat acceptance unverified. Any later attempt needs a fresh explicit dispatch decision and a new measured capacity admission; preserve the unchanged watchdog thresholds and native timing diagnostics."
+}
