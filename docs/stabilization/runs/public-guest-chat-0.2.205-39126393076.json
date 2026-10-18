@@ -1,0 +1,40 @@
+{
+  "kind": "published_guest_chat_checkpoint",
+  "observed_at_utc": "2026-10-18",
+  "public_target": {
+    "version": "0.2.205",
+    "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "baseline_source_commit": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3"
+  },
+  "run": {
+    "run_id": 39126393076,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39126393076",
+    "workflow_conclusion": "in_progress",
+    "workflow_head_sha": "e16f07452d4caff30755e3cc41c5eb4d360e385b",
+    "source_sha": "e16f07452d4caff30755e3cc41c5eb4d360e385b",
+    "runner_label": "macos-15-intel",
+    "acceptance_lane": "B",
+    "acceptance_case": "guest-chat",
+    "provenance_mode": "published_store_crx",
+    "product_verdict": "pending"
+  },
+  "checkpoint": {
+    "last_observed_at_utc": "2026-10-18T12:17:37Z",
+    "last_completed_step": "Wait for measured browser readiness",
+    "active_step": "Prepare full Chromium under a fresh owned permit",
+    "passed_preflights": [
+      "guest lane serialization",
+      "published Store target and provenance mode",
+      "guest authentication preflight",
+      "package resource readiness",
+      "pinned browser driver resource readiness"
+    ],
+    "product_evidence_obtained": false,
+    "next_action": "Continue monitoring the hosted workflow to terminal; download the uploaded browser result and screenshots; verify first reply, same-conversation follow-up, post-reload terminal and grounded content, bind browser-time server SHA before/after, and validate package/browser/guest resource finals before recording any product verdict."
+  },
+  "evidence_limits": [
+    "Workflow status and HTTP responses alone do not establish product acceptance.",
+    "This run targets the approved public 0.2.205 CRX and does not establish current Chrome Web Store dashboard state or a new submission."
+  ]
+}
