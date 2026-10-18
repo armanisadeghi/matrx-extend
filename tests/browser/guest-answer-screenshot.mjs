@@ -131,8 +131,13 @@ export function prepareGuestAnswerScreenshot({ code, heading = null, focus = cod
     if (focusedRange) break;
   }
   const rangeRect = () => focusedRange?.getBoundingClientRect?.() ?? null;
+  const scrollAncestors = [];
   if (focusedRange) {
-    for (let ancestor = focusedElement; ancestor; ancestor = ancestor.parentElement) {
+    for (
+      let ancestor = focusedElement, depth = 0;
+      ancestor;
+      ancestor = ancestor.parentElement, depth++
+    ) {
       const css = getComputedStyle(ancestor);
       const clip = ancestor.getBoundingClientRect();
       if (/(auto|scroll)/.test(css.overflowY) && ancestor.scrollHeight > ancestor.clientHeight) {
@@ -140,6 +145,7 @@ export function prepareGuestAnswerScreenshot({ code, heading = null, focus = cod
         if (line && (line.top < clip.top || line.bottom > clip.bottom)) {
           ancestor.scrollTop += (line.top + line.bottom - clip.top - clip.bottom) / 2;
         }
+        scrollAncestors.push({ depth, top: ancestor.scrollTop, height: ancestor.clientHeight });
       }
       if (/(auto|scroll)/.test(css.overflowX) && ancestor.scrollWidth > ancestor.clientWidth) {
         const line = rangeRect();
@@ -150,8 +156,8 @@ export function prepareGuestAnswerScreenshot({ code, heading = null, focus = cod
     }
   }
   const line = rangeRect();
-  const lineInsideClip = (element) => {
-    for (let node = element; node; node = node.parentElement) {
+  const clippingAncestor = (element) => {
+    for (let node = element, depth = 0; node; node = node.parentElement, depth++) {
       const css = getComputedStyle(node);
       const clip = node.getBoundingClientRect();
       if (
@@ -160,10 +166,16 @@ export function prepareGuestAnswerScreenshot({ code, heading = null, focus = cod
         (/(auto|scroll|hidden|clip)/.test(css.overflowX) &&
           (line.left < clip.left || line.right > clip.right))
       )
-        return false;
+        return {
+          depth,
+          overflowX: css.overflowX,
+          overflowY: css.overflowY,
+          rect: { left: clip.left, right: clip.right, top: clip.top, bottom: clip.bottom },
+        };
     }
-    return true;
+    return null;
   };
+  const clippedBy = line ? clippingAncestor(focusedElement) : null;
   const lineVisible =
     line &&
     line.width > 0 &&
@@ -172,21 +184,44 @@ export function prepareGuestAnswerScreenshot({ code, heading = null, focus = cod
     line.right <= viewportWidth &&
     line.top >= 0 &&
     line.bottom <= viewportHeight &&
-    lineInsideClip(focusedElement);
+    !clippedBy;
   const rect = article.getBoundingClientRect();
   const intersectWidth = Math.min(rect.right, viewportWidth) - Math.max(rect.left, 0);
   const intersectHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
-  return {
-    eligible:
+  const checks = {
+    articleIntersectsViewport:
       rect.width > 0 &&
       rect.height > 0 &&
       intersectWidth > 0 &&
       intersectHeight > 0 &&
       style.display !== 'none' &&
-      style.visibility !== 'hidden' &&
-      text.includes(code) &&
-      (heading === null || text.includes(heading)) &&
-      lineVisible,
+      style.visibility !== 'hidden',
+    codeInAnswerText: text.includes(code),
+    headingInAnswerText: heading === null || text.includes(heading),
+    focusedTextFound: Boolean(focusedRange),
+    focusedTextInViewport: Boolean(
+      line &&
+        line.width > 0 &&
+        line.height > 0 &&
+        line.left >= 0 &&
+        line.right <= viewportWidth &&
+        line.top >= 0 &&
+        line.bottom <= viewportHeight,
+    ),
+    focusedTextUnclipped: !clippedBy,
+  };
+  return {
+    eligible: Object.values(checks).every(Boolean) && lineVisible,
     reason: 'answer_outside_viewport_or_fixture_missing',
+    diagnostic: {
+      checks,
+      viewport: { width: viewportWidth, height: viewportHeight },
+      article: { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom },
+      line: line
+        ? { left: line.left, right: line.right, top: line.top, bottom: line.bottom }
+        : null,
+      clippedBy,
+      scrollAncestors,
+    },
   };
 }
