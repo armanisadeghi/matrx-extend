@@ -48,7 +48,8 @@
   "verification": {
     "focused": "25 member/org/control focused tests pass; compile and focused/full Biome pass. Source diagnostics preserve strict paint rejection; scrollTop and primary failure preservation RED\u2192GREEN.",
     "peer": "Fresh independent diagnostics peer PASS, reports/member-diagnostics-peer-20261018.json; 21focusedtests pass. Actual product paint and foreground cause remain unverified.",
-    "native": "Exact .546 native retest rejects answer_unpainted: ancestor opacity is zero. Two HTTP 200 terminal replies are diagnostic only; paint cause unresolved."
+    "native": "Exact .546 native retest rejects answer_unpainted: ancestor opacity is zero. Two HTTP 200 terminal replies are diagnostic only; paint cause unresolved.",
+    "admission_source": "Independent peer PASS, 28 clean-clone tests; reviewed helper/status/defect/evidence paths admitted, real product/config/lock/workflow drift still refused; storeEligibility remains false. Native pending."
   },
   "limitations": [
     "Historical run 39107538580 keeps its valid HTTP and terminal diagnostic evidence, but no visible-answer credit.",

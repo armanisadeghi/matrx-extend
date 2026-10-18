@@ -113,21 +113,30 @@ function reviewedStabilizationPath(path) {
   if (
     [
       'docs/stabilization/CHECKLIST.md',
+      'docs/stabilization/COORDINATOR.md',
       'docs/stabilization/STATUS.md',
       'docs/stabilization/STATUS.html',
       'docs/stabilization/inventory.json',
-      'docs/stabilization/defects/EXT-D-0228.json',
-      'docs/stabilization/defects/EXT-D-0239.json',
-      'docs/stabilization/defects/EXT-D-0240.json',
     ].includes(path)
   )
     return true;
+  if (/^docs\/stabilization\/defects\/EXT-D-[0-9]{4}\.json$/.test(path)) return true;
   if (
     /^docs\/stabilization\/evidence\/guest-values-b-[1-9][0-9]{10}\/(?:result\.sanitized\.json|values-open\.png)$/.test(
       path,
     )
   )
     return true;
+  // This recorded public guest run is source evidence, regardless of its
+  // acceptance verdict. Match the frozen version and run ID in every path.
+  const publicGuestReceipt =
+    /^docs\/stabilization\/runs\/public-guest-chat-0\.2\.205-([1-9][0-9]{10})\.json$/.exec(path);
+  if (publicGuestReceipt?.[1] === '39156655719') return true;
+  const publicGuestJournal =
+    /^docs\/stabilization\/evidence\/published-v0205-guest-chat\/run([1-9][0-9]{10})\/resource-journals\/hosted-(?:package|browser|guest)-\1-1\.sanitized\.jsonl$/.exec(
+      path,
+    );
+  if (publicGuestJournal?.[1] === '39156655719') return true;
   const memberEvidence =
     /^docs\/stabilization\/evidence\/member-run([1-9][0-9]{10})-[0-9]{8}\/(.+)$/.exec(path);
   return (
@@ -164,6 +173,8 @@ export function requireReleaseMemberSource(ancestor, paths) {
         path === 'tests/browser/member-native-auth-proof.test.mjs' ||
         path === 'tests/browser/member-chat-completion-oracle.mjs' ||
         path === 'tests/browser/member-chat-completion-oracle.test.mjs' ||
+        path === 'tests/browser/member-chat-visible-proof.mjs' ||
+        path === 'tests/browser/member-chat-visible-proof.test.mjs' ||
         path === 'tests/browser/reviewer-chat-store-acceptance.mjs' ||
         path === 'tests/browser/reviewer-chat-identity-diagnostic.mjs' ||
         path === 'tests/browser/reviewer-chat-identity-diagnostic.test.mjs' ||

@@ -3,7 +3,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { test } from 'node:test';
 import {
   admitReleaseMember,
@@ -47,8 +47,9 @@ const admission = {
 };
 
 // Recorded Settings run terminated resource-invalid with zero product credit.
-// Only its reviewed immutable evidence commit is operational source, never later edits.
-test('completed Settings evidence admits only its immutable commit and refuses pending or renamed bytes', (t) => {
+// Its run and journals are immutable evidence; the canonical defect record can
+// still receive non-runtime status updates after the reviewed commit.
+test('completed Settings evidence refuses run and journal drift while allowing defect status', (t) => {
   const source = '72fb54c95159b9f942bfbbc69f017c49b775a7c5';
   const reviewed = '1d458dba919650fcb0f077c0a65f723bd9ef7cc0';
   const paths = [
@@ -102,7 +103,12 @@ test('completed Settings evidence admits only its immutable commit and refuses p
     0,
     `completed reviewed evidence must be eligible: ${baseline.stderr}`,
   );
-  for (const path of paths) {
+  const defectPath = paths[0];
+  const defectOriginal = readFileSync(join(cwd, defectPath));
+  writeFileSync(join(cwd, defectPath), Buffer.concat([defectOriginal, Buffer.from(' ')]));
+  assert.equal(prove().status, 0, 'canonical defect status edit remains non-runtime');
+  git('checkout', '--', defectPath);
+  for (const path of paths.slice(1)) {
     const original = readFileSync(join(cwd, path));
     writeFileSync(join(cwd, path), Buffer.concat([original, Buffer.from(' ')]));
     refuse(`pending evidence refuses: ${path}`);
@@ -125,7 +131,7 @@ test('completed Settings evidence admits only its immutable commit and refuses p
     readFileSync(join(cwd, runPath)),
   );
   refuse('untracked sibling run cannot inherit reviewed evidence admission');
-  for (const path of [...paths, 'docs/stabilization/runs/hosted-settings-controls-*.json'])
+  for (const path of [...paths.slice(1), 'docs/stabilization/runs/hosted-settings-controls-*.json'])
     assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
 });
 
@@ -313,6 +319,109 @@ test('reviewed package Chat driver repairs preserve immutable candidate eligibil
     assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
 });
 
+// Break caught: the reviewed Member A paint diagnostics and status checkpoint
+// must not be mistaken for a change to the frozen Store extension.
+test('Member A source proof admits its exact reviewed diagnostic and status delta', (t) => {
+  const source = 'de066a247ae7fa74015bc143bbc13e4128f742e4';
+  const workflow = '5ae3851b4af89e706a00ed69439ff9b06317af3e';
+  const repository = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+    encoding: 'utf8',
+  }).trim();
+  const cwd = mkdtempSync(join(tmpdir(), 'member-paint-delta-'));
+  t.after(() => rmSync(cwd, { recursive: true, force: true }));
+  execFileSync('git', ['clone', '--shared', '--no-checkout', repository, '.'], { cwd });
+  execFileSync('git', ['checkout', '--detach', workflow], { cwd });
+  const moduleUrl = new URL('./hosted-release-member-admission.mjs', import.meta.url).href;
+  const result = spawnSync(
+    process.execPath,
+    [
+      '--input-type=module',
+      '-e',
+      `import { proveSource } from ${JSON.stringify(moduleUrl)}; console.log(JSON.stringify(proveSource(${JSON.stringify(source)}, ${JSON.stringify(workflow)})));`,
+    ],
+    { cwd, encoding: 'utf8' },
+  );
+  assert.equal(result.status, 0, result.stderr);
+  const proof = JSON.parse(result.stdout);
+  assert.equal(proof.storeEligibility, false);
+  assert.equal(proof.workflowSha, workflow);
+  assert.ok(proof.subsequentChangedPaths.includes('tests/browser/member-chat-visible-proof.mjs'));
+  assert.ok(
+    proof.subsequentChangedPaths.includes('tests/browser/member-chat-visible-proof.test.mjs'),
+  );
+  assert.ok(proof.subsequentChangedPaths.includes('docs/stabilization/COORDINATOR.md'));
+  requireReleaseMemberSource(true, proof.subsequentChangedPaths);
+  for (const path of [
+    'tests/browser/member-chat-visible-proof-copy.mjs',
+    'docs/stabilization/COORDINATOR-copy.md',
+    'src/config/env.ts',
+    'pnpm-lock.yaml',
+    'package.json',
+    'wxt.config.ts',
+    '.github/workflows/release.yml',
+  ])
+    assert.throws(
+      () => requireReleaseMemberSource(true, [...proof.subsequentChangedPaths, path]),
+      /release_member_product_changed/,
+      path,
+    );
+});
+
+// Break caught: the completed public guest receipt and its three resource
+// journals are evidence for one run, never a product-source delta or a folder wildcard.
+test('public guest run 39156655719 admits only its receipt and matching journals', (t) => {
+  const source = 'de066a247ae7fa74015bc143bbc13e4128f742e4';
+  const workflow = '5ae3851b4af89e706a00ed69439ff9b06317af3e';
+  const repository = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+    encoding: 'utf8',
+  }).trim();
+  const cwd = mkdtempSync(join(tmpdir(), 'member-public-receipt-'));
+  t.after(() => rmSync(cwd, { recursive: true, force: true }));
+  execFileSync('git', ['clone', '--shared', '--no-checkout', repository, '.'], { cwd });
+  execFileSync('git', ['checkout', '--detach', workflow], { cwd });
+  const paths = [
+    'docs/stabilization/runs/public-guest-chat-0.2.205-39156655719.json',
+    ...['package', 'browser', 'guest'].map(
+      (kind) =>
+        `docs/stabilization/evidence/published-v0205-guest-chat/run39156655719/resource-journals/hosted-${kind}-39156655719-1.sanitized.jsonl`,
+    ),
+  ];
+  for (const path of paths) {
+    mkdirSync(dirname(join(cwd, path)), { recursive: true });
+    // Admission reads Git path provenance, not the evidence payload bytes.
+    writeFileSync(join(cwd, path), '{}\n');
+  }
+  const moduleUrl = new URL('./hosted-release-member-admission.mjs', import.meta.url).href;
+  const result = spawnSync(
+    process.execPath,
+    [
+      '--input-type=module',
+      '-e',
+      `import { proveSource } from ${JSON.stringify(moduleUrl)}; console.log(JSON.stringify(proveSource(${JSON.stringify(source)}, ${JSON.stringify(workflow)})));`,
+    ],
+    { cwd, encoding: 'utf8' },
+  );
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout).pendingPaths.sort(), paths.sort());
+  for (const path of [
+    'docs/stabilization/runs/public-guest-chat-0.2.206-39156655719.json',
+    'docs/stabilization/runs/public-guest-chat-0.2.205-39156655720.json',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39156655719/resource-journals/hosted-package-39156655720-1.sanitized.jsonl',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39156655720/resource-journals/hosted-package-39156655720-1.sanitized.jsonl',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39156655719/resource-journals/hosted-other-39156655719-1.sanitized.jsonl',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39156655719/resource-journals/hosted-browser-39156655719-2.sanitized.jsonl',
+    'src/config/env.ts',
+    'pnpm-lock.yaml',
+    'package.json',
+    'wxt.config.ts',
+  ])
+    assert.throws(
+      () => requireReleaseMemberSource(true, [...paths, path]),
+      /release_member_product_changed/,
+      path,
+    );
+});
+
 test('member admission rejects documents outside the flat report namespace', () => {
   for (const path of [
     'docs/stabilization/release-workflow-change.json',
@@ -368,19 +477,24 @@ test('exact member identity diagnostic delta is admitted without widening paths'
 });
 
 // The Member A false-negative repair and its durable defect record remain test-only.
-test('member harness defects admit only exact reviewed test and record paths', () => {
+test('member harness defects admit only reviewed test and canonical defect records', () => {
   const reviewed = [
     'tests/browser/reviewer-chat-organization-boundary.test.mjs',
     'docs/stabilization/defects/EXT-D-0239.json',
     'docs/stabilization/defects/EXT-D-0240.json',
+    'docs/stabilization/defects/EXT-D-0243.json',
   ];
   requireReleaseMemberSource(true, reviewed);
   for (const path of [
     'tests/browser/reviewer-chat-organization-boundary-copy.test.mjs',
     'docs/stabilization/defects/EXT-D-0239.json.bak',
-    'docs/stabilization/defects/EXT-D-0241.json',
+    'docs/stabilization/defects/EXT-D-999.json',
+    'docs/stabilization/defects/EXT-D-0243.JSON',
+    'docs/stabilization/defects/EXT-D-0243.json/child',
+    'docs/stabilization/defects/EXT-D-0243-private.json',
     'docs/stabilization/defects/../package.json',
     'src/features/chat/ChatView.tsx',
+    'src/config/env.ts',
   ])
     assert.throws(
       () => requireReleaseMemberSource(true, [...reviewed, path]),
@@ -610,7 +724,7 @@ test('strict post-release history admits reviewed harness and bounded stabilizat
 test('bounded stabilization paths refuse unsafe nesting and unrelated payloads', () => {
   for (const path of [
     'tests/browser/member-chat-completion-oracle-copy.mjs',
-    'docs/stabilization/defects/EXT-D-0229.json',
+    'docs/stabilization/defects/EXT-D-0229.JSON',
     'docs/stabilization/evidence/guest-values-b-39058763654/nested/values-open.png',
     'docs/stabilization/evidence/guest-values-b-39058763654/values-open.png.mjs',
     'docs/stabilization/evidence/guest-values-b-39058763654/../package.json',

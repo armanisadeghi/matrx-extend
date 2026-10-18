@@ -1,0 +1,16 @@
+{
+  "verdict": "PASS",
+  "scope": "Independent review of scripts/hosted-release-member-admission.mjs and its tests for D240 source admission classification; no source edits or native/browser acceptance launched.",
+  "checks": [
+    "Reviewed exact allowlist and proveSource history/pending-path integration.",
+    "Confirmed only member-chat-visible-proof.mjs/.test.mjs were added as product-adjacent test helpers; src/config, package.json, pnpm-lock.yaml, WXT config, and release/hosted workflows remain refused.",
+    "Canonical EXT-D-####.json matching is bounded by four digits, exact case, flat path, and traversal/suffix rejection.",
+    "Public guest evidence admission is restricted to frozen 0.2.205 run 39156655719 receipt and three matching run/attempt-1 package/browser/guest sanitized journals; mismatched version, run ID, kind, or attempt is rejected.",
+    "Source proof for de066a247ae7fa74015bc143bbc13e4128f742e4 -> 5ae3851b4af89e706a00ed69439ff9b06317af3e asserts storeEligibility false and exact admitted delta; mutation/refusal cases cover adjacent and product paths.",
+    "Focused isolated run: node --test scripts/hosted-release-member-admission.test.mjs; 28 passed, 0 failed (15.7s). Executed from a temporary detached clone with only the two reviewed files copied in; shared stabilization/untracked files were not mutated."
+  ],
+  "limitations": [
+    "This is an admission-classification and source-test result only; it does not establish product behavior, browser acceptance, or Store eligibility.",
+    "The classifier admits the exact guest receipt/journal path names without validating their payload bytes; separate evidence validation must establish the recorded run's truth when those records are used as acceptance evidence."
+  ]
+}
