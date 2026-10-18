@@ -1,0 +1,115 @@
+{
+  "task_id": "store-release-owner-20261018",
+  "lane": "guarded-hosted-release-and-exact-store-artifact",
+  "status": "artifact-verified-acceptance-pending",
+  "source": {
+    "candidate_main_sha": "1dd69378e211bf765fb48833988c21af179a5055",
+    "aidream_immutable_sha": "9636fe4be9afe879305f10839384610dfb506f0e",
+    "main_synchronized_at_preflight": true,
+    "existing_release_workflow": ".github/workflows/release.yml",
+    "runner": "ubuntu-latest",
+    "repository_public": true,
+    "pre_dispatch_change": "@ai-matrx/content-ir lockfile 0.24.29 to 0.24.30; fast-forwarded after API cooldown",
+    "pre_dispatch_package_consumer_action": {
+      "package": "@ai-matrx/content-ir",
+      "from": "0.24.29",
+      "to": "0.24.30",
+      "changelog": "Automatic changed-only republish; no consumer action required",
+      "source": "aidream/apps/shared/content-ir-core/CHANGELOG.md"
+    },
+    "release_delta_from_preflight": {
+      "source_scripts_config_changes": 0,
+      "pnpm_lock_changes": 0,
+      "generated_tool_docs_updated": true,
+      "package_version_only": "0.2.544 to 0.2.546"
+    }
+  },
+  "release": {
+    "dispatch_attempts": [
+      {
+        "method": "gh workflow run release.yml",
+        "result": "HTTP 403 API rate limit; no run started"
+      },
+      {
+        "method": "gh api POST workflow dispatch",
+        "result": "HTTP 403 API rate limit; no run started"
+      }
+    ],
+    "api_limit_observed_at_utc": "2026-10-18T18:21:42Z",
+    "api_limit_remaining": 0,
+    "api_limit_reset_utc": "2026-10-18T18:25:41Z",
+    "retry_after_header": null,
+    "latest_prior_release_run": 39124994461,
+    "latest_prior_release_version": "0.2.543",
+    "active_release_at_preflight": false,
+    "new_run_id": 39154140054,
+    "new_version": "0.2.546",
+    "new_artifact_id": 12146258327,
+    "new_store_zip_sha256": "105ef2b1ae49f7891f367cfe4dd8f96e4dd1974a377a625b53121dfff9610126",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39154140054",
+    "dispatch_at_utc": "2026-10-18T18:25:55Z",
+    "boundary": "release.sh mandatory gates running after authority/config, immutable aidream checkout, frozen install and package refresh passed",
+    "conclusion": "success",
+    "completed_at_utc": "2026-10-18T18:33:49Z",
+    "new_source_sha": "1695c3be6460ae48a540ffe3d0a55991bc8c4748",
+    "tag": "v0.2.546",
+    "remote_main_sha_at_verification": "1695c3be6460ae48a540ffe3d0a55991bc8c4748",
+    "github_artifact_digest": "sha256:0fecf863441feeabac0995ae5ea7f9fb80f5ead6ea41958cccf5666fcaccfd46",
+    "local_zip_sha256": "eda8c592e598a55eaf87ce068bb57920e4aa94ca50b2f86aff63f816a6c4cc33",
+    "receipt_tree_sha256": "5be891d23c4e179416c9413865085c7ab2080752343f493c4a17ed28d49f49e8",
+    "receipt_publish_state": "pushed",
+    "all_required_release_steps": "success",
+    "archive_digest_matches_api": true,
+    "store_zip_digest_matches_receipt": true,
+    "tag_matches_receipt_source": true,
+    "local_checkout_clean_at_tag": true
+  },
+  "dispatch_inputs": {
+    "ref": "main",
+    "aidream_sha": "9636fe4be9afe879305f10839384610dfb506f0e",
+    "requested_by": "store_release_owner_oct18",
+    "message": "Store resubmission candidate: remote-code repair and stabilization fixes"
+  },
+  "acceptance_preparation": {
+    "guest": "Use scripts/hosted-remote-admission.mjs plan-guest-chat then dispatch-guest-chat for lane B, exact successful release run/artifact/source; review completed resource journals and opening, same-conversation follow-up, post-reload terminal content.",
+    "member": "Use scripts/hosted-release-member-admission.mjs plan then dispatch for lane A, exact release run/artifact/source; verify designated reviewer remains non-admin with active approved test organization, mint a fresh one-use link only at admission, stage MATRX_REVIEWER_MAGIC_LINK_JSON from private file via stdin, delete secret and link immediately after auth preflight, verify absence.",
+    "capacity": "At most two isolated hosted browser lanes; lane A owns shared authenticated fixture and secret. Do not dispatch either before exact Store payload verification and resource/source admission.",
+    "product_verdict": "pending exact Store ZIP guest B/member A independent review; Scrape, SEO, and broader navigation remain separate unverified backlog",
+    "guest_harness_coverage": "fresh signed-out Chat; unpredictable page fixture; terminal grounded opening; independent same-conversation follow-up; panel reload; terminal grounded new-conversation answer; no token/profile/org; Swipe File absent",
+    "member_harness_coverage": "designated non-admin and approved organization; terminal Capture/Understand/Use opening; same-conversation Understand follow-up; one start and follow-up HTTP 200 with matching organization header; Swipe File visible",
+    "not_covered_by_these_harnesses": [
+      "Scrape",
+      "SEO",
+      "full public navigation",
+      "Store-installed update lifecycle"
+    ],
+    "ownership": "parent assigned separate guest B and member A testers; this lane launched neither and staged no secret"
+  },
+  "store": {
+    "primary_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "published_version_at_last_dashboard_observation": "0.2.205",
+    "rejected_draft_version": "0.2.479",
+    "classification": "routine policy surface; final listing semantic review and native acceptance pending",
+    "upload_or_submission": false,
+    "dashboard_owner": "parent chat",
+    "manifest_version": "0.2.546",
+    "approved_policy_surface_match": true,
+    "manifest_key_absent": true,
+    "toolbar_popup_absent": true,
+    "side_panel_canonical": true,
+    "emitted_javascript_files_scanned": 1270,
+    "forbidden_runtime_code_gate": "pass",
+    "rejected_pdfobject_cdn_url_absent": true,
+    "exact_store_zip_path": "test-results/store-release-39154140054/extracted/.output/matrx-extend-0.2.546-store.zip"
+  },
+  "changes": [
+    "docs/stabilization/reports/store-release-owner-20261018.json"
+  ],
+  "open_items": [
+    "Guest B and member A must complete resource-valid independently reviewed exact ZIP acceptance before Store upload.",
+    "Parent owns primary-item upload and submission with automatic publication; currently no new upload.",
+    "After acceptance, promote this sanitized report from ignored test-results into docs/stabilization/reports and commit with parent coordination."
+  ],
+  "credentials_recorded": false,
+  "report_state": "sanitized checkpoint in ignored test-results to preserve clean exact-tag source admission; required tracked docs report deferred to post-acceptance coordination"
+}

@@ -34,12 +34,12 @@
   "reproducibility": "All three retained .532 answer screenshots omit the asserted answer; a focused DOM test reproduces an offscreen but DOM-visible latest article.",
   "severity": "S2: native acceptance reports a visually unsupported pass.",
   "priority": "P1: require answer-in-viewport proof before the next guest Chat screenshot.",
-  "state": "fixed",
-  "owner": "guest_answer_visual_evidence_fix",
+  "state": "in-fix",
+  "owner": "guest_answer_viewport_repair",
   "cause": "The observer's visible predicate checks nonzero bounds and computed display/visibility, while capture() saves the current viewport without positioning the answer or checking viewport intersection.",
   "sibling_census": "The same capture path writes opening, same-conversation follow-up and post-reload answer screenshots. All three now pass the same latest-article viewport and fixture-text gate; diagnostic failure screenshots retain their unrestricted capture path.",
   "fix_sha": "0db6cf073",
-  "original_retest_runs": [39096823813],
+  "original_retest_runs": [39096823813, 39154937331],
   "surrounding_retest_runs": [],
   "reviewer": "Independent focused peer review: behavior PASS, code quality PASS; native retest pending.",
   "acceptance_criteria": [
@@ -50,13 +50,13 @@
   "verification": {
     "focused": "27/27 guest-answer-screenshot and guest-chat-store-sequence tests pass; pnpm compile, focused Biome and git diff --check pass.",
     "peer": "Independent peer verdict A PASS and B PASS.",
-    "native": "Pending guarded hosted retest on corrected exact artifact; no browser or release run launched in this lane."
+    "native": "Exact .546 native retest rejects answer_outside_viewport_or_fixture_missing: article intersects viewport but asserted text is below it. No visible-answer acceptance."
   },
   "limitations": [
     "The historical .532 report's transport and DOM assertions are preserved, but its answer screenshots provide no visual confirmation.",
     "The new helper checks article-viewport intersection; a native retest must confirm the answer itself appears in each retained image."
   ],
-  "next_action": "Publish a corrected exact artifact, run one guarded hosted guest Chat acceptance, inspect all three answer screenshots and obtain independent native review before closing this defect.",
+  "next_action": "Complete independently reviewed source repair, then one guarded exact-artifact native retest; retain and independently inspect actual answer images before closure.",
   "transition_history": [
     {
       "at": "2026-10-18T04:35:38Z",
@@ -81,6 +81,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Three answer captures are gated on latest-article viewport intersection and fixture text; focused checks and independent peer review pass. Native retest remains pending."
+    },
+    {
+      "at": "2026-10-18T18:53:00Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Exact .546 native retest rejects answer_outside_viewport_or_fixture_missing: article intersects viewport but asserted text is below it. No visible-answer acceptance."
+    },
+    {
+      "at": "2026-10-18T18:53:00Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Focused evidence repair/diagnosis assigned; fresh independent review and native retest required."
     }
   ]
 }
