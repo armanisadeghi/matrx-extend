@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "observed_at_utc": "2026-10-18T08:56:40Z",
+  "case": "EXT-F-2013-T10 public guest Chat",
+  "status": "blocked_before_browser_dispatch",
+  "product_credit": "none",
+  "target": {
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "public_listing": "https://chromewebstore.google.com/detail/matrx-extend/hnfolienncfklkgmdjjmhhegglimlamg",
+    "public_version": "0.2.205",
+    "listing_observed_at": "2026-10-18T08:55Z",
+    "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "crx_identity_source": "scripts/published-store-crx-target.mjs; public listing reports version 0.2.205"
+  },
+  "backend": {
+    "version_endpoint": "https://server.app.matrxserver.com/health/version",
+    "http_status": 200,
+    "git_sha": "5de6b9b94d3d3d242edd88d81f014d3b4d081438",
+    "observed_at_utc": "2026-10-18T08:55Z",
+    "prior_evidence_sha_is_stale": true
+  },
+  "resource_preflight": {
+    "run_id": "public-guest-chat-20261018-preflight",
+    "journal": "docs/stabilization/resource-journals/public-guest-chat-20261018-preflight.jsonl",
+    "decision": "valid",
+    "admitted": true,
+    "resource_invalid": false,
+    "mode": "check",
+    "pressure_level": 1,
+    "available_memory_gib": 11.2,
+    "required_memory_gib": 4,
+    "one_minute_load": 2.91,
+    "logical_cpus": 10,
+    "cpu_busy_fraction": 0.08285714285714285,
+    "swap_used_mib": 2717,
+    "system_free_gib": 38.76642990112305,
+    "observed_at_utc": "2026-10-18T08:56:33Z",
+    "scope_note": "Host check only; no browser permit or browser job was started."
+  },
+  "dispatch": {
+    "attempted": false,
+    "reason": "scripts/hosted-remote-admission.mjs supports guest-chat dispatch for a validated release artifact but has no admission route for published_store_crx=true. Its release route would test v0.2.533, which is not the currently published v0.2.205 target.",
+    "browser_launched": false,
+    "next_required": "Add and independently review an enforced published-CRX admission route that verifies synchronized source, the exact public item/version/CRX identity, workflow contract and B-lane capacity; then rerun fresh host and hosted resource admission before dispatch."
+  },
+  "stale_run_context": {
+    "run_id": 39099012761,
+    "artifact_version": "0.2.533",
+    "server_sha": "ce6f3430911821130a55545b7b3a10d6c7f68a8b",
+    "resource_verdict": "invalid",
+    "reason": "RESOURCE_CPU_CONFIRMATION_EXPIRED",
+    "use_for_current_acceptance": false
+  }
+}
