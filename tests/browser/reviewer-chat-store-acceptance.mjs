@@ -25,6 +25,10 @@ import {
   writeReviewerReport,
 } from './member-chat-visible-proof.mjs';
 import {
+  recordMemberForegroundVisibility,
+  restoreMemberForeground,
+} from './member-foreground-diagnostic.mjs';
+import {
   authenticatedWebIdentity,
   observeCanonicalAdminCheck,
   supabaseOrigin,
@@ -78,6 +82,7 @@ const report = {
   authentication_method: null,
   chat: null,
   screenshots: null,
+  foreground_diagnostic: null,
   ...(UNINTERRUPTED && { approval: { cases: [], limitations: [] } }),
   failure_stage: null,
   failure_code: null,
@@ -1241,6 +1246,10 @@ try {
     expectedRelease: receipt,
     releaseReceiptPath: RECEIPT,
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
+    onPanelVisibilityObservation: (observation) => {
+      if (stage === 'reviewer_native_panel_foreground' && report.foreground_diagnostic)
+        recordMemberForegroundVisibility(report.foreground_diagnostic, observation);
+    },
     exercisePanel: async (native) => {
       const { page, panel, artifacts } = native;
       stage = MAGIC_LINK ? 'open_reviewer_magic_link' : 'open_reviewer_web_login';
@@ -1489,15 +1498,26 @@ try {
 
         stage = 'reviewer_native_panel_foreground';
         // Restore the native member panel after web authentication.
-        await web.close();
-        await page.bringToFront();
-        await native.reopenPanel();
-        await waitFor(
-          'reviewer_native_panel_foreground',
-          () => evaluate(panel, 'document.visibilityState'),
-          (visibility) => visibility === 'visible',
-          10_000,
-        );
+        report.foreground_diagnostic = {
+          steps: [],
+          visibility_observations: [],
+          failure_substep: null,
+          failure_class: null,
+          failure_snapshot: null,
+        };
+        await restoreMemberForeground({
+          web,
+          page,
+          native,
+          panel,
+          waitFor,
+          evaluate,
+          diagnostic: report.foreground_diagnostic,
+          onFailure: async (error) => {
+            recordReviewerFailure(report, stage, error);
+            await writeReviewerReport(OUTPUT, report);
+          },
+        });
 
         stage = 'signed_in_swipe_file_tab';
         await waitFor(

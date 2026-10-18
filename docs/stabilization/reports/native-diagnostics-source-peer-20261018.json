@@ -1,0 +1,12 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "review_scope": ["cfb968cd6", "988315cbf"],
+  "verdict_A": "PASS for scoped source behavior: Member four operations and 10s visible gate preserved; Guest six predicates plus original lineVisible still gate Page.captureScreenshot; both failures emit useful bounded diagnostics. Native Guest/Member product acceptance remains UNVERIFIED.",
+  "verdict_B": "PARTIAL: privacy and current integration pass; committed tests do not force the full diagnostic-to-report path or prove RED against a bypass/constant-return mutation.",
+  "finding_1": "Important test gap: guest-answer-screenshot.test.mjs:147 only checks helper proof; guest-chat-store-acceptance.mjs:934-936 and :1358 capture/serialization are unguarded by committed tests. Scratch boundary check proves current failure suppresses screenshot and writes sanitized predicates, but is not a durable guard.",
+  "finding_2": "Member test's onFailure stub at reviewer-chat-foreground-restoration.test.mjs:80 does not write the report. Scratch boundary check using actual recordReviewerFailure/writeReviewerReport proves current pre-cleanup persistence and no raw opener text.",
+  "privacy_evidence": "Injected PRIVATE_AUTH_NONCE_REPLY and PRIVATE_REPLY/Bearer/NONCE/AUTH fields did not appear in serialized reports; allowlisted Member phases/classes and Guest booleans, bounded numbers, rectangles, scroll metadata did.",
+  "acceptance_evidence": "Guest capture call at guest-chat-store-acceptance.mjs:1137 passes opening code after grounded terminal assertion, then rejection at :934 prevents Page.captureScreenshot; Member callback at reviewer-chat-store-acceptance.mjs:1496 calls helper and retains exact visible predicate/deadline.",
+  "focused_checks": "44/44 node tests pass (5 Guest screenshot, 35 Guest sequence, 4 Member foreground); node --check four runtime modules and biome check six owned files pass.",
+  "limitations": "No native browser launched; no guarded resource final or actual Guest/Member acceptance result; source pass is not product pass. No source changes made."
+}

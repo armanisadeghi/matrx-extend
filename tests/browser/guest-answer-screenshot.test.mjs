@@ -144,6 +144,10 @@ test('long completed answer scrolls the requested code line into the captured vi
     },
   );
   assert.equal(clipped.eligible, false, 'a clipped code line cannot provide screenshot proof');
+  assert.ok(clipped.diagnostic, 'a rejected screenshot must report which visibility check failed');
+  assert.equal(clipped.diagnostic.checks.codeInAnswerText, true);
+  assert.equal(clipped.diagnostic.checks.focusedTextInViewport, false);
+  assert.deepEqual(Object.keys(clipped.diagnostic.line), ['left', 'right', 'top', 'bottom']);
   await window.happyDOM.abort();
 });
 

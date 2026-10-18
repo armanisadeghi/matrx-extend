@@ -1,0 +1,15 @@
+{
+  "main_sha": "79583c65c93396cafc81c1b070e7bd8daec19aaf",
+  "latest_successful_ci_run": "39166087340",
+  "candidate_source_sha": "d35d4ad971336cf65c5a8acb5a92b29d43eacb99",
+  "artifact_id": "12150494314",
+  "artifact_name": "matrx-extend-development-test-d35d4ad971336cf65c5a8acb5a92b29d43eacb99-39166087340-1",
+  "version": "0.2.550",
+  "github_artifact_sha256": "76c81f96acbc0a3cf0af7893815a9db9fe3d5d193b4eff9b5f8e283af3fd5040",
+  "compatibility": "refused: ci_dev_runtime_source_changed",
+  "current_main_ci_run": "39167305651 (pending)",
+  "import": "not run; no eligible current-source successful artifact",
+  "promotion": "not run; .output/chrome-mv3-dev unchanged by this task",
+  "prior_personal_dev": "0.2.544 (per task input; Chrome reload/path/pin verification belongs to root)",
+  "limits": "No local build/release, browser control, or heavy tests performed."
+}
