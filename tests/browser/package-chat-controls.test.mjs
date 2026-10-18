@@ -375,3 +375,51 @@ test('public .205 icon send reaches trusted pointer input and refuses a title-on
   assert.equal(events.length, 0);
   await window.happyDOM.abort();
 });
+
+// Public Store v0.2.205 MessageRow/Markdown markup (source 2f68bc4).
+// A package-only article selector silently drops the visibly rendered reply.
+test('public Store answer observation reads completed assistant Markdown without user, tool or action text', async () => {
+  const { window, pane, read } = surface({
+    extra: `
+    <div class="group flex justify-end gap-1"><div class="min-w-0 text-foreground">User asks for Capture Understand Use</div><button title="Copy message"></button></div>
+    <div class="group space-y-2">
+      <div class="min-w-0 text-foreground">Opening check: 732. Capture, Understand, Use.</div>
+      <div class="group/toolcard"><div class="min-w-0 text-foreground">Tool result: follow-up 941</div></div>
+      <div class="mt-1"><button title="Copy reply">Copy reply</button><button>Speak reply</button></div>
+    </div>
+    <div class="group space-y-2"><div class="min-w-0 text-foreground">Follow-up check: 941.</div><div><button data-matrx-title="Copy reply"></button></div></div>
+    <div class="group space-y-2"><div class="min-w-0 text-foreground">Pending answer</div></div>
+    <button title="Stop"><svg class="lucide-square"></svg></button>
+    <button title="Copy reply">Decoy action</button>`,
+  });
+  assert.deepEqual(Array.from(read().replies), [
+    'Opening check: 732. Capture, Understand, Use.',
+    'Follow-up check: 941.',
+  ]);
+  pane.querySelector('div.group.space-y-2 > div.min-w-0.text-foreground').textContent =
+    'Opening check: 865. Capture, Understand, Use.';
+  assert.equal(read().replies[0], 'Opening check: 865. Capture, Understand, Use.');
+  pane.querySelector('div.group.space-y-2').style.display = 'none';
+  assert.deepEqual(Array.from(read().replies), ['Follow-up check: 941.']);
+  assert.equal(read().streaming, true);
+  pane.querySelector('button[title="Stop"]').remove();
+  assert.equal(read().streaming, false);
+  pane.setAttribute('data-state', 'inactive');
+  assert.deepEqual(Array.from(read().replies), []);
+  await window.happyDOM.abort();
+});
+
+test('public Stop observation rejects title decoys, wrong icons and contradictory accessible labels', async () => {
+  for (const extra of [
+    '<button title="Stop"></button>',
+    '<button title="Stop"><svg class="lucide-arrow-up"></svg></button>',
+    '<button title="Stop" aria-label="Cancel upload"><svg class="lucide-square"></svg></button>',
+    '<button title="Stop" hidden><svg class="lucide-square"></svg></button>',
+    '<button title="Stop" disabled><svg class="lucide-square"></svg></button>',
+    '<button title="Stop" aria-disabled="true"><svg class="lucide-square"></svg></button>',
+  ]) {
+    const { window, read } = surface({ extra });
+    assert.equal(read().streaming, false, extra);
+    await window.happyDOM.abort();
+  }
+});

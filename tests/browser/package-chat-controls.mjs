@@ -1,7 +1,7 @@
 /** Native observations for the package Chat surface, scoped to its active tab pane. */
 export function readPackageChatControls(pane) {
   const visible = (element) => {
-    if (!element || element.closest('[inert]')) return false;
+    if (!element || element.closest('[inert], [hidden], [aria-hidden="true"]')) return false;
     const rect = element.getBoundingClientRect();
     const style = getComputedStyle(element);
     return (
@@ -87,6 +87,44 @@ export function readPackageChatControls(pane) {
         })
         .filter((text) => text.trim().length > 0)
     : [];
+  // Public Store .205 predates the package's accessible article wrappers.
+  // A completed MessageRow has a Copy reply control and direct Markdown children;
+  // never harvest pane text, user bubbles, nested tool results or pending rows.
+  if (active && assistantArticleCount === 0) {
+    const rows = new Set(
+      [
+        ...pane.querySelectorAll(
+          'button[title="Copy reply"], button[data-matrx-title="Copy reply"]',
+        ),
+      ]
+        .map((button) => button.closest('div.group.space-y-2'))
+        .filter((row) => row && !row.closest('[class~="group/toolcard"]') && visible(row)),
+    );
+    for (const row of rows) {
+      const bodies = [...row.querySelectorAll(':scope > div.min-w-0.text-foreground')].filter(
+        visible,
+      );
+      const text = bodies
+        .map((body) => (body.innerText ?? body.textContent ?? '').trim())
+        .filter(Boolean)
+        .join('\n');
+      if (text) {
+        assistantArticleCount += 1;
+        answers.push(text);
+      }
+    }
+  }
+  const publicStop =
+    active &&
+    pane.querySelectorAll('textarea').length === 1 &&
+    [...pane.querySelectorAll('button[title="Stop"], button[data-matrx-title="Stop"]')].some(
+      (button) =>
+        !button.hasAttribute('aria-label') &&
+        !button.disabled &&
+        button.getAttribute('aria-disabled') !== 'true' &&
+        visible(button) &&
+        button.querySelector('svg.lucide-square'),
+    );
   return {
     sendEnabled:
       sends.length === 1 && !sends[0].disabled && sends[0].getAttribute('aria-disabled') !== 'true',
@@ -101,7 +139,8 @@ export function readPackageChatControls(pane) {
       (button) => button.getAttribute('aria-label') === 'Send message (still initializing)',
     ),
     streaming:
-      active && [...pane.querySelectorAll('button[aria-label="Stop the run"]')].some(visible),
+      active &&
+      ([...pane.querySelectorAll('button[aria-label="Stop the run"]')].some(visible) || publicStop),
     replies: answers,
     assistantDom: { assistantArticleCount, toolCardCount, toolOnlyArticleCount },
   };
