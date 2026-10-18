@@ -6,6 +6,7 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { prepareGuestAnswerScreenshot } from './guest-answer-screenshot.mjs';
 import {
   classifyGuestTurn,
   classifyPackageGuestTurn,
@@ -636,7 +637,14 @@ function diagnosticState(state, fixture) {
   };
 }
 
-async function capture(panel, path) {
+async function capture(panel, path, expectedAnswer = null) {
+  if (expectedAnswer) {
+    const proof = await evaluate(
+      panel,
+      `(${prepareGuestAnswerScreenshot.toString()})(${JSON.stringify(expectedAnswer)})`,
+    );
+    assert.equal(proof.eligible, true, `answer screenshot ineligible: ${proof.reason}`);
+  }
   const { data } = await panel.send('Page.captureScreenshot', { format: 'png' });
   await writeFile(path, Buffer.from(data, 'base64'), { mode: 0o600 });
   return path;
@@ -811,7 +819,9 @@ try {
             !answered.answerIsRefusal && !answered.terminalAnswerError && !answered.errorNotice,
           followup_completed_after_reload: false,
         };
-        report.screenshot = await capture(panel, join(artifacts, 'guest-chat-real-answer.png'));
+        report.screenshot = await capture(panel, join(artifacts, 'guest-chat-real-answer.png'), {
+          code: fixture.openingCode,
+        });
 
         markStage('same_conversation_followup_question');
         assert.equal(
@@ -875,6 +885,7 @@ try {
         report.same_conversation_screenshot = await capture(
           panel,
           join(artifacts, 'guest-chat-same-conversation-followup.png'),
+          { code: fixture.followupCode, heading: fixture.title },
         );
 
         markStage('real_panel_reload');
@@ -988,6 +999,7 @@ try {
         report.followup_screenshot = await capture(
           panel,
           join(artifacts, 'guest-chat-real-followup-answer.png'),
+          { code: fixture.followupCode, heading: fixture.title },
         );
         report.context_rule_reads = contextReadWatch.snapshot();
         assert.equal(
