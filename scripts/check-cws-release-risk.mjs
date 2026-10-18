@@ -1,6 +1,9 @@
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
-import { containsScriptSrcLoader } from './detect-remote-script-loader.mjs';
+import {
+  containsGistSrcDocScript,
+  containsScriptSrcLoader,
+} from './detect-remote-script-loader.mjs';
 
 const root = process.cwd();
 const baselinePath = path.join(root, 'config/chrome-web-store-approved-baseline.json');
@@ -67,6 +70,9 @@ for (const file of emittedFiles.filter((candidate) => candidate.endsWith('.js'))
     failures.push(
       `${path.relative(root, file)} creates an executable script element and assigns its src.`,
     );
+  }
+  if (containsGistSrcDocScript(source)) {
+    failures.push(`${path.relative(root, file)} embeds a remote Gist script in iframe srcDoc.`);
   }
 }
 
