@@ -1,0 +1,91 @@
+{
+  "id": "EXT-D-0233",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "title": "Fingerprint guest delegated tool answer is accepted but Chat resume requires an organization",
+  "surface": "Package Chat in native Chrome side panel",
+  "auth_mode": "guest",
+  "organization_context": "Fingerprint guest; no bearer, profile or selected organization. Server owns guest organization resolution.",
+  "preconditions": [
+    "Exact v0.2.530 release source a44a24493eec9b32376623bdaeb25c0a13977e59 loaded in an owned fresh guest profile.",
+    "Controlled page has unpredictable heading/code/stages; resource admission and final journals are valid."
+  ],
+  "reproduction": [
+    "Ask the signed-out browser assistant about the controlled current page.",
+    "Observe agent-start HTTP 200 and delegated get_page_text followed by completion and end of the opening stream.",
+    "Observe one tool_results HTTP 200 with result_accepted=true, continuation_needed=true and zero pending tools.",
+    "Observe no correlated resume request, no assistant prose and one unclassified unhandled rejection."
+  ],
+  "expected": "Accepted last delegated answer opens a correlated resume stream using the guest fingerprint and server-owned guest organization, then supplies a grounded assistant answer.",
+  "actual": "Run 39089963557 has one accepted result POST but resume_count=0/result_resume_verified=false; UI contains one tool-only assistant article, no prose, alert or refusal.",
+  "evidence": [
+    "docs/stabilization/evidence/guest-chat-v0530/run39089963557/result.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-v0530/run39089963557/resource-finals.sanitized.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39089963557"
+  ],
+  "build_receipt": {
+    "source_sha": "a44a24493eec9b32376623bdaeb25c0a13977e59",
+    "artifact_id": 12122421206,
+    "native_evidence_artifact_id": 12122791482,
+    "version": "0.2.530",
+    "kind": "native_store_zip_candidate_key_adapted",
+    "server_sha": "ce6f3430911821130a55545b7b3a10d6c7f68a8b",
+    "loaded_key_adapted_tree_sha256": "84420bb25bce186fc106c56de910717455a8fe49c4bd36eab426ee8049d8ab65",
+    "release_tree_sha256": "5e5f769561e82ab5bc056e65ecba9c0e920b8f584de50512b6aeed306ef2d4c8"
+  },
+  "reproducibility": "One resource-valid native occurrence; deterministic real submitToolResult to resumeInstance regression reproduces accepted result with rejected guest resume and zero stream calls.",
+  "severity": "S1: core guest Chat turn cannot complete after a successful delegated tool.",
+  "priority": "P1: repair before the next candidate; historical public Store behavior is not a regression comparison.",
+  "state": "in-fix",
+  "owner": "guest_page_text_diagnosis",
+  "cause": "Shared Chat resumeInstance used requireExecutionOrganizationId at both resume admission/body reads, unlike the opening send which uses executionOrganizationForRequest and recognizes fingerprint guests. The real accepted-result funnel reaches the local organization refusal before resume IO.",
+  "sibling_census": "Opening sends already use the guest-aware resolver. Resume admission and body now share it. Signed-in organization preservation, unidentified/missing-org refusals, stream-close single-flight, model overrides, scope selection and result settlement are covered. Legacy SW STREAM_CONTINUE/page-close handoff is not the mounted package result path.",
+  "fix_sha": "ba9205778b6805d35bd434079f0caa47d43778d2",
+  "upstream_repository": "AI-Matrix-Engine/aidream",
+  "upstream_paths": [
+    "apps/shared/chat/src/agents/redux/execution-system/thunks/resume-instance.thunk.ts",
+    "apps/shared/chat/src/agents/redux/execution-system/thunks/__tests__/a-guest-tool-answer-resumes-the-suspended-turn.test.ts"
+  ],
+  "original_retest_runs": [39089963557],
+  "surrounding_retest_runs": [],
+  "reviewer": "guest_resume_peer: source A/PASS and behavior guard B/PASS; real native retest pending.",
+  "acceptance_criteria": [
+    "Corrected shared Chat package is actually published and adopted in extension latest lock.",
+    "Fresh exact-artifact guest first answer, same-conversation follow-up and post-reload new conversation are grounded, with correlated delegated result/resume completion and valid resources.",
+    "Authenticated resume still sends the conversation organization; only a valid fingerprint guest omits it.",
+    "Independent native review passes before retest-pass/closed."
+  ],
+  "verification": {
+    "red": "Real result-funnel/resume test: guest accepted POST then rejected resume/zero stream calls; member sibling passed.",
+    "focused": "31 surrounding Jest tests plus 3 reconciled stream-event tests pass.",
+    "headers": "Real backend/header resolver: fingerprint guest has X-Fingerprint-ID and no bearer/org; member has bearer and conversation X-Organization-Id and no fingerprint.",
+    "mutation": "plant.py constant resume result, original strict-org resolver, corrupted org body and dropped headers each fail; source restored.",
+    "typecheck": "Chat own typecheck has 0 errors; three workspace sibling-source errors are reported separately by tsc-own.",
+    "native": "Pending corrected package publication/adoption, fresh hosted release and independent exact-artifact retest."
+  },
+  "limitations": [
+    "The native unhandled rejection reason/stack was not retained and is not attributed by this repair.",
+    "No new browser, release, credentials or paid model probe was launched during implementation."
+  ],
+  "next_action": "Follow existing authorized package publisher, verify corrected served Chat artifact, adopt latest in extension, then release owner dispatches guarded exact-artifact native retest.",
+  "transition_history": [
+    {
+      "at": "2026-10-18T02:45:45.633361+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Resource-valid native .530 accepted-result/no-resume failure captured."
+    },
+    {
+      "at": "2026-10-18T02:45:45.633361+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Real shared result-funnel/resume guard reproduces guest-only local organization refusal."
+    },
+    {
+      "at": "2026-10-18T02:45:45.633361+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Independent source/test review passes; package publication, extension adoption and native verification remain pending."
+    }
+  ]
+}

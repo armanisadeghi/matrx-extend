@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-17T21:25:49Z",
+  "updated_at": "2026-10-18T02:45:45.633361+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "741d7771e2c45d020f63ef3b9f2a6ef8ab3ff86c",
@@ -50142,7 +50142,8 @@
             "EXT-D-0226",
             "EXT-D-0227",
             "EXT-D-0228",
-            "EXT-D-0229"
+            "EXT-D-0229",
+            "EXT-D-0233"
           ],
           "results": {
             "guest": {
@@ -50173,7 +50174,20 @@
                 "evidence": "docs/stabilization/reports/native-guest-chat-20261012.json",
                 "scope": "Fresh owned guest first, same-conversation follow-up and post-reload new conversation; development unpacked artifact, not Store ZIP or Store-installed."
               },
-              "detail": "On Oct 10, actual Store-installed 0.2.205 in Arman's Chrome profile displayed guest state and completed a page-grounded first answer and same-conversation follow-up with terminal Send state. Separately, resource-valid hosted run 38066064258 used a fresh clean guest profile and Google's public CRX loaded unpacked, with real terminal opening, same-conversation and post-panel-reload answers; all three current journals were valid, the artifact tree was unchanged, and the deployed server SHA matched before/after. The native Store observation does not establish a clean-profile installed acceptance or post-reload path; the hosted run is not a Store UI install. No whole Chat or current development health follows."
+              "detail": "On Oct 10, actual Store-installed 0.2.205 in Arman's Chrome profile displayed guest state and completed a page-grounded first answer and same-conversation follow-up with terminal Send state. Separately, resource-valid hosted run 38066064258 used a fresh clean guest profile and Google's public CRX loaded unpacked, with real terminal opening, same-conversation and post-panel-reload answers; all three current journals were valid, the artifact tree was unchanged, and the deployed server SHA matched before/after. The native Store observation does not establish a clean-profile installed acceptance or post-reload path; the hosted run is not a Store UI install. No whole Chat or current development health follows.",
+              "current_candidate_result": {
+                "status": "fail",
+                "run_id": "39089963557",
+                "build_version": "0.2.530",
+                "artifact_source_sha": "a44a24493eec9b32376623bdaeb25c0a13977e59",
+                "server_sha": "ce6f3430911821130a55545b7b3a10d6c7f68a8b",
+                "resource_valid": true,
+                "defect_ids": [
+                  "EXT-D-0233"
+                ],
+                "evidence": "docs/stabilization/evidence/guest-chat-v0530/run39089963557/result.sanitized.json",
+                "scope": "Exact .530 candidate first turn; accepted delegated result did not resume. Follow-up/reload not run; historical Store evidence remains scoped to its original source/server."
+              }
             }
           },
           "defect_verification": {
@@ -50428,7 +50442,8 @@
             "EXT-D-0097",
             "EXT-D-0112",
             "EXT-D-0144",
-            "EXT-D-0172"
+            "EXT-D-0172",
+            "EXT-D-0233"
           ],
           "run_ids": [
             "guest-grounding-peer-native-20261001-001",
