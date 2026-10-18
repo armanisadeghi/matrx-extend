@@ -504,6 +504,10 @@ async function run(prepared, artifactMode) {
     runtimeDir,
     'approved-admin-organization-private.json',
   );
+  const approvedMemberOrganizationPath = join(
+    runtimeDir,
+    'approved-member-organization-private.json',
+  );
   const screenshotAdminEnvPath = join(homedir(), 'code/aidream/.env');
   const screenshotOrganizationPath = join(repo, 'test-results/d22-private-config.json');
   const screenshotPrivateFiles = [];
@@ -556,6 +560,8 @@ async function run(prepared, artifactMode) {
   }
   if (needsApprovedAdminOrganization)
     await stageProfileOrganizationConfig(approvedAdminOrganizationPath, process.env);
+  if (acceptanceCase === 'member-chat')
+    await stageProfileOrganizationConfig(approvedMemberOrganizationPath, process.env);
   const childEnv = {
     ...process.env,
     // Acceptance must consume the same runtime this wrapper just verified.
@@ -590,6 +596,9 @@ async function run(prepared, artifactMode) {
       : {}),
     MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_RELEASE_RECEIPT: relocatedReceipt,
+    ...(acceptanceCase === 'member-chat'
+      ? { MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE: approvedMemberOrganizationPath }
+      : {}),
     ...(tabGroupsRoute?.env ?? {}),
     ...(nativeAiProbeRoute?.env ?? {}),
     ...(notesFindRoute?.env ?? {}),
@@ -803,6 +812,7 @@ async function run(prepared, artifactMode) {
       await unlink(memberLinkPath);
     if (adminCredentialsCreated) await unlink(adminCredentialsPath);
     if (needsApprovedAdminOrganization) await unlink(approvedAdminOrganizationPath);
+    if (acceptanceCase === 'member-chat') await unlink(approvedMemberOrganizationPath);
   }
 }
 

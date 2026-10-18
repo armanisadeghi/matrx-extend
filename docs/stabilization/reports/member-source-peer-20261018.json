@@ -1,0 +1,51 @@
+{
+  "review": "member-chat-visible-answer-source-peer-review",
+  "date": "2026-10-18",
+  "result": "PASS",
+  "scope": "Fresh read-only review of the repaired organization forcing tests plus focused execution. No source edits, commit, hosted/native retry, or product behavior certification.",
+  "files_reviewed": [
+    "scripts/hosted-guest-acceptance.mjs",
+    "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "tests/browser/reviewer-chat-organization-boundary.test.mjs",
+    "tests/browser/member-chat-visible-proof.mjs",
+    "tests/browser/member-chat-visible-proof.test.mjs",
+    "tests/browser/package-chat-controls.mjs",
+    "tests/browser/package-chat-controls.test.mjs"
+  ],
+  "checks": {
+    "private_approved_org_staging_and_load": {
+      "status": "source_pass",
+      "evidence": "For member-chat, hosted wrapper stages approved-member-organization-private.json via stageProfileOrganizationConfig (exclusive write, mode 0600) from MATRX_HOSTED_PROFILE_ORGANIZATION_JSON, passes its path as MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE, and unlinks it in finally. Reviewer driver loads that configured path, verifies file mode, nonempty approved name and UUID, and loads it unconditionally before member flow. Workflow supplies the protected approved-organization secret in preflight and acceptance environments."
+    },
+    "actual_org_selection_and_transport_binding": {
+      "status": "source_pass",
+      "evidence": "Member driver reads the checked data-value from exactly one selected organization option, hashes the observed UUID, and requires equality with the hash of approvedOrganization.id. The transport observer fingerprints the actual start request X-Organization-Id and computes organization_header_matches_approved from that same loaded approvedOrganization.id. The two-turn binding then requires both actual request fingerprints to equal the selected UI fingerprint; no hardcoded true is present in production observation code."
+    },
+    "forcing_test_gap": {
+      "status": "pass",
+      "evidence": "The updated boundary tests execute source slices from the production hosted wrapper and reviewer driver, and call the actual stageProfileOrganizationConfig helper. They exercise actual member staging/private mode/content, child env path forwarding, config load, selected UUID match/mismatch, and the actual production transport-comparison expression against matching and different UUIDs. Explicit source-slice mutants remove staging, env forwarding, and runtime config loading and are required to fail their proof; a hardcoded-true expression mutant is required to fail the mismatch assertion. These assertions cover the prior unguarded configuration/masking failures without duplicating a separate decision implementation."
+    },
+    "answer_diagnostic_preserves_primary_failure": {
+      "status": "source_pass",
+      "evidence": "Immediate proof remains the sole pass gate; next-frame and scroll-to-bottom probes are diagnostic only and cannot turn a rejected answer into acceptance. The viewport/composer bounds, text hit-test, and display/visibility/zero-opacity ancestor checks remain. Scroll uses scrollTop arithmetic (so it does not require scrollTo); ancestor scope is constrained to fixed structural categories and style/geometry fields. runMemberAnswerProofBoundary records/writes the classified primary error before rethrow; recordReviewerFailure preserves an existing recognized failure when later cleanup throws. The regression test checks that a later transport cleanup error cannot overwrite reviewer_chat_visible_answer_unverified, and the no-scrollTo test covers the prior API failure."
+    },
+    "product_paint": {
+      "status": "unproven",
+      "evidence": "Source improvements only repair test setup and evidence capture. They do not establish that the active answer is painted. Per the task boundary, the product rendering cause remains open pending exact-package hosted/native evidence."
+    }
+  },
+  "limitations": [
+    "Focused test verifies the harness source boundary, not the actual private hosted runtime or product rendering.",
+    "The product paint cause remains unproven until exact-package hosted/native evidence passes."
+  ],
+  "validation": {
+    "focused_test": "pass: node --test tests/browser/reviewer-chat-organization-boundary.test.mjs (6 passed, 0 failed)",
+    "mutation_cases": "member staging removed; child env forwarding removed; runtime config loading removed; transport comparator hardcoded true; selected organization mismatch",
+    "product_behavior": "not tested or certified; hosted/native visible-answer acceptance remains separate"
+  },
+  "commit_grouping": {
+    "organization_binding": "scripts/hosted-guest-acceptance.mjs; tests/browser/reviewer-chat-store-acceptance.mjs organization-config/selected-organization/header-binding hunks; tests/browser/reviewer-chat-organization-boundary.test.mjs",
+    "member_answer_diagnostics": "tests/browser/member-chat-visible-proof.mjs; tests/browser/member-chat-visible-proof.test.mjs; tests/browser/package-chat-controls.mjs; tests/browser/package-chat-controls.test.mjs; tests/browser/reviewer-chat-store-acceptance.mjs diagnostic probe/integration hunks",
+    "note": "reviewer-chat-store-acceptance.mjs contains both organization and diagnostics changes; split hunks if keeping the concerns in separate commits."
+  }
+}

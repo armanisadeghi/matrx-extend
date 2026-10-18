@@ -87,9 +87,11 @@ function hash(value) {
   return createHash('sha256').update(value).digest('hex').slice(0, 16);
 }
 
-/** The admin lane uses only the previously approved private Files QA fixture. */
+/** Both signed-in lanes load the approved organization from private runtime config. */
 async function approvedOrganizationConfig() {
-  const path = join(REPO, 'test-results', 'files-saved-private-config.json');
+  const path =
+    process.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE ??
+    join(REPO, 'test-results', 'files-saved-private-config.json');
   const metadata = await lstat(path);
   if (!metadata.isFile() || (metadata.mode & 0o777) !== 0o600)
     throw new Error('reviewer_approved_organization_config_not_private');
@@ -1222,10 +1224,8 @@ async function exerciseApproval(native) {
 }
 
 try {
-  if (UNINTERRUPTED) {
-    stage = 'approved_organization_config';
-    approvedOrganization = await approvedOrganizationConfig();
-  }
+  stage = 'approved_organization_config';
+  approvedOrganization = await approvedOrganizationConfig();
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
   if (UNINTERRUPTED)
     report.imported_artifact = await verifyImportedNativeEvidence(EXTENSION_DIR, RECEIPT);
@@ -1453,6 +1453,12 @@ try {
         const selectedOrganizationFingerprint = UNINTERRUPTED
           ? null
           : await selectedMemberOrganizationFingerprint(panel);
+        if (!UNINTERRUPTED)
+          assert.equal(
+            selectedOrganizationFingerprint,
+            hash(approvedOrganization.id),
+            'member_selected_organization_must_match_approved_config',
+          );
         const storageShape = await storedSessionShape(panel);
         report.account = {
           reviewer_fingerprint: hash(email),
@@ -1597,6 +1603,11 @@ try {
         assert.ok(
           network.organization_header_fingerprint,
           'member Chat must carry a valid organization',
+        );
+        assert.equal(
+          network.organization_header_matches_approved,
+          true,
+          'member Chat header must match approved organization config',
         );
         assert.equal(network.start_http_status, 200, 'server must accept member Chat organization');
         assert.equal(
