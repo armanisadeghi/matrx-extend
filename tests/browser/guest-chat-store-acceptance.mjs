@@ -109,6 +109,7 @@ const report = {
   failure_stage: null,
   failure_code: null,
   failure_reason: null,
+  values_close_diagnostic: null,
   stage_progress: [],
   guest_ai_requests: [],
   guest_ai_observer: null,
@@ -429,11 +430,21 @@ async function openAndCloseGuestValuesChip(panel) {
       code: 'Escape',
       windowsVirtualKeyCode: 27,
     });
-    const closed = await waitFor(
-      'guest_values_chip_closed',
-      readChip,
-      (state) => state?.openStatePanelCount === 0 && state.escapeKeyDownCount > 0,
-    );
+    let lastCloseState = null;
+    let closed;
+    try {
+      closed = await waitFor(
+        'guest_values_chip_closed',
+        async () => {
+          lastCloseState = await readChip();
+          return lastCloseState;
+        },
+        (state) => state?.openStatePanelCount === 0 && state.escapeKeyDownCount > 0,
+      );
+    } catch (error) {
+      if (lastCloseState && error instanceof Error) error.guestValuesCloseState = lastCloseState;
+      throw error;
+    }
     return {
       present: true,
       exercised: true,
@@ -641,6 +652,22 @@ function safeFailure(error) {
     /^([a-z][a-z0-9_]{0,79})(?::|$)/i.exec(message)?.[1] ??
     (error instanceof Error ? error.name : 'error').toLowerCase();
   return { code, reason };
+}
+
+function safeValuesCloseDiagnostic(error) {
+  const state = error instanceof Error ? error.guestValuesCloseState : null;
+  if (!state || typeof state !== 'object') return null;
+  const count = (value) => (Number.isInteger(value) && value >= 0 && value <= 1000 ? value : null);
+  const flag = (value) => (typeof value === 'boolean' ? value : null);
+  return {
+    chip_count: count(state.count),
+    visible_open_popovers: count(state.openPanelCount),
+    open_state_popovers: count(state.openStatePanelCount),
+    escape_keydown_count: count(state.escapeKeyDownCount),
+    trusted_escape_keydown_count: count(state.trustedEscapeKeyDownCount),
+    document_focused: flag(state.documentFocused),
+    focus_inside_popover: flag(state.focusInsidePopover),
+  };
 }
 
 function safeVisibleText(value, fixture) {
@@ -1068,6 +1095,7 @@ try {
         const failure = safeFailure(error);
         report.failure_code = failure.code;
         report.failure_reason = failure.reason;
+        report.values_close_diagnostic = safeValuesCloseDiagnostic(error);
         report.failure_observation = diagnosticState(
           await observe(panel, {
             nonce: fixture?.openingCode,

@@ -242,6 +242,13 @@ const valuesDriver = new Function(
   'assert',
   `${valuesDriverSource}; return openAndCloseGuestValuesChip;`,
 );
+const failureSanitizersSource = source.slice(
+  source.indexOf('function safeFailure('),
+  source.indexOf('function safeVisibleText('),
+);
+const { safeFailure, safeValuesCloseDiagnostic } = new Function(
+  `${failureSanitizersSource}; return { safeFailure, safeValuesCloseDiagnostic };`,
+)();
 
 function valuesControlHarness(count, blocked = null) {
   let open = false;
@@ -320,7 +327,7 @@ function valuesControlHarness(count, blocked = null) {
     },
     async (stage, read, accepts) => {
       const state = await read();
-      assert.ok(accepts(state), stage);
+      if (!accepts(state)) throw new Error(`${stage}_not_observed:${JSON.stringify(state)}`);
       return state;
     },
     assert,
@@ -372,6 +379,35 @@ test('optional Values does not silently accept duplicate controls or a failed in
   await assert.rejects(valuesControlHarness(1, 'close').run, /guest_values_chip_closed/);
   await assert.rejects(valuesControlHarness(1, 'key-missed').run, /guest_values_chip_closed/);
   await assert.rejects(valuesControlHarness(1, 'hidden-close').run, /guest_values_chip_closed/);
+});
+
+test('long Values close failure keeps key delivery and focus in structured receipt diagnostics', async () => {
+  assert.ok(
+    source.includes('report.values_close_diagnostic = safeValuesCloseDiagnostic(error)'),
+    'the sanitized Values fields must be assigned to the emitted report',
+  );
+  for (const [blocked, expectedKeyCount] of [
+    ['close', 1],
+    ['key-missed', 0],
+  ]) {
+    let failure;
+    await assert.rejects(valuesControlHarness(1, blocked).run, (error) => {
+      failure = error;
+      return /guest_values_chip_closed_not_observed/.test(error.message);
+    });
+    const truncated = safeFailure(failure);
+    assert.equal(truncated.reason.length, 120);
+    assert.equal(truncated.reason.includes('trustedEscapeKeyDownCount'), false);
+    assert.deepEqual(safeValuesCloseDiagnostic(failure), {
+      chip_count: 1,
+      visible_open_popovers: 1,
+      open_state_popovers: 1,
+      escape_keydown_count: expectedKeyCount,
+      trusted_escape_keydown_count: expectedKeyCount,
+      document_focused: true,
+      focus_inside_popover: true,
+    });
+  }
 });
 
 // EXT-D-0230: a focus-driven React remount must preserve the user intent, not node identity.
