@@ -332,6 +332,29 @@ Every entry follows this shape:
 - **Verification status:** the 402 classification has focused source tests; native
   verification on an artifact containing the fix remains pending.
 
+### Exact Store guest reviewer walkthrough (EXT-F-0003-T14)
+- **What it does:** On an exact Store ZIP candidate in a fresh guest profile,
+  exercises the public demo page before the existing unpredictable Chat fixture.
+  The same path also accepts a verified published Store CRX receipt.
+- **Where to test:** `guest-chat` hosted native acceptance with the selected
+  release artifact and `https://www.aimatrx.com/matrx-extend-demo` in the owned tab.
+- **Steps:** Confirm Settings shows automatic capture off in both the visible
+  switch and stored preference, with no capture before the click. Click Capture
+  and inspect Article, Links, and Schema against the live demo heading, privacy
+  link, and Article JSON-LD. Open SEO and confirm an audit for the demo title.
+  In Data, pick the Capture cell from the workflow table, confirm the returned
+  selector uniquely resolves to that cell, then cancel the draft. Confirm each
+  panel screenshot reflects that state. Continue the existing same-page nonce
+  Chat opening, same-conversation follow-up, reload, transport, and answer checks.
+- **Expected:** Each reviewer control has its own pass/fail record. A failed
+  reviewer control does not skip Chat; any missing reviewer proof makes the
+  aggregate exact-candidate acceptance unverified. The original owned article
+  is restored before the Chat fixture is installed.
+- **Cases:** Settings `EXT-F-1003-T40`; Scrape `EXT-F-1007-T01/T08`; SEO
+  `EXT-F-1008-T01`; Data `EXT-F-2005-T01`. These product cases remain unverified
+  until a fresh native run. Source guard: `node --test
+  tests/browser/guest-chat-store-sequence.test.mjs`.
+
 ### Chat stream failure recovery
 - **What it does:** Keeps backend diagnostics in the Debug log while Chat shows
   a short recovery message and a **Retry** action.

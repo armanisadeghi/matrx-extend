@@ -6,6 +6,15 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { Window } from 'happy-dom';
 import { createGuestInputDriver } from './guest-chat-input-driver.mjs';
+import {
+  REVIEWER_DEMO_URL,
+  assertReviewerDemoProof,
+  isExactStoreReviewerCandidate,
+  requireExactStoreReviewerReceipt,
+  runStoreReviewerPrelude,
+  storeReviewerAcceptanceStatus,
+  unverifiedReviewerDemoPath,
+} from './store-reviewer-demo-path.mjs';
 
 const { configureStore } = createRequire(
   import.meta.resolve('@ai-matrx/chat/store/create-chat-store'),
@@ -875,4 +884,219 @@ test('driver retains observation through delayed Redux submission until final cl
   } finally {
     await driver.close();
   }
+});
+
+// The hosted runner returns published_store_zip_adapted, but the browser receives
+// this prepared receipt kind. Its runtime tree is measured after native verification.
+const reviewerStoreReceipt = () => ({
+  kind: 'native_store_zip_candidate_key_adapted',
+  version: '0.2.550',
+  publishState: 'pushed',
+  sourceSha: 'f4a72d5ddbb508f63eef71661547b80c23bb6ffe',
+  treeSha256: 'a'.repeat(64),
+  storeTreeSha256: 'b'.repeat(64),
+  storeZip: { sha256: 'c'.repeat(64) },
+  artifactSelection: {
+    source: 'release_receipt_store_zip',
+    publisherSourceTreeSha256: 'd'.repeat(64),
+    selectedZipSha256: 'c'.repeat(64),
+    originalStoreTreeSha256: 'b'.repeat(64),
+    runtimeTreeSha256: 'a'.repeat(64),
+    modifiedPaths: ['manifest.json'],
+  },
+});
+
+function completeReviewerProof() {
+  return {
+    public_url: REVIEWER_DEMO_URL,
+    source: { status: 'pass', stages: ['Capture', 'Understand', 'Use'] },
+    checks: Object.fromEntries(
+      [
+        'fresh_auto_capture_off',
+        'capture_article',
+        'capture_links',
+        'capture_schema',
+        'seo_audit',
+        'data_workflow_picker',
+      ].map((name) => [
+        name,
+        { status: 'pass', ...(name === 'data_workflow_picker' && { workflow_row_matched: true }) },
+      ]),
+    ),
+  };
+}
+
+test('prepared Store ZIP receipt reaches reviewer path only with measured runtime bytes', () => {
+  const receipt = reviewerStoreReceipt();
+  assert.equal(isExactStoreReviewerCandidate(receipt), true);
+  assert.equal(requireExactStoreReviewerReceipt(receipt, receipt.treeSha256), receipt.kind);
+  assert.throws(
+    () => requireExactStoreReviewerReceipt(receipt, 'e'.repeat(64)),
+    /reviewer_runtime_tree_hash_mismatch/,
+  );
+  assert.throws(
+    () =>
+      requireExactStoreReviewerReceipt(
+        {
+          ...receipt,
+          artifactSelection: { ...receipt.artifactSelection, runtimeTreeSha256: 'e'.repeat(64) },
+        },
+        receipt.treeSha256,
+      ),
+    /guest_transport_receipt_unrecognized/,
+  );
+  for (const kind of [
+    'release',
+    'local_dev_unpacked',
+    'ci_development_test',
+    'published_store_zip_adapted',
+    undefined,
+  ]) {
+    assert.equal(isExactStoreReviewerCandidate({ kind }), false);
+    assert.throws(
+      () => requireExactStoreReviewerReceipt({ kind }, receipt.treeSha256),
+      /reviewer_demo_requires_exact_store_payload/,
+    );
+  }
+});
+
+test('missing reviewer control fails aggregate after Chat can complete', () => {
+  const receipt = reviewerStoreReceipt();
+  const complete = completeReviewerProof();
+  assert.equal(assertReviewerDemoProof(complete), complete);
+  assert.equal(storeReviewerAcceptanceStatus(receipt, { ...complete, status: 'pass' }), 'pass');
+  for (const name of Object.keys(complete.checks)) {
+    const missing = completeReviewerProof();
+    delete missing.checks[name];
+    assert.throws(
+      () => assertReviewerDemoProof(missing),
+      new RegExp(`reviewer_demo_${name}_unverified`),
+    );
+    assert.equal(
+      storeReviewerAcceptanceStatus(receipt, { ...missing, status: 'pass' }),
+      'unverified',
+    );
+  }
+  assert.equal(storeReviewerAcceptanceStatus(receipt, { status: 'fail' }), 'unverified');
+  assert.equal(storeReviewerAcceptanceStatus(receipt, null), 'unverified');
+  const pageFailure = unverifiedReviewerDemoPath('public_demo_navigation_failed');
+  assert.equal(pageFailure.checks.capture_article.status, 'unverified');
+  assert.equal(storeReviewerAcceptanceStatus(receipt, pageFailure), 'unverified');
+  assert.equal(storeReviewerAcceptanceStatus({ kind: 'local_dev_unpacked' }, null), 'pass');
+  const wrongPage = completeReviewerProof();
+  wrongPage.public_url = 'http://localhost:3000/';
+  assert.throws(() => assertReviewerDemoProof(wrongPage), /reviewer_demo_wrong_page/);
+  const wrongTable = completeReviewerProof();
+  wrongTable.checks.data_workflow_picker.workflow_row_matched = false;
+  assert.throws(
+    () => assertReviewerDemoProof(wrongTable),
+    /reviewer_demo_data_workflow_not_matched/,
+  );
+});
+
+test('prepared Store ZIP navigates public demo, records reviewer failure, and restores Chat fixture page', async () => {
+  const receipt = reviewerStoreReceipt();
+  let url = 'http://localhost:3721/';
+  const events = [];
+  const page = {
+    url: () => url,
+    goto: async (target) => {
+      events.push(`goto:${target}`);
+      url = target;
+    },
+  };
+  const failed = await runStoreReviewerPrelude({
+    page,
+    panel: {},
+    receipt,
+    runtimeTreeSha256: receipt.treeSha256,
+    onStage: (stage) => events.push(`stage:${stage}`),
+    waitForArticle: async () => events.push(`article:${url}`),
+    runDemo: async ({ page: demoPage }) => {
+      events.push(`control:${demoPage.url()}`);
+      throw new Error('reviewer_capture_article_failed');
+    },
+  });
+  assert.equal(failed.status, 'fail');
+  assert.equal(failed.checks.capture_article.status, 'unverified');
+  assert.equal(storeReviewerAcceptanceStatus(receipt, failed), 'unverified');
+  assert.equal(url, 'http://localhost:3721/');
+  assert.deepEqual(events, [
+    'stage:reviewer_public_demo',
+    `goto:${REVIEWER_DEMO_URL}`,
+    `article:${REVIEWER_DEMO_URL}`,
+    `control:${REVIEWER_DEMO_URL}`,
+    'stage:owned_article_restored',
+    'goto:http://localhost:3721/',
+    'article:http://localhost:3721/',
+  ]);
+  const dev = await runStoreReviewerPrelude({
+    page,
+    panel: {},
+    receipt: { kind: 'local_dev_unpacked' },
+    runDemo: async () => {
+      throw new Error('dev_must_not_run_reviewer');
+    },
+  });
+  assert.equal(dev, null);
+  assert.equal(url, 'http://localhost:3721/');
+});
+
+test('guest runner invokes reviewer prelude before installing the Chat fixture', async () => {
+  const start = source.indexOf("        markStage('owned_article_page');");
+  const fixtureStage = source.indexOf("        markStage('page_specific_fixture');", start);
+  assert.ok(start >= 0 && fixtureStage > start, 'guest runner pre-fixture seam missing');
+  const end = fixtureStage + "        markStage('page_specific_fixture');".length;
+  const runActualPrelude = new Function(
+    'assert',
+    'waitFor',
+    'markStage',
+    'web',
+    'receipt',
+    'report',
+    'runStoreReviewerPrelude',
+    'panel',
+    'runtimeTreeSha256',
+    'capture',
+    'join',
+    'artifacts',
+    `return (async () => { ${source.slice(start, end)} })();`,
+  );
+  const events = [];
+  const receipt = reviewerStoreReceipt();
+  const web = { url: () => 'http://localhost:3721/', locator: () => ({ count: async () => 1 }) };
+  const panel = {};
+  const report = { reviewer_demo: null };
+  const expectedProof = { ...completeReviewerProof(), status: 'pass' };
+  await runActualPrelude(
+    assert,
+    async (_label, read, accept) => {
+      const value = await read();
+      assert.equal(accept(value), true);
+    },
+    (stage) => events.push(`stage:${stage}`),
+    web,
+    receipt,
+    report,
+    async (args) => {
+      assert.equal(args.page, web);
+      assert.equal(args.panel, panel);
+      assert.equal(args.receipt, receipt);
+      assert.equal(args.runtimeTreeSha256, receipt.treeSha256);
+      events.push('reviewer_prelude_called');
+      return expectedProof;
+    },
+    panel,
+    receipt.treeSha256,
+    async () => {},
+    () => '/owned/screenshot.png',
+    '/owned',
+  );
+  assert.deepEqual(events, [
+    'stage:owned_article_page',
+    'reviewer_prelude_called',
+    'stage:page_specific_fixture',
+  ]);
+  assert.equal(report.reviewer_demo, expectedProof);
+  assert.equal(storeReviewerAcceptanceStatus(receipt, report.reviewer_demo), 'pass');
 });
