@@ -38,7 +38,7 @@
   "owner": "guest_answer_viewport_repair",
   "cause": "Whole-article intersection did not ensure asserted text was within the screenshot; ancestor clipping also needs both axes.",
   "sibling_census": "The same capture path writes opening, same-conversation follow-up and post-reload answer screenshots. All three now pass the same latest-article viewport and fixture-text gate; diagnostic failure screenshots retain their unrestricted capture path.",
-  "fix_sha": null,
+  "fix_sha": "4fa718096",
   "original_retest_runs": [39096823813, 39154937331],
   "surrounding_retest_runs": [],
   "reviewer": "Fresh independent source peer PASS, 33 focused tests; native retest pending.",
@@ -95,7 +95,7 @@
       "reason": "Focused evidence repair/diagnosis assigned; fresh independent review and native retest required."
     },
     {
-      "at": "2026-10-18T18:58:00Z",
+      "at": "2026-10-18T18:56:15Z",
       "from": "in-fix",
       "to": "fixed",
       "reason": "Requested text Range viewport/ancestor proof independently reviewed; native exact-ZIP retest remains required."

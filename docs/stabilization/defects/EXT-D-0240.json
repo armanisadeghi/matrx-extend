@@ -46,15 +46,15 @@
     "Independent native retest visibly confirms both screenshots and all resource finals before Member A product credit."
   ],
   "verification": {
-    "focused": "Focused package controls 8/8; independent combined suite 34/34; pnpm compile, focused Biome, diff check, and frozen .537 source admission pass.",
-    "peer": "Fresh independent final peer A/B PASS.",
+    "focused": "25 member/org/control focused tests pass; compile and focused/full Biome pass. Source diagnostics preserve strict paint rejection; scrollTop and primary failure preservation RED\u2192GREEN.",
+    "peer": "Fresh source peer PASS, reports/member-source-peer-20261018.json; paint root cause unproven.",
     "native": "Exact .546 native retest rejects answer_unpainted: ancestor opacity is zero. Two HTTP 200 terminal replies are diagnostic only; paint cause unresolved."
   },
   "limitations": [
     "Historical run 39107538580 keeps its valid HTTP and terminal diagnostic evidence, but no visible-answer credit.",
     "This source-only harness repair does not establish product success until a fresh native retest."
   ],
-  "next_action": "Complete independently reviewed source repair, then one guarded exact-artifact native retest; retain and independently inspect actual answer images before closure.",
+  "next_action": "Run one guarded exact .546 Member A retest using pushed a7eee07d5 diagnostics and D242 org config. Inspect actual answer images and opacity ancestor scope; if still unpainted, diagnose active renderer before changing runtime.",
   "transition_history": [
     {
       "at": "2026-10-18T00:00:00Z",

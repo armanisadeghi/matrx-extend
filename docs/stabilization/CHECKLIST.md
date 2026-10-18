@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-18 18:14 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-18T18:13:53Z.
+Generated 2026-10-18 18:57 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-18T18:56:15Z.
 
 ## Current truth
 
@@ -8,7 +8,7 @@ Generated 2026-10-18 18:14 UTC from inventory.json, defect records, daily Store 
 - Case results: pass 100, partial 97, fail 1, unverified 1130, n/a 2; 176 explicitly unverified and 954 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/402 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 0 missing steps; 0 missing expected outcomes; 0 missing control links; 1 explicitly control-less procedures.
-- Defect states: closed 136, retest-pass 9, fixed 69, in-fix 23, open 2. A fixed or closed defect is not a feature-level UI pass.
+- Defect states: closed 136, retest-pass 9, fixed 69, in-fix 24, open 2. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current Store release observations
 
@@ -26,7 +26,7 @@ These observations are bounded to their recorded times; source versions and loca
 
 ## Inventory freshness review
 
-Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **1 `src/` paths changed** through `577a9fc3b7135bbcec77e4bb521976816df50f39`. A direct path-anchor comparison matched 0 and left 1 without an exact inventory anchor.
+Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **3 `src/` paths changed** through `a7eee07d52adb430bfe5bb5db3e2ace71c3293fc`. A direct path-anchor comparison matched 0 and left 3 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities

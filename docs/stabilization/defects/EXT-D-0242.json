@@ -46,7 +46,7 @@
   ],
   "cause": "approvedOrganizationConfig() was called only when UNINTERRUPTED was true, and the hosted member-chat case did not stage or pass the private approved-organization file. The generic transport snapshot compared its header to null and returned false.",
   "sibling_census": "The admin UNINTERRUPTED path already loads and checks the private approved organization. The normal member path had only checked UI selection versus actual request headers; opening and follow-up both used that selected organization. The visible-answer paint failure is separately owned by EXT-D-0240.",
-  "fix_sha": null,
+  "fix_sha": "31a521e77",
   "original_retest_runs": [39154980480],
   "surrounding_retest_runs": [],
   "reviewer": "Fresh independent source peer PASS; native pending.",

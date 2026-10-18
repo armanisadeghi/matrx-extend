@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-18T18:13:53Z",
+  "updated_at": "2026-10-18T18:56:15Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -50560,7 +50560,25 @@
             "independent_review": ".research/remaining-control-links-peer-20261008.json",
             "review_verdict": "accept"
           },
-          "mapping_notes": "Independent source review accepted 9 existing-control link(s); this mapping adds no runtime or native execution evidence."
+          "mapping_notes": "Independent source review accepted 9 existing-control link(s); this mapping adds no runtime or native execution evidence.",
+          "defect_ids": [
+            "EXT-D-0240",
+            "EXT-D-0242"
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-18T18:56:15Z",
+              "mode": "member",
+              "run_id": "39154980480",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "build_version": "0.2.546 Store ZIP adapted unpacked",
+              "evidence": [
+                "docs/stabilization/runs/member-chat-store-v0546-run39154980480.json"
+              ],
+              "detail": "Candidate .546 two terminal HTTP200 replies; painted-answer gate failed and approved-org comparison was not loaded. Zero visible-answer credit; paint cause unresolved."
+            }
+          ]
         },
         {
           "id": "EXT-F-2013-T03",
@@ -51131,6 +51149,18 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37770686993"
               ],
               "detail": "Bounded original reproduction passes on the published 0.2.205 CRX loaded as an adapted unpacked extension. Three signed-out guest turns produced distinct page-grounded terminal answers: opening, same-conversation follow-up, and a new conversation after full panel reload. All three current-run resource journals were valid; the artifact tree was unchanged and the live server SHA was stable. The independent adjudication refutes the cross-turn stage-criteria objection: the final diagnostic describes the post-reload code-and-heading prompt, while the stage-order assertion belongs to the separately checked opening turn. This does not establish Chrome Web Store UI installation, whole Chat feature health, or current development 0.2.407 health."
+            },
+            {
+              "at": "2026-10-18T18:56:15Z",
+              "mode": "guest",
+              "run_id": "39154937331",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "build_version": "0.2.546 Store ZIP adapted unpacked",
+              "evidence": [
+                "docs/stabilization/runs/guest-chat-store-v0546-run39154937331.json"
+              ],
+              "detail": "Candidate .546 opening terminal reply completed; screenshot text outside viewport and invalid resource final. Zero acceptance credit; follow-up/reload not reached."
             }
           ]
         },
@@ -51226,7 +51256,8 @@
             "EXT-D-0112",
             "EXT-D-0144",
             "EXT-D-0172",
-            "EXT-D-0233"
+            "EXT-D-0233",
+            "EXT-D-0235"
           ],
           "run_ids": [
             "guest-grounding-peer-native-20261001-001",
@@ -51236,19 +51267,24 @@
             "37240870438",
             "37267858358",
             "37356729984",
-            "37770686993"
+            "37770686993",
+            "39154937331"
           ],
-          "retest_status": "T10 bounded publicCRX205 adapted-unpacked first/same-conversation/full-panel-reload pass37770686993 on stablelive32f3; independent4a72d8b0, EXT-D-0172 closed. ActualStoreinstalled acceptance and broaderChat remain unverified; wholefeature guestcell stays partial."
+          "retest_status": "Latest candidate .546 remains unverified: Candidate .546 opening terminal reply completed; screenshot text outside viewport and invalid resource final. Zero acceptance credit; follow-up/reload not reached. Earlier bounded evidence remains bound to its original build/server."
         },
         "member": {
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0074",
             "EXT-D-0075",
-            "EXT-D-0113"
+            "EXT-D-0113",
+            "EXT-D-0240",
+            "EXT-D-0242"
           ],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "run_ids": [
+            "39154980480"
+          ],
+          "retest_status": "Latest candidate .546 remains unverified: Candidate .546 two terminal HTTP200 replies; painted-answer gate failed and approved-org comparison was not loaded. Zero visible-answer credit; paint cause unresolved. Earlier bounded evidence remains bound to its original build/server."
         },
         "admin": {
           "test_status": "unverified",
