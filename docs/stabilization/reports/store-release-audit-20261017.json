@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-17T23:55:37Z",
+  "observed_at": "2026-10-18T00:22:14Z",
   "scope": "Primary Chrome Web Store item hnfolienncfklkgmdjjmhhegglimlamg",
-  "status": "validated_0528_zip_stale_guest_zero_credit_member_refused_dashboard_mail_unknown",
+  "status": "held_canonical_guest_fix_package_publish_failure_no_adoption_no_upload",
   "official_email": {
     "account": "publisher mailbox arman@armansadeghi.com",
     "search": "from:chromewebstore-noreply@google.com after:2026/10/11",
@@ -38,7 +38,7 @@
     "source_comparison": "Current source still defaults automatic scrape capture off and offers signed-in Vault controls; Swipe Save sends a user-chosen supported post URL, and config reporting sends bounded key-read metadata. The live October 15 policy covers those reviewed flows. Exact 0.2.528 native behavior and dashboard disclosure selections remain unverified."
   },
   "source_and_release": {
-    "main_sha": "065312d045f51f68fa29dbda256dc03c9fc697d5",
+    "main_sha": "9a376fe6409be53af1f656c3f622ed70169818ee",
     "source_version": "0.2.528",
     "main_synchronized_with_origin": true,
     "latest_hosted_release_run": 39079670382,
@@ -51,7 +51,7 @@
     "cost_model_weekly_billed_usd": 55.97,
     "cost_model_ceiling_usd": 100,
     "cost_model_status": "pass",
-    "release_decision": "0.2.528 hosted ZIP passed gates and independent bounded static Blue Argon/integrity review, but post-tag Chat and Records UI lock changes make it stale for Store submission. Resource-valid guest B failed before transport with no terminal answer, and member A did not dispatch. Hold next guarded release for reviewed canonical guest-send diagnosis/fix, then package exact-current source and rerun guest/member acceptance. Authenticated dashboard and new Gmail notice remain unknown.",
+    "release_decision": "0.2.528 remains stale after material lock drift and failed native guest send. Reviewed canonical guest fix exists in aidream source 83e05302e5, but automatic package publish 39081769764 has not delivered a fetchable agent/chat pair. Chat L1 failed packed-install E404 for the advertised Agents tarball. No extension lock adoption, hosted release, native acceptance or Store upload for the fix. Private dashboard and newer Gmail notice remain unknown.",
     "latest_hosted_release_artifact_id": 12118411986,
     "release_tag": "v0.2.528",
     "store_zip_sha256": "1210ef8ed318836dfddf5ce6cb1277ee4f5591227db21ffa702ffa029f72baa2",
@@ -88,7 +88,7 @@
     "screenshots": "Keep Swipe Save, Scrape Capture, and SEO audit out of reviewer steps and screenshots until exact current candidate native behavior on the reviewer demo page is verified. Check the four existing guest screenshots against exact candidate UI before reuse.",
     "basis": "src/config/sidepanel-visibility.ts exposes Swipe file only after sign-in; src/lib/swipe-file/save.ts sends a supported chosen URL to ingestPost and adds it to a selected collection; src/lib/config/reporting.ts reports bounded key-read metadata. Live privacy policy and demo page returned HTTP 200 on October 17."
   },
-  "next_action": "Complete independently reviewed canonical @ai-matrx/chat guest-send diagnosis/fix and same-session package publish/adoption if proven. Then exact-current CI, guarded hosted next release, independent exact-ZIP Blue Argon scan, and native resource-valid guest first/follow-up/reload plus non-admin member first/follow-up terminal acceptance with stable deployed SHA. Verify current authenticated publisher Gmail/dashboard via permitted access before any Store upload; current private state remains unknown.",
+  "next_action": "Recover fetchable Agents package bytes with integrity proof, then finish authorized Chat package publish for reviewed aidream source. Adopt both exact published packages on synchronized extension main without pins/workarounds, run exact-head CI and guarded hosted next release, independently scan its ZIP and perform real guest first/follow-up/reload and non-admin member first/follow-up acceptance. Verify current private Store Gmail/dashboard through permitted access before upload.",
   "workspace_duplicate_archive": {
     "source": "docs/stabilization/resource-journals/settings-nav-preflight-20261017-01.jsonl",
     "archived_at": "node_modules/.cache/store-release-20261017/settings-journal-duplicate/settings-nav-preflight-20261017-01.jsonl",
@@ -220,5 +220,20 @@
     ],
     "consumer_review": "Npm gitHead source diff: chat adds optional isDomainDataType stream-consumer callback and adjusts agentVariableHref summon subpath; records-ui adds optional ChartBlock centerTotal, legend and groupColors. No new required host API in these deltas. Exact current hosted install/CI still required; guest .528 outcome may trigger product repair.",
     "release_eligibility": "material_package_identity_drift_requires_new_candidate"
+  },
+  "package_fix_publication_hold": {
+    "aidream_source_sha": "83e05302e51239100fdc78202a859b9b3b275e4f",
+    "automatic_publish_run": 39081769764,
+    "agents_npm_metadata_version": "0.59.138",
+    "agents_npm_metadata_git_head": "83e05302e51239100fdc78202a859b9b3b275e4f",
+    "agents_advertised_tarball_observation": "HTTP 404 at checkpoint; bytes/integrity not verified",
+    "chat_npm_latest_version": "0.8.173",
+    "chat_npm_latest_git_head": "4ca1db5d26f3084b562326cd7f137a6759ed5f79",
+    "chat_publish_job": "117541488611 L1 failed isolated packed-chat install with E404 fetching advertised Agents 0.59.138 tarball",
+    "causal_limit": "Observed dependency fetch failure; no claim about permanent registry cause or the guest product fix correctness from this publish attempt.",
+    "extension_main": "9a376fe6409be53af1f656c3f622ed70169818ee",
+    "extension_adoption": "not_attempted",
+    "next_release_dispatch": "held",
+    "store_upload": "not_attempted"
   }
 }
