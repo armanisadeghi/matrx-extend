@@ -1,0 +1,55 @@
+{
+  "id": "EXT-D-0243",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "title": "Watchdog termination loses guest acceptance progress and server identity",
+  "surface": "Hosted guest Chat test evidence and resource sequencing",
+  "auth_mode": "guest",
+  "preconditions": [
+    "Public .205 guest run39156655719 admitted on an isolated four-CPU hosted runner.",
+    "Package/browser preparations completed with valid resource finals."
+  ],
+  "reproduction": [
+    "Run the guarded public guest procedure through native setup and STAGE real_guest_answer.",
+    "Inspect invalid guest resource journal: CPU .91 then .62 with load3.39/4 triggers stop and SIGTERM.",
+    "Inspect artifact12147970080: setup images and resource journals exist, but no native Chat result or before-server SHA was saved."
+  ],
+  "expected": "Resource refusal remains invalid and stops the owned group, while an atomic sanitized checkpoint preserves exact build, before-server identity, last reached stage and observed progress without claiming a completed reply. Guest send follows measured readiness after native setup.",
+  "actual": "The driver writes its report only at normal tail completion; watchdog SIGTERM prevents it. Guest request/terminal outcome and before-server identity are unknown.",
+  "evidence": [
+    "docs/stabilization/runs/public-guest-chat-0.2.205-39156655719.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39156655719",
+    "test-results/hosted-resource-forensics-20261018.json"
+  ],
+  "severity": "S2: interrupted test loses diagnostic evidence and cannot establish live guest behavior.",
+  "priority": "P1: restore reliable guarded native evidence before release acceptance.",
+  "state": "in-fix",
+  "owner": "guest_answer_viewport_repair",
+  "cause": "Report is written only at tail; resource watchdog persists stop then terminates the owned group. Mixed host and browser CPU pressure is observed; polling is not established as causal.",
+  "sibling_census": "All three guest turns share the same interruption/report boundary. Keep watchdog/thresholds and invalid verdict intact; use existing policy readiness after setup.",
+  "fix_sha": null,
+  "original_retest_runs": [39156655719],
+  "surrounding_retest_runs": [],
+  "reviewer": null,
+  "next_action": "Implement atomic sanitized stage/server checkpoints and same-policy post-setup readiness; independent source review, then one guarded exact-artifact native run.",
+  "transition_history": [
+    {
+      "at": "2026-10-18T19:14:46.966368+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Invalid resource run has no native result or before-server identity."
+    },
+    {
+      "at": "2026-10-18T19:14:46.966368+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Tail-only report write cannot survive immediate watchdog group termination."
+    },
+    {
+      "at": "2026-10-18T19:14:46.966368+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Narrow checkpoint and compliant sequencing repair assigned; no threshold relaxation."
+    }
+  ]
+}

@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-18 18:57 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-18T18:56:15Z. 207 features · 825 cases · 1417 controls · 241 linked defect records.
+Generated 2026-10-18 19:19 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-18T19:15:11.823642+00:00. 207 features · 825 cases · 1417 controls · 242 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1330** — Pass: 100 · Partial: 97 · Fail: 1 · Unverified: 1130 · N/A: 2.
-Unverified splits into **176 explicitly marked unverified** and **954 with no result record**.
+Applicable case-by-role slots: **1330** — Pass: 99 · Partial: 97 · Fail: 1 · Unverified: 1131 · N/A: 2.
+Unverified splits into **177 explicitly marked unverified** and **954 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -47,7 +47,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 30, n/a 0 | 0 |
 | [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 0 |
-| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 0 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 1, partial 1, fail 1, unverified 24, n/a 0 | 19 |
+| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 0 pass · 0 partial · 1 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 1, unverified 25, n/a 0 | 20 |
 | [Pilot (deferred wave D)](#pilot-deferred-wave-d) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 5, n/a 0 | 1 |
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
@@ -1750,9 +1750,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Fail · member: Partial · admin: Unverified. **Cases:** 12. **Controls:** 138.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096, EXT-D-0156, EXT-D-0211, EXT-D-0226, EXT-D-0227, EXT-D-0228, EXT-D-0229, EXT-D-0230, EXT-D-0231, EXT-D-0233, EXT-D-0234, EXT-D-0235, EXT-D-0237, EXT-D-0239, EXT-D-0240, EXT-D-0241, EXT-D-0242
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096, EXT-D-0156, EXT-D-0211, EXT-D-0226, EXT-D-0227, EXT-D-0228, EXT-D-0229, EXT-D-0230, EXT-D-0231, EXT-D-0233, EXT-D-0234, EXT-D-0235, EXT-D-0237, EXT-D-0239, EXT-D-0240, EXT-D-0241, EXT-D-0242, EXT-D-0243
 
-**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (closed), [EXT-D-0211](defects/EXT-D-0211.json) (fixed), [EXT-D-0226](defects/EXT-D-0226.json) (in-fix), [EXT-D-0227](defects/EXT-D-0227.json) (in-fix), [EXT-D-0228](defects/EXT-D-0228.json) (in-fix), [EXT-D-0229](defects/EXT-D-0229.json) (in-fix), [EXT-D-0230](defects/EXT-D-0230.json) (in-fix), [EXT-D-0231](defects/EXT-D-0231.json) (open), [EXT-D-0233](defects/EXT-D-0233.json) (in-fix), [EXT-D-0234](defects/EXT-D-0234.json) (in-fix), [EXT-D-0235](defects/EXT-D-0235.json) (fixed), [EXT-D-0237](defects/EXT-D-0237.json) (fixed), [EXT-D-0239](defects/EXT-D-0239.json) (fixed), [EXT-D-0240](defects/EXT-D-0240.json) (in-fix), [EXT-D-0241](defects/EXT-D-0241.json) (fixed), [EXT-D-0242](defects/EXT-D-0242.json) (fixed)
+**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (closed), [EXT-D-0211](defects/EXT-D-0211.json) (fixed), [EXT-D-0226](defects/EXT-D-0226.json) (in-fix), [EXT-D-0227](defects/EXT-D-0227.json) (in-fix), [EXT-D-0228](defects/EXT-D-0228.json) (in-fix), [EXT-D-0229](defects/EXT-D-0229.json) (in-fix), [EXT-D-0230](defects/EXT-D-0230.json) (in-fix), [EXT-D-0231](defects/EXT-D-0231.json) (open), [EXT-D-0233](defects/EXT-D-0233.json) (in-fix), [EXT-D-0234](defects/EXT-D-0234.json) (in-fix), [EXT-D-0235](defects/EXT-D-0235.json) (fixed), [EXT-D-0237](defects/EXT-D-0237.json) (fixed), [EXT-D-0239](defects/EXT-D-0239.json) (fixed), [EXT-D-0240](defects/EXT-D-0240.json) (in-fix), [EXT-D-0241](defects/EXT-D-0241.json) (fixed), [EXT-D-0242](defects/EXT-D-0242.json) (fixed), [EXT-D-0243](defects/EXT-D-0243.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1765,7 +1765,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-2013-T07 Send explicit page Source status in Chat context | N/A | Unverified | Unverified | EXT-F-2013-C134 |
 | EXT-F-2013-T08 Apply account default model when no extension model is selected | Unverified | Unverified | Unverified | EXT-F-2013-C135 |
 | EXT-F-2013-T09 Render typed decision answer in Chat live stream and conversation history | Unverified | Unverified | Unverified | EXT-F-2013-C136 |
-| EXT-F-2013-T10 Public guest Chat first reply, same-conversation follow-up, and new conversation after reload | Pass | N/A | N/A | EXT-F-2013-C08, EXT-F-2013-C10 |
+| EXT-F-2013-T10 Public guest Chat first reply, same-conversation follow-up, and new conversation after reload | Unverified | N/A | N/A | EXT-F-2013-C08, EXT-F-2013-C10 |
 | EXT-F-2013-T11 Inspect actual context receipt blocks and delivered text | Unverified | Unverified | Unverified | EXT-F-2013-C137, EXT-F-2013-C138 |
 | EXT-F-2013-T12 Returning guest at the live usage limit receives free-account remedy without futile Retry | Fail | N/A | N/A | EXT-F-2013-C08, EXT-F-2013-C10, EXT-F-2013-C03 |
 
@@ -1773,8 +1773,8 @@ These historical checks retain their original artifact boundary; they do not est
 
 - EXT-F-2013-T02 · member: Partial. Hosted local-development-ZIP 0.2.205 nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case.
   Evidence / build / date recorded: 37182939504, .research/hosted-member205-final.json
-- EXT-F-2013-T10 · guest: Pass. On Oct 10, actual Store-installed 0.2.205 in Arman's Chrome profile displayed guest state and completed a page-grounded first answer and same-conversation follow-up with terminal Send state. Separately, resource-valid hosted run 38066064258 used a fresh clean guest profile and Google's public CRX loaded unpacked, with real terminal opening, same-conversation and post-panel-reload answers; all three current journals were valid, the artifact tree was unchanged, and the deployed server SHA matched before/after. The native Store observation does not establish a clean-profile installed acceptance or post-reload path; the hosted run is not a Store UI install. No whole Chat or current development health follows.
-  Evidence / build / date recorded: 38066064258, ['.research/guest-position-fix-live-retest-20261008.json', '.research/guest-position-native-adjudication-20261008.json', '.research/guest-position-fix-live-peer-20261008.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/37770686993', '.research/daily-guest-20261010.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/38066064258']
+- EXT-F-2013-T10 · guest: Unverified. Current opening/follow-up/reload result unknown: host watchdog terminated before report. Before-server SHA unknown; post-run ee884703d02801f18dbdc7036897f4cec3914f93. Earlier bounded pass is preserved in result_history; no current live-health credit.
+  Evidence / build / date recorded: 39156655719, ['docs/stabilization/runs/public-guest-chat-0.2.205-39156655719.json']
 - EXT-F-2013-T12 · guest: Fail. Historical Store-installed176 failed genericerror/Retry at liveHTTP402. Exact205candidate passed fresh/returning exhaustedguest remedy/noRetry;205 is now published. Public205CRX fresh/reload answers passed37267858358 but this did not exercise allowance402 or actualStoreinstalledprofile; retain open installed-acceptance requirement.
   Evidence / build / date recorded: urgent-live-guest-20261004-01, .research/urgent-live-guest-20261004.json
 

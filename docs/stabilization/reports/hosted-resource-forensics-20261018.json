@@ -1,0 +1,84 @@
+{
+  "task_id": "hosted-resource-forensics-20261018",
+  "lane": "resource-forensics",
+  "model": "inherited",
+  "status": "diagnosed_mixed_host_and_browser_pressure",
+  "feature_ids": [
+    "guest-chat"
+  ],
+  "defect_ids": [],
+  "summary": "Watchdog invalidation is justified. Existing private attribution shows substantial host/background activity alongside owned Chromium; browser-only cause is unsupported. Product outcome remains unknown.",
+  "cause_evidence": [
+    {
+      "source": "docs/stabilization/evidence/published-v0205-guest-chat/run39156655719/resource-journals/hosted-guest-39156655719-1.sanitized.jsonl",
+      "finding": "Admission 19:06:32Z mean CPU 0.0557; 19:06:48Z CPU 0.91 load2.22/4; 19:07:04Z CPU0.62 load3.39/4; immediate watchdog SIGTERM; final invalid exit3. Memory12.46GiB, swap0, disk108GiB healthy."
+    },
+    {
+      "source": "scripts/stabilization-resource-safety.mjs:7; scripts/stabilization-resource.mjs:361; scripts/stabilization-resource-cpu.mjs",
+      "finding": "CPU uses second iostat row: one-second interval, not boot average. 75% busy OR 60% busy with load/CPU>=0.75. Two consecutive unsafe observations trigger stop. Observations establish repeated interval pressure, not continuous saturation across the intervening 16 seconds."
+    },
+    {
+      "source": ".github/workflows/hosted-guest-acceptance.yml:491-561",
+      "finding": "Package, browser install, acceptance are sequential; readiness precedes each and acceptance gets fresh60s preflight. Idle admission and rising postlaunch load argue against historical package load alone."
+    },
+    {
+      "source": "scripts/copy-hosted-resource-journal.mjs:184",
+      "finding": "Sanitizer explicitly drops process attribution. Its absence from sanitized files cannot establish absence in original artifact."
+    },
+    {
+      "source": "tests/browser/guest-chat-store-acceptance.mjs:243-316; tests/browser/package-chat-controls.mjs:63-80",
+      "finding": "Answer wait repeats full layout/DOM/storage/trace observation every100ms, including clone and per-descendant computed-style reads. Concrete observer-load hypothesis; CPU causality not proven."
+    },
+    {
+      "source": "scripts/stabilization-resource.mjs:192-208,825-833; tests/browser/guest-chat-store-acceptance.mjs:1196-1220",
+      "finding": "Stop persists sentinel then signals entire owned group. Guest report only writes at normal tail; no guaranteed flush on SIGTERM. Missing report and before-server identity are interruption evidence loss, not product outcome."
+    },
+    {
+      "source": "original artifact12147970080 RESOURCE_PROCESS_ATTRIBUTION 2026-10-18T19:06:49.423Z; recovered by candidate_guest_b with artifact digest verification",
+      "finding": "Owned listed tree86.3% ps CPU (Chromium/helper/node); other host SafariLaunchAgen88.6%, mds87.5%, provjobd1765414214.3%, siriknowledged12.9%, duetexpertd11.7%. Nonowned top two alone176.1% versus owned86.3%. ps CPU is not the same one-second interval as iostat and attribution precedes second unsafe sample; exact causal share unresolved."
+    }
+  ],
+  "verification": [
+    {
+      "case_id": "existing-run-resource-semantics",
+      "run_id": 39156655719,
+      "verdict": "invalid-resource",
+      "evidence": "saved sanitized completed journals plus exact run source68c45bf59 inspected using git show"
+    }
+  ],
+  "hypotheses": [
+    {
+      "cause": "Cold browser/page startup overlapping answer polling",
+      "prediction": "Existing attribution dominated by owned browser; event-driven observer and sequencing expensive setup before send reduce concurrent observation work without changing guards."
+    },
+    {
+      "cause": "Hidden host process",
+      "prediction": "Existing attribution shows nonbrowser process dominating; harness changes would not address cause."
+    },
+    {
+      "cause": "Historical load only",
+      "prediction": "Current busy below0.60 despite high load. Contradicted by0.91 and0.62 intervals."
+    },
+    {
+      "cause": "Measurement boot-row error",
+      "prediction": "CPU parser uses first row. Contradicted by second-row parser."
+    }
+  ],
+  "smallest_compliant_candidate": "Do not change guard or blind-retry. Existing readiness runs before Chrome/public-page activation and cannot gate background work triggered by that activation. Add measured readiness inside the guarded native session after browser/public-page setup and before guest send, using existing healthy-sample policy and existing bounded deadline; watchdog stays active and can still invalidate startup. This sequences request/poll load after setup only if the same host actually recovers. If it does not recover, refuse and retain diagnostics. This cannot guarantee this run would pass. Event-driven observer reduction is secondary and lacks proof of dominance.",
+  "evidence_correction": "Persist sanitized atomic stage/identity checkpoints before native launch and send; retain invalid-resource and unknown transport until actual terminal evidence exists.",
+  "changed_files": [
+    "test-results/hosted-resource-forensics-20261018.json"
+  ],
+  "commit_shas": [],
+  "limitations": [
+    "No new browser, hosted, heavy or paid run launched. No source changes.",
+    "Process attribution is a ps snapshot after first unsafe interval, not interval CPU accounting or a second-unsafe attribution.",
+    "No authority to terminate unrelated host services or alter runner provisioning.",
+    "A readiness boundary cannot cure host startup that independently exceeds the existing two-unsafe-sample limit; such a run must remain invalid."
+  ],
+  "open_questions": [
+    "Did nonowned host background activity persist into the second unsafe sample? No second attribution is available.",
+    "Which Chrome process consumed the observed helper CPU? Executable basename cannot identify tab/extension task."
+  ],
+  "next_action": "Parent review source-only measured post-setup readiness and durable sanitized checkpoints. Preserve all thresholds and stop behavior; no new dispatch authorized. Do not label observer polling the proven cause."
+}
