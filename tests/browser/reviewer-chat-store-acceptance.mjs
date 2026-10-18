@@ -18,6 +18,7 @@ import {
   requireMemberChatSequence,
   requireMemberOrganizationBinding,
 } from './member-chat-completion-oracle.mjs';
+import { requireMemberAnswerEvidence } from './member-chat-visible-proof.mjs';
 import {
   authenticatedWebIdentity,
   observeCanonicalAdminCheck,
@@ -68,6 +69,7 @@ const SAFE_FAILURE_CODES = new Set([
   'reviewer_composer_input_unverified',
   'reviewer_chat_terminal_answer_unverified',
   'reviewer_chat_visible_answer_unverified',
+  'reviewer_chat_visible_answer_screenshot_missing',
 ]);
 const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -1660,7 +1662,18 @@ try {
           followup_completed_reply_count: followup.completedReplyCount,
           same_organization: true,
         };
-        await requireMemberAnswerScreenshot(panel, ['Understand']);
+        await requireMemberAnswerEvidence({
+          panel,
+          expectedTerms: ['Understand'],
+          report,
+          artifacts,
+          evaluateProof: (target, terms) =>
+            evaluate(
+              target,
+              `(${prepareMemberAnswerScreenshot.toString()})(${JSON.stringify(terms)})`,
+            ),
+          capture,
+        });
         report.screenshots.result = await capture(panel, artifacts, 'reviewer-chat-result');
         report.screenshots.store_candidate_640x400 = await captureStoreCandidate(panel, artifacts, [
           'Understand',

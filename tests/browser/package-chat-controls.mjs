@@ -133,8 +133,18 @@ export function prepareMemberAnswerScreenshot(expectedTerms) {
     }
     return false;
   };
+  const termVisibleFlags = expectedTerms.map(termVisible);
+  const eligible = painted && expectedTerms.length > 0 && termVisibleFlags.every(Boolean);
   return {
-    eligible: painted && expectedTerms.length > 0 && expectedTerms.every(termVisible),
-    reason: 'answer_not_readable_above_composer',
+    eligible,
+    reason: eligible
+      ? 'eligible'
+      : !painted
+        ? 'answer_unpainted'
+        : expectedTerms.length === 0
+          ? 'expected_terms_missing'
+          : 'answer_not_readable_above_composer',
+    painted,
+    term_visible: termVisibleFlags,
   };
 }
