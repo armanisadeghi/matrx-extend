@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-18 12:39 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-18T11:18:07Z. 207 features · 823 cases · 1416 controls · 240 linked defect records.
+Generated 2026-10-18 18:14 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-18T18:13:53Z. 207 features · 825 cases · 1417 controls · 240 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1325** — Pass: 100 · Partial: 97 · Fail: 1 · Unverified: 1125 · N/A: 2.
-Unverified splits into **176 explicitly marked unverified** and **949 with no result record**.
+Applicable case-by-role slots: **1330** — Pass: 100 · Partial: 97 · Fail: 1 · Unverified: 1130 · N/A: 2.
+Unverified splits into **176 explicitly marked unverified** and **954 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -25,7 +25,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 7 pass · 7 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 38 unverified · 0 deferred; 0/1 full | pass 7, partial 17, fail 0, unverified 81, n/a 0 | 12 |
+| [Scrape](#scrape) | 1 | 7 pass · 7 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 40 unverified · 0 deferred; 0/1 full | pass 7, partial 17, fail 0, unverified 86, n/a 0 | 12 |
 | [SEO](#seo) | 1 | 0 pass · 7 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 7, fail 0, unverified 41, n/a 0 | 2 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 6 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -893,7 +893,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Capture and manage current page scrape (EXT-F-1007)
 
-**Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 42. **Controls:** 41.
+**Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 44. **Controls:** 42.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138, EXT-D-0139, EXT-D-0166, EXT-D-0187, EXT-D-0192, EXT-D-0217
 
@@ -943,6 +943,8 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1007-T40 Open a Source recognized across accessible organizations | N/A | Unverified | Unverified | EXT-F-1007-C39 |
 | EXT-F-1007-T41 Open captured images from every displayed size tier | Unverified | Unverified | Unverified | EXT-F-1007-C40 |
 | EXT-F-1007-T42 Copy captured image URL from large and medium tiles | Unverified | Unverified | Unverified | EXT-F-1007-C41 |
+| EXT-F-1007-T43 Close Save Source without saving | Unverified | Unverified | Unverified | EXT-F-1007-C29 |
+| EXT-F-1007-T44 Close File elsewhere without filing | N/A | Unverified | Unverified | EXT-F-1007-C42 |
 
 **Recorded case details and evidence:**
 
@@ -1597,7 +1599,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0063, EXT-D-0067, EXT-D-0068, EXT-D-0225
 
-**Linked defects:** [EXT-D-0063](defects/EXT-D-0063.json) (fixed), [EXT-D-0067](defects/EXT-D-0067.json) (fixed), [EXT-D-0068](defects/EXT-D-0068.json) (fixed), [EXT-D-0225](defects/EXT-D-0225.json) (in-fix)
+**Linked defects:** [EXT-D-0063](defects/EXT-D-0063.json) (fixed), [EXT-D-0067](defects/EXT-D-0067.json) (fixed), [EXT-D-0068](defects/EXT-D-0068.json) (fixed), [EXT-D-0225](defects/EXT-D-0225.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
