@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "classification": "observer_route_false_negative_likely; native_followup_transport_unproven",
+  "run": {
+    "id": 39093788557,
+    "artifact_id": 12123428243,
+    "artifact_name": "hosted-guest-39093788557-1",
+    "artifact_sha256": "f33e24fdf393512bb52f79cd2121f8da96f4eeef1de0d5dd73da633754bd9455",
+    "artifact_size_bytes": 72536,
+    "workflow_head_sha": "eb702c98ad3392d0381f41c9dbe88be101ab2d38",
+    "artifact_source": "GitHub Actions metadata for the exact run artifact; extracted outer artifact matches the frozen sanitized report and journals byte-for-byte. The local Store ZIP SHA-256 matches the release receipt."
+  },
+  "build_scope": {
+    "extension_version": "0.2.531",
+    "source_sha": "eb702c98ad3392d0381f41c9dbe88be101ab2d38",
+    "published_store_zip_artifact_id": 12123921254,
+    "published_store_zip_sha256": "efd767974f0ba6a8b3afed9318e7234ed62c2fb2e24080eb575e1b2c39f48f24",
+    "store_zip_tree_sha256_before_native_key_adaptation": "9729e07f6d47d70b67faa1b4ca350a049e8e785268af8a7ac0354e509ce71e57",
+    "native_runtime_tree_sha256": "db2478e506de8cb1fb3125b193c1362eddbea13d93c03178b2452f36acc82286",
+    "native_receipt_kind": "native_store_zip_candidate_key_adapted",
+    "server_git_sha_before_and_after": "ce6f3430911821130a55545b7b3a10d6c7f68a8b",
+    "server_sha_observation_limit": "The receipt has matching before/after point observations but no observation timestamps.",
+    "chat_package_version": "0.8.180"
+  },
+  "observed_product_behavior": {
+    "opening": "The report records a fresh signed-out guest, one completed assistant reply, a canonical HTTP 200 opening request with is_new=true, semantic terminal success, and the unpredictable page code and ordered stages in the reply.",
+    "same_conversation_followup": "The failure observation records replyCount=2, streaming=false, an emptied composer after submission, pendingSubmissionObserved=true, 296 store notifications, no runtime errors, alerts, refusal, or terminal error, and tool-start events. Its sanitized latest reply contains [follow-up-code] and [fixture-heading]. The runtime sanitizer replaces those exact fixture values with these markers, which supports that the rendered reply contained both values.",
+    "conflicting_or_missing_evidence": "The same failure observation says answerContainsNonce=false despite the redacted reply marker; answerContainsFixtureHeading=true. The timeline has runCount=0 and streaming=true, the stream trace has no run or terminal events, and tool-boundary results are null for returned fixture content. Treat visible follow-up content as strong evidence of a rendered grounded answer, with its nonce boolean unresolved. The follow-up was not proven terminal by the UI oracle, and post-reload behavior was not reached.",
+    "product_verdict": "The content-level terminal classifier is likely false-negative for the follow-up, but the full user requirement is not satisfied by this run. Do not grant successful same-conversation transport or post-reload credit."
+  },
+  "observer_and_provenance": {
+    "mounted_chat": "At source SHA eb702c98, the side-panel Chat tab lazy-loads src/features/package-chat/PackageChatView.tsx. That view mounts ChatNewClient and ChatConversationRoom from @ai-matrx/chat; the room is configured ownedByMandate=false.",
+    "exact_package_evidence": "The source-SHA pnpm-lock.yaml resolves @ai-matrx/chat 0.8.180, and the exact 0.2.531 Store ZIP contains chunks/execute-instance.thunk-D68nhtPi.js. In the persisted-conversation branch, when the conversation does not continue through a mandate, it resolves POST /ai/conversations/{conversation_id}. The initial unpersisted send uses the start route; a persisted follow-up can therefore use the direct conversation route.",
+    "observer_at_run_sha": "tests/browser/guest-chat-transport-observer.mjs at eb702c98 recognizes /ai/mandates/extend.browser_chat (and its versioned form) as a chat path, and recognizes only /ai/conversations/{id}/resume and /tool_results as continuation requests. It does not recognize bare POST /ai/conversations/{id}.",
+    "observer_verdict": "This source-to-source route mismatch explains why a real package follow-up could be omitted from guest_ai_requests. It is a source-corroborated observer blind spot and makes a false-negative transport classification likely. The native run itself contains no follow-up request ID, URL, HTTP status, or conversation fingerprint, so the follow-up POST and its terminal transport remain unproven.",
+    "native_observer_counters": "The frozen report says mode=panel, request_events=67, post_events=11, chat_path_events=1, response_events=71, buffered_requests=6; only the opening request appears in guest_ai_requests."
+  },
+  "resource_validity": {
+    "package": "valid; child exit 0; resourceInvalid=false",
+    "browser": "valid; child exit 0; resourceInvalid=false",
+    "guest": "child_failed; child exit 1; admitted=true; resourceInvalid=false",
+    "evidence": "All three frozen journals under docs/stabilization/evidence/guest-chat-v0531/run39093788557/ byte-match the corresponding journals from the extracted outer artifact.",
+    "interpretation": "The guest acceptance child failed at its transport assertion; the run is not resource-invalid and earns no environmental-health pass."
+  },
+  "discriminating_next_step": "Repair the observer to recognize the persisted POST /ai/conversations/{id} route in the package-mode contract, deriving the conversation fingerprint from the path and capturing status plus terminal response semantics. Retest with the exact .531 ZIP or a recorded equivalent: prove opening is_new=true, follow-up uses the opening conversation identity and reaches successful terminal completion, then prove a new grounded turn after reload. If the direct route is observed and succeeds, classify the prior transport failure as observer false-negative; if it is not observed, investigate the product send path. Keep the current run unpassed until native capture proves these conditions.",
+  "evidence_paths": [
+    "docs/stabilization/evidence/guest-chat-v0531/run39093788557/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-v0531/run39093788557/hosted-package-39093788557-1.jsonl",
+    "docs/stabilization/evidence/guest-chat-v0531/run39093788557/hosted-browser-39093788557-1.jsonl",
+    "docs/stabilization/evidence/guest-chat-v0531/run39093788557/hosted-guest-39093788557-1.jsonl",
+    "tests/browser/guest-chat-transport-observer.mjs",
+    "src/features/package-chat/PackageChatView.tsx",
+    "src/entrypoints/sidepanel/App.tsx",
+    "pnpm-lock.yaml"
+  ]
+}
