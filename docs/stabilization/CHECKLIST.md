@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-18 20:27 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-18T20:03:46.716563+00:00.
+Generated 2026-10-18 20:52 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-18T20:03:46.716563+00:00.
 
 ## Current truth
 
@@ -8,7 +8,7 @@ Generated 2026-10-18 20:27 UTC from inventory.json, defect records, daily Store 
 - Case results: pass 100, partial 97, fail 2, unverified 1132, n/a 2; 178 explicitly unverified and 954 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/402 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 0 missing steps; 0 missing expected outcomes; 0 missing control links; 1 explicitly control-less procedures.
-- Defect states: closed 136, retest-pass 9, fixed 71, in-fix 23, open 3. A fixed or closed defect is not a feature-level UI pass.
+- Defect states: closed 136, retest-pass 9, fixed 72, in-fix 22, open 3. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current Store release observations
 
@@ -26,7 +26,7 @@ These observations are bounded to their recorded times; source versions and loca
 
 ## Inventory freshness review
 
-Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **3 `src/` paths changed** through `285597da02c9f523e4cf998828381ef1c6e6ff47`. A direct path-anchor comparison matched 0 and left 3 without an exact inventory anchor.
+Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **3 `src/` paths changed** through `6296584fc8d88ae4770e789f33cc28eeae759043`. A direct path-anchor comparison matched 0 and left 3 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities
