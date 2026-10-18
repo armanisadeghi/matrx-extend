@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { Window } from 'happy-dom';
@@ -30,6 +31,169 @@ const followupVerdict = source.indexOf("'new guest conversation after reload mus
 const followupScreenshot = source.indexOf('        report.followup_screenshot = await capture(');
 const cleanup = source.indexOf('      } catch (error) {', followupScreenshot);
 const tail = source.slice(followupScreenshot, cleanup);
+
+const checkpointBody = source.slice(
+  source.indexOf('async function writeGuestCheckpoint('),
+  source.indexOf('// Count fresh guard measurements after the native panel'),
+);
+const writeGuestCheckpoint = new Function(
+  'assert',
+  'dirname',
+  `${checkpointBody}; return writeGuestCheckpoint;`,
+)(assert, (path) => path.slice(0, path.lastIndexOf('/')));
+const readinessBody = source.slice(
+  source.indexOf('async function waitForGuestPostSetupHealth('),
+  source.indexOf('async function observe('),
+);
+const waitForGuestPostSetupHealth = new Function(
+  'assert',
+  'join',
+  `${readinessBody}; return waitForGuestPostSetupHealth;`,
+)(assert, join);
+
+test('post-setup readiness requires three new healthy watchdog measurements and refuses unsafe evidence', async () => {
+  const policy = {
+    healthySamplesToResume: 3,
+    hostedReadinessWaitSeconds: 90,
+    maximumHostedReadinessWaitSeconds: 90,
+    watchIntervalSeconds: 15,
+  };
+  const admission = { code: 'RESOURCE_ADMITTED' };
+  const healthy = { code: 'RESOURCE_WATCH_HEALTHY', sample: { cpuBusyFraction: 0.2 }, reasons: [] };
+  const events = [admission, healthy, healthy];
+  let elapsed = 0;
+  let unsafe = false;
+  const inputs = {
+    repo: '/repo',
+    env: { MATRX_RESOURCE_RUN_ID: 'hosted-guest-run' },
+    readEvidence: async (path) =>
+      path.endsWith('resource-policy.json')
+        ? JSON.stringify(policy)
+        : `${events.map((event) => JSON.stringify(event)).join('\n')}\n`,
+    checkHealth: async () => {
+      if (unsafe) throw new Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample');
+      return { event: 'RESOURCE_WATCH_HEALTHY' };
+    },
+    now: () => elapsed,
+    wait: async (ms) => {
+      elapsed += ms;
+      events.push(healthy);
+    },
+  };
+  assert.deepEqual(await waitForGuestPostSetupHealth(inputs), {
+    healthy_samples: 3,
+    policy_samples_required: 3,
+  });
+  assert.equal(elapsed, 4500, 'readiness must observe fresh samples rather than reuse admission');
+  events.splice(3);
+  elapsed = 0;
+  inputs.wait = async (ms) => {
+    elapsed += ms;
+    events.push({ code: 'RESOURCE_WATCH_UNSAFE' });
+    unsafe = true;
+  };
+  await assert.rejects(waitForGuestPostSetupHealth(inputs), /unsafe_sample/);
+  assert.equal(elapsed, 1500, 'unsafe guard evidence must refuse before another guest send');
+  unsafe = false;
+  events.splice(3);
+  elapsed = 0;
+  inputs.wait = async (ms) => {
+    elapsed += ms;
+  };
+  await assert.rejects(waitForGuestPostSetupHealth(inputs), /readiness_timeout/);
+  assert.equal(elapsed, 90000, 'the existing policy deadline must bound readiness');
+  events.splice(3);
+  elapsed = 0;
+  inputs.wait = async () => {
+    elapsed += 31000;
+    events.push(healthy);
+  };
+  await assert.rejects(
+    waitForGuestPostSetupHealth(inputs),
+    /readiness_timeout/,
+    'healthy evidence arriving after the policy deadline must not release the send',
+  );
+});
+
+test('early termination retains only atomic allowlisted guest stage and server identity', async (t) => {
+  const root = await mkdtemp(join(tmpdir(), 'guest-checkpoint-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const output = join(root, 'guest-chat-store-checkpoint-run.json');
+  const unsafe = 'Bearer private-guest-auth';
+  const state = {
+    stage_progress: ['owned_profile'],
+    server_version_before: {
+      reachable: true,
+      status: 200,
+      git_sha: 'a'.repeat(40),
+      secret: unsafe,
+    },
+    build: { version: '0.2.547', tree_sha256: 'b'.repeat(64), receipt_kind: 'release' },
+    latestReplyText: unsafe,
+    guest: { raw_id: unsafe },
+  };
+  const deps = { makeId: () => 'atomic', makeDir: mkdir, write: writeFile, move: rename };
+  await writeGuestCheckpoint(output, state, deps);
+  const first = await readFile(output, 'utf8');
+  const checkpoint = JSON.parse(first);
+  assert.deepEqual(checkpoint, {
+    schema_version: 1,
+    record_kind: 'guest_chat_progress_checkpoint',
+    defect_id: 'EXT-D-0243',
+    status: 'checkpoint',
+    acceptance_credit: false,
+    stage: 'owned_profile',
+    server_version_before: { reachable: true, status: 200, git_sha: 'a'.repeat(40) },
+    build: { version: '0.2.547', tree_sha256: 'b'.repeat(64), receipt_kind: 'release' },
+  });
+  assert.doesNotMatch(first, /Bearer|private-guest-auth|latestReplyText|raw_id|secret/);
+  assert.equal((await stat(output)).mode & 0o777, 0o600);
+  state.stage_progress.push('post_setup_resource_readiness');
+  await assert.rejects(
+    writeGuestCheckpoint(output, state, {
+      ...deps,
+      makeId: () => 'interrupted',
+      move: async () => {
+        throw new Error('interrupted_before_atomic_rename');
+      },
+    }),
+    /interrupted_before_atomic_rename/,
+  );
+  assert.equal(
+    await readFile(output, 'utf8'),
+    first,
+    'incomplete replacement cannot corrupt the durable checkpoint',
+  );
+  await writeGuestCheckpoint(output, state, { ...deps, makeId: () => 'next' });
+  assert.equal(JSON.parse(await readFile(output, 'utf8')).stage, 'post_setup_resource_readiness');
+  await assert.rejects(stat(`${output}.next.tmp`), /ENOENT/);
+});
+
+test('guest native work and first send follow durable identity checkpoints and measured post-setup readiness', () => {
+  const nativeStart = source.indexOf('  const run = await runNativeSidepanelQa({');
+  const send = source.indexOf("await submitQuestion(panel, FIRST_QUESTION, 'opening_question'");
+  const checkpoints = [
+    ...source.matchAll(/await writeGuestCheckpoint\(CHECKPOINT_OUTPUT, report\)/g),
+  ].map((match) => match.index);
+  const readiness = source.indexOf('await waitForGuestPostSetupHealth(');
+  const finalReport = source.indexOf('await writeFile(OUTPUT,');
+  const checkpointCleanup = source.indexOf('await unlink(CHECKPOINT_OUTPUT)');
+  assert.equal(
+    checkpoints.length,
+    3,
+    'identity must be durable before native work, readiness, and first send',
+  );
+  assert.ok(
+    checkpoints[0] < nativeStart &&
+      nativeStart < checkpoints[1] &&
+      checkpoints[1] < readiness &&
+      readiness < checkpoints[2] &&
+      checkpoints[2] < send &&
+      send < finalReport &&
+      finalReport < checkpointCleanup,
+    'fresh measured health and checkpoints precede send; completed reports replace progress evidence',
+  );
+});
 
 // A failed optional Values close must never prevent the three real guest Chat
 // turns from being sent and judged. Values still runs before the final verdict.

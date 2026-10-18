@@ -1,0 +1,19 @@
+{
+  "verdict": "PASS",
+  "scope": "D243 source review only; no native, hosted, or dispatch work performed.",
+  "product_acceptance": "UNVERIFIED",
+  "findings": [],
+  "evidence": {
+    "readiness": "After native panel, public page fixture, and stream setup, the runner records a journal-length baseline for MATRX_RESOURCE_RUN_ID, waits for policy.healthySamplesToResume new consecutive healthy/recovered events before the first guest send, enforces policy.hostedReadinessWaitSeconds and watch interval, and rechecks requireNativeResourceHealth before release.",
+    "existing_guard": "requireNativeResourceHealth binds the active run ID and owner permit, checks stop/hold/final state, rejects unsafe or CPU-pending journal state, requires a fresh latest sample, and reads the current policy. The watcher remains responsible for existing CPU/load thresholds and stop behavior.",
+    "checkpoints": "Allowlisted checkpoint writes use a same-directory unique temporary file, mode 0600, and rename. On interrupted replacement the prior checkpoint remains readable. Checkpoint fields contain stage, EXT-D-0243, acceptance_credit:false, sanitized before-server reachability/status/SHA, and validated build receipt metadata. The checkpoint name and record_kind/status distinguish it from the final report.",
+    "artifact_upload": "The existing test-results/guest-chat-store-*.json artifact pattern includes guest-chat-store-checkpoint-*.json.",
+    "acceptance_gates": "Diff adds setup sequencing and checkpointing; existing terminal, semantic, paint/screenshot, and follow-up gates are unchanged."
+  },
+  "verification": {
+    "focused_tests": "node --test tests/browser/guest-answer-screenshot.test.mjs tests/browser/guest-chat-store-sequence.test.mjs — 36 passed, 0 failed.",
+    "compile": "pnpm compile — passed (tsc --noEmit).",
+    "mutation_evidence": "The RED/GREEN and plant.py mutant results are recorded in /tmp/guest-resource-sequencing-repair.md; not rerun in this review."
+  },
+  "limitation": "A fresh guarded hosted run and screenshot inspection are still required to establish product acceptance."
+}

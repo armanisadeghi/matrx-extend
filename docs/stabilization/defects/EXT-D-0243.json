@@ -23,15 +23,15 @@
   ],
   "severity": "S2: interrupted test loses diagnostic evidence and cannot establish live guest behavior.",
   "priority": "P1: restore reliable guarded native evidence before release acceptance.",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "guest_answer_viewport_repair",
   "cause": "Report is written only at tail; resource watchdog persists stop then terminates the owned group. Mixed host and browser CPU pressure is observed; polling is not established as causal.",
   "sibling_census": "All three guest turns share the same interruption/report boundary. Keep watchdog/thresholds and invalid verdict intact; use existing policy readiness after setup.",
   "fix_sha": null,
   "original_retest_runs": [39156655719],
   "surrounding_retest_runs": [],
-  "reviewer": null,
-  "next_action": "Implement atomic sanitized stage/server checkpoints and same-policy post-setup readiness; independent source review, then one guarded exact-artifact native run.",
+  "reviewer": "Fresh independent D243 source peer PASS; 36 focused tests and compile pass; native pending.",
+  "next_action": "Run guarded exact .547 Guest B, retain checkpoint if interrupted, require three terminal grounded replies and requested-text images plus valid resource finals; fresh peer before closure.",
   "transition_history": [
     {
       "at": "2026-10-18T19:14:46.966368+00:00",
@@ -50,6 +50,17 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Narrow checkpoint and compliant sequencing repair assigned; no threshold relaxation."
+    },
+    {
+      "at": "2026-10-18T19:20:00.669628+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent source review accepts same-policy post-setup readiness and atomic allowlisted checkpoint; native retest pending."
     }
-  ]
+  ],
+  "verification": {
+    "focused": "36/36 tests, compile, scoped/full Biome and forcing mutations pass. Fresh run journal events only, current policy/permit, no threshold changes. Atomic checkpoint interrupted replacement and secret-exclusion proofs pass.",
+    "peer": "reports/guest-resource-sequencing-peer-20261018.json",
+    "native": "Pending guarded native exact .547 run; original invalid run earns zero product acceptance."
+  }
 }

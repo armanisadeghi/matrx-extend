@@ -2,7 +2,7 @@
 /** Real guest Chat acceptance in a fresh, receipt-bound native side panel. */
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rename, unlink, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
@@ -22,6 +22,7 @@ import {
   watchGuestAiRequests,
 } from './guest-chat-transport-observer.mjs';
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
+import { requireNativeResourceHealth } from './native-resource-boundary.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
@@ -36,6 +37,7 @@ const EXTENSION_DIR = resolve(
   process.env.MATRX_GUEST_CHAT_EXTENSION_DIR ?? join(REPO, '.output', 'chrome-mv3-dev'),
 );
 const OUTPUT = join(REPO, 'test-results', `guest-chat-store-${randomUUID()}.json`);
+const CHECKPOINT_OUTPUT = OUTPUT.replace('guest-chat-store-', 'guest-chat-store-checkpoint-');
 const FIRST_QUESTION =
   'Read the unique opening check code from the article on my current tab. What are the three workflow stages in order? Include the exact code.';
 const FOLLOWUP_QUESTION =
@@ -128,6 +130,126 @@ function markStage(next) {
   stage = next;
   report.stage_progress.push(next);
   process.stdout.write(`STAGE ${next}\n`);
+}
+
+// This allowlisted checkpoint remains useful if the resource watchdog stops
+// the owned process group before the normal tail can write its full report.
+async function writeGuestCheckpoint(
+  output,
+  state,
+  { makeId = randomUUID, makeDir = mkdir, write = writeFile, move = rename } = {},
+) {
+  const stage = state.stage_progress.at(-1);
+  assert.ok(
+    ['owned_profile', 'post_setup_resource_readiness', 'guest_question_ready'].includes(stage),
+    'guest_checkpoint_stage_refused',
+  );
+  const server = state.server_version_before;
+  const build = state.build;
+  const checkpoint = {
+    schema_version: 1,
+    record_kind: 'guest_chat_progress_checkpoint',
+    defect_id: 'EXT-D-0243',
+    status: 'checkpoint',
+    acceptance_credit: false,
+    stage,
+    server_version_before: {
+      reachable: server?.reachable === true,
+      status: Number.isInteger(server?.status) ? server.status : null,
+      git_sha: /^[0-9a-f]{7,40}$/i.test(server?.git_sha ?? '') ? server.git_sha : null,
+    },
+    build: {
+      version: /^\d+\.\d+\.\d+$/.test(build?.version ?? '') ? build.version : null,
+      tree_sha256: /^[0-9a-f]{64}$/i.test(build?.tree_sha256 ?? '') ? build.tree_sha256 : null,
+      receipt_kind: ['release', 'published_store_crx_unpacked', 'local_dev_unpacked'].includes(
+        build?.receipt_kind,
+      )
+        ? build.receipt_kind
+        : null,
+    },
+  };
+  await makeDir(dirname(output), { recursive: true, mode: 0o700 });
+  const temporary = `${output}.${makeId()}.tmp`;
+  await write(temporary, `${JSON.stringify(checkpoint, null, 2)}\n`, {
+    flag: 'wx',
+    mode: 0o600,
+  });
+  await move(temporary, output);
+}
+
+// Count fresh guard measurements after the native panel and public page are
+// ready. The guard still owns sampling, thresholds, and the stop decision.
+async function waitForGuestPostSetupHealth({
+  repo = REPO,
+  env = process.env,
+  readEvidence = readFile,
+  checkHealth = () => requireNativeResourceHealth({ repo, env }),
+  now = () => performance.now(),
+  wait = (ms) => new Promise((resolveWait) => setTimeout(resolveWait, ms)),
+} = {}) {
+  const policy = JSON.parse(
+    await readEvidence(join(repo, 'docs/stabilization/resource-policy.json'), 'utf8'),
+  );
+  const needed = policy.healthySamplesToResume;
+  const deadlineMs = policy.hostedReadinessWaitSeconds * 1000;
+  const intervalMs = policy.watchIntervalSeconds * 1000;
+  assert.ok(
+    Number.isInteger(needed) &&
+      needed > 0 &&
+      Number.isFinite(deadlineMs) &&
+      deadlineMs > 0 &&
+      deadlineMs <= policy.maximumHostedReadinessWaitSeconds * 1000 &&
+      Number.isFinite(intervalMs) &&
+      intervalMs > 0,
+    'guest_resource_policy_invalid',
+  );
+  assert.match(env.MATRX_RESOURCE_RUN_ID ?? '', /^[A-Za-z0-9_.-]+$/, 'guest_resource_run_missing');
+  const journalPath = join(
+    repo,
+    'docs/stabilization/resource-journals',
+    `${env.MATRX_RESOURCE_RUN_ID}.pending.jsonl`,
+  );
+  const readEvents = async () => {
+    const journal = await readEvidence(journalPath, 'utf8');
+    assert.ok(journal.endsWith('\n'), 'guest_resource_journal_incomplete');
+    return journal
+      .trimEnd()
+      .split('\n')
+      .map((line) => JSON.parse(line));
+  };
+  const baselineCount = (await readEvents()).length;
+  const deadline = now() + deadlineMs;
+  while (true) {
+    if (now() > deadline) throw new Error('guest_post_setup_resource_readiness_timeout');
+    let health = null;
+    try {
+      health = await checkHealth();
+    } catch (error) {
+      if (!/NATIVE_RESOURCE_BOUNDARY_REFUSED:(?:stale_health|cpu_pending)$/.test(error.message))
+        throw error;
+    }
+    const events = (await readEvents()).slice(baselineCount);
+    let consecutive = 0;
+    for (const event of events) {
+      if (event.code === 'RESOURCE_WATCH_HEALTHY' || event.code === 'RESOURCE_CPU_RECOVERED') {
+        assert.ok(
+          event.sample && Array.isArray(event.reasons) && event.reasons.length === 0,
+          'guest_resource_journal_invalid',
+        );
+        consecutive++;
+      } else if (event.code === 'RESOURCE_CPU_PENDING' || event.code === 'RESOURCE_WATCH_UNSAFE') {
+        consecutive = 0;
+      }
+    }
+    if (health && consecutive >= needed) {
+      await checkHealth();
+      if (now() > deadline) throw new Error('guest_post_setup_resource_readiness_timeout');
+      return { healthy_samples: consecutive, policy_samples_required: needed };
+    }
+    const remaining = deadline - now();
+    if (remaining <= 0) throw new Error('guest_post_setup_resource_readiness_timeout');
+    await wait(Math.min(Math.max(1, Math.floor(intervalMs / 10)), remaining));
+  }
 }
 
 async function observe(panel, expected = {}) {
@@ -763,6 +885,7 @@ try {
     receipt_kind: receipt.kind ?? 'release',
   };
   markStage('owned_profile');
+  await writeGuestCheckpoint(CHECKPOINT_OUTPUT, report);
   const run = await runNativeSidepanelQa({
     extensionDir: EXTENSION_DIR,
     expectedRelease: receipt,
@@ -865,6 +988,15 @@ try {
         );
         await installStreamTrace(panel, fixture, fixtureTabId);
         const openingBoundary = await guestTurnBoundary(panel, transportMode);
+        markStage('post_setup_resource_readiness');
+        report.post_setup_resource_readiness = { status: 'pending' };
+        await writeGuestCheckpoint(CHECKPOINT_OUTPUT, report);
+        report.post_setup_resource_readiness = {
+          status: 'ready',
+          ...(await waitForGuestPostSetupHealth()),
+        };
+        markStage('guest_question_ready');
+        await writeGuestCheckpoint(CHECKPOINT_OUTPUT, report);
         networkWatch.arm('opening');
         contextReadWatch.arm('opening_send');
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question', transportMode);
@@ -1218,5 +1350,8 @@ if (
 }
 await mkdir(dirname(OUTPUT), { recursive: true, mode: 0o700 });
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
+await unlink(CHECKPOINT_OUTPUT).catch((error) => {
+  if (error.code !== 'ENOENT') throw error;
+});
 process.stdout.write(`${report.status.toUpperCase()} guest_chat_store ${OUTPUT}\n`);
 if (report.status !== 'pass') process.exitCode = 1;
