@@ -117,6 +117,7 @@ function reviewedStabilizationPath(path) {
       'docs/stabilization/STATUS.html',
       'docs/stabilization/inventory.json',
       'docs/stabilization/defects/EXT-D-0228.json',
+      'docs/stabilization/defects/EXT-D-0239.json',
     ].includes(path)
   )
     return true;
@@ -222,6 +223,36 @@ function admission() {
   return remoteSha;
 }
 
+// Reviewed immutable .537 TEST-only drift; no Store eligibility is implied.
+const reviewedCandidateSource = '1b612c67410576b5d077fe20bee4fd33455d987d';
+const reviewedCandidateChanges = {
+  bffebad8ab1684b7fa23c0cd68c89805cbb87385: {
+    'tests/browser/vault-package-panel-walk.mjs': '2362f06b9dcfdf662c3d7bbe89af84fc0a99c9ea',
+  },
+  '4c24d46e1a5ed1e2b8ec790618fb57839ec86d74': {
+    'pnpm-lock.yaml': '602fbd618dee1c8a5de04c2f627d74ff793fb8cc',
+  },
+  a9e9a5913adc6ce4a2c24a3ff60cd86cb3bce69c: {
+    '_conflicts/2026-10-17-234541/pnpm-lock.yaml.held': '52ac526fe7c54b1120dc56b676ff7892fcaf1e62',
+    '_conflicts/README.md': 'b4fbec0d398d59d482d03e5956d76f09b8105890',
+    'docs/TOOLS.generated.md': 'da33a74f9e1100c576c2a3b4d8fab0f8b56c2ee0',
+    'docs/stabilization/defects/EXT-D-0223.json': '43aed9f1500b83763a4550dd301ec83f29d01853',
+    'package.json': '9c345f745ac563f076a2b16fa12bcb39d752808f',
+    'pnpm-lock.yaml': '12744871d792a43173913da3deb8cabf75798886',
+    'tests/browser/vault-package-panel-walk.mjs': 'd49410749f5c453cc56527d4b9d8f02e9d83d3a7',
+    'tests/browser/vault-walk-cleanup.mjs': '61a144de5a3b60586040c8343225eb62c582945f',
+    'types/tool-catalog.json': 'eb4a37a89a1a5564a5aea9ba6b7a923495e992d8',
+    'types/tool-catalog.md': 'd357267ab44aa23b8cb8fbf8f2145eb812b22504',
+  },
+  '7aa553320ed9fa5019899a3f35337dcbe1d77711': {
+    'tests/browser/vault-package-panel-walk.mjs': 'd49410749f5c453cc56527d4b9d8f02e9d83d3a7',
+    'tests/browser/vault-walk-cleanup.mjs': '61a144de5a3b60586040c8343225eb62c582945f',
+  },
+  '15d9b71630b82c92bdbc750e86faede2ed212f11': {
+    'pnpm-lock.yaml': '602fbd618dee1c8a5de04c2f627d74ff793fb8cc',
+  },
+};
+
 export function proveSource(sourceSha, workflowSha) {
   execFileSync('git', ['merge-base', '--is-ancestor', sourceSha, workflowSha]);
   // SHA attests the reviewed two-file operational change, not a script namespace.
@@ -242,8 +273,16 @@ export function proveSource(sourceSha, workflowSha) {
     'docs/stabilization/resource-journals/hosted-package-39074994379-1.jsonl',
   ];
   const reviewedStorePeer = '66b9b1b1852036d8aa565715455f94935177c522';
+  const reviewedD223Preflight = 'db9434441dd1f29eda3c0242b081971befa3dbdd';
+  const reviewedD223PreflightBlobs = {
+    'docs/stabilization/resource-journals/ext-d-0223-native-retest-preflight-20261018-01.jsonl':
+      'f01a7788e4501d348003173fdf33f585656e35d2',
+    'docs/stabilization/runs/ext-d-0223-t10-native-retest-20261018-01.json':
+      'b69d14ada91d1bc4a12a579b36cafc4a14db0b56',
+  };
   const reviewedStoreReceipt =
     'docs/stabilization/evidence/store-release-20261017/tool-drift-release-repair.json';
+  const reviewedChanges = [];
   const commits = git(['rev-list', `${sourceSha}..${workflowSha}`])
     .split('\n')
     .filter(Boolean);
@@ -265,12 +304,39 @@ export function proveSource(sourceSha, workflowSha) {
     )
       .split('\0')
       .filter(Boolean);
-    return paths.filter(
-      (path) =>
+    return [...new Set(paths)].filter((path) => {
+      const expectedBlob =
+        sourceSha === reviewedCandidateSource
+          ? reviewedCandidateChanges[commit]?.[path]
+          : undefined;
+      if (expectedBlob) {
+        assert.equal(
+          git(['rev-parse', `${commit}:${path}`]),
+          expectedBlob,
+          'release_member_reviewed_blob_mismatch',
+        );
+        reviewedChanges.push({ commit, path, blob: expectedBlob });
+        return false;
+      }
+      if (
+        sourceSha === reviewedCandidateSource &&
+        commit === reviewedD223Preflight &&
+        path in reviewedD223PreflightBlobs
+      ) {
+        assert.equal(
+          git(['rev-parse', `${commit}:${path}`]),
+          reviewedD223PreflightBlobs[path],
+          'release_member_reviewed_blob_mismatch',
+        );
+        reviewedChanges.push({ commit, path, blob: reviewedD223PreflightBlobs[path] });
+        return false;
+      }
+      return (
         (commit !== reviewedGuestRoute || !reviewedGuestPaths.includes(path)) &&
         (commit !== reviewedSettingsRecord || !reviewedSettingsPaths.includes(path)) &&
-        (commit !== reviewedStorePeer || path !== reviewedStoreReceipt),
-    );
+        (commit !== reviewedStorePeer || path !== reviewedStoreReceipt)
+      );
+    });
   });
   const pendingPaths = [
     ...execFileSync('git', ['diff', '--name-only', '-z', 'HEAD'], { encoding: 'utf8' }).split('\0'),
@@ -279,6 +345,19 @@ export function proveSource(sourceSha, workflowSha) {
     }).split('\0'),
   ].filter(Boolean);
   requireReleaseMemberSource(true, [...changedPaths, ...pendingPaths]);
+  return {
+    scope:
+      sourceSha === reviewedCandidateSource
+        ? 'frozen-release-candidate-test'
+        : 'frozen-release-test',
+    storeEligibility: false,
+    sourceSha,
+    workflowSha,
+    reviewedChanges,
+    subsequentCommits: commits,
+    subsequentChangedPaths: [...new Set(changedPaths)],
+    pendingPaths,
+  };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
@@ -343,11 +422,12 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     );
     verifyReleaseMemberBytes(archive, plan.artifact, receipt, store);
     assert.equal(admission(), workflowSha, 'release_member_workflow_changed');
-    proveSource(sourceSha, workflowSha);
+    const sourceReview = proveSource(sourceSha, workflowSha);
     if (mode === 'dispatch') execFileSync('gh', plan.args, { stdio: 'inherit' });
     console.log(
       JSON.stringify({
         mode,
+        ...sourceReview,
         releaseRunId,
         artifactId,
         sourceSha,

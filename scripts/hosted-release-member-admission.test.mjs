@@ -7,6 +7,7 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import {
   admitReleaseMember,
+  proveSource,
   releaseMemberPlan,
   requireReleaseMemberSource,
   verifyReleaseMemberBytes,
@@ -366,6 +367,54 @@ test('exact member identity diagnostic delta is admitted without widening paths'
     );
 });
 
+// The Member A false-negative repair and its durable defect record remain test-only.
+test('member follow-up harness defect admits only exact test and record paths', () => {
+  const reviewed = [
+    'tests/browser/reviewer-chat-organization-boundary.test.mjs',
+    'docs/stabilization/defects/EXT-D-0239.json',
+  ];
+  requireReleaseMemberSource(true, reviewed);
+  for (const path of [
+    'tests/browser/reviewer-chat-organization-boundary-copy.test.mjs',
+    'docs/stabilization/defects/EXT-D-0239.json.bak',
+    'docs/stabilization/defects/EXT-D-0240.json',
+    'docs/stabilization/defects/../package.json',
+    'src/features/chat/ChatView.tsx',
+  ])
+    assert.throws(
+      () => requireReleaseMemberSource(true, [...reviewed, path]),
+      /release_member_product_changed/,
+      path,
+    );
+});
+
+test('frozen .537 candidate admits only the reviewed D0223 preflight commit and blobs', () => {
+  const source = '1b612c67410576b5d077fe20bee4fd33455d987d';
+  const head = '5ec68e5e53d0902454329d7708ba178d571fe47f';
+  const proof = proveSource(source, head);
+  assert.equal(proof.storeEligibility, false);
+  assert.deepEqual(
+    proof.reviewedChanges
+      .filter((row) => row.commit === 'db9434441dd1f29eda3c0242b081971befa3dbdd')
+      .map((row) => [row.path, row.blob]),
+    [
+      [
+        'docs/stabilization/resource-journals/ext-d-0223-native-retest-preflight-20261018-01.jsonl',
+        'f01a7788e4501d348003173fdf33f585656e35d2',
+      ],
+      [
+        'docs/stabilization/runs/ext-d-0223-t10-native-retest-20261018-01.json',
+        'b69d14ada91d1bc4a12a579b36cafc4a14db0b56',
+      ],
+    ],
+  );
+  assert.throws(
+    () => proveSource('ec7b09cc64c83d48c7533da84735da764e0c9701', head),
+    /release_member_product_changed/,
+    'the reviewed preflight is limited to the frozen .537 candidate',
+  );
+});
+
 // Break caught: the immutable member candidate cannot be retested after a
 // reviewed guest package oracle repair unless these four exact paths are admitted.
 test('reviewed guest package terminal oracle delta is admitted without wildcard paths', () => {
@@ -711,4 +760,90 @@ test('member source proof admits immutable guest route and refuses every subsequ
   }
   writeFileSync(join(cwd, 'scripts/unreviewed-operational.mjs'), 'export {};');
   refusal('additional untracked script refuses');
+});
+
+// Break caught: independently reviewed .537 metadata drift blocks its frozen ZIP test.
+// Real Git history also forces later changes (including reversions) to remain refused.
+test('reviewed candidate admits immutable tuples but refuses every later or pending mutation', (t) => {
+  const source = '1b612c67410576b5d077fe20bee4fd33455d987d';
+  const reviewed = 'bffebad8ab1684b7fa23c0cd68c89805cbb87385';
+  const cwd = mkdtempSync(join(tmpdir(), 'member-candidate-drift-'));
+  t.after(() => rmSync(cwd, { recursive: true, force: true }));
+  const repository = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+    encoding: 'utf8',
+  }).trim();
+  const git = (...args) =>
+    execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  git('clone', '--shared', '--no-checkout', repository, '.');
+  const paths = [
+    'pnpm-lock.yaml',
+    '_conflicts/README.md',
+    '_conflicts/2026-10-17-234541/pnpm-lock.yaml.held',
+    'tests/browser/vault-package-panel-walk.mjs',
+    'tests/browser/vault-walk-cleanup.mjs',
+  ];
+  git('sparse-checkout', 'set', '--no-cone', ...paths.map((path) => `/${path}`));
+  git('checkout', '--detach', reviewed);
+  const moduleUrl = new URL('./hosted-release-member-admission.mjs', import.meta.url).href;
+  const prove = (candidate = source) =>
+    spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `import { proveSource } from ${JSON.stringify(moduleUrl)}; console.log(JSON.stringify(proveSource(${JSON.stringify(candidate)}, ${JSON.stringify(git('rev-parse', 'HEAD'))})));`,
+      ],
+      { cwd, encoding: 'utf8' },
+    );
+  const baseline = prove();
+  assert.equal(baseline.status, 0, baseline.stderr);
+  const evidence = JSON.parse(baseline.stdout);
+  assert.equal(evidence.scope, 'frozen-release-candidate-test');
+  assert.equal(evidence.storeEligibility, false);
+  assert.equal(evidence.reviewedChanges.length, 15);
+  assert.equal(evidence.workflowSha, reviewed);
+  const generic = prove(reviewed);
+  assert.equal(generic.status, 0, generic.stderr);
+  assert.equal(JSON.parse(generic.stdout).scope, 'frozen-release-test');
+  assert.equal(JSON.parse(generic.stdout).storeEligibility, false);
+  const refuse = () => {
+    const result = prove();
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /release_member_product_changed/);
+  };
+  const commit = () => {
+    git(
+      '-c',
+      'user.name=Admission guard',
+      '-c',
+      'user.email=guard@localhost',
+      'commit',
+      '-qam',
+      'candidate drift mutation',
+    );
+    return git('rev-parse', 'HEAD');
+  };
+  for (const path of paths) {
+    const original = readFileSync(join(cwd, path));
+    writeFileSync(join(cwd, path), Buffer.concat([original, Buffer.from(' ')]));
+    refuse();
+    git('add', path);
+    refuse();
+    const changed = commit();
+    refuse();
+    git('revert', '--no-commit', changed);
+    commit();
+    refuse();
+    git('checkout', '--detach', reviewed);
+  }
+  mkdirSync(join(cwd, 'src'), { recursive: true });
+  writeFileSync(join(cwd, 'src/candidate-product.js'), 'export const changed = true;');
+  refuse();
+  git('add', '--sparse', 'src/candidate-product.js');
+  commit();
+  refuse();
+  git('checkout', '--detach', reviewed);
+  const otherCandidate = prove('a9e9a5913adc6ce4a2c24a3ff60cd86cb3bce69c');
+  assert.notEqual(otherCandidate.status, 0, 'reviewed tuples are candidate-scoped');
+  assert.match(otherCandidate.stderr, /release_member_product_changed/);
 });

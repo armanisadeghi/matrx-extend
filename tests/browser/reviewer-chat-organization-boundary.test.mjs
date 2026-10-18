@@ -86,10 +86,20 @@ test('actual two-turn member verdict binds both headers to the checked UI organi
   assert.ok(start > 0 && end > start, 'member two-turn verdict seam must exist');
   const selected = 'c61c7d9a9d805d4e';
   const transport = (fingerprint) => ({
-    start_count: 2,
-    all_starts: [
-      { http_status: 200, organization_header_fingerprint: fingerprint },
-      { http_status: 200, organization_header_fingerprint: fingerprint },
+    start_count: 1,
+    member_turn_requests: [
+      {
+        kind: 'start',
+        http_status: 200,
+        organization_header_fingerprint: fingerprint,
+        conversation_fingerprint: 'ec8c373c1df3c614',
+      },
+      {
+        kind: 'followup',
+        http_status: 200,
+        organization_header_fingerprint: fingerprint,
+        conversation_fingerprint: 'ec8c373c1df3c614',
+      },
     ],
   });
   const requests = [
@@ -99,6 +109,8 @@ test('actual two-turn member verdict binds both headers to the checked UI organi
       status: 200,
       loading_finished: true,
       terminal_success: true,
+      semantic_completion: 'success',
+      pending_tool_count: 0,
       stream_error: false,
       path_class: 'canonical',
       conversation_fingerprint: 'ec8c373c1df3c614',
@@ -109,8 +121,10 @@ test('actual two-turn member verdict binds both headers to the checked UI organi
       status: 200,
       loading_finished: true,
       terminal_success: true,
+      semantic_completion: 'success',
+      pending_tool_count: 0,
       stream_error: false,
-      path_class: 'canonical',
+      path_class: 'conversation',
       conversation_fingerprint: 'ec8c373c1df3c614',
     },
   ];
