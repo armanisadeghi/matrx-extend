@@ -1,0 +1,9 @@
+{
+  "finding": "Guest B timed out waiting for owned DevToolsActivePort with valid resources; Member A was stopped by sustained CPU pressure. Shared launcher cause unproven.",
+  "change": "Existing MATRX_CDP_STARTUP_DIAGNOSTIC and MATRX_STARTUP_INTERVAL_DIAGNOSTIC now activate for guest-chat and member-chat in the existing guarded workflow job.",
+  "unchanged": "No new job, dispatch, schedule, Chrome process, startup behavior, deadline, or resource threshold; Notes/SEO mappings retained.",
+  "test": "node --test scripts/hosted-notes-startup-diagnostic-route.test.mjs: 6/6 pass, including actual workflow mapping and child env forwarding for both cases and controls.",
+  "secret_boundary": "Existing observers emit stage/lock labels, timer and CPU/process executable statistics; no endpoint URL, process arguments, profile path, env values, or credentials added to output.",
+  "ci_cost": "Existing ci-cost entry retained because trigger/job count and estimated minutes do not change. Existing check_workflow_runner_cost.py fails on missing measured-spend manifest and aggregate cross-repo ~$149/week; unrelated to this patch.",
+  "next": "Fresh peer review, then parent-owned commit/push/guarded forward cut. No hosted rerun or product credit claimed."
+}

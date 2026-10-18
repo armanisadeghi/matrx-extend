@@ -54,7 +54,7 @@ const driverSource = runnerSource.slice(
   runnerSource.indexOf('    const child = spawn', childEnvStart),
 );
 
-function actualHostedChildEnv(env) {
+function actualHostedChildEnv(env, acceptanceCase = 'notes-find-member') {
   const prepared = {
     kind: 'ci_development_test',
     sourceSha: 'a'.repeat(40),
@@ -68,7 +68,7 @@ function actualHostedChildEnv(env) {
     join,
     prepared,
     packageDir: '/owned/browser-runtime',
-    acceptanceCase: 'notes-find-member',
+    acceptanceCase,
     extensionDir: prepared.extensionDir,
     relocatedReceipt: prepared.relocatedReceipt,
     scrapeRoute: null,
@@ -80,15 +80,27 @@ function actualHostedChildEnv(env) {
     showcaseRoute: null,
     tabGroupsRoute: null,
     nativeAiProbeRoute: null,
-    notesFindRoute: hostedNotesFindRoute('notes-find-member', prepared, 'A'),
+    notesFindRoute:
+      acceptanceCase === 'notes-find-member'
+        ? hostedNotesFindRoute('notes-find-member', prepared, 'A')
+        : null,
+    screenshotRoute: null,
     memberLinkPath: '/owned/member.json',
+    approvedMemberOrganizationPath: '/owned/member-organization.json',
     kind: prepared.kind,
   };
   const result = runInNewContext(
     `${childEnvSource}\n${driverSource}\n({ env: childEnv, driver });`,
     sandbox,
   );
-  assert.equal(result.driver, 'tests/browser/notes-native-acceptance.mjs');
+  assert.equal(
+    result.driver,
+    acceptanceCase === 'notes-find-member'
+      ? 'tests/browser/notes-native-acceptance.mjs'
+      : acceptanceCase === 'member-chat'
+        ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+        : 'tests/browser/guest-chat-store-acceptance.mjs',
+  );
   return result.env;
 }
 
@@ -228,10 +240,60 @@ test('headed and headless startup diagnostics retain their original display mapp
   }
 });
 
-test('existing SEO CPU diagnostic flag cannot activate the new CDP handshake probe', async () => {
+test('existing startup interval diagnostic still activates the shared CDP observer', async () => {
   const receipts = await reachActualCallsite(
     { acceptance_case: 'notes-find-member', acceptance_lane: 'A', startup_display_mode: 'headed' },
     true,
   );
-  assert.equal(receipts.length, 0);
+  assert.equal(receipts.length, 1);
+});
+
+test('guest and member Chat forward both startup diagnostics; other cases retain their mapping', () => {
+  for (const acceptance_case of ['guest-chat', 'member-chat']) {
+    const inputs = {
+      acceptance_case,
+      acceptance_lane: acceptance_case === 'guest-chat' ? 'B' : 'A',
+      startup_display_mode: 'headed',
+      seo_diagnostic: 'none',
+    };
+    const flags = {
+      MATRX_CDP_STARTUP_DIAGNOSTIC: mapped(acceptance.env.MATRX_CDP_STARTUP_DIAGNOSTIC, inputs),
+      MATRX_STARTUP_INTERVAL_DIAGNOSTIC: mapped(
+        acceptance.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC,
+        inputs,
+      ),
+    };
+    assert.deepEqual(flags, {
+      MATRX_CDP_STARTUP_DIAGNOSTIC: '1',
+      MATRX_STARTUP_INTERVAL_DIAGNOSTIC: '1',
+    });
+    const child = actualHostedChildEnv(flags, acceptance_case);
+    assert.equal(child.MATRX_CDP_STARTUP_DIAGNOSTIC, '1');
+    assert.equal(child.MATRX_STARTUP_INTERVAL_DIAGNOSTIC, '1');
+  }
+  for (const inputs of [
+    {
+      acceptance_case: 'guest-data',
+      acceptance_lane: 'B',
+      startup_display_mode: 'headed',
+      seo_diagnostic: 'none',
+    },
+    {
+      acceptance_case: 'notes-find-member',
+      acceptance_lane: 'A',
+      startup_display_mode: 'headed',
+      seo_diagnostic: 'none',
+    },
+  ]) {
+    assert.equal(mapped(acceptance.env.MATRX_CDP_STARTUP_DIAGNOSTIC, inputs), '0');
+    assert.equal(mapped(acceptance.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC, inputs), '0');
+  }
+  const seoResource = {
+    acceptance_case: 'guest-seo',
+    acceptance_lane: 'B',
+    startup_display_mode: 'headed',
+    seo_diagnostic: 'resource',
+  };
+  assert.equal(mapped(acceptance.env.MATRX_CDP_STARTUP_DIAGNOSTIC, seoResource), '0');
+  assert.equal(mapped(acceptance.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC, seoResource), '1');
 });
