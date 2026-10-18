@@ -148,6 +148,13 @@ test('early termination retains only atomic allowlisted guest stage and server i
   });
   assert.doesNotMatch(first, /Bearer|private-guest-auth|latestReplyText|raw_id|secret/);
   assert.equal((await stat(output)).mode & 0o777, 0o600);
+  state.stage_progress.push('native_setup_resource_readiness');
+  await writeGuestCheckpoint(output, state, { ...deps, makeId: () => 'native-pending' });
+  assert.equal(JSON.parse(await readFile(output, 'utf8')).stage, 'native_setup_resource_readiness');
+  state.stage_progress.push('native_setup_resource_ready');
+  await writeGuestCheckpoint(output, state, { ...deps, makeId: () => 'native-ready' });
+  assert.equal(JSON.parse(await readFile(output, 'utf8')).stage, 'native_setup_resource_ready');
+  const beforeInterrupted = await readFile(output, 'utf8');
   state.stage_progress.push('post_setup_resource_readiness');
   await assert.rejects(
     writeGuestCheckpoint(output, state, {
@@ -161,7 +168,7 @@ test('early termination retains only atomic allowlisted guest stage and server i
   );
   assert.equal(
     await readFile(output, 'utf8'),
-    first,
+    beforeInterrupted,
     'incomplete replacement cannot corrupt the durable checkpoint',
   );
   await writeGuestCheckpoint(output, state, { ...deps, makeId: () => 'next' });
@@ -169,30 +176,84 @@ test('early termination retains only atomic allowlisted guest stage and server i
   await assert.rejects(stat(`${output}.next.tmp`), /ENOENT/);
 });
 
-test('guest native work and first send follow durable identity checkpoints and measured post-setup readiness', () => {
-  const nativeStart = source.indexOf('  const run = await runNativeSidepanelQa({');
-  const send = source.indexOf("await submitQuestion(panel, FIRST_QUESTION, 'opening_question'");
-  const checkpoints = [
-    ...source.matchAll(/await writeGuestCheckpoint\(CHECKPOINT_OUTPUT, report\)/g),
-  ].map((match) => match.index);
-  const readiness = source.indexOf('await waitForGuestPostSetupHealth(');
-  const finalReport = source.indexOf('await writeFile(OUTPUT,');
-  const checkpointCleanup = source.indexOf('await unlink(CHECKPOINT_OUTPUT)');
-  assert.equal(
-    checkpoints.length,
-    3,
-    'identity must be durable before native work, readiness, and first send',
-  );
-  assert.ok(
-    checkpoints[0] < nativeStart &&
-      nativeStart < checkpoints[1] &&
-      checkpoints[1] < readiness &&
-      readiness < checkpoints[2] &&
-      checkpoints[2] < send &&
-      send < finalReport &&
-      finalReport < checkpointCleanup,
-    'fresh measured health and checkpoints precede send; completed reports replace progress evidence',
-  );
+test('native callback waits for guard confirmation before attaching the guest observer', async () => {
+  const start = source.indexOf('    exercisePanel: async ({');
+  const end = source.indexOf('      const initial = await waitFor(', start);
+  assert.ok(start >= 0 && end > start, 'production callback entry must be available');
+  const entrySource = source.slice(start, end);
+  const buildEntry = ({ events, report, waitHealth }) =>
+    new Function(
+      'markStage',
+      'report',
+      'writeGuestCheckpoint',
+      'CHECKPOINT_OUTPUT',
+      'waitForGuestPostSetupHealth',
+      'watchGuestContextRuleReads',
+      `return ({ ${entrySource} return true; } }).exercisePanel;`,
+    )(
+      (stage) => {
+        events.push(`stage:${stage}`);
+        report.stage_progress.push(stage);
+      },
+      report,
+      async (_output, state) => events.push(`checkpoint:${state.stage_progress.at(-1)}`),
+      '/private/guest-checkpoint.json',
+      waitHealth,
+      async () => {
+        events.push('observer');
+        return { arm: (phase) => events.push(`arm:${phase}`) };
+      },
+    );
+  const events = [];
+  const report = { stage_progress: [] };
+  let releaseHealth;
+  const held = new Promise((resolve) => {
+    releaseHealth = resolve;
+  });
+  const entry = buildEntry({
+    events,
+    report,
+    waitHealth: async () => {
+      events.push('health_entered');
+      return held;
+    },
+  });
+  const running = entry({ panel: {} });
+  await new Promise(setImmediate);
+  assert.deepEqual(events, [
+    'stage:native_setup_resource_readiness',
+    'checkpoint:native_setup_resource_readiness',
+    'health_entered',
+  ]);
+  assert.equal(report.native_setup_resource_readiness.status, 'pending');
+  releaseHealth({ healthy_samples: 3, policy_samples_required: 3 });
+  assert.equal(await running, true);
+  assert.deepEqual(events.slice(3), [
+    'stage:native_setup_resource_ready',
+    'checkpoint:native_setup_resource_ready',
+    'observer',
+    'arm:observer_attached',
+    'stage:fresh_guest',
+  ]);
+  assert.deepEqual(report.native_setup_resource_readiness, {
+    status: 'ready',
+    healthy_samples: 3,
+    policy_samples_required: 3,
+  });
+
+  const refusedEvents = [];
+  const refusedEntry = buildEntry({
+    events: refusedEvents,
+    report: { stage_progress: [] },
+    waitHealth: async () => {
+      throw new Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:cpu_pending');
+    },
+  });
+  await assert.rejects(refusedEntry({ panel: {} }), /NATIVE_RESOURCE_BOUNDARY_REFUSED:cpu_pending/);
+  assert.deepEqual(refusedEvents, [
+    'stage:native_setup_resource_readiness',
+    'checkpoint:native_setup_resource_readiness',
+  ]);
 });
 
 // A failed optional Values close must never prevent the three real guest Chat

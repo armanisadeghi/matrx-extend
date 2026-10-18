@@ -31,7 +31,7 @@
   "original_retest_runs": [39156655719],
   "surrounding_retest_runs": [],
   "reviewer": "Fresh independent D243 source peer PASS; 36 focused tests and compile pass; native pending.",
-  "next_action": "Run guarded exact .547 Guest B, retain checkpoint if interrupted, require three terminal grounded replies and requested-text images plus valid resource finals; fresh peer before closure.",
+  "next_action": "Run guarded published205 guest and latest eligible exact-Store GuestB after current release cut. Require real terminal grounded replies/follow-up, visible requested-text images and valid resource finals; fresh peer before closure. Do not reuse stale547 across lockfile changes.",
   "transition_history": [
     {
       "at": "2026-10-18T19:14:46.966368+00:00",
@@ -62,5 +62,7 @@
     "focused": "36/36 tests, compile, scoped/full Biome and forcing mutations pass. Fresh run journal events only, current policy/permit, no threshold changes. Atomic checkpoint interrupted replacement and secret-exclusion proofs pass.",
     "peer": "reports/guest-resource-sequencing-peer-20261018.json",
     "native": "Pending guarded native exact .547 run; original invalid run earns zero product acceptance."
-  }
+  },
+  "native_retest_note": "Published205 retry39158476768 remains resource-invalid before firstsend, but atomic checkpoint survived and retained stage/serveridentity. Setup advanced during CPU recovery; guarded callback-entry sequencing source repair now independently accepted. Second spike cause is unproven.",
+  "entry_guard_review": "docs/stabilization/reports/guest-guard-final-source-peer-20261018.json"
 }

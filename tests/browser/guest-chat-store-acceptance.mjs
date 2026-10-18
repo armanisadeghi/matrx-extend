@@ -141,7 +141,13 @@ async function writeGuestCheckpoint(
 ) {
   const stage = state.stage_progress.at(-1);
   assert.ok(
-    ['owned_profile', 'post_setup_resource_readiness', 'guest_question_ready'].includes(stage),
+    [
+      'owned_profile',
+      'native_setup_resource_readiness',
+      'native_setup_resource_ready',
+      'post_setup_resource_readiness',
+      'guest_question_ready',
+    ].includes(stage),
     'guest_checkpoint_stage_refused',
   );
   const server = state.server_version_before;
@@ -904,6 +910,15 @@ try {
       attachWorker,
       attachOffscreen,
     }) => {
+      markStage('native_setup_resource_readiness');
+      report.native_setup_resource_readiness = { status: 'pending' };
+      await writeGuestCheckpoint(CHECKPOINT_OUTPUT, report);
+      report.native_setup_resource_readiness = {
+        status: 'ready',
+        ...(await waitForGuestPostSetupHealth()),
+      };
+      markStage('native_setup_resource_ready');
+      await writeGuestCheckpoint(CHECKPOINT_OUTPUT, report);
       const contextReadWatch = await watchGuestContextRuleReads(panel);
       contextReadWatch.arm('observer_attached');
       markStage('fresh_guest');
