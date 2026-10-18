@@ -1,0 +1,39 @@
+{
+  "observedAt": "2026-10-18T21:07:33.265709+00:00",
+  "owner": "root",
+  "version": "0.2.550",
+  "releaseRunId": 39165462442,
+  "artifactId": 12150453061,
+  "sourceSha": "9cc1694286476d5818d219caf2127c1129d9d6d3",
+  "storeZipSha256": "86b3379d29b1fd8d1d374a234b2204c7de80cd3221fbcbd170c0b4a7b1cc8130",
+  "publishedVersion": "0.2.205",
+  "rejectedDraftVersion": "0.2.479",
+  "storeSubmission": "none",
+  "lanes": [
+    {
+      "owner": "guest550_b_acceptance",
+      "lane": "B",
+      "runId": 39166232102,
+      "scope": "exact-candidate fresh guest Chat opening, same-conversation follow-up, reload and separate Values result",
+      "state": "dispatched; terminal result unverified",
+      "credentials": "designated guest; never log authentication values"
+    },
+    {
+      "owner": "member550_a_acceptance",
+      "lane": "A",
+      "runId": 39166380647,
+      "scope": "exact-candidate non-admin Chat, organization headers and visible reply proof",
+      "state": "dispatched; terminal result unverified",
+      "cleanup": "worker owns its one-use member link secret/local file; retain while in flight, delete only exact owned values after terminal and verify absence"
+    }
+  ],
+  "capacity": "two isolated hosted browser runs maximum; one guarded heavy job per physical host; no local heavy launches",
+  "implementation": {
+    "owner": "exact_store_reviewer_smoke",
+    "scope": "close exact public demo Settings/Capture/SEO/Data release acceptance gap without weakening Chat proof",
+    "draftPath": "/tmp/exact-store-reviewer-smoke",
+    "state": "not applied to repository; correcting actual prepared receipt wiring after independent review",
+    "review": "/tmp/store-smoke-draft-fresh-peer.json; blocking actual receipt-kind mismatch; source checks do not prove native behavior"
+  },
+  "nextAction": "Inspect terminal native results and new startup diagnostics, independently review product evidence, finish/review reviewer walkthrough source, then obtain any required fresh candidate and pass all release gates before upload. No overall health claim."
+}
