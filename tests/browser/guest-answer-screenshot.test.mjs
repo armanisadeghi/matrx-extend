@@ -5,6 +5,148 @@ import { Window } from 'happy-dom';
 import { prepareGuestAnswerScreenshot } from './guest-answer-screenshot.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
 
+function installTextRanges(window) {
+  window.document.createRange = () => ({
+    setStart(node) {
+      this.node = node;
+    },
+    setEnd() {},
+    getBoundingClientRect() {
+      return (
+        this.node.parentElement.closest('article') ?? this.node.parentElement
+      ).getBoundingClientRect();
+    },
+  });
+}
+
+test('horizontally clipped requested code cannot authorize a panel screenshot', async () => {
+  const window = new Window();
+  window.document.body.innerHTML = `<button role="tab" title="Chat" aria-selected="true" aria-controls="chat"></button>
+    <div id="chat" data-state="active" style="overflow-x:hidden">
+      <article role="article" aria-label="Assistant answer"><div data-message-content>Capture Understand Use CODE-791</div></article>
+    </div>`;
+  const pane = window.document.getElementById('chat');
+  for (const element of window.document.querySelectorAll('*')) {
+    element.getBoundingClientRect = () => ({
+      left: 0,
+      right: 250,
+      top: 20,
+      bottom: 120,
+      width: 250,
+      height: 100,
+    });
+    element.scrollIntoView = () => {};
+  }
+  window.document.createRange = () => ({
+    setStart() {},
+    setEnd() {},
+    getBoundingClientRect() {
+      return {
+        left: 300 - pane.scrollLeft,
+        right: 360 - pane.scrollLeft,
+        top: 40,
+        bottom: 60,
+        width: 60,
+        height: 20,
+      };
+    },
+  });
+  Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 400 });
+  Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 300 });
+  const proof = runInNewContext(`(${prepareGuestAnswerScreenshot.toString()})({code:'CODE-791'})`, {
+    document: window.document,
+    getComputedStyle: (element) => window.getComputedStyle(element),
+  });
+  assert.equal(
+    proof.eligible,
+    false,
+    'text beyond the clipped pane must not count as visual proof',
+  );
+  pane.style.overflowX = 'auto';
+  Object.defineProperty(pane, 'clientWidth', { value: 250 });
+  Object.defineProperty(pane, 'scrollWidth', { value: 500 });
+  const scrolled = runInNewContext(
+    `(${prepareGuestAnswerScreenshot.toString()})({code:'CODE-791'})`,
+    {
+      document: window.document,
+      getComputedStyle: (element) => window.getComputedStyle(element),
+    },
+  );
+  assert.equal(scrolled.eligible, true, 'a scrollable pane may bring the real code line into view');
+  assert.ok(pane.scrollLeft > 100, 'the horizontal screenshot proof must move the real pane');
+  await window.happyDOM.abort();
+});
+
+test('long completed answer scrolls the requested code line into the captured viewport', async () => {
+  const window = new Window();
+  window.document.body.innerHTML = `<button role="tab" title="Chat" aria-selected="true" aria-controls="chat"></button>
+    <div id="chat" data-state="active" style="overflow-y:auto">
+      <article role="article" aria-label="Assistant answer"><div data-message-content>Capture Understand Use. ${'More explanation. '.repeat(90)}CODE-791</div></article>
+    </div>`;
+  const pane = window.document.getElementById('chat');
+  const article = pane.querySelector('article');
+  for (const element of window.document.querySelectorAll('*')) {
+    element.getBoundingClientRect = () => ({
+      left: 0,
+      right: 250,
+      top: 10,
+      bottom: 290,
+      width: 250,
+      height: 280,
+    });
+    element.scrollIntoView = () => {};
+  }
+  article.getBoundingClientRect = () => ({
+    left: 0,
+    right: 250,
+    top: 20 - pane.scrollTop,
+    bottom: 1220 - pane.scrollTop,
+    width: 250,
+    height: 1200,
+  });
+  Object.defineProperty(pane, 'clientHeight', { value: 280 });
+  Object.defineProperty(pane, 'scrollHeight', { value: 1300 });
+  Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 400 });
+  Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 300 });
+  window.document.createRange = () => ({
+    setStart(node, index) {
+      this.node = node;
+      this.index = index;
+    },
+    setEnd() {},
+    getBoundingClientRect() {
+      const top = this.index > 500 ? 1060 - pane.scrollTop : 40 - pane.scrollTop;
+      return { left: 20, right: 130, top, bottom: top + 20, width: 110, height: 20 };
+    },
+  });
+  const proof = runInNewContext(`(${prepareGuestAnswerScreenshot.toString()})({code:'CODE-791'})`, {
+    document: window.document,
+    getComputedStyle: (element) => window.getComputedStyle(element),
+  });
+  assert.equal(proof.eligible, true);
+  assert.ok(pane.scrollTop > 700, 'the code line must enter the native screenshot viewport');
+  const stageProof = runInNewContext(
+    `(${prepareGuestAnswerScreenshot.toString()})({code:'CODE-791',focus:'Capture'})`,
+    {
+      document: window.document,
+      getComputedStyle: (element) => window.getComputedStyle(element),
+    },
+  );
+  assert.equal(stageProof.eligible, true);
+  assert.ok(pane.scrollTop < 100, 'the stage frame must return to the visible start of the reply');
+  pane.style.overflowY = 'hidden';
+  pane.scrollTop = 0;
+  const clipped = runInNewContext(
+    `(${prepareGuestAnswerScreenshot.toString()})({code:'CODE-791'})`,
+    {
+      document: window.document,
+      getComputedStyle: (element) => window.getComputedStyle(element),
+    },
+  );
+  assert.equal(clipped.eligible, false, 'a clipped code line cannot provide screenshot proof');
+  await window.happyDOM.abort();
+});
+
 test('answer screenshot refuses a DOM-visible reply that remains outside the viewport', async () => {
   const window = new Window();
   window.document.body.innerHTML = `
@@ -37,6 +179,7 @@ test('answer screenshot refuses a DOM-visible reply that remains outside the vie
   }
   Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 400 });
   Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 300 });
+  installTextRanges(window);
   newest.scrollIntoView = () => {};
   const verify = (expected) =>
     runInNewContext(`(${prepareGuestAnswerScreenshot.toString()})(expected)`, {
@@ -82,6 +225,7 @@ test('Store completed answer screenshot reads direct Markdown and refuses non-an
   }
   Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 400 });
   Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 300 });
+  installTextRanges(window);
   const verify = (code) =>
     runInNewContext(`(${prepareGuestAnswerScreenshot.toString()})({code})`, {
       document: window.document,
@@ -169,6 +313,7 @@ test('Store screenshot accepts painted answer when completed toolbar is unhovere
   }
   Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 400 });
   Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 300 });
+  installTextRanges(window);
   const context = {
     document: window.document,
     pane: window.document.getElementById('chat'),
