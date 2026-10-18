@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "run_id": 39084440048,
+  "status": "invalid_resource_zero_product_credit",
+  "case_id": "EXT-F-2013-T10",
+  "lane": "A",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39084440048",
+    "head_sha": "f6253af3d00c534cbcc66b1fe6704d072b8b1411",
+    "conclusion": "failure"
+  },
+  "release": {
+    "version": "0.2.529",
+    "run_id": 39083758486,
+    "source_sha": "f6253af3d00c534cbcc66b1fe6704d072b8b1411",
+    "artifact_id": 12120082821,
+    "outer_digest": "sha256:ffb4a539639122857ab39d3351857256f3525eb86df368a3a0b3e61780c88c9d",
+    "store_zip_sha256": "a6bd628555168da1d394aedc0f9bbc5c7a87feb1a956f9464c3885e03ee9e0ba",
+    "release_tree_sha256": "0936e6c796a45c49228df822c6cea300c237b7d59f0ab456a0003cc3153032da"
+  },
+  "hosted_result": {
+    "artifact_id": 12120650965,
+    "artifact_name": "hosted-guest-39084440048-1",
+    "artifact_sha256": "efac150cde564222c2d3d5a341f1731773c1e68f90a391822cc4e697eb3faf5e",
+    "sanitized_result_path": "test-results/member-chat-a-39084440048-sanitized/native-report.sanitized.json"
+  },
+  "scope": "Fresh owned Chrome-for-Testing profile; signed-in non-admin member; native Chat opening turn.",
+  "classification": "The member reached Chat and emitted one canonical chat POST. The first-answer oracle could not verify the required page-specific answer. The guest resource watchdog later invalidated the run on CPU busy/high-load. No member Chat acceptance credit.",
+  "first_boundary": {
+    "stage": "send_three_stage_question",
+    "failure_code": "unclassified_failure",
+    "opening_attempted": true,
+    "assistant_content_verified": false,
+    "raw_answer_retained": false,
+    "same_conversation_followup_attempted": false,
+    "post_reload_new_conversation_attempted": false
+  },
+  "transport_observation": {
+    "request_count": 1,
+    "attempt": "opening",
+    "path_class": "canonical",
+    "http_status": 200,
+    "is_new": true,
+    "conversation_fingerprint_present": true,
+    "stream_end_reason_complete": true,
+    "stream_error": false,
+    "loading_finished": true,
+    "semantic_request_or_tool_completion_verified": false,
+    "note": "The observed stream end does not establish that delegated tool work or the semantic answer completed successfully."
+  },
+  "diagnostic_limits": {
+    "answer_oracle": "The package-mode assistant selector can include inline tool-card text. Exact raw stream and unredacted answer content were not retained, so product cause remains unassigned.",
+    "product_cause": "Unassigned; this run does not prove a correct member Chat answer or establish the cause of the oracle failure."
+  },
+  "server": {
+    "sha_before": null,
+    "sha_after": null,
+    "stable": "unverified_from_retained_member_artifact"
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid",
+      "cause": "CPU busy/high-load was observed after admission; the child exited 1 during the first-answer check."
+    }
+  },
+  "fixture_cleanup": {
+    "temporary_github_secret_deleted": "reported_by_lane_owner; absent_on_later_secret_name_check",
+    "secret_name_absence_verified": "verified_after_run; deletion_time_unverified",
+    "local_one_use_link_file_absent": "reported_by_lane_owner_not_independently_verified_at_terminal",
+    "credential_or_link_values_recorded": false
+  },
+  "next_action": "Diagnose the answer-oracle and package tool-lifecycle observation gap before considering another native acceptance run."
+}
