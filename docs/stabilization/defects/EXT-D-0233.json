@@ -21,7 +21,8 @@
   "evidence": [
     "docs/stabilization/evidence/guest-chat-v0530/run39089963557/result.sanitized.json",
     "docs/stabilization/evidence/guest-chat-v0530/run39089963557/resource-finals.sanitized.json",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39089963557"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39089963557",
+    "docs/stabilization/reports/guest-chat-v0530-failure-peer-20261018.json"
   ],
   "build_receipt": {
     "source_sha": "a44a24493eec9b32376623bdaeb25c0a13977e59",
@@ -48,7 +49,7 @@
   ],
   "original_retest_runs": [39089963557],
   "surrounding_retest_runs": [],
-  "reviewer": "guest_resume_peer: source A/PASS and behavior guard B/PASS; real native retest pending.",
+  "reviewer": "guest_resume_peer: source A/PASS and behavior guard B/PASS. Independent native failure peer: opening A/FAIL, provenance B/PASS; corrected-artifact native retest pending.",
   "acceptance_criteria": [
     "Corrected shared Chat package is actually published and adopted in extension latest lock.",
     "Fresh exact-artifact guest first answer, same-conversation follow-up and post-reload new conversation are grounded, with correlated delegated result/resume completion and valid resources.",
@@ -61,13 +62,13 @@
     "headers": "Real backend/header resolver: fingerprint guest has X-Fingerprint-ID and no bearer/org; member has bearer and conversation X-Organization-Id and no fingerprint.",
     "mutation": "plant.py constant resume result, original strict-org resolver, corrupted org body and dropped headers each fail; source restored.",
     "typecheck": "Chat own typecheck has 0 errors; three workspace sibling-source errors are reported separately by tsc-own.",
-    "native": "Pending corrected package publication/adoption, fresh hosted release and independent exact-artifact retest."
+    "native": "Pending fresh hosted release and independent exact-artifact retest of adopted Chat 0.8.180; original .530 failed."
   },
   "limitations": [
     "The native unhandled rejection reason/stack was not retained and is not attributed by this repair.",
     "No new browser, release, credentials or paid model probe was launched during implementation."
   ],
-  "next_action": "Follow existing authorized package publisher, verify corrected served Chat artifact, adopt latest in extension, then release owner dispatches guarded exact-artifact native retest.",
+  "next_action": "Release owner dispatches a fresh guarded hosted release and independent exact-artifact guest native retest; keep in-fix until resource-valid first/follow-up/post-reload grounded answers pass.",
   "transition_history": [
     {
       "at": "2026-10-18T02:45:45.633361+00:00",
@@ -87,5 +88,14 @@
       "to": "in-fix",
       "reason": "Independent source/test review passes; package publication, extension adoption and native verification remain pending."
     }
-  ]
+  ],
+  "package_adoption": {
+    "name": "@ai-matrx/chat",
+    "version": "0.8.180",
+    "git_head": "15354161879cafd18f6599d3ec5448f6da068fe6",
+    "integrity": "sha512-O+T9NWCdo4q4b9Vk8WLiDU1z9UbDo5Re21Fdg6sMj8J1+2Vu3YHMRaZOmUeHbRHsF+FPbquuAbu0x1azyeAz9w==",
+    "publisher_run": 39091429508,
+    "artifact_id": 12123177748,
+    "proof": "Served npm metadata integrity equals publisher tarball; packed resume JS uses guest-aware organization resolver at both reads and omits absent body organization."
+  }
 }

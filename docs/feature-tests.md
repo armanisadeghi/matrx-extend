@@ -305,13 +305,13 @@ Every entry follows this shape:
 - **Steps:**
   1. Open the Matrx Extend side panel.
   2. Confirm Chat is selected. Type a short message, click Send, and wait for a real assistant response. The first Send must create a user message and start the request; it must not leave an enabled Send button beside an unchanged draft. The guest must not be asked to select an organization.
-  3. While the reply is running, queue a follow-up, edit it, cancel a queued item, and stop the running reply. Send another follow-up in that conversation, then open Scrape, Data, SEO, and Settings.
-     If a browser tool is delegated, complete it and confirm the assistant continues after the tool result.
-  4. Reload the side panel while still signed out.
-  5. Open the Values chip, turn a value off, send another turn, and confirm the choice stays local to this guest session.
-  6. For an already-used guest profile, send one message after its current platform-configured points usage is over the enforced allowance. Do not assume a fixed number of requests; the platform setting and accumulated usage determine when the refusal occurs.
-  7. Sign in, leave an account draft and selected Agent, sign out, then reopen Chat.
-  8. In the controlled member fixture with no available organization, attempt Send and confirm it refuses rather than using the guest identity.
+  3. On a controlled page with a fresh unpredictable heading/code/stages, ask about the current page so `get_page_text` is delegated. Confirm its accepted tool result is followed by a correlated resume request and a grounded assistant answer. The opening stream’s completion/end and a tool-card label alone do not complete this turn.
+  4. While another reply is running, queue a follow-up, edit it, cancel a queued item, and stop the running reply. Send a controlled-page follow-up in that same conversation and wait for its terminal grounded assistant prose. If that follow-up delegates a tool, confirm its accepted result and correlated resume before completion. Then open Scrape, Data, SEO, and Settings.
+  5. Reload the side panel while still signed out, start a new conversation, and repeat the controlled-page question. Confirm the delegated result/resume path and grounded answer again.
+  6. Open the Values chip, turn a value off, send another turn, and confirm the choice stays local to this guest session.
+  7. For an already-used guest profile, send one message after its current platform-configured points usage is over the enforced allowance. Do not assume a fixed number of requests; the platform setting and accumulated usage determine when the refusal occurs.
+  8. Sign in, leave an account draft and selected Agent, sign out, then reopen Chat.
+  9. In the controlled member fixture with no available organization, attempt Send and confirm it refuses rather than using the guest identity.
 - **Expected:** The guest can send and receive both turns without signing in or
   choosing an organization. Chat remains in navigation after reload. Account-only
   agent selection and saved history stay behind sign-in; the old account draft,
