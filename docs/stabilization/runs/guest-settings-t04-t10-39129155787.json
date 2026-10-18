@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_guest_settings_controls_run",
+  "run_id": 39129155787,
+  "title": "Guest Settings T04 partial and T10 stopped before preference action",
+  "status": "resource_valid_runner_interaction_failed",
+  "provenance": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "lane": "B",
+    "case_scope": ["EXT-F-1003-T04", "EXT-F-1003-T10"],
+    "workflow_conclusion": "failure",
+    "source_sha": "2ccb9eeb046c02477d4e3369d57dcc030df38cf4",
+    "source_ci_run_id": 39128467009,
+    "source_artifact_id": 12136938674,
+    "source_artifact_digest": "sha256:11a58046124718ab7016b95256f10cd9811a58445f8d5f3086cdddf9487d3812",
+    "source_version": "0.2.543",
+    "source_tree_sha256": "ee99b2189500355cfc6c4623e467cf08d3702ca7be67a12d72f81d122c4bb6b2",
+    "publish_state": "not_published",
+    "hosted_artifact_id": 12137267469,
+    "hosted_artifact_name": "hosted-guest-39129155787-1",
+    "hosted_artifact_size_bytes": 39754,
+    "hosted_artifact_digest": "sha256:d9437f9e2d12ed19c08bbe305976e41ffebaab65f683bde791729cf206517213",
+    "hosted_artifact_expired": false,
+    "sanitized_native_report": "node_modules/.cache/settings-t10-39129155787/settings-local-controls-acceptance.sanitized.json",
+    "record_and_resource_journals_inspected": true,
+    "independent_review": "/tmp/settings-t10-peer-39129155787/review.md",
+    "independent_review_verdict": "PARTIAL"
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "case_verdicts": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "mode": "guest",
+      "status": "partial",
+      "actions_observed": [
+        "Selected Dark, Light, and System in Guest Settings.",
+        "For each selection, the selected value, stored preference, theme class or system-media state, and computed background matched.",
+        "Each selected preference persisted through panel-document reload."
+      ],
+      "failed_or_unverified": [
+        "Original theme baseline restoration was not verified because no matching visible replacement Settings tab was reacquired after reload (matched=0, visible=0).",
+        "Full-extension reload and screenshot-confirmed appearance were not verified."
+      ],
+      "product_credit": "partial credit for the bounded warm selection and panel-document reload subtargets only; T04 overall remains partial"
+    },
+    {
+      "case_id": "EXT-F-1003-T10",
+      "mode": "guest",
+      "status": "unverified",
+      "actions_observed": [],
+      "failure_point": "Readiness check found no Chat section (count=0, expanded=null) before the first T10 step.",
+      "product_credit": "zero; no Ask/Act selection, persistence, inheritance, restoration, or full-extension recheck ran"
+    }
+  ],
+  "failure_classification": "Resource admission was valid. The child failed during runner interaction after T04 baseline restoration could not reacquire Settings; the later T10 readiness check could not find Chat. This is not evidence that T10 preference behavior failed.",
+  "other_selected_cases": "15 selected cases failed in the stopped runner and 4 remained unverified; no further preference assertions completed.",
+  "defect_and_retest_state": {
+    "defect_id": "EXT-D-0223",
+    "original_implicit_ask_key_container_assertion_reached": false,
+    "defect_transition": "none; remains in-fix",
+    "retest_state": "unchanged; this run neither reproduces nor clears D223",
+    "overall_health_claim": false
+  },
+  "next_action": "After source coordination, add bounded non-perturbing observations around panel reload and T10 readiness, then run a fresh resource-admitted exact-source T04/T10 sequence that verifies baseline restoration and reaches the first T10 preference action. Obtain independent native review before changing inventory or defect state."
+}

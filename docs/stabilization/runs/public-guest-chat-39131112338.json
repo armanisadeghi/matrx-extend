@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_public_guest_chat_run",
+  "run_id": 39131112338,
+  "title": "Public CRX Guest Chat B screenshot-oracle failure",
+  "status": "unverified_invalid_resource",
+  "provenance": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "lane": "B",
+    "case": "guest-chat",
+    "workflow_conclusion": "failure",
+    "source_sha": "507e58a4468a8388fef668266dd993070c88cc3e",
+    "artifact_id": 12137874268,
+    "artifact_name": "hosted-guest-39131112338-1",
+    "artifact_size_bytes": 92711,
+    "artifact_digest": "sha256:5476c407a81a73c55434d05e69f3d50fbfe706fe003f434ebe1ef25eea599fa2",
+    "artifact_expired": false,
+    "artifact_created_at_utc": "2026-10-18T13:28:26Z",
+    "build_version": "0.2.205",
+    "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "build_receipt_kind": "published_store_crx_unpacked",
+    "publication_scope": "Extracted/unpacked CRX evidence; this run does not establish a Store-installed browser lifecycle.",
+    "sanitized_native_report": "node_modules/.cache/public-guest-chat-39131112338/matrx-extend/matrx-extend/test-results/guest-chat-store-619296a4-42eb-4a7c-99b7-ab9a70435278.json",
+    "sanitized_native_report_sha256": "6e49e4e866be5382248bf9aef8e7e31a463df1409a7f8305e71fa074e85d963c",
+    "evidence_artifact_inspected": true
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "docs/stabilization/resource-journals/hosted-package-39131112338-1.jsonl",
+      "sanitized_journal_sha256": "0dba81920b1fd2c868ab2367bc5a6237c09db21611e457ca70a1e8c0e067664e"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "docs/stabilization/resource-journals/hosted-browser-39131112338-1.jsonl",
+      "sanitized_journal_sha256": "12b1fc24d52b56545c6be2c52f2bde1be045e3de6d151577600d9cf5b87e304d"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid",
+      "journal": "docs/stabilization/resource-journals/hosted-guest-39131112338-1.jsonl",
+      "sanitized_journal_sha256": "10ffa0732add0ea0659b940b511d7deed8e37165be29a8592ca8b0ca3d6a43fe"
+    }
+  },
+  "case_verdict": {
+    "case_id": "EXT-F-2013-T10",
+    "mode": "guest",
+    "status": "unverified_invalid_resource",
+    "actions_observed": [
+      "Fresh guest Chat opened.",
+      "Opening request was observed on the versioned path with HTTP 200 and is_new=true.",
+      "Opening turn reached terminal_answer with two completed assistant articles and two successful runs, including one delegated tool continuation.",
+      "Reported predicates found unpredictable page content and three ordered stages; grounding diagnostics matched the fixture tab and completed get_page_text result.",
+      "Server version remained stable across before/after checks."
+    ],
+    "limits": [
+      "Observer attached after panel load; it cannot establish earlier requests.",
+      "Initial server target for the tool event was unobserved and guest_ai_transport_proven is false.",
+      "No follow-up or post-reload behavior ran; after_reload and followup_completed_after_reload are false."
+    ],
+    "failure_stage": "real_guest_answer",
+    "failure_code": "assertionerror",
+    "failure_reason": "answer screenshot ineligible: missing_answer",
+    "oracle_interpretation": "The failure screenshot shows the terminal answer tail above an empty composer, and DOM diagnostics report terminal completion with ordered stages. The screenshot eligibility helper could not identify either the selected visible Chat pane or a visible completed answer row; the report does not identify which lookup failed. This is an oracle lookup failure after a reported answer, not evidence of a missing product answer.",
+    "screenshot_sha256": "2d6940b0cfdd040afe7af1e67cdf9af74f9d0feba347dd2f9284f36ea46b4a1f",
+    "partial_observation": "Opening-turn behavior is promising diagnostic evidence only.",
+    "product_acceptance_credit": "zero; guest resource final is invalid, and the required screenshot oracle failed before follow-up/reload coverage"
+  },
+  "defect_and_retest_state": {
+    "defect_transition": "none",
+    "retest_state": "no acceptance transition from this invalid run; inventory status remains unchanged",
+    "overall_health_claim": false
+  },
+  "next_action": "Repair the screenshot helper’s answer-target eligibility against the reported terminal-answer DOM, then rerun bounded Guest Chat B on a resource-valid runner. Establish follow-up and post-reload behavior only from that rerun; keep the CRX receipt classified as extracted/unpacked."
+}
