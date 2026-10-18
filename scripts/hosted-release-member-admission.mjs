@@ -114,6 +114,55 @@ export function verifyReleaseMemberBytes(archiveBytes, artifact, receipt, storeB
 }
 
 function reviewedStabilizationPath(path) {
+  // Operational records cannot alter the packaged extension. Keep this bound
+  // to canonical stabilization folders and data formats; never admit source,
+  // configuration, private fixtures, or path traversal through this class.
+  const segments = path.split('/');
+  if (
+    segments.some((part) => !part || part === '.' || part === '..') ||
+    segments.at(-1) === 'resource-policy.json' ||
+    /%2f/i.test(path) ||
+    /\.(?:mjs|cjs|js|ts|tsx|py|sh|yaml|yml)\./i.test(path) ||
+    /(?:^|[/._-])(?:private|secret|secrets|credential|credentials|fixture|fixtures|config|env)(?:[/._-]|$)/i.test(
+      path,
+    ) ||
+    /^docs\/stabilization\/runs\/hosted-settings-controls-/.test(path)
+  )
+    return false;
+  // Completed records with an immutable reviewed-blob exception below cannot
+  // become generally writable just because their directory is operational.
+  if (
+    path === 'docs/stabilization/evidence/store-release-20261017/tool-drift-release-repair.json' ||
+    /^docs\/stabilization\/(?:runs\/hosted-settings-controls-39074994379\.json|resource-journals\/hosted-(?:browser|guest|package)-39074994379-1\.jsonl)$/.test(
+      path,
+    )
+  )
+    return false;
+  if (
+    /^docs\/stabilization\/(?:runs|reports)\/[a-zA-Z0-9][a-zA-Z0-9._-]*\.(?:json|jsonl|md|html|txt|log)$/.test(
+      path,
+    ) ||
+    /^docs\/stabilization\/defects\/EXT-D-[0-9]{4}\.json$/.test(path)
+  )
+    return true;
+  if (
+    !/^docs\/stabilization\/evidence\/(?:member-run|guest-values-b-)/.test(path) &&
+    /^docs\/stabilization\/evidence\/(?:[a-zA-Z0-9][a-zA-Z0-9._-]*\/)+[a-zA-Z0-9][a-zA-Z0-9._-]*\.(?:json|jsonl|md|html|txt|log|png|jpg|jpeg|webp)$/.test(
+      path,
+    )
+  ) {
+    const run = path.match(/\/run([1-9][0-9]+)\//)?.[1];
+    const journal = path.match(
+      /\/resource-journals\/hosted-(?:browser|guest|package)-([1-9][0-9]+)-/,
+    );
+    if (path.includes('/resource-journals/'))
+      return (
+        run !== undefined &&
+        ((journal !== null && journal[1] === run) ||
+          /\/resource-journals\/hosted-(?:browser|guest|package)\.sanitized\.jsonl$/.test(path))
+      );
+    return true;
+  }
   if (
     [
       'docs/stabilization/CHECKLIST.md',
