@@ -19,6 +19,10 @@ test('browser-serializable stage matcher accepts whole words in order', () => {
   assert.equal(browserMatcher('Recapture, Understand; Used.', stages), false);
   assert.equal(browserMatcher('Capture, Understand; Used 1 tool.', stages), false);
   assert.equal(browserMatcher('Capture Understand Usefulness', stages), false);
+  assert.equal(browserMatcher('Capture Understand Use_value', stages), false);
+  assert.equal(browserMatcher('Capture Understand Use\u0301', stages), false);
+  assert.equal(browserMatcher('Capture Understand Use\u203Fvalue', stages), false);
+  assert.equal(browserMatcher('**Capture** → Understand — use.', stages), true);
 });
 
 // Break caught: CDP text insertion can lose focus, emit an input event that
@@ -236,6 +240,10 @@ test('package turn requires terminal wire success and a newly settled grounded a
       latestReplyText: 'Used 1 tool. OPEN-73: capture, understand; USE.',
     }),
     'terminal_answer',
+  );
+  assert.equal(
+    classify([request], { ...state, latestReplyText: 'OPEN-73: Capture Understand Use_value' }),
+    'terminal_wrong_answer',
   );
   assert.equal(classify([request]), 'terminal_answer');
 });

@@ -221,7 +221,10 @@ export function containsOrderedWholeTerms(text, terms) {
   return terms.every((term) => {
     const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const matches = text.matchAll(
-      new RegExp(`(^|[^\\p{L}\\p{N}])(${escaped})(?=$|[^\\p{L}\\p{N}])`, 'giu'),
+      new RegExp(
+        `(^|[^\\p{L}\\p{N}\\p{M}\\p{Pc}])(${escaped})(?=$|[^\\p{L}\\p{N}\\p{M}\\p{Pc}])`,
+        'giu',
+      ),
     );
     for (const match of matches) {
       const start = match.index + match[1].length;
