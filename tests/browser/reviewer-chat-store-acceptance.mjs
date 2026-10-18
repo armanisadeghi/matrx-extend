@@ -1652,11 +1652,15 @@ try {
           report,
           artifacts,
           output: OUTPUT,
-          evaluateProof: (target, terms) =>
-            evaluate(
+          evaluateProof: (target, terms, phase) => {
+            const sample = `(${prepareMemberAnswerScreenshot.toString()})(${JSON.stringify(terms)}, ${JSON.stringify(phase)})`;
+            return evaluate(
               target,
-              `(${prepareMemberAnswerScreenshot.toString()})(${JSON.stringify(terms)})`,
-            ),
+              phase === 'next_frame'
+                ? `new Promise((resolve) => requestAnimationFrame(() => resolve(${sample})))`
+                : sample,
+            );
+          },
         });
         report.screenshots.result = await capture(panel, artifacts, 'reviewer-chat-result');
         report.screenshots.store_candidate_640x400 = await captureStoreCandidate(panel, artifacts, [

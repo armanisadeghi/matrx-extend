@@ -68,7 +68,23 @@ export function readPackageChatControls(pane) {
 }
 
 /** Position the last assistant body and require readable proof above the composer. */
-export function prepareMemberAnswerScreenshot(expectedTerms) {
+export function prepareMemberAnswerScreenshot(expectedTerms, phase = 'immediate') {
+  const fingerprint = (value) => {
+    if (!value) return null;
+    let hash = 0xcbf29ce484222325n;
+    for (const char of value) {
+      hash ^= BigInt(char.codePointAt(0));
+      hash = BigInt.asUintN(64, hash * 0x100000001b3n);
+    }
+    return hash.toString(16).padStart(16, '0');
+  };
+  const rectOf = (element) => {
+    if (!element) return null;
+    const rect = element.getBoundingClientRect();
+    return Object.fromEntries(
+      ['x', 'y', 'width', 'height'].map((key) => [key, Math.round(rect[key] ?? 0)]),
+    );
+  };
   const tab = [...document.querySelectorAll('button[role="tab"]')].find(
     (candidate) => candidate.title === 'Chat' && candidate.getAttribute('aria-selected') === 'true',
   );
@@ -80,12 +96,35 @@ export function prepareMemberAnswerScreenshot(expectedTerms) {
       '[role="article"][aria-label="Assistant answer"], [role="article"][aria-label="Assistant answer, pinned"]',
     ),
   ].filter((article) => !article.closest('[inert]'));
-  const body = articles.at(-1)?.querySelector('[data-message-content]');
+  const article = articles.at(-1);
+  const body = article?.querySelector('[data-message-content]');
   if (!body) return { eligible: false, reason: 'answer_missing' };
-  body.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+  const scrollContainer = (() => {
+    for (
+      let element = body.parentElement;
+      element && element !== pane;
+      element = element.parentElement
+    ) {
+      const overflow = getComputedStyle(element).overflowY;
+      if (
+        (overflow === 'auto' || overflow === 'scroll') &&
+        element.scrollHeight > element.clientHeight &&
+        element.clientHeight > 0
+      )
+        return element;
+    }
+    return pane;
+  })();
+  if (phase === 'scroll_bottom') {
+    scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'instant' });
+  } else if (phase === 'immediate') {
+    body.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+  }
   const composer = pane.querySelector('textarea');
   const composerTop = composer?.getBoundingClientRect().top ?? 0;
   let painted = false;
+  let rejectedAncestor = null;
+  let ancestorDepth = 0;
   for (let element = body; element; element = element.parentElement) {
     const style = getComputedStyle(element);
     if (
@@ -93,12 +132,22 @@ export function prepareMemberAnswerScreenshot(expectedTerms) {
       style.visibility === 'hidden' ||
       style.visibility === 'collapse' ||
       (style.opacity !== '' && Number(style.opacity) === 0)
-    )
+    ) {
+      rejectedAncestor = {
+        depth: ancestorDepth,
+        tag: element.tagName,
+        class_hash: fingerprint(typeof element.className === 'string' ? element.className : ''),
+        opacity: Number(style.opacity),
+        display: style.display,
+        visibility: style.visibility,
+      };
       break;
+    }
     if (element === pane) {
       painted = true;
       break;
     }
+    ancestorDepth += 1;
   }
   const usableBottom = Math.min(document.documentElement.clientHeight, composerTop);
   const termVisible = (term) => {
@@ -146,5 +195,21 @@ export function prepareMemberAnswerScreenshot(expectedTerms) {
           : 'answer_not_readable_above_composer',
     painted,
     term_visible: termVisibleFlags,
+    diagnostic: {
+      article_id_hash: fingerprint(
+        article.getAttribute('data-primary-message-id') ??
+          article.getAttribute('data-message-ids') ??
+          article.querySelector('[data-message-id]')?.getAttribute('data-message-id'),
+      ),
+      article_rect: rectOf(article),
+      body_rect: rectOf(body),
+      scroll: {
+        top: Math.round(scrollContainer.scrollTop),
+        client_height: Math.round(scrollContainer.clientHeight),
+        scroll_height: Math.round(scrollContainer.scrollHeight),
+      },
+      composer_top: Math.round(composerTop),
+      rejected_ancestor: rejectedAncestor,
+    },
   };
 }

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
+import { containsOrderedWholeTerms } from './guest-chat-completion-oracle.mjs';
 import {
   prepareMemberAnswerScreenshot,
   readPackageChatControls,
@@ -39,11 +40,12 @@ test('Member screenshot refuses clipped or composer-occluded answer and accepts 
   window.document.elementFromPoint = () => hit;
   Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 400 });
   Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 300 });
-  const check = (terms = ['Understand']) =>
-    runInNewContext(`(${prepareMemberAnswerScreenshot.toString()})(terms)`, {
+  const check = (terms = ['Understand'], phase = 'immediate') =>
+    runInNewContext(`(${prepareMemberAnswerScreenshot.toString()})(terms, phase)`, {
       document: window.document,
       getComputedStyle: (node) => window.getComputedStyle(node),
       terms,
+      phase,
     });
   assert.equal(check().eligible, false, 'offscreen text must fail');
   top = 270;
@@ -59,8 +61,22 @@ test('Member screenshot refuses clipped or composer-occluded answer and accepts 
   assert.equal(check().eligible, true, 'readable latest answer must pass');
   body.parentElement.style.opacity = '0';
   assert.equal(check().eligible, false, 'transparent assistant ancestor must fail');
+  const diagnostic = check().diagnostic;
+  assert.equal(diagnostic.rejected_ancestor.tag, 'ARTICLE');
+  assert.equal(diagnostic.rejected_ancestor.opacity, 0);
+  assert.equal(diagnostic.composer_top, 260);
+  assert.deepEqual(Object.keys(diagnostic.article_rect), ['x', 'y', 'width', 'height']);
   body.parentElement.style.opacity = '1';
   assert.equal(check().eligible, true, 'restored assistant paint must pass');
+  const pane = window.document.getElementById('chat');
+  Object.defineProperties(pane, {
+    scrollHeight: { value: 500, configurable: true },
+    clientHeight: { value: 180, configurable: true },
+  });
+  pane.scrollTo = ({ top }) => {
+    pane.scrollTop = top;
+  };
+  assert.equal(check(['Understand'], 'scroll_bottom').diagnostic.scroll.top, 500);
   assert.equal(check(['Capture']).eligible, false, 'wrong answer text must fail');
   await window.happyDOM.abort();
 });
@@ -199,12 +215,15 @@ test('guest driver consumes package controls without dropping the terminal strea
     'readPackageChatControls',
     'nativeOAuthStoredBearerExpression',
     'REQUIRED_ANSWER_TERMS',
+    'containsOrderedWholeTerms',
     `${body}; return observe;`,
-  )(async (_panel, expression) => window.eval(expression), readPackageChatControls, 'false', [
-    'Capture',
-    'Understand',
-    'Use',
-  ]);
+  )(
+    async (_panel, expression) => window.eval(expression),
+    readPackageChatControls,
+    'false',
+    ['Capture', 'Understand', 'Use'],
+    containsOrderedWholeTerms,
+  );
   const ready = await observe(null);
   assert.equal(ready.sendEnabled, true);
   assert.equal(ready.sendControlCount, 1);

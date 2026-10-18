@@ -58,6 +58,56 @@ export function sanitizeMemberAnswerProof(proof) {
   };
 }
 
+/** Numeric geometry and fixed style fields only; no DOM text or raw IDs enter evidence. */
+export function sanitizeMemberAnswerDiagnostic(proof) {
+  const integer = (value) =>
+    Number.isFinite(value) && Math.abs(value) <= 10_000_000 ? Math.round(value) : null;
+  const rect = (value) =>
+    value && typeof value === 'object'
+      ? Object.fromEntries(['x', 'y', 'width', 'height'].map((key) => [key, integer(value[key])]))
+      : null;
+  const fingerprint = (value) =>
+    typeof value === 'string' && /^[0-9a-f]{16}$/.test(value) ? value : null;
+  const source = proof?.diagnostic;
+  const ancestor = source?.rejected_ancestor;
+  return {
+    ...sanitizeMemberAnswerProof(proof),
+    article_id_hash: fingerprint(source?.article_id_hash),
+    article_rect: rect(source?.article_rect),
+    body_rect: rect(source?.body_rect),
+    scroll: source?.scroll
+      ? {
+          top: integer(source.scroll.top),
+          client_height: integer(source.scroll.client_height),
+          scroll_height: integer(source.scroll.scroll_height),
+        }
+      : null,
+    composer_top: integer(source?.composer_top),
+    rejected_ancestor: ancestor
+      ? {
+          depth: integer(ancestor.depth),
+          tag:
+            typeof ancestor.tag === 'string' && /^[A-Z]{1,12}$/.test(ancestor.tag)
+              ? ancestor.tag
+              : null,
+          class_hash: fingerprint(ancestor.class_hash),
+          opacity:
+            Number.isFinite(ancestor.opacity) && ancestor.opacity >= 0 && ancestor.opacity <= 1
+              ? ancestor.opacity
+              : null,
+          display: ['none', 'block', 'flex', 'grid', 'contents', 'inline', 'inline-block'].includes(
+            ancestor.display,
+          )
+            ? ancestor.display
+            : 'other',
+          visibility: ['visible', 'hidden', 'collapse'].includes(ancestor.visibility)
+            ? ancestor.visibility
+            : 'other',
+        }
+      : null,
+  };
+}
+
 /** Persist the panel proof before the strict eligibility assertion can abort acceptance. */
 export async function requireMemberAnswerEvidence({
   panel,
@@ -67,8 +117,9 @@ export async function requireMemberAnswerEvidence({
   evaluateProof,
   capture,
 }) {
-  const proof = await evaluateProof(panel, expectedTerms);
+  const proof = await evaluateProof(panel, expectedTerms, 'immediate');
   report.member_answer_proof = sanitizeMemberAnswerProof(proof);
+  report.member_answer_diagnostic = { immediate: sanitizeMemberAnswerDiagnostic(proof) };
   let screenshotCaptured = false;
   try {
     report.screenshots.visible_answer_proof = await capture(
@@ -79,6 +130,29 @@ export async function requireMemberAnswerEvidence({
     screenshotCaptured = true;
   } catch {
     report.member_answer_proof.screenshot_capture_failed = true;
+  }
+  if (proof?.eligible !== true) {
+    try {
+      const nextFrame = await evaluateProof(panel, expectedTerms, 'next_frame');
+      report.member_answer_diagnostic.next_frame = sanitizeMemberAnswerDiagnostic(nextFrame);
+    } catch {
+      report.member_answer_diagnostic.next_frame_failed = true;
+    }
+    try {
+      const scrolled = await evaluateProof(panel, expectedTerms, 'scroll_bottom');
+      report.member_answer_diagnostic.scroll_bottom = sanitizeMemberAnswerDiagnostic(scrolled);
+      try {
+        report.screenshots.visible_answer_after_scroll = await capture(
+          panel,
+          artifacts,
+          'reviewer-chat-visible-answer-after-scroll',
+        );
+      } catch {
+        report.member_answer_diagnostic.scroll_screenshot_capture_failed = true;
+      }
+    } catch {
+      report.member_answer_diagnostic.scroll_probe_failed = true;
+    }
   }
   assert.equal(proof?.eligible, true, 'reviewer_chat_visible_answer_unverified');
   assert.equal(screenshotCaptured, true, 'reviewer_chat_visible_answer_screenshot_missing');
