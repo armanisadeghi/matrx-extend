@@ -215,6 +215,24 @@ export function createGuestStreamCollector({
   };
 }
 
+/** Find complete answer terms in sequence, ignoring casing and surrounding punctuation. */
+export function containsOrderedWholeTerms(text, terms) {
+  let after = 0;
+  return terms.every((term) => {
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const matches = text.matchAll(
+      new RegExp(`(^|[^\\p{L}\\p{N}])(${escaped})(?=$|[^\\p{L}\\p{N}])`, 'giu'),
+    );
+    for (const match of matches) {
+      const start = match.index + match[1].length;
+      if (start < after) continue;
+      after = start + match[2].length;
+      return true;
+    }
+    return false;
+  });
+}
+
 /** Classify one guest Chat turn from sanitized stream metadata and rendered assistant text. */
 export function classifyGuestTurn({
   runs,
@@ -250,14 +268,13 @@ export function classifyGuestTurn({
   if (replyCount <= priorReplyFloor && now - latest.doneAt < 700) return 'rendering_terminal';
   if (replyCount <= priorReplyFloor || !assistantText.trim()) return 'terminal_empty_answer';
   if (terminalAnswerError) return 'terminal_error';
-  let after = -1;
-  const inOrder = orderedTerms.every((term) => {
-    const position = assistantText.indexOf(term, after + 1);
-    if (position < 0) return false;
-    after = position + term.length - 1;
-    return true;
-  });
-  return inOrder && expectedTerms.every((term) => assistantText.includes(term))
+  const inOrder = containsOrderedWholeTerms(assistantText, orderedTerms);
+  return inOrder &&
+    expectedTerms.every(
+      (term) =>
+        orderedTerms.some((ordered) => ordered.toLowerCase() === term.toLowerCase()) ||
+        assistantText.includes(term),
+    )
     ? 'terminal_answer'
     : 'terminal_wrong_answer';
 }
@@ -297,14 +314,14 @@ export function classifyPackageGuestTurn({
   if (state.streaming) return 'in_progress';
   if (state.replyCount <= priorReplyCount) return 'in_progress';
   const text = state.latestReplyText ?? '';
-  let after = -1;
-  const inOrder = orderedTerms.every((term) => {
-    const position = text.indexOf(term, after + 1);
-    if (position < 0) return false;
-    after = position + term.length - 1;
-    return true;
-  });
-  return text.trim() && inOrder && expectedTerms.every((term) => text.includes(term))
+  const inOrder = containsOrderedWholeTerms(text, orderedTerms);
+  return text.trim() &&
+    inOrder &&
+    expectedTerms.every(
+      (term) =>
+        orderedTerms.some((ordered) => ordered.toLowerCase() === term.toLowerCase()) ||
+        text.includes(term),
+    )
     ? 'terminal_answer'
     : 'terminal_wrong_answer';
 }

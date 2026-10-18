@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { containsOrderedWholeTerms } from './guest-chat-completion-oracle.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
@@ -62,7 +63,7 @@ async function observe(panel) {
         sendControlDisabled: controls.sendControlDisabled,
         streaming: controls.streaming,
         replyCount: replies.length,
-        stagesInOrder: /Capture[\\s\\S]*Understand[\\s\\S]*Use/.test(answer),
+        stagesInOrder: (${containsOrderedWholeTerms.toString()})(answer, ${JSON.stringify(STAGES)}),
         refusal: /(?:sign.?in|log.?in|authentication required|upgrade|subscribe|payment required|unauthori[sz]ed|forbidden|\\b401\\b|\\b403\\b)/i.test(answer),
         error: /^\\s*Error\\s*:/i.test(answer) || Boolean(active && pane.querySelector('[role="alert"]')),
       }));

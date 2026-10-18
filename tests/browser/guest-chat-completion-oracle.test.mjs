@@ -1,12 +1,25 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { runInNewContext } from 'node:vm';
 import {
   classifyGuestTurn,
   classifyPackageGuestTurn,
+  containsOrderedWholeTerms,
   createGuestComposerProbe,
   createGuestStreamCollector,
   readGuestReactDraft,
 } from './guest-chat-completion-oracle.mjs';
+
+// Break caught: a rendered tool badge saying "Used" must not become the "Use" stage.
+test('browser-serializable stage matcher accepts whole words in order', () => {
+  const browserMatcher = runInNewContext(`(${containsOrderedWholeTerms.toString()})`);
+  const stages = ['Capture', 'Understand', 'Use'];
+  assert.equal(browserMatcher('Used 1 tool. capture, understand; USE.', stages), true);
+  assert.equal(browserMatcher('Use, Capture; Understand.', stages), false);
+  assert.equal(browserMatcher('Recapture, Understand; Used.', stages), false);
+  assert.equal(browserMatcher('Capture, Understand; Used 1 tool.', stages), false);
+  assert.equal(browserMatcher('Capture Understand Usefulness', stages), false);
+});
 
 // Break caught: CDP text insertion can lose focus, emit an input event that
 // React later clears, or leave a nonempty composer with Send still disabled.
@@ -217,6 +230,13 @@ test('package turn requires terminal wire success and a newly settled grounded a
     classify([request], { ...state, latestReplyText: 'Capture Understand Use' }),
     'terminal_wrong_answer',
   );
+  assert.equal(
+    classify([request], {
+      ...state,
+      latestReplyText: 'Used 1 tool. OPEN-73: capture, understand; USE.',
+    }),
+    'terminal_answer',
+  );
   assert.equal(classify([request]), 'terminal_answer');
 });
 
@@ -381,6 +401,17 @@ test('opening answer must list the page stages in order', () => {
   assert.equal(
     classifyGuestTurn({ ...common, assistantText: 'C82F4A: Capture, Understand, Use.' }),
     'terminal_answer',
+  );
+  assert.equal(
+    classifyGuestTurn({
+      ...common,
+      assistantText: 'Used 1 tool. C82F4A: capture, understand; USE.',
+    }),
+    'terminal_answer',
+  );
+  assert.equal(
+    classifyGuestTurn({ ...common, assistantText: 'C82F4A: Used, Capture, Understand.' }),
+    'terminal_wrong_answer',
   );
 });
 

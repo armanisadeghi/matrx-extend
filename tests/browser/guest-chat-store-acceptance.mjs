@@ -10,6 +10,7 @@ import { prepareGuestAnswerScreenshot } from './guest-answer-screenshot.mjs';
 import {
   classifyGuestTurn,
   classifyPackageGuestTurn,
+  containsOrderedWholeTerms,
   createGuestStreamCollector,
 } from './guest-chat-completion-oracle.mjs';
 import { createGuestInputDriver } from './guest-chat-input-driver.mjs';
@@ -173,11 +174,10 @@ async function observe(panel, expected = {}) {
           latestReply.includes(${JSON.stringify(expected.nonce ?? '')}),
         answerContainsFixtureHeading: Boolean(${JSON.stringify(expected.fixtureHeading ?? null)}) &&
           latestReply.includes(${JSON.stringify(expected.fixtureHeading ?? '')}),
-        answerMatchesPublicStages: ${JSON.stringify(REQUIRED_ANSWER_TERMS)}
-          .every((term) => latestReply.includes(term)),
-        answerStagesInOrder: ${JSON.stringify(REQUIRED_ANSWER_TERMS)}
-          .every((term, index, terms) => index === 0 ||
-            latestReply.indexOf(terms[index - 1]) < latestReply.indexOf(term)),
+        answerMatchesPublicStages: ${JSON.stringify(REQUIRED_ANSWER_TERMS)}.every(
+          (term) => (${containsOrderedWholeTerms.toString()})(latestReply, [term])),
+        answerStagesInOrder: (${containsOrderedWholeTerms.toString()})(
+          latestReply, ${JSON.stringify(REQUIRED_ANSWER_TERMS)}),
         answerIsRefusal: /(?:authentication (?:is )?required|you (?:must|need to) (?:sign.?in|log.?in|authenticate)|(?:sign.?in|log.?in) (?:to|before) (?:use|ask|send|continue)|upgrade|subscribe|payment required|unauthori[sz]ed|forbidden|\\b401\\b|\\b403\\b)/i
           .test(latestReply),
         terminalAnswerError: /^\s*Error\s*:/i.test(latestReply),
