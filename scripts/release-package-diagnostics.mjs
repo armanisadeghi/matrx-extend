@@ -90,6 +90,9 @@ const reasons = [
     'store-runtime-code',
   ],
   [/creates an executable script element and assigns its src/, 'store-remote-script-loader'],
+  // A published package importing a name its installed sibling no longer
+  // exports (records-ui 0.116.17 -> design-system formatShortcut, v0.2.538).
+  [/MISSING_EXPORT/, 'package-missing-export'],
 ];
 let found = 0;
 for (const [pattern, reason] of reasons) {
