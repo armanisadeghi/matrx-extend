@@ -19,8 +19,9 @@ const DISPATCH_REQUESTER = 'extend-stabilization';
 // Reviewed bytes of this narrow lane's active hosted workflow. Any workflow edit needs review.
 // Notes CDP opt-in uses startup_display_mode; SEO diagnostics share one input, leaving 25.
 // D221 adds only the reviewed lane A admin Screenshots case on an exact CI development artifact.
+// EXT-D-0243 enables existing startup observers for guest/member Chat after independent review.
 // The existing phase, fixture, and credential guards remain mandatory.
-const REVIEWED_WORKFLOW_SHA256 = '6d647290198bfa787fe80043c8acc3e4e6ff75d2847d692600de9eb792494bc4';
+const REVIEWED_WORKFLOW_SHA256 = '5015475e91f9999a8f82c5554c4b84b543f820ec5bf65e928ed31f13540dd6b1';
 const RESOURCE_POLICY = JSON.parse(
   readFileSync(new URL('../docs/stabilization/resource-policy.json', import.meta.url), 'utf8'),
 );
