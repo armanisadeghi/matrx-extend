@@ -39,6 +39,7 @@ printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
 mkdir -p scripts
 mv scripts-release-lock-conflict.mjs scripts/release-lock-conflict.mjs
 cp "$HARNESS_ROOT/scripts/release-snapshot-dependencies.sh" "$HARNESS_ROOT/scripts/release-owner-lock.sh" scripts/
+cp "$HARNESS_ROOT/scripts/release-package-diagnostics.mjs" scripts/
 mkdir -p types; echo "old catalog" > types/tool-catalog.md
 echo "shared" > shared.txt
 git_q add -A; git_q commit -m "seed"; git_q push origin main
@@ -107,7 +108,16 @@ fi
 case "\$1" in
   scripts/check-store-package.mjs|scripts/check-cws-release-risk.mjs)
     echo "\$1" >> "$SANDBOX/node-gates"
-    if [ -f "$SANDBOX/fail-store-package" ] && [ "\$1" = scripts/check-store-package.mjs ]; then exit 1; fi
+    if [ -f "$SANDBOX/fail-store-package" ] && [ "\$1" = scripts/check-store-package.mjs ]; then
+      echo 'Store manifest contains a development key' >&2
+      echo 'fixture-sensitive-value-from-package-check' >&2
+      exit 27
+    fi
+    if [ -f "$SANDBOX/fail-store-risk" ] && [ "\$1" = scripts/check-cws-release-risk.mjs ]; then
+      echo 'The manifest policy surface differs from the version Google approved.' >&2
+      echo 'fixture-sensitive-value-from-risk-check' >&2
+      exit 29
+    fi
     exit 0 ;;
 esac
 exec "$REAL_NODE" "\$@"
@@ -191,7 +201,11 @@ case " \$* " in
       exit 1
     fi ;;
   *" exec wxt zip "*)
-    [ -f "$SANDBOX/fail-build" ] && exit 1
+    if [ -f "$SANDBOX/fail-build" ]; then
+      echo 'ERR_PNPM_FETCH_404' >&2
+      echo 'fixture-sensitive-value-from-zip' >&2
+      exit 23
+    fi
     mkdir -p .output/chrome-mv3
     version=\$(sed -n 's/^  "version": "\([^"]*\)".*/\1/p' package.json)
     if [ "\${MATRX_CWS_BUILD:-}" = 1 ]; then
@@ -355,6 +369,7 @@ rm "$SANDBOX/fail-generation"
 check "generation failure exits nonzero"              '[[ $GEN_STATUS -ne 0 ]]'
 check "generation failure leaves main untouched"      '[[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
 touch "$SANDBOX/fail-build"
+rm -f tmp/release-logs/diagnostics.log
 set +e
 PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/build-out" 2>&1
 BUILD_STATUS=$?
@@ -362,7 +377,11 @@ set -e
 rm "$SANDBOX/fail-build"
 check "package failure exits nonzero"                 '[[ $BUILD_STATUS -ne 0 ]]'
 check "package failure leaves main untouched"         '[[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "zip failure publishes no tag or ZIP"           '! git ls-remote --tags origin | grep -q "refs/tags/v0.1.2$" && [[ ! -e .output/matrx-extend-0.1.2-store.zip && ! -e .output/matrx-extend-0.1.2-local.zip ]]'
+check "zip failure creates sanitized diagnosis"        'grep -q "phase=store-zip exit=23 candidate=v0.1.2" tmp/release-logs/diagnostics.log && grep -q "code=ERR_PNPM_FETCH_404" tmp/release-logs/diagnostics.log && ! grep -q "fixture-sensitive-value" tmp/release-logs/diagnostics.log && [[ $(wc -c < tmp/release-logs/diagnostics.log) -le 1024 ]]'
+check "zip failure keeps raw output out of release log" '! grep -q "fixture-sensitive-value-from-zip" tmp/release-logs/latest.log'
 touch "$SANDBOX/fail-store-package"
+rm -f tmp/release-logs/diagnostics.log
 set +e
 PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/store-check-out" 2>&1
 STORE_CHECK_STATUS=$?
@@ -370,6 +389,19 @@ set -e
 rm "$SANDBOX/fail-store-package"
 check "Store package gate exits nonzero"             '[[ $STORE_CHECK_STATUS -ne 0 ]]'
 check "Store package gate leaves main untouched"     '[[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "Store package failure publishes no tag or ZIP" '! git ls-remote --tags origin | grep -q "refs/tags/v0.1.2$" && [[ ! -e .output/matrx-extend-0.1.2-store.zip && ! -e .output/matrx-extend-0.1.2-local.zip ]]'
+check "Store package failure names only safe reason"    'grep -q "phase=store-package-check exit=27 candidate=v0.1.2" tmp/release-logs/diagnostics.log && grep -q "reason=store-dev-key" tmp/release-logs/diagnostics.log && ! grep -q "fixture-sensitive-value" tmp/release-logs/diagnostics.log'
+check "Store package failure keeps raw output out of release log" '! grep -q "fixture-sensitive-value-from-package-check" tmp/release-logs/latest.log'
+touch "$SANDBOX/fail-store-risk"
+rm -f tmp/release-logs/diagnostics.log
+set +e
+PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/store-risk-out" 2>&1
+STORE_RISK_STATUS=$?
+set -e
+rm "$SANDBOX/fail-store-risk"
+check "Store risk failure publishes no tag or ZIP"    '! git ls-remote --tags origin | grep -q "refs/tags/v0.1.2$" && [[ ! -e .output/matrx-extend-0.1.2-store.zip && ! -e .output/matrx-extend-0.1.2-local.zip ]]'
+check "Store risk failure creates safe diagnostic"    '[[ $STORE_RISK_STATUS -ne 0 ]] && grep -q "phase=store-risk-check exit=29 candidate=v0.1.2" tmp/release-logs/diagnostics.log && grep -q "reason=store-policy-surface" tmp/release-logs/diagnostics.log && ! grep -q "fixture-sensitive-value" tmp/release-logs/diagnostics.log'
+check "Store risk failure keeps raw output out of release log" '! grep -q "fixture-sensitive-value-from-risk-check" tmp/release-logs/latest.log'
 check "failed prep preserved prior zips"              'grep -q "prior Store zip" .output/matrx-extend-0.1.0-store.zip && grep -q "prior local zip" .output/matrx-extend-0.1.0-local.zip'
 
 # --no-push is a release preview.

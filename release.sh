@@ -909,19 +909,32 @@ $review" -- "${paths[@]}"; then
 # The Store rejects any
 # upload that carries the dev key (incident: .research/v0.1.4-auth-incident.md).
 build_zips() (
-    local wxt_zip=".output/${PROJECT_NAME}-${NEW_VERSION}-chrome.zip"
+    local wxt_zip=".output/${PROJECT_NAME}-${NEW_VERSION}-chrome.zip" phase="build-snapshot"
+    trap 'rc=$?; if (( rc != 0 )); then printf "%s %s\n" "$phase" "$rc" > "$JOBS/build-failure"; fi' EXIT
     cd "$BUILD_SNAP" || return 1
-    MATRX_CWS_BUILD=1 bounded 600 pnpm -s exec wxt zip || return 1
+    phase="store-zip"
+    MATRX_CWS_BUILD=1 bounded 600 pnpm -s exec wxt zip || return $?
+    phase="store-zip-present"
     [[ -f "$wxt_zip" ]] || return 1
-    node scripts/check-store-package.mjs || return 1
-    node scripts/check-cws-release-risk.mjs || return 1
+    phase="store-package-check"
+    node scripts/check-store-package.mjs || return $?
+    phase="store-risk-check"
+    node scripts/check-cws-release-risk.mjs || return $?
+    phase="store-key-absent"
     if unzip -p "$wxt_zip" manifest.json 2>/dev/null | grep -q '"key"'; then return 1; fi
-    cp "$wxt_zip" "$STORE_CANDIDATE" || return 1
-    rm -f "$wxt_zip"
-    bounded 600 pnpm -s exec wxt zip || return 1
+    phase="store-copy"
+    cp "$wxt_zip" "$STORE_CANDIDATE" || return $?
+    phase="store-temp-remove"
+    rm -f "$wxt_zip" || return $?
+    phase="local-zip"
+    bounded 600 pnpm -s exec wxt zip || return $?
+    phase="local-zip-present"
     [[ -f "$wxt_zip" ]] || return 1
-    cp "$wxt_zip" "$LOCAL_CANDIDATE" || return 1
+    phase="local-copy"
+    cp "$wxt_zip" "$LOCAL_CANDIDATE" || return $?
+    phase="local-key-present"
     unzip -p "$LOCAL_CANDIDATE" manifest.json 2>/dev/null | grep -q '"key"' || return 1
+    phase="local-manifest-present"
     [[ -f .output/chrome-mv3/manifest.json ]] || return 1
 )
 
@@ -979,10 +992,17 @@ while :; do
     mandate_scan_step
     # The package build started beside the parallel checks (start_build).
     await_background "$JOBS/build.rc" || { note_race packaging; continue; }
-    cat "$JOBS/build.out" >> "$RELEASE_LOG_FILE"
     if [[ "$(cat "$JOBS/build.rc")" != 0 ]]; then
+        if ! node "$REPO_ROOT/scripts/release-package-diagnostics.mjs" \
+            "$JOBS/build-failure" "$JOBS/build.out" "$NEW_TAG" \
+            > "$RELEASE_LOG_DIR/diagnostics.log"; then
+            printf 'phase=unknown exit=1 candidate=unknown\nreason=diagnostic-unavailable\n' \
+                > "$RELEASE_LOG_DIR/diagnostics.log"
+        fi
+        cat "$RELEASE_LOG_DIR/diagnostics.log"
         hard_stop "candidate package validation failed for $NEW_TAG — nothing was pushed"
     fi
+    cat "$JOBS/build.out" >> "$RELEASE_LOG_FILE"
     BG_PIDS=()
     report_excluded_dirty
     # Local fixture hook: a foreign commit can land at the last possible point.
