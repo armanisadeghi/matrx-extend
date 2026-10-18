@@ -1,0 +1,38 @@
+{
+  "review": "member-answer-diagnostics-source-peer-review",
+  "date": "2026-10-18",
+  "result": "PASS",
+  "scope": "Read-only review of four member answer diagnostic files and report; focused tests run. No source edits, native acceptance, or product-pass claim.",
+  "checks": {
+    "same_selected_pane_article_ancestry": {
+      "status": "pass",
+      "evidence": "Strict eligibility and paint diagnostics use the selected Chat tab pane and last non-inert assistant article. Candidate diagnostics cover at most the last two assistant articles in that same pane and compute paint ancestry against each candidate; the selected candidate is the strict proof article."
+    },
+    "bounded_sanitized_evidence": {
+      "status": "pass",
+      "evidence": "Report sanitizer allows only finite bounded integer geometry/count/timing, constrained visibility/display/play-state/scope enums, booleans, and 16-hex fingerprints. Candidate and animation lists are capped at two and three. It excludes DOM text, raw IDs, exception text, credentials, and unknown fields. Tests include unsafe values and malformed/out-of-range inputs."
+    },
+    "foreground_and_transcript_diagnostics": {
+      "status": "pass_with_limit",
+      "evidence": "Document visibility/focus, selected-tab/active-pane/transcript counts, selected/preceding article geometry and paint state, transcript opacity, and animation play state/current time/delay/duration/progress can distinguish an invisible/fading transcript from visible output. These DOM observations do not prove OS/window foreground or link an article ID to the backend reply; the repair report correctly preserves those as unresolved."
+    },
+    "strict_immediate_rejection": {
+      "status": "pass",
+      "evidence": "Immediate screenshot/proof is captured first and alone controls eligibility. Next-frame and scroll-bottom probes execute only after immediate rejection, are diagnostic only, and cannot override the immediate assertion. The test forces both later probes to green and confirms the overall proof still rejects."
+    },
+    "product_paint": {
+      "status": "unproven",
+      "evidence": "The instrumentation improves evidence only. It does not establish the cause of zero opacity, prove the selected answer is the active response, or certify product rendering."
+    }
+  },
+  "validation": {
+    "focused_tests": "pass: node --test tests/browser/package-chat-controls.test.mjs tests/browser/member-chat-visible-proof.test.mjs (21 passed, 0 failed)",
+    "compile": "not run in this peer lane; repair report states it passed",
+    "native_acceptance": "not run"
+  },
+  "limitations": [
+    "DOM visibility/focus is not OS foreground evidence.",
+    "The selected last article is not correlated to the actual network reply ID; stale/duplicate selection remains possible.",
+    "No product behavior or Store acceptance is certified."
+  ]
+}

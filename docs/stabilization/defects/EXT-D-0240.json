@@ -34,7 +34,7 @@
   "priority": "P1: retest Member A on corrected native harness before product credit.",
   "state": "in-fix",
   "owner": "member_answer_proof_repair",
-  "cause": "The final capture path did not position the answer and the terminal DOM oracle did not test viewport clipping or occlusion.",
+  "cause": "Prior screenshots did not prove paint; current .546 evidence identifies opacity-zero animated transcript ancestor. Member authentication opens another web tab without explicit target foreground restoration; causal role still unproven.",
   "sibling_census": "Both final Member images, normal and 640x400 Store candidate, now use the same latest-answer proof after each viewport size is applied. Transport and terminal assertions remain intact.",
   "fix_sha": null,
   "original_retest_runs": [39107538580, 39154980480],
@@ -47,14 +47,14 @@
   ],
   "verification": {
     "focused": "25 member/org/control focused tests pass; compile and focused/full Biome pass. Source diagnostics preserve strict paint rejection; scrollTop and primary failure preservation RED\u2192GREEN.",
-    "peer": "Fresh source peer PASS, reports/member-source-peer-20261018.json; paint root cause unproven.",
+    "peer": "Fresh independent diagnostics peer PASS, reports/member-diagnostics-peer-20261018.json; 21focusedtests pass. Actual product paint and foreground cause remain unverified.",
     "native": "Exact .546 native retest rejects answer_unpainted: ancestor opacity is zero. Two HTTP 200 terminal replies are diagnostic only; paint cause unresolved."
   },
   "limitations": [
     "Historical run 39107538580 keeps its valid HTTP and terminal diagnostic evidence, but no visible-answer credit.",
     "This source-only harness repair does not establish product success until a fresh native retest."
   ],
-  "next_action": "Run one guarded exact .546 Member A retest using pushed a7eee07d5 diagnostics and D242 org config. Inspect actual answer images and opacity ancestor scope; if still unpainted, diagnose active renderer before changing runtime.",
+  "next_action": "Guarded native Member A on exact latest .547 ZIP with reviewed visibility/focus/hashed candidate/animation diagnostics. Inspect immediate and diagnostic images; retain strict rejection. If hidden document/opacity persists, use actual target activation to discriminate before runtime repair.",
   "transition_history": [
     {
       "at": "2026-10-18T00:00:00Z",

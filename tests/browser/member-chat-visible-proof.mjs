@@ -66,6 +66,7 @@ export function sanitizeMemberAnswerProof(proof) {
 export function sanitizeMemberAnswerDiagnostic(proof) {
   const integer = (value) =>
     Number.isFinite(value) && Math.abs(value) <= 10_000_000 ? Math.round(value) : null;
+  const opacity = (value) => (Number.isFinite(value) && value >= 0 && value <= 1 ? value : null);
   const rect = (value) =>
     value && typeof value === 'object'
       ? Object.fromEntries(['x', 'y', 'width', 'height'].map((key) => [key, integer(value[key])]))
@@ -73,21 +74,8 @@ export function sanitizeMemberAnswerDiagnostic(proof) {
   const fingerprint = (value) =>
     typeof value === 'string' && /^[0-9a-f]{16}$/.test(value) ? value : null;
   const source = proof?.diagnostic;
-  const ancestor = source?.rejected_ancestor;
-  return {
-    ...sanitizeMemberAnswerProof(proof),
-    article_id_hash: fingerprint(source?.article_id_hash),
-    article_rect: rect(source?.article_rect),
-    body_rect: rect(source?.body_rect),
-    scroll: source?.scroll
-      ? {
-          top: integer(source.scroll.top),
-          client_height: integer(source.scroll.client_height),
-          scroll_height: integer(source.scroll.scroll_height),
-        }
-      : null,
-    composer_top: integer(source?.composer_top),
-    rejected_ancestor: ancestor
+  const sanitizedAncestor = (ancestor) =>
+    ancestor
       ? {
           depth: integer(ancestor.depth),
           tag:
@@ -100,10 +88,7 @@ export function sanitizeMemberAnswerDiagnostic(proof) {
             ? ancestor.scope
             : null,
           class_hash: fingerprint(ancestor.class_hash),
-          opacity:
-            Number.isFinite(ancestor.opacity) && ancestor.opacity >= 0 && ancestor.opacity <= 1
-              ? ancestor.opacity
-              : null,
+          opacity: opacity(ancestor.opacity),
           display: ['none', 'block', 'flex', 'grid', 'contents', 'inline', 'inline-block'].includes(
             ancestor.display,
           )
@@ -113,7 +98,63 @@ export function sanitizeMemberAnswerDiagnostic(proof) {
             ? ancestor.visibility
             : 'other',
         }
+      : null;
+  const transcript = source?.transcript;
+  return {
+    ...sanitizeMemberAnswerProof(proof),
+    document_visibility: ['visible', 'hidden', 'prerender'].includes(source?.document_visibility)
+      ? source.document_visibility
       : null,
+    document_has_focus:
+      typeof source?.document_has_focus === 'boolean' ? source.document_has_focus : null,
+    selected_chat_tab_count: integer(source?.selected_chat_tab_count),
+    active_chat_pane_count: integer(source?.active_chat_pane_count),
+    chat_column_count: integer(source?.chat_column_count),
+    transcript_count: integer(source?.transcript_count),
+    selected_transcript_index: integer(source?.selected_transcript_index),
+    assistant_article_count: integer(source?.assistant_article_count),
+    selected_article_index: integer(source?.selected_article_index),
+    article_candidates: Array.isArray(source?.article_candidates)
+      ? source.article_candidates.slice(-2).map((candidate) => ({
+          article_id_hash: fingerprint(candidate?.article_id_hash),
+          article_rect: rect(candidate?.article_rect),
+          painted: candidate?.painted === true,
+          rejected_ancestor: sanitizedAncestor(candidate?.rejected_ancestor),
+        }))
+      : [],
+    transcript: transcript
+      ? {
+          class_hash: fingerprint(transcript.class_hash),
+          opacity: opacity(transcript.opacity),
+          animation_count: integer(transcript.animation_count),
+          animation_probe_failed: transcript.animation_probe_failed === true,
+          animations: Array.isArray(transcript.animations)
+            ? transcript.animations.slice(0, 3).map((animation) => ({
+                play_state: ['idle', 'running', 'paused', 'finished'].includes(
+                  animation?.play_state,
+                )
+                  ? animation.play_state
+                  : 'other',
+                current_time_ms: integer(animation?.current_time_ms),
+                delay_ms: integer(animation?.delay_ms),
+                duration_ms: integer(animation?.duration_ms),
+                progress: opacity(animation?.progress),
+              }))
+            : [],
+        }
+      : null,
+    article_id_hash: fingerprint(source?.article_id_hash),
+    article_rect: rect(source?.article_rect),
+    body_rect: rect(source?.body_rect),
+    scroll: source?.scroll
+      ? {
+          top: integer(source.scroll.top),
+          client_height: integer(source.scroll.client_height),
+          scroll_height: integer(source.scroll.scroll_height),
+        }
+      : null,
+    composer_top: integer(source?.composer_top),
+    rejected_ancestor: sanitizedAncestor(source?.rejected_ancestor),
   };
 }
 

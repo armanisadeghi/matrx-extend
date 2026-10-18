@@ -164,9 +164,10 @@ export function prepareMemberAnswerScreenshot(expectedTerms, phase = 'immediate'
       ['x', 'y', 'width', 'height'].map((key) => [key, Math.round(rect[key] ?? 0)]),
     );
   };
-  const tab = [...document.querySelectorAll('button[role="tab"]')].find(
+  const selectedChatTabs = [...document.querySelectorAll('button[role="tab"]')].filter(
     (candidate) => candidate.title === 'Chat' && candidate.getAttribute('aria-selected') === 'true',
   );
+  const tab = selectedChatTabs[0];
   const pane = tab && document.getElementById(tab.getAttribute('aria-controls') ?? '');
   if (pane?.getAttribute('data-state') !== 'active')
     return { eligible: false, reason: 'chat_inactive' };
@@ -204,43 +205,73 @@ export function prepareMemberAnswerScreenshot(expectedTerms, phase = 'immediate'
   }
   const composer = pane.querySelector('textarea');
   const composerTop = composer?.getBoundingClientRect().top ?? 0;
-  let painted = false;
-  let rejectedAncestor = null;
-  let ancestorDepth = 0;
-  for (let element = body; element; element = element.parentElement) {
-    const style = getComputedStyle(element);
-    if (
-      style.display === 'none' ||
-      style.visibility === 'hidden' ||
-      style.visibility === 'collapse' ||
-      (style.opacity !== '' && Number(style.opacity) === 0)
-    ) {
-      rejectedAncestor = {
-        depth: ancestorDepth,
-        tag: element.tagName,
-        scope:
-          element === pane
-            ? 'pane'
-            : element === article
-              ? 'article'
-              : article.contains(element)
-                ? 'inside_article'
-                : pane.contains(element)
-                  ? 'above_article'
-                  : 'above_pane',
-        class_hash: fingerprint(typeof element.className === 'string' ? element.className : ''),
-        opacity: Number(style.opacity),
-        display: style.display,
-        visibility: style.visibility,
-      };
-      break;
+  const articleIdHash = (candidate) =>
+    fingerprint(
+      candidate.getAttribute('data-primary-message-id') ??
+        candidate.getAttribute('data-message-ids') ??
+        candidate.querySelector('[data-message-id]')?.getAttribute('data-message-id'),
+    );
+  const paintState = (candidate) => {
+    const candidateBody = candidate.querySelector('[data-message-content]');
+    if (!candidateBody) return { painted: false, rejected_ancestor: null };
+    let depth = 0;
+    for (let element = candidateBody; element; element = element.parentElement) {
+      const style = getComputedStyle(element);
+      if (
+        style.display === 'none' ||
+        style.visibility === 'hidden' ||
+        style.visibility === 'collapse' ||
+        (style.opacity !== '' && Number(style.opacity) === 0)
+      ) {
+        return {
+          painted: false,
+          rejected_ancestor: {
+            depth,
+            tag: element.tagName,
+            scope:
+              element === pane
+                ? 'pane'
+                : element === candidate
+                  ? 'article'
+                  : candidate.contains(element)
+                    ? 'inside_article'
+                    : pane.contains(element)
+                      ? 'above_article'
+                      : 'above_pane',
+            class_hash: fingerprint(typeof element.className === 'string' ? element.className : ''),
+            opacity: Number(style.opacity),
+            display: style.display,
+            visibility: style.visibility,
+          },
+        };
+      }
+      if (element === pane) return { painted: true, rejected_ancestor: null };
+      depth += 1;
     }
-    if (element === pane) {
-      painted = true;
-      break;
-    }
-    ancestorDepth += 1;
+    return { painted: false, rejected_ancestor: null };
+  };
+  const selectedPaint = paintState(article);
+  const painted = selectedPaint.painted;
+  const rejectedAncestor = selectedPaint.rejected_ancestor;
+  const transcripts = [...pane.querySelectorAll('[aria-label="Conversation"]')];
+  const selectedTranscript = article.closest('[aria-label="Conversation"]');
+  let animationCount = null;
+  let animationStates = [];
+  let animationProbeFailed = false;
+  try {
+    const animations = scrollContainer.getAnimations?.() ?? [];
+    animationCount = animations.length;
+    animationStates = animations.slice(0, 3).map((animation) => ({
+      play_state: animation.playState,
+      current_time_ms: animation.currentTime,
+      delay_ms: animation.effect?.getTiming?.().delay,
+      duration_ms: animation.effect?.getTiming?.().duration,
+      progress: animation.effect?.getComputedTiming?.().progress,
+    }));
+  } catch {
+    animationProbeFailed = true;
   }
+  const scrollStyle = getComputedStyle(scrollContainer);
   const usableBottom = Math.min(document.documentElement.clientHeight, composerTop);
   const termVisible = (term) => {
     const walker = document.createTreeWalker(body, 4);
@@ -288,11 +319,35 @@ export function prepareMemberAnswerScreenshot(expectedTerms, phase = 'immediate'
     painted,
     term_visible: termVisibleFlags,
     diagnostic: {
-      article_id_hash: fingerprint(
-        article.getAttribute('data-primary-message-id') ??
-          article.getAttribute('data-message-ids') ??
-          article.querySelector('[data-message-id]')?.getAttribute('data-message-id'),
-      ),
+      document_visibility: document.visibilityState,
+      document_has_focus: document.hasFocus(),
+      selected_chat_tab_count: selectedChatTabs.length,
+      active_chat_pane_count: selectedChatTabs.filter(
+        (candidate) =>
+          document
+            .getElementById(candidate.getAttribute('aria-controls') ?? '')
+            ?.getAttribute('data-state') === 'active',
+      ).length,
+      chat_column_count: pane.querySelectorAll('[data-chat-column]').length,
+      transcript_count: transcripts.length,
+      selected_transcript_index: transcripts.indexOf(selectedTranscript),
+      assistant_article_count: articles.length,
+      selected_article_index: articles.indexOf(article),
+      article_candidates: articles.slice(-2).map((candidate) => ({
+        article_id_hash: articleIdHash(candidate),
+        article_rect: rectOf(candidate),
+        ...paintState(candidate),
+      })),
+      transcript: {
+        class_hash: fingerprint(
+          typeof scrollContainer.className === 'string' ? scrollContainer.className : '',
+        ),
+        opacity: Number(scrollStyle.opacity),
+        animation_count: animationCount,
+        animation_probe_failed: animationProbeFailed,
+        animations: animationStates,
+      },
+      article_id_hash: articleIdHash(article),
       article_rect: rectOf(article),
       body_rect: rectOf(body),
       scroll: {

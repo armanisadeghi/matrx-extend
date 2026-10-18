@@ -115,6 +115,86 @@ test('Member screenshot scroll probe works when the native scroll area has no sc
   await window.happyDOM.abort();
 });
 
+test('Member proof identifies the selected article and its transcript fade without exposing message IDs', async () => {
+  const window = new Window();
+  window.document.body.innerHTML = `<button role="tab" title="Chat" aria-selected="true" aria-controls="chat"></button>
+    <div id="chat" data-state="active"><div data-chat-column><div class="absolute inset-0 overflow-y-auto pt-12 [container-type:size] scrollbar-contrast" style="overflow-y:auto;opacity:0"><div aria-label="Conversation">
+      <article role="article" aria-label="Assistant answer" data-primary-message-id="6ff85960-75cf-4ecd-921d-5b8c0674ae44"><div data-message-content>Capture Understand Use</div></article>
+      <article role="article" aria-label="Assistant answer" data-primary-message-id="dc37ab99-4488-42b8-a4db-df4490c186c4"><div data-message-content>Understand</div></article>
+    </div></div><textarea></textarea></div>`;
+  const pane = window.document.getElementById('chat');
+  const scroll = pane.querySelector('[class~="scrollbar-contrast"]');
+  const bodies = [...pane.querySelectorAll('[data-message-content]')];
+  Object.defineProperties(scroll, {
+    scrollHeight: { value: 908, configurable: true },
+    clientHeight: { value: 79, configurable: true },
+  });
+  scroll.getAnimations = () => [
+    {
+      playState: 'paused',
+      currentTime: 17,
+      effect: {
+        getTiming: () => ({ delay: 50, duration: 200 }),
+        getComputedTiming: () => ({ progress: 0 }),
+      },
+    },
+  ];
+  for (const body of bodies) {
+    body.scrollIntoView = () => {};
+    body.getBoundingClientRect = () => ({ x: 16, y: 134, width: 320, height: 35 });
+  }
+  pane.querySelector('textarea').getBoundingClientRect = () => ({ top: 256 });
+  window.document.createRange = () => ({
+    setStart() {},
+    setEnd() {},
+    getClientRects: () => [{ left: 16, right: 100, top: 134, bottom: 150, width: 84, height: 16 }],
+  });
+  window.document.elementFromPoint = () => bodies[1];
+  window.document.hasFocus = () => false;
+  Object.defineProperty(window.document, 'visibilityState', {
+    value: 'hidden',
+    configurable: true,
+  });
+  Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 360 });
+  Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 360 });
+  const probe = () =>
+    runInNewContext(`(${prepareMemberAnswerScreenshot.toString()})(['Understand'], 'next_frame')`, {
+      document: window.document,
+      getComputedStyle: (node) => window.getComputedStyle(node),
+    });
+  const hidden = probe();
+  assert.equal(hidden.eligible, false, 'zero-opacity transcript remains ineligible');
+  assert.equal(hidden.diagnostic.document_visibility, 'hidden');
+  assert.equal(hidden.diagnostic.document_has_focus, false);
+  assert.equal(hidden.diagnostic.selected_chat_tab_count, 1);
+  assert.equal(hidden.diagnostic.active_chat_pane_count, 1);
+  assert.equal(hidden.diagnostic.chat_column_count, 1);
+  assert.equal(hidden.diagnostic.transcript_count, 1);
+  assert.equal(hidden.diagnostic.assistant_article_count, 2);
+  assert.equal(hidden.diagnostic.selected_article_index, 1);
+  assert.equal(hidden.diagnostic.selected_transcript_index, 0);
+  assert.equal(hidden.diagnostic.article_candidates.length, 2);
+  assert.match(hidden.diagnostic.article_candidates[0].article_id_hash, /^[0-9a-f]{16}$/);
+  assert.notEqual(
+    hidden.diagnostic.article_candidates[0].article_id_hash,
+    hidden.diagnostic.article_candidates[1].article_id_hash,
+  );
+  assert.equal(hidden.diagnostic.article_candidates[1].rejected_ancestor.scope, 'above_article');
+  assert.equal(hidden.diagnostic.transcript.opacity, 0);
+  assert.equal(hidden.diagnostic.transcript.animations[0].play_state, 'paused');
+  assert.equal(hidden.diagnostic.transcript.animations[0].current_time_ms, 17);
+  assert.equal(hidden.diagnostic.transcript.animations[0].duration_ms, 200);
+  assert.doesNotMatch(
+    JSON.stringify(hidden.diagnostic),
+    /6ff85960|dc37ab99|Capture Understand Use/,
+  );
+  scroll.style.opacity = '1';
+  const painted = probe();
+  assert.equal(painted.eligible, true, 'real opacity transition must restore paint eligibility');
+  assert.equal(painted.diagnostic.transcript.opacity, 1);
+  await window.happyDOM.abort();
+});
+
 // Markup contracts recovered from the immutable .520 Store ZIP, release 39049375284:
 // Send/Stop aria labels; assistant article + data-message-content, never action-bar text.
 function surface({ disabled = false, name = 'Send message', active = true, extra = '' } = {}) {

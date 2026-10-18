@@ -8,7 +8,144 @@ import {
   recordReviewerFailure,
   requireMemberAnswerEvidence,
   runMemberAnswerProofBoundary,
+  sanitizeMemberAnswerDiagnostic,
 } from './member-chat-visible-proof.mjs';
+
+test('member diagnostic retains only bounded paint and animation evidence across probes', async () => {
+  const secret = 'Bearer private-message-id-and-answer';
+  const report = { screenshots: {} };
+  const phases = [];
+  const diagnostic = (opacity, phase) => ({
+    document_visibility: phase === 'immediate' ? 'hidden' : 'visible',
+    document_has_focus: phase !== 'immediate',
+    selected_chat_tab_count: 1,
+    active_chat_pane_count: 1,
+    chat_column_count: 1,
+    transcript_count: 1,
+    selected_transcript_index: 0,
+    assistant_article_count: 2,
+    selected_article_index: 1,
+    article_candidates: [
+      {
+        article_id_hash: '0123456789abcdef',
+        article_rect: { x: 16, y: 90, width: 320, height: 50 },
+        painted: false,
+        rejected_ancestor: {
+          scope: 'above_article',
+          opacity: 0,
+          class_hash: 'ab3882204ea95060',
+          display: 'block',
+          visibility: 'visible',
+          tag: 'DIV',
+          depth: 9,
+        },
+        raw_id: secret,
+      },
+      {
+        article_id_hash: 'fedcba9876543210',
+        article_rect: { x: 16, y: 134, width: 320, height: 35 },
+        painted: opacity > 0,
+        rejected_ancestor:
+          opacity > 0
+            ? null
+            : {
+                scope: 'above_article',
+                opacity: 0,
+                class_hash: 'ab3882204ea95060',
+                display: 'block',
+                visibility: 'visible',
+                tag: 'DIV',
+                depth: 9,
+              },
+        raw_text: secret,
+      },
+    ],
+    transcript: {
+      class_hash: 'ab3882204ea95060',
+      opacity,
+      animation_count: 1,
+      animation_probe_failed: false,
+      animations: [
+        {
+          play_state: opacity === 0 ? 'paused' : 'finished',
+          current_time_ms: opacity === 0 ? 17 : 200,
+          delay_ms: 50,
+          duration_ms: 200,
+          progress: opacity,
+          unsafe: secret,
+        },
+      ],
+      unsafe: secret,
+    },
+    secret,
+  });
+  await assert.rejects(
+    requireMemberAnswerEvidence({
+      panel: {},
+      expectedTerms: ['Understand'],
+      report,
+      artifacts: '/private',
+      evaluateProof: async (_panel, _terms, phase) => {
+        phases.push(phase);
+        const opacity = phase === 'immediate' ? 0 : 1;
+        return {
+          eligible: phase !== 'immediate',
+          reason: phase === 'immediate' ? 'answer_unpainted' : 'eligible',
+          painted: opacity > 0,
+          term_visible: [true],
+          diagnostic: diagnostic(opacity, phase),
+        };
+      },
+      capture: async (_panel, _artifacts, label) => `/private/${label}.png`,
+    }),
+    /reviewer_chat_visible_answer_unverified/,
+  );
+  assert.deepEqual(phases, ['immediate', 'next_frame', 'scroll_bottom']);
+  assert.equal(report.member_answer_diagnostic.immediate.transcript.opacity, 0);
+  assert.equal(report.member_answer_diagnostic.next_frame.transcript.opacity, 1);
+  assert.equal(
+    report.member_answer_diagnostic.scroll_bottom.transcript.animations[0].play_state,
+    'finished',
+  );
+  assert.equal(
+    report.member_answer_diagnostic.immediate.article_candidates[1].article_id_hash,
+    'fedcba9876543210',
+  );
+  assert.equal(report.member_answer_diagnostic.immediate.document_visibility, 'hidden');
+  assert.equal(
+    report.member_answer_proof.eligible,
+    false,
+    'later paint cannot weaken the immediate gate',
+  );
+  assert.doesNotMatch(
+    JSON.stringify(report),
+    /Bearer|private-message-id|raw_id|raw_text|unsafe|secret/,
+  );
+  const malformed = sanitizeMemberAnswerDiagnostic({
+    diagnostic: {
+      document_visibility: secret,
+      article_candidates: [
+        {
+          article_id_hash: secret,
+          article_rect: { x: Number.POSITIVE_INFINITY },
+          rejected_ancestor: { scope: secret, class_hash: secret },
+        },
+      ],
+      transcript: {
+        class_hash: secret,
+        opacity: 3,
+        animations: [
+          { play_state: secret, current_time_ms: Number.POSITIVE_INFINITY, progress: 2 },
+        ],
+      },
+    },
+  });
+  assert.equal(malformed.document_visibility, null);
+  assert.equal(malformed.article_candidates[0].article_id_hash, null);
+  assert.equal(malformed.transcript.opacity, null);
+  assert.equal(malformed.transcript.animations[0].play_state, 'other');
+  assert.doesNotMatch(JSON.stringify(malformed), /Bearer|private-message-id/);
+});
 
 test('cleanup failure cannot erase the classified visible-answer rejection', () => {
   const report = { status: 'unverified' };
