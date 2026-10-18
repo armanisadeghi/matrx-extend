@@ -474,6 +474,139 @@ test('package panel transport requires a correlated successful terminal NDJSON r
   await watch.stop();
 });
 
+// Break caught: package Chat sends a persisted second turn to the conversation
+// URL, so the observer must capture its own terminal stream and URL identity.
+test('package observer proves a persisted follow-up on the conversation route', async () => {
+  const events = new EventEmitter();
+  const bodies = new Map();
+  const panel = {
+    async send(method, { requestId } = {}) {
+      if (method === 'Network.getResponseBody')
+        return { body: bodies.get(requestId), base64Encoded: false };
+      return {};
+    },
+    on(name, listener) {
+      events.on(name, listener);
+      return () => events.off(name, listener);
+    },
+  };
+  const watch = await watchGuestAiRequests({
+    panel,
+    panelTarget: { url: 'chrome-extension://abc/sidepanel.html' },
+    mode: 'package',
+  });
+  const complete = (operation) =>
+    `${JSON.stringify({ event: 'init', data: { operation: 'user_request', operation_id: operation } })}\n` +
+    `${JSON.stringify({ event: 'completion', data: { operation: 'user_request', operation_id: operation, status: 'success' } })}\n` +
+    `${JSON.stringify({ event: 'end', data: { reason: 'complete' } })}\n`;
+  const emit = async ({ id, attempt, url, postData, body, status = 200 }) => {
+    watch.arm(attempt);
+    bodies.set(id, body);
+    events.emit('Network.requestWillBeSent', {
+      requestId: id,
+      request: { method: 'POST', url, postData: JSON.stringify(postData) },
+    });
+    events.emit('Network.responseReceived', { requestId: id, response: { status } });
+    events.emit('Network.loadingFinished', { requestId: id });
+    await watch.settle();
+  };
+  await emit({
+    id: 'opening',
+    attempt: 'opening',
+    url: 'https://server.invalid/ai/mandates/extend.browser_chat',
+    postData: { conversation_id: 'private-conversation', is_new: true, store: true },
+    body: complete('opening-operation'),
+  });
+  await emit({
+    id: 'followup',
+    attempt: 'same_conversation_followup',
+    url: 'https://server.invalid/ai/conversations/private-conversation',
+    postData: { user_input: 'private-question', stream: true, store: true },
+    body: complete('followup-operation'),
+  });
+  await emit({
+    id: 'reloaded',
+    attempt: 'post_reload_new_conversation',
+    url: 'https://server.invalid/ai/mandates/extend.browser_chat',
+    postData: { conversation_id: 'private-new-conversation', is_new: true, store: true },
+    body: complete('reloaded-operation'),
+  });
+  const rows = watch.snapshot();
+  requireGuestTransport(rows, 'same_conversation_followup', 'package');
+  requireGuestConversationSequence(rows);
+  assert.equal(rows.length, 3);
+  assert.equal(rows[1].path_class, 'conversation');
+  assert.equal(rows[1].is_new, false);
+  assert.equal(rows[1].conversation_fingerprint, rows[0].conversation_fingerprint);
+  assert.equal(rows[1].terminal_success, true);
+  assert.throws(
+    () => requireGuestConversationSequence([rows[0], { ...rows[1], is_new: true }, rows[2]]),
+    /followup_must_continue_conversation/,
+  );
+  assert.throws(
+    () =>
+      requireGuestConversationSequence([
+        rows[0],
+        { ...rows[1], conversation_fingerprint: rows[2].conversation_fingerprint },
+        rows[2],
+      ]),
+    /followup_must_keep_opening_conversation_identity/,
+  );
+  assert.throws(
+    () =>
+      requireGuestTransport(
+        [rows[0], { ...rows[1], terminal_success: false }, rows[2]],
+        'same_conversation_followup',
+        'package',
+      ),
+    /same_conversation_followup_guest_ai_transport_unobserved/,
+  );
+  assert.equal(JSON.stringify(rows).includes('private-conversation'), false);
+  assert.equal(JSON.stringify(rows).includes('private-question'), false);
+  for (const [id, method, url] of [
+    ['conversation-read', 'GET', 'https://server.invalid/ai/conversations/private-conversation'],
+    [
+      'neighboring-service',
+      'POST',
+      'https://server.invalid/other/ai/conversations/private-conversation',
+    ],
+    [
+      'conversation-message',
+      'POST',
+      'https://server.invalid/ai/conversations/private-conversation/messages',
+    ],
+  ]) {
+    watch.arm('same_conversation_followup');
+    bodies.set(id, complete(`${id}-operation`));
+    events.emit('Network.requestWillBeSent', {
+      requestId: id,
+      request: { method, url, postData: JSON.stringify({ stream: true }) },
+    });
+    events.emit('Network.responseReceived', { requestId: id, response: { status: 200 } });
+    events.emit('Network.loadingFinished', { requestId: id });
+    await watch.settle();
+  }
+  assert.equal(watch.snapshot().length, 3, 'unrelated conversation reads and paths stay excluded');
+  await emit({
+    id: 'contradictory-followup',
+    attempt: 'contradictory_followup',
+    url: 'https://server.invalid/ai/conversations/private-conversation',
+    postData: {
+      conversation_id: 'private-new-conversation',
+      is_new: false,
+      user_input: 'private-question',
+      stream: true,
+      store: true,
+    },
+    body: complete('contradictory-operation'),
+  });
+  const contradictory = watch.snapshot().at(-1);
+  assert.equal(contradictory.path_class, 'conversation');
+  assert.equal(contradictory.terminal_success, true);
+  assert.equal(contradictory.conversation_fingerprint, null);
+  await watch.stop();
+});
+
 test('large offscreen POST body is inspected transiently without retaining guest text or ID', async () => {
   const events = new EventEmitter();
   const watch = await watchGuestAiRequests({
