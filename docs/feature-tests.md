@@ -304,7 +304,7 @@ Every entry follows this shape:
 - **Where to test:** a fresh isolated Chrome profile with no AI Matrx sign-in.
 - **Steps:**
   1. Open the Matrx Extend side panel.
-  2. Confirm Chat is selected. Type a short message, click Send, and wait for a real assistant response. The guest must not be asked to select an organization.
+  2. Confirm Chat is selected. Type a short message, click Send, and wait for a real assistant response. The first Send must create a user message and start the request; it must not leave an enabled Send button beside an unchanged draft. The guest must not be asked to select an organization.
   3. While the reply is running, queue a follow-up, edit it, cancel a queued item, and stop the running reply. Send another follow-up in that conversation, then open Scrape, Data, SEO, and Settings.
      If a browser tool is delegated, complete it and confirm the assistant continues after the tool result.
   4. Reload the side panel while still signed out.
@@ -317,7 +317,9 @@ Every entry follows this shape:
   agent selection and saved history stay behind sign-in; the old account draft,
   variables, attachments, and running turn disappear on sign-out. The next
   guest send uses the platform chat Mandate. Guest sends and Values opens do not
-  attempt to read the signed-in person's owner-only context settings table. Once
+  attempt to read the signed-in person's owner-only context settings table or
+  an account-only agent run-tier RPC. Fresh Chat starts from the generated browser
+  Mandate display data; missing data shows a load error. Once
   the guest allowance is used, Chat says to sign up free and offers no futile Retry;
   this includes the current structured HTTP 402 guest-usage refusal as well as the
   previously documented 403 form. The existing guest banner provides the sign-up action.
