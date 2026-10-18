@@ -430,7 +430,6 @@ test('public guest run receipts admit matching journals and named screenshots', 
   assert.equal(result.status, 0, result.stderr);
   assert.deepEqual(JSON.parse(result.stdout).pendingPaths.sort(), paths.sort());
   for (const path of [
-    'docs/stabilization/runs/public-guest-chat-0.2.206-39156655719.json',
     'docs/stabilization/runs/public-guest-chat-0.2.205-39156655719-private.json',
     'docs/stabilization/runs/public-guest-chat-0.2.205-39156655719.json.mjs',
     'docs/stabilization/evidence/published-v0205-guest-chat/run39156655719/resource-journals/hosted-package-39156655720-1.sanitized.jsonl',
@@ -454,9 +453,70 @@ test('member admission rejects documents outside the flat report namespace', () 
     'docs/stabilization/release-workflow-change.json',
     'docs/stabilization/reports/nested/unreviewed.json',
     'docs/stabilization/reports/guest-send-controls-20261018.json.mjs',
-    'docs/stabilization/evidence/unreviewed/receipt.json',
   ])
     assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
+});
+
+test('released source admits public receipt and reply images as operational data', (t) => {
+  const source = '093566e1c5dac768a70c8b8574a8aad948b9bd2a';
+  const workflow = 'bbe37d110ef607991a451544abbdf78889f70aa6';
+  const cwd = mkdtempSync(join(tmpdir(), 'member-public-source-'));
+  t.after(() => rmSync(cwd, { recursive: true, force: true }));
+  execFileSync(
+    'git',
+    [
+      'clone',
+      '--shared',
+      '--no-checkout',
+      execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim(),
+      '.',
+    ],
+    { cwd },
+  );
+  execFileSync('git', ['checkout', '--detach', workflow], { cwd });
+  const moduleUrl = new URL('./hosted-release-member-admission.mjs', import.meta.url).href;
+  const result = spawnSync(
+    process.execPath,
+    [
+      '--input-type=module',
+      '-e',
+      `import { proveSource } from ${JSON.stringify(moduleUrl)}; console.log(JSON.stringify(proveSource(${JSON.stringify(source)}, ${JSON.stringify(workflow)})));`,
+    ],
+    { cwd, encoding: 'utf8' },
+  );
+  assert.equal(result.status, 0, result.stderr);
+  const proof = JSON.parse(result.stdout);
+  assert.equal(proof.storeEligibility, false);
+  assert.ok(proof.subsequentChangedPaths.some((path) => path.endsWith('/receipt.sanitized.json')));
+  assert.ok(
+    proof.subsequentChangedPaths.some((path) => path.endsWith('/screenshots/opening-answer.png')),
+  );
+});
+
+test('operational data class rejects executable, private, mismatched and escaping paths', () => {
+  requireReleaseMemberSource(true, [
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/receipt.sanitized.json',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/screenshots/opening-answer.png',
+    'docs/stabilization/runs/public-guest-chat-0.2.206-39160396059.json',
+  ]);
+  for (const path of [
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/resource-journals/hosted-browser-39160396059-1.sanitized.jsonl',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/run.sh',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/screenshots/dropper.py.json',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/screenshots/dropper.mjs.json',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/screenshots/dropper.sh.png',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/private-receipt.json',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/../run39160396059/receipt.json',
+    'docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/resource-policy.json',
+    'src/config/env.ts',
+    'pnpm-lock.yaml',
+    '.github/workflows/release.yml',
+  ])
+    assert.throws(
+      () => requireReleaseMemberSource(true, [path]),
+      /release_member_product_changed/,
+      path,
+    );
 });
 
 test('reviewed guest send peer receipt preserves the released member candidate', () => {

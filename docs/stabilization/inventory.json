@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-18T19:15:11.823642+00:00",
+  "updated_at": "2026-10-18T20:03:46.716563+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -50372,6 +50372,22 @@
           "label": "View exact delivered context",
           "action": "Open the canonical delivered-text viewer for the actual persisted server message.",
           "test_design_status": "unverified"
+        },
+        {
+          "id": "EXT-F-2013-C139",
+          "label": "Inspect next-turn Values",
+          "action": "Open the context Values dialog",
+          "source_anchor": "src/features/chat/ContextRulesComposerChip.tsx",
+          "test_design_status": "ready-for-reproduction",
+          "test_design_item": "EXT-F-2013-T13: open Values, verify actual visible dialog; other row interactions remain unverified."
+        },
+        {
+          "id": "EXT-F-2013-C140",
+          "label": "Close Values dialog",
+          "action": "Dismiss with Escape or its close control",
+          "source_anchor": "src/features/chat/ContextRulesComposerChip.tsx",
+          "test_design_status": "ready-for-reproduction",
+          "test_design_item": "EXT-F-2013-T13: verify Escape, close control and reopened baseline separately in each mode."
         }
       ],
       "source_anchors": [
@@ -50949,14 +50965,17 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "39156655719",
+              "status": "pass",
+              "run_id": "39160396058",
               "build_version": "0.2.205 public CRX adapted unpacked",
-              "resource_valid": false,
+              "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+              "resource_valid": true,
+              "server_sha_before_after": "a61289ffa374eb4b1a2ff8181d9db42e947f039a",
               "evidence": [
-                "docs/stabilization/runs/public-guest-chat-0.2.205-39156655719.json"
+                "docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json",
+                "docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json"
               ],
-              "detail": "Current opening/follow-up/reload result unknown: host watchdog terminated before report. Before-server SHA unknown; post-run ee884703d02801f18dbdc7036897f4cec3914f93. Earlier bounded pass is preserved in result_history; no current live-health credit."
+              "detail": "Bounded T10 PASS: three distinct grounded terminal replies, actual same-conversation is_new=false then new conversation after reload, fresh guest and valid resource finals. Overall workflow PARTIAL because later Values Escape close failed (D244/T13). Not actual Store-installed lifecycle, current548, member/admin, other controls or full Chat."
             }
           },
           "defect_verification": {
@@ -51130,6 +51149,21 @@
               },
               "superseded_at": "2026-10-18T19:19:51.762562+00:00",
               "reason": "Historical bounded pass remains valid only for its recorded extension/server. Current live server changed; latest public native attempt was resource-invalid, so current behavior is unverified."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "39156655719",
+                "build_version": "0.2.205 public CRX adapted unpacked",
+                "resource_valid": false,
+                "evidence": [
+                  "docs/stabilization/runs/public-guest-chat-0.2.205-39156655719.json"
+                ],
+                "detail": "Current opening/follow-up/reload result unknown: host watchdog terminated before report. Before-server SHA unknown; post-run ee884703d02801f18dbdc7036897f4cec3914f93. Earlier bounded pass is preserved in result_history; no current live-health credit."
+              },
+              "superseded_at": "2026-10-18T20:03:02.431885+00:00",
+              "reason": "Fresh independently reviewed public205 three-turn browser evidence on stable live server; separate Values failure does not erase T10 observations."
             }
           ],
           "attempt_history": [
@@ -51269,6 +51303,51 @@
               }
             }
           }
+        },
+        {
+          "id": "EXT-F-2013-T13",
+          "title": "Inspect and dismiss context Values dialog",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2013-C139",
+            "EXT-F-2013-C140"
+          ],
+          "preconditions": [
+            "Use an exact guarded artifact and fresh profile; record build/reload, actual role and live server identity."
+          ],
+          "steps": [
+            "Open Chat and the visible Values surface.",
+            "Focus inside its dialog and send a trusted Escape; inspect the dialog and focus state.",
+            "Separately verify close control and reopening; retain unverified state for any path not exercised."
+          ],
+          "expected": [
+            "The requested Values surface opens; Escape and its close control dismiss it without altering conversation or role."
+          ],
+          "defect_ids": [
+            "EXT-D-0244"
+          ],
+          "results": {
+            "guest": {
+              "status": "fail",
+              "run_id": "39160396058",
+              "build_version": "0.2.205 public CRX adapted unpacked",
+              "evidence": [
+                "docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json",
+                "docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json"
+              ],
+              "detail": "One observed Escape failure: trusted keydown received, dialog remains open and focus inside. Repeatability, cause, close control, latest548 and full Values interactions remain unverified."
+            },
+            "member": {
+              "status": "unverified"
+            },
+            "admin": {
+              "status": "unverified"
+            }
+          }
         }
       ],
       "cells": {
@@ -51287,7 +51366,8 @@
             "EXT-D-0172",
             "EXT-D-0233",
             "EXT-D-0235",
-            "EXT-D-0243"
+            "EXT-D-0243",
+            "EXT-D-0244"
           ],
           "run_ids": [
             "guest-grounding-peer-native-20261001-001",
@@ -51299,9 +51379,10 @@
             "37356729984",
             "37770686993",
             "39154937331",
-            "39156655719"
+            "39156655719",
+            "39160396058"
           ],
-          "retest_status": "Latest public205 run39156655719 is resource-invalid with unknown reply outcome/before-server SHA; no new product credit. Earlier passes remain bound to original source/server; candidate547 native acceptance pending."
+          "retest_status": "Independently reviewed bounded public205 T10 three-turn PASS on stable server a61289ff; Values Escape failure D244/T13 open. Exact548/native Store install/member/admin/full feature remain unverified."
         },
         "member": {
           "test_status": "unverified",

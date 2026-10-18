@@ -1,0 +1,37 @@
+{
+  "id": "EXT-D-0244",
+  "feature_id": "EXT-F-2013",
+  "surface": "Chat context Values dialog",
+  "auth_mode": "guest",
+  "case_ids": ["EXT-F-2013-T13"],
+  "control_ids": ["EXT-F-2013-C139", "EXT-F-2013-C140"],
+  "title": "Values dialog remains open after trusted Escape in public205 guest run",
+  "reproduction": [
+    "Import the exact public0.2.205 CRX (SHA2567f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23), load unpacked under the resource guard in a fresh guest profile, and reload from its recorded receipt.",
+    "Open Chat and complete the controlled three-turn fixture flow as run39160396058. Open Values and focus inside the dialog.",
+    "Dispatch trusted Escape, then inspect actual dialog open state and focus; native evidence records one trusted Escape and one remaining open dialog."
+  ],
+  "expected": "Escape dismisses the focused Values dialog.",
+  "actual": "The Values dialog remains visibly open with focus inside after a trusted Escape.",
+  "evidence": [
+    "docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json",
+    "docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/screenshots/values-chip-failure.png"
+  ],
+  "severity": "S3: context inspection dialog dismissal by Escape fails; the three Chat replies completed.",
+  "priority": "P2: verify current candidate and repair through the owning shared component if it reproduces.",
+  "state": "open",
+  "owner": "stabilization-coordinator",
+  "reproducibility": "One resource-valid native observation independently confirmed; repeatability/root cause and current548 remain unverified.",
+  "build_version": "0.2.205 public CRX adapted unpacked",
+  "server_sha": "a61289ffa374eb4b1a2ff8181d9db42e947f039a",
+  "transition_history": [
+    {
+      "at": "2026-10-18T20:03:02.431885+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent screenshot and DOM/event review confirms the observed dialog did not close; no cause or current-build equivalence inferred."
+    }
+  ],
+  "next_action": "Inspect exact548 GuestB Values outcome; reproduce independently before triage/fix. Keep original public205 evidence and separate T10 Chat pass."
+}

@@ -1,0 +1,62 @@
+{
+  "id": "member-chat-store-v0548-run39161061154",
+  "feature_id": "EXT-F-2013",
+  "case_id": "EXT-F-2013-T02",
+  "run_id": 39161061154,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39161061154",
+  "workflow_sha": "d6c9a013c50ff70099b943231ef86bca46e74381",
+  "release_run_id": 39160321437,
+  "release_artifact_id": 12148533135,
+  "release_artifact_digest": "sha256:9ca7c9c0e47efa71cbdd4913d42ad0fa915ba9d2ff779539135c187551b64810",
+  "extension_version": "0.2.548",
+  "product_source_sha": "093566e1c5dac768a70c8b8574a8aad948b9bd2a",
+  "store_zip_sha256": "6064c42c133b0807740b5a18d7f46555948b5476587df36e4e3b73ec65d7abec",
+  "native_evidence_artifact_id": 12148369014,
+  "native_evidence_artifact_digest": "sha256:78d96839dd1b2706961af684eab22cf2f7981d7b608b06853949fcfd4e834d9a",
+  "verdict": "unverified-visible-answer-failure",
+  "failure": {
+    "step": "Exercise the selected Chrome side-panel case",
+    "stage": "reviewer_two_turn_terminal_proof",
+    "code": "reviewer_chat_visible_answer_unverified"
+  },
+  "observations": {
+    "local_existing_reviewer_nonadmin_and_membership_preflight": "pass",
+    "member_web_and_extension_sign_in": true,
+    "canonical_extension_admin_check": "matched current extension user; zero admin rows",
+    "selected_organization_matches_approved_fixture": true,
+    "same_conversation_turns_completed": 2,
+    "terminal_replies": "two HTTP 200 semantic successes; transport complete",
+    "request_organization_headers": "both match selected approved organization",
+    "visible_answer_acceptance": "fail: answer_unpainted; subsequent bottom-scroll proof says answer_not_readable_above_composer",
+    "diagnostic": "document_visibility hidden while focused; immediate opacity 0; next-frame opacity 0.672206 with one running animation; bottom-scroll remains unreadable above composer",
+    "product_root_cause": "not determined"
+  },
+  "resource_finals": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid-child-failed",
+    "resource_invalid": false
+  },
+  "evidence": {
+    "native_summary": "docs/stabilization/evidence/member-run39161061154-20261018/native-summary.json",
+    "uploaded_files": [
+      "docs/stabilization/evidence/member-run39161061154-20261018/hosted-package-39161061154-1.sanitized.jsonl",
+      "docs/stabilization/evidence/member-run39161061154-20261018/hosted-browser-39161061154-1.sanitized.jsonl",
+      "docs/stabilization/evidence/member-run39161061154-20261018/hosted-guest-39161061154-1.sanitized.jsonl"
+    ],
+    "raw_evidence_archive_retained_until_peer": "/tmp/member-a-39161061154.zip"
+  },
+  "cleanup": {
+    "reviewer_magic_link_secret_removed_and_absence_verified": true,
+    "local_magic_link_file_removed_and_absence_verified": true,
+    "ephemeral_reviewer_identity_file_removed_and_absence_verified": true,
+    "approved_organization_fixture_unchanged": true,
+    "hosted_runner_terminal": true
+  },
+  "limitations": [
+    "The member Chat workflow reached real two-turn acceptance and both organization headers matched the approved fixture.",
+    "No visible-answer pass: captured answer-proof screenshots show no answer text, and the driver marked the answer unpainted/unreadable.",
+    "This run does not establish a product root cause or Store eligibility; no additional retry is authorized."
+  ],
+  "next_action": "Retain the verified private raw artifact for independent review; investigate the visibility/animation evidence before any separately authorized acceptance attempt."
+}

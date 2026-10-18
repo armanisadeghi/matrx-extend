@@ -96,9 +96,27 @@
     "product_defect_claimed": false
   },
   "resource_finals": {
-    "hosted-package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid", "journal": "resource-journals/hosted-package.sanitized.jsonl" },
-    "hosted-browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid", "journal": "resource-journals/hosted-browser.sanitized.jsonl" },
-    "hosted-guest": { "admitted": true, "resource_invalid": false, "exit_code": 1, "decision": "child_failed", "journal": "resource-journals/hosted-guest.sanitized.jsonl" }
+    "hosted-package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "resource-journals/hosted-package.sanitized.jsonl"
+    },
+    "hosted-browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "resource-journals/hosted-browser.sanitized.jsonl"
+    },
+    "hosted-guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed",
+      "journal": "resource-journals/hosted-guest.sanitized.jsonl"
+    }
   },
   "cleanup": {
     "workflow_job_terminal": true,
