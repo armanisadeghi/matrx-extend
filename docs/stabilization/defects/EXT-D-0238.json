@@ -1,0 +1,69 @@
+{
+  "id": "EXT-D-0238",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T07"],
+  "title": "Records description drift blocks the strict tool catalog release gate",
+  "surface": "Guarded hosted release tool catalog gate",
+  "auth_mode": "release gate identity",
+  "organization_context": "Configured member organization supplied by the release gate",
+  "preconditions": [
+    "Hosted release run 39101203775 checks the live tool registry and deployed server Records declaration before publication.",
+    "The records tool has 31 matching action variants in the database and deployed declaration."
+  ],
+  "reproduction": [
+    "Inspect hosted release run 39101203775 and failure artifact 12126975963: catalog:tools:drift:strict exits 1 before publication.",
+    "Compare tool.definition.parameters for records with the authenticated /tools/test/records declared_parameters: exactly three description leaves differ: data_sync.background, notion_sync.background and notion_sync.run_id.",
+    "The pre-repair strict gate reports DB action variants differ from canonical generated declaration; the other 83 tool definitions, 83 active bindings and two extension surfaces match."
+  ],
+  "expected": "The live records row matches the deployed generated declaration, and the strict gate passes without relaxing any contract check.",
+  "actual": "The live row retained older wording for three Records background-job descriptions, while the deployed producer described conversation wake and live progress. The generated SQL artifact was also stale and could reintroduce the old row.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39101203775",
+    "https://github.com/armanisadeghi/aidream/commit/e6c83c9a6a",
+    "scripts/check-tool-db-drift.ts",
+    "scripts/_server-tool-contract.ts"
+  ],
+  "reproducibility": "The original hosted gate failed with exit 1. A private authenticated read-only comparison isolated the same three leaves; the post-repair strict gate passes with 83 advertised tools, 83 database definitions, 83 active bindings and two surfaces.",
+  "severity": "S2: candidate publication blocked by a genuine registry contract mismatch.",
+  "priority": "P1: align the canonical row and prevent regeneration from stale source.",
+  "state": "fixed",
+  "owner": "records_tool_catalog_alignment",
+  "cause": "Records wire descriptions changed in the aidream producer after the live tool.definition row and checked-in generated SQL were last synchronized. The existing generator test compared definition_sql() with itself and could not catch a stale artifact.",
+  "sibling_census": "All 31 Records action names matched. A full generated-producer versus live-row comparison found only the three named leaf differences; the strict gate found no other advertised tool drift after repair.",
+  "fix_sha": "e6c83c9a6a",
+  "original_retest_runs": [39101203775],
+  "surrounding_retest_runs": [],
+  "reviewer": "Independent peer A/B PASS on the live-row repair, generated SQL and corrected forcing test; hosted release retest pending.",
+  "acceptance_criteria": [
+    "Only the three outdated Records description leaves change in the live row; action names, schemas and other parameters remain identical.",
+    "The checked-in generated SQL exactly matches the Records producer, and the test fails when that file is stale.",
+    "The authenticated strict catalog gate passes, followed by a guarded hosted release retest on synchronized main before closure."
+  ],
+  "verification": {
+    "database": "One optimistic Management API UPDATE required exact old values, affected one records row, and returned the expected JSONB object. Full before/after comparison and fresh readback showed no other parameter changes.",
+    "red": "The corrected generator test failed with exit 1 against the stale checked-in SQL, then passed after regeneration.",
+    "focused": "Two Records contract tests passed, one live-DB fixture deselected; Ruff check and format, git diff --check and generated SQL equality passed.",
+    "catalog": "Authenticated pnpm -s catalog:tools:drift:strict exited 0: 83 advertised/DB definitions/bindings, two surfaces, no drift.",
+    "peer": "Independent peer A/B PASS after the forcing-test correction.",
+    "hosted": "Pending guarded hosted release retest."
+  },
+  "limitations": [
+    "The local authenticated strict gate is not a hosted release result.",
+    "The repaired source and row have not yet been verified in a new hosted publication attempt."
+  ],
+  "next_action": "Release owner synchronizes the extension and aidream main checkouts, reruns the strict preflight, then dispatches one guarded hosted release and records its verdict before closing this defect.",
+  "transition_history": [
+    {
+      "at": "2026-10-18T05:49:29Z",
+      "from": null,
+      "to": "open",
+      "reason": "Hosted run 39101203775 blocked publication on three Records description differences."
+    },
+    {
+      "at": "2026-10-18T05:49:29Z",
+      "from": "open",
+      "to": "fixed",
+      "reason": "Live DB, generated SQL and forcing test repaired; authenticated strict gate and independent peer pass, hosted retest remains pending."
+    }
+  ]
+}
