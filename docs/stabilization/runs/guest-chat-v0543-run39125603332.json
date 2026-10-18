@@ -105,5 +105,8 @@
     "docs/stabilization/evidence/guest-chat-v0543/run39125603332/screenshots/guest-chat-same-conversation-followup.png",
     "docs/stabilization/evidence/guest-chat-v0543/run39125603332/screenshots/guest-chat-post-reload-reply.png"
   ],
-  "independent_review": "pending"
+  "independent_review": "docs/stabilization/reports/guest-chat-v0543-native-peer-20261018.json",
+  "independent_review_status": "DONE_WITH_CONCERNS",
+  "independent_guest_evidence_verdict": "PARTIAL",
+  "independent_readiness_observer_verdict": "PASS"
 }
