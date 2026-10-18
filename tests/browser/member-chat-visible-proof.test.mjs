@@ -1,17 +1,34 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { requireMemberAnswerEvidence } from './member-chat-visible-proof.mjs';
+import {
+  requireMemberAnswerEvidence,
+  runMemberAnswerProofBoundary,
+} from './member-chat-visible-proof.mjs';
 
 // A reviewer receives two terminal turns, but the final answer may be offscreen.
-test('an ineligible member answer keeps a private screenshot and sanitized reason before failure', async () => {
+test('runner persists a real CDP panel image and sanitized failure report before rejecting an ineligible answer', async () => {
   const artifacts = await mkdtemp(join(tmpdir(), 'member-visible-proof-'));
   try {
     const report = { screenshots: { result: null } };
-    const panel = { kind: 'native-panel' };
+    const output = join(artifacts, 'report.json');
     let captureObservedReport = false;
+    let captureCallCount = 0;
+    const png = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/lXcAAAAASUVORK5CYII=',
+      'base64',
+    );
+    const panel = {
+      async send(method, args) {
+        assert.equal(method, 'Page.captureScreenshot');
+        assert.deepEqual(args, { format: 'png' });
+        captureCallCount += 1;
+        captureObservedReport = report.member_answer_proof?.reason === proof.reason;
+        return { data: png.toString('base64') };
+      },
+    };
     const unsafe = 'Bearer sensitive-session-value';
     const proof = {
       eligible: false,
@@ -21,40 +38,38 @@ test('an ineligible member answer keeps a private screenshot and sanitized reaso
       answer_text: unsafe,
       token: unsafe,
     };
-    const capture = async (target, directory, label) => {
-      assert.equal(target, panel);
-      assert.equal(directory, artifacts);
-      assert.equal(label, 'reviewer-chat-visible-answer-proof');
-      captureObservedReport = report.member_answer_proof?.reason === proof.reason;
-      const path = join(directory, `${label}.png`);
-      await writeFile(path, Buffer.from('panel-image'), { mode: 0o600 });
-      return path;
-    };
     await assert.rejects(
-      requireMemberAnswerEvidence({
+      runMemberAnswerProofBoundary({
         panel,
         expectedTerms: ['Understand'],
         report,
         artifacts,
+        output,
         evaluateProof: async () => proof,
-        capture,
       }),
       /reviewer_chat_visible_answer_unverified/,
     );
     assert.equal(captureObservedReport, true);
-    assert.deepEqual(report.member_answer_proof, {
+    assert.equal(captureCallCount, 1);
+    const evidence = await readFile(output, 'utf8');
+    const persisted = JSON.parse(evidence);
+    assert.deepEqual(persisted.member_answer_proof, {
       eligible: false,
       reason: 'answer_not_readable_above_composer',
       painted: true,
       term_visible: [false],
     });
-    assert.equal(report.screenshots.result, null);
-    assert.equal(await readFile(report.screenshots.visible_answer_proof, 'utf8'), 'panel-image');
-    const persisted = join(artifacts, 'report.json');
-    await writeFile(persisted, JSON.stringify({ status: 'unverified', ...report }), {
-      mode: 0o600,
-    });
-    const evidence = await readFile(persisted, 'utf8');
+    assert.equal(persisted.status, 'unverified');
+    assert.equal(persisted.failure_stage, 'reviewer_two_turn_terminal_proof');
+    assert.equal(persisted.failure_code, 'reviewer_chat_visible_answer_unverified');
+    assert.equal(persisted.screenshots.result, null);
+    assert.equal(
+      persisted.screenshots.visible_answer_proof,
+      join(artifacts, 'reviewer-chat-visible-answer-proof.png'),
+    );
+    assert.deepEqual(await readFile(persisted.screenshots.visible_answer_proof), png);
+    assert.equal((await stat(persisted.screenshots.visible_answer_proof)).mode & 0o777, 0o600);
+    assert.equal((await stat(output)).mode & 0o777, 0o600);
     assert.match(evidence, /answer_not_readable_above_composer/);
     assert.doesNotMatch(evidence, /Bearer|sensitive-session-value|answer_text|token/);
   } finally {
