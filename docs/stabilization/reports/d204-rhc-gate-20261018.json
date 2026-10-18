@@ -1,0 +1,16 @@
+{
+  "defect_id": "EXT-D-0204",
+  "source_commit": "e3a7e9c37fd40d6cb07b764cdaf3555da09a9b6d",
+  "source_commit_state": "ancestor of origin/main at c7545800fbc97daf18782262cf68c52ef51f0ca6",
+  "gate_evidence": {
+    "gist_srcdoc": "The Store emitted-JavaScript gate parses source structure and rejects a literal remote gist.github.com script URL in an iframe srcDoc initializer. Tests cover installed/minified source shapes, false-positive cases, and gate refusal for an emitted chunk.",
+    "pdfobject": "The known jsPDF PDFObject script-src loader test remains in the suite, including gate refusal after minifier-style script-handle renaming.",
+    "independent_review": "Approved by independent AST scanner review; the reviewer reported 6/6 focused tests passing, targeted Biome clean, the installed tldraw source detected, and an emitted-output inventory with one Gist hit."
+  },
+  "limits": [
+    "The Gist detector is a narrow static guard for a literal remote script URL inside a TypeScript AST srcDoc property initializer; it does not prove the absence of other dynamically assembled remote-code paths.",
+    "No current Store ZIP has been built or scanned.",
+    "No release, guest/non-admin acceptance, or Store submission has occurred.",
+    "EXT-D-0204 remains in-fix."
+  ]
+}
