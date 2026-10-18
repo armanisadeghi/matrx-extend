@@ -12,22 +12,23 @@
     "Run the new src/lib/notes/queries.delete-failures.test.ts against the original query: five failure cases resolve false rather than rejecting with a recorded DbFailureError."
   ],
   "expected": "Failed or unconfirmed deletion uses failDbCall to announce a remedy, submit a structured diagnostic when diagnostics is enabled, and reject; only exactly one affected row confirms success. The editor retains the note and draft on rejection.",
-  "actual": "Both database errors and unexpected affected-row counts warn to the console and return false, bypassing the canonical diagnostic seam. The editor already preserves its draft, but no shared notice or durable report is emitted.",
+  "actual": "At source level, softDeleteNote routes database errors and every affected-row count other than exactly one through failDbCall, which records the shared notice and diagnostic before rejecting. The editor retains the pending draft and exposes Retry delete after rejection. Native behavior remains unverified.",
   "evidence": [
     "src/lib/notes/queries.delete-failures.test.ts",
     "src/features/notes/NoteEditor.delete-failures.test.tsx",
     "scripts/check-swallowed-refusals.ts",
-    "docs/feature-tests.md"
+    "docs/feature-tests.md",
+    "docs/stabilization/reports/d225-notes-source-review-20261018.json"
   ],
   "build_receipt": {
     "repair_base_sha": "584054ddf24f97cabfac4ed52bf8979bc539f526",
     "native_source_sha": null,
     "native_artifact": "Not built or installed in this lane"
   },
-  "reproducibility": "Guard red once; behavioral red 5/6 cases before fix, green 6/6 after fix. Constant-success and missing-count mutations each killed and source restored byte-identically by plant.py.",
+  "reproducibility": "Query refusal cases and the pending-draft editor rejection case pass at source level. The editor retry guard was shown RED by temporarily disabling the catch-path retry state; plant.py restored the source byte-identically. Native behavior remains unverified.",
   "severity": "S2: deletion refusal is omitted from shared diagnostics",
   "priority": "P1: mandatory release guard failure",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/notes_refusal_fix",
   "cause": "The exact-row-count confirmation added to softDeleteNote copied the older console-warn/false database-error path rather than the canonical failDbCall boundary.",
   "sibling_census": "Both deletion failure branches now share one failDbCall. Four pre-existing sites remain in moveNoteHome, createNote and updateNote and retain the lowered Notes ratchet budget of 4. No broader Notes write behavior changed. Editor performDelete already catches rejection and preserves draft/retry; focused caller tests pass.",
@@ -38,17 +39,15 @@
     "Independent source review and exact-build native evidence remain required before closure."
   ],
   "source_verification": {
-    "focused_tests": "62/62 pass in 13 files (all Notes plus canonical db-refusal seam)",
-    "compile": "pass",
-    "swallowed_refusals": "pass; 37 known sites",
+    "reviewed_commit": "94509b8b0",
+    "independent_source_review": "PASS for source repair reviewed at ba777cdaba45730ae954fdb5a49d020031d30e89 and focused editor test reviewed at 94509b8b0 (ancestor relationship verified); source-only scope: docs/stabilization/reports/d225-notes-source-review-20261018.json",
+    "focused_tests": "42/42 in 12 files from the source review; 5/5 focused NoteEditor deletion tests at reviewed commit 94509b8b0",
+    "swallowed_refusals": "pass; budget 4 and 37 known sites",
     "swallowed_refusals_self_test": "pass",
-    "schema_routing": "pass",
-    "lint": "Owned-file Biome pass; full pnpm -s lint currently blocked by formatting in scripts/test-hosted-acceptance-lanes.mjs:83 (separate root-owned lane).",
-    "independent_source_review": "pending",
-    "native_acceptance": "pending",
+    "native_acceptance": "pending: fresh exact-source native Notes deletion and error-inspector acceptance has not run",
     "release": "pending"
   },
-  "next_action": "Root obtains independent source review, pushes the verified unit, then owns guarded hosted release and fresh exact-source native Notes deletion/error-inspector acceptance. Do not mark native or Store acceptance from source tests.",
+  "next_action": "Run fresh exact-source native Notes deletion and error-inspector acceptance, then independently review that evidence. Keep release pending until its guarded path is completed. Do not close EXT-D-0225 or claim native, Store, or overall product acceptance from source tests.",
   "transition_history": [
     {
       "at": "2026-10-13T01:24:55.483347+00:00",
@@ -67,6 +66,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Focused repair and red/green tests complete; independent review and native acceptance pending."
+    },
+    {
+      "at": "2026-10-18T17:42:19Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "The source repair was independently reviewed at ba777cdaba45730ae954fdb5a49d020031d30e89 and the focused editor behavior at 94509b8b0; native acceptance and release remain pending."
     }
   ]
 }
