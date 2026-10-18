@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "run_id": "39125603332",
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39125603332",
+  "workflow_conclusion": "success",
+  "source_sha": "41a9e567ba4a6a6949b992295b6e694aeaf22c48",
+  "release": {
+    "run_id": "39124994461",
+    "artifact_id": "12136100758",
+    "version": "0.2.543",
+    "tag": "v0.2.543",
+    "store_zip_sha256": "cf9a62b2db91f23a65bc5ce11f481a5d73e0fe1e0f5a9588c7afa383fbf75e83",
+    "outer_artifact_digest": "sha256:b9a22685aeee7965ef5c111b3e2b163596b249dbfa185d224d9a4e20eba98e3a"
+  },
+  "product": {
+    "status": "pass",
+    "artifact_unchanged": true,
+    "build_version": "0.2.543",
+    "build_tree_sha256": "05b316d433aaefa4b29a17b9ad391f6536f1e496789bb5575a7a8f223d7fc69b",
+    "server_git_sha_before": "2a50e76a6552c2244892cf728dfd0a93688ea978",
+    "server_git_sha_after": "2a50e76a6552c2244892cf728dfd0a93688ea978",
+    "server_version_stable": true,
+    "guest_fresh": true,
+    "first_reply_terminal": "terminal_answer",
+    "first_reply_grounded": true,
+    "first_reply_page_stages_in_order": true,
+    "same_conversation_followup_terminal": "terminal_answer",
+    "same_conversation_followup_grounded": true,
+    "conversation_identity_verified": true,
+    "post_reload_new_conversation_terminal": "terminal_answer",
+    "post_reload_grounded": true,
+    "post_reload_fixture_heading_named": true,
+    "values_control_exercised": true,
+    "stage_progress": [
+      "owned_profile",
+      "fresh_guest",
+      "owned_article_page",
+      "page_specific_fixture",
+      "guest_chat_open",
+      "guest_question",
+      "real_guest_answer",
+      "same_conversation_followup_question",
+      "real_same_conversation_followup_answer",
+      "real_panel_reload",
+      "guest_followup_composer",
+      "guest_followup_question",
+      "real_guest_followup_answer",
+      "guest_values_chip_observation",
+      "artifact_unchanged"
+    ],
+    "screenshots": [
+      "guest-chat-real-answer.png",
+      "guest-chat-same-conversation-followup.png",
+      "guest-chat-real-followup-answer.png"
+    ]
+  },
+  "resource_finals": {
+    "package": {
+      "schema": 1,
+      "at": "2026-10-18T12:04:36.531Z",
+      "runId": "hosted-package-39125603332-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "browser": {
+      "schema": 1,
+      "at": "2026-10-18T12:06:39.332Z",
+      "runId": "hosted-browser-39125603332-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "guest": {
+      "schema": 1,
+      "at": "2026-10-18T12:09:35.631Z",
+      "runId": "hosted-guest-39125603332-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "startup_diagnostic_step": "skipped"
+}

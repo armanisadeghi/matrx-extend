@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-18 09:27 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-18T09:12:02Z. 207 features · 815 cases · 1403 controls · 239 linked defect records.
+Generated 2026-10-18 12:39 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-18T11:18:07Z. 207 features · 823 cases · 1416 controls · 240 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1308** — Pass: 100 · Partial: 97 · Fail: 1 · Unverified: 1108 · N/A: 2.
-Unverified splits into **159 explicitly marked unverified** and **949 with no result record**.
+Applicable case-by-role slots: **1325** — Pass: 100 · Partial: 97 · Fail: 1 · Unverified: 1125 · N/A: 2.
+Unverified splits into **176 explicitly marked unverified** and **949 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -19,17 +19,17 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 8, partial 3, fail 0, unverified 23, n/a 0 | 10 |
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 12, n/a 0 | 2 |
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
-| [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 20, n/a 0 | 0 |
+| [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 22, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 18 pass · 7 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | pass 32, partial 17, fail 0, unverified 51, n/a 1 | 6 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 7 pass · 7 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 27 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 37 unverified · 0 deferred; 0/1 full | pass 7, partial 17, fail 0, unverified 78, n/a 0 | 12 |
+| [Scrape](#scrape) | 1 | 7 pass · 7 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 38 unverified · 0 deferred; 0/1 full | pass 7, partial 17, fail 0, unverified 81, n/a 0 | 12 |
 | [SEO](#seo) | 1 | 0 pass · 7 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 7, fail 0, unverified 41, n/a 0 | 2 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 6 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
-| [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 2 |
+| [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 48, n/a 0 | 2 |
 | [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 30, n/a 0 | 11 |
 | [Token broker](#token-broker) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 9, n/a 0 | 0 |
 | [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 1 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 56, n/a 0 | 0 |
@@ -45,9 +45,9 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 2, fail 0, unverified 4, n/a 0 | 0 |
 | [Saved captures side-panel](#saved-captures-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 13, n/a 0 | 0 |
 | [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
-| [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
+| [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 30, n/a 0 | 0 |
 | [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 0 |
-| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 0 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 1, partial 1, fail 1, unverified 24, n/a 0 | 17 |
+| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 0 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 1, partial 1, fail 1, unverified 24, n/a 0 | 18 |
 | [Pilot (deferred wave D)](#pilot-deferred-wave-d) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 5, n/a 0 | 1 |
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
@@ -305,7 +305,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Navigate sidepanel tabs and recover inaccessible selection (EXT-F-1001)
 
-**Role status:** guest: Partial · member: Unverified · admin: Partial. **Cases:** 27. **Controls:** 11.
+**Role status:** guest: Partial · member: Unverified · admin: Partial. **Cases:** 28. **Controls:** 12.
 
 **Next:** Finish the missing criteria and repeat the partial case in the extension.
 
@@ -340,6 +340,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1001-T25 guest: Sign out menu action | Pass | N/A | N/A | EXT-F-1001-C11 |
 | EXT-F-1001-T26 member: Sign out menu action | N/A | Pass | N/A | EXT-F-1001-C11 |
 | EXT-F-1001-T27 admin: Sign out menu action | N/A | N/A | Unverified | EXT-F-1001-C11 |
+| EXT-F-1001-T28 Recover navigation after popup Capture claim failure | N/A | Unverified | Unverified | EXT-F-1001-C12 |
 
 **Recorded case details and evidence:**
 
@@ -892,7 +893,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Capture and manage current page scrape (EXT-F-1007)
 
-**Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 41. **Controls:** 40.
+**Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 42. **Controls:** 41.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138, EXT-D-0139, EXT-D-0166, EXT-D-0187, EXT-D-0192, EXT-D-0217
 
@@ -941,6 +942,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1007-T39 admin: Retry or dismiss a failed Diagnose picker launch | N/A | N/A | Unverified | EXT-F-1007-C16, EXT-F-1007-C37 |
 | EXT-F-1007-T40 Open a Source recognized across accessible organizations | N/A | Unverified | Unverified | EXT-F-1007-C39 |
 | EXT-F-1007-T41 Open captured images from every displayed size tier | Unverified | Unverified | Unverified | EXT-F-1007-C40 |
+| EXT-F-1007-T42 Copy captured image URL from large and medium tiles | Unverified | Unverified | Unverified | EXT-F-1007-C41 |
 
 **Recorded case details and evidence:**
 
@@ -1130,7 +1132,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Create and maintain browser guidance (EXT-F-1011)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 24. **Controls:** 24.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 25. **Controls:** 25.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0082, EXT-D-0216
 
@@ -1162,6 +1164,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1011-T22 Demo body missing state | N/A | Unverified | Unverified | EXT-F-1011-C22 |
 | EXT-F-1011-T23 Guidance loading/empty state | N/A | Unverified | Unverified | EXT-F-1011-C23 |
 | EXT-F-1011-T24 Restricted audience denial | N/A | N/A | N/A | EXT-F-1011-C24 |
+| EXT-F-1011-T25 Retry a failed guidance demo body load | N/A | Unverified | Unverified | EXT-F-1011-C25 |
 
 
 ## Showcase
@@ -1566,7 +1569,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Find and create notes (EXT-F-2006)
 
-**Role status:** guest: N/A · member: Partial · admin: Unverified. **Cases:** 3. **Controls:** 13.
+**Role status:** guest: N/A · member: Partial · admin: Unverified. **Cases:** 3. **Controls:** 15.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0061, EXT-D-0062, EXT-D-0069, EXT-D-0201
 
@@ -1574,8 +1577,8 @@ These historical checks retain their original artifact boundary; they do not est
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-2006-T01 Guest cannot open Notes | N/A | N/A | N/A | EXT-F-2006-C01 |
-| EXT-F-2006-T02 Find notes by title search and home | N/A | Partial | Unverified | EXT-F-2006-C02, EXT-F-2006-C03, EXT-F-2006-C04, EXT-F-2006-C05, EXT-F-2006-C07, EXT-F-2006-C08, EXT-F-2006-C09, EXT-F-2006-C10 |
+| EXT-F-2006-T01 Guest cannot open Notes | N/A | N/A | N/A | EXT-F-2006-C14 |
+| EXT-F-2006-T02 Find notes by title search and home | N/A | Partial | Unverified | EXT-F-2006-C02, EXT-F-2006-C03, EXT-F-2006-C04, EXT-F-2006-C05, EXT-F-2006-C07, EXT-F-2006-C08, EXT-F-2006-C09, EXT-F-2006-C10, EXT-F-2006-C15 |
 | EXT-F-2006-T03 Create first note and empty/loading states | N/A | Unverified | Unverified | EXT-F-2006-C01, EXT-F-2006-C06, EXT-F-2006-C11, EXT-F-2006-C12, EXT-F-2006-C13 |
 
 **Recorded case details and evidence:**
@@ -1590,7 +1593,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Edit, preview, organize, and delete a note (EXT-F-2007)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 4. **Controls:** 27.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 4. **Controls:** 29.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0063, EXT-D-0067, EXT-D-0068, EXT-D-0225
 
@@ -1598,12 +1601,12 @@ These historical checks retain their original artifact boundary; they do not est
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-2007-T01 Edit, preview, and autosave note fields | N/A | Unverified | Unverified | EXT-F-2007-C02, EXT-F-2007-C03, EXT-F-2007-C04, EXT-F-2007-C05, EXT-F-2007-C06, EXT-F-2007-C25 |
+| EXT-F-2007-T01 Edit, preview, and autosave note fields | N/A | Unverified | Unverified | EXT-F-2007-C02, EXT-F-2007-C03, EXT-F-2007-C04, EXT-F-2007-C05, EXT-F-2007-C06, EXT-F-2007-C25, EXT-F-2007-C26, EXT-F-2007-C29 |
 | EXT-F-2007-T02 Append each active-page content type | N/A | Unverified | Unverified | EXT-F-2007-C10, EXT-F-2007-C11, EXT-F-2007-C12, EXT-F-2007-C13, EXT-F-2007-C14, EXT-F-2007-C15, EXT-F-2007-C16 |
-| EXT-F-2007-T03 Delete note and cancel confirmation | N/A | Unverified | Unverified | EXT-F-2007-C07, EXT-F-2007-C09, EXT-F-2007-C08, EXT-F-2007-C01 |
+| EXT-F-2007-T03 Delete note and cancel confirmation | N/A | Unverified | Unverified | EXT-F-2007-C07, EXT-F-2007-C09, EXT-F-2007-C08, EXT-F-2007-C01, EXT-F-2007-C28 |
 | EXT-F-2007-T04 Detail-read failure, missing note, and retry | N/A | Unverified | Unverified | EXT-F-2007-C01, EXT-F-2007-C27 |
 
-**Controls without a mapped case:** EXT-F-2007-C17 Open append-from-page menu; EXT-F-2007-C18 Close append-from-page menu; EXT-F-2007-C19 Append page URL and title; EXT-F-2007-C20 Append selected page text; EXT-F-2007-C21 Append readable page text; EXT-F-2007-C22 Append page links; EXT-F-2007-C23 Append page metadata; EXT-F-2007-C24 Append from restricted page; EXT-F-2007-C26 Preview markdown after autosave
+**Controls without a mapped case:** EXT-F-2007-C17 Open append-from-page menu; EXT-F-2007-C18 Close append-from-page menu; EXT-F-2007-C19 Append page URL and title; EXT-F-2007-C20 Append selected page text; EXT-F-2007-C21 Append readable page text; EXT-F-2007-C22 Append page links; EXT-F-2007-C23 Append page metadata; EXT-F-2007-C24 Append from restricted page
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
 
@@ -1612,18 +1615,18 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Browse files and saved captures (EXT-F-2008)
 
-**Role status:** guest: N/A · member: Partial · admin: Partial. **Cases:** 4. **Controls:** 28.
+**Role status:** guest: N/A · member: Partial · admin: Partial. **Cases:** 4. **Controls:** 29.
 
-**Next:** Add cases for 13 uncovered control(s), then verify them in the extension.
+**Next:** Finish the missing criteria and repeat the partial case in the extension.
 
 **Linked defects:** [EXT-D-0064](defects/EXT-D-0064.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-2008-T01 Guest cannot open Files | N/A | N/A | N/A | EXT-F-2008-C01 |
+| EXT-F-2008-T01 Guest cannot open Files | N/A | N/A | N/A | EXT-F-2008-C29 |
 | EXT-F-2008-T02 Search library and screenshots | N/A | Partial | Partial | EXT-F-2008-C01, EXT-F-2008-C03, EXT-F-2008-C04, EXT-F-2008-C05, EXT-F-2008-C02 |
-| EXT-F-2008-T03 Open and attach file/screenshot | N/A | Unverified | Unverified | EXT-F-2008-C06, EXT-F-2008-C08, EXT-F-2008-C09, EXT-F-2008-C11 |
-| EXT-F-2008-T04 Inspect family navigation and pagination | N/A | Unverified | Unverified | EXT-F-2008-C07, EXT-F-2008-C10, EXT-F-2008-C12, EXT-F-2008-C13, EXT-F-2008-C14, EXT-F-2008-C15 |
+| EXT-F-2008-T03 Open and attach file/screenshot | N/A | Unverified | Unverified | EXT-F-2008-C06, EXT-F-2008-C08, EXT-F-2008-C09, EXT-F-2008-C11, EXT-F-2008-C25, EXT-F-2008-C26, EXT-F-2008-C27, EXT-F-2008-C28 |
+| EXT-F-2008-T04 Inspect family navigation and pagination | N/A | Unverified | Unverified | EXT-F-2008-C07, EXT-F-2008-C10, EXT-F-2008-C12, EXT-F-2008-C13, EXT-F-2008-C14, EXT-F-2008-C15, EXT-F-2008-C16, EXT-F-2008-C17, EXT-F-2008-C18, EXT-F-2008-C19, EXT-F-2008-C20, EXT-F-2008-C21, EXT-F-2008-C22, EXT-F-2008-C23, EXT-F-2008-C24 |
 
 **Recorded case details and evidence:**
 
@@ -1631,8 +1634,6 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: files-member-d64-20261002-003, docs/stabilization/reports/files-member-acceptance-20261002.json
 - EXT-F-2008-T02 · admin: Partial. Exact173 admin: failed reads show error/Retry without false-empty claim; both tabs recover after successful read. Search and other full-case actions untested.
   Evidence / build / date recorded: files-fresh-acceptance-20261001-002, docs/stabilization/reports/files-fresh-acceptance-20261001.json
-
-**Controls without a mapped case:** EXT-F-2008-C16 Inspect binary ancestry graph; EXT-F-2008-C17 Page backward through binary ancestry; EXT-F-2008-C18 Page forward through binary ancestry; EXT-F-2008-C19 Inspect processed-result graph; EXT-F-2008-C20 Page backward through processed ancestry; EXT-F-2008-C21 Page forward through processed ancestry; EXT-F-2008-C22 Inspect representation badges; EXT-F-2008-C23 Inspect capability badges; EXT-F-2008-C24 Observe family empty state; EXT-F-2008-C25 Observe attachment failure; EXT-F-2008-C26 Observe no active conversation gate; EXT-F-2008-C27 Detach file from current chat; EXT-F-2008-C28 Detach screenshot from current chat
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
 
@@ -1694,27 +1695,32 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Manage saved credentials and vault items (EXT-F-2011)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 55.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 16. **Controls:** 60.
 
-**Next:** Add cases for 12 uncovered control(s), then verify them in the extension.
+**Next:** Add cases for 11 uncovered control(s), then verify them in the extension.
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-2011-T01 Vault sign-in gate and list | N/A | Unverified | Unverified | EXT-F-2011-C01, EXT-F-2011-C03, EXT-F-2011-C04, EXT-F-2011-C05 |
+| EXT-F-2011-T01 Load and search embedded Vault workspace list | N/A | Unverified | Unverified | EXT-F-2011-C01, EXT-F-2011-C03, EXT-F-2011-C04 |
 | EXT-F-2011-T02 Current-page credential use | N/A | Unverified | Unverified | EXT-F-2011-C07, EXT-F-2011-C08, EXT-F-2011-C31, EXT-F-2011-C32, EXT-F-2011-C33 |
 | EXT-F-2011-T03 Create and edit a login | N/A | Unverified | Unverified | EXT-F-2011-C17, EXT-F-2011-C18, EXT-F-2011-C19, EXT-F-2011-C20, EXT-F-2011-C21, EXT-F-2011-C22, EXT-F-2011-C25, EXT-F-2011-C26, EXT-F-2011-C27, EXT-F-2011-C28, EXT-F-2011-C29, EXT-F-2011-C30, EXT-F-2011-C34, EXT-F-2011-C35, EXT-F-2011-C36, EXT-F-2011-C37, EXT-F-2011-C38, EXT-F-2011-C39, EXT-F-2011-C40, EXT-F-2011-C41, EXT-F-2011-C42, EXT-F-2011-C43, EXT-F-2011-C44 |
 | EXT-F-2011-T04 Pending capture decisions | N/A | Unverified | Unverified | EXT-F-2011-C45, EXT-F-2011-C46, EXT-F-2011-C47, EXT-F-2011-C48, EXT-F-2011-C49, EXT-F-2011-C50 |
 | EXT-F-2011-T05 Guest cannot open Vault | N/A | N/A | N/A | EXT-F-2011-C55 |
 | EXT-F-2011-T06 Reject stale credential offers after organization switch | N/A | Unverified | Unverified | EXT-F-2011-C45, EXT-F-2011-C49, EXT-F-2011-C50 |
-| EXT-F-2011-T07 Vault list can be freshly read after browser restart | N/A | Unverified | Unverified | EXT-F-2011-C01, EXT-F-2011-C04 |
+| EXT-F-2011-T07 Vault workspace list reloads after browser restart | N/A | Unverified | Unverified | EXT-F-2011-C01 |
 | EXT-F-2011-T08 Distinguish failed site-login lookup from no matches and retry | N/A | Unverified | Unverified | EXT-F-2011-C51 |
 | EXT-F-2011-T09 Saved-login candidates track the resolved page URL | N/A | Unverified | Unverified | EXT-F-2011-C31, EXT-F-2011-C52 |
 | EXT-F-2011-T10 Enable browser filling with account password | N/A | Unverified | Unverified | EXT-F-2011-C53 |
 | EXT-F-2011-T11 Approve browser filling with account passkey | N/A | Unverified | Unverified | EXT-F-2011-C54 |
+| EXT-F-2011-T12 Vault workspace views and filters | N/A | Unverified | Unverified | EXT-F-2011-C56 |
+| EXT-F-2011-T13 Sort controlled Vault items | N/A | Unverified | Unverified | EXT-F-2011-C57 |
+| EXT-F-2011-T14 Capability-gated Vault item actions and panels | N/A | Unverified | Unverified | EXT-F-2011-C58, EXT-F-2011-C23, EXT-F-2011-C24 |
+| EXT-F-2011-T15 Vault whole-vault tools and browser devices | N/A | Unverified | Unverified | EXT-F-2011-C59 |
+| EXT-F-2011-T16 Vault list loading, error retry, empty and inaccessible states | N/A | Unverified | Unverified | EXT-F-2011-C01, EXT-F-2011-C60 |
 
-**Controls without a mapped case:** EXT-F-2011-C02 Open web vault; EXT-F-2011-C06 Pending page-capture accept/deny; EXT-F-2011-C09 Expand/collapse entry; EXT-F-2011-C10 Add field; EXT-F-2011-C11 Reveal secret toggle; EXT-F-2011-C12 Copy secret; EXT-F-2011-C13 Change/save/cancel field; EXT-F-2011-C14 Remove field/item; EXT-F-2011-C15 Edit/create entry fields; EXT-F-2011-C16 Generate password; EXT-F-2011-C23 Expand login row; EXT-F-2011-C24 Collapse login row
+**Controls without a mapped case:** EXT-F-2011-C02 Open full web vault (not rendered in embedded extension); EXT-F-2011-C05 Sign in; EXT-F-2011-C06 Pending page-capture accept/deny; EXT-F-2011-C09 Expand/collapse entry; EXT-F-2011-C10 Add field; EXT-F-2011-C11 Reveal secret toggle; EXT-F-2011-C12 Copy secret; EXT-F-2011-C13 Change/save/cancel field; EXT-F-2011-C14 Remove field/item; EXT-F-2011-C15 Edit/create entry fields; EXT-F-2011-C16 Generate password
 
-**Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
+**Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.; Shared embedded Vault workspace source census is expanded by C56-C60/T12-T16; all new controls/cases and capability-gated outcomes remain unverified. Source rejection in hasRealUserToken has no rejection recovery in inspected code; retain as source-derived concern, not a confirmed runtime defect.
 
 
 ## Tools/manual runner
@@ -1742,9 +1748,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Fail · member: Partial · admin: Unverified. **Cases:** 12. **Controls:** 138.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096, EXT-D-0156, EXT-D-0211, EXT-D-0226, EXT-D-0227, EXT-D-0228, EXT-D-0229, EXT-D-0230, EXT-D-0231, EXT-D-0233, EXT-D-0234, EXT-D-0235, EXT-D-0237, EXT-D-0239, EXT-D-0240
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096, EXT-D-0156, EXT-D-0211, EXT-D-0226, EXT-D-0227, EXT-D-0228, EXT-D-0229, EXT-D-0230, EXT-D-0231, EXT-D-0233, EXT-D-0234, EXT-D-0235, EXT-D-0237, EXT-D-0239, EXT-D-0240, EXT-D-0241
 
-**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (closed), [EXT-D-0211](defects/EXT-D-0211.json) (fixed), [EXT-D-0226](defects/EXT-D-0226.json) (in-fix), [EXT-D-0227](defects/EXT-D-0227.json) (in-fix), [EXT-D-0228](defects/EXT-D-0228.json) (in-fix), [EXT-D-0229](defects/EXT-D-0229.json) (in-fix), [EXT-D-0230](defects/EXT-D-0230.json) (in-fix), [EXT-D-0231](defects/EXT-D-0231.json) (open), [EXT-D-0233](defects/EXT-D-0233.json) (in-fix), [EXT-D-0234](defects/EXT-D-0234.json) (in-fix), [EXT-D-0235](defects/EXT-D-0235.json) (fixed), [EXT-D-0237](defects/EXT-D-0237.json) (fixed), [EXT-D-0239](defects/EXT-D-0239.json) (fixed), [EXT-D-0240](defects/EXT-D-0240.json) (fixed)
+**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (closed), [EXT-D-0211](defects/EXT-D-0211.json) (fixed), [EXT-D-0226](defects/EXT-D-0226.json) (in-fix), [EXT-D-0227](defects/EXT-D-0227.json) (in-fix), [EXT-D-0228](defects/EXT-D-0228.json) (in-fix), [EXT-D-0229](defects/EXT-D-0229.json) (in-fix), [EXT-D-0230](defects/EXT-D-0230.json) (in-fix), [EXT-D-0231](defects/EXT-D-0231.json) (open), [EXT-D-0233](defects/EXT-D-0233.json) (in-fix), [EXT-D-0234](defects/EXT-D-0234.json) (in-fix), [EXT-D-0235](defects/EXT-D-0235.json) (fixed), [EXT-D-0237](defects/EXT-D-0237.json) (fixed), [EXT-D-0239](defects/EXT-D-0239.json) (fixed), [EXT-D-0240](defects/EXT-D-0240.json) (fixed), [EXT-D-0241](defects/EXT-D-0241.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

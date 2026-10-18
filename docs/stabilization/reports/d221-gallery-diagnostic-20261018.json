@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "scope": "EXT-D-0221 admin Screenshots gallery return and fixture cleanup; source diagnosis only",
+  "status": "insufficient_evidence_for_product_fix",
+  "source_run": "docs/stabilization/runs/ext-d-0221-admin-native-20261013-01.json",
+  "sanitized_result": "test-results/screenshot-capture-ba4d1343-b5db-48f0-83d1-f33e346df583.json",
+  "established": [
+    "The exact CI promotion receipt passed and the native browser reached the signed-in admin Screenshots tab.",
+    "The owned screenshot row rendered as one card before opening its Files route; the viewer was exercised twice and the new Files tab reached the owned route.",
+    "After returning, a completed HTTP 200 gallery GET contained the owned row, while the runner observed zero matching cards and stopped T04. T05 was never entered.",
+    "Failure-path deletion was attempted, but the subsequent zero-row read did not complete successfully; row absence remains unverified."
+  ],
+  "boundary_gap": "The recorded GET body check verifies canonical URL and a nonempty file ID. It does not record whether the complete row passed ScreenshotRowSchema, whether that request's result was applied by ScreenshotsView.reload, or whether a later reload superseded it. The October 13 native result has no filesReturn active-tab, settled-gallery, or Refresh-discrimination fields; those probes were added to the runner afterward. Therefore the mismatch cannot yet be assigned to product rendering, response parsing, a reload race, or the harness predicate.",
+  "ranked_falsifiable_causes": [
+    {
+      "cause": "A returned-page reload was superseded or its state had not settled when the runner examined cards.",
+      "prediction": "A trusted Refresh on the same active fixture tab completes another one-row GET and restores the card; a settled post-GET observation shows the initial zero-card state was transient."
+    },
+    {
+      "cause": "The row in the returned GET fails ScreenshotRowSchema and parseRowsSafe drops it.",
+      "prediction": "Refresh still completes a one-row GET but renders zero cards, and the existing supabase validation log reports a wbx_screenshot row failure with field-level issues."
+    },
+    {
+      "cause": "The panel's active-tab identity or the harness card selector diverges after Files tab closure.",
+      "prediction": "The active fixture tab, displayed canonical URL, or visible gallery markup fails its corresponding identity predicate despite the matching GET; a forced Refresh alone does not resolve that mismatch."
+    }
+  ],
+  "next_live_discriminator": "In one separately resource-admitted exact-source admin run, use the current runner's filesReturn active-tab, gallery, card, beforeRefresh, refreshDiscrimination, and afterRefresh observations. Capture only sanitized validation-log issue codes for fetchScreenshotsForUrl plus the count of schema-valid rows at the returned GET boundary. Require one completed matching GET per observed refresh and a settled gallery before comparing card identity. If Refresh restores the card, investigate reload ordering; if it does not and schema issues exist, repair the row contract; if neither, inspect active-tab identity and the rendered card selector. Verify the single run-owned row absent through a fresh read before claiming cleanup.",
+  "case_verdicts": {
+    "admin_T04": "unverified",
+    "admin_T05": "unverified_not_reached",
+    "member_T04_T05": "unverified",
+    "owned_fixture_cleanup": "unverified",
+    "provenance_gate": "fixed_and_native_verified"
+  },
+  "later_retries": "The three later October 13 hosted attempts stopped at source synchronization, organization-selection/resource, and browser-startup/resource gates respectively. None revisited the gallery-return boundary or proved fixture cleanup."
+}

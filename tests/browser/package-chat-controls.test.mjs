@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
+import { containsOrderedWholeTerms } from './guest-chat-completion-oracle.mjs';
 import {
   prepareMemberAnswerScreenshot,
   readPackageChatControls,
@@ -39,11 +40,12 @@ test('Member screenshot refuses clipped or composer-occluded answer and accepts 
   window.document.elementFromPoint = () => hit;
   Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 400 });
   Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 300 });
-  const check = (terms = ['Understand']) =>
-    runInNewContext(`(${prepareMemberAnswerScreenshot.toString()})(terms)`, {
+  const check = (terms = ['Understand'], phase = 'immediate') =>
+    runInNewContext(`(${prepareMemberAnswerScreenshot.toString()})(terms, phase)`, {
       document: window.document,
       getComputedStyle: (node) => window.getComputedStyle(node),
       terms,
+      phase,
     });
   assert.equal(check().eligible, false, 'offscreen text must fail');
   top = 270;
@@ -59,8 +61,22 @@ test('Member screenshot refuses clipped or composer-occluded answer and accepts 
   assert.equal(check().eligible, true, 'readable latest answer must pass');
   body.parentElement.style.opacity = '0';
   assert.equal(check().eligible, false, 'transparent assistant ancestor must fail');
+  const diagnostic = check().diagnostic;
+  assert.equal(diagnostic.rejected_ancestor.tag, 'ARTICLE');
+  assert.equal(diagnostic.rejected_ancestor.opacity, 0);
+  assert.equal(diagnostic.composer_top, 260);
+  assert.deepEqual(Object.keys(diagnostic.article_rect), ['x', 'y', 'width', 'height']);
   body.parentElement.style.opacity = '1';
   assert.equal(check().eligible, true, 'restored assistant paint must pass');
+  const pane = window.document.getElementById('chat');
+  Object.defineProperties(pane, {
+    scrollHeight: { value: 500, configurable: true },
+    clientHeight: { value: 180, configurable: true },
+  });
+  pane.scrollTo = ({ top }) => {
+    pane.scrollTop = top;
+  };
+  assert.equal(check(['Understand'], 'scroll_bottom').diagnostic.scroll.top, 500);
   assert.equal(check(['Capture']).eligible, false, 'wrong answer text must fail');
   await window.happyDOM.abort();
 });
@@ -108,6 +124,45 @@ test('send readiness exposes missing versus disabled control without accepting a
   assert.equal(read().sendControlCount, 0);
   assert.equal(read().sendControlDisabled, null);
   assert.equal(read().sendEnabled, false);
+  await window.happyDOM.abort();
+});
+
+test('send readiness distinguishes the package initialization shell from a disabled ready control', async () => {
+  const { window, pane, read } = surface({
+    name: 'Send message (still initializing)',
+    disabled: true,
+  });
+  const shell = read();
+  assert.equal(shell.sendEnabled, false);
+  assert.equal(shell.sendControlCount, 0);
+  assert.equal(shell.sendLikeControlCount, 1);
+  assert.equal(shell.initializationShellVisible, true);
+  assert.deepEqual(
+    Array.from(shell.sendLikeControls, (control) => ({ ...control })),
+    [{ label: 'initializing', disabled: true, ariaDisabled: null }],
+  );
+
+  const send = pane.querySelector('button');
+  send.setAttribute('aria-label', 'Send message');
+  send.setAttribute('aria-disabled', 'true');
+  const disabled = read();
+  assert.equal(disabled.sendControlCount, 1);
+  assert.equal(disabled.sendControlDisabled, true);
+  assert.equal(disabled.initializationShellVisible, false);
+  assert.deepEqual(
+    Array.from(disabled.sendLikeControls, (control) => ({ ...control })),
+    [{ label: 'send', disabled: true, ariaDisabled: 'true' }],
+  );
+
+  send.disabled = false;
+  send.setAttribute('aria-disabled', 'false');
+  const ready = read();
+  assert.equal(ready.sendEnabled, true);
+  assert.equal(ready.sendControlDisabled, false);
+  assert.deepEqual(
+    Array.from(ready.sendLikeControls, (control) => ({ ...control })),
+    [{ label: 'send', disabled: false, ariaDisabled: 'false' }],
+  );
   await window.happyDOM.abort();
 });
 
@@ -199,18 +254,30 @@ test('guest driver consumes package controls without dropping the terminal strea
     'readPackageChatControls',
     'nativeOAuthStoredBearerExpression',
     'REQUIRED_ANSWER_TERMS',
+    'containsOrderedWholeTerms',
     `${body}; return observe;`,
-  )(async (_panel, expression) => window.eval(expression), readPackageChatControls, 'false', [
-    'Capture',
-    'Understand',
-    'Use',
-  ]);
+  )(
+    async (_panel, expression) => window.eval(expression),
+    readPackageChatControls,
+    'false',
+    ['Capture', 'Understand', 'Use'],
+    containsOrderedWholeTerms,
+  );
   const ready = await observe(null);
   assert.equal(ready.sendEnabled, true);
   assert.equal(ready.sendControlCount, 1);
+  assert.equal(ready.sendLikeControlCount, 1);
+  assert.equal(ready.initializationShellVisible, false);
   assert.equal(ready.streamTrace.runs[0].done, true);
-  pane.querySelector('button').disabled = true;
-  assert.equal((await observe(null)).sendEnabled, false);
+  const send = pane.querySelector('button');
+  send.disabled = true;
+  assert.equal((await observe(null)).sendControlDisabled, true);
+  send.setAttribute('aria-label', 'Send message (still initializing)');
+  const shell = await observe(null);
+  assert.equal(shell.sendEnabled, false);
+  assert.equal(shell.sendControlCount, 0);
+  assert.equal(shell.sendLikeControlCount, 1);
+  assert.equal(shell.initializationShellVisible, true);
   await window.happyDOM.abort();
 });
 
@@ -264,4 +331,95 @@ test('assistant prose excludes pending and expanded tool cards plus hidden plain
     ['Understand FOLLOW-92'],
   );
   await window.happyDOM.abort();
+});
+
+// Public v0.2.205 ChatView.tsx at 2f68bc4: normal composer submit branch.
+// Lucide ArrowUp renders the arrow-up class; title is migrated by tooltip setup.
+test('public .205 composer icon send is ready, while title decoys and ambiguous sends fail closed', async () => {
+  const { window, pane, read } = surface({ name: 'unrelated' });
+  const button = pane.querySelector('button');
+  button.outerHTML =
+    '<button type="button" title="Send"><svg class="lucide lucide-arrow-up size-4"></svg></button>';
+  const send = pane.querySelector('button');
+  send.getBoundingClientRect = () => ({ width: 30, height: 30 });
+  assert.equal(read().sendEnabled, true);
+  assert.equal(read().sendLikeControlCount, 1);
+  send.disabled = true;
+  assert.equal(read().sendEnabled, false);
+  send.disabled = false;
+  send.removeAttribute('title');
+  send.setAttribute('data-matrx-title', 'Send');
+  assert.equal(read().sendEnabled, true);
+  send.insertAdjacentHTML('afterend', '<button title="Send"></button>');
+  assert.equal(read().sendControlCount, 1, 'title-only decoy is excluded');
+  send.insertAdjacentHTML('afterend', send.outerHTML);
+  send.nextElementSibling.getBoundingClientRect = () => ({ width: 30, height: 30 });
+  assert.equal(read().sendEnabled, false, 'two actual icon sends are ambiguous');
+  pane.querySelectorAll('button')[1].remove();
+  send.setAttribute('aria-label', 'Queue message');
+  assert.equal(read().sendEnabled, false, 'an explicit non-send label wins over title');
+  await window.happyDOM.abort();
+});
+
+test('public .205 icon send reaches trusted pointer input and refuses a title-only decoy', async () => {
+  const { click } = await import('./settings-panel-driver.mjs');
+  const { window, target, events, panel } = nativePointerSurface();
+  target.removeAttribute('aria-label');
+  target.title = 'Send';
+  target.innerHTML = '<svg class="lucide lucide-arrow-up size-4"></svg>';
+  await click(panel, 'chat-send', '');
+  assert.equal(events.length, 2);
+  target.innerHTML = '';
+  events.length = 0;
+  await assert.rejects(click(panel, 'chat-send', ''));
+  assert.equal(events.length, 0);
+  await window.happyDOM.abort();
+});
+
+// Public Store v0.2.205 MessageRow/Markdown markup (source 2f68bc4).
+// A package-only article selector silently drops the visibly rendered reply.
+test('public Store answer observation reads completed assistant Markdown without user, tool or action text', async () => {
+  const { window, pane, read } = surface({
+    extra: `
+    <div class="group flex justify-end gap-1"><div class="min-w-0 text-foreground">User asks for Capture Understand Use</div><button title="Copy message"></button></div>
+    <div class="group space-y-2">
+      <div class="min-w-0 text-foreground">Opening check: 732. Capture, Understand, Use.</div>
+      <div class="group/toolcard"><div class="min-w-0 text-foreground">Tool result: follow-up 941</div></div>
+      <div class="mt-1"><button title="Copy reply">Copy reply</button><button>Speak reply</button></div>
+    </div>
+    <div class="group space-y-2"><div class="min-w-0 text-foreground">Follow-up check: 941.</div><div><button data-matrx-title="Copy reply"></button></div></div>
+    <div class="group space-y-2"><div class="min-w-0 text-foreground">Pending answer</div></div>
+    <button title="Stop"><svg class="lucide-square"></svg></button>
+    <button title="Copy reply">Decoy action</button>`,
+  });
+  assert.deepEqual(Array.from(read().replies), [
+    'Opening check: 732. Capture, Understand, Use.',
+    'Follow-up check: 941.',
+  ]);
+  pane.querySelector('div.group.space-y-2 > div.min-w-0.text-foreground').textContent =
+    'Opening check: 865. Capture, Understand, Use.';
+  assert.equal(read().replies[0], 'Opening check: 865. Capture, Understand, Use.');
+  pane.querySelector('div.group.space-y-2').style.display = 'none';
+  assert.deepEqual(Array.from(read().replies), ['Follow-up check: 941.']);
+  assert.equal(read().streaming, true);
+  pane.querySelector('button[title="Stop"]').remove();
+  assert.equal(read().streaming, false);
+  pane.setAttribute('data-state', 'inactive');
+  assert.deepEqual(Array.from(read().replies), []);
+  await window.happyDOM.abort();
+});
+
+test('public Stop observation rejects title decoys, wrong icons and contradictory accessible labels', async () => {
+  for (const extra of [
+    '<button title="Stop"></button>',
+    '<button title="Stop"><svg class="lucide-arrow-up"></svg></button>',
+    '<button title="Stop" aria-label="Cancel upload"><svg class="lucide-square"></svg></button>',
+    '<button title="Stop" hidden><svg class="lucide-square"></svg></button>',
+    '<button title="Stop" disabled><svg class="lucide-square"></svg></button>',
+    '<button title="Stop" aria-disabled="true"><svg class="lucide-square"></svg></button>',
+  ]) {
+    const { window, read } = surface({ extra });
+    assert.equal(read().streaming, false, extra);
+    await window.happyDOM.abort();
+  }
 });

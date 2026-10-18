@@ -1,0 +1,112 @@
+{
+  "kind": "native_guest_evidence_checkpoint",
+  "observed_at_utc": "2026-10-18",
+  "release": {
+    "version": "0.2.543",
+    "run_id": 39124994461,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39124994461",
+    "workflow_head_sha": "41a9e567ba4a6a6949b992295b6e694aeaf22c48",
+    "source_sha": "41a9e567ba4a6a6949b992295b6e694aeaf22c48",
+    "tag": "v0.2.543",
+    "artifact_id": 12136100758,
+    "artifact_digest": "sha256:b9a22685aeee7965ef5c111b3e2b163596b249dbfa185d224d9a4e20eba98e3a",
+    "store_zip_sha256": "cf9a62b2db91f23a65bc5ce11f481a5d73e0fe1e0f5a9588c7afa383fbf75e83",
+    "artifact_hash_provenance": "The guarded admission route matched the release workflow, artifact, receipt, version, source, and Store ZIP digest before dispatch."
+  },
+  "guest": {
+    "run_id": 39125603332,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39125603332",
+    "workflow_conclusion": "success",
+    "workflow_head_sha": "41a9e567ba4a6a6949b992295b6e694aeaf22c48",
+    "runner_label": "macos-15-intel",
+    "acceptance_lane": "B",
+    "acceptance_case": "guest-chat",
+    "artifact_id": 12135799014,
+    "artifact_name": "hosted-guest-39125603332-1",
+    "artifact_digest": "sha256:1e41b024323ce3a99618fa078d1b25f6b369e5f4693f8375078b0bf8d6bf70e6",
+    "build_version": "0.2.543",
+    "build_tree_sha256": "05b316d433aaefa4b29a17b9ad391f6536f1e496789bb5575a7a8f223d7fc69b",
+    "runtime_receipt_kind": "native_store_zip_candidate_key_adapted",
+    "artifact_unchanged": true,
+    "candidate_scope": "Bounded native runtime evidence for the exact v0.2.543 Store ZIP candidate under a fresh hosted guest profile. Native key adaptation was used for the isolated installation. This does not establish Chrome Web Store submission, approval, listing state, or installation from the live Store."
+  },
+  "guest_identity": {
+    "fresh_signed_out_guest": true,
+    "authenticated": false,
+    "access_token_present": false,
+    "profile_absent_after_reload": true,
+    "credentials_or_auth_values_retained": false
+  },
+  "server": {
+    "version_endpoint_status_before_after": 200,
+    "git_sha_before": "2a50e76a6552c2244892cf728dfd0a93688ea978",
+    "git_sha_after": "2a50e76a6552c2244892cf728dfd0a93688ea978",
+    "stable": true
+  },
+  "product_evidence": {
+    "opening": {
+      "semantic_completion": "terminal_answer",
+      "fixture_grounding_asserted": true,
+      "public_page_stages_visible_in_order": true
+    },
+    "same_conversation_followup": {
+      "semantic_completion": "terminal_answer",
+      "same_conversation_identity": true,
+      "fixture_grounding_asserted": true
+    },
+    "post_reload_new_conversation": {
+      "panel_reloaded": true,
+      "prior_session_absent_after_reload": true,
+      "semantic_completion": "terminal_answer",
+      "fixture_grounding_asserted": true,
+      "fixture_heading_named": true
+    },
+    "values_control": {
+      "present": true,
+      "exercised": true,
+      "trusted_escape_keydown_count": 1
+    },
+    "scope": "Three observed signed-out guest sends only; no signed-in behavior or broader Chat health is established."
+  },
+  "resource_finals": {
+    "package": {
+      "journal": "docs/stabilization/evidence/guest-chat-v0543/run39125603332/resource-journals/hosted-package-39125603332-1.sanitized.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "browser": {
+      "journal": "docs/stabilization/evidence/guest-chat-v0543/run39125603332/resource-journals/hosted-browser-39125603332-1.sanitized.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "guest": {
+      "journal": "docs/stabilization/evidence/guest-chat-v0543/run39125603332/resource-journals/hosted-guest-39125603332-1.sanitized.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "transient_observation": "CPU busy reached 0.96 during the guarded phase; it recovered before the valid final decision."
+    }
+  },
+  "evidence_limits": [
+    "The native run used isolated native key adaptation; it does not prove a Store-installed package lifecycle or private Store status.",
+    "Screenshots show portions of the replies; the sanitized browser report supplies fixture-specific code, heading, terminal, and conversation-identity assertions.",
+    "Grounding diagnostics record tool starts and fixture-tab identity, not tool-result bodies.",
+    "The startup resource diagnostic workflow step was skipped; the package, browser, and guest phase journals each have valid final decisions.",
+    "This is three observed signed-out guest sends, not full Chat health."
+  ],
+  "evidence_source": "docs/stabilization/evidence/guest-chat-v0543/run39125603332/native-report.sanitized.json",
+  "screenshot_evidence": [
+    "docs/stabilization/evidence/guest-chat-v0543/run39125603332/screenshots/guest-chat-opening-reply.png",
+    "docs/stabilization/evidence/guest-chat-v0543/run39125603332/screenshots/guest-chat-same-conversation-followup.png",
+    "docs/stabilization/evidence/guest-chat-v0543/run39125603332/screenshots/guest-chat-post-reload-reply.png"
+  ],
+  "independent_review": "docs/stabilization/reports/guest-chat-v0543-native-peer-20261018.json",
+  "independent_review_status": "DONE_WITH_CONCERNS",
+  "independent_guest_evidence_verdict": "PARTIAL",
+  "independent_readiness_observer_verdict": "PASS"
+}

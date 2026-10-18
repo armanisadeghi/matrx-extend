@@ -8,8 +8,10 @@ import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { prepareGuestAnswerScreenshot } from './guest-answer-screenshot.mjs';
 import {
+  classifyFixtureUrlMatch,
   classifyGuestTurn,
   classifyPackageGuestTurn,
+  containsOrderedWholeTerms,
   createGuestStreamCollector,
 } from './guest-chat-completion-oracle.mjs';
 import { createGuestInputDriver } from './guest-chat-input-driver.mjs';
@@ -108,11 +110,13 @@ const report = {
   failure_stage: null,
   failure_code: null,
   failure_reason: null,
+  values_close_diagnostic: null,
   stage_progress: [],
   guest_ai_requests: [],
   guest_ai_observer: null,
   guest_ai_transport_proven: false,
   composer_input_boundaries: [],
+  send_readiness: [],
   context_rule_reads: [],
   grounding_diagnostics: {},
 };
@@ -161,9 +165,13 @@ async function observe(panel, expected = {}) {
         chatSelected: chat?.getAttribute('aria-selected') === 'true',
         paneVisible: Boolean(active),
         composerVisible: active && visible(pane.querySelector('textarea')),
+        composerLength: textarea?.value?.length ?? 0,
         sendEnabled: controls.sendEnabled,
         sendControlCount: controls.sendControlCount,
         sendControlDisabled: controls.sendControlDisabled,
+        sendLikeControlCount: controls.sendLikeControlCount,
+        sendLikeControls: controls.sendLikeControls,
+        initializationShellVisible: controls.initializationShellVisible,
         streaming: controls.streaming,
         streamTrace: window.__guestChatStreamTrace?.snapshot() ?? null,
         sendExecution: window.__guestChatSendExecutionProbe?.snapshot() ?? null,
@@ -173,11 +181,10 @@ async function observe(panel, expected = {}) {
           latestReply.includes(${JSON.stringify(expected.nonce ?? '')}),
         answerContainsFixtureHeading: Boolean(${JSON.stringify(expected.fixtureHeading ?? null)}) &&
           latestReply.includes(${JSON.stringify(expected.fixtureHeading ?? '')}),
-        answerMatchesPublicStages: ${JSON.stringify(REQUIRED_ANSWER_TERMS)}
-          .every((term) => latestReply.includes(term)),
-        answerStagesInOrder: ${JSON.stringify(REQUIRED_ANSWER_TERMS)}
-          .every((term, index, terms) => index === 0 ||
-            latestReply.indexOf(terms[index - 1]) < latestReply.indexOf(term)),
+        answerMatchesPublicStages: ${JSON.stringify(REQUIRED_ANSWER_TERMS)}.every(
+          (term) => (${containsOrderedWholeTerms.toString()})(latestReply, [term])),
+        answerStagesInOrder: (${containsOrderedWholeTerms.toString()})(
+          latestReply, ${JSON.stringify(REQUIRED_ANSWER_TERMS)}),
         answerIsRefusal: /(?:authentication (?:is )?required|you (?:must|need to) (?:sign.?in|log.?in|authenticate)|(?:sign.?in|log.?in) (?:to|before) (?:use|ask|send|continue)|upgrade|subscribe|payment required|unauthori[sz]ed|forbidden|\\b401\\b|\\b403\\b)/i
           .test(latestReply),
         terminalAnswerError: /^\s*Error\s*:/i.test(latestReply),
@@ -186,7 +193,6 @@ async function observe(panel, expected = {}) {
         ...( ${JSON.stringify(expected.diagnostics === true)} && {
           latestReplyText: latestReply,
           visibleAlertTexts: visibleAlerts,
-          composerLength: textarea?.value?.length ?? 0,
         }),
       }));
     })()`,
@@ -205,6 +211,7 @@ async function installStreamTrace(panel, fixture, fixtureTabId) {
       markers: ${JSON.stringify([fixture.openingCode, fixture.followupCode, fixture.title])},
       fixtureTabId: ${JSON.stringify(fixtureTabId)},
       fixtureUrl: ${JSON.stringify(fixture.url)},
+      classifyUrlMatch: (${classifyFixtureUrlMatch.toString()}),
     });
     const listener = (message) => collector.accept(message);
     chrome.runtime.onMessage.addListener(listener);
@@ -385,6 +392,10 @@ async function openAndCloseGuestValuesChip(panel) {
       count: matches.length,
       openPanelCount: visibleOpenPanels.length,
       openStatePanelCount: openPanels.length,
+      escapeKeyDownCount: document.__guestValuesEscapeProbe?.keyDownCount ?? 0,
+      trustedEscapeKeyDownCount: document.__guestValuesEscapeProbe?.trustedKeyDownCount ?? 0,
+      documentFocused: document.hasFocus(),
+      focusInsidePopover: openPanels.some((dialog) => dialog.contains(document.activeElement)),
     };
   })()`,
     );
@@ -398,20 +409,63 @@ async function openAndCloseGuestValuesChip(panel) {
   if (count === 0) return { present: false, exercised: false };
   await click(panel, 'context-values', '');
   await waitFor('guest_values_chip_open', readChip, (state) => state?.openPanelCount === 1);
-  await panel.send('Input.dispatchKeyEvent', {
-    type: 'keyDown',
-    key: 'Escape',
-    code: 'Escape',
-    windowsVirtualKeyCode: 27,
-  });
-  await panel.send('Input.dispatchKeyEvent', {
-    type: 'keyUp',
-    key: 'Escape',
-    code: 'Escape',
-    windowsVirtualKeyCode: 27,
-  });
-  await waitFor('guest_values_chip_closed', readChip, (state) => state?.openStatePanelCount === 0);
-  return { present: true, exercised: true };
+  await evaluate(
+    panel,
+    `(() => {
+    const probe = { keyDownCount: 0, trustedKeyDownCount: 0 };
+    const onKeyDown = (event) => {
+      if (event.key !== 'Escape') return;
+      probe.keyDownCount++;
+      if (event.isTrusted) probe.trustedKeyDownCount++;
+    };
+    document.addEventListener('keydown', onKeyDown, true);
+    probe.stop = () => document.removeEventListener('keydown', onKeyDown, true);
+    document.__guestValuesEscapeProbe = probe;
+  })()`,
+  );
+  try {
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+    let lastCloseState = null;
+    let closed;
+    try {
+      closed = await waitFor(
+        'guest_values_chip_closed',
+        async () => {
+          lastCloseState = await readChip();
+          return lastCloseState;
+        },
+        (state) => state?.openStatePanelCount === 0 && state.escapeKeyDownCount > 0,
+      );
+    } catch (error) {
+      if (lastCloseState && error instanceof Error) error.guestValuesCloseState = lastCloseState;
+      throw error;
+    }
+    return {
+      present: true,
+      exercised: true,
+      escape_keydown_count: closed.escapeKeyDownCount,
+      trusted_escape_keydown_count: closed.trustedEscapeKeyDownCount,
+    };
+  } finally {
+    await evaluate(
+      panel,
+      `(() => {
+      document.__guestValuesEscapeProbe?.stop();
+      delete document.__guestValuesEscapeProbe;
+    })()`,
+    ).catch(() => {});
+  }
 }
 
 async function installPageFixture(page, existingFixture = null) {
@@ -512,8 +566,10 @@ async function readableFixturePresent(page, fixture) {
 
 async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId, panel = null) {
   const readable = await readableFixturePresent(page, fixture).catch(() => false);
-  const pageUrlMatches = page.url() === fixture.url;
-  const base = { readableMarkerPresent: readable, pageUrlMatches };
+  const pageUrl = page.url();
+  const pageUrlComponents = classifyFixtureUrlMatch(fixture.url, pageUrl);
+  const pageUrlMatches = pageUrlComponents.exactMatch;
+  const base = { readableMarkerPresent: readable, pageUrlMatches, pageUrlComponents };
   let worker = null;
   try {
     worker = await attachWorker();
@@ -526,6 +582,7 @@ async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId
       returnByValue: true,
     });
     const active = response.result?.value ?? {};
+    const activeUrlComponents = classifyFixtureUrlMatch(fixture.url, active.url);
     let assignedTabMatchesFixture = null;
     if (panel) {
       const runIds = await evaluate(panel, 'window.__guestChatStreamTrace?.runIds() ?? []');
@@ -547,7 +604,8 @@ async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId
     return {
       ...base,
       activeTabMatchesFixture: active.id === fixtureTabId,
-      activeUrlMatchesFixture: active.url === fixture.url,
+      activeUrlMatchesFixture: activeUrlComponents.exactMatch,
+      activeUrlComponents,
       assignedTabMatchesFixture,
     };
   } catch {
@@ -555,6 +613,7 @@ async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId
       ...base,
       activeTabMatchesFixture: null,
       activeUrlMatchesFixture: null,
+      activeUrlComponents: classifyFixtureUrlMatch(fixture.url, null),
       assignedTabMatchesFixture: null,
       identityProbeAvailable: false,
     };
@@ -606,6 +665,22 @@ function safeFailure(error) {
   return { code, reason };
 }
 
+function safeValuesCloseDiagnostic(error) {
+  const state = error instanceof Error ? error.guestValuesCloseState : null;
+  if (!state || typeof state !== 'object') return null;
+  const count = (value) => (Number.isInteger(value) && value >= 0 && value <= 1000 ? value : null);
+  const flag = (value) => (typeof value === 'boolean' ? value : null);
+  return {
+    chip_count: count(state.count),
+    visible_open_popovers: count(state.openPanelCount),
+    open_state_popovers: count(state.openStatePanelCount),
+    escape_keydown_count: count(state.escapeKeyDownCount),
+    trusted_escape_keydown_count: count(state.trustedEscapeKeyDownCount),
+    document_focused: flag(state.documentFocused),
+    focus_inside_popover: flag(state.focusInsidePopover),
+  };
+}
+
 function safeVisibleText(value, fixture) {
   let text = String(value ?? '');
   for (const [raw, marker] of [
@@ -637,6 +712,11 @@ function diagnosticState(state, fixture) {
     composerVisible: state.composerVisible,
     composerLength: state.composerLength,
     sendEnabled: state.sendEnabled,
+    sendControlCount: state.sendControlCount,
+    sendControlDisabled: state.sendControlDisabled,
+    sendLikeControlCount: state.sendLikeControlCount,
+    sendLikeControls: state.sendLikeControls,
+    initializationShellVisible: state.initializationShellVisible,
     streaming: state.streaming,
     replyCount: state.replyCount,
     assistantDom: state.assistantDom,
@@ -754,11 +834,6 @@ try {
           30_000,
         );
         assert.equal(before.replyCount, 0, 'fresh guest must have no prior reply');
-
-        markStage('guest_values_chip_observation');
-        contextReadWatch.arm('chip_open');
-        report.guest.values_control = await openAndCloseGuestValuesChip(panel);
-        report.context_rule_reads = contextReadWatch.snapshot();
 
         markStage('guest_question');
         networkWatch = await watchGuestAiRequests({
@@ -1019,19 +1094,24 @@ try {
           join(artifacts, 'guest-chat-real-followup-answer.png'),
           { code: fixture.followupCode, heading: fixture.title },
         );
+        report.guest_ai_transport_proven = true;
+
+        markStage('guest_values_chip_observation');
+        contextReadWatch.arm('chip_open');
+        report.guest.values_control = await openAndCloseGuestValuesChip(panel);
         report.context_rule_reads = contextReadWatch.snapshot();
         assert.equal(
           report.context_rule_reads.some((request) => request.method === 'GET'),
           false,
           'guest panel, optional Values control, and all three sends must not issue an owner-table GET',
         );
-        report.guest_ai_transport_proven = true;
       } catch (error) {
         primaryError = error;
         report.failure_stage = stage;
         const failure = safeFailure(error);
         report.failure_code = failure.code;
         report.failure_reason = failure.reason;
+        report.values_close_diagnostic = safeValuesCloseDiagnostic(error);
         report.failure_observation = diagnosticState(
           await observe(panel, {
             nonce: fixture?.openingCode,

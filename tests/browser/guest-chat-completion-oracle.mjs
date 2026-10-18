@@ -1,10 +1,44 @@
 /** Safe browser stream collector; also exercised directly by node tests. */
+export function classifyFixtureUrlMatch(expectedUrl, actualUrl) {
+  const comparable = typeof expectedUrl === 'string' && typeof actualUrl === 'string';
+  const result = {
+    exactMatch: comparable ? actualUrl === expectedUrl : null,
+    originMatch: null,
+    pathnameMatch: null,
+    searchMatch: null,
+    hashMatch: null,
+    expectedHasSearch: null,
+    actualHasSearch: null,
+    expectedHasHash: null,
+    actualHasHash: null,
+  };
+  if (!comparable) return result;
+
+  try {
+    const expected = new URL(expectedUrl);
+    const actual = new URL(actualUrl);
+    result.originMatch = actual.origin === expected.origin;
+    result.pathnameMatch = actual.pathname === expected.pathname;
+    result.searchMatch = actual.search === expected.search;
+    result.hashMatch = actual.hash === expected.hash;
+    result.expectedHasSearch = expected.search.length > 0;
+    result.actualHasSearch = actual.search.length > 0;
+    result.expectedHasHash = expected.hash.length > 0;
+    result.actualHasHash = actual.hash.length > 0;
+  } catch {
+    // Keep malformed or non-URL values out of the receipt; exact equality above
+    // remains available while component classification stays unknown.
+  }
+  return result;
+}
+
 export function createGuestStreamCollector({
   replyCount = () => 0,
   now = Date.now,
   markers = [],
   fixtureTabId = null,
   fixtureUrl = null,
+  classifyUrlMatch = classifyFixtureUrlMatch,
 } = {}) {
   const runs = new Map();
   const order = [];
@@ -70,6 +104,7 @@ export function createGuestStreamCollector({
                 ? 'fixture_tab'
                 : 'different_tab',
           resultUrlMatchesFixture: typeof resultUrl === 'string' ? resultUrl === fixtureUrl : null,
+          resultUrlComponents: classifyUrlMatch(fixtureUrl, resultUrl),
           resultContainsOpeningCode: hasResult
             ? Boolean(markers[0] && result.includes(markers[0]))
             : null,
@@ -151,6 +186,7 @@ export function createGuestStreamCollector({
             target: 'server_event_target_unobserved',
             resultUrlMatchesFixture:
               typeof resultUrl === 'string' ? resultUrl === fixtureUrl : null,
+            resultUrlComponents: classifyUrlMatch(fixtureUrl, resultUrl),
             resultContainsOpeningCode: hasStreamedOutput
               ? Boolean(markers[0] && result.includes(markers[0]))
               : null,
@@ -215,6 +251,27 @@ export function createGuestStreamCollector({
   };
 }
 
+/** Find complete answer terms in sequence, ignoring casing and surrounding punctuation. */
+export function containsOrderedWholeTerms(text, terms) {
+  let after = 0;
+  return terms.every((term) => {
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const matches = text.matchAll(
+      new RegExp(
+        `(^|[^\\p{L}\\p{N}\\p{M}\\p{Pc}])(${escaped})(?=$|[^\\p{L}\\p{N}\\p{M}\\p{Pc}])`,
+        'giu',
+      ),
+    );
+    for (const match of matches) {
+      const start = match.index + match[1].length;
+      if (start < after) continue;
+      after = start + match[2].length;
+      return true;
+    }
+    return false;
+  });
+}
+
 /** Classify one guest Chat turn from sanitized stream metadata and rendered assistant text. */
 export function classifyGuestTurn({
   runs,
@@ -250,14 +307,13 @@ export function classifyGuestTurn({
   if (replyCount <= priorReplyFloor && now - latest.doneAt < 700) return 'rendering_terminal';
   if (replyCount <= priorReplyFloor || !assistantText.trim()) return 'terminal_empty_answer';
   if (terminalAnswerError) return 'terminal_error';
-  let after = -1;
-  const inOrder = orderedTerms.every((term) => {
-    const position = assistantText.indexOf(term, after + 1);
-    if (position < 0) return false;
-    after = position + term.length - 1;
-    return true;
-  });
-  return inOrder && expectedTerms.every((term) => assistantText.includes(term))
+  const inOrder = containsOrderedWholeTerms(assistantText, orderedTerms);
+  return inOrder &&
+    expectedTerms.every(
+      (term) =>
+        orderedTerms.some((ordered) => ordered.toLowerCase() === term.toLowerCase()) ||
+        assistantText.includes(term),
+    )
     ? 'terminal_answer'
     : 'terminal_wrong_answer';
 }
@@ -297,14 +353,14 @@ export function classifyPackageGuestTurn({
   if (state.streaming) return 'in_progress';
   if (state.replyCount <= priorReplyCount) return 'in_progress';
   const text = state.latestReplyText ?? '';
-  let after = -1;
-  const inOrder = orderedTerms.every((term) => {
-    const position = text.indexOf(term, after + 1);
-    if (position < 0) return false;
-    after = position + term.length - 1;
-    return true;
-  });
-  return text.trim() && inOrder && expectedTerms.every((term) => text.includes(term))
+  const inOrder = containsOrderedWholeTerms(text, orderedTerms);
+  return text.trim() &&
+    inOrder &&
+    expectedTerms.every(
+      (term) =>
+        orderedTerms.some((ordered) => ordered.toLowerCase() === term.toLowerCase()) ||
+        text.includes(term),
+    )
     ? 'terminal_answer'
     : 'terminal_wrong_answer';
 }

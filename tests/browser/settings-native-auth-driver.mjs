@@ -16,6 +16,7 @@ import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 import {
   observeMemberExtensionIdentity,
   runMemberAuthBoundary,
+  safeMemberAuthFailureCode,
 } from './settings-member-auth-diagnostic.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -328,6 +329,9 @@ export async function observeOrganizationOption(panel, requiredOrganizationName)
     const pressed = [...(filter?.querySelectorAll('button[aria-pressed="true"]') ?? [])];
     const filterText = pressed.length === 1 ? pressed[0].textContent.trim() : '';
     return {
+      trigger_count: triggers.length,
+      visible_trigger_count: triggers.filter(visible).length,
+      trigger_enabled: trigger ? !trigger.disabled : null,
       menu_open: Boolean(menuOpen),
       visible_option_count: visibleOptions.length,
       exact_match_count: exact.length,
@@ -364,9 +368,29 @@ export async function waitForOrganizationOption(panel, requiredOrganizationName,
 }
 
 export async function selectOrganization(panel, requiredOrganizationName, onObservation) {
-  await click(panel, 'organization', '');
-  await waitForOrganizationOption(panel, requiredOrganizationName, onObservation);
-  await click(panel, 'organization-option', requiredOrganizationName);
+  let phase = 'organization_trigger_click';
+  const observe = (value) => onObservation?.({ phase, ...value });
+  try {
+    const initial = await observeOrganizationOption(panel, requiredOrganizationName).catch(
+      () => null,
+    );
+    if (initial) {
+      const { point, candidate, ...safe } = initial;
+      observe(safe);
+    }
+    observe({ click_settled: false });
+    await click(panel, 'organization', '');
+    observe({ click_settled: true });
+    phase = 'organization_option_visibility';
+    await waitForOrganizationOption(panel, requiredOrganizationName, observe);
+    phase = 'organization_option_click';
+    observe({ click_settled: false });
+    await click(panel, 'organization-option', requiredOrganizationName);
+    observe({ click_settled: true });
+  } catch (error) {
+    observe({ failure_code: safeMemberAuthFailureCode(error, 'member_organization_selection') });
+    throw error;
+  }
 }
 
 /** Select and verify the approved device organization for an acceptance that requires it. */
@@ -713,7 +737,7 @@ export async function signInSettings({
       await onTrace?.(selectionRequired ? 'auth_org_select' : 'auth_org_skip');
       if (selectionRequired) {
         await runMemberAuthBoundary('member_organization_selection', onStage, () =>
-          selectOrganization(panel, MEMBER_TEST_ORGANIZATION_NAME),
+          selectOrganization(panel, MEMBER_TEST_ORGANIZATION_NAME, onAuthDiagnostic),
         );
       }
       await onTrace?.('auth_org_after');
@@ -723,7 +747,16 @@ export async function signInSettings({
         () =>
           waitFor(
             'd87_member_organization_selected',
-            () => accountIdentity(panel, email),
+            async () => {
+              const value = await accountIdentity(panel, email);
+              onAuthDiagnostic?.({
+                phase: 'organization_selected',
+                organization_selected: value?.organizationSelected === true,
+                expected_organization_matches:
+                  value?.organizationLabel === MEMBER_TEST_ORGANIZATION_NAME,
+              });
+              return value;
+            },
             (value) => value?.organizationSelected && value.organizationLabel === "Matrx's Org",
             30_000,
           ),

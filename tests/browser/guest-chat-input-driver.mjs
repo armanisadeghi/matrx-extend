@@ -3,6 +3,63 @@ import { createGuestComposerProbe, readGuestReactDraft } from './guest-chat-comp
 import { createGuestSendExecutionProbe } from './guest-chat-send-execution-probe.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
 
+/** Bounded, content-free timeline of the actual send control during native input. */
+export function createGuestSendReadinessTimeline(now = Date.now) {
+  const startedAt = now();
+  const samples = [];
+  let lastObservedMs = 0;
+  let firstEnabledMs = null;
+  const safeCount = (value) =>
+    Number.isInteger(value) && value >= 0 ? Math.min(value, 1000) : null;
+  const snapshot = () => ({
+    samples: [...samples],
+    last_observed_ms: lastObservedMs,
+    first_enabled_ms: firstEnabledMs,
+  });
+  const record = (phase, state) => {
+    const elapsedMs = Math.max(0, now() - startedAt);
+    lastObservedMs = elapsedMs;
+    const sample = {
+      phase,
+      elapsed_ms: elapsedMs,
+      observation_available: state !== null && state !== undefined,
+      pane_visible: typeof state?.paneVisible === 'boolean' ? state.paneVisible : null,
+      composer_length: safeCount(state?.composerLength),
+      send_enabled: typeof state?.sendEnabled === 'boolean' ? state.sendEnabled : null,
+      send_control_count: safeCount(state?.sendControlCount),
+      send_control_disabled:
+        typeof state?.sendControlDisabled === 'boolean' ? state.sendControlDisabled : null,
+      send_like_control_count: safeCount(state?.sendLikeControlCount),
+      send_like_controls: (state?.sendLikeControls ?? []).slice(0, 4).map((control) => ({
+        label: ['send', 'initializing', 'other_send_like'].includes(control.label)
+          ? control.label
+          : 'other_send_like',
+        disabled: control.disabled === true,
+        aria_disabled: [null, 'true', 'false'].includes(control.ariaDisabled)
+          ? control.ariaDisabled
+          : 'other',
+      })),
+      initialization_shell_visible:
+        typeof state?.initializationShellVisible === 'boolean'
+          ? state.initializationShellVisible
+          : null,
+    };
+    if (sample.send_enabled && firstEnabledMs === null) firstEnabledMs = elapsedMs;
+    const prior = samples.at(-1);
+    const changed =
+      !prior ||
+      prior.phase !== sample.phase ||
+      JSON.stringify({ ...prior, phase: null, elapsed_ms: null }) !==
+        JSON.stringify({ ...sample, phase: null, elapsed_ms: null });
+    if (changed) {
+      if (samples.length === 12) samples.splice(11, 1);
+      samples.push(sample);
+    }
+    return snapshot();
+  };
+  return { record, snapshot };
+}
+
 /** Captures the active pane and conversation, without exporting IDs or draft text. */
 export function createGuestInputIntent(document, readDraft, expectedText) {
   const activePane = () => {
@@ -145,6 +202,13 @@ export function createGuestInputDriver({ evaluate, waitFor, observe, click, repo
 
   async function submitQuestion(panel, question, label, mode, readDraft = readGuestReactDraft) {
     const boundary = mode === 'package' ? { attempt: label } : null;
+    const readiness = createGuestSendReadinessTimeline();
+    const readinessAttempt = { attempt: label, ...readiness.snapshot() };
+    report.send_readiness ??= [];
+    report.send_readiness.push(readinessAttempt);
+    const sampleReadiness = (phase, state) => {
+      Object.assign(readinessAttempt, readiness.record(phase, state));
+    };
     let phase = 'focus';
     if (boundary) report.composer_input_boundaries.push(boundary);
     const snapshot = async () => {
@@ -196,8 +260,10 @@ export function createGuestInputDriver({ evaluate, waitFor, observe, click, repo
           );
       }
       assert.equal(focused, true, `${label} guest Chat composer must focus`);
+      sampleReadiness('before_insert', await observe(panel).catch(() => null));
       phase = 'insert';
       await panel.send('Input.insertText', { text: question });
+      sampleReadiness('after_insert', await observe(panel).catch(() => null));
       if (boundary) {
         boundary.after_insert = await snapshot();
         boundary.react_after_insert = await evaluate(
@@ -260,11 +326,22 @@ export function createGuestInputDriver({ evaluate, waitFor, observe, click, repo
         boundary.submitted_input_method = 'native_key_events_after_insert_text_comparison';
       }
       phase = 'send_ready_wait';
+      sampleReadiness('before_wait', await observe(panel).catch(() => null));
       await waitFor(
         `${label}_send_ready`,
-        () => observe(panel),
+        async () => {
+          try {
+            const state = await observe(panel);
+            sampleReadiness('wait', state);
+            return state;
+          } catch (error) {
+            sampleReadiness('wait', null);
+            throw error;
+          }
+        },
         (state) => state?.sendEnabled,
         10_000,
+        () => readiness.snapshot(),
       );
       if (boundary) boundary.wait = { outcome: 'send_ready', snapshot: await snapshot() };
       phase = 'click';

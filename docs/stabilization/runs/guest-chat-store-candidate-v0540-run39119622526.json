@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "run_id": "39119622526",
+  "status": "invalid_resource_harness_failure",
+  "product_verdict": "none",
+  "product_credit": false,
+  "case": "EXT-F-2013-T10",
+  "lane": "B",
+  "started_at": "2026-10-18T10:32:08Z",
+  "finished_at": "2026-10-18T10:39:10Z",
+  "workflow": {
+    "name": "Native B · guest-chat",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39119622526",
+    "source_sha": "cda3c9d7c9089f0fb4d7730afba9b649d39c360b",
+    "job_conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case"
+  },
+  "candidate": {
+    "release_run_id": "39116693807",
+    "version": "0.2.540",
+    "source_sha": "cda3c9d7c9089f0fb4d7730afba9b649d39c360b",
+    "release_artifact_id": "12132368889",
+    "release_artifact_sha256": "e062599357d25c887b180558e932e1d4f9a14450758cc2dd20f5e2ea8847ebc4",
+    "store_zip_sha256": "864b0f87d8666cef2d6cab6b76cbf748f3f190a8a9ec2b403bf81120a7e1baa7",
+    "runtime_tree_sha256": "482736d9f4b25fcf7e18c911920a39cb80911350b0cc2de9e26bcceeacb01f31",
+    "runtime_receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "server": {
+    "version_endpoint": "https://server.app.matrxserver.com/health/version",
+    "sha_before": "2a50e76a6552c2244892cf728dfd0a93688ea978",
+    "sha_after": "2a50e76a6552c2244892cf728dfd0a93688ea978",
+    "stable": true
+  },
+  "guest": {
+    "fresh_signed_out_profile": true,
+    "chat_visible": true,
+    "swipe_file_tab_absent": true,
+    "values_control": "absent; no interaction expected or required",
+    "first_turn": {
+      "chat_request": "HTTP 200; semantic completion success",
+      "assistant_reply_rendered": true,
+      "opening_code_marker_present": true,
+      "required_stage_names_present": true,
+      "same_conversation_followup": "not reached"
+    },
+    "failure_stage": "real_guest_answer",
+    "failure_code": "assertionerror",
+    "failure_reason": "The native assertion rejected answer-stage order after finding 'Use' inside the UI prefix 'Used 1 tool' before the requested stage sequence. The rendered reply otherwise included the opening marker (redacted) and Capture, Understand, Use in order.",
+    "failure_classification": "Harness false negative; no product verdict. The guest resource final is also invalid due to RESOURCE_CPU_BUSY."
+  },
+  "resource_finals": {
+    "hosted-package-39119622526-1": {
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "hosted-browser-39119622526-1": {
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "hosted-guest-39119622526-1": {
+      "decision": "invalid",
+      "resource_invalid": true,
+      "exit_code": 3,
+      "reason": "RESOURCE_CPU_BUSY"
+    }
+  },
+  "evidence": {
+    "artifact_id": "12133218678",
+    "artifact_name": "hosted-guest-39119622526-1",
+    "artifact_sha256": "a72335b43f1f7aa8f4bac74650b5caa58513c19584893a502f4600f7dee0ea7f",
+    "sanitized_report": "../evidence/guest-chat-v0540/run39119622526/native-report.sanitized.json",
+    "sanitized_resource_journals": "../evidence/guest-chat-v0540/run39119622526/"
+  },
+  "independent_review": "pending",
+  "next_action": "Independently review the harness false-negative diagnosis. Repair and review the answer-order assertion and address fresh resource admission before any retry; no candidate or Store pass is claimed."
+}

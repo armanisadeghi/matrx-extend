@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-18T09:12:02Z",
-  "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
+  "updated_at": "2026-10-18T11:18:07Z",
+  "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
-  "source_sha": "741d7771e2c45d020f63ef3b9f2a6ef8ab3ff86c",
+  "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
   "modes": [
     "guest",
     "member",
@@ -2806,6 +2806,16 @@
           "id": "EXT-F-1001-C11",
           "label": "Sign out menu action",
           "action": "From the account popover, activate Sign out; verify the menu closes and the resulting identity is signed out, including the already-guest case."
+        },
+        {
+          "id": "EXT-F-1001-C12",
+          "label": "Open Scrape after popup Capture handoff failure",
+          "action": "When a signed-in popup Capture handoff claim fails and the sidepanel shows its recovery alert, activate Open Scrape; verify Scrape becomes selected and the alert clears.",
+          "source_anchor": "src/entrypoints/sidepanel/App.tsx:394-410",
+          "modes": [
+            "member",
+            "admin"
+          ]
         }
       ],
       "source_anchors": [
@@ -2817,7 +2827,8 @@
         "src/entrypoints/sidepanel/App.tsx:307",
         "src/lib/panel/launch-intent.ts",
         "src/state/sidepanel-tab.ts:1",
-        "src/styles/globals.css"
+        "src/styles/globals.css",
+        "src/entrypoints/sidepanel/App.tsx:394-410"
       ],
       "dependency_class": "local",
       "wave": "A",
@@ -3694,6 +3705,48 @@
             "warm",
             "navigation"
           ]
+        },
+        {
+          "id": "EXT-F-1001-T28",
+          "title": "Recover navigation after popup Capture claim failure",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C12"
+          ],
+          "preconditions": [
+            "Use a receipt-bound signed-in extension and a reviewed real-UI fixture with an exact fixture ID, setup, trigger, and reset that forces popup Capture claim_failed. Record extension ID, version, loaded path, role, and fixture receipt; current evidence does not identify an executable fixture, so execution is blocked until one is named."
+          ],
+          "steps": [
+            "Trigger claim_failed from popup Capture and open the sidepanel; verify the visible alert and Open Scrape action.",
+            "Activate Open Scrape; verify the Scrape tab becomes selected, the alert clears, and the failed Capture intent is not replayed.",
+            "Restore the fixture and repeat only if an exact fixture supports reload; preserve separate member/admin outcomes."
+          ],
+          "expected": [
+            "The failure remains visible until Open Scrape is activated; activation selects Scrape and dismisses the alert without replaying Capture."
+          ],
+          "dimensions": [
+            "warm",
+            "failure",
+            "navigation",
+            "role"
+          ],
+          "procedure_readiness": "requires_named_real_ui_fixture",
+          "procedure_gaps": [
+            "No native fixture/setup/reset is evidenced in supplied artifacts."
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New case; no native run."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New case; no native run."
+            }
+          }
         }
       ],
       "cells": {
@@ -5760,7 +5813,6 @@
             "claim-removal-failure",
             "expiry"
           ],
-          "remote_delta_acceptance": "Already covers Capture claim failure; confirm the sidepanel's Open Scrape alert is visible and actionable.",
           "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json",
           "source_anchors": [
             "src/entrypoints/popup/main.tsx:56-103",
@@ -5933,7 +5985,8 @@
             "report": ".research/popup-profile-acceptance-peer.json",
             "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
-          "required_fixture": "A named controlled fault fixture/harness must independently force panel-open rejection, storage-write rejection, each context-enumeration outcome, claim-removal failure, and intent expiry, and record those branch outcomes. No such user-facing fault control is exposed."
+          "required_fixture": "A named controlled fault fixture/harness must independently force panel-open rejection, storage-write rejection, each context-enumeration outcome, claim-removal failure, and intent expiry, and record those branch outcomes. No such user-facing fault control is exposed.",
+          "mapping_notes": "This case owns popup claim-failure launch, claim lifecycle, and retry branches. The explicit sidepanel Open Scrape alert, activation, navigation, and dismissal assertion is owned solely by EXT-F-1001-T28 and must not be credited here."
         },
         {
           "id": "EXT-F-1002-T20",
@@ -5973,7 +6026,6 @@
             "claim-removal-failure",
             "expiry"
           ],
-          "remote_delta_acceptance": "Same claim-failure behavior for admin.",
           "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json",
           "source_anchors": [
             "src/entrypoints/popup/main.tsx:56-103",
@@ -6146,7 +6198,8 @@
             "report": ".research/popup-profile-acceptance-peer.json",
             "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
-          "required_fixture": "A named controlled fault fixture/harness must independently force panel-open rejection, storage-write rejection, each context-enumeration outcome, claim-removal failure, and intent expiry, and record those branch outcomes. No such user-facing fault control is exposed."
+          "required_fixture": "A named controlled fault fixture/harness must independently force panel-open rejection, storage-write rejection, each context-enumeration outcome, claim-removal failure, and intent expiry, and record those branch outcomes. No such user-facing fault control is exposed.",
+          "mapping_notes": "This case owns popup claim-failure launch, claim lifecycle, and retry branches. The explicit sidepanel Open Scrape alert, activation, navigation, and dismissal assertion is owned solely by EXT-F-1001-T28 and must not be credited here."
         },
         {
           "id": "EXT-F-1002-T21",
@@ -23425,6 +23478,17 @@
           "label": "Open captured image",
           "action": "Open a captured image from each displayed size tier and verify its destination.",
           "source_anchor": "src/features/scrape/ScrapeView.tsx:1028"
+        },
+        {
+          "id": "EXT-F-1007-C41",
+          "label": "Copy captured image URL",
+          "action": "For a non-icon captured image, copy that tile’s exact img.src; the control is available on large and medium image tiles and absent on icon tiles.",
+          "source_anchor": "src/features/scrape/ScrapeView.tsx:1030-1036",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ]
         }
       ],
       "source_anchors": [
@@ -23475,7 +23539,8 @@
         "src/lib/supabase/queries.ts",
         "src/state/notices.ts",
         "src/state/scrape.ts",
-        "src/lib/api/routes/sources.ts"
+        "src/lib/api/routes/sources.ts",
+        "src/features/scrape/ScrapeView.tsx:1030-1036"
       ],
       "dependency_class": "cross-system",
       "wave": "C",
@@ -28548,6 +28613,51 @@
             "admin": {
               "status": "unverified",
               "detail": "No native product run recorded for opening images."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-1007-T42",
+          "title": "Copy captured image URL from large and medium tiles",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C41"
+          ],
+          "preconditions": [
+            "Use receipt-bound current extension on a controlled HTTPS page whose capture manifest guarantees one large and one medium non-icon image tile with distinct known src values. An icon tile is optional; test its control absence only when fixture includes one. Record UI identity mode and clipboard permission."
+          ],
+          "steps": [
+            "Capture the controlled page and open Images. Copy image URL from the guaranteed large tile; paste into a harmless controlled field or permitted clipboard inspection and compare the full value with that tile’s captured src. Record permission refusal visibly.",
+            "Repeat for the guaranteed medium tile. If an icon tile is present, verify the control is absent; if absent, mark only that optional subtarget unverified.",
+            "Repeat the tested copy action after extension reload only when the same fixture remains available; report each size tier separately."
+          ],
+          "expected": [
+            "Each tested non-icon tile copies exactly its own captured src without changing capture selection or other tile state.",
+            "Icon absence is asserted only when an icon fixture exists; clipboard denial is recorded as refusal, not a pass."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "failure",
+            "image-size-tier",
+            "clipboard"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "New source-to-case coverage; no native run."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "New source-to-case coverage; no native run."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New source-to-case coverage; no native run."
             }
           }
         }
@@ -34360,7 +34470,7 @@
         {
           "id": "EXT-F-1010-C02",
           "label": "Stop highlighter overlay",
-          "action": "Click Stop highlighting in the side panel and Close in the page toolbar."
+          "action": "Click Stop highlighting in the side panel and Close in the page toolbar. When the overlay is active on another page, verify the conditional Stop there action is visible and stops that remote-page session."
         },
         {
           "id": "EXT-F-1010-C03",
@@ -34479,7 +34589,9 @@
         "src/lib/highlights/highlighter.ts:211",
         "src/lib/highlights/highlighter.ts:216",
         "src/lib/highlights/highlighter.ts:238",
-        "src/lib/highlights/highlighter.ts:300"
+        "src/lib/highlights/highlighter.ts:300",
+        "src/features/highlights/HighlightView.tsx:218-236",
+        "src/lib/highlights/queries.ts:51-64"
       ],
       "dependency_class": "cross-system",
       "wave": "B",
@@ -34538,10 +34650,12 @@
             "Sign in; open Highlights on a controlled page with test text and selectable elements."
           ],
           "steps": [
-            "Click Stop highlighting in the side panel and Close in the page toolbar."
+            "Click Stop highlighting in the side panel and Close in the page toolbar.",
+            "With highlighting active on a different controlled page, return to the sidepanel for the current page; verify the “active on another page” message and conditional Stop there control, activate it, and verify the remote session stops."
           ],
           "expected": [
-            "Overlay listeners and shadow host are removed; side-panel state clears."
+            "Overlay listeners and shadow host are removed; side-panel state clears.",
+            "Stop there is visible only while another page owns the active overlay and stops that session when explicitly activated."
           ],
           "dimensions": [
             "warm",
@@ -35006,10 +35120,12 @@
             "Sign in; open Highlights on a controlled page with test text and selectable elements."
           ],
           "steps": [
-            "Open tab during list load, empty list, malformed active URL."
+            "Open tab during list load, empty list, malformed active URL.",
+            "With a controlled read failure for the highlight list, record the visible empty-instruction result and the failed read; this is a truthful failure assertion/reproduction lead, not acceptance of a genuine-empty presentation."
           ],
           "expected": [
-            "Loading completes; empty instruction reflects overlay state; invalid URL yields no host without crashing."
+            "Loading completes; empty instruction reflects overlay state; invalid URL yields no host without crashing.",
+            "A failed list read must not be credited as a genuine empty list or product pass; record the current source presentation and open a defect reproduction if observed."
           ],
           "dimensions": [
             "warm",
@@ -35200,6 +35316,16 @@
           "id": "EXT-F-1011-C24",
           "label": "Restricted audience access gate",
           "action": "Attempt to open the restricted surface from excluded audience using navigation and stale selection."
+        },
+        {
+          "id": "EXT-F-1011-C25",
+          "label": "Retry failed guidance demo body load",
+          "action": "After demo-body loading fails, activate Retry loading demo and verify a new load attempt and recovered body or a truthful retryable failure.",
+          "source_anchor": "src/features/guidance/GuidancePreview.tsx:239-265,302-310",
+          "modes": [
+            "member",
+            "admin"
+          ]
         }
       ],
       "source_anchors": [
@@ -35231,7 +35357,9 @@
         "src/features/guidance/GuidanceView.tsx:681",
         "src/features/guidance/actions.ts:1",
         "src/lib/guidance/cloud-sync.ts:1",
-        "src/lib/guidance/in-page-banner.ts:1"
+        "src/lib/guidance/in-page-banner.ts:1",
+        "src/features/guidance/GuidancePreview.tsx:239-265,302-310",
+        "src/lib/guidance/storage.ts:35-43,57-59"
       ],
       "dependency_class": "cross-system",
       "wave": "B",
@@ -35839,10 +35967,12 @@
             "Sign in; use an owned test domain and disposable guidance notes/screenshots/recordings."
           ],
           "steps": [
-            "Open with initial load, no items, and failed list read."
+            "Open with initial load, no items, and failed list read.",
+            "Inject a controlled chrome.storage.local read rejection for the Guidance list and observe the rendered state; record that source currently presents its empty-list state after failed read and treat this as a truthful failure assertion/reproduction lead, not acceptance."
           ],
           "expected": [
-            "Spinner then list/empty/error behavior is truthful; no empty message is presented as saved data."
+            "Spinner then list/empty/error behavior is truthful; no empty message is presented as saved data.",
+            "Failed storage read is distinguished in evidence from a genuinely empty Guidance list; current empty-state presentation is not credited as correct error handling."
           ],
           "dimensions": [
             "warm",
@@ -35874,6 +36004,43 @@
             "reload",
             "role-change"
           ]
+        },
+        {
+          "id": "EXT-F-1011-T25",
+          "title": "Retry a failed guidance demo body load",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1011-C25"
+          ],
+          "preconditions": [
+            "Use an owned demo_ref whose body is available and a controlled one-shot body-load rejection mechanism with a named request/fixture and reset. Keep this distinct from a resolved-missing body fixture in T22."
+          ],
+          "steps": [
+            "Open the demo preview and force its body load to reject once; record visible error and Retry loading demo.",
+            "Remove the one-shot refusal and click Retry loading demo; verify a fresh body request and the loaded demo content. Repeat only with a separate controlled fixture for each role."
+          ],
+          "expected": [
+            "Retry issues a new load attempt; successful retry renders the body. A repeated failure stays visibly recoverable. Do not infer retry success from T22 missing-body behavior."
+          ],
+          "dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "role"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New source-to-case coverage; no native run."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New source-to-case coverage; no native run."
+            }
+          }
         }
       ],
       "cells": {
@@ -45008,6 +45175,25 @@
           "source_anchor": "src/features/notes/NotesList.tsx",
           "test_design_status": "unverified",
           "test_design_item": "After an uncertain create response, refresh the notes list; distinguish a persisted result from a failed read without claiming that nothing was saved."
+        },
+        {
+          "id": "EXT-F-2006-C14",
+          "label": "Notes access gate for guest",
+          "action": "When signed out, Notes tab is unavailable and a persisted Notes selection resolves to an accessible page.",
+          "source_anchor": "src/config/sidepanel-visibility.ts:32",
+          "modes": [
+            "guest"
+          ]
+        },
+        {
+          "id": "EXT-F-2006-C15",
+          "label": "Search homes in Notes list home filter",
+          "action": "Filter named home choices in the Notes list home-filter picker; verify match and No matching homes without changing current selection.",
+          "source_anchor": "src/features/notes/HomePicker.tsx:57-65,95-97; src/features/notes/NotesList.tsx:183-190",
+          "modes": [
+            "member",
+            "admin"
+          ]
         }
       ],
       "source_anchors": [
@@ -45019,7 +45205,9 @@
         "src/features/notes/NotesList.tsx:117",
         "src/features/notes/NotesList.tsx:132",
         "src/features/notes/NotesList.tsx:160",
-        "src/features/notes/NotesList.tsx:1"
+        "src/features/notes/NotesList.tsx:1",
+        "src/features/notes/HomePicker.tsx:57-65,95-97",
+        "src/features/notes/NotesList.tsx:183-190"
       ],
       "dependency_class": "database",
       "wave": "B",
@@ -45042,7 +45230,7 @@
           "id": "EXT-F-2006-T01",
           "title": "Guest cannot open Notes",
           "control_ids": [
-            "EXT-F-2006-C01"
+            "EXT-F-2006-C14"
           ],
           "modes": [
             "guest"
@@ -45072,7 +45260,8 @@
             "EXT-F-2006-C07",
             "EXT-F-2006-C08",
             "EXT-F-2006-C09",
-            "EXT-F-2006-C10"
+            "EXT-F-2006-C10",
+            "EXT-F-2006-C15"
           ],
           "modes": [
             "member",
@@ -45086,12 +45275,16 @@
             "Search by the unique title token and verify the three fixture notes; clear search.",
             "Choose All homes, then each fixture named home; verify each filter shows its fixture note.",
             "Open one fixture through the note selector and another through its visible row.",
-            "Delete each fixture through the Notes UI and verify the live delete response and list removal."
+            "Delete each fixture through the Notes UI and verify the live delete response and list removal.",
+            "Using the controlled notes, open the Notes list home-filter picker (not the editor HomePicker); search a known fixture home and verify it remains selectable, search a unique no-match token and verify No matching homes, then clear the query and verify selection did not change until a choice is clicked.",
+            "Search for a unique title token absent from the existing controlled notes and verify the explicit No matches state; clear search and verify the original rows return."
           ],
           "expected": [
             "Create without choosing a home places the note in the active organization’s General; the editor picker changes the other notes’ homes through the live home action.",
             "Title search and All homes/named-home selection narrow the visible collection correctly; the selector reflects its home-filtered notes and both entry paths open the chosen note.",
-            "Cleanup deletes only the three run-owned note IDs and confirms each live delete and row removal."
+            "Cleanup deletes only the three run-owned note IDs and confirms each live delete and row removal.",
+            "The list picker has distinct matching and no-matching home search states and query clearing preserves selection.",
+            "A zero-result title query with existing notes shows No matches; clearing restores rows."
           ],
           "dimensions": [
             "member",
@@ -45418,6 +45611,26 @@
           "source_anchor": "src/features/notes/NoteEditor.tsx",
           "test_design_status": "unverified",
           "test_design_item": "Fail the selected-note read, verify terminal error and retry, recover it, then fail a background refresh with a local draft and verify the draft remains editable."
+        },
+        {
+          "id": "EXT-F-2007-C28",
+          "label": "Retry failed note deletion",
+          "action": "After a failed deletion, activate Retry delete to reopen confirmation for the same note; delete only after explicit confirmation and affected-row success.",
+          "source_anchor": "src/features/notes/NoteEditor.tsx:430-439",
+          "modes": [
+            "member",
+            "admin"
+          ]
+        },
+        {
+          "id": "EXT-F-2007-C29",
+          "label": "Retry failed note autosave",
+          "action": "After autosave failure, activate Retry save to persist the retained draft and verify it survives reopening.",
+          "source_anchor": "src/features/notes/NoteEditor.tsx:483-489,520-536",
+          "modes": [
+            "member",
+            "admin"
+          ]
         }
       ],
       "source_anchors": [
@@ -45434,7 +45647,8 @@
         "src/features/notes/AppendFromPagePanel.tsx:34",
         "src/features/notes/AppendFromPagePanel.tsx:83",
         "src/features/notes/NoteEditor.tsx:1",
-        "src/lib/notes/extract.ts:1"
+        "src/lib/notes/extract.ts:1",
+        "src/features/notes/NoteEditor.tsx:430-439,483-489,501-508,520-536"
       ],
       "dependency_class": "database",
       "wave": "B",
@@ -45462,7 +45676,9 @@
             "EXT-F-2007-C04",
             "EXT-F-2007-C05",
             "EXT-F-2007-C06",
-            "EXT-F-2007-C25"
+            "EXT-F-2007-C25",
+            "EXT-F-2007-C26",
+            "EXT-F-2007-C29"
           ],
           "modes": [
             "member",
@@ -45472,10 +45688,14 @@
             "Signed-in owner of one controlled note; autosave status initially idle."
           ],
           "steps": [
-            "Edit title and body; switch Edit/Preview; select a different home with HomePicker; revisit the note and list to check saved home and autosaved content."
+            "Edit title and body; switch Edit/Preview; select a different home with HomePicker; revisit the note and list to check saved home and autosaved content.",
+            "Preview a whitespace-only note and verify the explicit Empty note state; then preview nonempty markdown.",
+            "After one successful save, change the disposable note draft again; intercept exactly that note-update request with a named one-shot HTTP 503 mechanism, verify the latest draft remains and Retry save appears, remove the refusal, click Retry save, reopen the same note, and verify the changed draft persisted."
           ],
           "expected": [
-            "Title/body autosave and preview reflect the latest content. Home changes persist through the explicit move operation and are reflected by the home-filtered list; report failures visibly."
+            "Title/body autosave and preview reflect the latest content. Home changes persist through the explicit move operation and are reflected by the home-filtered list; report failures visibly.",
+            "Empty and nonempty note previews render their respective content states.",
+            "The controlled failed save retains the changed draft; retry persists that same draft after reopening."
           ],
           "dimensions": [
             "member",
@@ -45525,7 +45745,8 @@
             "EXT-F-2007-C07",
             "EXT-F-2007-C09",
             "EXT-F-2007-C08",
-            "EXT-F-2007-C01"
+            "EXT-F-2007-C01",
+            "EXT-F-2007-C28"
           ],
           "modes": [
             "member",
@@ -45536,11 +45757,13 @@
           ],
           "steps": [
             "Open Delete note; cancel via dialog close/Escape and verify note remains. Reopen, confirm, return to list and refresh.",
-            "For an owned test note, make deletion fail and then return a successful response with zero affected rows; verify neither is claimed as confirmed deletion. Restore normal transport and retry."
+            "For an owned test note, make deletion fail and then return a successful response with zero affected rows; verify neither is claimed as confirmed deletion. Restore normal transport and retry.",
+            "For one disposable owned note, make its first DELETE request fail using a named one-shot HTTP 503 intercept; verify the same note remains and the recovery action is Retry delete. Remove the refusal, explicitly click Retry delete, verify confirmation reopens for that same note, confirm deletion, and verify success only after the affected-row response."
           ],
           "expected": [
             "Cancel preserves note; confirm marks it deleted and returns list without it; dialog explains recoverability.",
-            "Unconfirmed deletion keeps a recoverable editor with visible feedback. Only confirmed affected-row deletion returns to the list; surrounding cancel still preserves the note."
+            "Unconfirmed deletion keeps a recoverable editor with visible feedback. Only confirmed affected-row deletion returns to the list; surrounding cancel still preserves the note.",
+            "Retry delete is explicitly activated after the controlled failure and reopens confirmation for the same note; no success is claimed before affected-row confirmation."
           ],
           "dimensions": [
             "member",
@@ -45848,6 +46071,15 @@
           "source_anchor": "src/features/files/FilesView.tsx",
           "test_design_status": "unverified",
           "test_design_item": "Verify Detach screenshot from current chat (Remove an attached screenshot) on Files side-panel in source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2008-C29",
+          "label": "Files access gate for guest",
+          "action": "When signed out, Files tab is unavailable; restoring a persisted Files selection routes to an accessible tab without mounting file data.",
+          "source_anchor": "src/config/sidepanel-visibility.ts:33",
+          "modes": [
+            "guest"
+          ]
         }
       ],
       "source_anchors": [
@@ -45867,7 +46099,9 @@
         "src/features/files/FilesView.tsx:811",
         "src/features/files/FilesView.tsx:1",
         "src/features/files/FilesView.tsx:539",
-        "src/features/files/FilesView.tsx:679"
+        "src/features/files/FilesView.tsx:679",
+        "src/features/files/FilesView.tsx:116-153,219-241,597-841",
+        "src/config/sidepanel-visibility.ts:33"
       ],
       "dependency_class": "backend",
       "wave": "B",
@@ -45890,7 +46124,7 @@
           "id": "EXT-F-2008-T01",
           "title": "Guest cannot open Files",
           "control_ids": [
-            "EXT-F-2008-C01"
+            "EXT-F-2008-C29"
           ],
           "modes": [
             "guest"
@@ -45927,10 +46161,12 @@
             "Signed-in user with controlled library file and screenshot rows plus active conversation."
           ],
           "steps": [
-            "Refresh; search a known file name then a screenshot title; clear query; switch Library and Screenshots."
+            "Refresh; search a known file name then a screenshot title; clear query; switch Library and Screenshots.",
+            "Choose Open full Files app and verify the destination URL/route and signed-in identity."
           ],
           "expected": [
-            "Refresh reloads data, query filters each current inventory, tabs show the matching row/card types and correct empty state."
+            "Refresh reloads data, query filters each current inventory, tabs show the matching row/card types and correct empty state.",
+            "Open full Files app reaches the web Files route without changing the sidepanel inventory selection."
           ],
           "dimensions": [
             "member",
@@ -45961,20 +46197,30 @@
             "EXT-F-2008-C06",
             "EXT-F-2008-C08",
             "EXT-F-2008-C09",
-            "EXT-F-2008-C11"
+            "EXT-F-2008-C11",
+            "EXT-F-2008-C25",
+            "EXT-F-2008-C26",
+            "EXT-F-2008-C27",
+            "EXT-F-2008-C28"
           ],
           "modes": [
             "member",
             "admin"
           ],
           "preconditions": [
-            "Signed-in user with file and screenshot rows; current conversation exists."
+            "Signed-in user with file and screenshot rows; current conversation exists.",
+            "Use distinct owned file and screenshot fixtures; run attach/detach only in an active conversation. For the no-conversation gate, switch to a genuinely new conversation before its first message and record its conversation ID/state. Name the specific controlled one-shot mutation failure and reset."
           ],
           "steps": [
-            "Open file details; attach then detach file; open screenshot in Files; attach then detach screenshot. Repeat attach with no conversation."
+            "Open file details; attach then detach file; open screenshot in Files; attach then detach screenshot. Repeat attach with no conversation.",
+            "Attach and detach the separate owned file and screenshot fixtures in the active conversation; record item IDs and persistence after reopening.",
+            "Switch to a genuinely empty/new conversation before its first message; verify attachment actions are disabled with their explanation and do not claim a write attempt.",
+            "For one named operation only (attach one file), intercept that exact request once with a controlled HTTP 503, verify visible failure and unchanged state, remove refusal, click retry for the same attach operation, then verify persisted attached state. Do not infer detach failure coverage."
           ],
           "expected": [
-            "Open actions navigate to selected resource; attach state toggles and persists; attachment is disabled with explanation until conversation exists."
+            "Open actions navigate to selected resource; attach state toggles and persists; attachment is disabled with explanation until conversation exists.",
+            "File and screenshot attach/detach affect the exact fixture and persist; empty-conversation gating is explicit.",
+            "Only the specifically induced attach failure and same-operation retry are claimed; detach failure remains unverified."
           ],
           "dimensions": [
             "member",
@@ -45992,20 +46238,35 @@
             "EXT-F-2008-C12",
             "EXT-F-2008-C13",
             "EXT-F-2008-C14",
-            "EXT-F-2008-C15"
+            "EXT-F-2008-C15",
+            "EXT-F-2008-C16",
+            "EXT-F-2008-C17",
+            "EXT-F-2008-C18",
+            "EXT-F-2008-C19",
+            "EXT-F-2008-C20",
+            "EXT-F-2008-C21",
+            "EXT-F-2008-C22",
+            "EXT-F-2008-C23",
+            "EXT-F-2008-C24"
           ],
           "modes": [
             "member",
             "admin"
           ],
           "preconditions": [
-            "Signed-in user with an item having a multi-page provenance family; one request can be made to fail."
+            "Signed-in user with an item having a multi-page provenance family; one request can be made to fail.",
+            "Use controlled owned file and screenshot families with known node IDs, at least two binary and processed-result pages per graph, recorded expected representation counts/capability values, and separate readable and no-readable-node fixtures for each graph type. Record fixture manifest and cleanup IDs."
           ],
           "steps": [
-            "Open file family and screenshot family; move next/previous; go back; induce family load error and Retry."
+            "Open file family and screenshot family; move next/previous; go back; induce family load error and Retry.",
+            "Compare rendered binary and processed graph nodes/relationships, counts and capability values to the fixture manifest for each file/screenshot family.",
+            "Advance and reverse each graph pager, record first/last page node IDs and disabled Previous/Next controls at both boundaries.",
+            "Open each graph type’s separate no-readable-node fixture and verify its explicit empty message."
           ],
           "expected": [
-            "Family identifies selected root and related provenance; page controls move by one page and disable at bounds; Back returns; Retry replaces error with data or actionable error."
+            "Family identifies selected root and related provenance; page controls move by one page and disable at bounds; Back returns; Retry replaces error with data or actionable error.",
+            "Both graph types match fixture node IDs, representation counts and capability values; pagers advance exactly one page, reverse, and stop at bounds.",
+            "Each empty graph reports its explicit no-readable-node state rather than a blank area."
           ],
           "dimensions": [
             "member",
@@ -47210,17 +47471,20 @@
       "controls": [
         {
           "id": "EXT-F-2011-C01",
-          "label": "Refresh",
-          "action": "Reload vault items",
+          "label": "Vault workspace list load and error retry",
+          "action": "Load the embedded Vault item list; when list loading fails, use the workspace Try again control and verify recovery.",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Refresh (Reload vault items) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Refresh (Reload vault items) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "source_anchor": "@ai-matrx/vault@0.1.11 source map VaultApp.tsx:280-287,505-508"
         },
         {
           "id": "EXT-F-2011-C02",
-          "label": "Open web vault",
-          "action": "Open full vault app",
+          "label": "Open full web vault (not rendered in embedded extension)",
+          "action": "Unavailable in embedded VaultApp; retained as a historical inventory alias only and excluded from current extension case mapping.",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Open web vault (Open full vault app) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Open web vault (Open full vault app) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "source_applicable": false,
+          "reconciliation": "Not rendered by embedded VaultApp; do not claim extension coverage."
         },
         {
           "id": "EXT-F-2011-C03",
@@ -47231,24 +47495,28 @@
         },
         {
           "id": "EXT-F-2011-C04",
-          "label": "Mine/shared tabs",
-          "action": "Filter scope",
+          "label": "Choose vault and item scope",
+          "action": "Use the Vault selector and Show selector for All items, Personal, Shared with me, or available organization scope; not Mine/shared tabs.",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Mine/shared tabs (Filter scope) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Mine/shared tabs (Filter scope) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "source_anchor": "@ai-matrx/vault@0.1.11 source map VaultApp.tsx:310-337; Sidebar.tsx:148-152"
         },
         {
           "id": "EXT-F-2011-C05",
           "label": "Sign in",
           "action": "Start auth flow as guest",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Sign in (Start auth flow as guest) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Sign in (Start auth flow as guest) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "source_applicable": false,
+          "reconciliation": "Guest cannot reach embedded VaultView through normal navigation; negative access is covered by T05/C55."
         },
         {
           "id": "EXT-F-2011-C06",
           "label": "Pending page-capture accept/deny",
           "action": "Save or reject detected login",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Pending page-capture accept/deny (Save or reject detected login) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Pending page-capture accept/deny (Save or reject detected login) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "reconciliation": "Pending capture is covered by the decomposed C45-C50 controls and T04; do not duplicate in workspace coverage."
         },
         {
           "id": "EXT-F-2011-C07",
@@ -47269,56 +47537,103 @@
           "label": "Expand/collapse entry",
           "action": "Inspect details/fields",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Expand/collapse entry (Inspect details/fields) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Expand/collapse entry (Inspect details/fields) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "coverage_alias_of": [
+            "EXT-F-2011-C23",
+            "EXT-F-2011-C24"
+          ]
         },
         {
           "id": "EXT-F-2011-C10",
           "label": "Add field",
           "action": "Open custom field editor",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Add field (Open custom field editor) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Add field (Open custom field editor) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "coverage_alias_of": [
+            "EXT-F-2011-C40",
+            "EXT-F-2011-C41",
+            "EXT-F-2011-C42"
+          ]
         },
         {
           "id": "EXT-F-2011-C11",
           "label": "Reveal secret toggle",
           "action": "Reveal or conceal secret value",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Reveal secret toggle (Reveal or conceal secret value) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Reveal secret toggle (Reveal or conceal secret value) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "coverage_alias_of": [
+            "EXT-F-2011-C34",
+            "EXT-F-2011-C35"
+          ]
         },
         {
           "id": "EXT-F-2011-C12",
           "label": "Copy secret",
           "action": "Copy secret",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Copy secret (Copy secret) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Copy secret (Copy secret) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "coverage_alias_of": [
+            "EXT-F-2011-C36"
+          ]
         },
         {
           "id": "EXT-F-2011-C13",
           "label": "Change/save/cancel field",
           "action": "Edit or discard secret-field value",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Change/save/cancel field (Edit or discard secret-field value) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Change/save/cancel field (Edit or discard secret-field value) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "coverage_alias_of": [
+            "EXT-F-2011-C37",
+            "EXT-F-2011-C38",
+            "EXT-F-2011-C39"
+          ]
         },
         {
           "id": "EXT-F-2011-C14",
           "label": "Remove field/item",
           "action": "Confirm/perform field or item removal",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Remove field/item (Confirm/perform field or item removal) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Remove field/item (Confirm/perform field or item removal) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "coverage_alias_of": [
+            "EXT-F-2011-C43",
+            "EXT-F-2011-C44"
+          ]
         },
         {
           "id": "EXT-F-2011-C15",
           "label": "Edit/create entry fields",
           "action": "Set credential metadata and values",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Edit/create entry fields (Set credential metadata and values) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Edit/create entry fields (Set credential metadata and values) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "coverage_alias_of": [
+            "EXT-F-2011-C17",
+            "EXT-F-2011-C18",
+            "EXT-F-2011-C19",
+            "EXT-F-2011-C20",
+            "EXT-F-2011-C21",
+            "EXT-F-2011-C22",
+            "EXT-F-2011-C25",
+            "EXT-F-2011-C26",
+            "EXT-F-2011-C27",
+            "EXT-F-2011-C28",
+            "EXT-F-2011-C29"
+          ]
         },
         {
           "id": "EXT-F-2011-C16",
           "label": "Generate password",
           "action": "Generate candidate password and copy/use it",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Generate password (Generate candidate password and copy/use it) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Generate password (Generate candidate password and copy/use it) on Vault side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "coverage_alias_of": [
+            "EXT-F-2017-C01",
+            "EXT-F-2017-C02",
+            "EXT-F-2017-C03",
+            "EXT-F-2017-C04",
+            "EXT-F-2017-C15",
+            "EXT-F-2017-C16",
+            "EXT-F-2017-C20"
+          ]
         },
         {
           "id": "EXT-F-2011-C17",
@@ -47622,6 +47937,61 @@
             "guest"
           ],
           "test_design_status": "unverified"
+        },
+        {
+          "id": "EXT-F-2011-C56",
+          "label": "Filter Vault workspace views",
+          "action": "Select favorites, recently opened, one-time passwords, trash, categories, or tags in the embedded workspace when each view is available.",
+          "source_anchor": "@ai-matrx/vault@0.1.11 source map VaultApp.tsx:241-253; Sidebar.tsx:86-101,144-178",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "test_design_status": "unverified"
+        },
+        {
+          "id": "EXT-F-2011-C57",
+          "label": "Sort Vault items",
+          "action": "Choose a visible item sort order and verify the ordered list for a controlled fixture.",
+          "source_anchor": "@ai-matrx/vault@0.1.11 source map VaultApp.tsx:400-508",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "test_design_status": "unverified"
+        },
+        {
+          "id": "EXT-F-2011-C58",
+          "label": "Open Vault item actions and panels",
+          "action": "Exercise capability-available favorite, share, move/copy, password history, activity, settings, and secure-link actions/panels using owned fixtures.",
+          "source_anchor": "@ai-matrx/vault@0.1.11 source map ItemPane.tsx:281-299",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "test_design_status": "unverified"
+        },
+        {
+          "id": "EXT-F-2011-C59",
+          "label": "Use whole-vault tools and browser devices",
+          "action": "Exercise available whole-vault import/export/backup and browser-device management actions; exclude native import/provider actions absent from extension host.",
+          "source_anchor": "@ai-matrx/vault@0.1.11 source map VaultApp.tsx:310-359,400-508; src/features/vault/VaultView.tsx:87-101",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "test_design_status": "unverified"
+        },
+        {
+          "id": "EXT-F-2011-C60",
+          "label": "Handle workspace loading, retry, empty, and inaccessible states",
+          "action": "Observe initial loading, controlled load failure and Try again, genuine empty state, and inaccessible item state without treating failure as empty.",
+          "source_anchor": "@ai-matrx/vault@0.1.11 source map VaultApp.tsx:280-287,461-465,505-508",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "test_design_status": "unverified"
         }
       ],
       "source_anchors": [
@@ -47632,7 +48002,11 @@
         "src/features/vault/usePanelAdmission.ts:1",
         "src/features/vault/VaultView.tsx",
         "src/features/vault/useVault.ts",
-        "src/features/vault/FillDeviceSetupCard.tsx"
+        "src/features/vault/FillDeviceSetupCard.tsx",
+        "@ai-matrx/vault@0.1.11 source map VaultApp.tsx:241-253,280-287,310-359,400-508",
+        "@ai-matrx/vault@0.1.11 source map Sidebar.tsx:86-101,144-178",
+        "@ai-matrx/vault@0.1.11 source map ItemPane.tsx:281-299",
+        "src/features/vault/VaultView.tsx:49-56,87-101"
       ],
       "dependency_class": "database",
       "wave": "B",
@@ -47653,9 +48027,8 @@
       "cases": [
         {
           "id": "EXT-F-2011-T01",
-          "title": "Vault sign-in gate and list",
+          "title": "Load and search embedded Vault workspace list",
           "modes": [
-            "guest",
             "member",
             "admin"
           ],
@@ -47663,18 +48036,13 @@
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
           "steps": [
-            "Exercise guest tab exclusion",
-            "Exercise sign-in prompt",
-            "Exercise refresh",
-            "Exercise search",
-            "Exercise mine/shared scopes"
+            "As member/admin, load the embedded Vault workspace and verify its visible list/loading state.",
+            "Search for a known controlled item and a unique no-match query; verify matching and empty search results.",
+            "Use the Vault selector and Show selector to choose All items, Personal, Shared with me, and an available organization; record unavailable choices as capability/entitlement-gated rather than presumed failures."
           ],
           "expected": [
-            "guest tab exclusion performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
-            "sign-in prompt performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
-            "refresh performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
-            "search performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
-            "mine/shared scopes performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
+            "List load and search correspond to the current embedded workspace UI.",
+            "Vault and Show selectors use their actual visible labels; no unsupported member/admin permission is inferred."
           ],
           "dimensions": [
             "warm",
@@ -47683,8 +48051,7 @@
           "control_ids": [
             "EXT-F-2011-C01",
             "EXT-F-2011-C03",
-            "EXT-F-2011-C04",
-            "EXT-F-2011-C05"
+            "EXT-F-2011-C04"
           ],
           "mapping_provenance": {
             "proposal": ".research/remaining-control-links-20261008.json",
@@ -47917,14 +48284,13 @@
         },
         {
           "id": "EXT-F-2011-T07",
-          "title": "Vault list can be freshly read after browser restart",
+          "title": "Vault workspace list reloads after browser restart",
           "modes": [
             "member",
             "admin"
           ],
           "control_ids": [
-            "EXT-F-2011-C01",
-            "EXT-F-2011-C04"
+            "EXT-F-2011-C01"
           ],
           "preconditions": [
             "Signed-in principal with explicitly selected organization and controlled Vault fixture; browser lifecycle harness records the replacement extension worker and sidepanel."
@@ -47932,13 +48298,12 @@
           "steps": [
             "Open Vault and observe its list before restarting the browser.",
             "Close the owned browser fully and start a replacement process against the same profile.",
-            "Reopen the extension sidepanel, navigate to Settings and then Vault after replacement binding.",
             "Observe the Vault items request and response initiated by the replacement sidepanel."
           ],
           "expected": [
             "Replacement process and extension contexts are distinct from the original run.",
             "A successful Vault list read occurs after replacement sidepanel binding, not only during startup.",
-            "Vault data is read without creating, editing, or deleting credential records."
+            "This case asserts the workspace list read after replacement binding; current-page Check again/Retry belongs to page-match lookup and is not counted here."
           ],
           "dimensions": [
             "cold-restart",
@@ -48109,6 +48474,189 @@
             "Return before approval and use I approved it; verify explicit pending/recoverable state. Complete the real approval and return to claim it.",
             "Verify enabled state after panel and extension reload; exercise expired/unapproved claim and the displayed password recovery path without logging codes."
           ]
+        },
+        {
+          "id": "EXT-F-2011-T12",
+          "title": "Vault workspace views and filters",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C56"
+          ],
+          "preconditions": [
+            "Use a receipt-bound extension build, signed-in authorized organization, owned controlled fixtures and record the actor/record capabilities before actions. This is source inventory only; all outcomes remain unverified."
+          ],
+          "steps": [
+            "Use owned fixtures to exercise favorites, recent, OTP, trash, category and tag views where source and entitlement make them available. All items, Personal, Shared with me and organization scope selection remain covered by T01. Record each unavailable facet separately."
+          ],
+          "expected": [
+            "Each available selector/view shows only its controlled matching fixtures; unavailable views are recorded as capability-gated, not passed."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "role",
+            "capability"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New workspace coverage; no native product run."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New workspace coverage; no native product run."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-2011-T13",
+          "title": "Sort controlled Vault items",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C57"
+          ],
+          "preconditions": [
+            "Use a receipt-bound extension build, signed-in authorized organization, owned controlled fixtures and record the actor/record capabilities before actions. This is source inventory only; all outcomes remain unverified."
+          ],
+          "steps": [
+            "Use at least three owned items with distinct known sort keys; select each rendered sort choice and compare visible order with the fixture manifest."
+          ],
+          "expected": [
+            "Every available sort choice produces its specified order; no permission assumption is made."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "role",
+            "capability"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New workspace coverage; no native product run."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New workspace coverage; no native product run."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-2011-T14",
+          "title": "Capability-gated Vault item actions and panels",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C58",
+            "EXT-F-2011-C23",
+            "EXT-F-2011-C24"
+          ],
+          "preconditions": [
+            "Use a receipt-bound extension build, signed-in authorized organization, owned controlled fixtures and record the actor/record capabilities before actions. This is source inventory only; all outcomes remain unverified."
+          ],
+          "steps": [
+            "Use separately owned item fixtures to expand and collapse a login row, then record which additional item action capabilities are available to this actor and record. Exercise only available favorite, share, move/copy, password history, activity, settings and secure-link panels; verify each displayed result or refusal. Login metadata editing, saving/canceling, encrypted-field reveal/copy and item removal remain covered by T03."
+          ],
+          "expected": [
+            "Each action is claimed only for the actor/record where the capability is present; member/admin reachability alone does not imply permission."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "role",
+            "capability"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New workspace coverage; no native product run."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New workspace coverage; no native product run."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-2011-T15",
+          "title": "Vault whole-vault tools and browser devices",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C59"
+          ],
+          "preconditions": [
+            "Use a receipt-bound extension build, signed-in authorized organization, owned controlled fixtures and record the actor/record capabilities before actions. This is source inventory only; all outcomes remain unverified."
+          ],
+          "steps": [
+            "Use a disposable owned Vault fixture and an already approved device fixture; record each whole-vault tool’s visible availability and required capability. Exercise import/export/backup and available browser-device management; verify resulting file/device state. Browser filling enrollment and passkey approval remain covered by T10 and T11. Do not exercise native import-passkeys or System AutoFill because the extension host does not provide host.nativeImport/host.nativeProvider."
+          ],
+          "expected": [
+            "Only source-present, authorized whole-vault and browser-device actions are assessed; each export/backup artifact and device change is identified. Browser filling enrollment and approval outcomes stay with T10 and T11. Excluded host-native actions are not asserted."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "role",
+            "capability"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New workspace coverage; no native product run."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New workspace coverage; no native product run."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-2011-T16",
+          "title": "Vault list loading, error retry, empty and inaccessible states",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C01",
+            "EXT-F-2011-C60"
+          ],
+          "preconditions": [
+            "Use a receipt-bound extension build, signed-in authorized organization, owned controlled fixtures and record the actor/record capabilities before actions. This is source inventory only; all outcomes remain unverified."
+          ],
+          "steps": [
+            "With separate controlled fixtures, observe initial loading, inject a named one-shot list-read refusal, use Try again after removing it, open a genuine empty-vault fixture, and open a known inaccessible-item fixture. Preserve separate expected results for each state."
+          ],
+          "expected": [
+            "Loading, failed read, retry, genuine empty and inaccessible item states remain distinguishable; a failed read is never counted as empty success."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "role",
+            "capability"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New workspace coverage; no native product run."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New workspace coverage; no native product run."
+            }
+          }
         }
       ],
       "cells": {
@@ -48136,7 +48684,8 @@
       "inventory_status": "source-complete",
       "missing_items": [],
       "readiness_gaps": [
-        "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel."
+        "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.",
+        "Shared embedded Vault workspace source census is expanded by C56-C60/T12-T16; all new controls/cases and capability-gated outcomes remain unverified. Source rejection in hasRealUserToken has no rejection recovery in inspected code; retain as source-derived concern, not a confirmed runtime defect."
       ],
       "runtime_evidence": [
         {
@@ -48159,7 +48708,27 @@
           ],
           "limits": "Maskedtitlecandidatecountzero is not globalcredentialabsence, memberlogin, current-site readiness, content correctness, reload, create/edit/use or fullVaulthealth. All featurecellsremainunverified."
         }
-      ]
+      ],
+      "source_control_crosswalk": {
+        "vault_selector_scope_views": "C04,C56 -> T01,T12; members/admins only and each option availability recorded per actor/entitlement",
+        "sorting": "C57 -> T13",
+        "item_panels_actions": "C58 plus decomposed login/item controls C17-C44 -> T14/T03; no duplicate broad legacy behavior claims",
+        "whole_vault_import_export_backup_devices": "C59 -> T15; host.nativeImport and host.nativeProvider actions excluded; credential enrollment C53/C54 remain T10/T11",
+        "list_load_error_retry_empty_inaccessible": "C01,C60 -> T01,T07,T16; Check again/Retry for current-page match lookup is separate and not claimed by list tests",
+        "historical_aliases": {
+          "C02": "not rendered in embedded extension VaultApp; excluded from current extension coverage",
+          "C05": "guest fallback unreachable through normal tab gate; guest boundary is T05/C55",
+          "C06": "pending capture decomposed as C45-C50/T04",
+          "C09": "C23-C24",
+          "C10": "C40-C42",
+          "C11": "C34-C35",
+          "C12": "C36",
+          "C13": "C37-C39",
+          "C14": "C43-C44",
+          "C15": "C17-C22 plus C25-C29",
+          "C16": "EXT-F-2017 generator controls/T01-T03"
+        }
+      }
     },
     {
       "id": "EXT-F-2012",
@@ -93543,7 +94112,8 @@
     "2026-10-03 current-source Settings delta reconciles EXT-F-1003 against HEAD 6f4e9d0. Added explicit account identity, organization archive-filter visibility/behavior, settled desktop status/health and admin permission retry controls; refined misleading debugger toggle and role-denial procedures. All additions remain unverified; this does not close the global source census.",
     "Settings source census is reconciled through source SHA 6f4e9d0; guest/member/admin controls now have explicit readiness procedures. Runtime additions and failure-injection paths remain unverified. Global scope_complete remains false.",
     "Settings follow-up: T60 now requires visible actionable clipboard failure feedback and no false copied-success state. Current console-only error handling is retained as unverified source lead EXT-L-SETTINGS-002, not a runtime defect or pass.",
-    "Source snapshot636d0085 includes the independently reviewed six-file WebMCP delta since d6678732; see .research/inventory-source-delta-check-20261007.json. This does not re-census the historical baseline or establish native completeness; scope_complete and all feature/case/runtime data are unchanged."
+    "Source snapshot636d0085 includes the independently reviewed six-file WebMCP delta since d6678732; see .research/inventory-source-delta-check-20261007.json. This does not re-census the historical baseline or establish native completeness; scope_complete and all feature/case/runtime data are unchanged.",
+    "2026-10-18 source-to-case reconciliation proposal from ignored stabilization audits. Reconciled against current checkout e4b5e32b5e6936e302905ec327b3ab60f858c792; source-only additions remain unverified. Existing result cells and bounded historical partial results are preserved. See node_modules/.cache/stabilization-pending-evidence-oct18/inventory-patch-verification-20261018.json."
   ],
   "source_review": "docs/stabilization/reports/takeover-inventory-reconciled.json"
 }

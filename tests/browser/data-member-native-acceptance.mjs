@@ -317,6 +317,9 @@ try {
         repo: REPO,
         memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
         allowLadderOrganization: true,
+        onAuthDiagnostic: (value) => {
+          report.auth_diagnostic = { ...report.auth_diagnostic, ...value };
+        },
         onStage: (value) => {
           report.auth_stage = value;
         },

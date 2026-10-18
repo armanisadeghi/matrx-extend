@@ -6,7 +6,7 @@
  */
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
-import { lstat, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { lstat, readFile, stat, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -18,6 +18,12 @@ import {
   requireMemberChatSequence,
   requireMemberOrganizationBinding,
 } from './member-chat-completion-oracle.mjs';
+import {
+  captureReviewerPanel as capture,
+  recordReviewerFailure,
+  runMemberAnswerProofBoundary,
+  writeReviewerReport,
+} from './member-chat-visible-proof.mjs';
 import {
   authenticatedWebIdentity,
   observeCanonicalAdminCheck,
@@ -56,19 +62,6 @@ const INTERACTIVE_REVIEWER_EMAIL = process.env.MATRX_REVIEWER_EMAIL?.trim() || n
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const DEMO_PATH = '/matrx-extend-demo';
 const QUESTION = 'What are the three workflow stages on this page?';
-const SAFE_FAILURE_CODES = new Set([
-  'native_sidepanel_release_receipt_missing',
-  'native_sidepanel_release_receipt_refused',
-  'native_sidepanel_override_provenance_refused',
-  'native_sidepanel_local_build_receipt_missing',
-  'native_sidepanel_local_build_provenance_refused',
-  'approval_action_completion_not_observed',
-  'reviewer_extension_identity_unverified',
-  'reviewer_canonical_role_unverified',
-  'reviewer_composer_input_unverified',
-  'reviewer_chat_terminal_answer_unverified',
-  'reviewer_chat_visible_answer_unverified',
-]);
 const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -231,13 +224,6 @@ async function memberPanelIdentity(panel) {
       isAdmin: stored['matrx.user.isAdmin'] === true ? true : stored['matrx.user.isAdmin'] === false ? false : null,
     })))()`,
   );
-}
-
-async function capture(panel, artifacts, label) {
-  const { data } = await panel.send('Page.captureScreenshot', { format: 'png' });
-  const file = join(artifacts, `${label}.png`);
-  await writeFile(file, Buffer.from(data, 'base64'), { mode: 0o600 });
-  return file;
 }
 
 /** A panel-only Store candidate; functional acceptance is complete before resizing. */
@@ -1660,7 +1646,22 @@ try {
           followup_completed_reply_count: followup.completedReplyCount,
           same_organization: true,
         };
-        await requireMemberAnswerScreenshot(panel, ['Understand']);
+        await runMemberAnswerProofBoundary({
+          panel,
+          expectedTerms: ['Understand'],
+          report,
+          artifacts,
+          output: OUTPUT,
+          evaluateProof: (target, terms, phase) => {
+            const sample = `(${prepareMemberAnswerScreenshot.toString()})(${JSON.stringify(terms)}, ${JSON.stringify(phase)})`;
+            return evaluate(
+              target,
+              phase === 'next_frame'
+                ? `new Promise((resolve) => requestAnimationFrame(() => resolve(${sample})))`
+                : sample,
+            );
+          },
+        });
         report.screenshots.result = await capture(panel, artifacts, 'reviewer-chat-result');
         report.screenshots.store_candidate_640x400 = await captureStoreCandidate(panel, artifacts, [
           'Understand',
@@ -1689,14 +1690,9 @@ try {
   report.build.extension_id = run.extensionId;
   report.status = 'pass';
 } catch (error) {
-  report.failure_stage = stage;
-  report.failure_code = SAFE_FAILURE_CODES.has(error?.message)
-    ? error.message
-    : 'unclassified_failure';
-  report.status = 'unverified';
+  recordReviewerFailure(report, stage, error);
 }
-await mkdir(dirname(OUTPUT), { recursive: true, mode: 0o700 });
-await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
+await writeReviewerReport(OUTPUT, report);
 process.stdout.write(
   `${report.status.toUpperCase()} ${UNINTERRUPTED ? 'reviewer_uninterrupted' : 'reviewer_chat_store'} ${OUTPUT}\n`,
 );

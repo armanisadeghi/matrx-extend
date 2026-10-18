@@ -1,12 +1,30 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { runInNewContext } from 'node:vm';
 import {
   classifyGuestTurn,
   classifyPackageGuestTurn,
+  containsOrderedWholeTerms,
   createGuestComposerProbe,
   createGuestStreamCollector,
   readGuestReactDraft,
 } from './guest-chat-completion-oracle.mjs';
+import * as guestChatOracle from './guest-chat-completion-oracle.mjs';
+
+// Break caught: a rendered tool badge saying "Used" must not become the "Use" stage.
+test('browser-serializable stage matcher accepts whole words in order', () => {
+  const browserMatcher = runInNewContext(`(${containsOrderedWholeTerms.toString()})`);
+  const stages = ['Capture', 'Understand', 'Use'];
+  assert.equal(browserMatcher('Used 1 tool. capture, understand; USE.', stages), true);
+  assert.equal(browserMatcher('Use, Capture; Understand.', stages), false);
+  assert.equal(browserMatcher('Recapture, Understand; Used.', stages), false);
+  assert.equal(browserMatcher('Capture, Understand; Used 1 tool.', stages), false);
+  assert.equal(browserMatcher('Capture Understand Usefulness', stages), false);
+  assert.equal(browserMatcher('Capture Understand Use_value', stages), false);
+  assert.equal(browserMatcher('Capture Understand Use\u0301', stages), false);
+  assert.equal(browserMatcher('Capture Understand Use\u203Fvalue', stages), false);
+  assert.equal(browserMatcher('**Capture** → Understand — use.', stages), true);
+});
 
 // Break caught: CDP text insertion can lose focus, emit an input event that
 // React later clears, or leave a nonempty composer with Send still disabled.
@@ -65,6 +83,55 @@ test('composer probe distinguishes focus loss, cleared input, and disabled send 
 });
 
 const expectedTerms = ['C82F4A', 'Capture', 'Understand', 'Use'];
+
+test('serialized browser collector records URL components with its injected classifier', () => {
+  const browserFactory = runInNewContext(`(${createGuestStreamCollector.toString()})`, { URL });
+  const browserClassifier = runInNewContext(
+    `(${guestChatOracle.classifyFixtureUrlMatch.toString()})`,
+    { URL },
+  );
+  const collector = browserFactory({
+    fixtureTabId: 21,
+    fixtureUrl: 'https://example.invalid/article?case=private#fixture-secret',
+    classifyUrlMatch: browserClassifier,
+  });
+  collector.accept({
+    __matrx: true,
+    kind: 'tool:timeline-event',
+    payload: {
+      callId: 'fixture-call',
+      toolName: 'get_page_text',
+      phase: 'started',
+      args: { tab_id: '21' },
+    },
+  });
+  collector.accept({
+    __matrx: true,
+    kind: 'tool:timeline-event',
+    payload: {
+      callId: 'fixture-call',
+      toolName: 'get_page_text',
+      phase: 'completed',
+      output: { url: 'https://example.invalid/article?case=private' },
+    },
+  });
+  const snapshot = JSON.parse(JSON.stringify(collector.snapshot()));
+  const event = snapshot.toolEvents.at(-1);
+  assert.equal(event.resultUrlMatchesFixture, false);
+  assert.deepEqual(event.resultUrlComponents, {
+    exactMatch: false,
+    originMatch: true,
+    pathnameMatch: true,
+    searchMatch: true,
+    hashMatch: false,
+    expectedHasSearch: true,
+    actualHasSearch: true,
+    expectedHasHash: true,
+    actualHasHash: false,
+  });
+  assert.doesNotMatch(JSON.stringify(snapshot), /example\.invalid|private|fixture-secret/);
+});
+
 const suspended = {
   done: true,
   delegated: true,
@@ -217,6 +284,17 @@ test('package turn requires terminal wire success and a newly settled grounded a
     classify([request], { ...state, latestReplyText: 'Capture Understand Use' }),
     'terminal_wrong_answer',
   );
+  assert.equal(
+    classify([request], {
+      ...state,
+      latestReplyText: 'Used 1 tool. OPEN-73: capture, understand; USE.',
+    }),
+    'terminal_answer',
+  );
+  assert.equal(
+    classify([request], { ...state, latestReplyText: 'OPEN-73: Capture Understand Use_value' }),
+    'terminal_wrong_answer',
+  );
   assert.equal(classify([request]), 'terminal_answer');
 });
 
@@ -260,7 +338,7 @@ test('tool diagnostics retain target and marker booleans without tool content', 
       toolName: 'get_page_text',
       phase: 'completed',
       output: {
-        url: 'https://www.aimatrx.com/matrx-extend-demo#fixture',
+        url: 'https://www.aimatrx.com/matrx-extend-demo',
         text: 'OPEN-73 Fixture heading NEVER-STORE',
       },
     },
@@ -270,13 +348,69 @@ test('tool diagnostics retain target and marker booleans without tool content', 
     name: 'get_page_text',
     phase: 'completed',
     target: 'fixture_tab',
-    resultUrlMatchesFixture: true,
+    resultUrlMatchesFixture: false,
+    resultUrlComponents: {
+      exactMatch: false,
+      originMatch: true,
+      pathnameMatch: true,
+      searchMatch: true,
+      hashMatch: false,
+      expectedHasSearch: false,
+      actualHasSearch: false,
+      expectedHasHash: true,
+      actualHasHash: false,
+    },
     resultContainsOpeningCode: true,
     resultContainsFollowupCode: false,
     resultContainsFixtureHeading: true,
   });
   assert.equal(JSON.stringify(collector.snapshot()).includes('NEVER-STORE'), false);
   assert.equal(JSON.stringify(collector.snapshot()).includes('OPEN-73'), false);
+});
+
+test('tool URL receipt separates path and search drift without retaining values', () => {
+  const collector = createGuestStreamCollector({
+    fixtureTabId: 21,
+    fixtureUrl: 'https://example.invalid/owned/article?case=private#fixture-secret',
+  });
+  collector.accept({
+    __matrx: true,
+    kind: 'tool:timeline-event',
+    payload: {
+      callId: 'fixture-call',
+      toolName: 'get_page_text',
+      phase: 'started',
+      args: { tab_id: '21' },
+    },
+  });
+  collector.accept({
+    __matrx: true,
+    kind: 'tool:timeline-event',
+    payload: {
+      callId: 'fixture-call',
+      toolName: 'get_page_text',
+      phase: 'completed',
+      output: { url: 'https://example.invalid/other/article?case=changed#other-secret' },
+    },
+  });
+  const snapshot = JSON.parse(JSON.stringify(collector.snapshot()));
+  const event = snapshot.toolEvents.at(-1);
+  assert.equal(event.resultUrlMatchesFixture, false);
+  assert.deepEqual(event.resultUrlComponents, {
+    exactMatch: false,
+    originMatch: true,
+    pathnameMatch: false,
+    searchMatch: false,
+    hashMatch: false,
+    expectedHasSearch: true,
+    actualHasSearch: true,
+    expectedHasHash: true,
+    actualHasHash: true,
+  });
+  assert.doesNotMatch(
+    JSON.stringify(snapshot),
+    /example\.invalid|private|fixture-secret|other-secret/,
+  );
 });
 
 test('collector keeps failed user-request completion terminal even after end complete', () => {
@@ -381,6 +515,17 @@ test('opening answer must list the page stages in order', () => {
   assert.equal(
     classifyGuestTurn({ ...common, assistantText: 'C82F4A: Capture, Understand, Use.' }),
     'terminal_answer',
+  );
+  assert.equal(
+    classifyGuestTurn({
+      ...common,
+      assistantText: 'Used 1 tool. C82F4A: capture, understand; USE.',
+    }),
+    'terminal_answer',
+  );
+  assert.equal(
+    classifyGuestTurn({ ...common, assistantText: 'C82F4A: Used, Capture, Understand.' }),
+    'terminal_wrong_answer',
   );
 });
 
