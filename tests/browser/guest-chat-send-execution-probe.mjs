@@ -26,6 +26,7 @@ export function createGuestSendExecutionProbe(composer, button, events = null) {
   let pendingObserved = false;
   let windowErrors = 0;
   let unhandledRejections = 0;
+  let stopped = false;
   // Do not read any event properties: error objects, messages and URLs may contain private data.
   const onError = () => {
     if (observing) windowErrors += 1;
@@ -70,18 +71,18 @@ export function createGuestSendExecutionProbe(composer, button, events = null) {
   });
   return {
     begin() {
+      if (stopped) return;
       observing = true;
     },
     snapshot,
-    stopSubscription() {
-      unsubscribe?.();
-      return snapshot();
-    },
     stop() {
-      observing = false;
-      unsubscribe?.();
-      events?.removeEventListener('error', onError);
-      events?.removeEventListener('unhandledrejection', onRejection);
+      if (!stopped) {
+        stopped = true;
+        observing = false;
+        unsubscribe?.();
+        events?.removeEventListener('error', onError);
+        events?.removeEventListener('unhandledrejection', onRejection);
+      }
       return snapshot();
     },
   };
