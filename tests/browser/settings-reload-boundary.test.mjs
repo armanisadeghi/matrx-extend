@@ -329,6 +329,14 @@ test('failed native Settings panel reload serializes the owned document and cont
       visible: true,
       runtimeIdMatches: true,
       rootCount: 1,
+      rootChildElementCount: 0,
+      reactRootAttached: false,
+      hydrationStateObservable: false,
+      tabTriggerCount: 0,
+      activePaneCount: 0,
+      loadingIndicatorCount: 0,
+      renderErrorPresent: false,
+      serviceWorkerContextCount: 0,
       settingsTabCount: 0,
       contextQueryAvailable: true,
       contextQueryFailed: false,
@@ -474,4 +482,107 @@ test('actual Settings guest catch persists safe extension reload failure evidenc
     JSON.stringify(second),
     /private unrelated error|private transport class|another private URL/,
   );
+});
+
+test('reacquisition diagnostic bounds populated render and worker observations without leaking content', async () => {
+  const selectors = {
+    '#app': Array(125).fill({
+      childElementCount: 250,
+      __reactContainer$private: { secret: 'private-value' },
+    }),
+    'button[role="tab"][title="Settings"]': Array(130).fill({}),
+    'button[role="tab"]': Array(140).fill({}),
+    '[role="tabpanel"][data-state="active"]': [{}],
+    '#app .animate-spin, #app .animate-pulse': [{}, {}],
+    '#app p': [
+      { textContent: 'private account and error details' },
+      { textContent: 'The panel hit a render error' },
+    ],
+  };
+  const contextQueries = [];
+  const panel = {
+    async send(method, params) {
+      if (method !== 'Runtime.evaluate') throw new Error('private transport failure');
+      return {
+        result: {
+          value: await runInNewContext(params.expression, {
+            document: {
+              URL: 'chrome-extension://owned/sidepanel.html',
+              readyState: 'complete',
+              visibilityState: 'visible',
+              querySelectorAll: (selector) => selectors[selector] ?? [],
+            },
+            chrome: {
+              runtime: {
+                id: 'owned',
+                getContexts: async (query) => {
+                  contextQueries.push(JSON.parse(JSON.stringify(query)));
+                  return [
+                    { contextType: 'BACKGROUND', contextId: 'private-context-id' },
+                    ...Array(135).fill({
+                      contextType: 'SIDE_PANEL',
+                      documentUrl: 'chrome-extension://owned/sidepanel.html',
+                      tabId: -1,
+                    }),
+                  ];
+                },
+              },
+            },
+          }),
+        },
+      };
+    },
+  };
+  const result = await observeSettingsReacquisition(panel, 'owned');
+  assert.deepEqual(contextQueries, [{ contextTypes: ['SIDE_PANEL', 'BACKGROUND'] }]);
+  const renderer = result.renderer;
+  assert.equal(renderer.rootCount, 100);
+  assert.equal(renderer.settingsTabCount, 100);
+  assert.equal(renderer.exactSidePanelContextCount, 100);
+  assert.equal(renderer.rootChildElementCount, 100);
+  assert.equal(renderer.tabTriggerCount, 100);
+  assert.equal(renderer.reactRootAttached, true);
+  assert.equal(renderer.activePaneCount, 1);
+  assert.equal(renderer.loadingIndicatorCount, 2);
+  assert.equal(renderer.renderErrorPresent, true);
+  assert.equal(renderer.serviceWorkerContextCount, 1);
+  assert.equal(renderer.hydrationStateObservable, false);
+  assert.equal(JSON.stringify(result).includes('private'), false);
+});
+
+test('reacquisition reports unavailable worker observation separately from zero contexts', async () => {
+  for (const available of [true, false]) {
+    const panel = {
+      async send(method, params) {
+        if (method !== 'Runtime.evaluate') throw new Error('unavailable');
+        return {
+          result: {
+            value: await runInNewContext(params.expression, {
+              document: {
+                URL: '',
+                readyState: 'complete',
+                visibilityState: 'hidden',
+                querySelectorAll: () => [],
+              },
+              chrome: {
+                runtime: available
+                  ? {
+                      getContexts: async () => {
+                        throw new Error('private');
+                      },
+                    }
+                  : {},
+              },
+            }),
+          },
+        };
+      },
+    };
+    const { renderer } = await observeSettingsReacquisition(panel, 'owned');
+    assert.equal(renderer.sampled, true);
+    assert.equal(renderer.contextQueryAvailable, available);
+    assert.equal(renderer.contextQueryFailed, available);
+    assert.equal(renderer.serviceWorkerContextCount, null);
+    assert.equal(renderer.reactRootAttached, false);
+  }
 });
