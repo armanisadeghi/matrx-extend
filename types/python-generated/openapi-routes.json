@@ -1235,6 +1235,9 @@
  "/audienceful/public/status": {
   "get": []
  },
+ "/audio/grant/transcribe": {
+  "post": []
+ },
  "/audio/recording-journal": {
   "get": []
  },
