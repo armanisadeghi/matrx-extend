@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-18 20:52 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-18T20:03:46.716563+00:00. 207 features · 826 cases · 1419 controls · 243 linked defect records.
+Generated 2026-10-18 21:14 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-18T21:14:29.468514+00:00. 207 features · 827 cases · 1420 controls · 243 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1333** — Pass: 100 · Partial: 97 · Fail: 2 · Unverified: 1132 · N/A: 2.
-Unverified splits into **178 explicitly marked unverified** and **954 with no result record**.
+Applicable case-by-role slots: **1334** — Pass: 100 · Partial: 97 · Fail: 2 · Unverified: 1133 · N/A: 2.
+Unverified splits into **178 explicitly marked unverified** and **955 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -17,7 +17,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 1, fail 0, unverified 14, n/a 0 | 6 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 8, partial 3, fail 0, unverified 23, n/a 0 | 10 |
-| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 12, n/a 0 | 2 |
+| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 13, n/a 0 | 2 |
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 22, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
@@ -202,7 +202,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Validate and publish exact release candidate (EXT-F-0003)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 13. **Controls:** 11.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 14. **Controls:** 12.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0204, EXT-D-0210
 
@@ -223,6 +223,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-0003-T11 Main verification survives subsequent evidence pushes | Pass | Pass | Pass | EXT-F-0003-C11 |
 | EXT-F-0003-T12 Store package refuses the rejected remote script loader and preserves PDF output | Unverified | Unverified | Unverified | EXT-F-0003-C13 |
 | EXT-F-0003-T13 Exact-source CI Typecheck, Lint and WXT build gates | Unverified | Unverified | Unverified | EXT-F-0003-C14, EXT-F-0003-C15 |
+| EXT-F-0003-T14 Exact Store guest public-demo reviewer walkthrough | Unverified | N/A | N/A | EXT-F-0003-C16 |
 
 **Recorded case details and evidence:**
 
@@ -278,7 +279,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-0003-T11 · admin: Pass. Shared auth-independent CI infrastructure: active main37102258819 and subsequent37102380063 finished successfully despite intervening pushes. Does not certify product or release gate health.
   Evidence / build / date recorded: main-ci-continuity-20261003, ['docs/stabilization/defects/EXT-D-0092.json', '.research/guarded-phases-peer.json']
 
-**Other remaining work:** Real successful release proven; exhaustive operational feature acceptance still needs per-case evidence reconciliation.; T08 CI lint parity requires the root-owned guarded red/green release fixture before full feature cells can pass.
+**Other remaining work:** Real successful release proven; exhaustive operational feature acceptance still needs per-case evidence reconciliation.; T08 CI lint parity requires the root-owned guarded red/green release fixture before full feature cells can pass.; EXT-F-0003-T14 requires actual exact-candidate native public-demo walkthrough evidence; source implementation and source reviews do not close this gap.
 
 
 ## Generated API request, credential and result transport
