@@ -712,3 +712,89 @@ test('member source proof admits immutable guest route and refuses every subsequ
   writeFileSync(join(cwd, 'scripts/unreviewed-operational.mjs'), 'export {};');
   refusal('additional untracked script refuses');
 });
+
+// Break caught: independently reviewed .537 metadata drift blocks its frozen ZIP test.
+// Real Git history also forces later changes (including reversions) to remain refused.
+test('reviewed candidate admits immutable tuples but refuses every later or pending mutation', (t) => {
+  const source = '1b612c67410576b5d077fe20bee4fd33455d987d';
+  const reviewed = 'bffebad8ab1684b7fa23c0cd68c89805cbb87385';
+  const cwd = mkdtempSync(join(tmpdir(), 'member-candidate-drift-'));
+  t.after(() => rmSync(cwd, { recursive: true, force: true }));
+  const repository = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+    encoding: 'utf8',
+  }).trim();
+  const git = (...args) =>
+    execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  git('clone', '--shared', '--no-checkout', repository, '.');
+  const paths = [
+    'pnpm-lock.yaml',
+    '_conflicts/README.md',
+    '_conflicts/2026-10-17-234541/pnpm-lock.yaml.held',
+    'tests/browser/vault-package-panel-walk.mjs',
+    'tests/browser/vault-walk-cleanup.mjs',
+  ];
+  git('sparse-checkout', 'set', '--no-cone', ...paths.map((path) => `/${path}`));
+  git('checkout', '--detach', reviewed);
+  const moduleUrl = new URL('./hosted-release-member-admission.mjs', import.meta.url).href;
+  const prove = (candidate = source) =>
+    spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `import { proveSource } from ${JSON.stringify(moduleUrl)}; console.log(JSON.stringify(proveSource(${JSON.stringify(candidate)}, ${JSON.stringify(git('rev-parse', 'HEAD'))})));`,
+      ],
+      { cwd, encoding: 'utf8' },
+    );
+  const baseline = prove();
+  assert.equal(baseline.status, 0, baseline.stderr);
+  const evidence = JSON.parse(baseline.stdout);
+  assert.equal(evidence.scope, 'frozen-release-candidate-test');
+  assert.equal(evidence.storeEligibility, false);
+  assert.equal(evidence.reviewedChanges.length, 15);
+  assert.equal(evidence.workflowSha, reviewed);
+  const generic = prove(reviewed);
+  assert.equal(generic.status, 0, generic.stderr);
+  assert.equal(JSON.parse(generic.stdout).scope, 'frozen-release-test');
+  assert.equal(JSON.parse(generic.stdout).storeEligibility, false);
+  const refuse = () => {
+    const result = prove();
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /release_member_product_changed/);
+  };
+  const commit = () => {
+    git(
+      '-c',
+      'user.name=Admission guard',
+      '-c',
+      'user.email=guard@localhost',
+      'commit',
+      '-qam',
+      'candidate drift mutation',
+    );
+    return git('rev-parse', 'HEAD');
+  };
+  for (const path of paths) {
+    const original = readFileSync(join(cwd, path));
+    writeFileSync(join(cwd, path), Buffer.concat([original, Buffer.from(' ')]));
+    refuse();
+    git('add', path);
+    refuse();
+    const changed = commit();
+    refuse();
+    git('revert', '--no-commit', changed);
+    commit();
+    refuse();
+    git('checkout', '--detach', reviewed);
+  }
+  mkdirSync(join(cwd, 'src'), { recursive: true });
+  writeFileSync(join(cwd, 'src/candidate-product.js'), 'export const changed = true;');
+  refuse();
+  git('add', '--sparse', 'src/candidate-product.js');
+  commit();
+  refuse();
+  git('checkout', '--detach', reviewed);
+  const otherCandidate = prove('a9e9a5913adc6ce4a2c24a3ff60cd86cb3bce69c');
+  assert.notEqual(otherCandidate.status, 0, 'reviewed tuples are candidate-scoped');
+  assert.match(otherCandidate.stderr, /release_member_product_changed/);
+});
