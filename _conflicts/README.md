@@ -23,7 +23,6 @@ agent -> Needs Arman) with ` — <question> — <what was checked> — <who>` ad
 Its files stay as they are.
 
 ## Held files
-- _conflicts/2026-10-17-234541/pnpm-lock.yaml.held — LOCAL latest 2026-10-17 23:44; GITHUB latest 2026-10-17 23:38; LOCAL lacks 0 of GITHUB's 88 new lines; GITHUB lacks 8 of LOCAL's 96 new lines; recover: git show 7aa553320e:'pnpm-lock.yaml' / 1b612c6741:'pnpm-lock.yaml'
 
 ## Needs a manager
 
@@ -36,3 +35,4 @@ Its files stay as they are.
 ## Resolution log
 
 - 2026-10-15 — Restored LOCAL BroadcastChannel read/missing telemetry forwarding; retained GITHUB lazy required-credential getters (superseding LOCAL eager bootstrap fallback), live boot refresh, and current config helpers. Focused forwarding/bootstrap tests: 3 passed.
+- 2026-10-18 — Claude resolver kept the live lockfile for `_conflicts/2026-10-17-234541/pnpm-lock.yaml.held`: LOCAL (15d9b71630, @ai-matrx bumps to npm latest) is byte-identical to live, which already adopted it. Verified `pnpm install --frozen-lockfile --lockfile-only` exit 0; `check-matrx-packages.mjs` 25 packages at npm latest exactly once.
