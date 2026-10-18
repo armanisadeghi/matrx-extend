@@ -33,9 +33,11 @@ cd "$SANDBOX/checkout"
 git config user.name test; git config user.email test@test; git config core.hooksPath /dev/null
 cp "$SCRIPT_UNDER_TEST" release.sh
 cp "$HARNESS_ROOT/ship.sh" ship.sh
+cp "$HARNESS_ROOT/scripts/release-lock-conflict.mjs" scripts-release-lock-conflict.mjs
 printf '{\n  "name": "matrx-extend",\n  "version": "0.1.0",\n  "private": true\n}\n' > package.json
 printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
 mkdir -p scripts
+mv scripts-release-lock-conflict.mjs scripts/release-lock-conflict.mjs
 cp "$HARNESS_ROOT/scripts/release-snapshot-dependencies.sh" "$HARNESS_ROOT/scripts/release-owner-lock.sh" scripts/
 mkdir -p types; echo "old catalog" > types/tool-catalog.md
 echo "shared" > shared.txt
@@ -114,6 +116,12 @@ cat > "$SANDBOX/bin/pnpm" <<STUB
 #!/usr/bin/env bash
 echo "\$*" >> "$SANDBOX/pnpm-calls"
 case " \$* " in
+  *" sync:matrx-packages "*)
+    if [ -f "$SANDBOX/lock-race" ]; then
+      latest=\$(cat "$SANDBOX/lock-latest" 2>/dev/null || echo 197)
+      sed -i.bak "s/0\\.86\\.[0-9]*/0.86.\$latest/g" pnpm-lock.yaml
+      rm -f pnpm-lock.yaml.bak
+    fi ;;
   *" install --frozen-lockfile --package-import-method=copy "*)
     mkdir -p node_modules/.bin
     # The fake installer supplies its diagnostic tool in the private install.
@@ -771,6 +779,171 @@ git fetch -q --tags origin 2>/dev/null || true
 check "serial release still publishes after all gates" '[[ $SERIAL_PASSED_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/serial-passed-out" && [[ "$SERIAL_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
 check "serial release runs the mandatory checks" 'grep -q "check:matrx-packages" "$SANDBOX/serial-passed-calls" && grep -q " compile" "$SANDBOX/serial-passed-calls" && grep -q " lint" "$SANDBOX/serial-passed-calls" && grep -q "exec vitest run --maxWorkers=4" "$SANDBOX/serial-passed-calls" && grep -q "check:migrations:strict" "$SANDBOX/serial-passed-calls" && grep -q "catalog:tools:drift:strict" "$SANDBOX/serial-passed-calls"'
 check "serial release builds after the last check" 'unit_line=$(grep -n "exec vitest run --maxWorkers=4" "$SANDBOX/serial-passed-calls" | tail -1 | cut -d: -f1); build_line=$(grep -n "exec wxt zip" "$SANDBOX/serial-passed-calls" | head -1 | cut -d: -f1); [[ -n "$unit_line" && -n "$build_line" && $build_line -gt $unit_line ]]'
+
+# A hosted package refresh and a local package refresh can edit the same lock
+# record before final integration. Both contributor histories and independent
+# source edits must survive, and the candidate must be rebuilt on npm latest.
+git fetch -q origin
+git merge -q --ff-only origin/main
+cat > pnpm-lock.yaml <<'LOCK'
+lockfileVersion: 9.0
+importers:
+  .:
+    dependencies:
+      '@ai-matrx/design-system':
+        specifier: latest
+        version: 0.86.193
+packages:
+  '@ai-matrx/design-system@0.86.193':
+    resolution: {integrity: sha512-QUJD}
+snapshots:
+  '@ai-matrx/design-system@0.86.193': {}
+  '@ai-matrx/chat@0.8.1':
+    dependencies:
+      '@ai-matrx/design-system': 0.86.193(peer@1.0.0)
+LOCK
+git_q add pnpm-lock.yaml; git_q commit -m 'seed shared design system lock'; git_q push origin main
+git_q clone "$SANDBOX/origin.git" "$SANDBOX/lock-local"
+( cd "$SANDBOX/lock-local" && git config user.name test && git config user.email test@test \
+  && sed 's/0.86.193/0.86.194/' pnpm-lock.yaml > lock-next && mv lock-next pnpm-lock.yaml \
+  && echo local > local-feature.txt && git_q add -A && git_q commit -m 'local package and product work' )
+( cd "$SANDBOX/other" && git pull -q origin main \
+  && sed 's/0.86.193/0.86.195/' pnpm-lock.yaml > lock-next && mv lock-next pnpm-lock.yaml \
+  && echo remote > remote-feature.txt && git_q add -A && git_q commit -m 'remote package and product work' && git_q push origin main )
+LOCK_LOCAL_SHA="$(git -C "$SANDBOX/lock-local" rev-parse HEAD)"
+LOCK_REMOTE_SHA="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+LOCK_CHECKS_BEFORE="$(grep -c 'check:matrx-packages' "$SANDBOX/pnpm-calls")"
+touch "$SANDBOX/lock-race"
+set +e
+( cd "$SANDBOX/lock-local" && PATH="$SANDBOX/bin:$PATH" bash release.sh ) > "$SANDBOX/lock-race-out" 2>&1
+LOCK_RACE_STATUS=$?
+set -e
+rm -f "$SANDBOX/lock-race"
+git fetch -q origin
+check "lock race publishes after fresh gates" '[[ $LOCK_RACE_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/lock-race-out" && [[ $(( $(grep -c "check:matrx-packages" "$SANDBOX/pnpm-calls") - LOCK_CHECKS_BEFORE )) -ge 1 ]]'
+check "both package contributors remain ancestors" 'git --git-dir="$SANDBOX/origin.git" merge-base --is-ancestor "$LOCK_LOCAL_SHA" main && git --git-dir="$SANDBOX/origin.git" merge-base --is-ancestor "$LOCK_REMOTE_SHA" main'
+check "both independent source changes survive" 'git --git-dir="$SANDBOX/origin.git" show main:local-feature.txt | grep -q local && git --git-dir="$SANDBOX/origin.git" show main:remote-feature.txt | grep -q remote'
+check "released lock is latest, never either stale side" 'git --git-dir="$SANDBOX/origin.git" show main:pnpm-lock.yaml | grep -q "version: 0.86.197"'
+check "lock race tag names exactly the validated candidate" 'lock_tag=$(sed -n "s/^\(v[0-9.]*\)  pushed.*/\1/p" "$SANDBOX/lock-race-out"); [[ -n "$lock_tag" && "$(git --git-dir="$SANDBOX/origin.git" rev-parse "$lock_tag")" == "$(tail -1 "$SANDBOX/checked-shas")" ]]'
+
+# A product conflict alongside a lock conflict is never auto-selected.
+git_q clone "$SANDBOX/origin.git" "$SANDBOX/lock-product-conflict"
+( cd "$SANDBOX/lock-product-conflict" && git config user.name test && git config user.email test@test \
+  && sed 's/0.86.197/0.86.198/' pnpm-lock.yaml > lock-next && mv lock-next pnpm-lock.yaml \
+  && echo local-product > shared.txt && git_q add -A && git_q commit -m 'local product conflict' )
+( cd "$SANDBOX/other" && git pull -q origin main \
+  && sed 's/0.86.197/0.86.199/' pnpm-lock.yaml > lock-next && mv lock-next pnpm-lock.yaml \
+  && echo remote-product > shared.txt && git_q add -A && git_q commit -m 'remote product conflict' && git_q push origin main )
+PRODUCT_REFUSAL_REMOTE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+PRODUCT_REFUSAL_LOCAL="$(git -C "$SANDBOX/lock-product-conflict" rev-parse HEAD)"
+set +e
+( cd "$SANDBOX/lock-product-conflict" && PATH="$SANDBOX/bin:$PATH" bash release.sh ) > "$SANDBOX/lock-product-conflict-out" 2>&1
+PRODUCT_REFUSAL_STATUS=$?
+set -e
+check "product conflict refuses before tag or artifact" '[[ $PRODUCT_REFUSAL_STATUS -ne 0 && "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" == "$PRODUCT_REFUSAL_REMOTE" && "$(git -C "$SANDBOX/lock-product-conflict" rev-parse HEAD)" == "$PRODUCT_REFUSAL_LOCAL" ]] && grep -q "RELEASE STOPPED" "$SANDBOX/lock-product-conflict-out"'
+
+# Continuous lock churn gets only two reconciliation attempts. No stale
+# candidate tag or artifact is published when the third collision arrives.
+git_q clone "$SANDBOX/origin.git" "$SANDBOX/lock-endless"
+( cd "$SANDBOX/lock-endless" && git config user.name test && git config user.email test@test \
+  && sed 's/0.86.199/0.86.200/' pnpm-lock.yaml > lock-next && mv lock-next pnpm-lock.yaml \
+  && git_q add pnpm-lock.yaml && git_q commit -m 'local package refresh during churn' )
+( cd "$SANDBOX/other" && git pull -q origin main \
+  && sed 's/0.86.199/0.86.201/' pnpm-lock.yaml > lock-next && mv lock-next pnpm-lock.yaml \
+  && git_q add pnpm-lock.yaml && git_q commit -m 'remote package refresh during churn' && git_q push origin main )
+ENDLESS_LOCAL_SHA="$(git -C "$SANDBOX/lock-endless" rev-parse HEAD)"
+ENDLESS_REMOTE_SHA="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+ENDLESS_TAGS_BEFORE="$(git --git-dir="$SANDBOX/origin.git" tag -l 'v*' | wc -l)"
+cat > "$SANDBOX/advance-lock.sh" <<HOOK
+#!/usr/bin/env bash
+set -e
+next=\$(( \$(cat "$SANDBOX/remote-lock-version" 2>/dev/null || echo 201) + 1 ))
+echo "\$next" > "$SANDBOX/remote-lock-version"
+cd "$SANDBOX/other"
+git pull -q origin main
+sed "s/0\\.86\\.[0-9]*/0.86.\$next/g" pnpm-lock.yaml > lock-next
+mv lock-next pnpm-lock.yaml
+git add pnpm-lock.yaml
+git -c user.name=t -c user.email=t@t commit -qm "remote lock race \$next"
+git push -q origin main
+HOOK
+echo 220 > "$SANDBOX/lock-latest"
+touch "$SANDBOX/lock-race"
+set +e
+( cd "$SANDBOX/lock-endless" && RELEASE_TEST_BEFORE_PUSH="bash '$SANDBOX/advance-lock.sh'" \
+    PATH="$SANDBOX/bin:$PATH" bash release.sh ) > "$SANDBOX/lock-endless-out" 2>&1
+ENDLESS_STATUS=$?
+set -e
+rm -f "$SANDBOX/lock-race" "$SANDBOX/lock-latest"
+check "third lock conflict exhausts bounded reconciliation" '[[ $ENDLESS_STATUS -ne 0 ]] && grep -q "exceeded 2 reconciliations" "$SANDBOX/lock-endless-out" && [[ "$(cat "$SANDBOX/remote-lock-version")" == 203 ]]'
+check "exhaustion preserves both original contributor commits" 'git -C "$SANDBOX/lock-endless" merge-base --is-ancestor "$ENDLESS_LOCAL_SHA" HEAD && git -C "$SANDBOX/lock-endless" merge-base --is-ancestor "$ENDLESS_REMOTE_SHA" HEAD'
+check "exhaustion leaves remote untagged and without release artifacts" '[[ "$(git --git-dir="$SANDBOX/origin.git" tag -l "v*" | wc -l)" == "$ENDLESS_TAGS_BEFORE" && ! -e "$SANDBOX/lock-endless/.output/release-receipt.json" ]]'
+
+# A contributor can have lockfile work beyond the shared-package records.
+# That data must remain untouched even when the only textual conflict is an
+# @ai-matrx version; the release refuses rather than selecting remote's lock.
+git_q clone "$SANDBOX/origin.git" "$SANDBOX/lock-extra-data"
+( cd "$SANDBOX/lock-extra-data" && git config user.name test && git config user.email test@test \
+  && sed 's/version: 0.86.203/version: 0.86.204/' pnpm-lock.yaml > lock-next && mv lock-next pnpm-lock.yaml \
+  && printf '\noverrides:\n  react: 19.3.0\n' >> pnpm-lock.yaml \
+  && git_q add pnpm-lock.yaml && git_q commit -m 'local lock with unrelated package data' )
+( cd "$SANDBOX/other" && git pull -q origin main \
+  && sed 's/version: 0.86.203/version: 0.86.205/' pnpm-lock.yaml > lock-next && mv lock-next pnpm-lock.yaml \
+  && git_q add pnpm-lock.yaml && git_q commit -m 'remote shared package update' && git_q push origin main )
+EXTRA_DATA_REMOTE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+EXTRA_DATA_LOCAL="$(git -C "$SANDBOX/lock-extra-data" rev-parse HEAD)"
+set +e
+( cd "$SANDBOX/lock-extra-data" && PATH="$SANDBOX/bin:$PATH" bash release.sh ) > "$SANDBOX/lock-extra-data-out" 2>&1
+EXTRA_DATA_STATUS=$?
+set -e
+check "unpublished unrelated lock data refuses reconciliation" '[[ $EXTRA_DATA_STATUS -ne 0 && "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" == "$EXTRA_DATA_REMOTE" && "$(git -C "$SANDBOX/lock-extra-data" rev-parse HEAD)" == "$EXTRA_DATA_LOCAL" ]] && git -C "$SANDBOX/lock-extra-data" show HEAD:pnpm-lock.yaml | grep -q "react: 19.3.0"'
+
+# An importer specifier is contributor intent, even inside an @ai-matrx block.
+git_q clone "$SANDBOX/origin.git" "$SANDBOX/lock-specifier"
+( cd "$SANDBOX/lock-specifier" && git config user.name test && git config user.email test@test \
+  && sed -e 's/version: 0.86.205/version: 0.86.206/' -e 's/specifier: latest/specifier: ^0.86.206/' pnpm-lock.yaml > lock-next \
+  && mv lock-next pnpm-lock.yaml && git_q add pnpm-lock.yaml && git_q commit -m 'local importer specifier change' )
+( cd "$SANDBOX/other" && git pull -q origin main \
+  && sed 's/version: 0.86.205/version: 0.86.207/' pnpm-lock.yaml > lock-next && mv lock-next pnpm-lock.yaml \
+  && git_q add pnpm-lock.yaml && git_q commit -m 'remote shared package 207' && git_q push origin main )
+SPECIFIER_REMOTE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+SPECIFIER_LOCAL="$(git -C "$SANDBOX/lock-specifier" rev-parse HEAD)"
+set +e
+( cd "$SANDBOX/lock-specifier" && PATH="$SANDBOX/bin:$PATH" bash release.sh ) > "$SANDBOX/lock-specifier-out" 2>&1
+SPECIFIER_STATUS=$?
+set -e
+check "shared-package specifier edit refuses reconciliation" '[[ $SPECIFIER_STATUS -ne 0 && "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" == "$SPECIFIER_REMOTE" && "$(git -C "$SANDBOX/lock-specifier" rev-parse HEAD)" == "$SPECIFIER_LOCAL" ]]'
+
+# Integrity at an unchanged package key cannot be chosen from either side.
+git_q clone "$SANDBOX/origin.git" "$SANDBOX/lock-metadata"
+( cd "$SANDBOX/lock-metadata" && git config user.name test && git config user.email test@test \
+  && sed -e 's/version: 0.86.207/version: 0.86.208/' -e 's/sha512-QUJD/sha512-REVG/' pnpm-lock.yaml > lock-next \
+  && mv lock-next pnpm-lock.yaml && git_q add pnpm-lock.yaml && git_q commit -m 'local integrity and version update' )
+( cd "$SANDBOX/other" && git pull -q origin main \
+  && sed 's/version: 0.86.207/version: 0.86.209/' pnpm-lock.yaml > lock-next && mv lock-next pnpm-lock.yaml \
+  && git_q add pnpm-lock.yaml && git_q commit -m 'remote shared package 209' && git_q push origin main )
+METADATA_REMOTE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+METADATA_LOCAL="$(git -C "$SANDBOX/lock-metadata" rev-parse HEAD)"
+set +e
+( cd "$SANDBOX/lock-metadata" && PATH="$SANDBOX/bin:$PATH" bash release.sh ) > "$SANDBOX/lock-metadata-out" 2>&1
+METADATA_STATUS=$?
+set -e
+check "same-key package integrity edit refuses reconciliation" '[[ $METADATA_STATUS -ne 0 && "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" == "$METADATA_REMOTE" && "$(git -C "$SANDBOX/lock-metadata" rev-parse HEAD)" == "$METADATA_LOCAL" ]]'
+
+git_q clone "$SANDBOX/origin.git" "$SANDBOX/lock-peer-suffix"
+( cd "$SANDBOX/lock-peer-suffix" && git config user.name test && git config user.email test@test \
+  && sed -e 's/0.86.209/0.86.210/g' -e 's/peer@1.0.0/peer@2.0.0/' pnpm-lock.yaml > lock-next \
+  && mv lock-next pnpm-lock.yaml && git_q add pnpm-lock.yaml && git_q commit -m 'local peer context change' )
+( cd "$SANDBOX/other" && git pull -q origin main \
+  && sed 's/0.86.209/0.86.211/g' pnpm-lock.yaml > lock-next && mv lock-next pnpm-lock.yaml \
+  && git_q add pnpm-lock.yaml && git_q commit -m 'remote shared package 211' && git_q push origin main )
+PEER_REMOTE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+PEER_LOCAL="$(git -C "$SANDBOX/lock-peer-suffix" rev-parse HEAD)"
+set +e
+( cd "$SANDBOX/lock-peer-suffix" && PATH="$SANDBOX/bin:$PATH" bash release.sh ) > "$SANDBOX/lock-peer-suffix-out" 2>&1
+PEER_STATUS=$?
+set -e
+check "same-key snapshot peer suffix edit refuses reconciliation" '[[ $PEER_STATUS -ne 0 && "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" == "$PEER_REMOTE" && "$(git -C "$SANDBOX/lock-peer-suffix" rev-parse HEAD)" == "$PEER_LOCAL" ]]'
 
 # A shared-checkout writer can rewrite release.sh after validation. Keep the
 # inode (write_text truncates in place), deliberately shifting Bash's file
