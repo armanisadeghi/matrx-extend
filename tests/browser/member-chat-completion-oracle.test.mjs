@@ -18,7 +18,12 @@ const row = {
   conversation_fingerprint: 'ec8c373c1df3c614',
 };
 const opening = { ...row, attempt: 'opening', is_new: true };
-const followup = { ...row, attempt: 'same_conversation_followup', is_new: false };
+const followup = {
+  ...row,
+  attempt: 'same_conversation_followup',
+  is_new: false,
+  path_class: 'conversation',
+};
 const verdicts = { opening: 'terminal_answer', same_conversation_followup: 'terminal_answer' };
 const state = {
   replyCount: 1,
@@ -91,11 +96,27 @@ test('two member turns require same request conversation and new-to-existing tra
     { is_new: true },
     { terminal_success: false },
     { stream_error: true },
+    { semantic_completion: 'pending' },
+    { pending_tool_count: 1 },
+    { path_class: 'canonical' },
   ])
     assert.throws(() =>
       requireMemberChatSequence([opening, { ...followup, ...changed }], verdicts),
     );
   assert.throws(() => requireMemberChatSequence([opening], verdicts), /exactly_two/);
+  assert.throws(
+    () => requireMemberChatSequence([followup, opening], verdicts),
+    /ordered_turn_requests/,
+  );
+  assert.throws(
+    () => requireMemberChatSequence([opening, opening, followup], verdicts),
+    /exactly_two/,
+  );
+  assert.throws(
+    () =>
+      requireMemberChatSequence([{ ...opening, path_class: 'conversation' }, followup], verdicts),
+    /opening_route_unverified/,
+  );
   assert.throws(
     () =>
       requireMemberChatSequence([opening, followup], {
@@ -109,8 +130,18 @@ test('two member turns require same request conversation and new-to-existing tra
 test('a different valid organization shared by both headers still fails selected UI binding', () => {
   const selected = 'c61c7d9a9d805d4e';
   const starts = [
-    { http_status: 200, organization_header_fingerprint: selected },
-    { http_status: 200, organization_header_fingerprint: selected },
+    {
+      kind: 'start',
+      http_status: 200,
+      organization_header_fingerprint: selected,
+      conversation_fingerprint: row.conversation_fingerprint,
+    },
+    {
+      kind: 'followup',
+      http_status: 200,
+      organization_header_fingerprint: selected,
+      conversation_fingerprint: row.conversation_fingerprint,
+    },
   ];
   assert.deepEqual(requireMemberOrganizationBinding(selected, starts), {
     selected_organization_fingerprint: selected,
@@ -132,5 +163,26 @@ test('a different valid organization shared by both headers still fails selected
     () => requireMemberOrganizationBinding(null, starts),
     /selected_organization_unobserved/,
   );
-  assert.throws(() => requireMemberOrganizationBinding(selected, [starts[0]]), /two_starts/);
+  assert.throws(() => requireMemberOrganizationBinding(selected, [starts[0]]), /two_requests/);
+  assert.throws(
+    () => requireMemberOrganizationBinding(selected, [starts[0], starts[0]]),
+    /start_then_followup/,
+  );
+  assert.throws(
+    () => requireMemberOrganizationBinding(selected, [starts[1], starts[0]]),
+    /start_then_followup/,
+  );
+  assert.throws(
+    () =>
+      requireMemberOrganizationBinding(selected, [starts[0], { ...starts[1], http_status: 202 }]),
+    /successful_start/,
+  );
+  assert.throws(
+    () =>
+      requireMemberOrganizationBinding(selected, [
+        starts[0],
+        { ...starts[1], conversation_fingerprint: '5687839f735578e9' },
+      ]),
+    /same_conversation/,
+  );
 });

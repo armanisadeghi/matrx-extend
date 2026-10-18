@@ -607,10 +607,11 @@ async function observeAuthenticatedTransport(native, expectedUrl, mode) {
   const summarize = (entry, source) => {
     try {
       const body = JSON.parse(source);
-      if (entry.kind === 'start') {
-        entry.conversation = UUID.test(body.conversation_id ?? '')
-          ? hash(body.conversation_id)
-          : null;
+      if (entry.kind === 'start' || entry.kind === 'followup') {
+        if (entry.kind === 'start')
+          entry.conversation = UUID.test(body.conversation_id ?? '')
+            ? hash(body.conversation_id)
+            : null;
         entry.requestMode = body.client?.state?.['browser-dom']?.permission_mode;
         entry.requestSurface = body.client?.state?.['browser-dom']?.surface;
       } else {
@@ -633,10 +634,11 @@ async function observeAuthenticatedTransport(native, expectedUrl, mode) {
       if (request.method !== 'POST') return;
       const path = new URL(request.url).pathname;
       const results = /\/ai\/conversations\/([a-f0-9-]{36})\/tool_results$/.exec(path);
+      const followup = /\/ai\/conversations\/([a-f0-9-]{36})$/.exec(path);
       const start = /\/ai\/(?:agent|agents|mandates)\/[^/]+$/.test(path);
-      if (!results && !start) return;
+      if (!results && !start && !followup) return;
       const entry = {
-        kind: start ? 'start' : 'result',
+        kind: start ? 'start' : followup ? 'followup' : 'result',
         startDoor: start && path.includes('/mandates/') ? 'mandate' : start ? 'agent' : null,
         targetKind:
           start && decodeURIComponent(path.split('/').at(-1)).startsWith('mandate:')
@@ -646,7 +648,7 @@ async function observeAuthenticatedTransport(native, expectedUrl, mode) {
               : start
                 ? 'concrete_agent'
                 : null,
-        conversation: results ? hash(results[1]) : null,
+        conversation: results || followup ? hash((results || followup)[1]) : null,
         status: null,
         responseConversation: null,
         backendRequest: null,
@@ -722,10 +724,19 @@ async function observeAuthenticatedTransport(native, expectedUrl, mode) {
       return {
         start_count: starts.length,
         all_starts: starts.map((row) => ({
+          kind: row.kind,
           organization_header_fingerprint: row.organizationHeader,
           conversation_fingerprint: row.conversation,
           http_status: row.status,
         })),
+        member_turn_requests: [...rows.values()]
+          .filter((row) => row.kind === 'start' || row.kind === 'followup')
+          .map((row) => ({
+            kind: row.kind,
+            organization_header_fingerprint: row.organizationHeader,
+            conversation_fingerprint: row.conversation,
+            http_status: row.status,
+          })),
         organization_header_fingerprint: start?.organizationHeader ?? null,
         organization_header_matches_approved: Boolean(
           approvedOrganization && start?.organizationHeader === hash(approvedOrganization.id),
@@ -1609,13 +1620,14 @@ try {
         stage = 'reviewer_two_turn_terminal_proof';
         const sequence = requireMemberChatSequence(memberTransport.turnRequests(), turns);
         const afterFollowup = memberTransport.snapshot();
+        assert.equal(afterFollowup.start_count, 1, 'member requires one actual Chat start');
         assert.equal(
-          afterFollowup.start_count,
+          afterFollowup.member_turn_requests.length,
           2,
-          'member requires exactly two actual Chat starts',
+          'member requires one actual Chat followup',
         );
         assert.ok(
-          afterFollowup.all_starts.every(
+          afterFollowup.member_turn_requests.every(
             (row) =>
               row.http_status === 200 &&
               row.organization_header_fingerprint === network.organization_header_fingerprint,
@@ -1624,7 +1636,7 @@ try {
         );
         const organizationBinding = requireMemberOrganizationBinding(
           selectedOrganizationFingerprint,
-          afterFollowup.all_starts,
+          afterFollowup.member_turn_requests,
         );
         report.chat_sequence = {
           ...sequence,

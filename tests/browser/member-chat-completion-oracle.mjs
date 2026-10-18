@@ -9,11 +9,15 @@ export function requireMemberChatSequence(requests, turns) {
       row.status === 200 &&
         row.loading_finished === true &&
         row.terminal_success === true &&
+        row.semantic_completion === 'success' &&
+        row.pending_tool_count === 0 &&
         row.stream_error === false,
       `member_${attempt}_requires_terminal_complete`,
     );
     assert.ok(
-      ['canonical', 'versioned'].includes(row.path_class),
+      attempt === 'opening'
+        ? ['canonical', 'versioned'].includes(row.path_class)
+        : row.path_class === 'conversation',
       `member_${attempt}_route_unverified`,
     );
     assert.match(
@@ -29,6 +33,11 @@ export function requireMemberChatSequence(requests, turns) {
     return row;
   };
   assert.equal(requests.length, 2, 'member_requires_exactly_two_turn_requests');
+  assert.deepEqual(
+    requests.map((row) => row.attempt),
+    ['opening', 'same_conversation_followup'],
+    'member_requires_ordered_turn_requests',
+  );
   const opening = successful('opening');
   const followup = successful('same_conversation_followup');
   assert.equal(opening.is_new, true, 'member_opening_requires_new_conversation');
@@ -53,7 +62,17 @@ export function requireMemberOrganizationBinding(selectedFingerprint, starts) {
     /^[a-f0-9]{16}$/,
     'member_selected_organization_unobserved',
   );
-  assert.equal(starts.length, 2, 'member_org_binding_requires_two_starts');
+  assert.equal(starts.length, 2, 'member_org_binding_requires_two_requests');
+  assert.deepEqual(
+    starts.map((row) => row.kind),
+    ['start', 'followup'],
+    'member_org_binding_requires_start_then_followup',
+  );
+  assert.equal(
+    starts[0].conversation_fingerprint,
+    starts[1].conversation_fingerprint,
+    'member_org_binding_requires_same_conversation',
+  );
   for (const start of starts) {
     assert.equal(start.http_status, 200, 'member_org_binding_requires_successful_start');
     assert.equal(
