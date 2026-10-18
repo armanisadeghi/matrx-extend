@@ -1,5 +1,5 @@
 {
-  "observedAt": "2026-10-18T21:07:33.265709+00:00",
+  "observedAt": "2026-10-18T21:21:02.425099+00:00",
   "owner": "root",
   "version": "0.2.550",
   "releaseRunId": 39165462442,
@@ -15,25 +15,40 @@
       "lane": "B",
       "runId": 39166232102,
       "scope": "exact-candidate fresh guest Chat opening, same-conversation follow-up, reload and separate Values result",
-      "state": "dispatched; terminal result unverified",
-      "credentials": "designated guest; never log authentication values"
+      "state": "terminal failed: one grounded completed opening reply; screenshot eligibility failed; follow-up/reload/Values not reached; no overall acceptance pass",
+      "credentials": "designated guest; never log authentication values",
+      "evidence": "runs/guest-chat-v0550-run39166232102.json; commits c9654c437 and b7e42b295"
     },
     {
       "owner": "member550_a_acceptance",
       "lane": "A",
       "runId": 39166380647,
       "scope": "exact-candidate non-admin Chat, organization headers and visible reply proof",
-      "state": "dispatched; terminal result unverified",
-      "cleanup": "worker owns its one-use member link secret/local file; retain while in flight, delete only exact owned values after terminal and verify absence"
+      "state": "terminal failed at foreground restoration before Chat interaction; unresolved CPU sample makes resource final invalid; zero product credit",
+      "cleanup": "one-use secret and local link removed; absence verified; approved-org fixture preserved",
+      "evidence": "commit 79583c65c; exact foreground substep unclassified; child exited before any watchdog stop"
     }
   ],
   "capacity": "two isolated hosted browser runs maximum; one guarded heavy job per physical host; no local heavy launches",
   "implementation": {
     "owner": "exact_store_reviewer_smoke",
-    "scope": "close exact public demo Settings/Capture/SEO/Data release acceptance gap without weakening Chat proof",
-    "draftPath": "/tmp/exact-store-reviewer-smoke",
-    "state": "not applied to repository; correcting actual prepared receipt wiring after independent review",
-    "review": "/tmp/store-smoke-draft-fresh-peer.json; blocking actual receipt-kind mismatch; source checks do not prove native behavior"
+    "state": "source committed and pushed at 8b9696cf3; independent source peer accepted with native limits; 35 targeted tests pass, call-deletion mutation fails",
+    "scope": "actual public demo Settings/Capture/SEO/Data before unchanged strict Chat sequence",
+    "nativeAcceptance": "unverified; EXT-F-0003-T14"
   },
-  "nextAction": "Inspect terminal native results and new startup diagnostics, independently review product evidence, finish/review reviewer walkthrough source, then obtain any required fresh candidate and pass all release gates before upload. No overall health claim."
+  "nextAction": "Review the screenshot boundary and foreground diagnostics independently, obtain fresh synchronized-main candidate after product/test source changes, and pass resource-valid native guest/member/reviewer acceptance before upload. No blind retry or threshold relaxation.",
+  "activeWorkers": [
+    {
+      "owner": "guest_viewport_boundary",
+      "scope": "prove screenshot failing boundary; minimal justified repair"
+    },
+    {
+      "owner": "foreground_probe_instrumentation",
+      "scope": "observation-only fixed foreground substep diagnostics"
+    },
+    {
+      "owner": "dev_ci_refresh",
+      "scope": "eligible CI development artifact import and promotion; root verifies Chrome"
+    }
+  ]
 }
