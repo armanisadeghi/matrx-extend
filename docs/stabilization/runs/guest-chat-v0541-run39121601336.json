@@ -9,8 +9,9 @@
     "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
     "artifact_id": 12134665291,
     "artifact_name": "matrx-extend-v0.2.541",
-    "artifact_payload_sha256": null,
-    "artifact_payload_sha256_note": "GitHub run metadata confirms artifact identity; its payload was not downloaded for hashing in this evidence review."
+    "artifact_payload_sha256": "ef72a0dc9f47e43d4962fbc7cc52ea0a8491a44128009ee46e552467aba022b3",
+    "store_zip_sha256": "f71248bb0b65675c6853cc5ff2445be47cde0a8dfac10737648c4740267384f3",
+    "artifact_hash_provenance": "Release owner receipt audit and fresh independent static peer report independently downloaded artifact 12134665291 and recorded these hashes; this evidence integration did not personally download or hash the artifact."
   },
   "guest": {
     "run_id": 39121601336,
