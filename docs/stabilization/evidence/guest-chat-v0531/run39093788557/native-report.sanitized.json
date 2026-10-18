@@ -1,0 +1,741 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat opening, same-conversation follow-up, and post-reload new conversation",
+  "context_rule_read_observation_scope": "CDP observer attaches after panel load and runs through the optional Values control, all three guest sends, and panel reload; it cannot establish requests before attachment",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.531",
+    "tree_sha256": "db2478e506de8cb1fb3125b193c1362eddbea13d93c03178b2452f36acc82286",
+    "receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "server_version_before": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "ce6f3430911821130a55545b7b3a10d6c7f68a8b"
+  },
+  "server_version_after": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "ce6f3430911821130a55545b7b3a10d6c7f68a8b"
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "swipe_file_tab_absent": true,
+    "after_reload": false,
+    "values_control": {
+      "present": false,
+      "exercised": false
+    },
+    "fixture_reinstalled_before_first_send": false
+  },
+  "chat": {
+    "opening_question_fingerprint": "8b0041e45eb47431",
+    "fixture_fragment_fingerprint": "d32fe3a7f3ab937b",
+    "opening_code_fingerprint": "0ed235866bc3ba21",
+    "completed_reply_count": 1,
+    "answer_contains_unpredictable_page_code": true,
+    "answer_names_page_stages": true,
+    "answer_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "followup_completed_after_reload": false
+  },
+  "screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-Rs1zYx/guest-chat-real-answer.png",
+  "followup_screenshot": null,
+  "failure_stage": "real_same_conversation_followup_answer",
+  "failure_code": "same_conversation_followup_guest_ai_transport_unobserved",
+  "failure_reason": "same_conversation_followup_guest_ai_transport_unobserved",
+  "stage_progress": [
+    "owned_profile",
+    "fresh_guest",
+    "owned_article_page",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_values_chip_observation",
+    "guest_question",
+    "real_guest_answer",
+    "same_conversation_followup_question",
+    "real_same_conversation_followup_answer"
+  ],
+  "guest_ai_requests": [
+    {
+      "attempt": "opening",
+      "request_at_utc": "2026-10-18T03:37:11.344Z",
+      "cdp_request_id": "8461.798",
+      "status": 200,
+      "code": null,
+      "terminal_success": true,
+      "stream_error": false,
+      "loading_finished": true,
+      "path_class": "canonical",
+      "conversation_fingerprint": "4d6e3128036d7a34",
+      "is_new": true,
+      "response_body_observed": true,
+      "transport_complete": true,
+      "semantic_completion": "success",
+      "semantic_events": [
+        {
+          "event": "init",
+          "operation_fingerprint": "1f61f90a98685375"
+        },
+        {
+          "event": "tool_delegated",
+          "call_fingerprint": "4c9de4ea320829e9"
+        },
+        {
+          "event": "completion_identity",
+          "operation_matched": true
+        },
+        {
+          "event": "completion",
+          "status": "success"
+        },
+        {
+          "event": "end",
+          "reason": "complete"
+        },
+        {
+          "event": "init",
+          "operation_fingerprint": "e57d8ec1ec1e990a"
+        },
+        {
+          "event": "completion_identity",
+          "operation_matched": true
+        },
+        {
+          "event": "completion",
+          "status": "success"
+        },
+        {
+          "event": "end",
+          "reason": "complete"
+        }
+      ],
+      "delegated_call_count": 1,
+      "result_resume_verified": true,
+      "pending_tool_count": 0,
+      "resume_count": 1,
+      "tool_result_posts": 1,
+      "tool_result_successes": 1,
+      "continuation_requests": [
+        {
+          "kind": "tool_results",
+          "status": 200,
+          "loading_finished": true,
+          "response_body_observed": true,
+          "result_accepted": true,
+          "continuation_needed": true
+        },
+        {
+          "kind": "resume",
+          "status": 200,
+          "loading_finished": true,
+          "response_body_observed": true,
+          "semantic_completion": "success",
+          "transport_complete": true
+        }
+      ]
+    }
+  ],
+  "guest_ai_observer": {
+    "mode": "panel",
+    "counters": {
+      "attached": 0,
+      "identity_changed": 0,
+      "network_enabled": 1,
+      "request_events": 67,
+      "post_events": 11,
+      "chat_path_events": 1,
+      "response_events": 71
+    },
+    "buffered_requests": 6
+  },
+  "guest_ai_transport_proven": false,
+  "composer_input_boundaries": [
+    {
+      "attempt": "opening_question",
+      "before_focus": {
+        "observedNodePresent": true,
+        "observedNodeConnected": true,
+        "currentNodePresent": true,
+        "currentNodeSame": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": false,
+        "currentValueLength": 0,
+        "inputEvents": 0,
+        "changeEvents": 0,
+        "sendEnabled": false
+      },
+      "after_focus": {
+        "observedNodePresent": true,
+        "observedNodeConnected": true,
+        "currentNodePresent": true,
+        "currentNodeSame": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "currentValueLength": 0,
+        "inputEvents": 0,
+        "changeEvents": 0,
+        "sendEnabled": false
+      },
+      "after_insert": {
+        "observedNodePresent": true,
+        "observedNodeConnected": true,
+        "currentNodePresent": true,
+        "currentNodeSame": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "currentValueLength": 139,
+        "inputEvents": 1,
+        "changeEvents": 0,
+        "sendEnabled": true
+      },
+      "react_after_insert": {
+        "reactPropsAvailable": true,
+        "reactOnChangePresent": true,
+        "reactValueLength": 139,
+        "reactValueMatchesExpected": true,
+        "domMatchesExpected": true,
+        "conversationLocated": true,
+        "matchingStoreCount": 1,
+        "reduxDraftLength": 139,
+        "reduxDraftMatchesExpected": true,
+        "submissionPhase": "idle"
+      },
+      "after_keyboard_clear": {
+        "observedNodePresent": true,
+        "observedNodeConnected": true,
+        "currentNodePresent": true,
+        "currentNodeSame": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "currentValueLength": 0,
+        "inputEvents": 2,
+        "changeEvents": 0,
+        "sendEnabled": false
+      },
+      "after_keyboard": {
+        "observedNodePresent": true,
+        "observedNodeConnected": true,
+        "currentNodePresent": true,
+        "currentNodeSame": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "currentValueLength": 139,
+        "inputEvents": 141,
+        "changeEvents": 0,
+        "sendEnabled": true
+      },
+      "react_after_keyboard": {
+        "uniqueComposer": true,
+        "sameActivePane": true,
+        "sameConversation": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "reactPropsAvailable": true,
+        "reactOnChangePresent": true,
+        "reactValueLength": 139,
+        "reactValueMatchesExpected": true,
+        "domMatchesExpected": true,
+        "conversationLocated": true,
+        "matchingStoreCount": 1,
+        "reduxDraftLength": 139,
+        "reduxDraftMatchesExpected": true,
+        "submissionPhase": "idle"
+      },
+      "submitted_input_method": "native_key_events_after_insert_text_comparison",
+      "wait": {
+        "outcome": "send_ready",
+        "snapshot": {
+          "observedNodePresent": true,
+          "observedNodeConnected": true,
+          "currentNodePresent": true,
+          "currentNodeSame": true,
+          "currentNodeConnected": true,
+          "currentNodeFocused": true,
+          "currentValueLength": 139,
+          "inputEvents": 141,
+          "changeEvents": 0,
+          "sendEnabled": true
+        }
+      },
+      "intent_before_click": {
+        "uniqueComposer": true,
+        "sameActivePane": true,
+        "sameConversation": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "reactPropsAvailable": true,
+        "reactOnChangePresent": true,
+        "reactValueLength": 139,
+        "reactValueMatchesExpected": true,
+        "domMatchesExpected": true,
+        "conversationLocated": true,
+        "matchingStoreCount": 1,
+        "reduxDraftLength": 139,
+        "reduxDraftMatchesExpected": true,
+        "submissionPhase": "idle"
+      },
+      "execution_before_click": {
+        "storeLocated": true,
+        "runtimeErrors": {
+          "windowErrors": 0,
+          "unhandledRejections": 0
+        },
+        "buttonReactOnClickPresent": true,
+        "storeNotificationsAfterClick": 0,
+        "pendingSubmissionObserved": false,
+        "conversationPresent": true,
+        "submissionPhase": "idle",
+        "preSendStatus": null,
+        "preSendErrorPresent": false,
+        "draftLength": 139,
+        "identityReady": true,
+        "authenticated": false,
+        "accessTokenPresent": false,
+        "fingerprintPresent": true
+      },
+      "click": {
+        "phases": [
+          "target_selected",
+          "press_attempted",
+          "press_returned",
+          "release_attempted",
+          "release_returned"
+        ],
+        "beforeClick": {
+          "clickEvents": 0,
+          "bubbleClickEvents": 0,
+          "trustedClickEvents": 0,
+          "intentMatchedAtClick": null,
+          "buttonConnected": true,
+          "composerLength": 139,
+          "userMessageCount": 0,
+          "sendEnabled": true
+        },
+        "afterClick": {
+          "clickEvents": 1,
+          "bubbleClickEvents": 1,
+          "trustedClickEvents": 1,
+          "intentMatchedAtClick": true,
+          "buttonConnected": true,
+          "composerLength": 0,
+          "userMessageCount": 0,
+          "sendEnabled": true
+        }
+      },
+      "execution_after_click": {
+        "storeLocated": true,
+        "runtimeErrors": {
+          "windowErrors": 0,
+          "unhandledRejections": 0
+        },
+        "buttonReactOnClickPresent": true,
+        "storeNotificationsAfterClick": 13,
+        "pendingSubmissionObserved": true,
+        "conversationPresent": true,
+        "submissionPhase": "pending",
+        "preSendStatus": null,
+        "preSendErrorPresent": false,
+        "draftLength": 139,
+        "identityReady": true,
+        "authenticated": false,
+        "accessTokenPresent": false,
+        "fingerprintPresent": true
+      }
+    },
+    {
+      "attempt": "same_conversation_followup_question",
+      "before_focus": {
+        "observedNodePresent": true,
+        "observedNodeConnected": true,
+        "currentNodePresent": true,
+        "currentNodeSame": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "currentValueLength": 0,
+        "inputEvents": 0,
+        "changeEvents": 0,
+        "sendEnabled": false
+      },
+      "after_focus": {
+        "observedNodePresent": true,
+        "observedNodeConnected": true,
+        "currentNodePresent": true,
+        "currentNodeSame": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "currentValueLength": 0,
+        "inputEvents": 0,
+        "changeEvents": 0,
+        "sendEnabled": false
+      },
+      "after_insert": {
+        "observedNodePresent": true,
+        "observedNodeConnected": true,
+        "currentNodePresent": true,
+        "currentNodeSame": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "currentValueLength": 148,
+        "inputEvents": 1,
+        "changeEvents": 0,
+        "sendEnabled": true
+      },
+      "react_after_insert": {
+        "reactPropsAvailable": true,
+        "reactOnChangePresent": true,
+        "reactValueLength": 148,
+        "reactValueMatchesExpected": true,
+        "domMatchesExpected": true,
+        "conversationLocated": true,
+        "matchingStoreCount": 1,
+        "reduxDraftLength": 148,
+        "reduxDraftMatchesExpected": true,
+        "submissionPhase": "idle"
+      },
+      "after_keyboard_clear": {
+        "observedNodePresent": true,
+        "observedNodeConnected": true,
+        "currentNodePresent": true,
+        "currentNodeSame": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "currentValueLength": 0,
+        "inputEvents": 2,
+        "changeEvents": 0,
+        "sendEnabled": false
+      },
+      "after_keyboard": {
+        "observedNodePresent": true,
+        "observedNodeConnected": true,
+        "currentNodePresent": true,
+        "currentNodeSame": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "currentValueLength": 148,
+        "inputEvents": 150,
+        "changeEvents": 0,
+        "sendEnabled": true
+      },
+      "react_after_keyboard": {
+        "uniqueComposer": true,
+        "sameActivePane": true,
+        "sameConversation": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "reactPropsAvailable": true,
+        "reactOnChangePresent": true,
+        "reactValueLength": 148,
+        "reactValueMatchesExpected": true,
+        "domMatchesExpected": true,
+        "conversationLocated": true,
+        "matchingStoreCount": 1,
+        "reduxDraftLength": 148,
+        "reduxDraftMatchesExpected": true,
+        "submissionPhase": "idle"
+      },
+      "submitted_input_method": "native_key_events_after_insert_text_comparison",
+      "wait": {
+        "outcome": "send_ready",
+        "snapshot": {
+          "observedNodePresent": true,
+          "observedNodeConnected": true,
+          "currentNodePresent": true,
+          "currentNodeSame": true,
+          "currentNodeConnected": true,
+          "currentNodeFocused": true,
+          "currentValueLength": 148,
+          "inputEvents": 150,
+          "changeEvents": 0,
+          "sendEnabled": true
+        }
+      },
+      "intent_before_click": {
+        "uniqueComposer": true,
+        "sameActivePane": true,
+        "sameConversation": true,
+        "currentNodeConnected": true,
+        "currentNodeFocused": true,
+        "reactPropsAvailable": true,
+        "reactOnChangePresent": true,
+        "reactValueLength": 148,
+        "reactValueMatchesExpected": true,
+        "domMatchesExpected": true,
+        "conversationLocated": true,
+        "matchingStoreCount": 1,
+        "reduxDraftLength": 148,
+        "reduxDraftMatchesExpected": true,
+        "submissionPhase": "idle"
+      },
+      "execution_before_click": {
+        "storeLocated": true,
+        "runtimeErrors": {
+          "windowErrors": 0,
+          "unhandledRejections": 0
+        },
+        "buttonReactOnClickPresent": true,
+        "storeNotificationsAfterClick": 0,
+        "pendingSubmissionObserved": false,
+        "conversationPresent": true,
+        "submissionPhase": "idle",
+        "preSendStatus": null,
+        "preSendErrorPresent": false,
+        "draftLength": 148,
+        "identityReady": true,
+        "authenticated": false,
+        "accessTokenPresent": false,
+        "fingerprintPresent": true
+      },
+      "click": {
+        "phases": [
+          "target_selected",
+          "press_attempted",
+          "press_returned",
+          "release_attempted",
+          "release_returned"
+        ],
+        "beforeClick": {
+          "clickEvents": 0,
+          "bubbleClickEvents": 0,
+          "trustedClickEvents": 0,
+          "intentMatchedAtClick": null,
+          "buttonConnected": true,
+          "composerLength": 148,
+          "userMessageCount": 1,
+          "sendEnabled": true
+        },
+        "afterClick": {
+          "clickEvents": 1,
+          "bubbleClickEvents": 1,
+          "trustedClickEvents": 1,
+          "intentMatchedAtClick": true,
+          "buttonConnected": true,
+          "composerLength": 0,
+          "userMessageCount": 2,
+          "sendEnabled": true
+        }
+      },
+      "execution_after_click": {
+        "storeLocated": true,
+        "runtimeErrors": {
+          "windowErrors": 0,
+          "unhandledRejections": 0
+        },
+        "buttonReactOnClickPresent": true,
+        "storeNotificationsAfterClick": 20,
+        "pendingSubmissionObserved": true,
+        "conversationPresent": true,
+        "submissionPhase": "pending",
+        "preSendStatus": null,
+        "preSendErrorPresent": false,
+        "draftLength": 148,
+        "identityReady": true,
+        "authenticated": false,
+        "accessTokenPresent": false,
+        "fingerprintPresent": true
+      }
+    }
+  ],
+  "context_rule_reads": [],
+  "grounding_diagnostics": {
+    "before_first_send": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": null
+    },
+    "opening": {
+      "toolEvents": [
+        {
+          "name": "get_page_text",
+          "phase": "started",
+          "target": "fixture_tab",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 1,
+          "toolName": "get_page_text",
+          "phase": "started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": null
+      }
+    },
+    "same_conversation_followup": {
+      "toolEvents": [
+        {
+          "name": "read_page",
+          "phase": "started",
+          "target": "fixture_tab",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "get_page_text",
+          "phase": "started",
+          "target": "fixture_tab",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 2,
+          "toolName": "read_page",
+          "phase": "started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 3,
+          "toolName": "get_page_text",
+          "phase": "started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": null
+      }
+    }
+  },
+  "opening_turn_verdict": "terminal_answer",
+  "opening_turn_timeline": [
+    {
+      "verdict": "in_progress",
+      "runCount": 0,
+      "replyCount": 0,
+      "streaming": false
+    },
+    {
+      "verdict": "terminal_answer",
+      "runCount": 0,
+      "replyCount": 1,
+      "streaming": false
+    }
+  ],
+  "failure_observation": {
+    "guestAccount": true,
+    "accessTokenAbsent": true,
+    "profileAbsent": true,
+    "organizationAbsent": true,
+    "chatVisible": true,
+    "chatSelected": true,
+    "paneVisible": true,
+    "composerVisible": true,
+    "composerLength": 0,
+    "sendEnabled": false,
+    "streaming": false,
+    "replyCount": 2,
+    "assistantDom": {
+      "assistantArticleCount": 2,
+      "toolCardCount": 1,
+      "toolOnlyArticleCount": 0
+    },
+    "answerContainsNonce": false,
+    "answerContainsFixtureHeading": true,
+    "answerMatchesPublicStages": false,
+    "answerStagesInOrder": false,
+    "answerIsRefusal": false,
+    "terminalAnswerError": false,
+    "interruptionNotice": false,
+    "errorNotice": false,
+    "latestAssistantReply": "Used 2 tools\nThe follow-up check code is [follow-up-code].\nThe heading directly above the check codes is \"[fixture-heading]\". It's an h2, and both the opening and follow-up codes sit below it. The page's h1, \"Research brief: product discovery\", comes after the codes.",
+    "visibleAlerts": [],
+    "streamTrace": {
+      "runs": [],
+      "continuations": 0,
+      "events": [],
+      "toolEvents": [
+        {
+          "name": "get_page_text",
+          "phase": "started",
+          "target": "fixture_tab",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "read_page",
+          "phase": "started",
+          "target": "fixture_tab",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "get_page_text",
+          "phase": "started",
+          "target": "fixture_tab",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        }
+      ]
+    },
+    "sendExecution": {
+      "storeLocated": true,
+      "runtimeErrors": {
+        "windowErrors": 0,
+        "unhandledRejections": 0
+      },
+      "buttonReactOnClickPresent": true,
+      "storeNotificationsAfterClick": 296,
+      "pendingSubmissionObserved": true,
+      "conversationPresent": true,
+      "submissionPhase": "idle",
+      "preSendStatus": null,
+      "preSendErrorPresent": false,
+      "draftLength": 0,
+      "identityReady": true,
+      "authenticated": false,
+      "accessTokenPresent": false,
+      "fingerprintPresent": true
+    }
+  },
+  "same_conversation_turn_verdict": "terminal_not_observed",
+  "same_conversation_turn_timeline": [
+    {
+      "verdict": "in_progress",
+      "runCount": 0,
+      "replyCount": 2,
+      "streaming": true
+    }
+  ],
+  "failure_screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-Rs1zYx/guest-chat-failure.png",
+  "server_version_stable": true
+}
