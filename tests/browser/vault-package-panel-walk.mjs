@@ -1,14 +1,14 @@
 #!/usr/bin/env node
+import { spawnSync } from 'node:child_process';
 /**
  * Real-browser walk of the Vault tab now that it is the shared @ai-matrx/vault
  * workspace. Owned disposable profile, admin@admin.com, role/label selectors.
  * Usage: MATRX_VAULT_WALK_RECEIPT=<local-dev receipt> MATRX_VAULT_WALK_SHOTS=<dir> node vault-package-panel-walk.mjs [step...]
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { spawnSync } from 'node:child_process';
 import http from 'node:http';
 import { join, resolve } from 'node:path';
-import { attachTargetSession, runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
