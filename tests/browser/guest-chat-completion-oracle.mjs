@@ -11,6 +11,7 @@ export function createGuestStreamCollector({
   const events = [];
   const toolEvents = [];
   const toolCalls = new Map();
+  const operationIds = new Map();
   let continuations = 0;
   const runFor = (id) => {
     if (typeof id !== 'string') return null;
@@ -114,6 +115,16 @@ export function createGuestStreamCollector({
         const name = payload.payload?.eventName;
         const data = payload.payload?.data;
         if (
+          name === 'init' &&
+          data?.operation === 'user_request' &&
+          !operationIds.has(payload.runId) &&
+          typeof data.operation_id === 'string' &&
+          data.operation_id.length > 0
+        ) {
+          operationIds.set(payload.runId, data.operation_id);
+          add({ kind: 'user_request_init', run: run.ordinal });
+        }
+        if (
           name === 'tool_event' &&
           ['tool_delegated', 'tool_started', 'tool_completed', 'tool_failed'].includes(data?.event)
         ) {
@@ -156,12 +167,16 @@ export function createGuestStreamCollector({
           /(?:^|\.)user_request$/.test(String(data?.table ?? '')) &&
           ['completed', 'failed'].includes(data?.status)
         ) {
-          if (data.status === 'failed' || !['failed', 'cancelled'].includes(run.userRequestOutcome))
-            run.userRequestOutcome = data.status === 'failed' ? 'failed' : 'success';
-          add({ kind: 'user_request_' + run.userRequestOutcome, run: run.ordinal });
+          if (data.status === 'failed') run.userRequestOutcome = 'failed';
+          add({
+            kind: data.status === 'failed' ? 'user_request_failed' : 'user_request_row_completed',
+            run: run.ordinal,
+          });
         } else if (
           name === 'completion' &&
           data?.operation === 'user_request' &&
+          operationIds.has(payload.runId) &&
+          data.operation_id === operationIds.get(payload.runId) &&
           ['success', 'failed', 'cancelled'].includes(data?.status)
         ) {
           if (
@@ -229,7 +244,7 @@ export function classifyGuestTurn({
   if (!latest?.done) return 'in_progress';
   if (latest.delegated) return 'awaiting_tool_resume';
   if (['error', 'failed', 'cancelled'].includes(latest.endReason)) return 'terminal_error';
-  const terminal = latest.userRequestOutcome === 'success' || latest.endReason === 'complete';
+  const terminal = latest.userRequestOutcome === 'success' && latest.endReason === 'complete';
   if (!terminal) return 'in_progress';
   const priorReplyFloor = Math.max(latest.startReplyCount, priorReplyCount);
   if (replyCount <= priorReplyFloor && now - latest.doneAt < 700) return 'rendering_terminal';
@@ -258,6 +273,7 @@ export function classifyPackageGuestTurn({
 }) {
   const turn = requests.filter((request) => request.attempt === attempt);
   if (
+    turn.some((request) => ['failed', 'cancelled'].includes(request.semantic_completion)) ||
     state.errorNotice ||
     state.terminalAnswerError ||
     state.answerIsRefusal ||
@@ -268,11 +284,18 @@ export function classifyPackageGuestTurn({
     return 'terminal_error';
   if (
     !turn.some(
-      (request) => request.status === 200 && request.loading_finished && request.terminal_success,
+      (request) =>
+        request.status === 200 &&
+        request.loading_finished &&
+        request.terminal_success &&
+        request.semantic_completion === 'success' &&
+        request.pending_tool_count === 0 &&
+        (!(request.delegated_call_count > 0) || request.result_resume_verified === true),
     )
   )
     return 'in_progress';
-  if (state.streaming || state.replyCount <= priorReplyCount) return 'in_progress';
+  if (state.streaming) return 'in_progress';
+  if (state.replyCount <= priorReplyCount) return 'in_progress';
   const text = state.latestReplyText ?? '';
   let after = -1;
   const inOrder = orderedTerms.every((term) => {

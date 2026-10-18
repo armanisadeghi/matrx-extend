@@ -110,6 +110,11 @@ function streamTerminal(body, base64Encoded) {
   const decoded = base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body;
   let terminal = false;
   let error = false;
+  let completion = null;
+  let operationId = null;
+  const events = [];
+  const delegated = [];
+  const settled = [];
   for (const line of decoded.split(/\r?\n/)) {
     if (!line.trim()) continue;
     let payload;
@@ -122,9 +127,50 @@ function streamTerminal(body, base64Encoded) {
     const kind = payload?.event;
     const detail = payload?.data ?? payload;
     if (
+      kind === 'init' &&
+      detail?.operation === 'user_request' &&
+      operationId === null &&
+      typeof detail.operation_id === 'string' &&
+      detail.operation_id.length > 0
+    ) {
+      operationId = detail.operation_id;
+      events.push({ event: 'init', operation_fingerprint: conversationFingerprint(operationId) });
+    }
+    const operationMatched = operationId !== null && detail?.operation_id === operationId;
+    if (kind === 'completion' && detail?.operation === 'user_request')
+      events.push({ event: 'completion_identity', operation_matched: operationMatched });
+    if (
+      kind === 'completion' &&
+      detail?.operation === 'user_request' &&
+      operationMatched &&
+      ['success', 'failed', 'cancelled'].includes(detail?.status)
+    ) {
+      if (completion !== 'failed' && completion !== 'cancelled') completion = detail.status;
+      events.push({ event: 'completion', status: detail.status });
+    }
+    if (
+      kind === 'tool_event' &&
+      ['tool_delegated', 'tool_completed', 'tool_error', 'tool_failed'].includes(detail?.event)
+    ) {
+      const call =
+        typeof detail.call_id === 'string' ? conversationFingerprint(detail.call_id) : null;
+      if (call) (detail.event === 'tool_delegated' ? delegated : settled).push(call);
+      events.push({ event: detail.event, call_fingerprint: call });
+    }
+    if (kind === 'end')
+      events.push({
+        event: 'end',
+        reason: ['complete', 'paused', 'tool_delegated', 'failed', 'error', 'cancelled'].includes(
+          detail?.reason,
+        )
+          ? detail.reason
+          : 'other',
+      });
+    if (
       kind === 'error' ||
       (kind === 'completion' &&
         detail?.operation === 'user_request' &&
+        operationMatched &&
         detail?.status !== 'success') ||
       (kind === 'record_update' &&
         /(?:^|\.)user_request$/.test(String(detail?.table ?? '')) &&
@@ -134,7 +180,7 @@ function streamTerminal(body, base64Encoded) {
       error = true;
     if (kind === 'end' && detail?.reason === 'complete') terminal = true;
   }
-  return { terminal, error };
+  return { terminal, error, completion, events: events.slice(-100), delegated, settled };
 }
 
 export async function watchGuestAiRequests({
@@ -186,8 +232,12 @@ export async function watchGuestAiRequests({
     )
       return;
     try {
-      if (!chatPathClass(request.url)) return;
+      const continuation =
+        mode === 'package' &&
+        new URL(request.url).pathname.match(/\/ai\/conversations\/([^/]+)\/(resume|tool_results)$/);
+      if (!chatPathClass(request.url) && !continuation) return;
       const entry = {
+        kind: continuation ? continuation[2] : 'start',
         sessionId,
         record: {
           attempt: armedLabel,
@@ -202,13 +252,17 @@ export async function watchGuestAiRequests({
           }),
           path_class: chatPathClass(request.url),
           ...safeConversationRequest(request.postData),
+          ...(continuation && {
+            conversation_fingerprint: conversationFingerprint(decodeURIComponent(continuation[1])),
+          }),
         },
       };
       requests.set(`${sessionId}:${requestId}`, entry);
       if (typeof request.postData !== 'string') {
         const pending = send('Network.getRequestPostData', { requestId })
           .then(({ postData }) => {
-            Object.assign(entry.record, safeConversationRequest(postData));
+            if (entry.kind === 'start')
+              Object.assign(entry.record, safeConversationRequest(postData));
           })
           .catch(() => {});
         pendingBodies.add(pending);
@@ -234,15 +288,42 @@ export async function watchGuestAiRequests({
     if (mode === 'package') request.loading_finished = true;
     const pending = send('Network.getResponseBody', { requestId })
       .then(({ body, base64Encoded }) => {
+        if (mode === 'package') request.response_body_observed = true;
         if (request.status !== null && request.status >= 400) {
           request.code = structuredErrorCode(body, base64Encoded);
+        } else if (requests.get(`${sessionId}:${requestId}`)?.kind === 'tool_results') {
+          try {
+            const data = JSON.parse(
+              base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body,
+            );
+            request.continuation_needed = data.continuation_needed === true;
+            request.resolved_calls = [
+              ...(Array.isArray(data.resolved) ? data.resolved : []),
+              ...(Array.isArray(data.already_resolved) ? data.already_resolved : []),
+            ]
+              .filter((value) => typeof value === 'string')
+              .map(conversationFingerprint);
+            request.result_accepted =
+              Array.isArray(data.resolved) &&
+              Array.isArray(data.not_found ?? []) &&
+              !data.not_found?.length;
+          } catch {
+            request.result_accepted = false;
+          }
         } else {
           const terminal = streamTerminal(body, base64Encoded);
-          request.terminal_success = terminal.terminal;
+          request.transport_complete = terminal.terminal;
+          request.semantic_completion = terminal.completion;
+          request.semantic_events = terminal.events;
+          request.delegated_calls = terminal.delegated;
+          request.settled_calls = terminal.settled;
+          request.terminal_success = terminal.terminal && terminal.completion === 'success';
           request.stream_error = terminal.error;
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (mode === 'package') request.response_body_observed = false;
+      });
     pendingCodes.add(pending);
     void pending.finally(() => pendingCodes.delete(pending));
   };
@@ -292,6 +373,92 @@ export async function watchGuestAiRequests({
     }
   };
 
+  const snapshotRequests = () => {
+    return [...requests.values()]
+      .filter((entry) => confirmedSessions.has(entry.sessionId) && entry.kind === 'start')
+      .map((entry) => {
+        const { delegated_calls, settled_calls, ...record } = entry.record;
+        if (mode !== 'package') return record;
+        // Only the same armed turn AND conversation can contribute a continuation.
+        const related = [...requests.values()].filter(
+          (other) =>
+            confirmedSessions.has(other.sessionId) &&
+            other.record.attempt === record.attempt &&
+            other.record.conversation_fingerprint === record.conversation_fingerprint,
+        );
+        const pending = new Set();
+        const semanticEvents = [];
+        const delegated = new Set();
+        let finalStream = null;
+        let lastResultIndex = -1;
+        let finalStreamIndex = -1;
+        let streamError = false;
+        for (const [index, other] of related.entries()) {
+          const row = other.record;
+          for (const call of row.delegated_calls ?? []) {
+            pending.add(call);
+            delegated.add(call);
+          }
+          // Local completion is not server acceptance. Only a successful result POST settles delegation.
+          if (other.kind === 'tool_results' && row.status === 200 && row.result_accepted) {
+            for (const call of row.resolved_calls ?? []) pending.delete(call);
+            lastResultIndex = index;
+          }
+          if (other.kind !== 'tool_results') {
+            finalStream = other;
+            finalStreamIndex = index;
+          }
+          streamError ||= row.stream_error === true;
+          semanticEvents.push(...(row.semantic_events ?? []));
+        }
+        const completion = finalStream?.record.semantic_completion ?? null;
+        const complete = finalStream?.record.transport_complete === true;
+        const resultResumeVerified =
+          delegated.size === 0 ||
+          (pending.size === 0 &&
+            finalStream?.kind === 'resume' &&
+            lastResultIndex >= 0 &&
+            lastResultIndex < finalStreamIndex);
+        return {
+          ...record,
+          semantic_completion: completion,
+          delegated_call_count: delegated.size,
+          result_resume_verified: resultResumeVerified,
+          pending_tool_count: pending.size,
+          resume_count: related.filter((other) => other.kind === 'resume').length,
+          tool_result_posts: related.filter((other) => other.kind === 'tool_results').length,
+          tool_result_successes: related.filter(
+            (other) => other.kind === 'tool_results' && other.record.result_accepted,
+          ).length,
+          continuation_requests: related
+            .filter((other) => other.kind !== 'start')
+            .map((other) => ({
+              kind: other.kind,
+              status: other.record.status,
+              loading_finished: other.record.loading_finished,
+              response_body_observed: other.record.response_body_observed === true,
+              ...(other.kind === 'tool_results'
+                ? {
+                    result_accepted: other.record.result_accepted === true,
+                    continuation_needed: other.record.continuation_needed === true,
+                  }
+                : {
+                    semantic_completion: other.record.semantic_completion ?? null,
+                    transport_complete: other.record.transport_complete === true,
+                  }),
+            })),
+          semantic_events: semanticEvents.slice(-100),
+          stream_error: streamError,
+          terminal_success:
+            complete &&
+            completion === 'success' &&
+            pending.size === 0 &&
+            resultResumeVerified &&
+            !streamError,
+        };
+      });
+  };
+
   if (mode === 'package') {
     assert.ok(panel, 'package_guest_panel_session_required');
     await panel.send('Network.enable');
@@ -307,7 +474,7 @@ export async function watchGuestAiRequests({
         armedLabel = label;
       },
       snapshot() {
-        return [...requests.values()].map((entry) => ({ ...entry.record }));
+        return snapshotRequests();
       },
       async diagnostics() {
         return { mode: 'panel', counters: { ...counters }, buffered_requests: requests.size };
@@ -373,9 +540,7 @@ export async function watchGuestAiRequests({
       armedLabel = label;
     },
     snapshot() {
-      return [...requests.values()]
-        .filter((entry) => confirmedSessions.has(entry.sessionId))
-        .map((entry) => ({ ...entry.record }));
+      return snapshotRequests();
     },
     async diagnostics() {
       let inventory;

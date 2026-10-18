@@ -167,6 +167,7 @@ async function observe(panel, expected = {}) {
         streamTrace: window.__guestChatStreamTrace?.snapshot() ?? null,
         sendExecution: window.__guestChatSendExecutionProbe?.snapshot() ?? null,
         replyCount: replies.length,
+        assistantDom: controls.assistantDom,
         answerContainsNonce: Boolean(${JSON.stringify(expected.nonce ?? null)}) &&
           latestReply.includes(${JSON.stringify(expected.nonce ?? '')}),
         answerContainsFixtureHeading: Boolean(${JSON.stringify(expected.fixtureHeading ?? null)}) &&
@@ -619,6 +620,7 @@ function diagnosticState(state, fixture) {
     sendEnabled: state.sendEnabled,
     streaming: state.streaming,
     replyCount: state.replyCount,
+    assistantDom: state.assistantDom,
     answerContainsNonce: state.answerContainsNonce,
     answerContainsFixtureHeading: state.answerContainsFixtureHeading,
     answerMatchesPublicStages: state.answerMatchesPublicStages,

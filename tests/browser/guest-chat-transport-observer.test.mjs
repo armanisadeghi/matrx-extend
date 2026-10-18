@@ -456,7 +456,7 @@ test('package panel transport requires a correlated successful terminal NDJSON r
   await emit(
     'complete',
     200,
-    '{"event":"completion","data":{"operation":"user_request","status":"success"}}\n{"event":"end","data":{"reason":"complete"}}\n',
+    '{"event":"init","data":{"operation":"user_request","operation_id":"private-operation"}}\n{"event":"completion","data":{"operation":"user_request","operation_id":"private-operation","status":"success"}}\n{"event":"end","data":{"reason":"complete"}}\n',
     'complete',
   );
   const rows = watch.snapshot();
@@ -800,3 +800,299 @@ test('discovery delivers the late offscreen identity required for transport proo
     'observer cleanup must preserve session-wide discovery for other harness consumers',
   );
 });
+
+test('package observer waits across delegated EOF, real result delivery and correlated resume completion', async () => {
+  const events = new EventEmitter();
+  const bodies = new Map();
+  const panel = {
+    on: (name, listener) => {
+      events.on(name, listener);
+      return () => events.off(name, listener);
+    },
+    send: async (method, { requestId } = {}) =>
+      method === 'Network.getResponseBody'
+        ? { body: bodies.get(requestId), base64Encoded: false }
+        : {},
+  };
+  const watch = await watchGuestAiRequests({
+    panel,
+    panelTarget: { url: 'chrome-extension://abc/sidepanel.html' },
+    mode: 'package',
+  });
+  watch.arm('opening');
+  const emit = async (id, path, body, postData = {}) => {
+    bodies.set(id, body);
+    events.emit('Network.requestWillBeSent', {
+      requestId: id,
+      request: {
+        method: 'POST',
+        url: `https://server.invalid${path}`,
+        postData: JSON.stringify({
+          conversation_id: 'private-conversation',
+          is_new: true,
+          ...postData,
+        }),
+      },
+    });
+    events.emit('Network.responseReceived', { requestId: id, response: { status: 200 } });
+    events.emit('Network.loadingFinished', { requestId: id });
+    await watch.settle();
+  };
+  await emit(
+    'start',
+    '/ai/mandates/extend.browser_chat',
+    [
+      {
+        event: 'tool_event',
+        data: { event: 'tool_delegated', call_id: 'private-call', tool_name: 'get_page_text' },
+      },
+      { event: 'end', data: { reason: 'complete' } },
+    ]
+      .map((row) => JSON.stringify(row))
+      .join('\n'),
+  );
+  assert.equal(watch.snapshot()[0].terminal_success, false, 'transport EOF is not request success');
+  assert.equal(watch.snapshot()[0].pending_tool_count, 1);
+  await emit(
+    'unrelated-resume',
+    '/ai/conversations/another-conversation/resume',
+    [
+      { event: 'init', data: { operation: 'user_request', operation_id: 'private-operation' } },
+      {
+        event: 'completion',
+        data: { operation: 'user_request', operation_id: 'private-operation', status: 'success' },
+      },
+      { event: 'end', data: { reason: 'complete' } },
+    ]
+      .map((row) => JSON.stringify(row))
+      .join('\n'),
+  );
+  assert.equal(
+    watch.snapshot()[0].terminal_success,
+    false,
+    'another conversation cannot finish this tool call',
+  );
+  assert.equal(watch.snapshot()[0].resume_count, 0);
+
+  await emit(
+    'result',
+    '/ai/conversations/private-conversation/tool_results',
+    JSON.stringify({ resolved: ['private-call'], continuation_needed: true }),
+    { results: [{ call_id: 'private-call', output: { text: 'private-tool-output' } }] },
+  );
+  assert.equal(
+    watch.snapshot()[0].terminal_success,
+    false,
+    'accepted tool output still needs resumed answer',
+  );
+  assert.equal(watch.snapshot()[0].pending_tool_count, 0);
+  await emit(
+    'resume',
+    '/ai/conversations/private-conversation/resume',
+    [
+      { event: 'init', data: { operation: 'user_request', operation_id: 'private-operation' } },
+      {
+        event: 'completion',
+        data: { operation: 'user_request', operation_id: 'private-operation', status: 'success' },
+      },
+      { event: 'end', data: { reason: 'complete' } },
+    ]
+      .map((row) => JSON.stringify(row))
+      .join('\n'),
+  );
+  const rows = watch.snapshot();
+  assert.equal(rows.length, 1, 'continuations belong to the opening turn, never extra user sends');
+  assert.equal(rows[0].terminal_success, true);
+  assert.equal(rows[0].semantic_completion, 'success');
+  assert.equal(rows[0].resume_count, 1);
+  assert.equal(rows[0].tool_result_successes, 1);
+  assert.equal(JSON.stringify(rows).includes('private-'), false);
+
+  watch.arm('same_conversation_followup');
+  await emit(
+    'failed-turn',
+    '/ai/mandates/extend.browser_chat',
+    [
+      { event: 'init', data: { operation: 'user_request', operation_id: 'private-operation' } },
+      {
+        event: 'completion',
+        data: { operation: 'user_request', operation_id: 'private-operation', status: 'failed' },
+      },
+      { event: 'end', data: { reason: 'complete' } },
+    ]
+      .map((row) => JSON.stringify(row))
+      .join('\n'),
+    { is_new: false },
+  );
+  assert.equal(watch.snapshot()[1].semantic_completion, 'failed');
+  assert.equal(watch.snapshot()[1].terminal_success, false);
+  assert.equal(watch.snapshot()[1].stream_error, true);
+  await watch.stop();
+});
+
+for (const scenario of [
+  'missing_result',
+  'failed_result',
+  'missing_resume',
+  'failed_resume',
+  'stale_completion',
+]) {
+  test(`delegated package turn refuses ${scenario} despite optimistic start success`, async () => {
+    const events = new EventEmitter();
+    const bodies = new Map();
+    const panel = {
+      on(name, listener) {
+        events.on(name, listener);
+        return () => events.off(name, listener);
+      },
+      async send(method, { requestId } = {}) {
+        return method === 'Network.getResponseBody'
+          ? { body: bodies.get(requestId), base64Encoded: false }
+          : {};
+      },
+    };
+    const watch = await watchGuestAiRequests({
+      panel,
+      panelTarget: { url: 'chrome-extension://abc/sidepanel.html' },
+      mode: 'package',
+    });
+    watch.arm('opening');
+    const emit = async (id, path, rows, status = 200) => {
+      bodies.set(
+        id,
+        Array.isArray(rows)
+          ? rows.map((row) => JSON.stringify(row)).join('\n')
+          : JSON.stringify(rows),
+      );
+      events.emit('Network.requestWillBeSent', {
+        requestId: id,
+        request: {
+          method: 'POST',
+          url: `https://server.invalid${path}`,
+          postData: JSON.stringify({ conversation_id: 'private-conversation', is_new: true }),
+        },
+      });
+      events.emit('Network.responseReceived', { requestId: id, response: { status } });
+      events.emit('Network.loadingFinished', { requestId: id });
+      await watch.settle();
+    };
+    await emit('start', '/ai/mandates/extend.browser_chat', [
+      { event: 'tool_event', data: { event: 'tool_delegated', call_id: 'private-call' } },
+      { event: 'tool_event', data: { event: 'tool_completed', call_id: 'private-call' } },
+      { event: 'init', data: { operation: 'user_request', operation_id: 'private-operation' } },
+      {
+        event: 'completion',
+        data: { operation: 'user_request', operation_id: 'private-operation', status: 'success' },
+      },
+      { event: 'end', data: { reason: 'complete' } },
+    ]);
+    if (scenario !== 'missing_result')
+      await emit(
+        'result',
+        '/ai/conversations/private-conversation/tool_results',
+        { resolved: ['private-call'], not_found: [], continuation_needed: true },
+        scenario === 'failed_result' ? 500 : 200,
+      );
+    if (scenario === 'stale_completion')
+      await emit('resume', '/ai/conversations/private-conversation/resume', [
+        { event: 'end', data: { reason: 'complete' } },
+      ]);
+    if (['missing_result', 'failed_result'].includes(scenario))
+      await emit(
+        'resume-without-accepted-result',
+        '/ai/conversations/private-conversation/resume',
+        [
+          { event: 'init', data: { operation: 'user_request', operation_id: 'private-operation' } },
+          {
+            event: 'completion',
+            data: {
+              operation: 'user_request',
+              operation_id: 'private-operation',
+              status: 'success',
+            },
+          },
+          { event: 'end', data: { reason: 'complete' } },
+        ],
+      );
+    if (scenario === 'failed_resume')
+      await emit(
+        'failed-resume',
+        '/ai/conversations/private-conversation/resume',
+        { error: 'resume_failed' },
+        500,
+      );
+    assert.equal(
+      watch.snapshot()[0].terminal_success,
+      false,
+      `${scenario} must not reuse optimistic start completion`,
+    );
+    await watch.stop();
+  });
+}
+
+for (const scenario of ['missing_init', 'missing_operation_id', 'mismatched_operation_id']) {
+  test(`package observer rejects ${scenario} for semantic completion`, async () => {
+    const events = new EventEmitter();
+    const rows = [
+      ...(scenario === 'missing_init'
+        ? []
+        : [
+            {
+              event: 'init',
+              data: { operation: 'user_request', operation_id: 'private-opening-operation' },
+            },
+          ]),
+      {
+        event: 'completion',
+        data: {
+          operation: 'user_request',
+          status: 'success',
+          ...(scenario === 'missing_operation_id'
+            ? {}
+            : {
+                operation_id:
+                  scenario === 'mismatched_operation_id'
+                    ? 'private-unrelated-operation'
+                    : 'private-opening-operation',
+              }),
+        },
+      },
+      { event: 'end', data: { reason: 'complete' } },
+    ];
+    const panel = {
+      on(name, listener) {
+        events.on(name, listener);
+        return () => events.off(name, listener);
+      },
+      async send(method) {
+        return method === 'Network.getResponseBody'
+          ? { body: rows.map((row) => JSON.stringify(row)).join('\n'), base64Encoded: false }
+          : {};
+      },
+    };
+    const watch = await watchGuestAiRequests({
+      panel,
+      panelTarget: { url: 'chrome-extension://abc/sidepanel.html' },
+      mode: 'package',
+    });
+    watch.arm('opening');
+    events.emit('Network.requestWillBeSent', {
+      requestId: 'op-start',
+      request: {
+        method: 'POST',
+        url: 'https://server.invalid/ai/mandates/extend.browser_chat',
+        postData: JSON.stringify({ conversation_id: 'private-conversation', is_new: true }),
+      },
+    });
+    events.emit('Network.responseReceived', { requestId: 'op-start', response: { status: 200 } });
+    events.emit('Network.loadingFinished', { requestId: 'op-start' });
+    await watch.settle();
+    assert.equal(
+      watch.snapshot()[0].terminal_success,
+      false,
+      `${scenario} cannot complete this user request`,
+    );
+    assert.equal(JSON.stringify(watch.snapshot()).includes('private-'), false);
+    await watch.stop();
+  });
+}

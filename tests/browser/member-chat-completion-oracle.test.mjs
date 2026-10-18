@@ -11,6 +11,8 @@ const row = {
   status: 200,
   loading_finished: true,
   terminal_success: true,
+  semantic_completion: 'success',
+  pending_tool_count: 0,
   stream_error: false,
   path_class: 'canonical',
   conversation_fingerprint: 'ec8c373c1df3c614',

@@ -435,6 +435,7 @@ async function chatObservation(panel) {
         streaming: controls.streaming,
         completedReplyCount: controls.replies.length,
         replyCount: controls.replies.length,
+        assistantDom: controls.assistantDom,
         latestReplyText: controls.replies.at(-1) ?? '',
         errorNotice: [...(pane?.querySelectorAll('[role="alert"]') ?? [])].some(el => el.getBoundingClientRect().height > 0),
         terminalAnswerError: false,
@@ -1549,6 +1550,18 @@ try {
                 priorReplyCount,
                 expectedTerms,
               });
+              report.chat_turn_observations ??= {};
+              report.chat_turn_observations[attempt] = {
+                verdict,
+                reply_count: state.replyCount,
+                streaming: state.streaming,
+                assistant_dom: state.assistantDom,
+                expected_terms_present: expectedTerms.map((term) =>
+                  state.latestReplyText.includes(term),
+                ),
+                prose_length: state.latestReplyText.length,
+                requests: memberTransport.turnRequests(),
+              };
               return { state, verdict };
             },
             (value) => value?.verdict !== 'in_progress',

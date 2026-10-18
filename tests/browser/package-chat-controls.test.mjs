@@ -179,3 +179,28 @@ function readPackageChatControlsWithWindow(window, pane) {
     getComputedStyle: (node) => window.getComputedStyle(node),
   });
 }
+
+test('assistant prose excludes pending and expanded tool cards plus hidden plain view', async () => {
+  const { window, pane, read } = surface({
+    extra: `
+    <article role="article" aria-label="Assistant answer"><div data-message-content>
+      <div class="group/toolcard"><button>Page Text</button><p>Capture Understand Use CARD-73</p></div>
+    </div></article>
+    <article role="article" aria-label="Assistant answer"><div data-message-content>
+      <div style="display:none">Old answer</div><p>Capture Understand Use OPEN-73</p>
+      <div class="group/toolcard"><p>Unrelated expanded tool output</p></div>
+    </div></article>`,
+  });
+  assert.deepEqual(
+    Array.from(read().replies).map((text) => text.trim()),
+    ['Capture Understand Use OPEN-73'],
+  );
+  assert.equal(read().assistantDom.toolCardCount, 2);
+  assert.equal(read().assistantDom.toolOnlyArticleCount, 1);
+  pane.querySelectorAll('article')[1].querySelector('p').textContent = 'Understand FOLLOW-92';
+  assert.deepEqual(
+    Array.from(read().replies).map((text) => text.trim()),
+    ['Understand FOLLOW-92'],
+  );
+  await window.happyDOM.abort();
+});

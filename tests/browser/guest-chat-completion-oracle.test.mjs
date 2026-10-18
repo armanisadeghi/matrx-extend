@@ -95,7 +95,12 @@ test('a finalized tool bubble is still awaiting its delegated-tool resume', () =
 });
 
 test('completed resume with the wrong answer terminates as a failure', () => {
-  const resumed = { ...suspended, delegated: false, startReplyCount: 2 };
+  const resumed = {
+    ...suspended,
+    userRequestOutcome: 'success',
+    delegated: false,
+    startReplyCount: 2,
+  };
   assert.equal(
     classifyGuestTurn({
       runs: [suspended, resumed],
@@ -109,7 +114,12 @@ test('completed resume with the wrong answer terminates as a failure', () => {
 });
 
 test('completed resume needs its own rendered nonce-grounded answer', () => {
-  const resumed = { ...suspended, delegated: false, startReplyCount: 2 };
+  const resumed = {
+    ...suspended,
+    userRequestOutcome: 'success',
+    delegated: false,
+    startReplyCount: 2,
+  };
   assert.equal(
     classifyGuestTurn({
       runs: [suspended, resumed],
@@ -133,7 +143,13 @@ test('completed resume needs its own rendered nonce-grounded answer', () => {
 });
 
 test('wire completion waits for React to render its final bubble', () => {
-  const resumed = { ...suspended, delegated: false, startReplyCount: 2, doneAt: Date.now() };
+  const resumed = {
+    ...suspended,
+    userRequestOutcome: 'success',
+    delegated: false,
+    startReplyCount: 2,
+    doneAt: Date.now(),
+  };
   assert.equal(
     classifyGuestTurn({
       runs: [suspended, resumed],
@@ -179,6 +195,8 @@ test('package turn requires terminal wire success and a newly settled grounded a
     status: 200,
     loading_finished: true,
     terminal_success: true,
+    semantic_completion: 'success',
+    pending_tool_count: 0,
     stream_error: false,
   };
   const classify = (requests, observed = state) =>
@@ -203,7 +221,12 @@ test('package turn requires terminal wire success and a newly settled grounded a
 });
 
 function streamEvent(runId, eventName, data) {
-  return streamMessage(runId, 'event', { eventName, data });
+  return streamMessage(runId, 'event', {
+    eventName,
+    data: ['init', 'completion'].includes(eventName)
+      ? { operation_id: `${runId}-operation`, ...data }
+      : data,
+  });
 }
 
 test('tool diagnostics retain target and marker booleans without tool content', () => {
@@ -262,6 +285,7 @@ test('collector keeps failed user-request completion terminal even after end com
   collector.accept(
     streamMessage('failed-run', 'text', { content: 'C82F4A Capture Understand Use' }),
   );
+  collector.accept(streamEvent('failed-run', 'init', { operation: 'user_request' }));
   collector.accept(
     streamEvent('failed-run', 'completion', { operation: 'user_request', status: 'failed' }),
   );
@@ -290,6 +314,7 @@ test('collector keeps failed user-request completion terminal even after end com
 test('collector accepts successful completion with a real new assistant reply', () => {
   let replies = 0;
   const collector = createGuestStreamCollector({ replyCount: () => replies, now: () => 1000 });
+  collector.accept(streamEvent('successful-run', 'init', { operation: 'user_request' }));
   collector.accept(
     streamEvent('successful-run', 'completion', { operation: 'user_request', status: 'success' }),
   );
@@ -311,6 +336,7 @@ test('collector accepts successful completion with a real new assistant reply', 
 
 test('completed Error reply cannot pass by echoing the fixture code and stages', () => {
   const collector = createGuestStreamCollector({ replyCount: () => 0, now: () => 1000 });
+  collector.accept(streamEvent('error-text-run', 'init', { operation: 'user_request' }));
   collector.accept(
     streamEvent('error-text-run', 'completion', { operation: 'user_request', status: 'success' }),
   );
@@ -334,6 +360,7 @@ test('completed Error reply cannot pass by echoing the fixture code and stages',
 
 test('opening answer must list the page stages in order', () => {
   const collector = createGuestStreamCollector({ replyCount: () => 0, now: () => 1000 });
+  collector.accept(streamEvent('ordered-run', 'init', { operation: 'user_request' }));
   collector.accept(
     streamEvent('ordered-run', 'completion', { operation: 'user_request', status: 'success' }),
   );
@@ -360,6 +387,7 @@ test('opening answer must list the page stages in order', () => {
 test('a completed prior turn cannot terminate a pending same-conversation follow-up', () => {
   let replies = 0;
   const collector = createGuestStreamCollector({ replyCount: () => replies, now: () => 1000 });
+  collector.accept(streamEvent('opening-run', 'init', { operation: 'user_request' }));
   collector.accept(
     streamEvent('opening-run', 'completion', { operation: 'user_request', status: 'success' }),
   );
@@ -378,6 +406,7 @@ test('a completed prior turn cannot terminate a pending same-conversation follow
   assert.equal(classifyGuestTurn({ ...common, runs: collector.snapshot().runs }), 'in_progress');
   collector.accept(streamMessage('followup-run', 'text', { content: 'reading page' }));
   assert.equal(classifyGuestTurn({ ...common, runs: collector.snapshot().runs }), 'in_progress');
+  collector.accept(streamEvent('followup-run', 'init', { operation: 'user_request' }));
   collector.accept(
     streamEvent('followup-run', 'completion', { operation: 'user_request', status: 'success' }),
   );
@@ -407,12 +436,14 @@ test('a completed prior turn cannot terminate a pending same-conversation follow
 test('a newly completed follow-up error is terminal despite an older successful answer', () => {
   let replies = 0;
   const collector = createGuestStreamCollector({ replyCount: () => replies, now: () => 1000 });
+  collector.accept(streamEvent('opening-run', 'init', { operation: 'user_request' }));
   collector.accept(
     streamEvent('opening-run', 'completion', { operation: 'user_request', status: 'success' }),
   );
   collector.accept(streamEvent('opening-run', 'end', { reason: 'complete' }));
   collector.accept(streamMessage('opening-run', 'done'));
   replies = 1;
+  collector.accept(streamEvent('followup-run', 'init', { operation: 'user_request' }));
   collector.accept(
     streamEvent('followup-run', 'completion', { operation: 'user_request', status: 'failed' }),
   );
@@ -453,6 +484,7 @@ test('uncoded 409 remains pending while another delegated tool resolves', () => 
     'awaiting_tool_resume',
   );
   collector.accept({ __matrx: true, kind: 'stream:continue', payload: {} });
+  collector.accept(streamEvent('final-resume', 'init', { operation: 'user_request' }));
   collector.accept(
     streamEvent('final-resume', 'completion', { operation: 'user_request', status: 'success' }),
   );
@@ -512,3 +544,122 @@ test('React draft diagnostic separates DOM-only, committed, missing and ambiguou
   assert.equal(readGuestReactDraft({ value: question }, question).reduxDraftMatchesExpected, null);
   assert.equal(readGuestReactDraft(null, question).domMatchesExpected, null);
 });
+
+// Break: transport EOF while a delegated browser call is still working is mistaken for an answer.
+test('package oracle waits for semantic success and delegated result settlement', () => {
+  const input = {
+    attempt: 'opening',
+    priorReplyCount: 0,
+    expectedTerms: ['Capture', 'Understand', 'Use'],
+    state: { streaming: false, replyCount: 1, latestReplyText: 'Capture Understand Use' },
+    requests: [
+      {
+        attempt: 'opening',
+        status: 200,
+        loading_finished: true,
+        terminal_success: true,
+        stream_error: false,
+        semantic_completion: null,
+        pending_tool_count: 1,
+      },
+    ],
+  };
+  assert.equal(classifyPackageGuestTurn(input), 'in_progress');
+  const row = { ...input.requests[0], semantic_completion: 'success', pending_tool_count: 0 };
+  assert.equal(classifyPackageGuestTurn({ ...input, requests: [row] }), 'terminal_answer');
+  assert.equal(
+    classifyPackageGuestTurn({ ...input, requests: [{ ...row, pending_tool_count: 1 }] }),
+    'in_progress',
+  );
+  assert.equal(
+    classifyPackageGuestTurn({ ...input, requests: [{ ...row, semantic_completion: 'failed' }] }),
+    'terminal_error',
+  );
+  assert.equal(
+    classifyPackageGuestTurn({
+      ...input,
+      requests: [row],
+      state: { ...input.state, latestReplyText: 'Page Text' },
+    }),
+    'terminal_wrong_answer',
+  );
+  assert.equal(
+    classifyPackageGuestTurn({
+      ...input,
+      requests: [row],
+      state: { ...input.state, replyCount: 0, latestReplyText: '' },
+    }),
+    'in_progress',
+  );
+  assert.equal(
+    classifyPackageGuestTurn({
+      ...input,
+      requests: [row],
+      expectedTerms: ['Understand'],
+      state: { ...input.state, latestReplyText: 'Understand' },
+    }),
+    'terminal_answer',
+  );
+});
+
+test('legacy turn never treats transport end or row completion as semantic success', () => {
+  const collector = createGuestStreamCollector({ now: () => 1000 });
+  collector.accept(
+    streamEvent('transport-only', 'record_update', {
+      table: 'chat.user_request',
+      status: 'completed',
+    }),
+  );
+  collector.accept(streamEvent('transport-only', 'end', { reason: 'complete' }));
+  collector.accept(streamMessage('transport-only', 'done'));
+  const input = {
+    runs: collector.snapshot().runs,
+    assistantText: 'Capture Understand Use',
+    replyCount: 1,
+    expectedTerms: ['Capture', 'Understand', 'Use'],
+    now: 2000,
+  };
+  assert.equal(classifyGuestTurn(input), 'in_progress');
+  collector.accept(streamEvent('transport-only', 'init', { operation: 'user_request' }));
+  collector.accept(
+    streamEvent('transport-only', 'completion', { operation: 'user_request', status: 'success' }),
+  );
+  assert.equal(classifyGuestTurn({ ...input, runs: collector.snapshot().runs }), 'terminal_answer');
+});
+
+for (const scenario of ['missing_init', 'missing_operation_id', 'mismatched_operation_id']) {
+  test(`legacy collector refuses ${scenario} at semantic completion`, () => {
+    const collector = createGuestStreamCollector({ now: () => 1000 });
+    if (scenario !== 'missing_init')
+      collector.accept(streamEvent('operation-check', 'init', { operation: 'user_request' }));
+    collector.accept(
+      streamMessage('operation-check', 'event', {
+        eventName: 'completion',
+        data: {
+          operation: 'user_request',
+          status: 'success',
+          ...(scenario === 'missing_operation_id'
+            ? {}
+            : {
+                operation_id:
+                  scenario === 'mismatched_operation_id'
+                    ? 'unrelated-operation'
+                    : 'operation-check-operation',
+              }),
+        },
+      }),
+    );
+    collector.accept(streamEvent('operation-check', 'end', { reason: 'complete' }));
+    collector.accept(streamMessage('operation-check', 'done'));
+    assert.equal(
+      classifyGuestTurn({
+        runs: collector.snapshot().runs,
+        assistantText: 'Capture Understand Use',
+        replyCount: 1,
+        expectedTerms: ['Capture', 'Understand', 'Use'],
+        now: 2000,
+      }),
+      'in_progress',
+    );
+  });
+}
