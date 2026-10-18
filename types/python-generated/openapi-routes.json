@@ -1395,6 +1395,12 @@
  "/bettermode/public/status": {
   "get": []
  },
+ "/billing/free-allowance/features/{feature}": {
+  "get": []
+ },
+ "/billing/free-allowance/report": {
+  "get": []
+ },
  "/bing-integrations/api-key": {
   "post": [
    "application/json"
@@ -1837,6 +1843,9 @@
  "/cloud-files/list": {
   "get": []
  },
+ "/cloud-files/machine-session": {
+  "post": []
+ },
  "/cloud-files/put": {
   "put": [
    "multipart/form-data"
@@ -2052,6 +2061,14 @@
   "post": [
    "application/json"
   ]
+ },
+ "/comparison/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/comparison/resolve/price": {
+  "get": []
  },
  "/comparison/run": {
   "post": [
@@ -3477,6 +3494,21 @@
  "/github-integrations/webhook": {
   "post": []
  },
+ "/github-sync/import": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/github-sync/repositories": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/github-sync/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/go1/public/status": {
   "get": []
  },
@@ -4886,6 +4918,16 @@
  "/mandates/coverage/states": {
   "get": []
  },
+ "/mandates/fix-with-ai/approve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/fix-with-ai/draft": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/mandates/impact": {
   "post": [
    "application/json"
@@ -5690,6 +5732,23 @@
  },
  "/notion-webhook": {
   "post": []
+ },
+ "/notion/connection": {
+  "get": [],
+  "delete": []
+ },
+ "/notion/connection/check": {
+  "post": []
+ },
+ "/notion/oauth/authorize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/notion/oauth/complete": {
+  "post": [
+   "application/json"
+  ]
  },
  "/ntfy/public/health": {
   "get": []
@@ -8015,6 +8074,23 @@
  "/slab/public/status": {
   "get": []
  },
+ "/slack/connection": {
+  "get": [],
+  "delete": []
+ },
+ "/slack/connection/check": {
+  "post": []
+ },
+ "/slack/oauth/authorize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/slack/oauth/complete": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/sleekplan/public/status": {
   "get": []
  },
@@ -8283,6 +8359,11 @@
  },
  "/social/posts/{post_id}/transcript": {
   "post": []
+ },
+ "/social/posts/{post_id}/video-upload": {
+  "post": [
+   "application/json"
+  ]
  },
  "/social/posts/{post_id}/words": {
   "post": []
@@ -9217,6 +9298,14 @@
  "/v1/meet/webhooks/livekit": {
   "post": []
  },
+ "/v1/oauth-apps": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/oauth-apps/{app_id}": {
+  "delete": []
+ },
  "/v1/sql": {
   "post": [
    "application/json"
@@ -9805,6 +9894,16 @@
   "get": []
  },
  "/web-credentials/sites/{site_id}/credential": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/web-credentials/sites/{site_id}/pagespeed": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/web-credentials/sites/{site_id}/search-performance": {
   "post": [
    "application/json"
   ]
