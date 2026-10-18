@@ -7,6 +7,7 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import {
   admitReleaseMember,
+  proveSource,
   releaseMemberPlan,
   requireReleaseMemberSource,
   verifyReleaseMemberBytes,
@@ -364,6 +365,54 @@ test('exact member identity diagnostic delta is admitted without widening paths'
       /release_member_product_changed/,
       `unreviewed path must refuse admission: ${path}`,
     );
+});
+
+// The Member A false-negative repair and its durable defect record remain test-only.
+test('member follow-up harness defect admits only exact test and record paths', () => {
+  const reviewed = [
+    'tests/browser/reviewer-chat-organization-boundary.test.mjs',
+    'docs/stabilization/defects/EXT-D-0239.json',
+  ];
+  requireReleaseMemberSource(true, reviewed);
+  for (const path of [
+    'tests/browser/reviewer-chat-organization-boundary-copy.test.mjs',
+    'docs/stabilization/defects/EXT-D-0239.json.bak',
+    'docs/stabilization/defects/EXT-D-0240.json',
+    'docs/stabilization/defects/../package.json',
+    'src/features/chat/ChatView.tsx',
+  ])
+    assert.throws(
+      () => requireReleaseMemberSource(true, [...reviewed, path]),
+      /release_member_product_changed/,
+      path,
+    );
+});
+
+test('frozen .537 candidate admits only the reviewed D0223 preflight commit and blobs', () => {
+  const source = '1b612c67410576b5d077fe20bee4fd33455d987d';
+  const head = '5ec68e5e53d0902454329d7708ba178d571fe47f';
+  const proof = proveSource(source, head);
+  assert.equal(proof.storeEligibility, false);
+  assert.deepEqual(
+    proof.reviewedChanges
+      .filter((row) => row.commit === 'db9434441dd1f29eda3c0242b081971befa3dbdd')
+      .map((row) => [row.path, row.blob]),
+    [
+      [
+        'docs/stabilization/resource-journals/ext-d-0223-native-retest-preflight-20261018-01.jsonl',
+        'f01a7788e4501d348003173fdf33f585656e35d2',
+      ],
+      [
+        'docs/stabilization/runs/ext-d-0223-t10-native-retest-20261018-01.json',
+        'b69d14ada91d1bc4a12a579b36cafc4a14db0b56',
+      ],
+    ],
+  );
+  assert.throws(
+    () => proveSource('ec7b09cc64c83d48c7533da84735da764e0c9701', head),
+    /release_member_product_changed/,
+    'the reviewed preflight is limited to the frozen .537 candidate',
+  );
 });
 
 // Break caught: the immutable member candidate cannot be retested after a

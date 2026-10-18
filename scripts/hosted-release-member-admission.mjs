@@ -117,6 +117,7 @@ function reviewedStabilizationPath(path) {
       'docs/stabilization/STATUS.html',
       'docs/stabilization/inventory.json',
       'docs/stabilization/defects/EXT-D-0228.json',
+      'docs/stabilization/defects/EXT-D-0239.json',
     ].includes(path)
   )
     return true;
@@ -272,6 +273,13 @@ export function proveSource(sourceSha, workflowSha) {
     'docs/stabilization/resource-journals/hosted-package-39074994379-1.jsonl',
   ];
   const reviewedStorePeer = '66b9b1b1852036d8aa565715455f94935177c522';
+  const reviewedD223Preflight = 'db9434441dd1f29eda3c0242b081971befa3dbdd';
+  const reviewedD223PreflightBlobs = {
+    'docs/stabilization/resource-journals/ext-d-0223-native-retest-preflight-20261018-01.jsonl':
+      'f01a7788e4501d348003173fdf33f585656e35d2',
+    'docs/stabilization/runs/ext-d-0223-t10-native-retest-20261018-01.json':
+      'b69d14ada91d1bc4a12a579b36cafc4a14db0b56',
+  };
   const reviewedStoreReceipt =
     'docs/stabilization/evidence/store-release-20261017/tool-drift-release-repair.json';
   const reviewedChanges = [];
@@ -308,6 +316,19 @@ export function proveSource(sourceSha, workflowSha) {
           'release_member_reviewed_blob_mismatch',
         );
         reviewedChanges.push({ commit, path, blob: expectedBlob });
+        return false;
+      }
+      if (
+        sourceSha === reviewedCandidateSource &&
+        commit === reviewedD223Preflight &&
+        path in reviewedD223PreflightBlobs
+      ) {
+        assert.equal(
+          git(['rev-parse', `${commit}:${path}`]),
+          reviewedD223PreflightBlobs[path],
+          'release_member_reviewed_blob_mismatch',
+        );
+        reviewedChanges.push({ commit, path, blob: reviewedD223PreflightBlobs[path] });
         return false;
       }
       return (

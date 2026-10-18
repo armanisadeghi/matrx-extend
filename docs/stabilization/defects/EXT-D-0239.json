@@ -1,0 +1,74 @@
+{
+  "id": "EXT-D-0239",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T02"],
+  "title": "Member Chat acceptance rejects a successful persisted-conversation follow-up",
+  "surface": "Hosted native Member A Chat acceptance harness",
+  "auth_mode": "member",
+  "organization_context": "Signed-in member with the selected organization bound to both requests",
+  "preconditions": [
+    "Run the frozen v0.2.537 Member A acceptance against the exact published artifact.",
+    "Send an opening question and a follow-up in the same conversation."
+  ],
+  "reproduction": [
+    "Inspect hosted acceptance run 39106477151, artifact 12127973860, and its reviewer-chat-store native report.",
+    "The opening POST to the agent/mandate route and the follow-up POST to /ai/conversations/{id} each return HTTP 200 and reach semantic terminal success with visible assistant answers.",
+    "Observe member_same_conversation_followup_route_unverified: the member oracle rejects the valid conversation route; the authenticated transport observer records only the first start."
+  ],
+  "expected": "The harness accepts exactly one authenticated initial start and one authenticated persisted-conversation follow-up, both for the selected organization and same conversation, only after terminal semantic success and a new grounded assistant answer for each turn.",
+  "actual": "The package observer captured two successful same-conversation turns, but the member oracle accepted only agent/mandate routes and the authenticated transport observer counted only starts. The harness stopped before its result screenshots and could not adjudicate Member A.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39106477151",
+    "Hosted artifact 12127973860: test-results/reviewer-chat-store-74466c88-25f8-448b-9d8b-d9fe70f702ca.json",
+    "tests/browser/member-chat-completion-oracle.mjs",
+    "tests/browser/reviewer-chat-store-acceptance.mjs"
+  ],
+  "build_receipt": {
+    "source_sha": "1b612c67410576b5d077fe20bee4fd33455d987d",
+    "version": "0.2.537",
+    "kind": "native_store_zip_candidate_key_adapted",
+    "native_run_id": 39106477151,
+    "native_evidence_artifact_id": 12127973860,
+    "loaded_tree_sha256": "07c8c08859d7c4f443e58376a4d2b1ffb1d42b1c5020ed151fdee93eec19e687"
+  },
+  "reproducibility": "Captured native metadata deterministically distinguishes the opening canonical route from the valid persisted-conversation follow-up route; focused harness tests reproduce the original false negative.",
+  "severity": "S2: Member A acceptance blocked by test infrastructure; no product failure established.",
+  "priority": "P1: rerun the corrected native acceptance before assigning Member A credit.",
+  "state": "fixed",
+  "owner": "member_0537_harness_fix",
+  "cause": "Two harness observers used an initial-start-only request model, while the extension's normal same-conversation follow-up uses POST /ai/conversations/{id}.",
+  "sibling_census": "The package turn observer already recognizes persisted follow-ups. The member semantic oracle, authenticated transport observer, and organization-boundary test fixture were aligned to one start plus one same-conversation follow-up.",
+  "fix_sha": "5ec68e5e53d0902454329d7708ba178d571fe47f",
+  "original_retest_runs": [39106477151],
+  "surrounding_retest_runs": [],
+  "reviewer": "Fresh independent peer review passed correctness and test adequacy after ordered-turn and sibling-fixture repairs.",
+  "acceptance_criteria": [
+    "Opening start and persisted follow-up are both HTTP 200, terminally and semantically successful, with no pending tools or stream error.",
+    "Both requests carry the selected organization and the same conversation; duplicate, reordered, unrelated, pending, or failed requests refuse.",
+    "A guarded native rerun has valid browser, guest, and package resource finals before Member A receives product credit."
+  ],
+  "verification": {
+    "focused": "36/36 combined browser oracle tests pass; pnpm compile and focused Biome pass.",
+    "peer": "Independent final correctness and test-adequacy reviews PASS.",
+    "native": "Pending guarded native rerun. Original run 39106477151 has guest resource CPU_PENDING/exit 3, so it carries zero product credit. The early harness assertion preceded the next 16-second resource watch; no resource threshold was changed."
+  },
+  "limitations": [
+    "The original native run is resource-invalid despite two diagnostic HTTP 200 terminal replies.",
+    "No Member A product or Store acceptance is claimed from this harness repair."
+  ],
+  "next_action": "Release owner reruns Member A against the exact frozen v0.2.537 artifact through the guarded hosted path and reviews native answers and all resource finals.",
+  "transition_history": [
+    {
+      "at": "2026-10-18T07:14:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Native run exposed a valid persisted-conversation follow-up rejected by the harness; resource final invalidated product credit."
+    },
+    {
+      "at": "2026-10-18T07:20:00Z",
+      "from": "open",
+      "to": "fixed",
+      "reason": "Harness repair 5ec68e5e5 passed focused tests and independent review; native retest remains pending."
+    }
+  ]
+}
