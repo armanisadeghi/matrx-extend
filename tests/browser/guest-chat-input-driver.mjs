@@ -324,7 +324,7 @@ export function createGuestInputDriver({ evaluate, waitFor, observe, click, repo
       if (boundary) {
         boundary.execution_after_click = await evaluate(
           panel,
-          'window.__guestChatSendExecutionProbe?.stopSubscription() ?? null',
+          'window.__guestChatSendExecutionProbe?.snapshot() ?? null',
         ).catch(() => null);
         if (boundary.click && !boundary.click.afterClick)
           boundary.click.afterClick = await evaluate(

@@ -1,9 +1,14 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import test from 'node:test';
 import { Window } from 'happy-dom';
 import { createGuestInputDriver } from './guest-chat-input-driver.mjs';
+
+const { configureStore } = createRequire(
+  import.meta.resolve('@ai-matrx/chat/store/create-chat-store'),
+)('@reduxjs/toolkit');
 
 const source = await readFile(
   new URL('./guest-chat-store-acceptance.mjs', import.meta.url),
@@ -280,20 +285,52 @@ test('optional Values does not silently accept duplicate controls or a failed in
 // EXT-D-0230: a focus-driven React remount must preserve the user intent, not node identity.
 // SUT: the guest submission driver. DOM, probe, and draft inspection run for real;
 // only native CDP input/pointer delivery are emulated at the browser boundary.
-function harness({ remount = true, breakAt = null } = {}) {
+function harness({ remount = true, breakAt = null, observeAsyncSubmission = false } = {}) {
   const window = new Window();
   window.document.body.innerHTML =
     '<button role="tab" title="Chat" aria-controls="chat"></button><div id="chat" data-state="active"><textarea></textarea><button aria-label="Send message" disabled></button></div>';
   const pane = window.document.getElementById('chat');
   let reduxText = '';
   let conversationId = 'opening-guest-conversation';
-  const store = {
-    getState: () => ({
-      instanceUserInput: {
-        byConversationId: { [conversationId]: { text: reduxText, submissionPhase: 'idle' } },
+  let deferredSubmission = null;
+  const initialState = {
+    conversations: { byConversationId: { [conversationId]: {} } },
+    instanceUserInput: {
+      byConversationId: {
+        [conversationId]: { text: reduxText, submissionPhase: 'idle' },
       },
-    }),
+    },
+    chatHost: {
+      identity: { authReady: true, isAuthenticated: false, fingerprintId: 'private-signature' },
+    },
   };
+  const store = observeAsyncSubmission
+    ? configureStore({
+        reducer: (state = initialState, action = {}) => {
+          if (action.type !== 'draft' && action.type !== 'submit') return state;
+          const input = state.instanceUserInput.byConversationId[conversationId];
+          return {
+            ...state,
+            instanceUserInput: {
+              byConversationId: {
+                ...state.instanceUserInput.byConversationId,
+                [conversationId]: {
+                  ...input,
+                  ...(action.type === 'draft' && { text: action.text }),
+                  ...(action.type === 'submit' && { submissionPhase: 'pending' }),
+                },
+              },
+            },
+          };
+        },
+      })
+    : {
+        getState: () => ({
+          instanceUserInput: {
+            byConversationId: { [conversationId]: { text: reduxText, submissionPhase: 'idle' } },
+          },
+        }),
+      };
   let nativeClicks = 0;
   let sentText = null;
   const report = { composer_input_boundaries: [] };
@@ -306,6 +343,7 @@ function harness({ remount = true, breakAt = null } = {}) {
       dependencies: { firstContext: { memoizedValue: { store } } },
     };
     reduxText = breakAt === 'redux' ? '' : text;
+    if (observeAsyncSubmission) store.dispatch({ type: 'draft', text: reduxText });
     pane.querySelector('button').disabled = !text;
   };
   commit('');
@@ -357,6 +395,7 @@ function harness({ remount = true, breakAt = null } = {}) {
   // React's delegated send handler is at an ancestor, not the native button.
   pane.addEventListener('click', () => {
     sentText = textarea().value;
+    if (observeAsyncSubmission) deferredSubmission = () => store.dispatch({ type: 'submit' });
   });
   const panel = {
     send: async (method, args) => {
@@ -377,6 +416,10 @@ function harness({ remount = true, breakAt = null } = {}) {
     report,
     sent: () => sentText,
     clicks: () => nativeClicks,
+    dispatchDeferredSubmission: () => deferredSubmission?.(),
+    executionSnapshot: () => window.__guestChatSendExecutionProbe?.snapshot() ?? null,
+    stopExecution: () => window.__guestChatSendExecutionProbe?.stop() ?? null,
+    dispatchAfterStop: () => store.dispatch({ type: 'after-stop' }),
     close: () => window.happyDOM.abort(),
   };
 }
@@ -448,6 +491,30 @@ test('a composer that stays mounted still receives the native Send', async () =>
     assert.equal(driver.report.composer_input_boundaries[0].click.afterClick.trustedClickEvents, 1);
     assert.equal(JSON.stringify(driver.report).includes('Name the workflow stages.'), false);
     assert.equal(JSON.stringify(driver.report).includes('opening-guest-conversation'), false);
+  } finally {
+    await driver.close();
+  }
+});
+
+test('driver retains observation through delayed Redux submission until final cleanup', async () => {
+  const driver = harness({ observeAsyncSubmission: true });
+  try {
+    await driver.run('Read the current page.');
+    const clickReturn = driver.report.composer_input_boundaries[0].execution_after_click;
+    assert.equal(clickReturn.storeLocated, true);
+    assert.equal(clickReturn.pendingSubmissionObserved, false);
+    assert.equal(clickReturn.storeNotificationsAfterClick, 0);
+
+    driver.dispatchDeferredSubmission();
+    const afterSubmission = driver.executionSnapshot();
+    assert.equal(afterSubmission.pendingSubmissionObserved, true);
+    assert.equal(afterSubmission.submissionPhase, 'pending');
+    assert.equal(afterSubmission.storeNotificationsAfterClick, 1);
+
+    const finalReceipt = driver.stopExecution();
+    driver.dispatchAfterStop();
+    assert.equal(finalReceipt.pendingSubmissionObserved, true);
+    assert.equal(driver.executionSnapshot().storeNotificationsAfterClick, 1);
   } finally {
     await driver.close();
   }

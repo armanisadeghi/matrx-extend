@@ -88,7 +88,7 @@ test('missing or ambiguous stores and missing handlers stay explicit', () => {
 });
 
 // A thrown handler and an asynchronously rejected send must leave different, sanitized evidence.
-test('runtime categories survive click return, export no event detail, and stop on cleanup', () => {
+test('runtime categories survive click return and stop on final cleanup', () => {
   const { composer, button } = setup();
   const listeners = new Set();
   class TrackedEvents extends EventTarget {
@@ -117,7 +117,6 @@ test('runtime categories survive click return, export no event detail, and stop 
   assert.deepEqual(probe.snapshot().runtimeErrors, { windowErrors: 0, unhandledRejections: 0 });
   probe.begin();
   events.dispatchEvent(privateError());
-  probe.stopSubscription();
   events.dispatchEvent(new Event('unhandledrejection'));
   assert.equal(listeners.size, 2);
   const receipt = probe.stop();
@@ -126,4 +125,31 @@ test('runtime categories survive click return, export no event detail, and stop 
   events.dispatchEvent(privateError());
   events.dispatchEvent(new Event('unhandledrejection'));
   assert.deepEqual(probe.snapshot().runtimeErrors, receipt.runtimeErrors);
+});
+
+test('a delayed submission notification remains observable until teardown', async () => {
+  const { store, composer, button } = setup();
+  const probe = createGuestSendExecutionProbe(composer, button);
+  probe.begin();
+  const clickReturn = probe.snapshot();
+  assert.equal(clickReturn.pendingSubmissionObserved, false);
+
+  let releaseDispatch;
+  const delayedNotification = new Promise((resolve) => {
+    releaseDispatch = () => {
+      store.dispatch({ type: 'submit' });
+      resolve();
+    };
+  });
+  queueMicrotask(releaseDispatch);
+  await delayedNotification;
+
+  const terminalObservation = probe.snapshot();
+  assert.equal(terminalObservation.storeNotificationsAfterClick, 1);
+  assert.equal(terminalObservation.pendingSubmissionObserved, true);
+  assert.equal(terminalObservation.submissionPhase, 'pending');
+  const finalReceipt = probe.stop();
+  store.dispatch({ type: 'after-stop' });
+  assert.equal(probe.snapshot().storeNotificationsAfterClick, 1);
+  assert.equal(finalReceipt.pendingSubmissionObserved, true);
 });
