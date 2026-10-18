@@ -63,6 +63,7 @@ test('Member screenshot refuses clipped or composer-occluded answer and accepts 
   assert.equal(check().eligible, false, 'transparent assistant ancestor must fail');
   const diagnostic = check().diagnostic;
   assert.equal(diagnostic.rejected_ancestor.tag, 'ARTICLE');
+  assert.equal(diagnostic.rejected_ancestor.scope, 'article');
   assert.equal(diagnostic.rejected_ancestor.opacity, 0);
   assert.equal(diagnostic.composer_top, 260);
   assert.deepEqual(Object.keys(diagnostic.article_rect), ['x', 'y', 'width', 'height']);
@@ -76,8 +77,41 @@ test('Member screenshot refuses clipped or composer-occluded answer and accepts 
   pane.scrollTo = ({ top }) => {
     pane.scrollTop = top;
   };
-  assert.equal(check(['Understand'], 'scroll_bottom').diagnostic.scroll.top, 500);
+  assert.equal(check(['Understand'], 'scroll_bottom').diagnostic.scroll.top, 320);
   assert.equal(check(['Capture']).eligible, false, 'wrong answer text must fail');
+  await window.happyDOM.abort();
+});
+
+test('Member screenshot scroll probe works when the native scroll area has no scrollTo method', async () => {
+  const window = new Window();
+  window.document.body.innerHTML = `<button role="tab" title="Chat" aria-selected="true" aria-controls="chat"></button>
+    <div id="chat" data-state="active"><article role="article" aria-label="Assistant answer"><div data-message-content>Understand</div></article><textarea></textarea></div>`;
+  const pane = window.document.getElementById('chat');
+  const body = pane.querySelector('[data-message-content]');
+  Object.defineProperties(pane, {
+    scrollHeight: { value: 908, configurable: true },
+    clientHeight: { value: 79, configurable: true },
+  });
+  pane.scrollTo = undefined;
+  body.getBoundingClientRect = () => ({ x: 16, y: 134, width: 320, height: 35 });
+  pane.querySelector('textarea').getBoundingClientRect = () => ({ top: 256 });
+  window.document.createRange = () => ({
+    setStart() {},
+    setEnd() {},
+    getClientRects: () => [{ left: 16, right: 100, top: 134, bottom: 150, width: 84, height: 16 }],
+  });
+  window.document.elementFromPoint = () => body;
+  Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 360 });
+  Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 360 });
+  const proof = () =>
+    runInNewContext(
+      `(${prepareMemberAnswerScreenshot.toString()})(['Understand'], 'scroll_bottom')`,
+      {
+        document: window.document,
+        getComputedStyle: (node) => window.getComputedStyle(node),
+      },
+    );
+  assert.equal(proof().diagnostic.scroll.top, 829);
   await window.happyDOM.abort();
 });
 

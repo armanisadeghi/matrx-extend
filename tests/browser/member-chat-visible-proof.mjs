@@ -35,6 +35,10 @@ export async function captureReviewerPanel(panel, artifacts, label) {
 }
 
 export function recordReviewerFailure(report, stage, error) {
+  if (report.failure_code && report.failure_code !== 'unclassified_failure') {
+    report.status = 'unverified';
+    return;
+  }
   report.failure_stage = stage;
   const code = typeof error?.message === 'string' ? error.message.split('\n', 1)[0] : null;
   report.failure_code = SAFE_FAILURE_CODES.has(code) ? code : 'unclassified_failure';
@@ -90,6 +94,11 @@ export function sanitizeMemberAnswerDiagnostic(proof) {
             typeof ancestor.tag === 'string' && /^[A-Z]{1,12}$/.test(ancestor.tag)
               ? ancestor.tag
               : null,
+          scope: ['pane', 'article', 'inside_article', 'above_article', 'above_pane'].includes(
+            ancestor.scope,
+          )
+            ? ancestor.scope
+            : null,
           class_hash: fingerprint(ancestor.class_hash),
           opacity:
             Number.isFinite(ancestor.opacity) && ancestor.opacity >= 0 && ancestor.opacity <= 1

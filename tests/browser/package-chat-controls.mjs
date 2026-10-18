@@ -195,7 +195,10 @@ export function prepareMemberAnswerScreenshot(expectedTerms, phase = 'immediate'
     return pane;
   })();
   if (phase === 'scroll_bottom') {
-    scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'instant' });
+    scrollContainer.scrollTop = Math.max(
+      0,
+      scrollContainer.scrollHeight - scrollContainer.clientHeight,
+    );
   } else if (phase === 'immediate') {
     body.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
   }
@@ -215,6 +218,16 @@ export function prepareMemberAnswerScreenshot(expectedTerms, phase = 'immediate'
       rejectedAncestor = {
         depth: ancestorDepth,
         tag: element.tagName,
+        scope:
+          element === pane
+            ? 'pane'
+            : element === article
+              ? 'article'
+              : article.contains(element)
+                ? 'inside_article'
+                : pane.contains(element)
+                  ? 'above_article'
+                  : 'above_pane',
         class_hash: fingerprint(typeof element.className === 'string' ? element.className : ''),
         opacity: Number(style.opacity),
         display: style.display,

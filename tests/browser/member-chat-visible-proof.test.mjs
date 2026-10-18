@@ -5,9 +5,25 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import {
+  recordReviewerFailure,
   requireMemberAnswerEvidence,
   runMemberAnswerProofBoundary,
 } from './member-chat-visible-proof.mjs';
+
+test('cleanup failure cannot erase the classified visible-answer rejection', () => {
+  const report = { status: 'unverified' };
+  recordReviewerFailure(
+    report,
+    'reviewer_two_turn_terminal_proof',
+    new Error('reviewer_chat_visible_answer_unverified'),
+  );
+  recordReviewerFailure(
+    report,
+    'reviewer_two_turn_terminal_proof',
+    new Error('transport cleanup failed'),
+  );
+  assert.equal(report.failure_code, 'reviewer_chat_visible_answer_unverified');
+});
 
 // A reviewer receives two terminal turns, but the final answer may be offscreen.
 test('runner persists a real CDP panel image and sanitized failure report before rejecting an ineligible answer', async () => {
@@ -47,6 +63,7 @@ test('runner persists a real CDP panel image and sanitized failure report before
         rejected_ancestor: {
           depth: 2,
           tag: 'DIV',
+          scope: 'above_article',
           class_hash: 'fedcba9876543210',
           opacity: 0,
           display: 'block',
@@ -83,6 +100,10 @@ test('runner persists a real CDP panel image and sanitized failure report before
     );
     assert.equal(report.member_answer_diagnostic?.immediate?.rejected_ancestor?.opacity, 0);
     assert.equal(report.member_answer_diagnostic?.immediate?.rejected_ancestor?.depth, 2);
+    assert.equal(
+      report.member_answer_diagnostic?.immediate?.rejected_ancestor?.scope,
+      'above_article',
+    );
     assert.equal(report.member_answer_diagnostic?.next_frame?.painted, true);
     assert.equal(report.member_answer_diagnostic?.scroll_bottom?.painted, true);
     for (const phase of ['immediate', 'next_frame', 'scroll_bottom']) {

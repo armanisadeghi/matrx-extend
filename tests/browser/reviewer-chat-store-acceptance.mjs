@@ -1665,12 +1665,7 @@ try {
           output: OUTPUT,
           evaluateProof: (target, terms, phase) => {
             const sample = `(${prepareMemberAnswerScreenshot.toString()})(${JSON.stringify(terms)}, ${JSON.stringify(phase)})`;
-            return evaluate(
-              target,
-              phase === 'next_frame'
-                ? `new Promise((resolve) => requestAnimationFrame(() => resolve(${sample})))`
-                : sample,
-            );
+            return evaluate(target, sample);
           },
         });
         report.screenshots.result = await capture(panel, artifacts, 'reviewer-chat-result');
