@@ -81,7 +81,8 @@
     "docs/stabilization/resource-journals/native-ai-pair-compile-20261007.jsonl",
     ".research/native-ai-pair-fresh-review-20261007.json",
     ".research/native-ai-guard-strength-20261007.json",
-    ".research/native-ai-route-diagnosis-20261007.json"
+    ".research/native-ai-route-diagnosis-20261007.json",
+    "docs/stabilization/reports/d147-context-hint-20261018.json"
   ],
   "build_receipt": null,
   "reproducibility": "Deterministic exported-function RED on the prior source; native unverified",
@@ -121,5 +122,12 @@
     "diagnosis_commit": "841bfce8",
     "status": "Source-confirmed unfixed: all nine agent-delegated ai_* handlers execute in the service worker, where Chrome documents their APIs unavailable. Manual panel execution does not verify that route.",
     "next_action": "Before implementing document routing, measure per-API exposure and availability in the existing side-panel and offscreen documents on a capable receipt-bound Chrome installation, including activation/download constraints. Reuse existing runtime document routing; preserve all nine operations and their real results. Native behavior and downstream effect of the LanguageModel-only context hint remain unverified."
+  },
+  "context_hint_repair": {
+    "commit": "43a88c761",
+    "scope": "Shared exposure hint detects dedicated top-level APIs independently of LanguageModel. No tool routing or availability success claim.",
+    "independent_review": "d147_hint_peer PASS; 14 focused tests and compile pass",
+    "red_green": "Six new dedicated-global cases fail before source repair; focused suite passes afterward.",
+    "native": "Unverified; service-worker document routing still requires per-API native measurement."
   }
 }

@@ -1,10 +1,10 @@
 {
   "at": "2026-10-18T18:09:51Z",
-  "status": "release-dispatch-held",
+  "status": "superseded-extension-release-is-unpaid",
   "policy": "common-docs/policies/ci-spend.md: $100/week total across repositories; no bypass of a spending block",
   "modeled_billed_usd_per_week": 149.44,
   "ceiling_usd_per_week": 100,
-  "release_effect": "No guarded Store ZIP can be dispatched or submitted while this gate is red. The latest guarded v0.2.543 release artifact is behind synchronized source and has no exact-artifact guest/member acceptance.",
+  "release_effect": "Earlier global stop was overbroad. The existing release.yml uses ubuntu-latest in verified public armanisadeghi/matrx-extend; standard hosted public runners are free. No job was moved. The $100 ceiling still blocks new paid dispatches and private-repository publication; it does not require increasing the ceiling to use this existing unpaid extension release path.",
   "store_last_authenticated_observation": {
     "published": "0.2.205",
     "rejected_draft": "0.2.479",
@@ -22,7 +22,7 @@
       "matrx-sandbox": "403f5b3",
       "matrx-ship": "2685e23"
     },
-    "remote_push_state": "held: each push can launch paid workflows while the spending gate is red",
+    "remote_push_state": "Extension reviewed changes will integrate with main; other repository guard commits remain local pending their owners and paid-workflow eligibility.",
     "validation": "Six self-test suites passed. Fresh private $150/week measured spend blocks even with a $0.60 forecast; stale and free-public measurements do not falsely block. Ordinary and --base HEAD checks still refuse the actual $149.44/week forecast."
   },
   "cost_reduction_review": "No safe small cut of at least $49.44/week was found without removing package-isolation or distinct real-browser checks; see local /tmp/aidream-ci-cost-reduction.md.",
@@ -35,5 +35,11 @@
     "remote_script_loader_hits": 0,
     "limitation": "Development unpacked payload only; not a Store ZIP or Chrome-loaded verification."
   },
-  "next_action": "After an authorized ceiling/cadence resolution, reconcile and push all six local guard commits, dispatch a new guarded release from synchronized main, scan the exact Store ZIP, obtain resource-valid real guest and non-admin acceptance with independent review, then upload and submit in the authenticated primary-item dashboard. Keep current rejection and no-submission state explicit until then."
+  "next_action": "Synchronize and push verified extension changes, run the existing guarded unpaid hosted release, scan its exact Store ZIP, obtain guarded guest/non-admin acceptance with independent review, upload and submit through the signed-in Chrome primary-item dashboard.",
+  "corrected_at": "2026-10-18T18:22:00Z",
+  "billing_evidence": {
+    "repository_api": "private=false, visibility=public",
+    "workflow": "release.yml release.runs-on=ubuntu-latest",
+    "official_reference": "https://docs.github.com/en/actions/reference/runners/github-hosted-runners"
+  }
 }
