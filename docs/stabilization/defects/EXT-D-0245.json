@@ -7,7 +7,7 @@
   "title": "Guest sequence guard still searches for retired capture call after helper extraction",
   "severity": "S2: current-main CI fails before producing a compatible development artifact",
   "priority": "P1: restore verified source CI and development artifact delivery",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root / ci_red_repair_20261019",
   "preconditions": [
     "Source contains captureGuestAnswer helper extraction985ffa542 while the sequence test still locates capture(."
@@ -26,15 +26,18 @@
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/39269329447"
   ],
   "fix_sha": "c69f8b6b5d03ae1af6f3fe10eb756380da2786bf",
-  "original_retest_runs": ["independent focused parent RED and repaired GREEN; see peer receipt"],
+  "original_retest_runs": [
+    "independent focused parent RED and repaired GREEN; see peer receipt",
+    "CI39284095794 / Focused acceptance guards: SUCCESS"
+  ],
   "surrounding_retest_runs": [
     "35-case guest sequence file PASS; compile PASS; forced owner-table allow mutant RED"
   ],
   "reviewer": "ci_sequence_peer_20261019: separate A/B scoped PASS; fresh hosted CI pending",
-  "next_action": "Observe existing CI39284095794 and its latest-main successors after GitHub Actions recovery. Close only after the repaired focused CI step passes; preserve original product-case status and obtain a compatible development artifact.",
+  "next_action": "No further work on this isolated CI locator defect. Continue full pipeline/artifact delivery and actual guest/member acceptance; do not count this closure as product behavior coverage.",
   "verification": {
     "source": "Independent original RED/repaired GREEN and forced-allow mutation RED; no runtime change.",
-    "hosted": "Queued during official Actions processing incident; no hosted pass yet.",
+    "hosted": "CI39284095794: Focused acceptance guards completed SUCCESS, observed2026-10-19T16:32:06Z; resource-guard-integration SUCCESS. Full checks job remains in progress, no overall CI pass asserted.",
     "product": "No product case or auth-mode health credited."
   },
   "transition_history": [
@@ -61,6 +64,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "c69 source correction and fresh independent focused review pass; hosted retest remains queued."
+    },
+    {
+      "at": "2026-10-19T16:32:23.249198+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent original RED/repaired GREEN, surrounding tests, mutation refusal and hosted focused acceptance step pass."
+    },
+    {
+      "at": "2026-10-19T16:32:23.249198+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original isolated source-guard failure no longer reproduces on repaired pushed source; full CI and product health remain separate pending gates."
     }
   ]
 }
