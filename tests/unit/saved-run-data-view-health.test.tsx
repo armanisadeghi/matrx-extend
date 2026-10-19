@@ -165,6 +165,20 @@ it('keeps guest Data extraction available without loading account-owned patterns
   expect((await screen.findAllByText('Calendar events')).length).toBeGreaterThan(0);
 });
 
+it('clears cached saved patterns on sign-out without another private read', async () => {
+  mocks.authUser = { id: 'user-1' };
+  mocks.fetchPatterns.mockResolvedValue([pattern]);
+  const view = render(<DataView />);
+  expect(await screen.findByText('Saved for electronic.vegas')).toBeTruthy();
+  expect(mocks.fetchPatterns).toHaveBeenCalledTimes(1);
+
+  mocks.authUser = null;
+  view.rerender(<DataView />);
+  await waitFor(() => expect(screen.queryByText('Saved for electronic.vegas')).toBeNull());
+  expect(screen.getByRole('button', { name: /Pick fields/i })).toBeTruthy();
+  expect(mocks.fetchPatterns).toHaveBeenCalledTimes(1);
+});
+
 it('shows DataView no-match guidance without writing ok health for zero rows', async () => {
   mocks.fetchPatterns.mockResolvedValue([pattern]);
   mocks.runSaved.mockResolvedValue([]);

@@ -16,5 +16,12 @@
     { "check": "Biome on changed source and tests", "verdict": "no errors; existing warnings" }
   ],
   "limitations": "No local build, release or browser dispatch was run. The source commit is not in the v0.2.556 Store artifact. Neither guest Chat answer paint nor the Settings/Capture/SEO/Data native acceptance failures have been retested against this source. The interface-text checker path prescribed by the skill was absent from this checkout.",
-  "next_action": "Obtain independent code review, then use the guarded hosted release and native guest acceptance on the new exact artifact. Keep the chat-answer paint oracle strict and investigate separately if the reply is still not visible."
+  "next_action": "Obtain independent code review, then use the guarded hosted release and native guest acceptance on the new exact artifact. Keep the chat-answer paint oracle strict and investigate separately if the reply is still not visible.",
+  "peer_followup": {
+    "review": "/tmp/d247-fresh-peer-20261019.json",
+    "finding": "Data guest-to-sign-in was covered, but signed-in-to-guest clearing lacked a direct assertion.",
+    "action": "Added a DataView regression that starts with a rendered saved-pattern section, signs out, and requires the section to disappear without a second private query while field picking remains available. No product source changed.",
+    "verification": "Targeted sign-out test passed; four focused test files passed 33/33; pnpm compile passed. Biome formatting corrected the new test layout; remaining warnings were pre-existing in the test file.",
+    "native_status": "pending new exact artifact and independent live retest"
+  }
 }
