@@ -1,0 +1,32 @@
+{
+  "defect_id": "EXT-D-0250",
+  "status": "SOURCE_REPAIRED_PENDING_INDEPENDENT_REVIEW",
+  "date": "2026-10-19",
+  "root_cause": "Successful source and check observations were copied into durable proof, while failure observations and screenshot callback paths lacked a typed output projection.",
+  "consumer_census": "Reviewer acceptance consumes source status/stages and check status/workflow_row_matched. Guest runner persists the full proof. No runtime consumer of removed source title/linkText, article/SEO title, or Data selected_field was found in scripts or browser harnesses.",
+  "repair": [
+    "Raw source remains local for original validation and downstream exact comparisons. Durable source uses known fixture constants and explicit boolean observations.",
+    "One typed projection at recordReviewerCheck protects success and failure observations: explicit boolean/null fields, nonnegative safe integer counts, and fixed Article/Links/Schema values; arbitrary fields and values cannot pass.",
+    "Article and SEO titles become equality booleans; selected selector becomes selected count, retaining unique match/workflow row and draft-clear proofs.",
+    "Failure screenshots retain a known requested basename after successful capture, never callback-returned paths. Unverified prelude codes and targets are bounded; receipt optional hashes are validated before output.",
+    "Existing strict source checks, first-failure targets, visibility predicates and control-only failure PNG capture are preserved. Relevant prior test import ordering corrected for full lint."
+  ],
+  "verification": {
+    "original_regression_corpus": "46 pass, 0 fail",
+    "new_real_exported_runner_regressions": "5 pass, 0 fail; positive six-check flow, aggregate-failure flow, invalid-source refusal, raw-source mutation rejection, typed boundary and callback-path refusal",
+    "combined_with_transport_surroundings": "74 pass, 0 fail",
+    "command": "node --test tests/browser/guest-answer-screenshot.test.mjs tests/browser/guest-chat-store-sequence.test.mjs tests/browser/store-reviewer-proof-projection.test.mjs tests/browser/guest-chat-transport-observer.test.mjs",
+    "old_red": "Original HEAD source loaded in scratch through the same real exported runner: positive serialization assertion fails on PRIVATE_PROJECTION_MARKER in durable source/checks.",
+    "mutation_red": "In-memory source projection mutation reintroducing raw title is rejected by the serialization assertion; committed regression verifies this rejection.",
+    "constant_return_red": "Scratch constant successful return cannot satisfy the six-check output assertions; executed test fails.",
+    "compile": "pnpm compile: pass",
+    "lint": "pnpm -s lint: pass, 926 existing warnings",
+    "logs": ["/tmp/d250-old-red.log", "/tmp/d250-constant-red.log", "/tmp/d250-surroundings.log", "/tmp/d250-compile.log", "/tmp/d250-lint.log"]
+  },
+  "limits": [
+    "Browser I/O is doubled in the isolated real exported runner tests; no live browser, build, dispatch, native run or credential access occurred.",
+    "No D249 helper, native admission guard, package or registry changes.",
+    "Fresh independent source review required before next latest candidate; exact-artifact visibility and PNG validation remain pending."
+  ],
+  "next_owner": "Root coordinator owns fresh independent peer review, registry/inventory updates and later exact candidate proof."
+}

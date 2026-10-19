@@ -50,6 +50,9 @@ function safeReviewerFailureCode(error) {
       'reviewer_demo_requires_exact_public_url',
       'reviewer_demo_public_link_changed',
       'reviewer_demo_schema_changed',
+      'public_demo_navigation_failed',
+      'reviewer_playwright_timeout',
+      'reviewer_observation_failed',
     ]).has(code)
   )
     return code;
@@ -94,6 +97,61 @@ const REVIEWER_TARGETS = {
   ],
 };
 
+// Durable evidence is an explicit projection, never an observation-object spread.
+// Strings from the DOM stay local even when a check succeeds.
+const EVIDENCE_BOOLEANS = new Set([
+  'visible',
+  'stored',
+  'setting_present',
+  'public_heading_present',
+  'workflow_stages_present',
+  'public_link_text_present',
+  'public_schema_headline_present',
+  'public_schema_type_present',
+  'public_title_matches',
+  'headings',
+  'reaudit_ready',
+  'workflow_row_matched',
+  'draft_cleared',
+  'pane_active',
+  'content_visible',
+  'empty',
+  'selected_article',
+  'selected_links',
+  'selected_schema',
+  'public_link_present',
+  'public_stages_present',
+  'error_present',
+  'audit_ready',
+  'audit_available',
+  'headings_present',
+  'picker_ready',
+  'cancel_ready',
+  'guest_explanation_present',
+  'switch_on',
+  'stored_on',
+  'observation_available',
+]);
+const EVIDENCE_COUNTS = new Set([
+  'link_count',
+  'unique_selector_matches',
+  'selected_count',
+  'switch_count',
+  'capture_button_count',
+]);
+function projectReviewerEvidence(value) {
+  const result = {};
+  for (const [key, entry] of Object.entries(value ?? {})) {
+    if (EVIDENCE_BOOLEANS.has(key) && (typeof entry === 'boolean' || entry === null))
+      result[key] = entry;
+    else if (EVIDENCE_COUNTS.has(key) && Number.isSafeInteger(entry) && entry >= 0)
+      result[key] = entry;
+    else if (key === 'selected' && ['Article', 'Links', 'Schema'].includes(entry))
+      result[key] = entry;
+  }
+  return result;
+}
+
 export async function recordReviewerCheck({ name, run, observeSafe, screenshot }) {
   assert.ok(REVIEWER_TARGETS[name], 'reviewer_unknown_check');
   let target = `${name}_open`;
@@ -102,7 +160,7 @@ export async function recordReviewerCheck({ name, run, observeSafe, screenshot }
     target = id;
   };
   try {
-    return { status: 'pass', ...(await run(markTarget)) };
+    return { status: 'pass', ...projectReviewerEvidence(await run(markTarget)) };
   } catch (error) {
     const failure = {
       status: 'fail',
@@ -110,12 +168,13 @@ export async function recordReviewerCheck({ name, run, observeSafe, screenshot }
       failure_target: target,
     };
     try {
-      failure.safe_dom = await observeSafe(name);
+      failure.safe_dom = projectReviewerEvidence(await observeSafe(name));
     } catch {
       failure.safe_dom = { observation_available: false };
     }
     try {
-      failure.failure_screenshot = await screenshot(`reviewer-${name}-failure.png`, name);
+      await screenshot(`reviewer-${name}-failure.png`, name);
+      failure.failure_screenshot = `reviewer-${name}-failure.png`;
     } catch (error) {
       failure.screenshot_status = safeReviewerFailureCode(error);
     }
@@ -207,18 +266,29 @@ export function unverifiedReviewerDemoPath(
   failureTarget = 'public_demo_navigation',
   publicUrlMatches = false,
 ) {
+  const safeCode = safeReviewerFailureCode({ message: failureCode });
+  const safeTarget = [
+    'public_demo_navigation',
+    'public_demo_article_visible',
+    'public_demo_source_and_controls',
+  ].includes(failureTarget)
+    ? failureTarget
+    : 'public_demo_navigation';
   return {
     status: 'fail',
     public_url: REVIEWER_DEMO_URL,
-    failure_code: failureCode,
+    failure_code: safeCode,
     source: {
       status: 'unverified',
-      failure_target: failureTarget,
-      safe_dom: { public_url_matches: publicUrlMatches, source_observation_available: false },
+      failure_target: safeTarget,
+      safe_dom: {
+        public_url_matches: publicUrlMatches === true,
+        source_observation_available: false,
+      },
       screenshot_status: 'public_source_unverified',
     },
     checks: Object.fromEntries(
-      REQUIRED_CHECKS.map((name) => [name, { status: 'unverified', reason: failureCode }]),
+      REQUIRED_CHECKS.map((name) => [name, { status: 'unverified', reason: safeCode }]),
     ),
   };
 }
@@ -425,12 +495,15 @@ export async function runStoreReviewerDemoPath({
     artifact: {
       receipt_kind: receipt.kind,
       runtime_tree_sha256: runtimeTreeSha256,
-      source_sha: receipt.sourceSha ?? null,
-      store_zip_sha256: receipt.storeZip?.sha256 ?? null,
+      source_sha: /^[a-f0-9]{40}$/.test(receipt.sourceSha ?? '') ? receipt.sourceSha : null,
+      store_zip_sha256: /^[a-f0-9]{64}$/.test(receipt.storeZip?.sha256 ?? '')
+        ? receipt.storeZip.sha256
+        : null,
     },
     source: null,
     checks: {},
   };
+  let source;
   const safeSample = async (name) => {
     if (name === 'fresh_auto_capture_off') {
       const value = await settingsOffSample(panel);
@@ -500,7 +573,7 @@ export async function runStoreReviewerDemoPath({
     let sourceTarget = 'public_demo_source_read';
     let sourceSafe = { public_url_matches: true, source_observation_available: false };
     try {
-      const source = await demoSource(page);
+      source = await demoSource(page);
       sourceSafe = {
         public_url_matches: source.url === REVIEWER_DEMO_URL,
         source_observation_available: true,
@@ -543,12 +616,11 @@ export async function runStoreReviewerDemoPath({
       );
       proof.source = {
         status: 'pass',
-        title: source.title,
-        stages: source.stages,
-        linkHref: source.linkHref,
-        linkText: source.linkText,
-        schemaType: source.schemaType,
-        schemaHeadline: source.schemaHeadline,
+        safe_dom: sourceSafe,
+        stages: ['Capture', 'Understand', 'Use'],
+        linkHref: 'https://www.aimatrx.com/privacy-policy/extension',
+        schemaType: 'Article',
+        schemaHeadline: 'A clear three-stage browser workflow',
       };
     } catch (error) {
       proof.source = {
@@ -566,7 +638,6 @@ export async function runStoreReviewerDemoPath({
     proof.status = 'fail';
     return proof;
   }
-  const source = proof.source;
   await record('fresh_auto_capture_off', async (mark) => {
     mark('settings_scrape_section');
     const off = await settingsOff(panel);
@@ -610,7 +681,7 @@ export async function runStoreReviewerDemoPath({
     await screenshot('reviewer-capture-article.png', 'capture_article');
     return {
       selected: article.selected,
-      title: article.title,
+      public_title_matches: article.title === source.title,
       public_heading_present: true,
       workflow_stages_present: true,
     };
@@ -687,7 +758,11 @@ export async function runStoreReviewerDemoPath({
       30000,
     );
     await screenshot('reviewer-seo-audit.png', 'seo_audit');
-    return { title: seo.title, headings: seo.headings, reaudit_ready: seo.auditReady };
+    return {
+      public_title_matches: seo.title === source.title,
+      headings: seo.headings,
+      reaudit_ready: seo.auditReady,
+    };
   });
   await record('data_workflow_picker', async (mark) => {
     let pickerOpened = false;
@@ -747,7 +822,7 @@ export async function runStoreReviewerDemoPath({
         (value) => value.active && value.pickerReady && value.selected.length === 0,
       );
       return {
-        selected_field: selected.selected[0],
+        selected_count: selected.selected.length,
         unique_selector_matches: target.count,
         workflow_row_matched: target.workflowRow,
         draft_cleared: true,
