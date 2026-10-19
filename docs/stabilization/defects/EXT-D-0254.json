@@ -37,7 +37,7 @@
     "docs/stabilization/reports/fixture-and-headless-peer-20261019.json"
   ],
   "cause": "Unknown. Host CPU pressure was observed but not proven causal; source comparison found no owned-launcher/connector change from559.",
-  "next_action": "One independently reviewed existing lane-A headless operational-viability diagnostic, only after successful exact-current-HEAD CI artifact and clean-source admission. Keep8s and resource gates unchanged; artifacts differ from prior run, so not a controlled same-artifact comparison. No Store build/upload before real candidate guest/member/reviewer acceptance.",
-  "active_diagnostic_run": null,
+  "next_action": "Observe the single admitted headless lane-A operational-viability run39318657314 to terminal; exact39bfe250 CI39317009493/artifact12218089566. Keep8s/resource guards unchanged; different artifact from prior headed probe, so no controlled same-artifact comparison. No Store build/upload before real current candidate guest/member/reviewer acceptance.",
+  "active_diagnostic_run": "39318657314",
   "completed_diagnostic_run": "39312706355"
 }

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T19:57:31.082565+00:00",
+  "updated_at": "2026-10-19T20:15:48.604946+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -531,7 +531,7 @@
             "dev-auth-readiness-001",
             "39308206905"
           ],
-          "retest_status": "Exact560 startup failed before product UI/auth/model, with zero product credit. D254 cause remains open; environment-only probe39312706355 pending. D255 copier infrastructure is independently closed after original writer-event refusal and surrounding terminal/redaction retests; no resource thresholds changed."
+          "retest_status": "Exact560 startup failed before product UI/auth/model, with zero product credit. D254 cause remains open; environment-only probe39312706355 terminal failed (resource-invalid CPU, first positive endpoint9,322ms after spawn); no product credit. D255 copier infrastructure is independently closed after original writer-event refusal and surrounding terminal/redaction retests; no resource thresholds changed."
         },
         "member": {
           "test_status": "unverified",
@@ -558,7 +558,7 @@
             "dev-auth-readiness-001",
             "39308413069"
           ],
-          "retest_status": "Exact560 startup failed before product UI/auth/model, with zero product credit. D254 cause remains open; environment-only probe39312706355 pending. D255 copier infrastructure is independently closed after original writer-event refusal and surrounding terminal/redaction retests; no resource thresholds changed."
+          "retest_status": "Exact560 startup failed before product UI/auth/model, with zero product credit. D254 cause remains open; environment-only probe39312706355 terminal failed (resource-invalid CPU, first positive endpoint9,322ms after spawn); no product credit. D255 copier infrastructure is independently closed after original writer-event refusal and surrounding terminal/redaction retests; no resource thresholds changed."
         },
         "admin": {
           "test_status": "unverified",
@@ -2403,7 +2403,7 @@
             "37269797985",
             "39303623065"
           ],
-          "retest_status": "Exact559 guest39303623065 has independently reviewed bounded first reply, same-conversation follow-up and new-conversation after panel reload; public Schema/SEO predicates pass, Settings/Capture/Links/Data fail. D253 reviewer helper source fix92ee994a8 awaits new native retest. No full feature or Store-installed559 pass; candidate is unsubmitted. Latest exact560 run failed owned CDP startup before UI; zero newer product acceptance credit, environment probe39312706355 pending; no Store upload."
+          "retest_status": "Exact559 guest39303623065 has independently reviewed bounded first reply, same-conversation follow-up and new-conversation after panel reload; public Schema/SEO predicates pass, Settings/Capture/Links/Data fail. D253 reviewer helper source fix92ee994a8 awaits new native retest. No full feature or Store-installed559 pass; candidate is unsubmitted. Latest exact560 run failed owned CDP startup before UI; zero newer product acceptance credit, environment probe39312706355 terminal failed with invalid startup CPU final; no product credit; no Store upload."
         },
         "member": {
           "test_status": "partial",
@@ -2448,7 +2448,7 @@
             "37269797985",
             "39303737912"
           ],
-          "retest_status": "Exact559 member39303737912 verified real nonadmin authentication and approved organization, then failed hidden-panel proof before any Chat send. D248 remains unresolved; tested safe topology instrumentation41b7cecdd awaits hosted replay. No member product or full feature pass. Latest exact560 run failed owned CDP startup before UI; zero newer product acceptance credit, environment probe39312706355 pending; no Store upload."
+          "retest_status": "Exact559 member39303737912 verified real nonadmin authentication and approved organization, then failed hidden-panel proof before any Chat send. D248 remains unresolved; tested safe topology instrumentation41b7cecdd awaits hosted replay. No member product or full feature pass. Latest exact560 run failed owned CDP startup before UI; zero newer product acceptance credit, environment probe39312706355 terminal failed with invalid startup CPU final; no product credit; no Store upload."
         },
         "admin": {
           "test_status": "partial",
@@ -29200,6 +29200,31 @@
           "report": "docs/stabilization/evidence/scrape-error-recovery-guest/run38041013005/receipt.sanitized.json",
           "proven": "CDP transport failed before recovery assertions; original host access restored.",
           "limits": "No denial/retry/dismiss acceptance credit, no product-cause verdict."
+        }
+      ],
+      "bounded_observations": [
+        {
+          "run_id": "dev560-scrape-authenticated-20261019-01",
+          "auth_context": "authenticated Arman UI session; role and organization unverified; no guest/member/admin cell credit",
+          "build_version": "0.2.560",
+          "source_sha": "900ae066cf76b53dd4661b419fb91b6280d250e4",
+          "status": "partial",
+          "evidence": [
+            "docs/stabilization/reports/dev560-scrape-authenticated-20261019.json"
+          ],
+          "passed_subtargets": [
+            "Fresh Capture with matching title/URL and137words",
+            "Images2 matched visible logo and avatar",
+            "Video empty-state UI on page with no visible video",
+            "SEO title and canonical matched active page; metadata panes rendered"
+          ],
+          "unverified": [
+            "Description/source metadata fidelity",
+            "Role and organization",
+            "Busy/error/recovery",
+            "Links/Schema/reload/digest invariance in this run"
+          ],
+          "existing_issue": "Preexisting unsaved warning belongs to D217; no fresh Save/Retry was invoked, so not a new authenticated RPC failure. See scrape-org-warning-triage-20261019.json."
         }
       ]
     },
