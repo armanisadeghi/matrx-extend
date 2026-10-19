@@ -68,7 +68,7 @@ test('reviewer screenshot clips the actual labeled Capture and counted Links con
         file: join(directory, 'private.png'),
         check: 'capture_links',
       }),
-      /reviewer_failure_screenshot_target_unavailable/,
+      /reviewer_failure_screenshot_target_missing/,
     );
   } finally {
     await window.happyDOM.abort();
@@ -84,6 +84,9 @@ test('reviewer Data check selects a fixture field before requiring guest explana
   let selected = false;
   let dataPickerClicked = false;
   let explanationAfterSelection = true;
+  let articleHeadingAfterCapture = true;
+  const articleHeadingInTextContent = true;
+  let doneFailure = null;
   const io = {
     click: async (_panel, kind, value) => {
       if (kind === 'scrape-result-tab') tab = value;
@@ -94,7 +97,9 @@ test('reviewer Data check selects a fixture field before requiring guest explana
     evaluate: async (_panel, expression) => {
       if (expression.includes('switchCount'))
         return { visible: false, stored: null, settingPresent: false, switchCount: 1 };
-      if (expression.includes('captureButtons'))
+      if (expression.includes('captureButtons')) {
+        const text = `${tab === 'Article' && !articleHeadingAfterCapture ? '' : headline} Capture Understand Use Matrx Extend privacy policy Article`;
+        const textContent = `${tab === 'Article' && !articleHeadingInTextContent ? '' : headline} Capture Understand Use Matrx Extend privacy policy Article`;
         return {
           active: true,
           title: 'Matrx Extend Demo Page',
@@ -102,10 +107,13 @@ test('reviewer Data check selects a fixture field before requiring guest explana
           captureButtons: 1,
           selected: tab,
           contentVisible: true,
-          text: `${headline} Capture Understand Use Matrx Extend privacy policy Article`,
+          text,
+          textContent,
+          headingNodes: tab === 'Article' && !articleHeadingInTextContent ? 0 : 1,
           linkCount: 17,
           error: null,
         };
+      }
       if (expression.includes('auditAvailable'))
         return {
           active: true,
@@ -133,6 +141,7 @@ test('reviewer Data check selects a fixture field before requiring guest explana
     },
     clickPickerField: async () => {},
     clickPickerDone: async () => {
+      if (doneFailure) throw new Error(doneFailure);
       selected = true;
     },
     clickPickerCancel: async () => {
@@ -181,6 +190,7 @@ test('reviewer Data check selects a fixture field before requiring guest explana
                 url: REVIEWER_DEMO_URL,
                 title: 'Matrx Extend Demo Page',
                 articleText: headline,
+                articleH1Matches: true,
                 stages: ['Capture', 'Understand', 'Use'],
                 linkHref: 'https://www.aimatrx.com/privacy-policy/extension',
                 linkText: 'Matrx Extend privacy policy',
@@ -204,6 +214,8 @@ test('reviewer Data check selects a fixture field before requiring guest explana
     assert.equal(proof.checks.data_workflow_picker.workflow_row_matched, true);
     explanationAfterSelection = false;
     dataPickerClicked = false;
+    captured = false;
+    tab = 'Article';
     const missingExplanation = await runStoreReviewerDemoPath(args);
     assert.equal(dataPickerClicked, true);
     assert.equal(
@@ -215,6 +227,82 @@ test('reviewer Data check selects a fixture field before requiring guest explana
       missingExplanation.checks.data_workflow_picker.failure_target,
       'data_selected_field',
     );
+    explanationAfterSelection = true;
+    articleHeadingAfterCapture = false;
+    captured = false;
+    tab = 'Article';
+    const missingHeading = await runStoreReviewerDemoPath(args);
+    assert.equal(missingHeading.status, 'fail');
+    assert.equal(missingHeading.checks.capture_article.failure_target, 'article_result');
+    assert.equal(missingHeading.checks.capture_article.safe_dom.public_heading_present, false);
+    assert.equal(
+      missingHeading.checks.capture_article.safe_dom.rendered_heading_text_content_present,
+      true,
+    );
+    assert.equal(
+      missingHeading.checks.capture_article.safe_dom.rendered_heading_inner_text_present,
+      false,
+    );
+    assert.equal(missingHeading.checks.capture_article.safe_dom.rendered_heading_node_count, 1);
+    assert.ok(
+      missingHeading.checks.capture_article.safe_dom.rendered_text_content_length >
+        missingHeading.checks.capture_article.safe_dom.rendered_inner_text_length,
+    );
+    assert.equal(missingHeading.checks.capture_article.safe_dom.public_stages_present, true);
+    assert.equal(missingHeading.checks.capture_links.status, 'pass');
+    // Mutation probe: if the textContent diagnostic accidentally reads innerText,
+    // this fixture changes its verdict while the Article gate remains red.
+    const mutant = rewritten.replace("(value.textContent ?? '').includes(", 'value.text.includes(');
+    assert.notEqual(mutant, rewritten);
+    const mutantRunner = await import(`data:text/javascript,${encodeURIComponent(mutant)}`);
+    captured = false;
+    tab = 'Article';
+    const mutantProof = await mutantRunner.runStoreReviewerDemoPath(args);
+    assert.equal(
+      mutantProof.checks.capture_article.safe_dom.rendered_heading_text_content_present,
+      false,
+    );
+    articleHeadingAfterCapture = true;
+    doneFailure = 'data_guest_done_hit_target_changed';
+    captured = false;
+    tab = 'Article';
+    const failedDone = await runStoreReviewerDemoPath(args);
+    assert.equal(failedDone.checks.data_workflow_picker.failure_code, doneFailure);
+    assert.equal(failedDone.checks.data_workflow_picker.failure_target, 'data_picker_done');
+    assert.equal(
+      failedDone.checks.data_workflow_picker.failure_diagnostic.picker_diagnostic_available,
+      false,
+    );
+    assert.equal(
+      failedDone.checks.data_workflow_picker.failure_diagnostic.field_hit_confirmed,
+      false,
+    );
+    args.page.context = () => ({
+      newCDPSession: async () => ({
+        send: async (method, params) => {
+          if (method === 'DOM.enable') return {};
+          if (method === 'DOM.getDocument') return { root: { nodeId: 1 } };
+          if (method === 'DOM.querySelector') return { nodeId: 2 };
+          if (method === 'DOM.describeNode')
+            return { node: { shadowRoots: [{ nodeId: 3, shadowRootType: 'closed' }] } };
+          if (method === 'DOM.querySelectorAll')
+            return { nodeIds: params.selector === 'button#done' ? [] : [4] };
+          throw new Error('unexpected_cdp_method');
+        },
+        detach: async () => {},
+      }),
+    });
+    captured = false;
+    tab = 'Article';
+    const countedDone = await runStoreReviewerDemoPath(args);
+    assert.equal(countedDone.checks.data_workflow_picker.failure_code, doneFailure);
+    assert.deepEqual(countedDone.checks.data_workflow_picker.failure_diagnostic, {
+      field_hit_confirmed: false,
+      picker_diagnostic_available: true,
+      picker_shadow_count: 1,
+      picker_done_node_count: 0,
+      picker_cancel_node_count: 1,
+    });
   } finally {
     delete globalThis[key];
   }
