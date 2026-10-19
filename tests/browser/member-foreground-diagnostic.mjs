@@ -52,6 +52,106 @@ async function boundedObservation(read, timeoutMs = 500) {
   }
 }
 
+/** Read only opaque browser identities and fixed visibility/topology fields. */
+export async function sampleMemberAuthTopology(native, panel, phase) {
+  const panelId = native.panelTarget.targetId;
+  const targets = await boundedObservation(() => native.browserSession.send('Target.getTargets'));
+  const panelTargets = Array.isArray(targets?.targetInfos)
+    ? targets.targetInfos.filter((target) => target.url === native.panelTarget.url)
+    : null;
+  const renderer = await boundedObservation(() =>
+    panel.send('Runtime.evaluate', {
+      expression: '({ visibility: document.visibilityState, focused: document.hasFocus() })',
+      returnByValue: true,
+    }),
+  );
+  const worker = await boundedObservation(() => native.attachWorker());
+  let topology = null;
+  if (worker) {
+    try {
+      topology = await boundedObservation(() =>
+        worker.send('Runtime.evaluate', {
+          expression: `(async () => {
+            const [contexts, windows, tabs] = await Promise.all([
+              chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }),
+              chrome.windows.getAll(), chrome.tabs.query({})
+            ]);
+            return {
+              contexts: contexts.map(c => ({
+                contextId: c.contextId, documentId: c.documentId,
+                windowId: c.windowId, tabId: c.tabId,
+                exactPanel: c.documentUrl === ${JSON.stringify(native.panelTarget.url)}
+              })),
+              windows: windows.map(w => ({ id: w.id, focused: w.focused, state: w.state })),
+              tabs: tabs.map(t => ({ id: t.id, windowId: t.windowId, active: t.active }))
+            };
+          })()`,
+          awaitPromise: true,
+          returnByValue: true,
+        }),
+      );
+    } finally {
+      await worker.detach().catch(() => {});
+    }
+  }
+  const value = topology?.exceptionDetails ? null : topology?.result?.value;
+  const safeId = (id) => (typeof id === 'string' && /^[a-zA-Z0-9_-]{1,128}$/.test(id) ? id : null);
+  const safeNumber = (id) => (Number.isSafeInteger(id) ? id : null);
+  return {
+    phase,
+    panel_target_id: safeId(panelId),
+    panel_targets_measured: panelTargets !== null,
+    panel_target_ids: panelTargets?.map((target) => safeId(target.targetId)) ?? [],
+    panel_visibility: ['visible', 'hidden', 'prerender'].includes(
+      renderer?.result?.value?.visibility,
+    )
+      ? renderer.result.value.visibility
+      : null,
+    panel_has_focus:
+      typeof renderer?.result?.value?.focused === 'boolean' ? renderer.result.value.focused : null,
+    topology_measured:
+      Array.isArray(value?.contexts) && Array.isArray(value?.windows) && Array.isArray(value?.tabs),
+    panel_contexts: (Array.isArray(value?.contexts) ? value.contexts : [])
+      .filter((context) => context.exactPanel === true)
+      .map((context) => ({
+        context_id: safeId(context.contextId),
+        document_id: safeId(context.documentId),
+        window_id: safeNumber(context.windowId),
+        tab_id: safeNumber(context.tabId),
+      })),
+    windows: (Array.isArray(value?.windows) ? value.windows : []).map((window) => ({
+      id: safeNumber(window.id),
+      focused: window.focused === true,
+      state: ['normal', 'minimized', 'maximized', 'fullscreen'].includes(window.state)
+        ? window.state
+        : null,
+    })),
+    tabs: (Array.isArray(value?.tabs) ? value.tabs : []).map((tab) => ({
+      id: safeNumber(tab.id),
+      window_id: safeNumber(tab.windowId),
+      active: tab.active === true,
+    })),
+  };
+}
+
+/** Flush every boundary before the next auth action can retire its targets. */
+export async function recordMemberAuthTopologyBoundary({
+  native,
+  panel,
+  phase,
+  report,
+  output,
+  writeReport,
+}) {
+  report.auth_topology ??= [];
+  try {
+    report.auth_topology.push(await sampleMemberAuthTopology(native, panel, phase));
+  } catch {
+    report.auth_topology.push({ phase, topology_measured: false, probe_failed: true });
+  }
+  await writeReport(output, report);
+}
+
 async function failureSnapshot({ web, page, native, panel, evaluate }) {
   const targets = await boundedObservation(() => native.browserSession.send('Target.getTargets'));
   const visibility = await boundedObservation(() => evaluate(panel, 'document.visibilityState'));

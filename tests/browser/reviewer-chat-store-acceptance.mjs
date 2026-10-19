@@ -26,7 +26,10 @@ import {
   runMemberAnswerProofBoundary,
   writeReviewerReport,
 } from './member-chat-visible-proof.mjs';
-import { recordMemberForegroundVisibility } from './member-foreground-diagnostic.mjs';
+import {
+  recordMemberAuthTopologyBoundary,
+  recordMemberForegroundVisibility,
+} from './member-foreground-diagnostic.mjs';
 import {
   authenticatedWebIdentity,
   observeCanonicalAdminCheck,
@@ -1251,29 +1254,46 @@ try {
     },
     exercisePanel: async (native) => {
       const { page, panel, artifacts } = native;
+      report.auth_topology = [];
+      const sampleAuthBoundary = (phase) =>
+        recordMemberAuthTopologyBoundary({
+          native,
+          panel,
+          phase,
+          report,
+          output: OUTPUT,
+          writeReport: writeReviewerReport,
+        });
+      await sampleAuthBoundary('before_member_tab_create');
       stage = MAGIC_LINK ? 'open_reviewer_magic_link' : 'open_reviewer_web_login';
       const web = await page.context().newPage();
+      await sampleAuthBoundary('after_member_tab_create');
       let memberTransport = null;
       const memberTurns = {};
       try {
         if (!MAGIC_LINK) {
+          await sampleAuthBoundary('before_login_navigation');
           await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+          await sampleAuthBoundary('after_login_navigation');
           if (safeLocation(web.url()) !== `${WEB_ORIGIN}/login`)
             throw new Error('reviewer_login_route_unverified');
         }
         let email;
         if (MAGIC_LINK) {
+          await sampleAuthBoundary('before_magic_link_navigation');
           const auth = await magicLink();
           email = auth.email;
           report.authentication_method = 'existing_user_magic_link';
           report.account = { reviewer_fingerprint: hash(email), web_signed_in: false };
           await web.goto(auth.url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+          await sampleAuthBoundary('after_magic_link_navigation');
           email = await waitFor(
             'reviewer_magic_link_web_session',
             () => authenticatedWebEmail(web),
             (value) => value?.toLowerCase() === auth.email.toLowerCase(),
             90_000,
           );
+          await sampleAuthBoundary('after_magic_link_web_session');
         } else if (INTERACTIVE_REVIEWER) {
           report.authentication_method = 'manual_password_login';
           stage = 'ready_manual_reviewer_login';
@@ -1284,6 +1304,7 @@ try {
             (value) => typeof value === 'string' && value.includes('@'),
             180_000,
           );
+          await sampleAuthBoundary('after_manual_web_session');
         } else {
           report.authentication_method = 'password_login';
           const auth = await credentials();
@@ -1293,7 +1314,9 @@ try {
           await web.locator('input[name="email"]').fill(auth.email);
           await web.locator('input[name="password"]').fill(auth.password);
           stage = 'submit_reviewer_web_login';
+          await sampleAuthBoundary('before_password_submit');
           await web.getByRole('button', { name: 'Sign in', exact: true }).click();
+          await sampleAuthBoundary('after_password_submit');
           await waitFor(
             'reviewer_real_web_session',
             () => safeLocation(web.url()),
@@ -1316,11 +1339,14 @@ try {
         email = webIdentity.email;
         report.account = { reviewer_fingerprint: hash(email), web_signed_in: false };
         report.account.web_signed_in = true;
+        await sampleAuthBoundary('after_web_identity');
         stage = 'open_demo_page';
+        await sampleAuthBoundary('before_demo_navigation');
         await web.goto(`${WEB_ORIGIN}${DEMO_PATH}`, {
           waitUntil: 'domcontentloaded',
           timeout: 60_000,
         });
+        await sampleAuthBoundary('after_demo_navigation');
         if (safeLocation(web.url()) !== `${WEB_ORIGIN}${DEMO_PATH}`)
           throw new Error('reviewer_demo_route_unverified');
         const demoMarker = randomUUID();
@@ -1329,9 +1355,12 @@ try {
         }, demoMarker);
 
         stage = 'extension_settings_open';
+        await sampleAuthBoundary('before_settings_open');
         await click(panel, 'title', 'Settings');
+        await sampleAuthBoundary('after_settings_open');
         stage = 'extension_account_open';
         await openSection(panel, 'Account');
+        await sampleAuthBoundary('after_account_open');
         const adminCheck = UNINTERRUPTED
           ? observeAdminAssignment(panel, await supabaseOrigin(REPO))
           : observeCanonicalAdminCheck(panel, await supabaseOrigin(REPO));
@@ -1339,16 +1368,22 @@ try {
         let canonicalAdminCheck;
         try {
           stage = 'extension_signin_click';
+          await sampleAuthBoundary('before_extension_signin');
           await click(panel, 'button', 'Sign in');
+          await sampleAuthBoundary('after_extension_signin');
           stage = 'extension_organization_open';
           await openSection(panel, 'Organization');
+          await sampleAuthBoundary('after_organization_open');
           stage = 'extension_identity_wait';
           try {
             await waitFor(
               'reviewer_non_admin_identity',
               async () => {
                 const consent = await approveOwnedOauthConsent(page.context());
-                if (consent === 'authorized') report.account.oauth_consent = 'authorized';
+                if (consent === 'authorized') {
+                  report.account.oauth_consent = 'authorized';
+                  await sampleAuthBoundary('after_oauth_consent');
+                }
                 return {
                   ...(await accountObservation(panel, email)),
                   ...(await memberPanelIdentity(panel)),
@@ -1364,6 +1399,7 @@ try {
               90_000,
             );
           } catch (error) {
+            await sampleAuthBoundary('extension_identity_wait_failed');
             await recordIdentityWaitFailure({
               report,
               waitError: error,
@@ -1385,6 +1421,7 @@ try {
               captureScreenshot: () => capture(panel, artifacts, 'reviewer-role-timeout'),
             },
           });
+          await sampleAuthBoundary('after_extension_identity');
         } finally {
           await adminCheck.stop();
         }
@@ -1398,8 +1435,10 @@ try {
         let selectionDiagnostics = null;
         if (UNINTERRUPTED || !account.organizationSelected) {
           stage = 'select_reviewer_default_organization';
+          await sampleAuthBoundary('before_organization_select');
           try {
             selectionDiagnostics = await selectReviewerOrganization(panel);
+            await sampleAuthBoundary('after_organization_select');
           } catch (error) {
             report.account = {
               reviewer_fingerprint: hash(email),
@@ -1500,6 +1539,7 @@ try {
         }
 
         stage = 'reviewer_native_panel_foreground';
+        await sampleAuthBoundary('before_foreground_restore');
         // Restore the native member panel after web authentication.
         report.foreground_diagnostic = {
           steps: [],
@@ -1508,17 +1548,21 @@ try {
           failure_class: null,
           failure_snapshot: null,
         };
-        await restoreMemberForegroundWithReport({
-          web,
-          page,
-          native,
-          panel,
-          waitFor,
-          evaluate,
-          output: OUTPUT,
-          report,
-          stage,
-        });
+        try {
+          await restoreMemberForegroundWithReport({
+            web,
+            page,
+            native,
+            panel,
+            waitFor,
+            evaluate,
+            output: OUTPUT,
+            report,
+            stage,
+          });
+        } finally {
+          await sampleAuthBoundary('after_foreground_restore');
+        }
 
         stage = 'signed_in_swipe_file_tab';
         await waitFor(
