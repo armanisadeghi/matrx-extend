@@ -4,6 +4,7 @@ import {
   clickPickerCancel,
   clickPickerDone,
   clickPickerField,
+  pickerSelectedCount,
 } from './data-guest-picker-driver.mjs';
 import { guestTransportModeForReceipt } from './guest-chat-transport-observer.mjs';
 import {
@@ -55,6 +56,7 @@ function safeReviewerFailureCode(error) {
       'data_guest_done_geometry_missing',
       'data_guest_done_hit_target_changed',
       'reviewer_picker_done_unclassified',
+      'reviewer_picker_field_not_selected_before_done',
       'reviewer_demo_title_missing',
       'reviewer_demo_workflow_table_changed',
       'reviewer_demo_article_missing',
@@ -161,6 +163,17 @@ const EVIDENCE_COUNTS = new Set([
   'picker_done_node_count',
   'picker_cancel_node_count',
   'picker_shadow_count',
+  'picker_selected_before_done',
+]);
+const EVIDENCE_GEOMETRY = new Set([
+  'rect_left',
+  'rect_top',
+  'rect_right',
+  'rect_bottom',
+  'viewport_width',
+  'viewport_height',
+  'visible_width',
+  'visible_height',
 ]);
 function projectReviewerEvidence(value) {
   const result = {};
@@ -168,6 +181,13 @@ function projectReviewerEvidence(value) {
     if (EVIDENCE_BOOLEANS.has(key) && (typeof entry === 'boolean' || entry === null))
       result[key] = entry;
     else if (EVIDENCE_COUNTS.has(key) && Number.isSafeInteger(entry) && entry >= 0)
+      result[key] = entry;
+    else if (
+      EVIDENCE_GEOMETRY.has(key) &&
+      typeof entry === 'number' &&
+      Number.isFinite(entry) &&
+      Math.abs(entry) <= 1000000
+    )
       result[key] = entry;
     else if (key === 'selected' && ['Article', 'Links', 'Schema'].includes(entry))
       result[key] = entry;
@@ -202,6 +222,8 @@ export async function recordReviewerCheck({ name, run, observeSafe, screenshot }
       failure.failure_screenshot = `reviewer-${name}-failure.png`;
     } catch (error) {
       failure.screenshot_status = safeReviewerFailureCode(error);
+      if (error?.reviewerSafeDiagnostic)
+        failure.screenshot_diagnostic = projectReviewerEvidence(error.reviewerSafeDiagnostic);
     }
     return failure;
   }
@@ -242,12 +264,23 @@ export async function captureReviewerPaneScreenshot({ page, panel, file, check }
     const x = Math.max(0, Math.ceil(rect.left)), y = Math.max(0, Math.ceil(rect.top));
     const right = Math.min(document.documentElement.clientWidth, Math.floor(rect.right));
     const bottom = Math.min(document.documentElement.clientHeight, Math.floor(rect.bottom));
+    if (right <= x || bottom <= y) return {
+      reason:'reviewer_failure_screenshot_target_geometry',
+      diagnostic: {rect_left:rect.left, rect_top:rect.top, rect_right:rect.right,
+        rect_bottom:rect.bottom, viewport_width:document.documentElement.clientWidth,
+        viewport_height:document.documentElement.clientHeight,
+        visible_width:Math.max(0,right-x), visible_height:Math.max(0,bottom-y)}
+    };
     const hit = document.elementFromPoint?.((x+right)/2, (y+bottom)/2);
     if (hit && hit !== matches[0] && !matches[0].contains(hit)) return {reason:'reviewer_failure_screenshot_target_hit'};
-    return right > x && bottom > y ? {x, y, width:right-x, height:bottom-y, scale:1} : {reason:'reviewer_failure_screenshot_target_geometry'};
+    return {x, y, width:right-x, height:bottom-y, scale:1};
   })()`,
   );
-  assert.ok(clip && !clip.reason, clip?.reason ?? 'reviewer_failure_screenshot_target_unavailable');
+  if (clip?.reason)
+    throw Object.assign(new Error(clip.reason), {
+      reviewerSafeDiagnostic: clip.diagnostic,
+    });
+  assert.ok(clip, 'reviewer_failure_screenshot_target_unavailable');
   const result = await panel.send('Page.captureScreenshot', {
     format: 'png',
     clip,
@@ -876,6 +909,14 @@ export async function runStoreReviewerDemoPath({
         0,
       );
       mark('data_picker_done');
+      const selectedBeforeDone = await pickerSelectedCount(page);
+      if (selectedBeforeDone !== 1)
+        throw Object.assign(new Error('reviewer_picker_field_not_selected_before_done'), {
+          reviewerSafeDiagnostic: {
+            field_hit_confirmed: fieldHit?.chosen_hit === 'field',
+            picker_selected_before_done: selectedBeforeDone,
+          },
+        });
       try {
         await clickPickerDone(page);
       } catch (error) {
@@ -884,6 +925,7 @@ export async function runStoreReviewerDemoPath({
         }));
         error.reviewerSafeDiagnostic = {
           field_hit_confirmed: fieldHit?.chosen_hit === 'field',
+          picker_selected_before_done: selectedBeforeDone,
           ...diagnostic,
         };
         if (safeReviewerFailureCode(error) === 'reviewer_observation_failed')
@@ -894,15 +936,24 @@ export async function runStoreReviewerDemoPath({
       }
       pickerOpened = false;
       mark('data_selected_field');
-      const selected = await waitFor(
-        'reviewer_data_workflow_field_selected',
-        () => dataState(panel),
-        (value) =>
-          value.active &&
-          value.selected.length === 1 &&
-          value.cancelReady &&
-          /^field_1:\s*.+/.test(value.selected[0]),
-      );
+      let selected;
+      try {
+        selected = await waitFor(
+          'reviewer_data_workflow_field_selected',
+          () => dataState(panel),
+          (value) =>
+            value.active &&
+            value.selected.length === 1 &&
+            value.cancelReady &&
+            /^field_1:\s*.+/.test(value.selected[0]),
+        );
+      } catch (error) {
+        error.reviewerSafeDiagnostic = {
+          field_hit_confirmed: fieldHit?.chosen_hit === 'field',
+          picker_selected_before_done: selectedBeforeDone,
+        };
+        throw error;
+      }
       assert.equal(selected.guestExplanation, true, 'reviewer_data_guest_explanation_missing');
       const selector = selected.selected[0].match(/^field_1:\s*(.+)$/)?.[1];
       assert.ok(selector, 'reviewer_data_selector_missing');

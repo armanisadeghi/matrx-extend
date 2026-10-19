@@ -27,7 +27,7 @@ async function loadRunner(source, io) {
     if (path === './settings-panel-driver.mjs')
       return `from '${stub(['click', 'evaluate', 'openSection', 'waitFor'])}'`;
     if (path === './data-guest-picker-driver.mjs')
-      return `from '${stub(['clickPickerCancel', 'clickPickerDone', 'clickPickerField'])}'`;
+      return `from '${stub(['clickPickerCancel', 'clickPickerDone', 'clickPickerField', 'pickerSelectedCount'])}'`;
     return `from '${new URL(path, sourceUrl).href}'`;
   });
   return {
@@ -52,6 +52,9 @@ function browserIO({ failAt = null } = {}) {
     async openSection() {},
     async clickPickerCancel() {},
     async clickPickerField() {},
+    async pickerSelectedCount() {
+      return 1;
+    },
     async clickPickerDone() {
       picked = true;
     },

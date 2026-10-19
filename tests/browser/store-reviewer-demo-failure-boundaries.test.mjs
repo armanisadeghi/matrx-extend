@@ -4,7 +4,11 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { Window } from 'happy-dom';
-import { REVIEWER_DEMO_URL, captureReviewerPaneScreenshot } from './store-reviewer-demo-path.mjs';
+import {
+  REVIEWER_DEMO_URL,
+  captureReviewerPaneScreenshot,
+  recordReviewerCheck,
+} from './store-reviewer-demo-path.mjs';
 
 const sourceUrl = new URL('./store-reviewer-demo-path.mjs', import.meta.url);
 const headline = 'A clear three-stage browser workflow';
@@ -76,6 +80,65 @@ test('reviewer screenshot clips the actual labeled Capture and counted Links con
   }
 });
 
+test('offscreen reviewer switch reports bounded geometry and never captures an empty crop', async () => {
+  const window = new Window();
+  try {
+    window.document.body.innerHTML = `
+      <button role="tab" title="Settings" aria-selected="true" aria-controls="settings"></button>
+      <div id="settings" data-state="active">
+        <button role="switch" aria-label="Auto-scrape on load"></button>
+      </div>`;
+    Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 320 });
+    Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 240 });
+    window.document.querySelector('[role="switch"]').getBoundingClientRect = () => ({
+      left: 28,
+      top: 410,
+      right: 72,
+      bottom: 434,
+    });
+    const panel = {
+      send: async (method, options) => {
+        assert.equal(method, 'Runtime.evaluate', 'empty geometry must not capture a screenshot');
+        return {
+          result: {
+            value: (await import('node:vm')).runInNewContext(options.expression, {
+              document: window.document,
+            }),
+          },
+        };
+      },
+    };
+    const page = { url: () => REVIEWER_DEMO_URL };
+    const failure = await recordReviewerCheck({
+      name: 'fresh_auto_capture_off',
+      run: async () => {
+        throw new Error('reviewer_observation_failed');
+      },
+      observeSafe: async () => ({ switch_on: false }),
+      screenshot: async (_file, check) =>
+        captureReviewerPaneScreenshot({
+          page,
+          panel,
+          file: '/tmp/unused-reviewer-geometry.png',
+          check,
+        }),
+    });
+    assert.equal(failure.screenshot_status, 'reviewer_failure_screenshot_target_geometry');
+    assert.deepEqual(failure.screenshot_diagnostic, {
+      rect_left: 28,
+      rect_top: 410,
+      rect_right: 72,
+      rect_bottom: 434,
+      viewport_width: 320,
+      viewport_height: 240,
+      visible_width: 44,
+      visible_height: 0,
+    });
+  } finally {
+    await window.happyDOM.abort();
+  }
+});
+
 test('reviewer Data check selects a fixture field before requiring guest explanation and Cancel', async () => {
   const original = await readFile(sourceUrl, 'utf8');
   const key = '__reviewerFailureBoundaryIO';
@@ -87,6 +150,8 @@ test('reviewer Data check selects a fixture field before requiring guest explana
   let articleHeadingAfterCapture = true;
   const articleHeadingInTextContent = true;
   let doneFailure = null;
+  let pickerCount = 1;
+  let doneClicks = 0;
   const io = {
     click: async (_panel, kind, value) => {
       if (kind === 'scrape-result-tab') tab = value;
@@ -140,7 +205,9 @@ test('reviewer Data check selects a fixture field before requiring guest explana
       return value;
     },
     clickPickerField: async () => {},
+    pickerSelectedCount: async () => pickerCount,
     clickPickerDone: async () => {
+      doneClicks += 1;
       if (doneFailure) throw new Error(doneFailure);
       selected = true;
     },
@@ -156,7 +223,7 @@ test('reviewer Data check selects a fixture field before requiring guest explana
       if (path === './settings-panel-driver.mjs')
         return `from '${stub(['click', 'evaluate', 'openSection', 'waitFor'])}'`;
       if (path === './data-guest-picker-driver.mjs')
-        return `from '${stub(['clickPickerCancel', 'clickPickerDone', 'clickPickerField'])}'`;
+        return `from '${stub(['clickPickerCancel', 'clickPickerDone', 'clickPickerField', 'pickerSelectedCount'])}'`;
       return `from '${new URL(path, sourceUrl).href}'`;
     });
     const { runStoreReviewerDemoPath } = await import(
@@ -298,11 +365,31 @@ test('reviewer Data check selects a fixture field before requiring guest explana
     assert.equal(countedDone.checks.data_workflow_picker.failure_code, doneFailure);
     assert.deepEqual(countedDone.checks.data_workflow_picker.failure_diagnostic, {
       field_hit_confirmed: false,
+      picker_selected_before_done: 1,
       picker_diagnostic_available: true,
       picker_shadow_count: 1,
       picker_done_node_count: 0,
       picker_cancel_node_count: 1,
     });
+    doneFailure = null;
+    pickerCount = 0;
+    const doneClicksBeforeEmptyPick = doneClicks;
+    captured = false;
+    tab = 'Article';
+    const emptyPick = await runStoreReviewerDemoPath(args);
+    assert.equal(
+      emptyPick.checks.data_workflow_picker.failure_code,
+      'reviewer_picker_field_not_selected_before_done',
+    );
+    assert.equal(
+      emptyPick.checks.data_workflow_picker.failure_diagnostic.picker_selected_before_done,
+      0,
+    );
+    assert.equal(
+      doneClicks,
+      doneClicksBeforeEmptyPick,
+      'Done must not certify an unselected field',
+    );
   } finally {
     delete globalThis[key];
   }

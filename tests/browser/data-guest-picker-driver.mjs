@@ -131,6 +131,22 @@ export async function pickerText(session, selector) {
   return outerHTML;
 }
 
+/** Read the rendered picked rows before Done removes the closed-shadow picker. */
+export async function pickerSelectedCount(page) {
+  const session = await page.context().newCDPSession(page);
+  try {
+    await session.send('DOM.enable');
+    const nodeId = await pickerShadowNode(session, '#picked');
+    const { nodeIds } = await session.send('DOM.querySelectorAll', {
+      nodeId,
+      selector: '.picked-item',
+    });
+    return nodeIds?.length ?? 0;
+  } finally {
+    await session.detach();
+  }
+}
+
 /** A trusted pointer is sent only after the exact closed-shadow button owns the hit. */
 async function clickPickerButton(page, buttonId) {
   const session = await page.context().newCDPSession(page);
