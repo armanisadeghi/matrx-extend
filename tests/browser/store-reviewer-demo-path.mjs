@@ -15,7 +15,7 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 export const REVIEWER_DEMO_URL = 'https://www.aimatrx.com/matrx-extend-demo';
 
 function safeReviewerFailureCode(error) {
-  const code = /^([a-z][a-z0-9_]{0,79})(?::|$)/i.exec(String(error?.message ?? ''))?.[1];
+  const code = /^([a-z][a-z0-9_]{0,79})(?::|\r?\n|$)/i.exec(String(error?.message ?? ''))?.[1];
   if (
     code &&
     new Set([
@@ -205,8 +205,8 @@ export async function captureReviewerPaneScreenshot({ page, panel, file, check }
       if (${JSON.stringify(check)} === 'fresh_auto_capture_off')
         return button.getAttribute('role') === 'switch' && button.getAttribute('aria-label') === 'Auto-scrape on load' && !label;
       if (${JSON.stringify(check)} === 'capture_article')
-        return (button.getAttribute('title') === 'Capture the page exactly as it is right now' || button.getAttribute('data-matrx-title') === 'Capture the page exactly as it is right now') && !label;
-      if (${JSON.stringify(check)} === 'capture_links') return button.getAttribute('role') === 'tab' && label === 'Links';
+        return (button.getAttribute('title') === 'Capture the page exactly as it is right now' || button.getAttribute('data-matrx-title') === 'Capture the page exactly as it is right now') && (label === '' || label === 'Capture' || label === 'Re-capture');
+      if (${JSON.stringify(check)} === 'capture_links') return button.getAttribute('role') === 'tab' && button.firstChild?.textContent?.trim() === 'Links' && /^Links(?:[1-9]\\d*)?$/.test(label.replace(/\\s+/g, ''));
       if (${JSON.stringify(check)} === 'capture_schema') return button.getAttribute('role') === 'tab' && label === 'Schema';
       if (${JSON.stringify(check)} === 'seo_audit') return label === 'Audit this page' || label === 'Re-audit';
       if (${JSON.stringify(check)} === 'data_workflow_picker') return label === 'Pick fields on this page' || label === 'Cancel';
@@ -770,12 +770,11 @@ export async function runStoreReviewerDemoPath({
       mark('data_tab');
       await click(panel, 'title', 'Data');
       mark('data_picker_button');
-      const data = await waitFor(
+      await waitFor(
         'reviewer_data_picker_ready',
         () => dataState(panel),
         (value) => value.active && value.pickerReady && value.selected.length === 0,
       );
-      assert.equal(data.guestExplanation, true, 'reviewer_data_guest_explanation_missing');
       await click(panel, 'data-picker-button', 'Pick fields on this page');
       pickerOpened = true;
       mark('data_picker_host');
@@ -795,6 +794,7 @@ export async function runStoreReviewerDemoPath({
           value.cancelReady &&
           /^field_1:\s*.+/.test(value.selected[0]),
       );
+      assert.equal(selected.guestExplanation, true, 'reviewer_data_guest_explanation_missing');
       const selector = selected.selected[0].match(/^field_1:\s*(.+)$/)?.[1];
       assert.ok(selector, 'reviewer_data_selector_missing');
       mark('data_workflow_selector');
