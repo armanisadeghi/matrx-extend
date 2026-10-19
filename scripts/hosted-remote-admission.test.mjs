@@ -66,6 +66,7 @@ test('standalone hosted CLI reaches admission refusals without installed package
     for (const name of [
       'hosted-remote-admission.mjs',
       'copy-hosted-resource-journal.mjs',
+      'stabilization-resource-journal.mjs',
       'development-source-compatibility.mjs',
       'published-store-crx-target.mjs',
     ])
