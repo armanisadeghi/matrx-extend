@@ -1,6 +1,6 @@
 ---
 name: matrx-oauth
-subject: skills/matrx-oauth
+subject: platform/auth
 type: Skill
 title: matrx-oauth — the Matrx OAuth flow, end to end
 description: "Guide to the Matrx OAuth flow across aimatrx.com, Supabase, aidream, and the desktop client. Use when wiring OAuth into a Matrx SPA or service, or debugging 'Token exchange failed', 'No access token received', flash-and-bounce logins, the admin allowlist, /auth/aimatrx and /auth/callback, or any auth issue involving aimatrx.com or Supabase tokens."
@@ -17,6 +17,19 @@ verified: 2026-09-12 — hard-won fact 0 (no token in a URL; one-time handoff + 
      sync, and commit each repo. Edits made here are overwritten and lost. -->
 
 # Matrx OAuth — Full A-to-Z
+
+<!-- rules:stamp -->
+> Rules from `common-docs/systems/platform/auth/STATE.md` — edit there, never here (`python3 common-docs/meta/scripts/one_home.py --write`).
+
+- Identity is `getClaims()` (local JWKS verification), never `getUser()`; `getUser()` exists only behind `utils/supabase/authUserRecord*.ts` for fields the JWT lacks (`created_at`, `identities`, `last_sign_in_at`, `*_confirmed_at`, `factors`). Never trust `getSession()` for access.
+- The whole identity resolve is bounded by one deadline (2.5 s). Raising it trades a degraded request for a Vercel 504; fix the authority instead. Abort the socket, never `Promise.race` it.
+- An authority we could not reach is not a signed-out person: when `authUnavailable` is set, write no cookie, expire none, clear no legacy key, do not bounce to `/login`, and do not paint a guest shell. A token we reached a verdict on (forged, rotated key) is not `authUnavailable`.
+- `getClaims()` saves the network call only with an asymmetric signing key; check the project's `/auth/v1/.well-known/jwks.json` before relying on it in a new project.
+- The proxy matcher names static extensions to skip; never match "anything after a dot" (creator and share slugs contain dots and would stop refreshing sessions).
+- A live token never rides a URL. The OAuth callback redirects with a one-time `handoff` code that the SPA POSTs to `/auth/session/exchange`; any inbound `access_token`, `token`, `refresh_token` or `id_token` query parameter is refused.
+- The Matrx OAuth client is a public PKCE client: never send `client_secret`.
+- Any client that validates a Matrx access token per request follows the same three rules (claims, bounded, unreachable is not logout).
+<!-- rules:stamp-end -->
 
 The Matrx OAuth provider is **a thin Next.js proxy in front of Supabase Auth**, hosted at `https://www.aimatrx.com`. It is NOT Google / GitHub / generic OAuth — it's our own provider, backed by the same Supabase project that issues Matrx user JWTs. Treat every external behavior as "Supabase OAuth 2.1 with PKCE", not "OAuth 2.0 in general" — Supabase has several non-standard quirks that have burned three weeks of debugging.
 
