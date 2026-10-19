@@ -1400,6 +1400,14 @@
  "/bandwidth-status/public/status": {
   "get": []
  },
+ "/base-move/jobs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/base-move/jobs/{job_id}": {
+  "get": []
+ },
  "/base-snapshots/schedule": {
   "put": [
    "application/json"
