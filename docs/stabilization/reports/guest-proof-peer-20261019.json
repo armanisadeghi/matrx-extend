@@ -1,0 +1,26 @@
+{
+  "status": "bounded-evidence-reviewed",
+  "reviewer": "guest_proof_peer_20261019; zero authorship",
+  "verdict_A": "PASS for actual Store-installed205 guest first reply and same-conversation follow-up only; separate adapted-CRX three-turn evidence; no current555 or full feature pass.",
+  "verdict_B": "PASS for evidence traceability and privacy with installed-byte and server-observer limits.",
+  "review_text": [
+    "STATUS: DONE",
+    "A verdict: PASS for bounded behavior: native Store guest side panel visibly labels guest, answers the public demo's stages and Understand result, then answers a same-chat follow-up; replies completed, composer returned to Send, no visible error. Screenshot is direct evidence; report/journal corroborate it.",
+    "A limit: Native screenshot/report show Chrome Store source, v0.2.205 and extension ID, but not loaded bundle bytes or a runtime SHA; release receipt maps 0.2.205 to source 2f68bc4, not installed-byte attestation.",
+    "Cross-check: hosted run 39283778031 is a separate adapted published-CRX test (CRX digest verified; runtime tree hash recorded), not live Web Store installation. Its native artifact supports three visible terminal answers across opening, same-conversation, and post-reload turns; protocol terminal markers alone do not prove UI completion, but captured answer screenshots do.",
+    "The hosted workflow remains pending/in_progress in supplied evidence, with child failure at Values Escape (visible popover remained open after trusted Escape); therefore that run's overall Guest Chat acceptance failed, notwithstanding the bounded answer proof.",
+    "Server SHA b8092f2 matched owner pre-observation 16:24:32 and two native post-observations; hosted before/after also match. Observers differ; no inference beyond sampled stability.",
+    "B verdict: PASS for evidence traceability/privacy with material limits. Native release receipt links approved source SHA to version/Store ID; that record does not attest loaded bytes. Hosted artifact SHA matches GitHub artifact digest and reports CRX SHA/tree SHA; provenance explicitly says extracted approved CRX loaded in isolated profile, not live Store install.",
+    "Website admin indicators are not extension identity: native screenshot and direct report show extension guest banner. Hosted artifact also records fresh guest profile and no login/paywall/error; do not use website auth to infer extension mode.",
+    "Sanitized repo evidence omits raw replies, nonce, auth, screenshot contents; raw hosted artifact remains in private /tmp bundle. Guest resource journal sanitization omitted 14 process-attribution records; remaining journal validates one final child_failed decision. Package/browser journals valid; native journal valid exit 0.",
+    "Bounded credible claim: on 2026-10-19, tested Store-installed v0.2.205 in a guest session completed one grounded public-demo reply and a same-conversation follow-up with no visible chat error. Separately, the published CRX in an isolated hosted profile produced three grounded terminal replies, while its workflow failed Values Escape and other reviewer checks.",
+    "Do not claim broad guest acceptance, settings/capture/SEO/data success, a passing hosted workflow, native installed-byte provenance, runtime SHA for the Store install, current-version/555 behavior, or release readiness."
+  ],
+  "owner_before_server_observation": {
+    "observed_at_utc": "2026-10-19T16:24:32Z",
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "git_sha": "b8092f234958c4f0b1a730576e218252a5735498",
+    "built_at": "2026-10-19T15:08:18Z",
+    "scope": "API-only version observation, preceding native Store messages; not itself guest behavior proof."
+  }
+}
