@@ -4126,6 +4126,9 @@
  "/helpwise/public/status": {
   "get": []
  },
+ "/hepdata/public/record": {
+  "get": []
+ },
  "/hex-pm/public/package": {
   "get": []
  },
@@ -4673,6 +4676,9 @@
   "get": []
  },
  "/launchpad/public/ubuntu-source": {
+  "get": []
+ },
+ "/learn-amp/public/status": {
   "get": []
  },
  "/learnworlds/public/status": {
@@ -8539,6 +8545,9 @@
  "/spotme/public/status": {
   "get": []
  },
+ "/sprig/public/status": {
+  "get": []
+ },
  "/sprout-social/public/status": {
   "get": []
  },
@@ -8936,6 +8945,9 @@
   "get": []
  },
  "/transistor/public/status": {
+  "get": []
+ },
+ "/translatewiki/public/page": {
   "get": []
  },
  "/travis-ci/public/status": {
