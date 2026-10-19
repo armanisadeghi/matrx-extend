@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { Window } from 'happy-dom';
+import { clickPickerDone as actualClickPickerDone } from './data-guest-picker-driver.mjs';
 import {
   REVIEWER_DEMO_URL,
   captureReviewerPaneScreenshot,
@@ -150,6 +151,9 @@ test('reviewer Data check selects a fixture field before requiring guest explana
   let articleHeadingAfterCapture = true;
   const articleHeadingInTextContent = true;
   let doneFailure = null;
+  let doneDiagnostic = null;
+  let combinedDoneFailure = false;
+  let combinedOriginalError = null;
   let pickerCount = 1;
   let doneClicks = 0;
   const io = {
@@ -208,7 +212,29 @@ test('reviewer Data check selects a fixture field before requiring guest explana
     pickerSelectedCount: async () => pickerCount,
     clickPickerDone: async () => {
       doneClicks += 1;
-      if (doneFailure) throw new Error(doneFailure);
+      if (combinedDoneFailure) {
+        try {
+          return await actualClickPickerDone({
+            context: () => ({
+              newCDPSession: async () => ({
+                send: async () => {
+                  throw Object.assign(new Error('PRIVATE_FIRST_CDP_791'), {
+                    name: 'ProtocolError',
+                  });
+                },
+                detach: async () => {
+                  throw new Error('PRIVATE_LATER_DETACH_791');
+                },
+              }),
+            }),
+          });
+        } catch (error) {
+          combinedOriginalError = error;
+          throw error;
+        }
+      }
+      if (doneFailure)
+        throw Object.assign(new Error(doneFailure), { pickerButtonDiagnostic: doneDiagnostic });
       selected = true;
     },
     clickPickerCancel: async () => {
@@ -371,7 +397,61 @@ test('reviewer Data check selects a fixture field before requiring guest explana
       picker_done_node_count: 0,
       picker_cancel_node_count: 1,
     });
+    doneFailure = 'PRIVATE_DONE_PROTOCOL_791';
+    doneDiagnostic = {
+      phase: 'get_box_model',
+      exception_category: 'protocol',
+      hit_equal: null,
+      mouse_click_resolved: false,
+      box_center_x: 30,
+      box_center_y: 40,
+      box_width: 44,
+      box_height: 20,
+      raw: doneFailure,
+    };
+    captured = false;
+    tab = 'Article';
+    const protocolDone = await runStoreReviewerDemoPath(args);
+    assert.equal(
+      protocolDone.checks.data_workflow_picker.failure_code,
+      'reviewer_picker_done_unclassified',
+    );
+    assert.equal(
+      protocolDone.checks.data_workflow_picker.failure_diagnostic.picker_failed_phase,
+      'get_box_model',
+    );
+    assert.equal(
+      protocolDone.checks.data_workflow_picker.failure_diagnostic.picker_exception_category,
+      'protocol',
+    );
+    assert.equal(
+      protocolDone.checks.data_workflow_picker.failure_diagnostic.picker_box_center_x,
+      30,
+    );
+    assert.doesNotMatch(JSON.stringify(protocolDone), /PRIVATE_DONE_PROTOCOL_791/);
     doneFailure = null;
+    doneDiagnostic = null;
+    combinedDoneFailure = true;
+    captured = false;
+    tab = 'Article';
+    const combined = await runStoreReviewerDemoPath(args);
+    assert.equal(combinedOriginalError?.message, 'PRIVATE_FIRST_CDP_791');
+    assert.equal(
+      combined.checks.data_workflow_picker.failure_code,
+      'reviewer_picker_done_unclassified',
+    );
+    assert.equal(
+      combined.checks.data_workflow_picker.failure_diagnostic.picker_failed_phase,
+      'dom_enable',
+    );
+    assert.equal(
+      combined.checks.data_workflow_picker.failure_diagnostic.picker_exception_category,
+      'protocol',
+    );
+    assert.doesNotMatch(JSON.stringify(combined), /PRIVATE_FIRST_CDP_791|PRIVATE_LATER_DETACH_791/);
+    combinedDoneFailure = false;
+    doneFailure = null;
+    doneDiagnostic = null;
     pickerCount = 0;
     const doneClicksBeforeEmptyPick = doneClicks;
     captured = false;

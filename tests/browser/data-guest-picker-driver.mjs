@@ -103,13 +103,16 @@ export async function hoverPickerField(page, selector, index = 0) {
 }
 
 /** Resolve a button inside the picker's closed shadow root through Chrome's DOM domain. */
-export async function pickerShadowNode(session, selector) {
+export async function pickerShadowNode(session, selector, onPhase = () => {}) {
+  onPhase('get_document');
   const { root } = await session.send('DOM.getDocument', { depth: 1, pierce: true });
+  onPhase('query_host');
   const { nodeId: hostId } = await session.send('DOM.querySelector', {
     nodeId: root.nodeId,
     selector: '#matrx-data-picker-host',
   });
   assert.ok(hostId, 'data_guest_picker_host_missing');
+  onPhase('describe_host');
   const { node: host } = await session.send('DOM.describeNode', {
     nodeId: hostId,
     depth: 1,
@@ -117,12 +120,21 @@ export async function pickerShadowNode(session, selector) {
   });
   const shadow = host.shadowRoots?.filter((node) => node.shadowRootType === 'closed');
   assert.equal(shadow?.length, 1, 'data_guest_picker_closed_shadow_missing');
+  onPhase('query_button');
   const { nodeId } = await session.send('DOM.querySelector', {
     nodeId: shadow[0].nodeId,
     selector,
   });
   assert.ok(nodeId, 'data_guest_picker_shadow_target_missing');
   return nodeId;
+}
+
+function pickerErrorCategory(error) {
+  if (error?.name === 'ProtocolError') return 'protocol';
+  if (error?.name === 'TimeoutError') return 'timeout';
+  if (error?.name === 'AssertionError') return 'assertion';
+  if (error?.name === 'TypeError') return 'type';
+  return 'other';
 }
 
 export async function pickerText(session, selector) {
@@ -149,32 +161,69 @@ export async function pickerSelectedCount(page) {
 
 /** A trusted pointer is sent only after the exact closed-shadow button owns the hit. */
 async function clickPickerButton(page, buttonId) {
-  const session = await page.context().newCDPSession(page);
+  let session;
+  let phase = 'new_session';
+  let firstError = null;
+  const diagnostic = { phase, hit_equal: null, mouse_click_resolved: false };
+  const setPhase = (value) => {
+    phase = value;
+  };
+  const fail = (error) => {
+    error.pickerButtonDiagnostic = {
+      ...diagnostic,
+      phase,
+      exception_category: pickerErrorCategory(error),
+    };
+    return error;
+  };
   try {
+    session = await page.context().newCDPSession(page);
+    phase = 'dom_enable';
     await session.send('DOM.enable');
-    const nodeId = await pickerShadowNode(session, `#${buttonId}`);
+    const nodeId = await pickerShadowNode(session, `#${buttonId}`, setPhase);
+    phase = 'describe_button';
     const { node } = await session.send('DOM.describeNode', { nodeId });
     assert.equal(node.nodeName, 'BUTTON', `data_guest_${buttonId}_not_button`);
+    phase = 'get_box_model';
     const { model } = await session.send('DOM.getBoxModel', { nodeId });
     const [x1, y1, x2, y2, x3, y3, x4, y4] = model?.content ?? [];
     const x = (x1 + x2 + x3 + x4) / 4;
     const y = (y1 + y2 + y3 + y4) / 4;
+    diagnostic.box_center_x = x;
+    diagnostic.box_center_y = y;
+    diagnostic.box_width = Math.hypot(x2 - x1, y2 - y1);
+    diagnostic.box_height = Math.hypot(x4 - x1, y4 - y1);
     assert.ok(Number.isFinite(x) && Number.isFinite(y), `data_guest_${buttonId}_geometry_missing`);
+    phase = 'get_node_for_location';
     const hit = await session.send('DOM.getNodeForLocation', {
       x: Math.round(x),
       y: Math.round(y),
       includeUserAgentShadowDOM: true,
       ignorePointerEventsNone: false,
     });
+    diagnostic.hit_equal = hit.backendNodeId === node.backendNodeId;
     assert.equal(
       hit.backendNodeId,
       node.backendNodeId,
       `data_guest_${buttonId}_hit_target_changed`,
     );
+    phase = 'mouse_click';
     await page.mouse.click(x, y);
-  } finally {
-    await session.detach();
+    diagnostic.mouse_click_resolved = true;
+  } catch (error) {
+    firstError = fail(error);
   }
+  if (session) {
+    try {
+      await session.detach();
+    } catch (error) {
+      if (!firstError) {
+        phase = 'detach';
+        firstError = fail(error);
+      }
+    }
+  }
+  if (firstError) throw firstError;
 }
 
 export async function clickPickerDone(page) {

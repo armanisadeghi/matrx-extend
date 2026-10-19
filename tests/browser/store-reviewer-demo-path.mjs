@@ -150,6 +150,8 @@ const EVIDENCE_BOOLEANS = new Set([
   'article_markdown_available',
   'field_hit_confirmed',
   'picker_diagnostic_available',
+  'picker_hit_equal',
+  'picker_mouse_click_resolved',
 ]);
 const EVIDENCE_COUNTS = new Set([
   'link_count',
@@ -174,7 +176,25 @@ const EVIDENCE_GEOMETRY = new Set([
   'viewport_height',
   'visible_width',
   'visible_height',
+  'picker_box_center_x',
+  'picker_box_center_y',
+  'picker_box_width',
+  'picker_box_height',
 ]);
+const PICKER_PHASES = new Set([
+  'new_session',
+  'dom_enable',
+  'get_document',
+  'query_host',
+  'describe_host',
+  'query_button',
+  'describe_button',
+  'get_box_model',
+  'get_node_for_location',
+  'mouse_click',
+  'detach',
+]);
+const PICKER_ERROR_CATEGORIES = new Set(['protocol', 'timeout', 'assertion', 'type', 'other']);
 function projectReviewerEvidence(value) {
   const result = {};
   for (const [key, entry] of Object.entries(value ?? {})) {
@@ -190,6 +210,9 @@ function projectReviewerEvidence(value) {
     )
       result[key] = entry;
     else if (key === 'selected' && ['Article', 'Links', 'Schema'].includes(entry))
+      result[key] = entry;
+    else if (key === 'picker_failed_phase' && PICKER_PHASES.has(entry)) result[key] = entry;
+    else if (key === 'picker_exception_category' && PICKER_ERROR_CATEGORIES.has(entry))
       result[key] = entry;
   }
   return result;
@@ -926,6 +949,14 @@ export async function runStoreReviewerDemoPath({
         error.reviewerSafeDiagnostic = {
           field_hit_confirmed: fieldHit?.chosen_hit === 'field',
           picker_selected_before_done: selectedBeforeDone,
+          picker_failed_phase: error.pickerButtonDiagnostic?.phase,
+          picker_exception_category: error.pickerButtonDiagnostic?.exception_category,
+          picker_hit_equal: error.pickerButtonDiagnostic?.hit_equal,
+          picker_mouse_click_resolved: error.pickerButtonDiagnostic?.mouse_click_resolved,
+          picker_box_center_x: error.pickerButtonDiagnostic?.box_center_x,
+          picker_box_center_y: error.pickerButtonDiagnostic?.box_center_y,
+          picker_box_width: error.pickerButtonDiagnostic?.box_width,
+          picker_box_height: error.pickerButtonDiagnostic?.box_height,
           ...diagnostic,
         };
         if (safeReviewerFailureCode(error) === 'reviewer_observation_failed')

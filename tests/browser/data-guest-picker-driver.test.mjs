@@ -114,6 +114,69 @@ test('Data guest Done receives trusted pointer only when exact closed-shadow but
   assert.equal(covered.calls.at(-1).method, 'detach');
 });
 
+test('Done helper preserves first failed phase and projects no raw protocol details', async () => {
+  const privateValue = 'PRIVATE_DONE_PROTOCOL_791';
+  for (const phase of [
+    ['new_session', null],
+    ['dom_enable', 'DOM.enable'],
+    ['get_document', 'DOM.getDocument'],
+    ['query_host', 'DOM.querySelector'],
+    ['describe_host', 'DOM.describeNode'],
+    ['query_button', 'DOM.querySelector'],
+    ['describe_button', 'DOM.describeNode'],
+    ['get_box_model', 'DOM.getBoxModel'],
+    ['get_node_for_location', 'DOM.getNodeForLocation'],
+    ['mouse_click', null],
+    ['detach', null],
+  ]) {
+    const [expectedPhase, method] = phase;
+    const fixture = ownedPage(74);
+    const originalSession = fixture.page.context().newCDPSession;
+    fixture.page.context = () => ({
+      newCDPSession: async () => {
+        if (expectedPhase === 'new_session')
+          throw Object.assign(new Error(privateValue), { name: 'ProtocolError' });
+        const session = await originalSession();
+        const originalSend = session.send.bind(session);
+        let queryCount = 0;
+        let describeCount = 0;
+        session.send = async (actual, params) => {
+          if (actual === 'DOM.querySelector') queryCount++;
+          if (actual === 'DOM.describeNode') describeCount++;
+          if (
+            actual === method &&
+            (!['DOM.querySelector', 'DOM.describeNode'].includes(actual) ||
+              (expectedPhase === 'query_host' && queryCount === 1) ||
+              (expectedPhase === 'query_button' && queryCount === 2) ||
+              (expectedPhase === 'describe_host' && describeCount === 1) ||
+              (expectedPhase === 'describe_button' && describeCount === 2))
+          )
+            throw Object.assign(new Error(privateValue), { name: 'ProtocolError' });
+          return originalSend(actual, params);
+        };
+        if (expectedPhase === 'detach')
+          session.detach = async () => {
+            throw Object.assign(new Error(privateValue), { name: 'ProtocolError' });
+          };
+        return session;
+      },
+    });
+    if (expectedPhase === 'mouse_click')
+      fixture.page.mouse.click = async () => {
+        throw Object.assign(new Error(privateValue), { name: 'ProtocolError' });
+      };
+    await assert.rejects(clickPickerDone(fixture.page), (error) => {
+      assert.equal(error.pickerButtonDiagnostic?.phase, expectedPhase);
+      assert.equal(error.pickerButtonDiagnostic?.exception_category, 'protocol');
+      assert.doesNotMatch(
+        JSON.stringify(error.pickerButtonDiagnostic),
+        /PRIVATE_DONE_PROTOCOL_791/,
+      );
+      return true;
+    });
+  }
+});
+
 test('C16 Cancel targets the picker exit button and refuses a covered hit', async () => {
   const exact = ownedPage(74);
   await clickPickerCancel(exact.page);
