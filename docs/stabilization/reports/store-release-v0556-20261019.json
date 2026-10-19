@@ -1,6 +1,6 @@
 {
   "task_id": "store555-release-eligibility",
-  "status": "guarded-candidate-prepared-acceptance-pending",
+  "status": "guarded-candidate-prepared-upload-ineligible",
   "workflow_run_id": 39289278009,
   "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39289278009",
   "workflow_conclusion": "success",
@@ -28,10 +28,10 @@
     "hosted_risk_gate": "pass: policy surface matches published 0.2.205 and emitted code scan found no forbidden runtime-code path",
     "release_gate": "pass; hosted compile, unit, strict schema routing, migration ledger, tool DB drift, package latest, Store package and risk gates"
   },
-  "classification": "Routine manifest surface; independent exact-ZIP static and semantic review pending before upload.",
-  "acceptance": "Exact v0.2.556 Store guest, non-admin member, and public reviewer walkthrough are pending. Actual Store-installed 0.2.205 guest first/follow-up proof does not establish v0.2.556 acceptance.",
+  "classification": "Routine manifest surface; independent exact-ZIP static review passed with no blocking finding. Browser acceptance remains incomplete.",
+  "acceptance": "Exact v0.2.556 guest B run 39290491457 failed its first visible-answer screenshot oracle, so follow-up and reload were not exercised; public reviewer controls also failed. The visible image shows a persistent Saved audits unavailable/RLS workspace error over Chat with no answer in frame. Root-cause diagnosis is open; no broad product verdict follows yet. Non-admin member A run 39291881216 is in progress after admission repair. Actual Store-installed 0.2.205 first/follow-up proof does not establish v0.2.556 acceptance.",
   "dashboard": "Authenticated October 19 observation remains Published 0.2.205, Draft 0.2.479 Rejected, no pending revision, upload enabled. No new upload or submission.",
-  "next_action": "Independent exact-ZIP static review and resource-valid guest/non-admin/public reviewer acceptance on this artifact; recheck main runtime before upload. If accepted, upload only the verified Store ZIP to the primary item, reconcile listing/reviewer fields, submit with automatic publication, and verify Pending review.",
+  "next_action": "Diagnose and repair the .556 guest/reviewer failure, finish member A, then obtain independently accepted exact-payload guest/non-admin/public reviewer results. Recheck main runtime before any upload. No human-only access blocker exists.",
   "store_upload_or_submission": false,
   "downloaded_artifact_directory": "/tmp/matrx-extend-store556-39289278009/.output"
 }
