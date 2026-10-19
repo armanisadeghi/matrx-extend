@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "resource_final_summary",
+  "run_id": 39291881216,
+  "archive_sha256": "e2349d7fa6fb670915a675ae60282c0af0445dba8fe4bd6302ce1cc403349ad1",
+  "finals": {
+    "package": {
+      "final_count": 1,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "sanitizer_result": "copied"
+    },
+    "browser": {
+      "final_count": 1,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "sanitizer_result": "copied"
+    },
+    "guest": {
+      "final_count": 1,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed",
+      "sanitizer_result": "refused_unknown_RESOURCE_STARTUP_INTERVAL_BRACKET"
+    }
+  }
+}

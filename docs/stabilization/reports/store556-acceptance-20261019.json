@@ -1,7 +1,7 @@
 {
   "task_id": "store556_acceptance_20261019",
   "lane": "store556_acceptance",
-  "status": "guest_native_failed_member_running",
+  "status": "guest_and_member_native_failed_no_store_acceptance",
   "release": {
     "version": "0.2.556",
     "source_tag_sha": "50a479584955eca5045853f8cbb7a7d594b9fd78",
@@ -41,7 +41,16 @@
     "admission": "Normal hosted-release-member-admission plan and dispatch passed after independent review of D246; existing designated reviewer passed live nonadmin role and approved organization dry run before a fresh single-use link was minted.",
     "auth_preflight": "passed; workflow advanced to guarded package readiness",
     "credential_cleanup": "Temporary GitHub link secret deleted and name confirmed absent; local single-use link file unlinked and confirmed absent. No credential content retained.",
-    "product_verdict": "pending"
+    "workflow_conclusion": "failure",
+    "uploaded_artifact_id": 12207000822,
+    "uploaded_artifact_sha256": "e2349d7fa6fb670915a675ae60282c0af0445dba8fe4bd6302ce1cc403349ad1",
+    "native_report": "../evidence/store556-member/run39291881216/native-report.sanitized.json",
+    "resource_finals": "../evidence/store556-member/run39291881216/resource-finals.sanitized.json",
+    "question_screenshot": "../evidence/store556-member/run39291881216/reviewer-chat-action.png",
+    "product_verdict": "unverified: one terminal reply failed expected stage terms; no follow-up was sent",
+    "bounded_observation": "The existing nonadmin signed into web and extension. A canonical admin check matched that extension user with HTTP 200 and zero admin rows; the approved organization and member-only Swipe file tab were visible. The opening Chat request returned HTTP 200, its delegated tool result and continuation completed, and one 592-character assistant reply reached terminal success. The native report preserved expected terms [Capture=true, Understand=false, Use=false], but deliberately retained no answer text or result screenshot; its actual wording cannot be quoted from this artifact.",
+    "target_diagnosis": "The runner loaded the intended public demo in a separate web tab, then restoreMemberForeground closed that tab, foregrounded the harness root Research brief at http://localhost:<ephemeral-port>/, and reopened the side panel before asking for the three workflow stages on this page. The recorded foreground web_close/root_foreground/panel_reopen steps all completed. Source sequence makes the wrong target the likely cause of the stage mismatch. The native report did not retain the assigned tab URL or request page_brief, so serialized context remains unverified. Do not call the answer a product defect or relax the answer oracle; repair target sequencing and assert the assigned URL at send.",
+    "resource_limit": "Package and browser journals copied with the repository sanitizer. Guest final in the verified archive says admitted=true, resourceInvalid=false, exitCode=1, decision=child_failed, but the sanitizer refused an unsupported RESOURCE_STARTUP_INTERVAL_BRACKET event; no sanitized guest event stream is claimed."
   },
-  "next_action": "Diagnose the exact candidate guest screenshot and public reviewer UI preconditions from targeted native paint/DOM evidence before another B attempt. Observe the already running A member run to terminal, inspect its sanitized artifact and resource finals, then update this report. Do not infer Store or full-surface acceptance from source checks."
+  "next_action": "Repair the guest overlay/paint and public reviewer first-target evidence, plus the member runner's demo-tab foreground sequencing and assigned-tab assertion, then test a new exact candidate through normal guarded admission. The current 0.2.556 Store ZIP has no accepted guest follow-up, public reviewer surface or nonadmin Chat proof. No Store upload or submission occurred."
 }
