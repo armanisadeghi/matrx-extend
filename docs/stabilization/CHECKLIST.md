@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-19 17:57 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-19T17:50:48.104265Z.
+Generated 2026-10-19 18:09 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-19T17:50:48.104265Z.
 
 ## Current truth
 
@@ -8,7 +8,7 @@ Generated 2026-10-19 17:57 UTC from inventory.json, defect records, daily Store 
 - Case results: pass 100, partial 97, fail 2, unverified 1133, n/a 2; 178 explicitly unverified and 955 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/402 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 0 missing steps; 0 missing expected outcomes; 0 missing control links; 1 explicitly control-less procedures.
-- Defect states: closed 138, retest-pass 9, fixed 74, in-fix 24, open 3. A fixed or closed defect is not a feature-level UI pass.
+- Defect states: closed 138, retest-pass 9, fixed 76, in-fix 22, open 3. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current Store release observations
 
@@ -26,7 +26,7 @@ These observations are bounded to their recorded times; source versions and loca
 
 ## Inventory freshness review
 
-Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **9 `src/` paths changed** through `4a39c3eb78c3f32ba8997919f59adbfde8d558e5`. A direct path-anchor comparison matched 2 and left 7 without an exact inventory anchor.
+Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **9 `src/` paths changed** through `34483db3d5a2a73b66e4a6d478dd87a610f5c575`. A direct path-anchor comparison matched 2 and left 7 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities

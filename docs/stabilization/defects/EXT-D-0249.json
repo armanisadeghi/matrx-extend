@@ -2,13 +2,14 @@
   "feature_id": "EXT-F-0001",
   "case_ids": ["EXT-F-0001-T01"],
   "auth_mode": "guest acceptance infrastructure; no product behavior credit",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root / guest_proof_diagnostics_fix",
   "evidence": [
     "docs/stabilization/reports/candidate557-acceptance-20261019.json",
     "docs/stabilization/evidence/store557-guest/run39295188109/guest-chat-failure.png",
     "docs/stabilization/reports/guest-proof-d249-d250-repair-20261019.json",
-    "docs/stabilization/reports/d249-d250-fresh-peer-20261019.json"
+    "docs/stabilization/reports/d249-d250-fresh-peer-20261019.json",
+    "docs/stabilization/reports/d249-d250-round2-peer-20261019.json"
   ],
   "transition_history": [
     {
@@ -28,6 +29,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Separate source repair and meaningful refusal/observability tests assigned."
+    },
+    {
+      "at": "2026-10-19T18:09:23.475583Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Round-two independent semantic extraction/focused Range direct-wrapper and hidden/tool/control/wrong-assistant tests pass. Native exact-artifact paint retest remains pending."
     }
   ],
   "id": "EXT-D-0249",
@@ -42,7 +49,8 @@
   ],
   "expected": "Visible semantic assistant text survives structural display:contents/zero-rectangle wrappers; hidden text, tools, user text and composer cannot satisfy screenshot proof.",
   "actual": "Live DOM and screenshot show the opening code, but pruned clone loses it. Complete response visibility remains separately limited by the small viewport; no follow-up pass is established.",
-  "next_action": "Builder addressing one batch of independent findings: direct zero-rect wrapper text must satisfy focused Range as well as semantic extraction; reviewer failure screenshots need controlled public-content provenance and source failures need first-step evidence. Fresh re-review before one new latest candidate build; keep frozen557 drift refusal.",
+  "next_action": "Cut one latest synchronized-main guarded Store candidate including all reviewed harness fixes and contributor package changes. Keep strict source gates unchanged, independently retest guest/nonadmin and public reviewer cases, then close only on original reproduction and surrounding behavior evidence.",
   "candidate_fix_sha": "3d2606c3f",
-  "reviewer": "d249_d250_fresh_peer: A FAIL / B FAIL; source repair returned for concrete adversarial gaps, no new native dispatch authorized."
+  "reviewer": "Fresh independent source-contract and code-quality PASS; exact new-artifact native retest pending.",
+  "fix_sha": "4a39c3eb7"
 }

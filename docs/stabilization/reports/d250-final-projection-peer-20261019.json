@@ -1,0 +1,19 @@
+{
+  "role": "fresh_independent_d250_final_source_peer",
+  "source_commit": "34483db3d5a2a73b66e4a6d478dd87a610f5c575",
+  "scope": "D250 persisted proof projection, source and isolated real exported runner only; no repo edit, browser, build, dispatch, credential, or native exact-artifact run",
+  "status": "PASS_SOURCE_SCOPE_NATIVE_PENDING",
+  "verdict_A_source_contract": "PASS",
+  "verdict_A_native_exact_artifact": "PENDING",
+  "verdict_B_quality": "PASS",
+  "evidence": {
+    "focused_regressions": "node --test tests/browser/store-reviewer-proof-projection.test.mjs tests/browser/guest-answer-screenshot.test.mjs tests/browser/guest-chat-store-sequence.test.mjs: 51 pass, 0 fail",
+    "old_source_red": "Scratch copy loads 34483db3d parent source through same exported runner test: 2 relevant failures; serialized successful and aggregate-failed proof leaked private title/link, article/SEO title, selected field and failure callback path.",
+    "current_green": "Real exported runner with valid-prefix private title suffix, private link text, private article title, private selector, private raw callback path: aggregate PASS with 6 PASS checks; private markers absent from serialized proof. Injected control failure retained first target and safe observations, aggregate FAIL. Invalid source failed before controls and retained no PNG.",
+    "mutation_sensitivity": "Existing real-runner raw source return mutant is detected. Independent scratch bypass of projectReviewerEvidence in recordReviewerCheck permits raw title through the direct boundary and is detected by the serialization assertion; scratch suite 6 pass.",
+    "source_census": "Persisted source uses validated public constants and booleans. Check success and failure values route through typed projection. Unknown/raw fields and invalid primitives drop. Screenshot callback return is ignored; requested bounded basename is recorded only after capture succeeds. Failure codes, targets, prelude reason, artifact hashes and candidate kind are bounded or validated."
+  },
+  "minor_observation": "capture_schema returns public_schema_headline_present and public_schema_type_present, but neither is in EVIDENCE_BOOLEANS, so those two safe booleans are omitted. The check still executes and reports PASS only after its live predicate succeeds; source also records validated schema constants. This reduces diagnostic detail but is not a proof-egress or status blocker.",
+  "limits": "Source/isolated proof only. Actual native candidate pixels, screenshot content, and complete lower-stage viewport visibility remain unverified and require exact-artifact run.",
+  "decision": "D250 source projection may proceed to guarded latest candidate build/native proof; D249 source verdict remains as prior PASS and native PENDING."
+}
