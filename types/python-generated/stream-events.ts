@@ -579,6 +579,7 @@ export interface ContextReceiptPassthrough {
   person_and_org: boolean;
   handed_over?: string[];
   mirrored?: string[];
+  declared?: string[];
   withheld?: ContextReceiptPassthroughWithheld[];
   overrides?: ContextReceiptPassthroughOverride[];
 }
