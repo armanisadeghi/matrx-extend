@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T20:15:48.604946+00:00",
+  "updated_at": "2026-10-19T20:38:58.813804+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -531,7 +531,7 @@
             "dev-auth-readiness-001",
             "39308206905"
           ],
-          "retest_status": "Exact560 startup failed before product UI/auth/model, with zero product credit. D254 cause remains open; environment-only probe39312706355 terminal failed (resource-invalid CPU, first positive endpoint9,322ms after spawn); no product credit. D255 copier infrastructure is independently closed after original writer-event refusal and surrounding terminal/redaction retests; no resource thresholds changed."
+          "retest_status": "Exact560 startup failed before product UI/auth/model, with zero product credit. D254 cause remains open; environment-only probe39312706355 terminal failed (resource-invalid CPU, first positive endpoint9,322ms after spawn); no product credit. D255 current-writer unsafehold/recovery sibling repair102c28472 independently passes A/B; copier infrastructureclosed, original refusedfinalpreserved. No resource thresholds orproducthealthchanged."
         },
         "member": {
           "test_status": "unverified",
@@ -558,7 +558,7 @@
             "dev-auth-readiness-001",
             "39308413069"
           ],
-          "retest_status": "Exact560 startup failed before product UI/auth/model, with zero product credit. D254 cause remains open; environment-only probe39312706355 terminal failed (resource-invalid CPU, first positive endpoint9,322ms after spawn); no product credit. D255 copier infrastructure is independently closed after original writer-event refusal and surrounding terminal/redaction retests; no resource thresholds changed."
+          "retest_status": "Exact560 startup failed before product UI/auth/model, with zero product credit. D254 cause remains open; environment-only probe39312706355 terminal failed (resource-invalid CPU, first positive endpoint9,322ms after spawn); no product credit. D255 current-writer unsafehold/recovery sibling repair102c28472 independently passes A/B; copier infrastructureclosed, original refusedfinalpreserved. No resource thresholds orproducthealthchanged."
         },
         "admin": {
           "test_status": "unverified",
