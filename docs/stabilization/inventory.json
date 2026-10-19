@@ -417,6 +417,9 @@
             "EXT-D-0080",
             "EXT-D-0165",
             "EXT-D-0171"
+          ],
+          "linked_defects": [
+            "EXT-D-0256"
           ]
         },
         {
