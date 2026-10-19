@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "task_id": "candidate563-package-peer",
+  "status": "DONE_WITH_CONCERNS",
+  "candidate": {
+    "workflow_run_id": "39333246651",
+    "artifact_id": "12226176077",
+    "tag": "v0.2.563",
+    "source_sha": "340b617259a10d86eb8fd3eb0bc80438864a5fc0",
+    "store_zip_path": "/tmp/matrx-store-v0563/.output/matrx-extend-0.2.563-store.zip",
+    "store_zip_sha256": "21d284c213c4b6a263b84e7cee92a8254a72a886145477db0c77630336b4d300"
+  },
+  "verified": {
+    "source_provenance": "Local HEAD is the stated source SHA; local tag v0.2.563 points at it. Hosted receipt names the same sourceSha, version 0.2.563, and publishState=pushed. Hosted run log identifies release artifact upload path; receipt and downloaded artifact ZIP hashes match exactly.",
+    "manifest": "Store ZIP manifest is MV3, version 0.2.563, has no development key, and has no popup. The direct baseline comparison's only raw difference is action.default_icon; scripts/check-cws-release-risk.mjs intentionally projects action to default_title, and the hosted risk gate reports the full normalized surface matches published baseline 0.2.205.",
+    "store_identity": "Manifest title/short name and store package validation are consistent with baseline; baseline primary item ID is hnfolienncfklkgmdjjmhhegglimlamg. The ZIP itself does not encode the Chrome Web Store item ID, so dashboard item association was not independently verified.",
+    "strict_release_gates": "Hosted log records exit 0 for matrx-packages, chat-package-link, typecheck, lint, unit-tests, schema-routing, migrations, tool-drift, Store package validation, and CWS approval-risk gate. Receipt hashes and tag/source identity are coherent.",
+    "config_attestation": "NOT ATTESTED, consistent with workflow's advisory step; not a strict release gate."
+  },
+  "source_eligibility": {
+    "exact_source_ci_run": "39333084518 failed in the guest screenshot fixture assertion; no overall release-green claim is supported.",
+    "prospective_fixture_change": "Only tests/browser/guest-chat-store-sequence.test.mjs changes, from matching the retired target_unavailable text to the current exact target_missing reason when the capture control is absent. This aligns the fixture with the helper's existing zero-match reason and preserves assertions for sensitive_input and wrong_page. It does not loosen the crop guard or prove unresolved public reviewer controls passed.",
+    "eligibility": "Do not waive the failed exact-source CI or invent a fixture-only exemption. Once the fixture correction is committed, it changes source SHA; require green source CI for that exact SHA and reassess candidate source identity before claiming release eligibility."
+  },
+  "limitations": [
+    "No independent lookup of GitHub artifact metadata to bind artifact ID 12226176077 to the downloaded root; exact bytes are independently hash-matched to the hosted receipt and its stated workflow run.",
+    "No live Store dashboard verification of item ID, upload, review state, or publication.",
+    "No overall release-ready claim because exact-source CI run 39333084518 is failed and the package config attestation is NOT ATTESTED."
+  ],
+  "files_touched": [],
+  "evidence": [
+    "/tmp/matrx-store-v0563/.output/release-receipt.json",
+    "/tmp/matrx-store-v0563/tmp/release-logs/latest.log",
+    "/tmp/matrx-store-v0563/.output/matrx-extend-0.2.563-store.zip",
+    "config/chrome-web-store-approved-baseline.json",
+    "scripts/check-cws-release-risk.mjs",
+    "scripts/check-store-package.mjs",
+    "git tag/HEAD at 340b617259a10d86eb8fd3eb0bc80438864a5fc0"
+  ],
+  "next_action": "Owner should complete the existing narrow fixture correction, obtain green CI on its exact resulting source SHA, then determine whether candidate refresh is required by source/package identity before any Store submission or release-green statement."
+}

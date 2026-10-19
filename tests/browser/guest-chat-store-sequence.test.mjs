@@ -1234,7 +1234,7 @@ test('reviewer screenshot captures only an exact public control and refuses stal
     window.document.getElementById('capture-control').remove();
     await assert.rejects(
       captureReviewerPaneScreenshot({ page, panel, file, check: 'capture_article' }),
-      /target_unavailable/,
+      /reviewer_failure_screenshot_target_missing/,
     );
     window.document.getElementById('scrape').innerHTML = '<input type="text" value="PRIVATE-791">';
     await assert.rejects(
