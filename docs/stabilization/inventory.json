@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T20:38:58.813804+00:00",
+  "updated_at": "2026-10-19T20:51:44.045620+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -7642,6 +7642,21 @@
           ],
           "defect_ids": [
             "EXT-D-0220"
+          ],
+          "blocked_attempts": [
+            {
+              "at": "2026-10-19T20:51:44.045410+00:00",
+              "run_id": null,
+              "mode": "guest",
+              "status": "blocked-before-dispatch",
+              "source_sha": "39bfe250e722deab104566c87cb3a08b9469367f",
+              "ci_run_id": 39317009493,
+              "artifact_id": 12218089566,
+              "reason": "ci_dev_runtime_source_changed: currentcopier+unit source notcoveredbyfrozen39bartifactguard; no job/profile/UI/resourcepermit/productcredit.",
+              "evidence": [
+                "docs/stabilization/reports/hosted-guest-settings-batch-20261019.json"
+              ]
+            }
           ]
         },
         {
@@ -8286,6 +8301,21 @@
               ],
               "scope": "Visible applied theme appearance and new-chat inherited default after panel reload; source tests only, independent source review passed/native pending; no extension-wide reload or server-action claim.",
               "independent_review": "91b3bc98"
+            }
+          ],
+          "blocked_attempts": [
+            {
+              "at": "2026-10-19T20:51:44.045607+00:00",
+              "run_id": null,
+              "mode": "guest",
+              "status": "blocked-before-dispatch",
+              "source_sha": "39bfe250e722deab104566c87cb3a08b9469367f",
+              "ci_run_id": 39317009493,
+              "artifact_id": 12218089566,
+              "reason": "ci_dev_runtime_source_changed: currentcopier+unit source notcoveredbyfrozen39bartifactguard; no job/profile/UI/resourcepermit/productcredit.",
+              "evidence": [
+                "docs/stabilization/reports/hosted-guest-settings-batch-20261019.json"
+              ]
             }
           ]
         },

@@ -1,0 +1,35 @@
+{
+  "task_id": "hosted_guest_settings_batch",
+  "lane": "B",
+  "model": "gpt-6-luna",
+  "date": "2026-10-19",
+  "status": "stopped_at_existing_source_compatibility_guard",
+  "candidate": {
+    "ci_run_id": 39317009493,
+    "artifact_id": 12218089566,
+    "source_sha": "39bfe250e722deab104566c87cb3a08b9469367f",
+    "current_main_sha": "10817f4b877f4e06baeea533bc821f0328f0a72f"
+  },
+  "source_compatibility": {
+    "proof": "existing scripts/development-source-compatibility.mjs sourceCompatibility(root, sourceSha)",
+    "result": "refused",
+    "code": "ci_dev_runtime_source_changed",
+    "paths_outside_allowlist": [
+      "scripts/copy-hosted-resource-journal.mjs",
+      "tests/unit/hosted-resource-journal-copy.test.ts"
+    ]
+  },
+  "cases": {
+    "EXT-F-1003-T04": "not_run; no product credit",
+    "EXT-F-1003-T10": "not_run; no product credit"
+  },
+  "headless": "Existing hosted workflow has a headless input; it does not override the source compatibility guard.",
+  "execution": {
+    "artifact_imported": false,
+    "dispatch_attempted": false,
+    "resource_job": "none",
+    "profile_created": false,
+    "cleanup": "none required"
+  },
+  "boundary": "Stopped as instructed; no bypass, source exception, or new artifact guess."
+}
