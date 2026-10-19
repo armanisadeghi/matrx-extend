@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "status": "INCOMPLETE_NO_UPLOAD",
+  "release": {
+    "workflow_run_id": "39335524427",
+    "workflow_conclusion": "success",
+    "workflow_source_sha": "569345fb3830536bf20767f064acce0f0ab107d0",
+    "candidate_sha": "a6a99c3cfb4c413bf66012142c85a2ab87387148",
+    "version": "0.2.564",
+    "artifact_id": "12226792173",
+    "github_artifact_digest": "sha256:5727e0416bb5deee7b514ffcba87e091504845e03810b6cae75bf39a99b621e1",
+    "store_zip_sha256": "39fcdd72e36e1cbd4d9970b41ae3d20102789313f84237b23067945bb2b3c57f",
+    "backend_reference_sha": "9ef78d4ade91d8f1cb1951710266b094db5744bf",
+    "package_proof": "Receipt, tag, manifest, exact Store ZIP, strict release gate and independent package peer match; advisory config attestation is unverified. Package proof is not native acceptance."
+  },
+  "source_admission": {
+    "main_at_b_dispatch": "7dae65eef6c8fb66fd8c616c300b59d6eb5a7dbb",
+    "guest_b_plan": "pass through canonical postrelease documentation equivalence, with strict clean source, ancestry, capacity, artifact and digest checks",
+    "member_a_plan": "refused release_member_product_changed; only two committed sanitized Store205 journals under docs/stabilization/resource-journals/ were outside its narrow source classifier",
+    "member_a_dispatch": false,
+    "member_link_file_and_github_secret": "deleted and absence verified after refusal",
+    "later_eligibility": "D259 member-admission source repair is pending integration; any executable change supersedes this candidate for upload."
+  },
+  "guest_b": {
+    "run_id": "39336624267",
+    "run_conclusion": "failure",
+    "runner": "macos-15-intel",
+    "workflow_source_sha": "7dae65eef6c8fb66fd8c616c300b59d6eb5a7dbb",
+    "native_artifact_id": "12227621408",
+    "native_artifact_digest": "sha256:248ce961369f15ed727d9c95afe90aba3366026a6bad58792bba349481dae6dc",
+    "native_report": "/tmp/hosted-guest-v0564-39336624267/matrx-extend/matrx-extend/test-results/guest-chat-store-973806dc-9899-4450-8abd-0f335a69f861.json",
+    "resource_finals": {
+      "package": "admitted, valid, resourceInvalid=false, exitCode=0",
+      "browser": "admitted, valid, resourceInvalid=false, exitCode=0",
+      "guest": "admitted, child_failed, resourceInvalid=false, exitCode=1"
+    },
+    "backend_before_after": "HTTP 200, same deployed SHA 9ef78d4ade91d8f1cb1951710266b094db5744bf",
+    "bounded_guest_chat": "Fresh account-free opening, same-conversation follow-up and post-reload new-conversation answer all reached terminal page-grounded content. This does not pass the full reviewer suite.",
+    "reviewer_public_demo": {
+      "overall": "fail: reviewer_demo_incomplete",
+      "auto_capture_off": "fail: reviewer_failure_screenshot_target_geometry; switch exists and is off, setting_present=false, no visual target proof",
+      "capture_article": "fail: reviewer_article_capture_not_observed; content and three public stages visible, 1118 textContent chars, but no rendered heading node or public heading text; retained failure crop shows Re-capture button only",
+      "data_picker_done": "fail: reviewer_picker_done_unclassified; field hit and shadow Done/Cancel nodes confirmed, but selected_count=0, picker_ready=false, guest explanation absent, screenshot target missing",
+      "capture_links": "pass",
+      "capture_schema": "pass",
+      "seo_audit": "pass",
+      "public_page_source": "pass"
+    },
+    "product_causality": "Unresolved. The three reviewer failures require evidence-backed source/DOM and screenshot-target diagnosis; no retry or product fix was inferred from this run."
+  },
+  "store_state": "Published 0.2.205; Draft 0.2.479 Rejected; no pending at last authenticated primary-dashboard check on 2026-10-19 16:20 UTC. No 0.2.564 upload or submission.",
+  "next_action": "Finish reviewed D259 repair and independent evidence-backed diagnosis of the three public reviewer controls; integrate and rerun strict CI, then prepare one fresh eligible guarded release from synchronized main before exact-candidate A/B acceptance."
+}
