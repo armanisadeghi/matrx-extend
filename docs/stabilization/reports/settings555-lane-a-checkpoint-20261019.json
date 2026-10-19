@@ -3,7 +3,7 @@
   "task_id": "settings555-lane-a-20261019",
   "lane": "hosted A",
   "model": "GPT-6",
-  "status": "exact_precondition_failure",
+  "status": "blocked_by_active_owned_resource_journal",
   "feature_ids": [
     "EXT-F-1003"
   ],
@@ -64,7 +64,62 @@
     "docs/stabilization/reports/settings555-lane-a-checkpoint-20261019.json"
   ],
   "open_questions": [
-    "Root/coordinator must assign an existing admitted lane-B guest Settings route after the owned A-only lane closes, or identify an already reviewed admission route for another lane-A case."
+    "Can the active native peer complete and publish its owned pending resource journal? Until then the reviewed normal helper refuses shared-checkout dispatch."
   ],
-  "next_action": "Coordinator assigns guest Settings to the existing lane-B route when available; otherwise use lane A only for its existing exact-source member Settings navigation route after a matching CI artifact exists. Do not change admission policy in this testing lane."
+  "next_action": "Wait for the native peer to close its owned resource journal; do not stage, remove, or bypass it. Then re-fetch and make one normal guest SEO B dispatch against current main if admission passes.",
+  "seo_route_followup": {
+    "task_identity": "guest-seo555-B",
+    "case_id": "EXT-F-1008-T02",
+    "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+    "workflow_case": "guest-seo",
+    "scope": "notice-stacked",
+    "lane": "B",
+    "runner_label": "macos-15-intel",
+    "current_source_sha": "1fad53902259264137307fde7beb2a667fb2b366",
+    "artifact_source_sha": "c69f8b6b5d03ae1af6f3fe10eb756380da2786bf",
+    "artifact_id": 12202722252,
+    "artifact_digest": "sha256:843b95285118eb0226e4265e131f6b781d64fcbccb20f21f03114b7be1d66c94",
+    "runtime_compatibility": "runtime-equivalent; normal plan explicitly proved current main compatibility and returned approved command arguments",
+    "prior_attempt": {
+      "mode": "plan-guest-seo",
+      "input_source_sha": "69a042e92f1b3a9e0244f785e11825e378811bb3",
+      "result": "HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT",
+      "note": "Input SHA was stale before the root checkpoint commit; no dispatch was attempted."
+    },
+    "corrected_plan": {
+      "mode": "plan-guest-seo",
+      "input_source_sha": "1fad53902259264137307fde7beb2a667fb2b366",
+      "result": "passed",
+      "workflow_args": [
+        "acceptance_lane=B",
+        "acceptance_case=guest-seo",
+        "seo_case_scope=notice-stacked",
+        "seo_metadata_fixture=none",
+        "seo_diagnostic=none",
+        "runner_label=macos-15-intel",
+        "development_run_id=39284095794",
+        "development_artifact_id=12202722252"
+      ]
+    },
+    "dispatch_attempts": [
+      {
+        "mode": "dispatch-guest-seo",
+        "result": "HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED",
+        "reason": "Root was still editing COORDINATOR.md and PLAN.md; no dispatch occurred."
+      },
+      {
+        "mode": "dispatch-guest-seo",
+        "result": "HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED",
+        "reason": "After root committed those edits, the only remaining dirty path was the active native peer resource journal; no dispatch occurred."
+      }
+    ],
+    "resource_journal_owner": "native verification peer; active pending path docs/stabilization/resource-journals/dev555-native-peer-20261019-01.pending.jsonl",
+    "browser_launched": false,
+    "hosted_run_id": null,
+    "fixtures": {
+      "created_or_mutated": false,
+      "cleanup": "No hosted workflow or browser started; no fixture cleanup required."
+    },
+    "next_action": "Coordinate completion and publication of the active native peer journal. Then re-fetch main, re-prove artifact runtime equivalence, and use the normal guest SEO B dispatch once if the checkout is clean."
+  }
 }
