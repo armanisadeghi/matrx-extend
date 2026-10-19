@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "defect_id": "EXT-D-0248",
-  "status": "second_source_repair_native_acceptance_pending",
+  "status": "second_source_repair_reviewed_next_candidate_native_acceptance_pending",
   "scope": "Non-admin Store reviewer acceptance harness target sequencing; no product answer verdict",
   "source_commit": "b20df1b31",
   "source_commits": [
@@ -44,5 +44,10 @@
   "open_questions": [
     "A fresh native non-admin acceptance run must confirm that the demo-triggered opener makes the exact panel visible, the intended demo passes both send guards, and the actual answer meets the page task. No product answer verdict is established by either source repair."
   ],
+  "admission_checkpoint": {
+    "round_two_peer": "Independent source review passed for b20df1b31; native visibility and answer remain unverified.",
+    "frozen_557": "The immutable 0.2.557 artifact predates the reviewed harness repair, and current main also has a later package-lock update. Its strict source gate correctly refuses this mixed source; no .557 exception was committed.",
+    "next_candidate": "The next release candidate will include the reviewed harness and later approved fixes in its own source snapshot. Native acceptance must run against that exact candidate."
+  },
   "native_acceptance": "pending_fresh_peer_run"
 }
