@@ -1,0 +1,34 @@
+{
+  "task": "independent exact artifact static review",
+  "verdict": "PASS_STATIC_ARTIFACT_QUALITY",
+  "candidate": {
+    "version": "0.2.557",
+    "release_run": "39294116587",
+    "source_commit": "0714e280fb1fc562d18da8c7359dd0c2b8b46e46",
+    "source_matches_checkout_head": true,
+    "artifact_id": "12206354899",
+    "store_zip": "/tmp/matrx-extend-store557-39294116587/.output/matrx-extend-0.2.557-store.zip",
+    "receipt_sha256": "da429ba8e99e737c6b3fcd293455630d9f05dfac7213b613c4e5ddc80648541d",
+    "observed_sha256": "da429ba8e99e737c6b3fcd293455630d9f05dfac7213b613c4e5ddc80648541d",
+    "emitted_tree_sha256": "e6e5630ca4accfea4e95e0529ddb87dfe8f78cf6ec92945747f0489359cec281",
+    "manifest_version": "0.2.557"
+  },
+  "checks": {
+    "receipt_source_version_and_artifact_provenance": "PASS",
+    "store_zip_sha256_matches_receipt": "PASS",
+    "extracted_store_manifest_version": "PASS",
+    "approved_manifest_surface_gate_on_extracted_exact_zip": "PASS: matches published 0.2.205 baseline",
+    "forbidden_runtime_tokens_and_script_src_loader_gate": "PASS: 1273 emitted JS files inspected by blocking gate",
+    "gist_srcdoc_remote_script_gate": "PASS: blocking AST gate found no remote Gist script in iframe srcDoc",
+    "prior_pdfobject_cdn_rejection_pattern": "PASS: no executable PDFObject/CDN loader detected; remaining pdfobject/jspdf.es references are in jsPDF 4.2.1 and indicate its remote-PDF-viewer option is unavailable",
+    "lockfile_and_source_adoption": "PASS: source commit is exact checkout HEAD; package.json and pnpm-lock.yaml changed in this candidate commit and the release log shows the refreshed tree built and packaged; no 0.2.556 artifact was reused",
+    "release_receipt_and_mandatory_gates": "PASS: hosted release completed exit 0; log reports 2507 tests passed / 5 skipped, migrations 15 applied / 0 unapplied / 0 drifted, private tool catalog verified with no drift, package validation passed, and Store risk gate passed"
+  },
+  "limitations": [
+    "Static review does not establish Chrome Web Store native acceptance or submission state.",
+    "Actual guest, signed-in non-admin member, and public reviewer-path acceptance remain pending and must be judged from the separate exact-artifact browser runs.",
+    "Artifact extraction used the locally verified downloaded Store ZIP and its release receipt; this review did not use the native Store publisher UI."
+  ],
+  "reviewed_at": "2026-10-19",
+  "reviewer": "independent static peer"
+}

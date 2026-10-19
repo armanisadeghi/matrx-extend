@@ -109,9 +109,8 @@ export async function restoreMemberForeground({
       throw error;
     }
   };
-  await step('web_close', () => web.close());
-  await step('root_foreground', () => page.bringToFront());
   await step('panel_reopen', () => native.reopenPanel());
+  await step('demo_foreground', () => web.bringToFront());
   await step('visibility_wait', () =>
     waitFor(
       'reviewer_native_panel_foreground',

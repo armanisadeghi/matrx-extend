@@ -12,7 +12,7 @@ import {
 function foregroundCase({ failAt = null, visible = true, reportOutput = null } = {}) {
   const events = [];
   let webClosed = false;
-  let rootActive = false;
+  let demoActive = false;
   let panelOpened = false;
   const diagnostic = {
     steps: [],
@@ -23,6 +23,11 @@ function foregroundCase({ failAt = null, visible = true, reportOutput = null } =
   };
   const web = {
     isClosed: () => webClosed,
+    bringToFront: async () => {
+      events.push('demo_foreground');
+      if (failAt === 'demo_foreground') throw new Error('Protocol error');
+      demoActive = true;
+    },
     close: async () => {
       events.push('web_close');
       if (failAt === 'web_close') throw new Error('Target closed');
@@ -32,22 +37,20 @@ function foregroundCase({ failAt = null, visible = true, reportOutput = null } =
   const page = {
     isClosed: () => false,
     bringToFront: async () => {
-      assert.equal(webClosed, true);
       events.push('root_foreground');
       if (failAt === 'root_foreground') throw new Error('Protocol error');
-      rootActive = true;
     },
   };
   const native = {
     panelTarget: { targetId: 'owned-panel' },
     browserSession: {
       send: async () => ({
-        targetInfos: failAt === 'web_close' ? [] : [{ targetId: 'owned-panel' }],
+        targetInfos: failAt === 'demo_foreground' ? [] : [{ targetId: 'owned-panel' }],
       }),
     },
     transportFailureClass: () => 'none',
     reopenPanel: async () => {
-      assert.equal(rootActive, true);
+      assert.equal(webClosed, false);
       events.push('panel_reopen');
       recordMemberForegroundVisibility(diagnostic, {
         phase: 'before_reopen',
@@ -65,6 +68,7 @@ function foregroundCase({ failAt = null, visible = true, reportOutput = null } =
   };
   const waitFor = async (_label, read, accepts, timeout) => {
     assert.equal(timeout, 10_000);
+    assert.equal(demoActive, true);
     events.push('visibility_wait');
     if (!accepts(await read())) throw new Error('reviewer_native_panel_foreground_not_observed');
   };
@@ -99,21 +103,15 @@ function foregroundCase({ failAt = null, visible = true, reportOutput = null } =
   };
 }
 
-test('member foreground performs all four real operations in order and accepts visible panel', async () => {
+test('member foreground retains the demo page and reopens the panel over it', async () => {
   const scenario = foregroundCase();
   await scenario.run();
-  assert.deepEqual(scenario.events, [
-    'web_close',
-    'root_foreground',
-    'panel_reopen',
-    'visibility_wait',
-  ]);
+  assert.deepEqual(scenario.events, ['panel_reopen', 'demo_foreground', 'visibility_wait']);
   assert.deepEqual(
     scenario.diagnostic.steps.map((row) => [row.name, row.completed_ms !== null]),
     [
-      ['web_close', true],
-      ['root_foreground', true],
       ['panel_reopen', true],
+      ['demo_foreground', true],
       ['visibility_wait', true],
     ],
   );
@@ -140,14 +138,14 @@ test('member foreground persists a bounded failure before native cleanup', async
     const otherOutput = join(directory, 'closed-target.json');
     const otherReport = { status: 'unverified', foreground_diagnostic: null };
     const closed = foregroundCase({
-      failAt: 'web_close',
+      failAt: 'demo_foreground',
       reportOutput: { output: otherOutput, report: otherReport },
     });
     otherReport.foreground_diagnostic = closed.diagnostic;
-    await assert.rejects(closed.run, /Target closed/);
+    await assert.rejects(closed.run, /Protocol error/);
     const otherPersisted = JSON.parse(await readFile(otherOutput, 'utf8'));
-    assert.equal(otherPersisted.foreground_diagnostic.failure_substep, 'web_close');
-    assert.equal(otherPersisted.foreground_diagnostic.failure_class, 'target_closed');
+    assert.equal(otherPersisted.foreground_diagnostic.failure_substep, 'demo_foreground');
+    assert.equal(otherPersisted.foreground_diagnostic.failure_class, 'protocol_failure');
     assert.equal(
       otherPersisted.foreground_diagnostic.failure_snapshot.exact_panel_target_present,
       false,
@@ -179,7 +177,7 @@ test('member foreground captures failing substep and fixed class without raw ope
   assert.deepEqual(scenario.events.slice(-2), ['panel_reopen', 'report_saved']);
   assert.equal(scenario.diagnostic.failure_class, 'opener_refused');
   assert.deepEqual(scenario.diagnostic.failure_snapshot, {
-    web_closed: true,
+    web_closed: false,
     root_closed: false,
     targets_measured: true,
     exact_panel_target_present: true,
@@ -199,11 +197,11 @@ test('member foreground refuses hidden panel and records visibility timeout', as
   assert.equal(scenario.diagnostic.failure_snapshot.panel_hidden, true);
 });
 
-test('member foreground distinguishes closed target before root foreground', async () => {
-  const scenario = foregroundCase({ failAt: 'web_close' });
-  await assert.rejects(scenario.run, /Target closed/);
-  assert.deepEqual(scenario.events, ['web_close', 'report_saved']);
-  assert.equal(scenario.diagnostic.failure_substep, 'web_close');
-  assert.equal(scenario.diagnostic.failure_class, 'target_closed');
+test('member foreground captures failed demo activation after panel reopen', async () => {
+  const scenario = foregroundCase({ failAt: 'demo_foreground' });
+  await assert.rejects(scenario.run, /Protocol error/);
+  assert.deepEqual(scenario.events, ['panel_reopen', 'demo_foreground', 'report_saved']);
+  assert.equal(scenario.diagnostic.failure_substep, 'demo_foreground');
+  assert.equal(scenario.diagnostic.failure_class, 'protocol_failure');
   assert.equal(scenario.diagnostic.failure_snapshot.exact_panel_target_present, false);
 });

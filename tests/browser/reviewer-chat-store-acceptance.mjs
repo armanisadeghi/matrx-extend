@@ -18,6 +18,7 @@ import {
   requireMemberChatSequence,
   requireMemberOrganizationBinding,
 } from './member-chat-completion-oracle.mjs';
+import { sendMemberChatOnTarget } from './member-chat-target.mjs';
 import {
   captureReviewerPanel as capture,
   recordReviewerFailure,
@@ -1322,6 +1323,10 @@ try {
         });
         if (safeLocation(web.url()) !== `${WEB_ORIGIN}${DEMO_PATH}`)
           throw new Error('reviewer_demo_route_unverified');
+        const demoMarker = randomUUID();
+        await web.evaluate((marker) => {
+          document.documentElement.setAttribute('data-matrx-reviewer-target', marker);
+        }, demoMarker);
 
         stage = 'extension_settings_open';
         await click(panel, 'title', 'Settings');
@@ -1621,8 +1626,17 @@ try {
           return observed.state;
         };
         stage = 'send_three_stage_question';
-        memberTransport.armTurn('opening');
-        await click(panel, 'chat-send', '');
+        await sendMemberChatOnTarget({
+          web,
+          panel,
+          evaluate,
+          expectedUrl: `${WEB_ORIGIN}${DEMO_PATH}`,
+          marker: demoMarker,
+          send: async () => {
+            memberTransport.armTurn('opening');
+            await click(panel, 'chat-send', '');
+          },
+        });
         const completed = await awaitTurn('opening', 0, ['Capture', 'Understand', 'Use']);
         stage = 'reviewer_chat_transport';
         const network = memberTransport.snapshot();
@@ -1649,8 +1663,17 @@ try {
           'enter_same_conversation_followup',
         );
         stage = 'send_same_conversation_followup';
-        memberTransport.armTurn('same_conversation_followup');
-        await click(panel, 'chat-send', '');
+        await sendMemberChatOnTarget({
+          web,
+          panel,
+          evaluate,
+          expectedUrl: `${WEB_ORIGIN}${DEMO_PATH}`,
+          marker: demoMarker,
+          send: async () => {
+            memberTransport.armTurn('same_conversation_followup');
+            await click(panel, 'chat-send', '');
+          },
+        });
         const followup = await awaitTurn(
           'same_conversation_followup',
           completed.completedReplyCount,

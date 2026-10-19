@@ -23,6 +23,7 @@ const SAFE_FAILURE_CODES = new Set([
   'reviewer_canonical_role_unverified',
   'reviewer_composer_input_unverified',
   'reviewer_chat_terminal_answer_unverified',
+  'reviewer_chat_target_unverified',
   'reviewer_chat_visible_answer_unverified',
   'reviewer_chat_visible_answer_screenshot_missing',
 ]);

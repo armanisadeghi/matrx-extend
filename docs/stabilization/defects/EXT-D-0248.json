@@ -7,7 +7,7 @@
   "title": "Foreground restoration closes public demo and assigns unrelated root fixture before member Chat",
   "severity": "S2: required non-admin acceptance tests the wrong page and falsely reports wrong assistant answer",
   "priority": "P1: preserve intended target and assert actual assigned URL before AI send",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root / member_target_fix",
   "reproduction": [
     "Run exact556 nonadmin Store acceptance A39291881216 through successful selected-authentication/org preflight.",
@@ -18,7 +18,9 @@
   "actual": "The native diagnostic records web_close and root_foreground before send. The canonical request/tool flow succeeds but reply is graded against a different page; no product wrong-answer conclusion is supported.",
   "evidence": [
     "docs/stabilization/reports/store556-acceptance-20261019.json",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39291881216"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39291881216",
+    "docs/stabilization/reports/ext-d-0248-member-target-repair-20261019.json",
+    "docs/stabilization/reports/d248-fresh-peer-20261019.json"
   ],
   "build_version": "0.2.556 exact Store ZIP under hosted test identity; workflow1f3904936",
   "transition_history": [
@@ -39,7 +41,15 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Target restoration and target-before-send guard assigned to a separate implementation worker."
+    },
+    {
+      "at": "2026-10-19T17:27:13.129437Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source17a6c00a7 pushed and fresh independent original foreground RED/fixed13 GREEN/wrong-target bypass RED source review PASS; actual native target-before-send retest remains pending."
     }
   ],
-  "next_action": "Repair target restoration and preserve auth cleanup, add independent target-before-send guard with meaningful RED/GREEN and wrong-target mutation, fresh source peer, then new guarded non-admin acceptance."
+  "next_action": "Repair target restoration and preserve auth cleanup, add independent target-before-send guard with meaningful RED/GREEN and wrong-target mutation, fresh source peer, then new guarded non-admin acceptance.",
+  "fix_sha": "17a6c00a7",
+  "reviewer": "d248_fresh_peer: A PASS_SOURCE_NATIVE_PENDING / B PASS"
 }
