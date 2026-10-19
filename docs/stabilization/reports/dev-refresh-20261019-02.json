@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-19",
+  "workflow": ".github/workflows/ci.yml",
+  "artifact_source_sha": "1f390493698245890555eee2f8337ace3093b774",
+  "ci_run_id": 39291510230,
+  "attempt": 1,
+  "ci_conclusion": "success",
+  "artifact_id": 12206736244,
+  "artifact_digest": "sha256:888ccc23097ef7db887ecc52cf516eaa49d20f817e5f972cca8d91b9963d4005",
+  "version": "0.2.556",
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "tree_sha256": "e77747e1d60a022c0b6eddcebc7b2e750850237d05b58c425045550a4b97f8b9",
+  "imported_path": "test-results/ci-artifacts/1f390493698245890555eee2f8337ace3093b774/39291510230-1/chrome-mv3",
+  "import": "verified by scripts/current-test-artifact.mjs; exact_pushed_commit_only",
+  "promotion": "not attempted: shared checkout contains actively owned D247 runtime changes; wait for their verified CI artifact",
+  "previous_artifact": {
+    "source_sha": "8989ef30daca75e3f4daad606fea2d2f64c6d1f2",
+    "ci_run_id": 39290117822,
+    "artifact_id": 12206250665,
+    "artifact_digest": "sha256:7a7987b7c998e70a0019f7e955a559af059ae13adc68b2d7450d5c872c9c5e31",
+    "tree_sha256": "0a274793a3852d5d6d0f72cea2c06d457ca3ee92f9d56de753a4e2602d51cc49",
+    "import": "verified",
+    "promotion": "refused: ci_dev_runtime_source_changed; intervening source includes scripts/hosted-release-member-admission.mjs and its test"
+  },
+  "current_main_sha_at_import": "342e57ba163fd40d46dcba7b3b692f99028993a3",
+  "active_uncommitted_runtime_paths_observed": [
+    "src/features/seo/SeoView.tsx",
+    "src/lib/supabase/queries.ts",
+    "tests/unit/seo-history-recovery.test.tsx",
+    "docs/feature-tests.md"
+  ],
+  "promotion_receipt_unchanged": {
+    "source_sha": "c69f8b6b5d03ae1af6f3fe10eb756380da2786bf",
+    "ci_run_id": 39284095794,
+    "artifact_id": 12202722252,
+    "version": "0.2.555",
+    "tree_sha256": "6f233015946d6bf8a8ae020c227ad8950795d7bcd26f9146fd13fff35863a422"
+  },
+  "chrome": {
+    "last_recorded_loaded_dev_version": "0.2.555",
+    "last_recorded_identity": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "last_recorded_pinned_beside_store": true,
+    "last_recorded_at": "2026-10-19T17:03:00Z",
+    "this_turn_reload_or_profile_access": false,
+    "status": "unchanged by this task; no fresh Chrome observation"
+  },
+  "resource_check_journal": "docs/stabilization/resource-journals/dev556-refresh-check-20261019.jsonl",
+  "open_question": "Promote a fresh successful CI development artifact after D247 runtime changes are committed and verified; then reload the development extension and capture fresh Loaded from, version, ID and pin evidence."
+}
