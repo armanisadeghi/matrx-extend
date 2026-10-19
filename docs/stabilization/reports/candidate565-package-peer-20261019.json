@@ -1,0 +1,47 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "candidate": {
+    "version": "0.2.565",
+    "source_commit": "a0c86f20b9fb070c09e00c0a574a0ffbf8f2b656",
+    "parent": "97de2edd19b4f38ebc19dd81099bec74db098b27",
+    "baseline_version": "0.2.205",
+    "baseline_source": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "zip_path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/release565-private/.output/matrx-extend-0.2.565-store.zip",
+    "zip_sha256": "fb55565b7c9bad1b73ada70b7ea54eda67217bde3f1bb1216ab9933bebf0a0c4",
+    "workflow_run": "39341777746",
+    "artifact_id": "12229886228",
+    "workflow_artifact_digest_reported": "sha256:2685e638905c056ea99017308a348b7cf283056cb6519d33c592eadbf5cf5a2f"
+  },
+  "verdict_A_spec_eligibility": {
+    "verdict": "PARTIAL_CURRENTLY_INELIGIBLE_UNDER_LATEST_LAW",
+    "evidence": [
+      "Receipt sourceSha/version/tag evidence ties the package to a0c86f20b9fb070c09e00c0a574a0ffbf8f2b656 / v0.2.565; commit parent is dependency catch-up 97de2edd1 and prior content source 2e809f9425c86f4cb738cf273a158fd881805c30.",
+      "Independent sha256sum of extracted Store ZIP matches receipt fb55565b7c9bad1b73ada70b7ea54eda67217bde3f1bb1216ab9933bebf0a0c4. ZIP manifest says MV3/version 0.2.565 and matches approved baseline policy surface (name, summary, required/optional permissions, host permissions, action/side panel, externally connectable, web accessible resources and content scripts). CI risk gate passed against published 0.2.205 and says no forbidden runtime-code path.",
+      "CI release log shows package gate passed at commit time 2026-10-19T23:30:31Z with all 26 @ai-matrx packages latest/exactly once; compile/build and typecheck passed; lint passed; 359 unit-test files / 2520 tests passed (2 files / 5 tests skipped); schema routing, migration ledger (15 applied, 0 unapplied/drifted), and live Supabase tool catalog drift all passed.",
+      "Fresh post-build pnpm check:matrx-packages now fails against current npm: candidate root @ai-matrx/agents 0.59.169 is behind 0.59.170; @ai-matrx/records 0.99.95 is behind 0.99.96; transitive @ai-matrx/rich-content 0.2.220 is behind 0.2.221. These releases occurred after the commit-time check; package specs remain latest, but emitted candidate embeds the older locked dependency code."
+    ],
+    "limits": [
+      "Post-build package check ran on the shared Mac's pre-existing node_modules, not a clean install of the immutable ZIP. It also reports older nested duplicate copies not represented in the candidate lockfile; do not attribute those local stale graph copies to this ZIP. The three root/locked versions above are the candidate drift that matters.",
+      "The CI artifact object digest was provided from the release owner; I independently confirmed the receipt's Store ZIP hash, not the GitHub artifact object's outer digest.",
+      "No independent runtime/browser check of this artifact and no new server runtime behavior trace in this package-peer lane; backend-specific migration/tool-catalog live gates are proven by the workflow log only."
+    ]
+  },
+  "verdict_B_evidence_quality": {
+    "verdict": "PASS_WITH_ADVISORY_UNKNOWN",
+    "evidence": [
+      "Receipt sourceSha, release log validated candidate source, tag/push; receipt tree hash ad3f5150d27ee5555871002485d6f4bbb230058c4d895e0d376c023030dde594 and 2465 files; CI source/destination output tree hashes match.",
+      "ZIP digest independently recomputed and matches release receipt. Emitted ZIP manifest inspected directly. Strict store risk, compile/typecheck/lint/unit, schema, migration and DB tool-drift gates are explicitly green in run log."
+    ],
+    "advisories": [
+      "CI reports 6 Mandate reference findings as WARNING/nonblocking. It states package key snapshot for @ai-matrx/agents 0.59.169 is unavailable, so mandate key-use findings are unresolved rather than verified clean.",
+      "Current registry drift makes the exact 0.2.565 package unsuitable as the next upload under the repo's absolute @ai-matrx latest rule; refresh packages through a new hosted release candidate and recheck consumer actions before submission."
+    ]
+  },
+  "sources": [
+    "test-results/release565-private/.output/release-receipt.json",
+    "test-results/release565-private/tmp/release-logs/latest.log",
+    "config/chrome-web-store-approved-baseline.json",
+    "/tmp/candidate565-package-check.txt",
+    "independent commands: sha256sum ZIP; unzip -p ZIP manifest.json; pnpm check:matrx-packages"
+  ]
+}

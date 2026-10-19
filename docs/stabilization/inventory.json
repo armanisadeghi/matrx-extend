@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T23:34:11.130Z",
+  "updated_at": "2026-10-19T23:40:39.810Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -3654,6 +3654,19 @@
           "dimensions": [
             "warm",
             "navigation"
+          ],
+          "native_development_observations": [
+            {
+              "run_id": "admin-settings-navigation-20261019-001",
+              "mode": "admin",
+              "version": "0.2.564",
+              "source_sha": "0708b3001019f570b34f0fcd7ee835edf3f53331",
+              "resource_valid": true,
+              "status": "partial",
+              "scope": "Tester-recorded warm native navigation passes; no retained screenshot, independent build re-derivation or reload proof. Fresh independent native retest pending.",
+              "new_unique_case_pass": false,
+              "evidence": "docs/stabilization/reports/native-admin-navigation-20261019.json"
+            }
           ]
         },
         {
@@ -3749,6 +3762,19 @@
           "dimensions": [
             "warm",
             "navigation"
+          ],
+          "native_development_observations": [
+            {
+              "run_id": "admin-settings-navigation-20261019-001",
+              "mode": "admin",
+              "version": "0.2.564",
+              "source_sha": "0708b3001019f570b34f0fcd7ee835edf3f53331",
+              "resource_valid": true,
+              "status": "partial",
+              "scope": "Tester-recorded warm native navigation passes; no retained screenshot, independent build re-derivation or reload proof. Fresh independent native retest pending.",
+              "new_unique_case_pass": false,
+              "evidence": "docs/stabilization/reports/native-admin-navigation-20261019.json"
+            }
           ]
         },
         {
