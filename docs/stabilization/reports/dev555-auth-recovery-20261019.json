@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0244 prerequisite / development sign-in recovery",
+  "observed_at_utc": "2026-10-19T16:50:09Z",
+  "lane": "actual-profile development 0.2.555 authentication recovery and bounded Values probe",
+  "status": "same_account_sign_in_recovered; bounded_values_input_focus_escape_pass",
+  "runtime": {
+    "browser": "Arman primary Google Chrome profile",
+    "user_data_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.555",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "other_installation": "Store hnfolienncfklkgmdjjmhhegglimlamg 0.2.205; no Store product action or auth assertion"
+  },
+  "first_failing_auth_boundary": {
+    "symptom": "Saved sign-in restore banner, guest Settings Email em dash, Chat session-not-ready error",
+    "native_read_only_diagnostic": "The development sidepanel retained a profile for arman@armansadeghi.com (user id 4cf62e4e-2679-484f-b652-034e697418df) while matrx.oauth.session was absent in chrome.storage.local. Only presence, profile identity, and key names were read; no credential or token values were read or recorded.",
+    "code_boundary": "restoreSupabaseSession returns false without a stored OAuth session; use-auth.ts displays the saved-sign-in restore error when USER_PROFILE remains. The condition explains this observation but does not establish why the session record went missing."
+  },
+  "ordinary_recovery": {
+    "action": "Clicked Settings > Sign in once in the existing development sidepanel; no credential entry, logout, storage clear, permission, or security setting change.",
+    "outcome": "No separate authorization window was observed. The sidepanel immediately displayed arman@armansadeghi.com / Arman Sadeghi, matching the retained profile, and a Sign out control. Closing and reopening the panel preserved this signed-in state.",
+    "chat_probe": "Configured Matrx Browser Agent / Claude Sonnet 5.5 completed one normal reply to the current-page-title question: The current page is titled Dashboard — AI Matrx."
+  },
+  "values_probe": {
+    "surface": "Chat composer compact Values from the 9 included button",
+    "pre_escape": "Values table and Open full view control visible; focus moved into the Active Scopes Inline max text field without editing it.",
+    "first_escape": "One native Chrome Escape closed the compact Values surface; subsequent full AX read found neither the compact container nor Values table.",
+    "scope": "Pass for the non-tooltip input-focused path on development 0.2.555. The earlier public 0.2.205 tooltip-focused failure, layer counts, and full-view dialog remain unverified here; this does not close EXT-D-0244."
+  },
+  "resource": {
+    "run_id": "dev555-auth-recovery-20261019-01",
+    "journal": "docs/stabilization/resource-journals/dev555-auth-recovery-20261019-01.jsonl",
+    "admission": "RESOURCE_ADMITTED",
+    "watch": "healthy",
+    "cleanup": "Manual UI work stopped before SIGINT; RESOURCE_BROWSER_STOP_CONFIRMED; holder exit code 0.",
+    "final_decision": "valid"
+  },
+  "files_changed": [
+    "docs/stabilization/reports/dev555-auth-recovery-20261019.json",
+    "docs/stabilization/resource-journals/dev555-auth-recovery-20261019-01.jsonl"
+  ],
+  "source_changes": false,
+  "next_action": "Root owns EXT-D-0244 current-candidate tooltip-focused, overlay-layer, and full-view Escape probes. This run establishes development sign-in recovery and one bounded passing compact Values focus path only.",
+  "evidence_limitations": "Contemporaneous operator AX observations are recorded in this receipt, but no screenshot or independent native retest was captured in this lane. Do not advance EXT-D-0244 case status from this observation."
+}
