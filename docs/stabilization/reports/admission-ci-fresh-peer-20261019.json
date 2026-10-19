@@ -1,0 +1,39 @@
+{
+  "reviewer": "fresh independent reviewer; no authorship; no repo files changed",
+  "date": "2026-10-19",
+  "D251": {
+    "verdictA": "PARTIAL",
+    "evidenceA": [
+      "node --test scripts/hosted-release-member-admission.test.mjs: 32/32 pass, including exact spaced requester positive and existing wrong workflow/path/event/branch/conclusion/artifact/receipt/source negatives.",
+      "Frozen 0.2.558 source proof at f1fe422 refuses release_member_product_changed, as required after contributor 36431388 changed pnpm-lock.yaml; old candidate must not be made eligible.",
+      "Exact source review shows run, artifact, receipt, synchronized-source and path allowlist checks remain in place; no version-specific exception.",
+      "Boundary gap: current regex accepts U+2028 in requester text (direct JS probe true), although this is a Unicode line separator and contract says single-line. CR/LF are refused."
+    ],
+    "finding": {
+      "severity": "Minor",
+      "file": "scripts/hosted-release-member-admission.mjs",
+      "issue": "single-line predicate excludes only CR and LF, so Unicode line separator U+2028/U+2029 can form a multi-line displayed requester; add a focused negative if the contract means all line separators."
+    },
+    "verdictB": "PASS WITH MINOR",
+    "evidenceB": "Real run 39300233770 / artifact 12210871757 values and exact display text from checked-in release reports are exercised; all 32 focused file cases pass. Strict provenance refused stale candidate."
+  },
+  "D252": {
+    "verdictA": "PASS for requested CI guard repair; no product/native behavior credit",
+    "evidenceA": [
+      "Pre-fix commit 34483db3d archived into a temporary real-copy scratch tree: focused mutation test reproduced Missing expected rejection (AssertionError) at the old after-root mutation.",
+      "Current focused node --test tests/browser/panel-visibility-diagnostic.test.mjs passes 3/3.",
+      "Current mutations remove each of nine observations from actual harness/scrape source and must raise AssertionError; omitOnce refuses missing source targets. Measurement cases exercise hidden/visible/unsupported, unavailable returns, leakage and constant-output mutants."
+    ],
+    "verdictB": "PASS",
+    "evidenceB": "Mutation is causal and isolated in-memory; the formerly no-op target now matches the conditional root/demo observation. The stale-target defect was independently seen RED then current repair GREEN; current test passes without CI dispatch."
+  },
+  "limits": "No hosted CI/browser dispatch. Candidate 0.2.558 remains correctly ineligible because lockfile drift requires a new synchronized candidate. No source edits or repo writes.",
+  "files": [
+    "scripts/hosted-release-member-admission.mjs",
+    "scripts/hosted-release-member-admission.test.mjs",
+    "tests/browser/panel-visibility-diagnostic.test.mjs",
+    "docs/stabilization/reports/admission-run-name-repair-20261019.json",
+    "docs/stabilization/reports/ci-transport-triage-20261019.json"
+  ],
+  "owner_adjudication": "D251 metadata-only Unicode U+2028/U+2029 requester-display minor accepted for this candidate: display attribution is not release authority. Strict workflow, source, artifact, path and digest checks remain binding. D252 source/quality peer passed; current full CI remains pending, so no CI-success claim."
+}
