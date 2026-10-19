@@ -17,9 +17,9 @@
     "surface": "native Chrome on macOS",
     "profile_label": "armansadeghi.com",
     "profile_data_directory": "actual Chrome user-data directory supplied to the resource guard",
-    "auth_mode_observed": "signed_in_admin",
+    "auth_mode_observed": "website_signed_in_admin_extension_unverified",
     "visible_evidence": [
-      "Public demo showed an Arman Sadeghi account image.",
+      "AIMATRX website public demo showed an Arman Sadeghi account image.",
       "Open dashboard button was present.",
       "Open admin settings control was present."
     ]
@@ -27,16 +27,16 @@
   "reproduction": [
     "Opened https://www.aimatrx.com/matrx-extend-demo in a newly created Chrome tab.",
     "Observed signed-in admin UI indicators on the page.",
-    "Stopped before opening the Store extension panel or sending any Chat message, as required for an already signed-in member/admin profile.",
+    "Stopped after observing website admin UI indicators; the Store extension panel was not opened or inspected.",
     "Closed the temporary tab; pre-existing tabs were left open and unchanged."
   ],
   "outcome": {
-    "verdict": "blocked_wrong_auth_mode",
+    "verdict": "extension_auth_mode_unverified",
     "acceptance_credit": 0,
     "visible_assistant_reply": false,
     "chat_requests_sent": 0,
     "backend_version_rechecked": false,
-    "reason": "The active Chrome profile is signed in as an administrator; a genuine guest result cannot be claimed without changing the user's auth state."
+    "reason": "The AIMATRX website showed administrator indicators. Website cookies/UI do not establish the Store extension session; its auth mode was not inspected in this run."
   },
   "resource_admission": {
     "journal": "docs/stabilization/resource-journals/guest-store-native-20261019-01.jsonl",
@@ -50,8 +50,12 @@
     "test_model_catalog": "Unavailable; aidream script returned ENOTFOUND for its configured database tenant before any product chat request. The product's configured guest model was not changed or overridden."
   },
   "limitations": [
-    "Actual Store-installed extension version and panel identity were not inspected because the observed account was already admin.",
+    "Actual Store-installed extension version, native panel identity, and extension auth mode were not inspected. Website admin UI is not evidence of extension auth mode.",
     "No guest opening message or same-conversation follow-up was sent; there is no Chat behavior verdict."
   ],
-  "next_action": "Rerun on a genuinely signed-out guest Chrome profile, then verify the installed Store extension identity/version and exercise one page-grounded opening message plus one same-conversation follow-up."
+  "next_action": "With a new normal manual-browser permit against the actual Chrome profile, open the installed Store extension native side panel and observe its own identity, version, and auth mode. If genuinely guest, exercise one page-grounded opening message and one same-conversation follow-up.",
+  "correction": {
+    "at_utc": "2026-10-19T16:30:00Z",
+    "scope": "Inference only: original website observations and valid resource verdict retained. Extension mode was unverified."
+  }
 }

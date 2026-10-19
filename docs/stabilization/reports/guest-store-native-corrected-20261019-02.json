@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-store-native-corrected-20261019-02",
+  "lane": "native_store_guest_chat",
+  "observed_at_utc": "2026-10-19T16:35:32Z",
+  "current_repo_sha_at_run": "82a87128b79b1539b0924aba9b655c12e9c86a9d",
+  "correction_of": "docs/stabilization/reports/guest-store-native-20261019-01.json",
+  "browser": {
+    "app": "Google Chrome on macOS",
+    "profile": "Arman (armansadeghi.com); Profile 8",
+    "user_data_directory": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "website_auth_observed": "AIMATRX public demo website showed Arman/admin indicators",
+    "store_extension_auth_observed": "native sidepanel explicitly showed You’re using Matrx as a guest",
+    "auth_separation": "Website session did not establish extension session. Both were directly observed and differed."
+  },
+  "store_extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "native_panel_url": "chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html",
+    "installed_version": "0.2.205",
+    "source": "Chrome Web Store as rendered by chrome://extensions details",
+    "enabled": true,
+    "version_before_chat": "0.2.205",
+    "version_after_chat": "0.2.205",
+    "release_receipt_source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "release_receipt": "config/chrome-web-store-approved-baseline.json and .research/next-store-candidate-audit.json",
+    "runtime_sha_directly_attested": false,
+    "runtime_sha_limit": "Installed Chrome details exposes version and source, but no build SHA. The source SHA belongs to the published release receipt and was not recovered directly from loaded bundle bytes."
+  },
+  "fixture": {
+    "url": "https://www.aimatrx.com/matrx-extend-demo",
+    "grounding": "Public three-stage workflow table: Capture, Understand, Use."
+  },
+  "chat": {
+    "mode": "real configured guest model; no override",
+    "first_user_message": "On this demo page, what are the three workflow stages, and what is the expected result for Understand?",
+    "first_visible_reply": "The page lists Capture, Understand, and Use; expected result for Understand is answers grounded in the current page.",
+    "followup_user_message": "Of those stages, which one yields structured rows that can be copied or reused?",
+    "followup_visible_reply": "The Use stage yields structured rows that can be copied or reused.",
+    "same_conversation": true,
+    "visible_terminal_state": "Both replies visibly complete; composer returned to Send after follow-up; no visible chat error or Retry."
+  },
+  "server": {
+    "version_url": "https://server.app.matrxserver.com/health/version",
+    "git_sha_post_message_observation_1": "b8092f234958c4f0b1a730576e218252a5735498",
+    "git_sha_post_message_observation_2": "b8092f234958c4f0b1a730576e218252a5735498",
+    "direct_git_sha_before_messages": null,
+    "built_at_utc": "2026-10-19T15:08:18Z",
+    "git_sha_before_messages_owner_observation": "b8092f234958c4f0b1a730576e218252a5735498",
+    "before_observed_at_utc": "2026-10-19T16:24:32Z",
+    "before_observer": "root task owner; separate observer, supplied after this run",
+    "before_after_stability_verdict": "matched: owner pre-run sample and this lane’s two post-message samples all returned b8092f234958c4f0b1a730576e218252a5735498; observers differ"
+  },
+  "evidence": {
+    "guest_chat_screenshot": "docs/stabilization/evidence/guest-store-native-corrected-20261019-02/guest-chat.jpg",
+    "installed_version_screenshot": "docs/stabilization/evidence/guest-store-native-corrected-20261019-02/installed-version.jpg",
+    "resource_journal": "docs/stabilization/resource-journals/guest-store-native-corrected-20261019-02.jsonl",
+    "screenshot_sanitization": "Chrome tab strip, address bar, and website account avatar were cropped; screenshots retain public demo content and Store panel or Chrome extension details."
+  },
+  "resource": {
+    "decision": "valid",
+    "resource_invalid": false,
+    "wrapper_exit_code": 0,
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "cleanup": "Store side panel closed, sole temporary demo/details tab closed, pre-existing tabs and user auth/storage retained; guard stopped and final journal published."
+  },
+  "verdict": {
+    "observed_store_guest_two_turn_behavior": "pass",
+    "strict_sha_bound_acceptance": "partial: server SHA matched before/after by separate observers; Store bundle build SHA not directly attested from installed bytes",
+    "reason": "Real native Store guest chat is directly proven; owner pre-run and this lane post-run server SHA observations match. Chrome exposed Store source, ID, and installed version, while direct installed-byte build SHA was unavailable."
+  },
+  "next_action": "Independent reviewer can assess screenshots and final journal. Installed-byte provenance remains a separate limit; do not infer it from version alone."
+}
