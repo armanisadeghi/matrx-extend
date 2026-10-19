@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "scope": "One guarded hosted Chrome startup environment diagnostic using the current development artifact; no authentication, product action, or acceptance claim.",
+  "status": "IN_PROGRESS",
+  "workflow_source_sha": "0fadf14304f7e59cb9ba8ec8586db91c8f5a3b29",
+  "diagnostic_run_id": 39312706355,
+  "diagnostic_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39312706355",
+  "diagnostic_conclusion": null,
+  "case": "startup-resource-diagnostic",
+  "lane": "A",
+  "runner_label": "macos-15-intel",
+  "display_mode": "headed",
+  "requested_by": "extend-stabilization",
+  "development_artifact": {
+    "run_id": 39309963996,
+    "artifact_id": 12216811946,
+    "artifact_digest": "sha256:043e50b46942d88b37d1afe13c92b1ead3068ba4c0a4c096e6c739dd0a6bc0ff",
+    "source_sha": "0fadf14304f7e59cb9ba8ec8586db91c8f5a3b29",
+    "ci_conclusion": "success"
+  },
+  "admission": "Existing scripts/hosted-remote-admission.mjs plan-startup-diagnostic and dispatch-startup-diagnostic accepted one run with a clean, exact local/remote/source SHA. No direct dispatch or guard change.",
+  "current_truth": "The hosted diagnostic is running. Chrome endpoint timing and resource finals have not been observed yet; no health conclusion is available.",
+  "next": "Collect the terminal hosted report and resource evidence, classify endpoint within 8 seconds versus late within the existing 15-second observation versus absent, then record the supported causal limits and cleanup.",
+  "product_credit": 0
+}
