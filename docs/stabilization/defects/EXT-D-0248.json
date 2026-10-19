@@ -7,7 +7,7 @@
   "title": "Foreground restoration closes public demo and assigns unrelated root fixture before member Chat",
   "severity": "S2: required non-admin acceptance tests the wrong page and falsely reports wrong assistant answer",
   "priority": "P1: preserve intended target and assert actual assigned URL before AI send",
-  "state": "fixed",
+  "state": "in-fix",
   "owner": "root / member_target_fix",
   "reproduction": [
     "Run exact556 nonadmin Store acceptance A39291881216 through successful selected-authentication/org preflight.",
@@ -22,7 +22,11 @@
     "docs/stabilization/reports/ext-d-0248-member-target-repair-20261019.json",
     "docs/stabilization/reports/d248-fresh-peer-20261019.json",
     "docs/stabilization/reports/candidate557-acceptance-20261019.json",
-    "docs/stabilization/reports/d248-round2-peer-20261019.json"
+    "docs/stabilization/reports/d248-round2-peer-20261019.json",
+    "docs/stabilization/reports/candidate559-acceptance-20261019.json",
+    "docs/stabilization/reports/d248-visibility-escalation-20261019.json",
+    "docs/stabilization/reports/d248-auth-topology-trace-20261019.json",
+    "docs/stabilization/reports/reviewer-trace-source-peer-20261019.json"
   ],
   "build_version": "0.2.556 exact Store ZIP under hosted test identity; workflow1f3904936",
   "transition_history": [
@@ -67,9 +71,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "b20df1b31 trusted demo-owned opener has fresh source-contract PASS with dynamic ownership RED/GREEN. Native replay is pending; strict557 admission remains unchanged and next candidate will include reviewed harness instead of adding a per-version exception."
+    },
+    {
+      "at": "2026-10-19T18:55:48.588710+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Exact559 member39303737912 passed real nonadmin/org auth but original panel remained hidden before any send; second native repair failed."
+    },
+    {
+      "at": "2026-10-19T18:55:48.588710+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Fresh bounded Astra escalation reproduced neither generic tab nor popup cause locally. Safe auth topology instrumentation41b7cecdd passes independent source review; hosted first hidden transition still requires replay before selecting a repair."
     }
   ],
-  "next_action": "Build one latest candidate after D249/D250 fresh source review passes, including b20 trusted demo-owned opener and all contributor package changes. Normal new-candidate admission must pass unchanged; then independently retest concurrent demo/panel visibility, target-before-send, first/follow-up and surrounding cleanup. Frozen557 is not re-run.",
+  "next_action": "Run one latest eligible frozen Store candidate on guarded hosted member lane with auth topology instrumentation. Locate first visible-to-hidden transition before another repair; preserve strict visibility/source/resource gates.",
   "fix_sha": "b20df1b31",
-  "reviewer": "d248_fresh_peer: A PASS_SOURCE_NATIVE_PENDING / B PASS"
+  "reviewer": "Fresh source-contract review accepts safe instrumentation; native issue remains unresolved, no repair or member Chat pass claimed.",
+  "diagnostic_sha": "41b7cecdd"
 }
