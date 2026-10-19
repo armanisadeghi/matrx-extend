@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "lane": "fresh read-only source and operating-plan peer",
+  "head": "ec2da38b7cced7be72f6c11935a2324afacd96b5",
+  "fixture": {
+    "A_observable_contract": "PASS",
+    "evidence": [
+      "Replayed pre-fix isolated scratch copy without scripts/stabilization-resource-journal.mjs: standalone CLI exits 1 with ERR_MODULE_NOT_FOUND from copy-hosted-resource-journal.mjs rather than HOSTED_MODE_INVALID.",
+      "node --test scripts/hosted-remote-admission.test.mjs: 32 passed, 0 failed; includes standalone refusal-path test with dependency present.",
+      "Commit ec2da38 adds only the missing transitive dependency to the test's explicit copy list; runtime CLI and admission code are untouched by this commit."
+    ],
+    "B_fixture_quality": "PASS",
+    "quality_note": "The forcing assertion requires the real CLI refusal text/status in an isolated scratch tree with NODE_PATH empty. Missing transitive dependency reproduces the regression. The guard tests the fixture's own dependency completeness without package installation or production behavior changes. No sibling explicit copy fixture uses copy-hosted-resource-journal.mjs (recorded in the commit report); no fixture bypass found.",
+    "limits": "Current green is tested at HEAD; red reproduced from the old copy-list shape rather than executing a detached historical checkout."
+  },
+  "proposed_headless_plan": {
+    "A_observable_contract": "PARTIAL",
+    "evidence": [
+      "Existing plan-startup-diagnostic accepts startup_display_mode=headless and only lane A, startup-resource-diagnostic, runner macos-15-intel; the default remains headed.",
+      "Existing dispatch path still verifies development artifact against supplied source, exact synchronized clean source, capacity, lane/case/runner and workflow provenance. Workflow only forwards display mode to the diagnostic step; the diagnostic records requested and observed launch mode and retains resource-health checks.",
+      "The run 39312706355 artifact is source 0fadf14304f7e59cb9ba8ec8586db91c8f5a3b29. Current HEAD differs in scripts/copy-hosted-resource-journal.mjs and scripts/stabilization-resource-journal.mjs, which now admit and sanitize RESOURCE_STARTUP_INTERVAL_BRACKET records. Current exact-source dispatch cannot reuse the old artifact/source SHA."
+    ],
+    "B_plan_quality": "PARTIAL",
+    "quality_note": "An environment-only headless mode is already supported and test-covered; no source exception, guard bypass, deadline widening, cap change, auth, or model call is needed. One dispatch remains within existing safety/ownership boundaries. However, it is not a controlled one-variable comparison with run 39312706355 at the current HEAD: that run's old source predates resource-journal instrumentation changes, and the exact-HEAD guard requires a current development artifact. A fresh artifact/run plus one authorized diagnostic is needed; a green result would establish operational viability only, not isolate headed display as cause.",
+    "constraints": [
+      "No dispatch or browser launch performed.",
+      "Keep the existing 8,000 ms deadline and resource checks unchanged.",
+      "Use current exact HEAD and a matching development artifact; do not claim same artifact/runtime as run 39312706355.",
+      "Stop after timeout or invalid resource final; do not grant product acceptance."
+    ]
+  },
+  "verification": {
+    "command": "node --test tests/browser/native-cdp-startup-deadline.test.mjs tests/browser/native-cdp-startup-boundary.test.mjs tests/browser/native-resource-boundary.test.mjs",
+    "result": "10 passed, 0 failed (12.34 seconds)",
+    "git_diff_check": "clean",
+    "repository_writes": false
+  }
+}
