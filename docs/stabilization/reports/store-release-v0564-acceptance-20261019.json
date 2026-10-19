@@ -19,7 +19,8 @@
     "member_a_plan": "refused release_member_product_changed; only two committed sanitized Store205 journals under docs/stabilization/resource-journals/ were outside its narrow source classifier",
     "member_a_dispatch": false,
     "member_link_file_and_github_secret": "deleted and absence verified after refusal",
-    "later_eligibility": "D259 member-admission source repair is pending integration; any executable change supersedes this candidate for upload."
+    "later_eligibility": "D259 member-admission source repair f664687b3214eceb79902c07489e94576a029eff is integrated after .564; this executable change supersedes .564 for upload.",
+    "d259_integrated_sha": "f664687b3214eceb79902c07489e94576a029eff"
   },
   "guest_b": {
     "run_id": "39336624267",
@@ -46,7 +47,15 @@
       "seo_audit": "pass",
       "public_page_source": "pass"
     },
-    "product_causality": "Unresolved. The three reviewer failures require evidence-backed source/DOM and screenshot-target diagnosis; no retry or product fix was inferred from this run."
+    "product_causality": "Unresolved. The three reviewer failures require evidence-backed source/DOM and screenshot-target diagnosis; no retry or product fix was inferred from this run.",
+    "installed_build": {
+      "receipt_kind": "native_store_zip_candidate_key_adapted",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "runtime_tree_sha256": "1737fffe760568859fc3381509388f65f4af41c11f1c9dc82fd7460e1e4063e7",
+      "clarification": "Exact .564 Store ZIP runtime loaded under a test key-adapted development extension ID; this is not the published Store-installed .205 build."
+    },
+    "guest_ai_transport_proven": true,
+    "conversation_semantics": "Opening and second reply share one verified conversation; post-reload reply is a new conversation."
   },
   "store_state": "Published 0.2.205; Draft 0.2.479 Rejected; no pending at last authenticated primary-dashboard check on 2026-10-19 16:20 UTC. No 0.2.564 upload or submission.",
   "next_action": "Finish reviewed D259 repair and independent evidence-backed diagnosis of the three public reviewer controls; integrate and rerun strict CI, then prepare one fresh eligible guarded release from synchronized main before exact-candidate A/B acceptance."
