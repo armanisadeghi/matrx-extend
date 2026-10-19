@@ -1,0 +1,66 @@
+{
+  "id": "EXT-D-0245",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01"],
+  "surface": "Development CI focused acceptance guard",
+  "auth_mode": "all modes; auth-independent infrastructure, no product behavior credit",
+  "title": "Guest sequence guard still searches for retired capture call after helper extraction",
+  "severity": "S2: current-main CI fails before producing a compatible development artifact",
+  "priority": "P1: restore verified source CI and development artifact delivery",
+  "state": "fixed",
+  "owner": "root / ci_red_repair_20261019",
+  "preconditions": [
+    "Source contains captureGuestAnswer helper extraction985ffa542 while the sequence test still locates capture(."
+  ],
+  "reproduction": [
+    "At parent of c69f8b6b5, run node --test --test-name-pattern='guest owner-table verdict executes' tests/browser/guest-chat-store-sequence.test.mjs.",
+    "Observe missing follow-up screenshot index and the ordering assertion failure; CI39269329447 reproduces the same case."
+  ],
+  "expected": "The real capture helper is found, and owner-table verdict remains after both Chat verdicts and captures; actual GET observations reject.",
+  "actual": "Retired capture( lookup returns -1, so the test fails before evaluating the production tail.",
+  "cause": "A test locator and injected function parameter were not updated when capture moved to captureGuestAnswer.",
+  "sibling_census": "Builder found no other retired follow-up capture reference in tests or scripts.",
+  "evidence": [
+    "docs/stabilization/reports/ci-red-repair-20261019.json",
+    "docs/stabilization/reports/ci-sequence-peer-20261019.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39269329447"
+  ],
+  "fix_sha": "c69f8b6b5d03ae1af6f3fe10eb756380da2786bf",
+  "original_retest_runs": ["independent focused parent RED and repaired GREEN; see peer receipt"],
+  "surrounding_retest_runs": [
+    "35-case guest sequence file PASS; compile PASS; forced owner-table allow mutant RED"
+  ],
+  "reviewer": "ci_sequence_peer_20261019: separate A/B scoped PASS; fresh hosted CI pending",
+  "next_action": "Observe existing CI39284095794 and its latest-main successors after GitHub Actions recovery. Close only after the repaired focused CI step passes; preserve original product-case status and obtain a compatible development artifact.",
+  "verification": {
+    "source": "Independent original RED/repaired GREEN and forced-allow mutation RED; no runtime change.",
+    "hosted": "Queued during official Actions processing incident; no hosted pass yet.",
+    "product": "No product case or auth-mode health credited."
+  },
+  "transition_history": [
+    {
+      "at": "2026-10-19T16:22:48.225541+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Current failing CI identified and original source reproduction preserved."
+    },
+    {
+      "at": "2026-10-19T16:22:48.225541+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Retired capture locator is the isolated failing boundary."
+    },
+    {
+      "at": "2026-10-19T16:22:48.225541+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "One test-only repair assigned; no workflow or runtime changes."
+    },
+    {
+      "at": "2026-10-19T16:22:48.225541+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "c69 source correction and fresh independent focused review pass; hosted retest remains queued."
+    }
+  ]
+}

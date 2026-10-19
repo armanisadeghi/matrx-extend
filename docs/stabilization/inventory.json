@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-18T21:14:29.468514+00:00",
+  "updated_at": "2026-10-19T16:22:48.225541+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -145,7 +145,8 @@
           ],
           "defect_ids": [
             "EXT-D-0028",
-            "EXT-D-0190"
+            "EXT-D-0190",
+            "EXT-D-0245"
           ]
         },
         {
@@ -503,7 +504,8 @@
             "EXT-D-0099",
             "EXT-D-0120",
             "EXT-D-0121",
-            "EXT-D-0190"
+            "EXT-D-0190",
+            "EXT-D-0245"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -523,7 +525,8 @@
             "EXT-D-0007",
             "EXT-D-0077",
             "EXT-D-0090",
-            "EXT-D-0190"
+            "EXT-D-0190",
+            "EXT-D-0245"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -545,7 +548,8 @@
             "EXT-D-0077",
             "EXT-D-0080",
             "EXT-D-0090",
-            "EXT-D-0190"
+            "EXT-D-0190",
+            "EXT-D-0245"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -572,6 +576,9 @@
           "verified": "Shared request sender adoption: guarded compile,53focused tests and npm-latest check passed; remote lock merge6aec7dd3 retained verified lock unchanged.",
           "remaining": "Independent consumer-adoption review and native current-artifact acceptance; no feature-role pass implied."
         }
+      ],
+      "defect_ids": [
+        "EXT-D-0245"
       ]
     },
     {
