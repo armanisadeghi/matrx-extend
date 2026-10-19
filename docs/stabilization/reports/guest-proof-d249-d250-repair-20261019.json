@@ -1,6 +1,6 @@
 {
   "task_id": "guest_proof_d249_d250_repair_20261019",
-  "status": "source_repaired_native_acceptance_pending",
+  "status": "source_repaired_after_peer_fail_fresh_peer_recheck_pending",
   "baseline": {
     "candidate": "0.2.557 exact Store ZIP, hosted identity adaptation",
     "run_id": 39295188109,
@@ -41,11 +41,27 @@
   ],
   "verification": {
     "guest_screenshot_tests": "7 passed",
-    "guest_sequence_tests": "37 passed",
+    "guest_sequence_tests": "39 passed",
     "types": "pnpm compile passed",
     "format": "Owned source files formatted with Biome; git diff --check passed",
-    "independent_native_retest": "pending fresh reviewed candidate"
+    "independent_native_retest": "pending fresh reviewed candidate; first source peer failed, second source peer pending"
   },
   "frozen_557_admission": "Normal B dispatch from the 0.2.557 source SHA rejects these browser harness changes as HOSTED_CHAT_RUNTIME_SOURCE_DRIFT. Do not allowlist the changed harness or claim 0.2.557 acceptance. Obtain a newly reviewed source and release artifact through the authorized path, then re-run exact-artifact native acceptance after independent peer review.",
-  "next_action": "Independent peer reviews source and proof negatives; release owner then prepares and verifies a fresh exact candidate before any B dispatch. No browser run, release, build, secret access, or product acceptance was performed in this repair lane."
+  "next_action": "Fresh independent source peer reviews both round-two repairs. If accepted, release owner obtains a newly reviewed exact candidate and runs native B through the unchanged admission guard. No .557 acceptance credit or browser rerun occurred in this repair lane.",
+  "peer_round_1": {
+    "report": "/tmp/d249-d250-fresh-peer-20261019.json",
+    "verdict": "FAIL_BLOCK_NEW_B_BUILD",
+    "d249": "Direct painted text inside a zero-rectangle display:contents wrapper passed answer-text extraction but failed the separate focused-Range parent rectangle check.",
+    "d250": "A public URL plus active pane allowed stale private pane pixels in a failure PNG; source validation and prelude failures lacked first source-step evidence."
+  },
+  "repair_round_2": {
+    "d249_commit": "4a39c3eb78c3f32ba8997919f59adbfde8d558e5",
+    "d249_change": "One semantic text-node predicate now feeds both answer extraction and focused Range. Direct painted text under a boxless wrapper passes; hidden/tool/user/older-answer and viewport or composer refusals remain.",
+    "d249_red_green": "The exact direct-text peer case is green; planting the prior visible(parentElement) filter in the focused walk makes that assertion red and restores source byte-for-byte.",
+    "d250_commit": "c17fbd39086a83c3e528578e75eeee083de6361e",
+    "d250_change": "Failure PNG clips only an exact allowlisted control, never an arbitrary active pane. Missing or sensitive controls refuse capture with a bounded reason. Public source validation and navigation failures record the first failing target and safe booleans; unverified source never produces a PNG.",
+    "d250_red_green": "The stale-private-pane test proves only the 100x28 capture control is clipped rather than the 320x220 pane. Mutation to pane geometry turns red. Wrong-title source and navigation failures retain step/booleans without raw title, URL, error text, or PNG; mutation to a generic source target turns red.",
+    "tests": "46 focused browser-source tests passed; pnpm compile passed; Biome formatted owned source; git diff --check passed",
+    "native_acceptance": "pending fresh reviewed candidate and fresh independent peer verdict"
+  }
 }
