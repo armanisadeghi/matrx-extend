@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "d258-sequence-fixture-peer",
+  "status": "DONE_WITH_CONCERNS",
+  "finding": "The fixture expectation change is narrowly correct for the missing Capture control case.",
+  "evidence": {
+    "helper": "tests/browser/store-reviewer-demo-path.mjs returns reviewer_failure_screenshot_target_missing when the matching control count is zero, and target_unavailable only as the generic fallback when no specific reason exists.",
+    "fixture": "tests/browser/guest-chat-store-sequence.test.mjs removes #capture-control, then expects reviewer_failure_screenshot_target_missing. Its next assertions still require sensitive_input for a sensitive field and wrong_page for an unapproved URL.",
+    "fresh_current_green": "node --test --test-name-pattern='reviewer screenshot captures only an exact public control' tests/browser/guest-chat-store-sequence.test.mjs — 1 pass, 0 fail.",
+    "author_red_green_record": "/tmp/d258-sequence-fixture-repair-20261019.json reports pre-change 38 pass/1 fail at the stale assertion, exact observer step post-change 86 pass/0 fail, focused D258 tests 7 pass/0 fail, compile and owned-file lint pass. I did not independently replay the pre-change RED or full observer step."
+  },
+  "scope_assessment": "Only a test expectation changes. The production crop logic and other safety assertions remain unchanged. This fixes a stale fixture reason and does not establish that the actual guest Article heading, Data picker, or automatic-capture reviewer controls work.",
+  "source_eligibility": "The one-line fixture change must pass exact-source CI before commit/A-B review. No fixture-only exemption is justified. Once committed, candidate source identity must be reconsidered.",
+  "files_touched": [],
+  "open_questions": [
+    "Exact-source CI for the post-fix SHA remains required.",
+    "D258's unresolved live public reviewer controls remain unverified; no overall acceptance claim follows from this fixture repair."
+  ],
+  "next_action": "Keep the exact-source CI failure visible until a green run covers the corrected SHA; then continue the independent A/B acceptance review with unresolved controls explicitly tracked."
+}

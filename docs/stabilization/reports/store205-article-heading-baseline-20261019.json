@@ -1,0 +1,56 @@
+{
+  "run_id": "store205-article-heading-baseline-20261019-01",
+  "extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.205 (previously verified in this same existing Chrome profile)",
+    "source": "Chrome Web Store (previously verified in this same existing profile)",
+    "current_panel_url": "chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html",
+    "current_guest_indicator": "G account icon visible; no sign-in flow opened"
+  },
+  "target": {
+    "url": "https://www.aimatrx.com/matrx-extend-demo",
+    "title": "Matrx Extend Demo Page — AI Matrx",
+    "visible_source_article_h1": "A clear three-stage browser workflow"
+  },
+  "capture": {
+    "method": "Manual Capture button",
+    "article_rendered_title_heading": "Matrx Extend Demo Page",
+    "article_word_count": 137,
+    "visible_article_body_opening": "A stable public page for trying Matrx Extend page capture, structured-data extraction, SEO auditing, and page-aware chat.",
+    "visible_following_headings": [
+      "The three workflow stages",
+      "Why page-aware assistance matters"
+    ],
+    "source_h1_in_visible_article_body": false,
+    "duplicate_h1_observed": false,
+    "ax_heading_levels": "Article title was the only visible level-1 heading; two following section headings were level 2.",
+    "comparison": "The source page visibly shows `A clear three-stage browser workflow` as its H1. In the captured Article, the title heading is `Matrx Extend Demo Page`, and the source H1 does not appear in the visible article body excerpt. This establishes a Store205 baseline mismatch; it does not establish intended title behavior or a current-candidate regression."
+  },
+  "screenshot": "Native CUA screenshot captured and visually inspected inline; no screenshot file was produced or stored.",
+  "scope_limits": [
+    "Published Store 0.2.205 only; no latest-candidate or current-main coverage claim.",
+    "One capture only; no recapture, edits, Save, auth, AI, clipboard, or network fetch.",
+    "No underlying source/markdown inspection beyond rendered AX and screenshot evidence."
+  ],
+  "pins": {
+    "store": "on",
+    "dev_id_cihdmkcdjjckfhjpgoedmgfpoljebaml": "on; confirmed on its exact dev details page immediately before this run"
+  },
+  "resource_guard": {
+    "admitted": "2026-10-19T22:14:58.142Z",
+    "last_watch_healthy": "2026-10-19T22:17:54.460Z",
+    "final_status": "RESOURCE_FINAL_DECISION valid; independently checked by owner",
+    "stopped": "2026-10-19T22:18:02.581Z",
+    "stop_confirmed": "2026-10-19T22:18:02.586Z",
+    "admitted_final": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "decision": "valid"
+  },
+  "owner_adjudication": {
+    "status": "bounded_native_observation_only",
+    "limitation": "Visual/AX excerpt does not retain full Article markdown/text or a durable screenshot. No exact candidate/current server acceptance claim. Current extractor replay preserves the source heading alongside document title, so title substitution alone does not explain candidate562 failure.",
+    "resource_journal": "docs/stabilization/resource-journals/store205-article-heading-baseline-20261019-01.sanitized.jsonl",
+    "current_candidate_comparison": "pending"
+  }
+}

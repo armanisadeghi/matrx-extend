@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "article-heading-title-followup",
+  "status": "bounded_source_ruling; exact_562_native_heading_boundary_still_unknown",
+  "store205_observation": {
+    "source": "/tmp/store205-scrape-guest-native-20261019.json",
+    "build": "published Chrome Web Store 0.2.205, existing guest profile",
+    "observed": "Public demo source has visible H1 A clear three-stage browser workflow. Captured Article showed top title Matrx Extend Demo Page, 137 words, body table and page-aware-assistance section; Links 17; Schema displayed the Article headline.",
+    "limit": "The Store 205 report did not retain Article markdown or a complete text/heading list; its stated Article PASS establishes captured title, identity and some body, not whether the visible source H1 survived. It is a different build from the failed 0.2.562 candidate."
+  },
+  "current_source_and_pipeline": {
+    "source": "Current public HTML at https://www.aimatrx.com/matrx-extend-demo has H1 A clear three-stage browser workflow inside main article header; document title begins Matrx Extend Demo Page; table stages and two subsequent H2 sections follow.",
+    "replay": "Running current src/lib/scrape/pipeline.ts runScrape on the public HTML produced Defuddle article.title=Matrx Extend Demo Page, word_count=179, and raw content_markdown starting with ## A clear three-stage browser workflow. Current articleToMarkdown prepended # Matrx Extend Demo Page and retained that ## heading in the display markdown. The discrepancy from Store 205's 137 words is further evidence those outputs are not interchangeable.",
+    "code": "Current and 0.2.562 candidate source SHA 417ca980 have no diff in pipeline.ts, to-markdown.ts, MarkdownView.tsx or ScrapeView.tsx. Defuddle supplies article.title and content separately; the extension prepends the title, cleans markdown, and renders it. There is no extension rule that removes the source H1 when article.title equals the document title. In this replay the source H1 is demoted to H2 by Defuddle, but its text survives."
+  },
+  "oracle": {
+    "candidate_562_predicate": "tests/browser/store-reviewer-demo-path.mjs at candidate SHA 417ca980: selected Article tab visible and value.text (active Article pane innerText) includes source.schemaHeadline exactly, plus Capture/Understand/Use and no error. It does not require an H1 element or that the string be a body heading rather than any other Article-pane text. Separate Links check requires source.linkText.",
+    "original_failure": "Candidate 562 run 39329484777 recorded selected Article=true, content visible=true, stages=true, public_heading_present=false. Thus it failed exact text presence, not heading level or title choice. The title Matrx Extend Demo Page alone cannot satisfy that predicate and cannot explain why the source-headline text was absent."
+  },
+  "conclusion": "Title substitution/deduplication is not demonstrated as the cause. Current extractor replay preserves both the document-style title and source H1 text in Article markdown. The Store 205 observation alone cannot prove the headline was omitted, and cannot localize the candidate 562 failure. A same-candidate captured SoupResult/articleToMarkdown versus rendered Article text readback remains necessary before any product fix claim.",
+  "changes": "none"
+}
