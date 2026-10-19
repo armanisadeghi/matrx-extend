@@ -9,7 +9,9 @@ import { createGuestInputDriver } from './guest-chat-input-driver.mjs';
 import {
   REVIEWER_DEMO_URL,
   assertReviewerDemoProof,
+  captureReviewerPaneScreenshot,
   isExactStoreReviewerCandidate,
+  recordReviewerCheck,
   requireExactStoreReviewerReceipt,
   runStoreReviewerPrelude,
   storeReviewerAcceptanceStatus,
@@ -1042,6 +1044,140 @@ test('prepared Store ZIP navigates public demo, records reviewer failure, and re
   });
   assert.equal(dev, null);
   assert.equal(url, 'http://localhost:3721/');
+});
+
+test('reviewer failure reports its exact step and bounded observation without raw error text', async () => {
+  const passed = await recordReviewerCheck({
+    name: 'capture_article',
+    run: async (mark) => {
+      mark('article_result');
+      return { public_heading_present: true };
+    },
+    observeSafe: async () => {
+      throw new Error('success_must_not_probe_failure');
+    },
+    screenshot: async () => {
+      throw new Error('success_must_not_capture_failure');
+    },
+  });
+  assert.deepEqual(passed, { status: 'pass', public_heading_present: true });
+  const privateError = 'https://private.example.invalid?token=SECRET-791';
+  const result = await recordReviewerCheck({
+    name: 'capture_article',
+    run: async (mark) => {
+      mark('article_result');
+      throw new Error(privateError);
+    },
+    observeSafe: async () => ({
+      pane_active: true,
+      capture_button_count: 1,
+      public_heading_present: false,
+    }),
+    screenshot: async (name, check) => {
+      assert.equal(name, 'reviewer-capture_article-failure.png');
+      assert.equal(check, 'capture_article');
+      return 'reviewer-capture_article-failure.png';
+    },
+  });
+  assert.deepEqual(result, {
+    status: 'fail',
+    failure_code: 'reviewer_observation_failed',
+    failure_target: 'article_result',
+    safe_dom: { pane_active: true, capture_button_count: 1, public_heading_present: false },
+    failure_screenshot: 'reviewer-capture_article-failure.png',
+  });
+  assert.doesNotMatch(JSON.stringify(result), /SECRET-791|private\.example/);
+  const missing = await recordReviewerCheck({
+    name: 'seo_audit',
+    run: async (mark) => {
+      mark('seo_audit_control');
+      const error = new Error(privateError);
+      error.name = 'TimeoutError';
+      throw error;
+    },
+    observeSafe: async () => {
+      throw new Error(privateError);
+    },
+    screenshot: async () => {
+      throw new Error(privateError);
+    },
+  });
+  assert.deepEqual(missing, {
+    status: 'fail',
+    failure_code: 'reviewer_playwright_timeout',
+    failure_target: 'seo_audit_control',
+    safe_dom: { observation_available: false },
+    screenshot_status: 'scoped_capture_unavailable',
+  });
+  assert.doesNotMatch(JSON.stringify(missing), /SECRET-791|private\.example/);
+});
+
+test('reviewer screenshot captures only the selected pane on the exact public demo', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'reviewer-pane-'));
+  const file = join(directory, 'failure.png');
+  const window = new Window();
+  try {
+    window.document.body.innerHTML = `<header>PRIVATE-HEADER</header>
+      <button role="tab" title="Scrape" aria-selected="true" aria-controls="scrape"></button>
+      <div id="scrape" data-state="active">Public demo capture</div>`;
+    Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 360 });
+    Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 373 });
+    window.document.getElementById('scrape').getBoundingClientRect = () => ({
+      left: 20,
+      top: 80,
+      right: 340,
+      bottom: 300,
+    });
+    let capturedClip;
+    const panel = {
+      send: async (method, options) => {
+        if (method === 'Runtime.evaluate')
+          return {
+            result: {
+              value: (await import('node:vm')).runInNewContext(options.expression, {
+                document: window.document,
+              }),
+            },
+          };
+        assert.equal(method, 'Page.captureScreenshot');
+        capturedClip = options.clip;
+        const png = Buffer.alloc(24);
+        png.writeUInt32BE(capturedClip.width, 16);
+        png.writeUInt32BE(capturedClip.height, 20);
+        return { data: png.toString('base64') };
+      },
+    };
+    const page = { url: () => REVIEWER_DEMO_URL };
+    assert.equal(
+      await captureReviewerPaneScreenshot({ page, panel, file, check: 'capture_article' }),
+      file,
+    );
+    assert.deepEqual(JSON.parse(JSON.stringify(capturedClip)), {
+      x: 20,
+      y: 80,
+      width: 320,
+      height: 220,
+      scale: 1,
+    });
+    assert.equal((await readFile(file)).length, 24);
+    window.document.getElementById('scrape').innerHTML = '<input type="text" value="PRIVATE-791">';
+    await assert.rejects(
+      captureReviewerPaneScreenshot({ page, panel, file, check: 'capture_article' }),
+      /pane_unavailable/,
+    );
+    await assert.rejects(
+      captureReviewerPaneScreenshot({
+        page: { url: () => 'https://private.example.invalid' },
+        panel,
+        file,
+        check: 'capture_article',
+      }),
+      /wrong_page/,
+    );
+  } finally {
+    await window.happyDOM.abort();
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 test('guest runner invokes reviewer prelude before installing the Chat fixture', async () => {

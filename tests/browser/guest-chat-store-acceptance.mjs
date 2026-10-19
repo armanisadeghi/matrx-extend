@@ -31,6 +31,7 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import {
+  captureReviewerPaneScreenshot,
   runStoreReviewerPrelude,
   storeReviewerAcceptanceStatus,
 } from './store-reviewer-demo-path.mjs';
@@ -965,7 +966,13 @@ try {
           receipt,
           runtimeTreeSha256,
           onStage: markStage,
-          screenshot: (name) => capture(panel, join(artifacts, name)),
+          screenshot: (name, check) =>
+            captureReviewerPaneScreenshot({
+              page: web,
+              panel,
+              file: join(artifacts, name),
+              check,
+            }),
         });
 
         markStage('page_specific_fixture');

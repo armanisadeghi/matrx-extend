@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { writeFile } from 'node:fs/promises';
 import {
   clickPickerCancel,
   clickPickerDone,
@@ -15,7 +16,137 @@ export const REVIEWER_DEMO_URL = 'https://www.aimatrx.com/matrx-extend-demo';
 
 function safeReviewerFailureCode(error) {
   const code = /^([a-z][a-z0-9_]{0,79})(?::|$)/i.exec(String(error?.message ?? ''))?.[1];
-  return code ?? 'reviewer_observation_failed';
+  if (
+    code &&
+    new Set([
+      'reviewer_auto_capture_switch_missing',
+      'reviewer_fresh_auto_capture_not_off',
+      'reviewer_scrape_ready_not_observed',
+      'reviewer_auto_capture_occurred_before_click',
+      'reviewer_article_capture_not_observed',
+      'reviewer_links_capture_not_observed',
+      'reviewer_schema_capture_not_observed',
+      'reviewer_seo_ready_not_observed',
+      'reviewer_demo_seo_audit_not_observed',
+      'reviewer_data_picker_ready_not_observed',
+      'reviewer_data_guest_explanation_missing',
+      'reviewer_data_workflow_field_selected_not_observed',
+      'reviewer_data_selector_missing',
+      'reviewer_data_selector_did_not_identify_workflow_cell',
+      'reviewer_data_draft_cleared_not_observed',
+      'pointer_target_not_unique',
+      'pointer_stable_hit_not_observed',
+      'pointer_followup_evaluation_failed',
+      'pointer_page_sample_failed',
+      'panel_runtime_exception',
+    ]).has(code)
+  )
+    return code;
+  if (error?.name === 'TimeoutError') return 'reviewer_playwright_timeout';
+  return 'reviewer_observation_failed';
+}
+
+const REVIEWER_PANES = {
+  fresh_auto_capture_off: 'Settings',
+  capture_article: 'Scrape',
+  capture_links: 'Scrape',
+  capture_schema: 'Scrape',
+  seo_audit: 'SEO',
+  data_workflow_picker: 'Data',
+};
+
+const REVIEWER_TARGETS = {
+  fresh_auto_capture_off: [
+    'fresh_auto_capture_off_open',
+    'settings_scrape_section',
+    'settings_auto_capture_switch',
+  ],
+  capture_article: [
+    'capture_article_open',
+    'scrape_tab',
+    'scrape_capture_button',
+    'article_result',
+  ],
+  capture_links: ['capture_links_open', 'scrape_tab', 'links_result_tab', 'links_result'],
+  capture_schema: ['capture_schema_open', 'scrape_tab', 'schema_result_tab', 'schema_result'],
+  seo_audit: ['seo_audit_open', 'seo_tab', 'seo_audit_control', 'seo_audit_result'],
+  data_workflow_picker: [
+    'data_workflow_picker_open',
+    'data_tab',
+    'data_picker_button',
+    'data_picker_host',
+    'data_workflow_cell',
+    'data_picker_done',
+    'data_selected_field',
+    'data_workflow_selector',
+    'data_draft_cancel',
+  ],
+};
+
+export async function recordReviewerCheck({ name, run, observeSafe, screenshot }) {
+  assert.ok(REVIEWER_TARGETS[name], 'reviewer_unknown_check');
+  let target = `${name}_open`;
+  const markTarget = (id) => {
+    assert.ok(REVIEWER_TARGETS[name].includes(id), 'reviewer_unknown_failure_target');
+    target = id;
+  };
+  try {
+    return { status: 'pass', ...(await run(markTarget)) };
+  } catch (error) {
+    const failure = {
+      status: 'fail',
+      failure_code: safeReviewerFailureCode(error),
+      failure_target: target,
+    };
+    try {
+      failure.safe_dom = await observeSafe(name);
+    } catch {
+      failure.safe_dom = { observation_available: false };
+    }
+    try {
+      failure.failure_screenshot = await screenshot(`reviewer-${name}-failure.png`, name);
+    } catch {
+      failure.screenshot_status = 'scoped_capture_unavailable';
+    }
+    return failure;
+  }
+}
+
+// Only the selected public-demo pane is captured. The account header, other
+// tabs, browser chrome, and any page outside the demo are outside this clip.
+export async function captureReviewerPaneScreenshot({ page, panel, file, check }) {
+  assert.equal(page.url(), REVIEWER_DEMO_URL, 'reviewer_failure_screenshot_wrong_page');
+  const title = REVIEWER_PANES[check];
+  assert.ok(title, 'reviewer_failure_screenshot_unknown_check');
+  const clip = await evaluate(
+    panel,
+    `(() => {
+    const tabs = [...document.querySelectorAll('button[role="tab"]')]
+      .filter(tab => tab.title === ${JSON.stringify(title)} && tab.getAttribute('aria-selected') === 'true');
+    const pane = tabs.length === 1 ? document.getElementById(tabs[0].getAttribute('aria-controls') ?? '') : null;
+    if (!pane || pane.getAttribute('data-state') !== 'active') return null;
+    if ([...pane.querySelectorAll('input, textarea, [contenteditable="true"]')].some(control =>
+      control.getAttribute('type') === 'password' ||
+      (!control.matches('input[type="checkbox"], input[type="radio"], input[type="hidden"]') &&
+        Boolean(control.value || control.textContent?.trim())))) return null;
+    const rect = pane.getBoundingClientRect();
+    const x = Math.max(0, Math.ceil(rect.left)), y = Math.max(0, Math.ceil(rect.top));
+    const right = Math.min(document.documentElement.clientWidth, Math.floor(rect.right));
+    const bottom = Math.min(document.documentElement.clientHeight, Math.floor(rect.bottom));
+    return right > x && bottom > y ? {x, y, width:right-x, height:bottom-y, scale:1} : null;
+  })()`,
+  );
+  assert.ok(clip, 'reviewer_failure_screenshot_pane_unavailable');
+  const result = await panel.send('Page.captureScreenshot', {
+    format: 'png',
+    clip,
+    captureBeyondViewport: false,
+  });
+  const png = Buffer.from(result.data, 'base64');
+  assert.equal(png.readUInt32BE(16), clip.width);
+  assert.equal(png.readUInt32BE(20), clip.height);
+  await writeFile(file, png, { mode: 0o600 });
+  return file;
 }
 
 const REQUIRED_CHECKS = [
@@ -132,6 +263,10 @@ async function demoSource(page) {
 async function settingsOff(panel) {
   await click(panel, 'title', 'Settings');
   await openSection(panel, 'Scrape');
+  return settingsOffSample(panel);
+}
+
+async function settingsOffSample(panel) {
   return evaluate(
     panel,
     `(async () => {
@@ -253,13 +388,62 @@ export async function runStoreReviewerDemoPath({
     source: null,
     checks: {},
   };
-  const record = async (name, fn) => {
-    try {
-      proof.checks[name] = { status: 'pass', ...(await fn()) };
-    } catch (error) {
-      const code = safeReviewerFailureCode(error);
-      proof.checks[name] = { status: 'fail', failure_code: code };
+  const safeSample = async (name) => {
+    if (name === 'fresh_auto_capture_off') {
+      const value = await settingsOffSample(panel);
+      return {
+        switch_count: value.switchCount,
+        switch_on: value.visible,
+        setting_present: value.settingPresent,
+        stored_on: value.stored,
+      };
     }
+    if (name.startsWith('capture_')) {
+      const value = await scrapeState(panel);
+      return {
+        pane_active: value.active,
+        capture_button_count: value.captureButtons,
+        content_visible: value.contentVisible,
+        empty: value.empty,
+        selected_article: value.selected === 'Article',
+        selected_links: value.selected === 'Links',
+        selected_schema: value.selected === 'Schema',
+        public_heading_present: value.text.includes('A clear three-stage browser workflow'),
+        public_link_present: value.text.includes('Matrx Extend privacy policy'),
+        public_stages_present: ['Capture', 'Understand', 'Use'].every((term) =>
+          value.text.includes(term),
+        ),
+        link_count: value.linkCount,
+        error_present: Boolean(value.error),
+      };
+    }
+    if (name === 'seo_audit') {
+      const value = await seoState(panel);
+      return {
+        pane_active: value.active,
+        audit_ready: value.auditReady,
+        audit_available: value.auditAvailable,
+        headings_present: value.headings,
+        public_title_matches: value.title === source.title,
+        error_present: value.error,
+      };
+    }
+    const value = await dataState(panel);
+    return {
+      pane_active: value.active,
+      picker_ready: value.pickerReady,
+      selected_count: value.selected.length,
+      cancel_ready: value.cancelReady,
+      guest_explanation_present: value.guestExplanation,
+    };
+  };
+  const record = async (name, fn) => {
+    proof.checks[name] = await recordReviewerCheck({
+      name,
+      run: fn,
+      observeSafe: safeSample,
+      screenshot,
+    });
   };
   if (page.url() !== REVIEWER_DEMO_URL) {
     proof.source = { status: 'fail', failure_code: 'reviewer_demo_requires_exact_public_url' };
@@ -300,20 +484,24 @@ export async function runStoreReviewerDemoPath({
     return proof;
   }
   const source = proof.source;
-  await record('fresh_auto_capture_off', async () => {
+  await record('fresh_auto_capture_off', async (mark) => {
+    mark('settings_scrape_section');
     const off = await settingsOff(panel);
+    mark('settings_auto_capture_switch');
     assert.equal(off.switchCount, 1, 'reviewer_auto_capture_switch_missing');
     assert.equal(
       autoScrapePreferenceMatches(off, false),
       true,
       'reviewer_fresh_auto_capture_not_off',
     );
-    await screenshot('reviewer-settings-off.png');
+    await screenshot('reviewer-settings-off.png', 'fresh_auto_capture_off');
     return { visible: off.visible, stored: off.stored, setting_present: off.settingPresent };
   });
 
-  await record('capture_article', async () => {
+  await record('capture_article', async (mark) => {
+    mark('scrape_tab');
     await click(panel, 'title', 'Scrape');
+    mark('scrape_capture_button');
     const before = await waitFor(
       'reviewer_scrape_ready',
       () => scrapeState(panel),
@@ -321,6 +509,7 @@ export async function runStoreReviewerDemoPath({
     );
     assert.equal(before.empty, true, 'reviewer_auto_capture_occurred_before_click');
     await click(panel, 'title', 'Capture the page exactly as it is right now');
+    mark('article_result');
     const article = await waitFor(
       'reviewer_article_capture',
       () => scrapeState(panel),
@@ -335,7 +524,7 @@ export async function runStoreReviewerDemoPath({
         !value.error,
       30000,
     );
-    await screenshot('reviewer-capture-article.png');
+    await screenshot('reviewer-capture-article.png', 'capture_article');
     return {
       selected: article.selected,
       title: article.title,
@@ -343,9 +532,12 @@ export async function runStoreReviewerDemoPath({
       workflow_stages_present: true,
     };
   });
-  await record('capture_links', async () => {
+  await record('capture_links', async (mark) => {
+    mark('scrape_tab');
     await click(panel, 'title', 'Scrape');
+    mark('links_result_tab');
     await click(panel, 'scrape-result-tab', 'Links');
+    mark('links_result');
     const links = await waitFor(
       'reviewer_links_capture',
       () => scrapeState(panel),
@@ -357,16 +549,19 @@ export async function runStoreReviewerDemoPath({
         value.linkCount > 0 &&
         !value.error,
     );
-    await screenshot('reviewer-capture-links.png');
+    await screenshot('reviewer-capture-links.png', 'capture_links');
     return {
       selected: links.selected,
       public_link_text_present: true,
       link_count: links.linkCount,
     };
   });
-  await record('capture_schema', async () => {
+  await record('capture_schema', async (mark) => {
+    mark('scrape_tab');
     await click(panel, 'title', 'Scrape');
+    mark('schema_result_tab');
     await click(panel, 'scrape-result-tab', 'Schema');
+    mark('schema_result');
     const schema = await waitFor(
       'reviewer_schema_capture',
       () => scrapeState(panel),
@@ -378,15 +573,17 @@ export async function runStoreReviewerDemoPath({
         value.text.includes('Article') &&
         !value.error,
     );
-    await screenshot('reviewer-capture-schema.png');
+    await screenshot('reviewer-capture-schema.png', 'capture_schema');
     return {
       selected: schema.selected,
       public_schema_headline_present: true,
       public_schema_type_present: true,
     };
   });
-  await record('seo_audit', async () => {
+  await record('seo_audit', async (mark) => {
+    mark('seo_tab');
     await click(panel, 'title', 'SEO');
+    mark('seo_audit_control');
     let seo = await waitFor(
       'reviewer_seo_ready',
       () => seoState(panel),
@@ -394,6 +591,7 @@ export async function runStoreReviewerDemoPath({
       30000,
     );
     if (seo.auditAvailable && !seo.auditReady) await click(panel, 'button', 'Audit this page');
+    mark('seo_audit_result');
     seo = await waitFor(
       'reviewer_demo_seo_audit',
       () => seoState(panel),
@@ -405,13 +603,15 @@ export async function runStoreReviewerDemoPath({
         !value.error,
       30000,
     );
-    await screenshot('reviewer-seo-audit.png');
+    await screenshot('reviewer-seo-audit.png', 'seo_audit');
     return { title: seo.title, headings: seo.headings, reaudit_ready: seo.auditReady };
   });
-  await record('data_workflow_picker', async () => {
+  await record('data_workflow_picker', async (mark) => {
     let pickerOpened = false;
     try {
+      mark('data_tab');
       await click(panel, 'title', 'Data');
+      mark('data_picker_button');
       const data = await waitFor(
         'reviewer_data_picker_ready',
         () => dataState(panel),
@@ -420,10 +620,14 @@ export async function runStoreReviewerDemoPath({
       assert.equal(data.guestExplanation, true, 'reviewer_data_guest_explanation_missing');
       await click(panel, 'data-picker-button', 'Pick fields on this page');
       pickerOpened = true;
+      mark('data_picker_host');
       await page.locator('#matrx-data-picker-host').waitFor({ state: 'attached' });
+      mark('data_workflow_cell');
       await clickPickerField(page, 'main article table tbody tr th[scope="row"]', 0);
+      mark('data_picker_done');
       await clickPickerDone(page);
       pickerOpened = false;
+      mark('data_selected_field');
       const selected = await waitFor(
         'reviewer_data_workflow_field_selected',
         () => dataState(panel),
@@ -435,6 +639,7 @@ export async function runStoreReviewerDemoPath({
       );
       const selector = selected.selected[0].match(/^field_1:\s*(.+)$/)?.[1];
       assert.ok(selector, 'reviewer_data_selector_missing');
+      mark('data_workflow_selector');
       const target = await page.evaluate((value) => {
         const matches = [...document.querySelectorAll(value)];
         return {
@@ -450,7 +655,8 @@ export async function runStoreReviewerDemoPath({
         { count: 1, workflowRow: true, text: 'Capture' },
         'reviewer_data_selector_did_not_identify_workflow_cell',
       );
-      await screenshot('reviewer-data-workflow-picker.png');
+      await screenshot('reviewer-data-workflow-picker.png', 'data_workflow_picker');
+      mark('data_draft_cancel');
       await click(panel, 'data-cancel-button', 'Cancel');
       await waitFor(
         'reviewer_data_draft_cleared',
