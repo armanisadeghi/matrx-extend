@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "scope": "One guarded hosted lane A headless startup resource diagnostic against the current exact-source CI development artifact; no authentication, product action, Store build, or acceptance case.",
+  "status": "TERMINAL_RESOURCE_VALID_OPERATIONAL_VIABILITY",
+  "workflow_source_sha": "39bfe250e722deab104566c87cb3a08b9469367f",
+  "diagnostic_run_id": 39318657314,
+  "diagnostic_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39318657314",
+  "diagnostic_conclusion": "success",
+  "diagnostic_artifact": {
+    "artifact_id": 12219701662,
+    "artifact_name": "hosted-guest-39318657314-1",
+    "artifact_digest": "sha256:4d0a7b25683fdfa3751eb48d457d64b16c8261ef1128493ace482d82261351dd"
+  },
+  "case": "startup-resource-diagnostic",
+  "lane": "A",
+  "runner_label": "macos-15-intel",
+  "runner_arch": "X64",
+  "display_mode": "headless",
+  "requested_by": "extend-stabilization",
+  "development_artifact": {
+    "run_id": 39317009493,
+    "artifact_id": 12218089566,
+    "artifact_digest": "sha256:a86b51b61a5c5be1ef29593929e1ad1b368a609decaa946bbcc59b03ece23e47",
+    "source_sha": "39bfe250e722deab104566c87cb3a08b9469367f",
+    "ci_conclusion": "success"
+  },
+  "admission": "Existing scripts/hosted-remote-admission.mjs plan-startup-diagnostic and dispatch-startup-diagnostic accepted the exact successful CI artifact with synchronized clean local and remote source, lane capacity, and reviewed workflow. The supported display-mode input alone selected headless; nativeCdpStartupDeadlineMs remained 8000 and resource policy was unchanged.",
+  "startup": {
+    "requested_mode": "headless",
+    "observed_mode": "headless",
+    "observed_mode_verified_by": "Browser.getBrowserCommandLine",
+    "browser_spawn_at": "2026-10-19T20:28:03.358Z",
+    "cdp_connected_endpoint_present": true,
+    "cdp_connected_elapsed_ms": 3251,
+    "cdp_connected_at": "2026-10-19T20:28:06.650Z",
+    "panel_ready_at": "2026-10-19T20:28:10.373Z",
+    "diagnostic_completed_at": "2026-10-19T20:28:51.080Z",
+    "last_native_stage": "exercise_panel",
+    "gpu_status": "RESOLVED"
+  },
+  "resource_result": {
+    "package_final": "valid; exit 0",
+    "browser_final": "valid; exit 0",
+    "startup_final": "valid; exit 0",
+    "startup_watch": "Four completed RESOURCE_WATCH_HEALTHY observations; no resource-invalid event in the sanitized journal.",
+    "startup_admitted_cpu_busy_fraction": 0.02428571428571429,
+    "startup_watch_cpu_busy_fractions": [0.38, 0.07, 0.02, 0.14]
+  },
+  "finding": "The owned browser published and connected to its CDP endpoint within the existing 8000 ms deadline in headless mode on a resource-valid hosted run. The diagnostic reached panel readiness and completed its bounded resource observation. This establishes one operationally viable route for this exact development artifact; the older headed run used a different source/artifact and had an invalid startup resource final, so display mode is not isolated as the sole cause.",
+  "evidence": [
+    "docs/stabilization/evidence/headless-startup-lane-a/run39318657314/startup-interval-diagnostic.sanitized.json",
+    "docs/stabilization/evidence/headless-startup-lane-a/run39318657314/resource-package.jsonl",
+    "docs/stabilization/evidence/headless-startup-lane-a/run39318657314/resource-browser.jsonl",
+    "docs/stabilization/evidence/headless-startup-lane-a/run39318657314/resource-startup.jsonl"
+  ],
+  "limitations": [
+    "One ephemeral hosted machine and one current source/artifact; no controlled same-artifact headed comparison was run.",
+    "This startup-resource-diagnostic carried no credentials or user interaction and earns zero product, authentication, or Store acceptance credit.",
+    "Headless is an admitted mode for this diagnostic; ordinary native acceptance remains subject to its own workflow, source/artifact, and resource gates.",
+    "The source has not been modified to repair headed startup or change the 8000 ms cutoff."
+  ],
+  "next_action": "The coordinator should evaluate this valid startup observation beside the prior resource-invalid headed result, keep the existing cutoff, and decide the next causal test for headed startup. Resume exact-candidate guest/member/reviewer acceptance only through its normal guarded route after that startup gate and current source/release provenance are established; do not infer product or Store readiness from this diagnostic.",
+  "product_credit": 0,
+  "cleanup": "The hosted harness completed and terminated its owned Chromium child; its temporary profile was confined to the disposable runner. Three sanitized, completed resource journals and a bounded startup report are retained here. No second diagnostic was dispatched."
+}
