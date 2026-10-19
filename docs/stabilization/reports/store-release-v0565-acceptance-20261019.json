@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "status": "INCOMPLETE_NO_UPLOAD",
+  "store_eligibility": false,
+  "release": {
+    "workflow_run_id": "39341777746",
+    "workflow_conclusion": "success",
+    "workflow_input_sha": "2e809f9425c86f4cb738cf273a158fd881805c30",
+    "candidate_sha": "a0c86f20b9fb070c09e00c0a574a0ffbf8f2b656",
+    "version": "0.2.565",
+    "artifact_id": "12229886228",
+    "github_artifact_digest": "sha256:2685e638905c056ea99017308a348b7cf283056cb6519d33c592eadbf5cf5a2f",
+    "store_zip_sha256": "fb55565b7c9bad1b73ada70b7ea54eda67217bde3f1bb1216ab9933bebf0a0c4",
+    "backend_sha": "9ef78d4ade91d8f1cb1951710266b094db5744bf",
+    "package_peer": "docs/stabilization/reports/candidate565-package-peer-20261019.json",
+    "package_proof": "Hosted release strict gates, tag, receipt, ZIP digest and independent package peer passed at build time. After that gate, npm advanced agents 0.59.169 to 0.59.170, records 0.99.95 to 0.99.96 and rich-content 0.2.220 to 0.2.221. The exact ZIP is now stale under the latest-package law and cannot be uploaded."
+  },
+  "source_admission": {
+    "workflow_checkout_sha_guest_b": "199e2e738ac928b661c8f1a55f1d4dcc6ddff440",
+    "workflow_checkout_sha_member_a": "313d23b0352e3a8076b3ae93fd7225421b7a75e3",
+    "after_release_changes": "Only canonical stabilization documents and sanitized resource records were admitted between candidate tag and each native dispatch. The member A source plan initially refused an active untracked Mac resource journal; after its owner completed and safely cleared the journal, the unchanged normal plan passed. No guard exception was added.",
+    "ci_source": "0708b3001019f570b34f0fcd7ee835edf3f53331",
+    "ci_run_id": "39340603045",
+    "ci_conclusion": "success",
+    "release_dependency_refresh_commit": "97de2edd19b4f38ebc19dd81099bec74db098b27"
+  },
+  "guest_b": {
+    "run_id": "39342759083",
+    "conclusion": "failure",
+    "native_artifact_id": "12229938148",
+    "native_artifact_digest": "sha256:dde7cd0076842fa4479779075f8ebe46ec69192fae9bec16bb91b610b245b353",
+    "installed_receipt_kind": "native_store_zip_candidate_key_adapted",
+    "runtime_tree_sha256": "692d24e6af00ad562f3e3a9b1dbfdc8bfe25feb82687a3acda37e71b3a5265e1",
+    "resource_finals": {
+      "package": "valid, resourceInvalid=false, exitCode=0",
+      "browser": "valid, resourceInvalid=false, exitCode=0",
+      "guest": "child_failed, resourceInvalid=false, exitCode=1"
+    },
+    "reviewer_controls": {
+      "article": "pass: public heading and three stages rendered in native DOM; retained crop shows only Re-capture button, so visual corroboration is limited",
+      "links_schema_seo": "pass",
+      "auto_capture_off": "fail: switch off and unique, but screenshot target y=919..939 fell outside the 373px viewport",
+      "data_picker_done": "fail: field hit and one selected item before Done; first failure at get_node_for_location, exception category other, no resolved mouse click or Done result"
+    },
+    "chat": "Opening and same-conversation follow-up both returned terminal page-grounded HTTP 200 replies with tool-result/resume. Formal proof stopped at real_same_conversation_followup_answer: focused answer text was clipped in the strict screenshot target, and no post-reload turn ran. This is bounded behavior, not a full Chat pass.",
+    "backend_before_after": "HTTP 200 and unchanged SHA 9ef78d4ade91d8f1cb1951710266b094db5744bf",
+    "native_report_private": "test-results/release565-guest-B/matrx-extend/matrx-extend/test-results/guest-chat-store-a59511b4-d1bf-43fd-8e0e-2d52ef24d175.json",
+    "sanitized_resource_journals": "docs/stabilization/evidence/guest-chat-store-v0565/run39342759083/resource-journals/"
+  },
+  "member_a": {
+    "run_id": "39343298322",
+    "conclusion": "failure",
+    "native_artifact_id": "12230295989",
+    "native_artifact_digest": "sha256:56cfe4fc0b5eded78374db32e65393a88b324ce45777b5dde4c39cf43b09f1b6",
+    "installed_receipt_kind": "native_store_zip_candidate_key_adapted",
+    "runtime_tree_sha256": "692d24e6af00ad562f3e3a9b1dbfdc8bfe25feb82687a3acda37e71b3a5265e1",
+    "resource_finals": {
+      "package": "valid, resourceInvalid=false, exitCode=0",
+      "browser": "valid, resourceInvalid=false, exitCode=0",
+      "guest": "child_failed, resourceInvalid=false, exitCode=1"
+    },
+    "auth": "Existing reviewer signed into web and extension. Canonical extension admin query returned zero rows; approved organization selected and picker available. One-use GitHub link secret and local link were deleted after authentication preflight; both absences verified.",
+    "chat": "Opening and same-conversation follow-up returned terminal HTTP 200 replies with shared conversation identity and first-turn tool-result/resume. Formal visible-answer proof failed: the selected transcript ancestor remained opacity 0, document visibility hidden, and answer unpainted after the paint-ready wait. No full member pass.",
+    "native_report_private": "test-results/release565-member-A/matrx-extend/matrx-extend/test-results/reviewer-chat-store-4d8b620c-6724-4a2c-ba16-2cf9ce4004d8.json",
+    "sanitized_resource_journals": "docs/stabilization/evidence/member-chat-store-v0565/run39343298322/resource-journals/"
+  },
+  "store_state": "No 0.2.565 upload or submission. Last authenticated primary-dashboard observation remains Published 0.2.205 / Draft 0.2.479 Rejected / no pending at 2026-10-19 16:20 UTC; private status must be rechecked before any later eligible upload.",
+  "next_action": "Repair and independently review the exact B Data get_node_for_location failure, Settings screenshot geometry and Chat visible-proof failures without weakening resource/source guards. Rebuild once from synchronized main after those repairs and latest-package catch-up; repeat strict package, guest/reviewer and real non-admin acceptance on that exact candidate before Store upload."
+}
