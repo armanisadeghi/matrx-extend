@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "task_id": "settings555-lane-a-20261019",
+  "lane": "hosted A",
+  "model": "GPT-6",
+  "status": "exact_precondition_failure",
+  "feature_ids": [
+    "EXT-F-1003"
+  ],
+  "defect_ids": [],
+  "summary": "No hosted browser run was dispatched and no product behavior was observed. The reviewed normal helper refuses guest Settings on lane A before artifact validation or dispatch. The promotion receipt's runtime-equivalent status is not a supported Settings admission: the guest Settings wrapper requires lane B, accepts only settings-controls/settings-auto-scrape-capture, and delegates to exact-source artifact validation without enabling runtime equivalence.",
+  "current_source": {
+    "local_head": "69a042e92f1b3a9e0244f785e11825e378811bb3",
+    "origin_main": "69a042e92f1b3a9e0244f785e11825e378811bb3",
+    "working_tree_note": "An unrelated resource journal from the native verification worker was present and left untouched."
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "version": "0.2.555",
+    "source_sha": "c69f8b6b5d03ae1af6f3fe10eb756380da2786bf",
+    "ci_run_id": 39284095794,
+    "artifact_id": 12202722252,
+    "artifact_digest": "sha256:843b95285118eb0226e4265e131f6b781d64fcbccb20f21f03114b7be1d66c94",
+    "tree_sha256": "6f233015946d6bf8a8ae020c227ad8950795d7bcd26f9146fd13fff35863a422",
+    "promotion_compatibility": "runtime-equivalent",
+    "eligible_store": false
+  },
+  "admission": {
+    "helper": "scripts/hosted-remote-admission.mjs",
+    "mode": "dispatch-settings-guest",
+    "case": "settings-controls",
+    "requested_lane": "A",
+    "runner_label": "macos-15-intel",
+    "command_exit_code": 1,
+    "refusal": "HOSTED_SETTINGS_GUEST_LANE_REFUSED",
+    "dispatch_occurred": false,
+    "browser_launched": false,
+    "rule": "scripts/hosted-remote-admission.mjs:842-848; guest Settings requires lane B and an allowlisted case before artifact validation. requireSettingsGuestDispatchAdmission at :870-888 requires exact synchronized source SHA.",
+    "runtime_equivalence": "Not enabled by the Settings route. requireDevelopmentArtifact defaults allowRuntimeEquivalent to false; promotion receipt compatibility alone does not change admission."
+  },
+  "case_results": {
+    "guest_settings": {
+      "status": "unverified",
+      "reason": "The existing reviewed route admits only lane B for guest Settings; lane A refused before artifact validation and dispatch."
+    },
+    "guest_theme_rendering_route": {
+      "status": "unverified",
+      "reason": "The workflow lists settings-theme-rendering, but no existing reviewed lane-A admission route allows it; the current guest Settings helper requires lane B and does not list this case."
+    }
+  },
+  "fixtures": {
+    "created_or_mutated": false,
+    "cleanup": "No browser, account, organization, secret, or product fixture was touched."
+  },
+  "verification": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "run_id": null,
+      "verdict": "unverified",
+      "evidence": "Normal dispatch helper refused with HOSTED_SETTINGS_GUEST_LANE_REFUSED; no product run exists."
+    }
+  ],
+  "changed_files": [
+    "docs/stabilization/reports/settings555-lane-a-checkpoint-20261019.json"
+  ],
+  "open_questions": [
+    "Root/coordinator must assign an existing admitted lane-B guest Settings route after the owned A-only lane closes, or identify an already reviewed admission route for another lane-A case."
+  ],
+  "next_action": "Coordinator assigns guest Settings to the existing lane-B route when available; otherwise use lane A only for its existing exact-source member Settings navigation route after a matching CI artifact exists. Do not change admission policy in this testing lane."
+}
