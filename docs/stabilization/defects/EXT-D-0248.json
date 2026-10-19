@@ -8,11 +8,11 @@
   "severity": "S2: required non-admin acceptance tests the wrong page and falsely reports wrong assistant answer",
   "priority": "P1: preserve intended target and assert actual assigned URL before AI send",
   "state": "in-fix",
-  "owner": "root / member_target_fix",
+  "owner": "root / candidate_docs_equivalence_diagnosis (instrumentation only)",
   "reproduction": [
     "Run exact556 nonadmin Store acceptance A39291881216 through successful selected-authentication/org preflight.",
     "The runner opens https://www.aimatrx.com/matrx-extend-demo, then calls restoreMemberForegroundWithReport with its web tab and the original Research brief root page before sending Chat.",
-    "The helper closes web, brings the unrelated root page forward and reopens the panel. It asks for this page’s workflow stages but grades the reply against the now-closed demo’s Capture/Understand/Use stages."
+    "The helper closes web, brings the unrelated root page forward and reopens the panel. It asks for this page\u2019s workflow stages but grades the reply against the now-closed demo\u2019s Capture/Understand/Use stages."
   ],
   "expected": "Foreground/auth recovery preserves the intended acceptance target; actual assigned URL/page identity is verified before sending and grading against that page.",
   "actual": "The native diagnostic records web_close and root_foreground before send. The canonical request/tool flow succeeds but reply is graded against a different page; no product wrong-answer conclusion is supported.",
@@ -26,7 +26,9 @@
     "docs/stabilization/reports/candidate559-acceptance-20261019.json",
     "docs/stabilization/reports/d248-visibility-escalation-20261019.json",
     "docs/stabilization/reports/d248-auth-topology-trace-20261019.json",
-    "docs/stabilization/reports/reviewer-trace-source-peer-20261019.json"
+    "docs/stabilization/reports/reviewer-trace-source-peer-20261019.json",
+    "docs/stabilization/reports/store-release-v0561-acceptance-20261019.json",
+    "docs/stabilization/reports/member-panel-hard-stall-diagnosis-20261019.json"
   ],
   "build_version": "0.2.556 exact Store ZIP under hosted test identity; workflow1f3904936",
   "transition_history": [
@@ -85,8 +87,23 @@
       "reason": "Fresh bounded Astra escalation reproduced neither generic tab nor popup cause locally. Safe auth topology instrumentation41b7cecdd passes independent source review; hosted first hidden transition still requires replay before selecting a repair."
     }
   ],
-  "next_action": "Run one latest eligible frozen Store candidate on guarded hosted member lane with auth topology instrumentation. Locate first visible-to-hidden transition before another repair; preserve strict visibility/source/resource gates.",
+  "next_action": "Add narrowly instrumented picker boundaries without changing behavior; independent source review, then one fresh eligible guarded candidate and native probe. No timeout/resource relaxation, no hypothetical repair claim, no unchanged blind retry.",
   "fix_sha": "b20df1b31",
   "reviewer": "Fresh source-contract review accepts safe instrumentation; native issue remains unresolved, no repair or member Chat pass claimed.",
-  "diagnostic_sha": "41b7cecdd"
+  "diagnostic_sha": "a7f4d9eb385386cff1c91cdd761ef14fea2e96f0",
+  "latest_native_attempt": {
+    "run_id": 39325479679,
+    "version": "0.2.561",
+    "status": "unverified",
+    "resource_invalid": true,
+    "chat_send": false,
+    "known": "Panel visible through canonical nonadmin identity; first hidden observation after identity before foreground restore. Same target/context/document across17snapshots.",
+    "hypothesis": "Organization picker Escape dismissal, picker opening, or delayed browser/resource effect; cause not proven.",
+    "secret_cleanup": "Owned one-use member secret and local link deleted; absence verified."
+  },
+  "diagnostic_source_review": {
+    "first": "FAIL: diagnostic persistence interrupted cleanup; related source extraction tests red.",
+    "final": "A source instrumentation PASS/native outcome pending; B PASS after all findings addressed;20/20 focused+adjacent checks.",
+    "evidence": "docs/stabilization/reports/member-picker-trace-final-peer-20261019.json"
+  }
 }

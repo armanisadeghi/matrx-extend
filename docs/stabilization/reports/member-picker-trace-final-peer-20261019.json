@@ -1,0 +1,62 @@
+{
+  "review": "fresh_independent_reverification_zero_authorship",
+  "target": "uncommitted D248 organization-picker transition instrumentation",
+  "first_review": "/tmp/member-picker-trace-fresh-peer-20261019.json",
+  "first_review_modified": false,
+  "addressed_findings": [
+    {
+      "finding": "Diagnostic persistence failure could skip Escape dismissal or leave keyDown without keyUp.",
+      "status": "ADDRESSED",
+      "evidence": "Current helper catches sample failures and remembers them; it executes Escape keyDown/keyUp cleanup in nested finally blocks, then rejects with member_picker_trace_persist_failed so the diagnostic cannot receive acceptance credit. Three focused injected failures at after_picker_click, before_escape_keydown, and after_escape_keydown each assert keyDown then keyUp and final refusal. Re-ran all three in the diagnostic suite: PASS."
+    },
+    {
+      "finding": "Adjacent organization-boundary test used the removed Scope the observer source anchor.",
+      "status": "ADDRESSED",
+      "evidence": "Its source range now ends at approvedOrganizationObservation; the focused organization-boundary test passes."
+    },
+    {
+      "finding": "Adjacent extracted default-Chat test lacked the existing sampleAuthBoundary and foreground-restore dependencies.",
+      "status": "ADDRESSED",
+      "evidence": "The test now supplies those dependencies and asserts before/after foreground phases. It passes in the focused 20-test run."
+    }
+  ],
+  "verdict_a": {
+    "status": "PASS_SOURCE_INSTRUMENTATION_NATIVE_OUTCOME_PENDING",
+    "evidence": [
+      "The actual evaluator expression is executed against Happy DOM Settings markup containing both the archive filter and Acting as picker. It measures the Acting as picker only and records visible then hidden observations with picker/listbox/checked counts.",
+      "Each fixed boundary is flushed to the reviewer report; invalid renderer evaluation is represented as measured=false and null visibility without persisting CDP error details.",
+      "The current member flow still requires the unique checked UUID/label/format proof and compares its fingerprint with the approved organization. Any sampled hidden state aborts before foreground restoration and model-backed Chat."
+    ],
+    "native_outcome": "PENDING. No hosted or native run was performed. The trace localizes observations to phase boundaries and does not prove which native event caused a transition or that Escape is causal."
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "evidence": [
+      "Original trusted organization click, 10-second checked-option wait, unique checked UUID proof, hash result, and Escape keyDown/keyUp behavior remain intact when tracing succeeds.",
+      "The new error-path tests prove cleanup and refusal for failures at all three original failure points. The adjacent organization boundary and foreground suites pass.",
+      "The diff adds no raw organization ID, token, label, URL, option value, or private CDP error string to the trace. The no-UUID persistence assertion passes.",
+      "No resource/capacity gate or timeout was changed. No dismissal repair or application product source change was made."
+    ],
+    "remaining_limit": "Boundary sampling adds observation time between Escape keyDown and keyUp; keep that in mind when interpreting a future native trace."
+  },
+  "checks": [
+    {
+      "command": "node --test tests/browser/member-picker-transition-diagnostic.test.mjs tests/browser/reviewer-chat-organization-boundary.test.mjs tests/browser/reviewer-chat-foreground-restoration.test.mjs",
+      "result": "PASS, 20/20"
+    },
+    {
+      "command": "pnpm exec biome check tests/browser/member-picker-transition-diagnostic.mjs tests/browser/member-picker-transition-diagnostic.test.mjs tests/browser/reviewer-chat-store-acceptance.mjs tests/browser/reviewer-chat-organization-boundary.test.mjs",
+      "result": "PASS, 4 files"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "scope": {
+    "source_edits_by_reviewer": false,
+    "hosted_or_native_run": false,
+    "commit_created": false,
+    "causality_or_product_health_claim": false
+  }
+}

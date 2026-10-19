@@ -45166,7 +45166,28 @@
               "status": "unverified"
             }
           },
-          "verification_status": "partial-bounded-guest-subtargets; remaining T07 criteria, reload and signed-in roles unverified"
+          "verification_status": "partial-bounded-guest-subtargets; remaining T07 criteria, reload and signed-in roles unverified",
+          "bounded_store_observations": [
+            {
+              "run_id": "published-guest-data-picker-store205-20261019-01",
+              "version": "0.2.205",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "observed": [
+                "Selected heading appears in picker",
+                "Clear removes entry",
+                "Fresh selected-field Cancel closes picker without retaining entry"
+              ],
+              "unverified": [
+                "Hover-only preview",
+                "Member/admin",
+                "Currentcandidate/main",
+                "Independentnative retest"
+              ],
+              "evidence": "docs/stabilization/reports/store205-data-picker-guest-20261019.json"
+            }
+          ]
         },
         {
           "id": "EXT-F-2005-T08",

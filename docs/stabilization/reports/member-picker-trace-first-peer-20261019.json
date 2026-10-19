@@ -1,0 +1,72 @@
+{
+  "review": "independent_zero_authorship_source_review",
+  "target": "instrumentation-only organization-picker transition trace",
+  "inspected_uncommitted_paths": [
+    "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "tests/browser/member-picker-transition-diagnostic.mjs",
+    "tests/browser/member-picker-transition-diagnostic.test.mjs",
+    "docs/stabilization/defects/EXT-D-0248.json"
+  ],
+  "verdict_a": {
+    "status": "PARTIAL_CANNOT_VERIFY_NATIVE_OUTCOME",
+    "evidence": [
+      "The harness samples seven fixed boundaries from after_admin_check_stop through after_escape_keyup, writing each boundary to the reviewer report. Samples contain visibility, focus, picker count/expanded state, listbox count, checked-option count, and measured status.",
+      "A hidden observation causes reviewer_member_panel_hidden_during_org_proof before foreground restore, Chat setup, and model-backed send.",
+      "No hosted/native candidate was run in this review, so the first real visible-to-hidden transition and any product cause remain unverified. This matches the no-hosted/no-UI scope."
+    ],
+    "missing": [
+      "A real resource-valid native run is still needed to determine which boundary first observes hidden state. The current samples localize to a boundary interval; they do not observe a visibility event between samples."
+    ]
+  },
+  "verdict_b": {
+    "status": "FAIL",
+    "findings": [
+      {
+        "severity": "Important",
+        "file": "tests/browser/member-picker-transition-diagnostic.mjs",
+        "lines": [82, 112, 119],
+        "finding": "A diagnostic persistence error can interrupt the original Escape dismissal/cleanup. after_picker_click is awaited before entering the try/finally, so an error there skips Escape entirely. A failure at before_escape_keydown in finally skips keyDown/keyUp, and a failure at after_escape_keydown skips keyUp. An injected narrow probe reproduced each case; after_escape_keydown failure left actions ending at keyDown with no keyUp.",
+        "impact": "The instrumentation-only trace can alter the native input sequence it is meant to observe, including leaving Escape pressed and preventing picker cleanup."
+      },
+      {
+        "severity": "Minor",
+        "file": "tests/browser/reviewer-chat-organization-boundary.test.mjs",
+        "lines": [98, 99, 106, 112],
+        "finding": "One adjacent regression test is red because it locates the end of approvedOrganizationConfig using the removed `// Scope the observer` comment. Moving actingOrganizationPickersExpression into the new diagnostic module removed that anchor. This is a stale source-extraction guard, not evidence of a product behavior regression.",
+        "impact": "The adjacent organization-boundary suite does not run cleanly after this refactor."
+      }
+    ],
+    "safe_trace_assessment": "The evaluator returns only fixed visibility/focus/count/boolean fields. A Happy DOM probe with a checked option UUID verified that the persisted report contains no UUID. Runtime evaluation exceptions are recorded as measured=false and visibility=null without private CDP error text. No raw org ID, token, label, URL, or option value is added by this trace.",
+    "gate_assessment": "The patch does not change resource admission/capacity logic, timeout constants, authentication/organization proof, trusted click action, checked UUID proof, or source/visibility gates. The unique checked-UUID hash comparison remains in place. The hidden-report gate is before foreground restore and model-backed Chat."
+  },
+  "checks": [
+    {
+      "command": "node --test tests/browser/member-picker-transition-diagnostic.test.mjs",
+      "result": "PASS, 5/5",
+      "meaning": "Covers the actual evaluator expression in Happy DOM, visible-to-hidden observations, privacy projection, unchanged trusted click and Escape order, and ambiguous checked-option refusal with key release."
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm exec biome check tests/browser/member-picker-transition-diagnostic.mjs tests/browser/member-picker-transition-diagnostic.test.mjs tests/browser/reviewer-chat-store-acceptance.mjs",
+      "result": "PASS, 3 files"
+    },
+    {
+      "command": "node --test tests/browser/member-picker-transition-diagnostic.test.mjs tests/browser/reviewer-chat-organization-boundary.test.mjs tests/browser/reviewer-chat-foreground-restoration.test.mjs",
+      "result": "FAIL, 15/17; reran failing organization-boundary file, same 2 failures",
+      "details": "The introduced stale-anchor failure is the finding above. The second failure (`sampleAuthBoundary is not defined` at the extracted default-Chat prerequisite) is pre-existing: HEAD already contains the extracted block's before_foreground_restore sampleAuthBoundary call. The foreground-restoration suite passed 5/5."
+    },
+    {
+      "probe": "Injected samplePickerBoundary rejection at after_picker_click, before_escape_keydown, and after_escape_keydown",
+      "result": "All three interruption paths reproduced; after_escape_keydown rejection leaves keyDown without keyUp."
+    }
+  ],
+  "scope": {
+    "source_files_changed_by_reviewer": false,
+    "hosted_or_native_runs_launched": false,
+    "commit_created": false,
+    "repair_or_product_health_claim": false
+  }
+}
