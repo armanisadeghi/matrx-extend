@@ -1,0 +1,54 @@
+{
+  "task_id": "candidate558_acceptance_20261019",
+  "lane": "exact_store_zip_guest_b_and_member_a",
+  "status": "admission_refused_before_launch",
+  "release": {
+    "version": "0.2.558",
+    "release_run_id": 39300233770,
+    "artifact_id": 12210871757,
+    "artifact_digest": "sha256:0b80695c5c9d6e3ab4bf34c50242f9f5dfee49a512cc9e334b6e67d7eb6a745d",
+    "source_tag_sha": "7075721579a725074be7ce2de0ea9bdf069f0df4",
+    "store_zip_sha256": "afbd3249311d8f645710fad41987b461182dd90386353740b27d6e2af1c73bde",
+    "workflow_checkout_sha": "a326df07524ec2feba5e2104bf7405c93c4825a6",
+    "channel_tested": "none; no hosted product browser run launched"
+  },
+  "preflight": {
+    "reviewer_existing_nonadmin_dry_run": "pass",
+    "approved_organization_and_identity": "validated by existing private fixture helper; no values emitted",
+    "local_source": "fast-forwarded to verified candidate source; clean",
+    "member_secret_staged": false,
+    "temporary_magic_link_created": false
+  },
+  "admission": {
+    "helper": "scripts/hosted-remote-admission.mjs plan-guest-chat",
+    "lane": "B",
+    "result": "refused",
+    "safe_error": "release_member_run_invalid",
+    "cause": "The verified GitHub release run name is 'Hosted release (by release555_eligibility exact-candidate558)'; the shared release-member validator accepts only a bare 'Hosted release' or a single simple '(by slug)' suffix.",
+    "dispatch_attempted": false,
+    "candidate_zip_validation": "verified in the release handoff; the normal acceptance plan could not admit it"
+  },
+  "guest_b": {
+    "workflow_run_id": null,
+    "workflow_conclusion": "not_started",
+    "product_credit": "none",
+    "resource_finals": null,
+    "screenshots": null
+  },
+  "member_a": {
+    "workflow_run_id": null,
+    "workflow_conclusion": "not_started",
+    "product_credit": "none",
+    "resource_finals": null,
+    "screenshots": null
+  },
+  "cleanup": {
+    "temporary_github_secret": "not staged; none to remove",
+    "local_one_use_magic_link": "not created; none to remove",
+    "guest_chat_conversation": "none created",
+    "member_chat_conversation": "none created",
+    "resource_owned_processes": "none; no hosted acceptance run started"
+  },
+  "acceptance_limit": "The v0.2.558 Store ZIP is verified by the release owner but has no new guest/member native acceptance. Public reviewer Settings/Capture/SEO/Data and exact Store ZIP Chat behavior remain unverified.",
+  "next_action": "Repair and independently review the release-run-name admission contract, then rerun the normal guarded plan helpers for this exact verified artifact if the source remains synchronized. Do not dispatch through a bypass."
+}
