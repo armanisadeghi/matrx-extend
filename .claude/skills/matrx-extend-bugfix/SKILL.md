@@ -1,5 +1,6 @@
 ---
 name: matrx-extend-bugfix
+subject: matrx-extend:.claude/skills/matrx-extend-bugfix
 type: Skill
 description: "Matrx Extend defect repair workflow. Use when independently owning a Chrome-extension bug through reproduction, fix, retest, shared-main integration, and release handoff, including while the stabilization coordinator is unavailable."
 ---

@@ -1,5 +1,6 @@
 ---
 name: matrx-extend-tool-display
+subject: apps/extension
 description: "Tool-call row display registry for the matrx-extend side panel. Use when making a tool 'show up nicely', editing `src/features/chat/tool-display/`, changing a row's icon, label, args, or result view, adding a CustomComponent, or a registered tool renders the default row. NOT for matrx-frontend (use matrx-frontend's create-tool-renderer)."
 ---
 

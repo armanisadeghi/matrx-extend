@@ -1,5 +1,6 @@
 ---
 name: chrome-web-store-release
+subject: apps/extension
 description: "Chrome Web Store release process for Matrx Extend. Use when checking release readiness, submitting a Store update, running `pnpm zip:store` or its risk gate, judging whether a change is Store-material, picking the version, editing listing, privacy, or reviewer copy, or tracking a review. NOT for local unpacked builds (use pnpm dev)."
 ---
 
