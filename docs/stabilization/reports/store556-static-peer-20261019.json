@@ -1,0 +1,48 @@
+{
+  "review": "preparedStore0.2.556 independent static/evidence peer",
+  "reviewer": "store556_static_peer",
+  "reviewed_at": "2026-10-19",
+  "verdict_a": "bounded_static_pass; product/release-contract browser acceptance remains pending",
+  "verdict_b": "artifact_and_code_quality_static_pass",
+  "artifact": {
+    "workflow_run": "39289278009",
+    "artifact_id": "12205386292",
+    "source_tag": "v0.2.556",
+    "source_sha": "50a479584955eca5045853f8cbb7a7d594b9fd78",
+    "independently_computed_sha256": "8087ad27fd3e1a82f19ea7f43b93d48797f01cf6014f9efba6a6388a45fc0bdb",
+    "receipt_tree_sha256": "80e066d61244f70e9a7fedf40fd7eb9b5a143e07fd8df445607089ff27a8f03d",
+    "status": "digest matches; receipt ties version/source/tag to hosted artifact",
+    "receipt_declared_store_zip_sha256": "8087ad27fd3e1a82f19ea7f43b93d48797f01cf6014f9efba6a6388a45fc0bdb"
+  },
+  "source_vs_current_main": {
+    "current_head": "8989ef30daca75e3f4daad606fea2d2f64c6d1f2",
+    "difference_from_candidate": "one documentation-only checkpoint JSON modification; no runtime/source/package change observed",
+    "qualification": "candidate was cut from synchronized origin main; reviewed checkout is now newer by docs only"
+  },
+  "checks": {
+    "release_run": "exit 0 at 2026-10-19T16:57:33Z",
+    "logged_gates": [
+      "matrx-packages",
+      "typecheck",
+      "lint",
+      "unit-tests",
+      "schema-routing",
+      "tool-drift",
+      "build",
+      "store zip",
+      "Store approval-risk gate"
+    ],
+    "artifact_scan": "extracted exact ZIP into /tmp/store556-peer-review; independently ran check-cws-release-risk.mjs against its manifest and emitted JavaScript; PASS matching approved 0.2.205 policy surface and no detector hits",
+    "remote_code_specific": "No PDFObject CDN URL found in emitted JS. The only gist.github.com occurrence found is the tldraw AnnotationEditor link that opens a Gist in a new tab; it does not load script code. No remote script loader or forbidden Runtime/eval token was reported by the package gate."
+  },
+  "reviewer_copy": {
+    "baseline": "CHROME-WEB-STORE.md currently retains truthful approved single-purpose statement, debugger justification, no-remote-code answer, and reviewer path through aimatrx.com/matrx-extend-demo",
+    "qualification": "copy is consistent with static package review; static review cannot establish live demo availability or installed reviewer journey"
+  },
+  "limitations": [
+    "No browser/native installed-extension acceptance performed in this lane; separate Sol acceptance remains required.",
+    "No upload, submission, or publication status was verified or changed.",
+    "Static emitted-code scan is bounded by the explicit forbidden-token and loader detectors; it is not a general proof against all possible remote behavior."
+  ],
+  "blocking_findings": []
+}

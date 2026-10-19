@@ -17,13 +17,15 @@
     "docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json",
     "docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json",
     "docs/stabilization/evidence/published-v0205-guest-chat/run39160396058/screenshots/values-chip-failure.png",
-    "docs/stabilization/reports/values-escape-diagnosis-20261018.json"
+    "docs/stabilization/reports/values-escape-diagnosis-20261018.json",
+    "docs/stabilization/runs/public-guest-chat-0.2.205-39283778031.json",
+    "docs/stabilization/reports/dev555-native-peer-20261019.json"
   ],
   "severity": "S3: context inspection dialog dismissal by Escape fails; the three Chat replies completed.",
   "priority": "P2: verify current candidate and repair through the owning shared component if it reproduces.",
   "state": "open",
   "owner": "stabilization-coordinator",
-  "reproducibility": "One resource-valid public205 observation independently confirmed. Current candidate and repeatability remain unverified; the full-view Dialog was not tested.",
+  "reproducibility": "Repeated on resource-valid adapted public205 run39283778031 after three completed replies. Independent native dev555 observations passed trigger-focused and input-focused dismissal after settling; exact tooltip-focused current guest path, full view and current556 remain unverified. No owning source fix established.",
   "build_version": "0.2.205 public CRX adapted unpacked",
   "server_sha": "a61289ffa374eb4b1a2ff8181d9db42e947f039a",
   "transition_history": [
@@ -34,5 +36,5 @@
       "reason": "Independent screenshot and DOM/event review confirms the observed dialog did not close; no cause or current-build equivalence inferred."
     }
   ],
-  "next_action": "On the exact current candidate, record safe open-layer/focus state before and after trusted Escape in the compact Values popover; discriminate a tooltip consuming the first Escape from a Popover dismissal failure. Test full-view Dialog separately. Keep current-build and root-cause claims unverified until observed."
+  "next_action": "Use exact556 guest acceptance run39290491457 to assess current candidate compact Values with focus/layer and settled-state evidence. Do not infer a current failure from old205 or close from dev555 signed-in observations; full-view and close-control surrounding cases remain unverified."
 }

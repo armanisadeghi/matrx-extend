@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T16:22:48.225541+00:00",
+  "updated_at": "2026-10-19T17:01:27.261380Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -51386,13 +51386,15 @@
           "results": {
             "guest": {
               "status": "fail",
-              "run_id": "39160396058",
+              "run_id": "39283778031",
               "build_version": "0.2.205 public CRX adapted unpacked",
               "evidence": [
                 "docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json",
-                "docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json"
+                "docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json",
+                "docs/stabilization/runs/public-guest-chat-0.2.205-39283778031.json",
+                "docs/stabilization/reports/dev555-native-peer-20261019.json"
               ],
-              "detail": "One observed Escape failure: trusted keydown received, dialog remains open and focus inside. Repeatability, cause, close control, latest548 and full Values interactions remain unverified."
+              "detail": "Repeated trusted Escape failure on adapted public0.2.205 with valid resources after three completed replies. Native dev555 trigger/input-focused dismissal passed independently after settling, but its role/tooltip path and current556 guest remain unverified; full view, close control and reopening remain unverified."
             },
             "member": {
               "status": "unverified"
