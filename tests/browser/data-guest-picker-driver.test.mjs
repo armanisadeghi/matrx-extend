@@ -177,6 +177,40 @@ test('Done helper preserves first failed phase and projects no raw protocol deta
   }
 });
 
+test('Done hit lookup classifies fixed CDP failures without retaining browser messages', async () => {
+  const cases = [
+    ['No node found at given location', 'no_node_at_location'],
+    ['Could not find node with given id', 'stale_node_or_context'],
+    ['Session closed', 'target_unavailable'],
+    ['Invalid parameters', 'invalid_parameters'],
+    ['Method not found', 'unsupported_command'],
+    ['PRIVATE_BROWSER_TEXT_791', 'other'],
+  ];
+  for (const [message, expected] of cases) {
+    const fixture = ownedPage(74);
+    const session = await fixture.page.context().newCDPSession();
+    const original = session.send.bind(session);
+    session.send = async (method, params) => {
+      if (method === 'DOM.getNodeForLocation')
+        throw Object.assign(new Error(message), { code: -32000 });
+      return original(method, params);
+    };
+    await assert.rejects(clickPickerDone(fixture.page), (error) => {
+      assert.equal(error.pickerButtonDiagnostic?.phase, 'get_node_for_location');
+      assert.equal(error.pickerButtonDiagnostic?.exception_category, expected);
+      assert.equal(error.pickerButtonDiagnostic?.exception_name, 'Error');
+      assert.equal(error.pickerButtonDiagnostic?.exception_code, -32000);
+      assert.doesNotMatch(JSON.stringify(error.pickerButtonDiagnostic), /PRIVATE_BROWSER_TEXT_791/);
+      return true;
+    });
+    assert.equal(
+      fixture.calls.some((call) => call.method === 'click'),
+      false,
+    );
+    assert.equal(fixture.calls.at(-1).method, 'detach');
+  }
+});
+
 test('C16 Cancel targets the picker exit button and refuses a covered hit', async () => {
   const exact = ownedPage(74);
   await clickPickerCancel(exact.page);

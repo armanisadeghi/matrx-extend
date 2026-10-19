@@ -180,6 +180,7 @@ const EVIDENCE_GEOMETRY = new Set([
   'picker_box_center_y',
   'picker_box_width',
   'picker_box_height',
+  'picker_exception_code',
 ]);
 const PICKER_PHASES = new Set([
   'new_session',
@@ -194,7 +195,26 @@ const PICKER_PHASES = new Set([
   'mouse_click',
   'detach',
 ]);
-const PICKER_ERROR_CATEGORIES = new Set(['protocol', 'timeout', 'assertion', 'type', 'other']);
+const PICKER_ERROR_CATEGORIES = new Set([
+  'no_node_at_location',
+  'stale_node_or_context',
+  'target_unavailable',
+  'invalid_parameters',
+  'unsupported_command',
+  'protocol',
+  'timeout',
+  'assertion',
+  'type',
+  'other',
+]);
+const PICKER_ERROR_NAMES = new Set([
+  'Error',
+  'ProtocolError',
+  'TimeoutError',
+  'AssertionError',
+  'TypeError',
+  'other',
+]);
 function projectReviewerEvidence(value) {
   const result = {};
   for (const [key, entry] of Object.entries(value ?? {})) {
@@ -214,6 +234,7 @@ function projectReviewerEvidence(value) {
     else if (key === 'picker_failed_phase' && PICKER_PHASES.has(entry)) result[key] = entry;
     else if (key === 'picker_exception_category' && PICKER_ERROR_CATEGORIES.has(entry))
       result[key] = entry;
+    else if (key === 'picker_exception_name' && PICKER_ERROR_NAMES.has(entry)) result[key] = entry;
   }
   return result;
 }
@@ -269,13 +290,15 @@ export async function captureReviewerPaneScreenshot({ page, panel, file, check }
       control.getAttribute('type') === 'password' ||
       (!control.matches('input[type="checkbox"], input[type="radio"], input[type="hidden"]') &&
         Boolean(control.value || control.textContent?.trim())))) return {reason:'reviewer_failure_screenshot_sensitive_input'};
+    const articleContent = ${JSON.stringify(check)} === 'capture_article'
+      ? [...pane.querySelectorAll('[role="tabpanel"][data-state="active"]')]
+        .filter(content => content.querySelectorAll('h1,h2').length > 0)
+      : [];
     const buttons = [...pane.querySelectorAll('button')];
-    const matches = buttons.filter(button => {
+    const matches = ${JSON.stringify(check)} === 'capture_article' ? articleContent : buttons.filter(button => {
       const label = button.textContent?.trim() ?? '';
       if (${JSON.stringify(check)} === 'fresh_auto_capture_off')
         return button.getAttribute('role') === 'switch' && button.getAttribute('aria-label') === 'Auto-scrape on load' && !label;
-      if (${JSON.stringify(check)} === 'capture_article')
-        return (button.getAttribute('title') === 'Capture the page exactly as it is right now' || button.getAttribute('data-matrx-title') === 'Capture the page exactly as it is right now') && (label === '' || label === 'Capture' || label === 'Re-capture');
       if (${JSON.stringify(check)} === 'capture_links') return button.getAttribute('role') === 'tab' && button.firstChild?.textContent?.trim() === 'Links' && /^Links(?:[1-9]\\d*)?$/.test(label.replace(/\\s+/g, ''));
       if (${JSON.stringify(check)} === 'capture_schema') return button.getAttribute('role') === 'tab' && label === 'Schema';
       if (${JSON.stringify(check)} === 'seo_audit') return label === 'Audit this page' || label === 'Re-audit';
@@ -283,6 +306,18 @@ export async function captureReviewerPaneScreenshot({ page, panel, file, check }
       return false;
     });
     if (matches.length !== 1) return {reason:matches.length === 0 ? 'reviewer_failure_screenshot_target_missing' : 'reviewer_failure_screenshot_target_multiple'};
+    const heading = ${JSON.stringify(check)} === 'capture_article'
+      ? [...matches[0].querySelectorAll('h1,h2')].filter(node =>
+          node.textContent?.trim() === 'A clear three-stage browser workflow')
+      : [];
+    const intro = ${JSON.stringify(check)} === 'capture_article'
+      ? [...matches[0].querySelectorAll('p')].filter(node =>
+          node.textContent?.trim().startsWith('This stable sample page lets anyone try Matrx Extend without signing in.'))
+      : [];
+    if (${JSON.stringify(check)} === 'capture_article' && (heading.length !== 1 || intro.length !== 1 ||
+      !['Capture','Understand','Use'].every(stage => matches[0].textContent?.includes(stage))))
+      return {reason:'reviewer_failure_screenshot_target_missing'};
+    (heading[0] ?? matches[0]).scrollIntoView?.({block:'start', inline:'nearest'});
     const rect = matches[0].getBoundingClientRect();
     const x = Math.max(0, Math.ceil(rect.left)), y = Math.max(0, Math.ceil(rect.top));
     const right = Math.min(document.documentElement.clientWidth, Math.floor(rect.right));
@@ -294,6 +329,16 @@ export async function captureReviewerPaneScreenshot({ page, panel, file, check }
         viewport_height:document.documentElement.clientHeight,
         visible_width:Math.max(0,right-x), visible_height:Math.max(0,bottom-y)}
     };
+    if (${JSON.stringify(check)} === 'capture_article') {
+      const visible = node => {
+        const box = node.getBoundingClientRect();
+        return box.right > x && box.left < right && box.bottom > y && box.top < bottom &&
+          box.right > 0 && box.left < document.documentElement.clientWidth &&
+          box.bottom > 0 && box.top < document.documentElement.clientHeight;
+      };
+      if (!visible(heading[0]) || !visible(intro[0]))
+        return {reason:'reviewer_failure_screenshot_target_geometry'};
+    }
     const hit = document.elementFromPoint?.((x+right)/2, (y+bottom)/2);
     if (hit && hit !== matches[0] && !matches[0].contains(hit)) return {reason:'reviewer_failure_screenshot_target_hit'};
     return {x, y, width:right-x, height:bottom-y, scale:1};
@@ -951,6 +996,8 @@ export async function runStoreReviewerDemoPath({
           picker_selected_before_done: selectedBeforeDone,
           picker_failed_phase: error.pickerButtonDiagnostic?.phase,
           picker_exception_category: error.pickerButtonDiagnostic?.exception_category,
+          picker_exception_name: error.pickerButtonDiagnostic?.exception_name,
+          picker_exception_code: error.pickerButtonDiagnostic?.exception_code,
           picker_hit_equal: error.pickerButtonDiagnostic?.hit_equal,
           picker_mouse_click_resolved: error.pickerButtonDiagnostic?.mouse_click_resolved,
           picker_box_center_x: error.pickerButtonDiagnostic?.box_center_x,

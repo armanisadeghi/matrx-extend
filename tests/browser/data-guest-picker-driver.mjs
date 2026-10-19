@@ -130,11 +130,29 @@ export async function pickerShadowNode(session, selector, onPhase = () => {}) {
 }
 
 function pickerErrorCategory(error) {
+  const message = String(error?.message ?? '');
+  if (/No node found at given location/i.test(message)) return 'no_node_at_location';
+  if (
+    /Could not find node with given id|Node is detached|Cannot find context with specified id/i.test(
+      message,
+    )
+  )
+    return 'stale_node_or_context';
+  if (/Session closed|Target closed|WebSocket closed/i.test(message)) return 'target_unavailable';
+  if (/Invalid parameters|Invalid params/i.test(message)) return 'invalid_parameters';
+  if (/Method not found/i.test(message)) return 'unsupported_command';
   if (error?.name === 'ProtocolError') return 'protocol';
   if (error?.name === 'TimeoutError') return 'timeout';
   if (error?.name === 'AssertionError') return 'assertion';
   if (error?.name === 'TypeError') return 'type';
   return 'other';
+}
+
+function pickerErrorName(error) {
+  const name = error?.name;
+  return ['Error', 'ProtocolError', 'TimeoutError', 'AssertionError', 'TypeError'].includes(name)
+    ? name
+    : 'other';
 }
 
 export async function pickerText(session, selector) {
@@ -173,6 +191,9 @@ async function clickPickerButton(page, buttonId) {
       ...diagnostic,
       phase,
       exception_category: pickerErrorCategory(error),
+      exception_name: pickerErrorName(error),
+      exception_code:
+        Number.isSafeInteger(error?.code) && Math.abs(error.code) <= 32768 ? error.code : null,
     };
     return error;
   };

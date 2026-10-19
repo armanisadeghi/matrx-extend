@@ -22,6 +22,11 @@ test('reviewer screenshot clips the actual labeled Capture and counted Links con
       <button role="tab" title="Scrape" aria-selected="true" aria-controls="scrape"></button>
       <div id="scrape" data-state="active">
         <button title="Capture the page exactly as it is right now">Re-capture</button>
+        <div role="tabpanel" data-state="active" id="article-result">
+          <h1>A clear three-stage browser workflow</h1>
+          <p>This stable sample page lets anyone try Matrx Extend without signing in.</p>
+          <table><tr><th>Capture</th><th>Understand</th><th>Use</th></tr></table>
+        </div>
         <button role="tab"><span>Links</span><span>17</span></button>
       </div>`;
     Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 360 });
@@ -36,6 +41,19 @@ test('reviewer screenshot clips the actual labeled Capture and counted Links con
         bottom: 88 + index * 40,
       });
     }
+    for (const [selector, top, bottom] of [
+      ['#article-result', 90, 280],
+      ['#article-result h1', 110, 140],
+      ['#article-result p', 146, 190],
+    ]) {
+      window.document.querySelector(selector).getBoundingClientRect = () => ({
+        left: 20,
+        top,
+        right: 340,
+        bottom,
+      });
+    }
+    const capturedClips = [];
     const panel = {
       send: async (method, options) => {
         if (method === 'Runtime.evaluate')
@@ -47,6 +65,7 @@ test('reviewer screenshot clips the actual labeled Capture and counted Links con
             },
           };
         assert.equal(method, 'Page.captureScreenshot');
+        capturedClips.push(options.clip);
         const png = Buffer.alloc(24);
         png.writeUInt32BE(options.clip.width, 16);
         png.writeUInt32BE(options.clip.height, 20);
@@ -65,6 +84,23 @@ test('reviewer screenshot clips the actual labeled Capture and counted Links con
         file,
       );
     }
+    assert.deepEqual(JSON.parse(JSON.stringify(capturedClips[0])), {
+      x: 20,
+      y: 90,
+      width: 320,
+      height: 190,
+      scale: 1,
+    });
+    window.document.querySelector('#article-result p').textContent = 'No introduction';
+    await assert.rejects(
+      captureReviewerPaneScreenshot({
+        page: { url: () => REVIEWER_DEMO_URL },
+        panel,
+        file: join(directory, 'missing-intro.png'),
+        check: 'capture_article',
+      }),
+      /reviewer_failure_screenshot_target_missing/,
+    );
     window.document.querySelector('#scrape button[role="tab"]').firstChild.textContent = 'PRIVATE';
     await assert.rejects(
       captureReviewerPaneScreenshot({
@@ -137,6 +173,67 @@ test('offscreen reviewer switch reports bounded geometry and never captures an e
     });
   } finally {
     await window.happyDOM.abort();
+  }
+});
+
+test('reviewer screenshot scrolls the real offscreen switch into view before a strict crop', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'reviewer-switch-'));
+  const window = new Window();
+  try {
+    window.document.body.innerHTML = `
+      <button role="tab" title="Settings" aria-selected="true" aria-controls="settings"></button>
+      <div id="settings" data-state="active">
+        <button role="switch" aria-label="Auto-scrape on load" aria-checked="false"></button>
+      </div>`;
+    Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 360 });
+    Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 373 });
+    const target = window.document.querySelector('[role="switch"]');
+    let scrolled = false;
+    target.scrollIntoView = () => {
+      scrolled = true;
+    };
+    target.getBoundingClientRect = () =>
+      scrolled
+        ? { left: 289, top: 176, right: 325, bottom: 196 }
+        : { left: 289, top: 919, right: 325, bottom: 939 };
+    window.document.elementFromPoint = () => target;
+    let clip;
+    const panel = {
+      send: async (method, options) => {
+        if (method === 'Runtime.evaluate')
+          return {
+            result: {
+              value: (await import('node:vm')).runInNewContext(options.expression, {
+                document: window.document,
+              }),
+            },
+          };
+        assert.equal(method, 'Page.captureScreenshot');
+        clip = options.clip;
+        const png = Buffer.alloc(24);
+        png.writeUInt32BE(clip.width, 16);
+        png.writeUInt32BE(clip.height, 20);
+        return { data: png.toString('base64') };
+      },
+    };
+    const file = join(directory, 'switch.png');
+    await captureReviewerPaneScreenshot({
+      page: { url: () => REVIEWER_DEMO_URL },
+      panel,
+      file,
+      check: 'fresh_auto_capture_off',
+    });
+    assert.equal(scrolled, true);
+    assert.deepEqual(JSON.parse(JSON.stringify(clip)), {
+      x: 289,
+      y: 176,
+      width: 36,
+      height: 20,
+      scale: 1,
+    });
+  } finally {
+    await window.happyDOM.abort();
+    await rm(directory, { recursive: true, force: true });
   }
 });
 
@@ -401,6 +498,8 @@ test('reviewer Data check selects a fixture field before requiring guest explana
     doneDiagnostic = {
       phase: 'get_box_model',
       exception_category: 'protocol',
+      exception_name: 'Error',
+      exception_code: -32000,
       hit_equal: null,
       mouse_click_resolved: false,
       box_center_x: 30,
@@ -423,6 +522,14 @@ test('reviewer Data check selects a fixture field before requiring guest explana
     assert.equal(
       protocolDone.checks.data_workflow_picker.failure_diagnostic.picker_exception_category,
       'protocol',
+    );
+    assert.equal(
+      protocolDone.checks.data_workflow_picker.failure_diagnostic.picker_exception_name,
+      'Error',
+    );
+    assert.equal(
+      protocolDone.checks.data_workflow_picker.failure_diagnostic.picker_exception_code,
+      -32000,
     );
     assert.equal(
       protocolDone.checks.data_workflow_picker.failure_diagnostic.picker_box_center_x,

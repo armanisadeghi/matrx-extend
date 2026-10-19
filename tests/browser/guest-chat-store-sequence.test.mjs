@@ -1184,6 +1184,11 @@ test('reviewer screenshot captures only an exact public control and refuses stal
       <button role="tab" title="Scrape" aria-selected="true" aria-controls="scrape"></button>
       <div id="scrape" data-state="active">PRIVATE_STALE_CONTENT_FROM_PREVIOUS_TAB
         <button id="capture-control" title="Capture the page exactly as it is right now"></button>
+        <div id="article-result" role="tabpanel" data-state="active">
+          <h1>A clear three-stage browser workflow</h1>
+          <p>This stable sample page lets anyone try Matrx Extend without signing in.</p>
+          <table><tr><th>Capture</th><th>Understand</th><th>Use</th></tr></table>
+        </div>
       </div>`;
     Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 360 });
     Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 373 });
@@ -1199,6 +1204,18 @@ test('reviewer screenshot captures only an exact public control and refuses stal
       right: 145,
       bottom: 148,
     });
+    for (const [selector, top, bottom] of [
+      ['#article-result', 90, 300],
+      ['#article-result h1', 120, 148],
+      ['#article-result p', 158, 200],
+    ]) {
+      window.document.querySelector(selector).getBoundingClientRect = () => ({
+        left: 20,
+        top,
+        right: 340,
+        bottom,
+      });
+    }
     let capturedClip;
     const panel = {
       send: async (method, options) => {
@@ -1224,14 +1241,14 @@ test('reviewer screenshot captures only an exact public control and refuses stal
       file,
     );
     assert.deepEqual(JSON.parse(JSON.stringify(capturedClip)), {
-      x: 45,
-      y: 120,
-      width: 100,
-      height: 28,
+      x: 20,
+      y: 90,
+      width: 320,
+      height: 210,
       scale: 1,
     });
     assert.equal((await readFile(file)).length, 24);
-    window.document.getElementById('capture-control').remove();
+    window.document.getElementById('article-result').remove();
     await assert.rejects(
       captureReviewerPaneScreenshot({ page, panel, file, check: 'capture_article' }),
       /reviewer_failure_screenshot_target_missing/,
