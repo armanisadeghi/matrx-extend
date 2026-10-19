@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T22:08:14.073064Z",
+  "updated_at": "2026-10-19T22:39:01.349782Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -7884,6 +7884,19 @@
           ],
           "linked_defects": [
             "EXT-D-0087"
+          ],
+          "native_store_observations": [
+            {
+              "run_id": "store205-article-heading-baseline-20261019-01",
+              "mode": "guest",
+              "version": "0.2.205",
+              "build_kind": "actual_store_installed",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Actual Store205 capture title differs from source visible H1 and source H1 absent in observed Article body/AX excerpt. Full markdown/durable screenshot unavailable; current native candidate cause remains unknown.",
+              "new_unique_case_pass": false,
+              "evidence": "docs/stabilization/reports/store205-article-heading-baseline-20261019.json"
+            }
           ]
         },
         {
@@ -44759,6 +44772,19 @@
               "scope": "Publicworkflow cell picker flow failed at Done; initialselection/returnedselector andSavegate remain unverified in thiscandidate.",
               "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
             }
+          ],
+          "native_store_observations": [
+            {
+              "run_id": "store205-data-done-baseline-20261019-01",
+              "mode": "guest",
+              "version": "0.2.205",
+              "build_kind": "actual_store_installed",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Actual Store205 guest two selected fields -> Done preview with guest Sign in to save gate -> Cancel empty baseline. No Save/auth action; network writes and persisted rows unverified; no current-candidate/full-case credit.",
+              "new_unique_case_pass": false,
+              "evidence": "docs/stabilization/reports/store205-data-done-baseline-20261019.json"
+            }
           ]
         },
         {
@@ -50941,6 +50967,19 @@
               "scope": "Two real Chat sends/terminalHTTP200 and toolresume observed; finalpairedpaint failed. Stop/retry/othercomposercontrols untested.",
               "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
             }
+          ],
+          "native_store_observations": [
+            {
+              "run_id": "store205-guest-chat-current-backend-20261019-01",
+              "mode": "guest",
+              "version": "0.2.205",
+              "build_kind": "actual_store_installed",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Actual Store205 guest two readable assistant replies and Send restored on unchanged backend9ef78d4ade91d8f1cb1951710266b094db5744bf. Network terminal events, full composer controls, current candidate and full case unverified.",
+              "new_unique_case_pass": false,
+              "evidence": "docs/stabilization/reports/store205-guest-chat-current-backend-20261019.json"
+            }
           ]
         },
         {
@@ -51629,6 +51668,19 @@
                 "Fresh561candidate acceptance"
               ],
               "evidence": "docs/stabilization/reports/store205-guest-chat-backend2b53-20261019.json"
+            }
+          ],
+          "native_store_observations": [
+            {
+              "run_id": "store205-guest-chat-current-backend-20261019-01",
+              "mode": "guest",
+              "version": "0.2.205",
+              "build_kind": "actual_store_installed",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Actual Store205 guest opening and same-conversation followup visible; no post-reload or network terminal proof in this native observation. Existing frozen-candidate result is unchanged.",
+              "new_unique_case_pass": false,
+              "evidence": "docs/stabilization/reports/store205-guest-chat-current-backend-20261019.json"
             }
           ]
         },

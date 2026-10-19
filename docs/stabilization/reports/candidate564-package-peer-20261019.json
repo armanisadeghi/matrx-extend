@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "task_id": "candidate564-package-peer",
+  "status": "DONE_WITH_CONCERNS",
+  "candidate": {
+    "workflow_run_id": "39335524427",
+    "workflow_source_sha": "569345fb3830536bf20767f064acce0f0ab107d0",
+    "candidate_sha": "a6a99c3cfb4c413bf66012142c85a2ab87387148",
+    "version": "0.2.564",
+    "artifact_id": "12226792173",
+    "reported_github_artifact_digest": "sha256:5727e0416bb5deee7b514ffcba87e091504845e03810b6cae75bf39a99b621e1",
+    "store_zip_path": "/tmp/matrx-store-v0564/.output/matrx-extend-0.2.564-store.zip",
+    "store_zip_sha256": "39fcdd72e36e1cbd4d9970b41ae3d20102789313f84237b23067945bb2b3c57f"
+  },
+  "verified": {
+    "receipt": "Downloaded Store ZIP SHA-256 equals receipt.storeZip.sha256; receipt names sourceSha a6a99c3cfb4c413bf66012142c85a2ab87387148, version 0.2.564, publishState pushed. Downloaded local ZIP also matches receipt.localZip.sha256.",
+    "tag": "Read-only git ls-remote confirms refs/tags/v0.2.564 resolves to candidate commit a6a99c3cfb4c413bf66012142c85a2ab87387148.",
+    "source_and_ci": "Workflow source 569345fb3830536bf20767f064acce0f0ab107d0 and green CI commit 3ecfcd1c79f75bec56be26a942188480069ba5c8 have the same tree e9f8471ff16647e0400cab98b89a0763fd1634e8. Candidate release commit a6a99c3cfb4c413bf66012142c85a2ab87387148 has tree c702b61e0707bd0a5c14620b53227a285ea65e1c and differs from that green tree only in release-generated package version 0.2.564 and generated timestamp fields in the tool docs/catalog. The missing-control test repair is included in the green source tree. This supports green CI for the identical pre-release tree, not a claim that CI ran on candidate commit a6.",
+    "manifest": "Store ZIP manifest is MV3 version 0.2.564, has no development key or popup, and matches all compared approved policy-surface fields. Its action.default_icon entries are intentionally omitted by the risk gate's action projection; the baseline action.default_title matches.",
+    "strict_gates": "Hosted release log reports exit 0 for matrx-packages, chat-package-link, typecheck, lint, unit-tests, schema-routing, migrations, tool-drift, Store package validation, and CWS approval-risk gate. Risk gate reports match to published 0.2.205 with no forbidden runtime-code path."
+  },
+  "limitations": [
+    "The reported GitHub artifact digest 5727e0416bb5deee7b514ffcba87e091504845e03810b6cae75bf39a99b621e1 is not independently recomputed because the downloaded root contains extracted payload files, not the enclosing GitHub artifact archive. Store ZIP bytes were independently hashed and matched to the receipt.",
+    "The workflow log's config attestation outcome is not present in the downloaded release log; treat advisory config attestation as UNVERIFIED.",
+    "No live Store upload/dashboard/publication verification or runtime/live acceptance was performed or claimed.",
+    "No independent rerun of CI or strict gates was performed; gate status is read from the hosted release log."
+  ],
+  "files_touched": [],
+  "evidence": [
+    "/tmp/matrx-store-v0564/.output/release-receipt.json",
+    "/tmp/matrx-store-v0564/tmp/release-logs/latest.log",
+    "/tmp/matrx-store-v0564/.output/matrx-extend-0.2.564-store.zip",
+    "/tmp/matrx-store-v0564/.output/matrx-extend-0.2.564-local.zip",
+    "remote refs/tags/v0.2.564",
+    "git trees at 3ecfcd1c79f75bec56be26a942188480069ba5c8, 569345fb3830536bf20767f064acce0f0ab107d0, and a6a99c3cfb4c413bf66012142c85a2ab87387148",
+    "config/chrome-web-store-approved-baseline.json",
+    "scripts/check-cws-release-risk.mjs",
+    "scripts/check-store-package.mjs"
+  ],
+  "next_action": "Package/source provenance and strict hosted package gates are supported. Keep release-generated metadata outside the identical green-CI tree explicit, verify advisory config-attestation status if needed, and do not infer Store submission or live acceptance from this package peer."
+}

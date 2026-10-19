@@ -1,0 +1,73 @@
+{
+  "task": "Store-installed guest Chat, current deployed backend",
+  "extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.205",
+    "source": "Chrome Web Store (verified for this existing profile in prior same-day UI run)",
+    "panel_url": "chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html",
+    "guest_banner": "You're using Matrx as a guest."
+  },
+  "target": {
+    "url": "https://www.aimatrx.com/matrx-extend-demo",
+    "title": "Matrx Extend Demo Page — AI Matrx",
+    "verified_active_before_send": true
+  },
+  "backend": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "before": {
+      "observed_at": "2026-10-19T22:22:48Z",
+      "http_status": 200,
+      "git_sha": "9ef78d4ade91d8f1cb1951710266b094db5744bf",
+      "built_at": "2026-10-19T21:51:10Z"
+    },
+    "after": {
+      "observed_at": "2026-10-19T22:24:51Z",
+      "http_status": 200,
+      "git_sha": "9ef78d4ade91d8f1cb1951710266b094db5744bf",
+      "built_at": "2026-10-19T21:51:10Z"
+    }
+  },
+  "messages": [
+    {
+      "sequence": 1,
+      "prompt": "What are the three workflow stages described on this page?",
+      "assistant_visible_content": "The page describes three workflow stages: Capture — turn the open page into readable content. The result is article text, links, media, metadata, and schema. Understand — ask questions about what is actually on the page. The result is answers grounded in the current page. Use — extract details needed for the next task. The result is structured rows that can be copied or reused.",
+      "completion": "Native AX showed the assistant response; Working/Stop disappeared and the Send control returned. No visible error.",
+      "network_terminal_event": "Not observed; native AX cannot establish the underlying network completion event."
+    },
+    {
+      "sequence": 2,
+      "prompt": "What does the Understand stage produce?",
+      "same_conversation_followup": true,
+      "assistant_visible_content": "The Understand stage produces answers grounded in the current page. Its purpose is to let you ask questions about what is actually on the page, so the answers come from that page's content.",
+      "completion": "Native AX showed the assistant response; Working/Stop disappeared and the Send control returned. No visible error.",
+      "network_terminal_event": "Not observed; native AX cannot establish the underlying network completion event."
+    }
+  ],
+  "test_model": "No model was selected or changed. This was a plumbing check of the real Store guest flow using its existing guest default; model selection was not part of the tested behavior.",
+  "cleanup": {
+    "pins": "Store and dev extension pins remained on; no pin changes made.",
+    "auth_or_account_changes": "None.",
+    "page_or_extension_settings": "None changed.",
+    "screenshot": "Native CUA screenshot inspected inline; no durable screenshot file was produced by the permitted API."
+  },
+  "resource_guard": {
+    "run_id": "store205-guest-chat-current-backend-20261019-01",
+    "admitted_at": "2026-10-19T22:22:13.450Z",
+    "last_watch_healthy": "2026-10-19T22:24:53.723Z",
+    "stopped_at": "2026-10-19T22:25:06.877Z",
+    "final_status": "valid",
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "journal_private_path": "/tmp/store205-guest-chat-current-backend-20261019-01-resource-journal.jsonl",
+    "journal_sha256": "d035fe97ce51abfaaa1d0c2587c38bac2779961156016333a6c3c319377cce9f"
+  },
+  "limitations": [
+    "Store 0.2.205 guest evidence only; not release-candidate or current-development acceptance.",
+    "Health samples bracket the UI run but do not prove continuous backend identity between samples.",
+    "Completion was observed through native accessibility state, not an underlying network terminal event."
+  ],
+  "owner_adjudication": "Partial actual Store UI observation only: no network terminal events or durable screenshot. Independent evidence review does not certify full Chat/current candidate.",
+  "sanitized_journal": "docs/stabilization/resource-journals/store205-guest-chat-current-backend-20261019-01.sanitized.jsonl"
+}
