@@ -1,0 +1,56 @@
+{
+  "task": "independent exact artifact static review",
+  "candidate": {
+    "version": "0.2.558",
+    "release_run": "39300233770",
+    "source_commit": "7075721579a725074be7ce2de0ea9bdf069f0df4",
+    "source_matches_checkout_head_and_v0_2_558_tag": false,
+    "artifact_id": "12210871757",
+    "artifact_archive_sha256_expected_and_observed": "0b80695c5c9d6e3ab4bf34c50242f9f5dfee49a512cc9e334b6e67d7eb6a745d",
+    "artifact_archive_size_bytes": 82711451,
+    "store_zip": "/tmp/matrx-extend-store558-39300233770/.output/matrx-extend-0.2.558-store.zip",
+    "store_zip_sha256_expected_receipt_and_observed": "afbd3249311d8f645710fad41987b461182dd90386353740b27d6e2af1c73bde",
+    "receipt_sha256": "beadf1bca590c40f2de10139b06bfdba671d784cd62c6f60adc99809172cd04a",
+    "receipt_tree_sha256": "107ae550f0f4a3b28b23dc5b4cfaa77abc51470f5517861ede1e0d8a19d9e97d",
+    "receipt_file_count": 2459,
+    "manifest_version": "0.2.558",
+    "manifest_name": "Matrx Extend",
+    "source_matches_tag": true,
+    "current_checkout_head_after_concurrent_advance": "a01ea8d4907b558cc29e5dc47f74e7db9755f745",
+    "current_checkout_head_title": "docs(stabilization): record candidate 558 admission refusal",
+    "tagged_source_is_ancestor_of_current_checkout_head": true
+  },
+  "A_static_release_contract": {
+    "verdict": "PASS_STATIC_CONTRACT",
+    "checks": {
+      "immutable_github_artifact_digest": "PASS: downloaded artifact 12210871757; archive SHA-256 and size match GitHub artifact metadata",
+      "artifact_integrity": "PASS: outer archive CRC verified; embedded release receipt byte-identical to provided receipt; embedded Store ZIP SHA-256 matches receipt and local ZIP",
+      "source_and_version_provenance": "PASS: receipt source/version match exact v0.2.558 tag; release log records Store 0.2.558 and source commit; release tree hash equals source and destination hashes. Shared checkout advanced afterward to a01ea8d docs-only commit during this review.",
+      "candidate_repairs_in_source_ancestry": "PASS: commits 72810e8f0 (D247), 17a6c00a7 (D248), 4a39c3eb7 and c17fbd390 (D249/D250), and 34483db3d (D250) are ancestors of candidate source",
+      "no_557_artifact_reuse": "PASS: outer archive contains only 0.2.558 Store/local ZIPs; embedded Store ZIP manifest is 0.2.558 and matches receipt hash",
+      "hosted_release_log": "PASS: release completed exit 0; strict log records typecheck, lint, unit tests, schema routing, migrations, tool drift, Store package validation, and Store risk gate all exit 0",
+      "hosted_unit_tests": "PASS: 358 test files passed / 2 skipped; 2507 tests passed / 5 skipped"
+    }
+  },
+  "B_static_artifact_quality": {
+    "verdict": "PASS_STATIC_ARTIFACT_QUALITY",
+    "checks": {
+      "zip_integrity": "PASS: exact Store ZIP CRC check reports no errors",
+      "extracted_exact_zip_risk_gate": "PASS: ran candidate-version blocking scripts/check-cws-release-risk.mjs against extracted exact ZIP and the 0.2.205 approved baseline copied from candidate source",
+      "approved_manifest_surface": "PASS: risk gate confirms exact extracted manifest policy surface matches published 0.2.205 baseline; manifest has no dev key or toolbar popup",
+      "forbidden_runtime_code": "PASS: blocking risk gate reports no forbidden runtime-code path across emitted JavaScript",
+      "gist_remote_script": "PASS: blocking Gist srcDoc detector found none; direct scan found no literal https://gist.github.com/.../*.js in emitted JS/HTML",
+      "prior_pdfobject_rejection_pattern": "PASS: direct scan of 1277 emitted JS/HTML files found no PDFObject CDN URL or pdfobject(.min).js reference",
+      "package_identity": "PASS: exact ZIP contains 2444 entries; extracted manifest is version 0.2.558 and named Matrx Extend",
+      "exact_checker_runtime": "PASS: ran candidate checker/detector from tagged source using TypeScript 6.0.2, matching release log dependency install"
+    }
+  },
+  "native_chrome_web_store_state": "PENDING / not established by this static review; no publisher-dashboard evidence was examined",
+  "limitations": [
+    "This review establishes archive/source integrity and bounded static artifact checks only; it does not establish runtime behavior, guest or signed-in non-admin browser acceptance, Store submission, or native review state.",
+    "GitHub artifact and exact ZIP were downloaded and inspected; no build, browser, Store publisher action, repository write, or credential access was performed.",
+    "The shared checkout advanced during review from the candidate tag to a01ea8d (docs-only admission-refusal record); the immutable 0.2.558 tag, downloaded archive, and receipt remain the reviewed source identity."
+  ],
+  "reviewed_at": "2026-10-19",
+  "reviewer": "independent static artifact peer"
+}
