@@ -12,6 +12,7 @@ import {
   captureReviewerPaneScreenshot,
   isExactStoreReviewerCandidate,
   recordReviewerCheck,
+  runStoreReviewerDemoPath,
   requireExactStoreReviewerReceipt,
   runStoreReviewerPrelude,
   storeReviewerAcceptanceStatus,
@@ -1022,6 +1023,8 @@ test('prepared Store ZIP navigates public demo, records reviewer failure, and re
     },
   });
   assert.equal(failed.status, 'fail');
+  assert.equal(failed.source.failure_target, 'public_demo_source_and_controls');
+  assert.equal(failed.source.screenshot_status, 'public_source_unverified');
   assert.equal(failed.checks.capture_article.status, 'unverified');
   assert.equal(storeReviewerAcceptanceStatus(receipt, failed), 'unverified');
   assert.equal(url, 'http://localhost:3721/');
@@ -1107,19 +1110,81 @@ test('reviewer failure reports its exact step and bounded observation without ra
     failure_code: 'reviewer_playwright_timeout',
     failure_target: 'seo_audit_control',
     safe_dom: { observation_available: false },
-    screenshot_status: 'scoped_capture_unavailable',
+    screenshot_status: 'reviewer_observation_failed',
   });
   assert.doesNotMatch(JSON.stringify(missing), /SECRET-791|private\.example/);
 });
 
-test('reviewer screenshot captures only the selected pane on the exact public demo', async () => {
+test('wrong public source records first failing source target and safe booleans without a PNG', async () => {
+  let captured = 0;
+  const receipt = reviewerStoreReceipt();
+  const proof = await runStoreReviewerDemoPath({
+    page: {
+      url: () => REVIEWER_DEMO_URL,
+      evaluate: async () => ({
+        url: REVIEWER_DEMO_URL,
+        title: 'PRIVATE_TITLE_SECRET-791',
+        articleText: 'PRIVATE_BODY_SECRET-791',
+        stages: ['Capture', 'Understand', 'Use'],
+        linkHref: null,
+        linkText: null,
+        schemaType: null,
+        schemaHeadline: null,
+      }),
+    },
+    panel: {},
+    receipt,
+    runtimeTreeSha256: receipt.treeSha256,
+    screenshot: async () => {
+      captured++;
+      throw new Error('must_not_capture_unverified_source');
+    },
+  });
+  assert.equal(proof.status, 'fail');
+  assert.equal(proof.source.failure_target, 'public_demo_title');
+  assert.equal(proof.source.safe_dom.title_matches, false);
+  assert.equal(proof.source.safe_dom.workflow_matches, true);
+  assert.equal(proof.source.screenshot_status, 'public_source_unverified');
+  assert.equal(captured, 0);
+  assert.doesNotMatch(JSON.stringify(proof), /SECRET-791|PRIVATE_BODY/);
+});
+
+test('reviewer navigation failure reports its first target without page or panel text', async () => {
+  const receipt = reviewerStoreReceipt();
+  let url = 'http://localhost:3721/';
+  const proof = await runStoreReviewerPrelude({
+    page: {
+      url: () => url,
+      goto: async (target) => {
+        if (target === REVIEWER_DEMO_URL)
+          throw new Error('https://private.example.invalid?token=SECRET-791');
+        url = target;
+      },
+    },
+    panel: {},
+    receipt,
+    runtimeTreeSha256: receipt.treeSha256,
+    waitForArticle: async () => {},
+    runDemo: async () => {
+      throw new Error('must_not_run');
+    },
+  });
+  assert.equal(proof.source.failure_target, 'public_demo_navigation');
+  assert.equal(proof.source.safe_dom.public_url_matches, false);
+  assert.equal(proof.source.screenshot_status, 'public_source_unverified');
+  assert.doesNotMatch(JSON.stringify(proof), /SECRET-791|private\.example/);
+});
+
+test('reviewer screenshot captures only an exact public control and refuses stale pane prose', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'reviewer-pane-'));
   const file = join(directory, 'failure.png');
   const window = new Window();
   try {
     window.document.body.innerHTML = `<header>PRIVATE-HEADER</header>
       <button role="tab" title="Scrape" aria-selected="true" aria-controls="scrape"></button>
-      <div id="scrape" data-state="active">Public demo capture</div>`;
+      <div id="scrape" data-state="active">PRIVATE_STALE_CONTENT_FROM_PREVIOUS_TAB
+        <button id="capture-control" title="Capture the page exactly as it is right now"></button>
+      </div>`;
     Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 360 });
     Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 373 });
     window.document.getElementById('scrape').getBoundingClientRect = () => ({
@@ -1127,6 +1192,12 @@ test('reviewer screenshot captures only the selected pane on the exact public de
       top: 80,
       right: 340,
       bottom: 300,
+    });
+    window.document.getElementById('capture-control').getBoundingClientRect = () => ({
+      left: 45,
+      top: 120,
+      right: 145,
+      bottom: 148,
     });
     let capturedClip;
     const panel = {
@@ -1153,17 +1224,22 @@ test('reviewer screenshot captures only the selected pane on the exact public de
       file,
     );
     assert.deepEqual(JSON.parse(JSON.stringify(capturedClip)), {
-      x: 20,
-      y: 80,
-      width: 320,
-      height: 220,
+      x: 45,
+      y: 120,
+      width: 100,
+      height: 28,
       scale: 1,
     });
     assert.equal((await readFile(file)).length, 24);
+    window.document.getElementById('capture-control').remove();
+    await assert.rejects(
+      captureReviewerPaneScreenshot({ page, panel, file, check: 'capture_article' }),
+      /target_unavailable/,
+    );
     window.document.getElementById('scrape').innerHTML = '<input type="text" value="PRIVATE-791">';
     await assert.rejects(
       captureReviewerPaneScreenshot({ page, panel, file, check: 'capture_article' }),
-      /pane_unavailable/,
+      /sensitive_input/,
     );
     await assert.rejects(
       captureReviewerPaneScreenshot({

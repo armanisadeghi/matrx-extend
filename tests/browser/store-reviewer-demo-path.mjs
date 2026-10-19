@@ -39,6 +39,17 @@ function safeReviewerFailureCode(error) {
       'pointer_followup_evaluation_failed',
       'pointer_page_sample_failed',
       'panel_runtime_exception',
+      'reviewer_failure_screenshot_wrong_page',
+      'reviewer_failure_screenshot_unknown_check',
+      'reviewer_failure_screenshot_pane_unavailable',
+      'reviewer_failure_screenshot_target_unavailable',
+      'reviewer_failure_screenshot_sensitive_input',
+      'reviewer_demo_title_missing',
+      'reviewer_demo_workflow_table_changed',
+      'reviewer_demo_article_missing',
+      'reviewer_demo_requires_exact_public_url',
+      'reviewer_demo_public_link_changed',
+      'reviewer_demo_schema_changed',
     ]).has(code)
   )
     return code;
@@ -105,15 +116,15 @@ export async function recordReviewerCheck({ name, run, observeSafe, screenshot }
     }
     try {
       failure.failure_screenshot = await screenshot(`reviewer-${name}-failure.png`, name);
-    } catch {
-      failure.screenshot_status = 'scoped_capture_unavailable';
+    } catch (error) {
+      failure.screenshot_status = safeReviewerFailureCode(error);
     }
     return failure;
   }
 }
 
-// Only the selected public-demo pane is captured. The account header, other
-// tabs, browser chrome, and any page outside the demo are outside this clip.
+// Crop only a known control with fixed public text. A selected pane can retain
+// arbitrary content from a previous tab, so it is never itself screenshot proof.
 export async function captureReviewerPaneScreenshot({ page, panel, file, check }) {
   assert.equal(page.url(), REVIEWER_DEMO_URL, 'reviewer_failure_screenshot_wrong_page');
   const title = REVIEWER_PANES[check];
@@ -124,19 +135,35 @@ export async function captureReviewerPaneScreenshot({ page, panel, file, check }
     const tabs = [...document.querySelectorAll('button[role="tab"]')]
       .filter(tab => tab.title === ${JSON.stringify(title)} && tab.getAttribute('aria-selected') === 'true');
     const pane = tabs.length === 1 ? document.getElementById(tabs[0].getAttribute('aria-controls') ?? '') : null;
-    if (!pane || pane.getAttribute('data-state') !== 'active') return null;
+    if (!pane || pane.getAttribute('data-state') !== 'active') return {reason:'reviewer_failure_screenshot_pane_unavailable'};
     if ([...pane.querySelectorAll('input, textarea, [contenteditable="true"]')].some(control =>
       control.getAttribute('type') === 'password' ||
       (!control.matches('input[type="checkbox"], input[type="radio"], input[type="hidden"]') &&
-        Boolean(control.value || control.textContent?.trim())))) return null;
-    const rect = pane.getBoundingClientRect();
+        Boolean(control.value || control.textContent?.trim())))) return {reason:'reviewer_failure_screenshot_sensitive_input'};
+    const buttons = [...pane.querySelectorAll('button')];
+    const matches = buttons.filter(button => {
+      const label = button.textContent?.trim() ?? '';
+      if (${JSON.stringify(check)} === 'fresh_auto_capture_off')
+        return button.getAttribute('role') === 'switch' && button.getAttribute('aria-label') === 'Auto-scrape on load' && !label;
+      if (${JSON.stringify(check)} === 'capture_article')
+        return (button.getAttribute('title') === 'Capture the page exactly as it is right now' || button.getAttribute('data-matrx-title') === 'Capture the page exactly as it is right now') && !label;
+      if (${JSON.stringify(check)} === 'capture_links') return button.getAttribute('role') === 'tab' && label === 'Links';
+      if (${JSON.stringify(check)} === 'capture_schema') return button.getAttribute('role') === 'tab' && label === 'Schema';
+      if (${JSON.stringify(check)} === 'seo_audit') return label === 'Audit this page' || label === 'Re-audit';
+      if (${JSON.stringify(check)} === 'data_workflow_picker') return label === 'Pick fields on this page' || label === 'Cancel';
+      return false;
+    });
+    if (matches.length !== 1) return {reason:'reviewer_failure_screenshot_target_unavailable'};
+    const rect = matches[0].getBoundingClientRect();
     const x = Math.max(0, Math.ceil(rect.left)), y = Math.max(0, Math.ceil(rect.top));
     const right = Math.min(document.documentElement.clientWidth, Math.floor(rect.right));
     const bottom = Math.min(document.documentElement.clientHeight, Math.floor(rect.bottom));
-    return right > x && bottom > y ? {x, y, width:right-x, height:bottom-y, scale:1} : null;
+    const hit = document.elementFromPoint?.((x+right)/2, (y+bottom)/2);
+    if (hit && hit !== matches[0] && !matches[0].contains(hit)) return {reason:'reviewer_failure_screenshot_target_unavailable'};
+    return right > x && bottom > y ? {x, y, width:right-x, height:bottom-y, scale:1} : {reason:'reviewer_failure_screenshot_target_unavailable'};
   })()`,
   );
-  assert.ok(clip, 'reviewer_failure_screenshot_pane_unavailable');
+  assert.ok(clip && !clip.reason, clip?.reason ?? 'reviewer_failure_screenshot_target_unavailable');
   const result = await panel.send('Page.captureScreenshot', {
     format: 'png',
     clip,
@@ -175,12 +202,21 @@ export function storeReviewerAcceptanceStatus(receipt, reviewerDemo) {
   }
 }
 
-export function unverifiedReviewerDemoPath(failureCode) {
+export function unverifiedReviewerDemoPath(
+  failureCode,
+  failureTarget = 'public_demo_navigation',
+  publicUrlMatches = false,
+) {
   return {
     status: 'fail',
     public_url: REVIEWER_DEMO_URL,
     failure_code: failureCode,
-    source: { status: 'unverified' },
+    source: {
+      status: 'unverified',
+      failure_target: failureTarget,
+      safe_dom: { public_url_matches: publicUrlMatches, source_observation_available: false },
+      screenshot_status: 'public_source_unverified',
+    },
     checks: Object.fromEntries(
       REQUIRED_CHECKS.map((name) => [name, { status: 'unverified', reason: failureCode }]),
     ),
@@ -349,13 +385,20 @@ export async function runStoreReviewerPrelude({
   const ownedUrl = page.url();
   onStage('reviewer_public_demo');
   let proof;
+  let preludeTarget = 'public_demo_navigation';
   try {
     if (page.url() !== REVIEWER_DEMO_URL) await page.goto(REVIEWER_DEMO_URL);
+    preludeTarget = 'public_demo_article_visible';
     await waitForArticle();
+    preludeTarget = 'public_demo_source_and_controls';
     proof = await runDemo({ page, panel, receipt, runtimeTreeSha256, screenshot });
   } catch (error) {
     const failureCode = safeReviewerFailureCode(error);
-    proof = unverifiedReviewerDemoPath(failureCode);
+    proof = unverifiedReviewerDemoPath(
+      failureCode,
+      preludeTarget,
+      page.url() === REVIEWER_DEMO_URL,
+    );
   } finally {
     if (ownedUrl !== REVIEWER_DEMO_URL) {
       onStage('owned_article_restored');
@@ -446,24 +489,58 @@ export async function runStoreReviewerDemoPath({
     });
   };
   if (page.url() !== REVIEWER_DEMO_URL) {
-    proof.source = { status: 'fail', failure_code: 'reviewer_demo_requires_exact_public_url' };
+    proof.source = {
+      status: 'fail',
+      failure_code: 'reviewer_demo_requires_exact_public_url',
+      failure_target: 'public_demo_url',
+      safe_dom: { public_url_matches: false, source_observation_available: false },
+      screenshot_status: 'public_source_unverified',
+    };
   } else {
+    let sourceTarget = 'public_demo_source_read';
+    let sourceSafe = { public_url_matches: true, source_observation_available: false };
     try {
       const source = await demoSource(page);
+      sourceSafe = {
+        public_url_matches: source.url === REVIEWER_DEMO_URL,
+        source_observation_available: true,
+        title_matches: source.title.startsWith('Matrx Extend Demo Page'),
+        workflow_matches:
+          JSON.stringify(source.stages) === JSON.stringify(['Capture', 'Understand', 'Use']),
+        article_marker_present: source.articleText.includes('A clear three-stage browser workflow'),
+        public_link_matches: source.linkHref === 'https://www.aimatrx.com/privacy-policy/extension',
+        article_schema_matches:
+          source.schemaType === 'Article' &&
+          source.schemaHeadline === 'A clear three-stage browser workflow',
+      };
+      sourceTarget = 'public_demo_url';
       assert.equal(source.url, REVIEWER_DEMO_URL);
+      sourceTarget = 'public_demo_title';
       assert.ok(source.title.startsWith('Matrx Extend Demo Page'), 'reviewer_demo_title_missing');
+      sourceTarget = 'public_demo_workflow';
       assert.deepEqual(
         source.stages,
         ['Capture', 'Understand', 'Use'],
         'reviewer_demo_workflow_table_changed',
       );
+      sourceTarget = 'public_demo_article_marker';
       assert.ok(
         source.articleText.includes('A clear three-stage browser workflow'),
         'reviewer_demo_article_missing',
       );
-      assert.equal(source.linkHref, 'https://www.aimatrx.com/privacy-policy/extension');
-      assert.equal(source.schemaType, 'Article');
-      assert.equal(source.schemaHeadline, 'A clear three-stage browser workflow');
+      sourceTarget = 'public_demo_link';
+      assert.equal(
+        source.linkHref,
+        'https://www.aimatrx.com/privacy-policy/extension',
+        'reviewer_demo_public_link_changed',
+      );
+      sourceTarget = 'public_demo_schema';
+      assert.equal(source.schemaType, 'Article', 'reviewer_demo_schema_changed');
+      assert.equal(
+        source.schemaHeadline,
+        'A clear three-stage browser workflow',
+        'reviewer_demo_schema_changed',
+      );
       proof.source = {
         status: 'pass',
         title: source.title,
@@ -474,7 +551,13 @@ export async function runStoreReviewerDemoPath({
         schemaHeadline: source.schemaHeadline,
       };
     } catch (error) {
-      proof.source = { status: 'fail', failure_code: safeReviewerFailureCode(error) };
+      proof.source = {
+        status: 'fail',
+        failure_code: safeReviewerFailureCode(error),
+        failure_target: sourceTarget,
+        safe_dom: sourceSafe,
+        screenshot_status: 'public_source_unverified',
+      };
     }
   }
   if (proof.source.status !== 'pass') {
