@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-19",
+  "workflow": ".github/workflows/ci.yml",
+  "ci_run_id": 39295495373,
+  "attempt": 1,
+  "ci_source_sha": "0afb75965d6206fa067c55aed8d315c474292814",
+  "ci_conclusion": "success",
+  "target_runtime_version": "0.2.557",
+  "target_runtime_source_sha": "0714e280fb1fc562d18da8c7359dd0c2b8b46e46",
+  "target_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "import": {
+    "attempts": 2,
+    "result": "failed",
+    "error": "test_artifact_github_api_failed",
+    "detail": "The guarded importer returned the same GitHub API failure on both allowed attempts. GitHub CLI authentication status was valid. Stopped after the second environment failure; no older artifact was imported."
+  },
+  "promotion": "not attempted: current artifact import did not complete",
+  "chrome": {
+    "last_recorded_loaded_dev_version": "0.2.555",
+    "last_recorded_identity": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "last_recorded_pinned_beside_store": true,
+    "fresh_reload_or_profile_observation": false
+  },
+  "resource_journal": "not created: promotion did not complete, so no fresh enforced browser permit or UI work was started",
+  "open_question": "Retry the guarded import only after the GitHub API environment failure is resolved; then revalidate source/package compatibility, promote, acquire the enforced Chrome browser permit, and verify loaded path, version 0.2.557, development ID, and pin beside the Store extension."
+}
