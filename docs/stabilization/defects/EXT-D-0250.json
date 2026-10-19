@@ -1,0 +1,48 @@
+{
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01"],
+  "auth_mode": "guest acceptance infrastructure; no product behavior credit",
+  "state": "in-fix",
+  "owner": "root / guest_proof_diagnostics_fix",
+  "evidence": [
+    "docs/stabilization/reports/candidate557-acceptance-20261019.json",
+    "docs/stabilization/evidence/store557-guest/run39295188109/guest-chat-failure.png",
+    "docs/stabilization/reports/guest-proof-d249-d250-repair-20261019.json",
+    "docs/stabilization/reports/d249-d250-fresh-peer-20261019.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-19T17:50:48.104265Z",
+      "from": null,
+      "to": "open",
+      "reason": "Actual557 failure evidence retained."
+    },
+    {
+      "at": "2026-10-19T17:50:48.104265Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Owning proof/diagnostic source boundary identified; no product regression inferred."
+    },
+    {
+      "at": "2026-10-19T17:50:48.104265Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Separate source repair and meaningful refusal/observability tests assigned."
+    }
+  ],
+  "id": "EXT-D-0250",
+  "surface": "Public Store reviewer failure evidence",
+  "title": "Reviewer checks discard first failing UI target and capture screenshots only on success",
+  "severity": "S2: repeated failed reviewer checks cannot be reproduced or diagnosed from their own report",
+  "priority": "P1: record bounded stage and safe failure observations before rerunning public surfaces",
+  "reproduction": [
+    "Run public reviewer path in exact557 guest B39295188109.",
+    "Inspect failed Settings/Links/Schema/SEO/Data check receipts.",
+    "Observe generic reviewer_observation_failed without the first awaited target, step, DOM state or failure screenshot; source catches uncoded errors and captures only successful checks."
+  ],
+  "expected": "Each failure retains a predefined stage/target, safe observation booleans and scoped failure image sufficient to locate the first failing UI boundary, without credentials or arbitrary private content.",
+  "actual": "Most reviewer failures contain only a generic code. Article specifically clicked Capture then timed out, but the remaining first failed targets cannot be reconstructed.",
+  "next_action": "Builder addressing one batch of independent findings: direct zero-rect wrapper text must satisfy focused Range as well as semantic extraction; reviewer failure screenshots need controlled public-content provenance and source failures need first-step evidence. Fresh re-review before one new latest candidate build; keep frozen557 drift refusal.",
+  "candidate_fix_sha": "0ff1411e6",
+  "reviewer": "d249_d250_fresh_peer: A FAIL / B FAIL; source repair returned for concrete adversarial gaps, no new native dispatch authorized."
+}

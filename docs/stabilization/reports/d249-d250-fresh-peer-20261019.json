@@ -1,0 +1,45 @@
+{
+  "role": "fresh_independent_source_peer",
+  "status": "FAIL_BLOCK_NEW_B_BUILD",
+  "scope": {
+    "commits": [
+      "3d2606c3febf6f1a81ddc9416ede94710de95f0f",
+      "0ff1411e6e37ff0fbc16eebc3504cc269dec8533"
+    ],
+    "builder_report": "docs/stabilization/reports/guest-proof-d249-d250-repair-20261019.json",
+    "live_native_or_browser_retest": "not performed; source peer only",
+    "frozen_557": "HOSTED_CHAT_RUNTIME_SOURCE_DRIFT remains binding. No allowlist or guard exception is supported. Frozen run 39295188109 cannot prove these source changes."
+  },
+  "tests_run": {
+    "command": "node --test tests/browser/guest-answer-screenshot.test.mjs tests/browser/guest-chat-store-sequence.test.mjs",
+    "result": "44 passed (7 D249, 37 D250/sequence); this does not resolve adversarial findings"
+  },
+  "d249": {
+    "verdict_A_behavior": "FAIL",
+    "verdict_B_quality": "FAIL",
+    "finding": "The semantic walk includes painted direct text under a zero-rectangle display:contents wrapper, but the focused Range walk still filters on visible(node.parentElement), which requires a nonzero parent rectangle. The gate rejects that painted answer despite codeInAnswerText=true.",
+    "location": "tests/browser/guest-answer-screenshot.mjs:122",
+    "isolated_reproduction": "In an in-memory happy-dom answer with `Capture, Understand, Use <span style=display:contents>CODE-791</span>` and a zero rectangle only on the span, current source returned eligible=false, codeInAnswerText=true, focusedTextFound=false, line=null. No repository files were changed.",
+    "test_gap": "The new fixture nests CODE-791 inside a child <code> whose mocked rectangle is nonzero, so it misses direct text in the layout-only wrapper. The 7 green tests are insufficient to claim the class fixed.",
+    "proof_limit": "No newly built exact Store artifact or live native screenshot was reviewed. Existing 557B screenshot paints nonce and beginning of stages but composer occludes lower stages, so complete-answer proof is still pending."
+  },
+  "d250": {
+    "verdict_A_behavior": "FAIL",
+    "verdict_B_quality": "FAIL",
+    "findings": [
+      {
+        "severity": "Critical",
+        "location": "tests/browser/store-reviewer-demo-path.mjs:120-140",
+        "issue": "Screenshot gate verifies public page URL and active pane, but does not establish that active pane contents belong to the public demo. An in-memory public-URL page with an active Scrape pane holding PRIVATE_STALE_CONTENT_FROM_PREVIOUS_TAB and no input triggered Page.captureScreenshot and wrote the PNG. This violates the public-only failure evidence bound."
+      },
+      {
+        "severity": "Important",
+        "location": "tests/browser/store-reviewer-demo-path.mjs:448-485",
+        "issue": "Public demo source failures bypass recordReviewerCheck. A wrong title returned source={status:fail,failure_code:reviewer_observation_failed}, while all checks became unverified with no first source target, safe observation, or failure screenshot. Navigation/prelude failures also bypass step capture."
+      }
+    ],
+    "positive": "Six named control checks use recordReviewerCheck, which retains a bounded target, code, and attempted pane screenshot. The undefined success screenshot callback is wired in guest-chat-store-acceptance.mjs. The existing 37 tests pass.",
+    "proof_limit": "No native public demo run or new exact Store artifact was reviewed. The isolated PNG test used a stub CDP response to establish that the screenshot command is attempted, not to inspect real pixels."
+  },
+  "decision": "Return both findings as one repair batch to builder; require fresh independent source reverify before a new latest candidate build and exact-artifact native B. No D249/D250 closure or 557B acceptance credit."
+}

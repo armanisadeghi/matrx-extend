@@ -1,0 +1,42 @@
+{
+  "reviewer": "d248_round2_peer",
+  "date": "2026-10-19",
+  "source_commit": "b20df1b315982732d1f7975e0f9532decec5fad6",
+  "scope": "EXT-D-0248 second source repair; no native browser run or dispatch",
+  "verdict_A": {
+    "status": "PASS_SOURCE_CONTRACT_NATIVE_PENDING",
+    "basis": [
+      "member foreground now activates the intended public demo before reopening the exact panel and passes the demo page as the trusted opener trigger",
+      "installed opener uses the canonical FRONTEND_RPC openPanel button and Playwright locator click on that demo document; production bridge derives sender.tab.windowId and invokes chrome.sidePanel.open before first await",
+      "the default root fixture opener path remains for all other reopenPanel callers",
+      "both member Chat sends still use the active current-window tab URL plus unique document marker guard before arming transport or clicking Send",
+      "the member web tab stays open through the acceptance flow and closes in its existing finally cleanup"
+    ],
+    "limitation": "The prior exact Store 0.2.557 run 39295371484 ended before any Chat send with the exact panel target present but hidden. This source review and mocked tests do not establish actual native panel visibility, assigned tab at send, or product answer. A fresh guarded native non-admin run is required."
+  },
+  "verdict_B": {
+    "status": "FAIL_BLOCKING_ADMISSION",
+    "finding": {
+      "severity": "Important",
+      "location": "scripts/hosted-release-member-admission.mjs:207-249",
+      "problem": "The existing guarded release-member source admission rejects every one of the six b20df1b31 harness and test paths with release_member_product_changed. A reviewed harness repair cannot be adopted by that dispatch path despite immutable 0.2.557 Store artifact bytes.",
+      "proof": "Direct invocation of requireReleaseMemberSource(true,[path]) refused each of the six paths. Existing 31 admission tests pass but lack this commit; pass does not mean the candidate is admitted.",
+      "requested_repair": "Admit only the exact reviewed b20df1b31 commit and six path/blob tuples after an immutable blob check; keep product/runtime/package, altered blobs, unknown harness paths and pending dirty source refused. Add a red/green admission test for exact acceptance and mutated blob rejection.",
+      "reviewed_blobs": {
+        "tests/browser/member-foreground-diagnostic.mjs": "880160102a217c8b9570642683e9e75a678ddaed",
+        "tests/browser/native-sidepanel-qa-harness.mjs": "a5229d84d28570b3427f2094e9107162b0a9f4e1",
+        "tests/browser/owned-panel-opener.mjs": "5f01ad97b5c51c3cca22a4eadd03d1d11a5f0972",
+        "tests/browser/owned-panel-opener.test.mjs": "16e2314544656591769a5fb37395b984ce08acb6",
+        "tests/browser/panel-visible-reopen-repair.test.mjs": "54850ccfb8e283978a1a58e1847f13d40adb3d27",
+        "tests/browser/reviewer-chat-foreground-restoration.test.mjs": "9ac43fdee7f0c7ca9d5075385e8b976005be07c0"
+      }
+    }
+  },
+  "tests": [
+    "21 focused tests passed on current source, including dynamic owner/active-tab visibility and wrong-target-before-AI cases",
+    "Independent scratch-copy red against 17a6c00a7 native harness: dynamic owner/active-tab test failed root !== demo",
+    "Independent scratch-copy wrong-target mutant (assigned URL/marker comparison disabled): member-chat-target test failed Missing expected rejection",
+    "31 existing release-member admission tests passed; direct current-path admission probes all refused"
+  ],
+  "follow_up": "Repair the narrow admission gate, obtain fresh independent review of that change, then run one guarded exact Store .557 native member acceptance. If native visibility fails again, escalate the environment/ownership failure rather than repeating opener order changes."
+}
