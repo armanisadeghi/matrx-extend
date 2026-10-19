@@ -1,0 +1,48 @@
+{
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01"],
+  "auth_mode": "guest acceptance infrastructure; no product behavior credit",
+  "state": "in-fix",
+  "owner": "root / guest_proof_diagnostics_fix",
+  "evidence": [
+    "docs/stabilization/reports/candidate557-acceptance-20261019.json",
+    "docs/stabilization/evidence/store557-guest/run39295188109/guest-chat-failure.png",
+    "docs/stabilization/reports/guest-proof-d249-d250-repair-20261019.json",
+    "docs/stabilization/reports/d249-d250-fresh-peer-20261019.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-19T17:50:48.104265Z",
+      "from": null,
+      "to": "open",
+      "reason": "Actual557 failure evidence retained."
+    },
+    {
+      "at": "2026-10-19T17:50:48.104265Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Owning proof/diagnostic source boundary identified; no product regression inferred."
+    },
+    {
+      "at": "2026-10-19T17:50:48.104265Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Separate source repair and meaningful refusal/observability tests assigned."
+    }
+  ],
+  "id": "EXT-D-0249",
+  "surface": "Guest visible-answer screenshot proof",
+  "title": "Screenshot clone pruning erases visible assistant text inside zero-rectangle structural wrappers",
+  "severity": "S2: falsely blocks guest release acceptance despite actual nonce painted in native frame",
+  "priority": "P1: repair semantic text proof while retaining hidden/wrong-source and occlusion refusals",
+  "reproduction": [
+    "Run exact557 guest B39295188109 through grounded terminal opening reply.",
+    "Compare live focused text Range and actual360x373 native screenshot with screenshot verifier cloned assistant text.",
+    "Observe visibly painted opening code while code_in_answer_text is false; source clone pruning removes descendants based on zero-rectangle wrapper visibility."
+  ],
+  "expected": "Visible semantic assistant text survives structural display:contents/zero-rectangle wrappers; hidden text, tools, user text and composer cannot satisfy screenshot proof.",
+  "actual": "Live DOM and screenshot show the opening code, but pruned clone loses it. Complete response visibility remains separately limited by the small viewport; no follow-up pass is established.",
+  "next_action": "Builder addressing one batch of independent findings: direct zero-rect wrapper text must satisfy focused Range as well as semantic extraction; reviewer failure screenshots need controlled public-content provenance and source failures need first-step evidence. Fresh re-review before one new latest candidate build; keep frozen557 drift refusal.",
+  "candidate_fix_sha": "3d2606c3f",
+  "reviewer": "d249_d250_fresh_peer: A FAIL / B FAIL; source repair returned for concrete adversarial gaps, no new native dispatch authorized."
+}
