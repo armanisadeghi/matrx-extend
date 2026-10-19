@@ -212,6 +212,22 @@ export function normalizeSemanticMarkup(
     el.replaceWith(replacement);
   }
 
+  // Defuddle removes most <header> nodes as page chrome. An article's own
+  // heading and introduction often live in a direct child <header>, so keep
+  // that content by making only heading-bearing article headers neutral on
+  // the extraction clone. Site headers remain eligible for Defuddle pruning.
+  for (const header of Array.from(
+    doc.querySelectorAll('article > header, [role="article"] > header'),
+  )) {
+    if (!header.querySelector('h1, h2, h3, h4, h5, h6')) continue;
+    const replacement = doc.createElement('div');
+    for (const attr of Array.from(header.attributes)) {
+      replacement.setAttribute(attr.name, attr.value);
+    }
+    while (header.firstChild) replacement.appendChild(header.firstChild);
+    header.replaceWith(replacement);
+  }
+
   // 2. Flatten highlighted code blocks to clean <pre><code>text</code></pre>.
   //    Critically, replace the *whole wrapper* (e.g. Mintlify's
   //    `.code-block.not-prose` with copy/feedback button chrome), not just

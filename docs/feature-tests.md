@@ -915,6 +915,13 @@ Every entry follows this shape:
   7. On a recoverable error, expand **Diagnostics (admin)** as admin and inspect the structured error fields. Repeat the same error as guest and member; confirm neither role sees the Diagnostics disclosure or payload.
 - **Expected:** Article Cancel leaves its prior text intact; Apply changes the in-memory article and Save alone persists it for signed-in roles. Scroll sync follows only while enabled. Copy choices represent the current capture and admin-only choices are hidden from guest/member. Add/remove/open/copy actions update or act on the selected resource, and blank required URLs do not add entries. Recoverable errors expose the classified recovery actions; restricted-page errors offer dismissal only. Structured error details are visible to admin only. These are test procedures, not runtime verdicts; record each role/build result in the stabilization inventory only after observing it.
 
+### Scrape — article headings survive extraction
+
+- **What it does:** Keeps a heading and introduction inside an article's own header in Article capture while excluding the site's navigation header.
+- **Where to test:** Open <https://www.aimatrx.com/matrx-extend-demo> in Chrome with Matrx Extend installed, then Side panel → Scrape → Article.
+- **Steps:** Confirm the public page shows “A clear three-stage browser workflow” as its article heading. Click **Capture**, then inspect the Article result and its copied Markdown. Check the Links and Schema result tabs from the same capture.
+- **Expected:** The Article result and copied Markdown contain that heading, the introduction, and Capture, Understand, and Use in order. Site navigation does not appear in the Article body. Links and Schema remain populated. Repeat after a full extension reload.
+
 ### Scrape — Save lands a Source (never lost) and Saved captures reads Sources
 
 - **Race/storage regression:** Delay an earlier refused Save/Retry, then complete a newer Save or discard for the same page. Releasing the older response must not restore its retry card; a fresh explicit Save may create one again. Switch workspaces before dispatch: the request must remain unsent and say the account or workspace changed, with a remedy to choose the intended workspace and retry. An actual server 403 must still say the server refused the request. A switch after dispatch keeps that request bound to its original workspace. If device storage cannot reserve save order, Save must say the page was not sent or saved on the device, keep the editable capture open, and allow a successful retry after storage recovers.
