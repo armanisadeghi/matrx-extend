@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0248",
+  "status": "source_repaired_native_acceptance_pending",
+  "scope": "Non-admin Store reviewer acceptance harness target sequencing; no product answer verdict",
+  "source_commit": "17a6c00a7",
+  "cause": "The member foreground helper closed the authenticated demo tab and activated the unrelated research-brief fixture before Chat. The native panel opener can also activate that fixture while reopening a hidden panel.",
+  "changed": [
+    "The foreground helper keeps the demo tab open and activates it after the native panel reopen step.",
+    "Both member Chat sends now check the active current-window tab URL and a unique marker on the intended demo document before the send callback runs.",
+    "A target mismatch records reviewer_chat_target_unverified and prevents a model request; the existing final cleanup still closes the web tab."
+  ],
+  "verification": {
+    "original_red": "Before the source fix, node --test --test-name-pattern='member foreground retains' tests/browser/reviewer-chat-foreground-restoration.test.mjs failed because the old helper closed the demo and foregrounded root before panel reopen.",
+    "fixed_green": "node --test tests/browser/member-chat-target.test.mjs tests/browser/reviewer-chat-foreground-restoration.test.mjs tests/browser/member-chat-visible-proof.test.mjs: 13 passed, 0 failed.",
+    "mutation": "A local bypass mutant that disabled both target comparisons failed member-chat-target.test.mjs with Missing expected rejection; it would have sent on the research brief.",
+    "static_checks": "Biome check on six changed source/test files and node --check on the reviewer runner passed."
+  },
+  "sibling_census": {
+    "foreground_helper_callers": "One runner call in reviewer-chat-store-acceptance.mjs, plus its direct unit tests; no other production acceptance caller uses restoreMemberForeground or restoreMemberForegroundWithReport.",
+    "native_opener": "activateOwnedSidePanel in native-sidepanel-qa-harness.mjs can foreground root to use its trusted reopen button; demo activation now follows that operation.",
+    "chat_sends": "Both opening and same-conversation follow-up sends use the same target guard."
+  },
+  "files": [
+    "tests/browser/member-foreground-diagnostic.mjs",
+    "tests/browser/member-chat-visible-proof.mjs",
+    "tests/browser/member-chat-target.mjs",
+    "tests/browser/member-chat-target.test.mjs",
+    "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "tests/browser/reviewer-chat-foreground-restoration.test.mjs"
+  ],
+  "open_questions": [
+    "A fresh native non-admin acceptance run must confirm the demo remains the assigned target through both sends and evaluate the actual answer. The source repair and local tests cannot establish a product answer verdict."
+  ],
+  "native_acceptance": "pending_fresh_peer_run"
+}
