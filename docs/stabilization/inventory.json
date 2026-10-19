@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T17:06:35.800804Z",
+  "updated_at": "2026-10-19T17:16:55.216252Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -30999,6 +30999,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "defect_ids": [
+            "EXT-D-0247"
           ]
         },
         {
@@ -31058,7 +31061,10 @@
               "status": "unverified"
             }
           },
-          "verification_status": "partial-bounded-guest-synthetic-error-retry; live-backend, reload, member and admin unverified"
+          "verification_status": "partial-bounded-guest-synthetic-error-retry; live-backend, reload, member and admin unverified",
+          "defect_ids": [
+            "EXT-D-0247"
+          ]
         },
         {
           "id": "EXT-F-1008-T07",
@@ -33046,7 +33052,10 @@
               "status": "unverified"
             }
           },
-          "verification_status": "source-confirmed-retry-control; runtime behavior unverified for guest, member and admin"
+          "verification_status": "source-confirmed-retry-control; runtime behavior unverified for guest, member and admin",
+          "defect_ids": [
+            "EXT-D-0247"
+          ]
         }
       ],
       "cells": {
@@ -33057,7 +33066,8 @@
             "EXT-D-0174",
             "EXT-D-0176",
             "EXT-D-0198",
-            "EXT-D-0199"
+            "EXT-D-0199",
+            "EXT-D-0247"
           ],
           "run_ids": [
             "seo-guest-001",
@@ -51426,7 +51436,8 @@
             "EXT-D-0233",
             "EXT-D-0235",
             "EXT-D-0243",
-            "EXT-D-0244"
+            "EXT-D-0244",
+            "EXT-D-0247"
           ],
           "run_ids": [
             "guest-grounding-peer-native-20261001-001",

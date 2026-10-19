@@ -1,0 +1,41 @@
+{
+  "id": "EXT-D-0247",
+  "feature_id": "EXT-F-1008",
+  "related_feature_ids": ["EXT-F-2013"],
+  "surface": "Guest SEO saved history and global notice over Chat",
+  "auth_mode": "guest",
+  "title": "Guest SEO saved-history request produces persistent workspace-denied notice during public reviewer flow",
+  "severity": "S2: public guest flow shows a workspace-denied global error; exact556 first reply is not visible in the small sidepanel acceptance frame",
+  "priority": "P1: repair proven guest access boundary and independently retest public reviewer/Chat before shipping",
+  "state": "triaged",
+  "owner": "root / guest_saved_audits_diagnosis",
+  "reproduction": [
+    "Load exact0.2.556 Store ZIP from guarded release39289278009 artifact12205386292 in the isolated fresh guest profile, following recorded key adaptation and build receipt.",
+    "Run public reviewer prelude against https://aimatrx.com/matrx-extend-demo as exact guest B39290491457, including the SEO surface, then return to Chat and send the controlled first question.",
+    "Inspect the actual360x373 native sidepanel: Saved audits unavailable reports a workspace-denied database read and remains visible over the Chat frame. The assistant reply is present in live DOM but not visibly painted in the captured frame."
+  ],
+  "expected": "Guest public SEO auditing and Chat remain usable without signed-in workspace-history access errors. Signed-in database failures remain explicit. Native screenshots must visibly show the actual reply before accepting it.",
+  "actual": "The saved SEO audit history fetch issues a guest workspace-scoped database request and raises a global saved-audits error on refusal. The first reply screenshot lacks a visible answer. The exact causal contribution of the notice versus layout, selection, scroll and clone extraction is not yet established.",
+  "evidence": [
+    "docs/stabilization/reports/store556-acceptance-20261019.json",
+    "docs/stabilization/evidence/store556-guest/run39290491457/guest-chat-failure.png",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39290491457"
+  ],
+  "build_version": "0.2.556 Store ZIP adapted only for hosted identity",
+  "server_sha": "b8092f234958c4f0b1a730576e218252a5735498",
+  "transition_history": [
+    {
+      "at": "2026-10-19T17:16:55.216252Z",
+      "from": null,
+      "to": "open",
+      "reason": "Actual native failure screenshot and source trace retained; no oracle relaxation."
+    },
+    {
+      "at": "2026-10-19T17:16:55.216252Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Builder located unconditional saved SEO history read and global failure notice on guest refusal; exact visual mechanism remains under diagnosis."
+    }
+  ],
+  "next_action": "Confirm guest-history applicability, repair the owning read boundary while preserving authenticated error reporting and public audit capability; add meaningful RED/GREEN and surrounding cases, fresh independent review, then exact new-artifact guest/native retest. No submission until required guest/nonadmin/reviewer gates pass."
+}
