@@ -420,7 +420,19 @@
           ],
           "linked_defects": [
             "EXT-D-0256"
-          ]
+          ],
+          "latest_candidate_checkpoint": {
+            "version": "0.2.562",
+            "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
+            "release_run_id": 39328192575,
+            "artifact_id": 12224145362,
+            "store_zip_sha256": "c7f32a9fc07b5bdb490752d16f3e2787588a4a25aac804712851202ad6041cfb",
+            "package_review": "Independent PASS_WITH_LIMITATIONS; optionalconfigattestationnotattested",
+            "member_run_id": 39329142176,
+            "member_status": "in_progress; no product credit",
+            "guest_status": "not_dispatched; rerun normaladmissionaftercanonicaldocs update",
+            "evidence": "docs/stabilization/reports/candidate562-package-peer-20261019.json"
+          }
         },
         {
           "id": "EXT-F-0001-T07",
