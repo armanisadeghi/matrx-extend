@@ -7,11 +7,12 @@
   "sourceEligibility": {
     "dispatchSourceSha": "479329cdf94bac963262729a09af17a534e4586e",
     "candidateTagSourceSha": "d442d418a8144a024b10c171946ba65d3623b82b",
-    "originMainAtDispatch": "d442d418a8144a024b10c171946ba65d3623b",
-    "workflowSha": "d442d418a8144a024b10c171946ba65d3623b",
+    "originMainAtDispatch": "d442d418a8144a024b10c171946ba65d3623b82b",
+    "workflowSha": "d442d418a8144a024b10c171946ba65d3623b82b",
     "candidateContainedReviewedChanges": [],
     "normalGuardedPlansPassed": true,
-    "unpublishedAndUnsubmitted": true
+    "unpublishedAndUnsubmitted": true,
+    "metadataCorrection": "Corrected two 36-character prefixes against native run 39303623065 and 39303737912 full headSha; release dispatch head remains separately recorded as479329cdf94bac963262729a09af17a534e4586e."
   },
   "candidate": {
     "version": "0.2.559",
