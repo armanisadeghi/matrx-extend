@@ -1,6 +1,7 @@
 const VISIBILITY_PHASES = new Set([
   'before_reopen',
   'after_root_foreground',
+  'after_demo_foreground',
   'after_trusted_open',
   'after_target_activation',
 ]);
@@ -109,8 +110,8 @@ export async function restoreMemberForeground({
       throw error;
     }
   };
-  await step('panel_reopen', () => native.reopenPanel());
   await step('demo_foreground', () => web.bringToFront());
+  await step('panel_reopen', () => native.reopenPanel({ page: web }));
   await step('visibility_wait', () =>
     waitFor(
       'reviewer_native_panel_foreground',

@@ -5,8 +5,36 @@ import { Window } from 'happy-dom';
 import { register } from 'tsx/esm/api';
 register();
 import { serveOwnedFixture } from './owned-fixture-server.mjs';
-import { panelOpenerHtml } from './owned-panel-opener.mjs';
+import { installOwnedPanelOpener, panelOpenerHtml } from './owned-panel-opener.mjs';
 const extensionId = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
+test('installed demo opener sends from the demo document and preserves its article', async () => {
+  const window = new Window({ url: 'https://www.aimatrx.com/matrx-extend-demo' });
+  window.document.body.innerHTML = '<article><h1>Capture Understand Use</h1></article>';
+  let calls = 0;
+  window.chrome = {
+    runtime: {
+      sendMessage(id, message, reply) {
+        assert.equal(id, extensionId);
+        assert.equal(message.action, 'openPanel');
+        assert.equal(window.location.pathname, '/matrx-extend-demo');
+        calls++;
+        reply({ ok: true, result: { opened: true } });
+      },
+    },
+  };
+  const page = {
+    evaluate: async (expression) => window.eval(expression),
+    locator: (selector) => selector,
+  };
+  const opener = await installOwnedPanelOpener(page, extensionId);
+  assert.equal(opener.button, '#native-owned-panel-opener #open-panel');
+  const root = window.document.getElementById('native-owned-panel-opener').shadowRoot;
+  root.querySelector('#open-panel').click();
+  assert.equal(calls, 1);
+  assert.equal(JSON.parse(root.querySelector('#result').textContent).result.opened, true);
+  assert.equal(window.document.querySelector('article h1').textContent, 'Capture Understand Use');
+  window.happyDOM.abort();
+});
 test('owned fixture navigation restores opener without changing assigned page or extraction content', async () => {
   const server = createServer((req, res) =>
     serveOwnedFixture(req, res, {

@@ -37,7 +37,7 @@ import { runOwnedPanelReopen } from './native-panel-reopen-boundary.mjs';
 import { reloadOperationBoundary } from './native-reload-operation-boundary.mjs';
 import { awaitNativeResourceHealth, runNativeResourceAction } from './native-resource-boundary.mjs';
 import { serveOwnedFixture } from './owned-fixture-server.mjs';
-import { panelOpenerHtml } from './owned-panel-opener.mjs';
+import { installOwnedPanelOpener, panelOpenerHtml } from './owned-panel-opener.mjs';
 import { startReloadLifetimeDiagnostic } from './reload-lifetime-diagnostic.mjs';
 import { prepareReloadSenderDocument } from './reload-sender-document-diagnostic.mjs';
 import { maybeStartScrapeReloadOpenDiagnostic } from './scrape-reload-open-diagnostic.mjs';
@@ -1201,24 +1201,31 @@ async function activateOwnedSidePanel({
   panel,
   panelTargetId,
   page,
+  triggerPage = page,
+  extensionId,
   observe = async () => {},
 }) {
   // Target activation can focus a hidden SIDE_PANEL without opening it. Use
   // the same trusted input / FRONTEND_RPC route as the initial native open.
   await observe('before_reopen');
+  if (triggerPage !== page) await triggerPage.bringToFront();
   // Preserve the exact owned panel when authentication left it visible. The
   // captured D133 run first became hidden during a redundant trusted open.
   const visibility = await observePanelVisibility(panel);
   if (!visibility.measured || !['visible', 'hidden'].includes(visibility.visibility))
     throw new Error('native_sidepanel_visibility_unavailable_before_reopen');
   if (visibility.visibility === 'visible') return;
-  await page.bringToFront();
-  await observe('after_root_foreground');
-  const result = page.locator('#result');
+  if (triggerPage === page) await page.bringToFront();
+  await observe(triggerPage === page ? 'after_root_foreground' : 'after_demo_foreground');
+  const opener =
+    triggerPage === page
+      ? { button: page.locator('#open-panel'), result: page.locator('#result') }
+      : await installOwnedPanelOpener(triggerPage, extensionId);
+  const { result } = opener;
   await result.evaluate((element) => {
     element.textContent = '';
   });
-  await page.locator('#open-panel').click();
+  await opener.button.click();
   await result.filter({ hasText: /\S/ }).waitFor({ state: 'visible' });
   const reply = JSON.parse((await result.textContent()) || '{}');
   if (reply?.ok !== true || reply?.result?.opened !== true)
@@ -1903,12 +1910,14 @@ export async function runNativeSidepanelQa({
             browserSession: cdp,
             activatePanel: () =>
               cdp.send('Target.activateTarget', { targetId: panelTarget.targetId }),
-            reopenPanel: () =>
+            reopenPanel: ({ page: triggerPage } = {}) =>
               activateOwnedSidePanel({
                 cdp,
                 panel,
                 panelTargetId: panelTarget.targetId,
                 page,
+                ...(triggerPage && { triggerPage }),
+                extensionId: expectedExtensionId,
                 observe: (phase) => observeVisibility(phase, panel),
               }),
             cycleOwnedPanel: async (currentPanel) => {

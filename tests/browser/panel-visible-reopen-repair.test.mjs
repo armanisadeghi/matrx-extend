@@ -11,11 +11,76 @@ const scrape = await readFile(
   new URL('./scrape-guest-native-acceptance.mjs', import.meta.url),
   'utf8',
 );
-function helper(text) {
+function helper(text, installOwnedPanelOpener = () => assert.fail('unexpected injected opener')) {
   const start = text.indexOf('async function observePanelVisibility(');
   const end = text.indexOf('async function sidePanelContexts(', start);
-  return new Function(`${text.slice(start, end)}; return activateOwnedSidePanel;`)();
+  return new Function(
+    'installOwnedPanelOpener',
+    `${text.slice(start, end)}; return activateOwnedSidePanel;`,
+  )(installOwnedPanelOpener);
 }
+
+test('member reopen binds the panel to the active demo tab before visibility is accepted', async () => {
+  let activeTab = 'root';
+  let panelOwner = 'root';
+  let openerClicks = 0;
+  const demo = {
+    bringToFront: async () => {
+      activeTab = 'demo';
+    },
+  };
+  const root = {
+    bringToFront: async () => {
+      activeTab = 'root';
+    },
+  };
+  const panel = {
+    send: async () => ({
+      result: {
+        value: {
+          visibility: panelOwner === activeTab ? 'visible' : 'hidden',
+        },
+      },
+    }),
+  };
+  const reopen = helper(source, async (target, extensionId) => {
+    assert.equal(target, demo);
+    assert.equal(extensionId, 'owned-extension');
+    let reply = '';
+    const result = {
+      evaluate: async (mutate) => {
+        const element = { textContent: reply };
+        mutate(element);
+        reply = element.textContent;
+      },
+      filter: () => result,
+      waitFor: async () => assert.ok(reply),
+      textContent: async () => reply,
+    };
+    return {
+      result,
+      button: {
+        click: async () => {
+          openerClicks++;
+          panelOwner = activeTab;
+          reply = JSON.stringify({ ok: true, result: { opened: true } });
+        },
+      },
+    };
+  });
+  await reopen({
+    panel,
+    page: root,
+    triggerPage: demo,
+    extensionId: 'owned-extension',
+    panelTargetId: 'owned-panel',
+    cdp: { send: async (_method, { targetId }) => assert.equal(targetId, 'owned-panel') },
+  });
+  assert.equal(activeTab, 'demo');
+  assert.equal(panelOwner, 'demo');
+  assert.equal(openerClicks, 1);
+  assert.equal((await panel.send()).result.value.visibility, 'visible');
+});
 
 // Captured member run: original exact panel remained visible after auth/org and
 // root foreground; a redundant trusted open was its first hidden transition.

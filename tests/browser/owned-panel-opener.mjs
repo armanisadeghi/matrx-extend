@@ -64,3 +64,22 @@ export function panelOpenerHtml(extensionId, shadow = false) {
     document.currentScript?.remove();
   }</script>`;
 }
+
+/** Install the same trusted opener on an owned page whose source we cannot modify. */
+export async function installOwnedPanelOpener(page, extensionId) {
+  await page.evaluate(`(() => {
+    let host = document.getElementById('native-owned-panel-opener');
+    if (host) return;
+    host = document.createElement('div');
+    host.id = 'native-owned-panel-opener';
+    host.style.cssText = 'position:fixed;bottom:0;right:0;z-index:2147483647';
+    document.body.append(host);
+    const root = host.attachShadow({ mode: 'open' });
+    root.innerHTML = ${JSON.stringify(controls)};
+    (${wirePanelOpener.toString()})(${JSON.stringify(extensionId)}, root);
+  })()`);
+  return {
+    button: page.locator('#native-owned-panel-opener #open-panel'),
+    result: page.locator('#native-owned-panel-opener #result'),
+  };
+}
