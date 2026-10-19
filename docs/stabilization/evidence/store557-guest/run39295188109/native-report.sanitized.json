@@ -1,0 +1,253 @@
+{
+  "status": "unverified",
+  "build": {
+    "version": "0.2.557",
+    "tree_sha256": "1709b00d2d59eb599056f65fc56823f7925826ba919ef47bb63d60bd22a18fe1",
+    "receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "swipe_file_tab_absent": true,
+    "after_reload": false,
+    "fixture_reinstalled_before_first_send": false
+  },
+  "chat": {
+    "opening_question_fingerprint": "8b0041e45eb47431",
+    "fixture_fragment_fingerprint": "37b0063e70e9a5ae",
+    "opening_code_fingerprint": "38988d6e9dd8cc96",
+    "completed_reply_count": 1,
+    "answer_contains_unpredictable_page_code": true,
+    "answer_names_page_stages": true,
+    "answer_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "followup_completed_after_reload": false
+  },
+  "opening_turn_verdict": "terminal_answer",
+  "answer_screenshot_diagnostic": {
+    "checks": {
+      "article_intersects_viewport": true,
+      "code_in_answer_text": false,
+      "heading_in_answer_text": true,
+      "focused_text_found": true,
+      "focused_text_in_viewport": true,
+      "focused_text_unclipped": true
+    },
+    "failed_checks": ["code_in_answer_text"],
+    "viewport": {
+      "width": 360,
+      "height": 373
+    },
+    "article": {
+      "left": 16,
+      "right": 336,
+      "top": 30,
+      "bottom": 339.75
+    },
+    "line": {
+      "left": 40,
+      "right": 325.48,
+      "top": 125.5,
+      "bottom": 161.5
+    },
+    "clipped_by": null,
+    "scroll_ancestors": [
+      {
+        "depth": 17,
+        "top": 261,
+        "height": 95
+      }
+    ]
+  },
+  "grounding_diagnostics": {
+    "before_first_send": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "pageUrlComponents": {
+        "exactMatch": true,
+        "originMatch": true,
+        "pathnameMatch": true,
+        "searchMatch": true,
+        "hashMatch": true,
+        "expectedHasSearch": false,
+        "actualHasSearch": false,
+        "expectedHasHash": true,
+        "actualHasHash": true
+      },
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "activeUrlComponents": {
+        "exactMatch": true,
+        "originMatch": true,
+        "pathnameMatch": true,
+        "searchMatch": true,
+        "hashMatch": true,
+        "expectedHasSearch": false,
+        "actualHasSearch": false,
+        "expectedHasHash": true,
+        "actualHasHash": true
+      },
+      "assignedTabMatchesFixture": null
+    },
+    "opening": {
+      "toolEvents": [
+        {
+          "name": "get_page_text",
+          "phase": "started",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": null,
+          "resultUrlComponents": {
+            "exactMatch": null,
+            "originMatch": null,
+            "pathnameMatch": null,
+            "searchMatch": null,
+            "hashMatch": null,
+            "expectedHasSearch": null,
+            "actualHasSearch": null,
+            "expectedHasHash": null,
+            "actualHasHash": null
+          },
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 1,
+          "toolName": "get_page_text",
+          "phase": "started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "pageUrlComponents": {
+            "exactMatch": true,
+            "originMatch": true,
+            "pathnameMatch": true,
+            "searchMatch": true,
+            "hashMatch": true,
+            "expectedHasSearch": false,
+            "actualHasSearch": false,
+            "expectedHasHash": true,
+            "actualHasHash": true
+          },
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "activeUrlComponents": {
+            "exactMatch": true,
+            "originMatch": true,
+            "pathnameMatch": true,
+            "searchMatch": true,
+            "hashMatch": true,
+            "expectedHasSearch": false,
+            "actualHasSearch": false,
+            "expectedHasHash": true,
+            "actualHasHash": true
+          },
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "pageUrlComponents": {
+          "exactMatch": true,
+          "originMatch": true,
+          "pathnameMatch": true,
+          "searchMatch": true,
+          "hashMatch": true,
+          "expectedHasSearch": false,
+          "actualHasSearch": false,
+          "expectedHasHash": true,
+          "actualHasHash": true
+        },
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "activeUrlComponents": {
+          "exactMatch": true,
+          "originMatch": true,
+          "pathnameMatch": true,
+          "searchMatch": true,
+          "hashMatch": true,
+          "expectedHasSearch": false,
+          "actualHasSearch": false,
+          "expectedHasHash": true,
+          "actualHasHash": true
+        },
+        "assignedTabMatchesFixture": null
+      }
+    }
+  },
+  "reviewer_demo": {
+    "status": "fail",
+    "public_url": "https://www.aimatrx.com/matrx-extend-demo",
+    "artifact": {
+      "receipt_kind": "native_store_zip_candidate_key_adapted",
+      "runtime_tree_sha256": "1709b00d2d59eb599056f65fc56823f7925826ba919ef47bb63d60bd22a18fe1",
+      "source_sha": "0714e280fb1fc562d18da8c7359dd0c2b8b46e46",
+      "store_zip_sha256": "da429ba8e99e737c6b3fcd293455630d9f05dfac7213b613c4e5ddc80648541d"
+    },
+    "source": {
+      "status": "pass",
+      "title": "Matrx Extend Demo Page — AI Matrx",
+      "stages": ["Capture", "Understand", "Use"],
+      "linkHref": "https://www.aimatrx.com/privacy-policy/extension",
+      "linkText": "Matrx Extend privacy policy",
+      "schemaType": "Article",
+      "schemaHeadline": "A clear three-stage browser workflow"
+    },
+    "checks": {
+      "fresh_auto_capture_off": {
+        "status": "fail",
+        "failure_code": "reviewer_observation_failed"
+      },
+      "capture_article": {
+        "status": "fail",
+        "failure_code": "reviewer_article_capture_not_observed"
+      },
+      "capture_links": {
+        "status": "fail",
+        "failure_code": "reviewer_observation_failed"
+      },
+      "capture_schema": {
+        "status": "fail",
+        "failure_code": "reviewer_observation_failed"
+      },
+      "seo_audit": {
+        "status": "fail",
+        "failure_code": "reviewer_observation_failed"
+      },
+      "data_workflow_picker": {
+        "status": "fail",
+        "failure_code": "reviewer_observation_failed"
+      }
+    }
+  },
+  "failure_stage": "real_guest_answer",
+  "failure_code": "assertionerror",
+  "failure_reason": "answer screenshot ineligible: answer_outside_viewport_or_fixture_missing",
+  "failure_observation": {
+    "guestAccount": true,
+    "accessTokenAbsent": true,
+    "profileAbsent": true,
+    "organizationAbsent": true,
+    "chatVisible": true,
+    "chatSelected": true,
+    "paneVisible": true,
+    "composerVisible": true,
+    "streaming": false,
+    "replyCount": 1,
+    "assistantDom": {
+      "assistantArticleCount": 1,
+      "toolCardCount": 1,
+      "toolOnlyArticleCount": 0
+    },
+    "answerContainsNonce": true,
+    "answerMatchesPublicStages": true,
+    "answerStagesInOrder": true,
+    "answerIsRefusal": false,
+    "terminalAnswerError": false,
+    "interruptionNotice": false,
+    "errorNotice": false,
+    "visibleAlerts": []
+  }
+}
