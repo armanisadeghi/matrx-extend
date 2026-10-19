@@ -40,5 +40,6 @@
       "sanitized_output": "docs/stabilization/evidence/chrome-native-20261019/store205-guest.sanitized.jsonl",
       "sha256": "910192e1f57ca6dc027ed8120d3c35fdcec09cc3b9c2465f9dbf99763119972d"
     }
-  ]
+  ],
+  "owner_current_truth": "The peer Store-journal-absence finding is REFUTED by the exact-file canonical copy and retained SHA in owner_rulings. Original peer wording below is retained as review evidence, not current availability status."
 }
