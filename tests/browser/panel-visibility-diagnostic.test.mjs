@@ -23,6 +23,11 @@ function helpers(source) {
   )();
 }
 
+function omitOnce(source, statement) {
+  assert.ok(source.includes(statement), `mutation target missing: ${statement}`);
+  return source.replace(statement, '');
+}
+
 // SUT owns measurement expression, failure reduction and checkpoint orchestration.
 // External CDP/DOM, authentication and screenshot dependencies are doubled.
 async function checkMeasurements(source) {
@@ -252,25 +257,30 @@ test('actual setup preserves all nine checkpoints and stops observation after re
 });
 test('in-memory mutations cannot omit checkpoints or manufacture successful measurements', async () => {
   const mutations = [
-    [harnessSource, scrapeSource.replace('observeBoundary: observeAuthenticatedPanel,', '')],
+    [harnessSource, omitOnce(scrapeSource, 'observeBoundary: observeAuthenticatedPanel,')],
     [
-      harnessSource.replace("await observeVisibility('initial_settled_before_screenshots');", ''),
+      omitOnce(harnessSource, "await observeVisibility('initial_settled_before_screenshots');"),
       scrapeSource,
     ],
     [
-      harnessSource.replace("await observeVisibility('after_initial_screenshots');", ''),
+      omitOnce(harnessSource, "await observeVisibility('after_initial_screenshots');"),
       scrapeSource,
     ],
-    ...[
-      'before_reopen',
-      'after_root_foreground',
-      'after_trusted_open',
-      'after_target_activation',
-    ].map((phase) => [harnessSource.replace(`await observe('${phase}');`, ''), scrapeSource]),
+    ...['before_reopen', 'after_trusted_open', 'after_target_activation'].map((phase) => [
+      omitOnce(harnessSource, `await observe('${phase}');`),
+      scrapeSource,
+    ]),
+    [
+      omitOnce(
+        harnessSource,
+        "await observe(triggerPage === page ? 'after_root_foreground' : 'after_demo_foreground');",
+      ),
+      scrapeSource,
+    ],
     ...['before_authentication', 'after_authentication', 'after_organization_selection'].map(
       (phase) => [
         harnessSource,
-        scrapeSource.replace(`await observePanelVisibility('${phase}');`, ''),
+        omitOnce(scrapeSource, `await observePanelVisibility('${phase}');`),
       ],
     ),
   ];
