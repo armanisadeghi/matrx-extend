@@ -37,7 +37,9 @@ const sameVerdict = source.indexOf(
 const sameScreenshot = source.indexOf("'guest-chat-same-conversation-followup.png'");
 const panelReload = source.indexOf("markStage('real_panel_reload')");
 const followupVerdict = source.indexOf("'new guest conversation after reload must ground");
-const followupScreenshot = source.indexOf('        report.followup_screenshot = await capture(');
+const followupScreenshot = source.indexOf(
+  '        report.followup_screenshot = await captureGuestAnswer(',
+);
 const cleanup = source.indexOf('      } catch (error) {', followupScreenshot);
 const tail = source.slice(followupScreenshot, cleanup);
 
@@ -419,7 +421,7 @@ test('guest owner-table verdict executes after both Chat verdicts and screenshot
     'panel',
     'artifacts',
     'join',
-    'capture',
+    'captureGuestAnswer',
     'report',
     'contextReadWatch',
     'assert',
