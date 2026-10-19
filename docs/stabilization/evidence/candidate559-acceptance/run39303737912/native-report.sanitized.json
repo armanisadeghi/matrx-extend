@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "scope": "exact frozen release 0.2.559 real nonadmin member A acceptance; stopped before any Chat send",
+  "run": {
+    "id": "39303737912",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39303737912",
+    "workflowConclusion": "failure",
+    "acceptanceFailure": {
+      "stage": "reviewer_native_panel_foreground",
+      "code": "unclassified_failure"
+    },
+    "resourceFinals": [
+      {
+        "runId": "hosted-package-39303737912-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "decision": "valid"
+      },
+      {
+        "runId": "hosted-browser-39303737912-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "decision": "valid"
+      },
+      {
+        "runId": "hosted-guest-39303737912-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "decision": "child_failed"
+      }
+    ]
+  },
+  "build": {
+    "version": "0.2.559",
+    "receiptKind": "native_store_zip_candidate_key_adapted",
+    "runtimeTreeSha256": "21d7ee2726da1ce17cde8345170980196fc3db8066b80cd4860bc1909de1f16c",
+    "releaseRunId": "39302507697",
+    "releaseArtifactId": "12212585831",
+    "releaseArtifactDigest": "sha256:7238365cc31d6a9ab41bd54ef22733281c1356a32ddb5032909b2c633c865c25",
+    "storeZipSha256": "97cce8f9bc851fc08ba2a389dd2c001eeae36070f6310b5440e5b841c99d83ea",
+    "sourceSha": "d442d418a8144a024b10c171946ba65d3623b82b"
+  },
+  "identity": {
+    "authenticationMethod": "existing_user_magic_link",
+    "reviewerFingerprint": "3d6137db6c081c07",
+    "webSignedIn": true,
+    "extensionSignedIn": true,
+    "canonicalAdminCheck": {
+      "matched_current_extension_user": true,
+      "http_status": 200,
+      "returned_rows": 0
+    },
+    "signOutVisible": true,
+    "approvedOrganizationSelected": true,
+    "organizationFingerprint": "8c4b25f5099470bf"
+  },
+  "panel": {
+    "failureSubstep": "visibility_wait",
+    "failureClass": "timeout",
+    "steps": [
+      {
+        "name": "demo_foreground",
+        "started_ms": 0,
+        "completed_ms": 2,
+        "failed_ms": null
+      },
+      {
+        "name": "panel_reopen",
+        "started_ms": 3,
+        "completed_ms": 288,
+        "failed_ms": null
+      },
+      {
+        "name": "visibility_wait",
+        "started_ms": 288,
+        "completed_ms": null,
+        "failed_ms": 10348
+      }
+    ],
+    "visibilityObservations": [
+      {
+        "phase": "before_reopen",
+        "measured": true,
+        "visible": false,
+        "hidden": true
+      },
+      {
+        "phase": "after_demo_foreground",
+        "measured": true,
+        "visible": false,
+        "hidden": true
+      },
+      {
+        "phase": "after_trusted_open",
+        "measured": true,
+        "visible": false,
+        "hidden": true
+      },
+      {
+        "phase": "after_target_activation",
+        "measured": true,
+        "visible": false,
+        "hidden": true
+      }
+    ],
+    "failureSnapshot": {
+      "web_closed": false,
+      "root_closed": false,
+      "targets_measured": true,
+      "exact_panel_target_present": true,
+      "visibility_measured": true,
+      "panel_visible": false,
+      "panel_hidden": true
+    },
+    "noChatSend": true,
+    "panelScreenshot": "screenshots/member-panel-hidden.png",
+    "targetScreenshot": "screenshots/member-demo-target-open-panel-response.png"
+  },
+  "disposition": "Exact panel target was present and measured hidden after demo foreground, trusted open, and target activation. No Chat request or assistant response occurred. This repeats the hidden-panel result recorded at source review for run 39295371484; D248 requires fresh escalation, with no opener reordering or retry from this lane.",
+  "sourceGuard": {
+    "reviewPath": "docs/stabilization/reports/d248-round2-peer-20261019.json",
+    "sourceReviewCommit": "b20df1b315982732d1f7975e0f9532decec5fad6",
+    "status": "PASS_SOURCE_CONTRACT_NATIVE_PENDING",
+    "limitation": "Native visibility and answer behavior remained unproven until this run."
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "schema": 1,
+  "date": "2026-10-19",
+  "task": "Exact-next-candidate bounded native acceptance: guest lane B and real nonadmin member lane A",
+  "status": "incomplete_failures_recorded",
+  "overallAcceptance": false,
+  "sourceEligibility": {
+    "dispatchSourceSha": "479329cdf94bac963262729a09af17a534e4586e",
+    "candidateTagSourceSha": "d442d418a8144a024b10c171946ba65d3623b82b",
+    "originMainAtDispatch": "d442d418a8144a024b10c171946ba65d3623b",
+    "workflowSha": "d442d418a8144a024b10c171946ba65d3623b",
+    "candidateContainedReviewedChanges": [],
+    "normalGuardedPlansPassed": true,
+    "unpublishedAndUnsubmitted": true
+  },
+  "candidate": {
+    "version": "0.2.559",
+    "releaseRunId": "39302507697",
+    "releaseRunUrl": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39302507697",
+    "releaseArtifactId": "12212585831",
+    "releaseArtifactName": "matrx-extend-v0.2.559",
+    "githubArtifactDigest": "sha256:7238365cc31d6a9ab41bd54ef22733281c1356a32ddb5032909b2c633c865c25",
+    "storeZipSha256": "97cce8f9bc851fc08ba2a389dd2c001eeae36070f6310b5440e5b841c99d83ea",
+    "runtimeTreeSha256": "21d7ee2726da1ce17cde8345170980196fc3db8066b80cd4860bc1909de1f16c",
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "server": {
+    "healthVersionEndpoint": "https://server.app.matrxserver.com/health/version",
+    "beforeGitSha": "164fd40c308ead103412a7c848cafbd9dd008f79",
+    "afterGitSha": "164fd40c308ead103412a7c848cafbd9dd008f79",
+    "reachableBeforeAndAfter": true
+  },
+  "runs": [
+    {
+      "lane": "B",
+      "case": "guest-chat",
+      "id": "39303623065",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39303623065",
+      "requestedBy": "extend-stabilization",
+      "workflowConclusion": "failure",
+      "failureStage": "reviewer_public_demo",
+      "failureCode": "reviewer_demo_incomplete",
+      "resources": {
+        "package": "valid",
+        "browser": "valid",
+        "acceptance": {
+          "admitted": true,
+          "resourceInvalid": false,
+          "decision": "child_failed"
+        }
+      },
+      "evidence": "docs/stabilization/evidence/candidate559-acceptance/run39303623065/native-report.sanitized.json",
+      "artifactId": "12212603200",
+      "runner": {
+        "label": "macos-15-intel",
+        "runnerId": 1000112027,
+        "isolated": true
+      }
+    },
+    {
+      "lane": "A",
+      "case": "member-chat",
+      "id": "39303737912",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39303737912",
+      "requestedBy": "release-member-admission",
+      "workflowConclusion": "failure",
+      "failureStage": "reviewer_native_panel_foreground",
+      "failureCode": "unclassified_failure",
+      "memberIdentity": {
+        "authenticationMethod": "existing_user_magic_link",
+        "roleProof": "canonical extension admin check HTTP 200, zero returned rows",
+        "webSignedIn": true,
+        "extensionSignedIn": true,
+        "approvedOrganizationSelected": true
+      },
+      "resources": {
+        "package": "valid",
+        "browser": "valid",
+        "acceptance": {
+          "admitted": true,
+          "resourceInvalid": false,
+          "decision": "child_failed"
+        }
+      },
+      "result": "Exact panel target was present but remained hidden after demo foreground, trusted open, and target activation; no Chat send was attempted.",
+      "evidence": "docs/stabilization/evidence/candidate559-acceptance/run39303737912/native-report.sanitized.json",
+      "sourceGuardReview": "docs/stabilization/reports/d248-round2-peer-20261019.json",
+      "priorHiddenPanelRun": "39295371484",
+      "nextAction": "Fresh D248 visibility/ownership escalation; do not reorder or rerun this case.",
+      "artifactId": "12213485496",
+      "runner": {
+        "label": "macos-15-intel",
+        "runnerId": 1000112028,
+        "isolated": true
+      }
+    }
+  ],
+  "guestProductEvidence": {
+    "chat": {
+      "firstReply": {
+        "terminalSuccess": true,
+        "visiblePaint": true,
+        "containsUnpredictableFixtureCode": true,
+        "namesRequiredStages": true,
+        "stagesInOrder": true,
+        "screenshot": "docs/stabilization/evidence/candidate559-acceptance/run39303623065/screenshots/guest-chat-first-answer.png"
+      },
+      "sameConversationFollowup": {
+        "terminalSuccess": true,
+        "replyCount": 2,
+        "containsFollowupFixtureCode": true,
+        "identityVerified": true,
+        "visiblePaint": true,
+        "screenshot": "docs/stabilization/evidence/candidate559-acceptance/run39303623065/screenshots/guest-chat-same-conversation-followup.png"
+      },
+      "afterPanelReloadNewConversation": {
+        "terminalSuccess": true,
+        "containsUnpredictableFixtureCode": true,
+        "namesFixtureHeading": true,
+        "visiblePaint": true,
+        "screenshot": "docs/stabilization/evidence/candidate559-acceptance/run39303623065/screenshots/guest-chat-followup-answer-after-reload.png"
+      },
+      "transportRequests": [
+        {
+          "attempt": "opening",
+          "status": 200,
+          "terminalSuccess": true,
+          "semanticCompletion": "success",
+          "isNew": true
+        },
+        {
+          "attempt": "same_conversation_followup",
+          "status": 200,
+          "terminalSuccess": true,
+          "semanticCompletion": "success",
+          "isNew": false
+        },
+        {
+          "attempt": "post_reload_new_conversation",
+          "status": 200,
+          "terminalSuccess": true,
+          "semanticCompletion": "success",
+          "isNew": true
+        }
+      ],
+      "noLoginPaywallOrError": true
+    },
+    "reviewerSurfaceResults": {
+      "settings": {
+        "status": "fail",
+        "detail": "Fresh auto-capture switch rendered off, but setting was absent from the safe storage observation; stored_on=null and screenshot target unavailable."
+      },
+      "capture": {
+        "status": "fail",
+        "detail": "Article capture result was not observed; screenshot target unavailable."
+      },
+      "links": {
+        "status": "fail",
+        "detail": "Links pane was selected and 17 links were counted, but the screenshot target was unavailable."
+      },
+      "schema": {
+        "status": "pass",
+        "detail": "Schema selected; public headline and schema type assertions passed."
+      },
+      "seo": {
+        "status": "pass",
+        "detail": "Public title, headings, and re-audit readiness assertions passed."
+      },
+      "data": {
+        "status": "fail",
+        "detail": "Picker was present, but Cancel readiness and guest explanation were absent; first target was the Data picker button."
+      }
+    },
+    "reviewerPublicSource": {
+      "status": "pass",
+      "checks": {
+        "publicUrlMatches": true,
+        "titleMatches": true,
+        "workflowMatches": true,
+        "articleMarkerPresent": true,
+        "publicLinkMatches": true,
+        "articleSchemaMatches": true
+      }
+    },
+    "limitations": [
+      "The guest run is workflow-failed overall; only its bounded Chat sequence plus Schema and SEO demo assertions passed.",
+      "Member Chat did not start because the panel remained hidden. No member answer or member Chat behavior is claimed.",
+      "The public reviewer Settings, Capture, Links, and Data checks fail or remain unverified as individually recorded; no surface pass is inferred from other panes.",
+      "Resource finals establish permitted execution, not a product pass.",
+      "No explicit owned fixture cleanup/readback result was present in either native report; those cleanup details remain unverified.",
+      "No independent native reviewer verdict is recorded yet."
+    ]
+  },
+  "credentialCleanup": {
+    "oneUseReviewerLinkGeneratedForExistingIdentity": true,
+    "temporaryGitHubSecretDeletedAfterMemberAuthPreflight": true,
+    "secretNameCountAfterCleanup": 0,
+    "localOneUseLinkRemoved": true,
+    "accountCreatedOrRotated": false,
+    "fixtureIdentityOrOrganizationMutated": false
+  },
+  "evidence": {
+    "resourceFinals": "docs/stabilization/evidence/candidate559-acceptance/resource-finals.sanitized.json",
+    "guestScreenshots": "docs/stabilization/evidence/candidate559-acceptance/run39303623065/screenshots",
+    "memberScreenshots": "docs/stabilization/evidence/candidate559-acceptance/run39303737912/screenshots",
+    "sanitizerNote": "Package/browser journals were processed through copy-hosted-resource-journal.mjs. Acceptance journals contained an unsupported startup-interval bracket event and were withheld; bounded manually sanitized finals and event counts are in resource-finals.sanitized.json. Original downloads remain private in /tmp."
+  }
+}
