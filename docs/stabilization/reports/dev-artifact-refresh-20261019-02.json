@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-19T16:36:55.471Z",
+  "purpose": "Current compatible CI development artifact promotion",
+  "source_sha": "c69f8b6b5d03ae1af6f3fe10eb756380da2786bf",
+  "origin_main_sha_at_promotion": "5e0d368f6a061ea9c4f4e7250b1ea957d3966112",
+  "ci_run_id": 39284095794,
+  "ci_conclusion": "success",
+  "artifact_id": 12202722252,
+  "artifact_digest": "sha256:843b95285118eb0226e4265e131f6b781d64fcbccb20f21f03114b7be1d66c94",
+  "version": "0.2.555",
+  "promotion": {
+    "compatibility": "runtime-equivalent",
+    "destination": ".output/chrome-mv3-dev",
+    "tree_sha256": "6f233015946d6bf8a8ae020c227ad8950795d7bcd26f9146fd13fff35863a422",
+    "receipt": "test-results/ci-dev-promotion-receipt.json",
+    "result": "CI_DEV_PROMOTED",
+    "file_count": 2459
+  },
+  "chrome_installation": {
+    "loaded_version": "unverified",
+    "loaded_path": "unverified",
+    "pin": "unverified",
+    "observation": "Chrome reload and probe are assigned to the native verification lane."
+  },
+  "store_eligibility": {
+    "eligible": false,
+    "reason": "Development artifact is not a Store ZIP and cannot be submitted."
+  },
+  "product_acceptance": "Not established by artifact import or promotion."
+}
