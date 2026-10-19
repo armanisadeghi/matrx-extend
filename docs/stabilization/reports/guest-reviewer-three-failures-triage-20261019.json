@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-reviewer-three-failures-triage",
+  "lane": "read-only actual-product-vs-oracle triage",
+  "candidate": {
+    "version": "0.2.562",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b"
+  },
+  "run": {
+    "run_id": 39329484777,
+    "overall_exit_code": 1,
+    "resource_journals": {
+      "package": "valid_exit_0",
+      "browser": "valid_exit_0",
+      "guest_acceptance": "resource_valid_child_exit_1"
+    },
+    "backend_sha_before_after": "e22bbed21c10e88a0d267061e897fbb05fc9ecff"
+  },
+  "findings": [
+    {
+      "failure_target": "settings_auto_capture_switch",
+      "classification": "oracle_or_screenshot-capture defect; no product failure established",
+      "reproduction": "Exact Store candidate, fresh guest profile, reviewer opens Settings > Scrape and observes Auto-scrape on load.",
+      "expected": "Auto-scrape off; absence of a persisted setting is accepted as the default-off state by autoScrapePreferenceMatches().",
+      "actual": "Safe DOM observed exactly one switch with checked=false, setting_present=false, stored_on=null. The run then failed while cropping a screenshot with reviewer_failure_screenshot_target_unavailable.",
+      "evidence": [
+        "raw artifact reviewer_demo.checks.fresh_auto_capture_off",
+        "tests/browser/store-reviewer-demo-path.mjs: settingsOffSample, settingsOff and captureReviewerPaneScreenshot",
+        "tests/browser/settings-auto-scrape-capture-baseline.mjs: autoScrapePreferenceMatches",
+        "src/features/settings/SettingsView.tsx: Auto-scrape on load Switch"
+      ],
+      "cause": "The requested state is observed and the explicit oracle accepts this absent-setting/default-off case. Failure is in screenshot evidence acquisition. Exact failing crop subcondition (unique target, geometry, or hit test) was not recorded, so the precise harness defect remains unknown.",
+      "next_bounded_probe": "On this target only, add a sanitized diagnostic of the matched switch count, rect, and center hit immediately before Page.captureScreenshot; do not toggle the switch. Compare the failing condition with the recorded safe-DOM false state.",
+      "confidence": "high for no product-state failure; medium for oracle defect; exact crop subcause unknown"
+    },
+    {
+      "failure_target": "article_result",
+      "classification": "candidate product behavior mismatch established; root cause not localized",
+      "reproduction": "Exact candidate on the public reviewer demo: open Scrape, verify empty state, click \u201cCapture the page exactly as it is right now\u201d, inspect selected Article result.",
+      "expected": "Article result contains the public source\u2019s schema headline \u201cA clear three-stage browser workflow\u201d, its public link text, and Capture/Understand/Use stages.",
+      "actual": "After the click, the Article tab was selected, pane/content visible and nonempty, no error present, and workflow stage labels were present; expected heading and link were absent. The corresponding Links and Schema reviewer checks passed, establishing that the source page exposes the link and headline through neighboring outputs.",
+      "evidence": [
+        "raw artifact reviewer_demo.source and checks.capture_article/capture_links/capture_schema",
+        "test-results/native-sidepanel-qa-oTPtK1/reviewer-capture_article-failure.png (failure screenshot proves the Capture control was available, not the Article payload)",
+        "tests/browser/store-reviewer-demo-path.mjs: scrapeState and capture_article assertion"
+      ],
+      "cause": "Actual Article output fails the exact public-source content assertion while the neighboring Links/Schema views expose the relevant data. This is product behavior for this candidate; evidence does not isolate whether extraction, conversion, or rendering dropped those fields.",
+      "next_bounded_probe": "At the same exact candidate and fixture, read a sanitized boolean/length projection of the Article source markdown from the scrape store and compare it with the rendered Article tab for the expected heading/link. This identifies extraction versus rendering without changing the acceptance assertion.",
+      "confidence": "high on observed output mismatch; low on internal cause"
+    },
+    {
+      "failure_target": "data_picker_done",
+      "classification": "unknown: observed workflow failure, product-vs-oracle unresolved",
+      "reproduction": "Exact candidate on the public reviewer demo: open Data, activate \u201cPick fields on this page\u201d, click the first row header under main article table, then attempt the picker\u2019s Done button.",
+      "expected": "One field is selected and Done closes the picker; Data pane shows the selected field and guest explanation.",
+      "actual": "The reviewer marks the target at data_picker_done immediately before clickPickerDone(). The failure is generic reviewer_observation_failed. Subsequent safe sampling reports pane active, pickerReady=false, selected_count=0, cancelReady=false, guestExplanation=false; screenshot crop is also unavailable.",
+      "evidence": [
+        "raw artifact reviewer_demo.checks.data_workflow_picker",
+        "tests/browser/store-reviewer-demo-path.mjs: data_workflow_picker target sequence and dataState",
+        "tests/browser/data-guest-picker-driver.mjs: clickPickerField, pickerShadowNode and clickPickerDone"
+      ],
+      "cause": "No exception detail or picker shadow state was retained. The failure may be inability to resolve/hit the closed-shadow Done button, loss of picker state after row selection, or UI completion failure. The post-failure state cannot distinguish them.",
+      "next_bounded_probe": "Repeat only this reviewer step once with the same candidate and page; immediately after the row click record field-hit diagnostic plus sanitized closed-shadow button IDs, labels, and Done geometry/hit target before clicking. Preserve the first thrown error code. Do not broaden to another browser or guest flow.",
+      "confidence": "high that this acceptance step failed; low on product-vs-oracle cause"
+    }
+  ],
+  "overall": "Guest chat opening, same-conversation follow-up, and post-reload new conversation all completed with grounded unpredictable page codes and no auth/paywall; public reviewer source, Links, Schema, and SEO checks passed. This does not erase the three failed reviewer targets. No fix, source edit, new hosted run, or product-health conclusion was made.",
+  "state_limit": "Working checkout was concurrently changing during inspection; observed HEAD moved from d2fda1ed4 to 6fb0e48fe. The supplied later-main SHA e8785f66f exists and was inspected for reviewer code; the exact tested artifact remains candidate source 417ca98041e94f91f7fa618db0b96681f170e66b.",
+  "owner_limit": "Missing native heading is an observation, not yet a localized product bug. Article privacy-link flag was diagnostic only, not a failed assertion."
+}

@@ -1,0 +1,70 @@
+{
+  "id": "EXT-D-0257",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01"],
+  "affected_product_case_ids": ["EXT-F-2013-T01", "EXT-F-2013-T02", "EXT-F-2013-T04"],
+  "title": "Member answer screenshot gate retains transient unpainted snapshot after the same answer becomes readable",
+  "surface": "Exact Store candidate member native acceptance harness",
+  "auth_mode": "member; infrastructure defect, bounded actual replies separately recorded",
+  "severity": "S2: completed member replies cannot satisfy screenshot acceptance during normal transcript paint transition",
+  "priority": "P1: restore authoritative paired answer proof before Store submission",
+  "state": "fixed",
+  "owner": "root/candidate_docs_equivalence_diagnosis",
+  "preconditions": [
+    "Candidate0.2.562 member run39329142176 has valid package/browser/acceptance resource journals.",
+    "Actual canonical non-admin authentication, approved organization, correct assigned demo and first/follow-up terminal replies succeeded.",
+    "Final assistant article is present while its transcript ancestor briefly has opacity0."
+  ],
+  "reproduction": [
+    "Run the exact frozen562 member case through two terminal replies.",
+    "Observe requireMemberAnswerEvidence takes immediate snapshot and saves it as member_answer_proof.",
+    "The same article and expected term become painted and eligible about603ms later in next_frame diagnostic, but final assertion still reads initial eligible=false."
+  ],
+  "expected": "Within existing bounded readiness policy, capture an actually readable final assistant article with screenshot and same-article postcapture proof; retain all genuine missing/wrong/offscreen/hidden and capture/identity failures.",
+  "actual": "Formal reviewer_chat_visible_answer_unverified failure after both actual replies; diagnostic/proof screenshot shows expected Understand text, but authoritative snapshot remains transient opacity0.",
+  "cause": "Member proof promotes only immediate sample while later eligible samples are diagnostics; next_frame label itself does not wait for a frame.",
+  "sibling_census": "D249 closed guest semantic extraction scope remains distinct; this is member temporal readiness and authoritative screenshot pairing.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39329142176",
+    "docs/stabilization/reports/member-answer-paint-diagnosis-20261019.json"
+  ],
+  "acceptance_criteria": [
+    "Original transient-opacity state refuses with old code and passes only after readiness plus screenshot and same-article recheck.",
+    "Permanent unreadable/missing/wrong-answer/identity-change/capture failures refuse.",
+    "Do not use scroll diagnostic as authority or relax terminal/org/demo/physical visibility/resource gates.",
+    "Independent source behavior/quality review, then exact eligible candidate native first/follow-up and screenshot proof under valid resources."
+  ],
+  "verification": {
+    "source": "Repair in progress; fresh peer pending.",
+    "native": "Original failing run valid; no repaired native retest yet.",
+    "visibility_limit": "document.visibilityState hidden even when paint probe later eligible; physical panel visibility is separately bounded, not waived."
+  },
+  "fix_commit": "4ba42b1bf",
+  "next_action": "Finish minimal readiness/screenshot pairing repair and independent source review; integrate current contributor changes before one fresh guarded release and native acceptance.",
+  "transition_history": [
+    {
+      "at": "2026-10-19T21:51:49.599977Z",
+      "from": null,
+      "to": "open",
+      "reason": "Valid562 member run retained immediate opacity0 proof despite later readable same assistant answer."
+    },
+    {
+      "at": "2026-10-19T21:51:49.599977Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source and real snapshots/screenshot identify stale authoritative sample; distinct from D249 guest extraction."
+    },
+    {
+      "at": "2026-10-19T21:51:49.599977Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded same-article readiness and paired screenshot repair authorized; native visibility uncertainty remains explicit."
+    },
+    {
+      "at": "2026-10-19T22:08:14.073064Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Exact source unit pushed after fresh independent source behavior and quality PASS; repaired native acceptance remains pending."
+    }
+  ]
+}

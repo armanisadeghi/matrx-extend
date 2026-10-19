@@ -1,0 +1,53 @@
+{
+  "review": "independent_zero_authorship_D257_review",
+  "target": "member temporal paint and screenshot pairing repair",
+  "verdict_a": {
+    "status": "FAIL_NATIVE_PENDING",
+    "evidence": [
+      "The original immediate-opacity fault is corrected for a stable assistant: a same-article immediate unpainted proof followed by a readable paint_ready sample, screenshot, and matching post_capture proof is accepted by the focused suite.",
+      "The source also rejects invalid post-capture paint/term state, inactive pane, changed article hash or position, changed transcript, screenshot failure, and post-capture evaluation loss in focused tests.",
+      "The source uses the existing waitFor default timeout of 10 seconds and does not invoke the scroll_bottom diagnostic. Outer terminal, demo target, organization transport, foreground restoration, and resource gates are outside this helper and unchanged by the patch.",
+      "No hosted/native replay was performed. The exact same-answer visual outcome on the native panel remains pending."
+    ],
+    "finding": {
+      "severity": "Important",
+      "file": "tests/browser/member-chat-visible-proof.mjs:223",
+      "details": "A later eligible proof is allowed to establish its own identity. The code captures identity from ready at line 250 and only compares post_capture to ready at lines 297-305; it never compares ready with immediate. A direct probe with immediate article hash A unpainted, paint_ready article hash B eligible, and post_capture B eligible returned accepted=true and B's hash. This adopts an arbitrary later article instead of proving that the final article seen before waiting became readable."
+    }
+  },
+  "verdict_b": {
+    "status": "FAIL",
+    "finding": {
+      "severity": "Important",
+      "file": "tests/browser/member-chat-visible-proof.test.mjs:14",
+      "details": "The regression guard covers only a stable hash across immediate, paint_ready, and post_capture. It has no mutation case where immediate identity differs from the ready identity, so removal or omission of an immediate-to-ready identity check stays green. The post-capture changed-assistant cases only exercise ready-to-post_capture comparison."
+    },
+    "checks_and_adversarial_results": [
+      "Replayed HEAD's old helper from a /tmp copy with immediate opacity-zero and a later eligible sample: it failed with the intended AssertionError reviewer_chat_visible_answer_unverified (false !== true), confirming the original failure behavior rather than an import error.",
+      "Current-source adversarial probe A-unpainted -> B-painted -> screenshot -> B-post_capture was accepted; this violates the same-article/no-arbitrary-later requirement.",
+      "Current tests reject post-capture identity/position/transcript changes, hidden paint, unreadable terms, inactive pane, missing identity indexes, screenshot failure, and evaluation loss.",
+      "The evaluator checks CSS paint, expected terms in visible geometry, viewport bounds, composer bounds, hit testing, latest assistant article, and active Chat pane; the helper preserves those proof outputs and requires a real capture. document_visibility and hasFocus remain diagnostics; the pre-existing physical foreground guard is not changed here, and native physical visibility still requires native evidence."
+    ],
+    "native_limit": "The mocks prove source branch behavior and actual evaluator DOM behavior only. They do not establish that the captured native screenshot visibly contains the answer or that the native panel stayed physically foregrounded."
+  },
+  "commands": [
+    {
+      "command": "node --test tests/browser/member-chat-visible-proof.test.mjs tests/browser/package-chat-controls.test.mjs tests/browser/member-chat-target.test.mjs tests/browser/reviewer-chat-organization-boundary.test.mjs",
+      "result": "PASS, 29/29"
+    },
+    {
+      "command": "pnpm exec biome check tests/browser/member-chat-visible-proof.mjs tests/browser/member-chat-visible-proof.test.mjs",
+      "result": "PASS, 2 files"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "scope": {
+    "source_edits_by_reviewer": false,
+    "hosted_or_native_run": false,
+    "commit_created": false,
+    "product_health_or_causality_claim": false
+  }
+}

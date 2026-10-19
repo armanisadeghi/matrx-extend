@@ -7,7 +7,7 @@
   "auth_mode": "guest; infrastructure-only zero product credit",
   "severity": "S2: eligible package browser acceptance cannot launch after harmless evidence integration",
   "priority": "P1: restore verified candidate acceptance without bypassing runtime drift checks",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/candidate_docs_equivalence_diagnosis",
   "preconditions": [
     "Candidate561 source234e62ad3 is ancestor of synchronized clean main924385838.",
@@ -33,10 +33,11 @@
   "fix_commit": "b15f8f44310499a796fa8c037094f6278b28a26c",
   "verification": {
     "source": "Builder reports focused74pass, compile/lint and RED/GREEN; independent review pending.",
-    "native": "Not run; no product verdict, no defect closure.",
-    "independent_source_review": "Fresh peer VerdictA PASS and VerdictB PASS, original regex RED/current docs-only GREEN and11 forbidden paths plus sync/dirty/ancestry/capacity refusals; native dispatch not performed."
+    "native": "Independent normal dispatch-admission retest PASS: release417\u2192main0a92 has six docs paths; newguard accepts, oldguardrefusesfive; actualB39329484777 dispatched. This verifies source-admission only; native product acceptance remains pending.",
+    "independent_source_review": "Fresh peer VerdictA PASS and VerdictB PASS, original regex RED/current docs-only GREEN and11 forbidden paths plus sync/dirty/ancestry/capacity refusals; native dispatch not performed.",
+    "actual_admission_peer": "docs/stabilization/reports/d256-actual-b-admission-peer-20261019.json"
   },
-  "next_action": "Finish independent review; integrate exact code+records, then fresh guarded release after runtime source eligibility and complete native acceptance.",
+  "next_action": "No further repair for this narrowly verified source-admission defect. Continue candidate562 browser acceptance; do not transfer admission PASS to product behavior.",
   "transition_history": [
     {
       "at": "2026-10-19T21:10:00Z",
@@ -61,6 +62,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Canonical classifier repair pushed after independent behavior and quality PASS; native dispatch acceptance remains pending."
+    },
+    {
+      "at": "2026-10-19T21:43:00Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Actual normal guest dispatch across postrelease documentation-only ancestry succeeded; fresh independent peer verified original oldguardRED/currentGREEN and realrunidentity."
+    },
+    {
+      "at": "2026-10-19T21:43:01Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Narrow source-admission symptom independently resolved; no product health or browser acceptance claim."
     }
   ]
 }

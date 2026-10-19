@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T21:10:00Z",
+  "updated_at": "2026-10-19T22:08:14.073064Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -153,6 +153,9 @@
             "EXT-D-0250",
             "EXT-D-0254",
             "EXT-D-0255"
+          ],
+          "linked_defects": [
+            "EXT-D-0257"
           ]
         },
         {
@@ -2370,7 +2373,33 @@
           ],
           "defect_ids": [
             "EXT-D-0253"
-          ]
+          ],
+          "linked_defects": [
+            "EXT-D-0258"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": 39329484777,
+              "build_version": "0.2.562",
+              "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
+              "resource_valid": true,
+              "aggregate_run_status": "failed",
+              "passed_subtargets": [
+                "Publicdemo source identity",
+                "Links",
+                "Schema",
+                "SEO currentpageaudit"
+              ],
+              "unverified": [
+                "Automatic-capture-off screenshot target",
+                "Article heading visibility/capture boundary",
+                "Data picker Done"
+              ],
+              "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json",
+              "detail": "Three reviewer controls incomplete. D258 sourceobservability fixed, real source/render/input failures not yet resolved. No overall acceptance."
+            }
+          }
         }
       ],
       "cells": {
@@ -11327,6 +11356,18 @@
                 "docs/stabilization/runs/hosted-settings-controls-38335625868.json"
               ],
               "detail": "Diagnosed retry was refused at browser resource admission with RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count before full Chromium or Settings interaction; no product evidence. Stop after this second unusable B attempt."
+            }
+          ],
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39329484777,
+              "version": "0.2.562",
+              "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Freshguest safeDOM switch off; absentpref accepteddefaultoff; requiredcontrol screenshot target failed. Visiblecrop proof unverified.",
+              "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
             }
           ]
         },
@@ -25667,6 +25708,18 @@
               ],
               "detail": "Operator observed Capture, Article, Links17 and matching Schema on public demo. Full cases remain partial; Images/Video/SEO, error recovery and reload unverified in this run; no current-main or development coverage."
             }
+          ],
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39329484777,
+              "version": "0.2.562",
+              "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Links/Schema passed ownpublicsource checks; Article content present/stages present but heading unlocalized. Images/Video/otherTabcontrols not tested.",
+              "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
+            }
           ]
         },
         {
@@ -29807,6 +29860,18 @@
                 ".research/seo-normal-after-stop-20261008/report.json"
               ],
               "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
+            }
+          ],
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39329484777,
+              "version": "0.2.562",
+              "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Currentpublicpage SEO title/audit result observed. History/error/retry/reload and wholecase not established.",
+              "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
             }
           ]
         },
@@ -44682,6 +44747,18 @@
               ],
               "detail": "Resource-valid native guest run 38039372695 on frozen CI development artifact 11664077690 (source 129299df, v0.2.459) observed 3 controlled rows, two distinct picker previews and two selected fields. Pattern name and Save pattern were absent; Sign in to save was used and reached pending state. The panel emitted zero non-GET /wbx_pattern requests during that bounded sign-in window. Completed authentication, persistence, C16 close-without-select, the full Data surface, current-main product code, and Store behavior remain unverified."
             }
+          ],
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39329484777,
+              "version": "0.2.562",
+              "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Publicworkflow cell picker flow failed at Done; initialselection/returnedselector andSavegate remain unverified in thiscandidate.",
+              "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
+            }
           ]
         },
         {
@@ -50749,7 +50826,21 @@
             "independent_review": ".research/remaining-control-links-peer-20261008.json",
             "review_verdict": "accept_with_unmapped_aspects"
           },
-          "mapping_notes": "Independent source review accepted 20 existing-control link(s); this mapping adds no runtime or native execution evidence. Unmapped aspects: Guest absence of the agent picker and absence of Sneak Peek are not represented by the mapped navigation/mode/picker controls; each needs explicit access/absence controls."
+          "mapping_notes": "Independent source review accepted 20 existing-control link(s); this mapping adds no runtime or native execution evidence. Unmapped aspects: Guest absence of the agent picker and absence of Sneak Peek are not represented by the mapped navigation/mode/picker controls; each needs explicit access/absence controls.",
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39329142176,
+              "version": "0.2.562",
+              "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
+              "mode": "member",
+              "auth_context": "CanonicalHTTP200zeroadminrows, approvedorganizationUI/headerfingerprintmatch",
+              "status": "partial",
+              "resource_valid": true,
+              "aggregate_run_status": "failed_paint_proof",
+              "scope": "Actualnonadmin opening+sameconversationfollowup terminalsuccess; approvedorg/demo proof retained. Finalpairedpaint proof failed; navigation/modes andwholecase not certified.",
+              "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
+            }
+          ]
         },
         {
           "id": "EXT-F-2013-T02",
@@ -50835,6 +50926,20 @@
                 "docs/stabilization/runs/member-chat-store-v0546-run39154980480.json"
               ],
               "detail": "Candidate .546 two terminal HTTP200 replies; painted-answer gate failed and approved-org comparison was not loaded. Zero visible-answer credit; paint cause unresolved."
+            }
+          ],
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39329142176,
+              "version": "0.2.562",
+              "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
+              "mode": "member",
+              "auth_context": "CanonicalHTTP200zeroadminrows, approvedorganizationUI/headerfingerprintmatch",
+              "status": "partial",
+              "resource_valid": true,
+              "aggregate_run_status": "failed_paint_proof",
+              "scope": "Two real Chat sends/terminalHTTP200 and toolresume observed; finalpairedpaint failed. Stop/retry/othercomposercontrols untested.",
+              "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
             }
           ]
         },
@@ -50963,7 +51068,21 @@
             "independent_review": ".research/remaining-control-links-peer-20261008.json",
             "review_verdict": "accept"
           },
-          "mapping_notes": "Independent source review accepted 25 existing-control link(s); this mapping adds no runtime or native execution evidence."
+          "mapping_notes": "Independent source review accepted 25 existing-control link(s); this mapping adds no runtime or native execution evidence.",
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39329142176,
+              "version": "0.2.562",
+              "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
+              "mode": "member",
+              "auth_context": "CanonicalHTTP200zeroadminrows, approvedorganizationUI/headerfingerprintmatch",
+              "status": "partial",
+              "resource_valid": true,
+              "aggregate_run_status": "failed_paint_proof",
+              "scope": "Delegatedtool result+resume completed atprotocollevel; carddetails/buttons/approvals andwholecase not certified.",
+              "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
+            }
+          ]
         },
         {
           "id": "EXT-F-2013-T05",
@@ -51208,16 +51327,26 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "39160396058",
-              "build_version": "0.2.205 public CRX adapted unpacked",
-              "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+              "run_id": 39329484777,
+              "build_version": "0.2.562",
+              "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
+              "receipt_kind": "native_store_zip_candidate_key_adapted",
+              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "build_tree_sha256": "4017019295c9a2273dccce52ea64767f5886d36a3ee4b4985568eb7da07d573f",
               "resource_valid": true,
-              "server_sha_before_after": "a61289ffa374eb4b1a2ff8181d9db42e947f039a",
+              "aggregate_run_status": "failed_reviewerdemo_incomplete",
+              "guest_resource_decision": "child_failed",
+              "guest_child_exit_code": 1,
+              "server_sha_before_after": "e22bbed21c10e88a0d267061e897fbb05fc9ecff",
+              "current_main_status": "stale_after_package_and_operational_source_changes",
+              "independent_review": "docs/stabilization/reports/candidate562-guest-behavior-context-recheck-20261019.json",
               "evidence": [
-                "docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json",
-                "docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json"
+                "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json",
+                "docs/stabilization/evidence/candidate562-guest-b/guest-chat-real-answer.png",
+                "docs/stabilization/evidence/candidate562-guest-b/guest-chat-same-conversation-followup.png",
+                "docs/stabilization/evidence/candidate562-guest-b/guest-chat-real-followup-answer.png"
               ],
-              "detail": "Bounded T10 PASS: three distinct grounded terminal replies, actual same-conversation is_new=false then new conversation after reload, fresh guest and valid resource finals. Overall workflow PARTIAL because later Values Escape close failed (D244/T13). Not actual Store-installed lifecycle, current548, member/admin, other controls or full Chat."
+              "detail": "Bounded frozen T10 PASS independently reviewed: freshguest real opening+sameconversation followup+NEWconversationafterreload, grounded expectedcodes/stages/heading, threeHTTP200terminalsuccess. Guest acceptance childfailed for separatepublicreviewercontrols, resourceInvalidfalse. Partial screenshots plus turn-scopedDOMproof; no actualStoreinstallation, currentmain, member/admin or fullChat claim. Browserversion not separately retained in receipt."
             }
           },
           "defect_verification": {
@@ -51406,6 +51535,23 @@
               },
               "superseded_at": "2026-10-18T20:03:02.431885+00:00",
               "reason": "Fresh independently reviewed public205 three-turn browser evidence on stable live server; separate Values failure does not erase T10 observations."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "39160396058",
+                "build_version": "0.2.205 public CRX adapted unpacked",
+                "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+                "resource_valid": true,
+                "server_sha_before_after": "a61289ffa374eb4b1a2ff8181d9db42e947f039a",
+                "evidence": [
+                  "docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json",
+                  "docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json"
+                ],
+                "detail": "Bounded T10 PASS: three distinct grounded terminal replies, actual same-conversation is_new=false then new conversation after reload, fresh guest and valid resource finals. Overall workflow PARTIAL because later Values Escape close failed (D244/T13). Not actual Store-installed lifecycle, current548, member/admin, other controls or full Chat."
+              },
+              "retained_reason": "Prior public205 adapted-CRX frozen scope retained; new independently reviewed562 candidate evidence recorded separately."
             }
           ],
           "attempt_history": [

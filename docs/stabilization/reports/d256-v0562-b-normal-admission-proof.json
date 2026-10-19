@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0256 normal guest B source admission across postrelease canonical proof docs",
+  "release_run_id": 39328192575,
+  "release_artifact_id": 12224145362,
+  "release_source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
+  "workflow_source_sha": "0a92c25d223f2d93d1ee3e7fa4e824d9e5e037b9",
+  "remote_main_sha": "0a92c25d223f2d93d1ee3e7fa4e824d9e5e037b9",
+  "source_synchronized": true,
+  "source_clean": true,
+  "release_ancestor": true,
+  "changed_paths": [
+    "docs/stabilization/CHECKLIST.md",
+    "docs/stabilization/COORDINATOR.md",
+    "docs/stabilization/STATUS.html",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/reports/candidate562-package-peer-20261019.json"
+  ],
+  "normal_plan_exit": 0,
+  "normal_plan": "plan-guest-chat on exact release source/artifact; passed full release identity, artifact digest, Store ZIP hash, source ancestry, clean sync and capacity admission",
+  "normal_dispatch_exit": 0,
+  "normal_dispatch_run_id": 39329484777,
+  "capacity_at_dispatch": "member A 39329142176 active on macos-15; B on macos-15-intel; no third hosted browser lane",
+  "product_acceptance_credit": "none from admission alone"
+}

@@ -8,7 +8,7 @@
   "severity": "S2: required non-admin acceptance tests the wrong page and falsely reports wrong assistant answer",
   "priority": "P1: preserve intended target and assert actual assigned URL before AI send",
   "state": "in-fix",
-  "owner": "root / candidate_docs_equivalence_diagnosis (instrumentation only)",
+  "owner": "root / release owner next paired native retest",
   "reproduction": [
     "Run exact556 nonadmin Store acceptance A39291881216 through successful selected-authentication/org preflight.",
     "The runner opens https://www.aimatrx.com/matrx-extend-demo, then calls restoreMemberForegroundWithReport with its web tab and the original Research brief root page before sending Chat.",
@@ -87,19 +87,19 @@
       "reason": "Fresh bounded Astra escalation reproduced neither generic tab nor popup cause locally. Safe auth topology instrumentation41b7cecdd passes independent source review; hosted first hidden transition still requires replay before selecting a repair."
     }
   ],
-  "next_action": "Add narrowly instrumented picker boundaries without changing behavior; independent source review, then one fresh eligible guarded candidate and native probe. No timeout/resource relaxation, no hypothetical repair claim, no unchanged blind retry.",
+  "next_action": "Retain narrow original-boundary observations in next exact candidate member acceptance with D257 same-article paint repair. No further picker behavior change without new evidence. Preserve originaltarget/org/visibility/resource gates; no wholememberpass until pairedpaint and surrounding cases pass.",
   "fix_sha": "b20df1b31",
   "reviewer": "Fresh source-contract review accepts safe instrumentation; native issue remains unresolved, no repair or member Chat pass claimed.",
   "diagnostic_sha": "a7f4d9eb385386cff1c91cdd761ef14fea2e96f0",
   "latest_native_attempt": {
-    "run_id": 39325479679,
-    "version": "0.2.561",
-    "status": "unverified",
-    "resource_invalid": true,
-    "chat_send": false,
-    "known": "Panel visible through canonical nonadmin identity; first hidden observation after identity before foreground restore. Same target/context/document across17snapshots.",
-    "hypothesis": "Organization picker Escape dismissal, picker opening, or delayed browser/resource effect; cause not proven.",
-    "secret_cleanup": "Owned one-use member secret and local link deleted; absence verified."
+    "run_id": 39329142176,
+    "version": "0.2.562",
+    "status": "partial_member_behaviors",
+    "resource_invalid": false,
+    "guest_child_exit_code": 1,
+    "known": "All seven original picker/Escape boundary samples visible. First/memberfollowup terminalHTTP200 and firsttoolresume succeeded. Final memberpairedpaint proof failed separatelyD257.",
+    "hypothesis": "Escape-caused hiding was not reproduced in this validrun; originalintermittency remains unresolved, not a verified Escapebug.",
+    "secret_cleanup": "Owned one-use membersecret and local link deleted; absence reverified."
   },
   "diagnostic_source_review": {
     "first": "FAIL: diagnostic persistence interrupted cleanup; related source extraction tests red.",

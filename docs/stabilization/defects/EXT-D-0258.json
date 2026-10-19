@@ -1,0 +1,69 @@
+{
+  "id": "EXT-D-0258",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T14"],
+  "affected_product_case_ids": ["EXT-F-1003-T40", "EXT-F-1007-T08", "EXT-F-2005-T01"],
+  "title": "Public reviewer failures omit reproducible crop, Article visibility and picker failure boundaries",
+  "surface": "Exact Store guest public reviewer diagnostics",
+  "auth_mode": "guest; infrastructure observability, no product repair claim",
+  "severity": "S2: three valid native reviewer failures cannot be localized from retained evidence",
+  "priority": "P1: actionable original failure evidence before next candidate acceptance",
+  "state": "fixed",
+  "owner": "root/public_article_capture_diagnosis",
+  "preconditions": [
+    "Resource-valid frozen562 guest run39329484777 completed three Chat replies but reviewer controls remained incomplete."
+  ],
+  "reproduction": [
+    "Run the exact candidate public reviewer walkthrough.",
+    "Automatic-capture-off proof reports screenshot target unavailable without distinguishing missing/multiple/crop/hit boundaries.",
+    "Article expected heading is absent from sampled innerText but no textContent distinction or captured-payload availability is retained.",
+    "Data picker Done failure lacks the first fixed failure category and precleanup closed-shadow control state."
+  ],
+  "expected": "Preserve safe precise first failure evidence, strict original pass criteria and cleanup; distinguish unknown capture stages without adding debug APIs, second capture or untrusted error text.",
+  "actual": "Failures cannot be reproduced/localized from the original records alone; a Re-capture button crop is not Article content proof.",
+  "cause": "Generic catches and limited safe DOM projections drop the relevant boundary state.",
+  "evidence": [
+    "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json",
+    "docs/stabilization/reports/public-reviewer-probe-repair-20261019.json"
+  ],
+  "sibling_census": "All three failed reviewer controls share the owned helper; member temporal paint repair remains separate D257. Article privacy-link presence was diagnostic only, not an assertion; initial contrary diagnosis is refuted. Links privacy check and Article heading/stages remain strict.",
+  "acceptance_criteria": [
+    "Distinguish fixed crop target missing/multiple/geometry/hit failures without loosening crop.",
+    "Record safe Article textContent/innerText heading distinction and explicit unavailable capture/markdown stages.",
+    "Retain first fixed Data Done error/control counts before original Cancel cleanup; diagnostics may not bypass cleanup.",
+    "No arbitrary raw errors, IDs, credentials or private page text persisted.",
+    "Independent source A/B review, then fresh native replay retaining actionable original first-failure evidence."
+  ],
+  "verification": {
+    "source": "Fresh first review found divergent Article test gap; builder repaired it and final independent A/B PASS. Native diagnostic outcome pending.",
+    "product": "Missing native Article heading and Data Done cause remain unknown; no feature pass or product fix."
+  },
+  "fix_commit": "8ec03ea5b08968780a8470540710234df197dc10",
+  "next_action": "Commit reviewed helper/test unit, freeze all records with D257 and contributor changes, then one exact candidate native public reviewer probe.",
+  "transition_history": [
+    {
+      "at": "2026-10-19T22:05:02.915114Z",
+      "from": null,
+      "to": "open",
+      "reason": "Three exact562 reviewer failures retain insufficient first-boundary evidence."
+    },
+    {
+      "at": "2026-10-19T22:05:02.915114Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Read-only source/native evidence identifies generic diagnostics and independent unknown product boundary."
+    },
+    {
+      "at": "2026-10-19T22:05:02.915114Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Minimal helper diagnostics and meaningful divergent text tests reviewed; code commit and native evidence pending."
+    },
+    {
+      "at": "2026-10-19T22:08:14.073064Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Exact source unit pushed after fresh independent source behavior and quality PASS; repaired native acceptance remains pending."
+    }
+  ]
+}

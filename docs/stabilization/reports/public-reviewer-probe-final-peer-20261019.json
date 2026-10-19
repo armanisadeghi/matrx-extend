@@ -1,0 +1,26 @@
+{
+  "status": "DONE",
+  "priorFinding": {
+    "result": "ADDRESSED",
+    "finding": "The Article failure fixture did not distinguish rendered innerText from DOM textContent and could not guard the diagnostic distinction.",
+    "evidence": "The revised fixture leaves the public heading in textContent and one heading node while removing it from innerText; it asserts textContent=true, innerText=false, node_count=1, and textContent length greater than innerText length. The same run asserts Article remains FAIL at article_result, stages remain present, and Links remains PASS. The in-memory mutation that swaps the textContent diagnostic to innerText returns false for the diagnostic; the unmutated assertion requires true."
+  },
+  "verdictA": {
+    "result": "PASS for source behavior; native outcomes pending",
+    "evidence": [
+      "Article heading and stage wait conditions remain strict and the privacy link is still asserted in the separate Links result. The revised divergent-heading case confirms the new diagnostic does not turn Article green or make Links fail.",
+      "Crop missing/multiple/geometry/hit refusals and private-field projection were independently probed in the first peer review and have no source changes in this repair round.",
+      "The Done diagnostic remains before Cancel cleanup in the try/finally, and diagnostic read failure is caught without changing the Done failure code."
+    ],
+    "limits": "No native UI or hosted run was performed; actual Article, Settings crop, and Data Done product behavior remains to be verified."
+  },
+  "verdictB": {
+    "result": "PASS; no remaining findings in the reviewed two-file diagnostic patch",
+    "evidence": [
+      "node --test tests/browser/store-reviewer-demo-failure-boundaries.test.mjs tests/browser/store-reviewer-proof-projection.test.mjs: 7 passed, 0 failed on the revised diff.",
+      "git diff --check on the two owned files: pass.",
+      "The new fixture and in-memory mutation address the prior forcing-function gap without changing product code or acceptance predicates."
+    ],
+    "findings": []
+  }
+}
