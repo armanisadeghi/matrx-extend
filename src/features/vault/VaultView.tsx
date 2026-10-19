@@ -30,6 +30,7 @@ import {
   VaultApp,
   type VaultHostCapabilities,
   type VaultLocation,
+  type VaultUserStateDoor,
   createApiVaultPort,
   createVaultKnobs,
 } from '@ai-matrx/vault';
@@ -90,9 +91,15 @@ function VaultWorkspace({ actor }: { actor: Actor }) {
 
   const port = useMemo(() => {
     const supabase = getSupabase();
+    // The full generic query builders exceed TypeScript's comparison depth
+    // against VaultUserStateDoor. Pass both existing clients through intact:
+    // userState provides rpc and schema(...).from(...).select(...).in(...),
+    // while the platform-scoped client supplies the door's rpc.
+    const userState = supabase as unknown as VaultUserStateDoor;
+    const platformDoor = platformDb() as unknown as VaultUserStateDoor;
     return createApiVaultPort(createPackageApi(actor.organizationId), {
-      userState: supabase,
-      platformDoor: platformDb(),
+      userState,
+      platformDoor,
     });
   }, [actor.organizationId]);
   const knobs = useMemo(() => createVaultKnobs(getSupabase(), actor), [actor]);
