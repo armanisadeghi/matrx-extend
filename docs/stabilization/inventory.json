@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T20:51:44.045620+00:00",
+  "updated_at": "2026-10-19T21:03:00Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -7657,6 +7657,17 @@
                 "docs/stabilization/reports/hosted-guest-settings-batch-20261019.json"
               ]
             }
+          ],
+          "bounded_store_observations": [
+            {
+              "run_id": "published-guest-settings-native-20261019-01",
+              "version": "0.2.205",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Visible selection/restoration only; rendering/storage/reopen/full reload/runtime effects unverified; no independent retest or current-main credit.",
+              "evidence": "docs/stabilization/reports/store205-settings-guest-native-20261019.json"
+            }
           ]
         },
         {
@@ -8317,6 +8328,17 @@
                 "docs/stabilization/reports/hosted-guest-settings-batch-20261019.json"
               ]
             }
+          ],
+          "bounded_store_observations": [
+            {
+              "run_id": "published-guest-settings-native-20261019-01",
+              "version": "0.2.205",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Visible selection/restoration only; rendering/storage/reopen/full reload/runtime effects unverified; no independent retest or current-main credit.",
+              "evidence": "docs/stabilization/reports/store205-settings-guest-native-20261019.json"
+            }
           ]
         },
         {
@@ -8577,6 +8599,17 @@
               "independent_review": "4a5a8e98",
               "detail": "Independent review confirms original guest criteria.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            }
+          ],
+          "bounded_store_observations": [
+            {
+              "run_id": "published-guest-settings-native-20261019-01",
+              "version": "0.2.205",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Visible selection/restoration only; rendering/storage/reopen/full reload/runtime effects unverified; no independent retest or current-main credit.",
+              "evidence": "docs/stabilization/reports/store205-settings-guest-native-20261019.json"
             }
           ]
         },
