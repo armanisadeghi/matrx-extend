@@ -1,0 +1,44 @@
+{
+  "defect_id": "EXT-D-0255",
+  "reviewed_commit": "8df8de5fcfdef31617b1ac3e0c1066ac55c8b3b5",
+  "verdict_a": {
+    "result": "PASS_WITH_LIMITS",
+    "finding": "The exported production copier now accepts a complete writer-shaped startup bracket, omits it, and preserves the valid and invalid terminal decisions. The pre-fix copier from the reviewed commit's parent rejects both cases with JOURNAL_EVENT_UNSUPPORTED. The supplied completed native dev560-02 journal is admitted=true, resourceInvalid=false, decision=valid, exitCode=0 and is accepted by the copier, but it contains no startup bracket. The requested Store 205 journal path was absent; no Store journal result is claimed.",
+    "evidence": [
+      "Full canonical bracket direct-call comparison: old rejected; current accepted; bracket omitted; valid final preserved.",
+      "Full canonical bracket direct-call comparison: old rejected; current accepted; bracket omitted; invalid final preserved.",
+      "Focused Vitest tests/unit/hosted-resource-journal-copy.test.ts: 1 file, 23 tests passed.",
+      "Completed native journal dev560-native-refresh-20261019-02 accepted; source terminal values preserved. This infrastructure export is not product acceptance evidence."
+    ]
+  },
+  "verdict_b": {
+    "result": "PASS",
+    "finding": "The change reuses sanitizeStartupBracket from the guard writer, requires deep equality with its canonical finite sanitized shape, and drops the full bracket event. Extra event fields are rejected; injected secrets at the bracket and nested observed-process level are rejected with JOURNAL_EVENT_VALUE_UNSUPPORTED. The change does not touch resource thresholds, admission, watchdog, timeout, or runtime policy. Existing terminal validation remains active and both terminal branches were exercised through the actual exported copier.",
+    "evidence": [
+      "Top-level secret probe refused with JOURNAL_EVENT_FIELD_UNSUPPORTED.",
+      "Bracket and nested process secret probes refused with JOURNAL_EVENT_VALUE_UNSUPPORTED.",
+      "Reviewed only commit 8df8de5fc, not BASE..HEAD; source change is limited to canonical bracket shape validation and omission plus tests/report."
+    ]
+  },
+  "artifacts": {
+    "sanitized_native_output": "/tmp/resource-copier-peer-20261019/dev560-02.sanitized.jsonl",
+    "sanitized_native_output_sha256": "60ca0fde9f4b7a2b67cae0c47b9b62228ca3ce2dfb58e16ae67ea7b551674995",
+    "sanitized_native_output_mode": "0600",
+    "writer_shape_probe_sha256": "1f84efa60f9ec3cbbf33b62232c5878d9fc8f01636bd9a1da8f8940941eee182",
+    "scratch_report": "/tmp/resource-copier-peer-20261019/direct-check.json"
+  },
+  "limits": [
+    "The supplied dev560-02 source has no startup bracket, so writer compatibility is established by direct calls to the actual exported copier using a complete canonical writer-shaped bracket, not by a captured bracket event from that journal.",
+    "The specified Store 205 journal file was not present at the supplied path; no alternate Store evidence was substituted.",
+    "No browser, hosted job, CI, or product acceptance was run."
+  ],
+  "owner_rulings": [
+    {
+      "finding": "Requested Store205 raw journal absent",
+      "verdict": "refuted",
+      "reason": "Root found the exact supplied repository file and successfully ran the canonical copier using its absolute path; no source change or alternate evidence substitution.",
+      "sanitized_output": "docs/stabilization/evidence/chrome-native-20261019/store205-guest.sanitized.jsonl",
+      "sha256": "910192e1f57ca6dc027ed8120d3c35fdcec09cc3b9c2465f9dbf99763119972d"
+    }
+  ]
+}

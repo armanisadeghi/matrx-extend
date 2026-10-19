@@ -1,0 +1,43 @@
+{
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01"],
+  "auth_mode": "guest and member test infrastructure; no product behavior credit",
+  "state": "triaged",
+  "owner": "root",
+  "transition_history": [
+    {
+      "at": "2026-10-19T19:38:17.645459+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual test infrastructure failure retained."
+    },
+    {
+      "at": "2026-10-19T19:38:17.645459+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "First failing boundary reproduced or recorded; no product regression inferred."
+    }
+  ],
+  "id": "EXT-D-0254",
+  "surface": "Owned hosted Chromium profile startup",
+  "title": "Owned Chromium remains alive without its debugging endpoint at the configured startup deadline",
+  "severity": "S2: guest/member acceptance cannot reach product UI",
+  "priority": "P1: restore valid native acceptance before Store resubmission",
+  "reproduction": [
+    "Use exact adapted Store560 runtime through guarded hosted guest B39308206905 or member A39308413069 on macos-15-intel.",
+    "Observe owned_profile fail with owned_cdp_endpoint_timeout at about8000ms.",
+    "Privately inspect owned-child/SingletonLock/DevToolsActivePort observations and resource final; no auth, chat or reviewer step occurred."
+  ],
+  "expected": "A valid resource-admitted native browser either reaches its owned endpoint and product UI or produces sufficient bounded startup evidence to distinguish host pressure, stalled launch and program failure.",
+  "actual": "Both children were alive with matching singleton ownership and empty stderr, but no DevToolsActivePort at8,001/8,008ms. Guest exercise resource final is invalid and member exercise final missing; no product credit. Existing lane-A headed diagnostic39312706355 also timed out at8s; first positive endpoint observation was9,322ms after spawn,542ms into the post-timeout watch. Startup final invalid for CPU, so no product credit or causal proof.",
+  "evidence": [
+    "docs/stabilization/reports/candidate560-acceptance-20261019.json",
+    "docs/stabilization/reports/startup-probe-lane-a-20261019.json",
+    "docs/stabilization/reports/startup-bootstrap-escalation-20261019.json",
+    "docs/stabilization/reports/fixture-and-headless-peer-20261019.json"
+  ],
+  "cause": "Unknown. Host CPU pressure was observed but not proven causal; source comparison found no owned-launcher/connector change from559.",
+  "next_action": "One independently reviewed existing lane-A headless operational-viability diagnostic, only after successful exact-current-HEAD CI artifact and clean-source admission. Keep8s and resource gates unchanged; artifacts differ from prior run, so not a controlled same-artifact comparison. No Store build/upload before real candidate guest/member/reviewer acceptance.",
+  "active_diagnostic_run": null,
+  "completed_diagnostic_run": "39312706355"
+}

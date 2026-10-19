@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T17:50:48.104265Z",
+  "updated_at": "2026-10-19T19:57:31.082565+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -150,7 +150,9 @@
             "EXT-D-0246",
             "EXT-D-0248",
             "EXT-D-0249",
-            "EXT-D-0250"
+            "EXT-D-0250",
+            "EXT-D-0254",
+            "EXT-D-0255"
           ]
         },
         {
@@ -514,7 +516,9 @@
             "EXT-D-0249",
             "EXT-D-0250",
             "EXT-D-0251",
-            "EXT-D-0252"
+            "EXT-D-0252",
+            "EXT-D-0254",
+            "EXT-D-0255"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -524,9 +528,10 @@
             "integrated-compile-001",
             "integrated-install-002",
             "integrated-regression-001",
-            "dev-auth-readiness-001"
+            "dev-auth-readiness-001",
+            "39308206905"
           ],
-          "retest_status": "partial"
+          "retest_status": "Exact560 startup failed before product UI/auth/model, with zero product credit. D254 cause remains open; environment-only probe39312706355 pending. D255 copier infrastructure is independently closed after original writer-event refusal and surrounding terminal/redaction retests; no resource thresholds changed."
         },
         "member": {
           "test_status": "unverified",
@@ -538,7 +543,9 @@
             "EXT-D-0245",
             "EXT-D-0246",
             "EXT-D-0248",
-            "EXT-D-0251"
+            "EXT-D-0251",
+            "EXT-D-0254",
+            "EXT-D-0255"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -548,9 +555,10 @@
             "integrated-compile-001",
             "integrated-install-002",
             "integrated-regression-001",
-            "dev-auth-readiness-001"
+            "dev-auth-readiness-001",
+            "39308413069"
           ],
-          "retest_status": "not-run"
+          "retest_status": "Exact560 startup failed before product UI/auth/model, with zero product credit. D254 cause remains open; environment-only probe39312706355 pending. D255 copier infrastructure is independently closed after original writer-event refusal and surrounding terminal/redaction retests; no resource thresholds changed."
         },
         "admin": {
           "test_status": "unverified",
@@ -2395,7 +2403,7 @@
             "37269797985",
             "39303623065"
           ],
-          "retest_status": "Exact559 guest39303623065 has independently reviewed bounded first reply, same-conversation follow-up and new-conversation after panel reload; public Schema/SEO predicates pass, Settings/Capture/Links/Data fail. D253 reviewer helper source fix92ee994a8 awaits new native retest. No full feature or Store-installed559 pass; candidate is unsubmitted."
+          "retest_status": "Exact559 guest39303623065 has independently reviewed bounded first reply, same-conversation follow-up and new-conversation after panel reload; public Schema/SEO predicates pass, Settings/Capture/Links/Data fail. D253 reviewer helper source fix92ee994a8 awaits new native retest. No full feature or Store-installed559 pass; candidate is unsubmitted. Latest exact560 run failed owned CDP startup before UI; zero newer product acceptance credit, environment probe39312706355 pending; no Store upload."
         },
         "member": {
           "test_status": "partial",
@@ -2440,7 +2448,7 @@
             "37269797985",
             "39303737912"
           ],
-          "retest_status": "Exact559 member39303737912 verified real nonadmin authentication and approved organization, then failed hidden-panel proof before any Chat send. D248 remains unresolved; tested safe topology instrumentation41b7cecdd awaits hosted replay. No member product or full feature pass."
+          "retest_status": "Exact559 member39303737912 verified real nonadmin authentication and approved organization, then failed hidden-panel proof before any Chat send. D248 remains unresolved; tested safe topology instrumentation41b7cecdd awaits hosted replay. No member product or full feature pass. Latest exact560 run failed owned CDP startup before UI; zero newer product acceptance credit, environment probe39312706355 pending; no Store upload."
         },
         "admin": {
           "test_status": "partial",
@@ -23936,6 +23944,20 @@
               ],
               "detail": "Fast capture and busy/result behavior are observed, but no natural capture error and corresponding recovery actions are exercised."
             }
+          ],
+          "bounded_observations": [
+            {
+              "run_id": "store205-scrape-guest-native-20261019-01",
+              "mode": "guest",
+              "extension_version": "0.2.205",
+              "installation": "actual Store-installed",
+              "status": "partial",
+              "evidence": [
+                "docs/stabilization/reports/store205-scrape-guest-native-20261019.json",
+                "docs/stabilization/evidence/chrome-native-20261019/store205-scrape.sanitized.jsonl"
+              ],
+              "detail": "Operator observed Capture, Article, Links17 and matching Schema on public demo. Full cases remain partial; Images/Video/SEO, error recovery and reload unverified in this run; no current-main or development coverage."
+            }
           ]
         },
         {
@@ -25552,6 +25574,20 @@
                 "Warm empty Links zero rows/Add link/export invariance revalidated"
               ],
               "unverified": "Full extension reload stopped before replacement panel/open click: worker-retirement/activation proof missing. No post-reload Article/Links credit; no member/admin or full T08 pass."
+            }
+          ],
+          "bounded_observations": [
+            {
+              "run_id": "store205-scrape-guest-native-20261019-01",
+              "mode": "guest",
+              "extension_version": "0.2.205",
+              "installation": "actual Store-installed",
+              "status": "partial",
+              "evidence": [
+                "docs/stabilization/reports/store205-scrape-guest-native-20261019.json",
+                "docs/stabilization/evidence/chrome-native-20261019/store205-scrape.sanitized.jsonl"
+              ],
+              "detail": "Operator observed Capture, Article, Links17 and matching Schema on public demo. Full cases remain partial; Images/Video/SEO, error recovery and reload unverified in this run; no current-main or development coverage."
             }
           ]
         },

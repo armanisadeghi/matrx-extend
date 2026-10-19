@@ -20,7 +20,89 @@ const final = (fields: Record<string, unknown> = {}) =>
     ...fields,
   });
 
+const startupBracket = {
+  iostatStartedAt: '2026-10-04T20:02:59.757Z',
+  iostatCompletedAt: '2026-10-04T20:03:00.840Z',
+  beforeStartedAt: '2026-10-04T20:02:59.740Z',
+  beforeCompletedAt: '2026-10-04T20:02:59.757Z',
+  afterStartedAt: '2026-10-04T20:03:00.840Z',
+  afterCompletedAt: '2026-10-04T20:03:00.856Z',
+  resolutionSeconds: 0.01,
+  ownedAtStart: [12669, 12803],
+  ownedAtEnd: [12669, 12803],
+  exitedOrUnmatchedPids: [13103],
+  appearedPids: [13188],
+  categoryTotalsSeconds: {
+    ownedChromium: 0.36,
+    ownedOther: 0.03,
+    hostProvisioner: 0,
+    otherHost: 1.69,
+  },
+  observed: [
+    { pid: 12803, executable: 'Chromium Helper', category: 'ownedChromium', cpuSecondsDelta: 0.36 },
+  ],
+  otherHostObservedProcessCount: 523,
+  limitation:
+    'ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time.',
+};
+
 describe('hosted resource journal evidence copy', () => {
+  it.each([
+    ['valid', { admitted: true, resourceInvalid: false, exitCode: 0, decision: 'valid' }],
+    ['invalid', { admitted: true, resourceInvalid: true, exitCode: 3, decision: 'invalid' }],
+  ])('omits a safe writer startup bracket and preserves the exact %s final', (_name, fields) => {
+    const finalLine = `${event('RESOURCE_FINAL_DECISION', fields)}\n`;
+    const source = `${event('RESOURCE_ADMITTED', { mode: 'run' })}\n${event('RESOURCE_STARTUP_INTERVAL_BRACKET', { bracket: startupBracket })}\n${event('RESOURCE_WATCH_UNSAFE', { reasons: ['RESOURCE_CPU_BUSY'] })}\n${finalLine}`;
+    expect(sanitizeHostedResourceJournal(source, runId)).toBe(
+      `${event('RESOURCE_ADMITTED', { mode: 'run' })}\n${event('RESOURCE_WATCH_UNSAFE', { reasons: ['RESOURCE_CPU_BUSY'] })}\n${finalLine}`,
+    );
+  });
+
+  it.each([
+    [
+      'top-level secret',
+      { bracket: startupBracket, token: 'never-copy' },
+      'JOURNAL_EVENT_FIELD_UNSUPPORTED',
+    ],
+    [
+      'bracket secret',
+      { bracket: { ...startupBracket, accessToken: 'never-copy' } },
+      'JOURNAL_EVENT_VALUE_UNSUPPORTED',
+    ],
+    [
+      'nested process secret',
+      {
+        bracket: {
+          ...startupBracket,
+          observed: [{ ...startupBracket.observed[0], args: 'never-copy' }],
+        },
+      },
+      'JOURNAL_EVENT_VALUE_UNSUPPORTED',
+    ],
+    [
+      'nested totals secret',
+      {
+        bracket: {
+          ...startupBracket,
+          categoryTotalsSeconds: { ...startupBracket.categoryTotalsSeconds, privateTotal: 1 },
+        },
+      },
+      'JOURNAL_EVENT_VALUE_UNSUPPORTED',
+    ],
+    ['missing bracket', {}, 'JOURNAL_EVENT_VALUE_UNSUPPORTED'],
+  ])('refuses %s in a startup bracket', (_name, fields, code) => {
+    expect(() =>
+      sanitizeHostedResourceJournal(
+        `${event('RESOURCE_STARTUP_INTERVAL_BRACKET', fields)}\n${final()}\n`,
+        runId,
+      ),
+    ).toThrow(code);
+  });
+
+  it('accepts a safe unavailable bracket without exposing its process detail', () => {
+    const source = `${event('RESOURCE_STARTUP_INTERVAL_BRACKET', { bracket: { unavailable: true } })}\n${final()}\n`;
+    expect(sanitizeHostedResourceJournal(source, runId)).toBe(`${final()}\n`);
+  });
   it('removes only process attribution and preserves the exact child-failed final line', () => {
     const finalLine = `  ${final()}  `;
     const source = [
@@ -149,12 +231,6 @@ describe('hosted resource journal evidence copy', () => {
     ).toThrow('JOURNAL_EVENT_FIELD_UNSUPPORTED');
     expect(() =>
       sanitizeHostedResourceJournal(
-        `${event('RESOURCE_STARTUP_INTERVAL_BRACKET', { bracket: { pid: 8124 } })}\n${final()}`,
-        runId,
-      ),
-    ).toThrow('JOURNAL_EVENT_UNSUPPORTED');
-    expect(() =>
-      sanitizeHostedResourceJournal(
         `${event('RESOURCE_ADMITTED', { sample: { pressureLevel: 1, accessToken: 'never-copy' } })}\n${final()}`,
         runId,
       ),
@@ -184,7 +260,7 @@ describe('hosted resource journal evidence copy', () => {
     const directory = await mkdtemp(join(tmpdir(), 'resource-journal-copy-'));
     const sourcePath = join(directory, 'source.jsonl');
     const outputPath = join(directory, 'shared.jsonl');
-    const source = `${event('RESOURCE_JOURNAL_OPENED', { path: sourcePath })}\n${event('RESOURCE_ADMITTED', { mode: 'run' })}\n${final()}\n`;
+    const source = `${event('RESOURCE_JOURNAL_OPENED', { path: sourcePath })}\n${event('RESOURCE_ADMITTED', { mode: 'run' })}\n${event('RESOURCE_STARTUP_INTERVAL_BRACKET', { bracket: startupBracket })}\n${final()}\n`;
     const expected = `${event('RESOURCE_JOURNAL_OPENED')}\n${event('RESOURCE_ADMITTED', { mode: 'run' })}\n${final()}\n`;
     try {
       await writeFile(sourcePath, source, { mode: 0o600 });

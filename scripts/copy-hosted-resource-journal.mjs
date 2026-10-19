@@ -5,6 +5,8 @@
 import { open, readFile, realpath } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { isDeepStrictEqual } from 'node:util';
+import { sanitizeStartupBracket } from './stabilization-resource-journal.mjs';
 
 const FINAL_DECISIONS = new Set(['refused', 'invalid', 'valid', 'child_failed', 'interrupted']);
 const COMMON_FIELDS = ['schema', 'at', 'runId', 'code'];
@@ -56,6 +58,7 @@ const EVENT_FIELDS = new Map([
   ['RESOURCE_CPU_RECOVERED', ['reasons', 'sample']],
   ['RESOURCE_WATCH_HEALTHY', ['reasons', 'sample']],
   ['RESOURCE_PROCESS_ATTRIBUTION', ['processes', 'unavailable']],
+  ['RESOURCE_STARTUP_INTERVAL_BRACKET', ['bracket']],
   ['RESOURCE_STOP_AT_SAFE_BOUNDARY', ['reasons']],
   ['RESOURCE_BROWSER_OPERATOR_STOP_REQUIRED', ['instruction']],
   ['RESOURCE_RECOVERY_SAMPLES_READY', ['previousRunId']],
@@ -174,6 +177,16 @@ export function sanitizeHostedResourceJournal(source, runId) {
     if (hasMeasurementDetail && event.detail !== event.code)
       refuse('JOURNAL_EVENT_VALUE_UNSUPPORTED');
     if (!validKnownValues(event)) refuse('JOURNAL_EVENT_VALUE_UNSUPPORTED');
+    if (event.code === 'RESOURCE_STARTUP_INTERVAL_BRACKET') {
+      let sanitizedBracket;
+      try {
+        sanitizedBracket = sanitizeStartupBracket(event.bracket);
+      } catch {
+        refuse('JOURNAL_EVENT_VALUE_UNSUPPORTED');
+      }
+      if (!isDeepStrictEqual(event.bracket, sanitizedBracket))
+        refuse('JOURNAL_EVENT_VALUE_UNSUPPORTED');
+    }
 
     records.push(event);
     if (event.code === 'RESOURCE_FINAL_DECISION') {
@@ -181,7 +194,11 @@ export function sanitizeHostedResourceJournal(source, runId) {
       finalRecordIndex = records.length - 1;
       if (!validFinalDecision(event)) refuse('JOURNAL_FINAL_DECISION_INVALID');
     }
-    if (event.code === 'RESOURCE_PROCESS_ATTRIBUTION') continue;
+    if (
+      event.code === 'RESOURCE_PROCESS_ATTRIBUTION' ||
+      event.code === 'RESOURCE_STARTUP_INTERVAL_BRACKET'
+    )
+      continue;
     if (event.code === 'RESOURCE_JOURNAL_OPENED' && Object.hasOwn(event, 'path')) {
       const { path: _path, ...sanitized } = event;
       kept.push(`${JSON.stringify(sanitized)}${chunk.slice(line.length)}`);

@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "scope": "One guarded hosted Chrome startup environment diagnostic using the current development artifact; no authentication, product action, or acceptance claim.",
+  "status": "TERMINAL_DIAGNOSTIC_CAPTURED",
+  "workflow_source_sha": "0fadf14304f7e59cb9ba8ec8586db91c8f5a3b29",
+  "diagnostic_run_id": 39312706355,
+  "diagnostic_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39312706355",
+  "diagnostic_conclusion": "failure",
+  "diagnostic_artifact": {
+    "artifact_id": 12216658950,
+    "artifact_name": "hosted-guest-39312706355-1",
+    "artifact_digest": "sha256:2d445bec72e7833f39887cb81a13a73620405f9e7143edc9de2ca1a5ba6f1307"
+  },
+  "case": "startup-resource-diagnostic",
+  "lane": "A",
+  "runner_label": "macos-15-intel",
+  "runner_arch": "X64",
+  "display_mode": "headed",
+  "requested_by": "extend-stabilization",
+  "development_artifact": {
+    "run_id": 39309963996,
+    "artifact_id": 12216811946,
+    "artifact_digest": "sha256:043e50b46942d88b37d1afe13c92b1ead3068ba4c0a4c096e6c739dd0a6bc0ff",
+    "source_sha": "0fadf14304f7e59cb9ba8ec8586db91c8f5a3b29",
+    "ci_conclusion": "success"
+  },
+  "admission": "Existing scripts/hosted-remote-admission.mjs plan-startup-diagnostic and dispatch-startup-diagnostic accepted one run with a clean, exact local/remote/source SHA. No direct dispatch or guard change.",
+  "runtime": {
+    "browser_version": "Chromium 141.0.7390.37",
+    "launcher": "Existing owned Chrome child with fresh profile, ephemeral loopback debugging port, development extension and about:blank; no launcher changes.",
+    "display_mode_verified": false
+  },
+  "endpoint_timeline": {
+    "browser_spawn_at": "2026-10-19T19:45:16.946Z",
+    "cdp_connect_started_at": "2026-10-19T19:45:16.952Z",
+    "deadline_ms": 8000,
+    "connector_failure": "owned_cdp_endpoint_timeout",
+    "connector_elapsed_ms": 8013,
+    "connector_polls": 212,
+    "longest_endpoint_read_ms": 1003,
+    "timer_samples": 42,
+    "longest_timer_delay_ms": 913,
+    "profile_lock_at_deadline": "spawned_child",
+    "child_alive_at_deadline": true,
+    "devtools_listening_stderr_observed": false,
+    "timeout_observation_at": "2026-10-19T19:45:25.722Z",
+    "post_timeout_observation_at": "2026-10-19T19:45:26.268Z",
+    "post_timeout_poll_count": 6,
+    "post_timeout_watch_elapsed_ms": 542,
+    "endpoint_present_post_timeout": true,
+    "child_alive_post_timeout": true,
+    "interpretation": "DevToolsActivePort was absent at the existing deadline and present within the first 542 ms of the post-timeout watch. Its exact publication instant was not captured. The endpoint arrived too late for the unchanged connector; the run did not attempt a second connection."
+  },
+  "native_result": {
+    "last_stage": "cdp_connect",
+    "panel_ready": false,
+    "gpu_status": "UNKNOWN",
+    "failure_code": "STARTUP_PANEL_DIAGNOSTIC_FAILED"
+  },
+  "resource_result": {
+    "package_final": "valid; exit 0",
+    "browser_final": "valid; exit 0",
+    "startup_final": "invalid; exit 3",
+    "startup_admitted_cpu_busy_fraction": 0.07857142857142856,
+    "startup_cpu_pending_at": "2026-10-19T19:45:25.708Z",
+    "startup_cpu_pending_busy_fraction": 1,
+    "startup_bracket_category_cpu_seconds": {
+      "owned_chromium": 0.97,
+      "owned_other": 0.05,
+      "host_provisioner": 0.02,
+      "other_host": 5.57
+    },
+    "interpretation": "The startup phase failed and was resource-invalid. CPU pressure overlaps the timeout, but its process bracket is a snapshot and does not establish CPU as the sole cause. No startup resource journal was included in the uploaded artifact; these bounded fields were extracted from private workflow logs."
+  },
+  "cause_confidence": "CONFIRMED that endpoint publication missed the 8-second deadline in this run but occurred shortly afterward while the owned child remained alive. UNPROVEN whether host CPU contention, package startup, browser behavior, or another factor caused the delay; this development artifact is not Store 560.",
+  "comparison": "The earlier resource-valid hosted diagnostic 38190832099 connected within 2565 ms under the same 8-second deadline, with a different development artifact. This single run cannot isolate the source or host condition that changed.",
+  "evidence": [
+    "docs/stabilization/evidence/startup-probe-lane-a/run39312706355/startup-interval-diagnostic.sanitized.json"
+  ],
+  "cleanup": "The harness finally block terminates only its spawned Chrome child and removes its temporary profile; the run propagated the original timeout rather than a child-termination error. The hosted VM was disposable. No auth fixture, product write, or panel action ran.",
+  "limits": [
+    "The post-timeout watcher checked for file presence only; it did not verify a CDP handshake or extension UI after the deadline.",
+    "The uploaded artifact contained the startup report but no resource journals; raw workflow logs remain private and are not committed.",
+    "No root-cause fix, timeout change, rerun, or Store build was made."
+  ],
+  "product_credit": 0
+}

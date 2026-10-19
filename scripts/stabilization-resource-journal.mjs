@@ -66,7 +66,7 @@ const safeExecutable = (value) =>
     return code >= 32 && code !== 127;
   });
 
-function sanitizeStartupBracket(bracket) {
+export function sanitizeStartupBracket(bracket) {
   if (!bracket || typeof bracket !== 'object' || Array.isArray(bracket))
     throw new Error('invalid startup bracket');
   const timestamps = Object.fromEntries(

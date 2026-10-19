@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "status": "ESCALATE_ROOT_EXPERIMENT_DECISION",
+  "defect": "EXT-D-0254",
+  "scope": "Bootstrap correction assessment plus one surrounding admission-test fixture repair; no Chrome launch, hosted dispatch, auth, model call, runtime source edit, resource policy change, or product acceptance.",
+  "finding": "No demonstrated bootstrap implementation defect or justified new deadline was found. The requested correction cannot be claimed from the available resource-invalid run.",
+  "causal_boundary": {
+    "confirmed": "The owned child stayed alive and its profile endpoint became present after the unchanged endpoint wait expired. The final startup resource verdict was invalid.",
+    "not_confirmed": "CPU pressure as cause, CDP handshake readiness after publication, display initialization as cause, or suitability of a larger deadline on a healthy host.",
+    "timing_correction": "542 ms is the post-timeout watcher duration, not time from the connector deadline. The first endpoint-present observation timestamp minus browser_spawn is 9322 ms (19:45:26.268 minus 19:45:16.946). Timestamped absence is at 8776 ms after spawn. Diagnostic/reporting latency and sampling mean neither value is the exact publication instant. Do not infer an 8542 ms readiness bound.",
+    "evidence": "docs/stabilization/evidence/startup-probe-lane-a/run39312706355/startup-interval-diagnostic.sanitized.json"
+  },
+  "existing_contract": {
+    "knob": "docs/stabilization/resource-policy.json:nativeCdpStartupDeadlineMs=8000",
+    "owner": "tests/browser/native-sidepanel-qa-harness.mjs:connectNativeStartupOwnedCdp",
+    "historical_basis": ".research/native-startup-deadline-repair-20261008.json records resource-valid run37785284577, endpoint observed after the prior 5000 ms limit; repair37ca7d88 already addressed that demonstrated boundary.",
+    "siblings": "Shared native harness routes through this policy. Raw connectOwnedCdp defaults remain appropriate for subsequent transport connections; widening them would broaden scope. Endpoint validation and process/profile ownership are still checked before connection, and spawned-child identity is checked before native panel work.",
+    "resource_contract": "awaitNativeResourceHealth and runNativeResourceAction retain owner, stale-health, pending-CPU, unsafe, and stop refusions. Their recovery budgets come from the existing resource policy. A larger endpoint wait cannot make an invalid resource verdict valid."
+  },
+  "ranked_hypotheses": [
+    {
+      "cause": "Headed display initialization contributes materially to startup delay",
+      "falsifier": "With only existing startup_display_mode changed to headless, the admitted diagnostic still times out before its endpoint or ends resource-invalid; that rejects headless as a sufficient operational remedy.",
+      "test": "One root-approved existing guarded lane A startup-resource-diagnostic with headless, same Intel runner class and exact development artifact, unchanged 8000 ms policy. No acceptance case or credentials."
+    },
+    {
+      "cause": "The deadline is insufficient even on a healthy host",
+      "falsifier": "A resource-valid unchanged-deadline diagnostic connects within 8000 ms; late publication only on invalid runs does not support changing the deadline.",
+      "test": "Retain current cutoff and post-timeout observation in the controlled diagnostic; require resource-valid final journal before considering a policy change. No new deadline proposed."
+    },
+    {
+      "cause": "A current bootstrap-code regression replaced a previously correct endpoint wait or owner boundary",
+      "falsifier": "Current real-file boundary guard accepts delayed owned publication and rejects missing endpoints/foreign ownership while resource boundary still rejects unhealthy evidence.",
+      "test": "Existing focused boundary suite passed 10/10. This excludes those tested regression classes, not real Chrome startup behavior."
+    }
+  ],
+  "decision_for_root": {
+    "recommendation": "Do not widen the startup deadline or resume Store A/B acceptance. If another paid experiment is warranted after independent review, authorize exactly one environment-only headless diagnostic through existing plan-startup-diagnostic/dispatch-startup-diagnostic. This changes a supported configuration variable rather than repeating the failed headed run.",
+    "go_conditions": "Root go, fresh independent review, normal exact-source/artifact admission, lane capacity, current spend admission, and unchanged resource admission all required. Resolve any exact-source mismatch by the existing process; no source allowlist bypass.",
+    "outcome_rule": "A connected endpoint plus valid complete resource journals permits evaluation of headless as an operational diagnostic route; it is not product acceptance or proof that headed startup is repaired. Another timeout or invalid resource final stops this hypothesis without a second retry. A source fix must follow new causal evidence, not another deadline guess.",
+    "limitation": "Different ephemeral hosts remain a confounder; one successful headless run would show viability, not isolate display as sole cause. Historical headless run37793909272 succeeded at3196ms but used a different artifact and cannot establish current viability."
+  },
+  "verification": {
+    "command": "node --test tests/browser/native-cdp-startup-deadline.test.mjs tests/browser/native-cdp-startup-boundary.test.mjs tests/browser/native-resource-boundary.test.mjs",
+    "result": "10 passed, 0 failed; 12.37 seconds. Existing old-cutoff RED and policy-path GREEN boundary remains effective.",
+    "new_tests": "None: no implementation change and no manufactured new timeout target.",
+    "product_credit": 0,
+    "surrounding_regression": {
+      "path": "scripts/hosted-remote-admission.test.mjs",
+      "cause": "Isolated standalone CLI fixture omitted the transitive stabilization-resource-journal.mjs import introduced by the journal copier. Production checkout includes the module.",
+      "red": "Existing full suite failed its standalone refusal test with ERR_MODULE_NOT_FOUND; test expected HOSTED_MODE_INVALID.",
+      "green": "Add the actual dependency to the fixture copy list; targeted real CLI test passes both invalid-mode and invalid-lane refusals without installed packages.",
+      "census": "Only standalone scratch fixture copying copy-hosted-resource-journal.mjs uses this explicit dependency list.",
+      "scope_limit": "Verification fixture repair only; cannot resume Chrome acceptance or explain late endpoint publication."
+    },
+    "surrounding_suite": "node --test scripts/hosted-remote-admission.test.mjs: all tests passed after isolated fixture dependency repair (see commit validation).",
+    "lint": "pnpm -s lint: exit 0; 3119 files checked, 926 existing warnings. Own test syntax and git diff --check pass; report formatted through Biome stdin because stabilization report directory is excluded."
+  },
+  "cleanup": "No browser/window or profile touched. No temporary source mutation, child browser, credential, or hosted run created. Root retains defect/inventory ownership. Remove this working decision report when EXT-D-0254 has a verified remedy."
+}

@@ -1,0 +1,85 @@
+{
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01"],
+  "auth_mode": "guest and member test infrastructure; no product behavior credit",
+  "state": "closed",
+  "owner": "resource_journal_copier_fix",
+  "transition_history": [
+    {
+      "at": "2026-10-19T19:38:17.645459+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual test infrastructure failure retained."
+    },
+    {
+      "at": "2026-10-19T19:38:17.645459+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "First failing boundary reproduced or recorded; no product regression inferred."
+    },
+    {
+      "at": "2026-10-19T19:41:19.854075+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded source repair and actual copier tests assigned after source freeze lifted."
+    },
+    {
+      "at": "2026-10-19T19:46:09.644130+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source8df8de5fc reuses writer canonical sanitizer and deep equality, omits validated bracket, preserves terminal truth; source self-verification complete."
+    },
+    {
+      "at": "2026-10-19T19:57:31.082565+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Surrounding standalone hosted-admission fixture regressed: missing transitive journal module import produced ERR_MODULE_NOT_FOUND."
+    },
+    {
+      "at": "2026-10-19T19:57:31.082565+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Restore the isolated fixture dependency without changing runtime guards."
+    },
+    {
+      "at": "2026-10-19T19:57:31.082565+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "ec2da38b7 adds the missing fixture dependency; builder admission32/32, boundary10/10 and lint pass."
+    },
+    {
+      "at": "2026-10-19T19:57:31.082565+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh zero-authorship fixture peer reproduced old failure; current admission32/32 and boundary10/10 pass. Copier original reproduction separately independently passed."
+    },
+    {
+      "at": "2026-10-19T19:57:31.082565+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original copier refusal and surrounding admission regression independently verified. Infrastructure closure only; Chrome startup and product acceptance remain open."
+    }
+  ],
+  "id": "EXT-D-0255",
+  "surface": "Canonical resource journal evidence copier",
+  "title": "Canonical copier rejects the active guard writer startup interval event",
+  "severity": "S3: complete sanitized resource evidence is unavailable for independent review",
+  "priority": "P2: repair exact known-event schema without loosening redaction",
+  "reproduction": [
+    "Run copy-hosted-resource-journal.mjs on a valid resource writer journal containing RESOURCE_STARTUP_INTERVAL_BRACKET followed by its terminal decision.",
+    "Observe JOURNAL_EVENT_UNSUPPORTED; valid and invalid final decisions cannot be retained through the supported copier."
+  ],
+  "expected": "The canonical copier accepts the exact safe writer schema, rejects extra or secret-bearing fields, and retains the original resource final honestly.",
+  "actual": "The supported copier rejects the known writer event. Multiple test reports retain only bounded manual finals and disclose the missing full sanitized stream.",
+  "evidence": [
+    "docs/stabilization/reports/candidate560-acceptance-20261019.json",
+    "docs/stabilization/reports/resource-journal-copier-fix-20261019.json",
+    "docs/stabilization/reports/resource-copier-fresh-peer-20261019.json",
+    "docs/stabilization/reports/fixture-and-headless-peer-20261019.json"
+  ],
+  "cause": "Writer/copy event vocabularies differed; canonical sanitizer reuse repairs the exact event. Its new transitive import required updating the standalone admission fixture, independently retested.",
+  "next_action": "Use canonical copier for subsequent journals. Existing refused/invalid/missing finals remain honest; continue separately tracked D254 startup diagnosis.",
+  "fix_sha": "8df8de5fc",
+  "reviewer": "Fresh independent A PASS_WITH_LIMITS and B PASS; actual exported copier parent RED/current GREEN, invalid/valid final truth and secret refusal cases pass. No product acceptance credit.",
+  "fix_shas": ["8df8de5fc", "ec2da38b7"]
+}
