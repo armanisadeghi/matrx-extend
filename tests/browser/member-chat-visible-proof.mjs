@@ -1,7 +1,7 @@
-import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { restoreMemberForeground } from './member-foreground-diagnostic.mjs';
+import { waitFor } from './settings-panel-driver.mjs';
 
 const SAFE_REASONS = new Set([
   'eligible',
@@ -190,6 +190,7 @@ export async function requireMemberAnswerEvidence({
   artifacts,
   evaluateProof,
   capture,
+  waitForReady = waitFor,
 }) {
   report.member_answer_diagnostic = { phase_timing: {} };
   const probe = async (phase) => {
@@ -210,46 +211,113 @@ export async function requireMemberAnswerEvidence({
       };
     }
   };
-  const proof = await probe('immediate');
-  report.member_answer_proof = sanitizeMemberAnswerProof(proof);
-  report.member_answer_diagnostic.immediate = sanitizeMemberAnswerDiagnostic(proof);
-  let screenshotCaptured = false;
+  const immediate = await probe('immediate');
+  const eligiblePaint = (proof) =>
+    proof?.eligible === true &&
+    proof.painted === true &&
+    expectedTerms.length > 0 &&
+    expectedTerms.every((_term, index) => proof.term_visible?.[index] === true);
+  report.member_answer_proof = sanitizeMemberAnswerProof(immediate);
+  report.member_answer_diagnostic.immediate = sanitizeMemberAnswerDiagnostic(immediate);
+  let ready = immediate;
+  if (!eligiblePaint(ready)) {
+    try {
+      ready = await waitForReady(
+        'reviewer_answer_paint_ready',
+        async () => {
+          const sample = await probe('paint_ready');
+          report.member_answer_diagnostic.paint_ready = sanitizeMemberAnswerDiagnostic(sample);
+          return sample;
+        },
+        eligiblePaint,
+        undefined,
+        sanitizeMemberAnswerProof,
+      );
+    } catch {
+      report.member_answer_diagnostic.paint_ready_failed = true;
+      try {
+        report.screenshots.visible_answer_initial = await capture(
+          panel,
+          artifacts,
+          'reviewer-chat-visible-answer-initial',
+        );
+      } catch {
+        report.member_answer_diagnostic.initial_screenshot_capture_failed = true;
+      }
+      throw new Error('reviewer_chat_visible_answer_unverified');
+    }
+  }
+  const initialArticle = immediate?.diagnostic?.article_id_hash;
+  const initialArticleIndex = immediate?.diagnostic?.selected_article_index;
+  const initialTranscriptIndex = immediate?.diagnostic?.selected_transcript_index;
+  const identity = ready?.diagnostic?.article_id_hash;
+  if (
+    !eligiblePaint(ready) ||
+    !/^[0-9a-f]{16}$/.test(identity ?? '') ||
+    identity !== initialArticle ||
+    !Number.isInteger(ready?.diagnostic?.selected_article_index) ||
+    ready.diagnostic.selected_article_index < 0 ||
+    ready.diagnostic.selected_article_index !== initialArticleIndex ||
+    !Number.isInteger(ready?.diagnostic?.selected_transcript_index) ||
+    ready.diagnostic.selected_transcript_index < 0 ||
+    ready.diagnostic.selected_transcript_index !== initialTranscriptIndex ||
+    ready?.diagnostic?.selected_chat_tab_count !== 1 ||
+    ready?.diagnostic?.active_chat_pane_count !== 1
+  ) {
+    report.member_answer_proof = {
+      ...sanitizeMemberAnswerProof(ready),
+      eligible: false,
+      reason: 'paired_proof_unverified',
+    };
+    throw new Error('reviewer_chat_visible_answer_unverified');
+  }
   try {
     report.screenshots.visible_answer_proof = await capture(
       panel,
       artifacts,
       'reviewer-chat-visible-answer-proof',
     );
-    screenshotCaptured = true;
   } catch {
-    report.member_answer_proof.screenshot_capture_failed = true;
+    report.member_answer_proof = {
+      ...sanitizeMemberAnswerProof(ready),
+      eligible: false,
+      reason: 'screenshot_missing',
+      screenshot_capture_failed: true,
+    };
+    throw new Error('reviewer_chat_visible_answer_screenshot_missing');
   }
-  if (proof?.eligible !== true) {
-    try {
-      const nextFrame = await probe('next_frame');
-      report.member_answer_diagnostic.next_frame = sanitizeMemberAnswerDiagnostic(nextFrame);
-    } catch {
-      report.member_answer_diagnostic.next_frame_failed = true;
-    }
-    try {
-      const scrolled = await probe('scroll_bottom');
-      report.member_answer_diagnostic.scroll_bottom = sanitizeMemberAnswerDiagnostic(scrolled);
-      try {
-        report.screenshots.visible_answer_after_scroll = await capture(
-          panel,
-          artifacts,
-          'reviewer-chat-visible-answer-after-scroll',
-        );
-      } catch {
-        report.member_answer_diagnostic.scroll_screenshot_capture_failed = true;
-      }
-    } catch {
-      report.member_answer_diagnostic.scroll_probe_failed = true;
-    }
+  let afterCapture;
+  try {
+    afterCapture = await probe('post_capture');
+  } catch {
+    report.member_answer_proof = {
+      ...sanitizeMemberAnswerProof(ready),
+      eligible: false,
+      reason: 'paired_proof_unverified',
+    };
+    report.member_answer_diagnostic.post_capture_failed = true;
+    throw new Error('reviewer_chat_visible_answer_unverified');
   }
-  assert.equal(proof?.eligible, true, 'reviewer_chat_visible_answer_unverified');
-  assert.equal(screenshotCaptured, true, 'reviewer_chat_visible_answer_screenshot_missing');
-  return proof;
+  report.member_answer_diagnostic.post_capture = sanitizeMemberAnswerDiagnostic(afterCapture);
+  report.member_answer_proof = sanitizeMemberAnswerProof(afterCapture);
+  if (
+    !eligiblePaint(afterCapture) ||
+    afterCapture?.diagnostic?.article_id_hash !== identity ||
+    afterCapture?.diagnostic?.selected_article_index !==
+      ready?.diagnostic?.selected_article_index ||
+    afterCapture?.diagnostic?.selected_transcript_index !==
+      ready?.diagnostic?.selected_transcript_index ||
+    afterCapture?.diagnostic?.selected_chat_tab_count !== 1 ||
+    afterCapture?.diagnostic?.active_chat_pane_count !== 1
+  ) {
+    report.member_answer_proof = {
+      ...sanitizeMemberAnswerProof(afterCapture),
+      eligible: false,
+      reason: 'paired_proof_unverified',
+    };
+    throw new Error('reviewer_chat_visible_answer_unverified');
+  }
+  return afterCapture;
 }
 
 /** Runner seam: retain actual CDP image and failure report even when the proof rejects. */
@@ -260,6 +328,7 @@ export async function runMemberAnswerProofBoundary({
   artifacts,
   output,
   evaluateProof,
+  waitForReady,
 }) {
   try {
     return await requireMemberAnswerEvidence({
@@ -269,6 +338,7 @@ export async function runMemberAnswerProofBoundary({
       artifacts,
       evaluateProof,
       capture: captureReviewerPanel,
+      ...(waitForReady && { waitForReady }),
     });
   } catch (error) {
     recordReviewerFailure(report, 'reviewer_two_turn_terminal_proof', error);
