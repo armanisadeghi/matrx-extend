@@ -106,9 +106,11 @@ export function LiveDataOffer({ url, signedIn }: { url: string; signedIn: boolea
           />
         </label>
         {limit && <span className="text-muted-foreground">limit {limit.value}</span>}
-        <span className="ml-auto text-muted-foreground" data-testid="live-data-points">
-          {points == null ? 'cost shown after run' : `about ${formatCount(points)} points`}
-        </span>
+        {points != null && (
+          <span className="ml-auto text-muted-foreground" data-testid="live-data-points">
+            {`about ${formatCount(points)} points`}
+          </span>
+        )}
       </div>
       <Button size="sm" className="h-7 w-full rounded-full text-xs" disabled={busy} onClick={run}>
         {busy ? <Loader2 className="mr-1 size-3 animate-spin" /> : null}
