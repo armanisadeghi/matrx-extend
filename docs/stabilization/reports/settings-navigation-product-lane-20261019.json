@@ -1,0 +1,60 @@
+{
+  "task_id": "settings-navigation-product-lane-20261019",
+  "lane": "A",
+  "model": "GPT-6 Luna / medium",
+  "status": "blocked_normal_admission_refused",
+  "source": {
+    "head": "2e809f9425c86f4cb738cf273a158fd881805c30",
+    "clean": true,
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "guarded_driver": "scripts/hosted-guest-acceptance.mjs"
+  },
+  "recommended_existing_case": {
+    "acceptance_case": "settings-account-popover-guest",
+    "inventory_cases": [
+      {
+        "id": "EXT-F-1001-T19",
+        "control": "Guest Profile menu entry hidden"
+      },
+      {
+        "id": "EXT-F-1001-T22",
+        "control": "Preferences menu entry opens Settings and closes popover"
+      },
+      {
+        "id": "EXT-F-1001-T25",
+        "control": "Guest Sign out action preserves guest state through reload"
+      }
+    ],
+    "expected_coverage": "Actual guest sidepanel navigation and role visibility; existing native driver verifies warm interaction and reload identity. This is bounded to those controls, not all Settings."
+  },
+  "required_inputs": [
+    "Successful eligible CI development run ID plus exact artifact ID/source matching frozen candidate; the route requires a CI development receipt and rejects release/Store payloads for Settings acceptance.",
+    "Hosted workflow acceptance_case=settings-account-popover-guest, acceptance_lane=A; lane A only during the existing release build as directed by root.",
+    "Existing disposable genuinely signed-out profile; no auth, shared-account fixture, or backend write is required."
+  ],
+  "guard_and_spend": {
+    "route": "Existing hosted-guest-acceptance.yml -> normal admission + hosted-guest-acceptance.mjs; settings-account-popover-guest uses tests/browser/settings-account-popover-native.mjs.",
+    "host_resource": "Source ancestry and idle hosted lane checks passed. Normal dispatcher scripts/hosted-remote-admission.mjs plan-settings-guest was invoked for the authorized source/artifact and lane A combination; it refused with HOSTED_SETTINGS_GUEST_CASE_MODE_MISMATCH because its only guest settings cases are settings-controls and settings-auto-scrape-capture on lane B. No direct workflow dispatch or bypass attempted.",
+    "weekly_spend": "Fresh canonical read (2026-10-19T23:20:00.603618Z) returned $59.50 complete against $100, stale=false. Root confirmed policy defines the below-cap total as on-budget; the service off_track flag is a separate advisory, not the spend-cap verdict."
+  },
+  "cases": {
+    "actually_passed": [],
+    "actually_failed": [],
+    "pending": ["EXT-F-1001-T19", "EXT-F-1001-T22", "EXT-F-1001-T25"],
+    "pending_reason": "All selected cases remain pending; no product interaction took place."
+  },
+  "evidence": {
+    "version": null,
+    "source_sha": null,
+    "backend": "Not used; guest navigation-only path.",
+    "resources": "No hosted job dispatched; normal admission refusal preserved. Zero product evidence/credit.",
+    "files": [
+      ".github/workflows/hosted-guest-acceptance.yml",
+      "scripts/hosted-guest-acceptance.mjs",
+      "tests/browser/settings-account-popover-native.mjs",
+      "docs/stabilization/inventory.json"
+    ]
+  },
+  "fixture_secret_cleanup": "No fixture or secret staged; nothing to clean up.",
+  "next_action": "The normal admission route must be updated and reviewed to admit this already-existing guest popover case on the approved lane, or the owner must select a currently admitted case. Do not bypass the refusal."
+}

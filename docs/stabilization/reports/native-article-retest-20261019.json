@@ -1,0 +1,61 @@
+{
+  "task": "native_article_retest",
+  "date": "2026-10-19",
+  "scope": "Independent native retest of EXT-D-0260 on the promoted unpacked development extension; original Article heading-loss reproduction plus surrounding Links, Schema, and SEO capture surfaces.",
+  "candidate": {
+    "source_sha": "0708b3001019f570b34f0fcd7ee835edf3f53331",
+    "ci_run_id": 39340603045,
+    "ci_artifact_id": 12229291733,
+    "version": "0.2.564",
+    "tree_sha256": "448ded8b08d76c81b808adf942c0a44da9736f9f9c62942d7816a998daa5e7dd",
+    "dev_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "dev_loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "dev_enabled": true,
+    "dev_pinned": true,
+    "store_extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "store_version": "0.2.205",
+    "store_enabled": true,
+    "store_pinned": true,
+    "chrome_profile": "Profile 8 (Chrome About Version)",
+    "chrome_version": "155.0.8059.82 (Official Build) (arm64)",
+    "auth_role_observed": "ADMIN (dev extension Settings \u2192 Account)",
+    "target_url": "https://www.aimatrx.com/matrx-extend-demo"
+  },
+  "verdicts": {
+    "A_actual_behavior": {
+      "overall": "PASS",
+      "article": {
+        "verdict": "PASS",
+        "observed": [
+          "Captured Article retained source heading 'A clear three-stage browser workflow'.",
+          "Captured Article retained the source introductory paragraphs, including the paragraph beginning 'This stable sample page lets anyone try Matrx Extend without signing in.'",
+          "Captured Article retained 'The three workflow stages' and all three workflow rows (Capture, Understand, Use) with their body cells.",
+          "Both initial Capture and Re-capture after reloading the target page showed the same heading, intro, and stages."
+        ],
+        "article_length": "179 words"
+      },
+      "surrounding": {
+        "links": "PASS: 17 links listed, including the public demo's internal and external resources.",
+        "schema": "PASS: metadata JSON displayed and SEO summary reported two structured-data items, Article and Organization.",
+        "seo": "PASS: audit reported no problems, the expected page title/description/canonical, H1 outline, 18 links (17 internal/1 external), and 200 page status."
+      }
+    },
+    "B_evidence_and_doctrine": {
+      "overall": "PASS",
+      "identity": "Loaded folder, dev ID, enabled state, pin state, version, CI receipt, and complete-tree hash matched the promoted artifact. Store extension remained separately identified at 0.2.205.",
+      "profile_and_role": "Actual Chrome profile path was /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8. Dev extension Settings visibly reported Role ADMIN. No guest or member credit is claimed.",
+      "resource": "Admitted native browser guard, continuous healthy watch samples, clean user stop, and completed valid resource journal.",
+      "method": "Real native Chrome and extension UI; existing demo tab; extension reloaded and target page reloaded before capture. No sign-out, credential entry, backend write action, source change, or release action."
+    }
+  },
+  "resource_journal": "docs/stabilization/resource-journals/native-article-retest-20261019-browser.sanitized.jsonl",
+  "initial_refusal": {
+    "run_id": "native-article-retest-20261019-preflight",
+    "reason": "The temporary profile directory did not exist; no UI was touched. A subsequent unique guarded browser run was admitted and completed validly.",
+    "journal": "docs/stabilization/resource-journals/native-article-retest-20261019-preflight.sanitized.jsonl"
+  },
+  "limitation": "Only the observed ADMIN profile was tested; no guest/member acceptance claim. Chrome showed a pre-existing local 'Not yet a Source' capture entry with an organization permission-denied message. It was left untouched; no save retry or discard was used. This bounded retest makes no whole-feature or Store-installed behavioral claim.",
+  "source_changes": "none",
+  "case_ids": ["EXT-F-1007-T01", "EXT-F-1007-T08"],
+  "evidence_limit": "Native tester AX/visual observations and valid resource journal; no durable full-panel screenshots or machine-readable extracted-content snapshot retained. Bounded admin observations only."
+}

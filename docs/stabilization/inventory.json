@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T23:04:50.416515Z",
+  "updated_at": "2026-10-19T23:34:11.130Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -7900,22 +7900,6 @@
           ],
           "linked_defects": [
             "EXT-D-0087"
-          ],
-          "native_store_observations": [
-            {
-              "run_id": "store205-article-heading-baseline-20261019-01",
-              "mode": "guest",
-              "version": "0.2.205",
-              "build_kind": "actual_store_installed",
-              "status": "partial",
-              "resource_valid": true,
-              "scope": "Actual Store205 capture title differs from source visible H1 and source H1 absent in observed Article body/AX excerpt. Full markdown/durable screenshot unavailable; current native candidate cause remains unknown.",
-              "new_unique_case_pass": false,
-              "evidence": "docs/stabilization/reports/store205-article-heading-baseline-20261019.json"
-            }
-          ],
-          "defect_ids": [
-            "EXT-D-0260"
           ]
         },
         {
@@ -25675,7 +25659,8 @@
           "defect_ids": [
             "EXT-D-0175",
             "EXT-D-0178",
-            "EXT-D-0180"
+            "EXT-D-0180",
+            "EXT-D-0260"
           ],
           "preparation_history": [
             {
@@ -25751,6 +25736,33 @@
               "resource_valid": true,
               "scope": "Links/Schema passed ownpublicsource checks; Article content present/stages present but heading unlocalized. Images/Video/otherTabcontrols not tested.",
               "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
+            }
+          ],
+          "native_store_observations": [
+            {
+              "run_id": "store205-article-heading-baseline-20261019-01",
+              "mode": "guest",
+              "version": "0.2.205",
+              "build_kind": "actual_store_installed",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Actual Store205 capture title differs from source visible H1 and source H1 absent in observed Article body/AX excerpt. Full markdown/durable screenshot unavailable; current native candidate cause remains unknown.",
+              "new_unique_case_pass": false,
+              "evidence": "docs/stabilization/reports/store205-article-heading-baseline-20261019.json"
+            }
+          ],
+          "native_development_observations": [
+            {
+              "run_id": "native-article-retest-20261019-browser",
+              "mode": "admin",
+              "version": "0.2.564",
+              "source_sha": "0708b3001019f570b34f0fcd7ee835edf3f53331",
+              "build_kind": "ci_development_unpacked",
+              "resource_valid": true,
+              "status": "partial",
+              "scope": "Article heading,introduction,stages179words retained on Capture/Re-capture after extension/page reload; Links/Schema/SEO bounded observations. No guest/member or all-tabs pass. No durable full-panel screenshot/content snapshot retained.",
+              "new_unique_case_pass": false,
+              "evidence": "docs/stabilization/reports/native-article-retest-20261019.json"
             }
           ]
         },

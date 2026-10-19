@@ -1,10 +1,10 @@
 {
   "id": "EXT-D-0260",
-  "feature_id": "EXT-F-1003",
-  "case_ids": ["EXT-F-1003-T08"],
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T08"],
   "title": "Article capture loses a heading-bearing semantic article header",
   "surface": "Scrape Article extraction and display",
-  "auth_mode": "guest reproduced; other modes unverified",
+  "auth_mode": "guest reproduced; admin bounded native postfix pass; member unverified",
   "severity": "S2: captured article omits source headline and introduction",
   "priority": "P1: public reviewer path and faithful page capture",
   "state": "fixed",
@@ -21,14 +21,15 @@
   ],
   "expected": "Article extraction preserves source article heading and introduction along with body stages; unrelated site chrome is not newly retained. Source DOM remains unchanged.",
   "actual": "Native candidate Article has1118textContent/1133innerText chars and workflow stages but loses source heading. No raw SoupResult was retained in that run.",
-  "cause": "Defuddle removal selector header:not(:has(p + p)):not(:has(img)) matches the live semantic article header in Chrome. Removing only that header from saved HTML reproduces native137word output; intact HappyDOM replay gives179words. Chrome DOM probe supports the selector boundary; exact post-fix native capture remains pending.",
+  "cause": "Defuddle removal selector header:not(:has(p + p)):not(:has(img)) matches the live semantic article header in Chrome. Removing only that header from saved HTML reproduces native137word output; intact HappyDOM replay gives179words. Chrome DOM probe supports the selector boundary; independent post-fix ADMIN capture now retains heading, introduction and stages; exact release-candidate guest retest remains pending.",
   "evidence": [
     "docs/stabilization/reports/store-release-v0564-acceptance-20261019.json",
     "docs/stabilization/reports/article-heading-native-diagnosis-20261019.json",
     "docs/stabilization/reports/article-header-native-selector-probe-20261019.json",
     "docs/stabilization/reports/article-heading-native-source-peer-20261019.json",
     "docs/stabilization/reports/article-heading-native-diagnosis-final-20261019.json",
-    "docs/stabilization/reports/article-heading-native-source-final-peer-20261019.json"
+    "docs/stabilization/reports/article-heading-native-source-final-peer-20261019.json",
+    "docs/stabilization/reports/native-article-retest-20261019.json"
   ],
   "acceptance_criteria": [
     "Original heading/header-loss reproduction fails before and passes after repair with intro retained.",
@@ -40,9 +41,9 @@
   "verification": {
     "source": "Integrated narrow clone-only repair after peer test concerns resolved: heading+intro retention, original DOM unchanged, unrelated/unheaded headers left unchanged before controlled dependency prune.19adjacent tests/compile pass; quality peer PASS, native post-fix pending.",
     "native_selector": "Actual Chrome public header matches exact Defuddle selector; diagnostic only, no post-fix extraction claim.",
-    "native_postfix": "pending new eligible candidate"
+    "native_postfix": "Independent ADMIN real Chrome on CI0708 development0.2.564 passed heading,introduction,stages179words after extension/page reload and Capture/Re-capture; surrounding Links/Schema/SEO observed. Resource-valid, no guest/member/full-feature credit; exact565 guest original reproduction remains pending."
   },
-  "next_action": "Retest source heading,introduction,stages and surrounding capture cases on a new eligible native candidate before closure.",
+  "next_action": "Exact release565 guest original reproduction and surrounding cases must pass before closure; admin-only development pass is insufficient.",
   "transition_history": [
     {
       "at": "2026-10-19T23:00:04.561948Z",
