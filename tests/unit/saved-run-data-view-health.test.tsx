@@ -22,6 +22,7 @@ const mocks = vi.hoisted(() => ({
   retryIdentity: vi.fn(),
   listHighlights: vi.fn(),
   requireOrg: vi.fn(),
+  authUser: { id: 'user-1' } as { id: string } | null,
 }));
 
 vi.mock('@/hooks/use-active-tab', () => ({
@@ -34,7 +35,11 @@ vi.mock('@/hooks/use-active-tab', () => ({
   refreshActiveTabIdentity: mocks.retryIdentity,
 }));
 vi.mock('@/hooks/use-auth', () => ({
-  useAuth: () => ({ user: { id: 'user-1' }, status: 'signed-in', signIn: vi.fn() }),
+  useAuth: () => ({
+    user: mocks.authUser,
+    status: mocks.authUser ? 'signed-in' : 'signed-out',
+    signIn: vi.fn(),
+  }),
 }));
 vi.mock('@/lib/supabase/queries', () => ({
   fetchPatternsForDomain: mocks.fetchPatterns,
@@ -127,6 +132,7 @@ const pattern = {
 
 afterEach(() => {
   cleanup();
+  mocks.authUser = { id: 'user-1' };
   mocks.page = {
     id: 37,
     url: 'https://electronic.vegas/calendar/',
@@ -145,6 +151,18 @@ afterEach(() => {
   vi.unstubAllGlobals();
   useAutoExtractStore.setState({ records: new Map() });
   useHighlightStore.setState({ items: [], dataHandoff: null });
+});
+
+it('keeps guest Data extraction available without loading account-owned patterns', async () => {
+  mocks.authUser = null;
+  mocks.fetchPatterns.mockResolvedValue([pattern]);
+  const view = render(<DataView />);
+  expect(screen.getByRole('button', { name: /Pick fields/i })).toBeTruthy();
+  expect(mocks.fetchPatterns).not.toHaveBeenCalled();
+  mocks.authUser = { id: 'user-1' };
+  view.rerender(<DataView />);
+  await waitFor(() => expect(mocks.fetchPatterns).toHaveBeenCalledWith('electronic.vegas'));
+  expect((await screen.findAllByText('Calendar events')).length).toBeGreaterThan(0);
 });
 
 it('shows DataView no-match guidance without writing ok health for zero rows', async () => {

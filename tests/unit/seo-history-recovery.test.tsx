@@ -1,6 +1,7 @@
 import { SeoView } from '@/features/seo/SeoView';
 import { DbFailureError } from '@/lib/supabase/db-failure';
 import { type SeoAuditRow, fetchSeoAuditHistoryForUrl } from '@/lib/supabase/queries';
+import { useAuthStore } from '@/state/auth';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
@@ -8,7 +9,12 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   read: vi.fn(),
   eq: vi.fn(),
+  hasToken: vi.fn(),
   tab: { id: null, url: 'https://www.iana.org/domains/reserved', pageKey: null },
+}));
+vi.mock('@/lib/supabase/client', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/supabase/client')>()),
+  hasSupabaseAccessToken: mocks.hasToken,
 }));
 vi.mock('@/hooks/use-active-tab', () => ({
   useActiveTab: () => mocks.tab,
@@ -51,10 +57,49 @@ const saved = {
 } satisfies SeoAuditRow;
 
 beforeEach(() => {
+  useAuthStore.getState().setStatus('unknown');
+  mocks.hasToken.mockReset().mockResolvedValue(true);
   mocks.read.mockReset().mockResolvedValue({ data: [], error: null });
   mocks.eq.mockReset().mockImplementation(() => ({ order: () => ({ limit: mocks.read }) }));
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  useAuthStore.getState().setStatus('unknown');
+});
+
+it('does not send account-owned saved-history requests for a guest', async () => {
+  mocks.hasToken.mockResolvedValue(false);
+  useAuthStore.getState().setStatus('signed-out');
+  const view = render(<SeoView />);
+  expect(mocks.read).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: 'Saved audits for this URL' }));
+  expect(screen.getByText('Sign in to view saved audits.')).toBeTruthy();
+  expect(screen.queryByRole('alert')).toBeNull();
+  view.unmount();
+});
+
+it('returns sign-in-required from the query seam without an anon request', async () => {
+  mocks.hasToken.mockResolvedValue(false);
+  await expect(fetchSeoAuditHistoryForUrl(saved.url)).resolves.toBeNull();
+  expect(mocks.read).not.toHaveBeenCalled();
+});
+
+it('reloads saved history after sign-in and clears it after sign-out', async () => {
+  mocks.hasToken.mockResolvedValue(false);
+  useAuthStore.getState().setStatus('signed-out');
+  render(<SeoView />);
+  await userEvent.click(screen.getByRole('button', { name: 'Saved audits for this URL' }));
+  await waitFor(() => expect(screen.getByText('Sign in to view saved audits.')).toBeTruthy());
+  mocks.hasToken.mockResolvedValue(true);
+  mocks.read.mockResolvedValue({ data: [saved], error: null });
+  act(() => useAuthStore.getState().setStatus('signed-in'));
+  await waitFor(() => expect(screen.getByText('First saved audit')).toBeTruthy());
+  mocks.hasToken.mockResolvedValue(false);
+  act(() => useAuthStore.getState().setStatus('signed-out'));
+  await waitFor(() => expect(screen.getByText('Sign in to view saved audits.')).toBeTruthy());
+  expect(screen.queryByText('First saved audit')).toBeNull();
+  expect(mocks.read).toHaveBeenCalledTimes(1);
+});
 
 it('rejects a real history query refusal instead of returning successful empty history', async () => {
   mocks.read.mockResolvedValue({ data: null, error: refusal });

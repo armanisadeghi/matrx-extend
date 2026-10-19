@@ -1164,7 +1164,14 @@ export async function fetchLatestSeoAuditForUrl(url: string): Promise<SeoAuditRo
  * (stamped by a trigger), so RLS scopes these rows to the signed-in user with
  * no client-side filter.
  */
-export async function fetchSeoAuditHistoryForUrl(url: string, limit = 25): Promise<SeoAuditRow[]> {
+export async function fetchSeoAuditHistoryForUrl(
+  url: string,
+  limit = 25,
+): Promise<SeoAuditRow[] | null> {
+  // Saved audits are account/organization-owned. A guest has no rows to read,
+  // and an anon request reaches a permission refusal rather than useful data.
+  // Null lets the UI distinguish sign-in-required from a truly empty history.
+  if (!(await hasSupabaseAccessToken())) return null;
   const { data, error } = await extendDb()
     .from('wbx_seo_audit')
     .select('id, url, audited_at, signals, recommendations, flesch_reading_ease, word_count, notes')

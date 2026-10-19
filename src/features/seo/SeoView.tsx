@@ -22,6 +22,7 @@ import {
 import { evaluateSeoAudit } from '@/lib/seo/evaluators/from-audit';
 import { seoAuditToText } from '@/lib/seo/to-text';
 import { type SeoAuditRow, fetchSeoAuditHistoryForUrl, saveSeoAudit } from '@/lib/supabase/queries';
+import { useAuthStore } from '@/state/auth';
 import { Button } from '@ai-matrx/design-system';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
@@ -51,6 +52,7 @@ interface HistoryEntry {
 
 export function SeoView() {
   const tab = useActiveTab();
+  const authStatus = useAuthStore((s) => s.status);
   const [storedAudit, setAudit] = useState<SeoAudit | null>(null);
   const [auditPageKey, setAuditPageKey] = useState<string | null>(null);
   const audit = tab.pageKey && auditPageKey === tab.pageKey ? storedAudit : null;
@@ -58,7 +60,9 @@ export function SeoView() {
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [history, setHistory] = useState<SeoAuditRow[]>([]);
-  const [historyStatus, setHistoryStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [historyStatus, setHistoryStatus] = useState<
+    'loading' | 'ready' | 'error' | 'sign-in-required'
+  >('loading');
   const [showHistory, setShowHistory] = useState(false);
   /** When set, the body renders that saved snapshot instead of the live audit. */
   const [viewingId, setViewingId] = useState<string | null>(null);
@@ -83,8 +87,8 @@ export function SeoView() {
     try {
       const rows = await fetchSeoAuditHistoryForUrl(url);
       if (run !== historyRunRef.current || tabRef.current.url !== url) return;
-      setHistory(rows);
-      setHistoryStatus('ready');
+      setHistory(rows ?? []);
+      setHistoryStatus(rows === null ? 'sign-in-required' : 'ready');
     } catch {
       if (run !== historyRunRef.current || tabRef.current.url !== url) return;
       setHistoryStatus('error');
@@ -98,11 +102,15 @@ export function SeoView() {
       setHistoryStatus('ready');
       return;
     }
-    void reloadHistory(tab.url);
+    if (authStatus === 'signed-out') {
+      setHistoryStatus('sign-in-required');
+    } else {
+      void reloadHistory(tab.url);
+    }
     return () => {
       historyRunRef.current += 1;
     };
-  }, [tab.url, reloadHistory]);
+  }, [tab.url, authStatus, reloadHistory]);
 
   // Auto-run an audit when the SEO tab gets a fresh URL — first mount, or
   // user navigates the active tab. Manual "Re-audit" stays as the way to
@@ -307,6 +315,9 @@ export function SeoView() {
           )}
           {showHistory && historyStatus === 'ready' && history.length === 0 && (
             <div className="text-xs text-muted-foreground">No saved audits for this URL.</div>
+          )}
+          {showHistory && historyStatus === 'sign-in-required' && (
+            <div className="text-xs text-muted-foreground">Sign in to view saved audits.</div>
           )}
           {showHistory && historyStatus === 'ready' && history.length > 0 && (
             <HistoryList

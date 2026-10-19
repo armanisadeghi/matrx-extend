@@ -2664,6 +2664,14 @@ Every entry follows this shape:
     "Unchanged" (we never claim a field is unchanged when one side never had it).
   - A URL with no saved audits: the **History** chip remains available; opening
     it shows **No saved audits for this URL.**, with no diff card.
+  - Signed out on a public page: the live SEO audit remains available. History
+    shows **Sign in to view saved audits.** without sending a saved-history
+    database request or raising a panel-wide refusal notice. Sign in and open
+    History again; the account's saved rows load. Sign out and confirm those
+    rows clear. A signed-in permission refusal still shows the failure and retry.
+  - On the public Data tab, signed-out field picking remains available without
+    a saved-patterns request. Signing in loads account patterns for the page;
+    signing out clears them while field picking remains available.
   - Delay the saved-history response and open **History**: **Loading saved
     audits…** appears until the read completes.
   - Return a controlled history permission, missing-table, or network error:

@@ -132,7 +132,8 @@ export function DataView() {
     void patternLoadAttempt;
     setPatternSnapshot(null);
     setPatternLoadError(null);
-    if (!host) {
+    // A guest can extract this page, but saved patterns belong to an account.
+    if (!host || !user) {
       setPatternSnapshot({ host, patterns: [] });
       setPatternsLoading(false);
       return;
@@ -161,7 +162,7 @@ export function DataView() {
     return () => {
       cancelled = true;
     };
-  }, [host, patternLoadAttempt]);
+  }, [host, user, patternLoadAttempt]);
 
   useEffect(() => {
     // STRICT: only the SW's stamped rebroadcast counts. The raw content-
