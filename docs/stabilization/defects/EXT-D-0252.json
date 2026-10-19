@@ -1,0 +1,54 @@
+{
+  "id": "EXT-D-0252",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01"],
+  "surface": "CI Guest transport observer regression gate",
+  "title": "Panel visibility mutation self-test no longer targets conditional foreground observation",
+  "auth_mode": "guest build admission infrastructure; no product behavior credit",
+  "severity": "S3: CI gate fails before the candidate can receive an exact-head verdict",
+  "priority": "P1: restore deterministic CI gate before candidate admission",
+  "state": "fixed",
+  "owner": "root / ci_transport_failure_triage",
+  "reproduction": [
+    "Open CI run 39299835641 at source 34483db3d and find the first failed subtest in Guest transport observer regression.",
+    "Run the focused panel-visibility-diagnostic in-memory mutation test against current main before repair.",
+    "Observe Missing expected rejection (AssertionError) at the mutation loop."
+  ],
+  "expected": "Every in-memory omission mutation changes the current source and makes the behavioral checkpoint assertion fail for the intended missing observation.",
+  "actual": "The after_root_foreground mutation matched an obsolete unconditional call; replacement returned unchanged source, so the behavioral path remained green and the self-test failed.",
+  "cause": "Native setup now selects after_root_foreground or after_demo_foreground in one conditional observe call; the test mutation literal was not updated and had no source-match guard.",
+  "sibling_census": "All omitted-checkpoint String.replace mutations in this test were converted to omitOnce, which asserts each source target exists before removal. Measurement mutants retain their existing behavioral assertions.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39299835641",
+    "docs/stabilization/reports/ci-transport-triage-20261019.json"
+  ],
+  "fix_sha": "6889c49f1",
+  "reviewer": "Independent code/test review pending; no native or product acceptance credit.",
+  "next_action": "Obtain independent review of the test-only contract repair and an exact-head CI verdict; coordinate inventory linkage after current admission owner completes its write.",
+  "transition_history": [
+    {
+      "at": "2026-10-19T18:23:04Z",
+      "from": null,
+      "to": "open",
+      "reason": "CI first failure reproduced on current main."
+    },
+    {
+      "at": "2026-10-19T18:23:04Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Obsolete mutation target identified; product path itself passed focused behavior tests."
+    },
+    {
+      "at": "2026-10-19T18:23:04Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Update only the mutation target and require every omission target to exist."
+    },
+    {
+      "at": "2026-10-19T18:23:04Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Focused test RED before and GREEN after, Biome passed, exact test-only commit pushed; independent review and exact-head CI pending."
+    }
+  ]
+}

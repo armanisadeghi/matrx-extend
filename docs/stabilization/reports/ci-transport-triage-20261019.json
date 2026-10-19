@@ -1,0 +1,58 @@
+{
+  "task_id": "ci_transport_failure_triage",
+  "lane": "Guest transport observer regression CI triage",
+  "status": "source_fixed_independent_review_pending",
+  "feature_ids": [
+    "EXT-F-0001"
+  ],
+  "case_ids": [
+    "EXT-F-0001-T01"
+  ],
+  "defect_ids": [
+    "EXT-D-0252"
+  ],
+  "source_run": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39299835641",
+    "head_sha": "34483db3d",
+    "first_failure": "tests/browser/panel-visibility-diagnostic.test.mjs:253 in-memory mutations cannot omit checkpoints or manufacture successful measurements; Missing expected rejection (AssertionError) at line 278"
+  },
+  "reproduction": {
+    "command": "node --test --test-name-pattern=\"in-memory mutations cannot omit checkpoints\" tests/browser/panel-visibility-diagnostic.test.mjs",
+    "before": "FAIL, Missing expected rejection (AssertionError), 1 failed test",
+    "after": "PASS, 1 passed test"
+  },
+  "cause": "The after_root_foreground mutation searched for an unconditional observe call. Current native setup uses a conditional root/demo foreground observe call, so String.replace returned unchanged source and the test incorrectly expected an assertion rejection.",
+  "fix": {
+    "commit": "6889c49f1",
+    "integrated_head": "ac12448ce0b4b3895db4bf19c5faffc33ae73240",
+    "changed_paths": [
+      "tests/browser/panel-visibility-diagnostic.test.mjs"
+    ],
+    "behavior": "The mutation deletes the current conditional foreground observation, and omission mutations now refuse a missing source target."
+  },
+  "verification": [
+    {
+      "command": "node --test tests/browser/panel-visibility-diagnostic.test.mjs",
+      "result": "3 passed, 0 failed after origin/main merge"
+    },
+    {
+      "command": "pnpm exec biome check tests/browser/panel-visibility-diagnostic.test.mjs",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "limits": [
+    "Test-only repair has no Store runtime payload change or product acceptance credit.",
+    "No hosted CI, native browser, or Store acceptance was dispatched in this lane.",
+    "Independent review of the repaired test and release admission ruling remain pending."
+  ],
+  "related_run_status_at_report": {
+    "39300195263": "in_progress at older source a326df075",
+    "39301445317": "cancelled at older source 49408d4f5"
+  },
+  "next_action": "Independent peer reviews the exact test change and determines CI admission impact. Existing candidate acceptance remains separate; link EXT-D-0252 from inventory after current admission owner finishes its serialized write.",
+  "recorded_at": "2026-10-19T18:23:04Z"
+}
