@@ -1,0 +1,31 @@
+{
+  "task_id": "D247 final independent source review",
+  "reviewer": "fresh source peer; zero authorship",
+  "reviewed_commits": ["72810e8f0", "2a740561c"],
+  "evidence_commit_note": "1dbe4a91b includes other acceptance-owner artifacts; none were attributed to this source fix or counted as current native proof.",
+  "verdict_a": {
+    "status": "PASS_SOURCE_NATIVE_PENDING",
+    "findings": [],
+    "evidence": [
+      "SeoView avoids history reload while auth status is signed-out; the history query independently checks the canonical stored token before constructing or issuing the DB query.",
+      "DataView retains the Pick fields control for guests and skips account-pattern loading without an authenticated user.",
+      "SEO auth transition clears stale rows on sign-out and reloads on sign-in; DataView user dependency clears saved rows and refreshes after sign-in.",
+      "Signed-in SEO query refusal remains an error, displayed with Retry history; a focused test checks 42501 refusal then a successful second read.",
+      "Source alone cannot establish native paint or visibility on the next exact artifact. Native guest acceptance and visible chat-answer paint remain pending."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "findings": [],
+    "evidence": [
+      "The fix gates the two identified account-owned guest read paths at their callers; SEO also has a query-seam token preflight. The reviewed census identifies useAutoExtract as already auth-gated.",
+      "Current focused tests passed: tests/unit/seo-history-recovery.test.tsx and tests/unit/saved-run-data-view-health.test.tsx; 2 files, 29 tests.",
+      "Isolated /tmp baseline used the pre-fix DataView source with the current Data regression tests. The guest no-query assertion failed because fetchPatternsForDomain ran; the sign-out assertion failed because the saved-pattern section remained visible. These were assertion failures matching each defect."
+    ]
+  },
+  "limitations": [
+    "No browser, build, release, or dispatch run, as requested.",
+    "The isolated baseline emitted unrelated module initialization diagnostics from a test background call, but both regression failures were direct behavior assertions, not setup/import failures.",
+    "Native rendering remains unproven pending the exact artifact."
+  ]
+}

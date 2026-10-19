@@ -20,7 +20,9 @@
     "docs/stabilization/reports/store556-acceptance-20261019.json",
     "docs/stabilization/evidence/store556-guest/run39290491457/guest-chat-failure.png",
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/39290491457",
-    "docs/stabilization/reports/guest-saved-audits-d247-20261019.json"
+    "docs/stabilization/reports/guest-saved-audits-d247-20261019.json",
+    "docs/stabilization/reports/d247-source-peer-initial-20261019.json",
+    "docs/stabilization/reports/d247-final-source-review-20261019.json"
   ],
   "build_version": "0.2.556 Store ZIP adapted only for hosted identity",
   "server_sha": "b8092f234958c4f0b1a730576e218252a5735498",
@@ -50,6 +52,7 @@
       "reason": "Source72810e8f0 pushed with meaningful guest-query RED/GREEN, authenticated refusal, transitions and32 surrounding tests. Fresh peer and exact new-artifact native retest remain pending."
     }
   ],
-  "next_action": "Confirm guest-history applicability, repair the owning read boundary while preserving authenticated error reporting and public audit capability; add meaningful RED/GREEN and surrounding cases, fresh independent review, then exact new-artifact guest/native retest. No submission until required guest/nonadmin/reviewer gates pass.",
-  "fix_sha": "72810e8f0"
+  "next_action": "Guarded new Store build39294116587 is in progress. Require exact resulting artifact native guest SEO/Data/private-history and visible first/follow-up Chat/public-reviewer retest; source fix alone does not establish reply paint or close defect.",
+  "fix_sha": "72810e8f0",
+  "reviewer": "d247_final_source_review: A PASS_SOURCE_NATIVE_PENDING / B PASS; observable anonymous query avoidance, sign-in/out lifecycle, and authenticated42501 failure/retry checked independently."
 }

@@ -1,0 +1,45 @@
+{
+  "task_id": "D247 fresh independent source review",
+  "reviewer": "fresh peer",
+  "reviewed_commit": "72810e8f0ab0a05dbdaa36fbf7d23d3184157731",
+  "source_evidence_commit": "1dbe4a91b",
+  "worktree_edits": false,
+  "verdict_a": {
+    "status": "PARTIAL_SOURCE_PASS_NATIVE_PENDING",
+    "findings": [
+      {
+        "claim": "Guests retain public SEO/Data functionality without account-owned saved reads.",
+        "evidence": "SeoView skips saved history when authStatus is signed-out; fetchSeoAuditHistoryForUrl independently checks hasSupabaseAccessToken before extendDb(). DataView retains extraction UI and skips fetchPatternsForDomain when user is null.",
+        "limit": "No current-artifact/native UI run. Original 0.2.556 evidence shows global notice over Chat but does not prove that notice caused the unseen assistant reply; current source cannot establish the visual behavior on a new artifact."
+      },
+      {
+        "claim": "Sign-in/out transitions clear or refresh account-owned data.",
+        "evidence": "SEO tests exercise signed-out→signed-in→signed-out and assert saved history appears then clears; Data test exercises guest→signed-in and observes the pattern fetch/load.",
+        "limit": "No DataView sign-out transition assertion exists in the added test; its requested clear-on-sign-out behavior remains source-inferred, not independently tested."
+      }
+    ]
+  },
+  "verdict_b": {
+    "status": "PARTIAL",
+    "findings": [
+      {
+        "severity": "Minor",
+        "file": "tests/unit/saved-run-data-view-health.test.tsx",
+        "detail": "The sibling DataView test proves guest read suppression and sign-in refresh but does not prove pattern clearing after sign-out. Add only if implementation owner wants automated coverage of that acceptance clause."
+      },
+      {
+        "severity": "Observation",
+        "detail": "The SEO guest tests observe the Supabase query builder (`read`) and token preflight; they are not string-only mirrors. Existing tests preserve real refusal semantics by requiring 42501 to reject as DbFailureError and exercise retry UI."
+      }
+    ],
+    "class_fix": "The two identified public guest read sites are gated at their actual UI/query boundaries. Sibling census in source evidence identifies useAutoExtract as already auth-gated; no additional same-class unguarded saved read was identified in the reviewed paths."
+  },
+  "verification": {
+    "repaired_source": "pnpm test tests/unit/seo-history-recovery.test.tsx tests/unit/saved-run-data-view-health.test.tsx — PASS, 2 files / 28 tests.",
+    "original_source_red": "Ran the same added tests in an isolated /tmp copy containing commit 72810e8f0 tests and parent-commit production SeoView.tsx, DataView.tsx, and queries.ts — RED, 2 files / 28 total; 4 failures (Data guest fetch called, SEO guest fetch called, query seam returns [] instead of null, SEO guest transition lacks sign-in state). Initial attempt lacked generated .wxt config; copied .wxt into temp copy and reran successfully. No shared source was modified.",
+    "authenticated_refusal": "Focused suite includes query rejection with code 42501 / kind refused, plus SeoView visible failure and retry; suite passed on repaired source.",
+    "native_artifact": "NOT RUN; no browser/build/dispatch used, per lane constraints."
+  },
+  "independence_note": "Commit 1dbe4a91b contains source evidence for D247 plus six unrelated acceptance-owner evidence files. They were not attributed to this fix or treated as independent native proof.",
+  "remaining_gate": "Fresh exact-new-artifact native guest acceptance is required before product closure; verify SEO history guest state, Data picker lifecycle including sign-out, and visible Chat reply independently."
+}
