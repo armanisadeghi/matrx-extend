@@ -9,6 +9,7 @@ import { isDeepStrictEqual } from 'node:util';
 import { sanitizeStartupBracket } from './stabilization-resource-journal.mjs';
 
 const FINAL_DECISIONS = new Set(['refused', 'invalid', 'valid', 'child_failed', 'interrupted']);
+const RUN_ID = /^[A-Za-z0-9_.-]+$/;
 const COMMON_FIELDS = ['schema', 'at', 'runId', 'code'];
 const SAMPLE_FIELDS = new Set([
   'pressureLevel',
@@ -22,6 +23,21 @@ const SAMPLE_FIELDS = new Set([
   'profileFreeGiB',
   'safetyFreeGiB',
   'systemFreeGiB',
+]);
+// recoverHold emits these before admission, without a runId on the event.
+// The opened and terminal records still bind the journal to the requested run.
+const RECOVERY_EVENTS_WITHOUT_RUN_ID = new Set([
+  'RESOURCE_UNSAFE_HOLD',
+  'RESOURCE_RECOVERY_SAMPLES_READY',
+]);
+const HOLD_REASONS = new Set([
+  'RESOURCE_PRESSURE_UNSAFE',
+  'RESOURCE_MEMORY_LOW',
+  'RESOURCE_CPU_BUSY',
+  'RESOURCE_CPU_HIGH_LOAD_BUSY',
+  'RESOURCE_DISK_LOW',
+  'RESOURCE_SWAP_BASELINE_MISSING',
+  'RESOURCE_SWAP_GROWTH',
 ]);
 const EVENT_FIELDS = new Map([
   ['RESOURCE_JOURNAL_OPENED', ['path']],
@@ -62,6 +78,7 @@ const EVENT_FIELDS = new Map([
   ['RESOURCE_STOP_AT_SAFE_BOUNDARY', ['reasons']],
   ['RESOURCE_BROWSER_OPERATOR_STOP_REQUIRED', ['instruction']],
   ['RESOURCE_RECOVERY_SAMPLES_READY', ['previousRunId']],
+  ['RESOURCE_UNSAFE_HOLD', ['reasons', 'sample']],
   ['RESOURCE_OWNED_PROCESS_STILL_RUNNING', ['recovery']],
   ['RESOURCE_GROUP_STILL_RUNNING', ['groupId']],
   ['RESOURCE_SAFETY_STATE_WRITE_FAILED', []],
@@ -132,15 +149,36 @@ function validKnownValues(event) {
   return true;
 }
 
+function validRecoveryEvent(event) {
+  if (event.code === 'RESOURCE_UNSAFE_HOLD')
+    return (
+      !Object.hasOwn(event, 'runId') &&
+      event.sample !== undefined &&
+      SAMPLE_FIELDS.size === Object.keys(event.sample).length &&
+      [...SAMPLE_FIELDS].every((key) => Object.hasOwn(event.sample, key)) &&
+      Array.isArray(event.reasons) &&
+      event.reasons.length > 0 &&
+      event.reasons.every((reason) => HOLD_REASONS.has(reason))
+    );
+  if (event.code === 'RESOURCE_RECOVERY_SAMPLES_READY')
+    return Object.hasOwn(event, 'runId')
+      ? !Object.hasOwn(event, 'previousRunId')
+      : typeof event.previousRunId === 'string' && RUN_ID.test(event.previousRunId);
+  return true;
+}
+
 /** Remove process-attribution rows and opened-event paths; preserve all other source lines. */
 export function sanitizeHostedResourceJournal(source, runId) {
   if (typeof source !== 'string' || !source) refuse('SOURCE_CONTENT_INVALID');
-  if (typeof runId !== 'string' || !/^[A-Za-z0-9_.-]+$/.test(runId)) refuse('RUN_ID_INVALID');
+  if (typeof runId !== 'string' || !RUN_ID.test(runId)) refuse('RUN_ID_INVALID');
 
   const chunks = source.match(/[^\n]*\n|[^\n]+$/g) ?? [];
   const records = [];
   let finalCount = 0;
   let finalRecordIndex = -1;
+  let opened = false;
+  let admitted = false;
+  let unsafeHold = false;
   const kept = [];
 
   for (const chunk of chunks) {
@@ -161,7 +199,8 @@ export function sanitizeHostedResourceJournal(source, runId) {
       Array.isArray(event) ||
       event.schema !== 1 ||
       typeof event.at !== 'string' ||
-      event.runId !== runId ||
+      (event.runId !== runId &&
+        !(event.runId === undefined && RECOVERY_EVENTS_WITHOUT_RUN_ID.has(event.code))) ||
       typeof event.code !== 'string' ||
       !event.code.startsWith('RESOURCE_')
     )
@@ -177,6 +216,9 @@ export function sanitizeHostedResourceJournal(source, runId) {
     if (hasMeasurementDetail && event.detail !== event.code)
       refuse('JOURNAL_EVENT_VALUE_UNSUPPORTED');
     if (!validKnownValues(event)) refuse('JOURNAL_EVENT_VALUE_UNSUPPORTED');
+    if (!validRecoveryEvent(event)) refuse('JOURNAL_EVENT_VALUE_UNSUPPORTED');
+    if (!Object.hasOwn(event, 'runId') && (!opened || admitted))
+      refuse('JOURNAL_EVENT_VALUE_UNSUPPORTED');
     if (event.code === 'RESOURCE_STARTUP_INTERVAL_BRACKET') {
       let sanitizedBracket;
       try {
@@ -189,6 +231,9 @@ export function sanitizeHostedResourceJournal(source, runId) {
     }
 
     records.push(event);
+    if (event.code === 'RESOURCE_JOURNAL_OPENED') opened = true;
+    if (event.code === 'RESOURCE_ADMITTED') admitted = true;
+    if (event.code === 'RESOURCE_UNSAFE_HOLD') unsafeHold = true;
     if (event.code === 'RESOURCE_FINAL_DECISION') {
       finalCount += 1;
       finalRecordIndex = records.length - 1;
@@ -211,6 +256,8 @@ export function sanitizeHostedResourceJournal(source, runId) {
   if (finalCount === 0) refuse('JOURNAL_FINAL_DECISION_MISSING');
   if (finalCount !== 1) refuse('JOURNAL_FINAL_DECISION_DUPLICATE');
   if (finalRecordIndex !== records.length - 1) refuse('JOURNAL_FINAL_DECISION_NOT_LAST');
+  if (unsafeHold && (admitted || records[finalRecordIndex].decision !== 'refused'))
+    refuse('JOURNAL_FINAL_DECISION_INVALID');
   return kept.join('');
 }
 
