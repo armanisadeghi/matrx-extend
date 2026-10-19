@@ -33,11 +33,11 @@
   "surrounding_retest_runs": [
     "35-case guest sequence file PASS; compile PASS; forced owner-table allow mutant RED"
   ],
-  "reviewer": "ci_sequence_peer_20261019: separate A/B scoped PASS; fresh hosted CI pending",
+  "reviewer": "ci_sequence_peer_20261019: separate scoped A/B PASS; CI39284095794 focused and full checks SUCCESS",
   "next_action": "No further work on this isolated CI locator defect. Continue full pipeline/artifact delivery and actual guest/member acceptance; do not count this closure as product behavior coverage.",
   "verification": {
     "source": "Independent original RED/repaired GREEN and forced-allow mutation RED; no runtime change.",
-    "hosted": "CI39284095794: Focused acceptance guards completed SUCCESS, observed2026-10-19T16:32:06Z; resource-guard-integration SUCCESS. Full checks job remains in progress, no overall CI pass asserted.",
+    "hosted": "CI39284095794 authoritative overall SUCCESS, observed2026-10-19T16:35:04Z; focused acceptance guards, resource-guard integration and full checks all succeeded.",
     "product": "No product case or auth-mode health credited."
   },
   "transition_history": [

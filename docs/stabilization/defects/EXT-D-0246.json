@@ -1,0 +1,41 @@
+{
+  "id": "EXT-D-0246",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01"],
+  "surface": "Hosted Store member acceptance source eligibility",
+  "auth_mode": "all modes; auth-independent infrastructure, no product behavior credit",
+  "title": "Candidate second-parent merge falsely reports preexisting package history as new runtime drift",
+  "severity": "S2: prevents required non-admin acceptance for a runtime-equivalent Store candidate",
+  "priority": "P1: repair eligibility proof without relaxing real runtime-drift refusal",
+  "state": "in-fix",
+  "owner": "root / release_delta_guard_fix",
+  "reproduction": [
+    "Use Store candidate source50a479584955eca5045853f8cbb7a7d594b9fd78 and synchronized mainafe182fbe, whose candidate-to-main net diff contains only stabilization evidence/documents.",
+    "Call the source proof in scripts/hosted-release-member-admission.mjs for these commits.",
+    "Observe release_member_product_changed at mergee0980f9d8: the merge census compares package/catalog bytes against an older first parent, even though the candidate is already in the second-parent ancestry."
+  ],
+  "expected": "Already-present candidate ancestry does not count as newly introduced product drift; actual runtime changes on candidate-descendant paths remain refused.",
+  "actual": "The existing per-parent merge census reports old package/catalog bytes as new drift, blocking member admission before any browser launch.",
+  "evidence": ["docs/stabilization/reports/store556-acceptance-20261019.json"],
+  "transition_history": [
+    {
+      "at": "2026-10-19T17:06:35.800804Z",
+      "from": null,
+      "to": "open",
+      "reason": "Original member source proof refused while candidate-to-main net runtime tree remains equal."
+    },
+    {
+      "at": "2026-10-19T17:06:35.800804Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Builder reproduced false merge-parent history attribution; no product behavior claim."
+    },
+    {
+      "at": "2026-10-19T17:06:35.800804Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Minimal ancestry-aware source proof and red/green/adversarial tests assigned; independent review required."
+    }
+  ],
+  "next_action": "Complete source repair, fresh independent original/surrounding/refusal retest, then mint a fresh one-use non-admin link and run normal guarded member admission. Prior temporary link/secret was removed and absence verified."
+}

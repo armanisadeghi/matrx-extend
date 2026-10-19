@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T17:01:27.261380Z",
+  "updated_at": "2026-10-19T17:06:35.800804Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -114,7 +114,7 @@
           "preconditions": [
             "Resource permit admitted; record source/lock hashes, build channel, output path and runtime ID."
           ],
-          "steps": "Build from current source; load the generated development bundle unpacked; compare Chrome extension ID/version with the receipt.",
+          "steps": "Use the authorized build/artifact path (hosted CI import on this Mac); load the verified development bundle unpacked and compare Chrome ID/version/path with the receipt.",
           "expected": [
             "Fresh bundle builds and the loaded unpacked extension matches the expected development identity."
           ],
@@ -146,7 +146,8 @@
           "defect_ids": [
             "EXT-D-0028",
             "EXT-D-0190",
-            "EXT-D-0245"
+            "EXT-D-0245",
+            "EXT-D-0246"
           ]
         },
         {
@@ -505,7 +506,8 @@
             "EXT-D-0120",
             "EXT-D-0121",
             "EXT-D-0190",
-            "EXT-D-0245"
+            "EXT-D-0245",
+            "EXT-D-0246"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -526,7 +528,8 @@
             "EXT-D-0077",
             "EXT-D-0090",
             "EXT-D-0190",
-            "EXT-D-0245"
+            "EXT-D-0245",
+            "EXT-D-0246"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -549,7 +552,8 @@
             "EXT-D-0080",
             "EXT-D-0090",
             "EXT-D-0190",
-            "EXT-D-0245"
+            "EXT-D-0245",
+            "EXT-D-0246"
           ],
           "run_ids": [
             "baseline-build-001",
