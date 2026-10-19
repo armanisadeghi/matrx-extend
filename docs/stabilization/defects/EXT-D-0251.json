@@ -7,7 +7,7 @@
   "title": "Legitimate spaced release requester is rejected before Store acceptance",
   "severity": "S2: verified Store candidate cannot enter normal native acceptance",
   "priority": "P1: repair shared admission metadata contract before next candidate",
-  "state": "fixed",
+  "state": "closed",
   "owner": "admission_run_name_repair",
   "preconditions": [
     "Published release run 39300233770 succeeded through .github/workflows/release.yml on main; artifact 12210871757 and receipt identify 0.2.558 source 7075721579a725074be7ce2de0ea9bdf069f0df4."
@@ -39,11 +39,11 @@
     "Continue refusing wrong workflow name/path/event/branch/state, wrong artifact/run binding, source/tag/receipt drift and malformed run-name framing.",
     "Do not claim native product pass or bypass frozen-source eligibility."
   ],
-  "fix_sha": "Commit containing this defect record; native acceptance and independent review pending.",
+  "fix_sha": "f1fe422574b0c67c07ea98d367c09426fbf0b44e",
   "original_retest_runs": [],
   "surrounding_retest_runs": [],
-  "reviewer": "Parent independent review pending.",
-  "next_action": "Independent source review, then cut a new synchronized candidate after the later pnpm-lock.yaml change and separate CI repair are reviewed; run normal guarded guest/member plans. Do not assign Store product credit until native evidence exists.",
+  "reviewer": "admission-ci-fresh-peer-20261019: behavior PARTIAL only for accepted metadata-only Unicode display minor; strict provenance B PASS WITH MINOR. Original spaced attribution and surrounding refusal cases passed 32/32; frozen .558 correctly refused package-source drift.",
+  "next_action": "Infrastructure contract repaired and source-reviewed. Exact .559 guest and member plans admitted normally; await native product results independently, without granting product credit from admission.",
   "transition_history": [
     {
       "at": "2026-10-19T18:22:05Z",
@@ -68,6 +68,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Focused RED-to-GREEN contract test; native acceptance and independent review pending."
+    },
+    {
+      "at": "2026-10-19T18:35:00Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original spaced run-name contract passed 32 focused cases and strict negative surroundings; both new .559 normal plans admitted without bypass. Native product behavior remains pending."
+    },
+    {
+      "at": "2026-10-19T18:35:01Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original spaced run-name contract passed 32 focused cases and strict negative surroundings; both new .559 normal plans admitted without bypass. Native product behavior remains pending."
     }
   ]
 }

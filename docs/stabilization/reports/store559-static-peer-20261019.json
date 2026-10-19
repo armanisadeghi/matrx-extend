@@ -1,0 +1,29 @@
+{
+  "review": "independent exact Store 0.2.559 static artifact review",
+  "date": "2026-10-19",
+  "verdict_a_static_release_contract": {
+    "status": "PASS_WITH_LIMITS",
+    "evidence": {
+      "workflow": "Hosted release run 39302507697 completed success; branch main; workflow-dispatch head 479329cdf94bac963262729a09af17a534e4586e.",
+      "source": "Receipt and pushed tag v0.2.559 both identify source commit d442d418a8144a024b10c171946ba65d3623b82b; workflow log says Verify tag, receipt, and candidate identity succeeded.",
+      "manifest": "Emitted manifest is version 0.2.559; independent comparison of the approved baseline policy surface reports no mismatches. Store package has no development key or toolbar popup.",
+      "remote_code_gate": "Release log reports the Chrome Web Store approval-risk gate passed against published 0.2.205. Independent scan of all 1,273 emitted JavaScript files found no forbidden tokens, script-src loader, or Gist srcDoc remote script. The prior PDFObject/jsPDF CDN signature is absent."
+    },
+    "limits": [
+      "This is static release-contract evidence only; exact-candidate native Store install, guest/member acceptance, and public reviewer-path acceptance remain unestablished.",
+      "Config-manifest attestation was explicitly advisory and reported NOT ATTESTED because the hosted environment lacked Python dotenv; the release still completed and the warning was not represented as a successful attestation.",
+      "No dashboard upload/submission or Google decision is established by this review."
+    ]
+  },
+  "verdict_b_exact_artifact_quality": {
+    "status": "PASS",
+    "evidence": {
+      "github_artifact": "Artifact 12212585831, matrx-extend-v0.2.559, 82,716,594 bytes, unexpired; GitHub metadata digest sha256:7238365cc31d6a9ab41bd54ef22733281c1356a32ddb5032909b2c633c865c25.",
+      "independent_download": "Fresh gh run download of run 39302507697 produced the same Store ZIP, receipt, and release log bytes as the reviewed extracted artifact.",
+      "store_zip": "SHA-256 97cce8f9bc851fc08ba2a389dd2c001eeae36070f6310b5440e5b841c99d83ea; matches the embedded release receipt and the independent local digest.",
+      "receipt": "Embedded release-receipt.json identifies version 0.2.559, sourceSha d442d418a8144a024b10c171946ba65d3623b82b, publishState pushed, and treeSha256 28815e51a9f2ee7eff748007289f2600e8ebe2de29609928556de71c663168e4.",
+      "strict_release_checks": "Bundled strict release log shows exit 0 for matrx-packages, chat-package-link, typecheck, lint, unit-tests, schema-routing, migrations, and tool-drift; Store package validation and risk gate both passed."
+    }
+  },
+  "scope": "Read-only review; no source or repository files changed."
+}
