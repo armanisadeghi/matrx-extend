@@ -362,23 +362,41 @@ export function proveSource(sourceSha, workflowSha) {
     .split('\n')
     .filter(Boolean);
   const changedPaths = commits.flatMap((commit) => {
-    const paths = execFileSync(
-      'git',
-      [
-        'diff-tree',
-        '--root',
-        '-m',
-        '-r',
-        '--no-commit-id',
-        '--no-renames',
-        '--name-only',
-        '-z',
-        commit,
-      ],
-      { encoding: 'utf8' },
-    )
-      .split('\0')
-      .filter(Boolean);
+    const parents = git(['rev-list', '--parents', '-n', '1', commit]).split(' ').slice(1);
+    // A merge can bring the frozen candidate in as its second parent. Comparing
+    // against every parent counts the candidate's own files as newly changed.
+    // Compare against the parent(s) descended from the candidate instead;
+    // ordinary commits on either branch are still censused individually.
+    const candidateParents =
+      parents.length > 1
+        ? parents.filter((parent) => git(['merge-base', sourceSha, parent]) === sourceSha)
+        : [];
+    const paths =
+      candidateParents.length > 0
+        ? candidateParents.flatMap((parent) =>
+            execFileSync('git', ['diff', '--no-renames', '--name-only', '-z', parent, commit], {
+              encoding: 'utf8',
+            })
+              .split('\0')
+              .filter(Boolean),
+          )
+        : execFileSync(
+            'git',
+            [
+              'diff-tree',
+              '--root',
+              '-m',
+              '-r',
+              '--no-commit-id',
+              '--no-renames',
+              '--name-only',
+              '-z',
+              commit,
+            ],
+            { encoding: 'utf8' },
+          )
+            .split('\0')
+            .filter(Boolean);
     return [...new Set(paths)].filter((path) => {
       const expectedBlob =
         sourceSha === reviewedCandidateSource

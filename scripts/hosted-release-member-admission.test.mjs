@@ -1002,7 +1002,7 @@ test('reviewed candidate admits immutable tuples but refuses every later or pend
   const evidence = JSON.parse(baseline.stdout);
   assert.equal(evidence.scope, 'frozen-release-candidate-test');
   assert.equal(evidence.storeEligibility, false);
-  assert.equal(evidence.reviewedChanges.length, 15);
+  assert.equal(evidence.reviewedChanges.length, 9);
   assert.equal(evidence.workflowSha, reviewed);
   const generic = prove(reviewed);
   assert.equal(generic.status, 0, generic.stderr);
@@ -1048,4 +1048,85 @@ test('reviewed candidate admits immutable tuples but refuses every later or pend
   const otherCandidate = prove('a9e9a5913adc6ce4a2c24a3ff60cd86cb3bce69c');
   assert.notEqual(otherCandidate.status, 0, 'reviewed tuples are candidate-scoped');
   assert.match(otherCandidate.stderr, /release_member_product_changed/);
+});
+
+// Break caught: merging an older documentation branch with a candidate as the
+// second parent must not count the candidate's own package files as new drift.
+test('release member source proof follows the candidate parent through a documentation merge', (t) => {
+  const source = '50a479584955eca5045853f8cbb7a7d594b9fd78';
+  const reviewed = 'afe182fbe12c562e50e4e79c7c5ddeea12744dcd';
+  const repository = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+    encoding: 'utf8',
+  }).trim();
+  const cwd = mkdtempSync(join(tmpdir(), 'member-candidate-merge-'));
+  t.after(() => rmSync(cwd, { recursive: true, force: true }));
+  const git = (...args) =>
+    execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  git('clone', '--shared', '--no-checkout', repository, '.');
+  git('sparse-checkout', 'set', '--no-cone', '/package.json');
+  git('checkout', '--detach', reviewed);
+  const moduleUrl = new URL('./hosted-release-member-admission.mjs', import.meta.url).href;
+  const prove = () =>
+    spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `import { proveSource } from ${JSON.stringify(moduleUrl)}; console.log(JSON.stringify(proveSource(${JSON.stringify(source)}, ${JSON.stringify(git('rev-parse', 'HEAD'))})));`,
+      ],
+      { cwd, encoding: 'utf8' },
+    );
+  const baseline = prove();
+  assert.equal(baseline.status, 0, `candidate-equivalent merge should admit: ${baseline.stderr}`);
+  assert.equal(JSON.parse(baseline.stdout).sourceSha, source);
+  const original = readFileSync(join(cwd, 'package.json'));
+  writeFileSync(join(cwd, 'package.json'), Buffer.concat([original, Buffer.from(' ')]));
+  git('add', 'package.json');
+  git(
+    '-c',
+    'user.name=Admission guard',
+    '-c',
+    'user.email=guard@localhost',
+    'commit',
+    '-qm',
+    'package mutation',
+  );
+  const changed = prove();
+  assert.notEqual(changed.status, 0, 'a genuine package change must refuse');
+  assert.match(changed.stderr, /release_member_product_changed/);
+  git('checkout', '--', 'package.json');
+  git('revert', '--no-commit', 'HEAD');
+  git(
+    '-c',
+    'user.name=Admission guard',
+    '-c',
+    'user.email=guard@localhost',
+    'commit',
+    '-qm',
+    'restore package',
+  );
+  const reverted = prove();
+  assert.notEqual(reverted.status, 0, 'reverted package drift must still refuse');
+  assert.match(reverted.stderr, /release_member_product_changed/);
+  git('checkout', '--detach', '73c57bd49076e62499143643146bdf9e4d007cbe');
+  git(
+    '-c',
+    'user.name=Admission guard',
+    '-c',
+    'user.email=guard@localhost',
+    'merge',
+    '--no-ff',
+    '-s',
+    'ours',
+    '-m',
+    'merge candidate while retaining older product bytes',
+    source,
+  );
+  const alteredMerge = prove();
+  assert.notEqual(
+    alteredMerge.status,
+    0,
+    'merge with product bytes changed from candidate must refuse',
+  );
+  assert.match(alteredMerge.stderr, /release_member_product_changed/);
 });
