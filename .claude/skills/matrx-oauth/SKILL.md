@@ -1,5 +1,6 @@
 ---
 name: matrx-oauth
+subject: skills/matrx-oauth
 type: Skill
 title: matrx-oauth — the Matrx OAuth flow, end to end
 description: "Guide to the Matrx OAuth flow across aimatrx.com, Supabase, aidream, and the desktop client. Use when wiring OAuth into a Matrx SPA or service, or debugging 'Token exchange failed', 'No access token received', flash-and-bounce logins, the admin allowlist, /auth/aimatrx and /auth/callback, or any auth issue involving aimatrx.com or Supabase tokens."
