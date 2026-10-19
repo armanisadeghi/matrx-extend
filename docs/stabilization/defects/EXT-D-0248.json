@@ -1,0 +1,45 @@
+{
+  "id": "EXT-D-0248",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01"],
+  "surface": "Hosted non-admin Store Chat acceptance target ownership",
+  "auth_mode": "member acceptance harness; no product behavior credit",
+  "title": "Foreground restoration closes public demo and assigns unrelated root fixture before member Chat",
+  "severity": "S2: required non-admin acceptance tests the wrong page and falsely reports wrong assistant answer",
+  "priority": "P1: preserve intended target and assert actual assigned URL before AI send",
+  "state": "in-fix",
+  "owner": "root / member_target_fix",
+  "reproduction": [
+    "Run exact556 nonadmin Store acceptance A39291881216 through successful selected-authentication/org preflight.",
+    "The runner opens https://www.aimatrx.com/matrx-extend-demo, then calls restoreMemberForegroundWithReport with its web tab and the original Research brief root page before sending Chat.",
+    "The helper closes web, brings the unrelated root page forward and reopens the panel. It asks for this page’s workflow stages but grades the reply against the now-closed demo’s Capture/Understand/Use stages."
+  ],
+  "expected": "Foreground/auth recovery preserves the intended acceptance target; actual assigned URL/page identity is verified before sending and grading against that page.",
+  "actual": "The native diagnostic records web_close and root_foreground before send. The canonical request/tool flow succeeds but reply is graded against a different page; no product wrong-answer conclusion is supported.",
+  "evidence": [
+    "docs/stabilization/reports/store556-acceptance-20261019.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39291881216"
+  ],
+  "build_version": "0.2.556 exact Store ZIP under hosted test identity; workflow1f3904936",
+  "transition_history": [
+    {
+      "at": "2026-10-19T17:20:59.618007Z",
+      "from": null,
+      "to": "open",
+      "reason": "Actual non-admin run source/foreground trace shows intended page closed before question."
+    },
+    {
+      "at": "2026-10-19T17:20:59.618007Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Restore helper target ownership is the confirmed first failing test boundary; no product answer credit or defect inferred."
+    },
+    {
+      "at": "2026-10-19T17:21:56.495539Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Target restoration and target-before-send guard assigned to a separate implementation worker."
+    }
+  ],
+  "next_action": "Repair target restoration and preserve auth cleanup, add independent target-before-send guard with meaningful RED/GREEN and wrong-target mutation, fresh source peer, then new guarded non-admin acceptance."
+}

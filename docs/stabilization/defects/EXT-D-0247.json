@@ -7,7 +7,7 @@
   "title": "Guest SEO saved-history request produces persistent workspace-denied notice during public reviewer flow",
   "severity": "S2: public guest flow shows a workspace-denied global error; exact556 first reply is not visible in the small sidepanel acceptance frame",
   "priority": "P1: repair proven guest access boundary and independently retest public reviewer/Chat before shipping",
-  "state": "triaged",
+  "state": "fixed",
   "owner": "root / guest_saved_audits_diagnosis",
   "reproduction": [
     "Load exact0.2.556 Store ZIP from guarded release39289278009 artifact12205386292 in the isolated fresh guest profile, following recorded key adaptation and build receipt.",
@@ -19,7 +19,8 @@
   "evidence": [
     "docs/stabilization/reports/store556-acceptance-20261019.json",
     "docs/stabilization/evidence/store556-guest/run39290491457/guest-chat-failure.png",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39290491457"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39290491457",
+    "docs/stabilization/reports/guest-saved-audits-d247-20261019.json"
   ],
   "build_version": "0.2.556 Store ZIP adapted only for hosted identity",
   "server_sha": "b8092f234958c4f0b1a730576e218252a5735498",
@@ -35,7 +36,20 @@
       "from": "open",
       "to": "triaged",
       "reason": "Builder located unconditional saved SEO history read and global failure notice on guest refusal; exact visual mechanism remains under diagnosis."
+    },
+    {
+      "at": "2026-10-19T17:21:56.495539Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Existing token preflight and guest UI lifecycle repair assigned for SEO and sibling Data saved reads."
+    },
+    {
+      "at": "2026-10-19T17:21:56.495539Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source72810e8f0 pushed with meaningful guest-query RED/GREEN, authenticated refusal, transitions and32 surrounding tests. Fresh peer and exact new-artifact native retest remain pending."
     }
   ],
-  "next_action": "Confirm guest-history applicability, repair the owning read boundary while preserving authenticated error reporting and public audit capability; add meaningful RED/GREEN and surrounding cases, fresh independent review, then exact new-artifact guest/native retest. No submission until required guest/nonadmin/reviewer gates pass."
+  "next_action": "Confirm guest-history applicability, repair the owning read boundary while preserving authenticated error reporting and public audit capability; add meaningful RED/GREEN and surrounding cases, fresh independent review, then exact new-artifact guest/native retest. No submission until required guest/nonadmin/reviewer gates pass.",
+  "fix_sha": "72810e8f0"
 }
