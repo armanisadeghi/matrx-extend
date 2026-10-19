@@ -2345,7 +2345,9 @@
             "data-picker",
             "independent-native-retest"
           ],
-          "defect_ids": []
+          "defect_ids": [
+            "EXT-D-0253"
+          ]
         }
       ],
       "cells": {
@@ -2367,7 +2369,8 @@
             "EXT-D-0188",
             "EXT-D-0204",
             "EXT-D-0206",
-            "EXT-D-0208"
+            "EXT-D-0208",
+            "EXT-D-0253"
           ],
           "run_ids": [
             "release-red-001",
@@ -2389,9 +2392,10 @@
             "popup-teardown-suite-001",
             "popup-teardown-green-002",
             "release-stabilization-027",
-            "37269797985"
+            "37269797985",
+            "39303623065"
           ],
-          "retest_status": "D140 remains closed on its recorded bounded evidence. D0204 is fixed: exact0.2.549/0.2.550 emitted Store packages have independent clean remote-code scans;0.2.550 full hosted release gates pass. Exact0.2.550 guest/member native runs are in progress. T14 public-demo walkthrough source is under integration; actual fresh-candidate native proof and Store submission remain pending. No new full feature/mode pass."
+          "retest_status": "Exact559 guest39303623065 has independently reviewed bounded first reply, same-conversation follow-up and new-conversation after panel reload; public Schema/SEO predicates pass, Settings/Capture/Links/Data fail. D253 reviewer helper source fix92ee994a8 awaits new native retest. No full feature or Store-installed559 pass; candidate is unsubmitted."
         },
         "member": {
           "test_status": "partial",
@@ -2433,9 +2437,10 @@
             "popup-teardown-suite-001",
             "popup-teardown-green-002",
             "release-stabilization-027",
-            "37269797985"
+            "37269797985",
+            "39303737912"
           ],
-          "retest_status": "D140 remains closed on its recorded bounded evidence. D0204 is fixed: exact0.2.549/0.2.550 emitted Store packages have independent clean remote-code scans;0.2.550 full hosted release gates pass. Exact0.2.550 guest/member native runs are in progress. T14 public-demo walkthrough source is under integration; actual fresh-candidate native proof and Store submission remain pending. No new full feature/mode pass."
+          "retest_status": "Exact559 member39303737912 verified real nonadmin authentication and approved organization, then failed hidden-panel proof before any Chat send. D248 remains unresolved; tested safe topology instrumentation41b7cecdd awaits hosted replay. No member product or full feature pass."
         },
         "admin": {
           "test_status": "partial",

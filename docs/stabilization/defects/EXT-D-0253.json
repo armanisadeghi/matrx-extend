@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0253",
   "feature_id": "EXT-F-0003",
-  "case_ids": [
-    "EXT-F-0003-T14"
-  ],
+  "case_ids": ["EXT-F-0003-T14"],
   "surface": "Exact Store guest public-demo reviewer walkthrough",
   "auth_mode": "fresh guest; exact unpublished 0.2.559 adapted Store ZIP; public demo page",
   "title": "Reviewer helper rejects public controls and checks Data guest state before selection",
@@ -23,11 +21,12 @@
   "evidence": [
     "docs/stabilization/reports/candidate559-acceptance-20261019.json",
     "docs/stabilization/evidence/candidate559-acceptance/run39303623065/native-report.sanitized.json",
-    "docs/stabilization/reports/reviewer559-failure-repair-20261019.json"
+    "docs/stabilization/reports/reviewer559-failure-repair-20261019.json",
+    "docs/stabilization/reports/reviewer-trace-source-peer-20261019.json"
   ],
   "fix_sha": "92ee994a8",
   "verification": "Focused RED on old helper; 46 adjacent local tests PASS, pnpm compile PASS, changed JavaScript Biome PASS. Fresh exact-artifact native and independent review are pending.",
-  "reviewer": "pending independent native and code review",
+  "reviewer": "Fresh independent source A/B PASS with focused46 tests; exact next-candidate native Settings/Article and surrounding controls remain pending.",
   "next_action": "On the next eligible synchronized-main candidate, independently retest EXT-F-0003-T14. Keep .559 failed; investigate Settings screenshot and Article result from their first native boundaries, then advance this defect only on real native evidence.",
   "transition_history": [
     {
