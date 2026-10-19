@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_published_store_crx_guest_chat_run",
+  "run_id": 39283778031,
+  "observed_at_utc": "2026-10-19T16:19:00Z",
+  "title": "Public Store CRX v0.2.205 Guest Chat B — admitted, queued before hosted execution",
+  "status": "queued_unverified_no_product_credit",
+  "task_identity": "guest_live_20261019",
+  "provenance": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39283778031",
+    "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39283778031/job/118163920235",
+    "job_id": 118163920235,
+    "workflow_status": "queued",
+    "job_status": "queued",
+    "workflow_head_sha": "27af0f60415e2c70d2d727f0b99d453156f9f1ae",
+    "source_sha": "27af0f60415e2c70d2d727f0b99d453156f9f1ae",
+    "workflow_checkout_sha": "27af0f60415e2c70d2d727f0b99d453156f9f1ae",
+    "lane": "B",
+    "case": "guest-chat",
+    "auth_mode": "guest",
+    "runner_label": "macos-15-intel",
+    "requested_by": "extend-stabilization",
+    "public_version": "0.2.205",
+    "store_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "approved_crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "provenance_mode": "published_store_crx",
+    "publication_scope": "The workflow is intended to extract and load the approved public CRX in an isolated hosted profile; no hosted execution has started, and this cannot establish installation from the live Chrome Web Store."
+  },
+  "admission": {
+    "path": "scripts/hosted-remote-admission.mjs dispatch-published-guest-chat",
+    "result": "passed",
+    "helper_dispatcher": "canonical helper; requested_by fixed to extend-stabilization",
+    "local_head_at_dispatch": "27af0f60415e2c70d2d727f0b99d453156f9f1ae",
+    "origin_main_at_dispatch": "27af0f60415e2c70d2d727f0b99d453156f9f1ae",
+    "dirty_at_dispatch": false,
+    "resource_admission": "not_started; hosted job remains queued",
+    "capacity_admission": "passed by normal helper at dispatch",
+    "hosted_workflow_digest_review": "passed by normal helper at dispatch"
+  },
+  "server": {
+    "git_sha_before": null,
+    "git_sha_after": null,
+    "status_before": null,
+    "status_after": null,
+    "stable": null,
+    "note": "Hosted runner has not started; the live server was not queried by this run."
+  },
+  "case_observation": {
+    "hosted_runner_started": false,
+    "fresh_guest_profile_verified": false,
+    "chat_opened": false,
+    "opening_reply_terminal": false,
+    "opening_reply_grounded_in_page_fixture": false,
+    "same_conversation_followup_terminal": false,
+    "post_reload_new_conversation_terminal": false,
+    "screenshot_predicate_diagnostics": "not available; browser phase has not started",
+    "public_demo_settings_result": "not run",
+    "public_demo_capture_result": "not run",
+    "public_demo_seo_result": "not run",
+    "public_demo_data_result": "not run",
+    "accepted_product_screenshot_count": 0,
+    "product_acceptance_credit": 0
+  },
+  "resource_finals": {
+    "hosted-package": "not started; no journal produced",
+    "hosted-browser": "not started; no journal produced",
+    "hosted-guest": "not started; no journal produced"
+  },
+  "queue_observation": {
+    "observed_at_utc": "2026-10-19T16:18:00Z",
+    "workflow_status": "queued",
+    "job_status": "queued",
+    "job_started_at_reported": "2026-10-19T16:13:37Z",
+    "job_steps": [],
+    "environment_note": "Task owner verified active GitHub Actions workflow-processing delays on the official GitHub Status page. This is an infrastructure delay, not product evidence."
+  },
+  "cleanup": {
+    "workflow_terminal": false,
+    "additional_dispatches": 0,
+    "credentials_staged": false,
+    "private_raw_bundle_created": false,
+    "next_action": "Leave this single admitted run queued. At the next hourly observation, inspect this same run; do not redispatch or relocate it. If it remains queued, preserve the zero-credit checkpoint and report the exact state."
+  }
+}
