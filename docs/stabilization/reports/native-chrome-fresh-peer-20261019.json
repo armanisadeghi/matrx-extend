@@ -1,0 +1,31 @@
+{
+  "task_id": "native-chrome-fresh-peer-20261019",
+  "status": "DONE_WITH_CONCERNS",
+  "reviewer": "fresh independent native Chrome peer; zero authorship",
+  "observed_at_utc": "2026-10-19T19:36:00Z",
+  "verdict_A_live_ui": {
+    "dev_installation": {
+      "verdict": "PASS_BOUNDED",
+      "observed": "chrome://extensions details showed Unpacked extension, version 0.2.560, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, Loaded from /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev, enabled, Pin to toolbar on.",
+      "evidence": "Native Chrome AX state and screenshot in CUA tool results; current tab id 2091587342 was Chrome internal and could not be claimed, so Chrome native app AX was used."
+    },
+    "store_guest": {
+      "verdict": "PARTIAL_UNVERIFIABLE_EXISTING_CONVERSATION",
+      "observed": "Store extension details showed version 0.2.205, ID hnfolienncfklkgmdjjmhhegglimlamg, Chrome Web Store source, enabled, pinned. Its panel URL used that Store ID and displayed ‘You're using Matrx as a guest.’ On public fixture https://www.aimatrx.com/matrx-extend-demo, History showed 0 and ‘No conversations yet.’ Current guest composer was blank with Send disabled.",
+      "not_verified": "The existing owned two-turn conversation, its actual replies, and completed-turn Send composer terminal could not be reopened because no conversation appeared in History. No new chat or AI call was made."
+    },
+    "public_fixture": "Visible page stated Capture / Understand / Use; Understand expected answers grounded in current page; Use expected structured rows that can be copied or reused. This confirms fixture content only, not the Store chat replies."
+  },
+  "verdict_B_evidence_provenance_cleanup_limits": {
+    "store_provenance": "Self-observed native Store identity/version/source. Builder receipt /tmp/store205-live-guest-refresh-20261019.json reports server SHA 0362acd8b6e4f34c48a062a08f4cde61e5e9e441 before and after; I did not independently resample the server.",
+    "dev_provenance": "Self-observed loaded directory, ID and version. dev560_refresh reported CI artifact 12216060926 / source 900ae066 and successful promotion; I did not independently inspect artifact bytes or receipt.",
+    "resource": "Native UI began only under the explicit admitted guard dev560-native-refresh-20261019-02, owned by dev560_refresh (session 76941); admission 2026-10-19T19:32:58.167Z, pressure 1, memory 10.56 GiB available, CPU busy 9.7%, load 2.3/10, disk repo 1630.31 GiB/profile 43.79 GiB, no refusal reasons. I closed the Store panel and stopped UI; the lease owner confirmed UI and permit released with final decision valid, exit 0, resourceInvalid false.",
+    "images": "Native screenshots were captured and rendered in CUA outputs for Store details, dev details, and public fixture plus Store guest History. The documented CUA API returns screenshot bytes and displays them; it exposes no supported filesystem-save method. No filesystem/network workaround was used, so there are no image paths.",
+    "limits": [
+      "No Store 0.2.205 two-reply transcript or composer-after-send proof; the current Store guest History is empty.",
+      "No installed-bundle SHA attestation; version/ID/path are native Chrome observations.",
+      "No source diff review was applicable to this UI-only peer lane.",
+      "The dev worker reported one pre-admission UI action/refused journal; that observation receives no acceptance credit. My observed dev proof occurred after the explicit admitted lease handoff."
+    ]
+  }
+}

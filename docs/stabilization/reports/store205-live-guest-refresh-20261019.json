@@ -1,0 +1,49 @@
+{
+  "task_id": "store205-live-guest-refresh-20261019-01",
+  "status": "PASS_BOUNDED_NATIVE_STORE_GUEST_TWO_TURN",
+  "observed_at_utc": "2026-10-19T19:26:13Z",
+  "store_extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "installed_version": "0.2.205",
+    "source": "Chrome Web Store",
+    "enabled": true,
+    "native_details_page": "chrome://extensions/?id=hnfolienncfklkgmdjjmhhegglimlamg",
+    "native_panel_url": "chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html",
+    "guest_banner": "You're using Matrx as a guest."
+  },
+  "fixture": "https://www.aimatrx.com/matrx-extend-demo",
+  "conversation": {
+    "first_prompt": "On this demo page, what are the three workflow stages, and what is the expected result for Understand?",
+    "first_reply_observed": "The page lists Capture, Understand, and Use; for Understand, the expected result is answers grounded in the current page.",
+    "followup_prompt": "Of those stages, which one yields structured rows that can be copied or reused?",
+    "followup_reply_observed": "Use is the stage that yields structured rows; its purpose is to extract details needed for the next task, and the expected result is structured rows that can be copied or reused.",
+    "same_conversation": true,
+    "terminal_composer": "Send restored after follow-up; no visible error or retry.",
+    "screenshots": "Native CUA tool results in this task: initial first-turn view and final two-turn screenshot (captured after completion); not written as filesystem images."
+  },
+  "server": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "before": {
+      "git_sha": "0362acd8b6e4f34c48a062a08f4cde61e5e9e441",
+      "built_at": "2026-10-19T18:58:24Z"
+    },
+    "after": {
+      "git_sha": "0362acd8b6e4f34c48a062a08f4cde61e5e9e441",
+      "built_at": "2026-10-19T18:58:24Z"
+    }
+  },
+  "resource": {
+    "run_id": "store205-live-guest-refresh-20261019-01",
+    "journal": "test-results/native-store205/store205-live-guest-refresh-20261019-01.jsonl",
+    "final_decision": "valid",
+    "wrapper_exit_code": 0,
+    "browser_profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "cleanup": "Closed Store panel and temporary demo tab; preexisting tabs and auth retained; SIGINT stopped the UI permit after UI work ended; final resource decision valid.",
+    "raw_journal_sha256": "910192e1f57ca6dc027ed8120d3c35fdcec09cc3b9c2465f9dbf99763119972d",
+    "relocation": "Completed raw journal preserved byte-identically under ignored test-results to permit unrelated hosted source admission; sanitized durable copy pending copier repair.",
+    "sanitized_durable_journal": "docs/stabilization/evidence/chrome-native-20261019/store205-guest.sanitized.jsonl"
+  },
+  "deviation": "One toolbar click briefly reopened existing unpacked extension 0.2.555. No reload, chat input, setting change, or source change was made. Switched to and used the exact Store extension ID above.",
+  "limits": "Confirms visible behavior on installed Store 0.2.205 only. Runtime installed-bundle SHA is not directly attested. Server SHA sampled twice during this test and matched the requested deploy SHA. No broad product health claim.",
+  "independent_review_limit": "Later fresh peer observed exact Store205 identity and guest banner, but History had zero conversations after panel close and could not replay the earlier two-turn transcript without new model calls. Two-turn PASS is the direct native operator observation above, not an independent replay or guest-history-persistence pass."
+}
