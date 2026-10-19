@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "store_release_gate_checkpoint",
+  "status": "terminal_failed_before_publication",
+  "hosted_release_run_id": 39321198765,
+  "hosted_release_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39321198765",
+  "dispatch_source_sha": "10817f4b877f4e06baeea533bc821f0328f0a72f",
+  "pinned_aidream_type_source_sha": "0362acd8b6e4f34c48a062a08f4cde61e5e9e441",
+  "requested_candidate_version": "0.2.561",
+  "failed_step": "Release through the repository contract",
+  "first_failed_gate": "tool-drift",
+  "failure_artifact_id": 12220535926,
+  "failure_artifact_name": "matrx-extend-failure-39321198765-1",
+  "published_tag": false,
+  "validated_store_zip": false,
+  "store_upload_or_submission": false,
+  "red_reproduction": "Authenticated pnpm -s catalog:tools:drift:strict exited 1 against the live database and deployed server, finding one tool with two different description leaves in its Records action variants.",
+  "first_contract_boundary": {
+    "tool": "records",
+    "paths": [
+      "$variants.data_sync.confirm_archive.description",
+      "$variants.notion_sync.confirm_archive.description"
+    ],
+    "live_database": "The held-archive count:fingerprint confirmation wording matches current aidream main's Records argument declarations.",
+    "deployed_server": "The older sync-would-archive confirmation wording comes from deployed aidream def6af7c3ceb01f704de3106cfd1ccae83f9130d, verified by /health/version and that commit's Records argument declarations.",
+    "other_contract_differences": 0
+  },
+  "classification": "Deployed server declaration lags the live database and current Records source. The release gate correctly refused publication; this is not an extension package, authentication, or CI spend failure.",
+  "next_action": "Deploy current aidream Records source through its authorized release path, verify /health/version and rerun the authenticated strict tool-drift gate. Re-dispatch the hosted extension release only after that gate passes and source/capacity admission remains valid. The exact Store candidate still needs independent guest, non-admin member, and public reviewer browser acceptance before upload."
+}
