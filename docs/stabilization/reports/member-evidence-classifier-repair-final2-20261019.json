@@ -1,0 +1,21 @@
+{
+  "status": "DONE_PENDING_FRESH_PEER_AND_INTEGRATION",
+  "changes": [
+    "Removed the obsolete D0223 exact-commit/blob exception from member source proof; the historical old candidate now refuses admission-guard drift without an untested escape branch.",
+    "Retained canonical sanitized journal admission and refusal of pending or committed member guard/test drift."
+  ],
+  "evidence": {
+    "tests": "32/32 member admission tests passed after exception removal",
+    "compile": "pnpm compile passed",
+    "lint": "pnpm -s lint passed",
+    "format_and_diff": "biome format and git diff --check passed",
+    "limit": "Native member admission requires a new eligible artifact and remains release-owner work."
+  },
+  "files": [
+    "scripts/hosted-release-member-admission.mjs",
+    "scripts/hosted-release-member-admission.test.mjs"
+  ],
+  "openquestions": [
+    "Fresh peer review before root-coordinated commit/push; no source correctness follow-up identified."
+  ]
+}

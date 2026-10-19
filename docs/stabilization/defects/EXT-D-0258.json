@@ -9,7 +9,7 @@
   "severity": "S2: three valid native reviewer failures cannot be localized from retained evidence",
   "priority": "P1: actionable original failure evidence before next candidate acceptance",
   "state": "fixed",
-  "owner": "root/public_article_capture_diagnosis",
+  "owner": "root/reviewer_geometry_picker_repair",
   "preconditions": [
     "Resource-valid frozen562 guest run39329484777 completed three Chat replies but reviewer controls remained incomplete."
   ],
@@ -24,7 +24,10 @@
   "cause": "Generic catches and limited safe DOM projections drop the relevant boundary state.",
   "evidence": [
     "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json",
-    "docs/stabilization/reports/public-reviewer-probe-repair-20261019.json"
+    "docs/stabilization/reports/public-reviewer-probe-repair-20261019.json",
+    "docs/stabilization/reports/store-release-v0564-acceptance-20261019.json",
+    "docs/stabilization/reports/reviewer-geometry-picker-repair-20261019.json",
+    "docs/stabilization/reports/reviewer-geometry-picker-source-peer-20261019.json"
   ],
   "sibling_census": "All three failed reviewer controls share the owned helper; member temporal paint repair remains separate D257. Article privacy-link presence was diagnostic only, not an assertion; initial contrary diagnosis is refuted. Links privacy check and Article heading/stages remain strict.",
   "acceptance_criteria": [
@@ -35,11 +38,12 @@
     "Independent source A/B review, then fresh native replay retaining actionable original first-failure evidence."
   ],
   "verification": {
-    "source": "Fresh first review found divergent Article test gap; builder repaired it and final independent A/B PASS. Native diagnostic outcome pending.",
-    "product": "Missing native Article heading and Data Done cause remain unknown; no feature pass or product fix."
+    "source": "436fec00c diagnostic continuation integrated after independent source behavior/quality review.81adjacent tests,compile/fullLint pass. No Data/automatic-capture product repair claimed.",
+    "product": "Article cause localized and source repair tracked separately as D260; Data Done and automatic-capture screenshot geometry remain unclassified.",
+    "native": "Exact564B39336624267 resource-valid: precise crop geometry code and Article text/node evidence were retained, but geometry coordinates and selected-before-Done state were missing. New bounded numeric/count diagnostics await fresh native replay."
   },
-  "fix_commit": "8ec03ea5b08968780a8470540710234df197dc10",
-  "next_action": "Commit reviewed helper/test unit, freeze all records with D257 and contributor changes, then one exact candidate native public reviewer probe.",
+  "fix_commit": "436fec00c71da4e14ba6fce281bb38fa02566019",
+  "next_action": "Fresh eligible candidate must expose geometry and actual picker count, preserve cleanup, and classify remaining first failures. No unchanged blind rerun or product pass inferred.",
   "transition_history": [
     {
       "at": "2026-10-19T22:05:02.915114Z",
@@ -64,6 +68,28 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Exact source unit pushed after fresh independent source behavior and quality PASS; repaired native acceptance remains pending."
+    },
+    {
+      "at": "2026-10-19T22:51:52Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "564 native run still lacked geometry scalars and actual selected-before-Done state for actionable first boundary."
+    },
+    {
+      "at": "2026-10-19T23:04:50.416515Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Bounded numeric geometry and actual closed-shadow selection count added without relaxing control semantics."
+    },
+    {
+      "at": "2026-10-19T23:04:50.416515Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Diagnostic continuation reviewed and pushed at436fec00c; fresh native replay remains pending."
     }
+  ],
+  "previous_fix_commits": [
+    "8ec03ea5b08968780a8470540710234df197dc10",
+    "3ecfcd1c79f75bec56be26a942188480069ba5c8"
   ]
 }

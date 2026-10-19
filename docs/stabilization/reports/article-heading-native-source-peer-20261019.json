@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0260",
+  "status": "SOURCE_REVIEW_COMPLETE_NATIVE_PENDING",
+  "verdict_a": {
+    "outcome": "PARTIAL",
+    "finding": "The source change is narrowly aligned with preserving the public demo article header: only direct headers under article or role=article containing a heading are neutralized, and the normalization runs on a clone before extraction. This leaves the unrelated body-level site header eligible for Defuddle pruning.",
+    "evidence": [
+      "Current source Article result in the provided 0.2.564 run omitted the heading while stages survived; native confirmation of the repair is pending.",
+      "Source inspection confirms extractArticle clones the input before normalizeSemanticMarkup and then passes that clone into Defuddle/Readability.",
+      "The focused unit test passes locally (2 cases), but no native Chrome post-fix result is available; therefore no live PASS."
+    ],
+    "limits": [
+      "No Chrome post-fix verification.",
+      "No test yet directly proves the introduction survives or that the original document outerHTML is unchanged."
+    ]
+  },
+  "verdict_b": {
+    "outcome": "CONCERNS",
+    "finding": "The class boundary is reasonable and the regression guard exercises the real normalization-before-extraction seam with two article examples and a competing site header. However, the test does not assert the intro text, despite that being part of the required outcome, and its `not.toContain(\"Site navigation\")` assertion is pre-satisfied by test code that explicitly deletes all remaining headers before runScrape. That assertion is not evidence that the real Defuddle path prunes the site header.",
+    "evidence": [
+      "Test calls normalizeSemanticMarkup on a clone, manually removes every remaining header to stand in for Defuddle, then invokes runScrape; this does stress whether the article header survived normalization, but makes the site-header exclusion assertion tautological.",
+      "Test asserts the original doc still has its original article H1 node, but does not compare the source DOM before/after or verify intro retention.",
+      "The new production condition scopes to direct article headers with any descendant heading; neutralizes the element while preserving all its attributes/children. No source DOM write occurs in this function by inspection.",
+      "Focused command `pnpm exec vitest run tests/unit/scrape-article-header.test.ts` passed: 2 tests."
+    ],
+    "recommendation": "Before treating the regression guard as complete, assert a distinct article-introduction sentinel in extracted markdown and source DOM unchanged (e.g. serialized source snapshot). Replace the site-header no-content assertion with evidence from the actual Defuddle selector/runtime or an isolated test of that selector against both headers; retain a distinct RED assertion showing removal of the article-header normalization loses the heading."
+  },
+  "files_reviewed": [
+    "src/lib/scrape/pipeline.ts",
+    "tests/unit/scrape-article-header.test.ts",
+    "tests/browser/store-reviewer-demo-path.mjs",
+    "/tmp/article-heading-native-diagnosis-20261019.json"
+  ],
+  "files_touched": [],
+  "native_acceptance": "Pending, explicitly not verified by this review.",
+  "overall": "Do not mark the full Article repair passed yet. Source implementation appears narrowly correct for the heading-loss boundary; guard misses explicit intro assertion and does not independently prove site-header pruning. Native selector probe and exact-candidate Chrome replay remain required."
+}

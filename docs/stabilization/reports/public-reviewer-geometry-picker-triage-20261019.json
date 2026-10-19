@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "task": "public-reviewer-geometry-picker-triage",
+  "run_id": "39336624267",
+  "status": "PARTIAL_TRIAGE",
+  "resource_status": "Resource finals valid; public reviewer demo failed. Guest failure does not invalidate resource receipts. This is not a release/readiness pass.",
+  "findings": {
+    "fresh_auto_capture_off": {
+      "classification": "SETTING_STATE_CHECK_PASSED; SCREENSHOT_GEOMETRY_ORACLE_FAILED",
+      "evidence": [
+        "Run reports one real Auto-scrape on load switch, switch_on=false, setting_present=false, stored_on=null; the off/default assertion completed before the screenshot failure.",
+        "The screenshot helper resolves the exact labeled switch and fails geometry when its viewport-clipped visible rectangle has nonpositive width or height. Failure code is screenshot_target_geometry, not target_missing or a setting-state mismatch.",
+        "Thus setting_present=false indicates no explicit stored override; it does not mean the switch is absent. Artifact lacks rect/viewport scalars, so the specific layout cause (scroll position, clipping, or zero-sized rect) is unproven."
+      ],
+      "recommendation": "Narrowly add safe numeric rect and viewport diagnostics to the screenshot failure, then exercise the same visible-hit target with the settings panel scrolled and unscrolled. Preserve the requirement for a positive visible target area and the existing off-state semantics; do not mark geometry as passed."
+    },
+    "data_workflow_picker": {
+      "classification": "UNCLASSIFIED_RESULT_HANDOFF; POST-DONE_UI_ASSERTION_FAILED",
+      "evidence": [
+        "Driver confirms the page-field hit and finds one closed-shadow picker with Done and Cancel nodes; this proves target/node discovery, not that the picker accepted a field.",
+        "After Done, safe DataView state is selected_count=0, picker_ready=false, cancel_ready=false, guest_explanation_present=false; missing screenshot is downstream of that absent recovered state.",
+        "Source flow builds the result from the picker internal picked set, then DataView accepts only matching tab, document, session, and page identity. Run evidence has no pre-Done picked count, emitted result count, or identity-acceptance booleans, so product rejection versus driver/event timing remains unresolved."
+      ],
+      "recommendation": "Add a focused, safe-instrumented real-flow test: assert numeric picker selected count immediately before Done; observe result delivery and identity-match booleans; then assert DataView selected_count=1, Cancel readiness, and guest explanation. If pre-Done count is zero, investigate field-click acceptance/timing; if result count is one but matching fails, investigate session/page identity handoff. Keep Done, one-field selection, same-page acceptance, Cancel, and guest gate requirements intact."
+    }
+  },
+  "historical_baseline": "The earlier 0.2.205 manual two-field Done path is separate evidence and cannot establish this 0.2.564 run as passing.",
+  "files_reviewed": [
+    "/tmp/hosted-guest-v0564-39336624267/matrx-extend/matrx-extend/test-results/guest-chat-store-973806dc-9899-4450-8abd-0f335a69f861.json",
+    "docs/stabilization/reports/store-release-v0564-acceptance-20261019.json",
+    "tests/browser/store-reviewer-demo-path.mjs",
+    "tests/browser/data-guest-picker-driver.mjs",
+    "src/features/settings/SettingsView.tsx",
+    "src/lib/data-pattern/picker.ts",
+    "src/features/data/DataView.tsx"
+  ],
+  "files_touched": [],
+  "open_questions": [
+    "What were the safe switch rect and viewport values at failure?",
+    "Did the picker internal selected count equal one immediately before Done?",
+    "Was a result emitted, and did DataView reject it due to tab/document/session/page identity mismatch?"
+  ],
+  "next_action": "Instrument only the safe geometry scalars and picker count/result/identity boundary, rerun the exact candidate fixture, and classify the first failing boundary before proposing source changes."
+}

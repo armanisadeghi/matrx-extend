@@ -1,0 +1,73 @@
+{
+  "id": "EXT-D-0260",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T08"],
+  "title": "Article capture loses a heading-bearing semantic article header",
+  "surface": "Scrape Article extraction and display",
+  "auth_mode": "guest reproduced; other modes unverified",
+  "severity": "S2: captured article omits source headline and introduction",
+  "priority": "P1: public reviewer path and faithful page capture",
+  "state": "fixed",
+  "owner": "root/article_heading_native_loss_repair",
+  "preconditions": [
+    "Public reviewer demo https://www.aimatrx.com/matrx-extend-demo has source H1 A clear three-stage browser workflow inside article > header.",
+    "Exact candidate0.2.564 sourcea6a99c3cf / release39335524427 / artifact12226792173; test installation key-adapted development copy, not Store install."
+  ],
+  "reproduction": [
+    "Open the public demo and guest Scrape tab.",
+    "Capture the page and open Article.",
+    "Compare source H1 with captured Article text. Resource-valid guestB39336624267 saw content and all workflow stages but no source heading text or heading nodes.",
+    "Actual Store205 manual capture also yielded137words and omitted the source heading in observed body; this is a separately bounded older baseline."
+  ],
+  "expected": "Article extraction preserves source article heading and introduction along with body stages; unrelated site chrome is not newly retained. Source DOM remains unchanged.",
+  "actual": "Native candidate Article has1118textContent/1133innerText chars and workflow stages but loses source heading. No raw SoupResult was retained in that run.",
+  "cause": "Defuddle removal selector header:not(:has(p + p)):not(:has(img)) matches the live semantic article header in Chrome. Removing only that header from saved HTML reproduces native137word output; intact HappyDOM replay gives179words. Chrome DOM probe supports the selector boundary; exact post-fix native capture remains pending.",
+  "evidence": [
+    "docs/stabilization/reports/store-release-v0564-acceptance-20261019.json",
+    "docs/stabilization/reports/article-heading-native-diagnosis-20261019.json",
+    "docs/stabilization/reports/article-header-native-selector-probe-20261019.json",
+    "docs/stabilization/reports/article-heading-native-source-peer-20261019.json",
+    "docs/stabilization/reports/article-heading-native-diagnosis-final-20261019.json",
+    "docs/stabilization/reports/article-heading-native-source-final-peer-20261019.json"
+  ],
+  "acceptance_criteria": [
+    "Original heading/header-loss reproduction fails before and passes after repair with intro retained.",
+    "Only cloned extraction input is normalized; original DOM and unrelated site headers remain unchanged.",
+    "Meaningful regression and mutation evidence, adjacent extraction tests and compile/lint pass.",
+    "Fresh independent source review has no unresolved correctness/test concern.",
+    "Fresh exact native candidate reproduces source heading/introduction/stages and surrounding Links/Schema/SEO cases before closure."
+  ],
+  "verification": {
+    "source": "Integrated narrow clone-only repair after peer test concerns resolved: heading+intro retention, original DOM unchanged, unrelated/unheaded headers left unchanged before controlled dependency prune.19adjacent tests/compile pass; quality peer PASS, native post-fix pending.",
+    "native_selector": "Actual Chrome public header matches exact Defuddle selector; diagnostic only, no post-fix extraction claim.",
+    "native_postfix": "pending new eligible candidate"
+  },
+  "next_action": "Retest source heading,introduction,stages and surrounding capture cases on a new eligible native candidate before closure.",
+  "transition_history": [
+    {
+      "at": "2026-10-19T23:00:04.561948Z",
+      "from": null,
+      "to": "open",
+      "reason": "Resource-valid exact564 guest Article check omits source heading."
+    },
+    {
+      "at": "2026-10-19T23:00:04.561948Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source/header ablation matches native word count and actual Chrome selector matches semantic article header."
+    },
+    {
+      "at": "2026-10-19T23:00:04.561948Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Narrow clone-only preservation repair in progress under independent review."
+    },
+    {
+      "at": "2026-10-19T23:04:50.416515Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Reviewed product source/test/documentation unit committed and pushed; original native guest reproduction and surrounding cases still require fresh exact candidate retest."
+    }
+  ],
+  "fix_commit": "d1bd25d7d86b4531ad2c17671b8cddfa3c48876b"
+}

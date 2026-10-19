@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "task": "candidate-0.2.564-guest-behavior-evidence-review",
+  "status": "BOUNDED_GUEST_CHAT_BEHAVIOR_SUPPORTED_FULL_REVIEWER_RUN_FAILED",
+  "build_identity": {
+    "version": "0.2.564",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "runtime_tree_sha256": "1737fffe760568859fc3381509388f65f4af41c11f1c9dc82fd7460e1e4063e7",
+    "artifact_unchanged": true,
+    "release_checkpoint_run": "39335524427",
+    "artifact_id": "12226792173",
+    "artifact_digest": "sha256:5727e0416bb5deee7b514ffcba87e091504845e03810b6cae75bf39a99b621e1",
+    "store_zip_sha256": "39fcdd72e36e1cbd4d9970b41ae3d20102789313f84237b23067945bb2b3c57f",
+    "scope_limit": "Loaded under a test-key-adapted development extension identity. This is not the published Store-installed 0.2.205 build and does not prove a later source candidate."
+  },
+  "backend": {
+    "before_http_200": true,
+    "after_http_200": true,
+    "same_deployed_backend_sha": true,
+    "sha": "9ef78d4ade91d8f1cb1951710266b094db5744bf"
+  },
+  "turns": [
+    {
+      "attempt": "opening",
+      "terminal_ui_verdict": "terminal_answer",
+      "http_200": true,
+      "transport_complete": true,
+      "semantic_completion_success": true,
+      "end_complete": true,
+      "assistant_reply_count": 1,
+      "conversation_is_new": true,
+      "grounding_checks": {
+        "active_tab_matched_fixture": true,
+        "page_url_matched": true,
+        "readable_marker_present": true
+      },
+      "tool_resume_and_result_posts_succeeded": true,
+      "screenshot_reference_present": true
+    },
+    {
+      "attempt": "same_conversation_followup",
+      "terminal_ui_verdict": "terminal_answer",
+      "http_200": true,
+      "transport_complete": true,
+      "semantic_completion_success": true,
+      "end_complete": true,
+      "assistant_reply_count": 2,
+      "conversation_is_new": false,
+      "same_conversation_as_opening": true,
+      "grounding_checks": {
+        "active_tab_matched_fixture": true,
+        "page_url_matched": true
+      },
+      "tool_resume_and_result_posts_succeeded": true,
+      "screenshot_reference_present": true
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "terminal_ui_verdict": "terminal_answer",
+      "http_200": true,
+      "transport_complete": true,
+      "semantic_completion_success": true,
+      "end_complete": true,
+      "assistant_reply_count": 1,
+      "conversation_is_new": true,
+      "conversation_fingerprint_differs_from_prior_conversation": true,
+      "session_absent_after_reload": true,
+      "guest_chat_visible_after_reload": true,
+      "tool_resume_and_result_posts_succeeded": true,
+      "screenshot_reference_present": true
+    }
+  ],
+  "anonymous_use": {
+    "guest_account_observed": true,
+    "organization_absent": true,
+    "profile_absent": true,
+    "access_token_present": false,
+    "authenticated": false,
+    "login_paywall_or_error": false,
+    "page_grounded_reply_markers_checked": true,
+    "raw_user_content_or_auth_values_emitted": false
+  },
+  "screenshots": {
+    "png_artifacts_present": 14,
+    "opening_same_conversation_and_post_reload_chat_screenshots_referenced": true,
+    "failure_crop_for_article_present": true,
+    "auto_capture_off_screenshot_unavailable_due_geometry_failure": true,
+    "data_picker_failure_screenshot_unavailable_due_missing_target": true,
+    "visual_review_of_raw_chat_transcript_performed": false
+  },
+  "full_review_status": {
+    "reviewer_demo": "fail",
+    "auto_capture_off": "fail",
+    "article_capture": "fail",
+    "data_workflow_picker": "fail",
+    "links": "pass",
+    "schema": "pass",
+    "seo": "pass",
+    "overall_acceptance": "not passed"
+  },
+  "not_established": [
+    "Current post-D260 source/build acceptance or post-fix Article behavior.",
+    "Published Store-installed 0.2.205 runtime behavior from this 0.2.564 candidate-key-adapted run.",
+    "A full public-reviewer PASS; three controls failed.",
+    "Pre-attachment requests: the observer attached after panel load, so earlier network activity is outside its observation scope."
+  ],
+  "files_reviewed": [
+    "/tmp/hosted-guest-v0564-39336624267/matrx-extend/matrx-extend/test-results/guest-chat-store-973806dc-9899-4450-8abd-0f335a69f861.json",
+    "docs/stabilization/reports/store-release-v0564-acceptance-20261019.json"
+  ],
+  "files_touched": [],
+  "next_action": "Use this only as bounded evidence that the 0.2.564 candidate-key-adapted run supported three terminal guest chat turns with the stated conversation semantics. Keep the overall reviewer status failed and rerun against any later exact candidate before making current-release claims."
+}

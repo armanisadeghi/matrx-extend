@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "member-evidence-classifier-final2-peer",
+  "status": "DONE_SOURCE_REVIEW_PASS_NATIVE_PENDING",
+  "verdict_A_behavior": {
+    "status": "PASS",
+    "evidence": [
+      "The 32-test scripts/hosted-release-member-admission.test.mjs suite passed: 32 pass, 0 fail.",
+      "The suite's clean source-history fixture admits exactly the two sanitized journal changes; it commits independent guard and guard-test edits and confirms both pending and committed changes refuse the old candidate.",
+      "Focused adversarial negatives reject product, dependency, workflow, resource-policy, unsafe journal suffix/name, traversal and nested paths. Existing no-ancestry, synchronized-source, artifact identity, receipt/tag, archive digest and inner Store ZIP digest tests passed in the same suite.",
+      "The obsolete D0223 commit/blob exception and its hash references are removed from both implementation and test. The older candidate refusal expectation remains covered by the Member A old-candidate test and the new pending/committed guard drift fixture.",
+      "git diff --check passed. Reviewed implementation/test diff changes only scripts/hosted-release-member-admission.mjs and scripts/hosted-release-member-admission.test.mjs for this task."
+    ],
+    "source_scope": "The classifier now accepts canonical sanitized resource-journal ancestry through the shared documentation compatibility predicate while leaving the old candidate ineligible after admission-guard changes."
+  },
+  "verdict_B_quality": {
+    "status": "PASS",
+    "evidence": [
+      "The behavior test constructs a clean two-journal-only Git history and verifies original RED/current GREEN rather than relying only on path-string unit checks.",
+      "Tests retain strict refusal for admission guard/test changes in both pending and committed history, plus product/runtime/workflow/dependency/resource-policy negatives.",
+      "Removal of the D0223 exception resolves the previous untested exact-commit/blob branch; no new path/commit exception or self-admission bypass remains in the reviewed delta.",
+      "No resource-capacity logic, release receipt/tag/archive/store-byte gate, hosted workflow, package dependency, or product/runtime code changed."
+    ],
+    "builder_report_corroboration": "The builder report says compile and full lint passed; this peer independently reran the focused 32-test suite and diff check only."
+  },
+  "residual_work": {
+    "native_member_admission": "PENDING and still required after integration on a newly eligible artifact. Candidate 0.2.564 remains ineligible after the source guard change.",
+    "product_acceptance": "Not established by this source review; no product credit follows from source admission or a future member run alone."
+  },
+  "files_touched": [],
+  "next_action": "Root may integrate after its separate held B-run gate; then create/use a newly eligible artifact and perform fresh native member admission with the ordinary resource and receipt checks."
+}

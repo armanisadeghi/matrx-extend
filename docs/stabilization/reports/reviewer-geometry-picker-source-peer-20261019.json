@@ -1,0 +1,27 @@
+{
+  "verdict": "B",
+  "scope": "Source-only peer review of the four requested diagnostic driver/test files; no UI, browser, resource guard, product source, workflow, or repository writes.",
+  "filesReviewed": [
+    "tests/browser/store-reviewer-demo-path.mjs",
+    "tests/browser/data-guest-picker-driver.mjs",
+    "tests/browser/store-reviewer-demo-failure-boundaries.test.mjs",
+    "tests/browser/store-reviewer-proof-projection.test.mjs"
+  ],
+  "findings": [
+    "The screenshot path still requires the exact public demo URL, exactly one selected pane tab with an active controlled pane, and a fixed known control; it refuses missing/duplicate targets, nonempty sensitive controls, empty/out-of-viewport crops, and unexpected hit targets before capture.",
+    "Out-of-viewport diagnostics contain only finite numeric rect/viewport/visible dimensions projected with an absolute 1,000,000 bound. A targeted test observes the zero-visible-height case and verifies Page.captureScreenshot is never called. Existing wrong-label test verifies the private-label target is refused.",
+    "The new pre-Done collector walks the exact closed shadow root of #matrx-data-picker-host, selects #picked, then counts .picked-item rows. This matches src/lib/data-pattern/picker.ts, which renders that container and one .picked-item div per selected field. Zero or any count other than one fails before Done and is projected as a bounded count; finally cleanup attempts picker Cancel and then DataView Cancel when ready.",
+    "After Done, the runner still requires exactly one DataView selected field, cancel readiness, and the guest explanation before checking the public selector and canceling the draft. It does not add a save/auth action. The failure-boundary test exercises count=0 and asserts Done was not clicked; it also exercises Done hit-target failure and cleanup."
+  ],
+  "verification": {
+    "command": "node --test tests/browser/store-reviewer-demo-failure-boundaries.test.mjs tests/browser/store-reviewer-proof-projection.test.mjs",
+    "result": "8/8 passed",
+    "independentBuildClaim": false
+  },
+  "limitations": [
+    "No dedicated stale-tab/active-pane mismatch fault-injection case was added in these four files. This is remaining integration coverage, not an identified source correctness issue; code refuses when the selected tab has no controlled active pane.",
+    "The closed-shadow count integration is source-matched but its tests stub pickerSelectedCount; exact candidate behavior still needs the authorized hosted rerun. This review is not product-fix proof, native UI proof, or candidate acceptance."
+  ],
+  "cleanup": "No browser/profile state changed; no source edits or commits made.",
+  "verdictMeaning": "Source review is acceptable for this diagnostic-only patch, with hosted candidate rerun still required. The stale selected-tab/active-pane case is an integration coverage gap, not an observed correctness defect: the implementation independently requires exactly one selected tab, resolves its aria-controls pane, and requires data-state=active before screenshot targeting."
+}

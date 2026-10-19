@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T22:39:01.349782Z",
+  "updated_at": "2026-10-19T23:04:50.416515Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -419,7 +419,8 @@
           "defect_ids": [
             "EXT-D-0080",
             "EXT-D-0165",
-            "EXT-D-0171"
+            "EXT-D-0171",
+            "EXT-D-0259"
           ],
           "linked_defects": [
             "EXT-D-0256"
@@ -2399,7 +2400,22 @@
               "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json",
               "detail": "Three reviewer controls incomplete. D258 sourceobservability fixed, real source/render/input failures not yet resolved. No overall acceptance."
             }
-          }
+          },
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39336624267,
+              "mode": "guest",
+              "version": "0.2.564",
+              "source_sha": "a6a99c3cfb4c413bf66012142c85a2ab87387148",
+              "status": "partial",
+              "resource_valid": true,
+              "aggregate_run_status": "failed_reviewer_controls",
+              "build_kind": "native_store_zip_candidate_key_adapted",
+              "new_unique_case_pass": false,
+              "scope": "Public source,Links,Schema,SEO subtargets pass; automatic-capture screenshot geometry, Articleheading andDataDone fail. Diagnostic continuation and Article source repair now require fresh native retest.",
+              "evidence": "docs/stabilization/reports/store-release-v0564-acceptance-20261019.json"
+            }
+          ]
         }
       ],
       "cells": {
@@ -7897,6 +7913,9 @@
               "new_unique_case_pass": false,
               "evidence": "docs/stabilization/reports/store205-article-heading-baseline-20261019.json"
             }
+          ],
+          "defect_ids": [
+            "EXT-D-0260"
           ]
         },
         {
@@ -51681,6 +51700,21 @@
               "scope": "Actual Store205 guest opening and same-conversation followup visible; no post-reload or network terminal proof in this native observation. Existing frozen-candidate result is unchanged.",
               "new_unique_case_pass": false,
               "evidence": "docs/stabilization/reports/store205-guest-chat-current-backend-20261019.json"
+            }
+          ],
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39336624267,
+              "mode": "guest",
+              "version": "0.2.564",
+              "source_sha": "a6a99c3cfb4c413bf66012142c85a2ab87387148",
+              "status": "partial",
+              "resource_valid": true,
+              "aggregate_run_status": "failed_reviewer_controls",
+              "build_kind": "native_store_zip_candidate_key_adapted",
+              "new_unique_case_pass": false,
+              "scope": "Three protocol-terminal grounded guest replies with same-conversation second/new-conversation postreload third; independent evidence peer supports frozen scope only; post-D260 current main and actual Store205 not certified.",
+              "evidence": "docs/stabilization/reports/store-release-v0564-acceptance-20261019.json"
             }
           ]
         },

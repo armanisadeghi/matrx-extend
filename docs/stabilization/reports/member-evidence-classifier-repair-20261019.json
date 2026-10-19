@@ -1,0 +1,19 @@
+{
+  "status": "DONE_PENDING_INTEGRATION",
+  "changes": [
+    "Member A accepts canonical top-level sanitized resource journals through the shared runtime-equivalent documentation classifier while retaining its existing path exclusions.",
+    "Added a guard using two actual committed journal paths, source a6a99c3cf, head 7dae65eef, and negative path cases."
+  ],
+  "evidence": {
+    "red": "node --test --test-name-pattern='canonical sanitized resource journals' scripts/hosted-release-member-admission.test.mjs failed release_member_product_changed before fix",
+    "green": "same focused test passed; full member admission suite 33/33 passed; pnpm compile passed; pnpm -s lint passed (926 existing warnings); git diff --check passed",
+    "candidate_limit": "Proof covers source a6a99c3cf through 7dae65eef; later product/runtime changes still require a new artifact and cannot be self-exempted by this classifier."
+  },
+  "files": [
+    "scripts/hosted-release-member-admission.mjs",
+    "scripts/hosted-release-member-admission.test.mjs"
+  ],
+  "openquestions": [
+    "Root to perform independent review and coordinate commit/push after Guest B reaches a terminal state."
+  ]
+}
