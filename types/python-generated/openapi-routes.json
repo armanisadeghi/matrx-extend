@@ -2041,6 +2041,16 @@
  "/cognito-forms/public/status": {
   "get": []
  },
+ "/collab/rooms/{room_id}/current": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/collab/rooms/{room_id}/write": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/communications/internal/test-handset-inbox": {
   "get": []
  },
