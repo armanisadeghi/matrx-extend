@@ -7607,6 +7607,9 @@
    "application/json"
   ]
  },
+ "/seo/brands/{brand_id}/map/readiness": {
+  "get": []
+ },
  "/seo/brands/{brand_id}/strategy": {
   "get": []
  },

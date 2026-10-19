@@ -7,7 +7,7 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-10-19T21:04:26.463Z
+Generated: 2026-10-19T21:33:34.481Z
 Total tools: 83
 
 ## ai
@@ -691,32 +691,32 @@ Extract text from a PDF by file_id (cld_files id) or tab_id (open tab whose URL 
 
 _action_
 
-The person's custom records: tables, fields and rows, plus forms, portals, boards, dashboards, documents and automations built on them. Send `action` and that action's arguments in `args`. Before a write or build action's FIRST use in a conversation, call {"action": "guide", "args": {"topic": "<action>"}} for every argument and a worked example (not needed for record_read and record_aggregate); {"action": "guide"} alone returns the full how-to.
+The person's custom records: tables, fields and rows, plus forms, portals, boards, dashboards, documents and automations built on them. Send `action` and that action's arguments in `args`. Before a write or build action's FIRST use in a conversation, call {"action": "guide", "args": {"topic": "<action>"}} for every argument and a worked example (not for record_read or record_aggregate); {"action": "guide"} alone returns the full how-to.
 Actions:
 - table_list: the tables and homes the person can see
-- metadata_search: search tables and fields by name (structure, not rows)
+- metadata_search: find tables and fields by name (not rows)
 - record_read: rows of a table (table_id, optional match), or one row (record_id). match takes a multi-select's word or list and a linked table's field, in ONE call: {"match": {"Platforms": "Instagram", "Client.Client Type": {"is_not": "Past Client"}}}
 - record_aggregate: every count/sum/avg/min/max, total or top N (never add up rows you read). Call it FIRST with the person's own names, no lookup before it (a wrong name is refused with the real ones): {"action": "record_aggregate", "args": {"table": "Visit Log", "measure": "sum", "field_key": "Copay", "match": {"Patient.Referring physician": "Dr. Shah"}}} ("Relation.Field" reaches across a relation). Also group_by, bucket (day/week/month), order "measure_desc" + limit, as_of
-- record_write: add or change rows, up to 200 in one call via `records`; an entry with `record_id` changes that row
+- record_write: add or change up to 200 rows via `records` (an entry with `record_id` changes that row)
 - record_delete: archive a row; undo=true restores it
 - record_history / record_restore_version: a row's past versions; put one back
 - field_propose: add ONE field to an existing table
 - table_propose: a new table WITH all its fields in one call (a choice field takes `options`, a link takes `relation_target`: the other table's id)
 - import_propose: a spreadsheet, CSV or rows from the chat into a table
-- did an import miss rows: record_read's import_note says what the last import refused and why
+- record_read's import_note: what the last import refused and why
 - form_propose: a form anyone with the link can answer
 - capture_propose: the person's own crew logging on a phone, even offline
 - booking_propose: let people book a time
 - checklist_propose: a process or SOP that runs when a record arrives
 - pipeline_propose: a board where records move between stages
 - dashboard_propose: a saved breakdown, counts or chart
-- document_propose: render a record as a proposal, quote, invoice or letter
+- document_propose: a record as a proposal, quote, invoice or letter
 - portal_propose: clients sign in and see only their own rows
 - signature_request: have somebody sign a document on a record
-- subscription_propose: notify or summarize when something happens
-- notion_sync: pull the latest from Notion into an imported table or page
+- subscription_propose: notify or sum up when something happens
+- notion_sync: pull Notion's latest into an imported table or page
 - data_sync: copy a connected source into existing tables by a mapping
-- enrich_propose: fill fields of rows from outside sources
+- enrich_propose: fill rows' fields from outside sources
 - entity_read / entity_write: platform records such as contacts
 - page_write, view_propose, template_propose, field_convert: page bodies (Notion blocks ok), saved views, row templates, automatic fields
 - guide: arguments and examples for any action
