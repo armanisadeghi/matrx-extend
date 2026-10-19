@@ -46,6 +46,87 @@ const admission = {
   secretNames: ['MATRX_REVIEWER_MAGIC_LINK_JSON', 'MATRX_PROFILE_APPROVED_ORGANIZATION_JSON'],
 };
 
+test('canonical sanitized resource journals remain eligible for frozen member source', (t) => {
+  const journals = [
+    'docs/stabilization/resource-journals/store205-data-done-baseline-20261019-01.sanitized.jsonl',
+    'docs/stabilization/resource-journals/store205-guest-chat-current-backend-20261019-01.sanitized.jsonl',
+    'docs/stabilization/resource-journals/future-run-20261020-01.sanitized.jsonl',
+  ];
+  requireReleaseMemberSource(true, journals);
+  const repository = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+    encoding: 'utf8',
+  }).trim();
+  const cwd = mkdtempSync(join(tmpdir(), 'member-journal-history-'));
+  t.after(() => rmSync(cwd, { recursive: true, force: true }));
+  const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8' }).trim();
+  git('clone', '--shared', '--no-checkout', repository, '.');
+  git(
+    'sparse-checkout',
+    'set',
+    '--no-cone',
+    '/scripts/hosted-release-member-admission.mjs',
+    '/scripts/hosted-release-member-admission.test.mjs',
+  );
+  git('checkout', '--detach', '7dae65eef6c8fb66fd8c616c300b59d6eb5a7dbb');
+  const moduleUrl = new URL('./hosted-release-member-admission.mjs', import.meta.url).href;
+  const prove = () =>
+    spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `import { proveSource } from ${JSON.stringify(moduleUrl)}; console.log(JSON.stringify(proveSource('a6a99c3cf', '${git('rev-parse', 'HEAD')}')));`,
+      ],
+      { cwd, encoding: 'utf8' },
+    );
+  const baseline = prove();
+  assert.equal(baseline.status, 0, baseline.stderr);
+  const proof = JSON.parse(baseline.stdout);
+  assert.ok(journals.slice(0, 2).every((path) => proof.subsequentChangedPaths.includes(path)));
+  for (const path of [
+    'scripts/hosted-release-member-admission.mjs',
+    'scripts/hosted-release-member-admission.test.mjs',
+  ]) {
+    const original = readFileSync(join(cwd, path));
+    writeFileSync(
+      join(cwd, path),
+      Buffer.concat([original, Buffer.from('\n// later guard drift\n')]),
+    );
+    const pending = prove();
+    assert.notEqual(pending.status, 0, `pending ${path} must refuse`);
+    assert.match(pending.stderr, /release_member_product_changed/);
+    git('add', path);
+    git(
+      '-c',
+      'user.name=Admission guard',
+      '-c',
+      'user.email=guard@localhost',
+      'commit',
+      '-qm',
+      'later guard drift',
+    );
+    const committed = prove();
+    assert.notEqual(committed.status, 0, `committed ${path} must refuse`);
+    assert.match(committed.stderr, /release_member_product_changed/);
+    git('checkout', '--detach', '7dae65eef6c8fb66fd8c616c300b59d6eb5a7dbb');
+  }
+  for (const path of [
+    'docs/stabilization/resource-journals/hosted-browser-39074994379-1.jsonl',
+    'docs/stabilization/resource-journals/private-run.sanitized.jsonl',
+    'docs/stabilization/resource-journals/future-run.jsonl',
+    'docs/stabilization/resource-journals/future-run.mjs.sanitized.jsonl',
+    'docs/stabilization/resource-journals/../package.json',
+    'docs/stabilization/resource-journals/nested/future-run.sanitized.jsonl',
+    'docs/stabilization/resource-policy.json',
+    'src/ChatView.tsx',
+  ])
+    assert.throws(
+      () => requireReleaseMemberSource(true, [path]),
+      /release_member_product_changed/,
+      path,
+    );
+});
+
 // Recorded Settings run terminated resource-invalid with zero product credit.
 // Its run and journals are immutable evidence; the canonical defect record can
 // still receive non-runtime status updates after the reviewed commit.
@@ -389,13 +470,13 @@ test('archive and inner Store bytes must both match signed GitHub and receipt di
     /release_member_store_digest_mismatch/,
   );
 });
-test('harness and evidence commits preserve release eligibility but product edits refuse it', () => {
+test('reviewed harness and evidence paths preserve eligibility but guard and product edits refuse it', () => {
   requireReleaseMemberSource(true, [
-    'scripts/hosted-release-member-admission.mjs',
-    'scripts/hosted-release-member-admission.test.mjs',
     'docs/stabilization/reports/store-release-audit-20261017.json',
   ]);
   for (const path of [
+    'scripts/hosted-release-member-admission.mjs',
+    'scripts/hosted-release-member-admission.test.mjs',
     'src/features/chat/ChatView.tsx',
     'package.json',
     'wxt.config.ts',
@@ -424,9 +505,9 @@ test('reviewed package Chat driver repairs preserve immutable candidate eligibil
     assert.throws(() => requireReleaseMemberSource(true, [path]), /release_member_product_changed/);
 });
 
-// Break caught: the reviewed Member A paint diagnostics and status checkpoint
-// must not be mistaken for a change to the frozen Store extension.
-test('Member A source proof admits its exact reviewed diagnostic and status delta', (t) => {
+// The historical candidate now refuses because its later history changed the
+// admission guard; the diagnostic and status records remain non-runtime paths.
+test('Member A old candidate refuses guard drift while diagnostics remain operational', (t) => {
   const source = 'de066a247ae7fa74015bc143bbc13e4128f742e4';
   const workflow = '2b32e0ab11f169b46a0430ef9ee1f5b6f5cd03e9';
   const repository = execFileSync('git', ['rev-parse', '--show-toplevel'], {
@@ -446,21 +527,15 @@ test('Member A source proof admits its exact reviewed diagnostic and status delt
     ],
     { cwd, encoding: 'utf8' },
   );
-  assert.equal(result.status, 0, result.stderr);
-  const proof = JSON.parse(result.stdout);
-  assert.equal(proof.storeEligibility, false);
-  assert.equal(proof.workflowSha, workflow);
-  assert.ok(proof.subsequentChangedPaths.includes('tests/browser/member-chat-visible-proof.mjs'));
-  assert.ok(
-    proof.subsequentChangedPaths.includes('tests/browser/member-chat-visible-proof.test.mjs'),
-  );
-  assert.ok(proof.subsequentChangedPaths.includes('docs/stabilization/COORDINATOR.md'));
-  assert.ok(
-    proof.subsequentChangedPaths.includes(
-      'docs/stabilization/runs/member-chat-store-v0547-run39158481456.json',
-    ),
-  );
-  requireReleaseMemberSource(true, proof.subsequentChangedPaths);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /release_member_product_changed/);
+  const operational = [
+    'tests/browser/member-chat-visible-proof.mjs',
+    'tests/browser/member-chat-visible-proof.test.mjs',
+    'docs/stabilization/COORDINATOR.md',
+    'docs/stabilization/runs/member-chat-store-v0547-run39158481456.json',
+  ];
+  requireReleaseMemberSource(true, operational);
   for (const path of [
     'tests/browser/member-chat-visible-proof-copy.mjs',
     'docs/stabilization/COORDINATOR-copy.md',
@@ -474,7 +549,7 @@ test('Member A source proof admits its exact reviewed diagnostic and status delt
     '.github/workflows/release.yml',
   ])
     assert.throws(
-      () => requireReleaseMemberSource(true, [...proof.subsequentChangedPaths, path]),
+      () => requireReleaseMemberSource(true, [...operational, path]),
       /release_member_product_changed/,
       path,
     );
@@ -681,33 +756,6 @@ test('member harness defects admit only reviewed test and canonical defect recor
       /release_member_product_changed/,
       path,
     );
-});
-
-test('frozen .537 candidate admits only the reviewed D0223 preflight commit and blobs', () => {
-  const source = '1b612c67410576b5d077fe20bee4fd33455d987d';
-  const head = '5ec68e5e53d0902454329d7708ba178d571fe47f';
-  const proof = proveSource(source, head);
-  assert.equal(proof.storeEligibility, false);
-  assert.deepEqual(
-    proof.reviewedChanges
-      .filter((row) => row.commit === 'db9434441dd1f29eda3c0242b081971befa3dbdd')
-      .map((row) => [row.path, row.blob]),
-    [
-      [
-        'docs/stabilization/resource-journals/ext-d-0223-native-retest-preflight-20261018-01.jsonl',
-        'f01a7788e4501d348003173fdf33f585656e35d2',
-      ],
-      [
-        'docs/stabilization/runs/ext-d-0223-t10-native-retest-20261018-01.json',
-        'b69d14ada91d1bc4a12a579b36cafc4a14db0b56',
-      ],
-    ],
-  );
-  assert.throws(
-    () => proveSource('ec7b09cc64c83d48c7533da84735da764e0c9701', head),
-    /release_member_product_changed/,
-    'the reviewed preflight is limited to the frozen .537 candidate',
-  );
 });
 
 // Break caught: the immutable member candidate cannot be retested after a

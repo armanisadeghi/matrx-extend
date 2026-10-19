@@ -7,6 +7,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { isRuntimeEquivalentDocumentationPath } from './development-source-compatibility.mjs';
 import {
   requireSynchronizedDispatchSource,
   verifyHostedWorkflowCheckout,
@@ -139,6 +140,13 @@ function reviewedStabilizationPath(path) {
   )
     return false;
   if (
+    /^docs\/stabilization\/resource-journals\/[a-zA-Z0-9][a-zA-Z0-9._-]*\.sanitized\.jsonl$/.test(
+      path,
+    ) &&
+    isRuntimeEquivalentDocumentationPath(path)
+  )
+    return true;
+  if (
     /^docs\/stabilization\/(?:runs|reports)\/[a-zA-Z0-9][a-zA-Z0-9._-]*\.(?:json|jsonl|md|html|txt|log)$/.test(
       path,
     ) ||
@@ -222,7 +230,6 @@ export function requireReleaseMemberSource(ancestor, paths) {
           'docs/stabilization/evidence/member-release-admission-20261017/release-api-metadata.json' ||
         path ===
           'docs/stabilization/evidence/settings-navigation-lane-a-preflight-20261017/resource-journals/settings-nav-preflight-20261017-01.sanitized.jsonl' ||
-        /^scripts\/hosted-release-member-admission(?:\.test)?\.mjs$/.test(path) ||
         path === 'tests/browser/guest-chat-store-acceptance.mjs' ||
         path === 'tests/browser/guest-chat-store-sequence.test.mjs' ||
         path === 'tests/browser/guest-chat-store-screenshot.mjs' ||
@@ -348,13 +355,6 @@ export function proveSource(sourceSha, workflowSha) {
     'docs/stabilization/resource-journals/hosted-package-39074994379-1.jsonl',
   ];
   const reviewedStorePeer = '66b9b1b1852036d8aa565715455f94935177c522';
-  const reviewedD223Preflight = 'db9434441dd1f29eda3c0242b081971befa3dbdd';
-  const reviewedD223PreflightBlobs = {
-    'docs/stabilization/resource-journals/ext-d-0223-native-retest-preflight-20261018-01.jsonl':
-      'f01a7788e4501d348003173fdf33f585656e35d2',
-    'docs/stabilization/runs/ext-d-0223-t10-native-retest-20261018-01.json':
-      'b69d14ada91d1bc4a12a579b36cafc4a14db0b56',
-  };
   const reviewedStoreReceipt =
     'docs/stabilization/evidence/store-release-20261017/tool-drift-release-repair.json';
   const reviewedChanges = [];
@@ -409,19 +409,6 @@ export function proveSource(sourceSha, workflowSha) {
           'release_member_reviewed_blob_mismatch',
         );
         reviewedChanges.push({ commit, path, blob: expectedBlob });
-        return false;
-      }
-      if (
-        sourceSha === reviewedCandidateSource &&
-        commit === reviewedD223Preflight &&
-        path in reviewedD223PreflightBlobs
-      ) {
-        assert.equal(
-          git(['rev-parse', `${commit}:${path}`]),
-          reviewedD223PreflightBlobs[path],
-          'release_member_reviewed_blob_mismatch',
-        );
-        reviewedChanges.push({ commit, path, blob: reviewedD223PreflightBlobs[path] });
         return false;
       }
       return (
