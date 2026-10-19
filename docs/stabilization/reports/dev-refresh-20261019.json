@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-19",
+  "workflow": ".github/workflows/ci.yml",
+  "run_id": 39167489515,
+  "attempt": 1,
+  "artifact_id": 12151169007,
+  "artifact_digest": "sha256:35da039459273844871d98659d102c2c92eed6da1abad606d11a3f87ee1ddc8b",
+  "source_sha": "1a96becbc6abc4751fe0cb6eb94aad94e15f2d7a",
+  "current_main_sha": "27af0f60415e2c70d2d727f0b99d453156f9f1ae",
+  "version": "0.2.550",
+  "tree_sha256": "236067cf015a628ca8990e856991691feb5b8caa31176cfd68c95dc6e93aa874",
+  "import": "verified; exact_pushed_commit_only",
+  "promotion": "refused: ci_dev_runtime_source_changed",
+  "installed_dev_version": "0.2.544",
+  "installed_dev_tree_sha256": "e6b2c3f115ba2b5db86cdfb1ded8de7ba18eacb65bf6fbe3e1b42ca3668004f0",
+  "installed_dev_run_id": 39151181881,
+  "chrome_loaded_version": "unknown; not verified",
+  "limit": "CI source lags current main; promotion hard stop; do not claim current"
+}

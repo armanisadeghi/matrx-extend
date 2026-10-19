@@ -1,0 +1,18 @@
+{
+  "cause": "tests/browser/guest-chat-store-sequence.test.mjs located the follow-up capture with a retired capture( call after production moved to captureGuestAnswer(; indexOf returned -1 and the owner-table ordering assertion failed before exercising the tail.",
+  "failed_run": 39269329447,
+  "failed_step": "checks: pnpm test:focused-acceptance; guest owner-table verdict executes after both Chat verdicts and screenshots",
+  "reproduction": "node --test --test-name-pattern='guest owner-table verdict executes' tests/browser/guest-chat-store-sequence.test.mjs: RED before fix, GREEN after fix",
+  "tests": [
+    "node --test tests/browser/guest-chat-store-sequence.test.mjs: 35/35 pass",
+    "pnpm compile: pass",
+    "pnpm exec biome check tests/browser/guest-chat-store-sequence.test.mjs: pass",
+    "git diff --check: pass"
+  ],
+  "sibling_census": "No other retired follow-up capture reference under tests or scripts.",
+  "own_sha": "c69f8b6b5",
+  "push": "origin/main",
+  "pipeline_known": "Source test failure fixed and local exact test green; no workflow change or manual CI dispatch.",
+  "pipeline_unknown": "Fresh GitHub CI result for c69f8b6b5 awaits root monitoring; prior guest runtime remains independently unverified.",
+  "ci_breaker": "No open ci-breaker issue found."
+}
