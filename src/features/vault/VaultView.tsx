@@ -15,6 +15,7 @@
  * (`passkeys`) — it needs an aimatrx.com page, so the package hides it.
  */
 
+import { ENV } from '@/config/env';
 import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
@@ -46,6 +47,8 @@ import { useVaultPage } from './useVaultPage';
 type Actor = { userId: string; organizationId: string };
 
 const openUrl = (url: string) => void openOutbound(url, '_blank', 'noopener');
+/** The vault menu's "Open on the web": the full workspace on the website. */
+const openWebVault = () => openUrl(`${ENV.FRONTEND_URL}/vault`);
 
 export function VaultView() {
   const { user } = useAuth();
@@ -105,6 +108,7 @@ function VaultWorkspace({ actor }: { actor: Actor }) {
     () => ({
       knobs,
       openUrl,
+      openWebVault,
       identity: extensionVaultIdentity,
       fillSetup,
       capture,
