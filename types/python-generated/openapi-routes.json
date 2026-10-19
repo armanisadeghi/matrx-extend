@@ -493,6 +493,14 @@
    "application/json"
   ]
  },
+ "/admin/tool-layer/tools/{tool_id}/order": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/tool-layer/tools/{tool_id}/pricing": {
+  "get": []
+ },
  "/admin/tool-routing/cache-bust": {
   "post": []
  },
@@ -1407,6 +1415,16 @@
  },
  "/base-move/jobs/{job_id}": {
   "get": []
+ },
+ "/base-move/restore-jobs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/base-move/snapshot-jobs": {
+  "post": [
+   "application/json"
+  ]
  },
  "/base-snapshots/schedule": {
   "put": [
@@ -8857,6 +8875,9 @@
  "/tools/calls/{call_id}/cancel": {
   "post": []
  },
+ "/tools/catalog/describe-status": {
+  "get": []
+ },
  "/tools/catalog/search": {
   "get": []
  },
@@ -8899,6 +8920,11 @@
  },
  "/tools/{tool_id}/agent-doc": {
   "get": []
+ },
+ "/tools/{tool_id}/describe": {
+  "post": [
+   "application/json"
+  ]
  },
  "/tools/{tool_id}/run-form": {
   "get": []
