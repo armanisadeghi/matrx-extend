@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "record_kind": "sanitized_published_crx_guest_chat_result",
+  "run_id": 39283778031,
+  "artifact": {
+    "id": 12203600032,
+    "name": "hosted-guest-39283778031-1",
+    "digest": "sha256:ea9aad2a508acaf60292f88bf57cdce568b04a959de674452fc381d59b9c5b0a",
+    "downloaded_zip_sha256_matches_github_digest": true,
+    "size_bytes": 336143,
+    "native_result_file_present": true,
+    "raw_screenshots_retained_privately": true
+  },
+  "build": {
+    "version": "0.2.205",
+    "receipt_kind": "published_store_crx_unpacked",
+    "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "public_crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "source_sha": "27af0f60415e2c70d2d727f0b99d453156f9f1ae"
+  },
+  "server": {
+    "status_before": 200,
+    "status_after": 200,
+    "git_sha_before": "b8092f234958c4f0b1a730576e218252a5735498",
+    "git_sha_after": "b8092f234958c4f0b1a730576e218252a5735498",
+    "stable": true
+  },
+  "guest": {
+    "fresh_profile": true,
+    "chat_visible": true,
+    "after_reload": true,
+    "session_absent_after_reload": true,
+    "no_login_paywall_or_error": true
+  },
+  "chat": {
+    "opening_verdict": "terminal_answer",
+    "opening_contains_unpredictable_page_code": true,
+    "opening_names_page_stages": true,
+    "opening_stages_in_order": true,
+    "same_conversation_verdict": "terminal_answer",
+    "same_conversation_identity_verified": true,
+    "same_conversation_followup_contains_page_code": true,
+    "same_conversation_terminal_reply_count": 4,
+    "post_reload_verdict": "terminal_answer",
+    "post_reload_followup_contains_unpredictable_page_code": true,
+    "post_reload_followup_names_fixture_heading": true,
+    "post_reload_terminal_reply_count": 2,
+    "guest_ai_transport_proven": true,
+    "observed_guest_ai_request_count": 3,
+    "context_rule_read_count": 0,
+    "context_observer_scope": "Observer attached after panel load; pre-attachment requests are outside the observation window."
+  },
+  "failure": {
+    "stage": "guest_values_chip_observation",
+    "code": "guest_values_chip_closed_not_observed",
+    "interpretation": "Guest Chat opening, same-conversation follow-up, and post-reload follow-up reached terminal answers. The first failing assertion was the optional Values popover remaining visibly open after a trusted Escape keypress.",
+    "values_close_diagnostic": {
+      "chip_count": 1,
+      "visible_open_popovers": 1,
+      "open_state_popovers": 1,
+      "escape_keydown_count": 1,
+      "trusted_escape_keydown_count": 1,
+      "document_focused": true,
+      "focus_inside_popover": true
+    },
+    "answer_screenshot_predicate_diagnostic": null,
+    "note": "The answer screenshot assertion did not fail in this run; the failure occurred later at Values popover Escape close. Raw reply, nonce, screenshot content, and screenshot paths are omitted."
+  },
+  "bounded_public_demo": {
+    "fresh_auto_capture_off": { "status": "fail", "code": "reviewer_observation_failed" },
+    "capture_article": { "status": "fail", "code": "reviewer_article_capture_not_observed" },
+    "capture_links": { "status": "fail", "code": "reviewer_observation_failed" },
+    "capture_schema": { "status": "fail", "code": "reviewer_observation_failed" },
+    "seo_audit": { "status": "fail", "code": "reviewer_observation_failed" },
+    "data_workflow_picker": { "status": "fail", "code": "reviewer_observation_failed" }
+  },
+  "screenshots": {
+    "opening_stage_count": 3,
+    "same_conversation_heading_present": true,
+    "post_reload_heading_present": true,
+    "post_reload_answer_present": true,
+    "failure_screenshot_present": true,
+    "retention": "Raw screenshots contain page/reply content and remain only in the private downloaded artifact."
+  },
+  "resource_finals": {
+    "hosted-package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "sanitization": {
+    "package_and_browser": "Copied through scripts/copy-hosted-resource-journal.mjs.",
+    "guest": "Fourteen RESOURCE_STARTUP_INTERVAL_BRACKET records containing process attribution were omitted; the remaining events passed scripts/copy-hosted-resource-journal.mjs validation, including one final decision.",
+    "raw_reply_nonce_auth_and_screenshot_content_in_repository": false
+  },
+  "scope_limit": "This is bounded evidence for the tested public CRX and guest profile. Public-demo checks are recorded separately above. No independent retest or live Chrome Web Store installation is established."
+}

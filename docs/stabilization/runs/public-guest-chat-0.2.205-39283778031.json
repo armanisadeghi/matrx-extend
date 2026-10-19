@@ -2,17 +2,28 @@
   "schema_version": 1,
   "record_kind": "hosted_published_store_crx_guest_chat_run",
   "run_id": 39283778031,
-  "observed_at_utc": "2026-10-19T16:19:00Z",
-  "title": "Public Store CRX v0.2.205 Guest Chat B — admitted, queued before hosted execution",
-  "status": "queued_unverified_no_product_credit",
+  "observed_at_utc": "2026-10-19T16:33:19Z",
+  "title": "Public Store CRX v0.2.205 Guest Chat B — three replies observed; Values Escape assertion failed",
+  "status": "partial_behavior_failure_workflow_status_pending",
   "task_identity": "guest_live_20261019",
   "provenance": {
     "workflow": "Hosted guest side-panel acceptance",
     "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39283778031",
     "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39283778031/job/118163920235",
     "job_id": 118163920235,
-    "workflow_status": "queued",
-    "job_status": "queued",
+    "workflow_status": "in_progress",
+    "workflow_updated_at": "2026-10-19T16:27:12Z",
+    "job_status": "in_progress",
+    "job_conclusion": null,
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "failed_step_completed_at": "2026-10-19T16:23:45Z",
+    "artifact": {
+      "id": 12203600032,
+      "name": "hosted-guest-39283778031-1",
+      "digest": "sha256:ea9aad2a508acaf60292f88bf57cdce568b04a959de674452fc381d59b9c5b0a",
+      "downloaded_zip_sha256_matches_github_digest": true
+    },
+    "sanitized_native_result": "../evidence/published-v0205-guest-chat/run39283778031/native-result.sanitized.json",
     "workflow_head_sha": "27af0f60415e2c70d2d727f0b99d453156f9f1ae",
     "source_sha": "27af0f60415e2c70d2d727f0b99d453156f9f1ae",
     "workflow_checkout_sha": "27af0f60415e2c70d2d727f0b99d453156f9f1ae",
@@ -25,7 +36,7 @@
     "store_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
     "approved_crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
     "provenance_mode": "published_store_crx",
-    "publication_scope": "The workflow is intended to extract and load the approved public CRX in an isolated hosted profile; no hosted execution has started, and this cannot establish installation from the live Chrome Web Store."
+    "publication_scope": "Approved public CRX was extracted and loaded in an isolated hosted profile; this does not establish installation from the live Chrome Web Store."
   },
   "admission": {
     "path": "scripts/hosted-remote-admission.mjs dispatch-published-guest-chat",
@@ -34,52 +45,84 @@
     "local_head_at_dispatch": "27af0f60415e2c70d2d727f0b99d453156f9f1ae",
     "origin_main_at_dispatch": "27af0f60415e2c70d2d727f0b99d453156f9f1ae",
     "dirty_at_dispatch": false,
-    "resource_admission": "not_started; hosted job remains queued",
+    "resource_admission": "passed on hosted runner for package, browser, and guest phases",
     "capacity_admission": "passed by normal helper at dispatch",
     "hosted_workflow_digest_review": "passed by normal helper at dispatch"
   },
   "server": {
-    "git_sha_before": null,
-    "git_sha_after": null,
-    "status_before": null,
-    "status_after": null,
-    "stable": null,
-    "note": "Hosted runner has not started; the live server was not queried by this run."
+    "git_sha_before": "b8092f234958c4f0b1a730576e218252a5735498",
+    "git_sha_after": "b8092f234958c4f0b1a730576e218252a5735498",
+    "status_before": 200,
+    "status_after": 200,
+    "stable": true
   },
   "case_observation": {
-    "hosted_runner_started": false,
-    "fresh_guest_profile_verified": false,
-    "chat_opened": false,
-    "opening_reply_terminal": false,
-    "opening_reply_grounded_in_page_fixture": false,
-    "same_conversation_followup_terminal": false,
-    "post_reload_new_conversation_terminal": false,
-    "screenshot_predicate_diagnostics": "not available; browser phase has not started",
-    "public_demo_settings_result": "not run",
-    "public_demo_capture_result": "not run",
-    "public_demo_seo_result": "not run",
-    "public_demo_data_result": "not run",
+    "hosted_runner_started": true,
+    "fresh_guest_profile_verified": true,
+    "chat_opened": true,
+    "opening_reply_terminal": true,
+    "opening_reply_grounded_in_page_fixture": true,
+    "same_conversation_followup_terminal": true,
+    "post_reload_new_conversation_terminal": true,
+    "failure_stage": "guest_values_chip_observation",
+    "failure_code": "guest_values_chip_closed_not_observed",
+    "screenshot_predicate_diagnostics": "The answer screenshot assertion passed; the first failure was the Values popover remaining open after trusted Escape. Structured predicate details are in native-result.sanitized.json.",
+    "public_demo_settings_result": "bounded reviewer check fresh_auto_capture_off failed with reviewer_observation_failed",
+    "public_demo_capture_result": "bounded reviewer checks capture_article, capture_links, capture_schema failed; article failure code reviewer_article_capture_not_observed",
+    "public_demo_seo_result": "bounded reviewer check seo_audit failed with reviewer_observation_failed",
+    "public_demo_data_result": "bounded reviewer check data_workflow_picker failed with reviewer_observation_failed",
     "accepted_product_screenshot_count": 0,
-    "product_acceptance_credit": 0
+    "product_acceptance_credit": "partial; three terminal replies observed, overall Guest Chat acceptance failed at Values Escape"
   },
   "resource_finals": {
-    "hosted-package": "not started; no journal produced",
-    "hosted-browser": "not started; no journal produced",
-    "hosted-guest": "not started; no journal produced"
+    "hosted-package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "../evidence/published-v0205-guest-chat/run39283778031/resource-journals/hosted-package-39283778031-1.sanitized.jsonl"
+    },
+    "hosted-browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "../evidence/published-v0205-guest-chat/run39283778031/resource-journals/hosted-browser-39283778031-1.sanitized.jsonl"
+    },
+    "hosted-guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed",
+      "journal": "../evidence/published-v0205-guest-chat/run39283778031/resource-journals/hosted-guest-39283778031-1.sanitized.jsonl"
+    }
   },
-  "queue_observation": {
-    "observed_at_utc": "2026-10-19T16:18:00Z",
-    "workflow_status": "queued",
-    "job_status": "queued",
-    "job_started_at_reported": "2026-10-19T16:13:37Z",
-    "job_steps": [],
-    "environment_note": "Task owner verified active GitHub Actions workflow-processing delays on the official GitHub Status page. This is an infrastructure delay, not product evidence."
-  },
+  "queue_observations": [
+    {
+      "observed_at_utc": "2026-10-19T16:18:00Z",
+      "workflow_status": "queued",
+      "job_status": "queued",
+      "job_started_at_reported": "2026-10-19T16:13:37Z",
+      "job_steps": [],
+      "environment_note": "Task owner verified active GitHub Actions workflow-processing delays on the official GitHub Status page."
+    },
+    {
+      "observed_at_utc": "2026-10-19T16:33:19Z",
+      "workflow_status": "in_progress",
+      "job_status": "in_progress",
+      "job_started_at": "2026-10-19T16:13:40Z",
+      "all_reported_job_steps_completed": true,
+      "native_case_step": "failure",
+      "artifact_upload_step": "success"
+    }
+  ],
   "cleanup": {
     "workflow_terminal": false,
     "additional_dispatches": 0,
     "credentials_staged": false,
-    "private_raw_bundle_created": false,
-    "next_action": "Leave this single admitted run queued. At the next hourly observation, inspect this same run; do not redispatch or relocate it. If it remains queued, preserve the zero-credit checkpoint and report the exact state."
+    "private_raw_bundle_created": true,
+    "private_bundle_path": "/tmp/guest-live-20261019-run39283778031",
+    "raw_result_and_screenshots_retained_in_private_bundle": true,
+    "next_action": "Observe this same workflow run until GitHub reports terminal status; do not redispatch. Preserve the Values Escape failure and valid resource finals independently of the delayed workflow status."
   }
 }
