@@ -3,7 +3,7 @@
   "task_id": "settings555-lane-a-20261019",
   "lane": "hosted A",
   "model": "GPT-6",
-  "status": "blocked_by_active_owned_resource_journal",
+  "status": "blocked_by_runtime_source_drift",
   "feature_ids": [
     "EXT-F-1003"
   ],
@@ -64,9 +64,9 @@
     "docs/stabilization/reports/settings555-lane-a-checkpoint-20261019.json"
   ],
   "open_questions": [
-    "Can the active native peer complete and publish its owned pending resource journal? Until then the reviewed normal helper refuses shared-checkout dispatch."
+    "A fresh CI development artifact matching the current pnpm-lock.yaml package set is required before hosted guest SEO can run."
   ],
-  "next_action": "Wait for the native peer to close its owned resource journal; do not stage, remove, or bypass it. Then re-fetch and make one normal guest SEO B dispatch against current main if admission passes.",
+  "next_action": "Wait for the current-source CI artifact; preserve the lockfile drift refusal and make no further dispatch attempt with artifact12202722252.",
   "seo_route_followup": {
     "task_identity": "guest-seo555-B",
     "case_id": "EXT-F-1008-T02",
@@ -75,7 +75,7 @@
     "scope": "notice-stacked",
     "lane": "B",
     "runner_label": "macos-15-intel",
-    "current_source_sha": "1fad53902259264137307fde7beb2a667fb2b366",
+    "current_source_sha": "ede61ad7f4b7b2d80fbe0735970bc826fde25d98",
     "artifact_source_sha": "c69f8b6b5d03ae1af6f3fe10eb756380da2786bf",
     "artifact_id": 12202722252,
     "artifact_digest": "sha256:843b95285118eb0226e4265e131f6b781d64fcbccb20f21f03114b7be1d66c94",
@@ -88,29 +88,20 @@
     },
     "corrected_plan": {
       "mode": "plan-guest-seo",
-      "input_source_sha": "1fad53902259264137307fde7beb2a667fb2b366",
-      "result": "passed",
-      "workflow_args": [
-        "acceptance_lane=B",
-        "acceptance_case=guest-seo",
-        "seo_case_scope=notice-stacked",
-        "seo_metadata_fixture=none",
-        "seo_diagnostic=none",
-        "runner_label=macos-15-intel",
-        "development_run_id=39284095794",
-        "development_artifact_id=12202722252"
-      ]
+      "input_source_sha": "ede61ad7f4b7b2d80fbe0735970bc826fde25d98",
+      "result": "HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT",
+      "reason": "Commit 42252b14f9376e8eb6686705b2f59eb6574f453b updates pnpm-lock.yaml after artifact source c69f8b6; package/runtime changes are outside the reviewed runtime-equivalence allowlist."
     },
     "dispatch_attempts": [
       {
         "mode": "dispatch-guest-seo",
         "result": "HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED",
-        "reason": "Root was still editing COORDINATOR.md and PLAN.md; no dispatch occurred."
+        "reason": "Root coordination files were being edited; no dispatch occurred."
       },
       {
         "mode": "dispatch-guest-seo",
         "result": "HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED",
-        "reason": "After root committed those edits, the only remaining dirty path was the active native peer resource journal; no dispatch occurred."
+        "reason": "Only remaining dirty path was the active native peer journal; no dispatch occurred."
       }
     ],
     "resource_journal_owner": "native verification peer; active pending path docs/stabilization/resource-journals/dev555-native-peer-20261019-01.pending.jsonl",
@@ -120,6 +111,10 @@
       "created_or_mutated": false,
       "cleanup": "No hosted workflow or browser started; no fixture cleanup required."
     },
-    "next_action": "Coordinate completion and publication of the active native peer journal. Then re-fetch main, re-prove artifact runtime equivalence, and use the normal guest SEO B dispatch once if the checkout is clean."
+    "next_action": "Release worker or coordinator obtains a fresh successful CI artifact for current package-lock source; then repeat normal runtime-provenance admission before any SEO dispatch.",
+    "newer_artifact_discovery": {
+      "command": "gh run list --workflow ci.yml --branch main",
+      "result": "HTTP 404 from GitHub Actions endpoint; no newer CI run or artifact verified."
+    }
   }
 }
