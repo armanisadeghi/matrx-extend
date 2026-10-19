@@ -27,7 +27,10 @@
     "docs/stabilization/reports/public-reviewer-probe-repair-20261019.json",
     "docs/stabilization/reports/store-release-v0564-acceptance-20261019.json",
     "docs/stabilization/reports/reviewer-geometry-picker-repair-20261019.json",
-    "docs/stabilization/reports/reviewer-geometry-picker-source-peer-20261019.json"
+    "docs/stabilization/reports/reviewer-geometry-picker-source-peer-20261019.json",
+    "docs/stabilization/reports/data-done-hard-stall-diagnosis-20261019.json",
+    "docs/stabilization/reports/reviewer-done-first-phase-repair-20261019.json",
+    "docs/stabilization/reports/reviewer-done-first-phase-final-peer-20261019.json"
   ],
   "sibling_census": "All three failed reviewer controls share the owned helper; member temporal paint repair remains separate D257. Article privacy-link presence was diagnostic only, not an assertion; initial contrary diagnosis is refuted. Links privacy check and Article heading/stages remain strict.",
   "acceptance_criteria": [
@@ -38,12 +41,13 @@
     "Independent source A/B review, then fresh native replay retaining actionable original first-failure evidence."
   ],
   "verification": {
-    "source": "436fec00c diagnostic continuation integrated after independent source behavior/quality review.81adjacent tests,compile/fullLint pass. No Data/automatic-capture product repair claimed.",
+    "source": "0708b300 integrated first Done helper phase/category and bounded geometry/hit evidence, preserving original failure through detach cleanup. Independent source review and14fault tests/76adjacent tests/compile/fullLint pass; no native product pass.",
     "product": "Article cause localized and source repair tracked separately as D260; Data Done and automatic-capture screenshot geometry remain unclassified.",
-    "native": "Exact564B39336624267 resource-valid: precise crop geometry code and Article text/node evidence were retained, but geometry coordinates and selected-before-Done state were missing. New bounded numeric/count diagnostics await fresh native replay."
+    "native": "Exact564B39336624267 resource-valid: precise crop geometry code and Article text/node evidence were retained, but geometry coordinates and selected-before-Done state were missing. New bounded numeric/count diagnostics await fresh native replay.",
+    "forensic": "Fresh read-only escalation localized original564 failure to clickPickerDone catch BEFORE result wait. Downstream IPC/identity rejection is not established. New pre-Done count alone would not explain discarded first error."
   },
-  "fix_commit": "436fec00c71da4e14ba6fce281bb38fa02566019",
-  "next_action": "Fresh eligible candidate must expose geometry and actual picker count, preserve cleanup, and classify remaining first failures. No unchanged blind rerun or product pass inferred.",
+  "fix_commit": "0708b3001019f570b34f0fcd7ee835edf3f53331",
+  "next_action": "Require fresh relevant CI, guarded current candidate and exact native replay. Diagnose first Done operation/category alongside actual pre-Done picked count and bounded screenshot geometry; preserve original pass/cleanup requirements.",
   "transition_history": [
     {
       "at": "2026-10-19T22:05:02.915114Z",
@@ -90,6 +94,7 @@
   ],
   "previous_fix_commits": [
     "8ec03ea5b08968780a8470540710234df197dc10",
-    "3ecfcd1c79f75bec56be26a942188480069ba5c8"
+    "3ecfcd1c79f75bec56be26a942188480069ba5c8",
+    "436fec00c71da4e14ba6fce281bb38fa02566019"
   ]
 }

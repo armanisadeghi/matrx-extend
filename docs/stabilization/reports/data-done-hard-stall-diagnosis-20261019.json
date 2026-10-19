@@ -1,0 +1,14 @@
+{
+  "status": "LOCALIZED_DRIVER_BOUNDARY_ROOT_CAUSE_UNPROVEN",
+  "evidence": [
+    "Exact .564 report: failure_target=data_picker_done; failure_code=reviewer_picker_done_unclassified; field_hit_confirmed=true; closed shadow, Done and Cancel each count=1.",
+    "Exact workflow source 7dae65eef maps reviewer_picker_done_unclassified only in catch around await clickPickerDone(page), before data_selected_field and its result wait. Thus no successful Done helper completion is established.",
+    "Driver can throw during CDP session creation, DOM enable/query/describe/box model/hit test, mouse.click or detach. Named missing-host/shadow/button/geometry/hit-mismatch assertions are allowlisted, so the unclassified code instead hides another exception, potentially a CDP protocol error. Exact exception was discarded.",
+    "Actual picker document capture click synchronously builds selector, pushes picked field and renders .picked-item. Hover only draws highlight. Done sends fields then synchronously removes host. Surviving host/buttons weigh against successful finish; count zero in DataView while still picking is not evidence of zero in picker.",
+    "Result chain is chrome.runtime.sendMessage -> SW stampDocumentSender(tab.id,documentId) -> broadcast -> DataView requires tab/document/session/current page identity. Those downstream checks cannot explain the observed helper exception by themselves.",
+    "Native fixture acceptance reads picked previews and then uses the same Done helper. Driver unit test mocks box coordinates and hit result; it cannot reproduce public-page layout or CDP protocol failures. Source inspected matches frozen 84d2c3833 for relevant paths."
+  ],
+  "cause-or-unknown": "Unknown underlying exception; first evidenced failure is Done input delivery/cleanup helper, not proven product selection or IPC rejection. No speculative fix justified.",
+  "ownedfiles": [],
+  "nextaction": "On the next already-authorized exact B run retain pre-Done .picked-item count, but also record the first failed Done-helper phase and sanitized exception class/protocol error category; retain bounded Done box center, viewport/scroll, hit equality, whether mouse.click resolved, and post-click host presence. Do not let detach overwrite the original error. Pre-Done zero localizes field selection; count one plus pre-mouse protocol failure localizes driver; click resolved plus host gone and missing fields then warrants tab/document/session equality booleans at result boundary. A new B count alone is insufficient because .564 already failed inside the helper and erased its precise exception."
+}
