@@ -7,7 +7,10 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mjs';
-import { sourceCompatibility } from './development-source-compatibility.mjs';
+import {
+  isRuntimeEquivalentDocumentationPath,
+  sourceCompatibility,
+} from './development-source-compatibility.mjs';
 import {
   PUBLISHED_STORE_CRX,
   requirePublishedStoreCrxTarget,
@@ -209,7 +212,7 @@ export function planHostedPublishedGuestChat({
   };
 }
 
-// The frozen release may advance only across this reviewed route and sanitized records.
+// Frozen release bytes can be reused only across canonical documentation-only history.
 // Browser harnesses, workflows, dependencies and product edits require a fresh release.
 export function requireGuestChatDispatchAdmission({
   localSha,
@@ -225,12 +228,7 @@ export function requireGuestChatDispatchAdmission({
     !SHA.test(sourceSha ?? '') ||
     ancestor !== true ||
     !Array.isArray(changedPaths) ||
-    changedPaths.some(
-      (path) =>
-        !/^(?:scripts\/hosted-remote-(?:admission|guest-chat-admission)(?:\.test)?\.mjs|docs\/stabilization\/(?:runs|reports|defects)\/[a-z0-9-]+\.json)$/.test(
-          path,
-        ),
-    )
+    changedPaths.some((path) => !isRuntimeEquivalentDocumentationPath(path))
   )
     refuse('HOSTED_CHAT_RUNTIME_SOURCE_DRIFT');
   if (

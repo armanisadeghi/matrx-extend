@@ -6,6 +6,10 @@ import { execFileSync, spawnSync } from 'node:child_process';
 const RUNTIME_EQUIVALENT_PATH =
   /^docs\/stabilization\/(?:runs\/[^/]+\.json|resource-journals\/[^/]+\.jsonl|[^/]+\.(?:md|html|txt)|inventory\.json|(?:defects|reports|evidence)\/(?:[^/]+\/)*[^/]+\.(?:json|jsonl|md|html|txt|log|png|jpg|jpeg|webp))$/;
 
+export function isRuntimeEquivalentDocumentationPath(path) {
+  return typeof path === 'string' && RUNTIME_EQUIVALENT_PATH.test(path);
+}
+
 function git(root, ...args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
 }
@@ -38,7 +42,7 @@ export function sourceCompatibility(root, sourceSha) {
   )
     .split('\0')
     .filter(Boolean);
-  if ([...diffPaths, ...committedPaths].some((path) => !RUNTIME_EQUIVALENT_PATH.test(path)))
+  if ([...diffPaths, ...committedPaths].some((path) => !isRuntimeEquivalentDocumentationPath(path)))
     throw new Error('ci_dev_runtime_source_changed');
   assertCurrentMain(root, mainSha);
   return {
@@ -61,7 +65,7 @@ export function assertCurrentMain(root, mainSha) {
   ].flatMap((args) =>
     execFileSync('git', args, { cwd: root, encoding: 'utf8' }).split('\0').filter(Boolean),
   );
-  if (pendingPaths.some((path) => !RUNTIME_EQUIVALENT_PATH.test(path)))
+  if (pendingPaths.some((path) => !isRuntimeEquivalentDocumentationPath(path)))
     throw new Error('ci_dev_pending_runtime_source');
 }
 

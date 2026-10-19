@@ -90,7 +90,7 @@ test('guest chat release plan cannot become member, development, diagnostic or u
   ])
     assert.throws(() => planHostedGuestChat({ ...input, ...changed }));
 });
-test('guest release admission isolates B and permits only reviewed route or records after frozen product', () => {
+test('guest release admission isolates B and permits only documentation history after frozen product', () => {
   const base = {
     localSha: sha,
     remoteSha: sha,
@@ -101,23 +101,19 @@ test('guest release admission isolates B and permits only reviewed route or reco
     runs: [],
   };
   assert.equal(requireGuestChatDispatchAdmission(base), true);
-  const v533Reroute = {
+  const v533Records = {
     ...base,
     localSha: 'd912a9f565d212a0dd025ca6b90647ed0b1f3a12',
     remoteSha: 'd912a9f565d212a0dd025ca6b90647ed0b1f3a12',
-    changedPaths: [
-      'scripts/hosted-remote-admission.mjs',
-      'scripts/hosted-remote-guest-chat-admission.test.mjs',
-      'docs/stabilization/runs/guest-chat-v0533-run39099012761.json',
-    ],
+    changedPaths: ['docs/stabilization/runs/guest-chat-v0533-run39099012761.json'],
   };
-  assert.equal(requireGuestChatDispatchAdmission(v533Reroute), true);
+  assert.equal(requireGuestChatDispatchAdmission(v533Records), true);
   assert.throws(
     () =>
       requireGuestChatDispatchAdmission({
-        ...v533Reroute,
+        ...v533Records,
         changedPaths: [
-          ...v533Reroute.changedPaths,
+          ...v533Records.changedPaths,
           'tests/browser/guest-chat-store-acceptance.mjs',
         ],
       }),
@@ -128,10 +124,7 @@ test('guest release admission isolates B and permits only reviewed route or reco
       ...base,
       localSha: 'a'.repeat(40),
       remoteSha: 'a'.repeat(40),
-      changedPaths: [
-        'scripts/hosted-remote-admission.mjs',
-        'scripts/hosted-remote-guest-chat-admission.test.mjs',
-      ],
+      changedPaths: ['docs/stabilization/reports/guest-chat.json'],
       runs: [{ name: 'Native A · member-chat', status: 'in_progress' }],
     }),
     true,
@@ -150,6 +143,45 @@ test('guest release admission isolates B and permits only reviewed route or reco
     { runs: [{ name: 'Hosted resource diagnosis', status: 'in_progress' }] },
   ])
     assert.throws(() => requireGuestChatDispatchAdmission({ ...base, ...changed }));
+});
+test('guest Chat admits the candidate 561 documentation history but refuses executable drift', () => {
+  const base = {
+    localSha: '9243858382af6f756ad7ae484e8f848bad1420af',
+    remoteSha: '9243858382af6f756ad7ae484e8f848bad1420af',
+    dirty: '',
+    sourceSha: '234e62ad3ddd455edc1a1478d04b93e6f66bcffa',
+    ancestor: true,
+    changedPaths: [
+      'docs/stabilization/CHECKLIST.md',
+      'docs/stabilization/COORDINATOR.md',
+      'docs/stabilization/STATUS.html',
+      'docs/stabilization/STATUS.md',
+      'docs/stabilization/evidence/chrome-native-20261019/store205-chat-backend2b53.sanitized.jsonl',
+      'docs/stabilization/inventory.json',
+      'docs/stabilization/reports/aidream-catalog-deploy-alignment-20261019.json',
+      'docs/stabilization/reports/store205-guest-chat-backend2b53-20261019.json',
+      'docs/stabilization/reports/store205-settings-evidence-peer-20261019.json',
+    ],
+    runs: [],
+  };
+  assert.equal(requireGuestChatDispatchAdmission(base), true);
+  for (const path of [
+    'src/main.ts',
+    'src/config/env.ts',
+    '.github/workflows/hosted-guest-acceptance.yml',
+    'package.json',
+    'pnpm-lock.yaml',
+    'docs/stabilization/resource-policy.json',
+    'scripts/hosted-remote-admission.mjs',
+    'scripts/hosted-remote-guest-chat-admission.test.mjs',
+  ]) {
+    assert.throws(
+      () =>
+        requireGuestChatDispatchAdmission({ ...base, changedPaths: [...base.changedPaths, path] }),
+      /HOSTED_CHAT_RUNTIME_SOURCE_DRIFT/,
+      path,
+    );
+  }
 });
 // SUT: real CLI routing, ordering, validations and final dispatch. Doubles only replace GitHub/git/unzip I/O.
 test('normal guest Chat CLI sends exact release route only after provenance, workflow, source and capacity admission', () => {
