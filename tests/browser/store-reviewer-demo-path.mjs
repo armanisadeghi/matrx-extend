@@ -43,7 +43,18 @@ function safeReviewerFailureCode(error) {
       'reviewer_failure_screenshot_unknown_check',
       'reviewer_failure_screenshot_pane_unavailable',
       'reviewer_failure_screenshot_target_unavailable',
+      'reviewer_failure_screenshot_target_missing',
+      'reviewer_failure_screenshot_target_multiple',
+      'reviewer_failure_screenshot_target_geometry',
+      'reviewer_failure_screenshot_target_hit',
       'reviewer_failure_screenshot_sensitive_input',
+      'data_guest_picker_host_missing',
+      'data_guest_picker_closed_shadow_missing',
+      'data_guest_picker_shadow_target_missing',
+      'data_guest_done_not_button',
+      'data_guest_done_geometry_missing',
+      'data_guest_done_hit_target_changed',
+      'reviewer_picker_done_unclassified',
       'reviewer_demo_title_missing',
       'reviewer_demo_workflow_table_changed',
       'reviewer_demo_article_missing',
@@ -119,7 +130,6 @@ const EVIDENCE_BOOLEANS = new Set([
   'selected_article',
   'selected_links',
   'selected_schema',
-  'public_link_present',
   'public_stages_present',
   'error_present',
   'audit_ready',
@@ -131,6 +141,13 @@ const EVIDENCE_BOOLEANS = new Set([
   'switch_on',
   'stored_on',
   'observation_available',
+  'source_h1_matches',
+  'rendered_heading_text_content_present',
+  'rendered_heading_inner_text_present',
+  'capture_payload_available',
+  'article_markdown_available',
+  'field_hit_confirmed',
+  'picker_diagnostic_available',
 ]);
 const EVIDENCE_COUNTS = new Set([
   'link_count',
@@ -138,6 +155,12 @@ const EVIDENCE_COUNTS = new Set([
   'selected_count',
   'switch_count',
   'capture_button_count',
+  'rendered_text_content_length',
+  'rendered_inner_text_length',
+  'rendered_heading_node_count',
+  'picker_done_node_count',
+  'picker_cancel_node_count',
+  'picker_shadow_count',
 ]);
 function projectReviewerEvidence(value) {
   const result = {};
@@ -167,6 +190,8 @@ export async function recordReviewerCheck({ name, run, observeSafe, screenshot }
       failure_code: safeReviewerFailureCode(error),
       failure_target: target,
     };
+    if (error?.reviewerSafeDiagnostic)
+      failure.failure_diagnostic = projectReviewerEvidence(error.reviewerSafeDiagnostic);
     try {
       failure.safe_dom = projectReviewerEvidence(await observeSafe(name));
     } catch {
@@ -212,14 +237,14 @@ export async function captureReviewerPaneScreenshot({ page, panel, file, check }
       if (${JSON.stringify(check)} === 'data_workflow_picker') return label === 'Pick fields on this page' || label === 'Cancel';
       return false;
     });
-    if (matches.length !== 1) return {reason:'reviewer_failure_screenshot_target_unavailable'};
+    if (matches.length !== 1) return {reason:matches.length === 0 ? 'reviewer_failure_screenshot_target_missing' : 'reviewer_failure_screenshot_target_multiple'};
     const rect = matches[0].getBoundingClientRect();
     const x = Math.max(0, Math.ceil(rect.left)), y = Math.max(0, Math.ceil(rect.top));
     const right = Math.min(document.documentElement.clientWidth, Math.floor(rect.right));
     const bottom = Math.min(document.documentElement.clientHeight, Math.floor(rect.bottom));
     const hit = document.elementFromPoint?.((x+right)/2, (y+bottom)/2);
-    if (hit && hit !== matches[0] && !matches[0].contains(hit)) return {reason:'reviewer_failure_screenshot_target_unavailable'};
-    return right > x && bottom > y ? {x, y, width:right-x, height:bottom-y, scale:1} : {reason:'reviewer_failure_screenshot_target_unavailable'};
+    if (hit && hit !== matches[0] && !matches[0].contains(hit)) return {reason:'reviewer_failure_screenshot_target_hit'};
+    return right > x && bottom > y ? {x, y, width:right-x, height:bottom-y, scale:1} : {reason:'reviewer_failure_screenshot_target_geometry'};
   })()`,
   );
   assert.ok(clip && !clip.reason, clip?.reason ?? 'reviewer_failure_screenshot_target_unavailable');
@@ -357,6 +382,9 @@ async function demoSource(page) {
       url: location.href,
       title: document.title,
       articleText: article?.innerText ?? '',
+      articleH1Matches:
+        article?.querySelector('h1')?.textContent?.trim() ===
+        'A clear three-stage browser workflow',
       stages,
       linkHref: link?.href ?? null,
       linkText: link?.textContent?.trim() ?? null,
@@ -401,6 +429,8 @@ async function scrapeState(panel) {
       tabLabels:tabs.map((tab)=>tab.firstChild?.textContent?.trim()),
       contentVisible:content?.getAttribute('data-state')==='active' && content.getBoundingClientRect().height>0,
       text:content?.innerText??'',
+      textContent:content?.textContent??'',
+      headingNodes:[...(content?.querySelectorAll('h1,h2')??[])].filter(node=>node.textContent?.includes('A clear three-stage browser workflow')).length,
       linkCount:content?.querySelectorAll('a[href]').length??0,
       error:pane?.querySelector('[role="alert"]')?.innerText??null };
   })()`,
@@ -438,6 +468,55 @@ async function dataState(panel) {
       guestExplanation:(pane?.textContent??'').includes('Field selection works as a guest.') };
   })()`,
   );
+}
+
+// Read the picker's existing closed shadow after a failed Done click, before
+// cleanup removes it. Only counts leave this function; no field text or HTML.
+async function pickerDoneFailureDiagnostic(page) {
+  const session = await page.context().newCDPSession(page);
+  try {
+    await session.send('DOM.enable');
+    const { root } = await session.send('DOM.getDocument', { depth: 1, pierce: true });
+    const { nodeId: hostId } = await session.send('DOM.querySelector', {
+      nodeId: root.nodeId,
+      selector: '#matrx-data-picker-host',
+    });
+    if (!hostId)
+      return {
+        picker_diagnostic_available: true,
+        picker_shadow_count: 0,
+        picker_done_node_count: 0,
+        picker_cancel_node_count: 0,
+      };
+    const { node: host } = await session.send('DOM.describeNode', {
+      nodeId: hostId,
+      depth: 1,
+      pierce: true,
+    });
+    const shadows = host.shadowRoots?.filter((node) => node.shadowRootType === 'closed') ?? [];
+    if (shadows.length !== 1)
+      return {
+        picker_diagnostic_available: true,
+        picker_shadow_count: shadows.length,
+        picker_done_node_count: 0,
+        picker_cancel_node_count: 0,
+      };
+    const count = async (selector) => {
+      const { nodeIds } = await session.send('DOM.querySelectorAll', {
+        nodeId: shadows[0].nodeId,
+        selector,
+      });
+      return nodeIds?.length ?? 0;
+    };
+    return {
+      picker_diagnostic_available: true,
+      picker_shadow_count: 1,
+      picker_done_node_count: await count('button#done'),
+      picker_cancel_node_count: await count('button#cancel'),
+    };
+  } finally {
+    await session.detach();
+  }
 }
 
 /** Owns the exact-candidate navigation seam; reviewer failure does not skip Chat. */
@@ -525,7 +604,17 @@ export async function runStoreReviewerDemoPath({
         selected_links: value.selected === 'Links',
         selected_schema: value.selected === 'Schema',
         public_heading_present: value.text.includes('A clear three-stage browser workflow'),
-        public_link_present: value.text.includes('Matrx Extend privacy policy'),
+        rendered_heading_text_content_present: (value.textContent ?? '').includes(
+          'A clear three-stage browser workflow',
+        ),
+        rendered_heading_inner_text_present: value.text.includes(
+          'A clear three-stage browser workflow',
+        ),
+        rendered_text_content_length: (value.textContent ?? '').length,
+        rendered_inner_text_length: value.text.length,
+        rendered_heading_node_count: value.headingNodes ?? 0,
+        capture_payload_available: false,
+        article_markdown_available: false,
         public_stages_present: ['Capture', 'Understand', 'Use'].every((term) =>
           value.text.includes(term),
         ),
@@ -581,6 +670,7 @@ export async function runStoreReviewerDemoPath({
         workflow_matches:
           JSON.stringify(source.stages) === JSON.stringify(['Capture', 'Understand', 'Use']),
         article_marker_present: source.articleText.includes('A clear three-stage browser workflow'),
+        source_h1_matches: source.articleH1Matches,
         public_link_matches: source.linkHref === 'https://www.aimatrx.com/privacy-policy/extension',
         article_schema_matches:
           source.schemaType === 'Article' &&
@@ -780,9 +870,28 @@ export async function runStoreReviewerDemoPath({
       mark('data_picker_host');
       await page.locator('#matrx-data-picker-host').waitFor({ state: 'attached' });
       mark('data_workflow_cell');
-      await clickPickerField(page, 'main article table tbody tr th[scope="row"]', 0);
+      const fieldHit = await clickPickerField(
+        page,
+        'main article table tbody tr th[scope="row"]',
+        0,
+      );
       mark('data_picker_done');
-      await clickPickerDone(page);
+      try {
+        await clickPickerDone(page);
+      } catch (error) {
+        const diagnostic = await pickerDoneFailureDiagnostic(page).catch(() => ({
+          picker_diagnostic_available: false,
+        }));
+        error.reviewerSafeDiagnostic = {
+          field_hit_confirmed: fieldHit?.chosen_hit === 'field',
+          ...diagnostic,
+        };
+        if (safeReviewerFailureCode(error) === 'reviewer_observation_failed')
+          throw Object.assign(new Error('reviewer_picker_done_unclassified', { cause: error }), {
+            reviewerSafeDiagnostic: error.reviewerSafeDiagnostic,
+          });
+        throw error;
+      }
       pickerOpened = false;
       mark('data_selected_field');
       const selected = await waitFor(
