@@ -7,7 +7,7 @@
   "title": "Candidate second-parent merge falsely reports preexisting package history as new runtime drift",
   "severity": "S2: prevents required non-admin acceptance for a runtime-equivalent Store candidate",
   "priority": "P1: repair eligibility proof without relaxing real runtime-drift refusal",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "root / release_delta_guard_fix",
   "reproduction": [
     "Use Store candidate source50a479584955eca5045853f8cbb7a7d594b9fd78 and synchronized mainafe182fbe, whose candidate-to-main net diff contains only stabilization evidence/documents.",
@@ -16,7 +16,11 @@
   ],
   "expected": "Already-present candidate ancestry does not count as newly introduced product drift; actual runtime changes on candidate-descendant paths remain refused.",
   "actual": "The existing per-parent merge census reports old package/catalog bytes as new drift, blocking member admission before any browser launch.",
-  "evidence": ["docs/stabilization/reports/store556-acceptance-20261019.json"],
+  "evidence": [
+    "docs/stabilization/reports/ext-d-0246-release-member-merge-admission-20261019.json",
+    "docs/stabilization/reports/ext-d-0246-fresh-peer-20261019.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39291881216"
+  ],
   "transition_history": [
     {
       "at": "2026-10-19T17:06:35.800804Z",
@@ -35,7 +39,27 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Minimal ancestry-aware source proof and red/green/adversarial tests assigned; independent review required."
+    },
+    {
+      "at": "2026-10-19T17:10:56.638548Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair1f3904936 pushed with focused31/31, compile and lint passing."
+    },
+    {
+      "at": "2026-10-19T17:10:56.638548Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent original RED/repaired GREEN and negative cases pass; actual normal member helper admitted unchanged556 candidate and dispatched guarded A39291881216."
+    },
+    {
+      "at": "2026-10-19T17:10:56.638548Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original source-eligibility refusal no longer reproduces. Actual member product acceptance is a separate in-flight case, not credited by this infrastructure closure."
     }
   ],
-  "next_action": "Complete source repair, fresh independent original/surrounding/refusal retest, then mint a fresh one-use non-admin link and run normal guarded member admission. Prior temporary link/secret was removed and absence verified."
+  "next_action": "No further work on this isolated source-proof defect; observe normal guarded member A39291881216 and guest B39290491457, clean owned auth fixtures, and independently review real product acceptance before Store submission.",
+  "fix_sha": "1f3904936",
+  "reviewer": "d246_fresh_peer: separate source-proof behavior and guard-quality PASS; original parent RED, repaired31/31 GREEN, real package edit/revert/altered merge refusal retained."
 }

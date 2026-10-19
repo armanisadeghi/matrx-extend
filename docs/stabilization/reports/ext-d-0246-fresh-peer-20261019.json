@@ -1,0 +1,24 @@
+{
+  "review": "EXT-D-0246 independent fresh peer",
+  "commit": "1f390493698245890555eee2f8337ace3093b774",
+  "verdict_a": {
+    "status": "PASS_SOURCE_PROOF_PENDING_PRODUCT_ACCEPTANCE",
+    "evidence": [
+      "On an isolated mutable clone checked out at workflow afe182f, running the original parent implementation (70a8bf4) against candidate 50a47958 reproduced release_member_product_changed.",
+      "Ran node --test scripts/hosted-release-member-admission.test.mjs from the repaired source checkout: 31/31 pass, including copied-clone candidate-equivalent documentation merge admission, subsequent package edit refusal, reverted edit refusal, and altered merge retaining older product bytes refusal.",
+      "The merge fixture clones a mutable repository and changes only that clone's package.json; no symlink is used to mutate shared source.",
+      "Remaining acceptance: actual hosted Member A product acceptance for release run 39289278009 is explicitly pending and was not attempted or claimed."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "evidence": [
+      "The repair filters a merge's comparison parents to candidate descendants, so candidate-introduced package files are not mistaken for post-candidate drift.",
+      "It still records changes along ordinary commits and compares merge result bytes against candidate-descendant parent(s); adversarial mutation, revert, and altered-result controls all refused.",
+      "The focused test exercises proveSource over actual Git history and fails on the prior implementation; it is not a source-symbol assertion."
+    ],
+    "limitations": [
+      "Did not independently rerun the builder's scratch return-expected mutant; the reported mutation assertion is backed by the observed live product-mutation refusal case."
+    ]
+  }
+}
