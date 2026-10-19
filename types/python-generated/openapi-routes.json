@@ -1581,6 +1581,14 @@
  "/browser-manager/cloud-computer": {
   "get": []
  },
+ "/browser-manager/cloud-computer/files": {
+  "get": []
+ },
+ "/browser-manager/cloud-computer/files/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/browser-manager/cloud-computer/wake": {
   "post": [
    "application/json"
@@ -5513,6 +5521,11 @@
  },
  "/memberstack/public/status": {
   "get": []
+ },
+ "/memory-lab/trials/{trial_id}/apply": {
+  "post": [
+   "application/json"
+  ]
  },
  "/mention/public/status": {
   "get": []

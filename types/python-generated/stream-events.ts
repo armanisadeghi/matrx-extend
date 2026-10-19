@@ -9337,7 +9337,7 @@ export type MessageFlagKey = (typeof MESSAGE_FLAG_KEYS)[number];
 export type MessageFlags = Partial<Record<MessageFlagKey, true>>;
 /** Where a runtime message keeps its flags: `cx_message.metadata[MESSAGE_FLAGS_METADATA_KEY]`. */
 export const MESSAGE_FLAGS_METADATA_KEY = "flags";
-/** What a flag the model cannot honour becomes (org knob agents.messages / flag_compatibility_mode). */
+/** What a flag the model cannot honor becomes (org knob agents.messages / flag_compatibility_mode). */
 export const FLAG_COMPATIBILITY_MODES = ["refuse", "convert", "drop"] as const;
 export type FlagCompatibilityMode = (typeof FLAG_COMPATIBILITY_MODES)[number];
 export const DEFAULT_FLAG_COMPATIBILITY_MODE: FlagCompatibilityMode = "convert";
