@@ -114,6 +114,17 @@
       "all_reported_job_steps_completed": true,
       "native_case_step": "failure",
       "artifact_upload_step": "success"
+    },
+    {
+      "observed_at_utc": "2026-10-19T16:35:23Z",
+      "workflow_status": "in_progress",
+      "workflow_conclusion": null,
+      "job_status": "in_progress",
+      "job_conclusion": null,
+      "workflow_updated_at": "2026-10-19T16:27:12Z",
+      "all_reported_job_steps_completed": true,
+      "last_step_completed_at": "2026-10-19T16:23:49Z",
+      "api_lag_note": "GitHub API still reports the run and job in_progress despite every reported job step, including Complete job and artifact upload, having completed. Treat overall workflow terminal status as pending; do not repeat unchanged polling."
     }
   ],
   "cleanup": {
