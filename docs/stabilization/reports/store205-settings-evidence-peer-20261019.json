@@ -1,0 +1,16 @@
+{
+  "status": "PASS_BOUNDED_EVIDENCE; PARTIAL_CASE_CREDIT",
+  "findings": [
+    "Report identifies actual published Chrome Web Store build 0.2.205, extension ID hnfolienncfklkgmdjjmhhegglimlamg, the demo fixture, and the observed guest banner. This is an explicit report identity claim; sanitized journal itself is the resource journal, not a UI transcript.",
+    "Final resource decision is admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Temporal chain is coherent: admission at 20:53:05.736Z, healthy watch through 21:01:06.528Z, stop confirmation at 21:01:18.593Z, final decision at 21:01:18.598Z.",
+    "Visible-choice claims are scoped consistently: T04 System→Light/Dark→System; T10 Ask before acting→Act without asking→Ask before acting; T13 Fast→Thinking→Fast. Report and all three bounded_store_observations classify results as partial and limit credit to visible selection/restoration.",
+    "T13 records the COMING SOON label alongside an enabled Fast/Thinking combo. Treat this as an observed UI contradiction only; no speed effect was tested."
+  ],
+  "verification": "Reviewed report, all 36 sanitized journal rows, and bounded_store_observations for EXT-F-1003-T04/T10/T13. Inventory entries match run ID, Store version, guest mode, valid resource status, partial status, and the report's stated scope.",
+  "limits": [
+    "Evidence does not establish theme paint/rendering, storage baseline shape, persistence after panel reopen or extension reload, or model speed behavior.",
+    "Visible value restoration does not establish storage-level restoration. No absent-key/container claim is supported.",
+    "No independent retest, current-main/dev-build coverage, full-case pass, member/admin coverage, or defect closure is established."
+  ],
+  "nextaction": "Keep inventory status partial with visible selection/restoration scope. Do not use this artifact to close D220/D223 or claim independent product retest."
+}

@@ -1,0 +1,80 @@
+{
+  "task_id": "published-guest-chat-backend2b53",
+  "status": "two-message Store guest chat completed; bounded native evidence",
+  "build": {
+    "source": "Chrome Web Store",
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "panel_url": "chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html",
+    "guest_banner": "You're using Matrx as a guest.",
+    "target_url": "https://www.aimatrx.com/matrx-extend-demo",
+    "target_title": "Matrx Extend Demo Page \u2014 AI Matrx"
+  },
+  "backend_health_version": {
+    "url": "https://server.app.matrxserver.com/health/version",
+    "before": {
+      "http_status": 200,
+      "git_sha": "2b53b34ecdac24c889e28f5df1798cf5a969387f",
+      "built_at": "2026-10-19T20:44:36Z",
+      "branch": null,
+      "observed_before_first_send": true,
+      "timestamp_note": "Read after guard admission and before opening the guest panel; exact curl wall-clock timestamp was not captured."
+    },
+    "after": {
+      "http_status": 200,
+      "git_sha": "2b53b34ecdac24c889e28f5df1798cf5a969387f",
+      "built_at": "2026-10-19T20:44:36Z",
+      "branch": null,
+      "observed_after_both_completions": true,
+      "timestamp_note": "Read after the second assistant completion and before UI restoration; exact curl wall-clock timestamp was not captured."
+    }
+  },
+  "messages": [
+    {
+      "sequence": 1,
+      "prompt": "What are the three workflow stages described on this page?",
+      "completion_observation_window_utc": "2026-10-19 21:06:18\u201321:06:34",
+      "assistant_excerpt": "The page describes three workflow stages: Capture \u2014 turn the open page into readable content, including article text, links, media, metadata, and schema; Understand \u2014 ask questions about what is actually on the page, with answers grounded in it; Use \u2014 extract details for the next task as structured rows that can be copied or reused.",
+      "terminal_completion": "Working indicator disappeared; Send control returned.",
+      "error_observed": false
+    },
+    {
+      "sequence": 2,
+      "prompt": "What does the Understand stage produce?",
+      "completion_observation_window_utc": "2026-10-19 21:07:06\u201321:07:22",
+      "assistant_excerpt": "The Understand stage produces answers grounded in the current page. Its purpose is to let you ask questions about what is actually on the page.",
+      "terminal_completion": "Working indicator disappeared; Send control returned.",
+      "error_observed": false,
+      "same_conversation_followup": true
+    }
+  ],
+  "restoration": {
+    "development_extension": {
+      "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "version": "0.2.560",
+      "temporary_pin_state": "off to disambiguate the Store icon",
+      "final_pin_state": "on, visibly verified"
+    },
+    "store_pin_state": "on before and after; not changed",
+    "original_ui": "Returned to the initially selected Chrome Extensions details page for the development build.",
+    "account_or_org_changes": "none observed or made",
+    "source_or_fixture_writes": "none",
+    "history_deletion": "none"
+  },
+  "resource": {
+    "run_id": "published-guest-chat-backend2b53-20261019-01",
+    "admitted_at": "2026-10-19T21:03:38.131Z",
+    "watch": "healthy through 2026-10-19T21:08:10.571Z",
+    "final_at": "2026-10-19T21:08:19.651Z",
+    "decision": "valid",
+    "resource_invalid": false,
+    "exit_code": 0,
+    "journal": "docs/stabilization/evidence/chrome-native-20261019/store205-chat-backend2b53.sanitized.jsonl",
+    "raw_sha256": "5e8386358d0fd48af27c324dd58a95691d077932e2dfdb29bc779d1a01741730"
+  },
+  "evidence_limits": [
+    "Native accessibility output observed the Store URL, guest banner, assistant content, and terminal Send control; no screenshot artifact was created.",
+    "No extension reload or warm-reopen persistence claim.",
+    "This is Store 0.2.205 guest chat evidence only; it does not establish candidate/release acceptance or current development/main behavior."
+  ]
+}

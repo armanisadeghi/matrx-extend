@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T21:03:00Z",
+  "updated_at": "2026-10-19T21:10:00Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -51430,6 +51430,23 @@
                 "docs/stabilization/runs/public-guest-chat-0.2.205-39156655719.json"
               ],
               "detail": "Host resource watchdog terminated before result write; no completed-answer/first-followup/reload verdict or before-server SHA. Source checkpoint/sequencing repair D243 assigned."
+            }
+          ],
+          "bounded_store_observations": [
+            {
+              "run_id": "published-guest-chat-backend2b53-20261019-01",
+              "version": "0.2.205",
+              "mode": "guest",
+              "server_sha": "2b53b34ecdac24c889e28f5df1798cf5a969387f",
+              "status": "partial",
+              "resource_valid": true,
+              "observed": "Real firstpagegroundedassistant reply and sameconversationfollowup both completed withSendrestored.",
+              "unverified": [
+                "Newconversation afterreload",
+                "Independentproductretest",
+                "Fresh561candidate acceptance"
+              ],
+              "evidence": "docs/stabilization/reports/store205-guest-chat-backend2b53-20261019.json"
             }
           ]
         },
