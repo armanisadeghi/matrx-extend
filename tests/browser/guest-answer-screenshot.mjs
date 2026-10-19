@@ -68,66 +68,55 @@ export function prepareGuestAnswerScreenshot({ code, heading = null, focus = cod
   const style = getComputedStyle(article);
   const viewportWidth = document.documentElement.clientWidth;
   const viewportHeight = document.documentElement.clientHeight;
-  const text = [
-    ...article.querySelectorAll(
-      articles.length ? '[data-message-content]' : ':scope > div.min-w-0.text-foreground',
-    ),
-  ]
-    .filter(visible)
-    .map((body) => {
-      // A layout-only wrapper can have a zero rectangle while its code/text
-      // children are painted. Pruning a cloned wrapper loses that real answer.
-      const walker = document.createTreeWalker(body, 4);
-      const parts = [];
-      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-        let semantic = true;
-        for (
-          let parent = node.parentElement;
-          parent && parent !== body;
-          parent = parent.parentElement
+  const semanticTextNodes = (body) => {
+    const walker = document.createTreeWalker(body, 4);
+    const nodes = [];
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      let semantic = true;
+      for (
+        let parent = node.parentElement;
+        parent && parent !== body;
+        parent = parent.parentElement
+      ) {
+        const style = getComputedStyle(parent);
+        if (
+          parent.matches(
+            '[class~="group/toolcard"], [data-testid="tool-line"], button, [role="button"], [hidden], [inert], [aria-hidden="true"]',
+          ) ||
+          style.display === 'none' ||
+          style.visibility === 'hidden' ||
+          style.visibility === 'collapse' ||
+          Number.parseFloat(style.opacity) === 0
         ) {
-          const style = getComputedStyle(parent);
-          if (
-            parent.matches(
-              '[class~="group/toolcard"], [data-testid="tool-line"], button, [role="button"], [hidden], [inert], [aria-hidden="true"]',
-            ) ||
-            style.display === 'none' ||
-            style.visibility === 'hidden' ||
-            style.visibility === 'collapse' ||
-            Number.parseFloat(style.opacity) === 0
-          ) {
-            semantic = false;
-            break;
-          }
+          semantic = false;
+          break;
         }
-        if (semantic) parts.push(node.textContent ?? '');
       }
-      return parts.join('');
-    })
-    .join('\n');
-  // A long answer can intersect the panel while its requested line is far
-  // below the screenshot. Locate the painted text itself, then scroll its
-  // existing container until that line is inside the native panel viewport.
+      if (semantic) nodes.push(node);
+    }
+    return nodes;
+  };
   const bodies = [
     ...article.querySelectorAll(
       articles.length ? '[data-message-content]' : ':scope > div.min-w-0.text-foreground',
     ),
   ].filter(visible);
+  // The same semantic walk feeds both the answer-text and focused Range checks.
+  // A display:contents wrapper has no box, but its direct text can still paint.
+  const text = bodies
+    .map((body) =>
+      semanticTextNodes(body)
+        .map((node) => node.textContent ?? '')
+        .join(''),
+    )
+    .join('\n');
+  // A long answer can intersect the panel while its requested line is far
+  // below the screenshot. Locate the painted text itself, then scroll its
+  // existing container until that line is inside the native panel viewport.
   let focusedRange = null;
   let focusedElement = null;
   for (const body of bodies) {
-    const walker = document.createTreeWalker(body, 4);
-    const nodes = [];
-    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-      if (
-        !visible(node.parentElement) ||
-        node.parentElement.closest(
-          '[class~="group/toolcard"], [data-testid="tool-line"], button, [role="button"], [hidden], [inert], [aria-hidden="true"]',
-        )
-      )
-        continue;
-      nodes.push(node);
-    }
+    const nodes = semanticTextNodes(body);
     const joined = nodes.map((node) => node.textContent ?? '').join('');
     const index = joined.indexOf(focus);
     if (index < 0) continue;

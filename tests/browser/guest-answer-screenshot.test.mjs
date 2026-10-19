@@ -284,6 +284,7 @@ test('painted inline code survives a layout-only wrapper, but chrome and another
       <article role="article" aria-label="Assistant answer"><div data-message-content>Earlier CODE-OLD</div></article>
       <article role="article" aria-label="Assistant answer"><div data-message-content>
         <p>Opening check code: <span id="layout" style="display:contents"><code>CODE-791</code></span></p>
+        <p>Second painted code: <span id="direct-layout" style="display:contents">DIRECT-865</span></p>
         <p>Capture, Understand, Use</p>
         <div class="group/toolcard">TOOL-482</div>
         <button>CONTROL-482</button>
@@ -309,6 +310,14 @@ test('painted inline code survives a layout-only wrapper, but chrome and another
     width: 0,
     height: 0,
   });
+  window.document.getElementById('direct-layout').getBoundingClientRect = () => ({
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 0,
+    height: 0,
+  });
   Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 400 });
   Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 300 });
   installTextRanges(window);
@@ -319,6 +328,11 @@ test('painted inline code survives a layout-only wrapper, but chrome and another
       code,
     });
   assert.equal(check('CODE-791').eligible, true);
+  assert.equal(
+    check('DIRECT-865').eligible,
+    true,
+    'direct painted text in a boxless wrapper is answer proof',
+  );
   for (const code of ['CODE-OLD', 'TOOL-482', 'CONTROL-482', 'HIDDEN-482'])
     assert.equal(check(code).eligible, false, code);
   await window.happyDOM.abort();
