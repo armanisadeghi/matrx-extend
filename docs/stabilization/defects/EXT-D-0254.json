@@ -34,10 +34,12 @@
     "docs/stabilization/reports/candidate560-acceptance-20261019.json",
     "docs/stabilization/reports/startup-probe-lane-a-20261019.json",
     "docs/stabilization/reports/startup-bootstrap-escalation-20261019.json",
-    "docs/stabilization/reports/fixture-and-headless-peer-20261019.json"
+    "docs/stabilization/reports/fixture-and-headless-peer-20261019.json",
+    "docs/stabilization/reports/headless-startup-lane-a-20261019.json"
   ],
   "cause": "Unknown. Host CPU pressure was observed but not proven causal; source comparison found no owned-launcher/connector change from559.",
-  "next_action": "Observe the single admitted headless lane-A operational-viability run39318657314 to terminal; exact39bfe250 CI39317009493/artifact12218089566. Keep8s/resource guards unchanged; different artifact from prior headed probe, so no controlled same-artifact comparison. No Store build/upload before real current candidate guest/member/reviewer acceptance.",
-  "active_diagnostic_run": "39318657314",
-  "completed_diagnostic_run": "39312706355"
+  "next_action": "Fresh independent review of valid headless operational viability and exact candidate acceptance route. Headless39318657314 connectedownedCDP3251ms and panelready; allthreejournals valid. This doesnotresolve priorheadedtimeout/D248 or provideproduct/Storeacceptance. No arbitrarydeadline/guardchange; useonlyexistingauthorizedroutes.",
+  "active_diagnostic_run": null,
+  "completed_diagnostic_run": "39312706355",
+  "completed_diagnostic_runs": ["39312706355", "39318657314"]
 }
