@@ -2,17 +2,17 @@
   "schema_version": 1,
   "record_kind": "hosted_published_store_crx_guest_chat_run",
   "run_id": 39283778031,
-  "observed_at_utc": "2026-10-19T16:33:19Z",
+  "observed_at_utc": "2026-10-19T16:50:55.380959Z",
   "title": "Public Store CRX v0.2.205 Guest Chat B — three replies observed; Values Escape assertion failed",
-  "status": "partial_behavior_failure_workflow_status_pending",
+  "status": "partial_behavior_failure_workflow_completed",
   "task_identity": "guest_live_20261019",
   "provenance": {
     "workflow": "Hosted guest side-panel acceptance",
     "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39283778031",
     "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39283778031/job/118163920235",
     "job_id": 118163920235,
-    "workflow_status": "in_progress",
-    "workflow_updated_at": "2026-10-19T16:27:12Z",
+    "workflow_status": "completed",
+    "workflow_updated_at": "2026-10-19T16:45:31Z",
     "job_status": "in_progress",
     "job_conclusion": null,
     "failed_step": "Exercise the selected Chrome side-panel case",
@@ -36,7 +36,8 @@
     "store_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
     "approved_crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
     "provenance_mode": "published_store_crx",
-    "publication_scope": "Approved public CRX was extracted and loaded in an isolated hosted profile; this does not establish installation from the live Chrome Web Store."
+    "publication_scope": "Approved public CRX was extracted and loaded in an isolated hosted profile; this does not establish installation from the live Chrome Web Store.",
+    "workflow_conclusion": "failure"
   },
   "admission": {
     "path": "scripts/hosted-remote-admission.mjs dispatch-published-guest-chat",
@@ -125,15 +126,22 @@
       "all_reported_job_steps_completed": true,
       "last_step_completed_at": "2026-10-19T16:23:49Z",
       "api_lag_note": "GitHub API still reports the run and job in_progress despite every reported job step, including Complete job and artifact upload, having completed. Treat overall workflow terminal status as pending; do not repeat unchanged polling."
+    },
+    {
+      "observed_at_utc": "2026-10-19T16:50:55.380959Z",
+      "observer": "root authoritative gh run view",
+      "workflow_status": "completed",
+      "workflow_conclusion": "failure",
+      "workflow_updated_at": "2026-10-19T16:45:31Z"
     }
   ],
   "cleanup": {
-    "workflow_terminal": false,
+    "workflow_terminal": true,
     "additional_dispatches": 0,
     "credentials_staged": false,
     "private_raw_bundle_created": true,
     "private_bundle_path": "/tmp/guest-live-20261019-run39283778031",
     "raw_result_and_screenshots_retained_in_private_bundle": true,
-    "next_action": "Observe this same workflow run until GitHub reports terminal status; do not redispatch. Preserve the Values Escape failure and valid resource finals independently of the delayed workflow status."
+    "next_action": "Preserve the bounded three-reply evidence and valid resource finals; independently test current-artifact Values and public reviewer controls. Do not redispatch the unchanged published CRX case."
   }
 }
