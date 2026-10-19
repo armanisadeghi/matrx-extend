@@ -573,6 +573,27 @@ export interface ContextReceiptBlock {
   delivered: ContextDeliveredRef;
 }
 
+export interface ContextReceiptPassthrough {
+  conductor_id: string;
+  mode: "closed" | "handed_over" | "mirror";
+  person_and_org: boolean;
+  handed_over?: string[];
+  mirrored?: string[];
+  withheld?: ContextReceiptPassthroughWithheld[];
+  overrides?: ContextReceiptPassthroughOverride[];
+}
+
+export interface ContextReceiptPassthroughOverride {
+  key: string;
+  show?: "whole" | "pointer" | null;
+  limit?: number | null;
+}
+
+export interface ContextReceiptPassthroughWithheld {
+  key: string;
+  reason: "closed" | "conductor_owned" | "page_off" | "refused" | "person_and_org_off";
+}
+
 export interface ContextReceiptRoomView {
   participant_id: string;
   participant_key: string;
@@ -626,6 +647,7 @@ export interface ContextReceiptData {
   rules_error?: string | null;
   blocks?: ContextReceiptBlock[];
   room_view?: ContextReceiptRoomView | null;
+  passthrough?: ContextReceiptPassthrough | null;
 }
 
 export interface ConversationIdData {

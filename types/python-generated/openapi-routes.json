@@ -124,6 +124,9 @@
    "application/json"
   ]
  },
+ "/admin/ai-catalog/translation-cells/{cell_id}/test": {
+  "post": []
+ },
  "/admin/ai-test-mode/baselines": {
   "get": []
  },
@@ -369,6 +372,9 @@
  "/admin/rag/search-lab/inventory": {
   "get": []
  },
+ "/admin/requests/{snapshot_id}/as-sent": {
+  "get": []
+ },
  "/admin/review/descend": {
   "get": []
  },
@@ -436,6 +442,16 @@
  },
  "/admin/stats": {
   "get": []
+ },
+ "/admin/surface-evidence/review": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/surface-evidence/runs": {
+  "post": [
+   "application/json"
+  ]
  },
  "/admin/system-context/cache-reset": {
   "post": [
