@@ -1,0 +1,10 @@
+{
+  "task_id": "EXT-D-0255",
+  "commit": "102c284725824370e03e48e822961b36ca4902d2",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_a": "PASS: actual exported native journal was rejected by parent copier (JOURNAL_EVENT_INVALID); repaired copier accepted and byte-equal copied it, retaining opened/hold/refused final. Final remains admitted=false, resourceInvalid=false, exitCode=2, decision=refused.",
+  "verdict_b": "PASS: no resource guard/admission/policy writer changes. Missing runId accepted only for UNSAFE_HOLD and RECOVERY_SAMPLES_READY. All records including opened/final must match requested runId; no-runId events require prior opened and pre-admission. Hold requires exact finite sample keys and finite numeric values, nonempty finite reasons, and refused final. Unknown/extra fields are rejected.",
+  "verification": "pnpm exec vitest run tests/unit/hosted-resource-journal-copy.test.ts --reporter=dot \u2014 26/26 pass. Direct old/current sanitizer comparison against actual native journal confirms RED/GREEN and byte equality.",
+  "concern": "The focused refusal tests cover extra fields, invalid reason/sample, placement, and contradictory final. No separately named regression asserts missing/duplicate RESOURCE_JOURNAL_OPENED or duplicate RESOURCE_ADMITTED records; current implementation still enforces opening before missing-id rows, identity on every present runId, and unsafe-hold refusal consistency. Not blocking this repair.",
+  "owner_ruling": "A/B PASS accepted for originalactualrefusal and strictcurrentwriter schema. Minor duplicate opening/admission regression-test coverage gap retained; no reproduced defect and no product/guard-admission policy change, so it doesnotblocknarrowinfrastructureclosure."
+}

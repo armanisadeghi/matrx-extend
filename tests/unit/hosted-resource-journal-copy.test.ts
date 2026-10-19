@@ -10,6 +10,8 @@ import {
 const runId = 'hosted-guest-journal-copy-001';
 const event = (code: string, fields: Record<string, unknown> = {}) =>
   JSON.stringify({ schema: 1, at: '2026-10-09T00:00:00.000Z', runId, ...fields, code });
+const recoveryEvent = (code: string, fields: Record<string, unknown> = {}) =>
+  JSON.stringify({ schema: 1, at: '2026-10-09T00:00:00.000Z', ...fields, code });
 
 const final = (fields: Record<string, unknown> = {}) =>
   event('RESOURCE_FINAL_DECISION', {
@@ -47,6 +49,132 @@ const startupBracket = {
 };
 
 describe('hosted resource journal evidence copy', () => {
+  it('preserves a completed native guard unsafe-hold refusal without changing admission or exit', () => {
+    const opened = event('RESOURCE_JOURNAL_OPENED');
+    const hold = recoveryEvent('RESOURCE_UNSAFE_HOLD', {
+      reasons: ['RESOURCE_CPU_BUSY'],
+      sample: {
+        pressureLevel: 1,
+        availableMemoryGiB: 10,
+        requiredMemoryGiB: 12,
+        oneMinuteLoad: 4,
+        logicalCpus: 8,
+        cpuBusyFraction: 0.8,
+        swapUsedMiB: 100,
+        repoFreeGiB: 50,
+        profileFreeGiB: 50,
+        safetyFreeGiB: 50,
+        systemFreeGiB: 50,
+      },
+    });
+    const refusal = event('RESOURCE_FINAL_DECISION', {
+      admitted: false,
+      resourceInvalid: false,
+      exitCode: 2,
+      decision: 'refused',
+    });
+    expect(sanitizeHostedResourceJournal(`${opened}\n${hold}\n${refusal}\n`, runId)).toBe(
+      `${opened}\n${hold}\n${refusal}\n`,
+    );
+  });
+
+  it('preserves the guard recovery event that precedes admission', () => {
+    const ready = recoveryEvent('RESOURCE_RECOVERY_SAMPLES_READY', {
+      previousRunId: 'previous-run-001',
+    });
+    const admitted = event('RESOURCE_ADMITTED', { mode: 'check' });
+    const valid = event('RESOURCE_FINAL_DECISION', {
+      admitted: true,
+      resourceInvalid: false,
+      exitCode: 0,
+      decision: 'valid',
+    });
+    const source = `${event('RESOURCE_JOURNAL_OPENED')}\n${ready}\n${admitted}\n${valid}\n`;
+    expect(sanitizeHostedResourceJournal(source, runId)).toBe(source);
+  });
+
+  it('refuses unsupported recovery fields, values, placement, and contradictory finals', () => {
+    const opened = `${event('RESOURCE_JOURNAL_OPENED')}\n`;
+    const refused = `${event('RESOURCE_FINAL_DECISION', {
+      admitted: false,
+      resourceInvalid: false,
+      exitCode: 2,
+      decision: 'refused',
+    })}\n`;
+    const hold = recoveryEvent('RESOURCE_UNSAFE_HOLD', {
+      reasons: ['RESOURCE_CPU_BUSY'],
+      sample: Object.fromEntries(
+        [
+          'pressureLevel',
+          'availableMemoryGiB',
+          'requiredMemoryGiB',
+          'oneMinuteLoad',
+          'logicalCpus',
+          'cpuBusyFraction',
+          'swapUsedMiB',
+          'repoFreeGiB',
+          'profileFreeGiB',
+          'safetyFreeGiB',
+          'systemFreeGiB',
+        ].map((key) => [key, 1]),
+      ),
+    });
+    for (const mutated of [
+      recoveryEvent('RESOURCE_UNSAFE_HOLD', {
+        reasons: ['RESOURCE_CPU_BUSY'],
+        sample: { token: 'secret' },
+      }),
+      recoveryEvent('RESOURCE_UNSAFE_HOLD', {
+        reasons: ['RESOURCE_CPU_BUSY'],
+        sample: JSON.parse(hold).sample,
+        token: 'secret',
+      }),
+      recoveryEvent('RESOURCE_UNSAFE_HOLD', {
+        reasons: ['RESOURCE_SECRET_PATH'],
+        sample: JSON.parse(hold).sample,
+      }),
+      recoveryEvent('RESOURCE_UNSAFE_HOLD', {
+        reasons: ['RESOURCE_CPU_BUSY'],
+        sample: JSON.parse(hold).sample,
+        runId,
+      }),
+      recoveryEvent('RESOURCE_RECOVERY_SAMPLES_READY', { previousRunId: '/private/path' }),
+      recoveryEvent('RESOURCE_RECOVERY_SAMPLES_READY', { previousRunId: 'prior', token: 'secret' }),
+    ])
+      expect(() => sanitizeHostedResourceJournal(`${opened}${mutated}\n${refused}`, runId)).toThrow(
+        /JOURNAL_EVENT_(FIELD|VALUE)_UNSUPPORTED/,
+      );
+    expect(() => sanitizeHostedResourceJournal(`${hold}\n${refused}`, runId)).toThrow(
+      'JOURNAL_EVENT_VALUE_UNSUPPORTED',
+    );
+    expect(() =>
+      sanitizeHostedResourceJournal(
+        `${opened}${event('RESOURCE_ADMITTED')}\n${hold}\n${refused}`,
+        runId,
+      ),
+    ).toThrow('JOURNAL_EVENT_VALUE_UNSUPPORTED');
+    expect(() =>
+      sanitizeHostedResourceJournal(
+        `${opened}${hold}\n${event('RESOURCE_FINAL_DECISION', {
+          admitted: true,
+          resourceInvalid: false,
+          exitCode: 0,
+          decision: 'valid',
+        })}\n`,
+        runId,
+      ),
+    ).toThrow('JOURNAL_FINAL_DECISION_INVALID');
+    expect(() =>
+      sanitizeHostedResourceJournal(
+        `${opened}${event('RESOURCE_UNSAFE_HOLD', {
+          reasons: ['RESOURCE_CPU_BUSY'],
+          sample: JSON.parse(hold).sample,
+          runId: 'other-run',
+        })}\n${refused}`,
+        runId,
+      ),
+    ).toThrow('JOURNAL_EVENT_INVALID');
+  });
   it.each([
     ['valid', { admitted: true, resourceInvalid: false, exitCode: 0, decision: 'valid' }],
     ['invalid', { admitted: true, resourceInvalid: true, exitCode: 3, decision: 'invalid' }],

@@ -3,7 +3,7 @@
   "case_ids": ["EXT-F-0001-T01"],
   "auth_mode": "guest and member test infrastructure; no product behavior credit",
   "state": "closed",
-  "owner": "resource_journal_copier_fix",
+  "owner": "resource_hold_copier_repair",
   "transition_history": [
     {
       "at": "2026-10-19T19:38:17.645459+00:00",
@@ -58,6 +58,42 @@
       "from": "retest-pass",
       "to": "closed",
       "reason": "Original copier refusal and surrounding admission regression independently verified. Infrastructure closure only; Chrome startup and product acceptance remain open."
+    },
+    {
+      "at": "2026-10-19T20:34:02.722490+00:00",
+      "from": "closed",
+      "to": "open",
+      "reason": "New actual current-writer sibling found: completed unsafehold journal canonicalcopy refuses JOURNAL_EVENT_INVALID."
+    },
+    {
+      "at": "2026-10-19T20:34:02.722490+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Opening/finalrunId match; RESOURCE_UNSAFE_HOLD currentwriter event lacksrunId. Guard remains refused and no UI occurred."
+    },
+    {
+      "at": "2026-10-19T20:34:02.722490+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Assign bounded exact-current-writer schema repair and privacy/terminal regression tests; no admission or resource threshold change."
+    },
+    {
+      "at": "2026-10-19T20:37:49.600852+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Actualunsafehold copierRED\u2192GREEN source102c28472, siblingrecovery eventstrictshape covered,26focused+39surroundingtests/fullLint/compilepass; rootcanonicalcopyactualjournalbyteequal. Freshindependentreviewpending; no resourcepolicyorproducthealthcredit."
+    },
+    {
+      "at": "2026-10-19T20:38:58.813804+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent A/B PASS: exactparentactualcopierRED andcurrentbyteequalGREEN,26focusedtests/privacy/identity/pre-admission checks pass."
+    },
+    {
+      "at": "2026-10-19T20:38:58.813804+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Originalactualunsafehold refusal and siblingrecovery records independentlyverified; no resource/admission/timeout changes and no product healthcredit. Minor duplicate-record test coveragegap retained."
     }
   ],
   "id": "EXT-D-0255",
@@ -70,16 +106,24 @@
     "Observe JOURNAL_EVENT_UNSUPPORTED; valid and invalid final decisions cannot be retained through the supported copier."
   ],
   "expected": "The canonical copier accepts the exact safe writer schema, rejects extra or secret-bearing fields, and retains the original resource final honestly.",
-  "actual": "The supported copier rejects the known writer event. Multiple test reports retain only bounded manual finals and disclose the missing full sanitized stream.",
+  "actual": "Original startup-bracket vocabulary issue is source-repaired and independently retested, but a current-writer unsafe-hold record withoutrunId is still refused. D255 reopened; no rawfallback.",
   "evidence": [
     "docs/stabilization/reports/candidate560-acceptance-20261019.json",
     "docs/stabilization/reports/resource-journal-copier-fix-20261019.json",
     "docs/stabilization/reports/resource-copier-fresh-peer-20261019.json",
-    "docs/stabilization/reports/fixture-and-headless-peer-20261019.json"
+    "docs/stabilization/reports/fixture-and-headless-peer-20261019.json",
+    "docs/stabilization/reports/cooled-dev-installation-peer-20261019.json",
+    "docs/stabilization/reports/resource-hold-copier-repair-20261019.json",
+    "docs/stabilization/reports/hold-copier-fresh-peer-20261019.json"
   ],
   "cause": "Writer/copy event vocabularies differed; canonical sanitizer reuse repairs the exact event. Its new transitive import required updating the standalone admission fixture, independently retested.",
-  "next_action": "Use canonical copier for subsequent journals. Existing refused/invalid/missing finals remain honest; continue separately tracked D254 startup diagnosis.",
+  "next_action": "Use canonical copier for currentwriter journals. Retainminor duplicate-opening/admitted-record regression-test gap; D254/actualproductacceptance remainopen separately.",
   "fix_sha": "8df8de5fc",
   "reviewer": "Fresh independent A PASS_WITH_LIMITS and B PASS; actual exported copier parent RED/current GREEN, invalid/valid final truth and secret refusal cases pass. No product acceptance credit.",
-  "fix_shas": ["8df8de5fc", "ec2da38b7"]
+  "fix_shas": ["8df8de5fc", "ec2da38b7", "102c284725824370e03e48e822961b36ca4902d2"],
+  "latest_reproduction": [
+    "Generate an actual guard refusal during existing unsafe-hold recovery, producing opening and refused final with matching runId and RESOURCE_UNSAFE_HOLD without runId.",
+    "Run canonicalcopy with that runId; observe JOURNAL_EVENT_INVALID before any output."
+  ],
+  "latest_reviewer": "hold_copier_fresh_peer: A PASS/B PASS"
 }
