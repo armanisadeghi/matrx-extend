@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "resource_final_summary",
+  "run_id": 39308206905,
+  "finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "sanitizer_result": "copied"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "sanitizer_result": "copied"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "child_exit_code": 1,
+      "decision": "invalid",
+      "sanitizer_result": "refused_unknown_RESOURCE_STARTUP_INTERVAL_BRACKET"
+    }
+  },
+  "guest_pressure_observation": {
+    "source": "safe-field projection of hosted journal; no process attribution retained",
+    "pending_reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+    "pressure_level": 1,
+    "cpu_busy_fraction": 1,
+    "one_minute_load": 1.64,
+    "logical_cpus": 4,
+    "available_memory_gib": 12.6,
+    "swap_used_mib": 0,
+    "unsupported_event": "RESOURCE_STARTUP_INTERVAL_BRACKET"
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "candidate_store_acceptance",
+  "observed_at": "2026-10-19",
+  "candidate": {
+    "version": "0.2.560",
+    "tag": "v0.2.560",
+    "source_sha": "269db2c47b087a8eb5df335f7bfca717fda39f9a",
+    "workflow_run_id": 39306988896,
+    "workflow_status": "success",
+    "artifact_id": "12213578304",
+    "artifact_name": "matrx-extend-v0.2.560",
+    "github_artifact_digest": "sha256:fbd8f07715c1186220787e389a6097a76a595a26d203d5ffc1019d8d815cd5cf",
+    "store_zip_sha256": "ea9775897c6268bb25cc603fdcef73a8f9c0594621a39c56d3ed18503c9748ef",
+    "local_zip_sha256": "11c271310f8a2d3652462fd9368345e1e16c235ee88d19e24e8ff049b432603b",
+    "receipt_tree_sha256": "83d0ef738dde3eb2a76bd35403e3e67aa3ae5519871bcb4846c330ae56b31932",
+    "receipt_file_count": 2459,
+    "input_extension_sha": "c72095cb2",
+    "pinned_aidream_sha": "0362acd8b6e4f34c48a062a08f4cde61e5e9e441",
+    "store_zip_download_matches_receipt": true,
+    "zip_integrity_and_manifest_version_pass": true,
+    "hosted_store_policy_runtime_code_risk_gate": "pass",
+    "config_attestation": "not_attested_advisory",
+    "store_submission": false
+  },
+  "native_acceptance_identity": {
+    "version": "0.2.560",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "runtime_tree_sha256": "15a013d084505b8ace5d8d3ed4cb0582d83f54e7e547541f1203a3c5387b69eb"
+  },
+  "server_health": {
+    "before_http_status": 200,
+    "before_sha": "0362acd8b6e4f34c48a062a08f4cde61e5e9e441",
+    "after_http_status": 200,
+    "after_sha": "0362acd8b6e4f34c48a062a08f4cde61e5e9e441",
+    "stable": true,
+    "matches_pinned_aidream_sha": true
+  },
+  "cases": {
+    "B_public_guest_reviewer": {
+      "run_id": 39308206905,
+      "artifact_id": "12214683334",
+      "artifact_name": "hosted-guest-39308206905-1",
+      "terminal_status": "failure",
+      "first_failed_stage": "owned_profile",
+      "failure_code": "owned_cdp_endpoint_timeout",
+      "report_status": "unverified",
+      "guest_reviewer_ui_exercised": false,
+      "settings_capture_links_data_exercised": false,
+      "chat_open_followup_postreload_exercised": false,
+      "chat_requests": 0,
+      "screenshots": 0,
+      "resource_finals": "evidence/store560-guest/run39308206905/resource-finals.sanitized.json",
+      "package_browser_final": "valid",
+      "guest_final": "invalid_resource_startup_interval_bracket_and_cpu_busy"
+    },
+    "A_existing_member_auth_topology": {
+      "run_id": 39308413069,
+      "artifact_id": "12214678679",
+      "artifact_name": "hosted-guest-39308413069-1",
+      "terminal_status": "failure",
+      "first_failed_stage": "owned_profile",
+      "artifact_failure_code": "unclassified_failure",
+      "safe_filtered_log_failure_code": "owned_cdp_endpoint_timeout",
+      "report_status": "unverified",
+      "authentication_started": false,
+      "auth_topology_first_hidden_boundary": "unavailable; owned profile/CDP startup failed before sign-in or panel visibility observation",
+      "chat_visibility_checked": false,
+      "chat_send_performed": false,
+      "screenshots": 0,
+      "resource_finals": "evidence/store560-member/run39308413069/resource-finals.sanitized.json",
+      "package_browser_final": "valid",
+      "guest_final": "invalid_resource_startup_interval_bracket_and_cpu_busy"
+    }
+  },
+  "shared_outcome": {
+    "product_acceptance_credit": "none; both runs stopped before first product action at owned-profile startup",
+    "classification": "environment_or_harness_startup_failure; not a candidate product verdict",
+    "repeat_policy": "no retry; both permitted isolated runs reached the same known owned-CDP startup failure and the guest resource gate also finalized invalid",
+    "resource_sanitizer_limit": "RESOURCE_STARTUP_INTERVAL_BRACKET is unsupported by the sanitizer; guest projections retain only bounded safe fields and omit raw logs/process attribution",
+    "private_fixture": "existing approved identity only; one-use link secret and local payload deleted immediately after selected-authentication preflight; secret name and file absence verified",
+    "cleanup": "no broad conversation deletion; no unowned data touched",
+    "limitations": [
+      "No public reviewer UI, Settings, Capture, Links, Data, or Chat surface was reached.",
+      "No member authentication or auth-topology transition was observed; no claim about the earliest hidden boundary can be made.",
+      "No screenshots or terminal assistant-content sequence exist for these failed startup attempts.",
+      "This does not establish overall health or that the adapted ZIP is installed in the Web Store."
+    ]
+  },
+  "evidence_paths": [
+    "evidence/store560-guest/run39308206905/native-report.sanitized.json",
+    "evidence/store560-guest/run39308206905/resource-finals.sanitized.json",
+    "evidence/store560-guest/run39308206905/resource-journals/hosted-package-39308206905.sanitized.jsonl",
+    "evidence/store560-guest/run39308206905/resource-journals/hosted-browser-39308206905.sanitized.jsonl",
+    "evidence/store560-member/run39308413069/native-report.sanitized.json",
+    "evidence/store560-member/run39308413069/resource-finals.sanitized.json"
+  ]
+}
