@@ -75,14 +75,34 @@ export function prepareGuestAnswerScreenshot({ code, heading = null, focus = cod
   ]
     .filter(visible)
     .map((body) => {
-      const copy = body.cloneNode(true);
-      const originals = [...body.querySelectorAll('*')];
-      const copies = [...copy.querySelectorAll('*')];
-      originals.forEach((node, index) => {
-        if (!visible(node) || node.matches('[class~="group/toolcard"], [data-testid="tool-line"]'))
-          copies[index]?.remove();
-      });
-      return copy.innerText ?? copy.textContent ?? '';
+      // A layout-only wrapper can have a zero rectangle while its code/text
+      // children are painted. Pruning a cloned wrapper loses that real answer.
+      const walker = document.createTreeWalker(body, 4);
+      const parts = [];
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        let semantic = true;
+        for (
+          let parent = node.parentElement;
+          parent && parent !== body;
+          parent = parent.parentElement
+        ) {
+          const style = getComputedStyle(parent);
+          if (
+            parent.matches(
+              '[class~="group/toolcard"], [data-testid="tool-line"], button, [role="button"], [hidden], [inert], [aria-hidden="true"]',
+            ) ||
+            style.display === 'none' ||
+            style.visibility === 'hidden' ||
+            style.visibility === 'collapse' ||
+            Number.parseFloat(style.opacity) === 0
+          ) {
+            semantic = false;
+            break;
+          }
+        }
+        if (semantic) parts.push(node.textContent ?? '');
+      }
+      return parts.join('');
     })
     .join('\n');
   // A long answer can intersect the panel while its requested line is far
@@ -101,7 +121,9 @@ export function prepareGuestAnswerScreenshot({ code, heading = null, focus = cod
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
       if (
         !visible(node.parentElement) ||
-        node.parentElement.closest('[class~="group/toolcard"], [data-testid="tool-line"]')
+        node.parentElement.closest(
+          '[class~="group/toolcard"], [data-testid="tool-line"], button, [role="button"], [hidden], [inert], [aria-hidden="true"]',
+        )
       )
         continue;
       nodes.push(node);

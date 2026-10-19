@@ -276,6 +276,54 @@ test('answer screenshot refuses a DOM-visible reply that remains outside the vie
   await window.happyDOM.abort();
 });
 
+test('painted inline code survives a layout-only wrapper, but chrome and another answer cannot supply it', async () => {
+  const window = new Window();
+  window.document.body.innerHTML = `
+    <button role="tab" title="Chat" aria-selected="true" aria-controls="chat"></button>
+    <div id="chat" data-state="active">
+      <article role="article" aria-label="Assistant answer"><div data-message-content>Earlier CODE-OLD</div></article>
+      <article role="article" aria-label="Assistant answer"><div data-message-content>
+        <p>Opening check code: <span id="layout" style="display:contents"><code>CODE-791</code></span></p>
+        <p>Capture, Understand, Use</p>
+        <div class="group/toolcard">TOOL-482</div>
+        <button>CONTROL-482</button>
+        <span hidden>HIDDEN-482</span>
+      </div></article>
+    </div>`;
+  for (const element of window.document.querySelectorAll('*')) {
+    element.getBoundingClientRect = () => ({
+      left: 10,
+      right: 250,
+      top: 20,
+      bottom: 100,
+      width: 240,
+      height: 80,
+    });
+    element.scrollIntoView = () => {};
+  }
+  window.document.getElementById('layout').getBoundingClientRect = () => ({
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 0,
+    height: 0,
+  });
+  Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 400 });
+  Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 300 });
+  installTextRanges(window);
+  const check = (code) =>
+    runInNewContext(`(${prepareGuestAnswerScreenshot.toString()})({code})`, {
+      document: window.document,
+      getComputedStyle: (element) => window.getComputedStyle(element),
+      code,
+    });
+  assert.equal(check('CODE-791').eligible, true);
+  for (const code of ['CODE-OLD', 'TOOL-482', 'CONTROL-482', 'HIDDEN-482'])
+    assert.equal(check(code).eligible, false, code);
+  await window.happyDOM.abort();
+});
+
 // Store .205 MessageRow/Markdown shape, captured in run 39129963929 (source 2f68bc4).
 test('Store completed answer screenshot reads direct Markdown and refuses non-answer proof', async () => {
   const window = new Window();
