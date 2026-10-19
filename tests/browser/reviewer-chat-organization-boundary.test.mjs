@@ -96,7 +96,7 @@ test('member driver loads the staged config and requires the selected UI organiz
   const id = '72336a38-f816-442f-ad48-18610128fb67';
   const fingerprint = createHash('sha256').update(id).digest('hex').slice(0, 16);
   const loadStart = source.indexOf('async function approvedOrganizationConfig() {');
-  const loadEnd = source.indexOf('// Scope the observer', loadStart);
+  const loadEnd = source.indexOf('async function approvedOrganizationObservation(', loadStart);
   const entryStart = source.indexOf("  stage = 'approved_organization_config';");
   const entryEnd = source.indexOf('  const receipt = ', entryStart);
   const selectionStart = source.indexOf(
@@ -203,6 +203,7 @@ test('signed-in member reaches Chat without a persisted device organization over
   for (const activeOrganizationPresent of [false, true]) {
     const clicks = [];
     const waits = [];
+    const phases = [];
     await runInNewContext(`(async () => { ${source.slice(start, end)} })()`, {
       assert,
       UNINTERRUPTED: false,
@@ -211,6 +212,13 @@ test('signed-in member reaches Chat without a persisted device organization over
       email: 'member',
       report: { account: {} },
       stage: '',
+      sampleAuthBoundary: async (phase) => phases.push(phase),
+      restoreMemberForegroundWithReport: async () => {},
+      web: {},
+      page: {},
+      native: {},
+      evaluate: async () => {},
+      OUTPUT: '/tmp/reviewer-boundary',
       waitFor: async (label, _read, accept) => {
         waits.push(label);
         assert.equal(accept({ swipeFileVisible: true }), true);
@@ -219,6 +227,7 @@ test('signed-in member reaches Chat without a persisted device organization over
       click: async (_panel, kind, label) => clicks.push([kind, label]),
     });
     assert.deepEqual(waits, ['reviewer_swipe_file_tab_visible']);
+    assert.deepEqual(phases, ['before_foreground_restore', 'after_foreground_restore']);
     assert.deepEqual(
       clicks,
       [['title', 'Chat']],

@@ -35,6 +35,11 @@ import {
   observeCanonicalAdminCheck,
   supabaseOrigin,
 } from './member-native-auth-proof.mjs';
+import {
+  actingOrganizationPickersExpression,
+  recordMemberPickerBoundary,
+  selectedMemberOrganizationFingerprint,
+} from './member-picker-transition-diagnostic.mjs';
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import {
@@ -110,14 +115,6 @@ async function approvedOrganizationConfig() {
   )
     throw new Error('reviewer_approved_organization_identity_missing');
   return { name: value.approved_organization_name.trim(), id: value.approved_organization_id };
-}
-
-// Scope the observer to the same ControlRow used by the native organization driver.
-// Organization also contains the archive filter, so its first combobox is unrelated.
-function actingOrganizationPickersExpression(section = 'orgSection') {
-  return `[...(${section}?.querySelectorAll('span') ?? [])]
-    .filter((span) => span.textContent.trim() === 'Acting as')
-    .flatMap((span) => [...span.parentElement.parentElement.querySelectorAll('button[role="combobox"]')])`;
 }
 
 async function approvedOrganizationObservation(panel) {
@@ -258,52 +255,6 @@ async function requireMemberAnswerScreenshot(panel, expectedTerms) {
   );
   assert.equal(proof?.eligible, true, 'reviewer_chat_visible_answer_unverified');
   return proof;
-}
-
-/** Observe the checked option's real UUID; only its fingerprint enters evidence. */
-async function selectedMemberOrganizationFingerprint(panel) {
-  await click(panel, 'organization', '');
-  try {
-    const selected = await waitFor(
-      'member_selected_organization_option',
-      () =>
-        evaluate(
-          panel,
-          `(() => {
-      const organization = [...document.querySelectorAll('button[aria-expanded]')]
-        .find(button => button.textContent.trim() === 'Organization');
-      const orgSection = organization?.parentElement?.nextElementSibling;
-      const pickers = ${actingOrganizationPickersExpression()};
-      const picker = pickers.length === 1 ? pickers[0] : null;
-      const list = picker ? document.getElementById(picker.getAttribute('aria-controls') ?? '') : null;
-      const checked = [...(list?.querySelectorAll('[role="option"][data-state="checked"][data-value]') ?? [])];
-      return { pickerCount: pickers.length, checkedCount: checked.length,
-        value: checked.length === 1 ? checked[0].getAttribute('data-value') : null,
-        labelMatches: checked.length === 1 && checked[0].textContent.trim() === picker?.textContent.trim() };
-    })()`,
-        ),
-      (value) =>
-        value?.pickerCount === 1 &&
-        value.checkedCount === 1 &&
-        value.labelMatches &&
-        UUID.test(value.value ?? ''),
-      10_000,
-    );
-    return hash(selected.value);
-  } finally {
-    await panel.send('Input.dispatchKeyEvent', {
-      type: 'keyDown',
-      key: 'Escape',
-      code: 'Escape',
-      windowsVirtualKeyCode: 27,
-    });
-    await panel.send('Input.dispatchKeyEvent', {
-      type: 'keyUp',
-      key: 'Escape',
-      code: 'Escape',
-      windowsVirtualKeyCode: 27,
-    });
-  }
 }
 
 async function accountObservation(panel, expectedEmail) {
@@ -1425,6 +1376,15 @@ try {
         } finally {
           await adminCheck.stop();
         }
+        const samplePickerBoundary = (phase) =>
+          recordMemberPickerBoundary({
+            panel,
+            phase,
+            report,
+            output: OUTPUT,
+            writeReport: writeReviewerReport,
+          });
+        if (!UNINTERRUPTED) await samplePickerBoundary('after_admin_check_stop');
         stage = 'reviewer_organization_resolve';
         let account = await waitFor(
           'reviewer_organization_resolved',
@@ -1503,7 +1463,15 @@ try {
         }
         const selectedOrganizationFingerprint = UNINTERRUPTED
           ? null
-          : await selectedMemberOrganizationFingerprint(panel);
+          : await selectedMemberOrganizationFingerprint({
+              panel,
+              click,
+              evaluate,
+              waitFor,
+              hash,
+              UUID,
+              samplePickerBoundary,
+            });
         if (!UNINTERRUPTED)
           assert.equal(
             selectedOrganizationFingerprint,
@@ -1533,6 +1501,13 @@ try {
             },
           }),
         };
+        if (
+          !UNINTERRUPTED &&
+          report.organization_picker_transition?.some(
+            (sample) => sample.panel_visibility === 'hidden',
+          )
+        )
+          throw new Error('reviewer_member_panel_hidden_during_org_proof');
         if (UNINTERRUPTED) {
           await exerciseApproval(native);
           return;
