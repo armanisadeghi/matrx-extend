@@ -1,0 +1,58 @@
+{
+  "task_id": "cooled-dev-installation-peer-20261019",
+  "lane": "independent Chrome installation verification",
+  "status": "blocked_resource_refusal",
+  "resource": {
+    "run_id": "dev39b-independent-20261019-01",
+    "journal": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/dev39b-independent-20261019-01.jsonl",
+    "final_at": "2026-10-19T20:27:38.707Z",
+    "decision": "refused",
+    "admitted": false,
+    "resource_invalid": false,
+    "refusal": "RESOURCE_CPU_BUSY",
+    "sample_at": "2026-10-19T20:27:38.695Z",
+    "sample": {
+      "cpu_busy_fraction": 0.97,
+      "one_minute_load": 5.23,
+      "logical_cpus": 10,
+      "available_memory_gib": 12.32,
+      "pressure_level": 1,
+      "repo_free_gib": 1629.7565650939941,
+      "profile_free_gib": 40.63258361816406,
+      "swap_used_mib": 4156
+    }
+  },
+  "A_observations": {
+    "chrome_accessed": false,
+    "ui_accessed": false,
+    "installation_verified": false,
+    "confirmed_by_this_peer": [],
+    "prior_context_only": "Requested target is development ID cihdmkcdjjckfhjpgoedmgfpoljebaml v0.2.560 loaded from .output/chrome-mv3-dev, enabled and pinned beside enabled/pinned Store ID hnfolienncfklkgmdjjmhhegglimlamg. No installation evidence was collected in this attempt."
+  },
+  "B_provenance": {
+    "development_ci_run": "39317009493",
+    "development_artifact": "12218089566",
+    "source": "39bfe250",
+    "tree_sha256": "a8b9a18b84d591a1546249018fc39e4ddfc04102a01e4b7df6009fd046343bef",
+    "later_main_docs_only": "41b020c5a",
+    "provenance_source": "parent-provided task brief; not independently inspected due resource refusal"
+  },
+  "prior_context": {
+    "previous_operator_native_reloadguard": "unsafe at 20:24 UTC and final invalid at 20:25 UTC; no installation acceptance credit",
+    "other_peer_accessed_ui": false,
+    "cooldown_boundary": "guard attempt started 2026-10-19T20:27:21.554Z, after prior stop 20:25:07Z; guard sampled and refused before admission"
+  },
+  "exact_unverified": [
+    "Whether Chrome is currently running v0.2.560 from .output/chrome-mv3-dev",
+    "Whether the development extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml is currently enabled and pinned",
+    "Whether Store ID hnfolienncfklkgmdjjmhhegglimlamg remains enabled and pinned beside it",
+    "Whether the on-disk artifact matches the stated CI receipt"
+  ],
+  "next_action": "Stop this peer attempt after refusal. No retry and no Chrome reload.",
+  "durable_sanitized_journal": "docs/stabilization/evidence/chrome-native-20261019/latest-dev-peer-refused.sanitized.jsonl",
+  "raw_journal_private_path": "test-results/native-dev560/dev39b-independent-20261019-01.jsonl",
+  "raw_journal_sha256": "bb4cec78b52384bb4463e0fed301f37cae788c102061137f066381f2b1319f2f",
+  "owner_stage_correction": "Refused in existing unsafe-hold recovery before60-second admission preflight; no cpuBusySamples window and no UI.",
+  "initial_canonical_copy": "REFUSED JOURNAL_EVENT_INVALID: currentwriter unsafehold event lacks runId; D255 reopened. No raw fallback.",
+  "current_canonical_copy": "Source102c28472 accepts exactcurrentwriter unsafehold schema; exported byte-identically, preservingrefused/admittedfalse/exit2. Independent repairreviewpending."
+}

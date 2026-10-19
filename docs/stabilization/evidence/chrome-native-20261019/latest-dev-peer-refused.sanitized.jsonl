@@ -1,0 +1,3 @@
+{"schema":1,"at":"2026-10-19T20:27:21.554Z","runId":"dev39b-independent-20261019-01","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-19T20:27:38.695Z","reasons":["RESOURCE_CPU_BUSY"],"sample":{"pressureLevel":1,"availableMemoryGiB":12.32,"requiredMemoryGiB":4,"oneMinuteLoad":5.23,"logicalCpus":10,"cpuBusyFraction":0.97,"swapUsedMiB":4156,"repoFreeGiB":1629.7565650939941,"profileFreeGiB":40.63258361816406,"safetyFreeGiB":40.63258361816406,"systemFreeGiB":40.63258361816406},"code":"RESOURCE_UNSAFE_HOLD"}
+{"schema":1,"at":"2026-10-19T20:27:38.707Z","runId":"dev39b-independent-20261019-01","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}
