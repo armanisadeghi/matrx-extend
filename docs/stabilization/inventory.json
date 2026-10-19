@@ -512,7 +512,9 @@
             "EXT-D-0245",
             "EXT-D-0246",
             "EXT-D-0249",
-            "EXT-D-0250"
+            "EXT-D-0250",
+            "EXT-D-0251",
+            "EXT-D-0252"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -535,7 +537,8 @@
             "EXT-D-0190",
             "EXT-D-0245",
             "EXT-D-0246",
-            "EXT-D-0248"
+            "EXT-D-0248",
+            "EXT-D-0251"
           ],
           "run_ids": [
             "baseline-build-001",

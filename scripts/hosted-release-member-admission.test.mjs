@@ -198,6 +198,99 @@ test('exact member dispatch uses selected release rather than a current build', 
   assert.ok(second.args.includes('release_run_id=39049375285'));
   assert.notDeepEqual(first.args, second.args);
 });
+test('spaced workflow requester retains exact release provenance', () => {
+  const candidateInput = {
+    releaseRunId: '39300233770',
+    artifactId: '12210871757',
+    sourceSha: '7075721579a725074be7ce2de0ea9bdf069f0df4',
+  };
+  const candidateRun = {
+    ...run,
+    id: 39300233770,
+    name: 'Hosted release (by release555_eligibility exact-candidate558)',
+    head_sha: 'a326df07524ec2feba5e2104bf7405c93c4825a6',
+    repository: { id: 1225111202, full_name: 'armanisadeghi/matrx-extend' },
+    head_repository: { id: 1225111202, full_name: 'armanisadeghi/matrx-extend' },
+  };
+  const candidateArtifact = {
+    ...artifact,
+    id: 12210871757,
+    name: 'matrx-extend-v0.2.558',
+    workflow_run: {
+      id: 39300233770,
+      repository_id: 1225111202,
+      head_repository_id: 1225111202,
+      head_branch: 'main',
+      head_sha: candidateRun.head_sha,
+    },
+  };
+  const candidateListing = { total_count: 1, artifacts: [candidateArtifact] };
+  const candidateReceipt = {
+    version: '0.2.558',
+    sourceSha: candidateInput.sourceSha,
+    publishState: 'pushed',
+    storeZip: { sha256: 'afbd3249311d8f645710fad41987b461182dd90386353740b27d6e2af1c73bde' },
+  };
+  assert.equal(
+    String(
+      releaseMemberPlan(
+        candidateInput,
+        candidateRun,
+        candidateListing,
+        candidateReceipt,
+        candidateInput.sourceSha,
+      ).artifact.id,
+    ),
+    candidateInput.artifactId,
+  );
+  for (const changed of [
+    { name: 'Hosted release (by )' },
+    { name: 'Hosted release (by release555_eligibility exact-candidate558) extra' },
+    { name: 'Other release (by release555_eligibility exact-candidate558)' },
+    { path: '.github/workflows/ci.yml' },
+    { event: 'push' },
+    { head_branch: 'feature' },
+    { conclusion: 'failure' },
+  ])
+    assert.throws(
+      () =>
+        releaseMemberPlan(
+          candidateInput,
+          { ...candidateRun, ...changed },
+          candidateListing,
+          candidateReceipt,
+          candidateInput.sourceSha,
+        ),
+      /release_member_run_invalid/,
+    );
+  assert.throws(
+    () =>
+      releaseMemberPlan(
+        candidateInput,
+        candidateRun,
+        {
+          total_count: 1,
+          artifacts: [
+            { ...candidateArtifact, workflow_run: { ...candidateArtifact.workflow_run, id: 42 } },
+          ],
+        },
+        candidateReceipt,
+        candidateInput.sourceSha,
+      ),
+    /release_member_artifact_invalid/,
+  );
+  assert.throws(
+    () =>
+      releaseMemberPlan(
+        candidateInput,
+        candidateRun,
+        candidateListing,
+        { ...candidateReceipt, sourceSha: sha },
+        candidateInput.sourceSha,
+      ),
+    /release_member_receipt_invalid/,
+  );
+});
 test('unpublished, substituted or ambiguous release cannot create a dispatch plan', () => {
   for (const changed of [
     { id: 999 },
