@@ -2051,6 +2051,11 @@
    "application/json"
   ]
  },
+ "/collab/share/current": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/communications/internal/test-handset-inbox": {
   "get": []
  },
