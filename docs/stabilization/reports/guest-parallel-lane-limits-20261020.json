@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-20",
+  "status": "routing-finding-only",
+  "finding": "No existing guarded lane A route admits a native guest SEO run against the exact development artifact.",
+  "evidence": [
+    {
+      "source": "scripts/hosted-remote-admission.mjs",
+      "lines": "607-668",
+      "fact": "planHostedGuestSeo requires lane B, case guest-seo, exact scope notice-stacked, fixture none, resource diagnostic false, interruption none, and runner macos-15-intel. It plans workflow_dispatch with those values and development artifact IDs."
+    },
+    {
+      "source": "scripts/hosted-remote-admission.mjs",
+      "lines": "670-705",
+      "fact": "planHostedScrape requires lane B, case guest-scrape-development, scope seo-schema-empty, guest auth and macos-15-intel. It plans the development artifact route."
+    },
+    {
+      "source": "scripts/hosted-scrape-route.mjs",
+      "lines": "31-43,53-64",
+      "fact": "guest-scrape-development selects the SEO/schema-empty driver only for that exact scope; any non-full scope requires lane B and guest auth."
+    },
+    {
+      "source": "tests/browser/scrape-seo-schema-empty-guest.mjs",
+      "lines": "23-47,60-69",
+      "fact": "The bounded case uses one owned localhost page with title but no body signals and asserts only the guest no-signal SEO and empty Schema panes. It does not cover real public-page SEO audit or copy controls."
+    },
+    {
+      "source": ".github/workflows/hosted-guest-acceptance.yml",
+      "lines": "94-115,125-133,297-316",
+      "fact": "The workflow exposes additional SEO scopes (full, controlled, notice, readability, metadata and narrow), but its lane predicates and fixture/diagnostic conditions do not establish a lane A admission. The normal local SEO helper rejects these wider scopes."
+    }
+  ],
+  "route_summary": {
+    "guest_seo_normal_admission": {
+      "lane": "B",
+      "case": "guest-seo",
+      "scope": "notice-stacked",
+      "fixture": "none",
+      "resource_diagnostic": false,
+      "interrupt": "none",
+      "runner": "macos-15-intel",
+      "meaning": "Two owned refusal notices, Re-audit hit testing and dismissal/cleanup; this is fixture behavior and supplies no broad SEO audit or SEO control coverage."
+    },
+    "guest_scrape_development_normal_admission": {
+      "lane": "B",
+      "case": "guest-scrape-development",
+      "scope": "seo-schema-empty",
+      "auth": "guest",
+      "runner": "macos-15-intel",
+      "meaning": "Owned localhost T08 no-signal SEO and empty Schema panes only."
+    },
+    "lane_a_guest_seo_or_scrape": "No matching admitted route found."
+  },
+  "unresolved_source_level_question": "The source enforces lane B for these guest routes, while the plan says lane A owns shared authenticated fixtures. Available code does not establish whether the guest-only B restriction exists for host/resource isolation, fixture or credential ownership, or exact-case policy. A future route change should first establish this rationale; do not infer that guest SEO work is safe on lane A from the current predicates alone.",
+  "product_evidence": {
+    "native_runs_dispatched": 0,
+    "product_tests_executed": 0,
+    "product_passes_claimed": 0,
+    "broader_seo_coverage_claimed": false
+  },
+  "decision": "Do not redispatch this lane A task through an alternate command or workflow path. Any meaningful exact-artifact guest SEO route requires a separately reviewed admission change and lane/resource coordination."
+}
