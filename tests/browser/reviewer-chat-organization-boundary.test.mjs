@@ -10,6 +10,7 @@ import {
   requireMemberChatSequence,
   requireMemberOrganizationBinding,
 } from './member-chat-completion-oracle.mjs';
+import { requireOpeningMemberTransport } from './member-chat-original-repro.mjs';
 
 const source = await readFile(
   new URL('./reviewer-chat-store-acceptance.mjs', import.meta.url),
@@ -244,15 +245,6 @@ test('signed-in member reaches Chat without a persisted device organization over
 // This checks the harness verdict, not product behavior. Captured network metadata
 // remains mandatory even when the UI has rendered a completed answer.
 test('member Chat verdict refuses absent, rejected or uncorrelated organization transport', () => {
-  const start = source.indexOf('        const network = memberTransport.snapshot();');
-  const end = source.indexOf('        await typeQuestion(', start);
-  assert.ok(start > 0 && end > start, 'member transport oracle must be located');
-  const oracle = (network) =>
-    runInNewContext(source.slice(start, end), {
-      assert,
-      memberTransport: { snapshot: () => network },
-      report: {},
-    });
   const accepted = {
     start_count: 1,
     organization_header_fingerprint: 'observed-org-fingerprint',
@@ -261,7 +253,7 @@ test('member Chat verdict refuses absent, rejected or uncorrelated organization 
     response_matches_request_conversation: true,
     backend_request_fingerprint: 'observed-request-fingerprint',
   };
-  oracle(accepted);
+  requireOpeningMemberTransport(accepted);
   for (const changed of [
     { start_count: 0 },
     { start_count: 2 },
@@ -271,8 +263,10 @@ test('member Chat verdict refuses absent, rejected or uncorrelated organization 
     { response_matches_request_conversation: false },
     { backend_request_fingerprint: null },
   ])
-    assert.throws(() => oracle({ ...accepted, ...changed }), { code: 'ERR_ASSERTION' });
-  assert.throws(() => oracle({}), { code: 'ERR_ASSERTION' });
+    assert.throws(() => requireOpeningMemberTransport({ ...accepted, ...changed }), {
+      code: 'ERR_ASSERTION',
+    });
+  assert.throws(() => requireOpeningMemberTransport({}), { code: 'ERR_ASSERTION' });
 });
 
 // Break caught: two valid matching request headers can still target the wrong UI org.

@@ -121,15 +121,7 @@ export function summarizeOpeningPageTextBoundary({ events, requests }) {
 }
 
 /** Retain a real same-conversation follow-up before the strict Page Text verdict. */
-export async function runFollowupBeforeOpeningPageTextJoin({
-  openingTransport,
-  events,
-  requests,
-  heading,
-  pageTextFailureCode,
-  runFollowup,
-  persistFollowup,
-}) {
+export function requireOpeningMemberTransport(openingTransport) {
   assert.equal(openingTransport.start_count, 1, 'one actual member Chat start required');
   assert.ok(
     openingTransport.organization_header_fingerprint,
@@ -154,6 +146,18 @@ export async function runFollowupBeforeOpeningPageTextJoin({
     openingTransport.backend_request_fingerprint,
     'real member Chat backend request required',
   );
+}
+
+export async function runFollowupBeforeOpeningPageTextJoin({
+  openingTransport,
+  events,
+  requests,
+  heading,
+  pageTextFailureCode,
+  runFollowup,
+  persistFollowup,
+}) {
+  requireOpeningMemberTransport(openingTransport);
 
   const followupProof = await runFollowup();
   await persistFollowup(followupProof);
