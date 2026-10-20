@@ -951,6 +951,7 @@ test('package observer waits across delegated EOF, real result delivery and corr
     panel,
     panelTarget: { url: 'chrome-extension://abc/sidepanel.html' },
     mode: 'package',
+    pageTextUrl: 'https://www.aimatrx.com/matrx-extend-demo',
   });
   watch.arm('opening');
   const emit = async (id, path, body, postData = {}) => {
@@ -1011,7 +1012,20 @@ test('package observer waits across delegated EOF, real result delivery and corr
     'result',
     '/ai/conversations/private-conversation/tool_results',
     JSON.stringify({ resolved: ['private-call'], continuation_needed: true }),
-    { results: [{ call_id: 'private-call', output: { text: 'private-tool-output' } }] },
+    {
+      results: [
+        {
+          call_id: 'private-call',
+          tool_name: 'get_page_text',
+          is_error: false,
+          output: {
+            ok: true,
+            url: 'https://www.aimatrx.com/matrx-extend-demo',
+            text: 'The three workflow stages: Capture, Understand, Use.',
+          },
+        },
+      ],
+    },
   );
   assert.equal(
     watch.snapshot()[0].terminal_success,
@@ -1039,7 +1053,25 @@ test('package observer waits across delegated EOF, real result delivery and corr
   assert.equal(rows[0].semantic_completion, 'success');
   assert.equal(rows[0].resume_count, 1);
   assert.equal(rows[0].tool_result_successes, 1);
+  assert.deepEqual(rows[0].tool_results, [
+    {
+      tool_class: 'get_page_text',
+      call_fingerprint: rows[0].semantic_events.find((event) => event.event === 'tool_delegated')
+        .call_fingerprint,
+      is_error_false: true,
+      output_ok: true,
+      result_url_matches_fixture: true,
+      result_has_stages: true,
+      conversation_fingerprint: rows[0].conversation_fingerprint,
+      status: 200,
+      result_accepted: true,
+      resolved_calls: [
+        rows[0].semantic_events.find((event) => event.event === 'tool_delegated').call_fingerprint,
+      ],
+    },
+  ]);
   assert.equal(JSON.stringify(rows).includes('private-'), false);
+  assert.equal(JSON.stringify(rows).includes('https://www.aimatrx.com'), false);
 
   watch.arm('same_conversation_followup');
   await emit(

@@ -37,8 +37,8 @@ export function requireOriginalGuestSequence(requests) {
   return { status: 'terminal_two_turn_guest', completed_turns: 2 };
 }
 
-/** Join the passive extension event to the delegated call of this opening request. */
-export function requireOpeningPageText({ events, requests, heading }) {
+/** Join the package's canonical result POST and acknowledgement to this delegated opening call. */
+export function requireOpeningPageText({ requests, heading }) {
   const openingRows = requests.filter((row) => row.attempt === 'opening');
   assert.equal(openingRows.length, 1, 'D261 Page Text requires one member opening');
   const opening = openingRows[0];
@@ -49,17 +49,26 @@ export function requireOpeningPageText({ events, requests, heading }) {
       .filter((event) => event.event === 'tool_delegated')
       .map((event) => event.call_fingerprint),
   );
-  const match = events.find(
+  const match = (opening.tool_results ?? []).find(
     (event) =>
       event.tool_class === 'get_page_text' &&
-      event.phase === 'completed' &&
       event.conversation_fingerprint === opening.conversation_fingerprint &&
       /^[a-f0-9]{16}$/.test(event.call_fingerprint ?? '') &&
       delegated.has(event.call_fingerprint) &&
-      event.result_has_heading === true &&
-      event.result_has_stages === true,
+      event.is_error_false === true &&
+      event.output_ok === true &&
+      event.result_url_matches_fixture === true &&
+      event.result_has_stages === true &&
+      event.status === 200 &&
+      event.result_accepted === true &&
+      event.resolved_calls?.includes(event.call_fingerprint),
   );
-  assert.ok(match, 'D261 opening requires correlated completed Page Text with real page data');
+  assert.ok(
+    match,
+    'D269 opening requires correlated successful Page Text result and acknowledgement',
+  );
+  assert.equal(opening.result_resume_verified, true, 'D269 Page Text requires correlated resume');
+  assert.equal(opening.terminal_success, true, 'D269 Page Text requires terminal answer');
   return {
     completed_actual_page_result: true,
     opening_conversation_fingerprint: opening.conversation_fingerprint,
@@ -68,7 +77,7 @@ export function requireOpeningPageText({ events, requests, heading }) {
 }
 
 /** Bounded, content-free diagnosis of the same opening join. */
-export function summarizeOpeningPageTextBoundary({ events, requests }) {
+export function summarizeOpeningPageTextBoundary({ requests }) {
   const openingRows = requests.filter((row) => row.attempt === 'opening');
   const opening = openingRows.length === 1 ? openingRows[0] : null;
   const delegated = new Set(
@@ -76,28 +85,39 @@ export function summarizeOpeningPageTextBoundary({ events, requests }) {
       .filter((event) => event.event === 'tool_delegated')
       .map((event) => event.call_fingerprint),
   );
+  const events = opening?.tool_results ?? [];
   const page = events.filter((event) => event.tool_class === 'get_page_text');
-  const completed = page.filter((event) => event.phase === 'completed');
-  const conversation = completed.filter(
-    (event) => event.conversation_fingerprint === opening?.conversation_fingerprint,
+  const call = page.filter(
+    (event) =>
+      delegated.has(event.call_fingerprint) &&
+      event.conversation_fingerprint === opening?.conversation_fingerprint,
   );
-  const call = conversation.filter((event) => delegated.has(event.call_fingerprint));
   const content = call.filter(
-    (event) => event.result_has_heading === true && event.result_has_stages === true,
+    (event) =>
+      event.is_error_false &&
+      event.output_ok &&
+      event.result_url_matches_fixture &&
+      event.result_has_stages,
+  );
+  const accepted = content.filter(
+    (event) =>
+      event.status === 200 &&
+      event.result_accepted &&
+      event.resolved_calls?.includes(event.call_fingerprint),
   );
   const failure_code =
     !opening || !/^[a-f0-9]{16}$/.test(opening.conversation_fingerprint ?? '')
       ? 'reviewer_member_page_text_opening_unverified'
       : page.length === 0
-        ? 'reviewer_member_page_text_event_missing'
-        : completed.length === 0
-          ? 'reviewer_member_page_text_completion_missing'
-          : conversation.length === 0
-            ? 'reviewer_member_page_text_conversation_mismatch'
-            : call.length === 0
-              ? 'reviewer_member_page_text_call_mismatch'
-              : content.length === 0
-                ? 'reviewer_member_page_text_content_mismatch'
+        ? 'reviewer_member_page_text_result_missing'
+        : call.length === 0
+          ? 'reviewer_member_page_text_call_mismatch'
+          : content.length === 0
+            ? 'reviewer_member_page_text_content_mismatch'
+            : accepted.length === 0
+              ? 'reviewer_member_page_text_ack_missing'
+              : !opening.result_resume_verified || !opening.terminal_success
+                ? 'reviewer_member_page_text_resume_missing'
                 : null;
   return {
     failure_code,
@@ -107,15 +127,18 @@ export function summarizeOpeningPageTextBoundary({ events, requests }) {
       tool_class: ['get_page_text', 'read_page', 'find'].includes(event.tool_class)
         ? event.tool_class
         : 'other',
-      phase: ['started', 'completed', 'error'].includes(event.phase) ? event.phase : 'other',
+      status: event.status ?? null,
       call_fingerprint: /^[a-f0-9]{16}$/.test(event.call_fingerprint ?? '')
         ? event.call_fingerprint
         : null,
       conversation_fingerprint: /^[a-f0-9]{16}$/.test(event.conversation_fingerprint ?? '')
         ? event.conversation_fingerprint
         : null,
-      result_has_heading: event.result_has_heading === true,
+      is_error_false: event.is_error_false === true,
+      output_ok: event.output_ok === true,
+      result_url_matches_fixture: event.result_url_matches_fixture === true,
       result_has_stages: event.result_has_stages === true,
+      ack_matches_call: event.resolved_calls?.includes(event.call_fingerprint) === true,
     })),
   };
 }
@@ -150,7 +173,6 @@ export function requireOpeningMemberTransport(openingTransport) {
 
 export async function runFollowupBeforeOpeningPageTextJoin({
   openingTransport,
-  events,
   requests,
   heading,
   pageTextFailureCode,
@@ -162,7 +184,7 @@ export async function runFollowupBeforeOpeningPageTextJoin({
   const followupProof = await runFollowup();
   await persistFollowup(followupProof);
   try {
-    return requireOpeningPageText({ events, requests, heading });
+    return requireOpeningPageText({ requests, heading });
   } catch {
     throw new Error(pageTextFailureCode ?? 'reviewer_member_page_text_join_unverified');
   }

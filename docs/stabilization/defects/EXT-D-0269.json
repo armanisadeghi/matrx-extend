@@ -1,0 +1,61 @@
+{
+  "id": "EXT-D-0269",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T14"],
+  "title": "Strict member Page Text observer requires an extension completion event absent from package Chat",
+  "surface": "Test-only native member Chat acceptance observer and strict driver",
+  "auth_mode": "signed-in non-admin member; same package transport applies to guest and other package Chat tools",
+  "severity": "S2: false strict acceptance failure after a real successful member answer; no product failure inferred",
+  "priority": "P1: restore sound exact-call acceptance without changing pending Store 0.2.577",
+  "state": "fixed",
+  "owner": "package_chat_observer_repair",
+  "source_candidate": "91d7696626537676d0a5a1239ca29eb3fbed7331",
+  "store_version": "0.2.577 SUBMITTED_PENDING; no new extension artifact or version for this test-only repair",
+  "reproduction": [
+    "Exact 0.2.577 native run 39443241939 shows member opening conversation d267b8af803a54ab, delegated get_page_text call db760ddbd90bd7ff, two successful tool result POSTs and resumes, and terminal opening and follow-up answers.",
+    "The old strict Page Text join reads only extension tool:timeline-event started/completed messages; the run captured started but no completed event and exited child_failed after preserving the follow-up.",
+    "Package Chat invokes the handler with a result sink, owns its lifecycle in Redux, and submits the canonical POST /ai/conversations/{id}/tool_results. The sink does not emit an extension timeline completed event."
+  ],
+  "expected": "The strict observer passively joins the exact delegated get_page_text call and opening conversation to a successful canonical result body, matching server resolution acknowledgement, correlated resume, and terminal answer; the visible H1 is checked in the answer separately.",
+  "actual": "The old driver rejected successful package Chat output solely because the unrelated extension completion event was absent. The backend exact-call receipt confirms success, output.ok, current demo URL, and Capture/Understand/Use. Page Text correctly strips the article-header H1; a separate query_elements(h1) returned it.",
+  "cause": "Test harness observed the wrong completion channel for package Chat and required a heading inside readable text contrary to the handler's header-stripping contract.",
+  "sibling_census": "All package Chat delegated tools use the same result sink and canonical tool_results route. The shared passive package transport observer now records sanitized result metadata for every tool class. The strict get_page_text assertion remains exact-tool and exact-call; read_page is distinct.",
+  "evidence": [
+    "/tmp/member-tool-completion-diagnosis-20261020.json",
+    "/tmp/member577-native-mac-20261020.json",
+    "/tmp/member577-backend-result-proof-20261020.json",
+    "/tmp/member577-page-text-contract-proof-20261020.json",
+    "/tmp/member577-semantic-final-peer-20261020.json",
+    "tests/browser/reviewer-chat-original-repro.test.mjs",
+    "tests/browser/guest-chat-transport-observer.test.mjs",
+    "docs/stabilization/resource-journals/d269-focused-20261020-1534.jsonl"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-20T15:31:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Native 577 showed a false strict Page Text completion failure despite exact successful backend result and terminal same-conversation turns."
+    },
+    {
+      "at": "2026-10-20T15:31:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Confirmed package Chat result sink never emits the extension completion event; Page Text contract omits the article-header H1."
+    },
+    {
+      "at": "2026-10-20T15:31:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Focused strict guard failed against old observer; implementing passive canonical result and acknowledgement join."
+    },
+    {
+      "at": "2026-10-20T15:35:37Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Test-only source repair passed old-source red/new green focused guard, constant-return and output.ok mutations, compile, scoped Biome, and guarded canonical focused suite (731 total, 721 pass, 10 platform skips, resource valid). Native replay and independent verification remain pending."
+    }
+  ],
+  "verification_status": "Old-source focused guard RED; new focused observer and strict-driver tests 28/28 PASS; constant-return and output.ok mutations RED with identical restore; compile and scoped Biome PASS. Guarded canonical focused suite 731 total, 721 pass, 10 Mac platform skips, zero fail, child exit 0, resource valid (d269-focused-20261020-1534). Native future run, exact-source CI, and independent review pending; current 577 Store submission remains pending and untouched.",
+  "next_action": "After source push, run one admitted exact-source native member acceptance when Store/submission constraints permit. Require exact get_page_text canonical result/ack/resume plus terminal opening and same-conversation follow-up; obtain independent review before closing."
+}

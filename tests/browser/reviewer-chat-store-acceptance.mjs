@@ -517,51 +517,6 @@ async function runOriginalGuestPrelude(native, marker) {
   }
 }
 
-/** Passive runtime message proof of real Page Text handler output. */
-async function startMemberPageTextProof(panel, heading) {
-  const installed = await evaluate(
-    panel,
-    `(() => {
-    window.__memberPageTextProof?.stop();
-    const observed = [];
-    const listener = (message) => {
-      if (message?.__matrx !== true || message.kind !== 'tool:timeline-event') return;
-      const event = message.payload;
-      if (!event || typeof event !== 'object') return;
-      const result = event.phase === 'completed' ? JSON.stringify(event.output ?? null) : '';
-      observed.push({
-        tool_class: ['get_page_text', 'read_page', 'find'].includes(event.toolName)
-          ? event.toolName : 'other',
-        phase: event.phase,
-        call_id: event.callId ?? null,
-        conversation_id: event.conversationId ?? null,
-        result_has_heading: result.includes(${JSON.stringify(heading)}),
-        result_has_stages: ['Capture', 'Understand', 'Use'].every((term) => result.includes(term)),
-      });
-    };
-    chrome.runtime.onMessage.addListener(listener);
-    window.__memberPageTextProof = {
-      snapshot: () => observed.slice(),
-      stop: () => chrome.runtime.onMessage.removeListener(listener),
-    };
-    return true;
-  })()`,
-  );
-  assert.equal(installed, true, 'member Page Text observer required');
-  return {
-    snapshot: async () =>
-      (await evaluate(panel, 'window.__memberPageTextProof?.snapshot() ?? []')).map(
-        ({ call_id, conversation_id, ...event }) => ({
-          ...event,
-          call_fingerprint: typeof call_id === 'string' ? hash(call_id) : null,
-          conversation_fingerprint:
-            typeof conversation_id === 'string' ? hash(conversation_id) : null,
-        }),
-      ),
-    stop: () => evaluate(panel, 'window.__memberPageTextProof?.stop()'),
-  };
-}
-
 /** Observe the real canonical admin assignment response, without exporting its body. */
 function observeAdminAssignment(panel, origin) {
   const requests = new Map();
@@ -716,6 +671,7 @@ async function observeAuthenticatedTransport(native, expectedUrl, mode) {
   const observer = await watchGuestAiRequests({
     ...native,
     mode: UNINTERRUPTED ? 'legacy' : 'package',
+    pageTextUrl: `${WEB_ORIGIN}${DEMO_PATH}`,
   });
   observer.arm('approval-action');
   const summarize = (entry, source) => {
@@ -1373,7 +1329,6 @@ try {
       stage = MAGIC_LINK ? 'open_reviewer_magic_link' : 'open_reviewer_web_login';
       let web = null;
       let memberTransport = null;
-      let pageTextProof = null;
       const memberTurns = {};
       try {
         const entry = await enterFirstPartyRoute({
@@ -1822,7 +1777,6 @@ try {
           'original member Chat must be fresh after sign-in reload',
         );
         report.original_member_reload.fresh_chat = true;
-        pageTextProof = await startMemberPageTextProof(panel, demoHeading);
         report.screenshots = {
           before: await captureWithLifecycle(panel, artifacts, 'reviewer-chat-before'),
           action: null,
@@ -1938,16 +1892,8 @@ try {
         } catch {
           throw new Error('reviewer_member_page_text_transport_settle_failed');
         }
-        stage = 'member_page_text_snapshot';
-        let pageTextEvents;
-        try {
-          pageTextEvents = await pageTextProof.snapshot();
-        } catch {
-          throw new Error('reviewer_member_page_text_snapshot_failed');
-        }
         stage = 'member_page_text_join';
         const pageTextBoundary = summarizeOpeningPageTextBoundary({
-          events: pageTextEvents,
           requests: memberTransport.turnRequests(),
         });
         report.page_text_boundary = pageTextBoundary;
@@ -1957,7 +1903,6 @@ try {
         report.chat_transport = network;
         const pageTextJoin = await runFollowupBeforeOpeningPageTextJoin({
           openingTransport: network,
-          events: pageTextEvents,
           requests: memberTransport.turnRequests(),
           heading: demoHeading,
           pageTextFailureCode: pageTextBoundary.failure_code,
@@ -2030,7 +1975,7 @@ try {
             stage = 'member_page_text_join';
           },
         });
-        report.page_text_proof = { ...pageTextJoin, event_count: pageTextEvents.length };
+        report.page_text_proof = pageTextJoin;
         report.screenshots.result = await captureWithLifecycle(
           panel,
           artifacts,
@@ -2059,7 +2004,6 @@ try {
             complete: false,
           };
         await memberTransport?.stop();
-        await pageTextProof?.stop();
         if (web && !web.isClosed()) await web.close();
       }
     },

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { containsOrderedWholeTerms } from './guest-chat-completion-oracle.mjs';
 
 const CHAT_PATH = '/ai/mandates/extend.browser_chat';
 const VERSIONED_CHAT_PATH = `/v2${CHAT_PATH}`;
@@ -209,6 +210,7 @@ export async function watchGuestAiRequests({
   panelTarget,
   panel,
   mode = 'legacy',
+  pageTextUrl = null,
 }) {
   const offscreenUrl = new URL('offscreen.html', panelTarget.url).href;
   const requests = new Map();
@@ -234,6 +236,32 @@ export async function watchGuestAiRequests({
   };
   const classifyUrl = (url) =>
     !url || url === 'about:blank' ? 'provisional' : url === offscreenUrl ? 'offscreen' : 'other';
+  const sanitizeResultPost = (source) => {
+    try {
+      const body = JSON.parse(source);
+      return (Array.isArray(body.results) ? body.results : []).map((result) => {
+        const text = result?.output?.text;
+        return {
+          tool_class: ['get_page_text', 'read_page', 'find', 'query_elements'].includes(
+            result?.tool_name,
+          )
+            ? result.tool_name
+            : 'other',
+          call_fingerprint:
+            typeof result?.call_id === 'string' ? conversationFingerprint(result.call_id) : null,
+          is_error_false: result?.is_error === false,
+          output_ok: result?.output?.ok === true,
+          result_url_matches_fixture:
+            typeof pageTextUrl === 'string' && result?.output?.url === pageTextUrl,
+          result_has_stages:
+            typeof text === 'string' &&
+            containsOrderedWholeTerms(text, ['Capture', 'Understand', 'Use']),
+        };
+      });
+    } catch {
+      return [];
+    }
+  };
 
   const onRequest = (
     { requestId, request },
@@ -279,13 +307,19 @@ export async function watchGuestAiRequests({
           ...(continuation && {
             conversation_fingerprint: conversationFingerprint(decodeURIComponent(continuation[1])),
           }),
+          ...(continuation?.[2] === 'tool_results' && {
+            tool_result_calls:
+              typeof request.postData === 'string' ? sanitizeResultPost(request.postData) : [],
+          }),
         },
       };
       requests.set(`${sessionId}:${requestId}`, entry);
       if (typeof request.postData !== 'string') {
         const pending = send('Network.getRequestPostData', { requestId })
           .then(({ postData }) => {
-            if (entry.kind === 'start') {
+            if (entry.kind === 'tool_results') {
+              entry.record.tool_result_calls = sanitizeResultPost(postData);
+            } else if (entry.kind === 'start') {
               const identity = safeConversationRequest(postData);
               Object.assign(entry.record, identity);
               if (turnId) Object.assign(entry.record, persistedTurnIdentity(turnId, identity));
@@ -474,6 +508,17 @@ export async function watchGuestAiRequests({
                     transport_complete: other.record.transport_complete === true,
                   }),
             })),
+          tool_results: related
+            .filter((other) => other.kind === 'tool_results')
+            .flatMap((other) =>
+              (other.record.tool_result_calls ?? []).map((call) => ({
+                ...call,
+                conversation_fingerprint: other.record.conversation_fingerprint,
+                status: other.record.status,
+                result_accepted: other.record.result_accepted === true,
+                resolved_calls: other.record.resolved_calls ?? [],
+              })),
+            ),
           semantic_events: semanticEvents.slice(-100),
           stream_error: streamError,
           terminal_success:

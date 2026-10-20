@@ -85,11 +85,15 @@ test('D261 persists a real follow-up before a still-fatal opening Page Text join
   const matching = [
     {
       tool_class: 'get_page_text',
-      phase: 'completed',
       conversation_fingerprint: first,
       call_fingerprint: second,
-      result_has_heading: true,
+      is_error_false: true,
+      output_ok: true,
+      result_url_matches_fixture: true,
       result_has_stages: true,
+      status: 200,
+      result_accepted: true,
+      resolved_calls: [second],
     },
   ];
   const run = (events, transport = openingTransport) => {
@@ -98,8 +102,14 @@ test('D261 persists a real follow-up before a still-fatal opening Page Text join
       order,
       args: {
         openingTransport: transport,
-        events,
-        requests,
+        requests: [
+          {
+            ...requests[0],
+            terminal_success: true,
+            result_resume_verified: true,
+            tool_results: events,
+          },
+        ],
         heading: 'Matrx Extend Demo',
         pageTextFailureCode: 'reviewer_member_page_text_event_missing',
         runFollowup: async () => {
@@ -172,49 +182,103 @@ test('D261 Page Text must be a completed delegated call on this member opening',
   ];
   const event = {
     tool_class: 'get_page_text',
-    phase: 'completed',
     conversation_fingerprint: first,
     call_fingerprint: second,
-    result_has_heading: true,
+    is_error_false: true,
+    output_ok: true,
+    result_url_matches_fixture: true,
     result_has_stages: true,
+    status: 200,
+    result_accepted: true,
+    resolved_calls: [second],
   };
+  requests[0].terminal_success = true;
+  requests[0].result_resume_verified = true;
+  requests[0].tool_results = [event];
   assert.equal(
-    requireOpeningPageText({ events: [event], requests, heading: 'Matrx Extend Demo' })
-      .page_text_call_fingerprint,
+    requireOpeningPageText({ requests, heading: 'Matrx Extend Demo' }).page_text_call_fingerprint,
     second,
   );
   for (const mismatch of [
     { ...event, tool_class: 'read_page' },
-    { ...event, conversation_fingerprint: 'c'.repeat(16) },
     { ...event, call_fingerprint: 'c'.repeat(16) },
-    { ...event, phase: 'started' },
-    { ...event, result_has_heading: false },
+    { ...event, is_error_false: false },
     { ...event, result_has_stages: false },
   ])
     assert.throws(
-      () => requireOpeningPageText({ events: [mismatch], requests, heading: 'Matrx Extend Demo' }),
-      /correlated completed Page Text/,
+      () =>
+        requireOpeningPageText({
+          requests: [{ ...requests[0], tool_results: [mismatch] }],
+          heading: 'Matrx Extend Demo',
+        }),
+      /correlated successful Page Text/,
     );
   assert.throws(
     () =>
       requireOpeningPageText({
-        events: [event],
         requests: [{ ...requests[0], semantic_events: [] }],
         heading: 'Matrx Extend Demo',
       }),
-    /correlated completed Page Text/,
+    /correlated successful Page Text/,
   );
-  assert.equal(summarizeOpeningPageTextBoundary({ events: [event], requests }).failure_code, null);
+  assert.equal(summarizeOpeningPageTextBoundary({ requests }).failure_code, null);
   assert.equal(
-    summarizeOpeningPageTextBoundary({ events: [{ ...event, tool_class: 'read_page' }], requests })
-      .failure_code,
-    'reviewer_member_page_text_event_missing',
+    summarizeOpeningPageTextBoundary({
+      requests: [{ ...requests[0], tool_results: [{ ...event, tool_class: 'read_page' }] }],
+    }).failure_code,
+    'reviewer_member_page_text_result_missing',
   );
   assert.equal(
     summarizeOpeningPageTextBoundary({
-      events: [{ ...event, call_fingerprint: 'c'.repeat(16) }],
-      requests,
+      requests: [
+        { ...requests[0], tool_results: [{ ...event, call_fingerprint: 'c'.repeat(16) }] },
+      ],
     }).failure_code,
     'reviewer_member_page_text_call_mismatch',
   );
+});
+
+test('D269 package Page Text completion is the exact successful canonical result, acknowledgement, and resume', () => {
+  const call = 'db760ddbd90bd7ff';
+  const conversation = 'd267b8af803a54ab';
+  const proof = {
+    tool_class: 'get_page_text',
+    conversation_fingerprint: conversation,
+    call_fingerprint: call,
+    is_error_false: true,
+    output_ok: true,
+    result_url_matches_fixture: true,
+    result_has_stages: true,
+    status: 200,
+    result_accepted: true,
+    resolved_calls: [call],
+  };
+  const opening = {
+    attempt: 'opening',
+    conversation_fingerprint: conversation,
+    semantic_events: [{ event: 'tool_delegated', call_fingerprint: call }],
+    terminal_success: true,
+    result_resume_verified: true,
+    tool_results: [proof],
+  };
+  const verify = (changed) =>
+    requireOpeningPageText({
+      requests: [changed],
+      heading: 'A clear three-stage browser workflow',
+    });
+  assert.equal(verify(opening).page_text_call_fingerprint, call);
+  for (const changed of [
+    { ...proof, tool_class: 'read_page' },
+    { ...proof, call_fingerprint: '1565d1dace91d42e' },
+    { ...proof, is_error_false: false },
+    { ...proof, output_ok: false },
+    { ...proof, result_url_matches_fixture: false },
+    { ...proof, result_has_stages: false },
+    { ...proof, status: 500 },
+    { ...proof, resolved_calls: [] },
+  ])
+    assert.throws(() => verify({ ...opening, tool_results: [changed] }));
+  assert.throws(() => verify({ ...opening, conversation_fingerprint: first }));
+  assert.throws(() => verify({ ...opening, result_resume_verified: false }));
+  assert.throws(() => verify({ ...opening, terminal_success: false }));
 });
