@@ -24,5 +24,16 @@
     "scripts/hosted-resource-readiness-loop.test.mjs": "952ccceb28bc547c8272eeac8f32cb5745521fb9b89d752e5eef6fcda8a1c244",
     "package.json": "447a93ee4d3b0cef92d5c320aa3418f95e15a205c11e0a3834f58136311c29b5"
   },
-  "parent_ruling": "Source preparation A/B PASS accepted; native capability-unavailable/no-spawn, dropped-permission and stale-supervisor hard-death cases plus IO/handshake/pipe ownership are required before activation. Existing Linux route remains refused; no product pass."
+  "parent_ruling": "Source preparation A/B PASS accepted; native capability-unavailable/no-spawn, dropped-permission and stale-supervisor hard-death cases plus IO/handshake/pipe ownership are required before activation. Existing Linux route remains refused; no product pass.",
+  "source_commit": "c16ede823",
+  "parent_full_focused_check": {
+    "command": "pnpm test:focused-acceptance",
+    "tests": 721,
+    "pass": 711,
+    "skip": 10,
+    "fail": 0,
+    "duration_ms": 52719.884292,
+    "platform": "macOS; Linux-only branches explicitly skipped"
+  },
+  "ci_followthrough": "Source and checkpoint were pushed together with skip-ci tip; no automatic source CI launched. This evidence commit intentionally enables existing full CI for actual Ubuntu kernel checks. No workflow dispatch or additional workflow."
 }
