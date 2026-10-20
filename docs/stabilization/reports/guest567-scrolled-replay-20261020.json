@@ -28,5 +28,22 @@
     "bypass": "not_attempted"
   },
   "native_verdict": "unverified",
-  "next_action": "Keep the refusal binding. A reviewed normal admission path and successful full CI must be established before any single exact-artifact B replay; otherwise produce a new verified candidate through the authorized release process. Do not infer Data, surrounding panes, or two actual guest AI replies from the focused source test."
+  "next_candidate_release": {
+    "run_id": "39356737665",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39356737665",
+    "workflow": "release.yml",
+    "dispatch_ref": "main",
+    "workflow_head_sha": "0252c178bcd2686ca5a87b57e2679f5fcf9a820e",
+    "requested_by": "guest567_scrolled_replay_owner",
+    "aidream_sha_input": "20bd8859ffb7c71d05c3edb7a78e2a3060876b59",
+    "aidream_live_health_sha_at_dispatch": "20bd8859ffb7c71d05c3edb7a78e2a3060876b59",
+    "ci_spend_read_at": "2026-10-20T01:20:58.899599+00:00",
+    "ci_spend_week_total_usd": 59.5,
+    "ci_spend_week_cap_usd": 100,
+    "ci_spend_complete_and_nonstale": true,
+    "status_at_checkpoint": "in_progress_package_refresh",
+    "artifact_identity": "pending_verified_receipt",
+    "external_job_cleanup": "hosted workflow owns ephemeral runner; no local process, profile, or staged secret"
+  },
+  "next_action": "Track the single hosted release to terminal and bind its validated receipt, tag, source SHA, Store ZIP hash and artifact digest. Then obtain independent package review and root GO before normal lane B admission and one exact-candidate native replay. The .567 admission refusal remains binding; no .567 native credit is inferred."
 }
