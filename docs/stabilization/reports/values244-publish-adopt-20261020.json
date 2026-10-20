@@ -20,8 +20,20 @@
     "package_declarations": "All @ai-matrx dependencies remain latest in package.json.",
     "lockfile": "All 26 @ai-matrx packages resolved to npm latest; agents 0.59.174.",
     "consumer_actions": "Reviewed changed package changelogs. The Vault openWebVault extension action is already wired in VaultView; no new call-site changes required.",
-    "verification": ["pnpm install --frozen-lockfile --ignore-scripts PASS", "pnpm compile PASS", "pnpm check:matrx-packages PASS", "git diff --check PASS"],
-    "automatic_ci": "pending source push"
+    "verification": [
+      "pnpm install --frozen-lockfile --ignore-scripts PASS",
+      "pnpm compile PASS",
+      "pnpm check:matrx-packages PASS",
+      "git diff --check PASS"
+    ],
+    "automatic_ci": {
+      "full_run": 39397452854,
+      "full_state": "in_progress",
+      "focused_run": 39397452861,
+      "focused_state": "success",
+      "source_sha": "adb10448d"
+    },
+    "commit": "adb10448d"
   },
   "native_acceptance": "UNKNOWN: original-equivalent compact Values focus/tooltip/Escape T13 and independent peer must run on the released exact candidate.",
   "next_action": "Track adoption CI; release through guarded hosted path, then perform exact-candidate guest native T13 and independent behavior retest."

@@ -116,7 +116,10 @@ then live raw/DB phase visibility and resource-valid original member reproductio
 host retry or manual Mac deployment. Exact source/report links are in D261.
 [Independent current-backend delta](reports/member261-cd80-delta-20261020.json) establishes no
 causal D261 repair f8dd→cd80; member remains unresolved. No new member attempt without changed
-capacity condition. No known human-only access blocker.
+capacity condition. [Bounded escalation](reports/member-startup-capacity-escalation-20261020.json)
+replays actual member unsafe reasons through current classifier: D265 does not repair that refusal.
+Existing host activity materially overlapped startup, but attribution and auth-start timing remain
+incomplete; no source change or threshold increase is justified. No known human-only access blocker.
 No new Store upload. Current member evidence and private Store/source/package drift checks remain
 required. [Current guest report](reports/guest567-scrolled-replay-20261020.json).
 
@@ -180,7 +183,7 @@ repeat the same launch blindly or weaken guard thresholds.
 
 ## Source units and immediate next work
 
-**D244 source repair passed fresh independent component review; publication/adoption is active.**
+**D244 source repair is published and adopted; exact-candidate native retest is pending.**
 Real shared ContextRulesChip/Tooltip/Popover reproduction confirms the inner tooltip consumes first
 Escape and leaves the compact popover. The reviewed component handler dismisses only for Escape
 from DOM-contained focus. Actual old-source RED/new-source GREEN; full component suite38/38;
@@ -191,13 +194,18 @@ may close parent while cancelling; guard proves no draft write and original afte
 [Repair](reports/values244-product-source-repair-20261020.json),
 [first peer](reports/values244-product-first-peer-20261020.json),
 [final peer](reports/values244-product-final-peer-20261020.json).
-`values244_publish_adopt` owns exact-path shared source push, automatic changed-only npm publish,
-registry gitHead proof and latest extension adoption; root owns subsequent candidate/native.
+Shared source `a1c540b80761a8f3281af06881a9cbc146a15341` is published as agents0.59.174;
+registry gitHead/tarball bytes and compiled Escape handler verified. Extension adoption `adb10448d`
+refreshes all26 Matrx packages to latest; frozen install, compile, package freshness and lint pass.
+[Adoption](reports/values244-publish-adopt-20261020.json). Automatic fullCI39397452854 is running;
+focused39397452861 passed. Fresh independent adoption peer is pending. Candidate/native owner
+`values244_candidate_native_owner` waits for fullCI+peer before one guarded release and original
+T13 guest retest. Existing572 has the older package; no post-fix native or Store pass is claimed.
 Direct local package tsc remains red on3 unchanged sibling imports; required hosted install-for-gate
 and consumer/type checks cannot be waived. ModelListDropdown sibling remains unverified after
 missingkit/dom prevented collection; no speculative repair or resolved-class claim. AgentListDropdown
 trigger-tooltip is explicitly disabled while open and does not share observed inner-control chain.
-D244 stays in-fix until published/adopted source; native closure requires actual exact-package T13.
+D244 is fixed for source only; native closure requires actual exact-package T13.
 
 
 1. **D258 closed narrowly**, source `ff105b712`, exact568 original scroll479 native PASS above. Measured
