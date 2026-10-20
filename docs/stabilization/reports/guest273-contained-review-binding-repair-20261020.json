@@ -25,11 +25,7 @@
     "pinned_version_id": "ad6074af-3d54-4c5b-bec7-879c15a338b1",
     "before_consumption_map": null,
     "after_consumption_map": {
-      "bundle": {
-        "mapType": "offered_value",
-        "target": "review_bundle",
-        "deliver": "variable"
-      }
+      "bundle": { "mapType": "offered_value", "target": "review_bundle", "deliver": "variable" }
     },
     "default_config_overrides": "null unchanged",
     "default_auto_run": "null unchanged",
@@ -78,5 +74,13 @@
     "No factory build",
     "No native guest D273 retest or product fix"
   ],
-  "next_action": "Prepare real browser-capable proof set for existing-agent Builder; current textual cases lack executable browser context/tool behavior. Follow existing agent-authoring rule at the production-ready step; do not mark whole campaign human blocked before engineering prerequisites are ready. Independently retest D273 exact guest H1 plus surrounding first/follow-up/reopen after quality change."
+  "next_action": "Prepare real browser-capable proof set for existing-agent Builder; current textual cases lack executable browser context/tool behavior. Follow existing agent-authoring rule at the production-ready step; do not mark whole campaign human blocked before engineering prerequisites are ready. Independently retest D273 exact guest H1 plus surrounding first/follow-up/reopen after quality change.",
+  "owned_secret_cleanup": {
+    "status": "verified",
+    "artifacts_checked": 14,
+    "credential_or_token_values_found": 0,
+    "temporary_secret_files_created": false,
+    "verification_helper": "Point-of-use private credential reads only; no stored credential values.",
+    "source": "Repair owner final cleanup audit, 2026-10-20"
+  }
 }
