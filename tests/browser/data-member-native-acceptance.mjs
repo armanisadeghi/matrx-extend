@@ -43,6 +43,7 @@ import {
   dataPickerControlReady,
   evaluate,
   waitFor,
+  waitForReplacementTab,
 } from './settings-panel-driver.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -220,6 +221,7 @@ async function lookupSavedPattern(panel, name, organizationId) {
 }
 
 function safeFailureCode(error) {
+  if (error?.readinessDiagnostic) return 'data_member_replacement_tab_not_ready';
   const pointerCodes = new Set([
     'pointer_initial_evaluation_failed',
     'pointer_page_sample_failed',
@@ -644,6 +646,17 @@ try {
         report.stage = 'extension_reload_activate';
         await panel.send('Page.bringToFront');
         report.stage = 'extension_reload_reopen_data';
+        try {
+          report.reload_data_readiness = await waitForReplacementTab(
+            panel,
+            'Data',
+            10000,
+            native.panelTarget.url,
+          );
+        } catch (error) {
+          report.reload_data_readiness = error.readinessDiagnostic ?? null;
+          throw error;
+        }
         await click(panel, 'title', 'Data');
         await waitFor(
           'data_member_reloaded_data_tab_ready',

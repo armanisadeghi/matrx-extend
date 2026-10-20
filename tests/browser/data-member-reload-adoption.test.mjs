@@ -16,7 +16,7 @@ const source = await readFile(
   'utf8',
 );
 const start = source.indexOf("        report.stage = 'extension_reload';");
-const end = source.indexOf("        await click(panel, 'title', 'Data');", start);
+const end = source.indexOf('        try {\n          report.reload_data_readiness', start);
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 const adoptDriver = new AsyncFunction(
   'assert',

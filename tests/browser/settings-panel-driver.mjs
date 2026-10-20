@@ -79,32 +79,126 @@ export function profilePaneReady(state) {
   );
 }
 
-// A replacement CDP target can exist before React mounts its tabs. Do not
-// dispatch a native pointer until the same visible Settings target is ready.
-export async function waitForReplacementSettingsTab(panel, timeoutMs = 10000) {
+// A replacement CDP target can exist before React mounts its tabs. Keep the
+// target/frame and visible tab checks in the same bounded readiness sequence.
+export async function waitForReplacementTab(
+  panel,
+  title,
+  timeoutMs = 10000,
+  expectedPanelUrl = null,
+) {
   let first;
-  const last = await waitFor(
-    'replacement_settings_tab_ready',
-    async () => {
-      const sample = await evaluate(
-        panel,
-        `(() => {
-    const tabs = [...document.querySelectorAll('button[role="tab"][title="Settings"]')];
+  const started = Date.now();
+  let last;
+  const read = async () => {
+    let targetMatches = null;
+    let frameMatches = null;
+    let targetQueryFailed = false;
+    let frameQueryFailed = false;
+    if (expectedPanelUrl !== null) {
+      try {
+        const { targetInfo } = await panel.send('Target.getTargetInfo');
+        targetMatches =
+          targetInfo?.targetId === panel.targetId &&
+          targetInfo?.type === 'page' &&
+          targetInfo?.url === expectedPanelUrl;
+      } catch {
+        targetQueryFailed = true;
+      }
+      try {
+        const { frameTree } = await panel.send('Page.getFrameTree');
+        frameMatches =
+          frameTree?.frame?.url === expectedPanelUrl && !frameTree.frame.unreachableUrl;
+      } catch {
+        frameQueryFailed = true;
+      }
+    }
+    let observationUnavailable = false;
+    const tab = await evaluate(
+      panel,
+      `(() => {
+    const tabs = [...document.querySelectorAll('button[role="tab"][title=${JSON.stringify(title)}]')];
     const visible = tabs.filter((tab) => {
       const style = getComputedStyle(tab), rect = tab.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
         style.display !== 'none' && !tab.closest('[inert]');
     });
-    return { matched: tabs.length, visible: visible.length };
+    const roots = [...document.querySelectorAll('#app')];
+    return { matched: tabs.length, visible: visible.length,
+      readyState: document.readyState,
+      rootCount: roots.length,
+      loadingIndicatorCount: document.querySelectorAll('#app .animate-spin, #app .animate-pulse').length,
+      renderErrorPresent: [...document.querySelectorAll('#app p')]
+        .some((node) => node.textContent?.trim() === 'The panel hit a render error') };
   })()`,
-      );
-      first ??= sample;
-      return sample;
-    },
-    (sample) => sample?.matched === 1 && sample.visible === 1,
-    timeoutMs,
-  );
-  return { first, last };
+    ).catch(() => {
+      observationUnavailable = true;
+      return null;
+    });
+    const bounded = (value) =>
+      Number.isInteger(value) && value >= 0 && value <= 100 ? value : null;
+    const sample = {
+      matched: bounded(tab?.matched),
+      visible: bounded(tab?.visible),
+      ...(expectedPanelUrl !== null && {
+        targetMatches,
+        frameMatches,
+        targetQueryFailed,
+        frameQueryFailed,
+      }),
+      observationUnavailable,
+      ...(tab?.readyState && {
+        readyState: ['loading', 'interactive', 'complete'].includes(tab.readyState)
+          ? tab.readyState
+          : 'unknown',
+      }),
+      ...(bounded(tab?.rootCount) !== null && { rootCount: bounded(tab.rootCount) }),
+      ...(bounded(tab?.loadingIndicatorCount) !== null && {
+        loadingIndicatorCount: bounded(tab.loadingIndicatorCount),
+      }),
+      ...(typeof tab?.renderErrorPresent === 'boolean' && {
+        renderErrorPresent: tab.renderErrorPresent,
+      }),
+    };
+    first ??= sample;
+    last = sample;
+    return sample;
+  };
+  try {
+    await waitFor(
+      `replacement_${title.toLowerCase()}_tab_ready`,
+      read,
+      (sample) =>
+        sample?.matched === 1 &&
+        sample.visible === 1 &&
+        (expectedPanelUrl === null ||
+          (sample.targetMatches === true && sample.frameMatches === true)),
+      timeoutMs,
+      (sample) => (sample?.transient ? { observationUnavailable: true } : sample),
+    );
+    return { first, last, elapsed_ms: Date.now() - started, stage: 'ready' };
+  } catch (error) {
+    error.readinessDiagnostic = {
+      first: first ?? null,
+      last: last ?? null,
+      elapsed_ms: Date.now() - started,
+      stage:
+        last?.targetMatches === false
+          ? 'target_mismatch'
+          : last?.frameMatches === false
+            ? 'frame_mismatch'
+            : last?.targetQueryFailed || last?.frameQueryFailed || last?.observationUnavailable
+              ? 'observation_unavailable'
+              : last
+                ? 'tab_not_ready'
+                : 'observation_unavailable',
+    };
+    throw error;
+  }
+}
+
+export async function waitForReplacementSettingsTab(panel, timeoutMs = 10000) {
+  return waitForReplacementTab(panel, 'Settings', timeoutMs);
 }
 
 export async function openGuestSettings(panel, onStep = () => {}) {

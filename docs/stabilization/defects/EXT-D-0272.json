@@ -1,0 +1,55 @@
+{
+  "id": "EXT-D-0272",
+  "feature_id": "EXT-F-2005",
+  "case_ids": ["EXT-F-2005-T03"],
+  "title": "Member Data pointer runs before replacement tab readiness after extension reload",
+  "surface": "Hosted native member Data reload acceptance driver",
+  "auth_mode": "approved ordinary member",
+  "organization_context": "Approved member identity and organization were verified before reload; the exact saved row was cleaned up.",
+  "reproduction": [
+    "Run 39461020039 on source ebe922a655b0bff320d1457e6b598bae3a1c1b10: after a successful replacement-worker open response and a distinct panel target/context, the first Data pointer sample has zero matching and visible tabs.",
+    "node --test tests/browser/data-member-reload-readiness.test.mjs failed against the old driver at pointer_target_not_unique for a controlled delayed-mount replacement; it passes with the readiness repair."
+  ],
+  "expected": "Wait within the existing bounded panel-readiness interval until the adopted replacement target and frame match the owned panel and exactly one Data tab is visible, then send the trusted pointer and continue actual persistence assertions.",
+  "actual": "The member driver called click(panel, 'title', 'Data') immediately after panel adoption. One matching SIDE_PANEL runtime context at 21 ms did not establish that React had mounted the Data tab; the pointer refused with zero targets before any post-reload Data assertion.",
+  "severity": "S2: acceptance harness can stop at reload before measuring saved-pattern persistence; no persistent product bootstrap defect established.",
+  "priority": "P1",
+  "state": "fixed",
+  "owner": "data_reload_causal_diagnosis",
+  "cause": "The Data reload path omitted the visible replacement-tab precondition that the shared Settings path already applies. The harness proved URL/context and replacement target, but dispatched the first Data pointer before checking mounted controls.",
+  "sibling_census": "Settings replacement tab already used bounded readiness and remains on the shared helper. Scrape has a separate replacement-tab helper; this repair touches the member Data pointer path without changing its other lifecycle assertions or auth.",
+  "fix": "Generalize the existing Settings tab readiness to a title-based shared helper, retaining the original interval. Member Data checks its adopted target ID, page/frame URL and one visible Data tab before the pointer; first/last bounded observations and failure stage are recorded without raw page contents. Never-ready, duplicate, wrong-target and wrong-frame results fail without input.",
+  "evidence": [
+    "docs/stabilization/reports/data-reload-causal-diagnosis-20261020.json",
+    "tests/browser/data-member-reload-readiness.test.mjs",
+    "tests/browser/data-member-reload-adoption.test.mjs"
+  ],
+  "verification_status": "Controlled actual-driver delayed-mount seam RED on old code and GREEN after repair; negative cases and constant-readiness mutant refuse input. Focused tests, compile and scoped Biome passed. Fresh source peer, native member replay, and post-reload product persistence remain unverified.",
+  "transition_history": [
+    {
+      "at": "2026-10-20T17:12:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Raw native run stopped at zero Data pointer targets after replacement panel adoption."
+    },
+    {
+      "at": "2026-10-20T17:12:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source and controlled driver seam prove the missing tab-readiness precondition; native bootstrap duration remains unknown."
+    },
+    {
+      "at": "2026-10-20T17:12:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Shared bounded Settings readiness is extended to Data with target/frame and safe first/last observations."
+    },
+    {
+      "at": "2026-10-20T17:12:00Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Old seam red, repaired seam green; negative and constant-return checks pass. Native verification remains pending."
+    }
+  ],
+  "next_action": "Obtain independent source review, then one eligible normal native member replay. If readiness never arrives on a stable correct target/frame, investigate product bootstrap with the captured first failed boundary; do not claim T03 persistence until real post-reload assertions pass."
+}
