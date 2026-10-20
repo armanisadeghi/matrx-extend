@@ -41,6 +41,9 @@ Exact568 candidate guest runs are terminal and independently reviewed:
   Package/browser finals valid; guest admitted, resourceInvalid=false, child_failed exit1.
   [Daily evidence](reports/published-guest-daily-20261020.json),
   [fresh peer](reports/published205-native-peer-20261020.json). No retry or upload.
+Focused D262 guest Settings admin-absence route is being implemented by member568_current_acceptance;
+independent settings_absence_focus_plan_attack checks scoped T22/guest-only T63 evidence, unchanged
+full-batch T04 and exact CI-dev receipt/guard. No native launch or extra CI trigger yet.
 No new Store upload. Current member evidence and private Store/source/package drift checks remain
 required. [Current guest report](reports/guest567-scrolled-replay-20261020.json).
 

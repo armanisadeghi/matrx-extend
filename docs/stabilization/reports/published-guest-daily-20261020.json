@@ -81,7 +81,8 @@
       "contains_unpredictable_page_code": true,
       "names_fixture_heading": true,
       "assistant_reply_count": 2
-    }
+    },
+    "independent_visual_peer_review": true
   },
   "visual_evidence": {
     "png_bytes_uploaded": true,
@@ -117,7 +118,7 @@
     "visual_coverage": "partial viewport crops; not a complete answer rendering",
     "raw_assistant_text_retained": false,
     "manual_visual_inspection_performed": true,
-    "independent_visual_peer_review": false
+    "independent_visual_peer_review": true
   },
   "later_failure": {
     "stage": "guest_values_chip_observation",
@@ -172,8 +173,9 @@
   },
   "limits": [
     "The overall workflow failed at the later Values-chip close assertion; only the bounded Chat observations above passed.",
-    "The artifact contains 20 members, including 16 PNGs and three resource journals. The native report retains content predicates and fingerprints, not raw assistant text; inspected screenshots are partial viewport crops and do not prove a complete answer rendering. Independent visual peer review is pending.",
+    "The artifact contains 20 members, including 16 PNGs and three resource journals. The native report retains content predicates and fingerprints, not raw assistant text; inspected screenshots are partial viewport crops and do not prove a complete answer rendering. Independent peer inspected the actual uploaded PNG bytes; full prose remains clipped.",
     "The public CRX was verified and loaded as an adapted unpacked extension; this does not prove behavior in a Store-installed Chrome profile.",
     "The authenticated primary Store dashboard was not inspected for this probe; no private review or pending status is inferred."
-  ]
+  ],
+  "independent_review": "docs/stabilization/reports/published205-native-peer-20261020.json"
 }
