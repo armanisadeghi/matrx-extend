@@ -1,0 +1,56 @@
+{
+  "checkedAtUtc": "2026-10-20T02:16:45Z",
+  "candidate": {
+    "version": "0.2.568",
+    "sourceSha": "5aca3d4f9a21b752614a0bb33228c1ce4ae62544",
+    "releaseRun": 39356737665,
+    "releaseJobCompletedUtc": "2026-10-20T02:08:41Z",
+    "archivedStrictLatestGateUtc": "2026-10-20T02:04:10Z",
+    "archivedStrictLatestResult": "26/26 green"
+  },
+  "method": "Read-only frozen lockfile and exact upstream shipped-source diffs specified by release changelogs; no build, test, browser, install, or native acceptance.",
+  "packages": [
+    {
+      "name": "@ai-matrx/associations",
+      "candidateVersion": "0.14.82",
+      "candidateSourceSha": "f37869f518d0e0e21e7daf8d810126a6d5876ac8",
+      "latestObservedVersion": "0.14.83",
+      "latestSourceSha": "0095b2b34e09ce1a580f4e2ff2c815bd1ea0e277",
+      "publishedAtUtc": "2026-10-20T02:10:23.187Z",
+      "sourceDiff": "Optional PlatformComment.authorSystem; comments service maps created_by_tier=system; CommentThread displays AI Matrx and prevents edit/profile on system comments. Only three shipped source files changed.",
+      "consumerAction": "Release section marks UNKNOWN due to missing release note; upstream Unreleased note for same change says none. Exact diff shows no required prop, port, or existing type change.",
+      "extensionUsage": "Direct core store, provider, search and filing pickers in SaveSourceForm/FileSourcePanel; no CommentThread or comments service imports in those paths.",
+      "mandatoryExtensionAdoption": false,
+      "runtimeCompatibility": "No static incompatibility found; system-comment rendering changes are outside identified extension usage."
+    },
+    {
+      "name": "@ai-matrx/rich-content",
+      "candidateVersion": "0.2.223",
+      "candidateSourceSha": "9778f0b9863a79bea668aac75827800c4421543d",
+      "latestObservedVersion": "0.2.224",
+      "latestSourceSha": "b03a4754d5e33dcc923155f5382f36a7e563d2ce",
+      "publishedAtUtc": "2026-10-20T02:13:31.697Z",
+      "sourceDiff": "ChatCollapsibleWrapper title truncation; MermaidBlock hides duplicate Show source when host actions exist; visual editor TrailingNode appends empty paragraph outside undo history. Only three shipped source files changed.",
+      "consumerAction": "Release section marks UNKNOWN due to missing release note; no mandatory host change appears in exact diff.",
+      "extensionUsage": "No direct source import; frozen lock has rich-content transitively through @ai-matrx/chat. Changed visual editor and block UI have no identified extension call site.",
+      "mandatoryExtensionAdoption": false,
+      "runtimeCompatibility": "No static host API incompatibility found; indirect UI effects require native review if reached."
+    }
+  ],
+  "staticVerdict": "PASS_FROZEN_CANDIDATE_SOURCE_COMPATIBILITY_WITH_RUNTIME_LIMITS",
+  "rebuildDecision": "Post-build publication does not retroactively fail the archived gate or compel rebuilding this immutable candidate on static compatibility grounds. Any future candidate must refresh latest and rerun gates. Native acceptance and Store upload remain separate gates.",
+  "currentRegistryCheck": {
+    "timeUtc": "2026-10-20T02:16:45Z",
+    "associationsLatest": "0.14.83",
+    "richContentLatest": "0.2.224",
+    "additionalDrift": "UNKNOWN: full 26-package registry scan not run in this narrow read-only review"
+  },
+  "evidence": [
+    "/tmp/candidate568-package-peer-20261020.json",
+    "matrx-extend git show 5aca3d4f9:pnpm-lock.yaml",
+    "aidream git diff f37869f518 0095b2b34e -- apps/shared/associations/src",
+    "aidream git diff 9778f0b986 b03a4754d5 -- apps/shared/rich-content/src",
+    "aidream package CHANGELOG.md release sections 0.14.83 and 0.2.224",
+    "matrx-extend rg source imports"
+  ]
+}

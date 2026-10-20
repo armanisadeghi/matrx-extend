@@ -12,23 +12,26 @@ published0.2.205, draft0.2.479 rejected, no pending, Upload enabled. Vault login
 no human-only access blocker is established. No new upload/submission has occurred.
 Never infer private review state from old email/public listing or this checkpoint.
 
-Prior candidate **0.2.566**: guarded release39347129008, source/tag
-`c41ae6fd67057305c521791e404d2708882895f5`, artifact12231343581,
-StoreZIPsha256`a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840`.
-[Package peer](reports/candidate566-package-peer-20261019.json) passed at review time;
-strict gates passed, advisory Mandate/config findings remain unknown. Recheck package/backend
-and source eligibility immediately before release actions. Later source is not this artifact.
+Current candidate **0.2.568**: guarded release39356737665 SUCCESS; source/tag
+`5aca3d4f9a21b752614a0bb33228c1ce4ae62544`, artifact12235302731, exact provenance in the
+[release checkpoint](reports/guest567-scrolled-replay-20261020.json) and canonical Store record.
+[Fresh package peer](reports/candidate568-package-peer-20261020.json) verifies receipt/tag/hash,
+all strict gates at immutable cut,2520tests/compile/fullLint/schema/tool/Store policy; static host
+compatibility passes.927lint warnings,6Mandate UNMEASURED and5skipped tests remain explicit limits.
+[Postbuild drift](reports/candidate568-postbuild-drift-20261020.json): associations.83 and
+rich-content.224 published AFTER build; actual source diffs show no mandatory host action.
+Candidate is NOT registry-current; frozen acceptance allowed, no gate waiver or upload eligibility.
+Before any upload repeat current source/runtime/package/private Store checks and real acceptance.
 
-Current candidate **0.2.567**: guarded release39352466107 SUCCESS, source/tag
-`92757742d13c8230bcc8447fdf7ddaf2c5db180b`, artifact12234116008,
-StoreZIPsha256`4d6a42bd1cece0a8433fdbe403e2c4f02784716c62162fd5258bf82e87fcd40d`.
-[Fresh package peer](reports/candidate567-package-peer-20261020.json) verifies exact source,
-receipt, hashes and archived strict gates at build cut. Registry subsequently advanced api.51→.52
-(optional types/contracts) and design-system.229→.230 (table phone-card windowing); source ranges
-reviewed, no mandatory host action found. Candidate is NOT registry-current. Root allows guarded
-acceptance of this frozen main artifact; no strict gate is waived and upload remains pending
-fresh source/runtime/Store eligibility plus product acceptance. Do not rebuild merely for a
-higher version label without reviewing actual drift/Consumer actions.
+Two independent exact568 hosted native runs are ACTIVE:
+- **A39357989631** root/guest_data_scrolled_hosted_retest: guest Data controls, release-mode
+  key-only Store adaptation; supplemental fixture does not certify original nonzero scroll.
+- **B39358084388** root/guest567_scrolled_replay_owner: original public-demo scrolled Data Done,
+  surrounding reviewer controls and unchanged guest Chat/transport/paint gates. Normal admission
+  passed. Workflow checkout31c810ace; backend-before nowf8dd64696fd963685d259328a0776737a9d5aa23,
+  advanced since20bd build input. Record before/after drift; no product pass yet.
+No new Store upload. Both owners must retain terminal evidence/resource journals/cleanup before
+parent end. No further launches or source mutations until current batch adjudication.
 
 **Product acceptance remains blocked by actual non-admin first-turn failure [D261](defects/EXT-D-0261.json).**
 Independent native tester signed in through the real first-party flow, opened fresh member Chat
@@ -43,9 +46,12 @@ not captured; visible acting org and non-admin identity were verified by the can
 [image/evidence peer](reports/native566-evidence-peer-20261019.json),
 [initial diagnosis](reports/member566-tool-stall-diagnosis-20261019.json),
 [production correlation](reports/member504-server-log-diagnosis-20261020.json).
-Live backend advanced to20bd8859ffb7c71d05c3edb7a78e2a3060876b59; inspected resume/pool code
-is unchanged. Short postdeploy logs lack the prior timeout burst; current member behavior and
-root cause remain unverified, not repaired by inference.
+[Pre-response diagnosis](reports/member261-prepare-resume-diagnosis-20261020.json) finds22
+awaits before response creation, no in-flight per-await correlation (timing persistence waits
+run finalization). New deployedf8dd has no relevant resume/pool/claim repair or mandatory wire
+change relative to20bd. A fresh pass is current symptom evidence, not causal fix attribution.
+If failure recurs, request-correlated preparation phase timing is the next discriminator; no
+speculative client retry, pool cap or timeout change. Current member behavior remains unverified.
 
 ## Verified product progress and exact limits
 
@@ -73,71 +79,34 @@ root cause remain unverified, not repaired by inference.
 
 ## Source units and immediate next work
 
-Active owner `root/release_next_hosted_owner` owns the next exact567 A/B acceptance and release
-checkpoint. Exact567 guest B39353960745 and member A39354133238 are TERMINAL failures.
-[Exact567 results](reports/store-release-v0567-acceptance-20261020.json): B resources valid;
-opening and same-conversation replies reached terminal answers, but answer screenshot clipped,
-so full guest gate UNVERIFIED. [Clip diagnosis](reports/guest567-answer-clip-diagnosis-20261020.json)
-localizes rejection to a0.02CSSpx Range/ancestor mismatch; actual paint/readability remains unknown,
-not a demonstrated persistent product scrolling bug. No tolerance or visible-proof waiver. Data Done repeats no_node_at_location before mouse despite visible,
-focused original target; simple foreground hypothesis is refuted. Article/Links/Schema/SEO and
-capture-off have bounded passes only. A resources INVALID (CPU/load), stopped owned_profile,
-no member send/no new D261 evidence. [Resource boundary](reports/member567-resource-boundary-20261020.json)
-shows actual CPU/load spike after healthy admission; no invalid-baseline or exact process attribution
-claim. Preserve thresholds; do not retry without a quiescent admitted host. One-use link/secret deleted with absence verified; no active
-external run or new Store upload. Fresh hard-stall agent root/data_done567_forensics owns read-only
-protocol diagnosis found a supported scroll coordinate mismatch: viewport Done center was sent
-to a document-space hit lookup with scrollY479. [Forensics](reports/data-done567-forensics-20261020.json);
-Measured conversion source fix ff105b712 passed two fresh source peers; Done/Cancel/Clear
-each have three scroll cases, strict target identity and viewport mouse preserved. Focused39355860876 PASS684/684; CI39355860873 cancelled before jobs when evidence-only
-8abbdb3d4 triggered successor CI39356360500, now active; root/guest_data_scrolled_hosted_retest prepares normal
-A guest-data admission but cannot dispatch before root GO and successful current-source CI artifact.
-This is supplemental: its fixture does not certify nonzero scroll and cannot close original D258.
-Normal old567 B replay was source-drift REFUSED, no bypass. Root authorized ONE new guarded
-hosted build from synchronized main after fresh preflight; release owner root/guest567_scrolled_replay_owner
-retains dispatch/run handle. This build runs every mandatory exact-candidate gate; source CI and
-release checks may run on independent hosts, no gate waiver. Original public-demo B replay waits
-new verified candidate plus independent package review/admission/root GO. No product patch/pass.
-T22/T63 absence-oracle source d4750c363 and import-only correction4bc76ec8e passed focused680/680;
-full CI39355672626 SUCCESS (prior d475 lint-red import ordering corrected). D262 fixed, native proof pending. Settings A39352539316 and the guarded build are terminal.
-Root owns integration/records. Source-only repairs are committed; verify origin/main and the next CI before relying on integration:
-
-1. **D248 `8d8fda5fe`**: shared trusted foreground restoration before organization proof;
-   original-target/visibility checks before every org picker/option input, including after shared
-   pointer settling immediately before press. Release-after-press cleanup remains unconditional.
-   Fresh peers found two real gaps; both repaired,70focused/adjacent tests pass and final source
-   qualityPASS. Native replay pending, D248 remains in-fix. Six existing/new guard suites are now
-   registered in the existing automatic focused CI command. No new workflow/job.
-   [Repair](reports/member566-foreground-repair-20261019.json),
-   [final peer](reports/member566-click-boundary-peer-20261019.json).
-2. **D258 `02503153b`**: one canonical original-page foreground step before strict Done hit;
-   safe before/after geometry/visibility evidence, backend-node identity retained through final
-   CDP session, fresh moved coordinates and strict hit equality. No blind retry/fake DOM.
-  21targeted tests, meaningful mutations, compile and fresh source peer pass. Three Data suites
-   registered in focused CI. Exact567 native experiment failed at the same no-node boundary; no product fix or native closure claim.
-   [Repair](reports/data566-foreground-experiment-20261019.json),
-   [final peer](reports/data566-final-peer-20261019.json).
-3. Previous full focused command passed585/585 under a valid Mac guard, before the test-list
-   registration; separate member70/Data21 suites passed. Combined automatic suite676/676 and full lint
-   passed in CI39351587471/focused39351587375 at27b7defe; exact567 release gates also passed. Local full lint was REFUSED before spawn for swap growth; never
-   call it passed. Appropriate source/compile/Biome checks passed. Real product gates remain pending.
-4. Use normal source admission to determine whether reviewed harness changes may retest frozen566.
-   Do not expand an allowlist as an exception or waive a refusal. A new candidate, if required,
-   uses only guarded hosted release after source/runtime/package/spend checks. No stale candidate
-   upload or pending-submission replacement.
-5. Reproduce D261 on an independently admitted host with passive transport attached BEFORE send:
-   classify start/tool_results/resume HTTP statuses and terminal event names, fingerprint identities,
-   exact approved principal/org, actual foreground, before/after server SHA. One watched short
-   call; no raw headers/bodies/auth values. Live catalog read recovered through current Matrix
-   RPC: [choice receipt](reports/test-catalog-read-recovery-20261020.json). Plumbing choice is
-   GPT OSS20B; the single current member discriminator preserves its actual persisted selection
-   and must record it, since changing model would not reproduce the original Sonnet5.5 incident.
-   Fresh-direct-member vs original guest→member transition
-   is a discriminator, not interchangeable closure evidence. Use current catalog/test-model skill.
-   [Prepared observer handoff](reports/member566-network-repro-20261020.json).
-6. Continue Settings/navigation and Scrape/Data/SEO registered product cases on independent hosts;
-   deeper Chat/Pilot remains deferred except release/basic-flow regressions. D217 stale-session
-   Save/Retry, D198 SEO history and other fixed-but-unretested cases remain open at their scopes.
+1. **D258 fixed in source `ff105b712`**, native original replay B ACTIVE above. Measured
+   document-space hit conversion, same original button/backend identity and unchanged viewport
+   trusted mouse. Done/Cancel/Clear each tested at0,218,479scroll including horizontal offset;
+   unsupported zoom/offset refuses. [Repair](reports/data-scrolled-hit-repair-20261020.json),
+   [fresh final peer](reports/data-scroll-round2-peer-20261020.json). Focused684/684 and full
+   CI39356360500 pass;568 strict gates pass. This is a harness repair, no product/closure credit.
+2. **D262 fixed in source `d4750c363` + import-only`4bc76ec8e`**. T22/T63 now require actual
+   active guest Settings and rendered anchors before absence of admin controls may pass. Tests
+   execute actual DOM-probe/case-recorder seam; [fresh peer](reports/settings-absence-round2-peer-20261020.json),
+   focused680/680/fullCI39355672626 pass. Native Settings replay pending. Prior batch T22 warm
+   `active=false,sections=[]` credit was removed. T04 reload failure remains separate/unlocalized.
+3. **D248 `8d8fda5fe`**, source quality pass/native pending. Org proof retains original target
+   and visibility immediately before each native pointer press, after pointer-settling polls.
+   [Final peer](reports/member566-click-boundary-peer-20261019.json). The567 member run stopped
+   resource-invalid before Chat, so no member product or hidden-target fix closure is supported.
+4. **D261 triaged**, real566 member first-turn504 unresolved. After current A/B finish, prioritize
+   one resource-valid .568 member run with passive transport before send, actual selected model,
+   approved identity/org, before/after backend SHA and real terminal reply/follow-up. Require a
+   quiescent admitted host;567 member CPU invalidation was not a product failure. Fresh-direct-member
+   versus original guest→member sequence is a discriminator, not interchangeable closure evidence.
+   [Observer handoff](reports/member566-network-repro-20261020.json),
+   [live model choices](reports/test-catalog-read-recovery-20261020.json). Never log auth values.
+5. Continue Settings/navigation and Scrape/Data/SEO product cases. [Prior567 results](reports/store-release-v0567-acceptance-20261020.json)
+   bound terminal guest replies and reviewer controls, but full guest gate failed answer screenshot
+   clipping. [Diagnosis](reports/guest567-answer-clip-diagnosis-20261020.json) identifies0.02CSSpx
+   Range/ancestor overrun; actual paint remains unknown. No tolerance or visible-proof waiver.
+   D217 stale-session Save/Retry and D198 SEO history remain fixed-but-unretested. Deep Chat/Pilot
+   deferred except urgent basic-flow release regressions. Source/CI/fixtures never count as product passes.
 
 ## Local resource constraint — not a human-only access gate
 

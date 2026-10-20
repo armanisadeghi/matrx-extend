@@ -8,7 +8,7 @@
   "auth_mode": "guest; infrastructure observability, no product repair claim",
   "severity": "S2: three valid native reviewer failures cannot be localized from retained evidence",
   "priority": "P1: actionable original failure evidence before next candidate acceptance",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/reviewer_geometry_picker_repair",
   "preconditions": [
     "Resource-valid frozen562 guest run39329484777 completed three Chat replies but reviewer controls remained incomplete."
@@ -55,8 +55,8 @@
     "native": "Exact565B39342759083 resourcevalid: settings offswitch semanticpass butrecty919..939 outsideviewport373; Article heading/stages safeDOMpass butintro/visiblebody notproved; Done1picked/controlsfound rejectsatDOM.getNodeForLocation, nohitresult/mouseclick. NativepeerA partial; noD260closure.",
     "forensic": "Fresh read-only escalation localized original564 failure to clickPickerDone catch BEFORE result wait. Downstream IPC/identity rejection is not established. New pre-Done count alone would not explain discarded first error."
   },
-  "fix_commit": "56ca1354c46645849dab2b106b8cc8549ce94633",
-  "next_action": "Await exact-source focused/full CI on reviewed measured conversion; then normal guarded hosted no-model Data replay with nonzero scroll, exact button hit and viewport trusted click. No physical RED/GREEN or product pass yet. Do not relax unsupported scale/zoom refusals or source/resource gates.",
+  "fix_commit": "ff105b712623b5a6e6e18f942325fcf106844d9b",
+  "next_action": "Wait both exact568 native runs to terminal; independent evidence review must prove original public-demo nonzero-scroll strict hit/selector and surrounding controls before closure. Supplemental guestData controls alone cannot establish original scrolled reproduction. No product repair claim from harness change.",
   "transition_history": [
     {
       "at": "2026-10-19T22:05:02.915114Z",
@@ -147,6 +147,12 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Escalated primary-source/actual567 evidence identifies viewport-vs-document coordinate mismatch at scrollY479, masked by zero-scroll fixtures. Shared Done/Cancel/Clear source conversion independently reviewed; tests/native execution pending."
+    },
+    {
+      "at": "2026-10-20T02:18:20.027340Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh round2 source peer, focused684/684, fullCI39356360500 and exact568 guardedrelease39356737665 pass. Native originalscrolledreplayB39358084388 and supplementalDataA39357989631 are ACTIVE; no closure/productpass."
     }
   ],
   "previous_fix_commits": [
