@@ -1,0 +1,31 @@
+{
+  "status": "DONE_WITH_CONCERNS_READY_FOR_FRESH_PEER",
+  "base_head": "eb98ec1cd23d71cc40807ec2e3e468eb8179a045",
+  "observed_origin_main": "3b8bdfde47784af4981dd4958b7c0f317502d17f",
+  "diff_path": "/tmp/member261-pre-response-observability-20261020.patch",
+  "diff_sha256": "0182c7963598add1248ad251f8409f85f73a123070e205ebe075fc6f770ee740",
+  "diff_bytes": 51130,
+  "owned_paths": [
+    "aidream/api/routers/conversations.py",
+    "aidream/api/tests/test_on_screen_write_records.py",
+    "aidream/observability/FEATURE.md",
+    "aidream/observability/app_log_handler.py",
+    "aidream/observability/test_app_log_handler.py",
+    "aidream/observability/test_observability_loggers_reach_app_log.py",
+    "aidream/services/conversation_context/FEATURE.md",
+    "aidream/services/conversation_context/continue_conversation.py",
+    "aidream/services/conversation_context/resume_prep_probe.py",
+    "aidream/services/conversation_context/tests/test_resume_pre_response_probe.py"
+  ],
+  "remote_overlap_paths": [],
+  "source_changes": [
+    "Task-scoped ContextVar replaces thread-local drain guard so concurrent requests enqueue while an insert awaits; recursive logs in drain task and child tasks remain suppressed. set/reset tokens restore guard on success, failure, cancellation.",
+    "Installed-handler resume probe uses fixed allowlist phase/outcome, monotonic elapsed, opaque digest of middleware request ID, WARNING level to pass run.py default log floor, and omits ambient identity/route from app_log row. Every explicit resume-preparation await and both implicit async context awaits instrumented before headers; response handoff marked separately.",
+    "Outer terminal failure/cancellation uses fixed prepare phase, avoiding false attribution to a completed last await."
+  ],
+  "negative_proof": "Before sink change, installed-handler blocked-insert test failed at queue.get_nowait with Empty even though caplog held phase record. After ContextVar change, same test passed; recursive drain and child-task records were absent from persisted rows.",
+  "verification": "46 focused tests passed (full app-log handler, logger-reach, probe, on-screen-write census, prep streaming); targeted Ruff and git diff --check passed. Follow-up child-task inheritance assertion passed.",
+  "limits": "No live member replay or 504 causal repair. If app_log DB insert fails, that batch can still be lost; WARNING records also go through configured raw process handlers, but raw sink availability was not proven here. ContextVar copies into child tasks spawned during drain insert, intentionally retaining recursive suppression there. Existing broader podcast_race test fails connecting to retired DB tenant; no new attempt after confirming unrelated failure.",
+  "ownership": "Initial working tree clean on base; current 10 changed/untracked paths are this lane only. No merge/rebase/commit/push/deploy/workflow dispatch performed. Parent to reconcile remote overlap and fresh spend gate.",
+  "durable_copy_note": "Source-only report; no live repair, deployment, or product acceptance. Implementation is subject to fresh independent source review and synchronized integration."
+}

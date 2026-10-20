@@ -54,9 +54,16 @@ Screenshots shell-only, actual native DOM/recorder assertions support Settings c
 **D262 closed narrowly as harness false-pass prevention**, no product-repair/whole Settings/T04
 claim. Missing live planted negative branch is a stated limit; source/VM negative guards and CI
 plus this positive native pass satisfy original criteria. Raw report/evidence pushed d41b2afbd.
-No current hosted native run remains. **member261_pre_response_observability** owns backend
-source-only implementation of safe pre-header phase diagnostics independent of run finalizer,
-with meaningful blocked/cancel/failure tests; no deploy/source push until fresh peer/root gate.
+No current hosted native run or worker remains. D261 diagnostic source `a5452ac5c6` was pushed
+through synchronized backend merge `db8f6d8f271de5f53bc853eb1fb23b4695c2fda0` after
+[fresh source peer](reports/member261-observability-fresh-review-20261020.json) and postmerge41
+focused passes/Ruff/diff check. Concurrent log-drain drop guard is repaired with task-scoped
+ContextVar and installed-handler blocked-drain RED→GREEN proof. Live version endpoint after push still reports `cd80cd8763b6bd0a5fc03706af6b478f599df9c6`
+(built02:18:14UTC); diagnostic deployment/telemetry and member outcome remain unverified; no causal repair or product pass. Roughly50–60 WARNING rows
+per resume, bounded queue/drop and DB-write failure limits remain. Global docs guard3untouched
+violations and broader retired-DB test failure are not waived. Verify normal auto-deployment,
+then live raw/DB phase visibility and resource-valid original member reproduction. No blind
+host retry or manual Mac deployment. Exact source/report links are in D261.
 [Independent current-backend delta](reports/member261-cd80-delta-20261020.json) establishes no
 causal D261 repair f8dd→cd80; member remains unresolved. No new member attempt without changed
 capacity condition. No known human-only access blocker.

@@ -8,7 +8,7 @@
   "severity": "S1: signed-in member gets no assistant answer on a basic page question",
   "priority": "P0: real non-admin release acceptance blocker",
   "state": "triaged",
-  "owner": "root/member566_network_repro",
+  "owner": "stabilization-coordinator",
   "preconditions": [
     "Use exact 0.2.566 candidate from source c41ae6fd67057305c521791e404d2708882895f5, Store ZIP sha256 a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840. Canonical test adaptation changes manifest key only; original runtime code is unchanged.",
     "Use a fresh owned Chrome profile under a valid resource guard; never sign out the personal Chrome profile.",
@@ -28,10 +28,13 @@
     "docs/stabilization/reports/native-isolated-candidate-20261019.json",
     "docs/stabilization/reports/native566-evidence-peer-20261019.json",
     "docs/stabilization/reports/member566-tool-stall-diagnosis-20261019.json",
-    "docs/stabilization/reports/member504-server-log-diagnosis-20261020.json"
+    "docs/stabilization/reports/member504-server-log-diagnosis-20261020.json",
+    "docs/stabilization/reports/member261-phase-observability-peer-20261020.json",
+    "docs/stabilization/reports/member261-pre-response-observability-20261020.json",
+    "docs/stabilization/reports/member261-observability-fresh-review-20261020.json"
   ],
   "cause": "Localized: original mandate start and same-conversation tool_results returned200; subsequent resume entered the backend but no target headers arrived for59.999s, then ALB generated504. create_prepared_streaming_response awaits prepare_resume_conversation before constructing the response. Concurrent DB pool/connect/query timeouts are observed but their causal link to this request is unproven. Deployed20bd has identical inspected resume/pool implementation; a short postdeploy sample lacks the prior error burst, not a repair claim.",
-  "next_action": "After candidate gates, one guarded current-server member retest with passive transport is justified by changed deployed environment20bd. Preserve original guest-to-member reproduction versus fresh-direct-member discriminator. Do not attribute a pass to an unproven code fix or close the incident without original-reproduction/surrounding evidence. Fix only a localized cause; no speculative timeout/pool increases.",
+  "next_action": "Diagnostic source a5452ac5c6 was freshly reviewed and pushed through merge db8f6d8f271de5f53bc853eb1fb23b4695c2fda0. Verify normal automatic deployment and live raw/database phase visibility; do not claim production from push. Obtain a resource-valid current-server exact-candidate non-admin original guest-to-member reproduction plus first/follow-up with passive transport, actual selected model, approved identity/org and before/after server SHA. Two Intel startup refusals mean no blind same-host retry; capacity remedy remains unproven. Fresh-direct-member is a separate discriminator. A pass is symptom evidence, not causal attribution; do not close without original and surrounding independent retest.",
   "transition_history": [
     {
       "at": "2026-10-20T00:56:58.460155Z",
@@ -45,5 +48,20 @@
       "to": "triaged",
       "reason": "Read-only production ALB/app evidence correlates exact same-conversation start200,tool_results200,resume pre-response60s504. Request boundary proven; underlying cause not yet established."
     }
-  ]
+  ],
+  "diagnostic_source": {
+    "commit": "a5452ac5c6",
+    "integration_head": "db8f6d8f271de5f53bc853eb1fb23b4695c2fda0",
+    "status": "pushed_source_only_not_deployed_or_causal_fix",
+    "fresh_peer": "docs/stabilization/reports/member261-observability-fresh-review-20261020.json",
+    "owner_verification": "Postmerge41 focused tests passed in9.72s with lock sampler disabled; Ruff and diff check passed. Subsequent incoming change only package CHANGELOG, reconciled before push. Broader suite and global docs guard failures remain explicit, not waived.",
+    "limits": "Roughly50-60 WARNING records per resume, bounded asynchronous queue can overflow and DB failures lose batches; live raw sink availability unverified. No timeout/model/pool/auth/org/response behavior change.",
+    "live_version_observation": {
+      "at": "2026-10-20T03:52:36.625318+00:00",
+      "url": "https://server.app.matrxserver.com/health/version",
+      "git_sha": "cd80cd8763b6bd0a5fc03706af6b478f599df9c6",
+      "built_at": "2026-10-20T02:18:14Z",
+      "conclusion": "Still prior backend, diagnostic source not yet observed deployed."
+    }
+  }
 }

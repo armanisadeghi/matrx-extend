@@ -1,0 +1,41 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "review_scope": "Read-only source and patch inspection at aidream eb98ec1cd23d71cc40807ec2e3e468eb8179a045; no tests, browser, live calls, deployment, or source edits.",
+  "verdict_A_acceptance_source": {
+    "status": "PARTIAL",
+    "supports": [
+      "The route creates a probe before create_prepared_streaming_response; the latter awaits preparation before returning StreamingResponse, so phase entry is emitted before target response headers.",
+      "All explicit awaits in _prepare_resume_conversation are wrapped in probe.run; both legacy standalone_coordinator async entry and exit are enclosed in probe.phase. The probe logs fixed phase/outcome literals, monotonic elapsed time, and a truncated SHA-256 digest of middleware request ID; the route logs response handoff after the streaming response helper returns.",
+      "The probe does not itself change request parameters, authentication, organization, model, pool settings, or timeout settings. It rethrows await failures and cancellations; existing cleanup sequence remains visible. No extension wire path is changed."
+    ],
+    "blockers": [
+      "Durable app_log rows are not guaranteed while the original await is blocked. AppLogHandler.emit returns early when _sink._guard.active, while _drain_loop sets that thread-local flag across await insert_logs(batch) on the same event-loop thread. Any resumed request that runs during a pending insert emits to logging but its durable row is silently dropped. This invalidates the promised app_log location of an in-flight stall, particularly with concurrent DB/pool trouble. A targeted installed-handler/queue test under pending drain is absent."
+    ],
+    "limits": [
+      "Source proves instrumentation placement, not that the original member flow answers or which awaited call caused its 504. No current-server original reproduction or production telemetry was examined.",
+      "The 17 focused pass and 28+1 broad result are builder-reported; this lane did not rerun them. The retired DB tenant explanation for the broad podcast_race failure was not independently verified here and remains a gate to resolve, not a waiver."
+    ]
+  },
+  "verdict_B_doctrine_quality": {
+    "status": "FAIL",
+    "important": [
+      "The new marker depends on a sink whose thread-local reentrancy guard spans an async await. Because concurrent application tasks share the event-loop thread, an unrelated drain operation suppresses probe records without notice; this violates nothing-fails-silently for the stated diagnostic outcome. Fix/reuse the sink semantics so the marker survives concurrent drains, then prove the installed handler path with a forced blocked drain and one resume phase.",
+      "Current blocked/cancel/failure tests assert caplog records, not AppLogHandler.emit or durable queue presence. The privacy test calls _record_to_row directly. These tests can pass while all diagnostic rows are dropped by emit; they do not force the key telemetry contract."
+    ],
+    "minor": [
+      "The outer wrapper emits failed_final or cancelled using last_phase even after that phase completed, so a synchronous validation failure after target_resolve can be attributed to target_resolve. Treat terminal prepare failure as its own fixed phase to avoid falsely implying the last await failed."
+    ],
+    "positive": "The patch reuses the existing logging tree and app_log sink, bounds event vocabulary, omits raw ambient identity from app_log rows, and adds an AST census for explicit awaits and async context manager entry/exit."
+  },
+  "source_evidence": [
+    "aidream/services/conversation_context/resume_prep_probe.py:69-96",
+    "aidream/services/conversation_context/continue_conversation.py:1325-1353,1384-1939",
+    "aidream/api/routers/conversations.py:615-643",
+    "packages/matrx-connect/matrx_connect/streaming/response.py:1058-1145",
+    "aidream/observability/app_log_handler.py:374-387,441-452",
+    "aidream/services/conversation_context/tests/test_resume_pre_response_probe.py:20-190",
+    "matrx-extend/docs/stabilization/defects/EXT-D-0261.json"
+  ],
+  "readiness": "NO-GO for source readiness until sink-drop blocker and forcing installed-handler test are addressed. No causal repair or product acceptance inferred.",
+  "durable_copy_note": "Source-only report; no live repair, deployment, or product acceptance. Implementation is subject to fresh independent source review and synchronized integration."
+}
