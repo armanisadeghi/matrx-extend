@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "status": "complete_read_only_evidence",
+  "source": "immutable member artifact member-run39354133238.zip; no rerun performed",
+  "first_invalidation": {
+    "phase": "hosted guest / owned-profile startup, before Chat evidence",
+    "time_utc": "2026-10-20T01:40:38.728Z",
+    "boundary": "guest was admitted, then startup resource watch emitted RESOURCE_CPU_PENDING; final decision at 01:40:40.108Z was admitted=true, resourceInvalid=true, exitCode=3, decision=invalid",
+    "package_and_browser": "both had RESOURCE_ADMITTED, child exit 0, RESOURCE_FINAL_DECISION valid, resourceInvalid=false"
+  },
+  "measured_guest_evidence": {
+    "admission_at_01:40:19.488Z": {
+      "pressure_level": 1,
+      "available_memory_gib": 12.6,
+      "required_memory_gib": 4,
+      "one_minute_load": 0.82,
+      "logical_cpus": 4,
+      "cpu_busy_fraction": 0.048571,
+      "swap_used_mib": 0,
+      "free_disk_gib": 108.301,
+      "reasons": []
+    },
+    "pending_at_01:40:38.728Z": {
+      "pressure_level": 1,
+      "available_memory_gib": 12.6,
+      "one_minute_load": 4.26,
+      "logical_cpus": 4,
+      "cpu_busy_fraction": 1.0,
+      "swap_used_mib": 0,
+      "free_disk_gib": 108.142,
+      "reason_codes": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+    },
+    "startup_interval_bracket": {
+      "duration_seconds": 1.159,
+      "owned_chromium_cpu_seconds": 2.72,
+      "owned_other_cpu_seconds": 0,
+      "host_provisioner_cpu_seconds": 0.28,
+      "other_host_cpu_seconds": 3.31,
+      "owned_process_count_at_start": 7,
+      "owned_process_count_at_end": 7,
+      "appeared_process_count": 2,
+      "exited_or_unmatched_process_count": 5,
+      "limitation": "ps CPU-time snapshots bracket, but do not equal, the iostat interval; exited, newly spawned, reparented or PID-reused processes cannot be assigned exact interval CPU time"
+    },
+    "top_process_sample_at_01:40:39.147Z": "largest shown CPU percentages: owned Chromium 52.7%, host ps 31.2%, host runner worker 30.7%, host node 20.8%; percentages are a point sample and not exact attribution for the preceding interval"
+  },
+  "configured_guard_thresholds": {
+    "minimum_available_memory_gib": 4,
+    "maximum_one_minute_load_per_logical_cpu": 0.75,
+    "maximum_sustained_cpu_busy_fraction": 0.75,
+    "maximum_busy_fraction_at_high_load": 0.6,
+    "high_load_and_busy_rule": "CPU busy >=0.60 when any sampled normalized one-minute load >=0.75",
+    "minimum_free_disk_gib": 20,
+    "maximum_swap_growth_mib": 256,
+    "healthy_samples_to_resume": 3,
+    "source": "repo docs/stabilization/resource-policy.json; policy schema 1"
+  },
+  "cause_assessment": {
+    "supported": "the guest was initially admitted, then crossed the enforced CPU busy and high-load-busy conditions during startup; the journal's bounded interval has more CPU time attributed to other host processes (3.31 s) than owned Chromium (2.72 s), consistent with host contention",
+    "not_proven": "exact causal share of host work versus owned Chromium; interval attribution has the stated process-snapshot limitations",
+    "own_chrome_spawn": "not demonstrated: owned process set stayed at 7 at both bracket endpoints. Two processes appeared overall, but the artifact does not safely establish their ownership or whether a transient owned Chrome spawn caused the spike",
+    "invalid_baseline": "not supported: guest admission succeeded on the initial sample with low CPU busy, normal pressure, adequate memory/disk and no reasons; invalidation followed during startup",
+    "disk_or_memory": "not implicated by these samples: free disk remained about 108 GiB and available memory 12.6 GiB; both exceed policy minimums"
+  },
+  "next_environment_action": "For a future separately authorized member test, wait until the existing guard admits the full CPU/load window and the hosted runner is quiescent; avoid overlapping host provisioning or other CPU-heavy host jobs, then launch through the same enforced guard. Preserve all thresholds and stop if it emits a pending/unsafe code. No rerun is requested here.",
+  "unresolved_evidence_gaps": [
+    "No detailed safe identity/ownership attribution for the two appeared and five exited-or-unmatched processes.",
+    "No direct resource-journal evidence after the startup invalidation; exact point of guest child failure and any subsequent step state are absent.",
+    "The reviewer record says failure_stage=owned_profile and failure_code=unclassified_failure, with status=unverified and chat=null; therefore no Chat/product evidence exists."
+  ],
+  "out_of_scope_actions_taken": []
+}

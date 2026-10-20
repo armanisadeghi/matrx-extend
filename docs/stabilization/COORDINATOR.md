@@ -80,13 +80,18 @@ opening and same-conversation replies reached terminal answers, but answer scree
 so full guest gate UNVERIFIED. Data Done repeats no_node_at_location before mouse despite visible,
 focused original target; simple foreground hypothesis is refuted. Article/Links/Schema/SEO and
 capture-off have bounded passes only. A resources INVALID (CPU/load), stopped owned_profile,
-no member send/no new D261 evidence. One-use link/secret deleted with absence verified; no active
+no member send/no new D261 evidence. [Resource boundary](reports/member567-resource-boundary-20261020.json)
+shows actual CPU/load spike after healthy admission; no invalid-baseline or exact process attribution
+claim. Preserve thresholds; do not retry without a quiescent admitted host. One-use link/secret deleted with absence verified; no active
 external run or new Store upload. Fresh hard-stall agent root/data_done567_forensics owns read-only
 protocol diagnosis found a supported scroll coordinate mismatch: viewport Done center was sent
 to a document-space hit lookup with scrollY479. [Forensics](reports/data-done567-forensics-20261020.json);
-root/data_scrolled_hit_repair owns measured conversion and strict hit regression, no product patch.
-T22/T63 absence-oracle source fix d4750c363 passed fresh round2 source peer; focused39355397255
-and CI39355397290 are active, tests/native proof still pending. Settings A39352539316 and the guarded build are terminal.
+Measured conversion source fix ff105b712 passed two fresh source peers; Done/Cancel/Clear
+each have three scroll cases, strict target identity and viewport mouse preserved. Focused39355860876
+and CI39355860873 are pending/in progress; root/guest_data_scrolled_hosted_retest prepares normal
+B guest-data admission but cannot dispatch before root GO and exact CI artifact. No product patch/pass.
+T22/T63 absence-oracle source d4750c363 and import-only correction4bc76ec8e passed focused680/680;
+full CI39355672626 remains active (prior d475 full CI lint-red import ordering, corrected). Native proof pending. Settings A39352539316 and the guarded build are terminal.
 Root owns integration/records. Source-only repairs are committed; verify origin/main and the next CI before relying on integration:
 
 1. **D248 `8d8fda5fe`**: shared trusted foreground restoration before organization proof;
