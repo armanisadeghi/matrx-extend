@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "status": "bounded_guest_data_controls_pass",
+  "test": "EXT-F-2005-T01 native guest Data controls on guarded hosted release artifact",
+  "run": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "run_id": 39357989631,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39357989631",
+    "conclusion": "success",
+    "created_at": "2026-10-20T02:16:08Z",
+    "completed_at": "2026-10-20T02:22:45Z",
+    "checkout_sha": "31c810ace375436e5a8c79b72e76be8859ba017a",
+    "inputs": {
+      "acceptance_lane": "A",
+      "acceptance_case": "guest-data",
+      "runner_label": "macos-15-intel",
+      "release_run_id": 39356737665,
+      "scrape_auth_mode": "guest",
+      "requested_by": "extend-stabilization"
+    },
+    "guarded_preflight": {
+      "existing_workflow_lane_and_case_guards": "passed",
+      "successful_published_release_artifact_and_receipt": "passed",
+      "source_compatibility": "runtime-equivalent; report-only checkout delta",
+      "fresh_ci_spend_status": {
+        "http_status": 200,
+        "available": true,
+        "week_total_usd": 59.5,
+        "week_cap_usd": 100,
+        "week_total_complete": true,
+        "stale": false,
+        "read_at": "2026-10-20T01:20:58.899599+00:00"
+      },
+      "lane_a_active_conflict_at_dispatch": false,
+      "dispatch_count": 1,
+      "model_calls": 0
+    }
+  },
+  "artifact_provenance": {
+    "release_run_id": 39356737665,
+    "release_artifact_id": 12235302731,
+    "release_artifact_name": "matrx-extend-v0.2.568",
+    "release_version": "0.2.568",
+    "release_source_sha": "5aca3d4f9a21b752614a0bb33228c1ce4ae62544",
+    "release_tree_sha256": "30703796420eee02f90fab3f4795846213539699ab88874f5fd673e06b7d79e7",
+    "release_artifact_zip_sha256": "42ef88cbd588c9816f3e3daaa96928971a548ce35deb7c321c67fc3514b5f305",
+    "store_zip_sha256": "16dd16b2c1bfb4b63ba0d95c59b1e2c4213928b7b292fbc2761fdfc685ea8a3d",
+    "runtime_artifact_kind": "native_store_zip_candidate_key_adapted",
+    "adaptation": "Only manifest.key was added by the existing Store ZIP candidate admission adapter, from the matching existing local release receipt.",
+    "runtime_tree_sha256": "8af9872212755906e6bfc08daa983fca189c8f887d1b1a19c4f7e80b08388cec",
+    "artifact_mode": "release"
+  },
+  "native_result": {
+    "artifact_id": 12235124736,
+    "artifact_name": "hosted-guest-39357989631-1",
+    "artifact_zip_sha256": "638a7d0a89b5ff69397b3b4297773dd7c8043ce40bcde9acb951c121eec622b6",
+    "artifact_size_bytes": 43795,
+    "raw_result_path_in_artifact": "matrx-extend/test-results/data-guest-native-acceptance.json",
+    "case_id": "EXT-F-2005-T01",
+    "status": "pass",
+    "stage": "complete",
+    "native_stage": "exercise_panel",
+    "covered_observations": {
+      "picker_cancel_without_selection": true,
+      "picker_cancel_selected_fields_unchanged": true,
+      "picker_cancel_pattern_writes": 0,
+      "c19_click_to_select": {
+        "preview": "Cedar chair",
+        "visible_field": "field_1: body > main > section > article.product-card:nth-of-type(1) > h2.product-name",
+        "selector_unique_matches": 1,
+        "selector_matched_clicked_element": true
+      },
+      "t07_hover_highlight": "Two distinct product fields highlighted during hover; their measured target rectangles differed.",
+      "t07_clear": {
+        "before": "Cedar chair",
+        "after_entries": 0
+      },
+      "t07_selected_then_cancel": {
+        "panel_state_restored": true,
+        "selected_fields_before": [],
+        "selected_fields_after": [],
+        "picker_button_before_and_after": 1,
+        "cancel_selection_before_and_after": 0,
+        "pattern_write_requests": 0
+      },
+      "guest_picker_and_save_gate": {
+        "guest_auth_state": true,
+        "controlled_rows": 3,
+        "two_distinct_picker_previews": true,
+        "two_selected_fields": true,
+        "pattern_name_absent": true,
+        "save_pattern_absent": true,
+        "sign_in_to_save_present_and_used": true,
+        "pattern_write_requests_before_auth": 0
+      }
+    },
+    "driver_viewport": {
+      "width": 821,
+      "height": 787
+    },
+    "nonzero_scroll_reproduction": "not exercised or recorded; this run does not reproduce or close EXT-D-0258's original nonzero-scroll failure",
+    "scope_limits": [
+      "Only the selected guest native Data script assertions are credited; no whole-Data-feature pass.",
+      "No signed-in save, persistence, member/admin, or published Store-installed behavior was exercised.",
+      "No scrollY or explicit scrolling observation exists in the native result.",
+      "Two uploaded screenshots are runner QA captures; the native-side-panel image is a loading skeleton and is not evidence of the completed Data interaction. The JSON result and passing native assertions are the interaction evidence."
+    ]
+  },
+  "resource_and_cleanup": {
+    "runner": "macos-15-intel, x86_64",
+    "journals": [
+      {
+        "run_id": "hosted-package-39357989631-1",
+        "path_in_artifact": "matrx-extend/docs/stabilization/resource-journals/hosted-package-39357989631-1.jsonl",
+        "admitted": true,
+        "resource_invalid": false,
+        "child_exit_code": 0,
+        "final_decision": "valid"
+      },
+      {
+        "run_id": "hosted-browser-39357989631-1",
+        "path_in_artifact": "matrx-extend/docs/stabilization/resource-journals/hosted-browser-39357989631-1.jsonl",
+        "admitted": true,
+        "resource_invalid": false,
+        "child_exit_code": 0,
+        "final_decision": "valid"
+      },
+      {
+        "run_id": "hosted-guest-39357989631-1",
+        "path_in_artifact": "matrx-extend/docs/stabilization/resource-journals/hosted-guest-39357989631-1.jsonl",
+        "admitted": true,
+        "resource_invalid": false,
+        "child_exit_code": 0,
+        "final_decision": "valid",
+        "watch_health": "RESOURCE_WATCH_HEALTHY"
+      }
+    ],
+    "owned_process_cleanup": "The native QA harness finally block detaches CDP, closes its local server, stops only the exact Chromium child it spawned, and removes its owned temporary profile root.",
+    "hosted_job_cleanup": "Job and post-checkout/setup cleanup completed successfully; hosted job was terminal success.",
+    "startup_diagnostic": "The optional owned Chromium startup interval step was skipped by its workflow condition; not part of this case's result.",
+    "local_scratch": "Downloaded result bundle and log were removed after inspection; shared checkout was clean before report creation."
+  }
+}
