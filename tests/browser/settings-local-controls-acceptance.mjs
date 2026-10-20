@@ -32,6 +32,7 @@ import {
   GUEST_PRIVACY_SWITCHES,
   runGuestPrivacySwitchCase,
 } from './settings-guest-privacy-batch.mjs';
+import { recordGuestAdminAbsence } from './settings-guest-absence.mjs';
 import {
   runGuestAutoScrapeCase,
   runGuestAutoScrapeModeCase,
@@ -39,7 +40,6 @@ import {
 } from './settings-guest-scrape-controls.mjs';
 import { runGuestAskAgainCase } from './settings-guest-unrecorded-cases.mjs';
 import {
-  activeTabPanelExpression,
   click,
   evaluate,
   guestSettingsChecks,
@@ -189,21 +189,6 @@ async function reloadSettings(panel) {
     };
     throw error;
   }
-}
-
-async function guestSections(panel) {
-  return evaluate(
-    panel,
-    `(() => {
-    const pane = ${activeTabPanelExpression('Settings')};
-    const text = pane?.innerText ?? '';
-    return { active: !!pane,
-      sections: [...(pane?.querySelectorAll('button[aria-expanded]') ?? [])].map((b) => b.textContent.trim()),
-      advancedText: text.includes('Advanced agent capabilities'),
-      adminControls: ['Audit key', 'Permission gate'].filter((s) => text.includes(s)),
-      permissionControlCount: pane?.querySelectorAll('[aria-label="DevTools Protocol permission"]').length ?? 0 };
-  })()`,
-  );
 }
 
 async function deepClean(panel) {
@@ -500,29 +485,19 @@ function recordGuestPhase(phase, observation) {
 
 async function recordGuestAdvancedDenial(phase, panel, observation) {
   const c = byId('T63');
-  const state = await guestSections(panel);
   const signedOut = guestSettingsChecks(
     observation.state,
     observation.organizationRequests,
   ).signedOut;
-  const passed =
-    signedOut &&
-    state.active &&
-    !state.sections.includes('Advanced agent capabilities') &&
-    !state.advancedText &&
-    state.adminControls.length === 0 &&
-    state.permissionControlCount === 0;
-  c.steps.push({
+  await recordGuestAdminAbsence({
+    panel,
+    caseRecord: c,
     phase,
+    signedOut,
+    criterion,
     action: 'Inspect guest Settings admin section and actions',
-    observation: { signedOut, ...state },
+    criterionName: `${phase}: guest admin section, optional controls and audit actions absent`,
   });
-  criterion(
-    c,
-    `${phase}: guest admin section, optional controls and audit actions absent`,
-    passed ? 'pass' : 'fail',
-    { signedOut, ...state },
-  );
 }
 
 async function runCase(c, fn) {
@@ -684,22 +659,14 @@ try {
         const c = byId('T22');
         for (const phase of ['warm', 'reload']) {
           if (phase === 'reload') await reloadSettings(panel);
-          const state = await guestSections(panel);
-          c.steps.push({
+          await recordGuestAdminAbsence({
+            panel,
+            caseRecord: c,
             phase,
+            criterion,
             action: 'Inspect guest Settings section list and admin controls',
-            observation: state,
+            criterionName: `${phase} admin section and controls absent`,
           });
-          criterion(
-            c,
-            `${phase} admin section and controls absent`,
-            !state.sections.includes('Advanced agent capabilities') &&
-              !state.advancedText &&
-              state.adminControls.length === 0
-              ? 'pass'
-              : 'fail',
-            state,
-          );
         }
       });
       for (const [suffix, run] of [

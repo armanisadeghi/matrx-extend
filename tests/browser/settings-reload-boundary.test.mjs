@@ -142,7 +142,7 @@ for (const scenario of [
       'utf8',
     );
     const start = source.indexOf('async function settings(panel, onStep = () => {}) {');
-    const end = source.indexOf('\nasync function guestSections(', start);
+    const end = source.indexOf('\nasync function deepClean(', start);
     assert.ok(start >= 0 && end > start);
     const commands = [];
     const settingsTab = {
@@ -279,7 +279,7 @@ test('failed native Settings panel reload serializes the owned document and cont
   );
   const settingsStart = source.indexOf('async function settings(panel, onStep = () => {}) {');
   const reloadStart = source.indexOf('\nasync function reloadSettings(panel) {', settingsStart);
-  const reloadEnd = source.indexOf('\nasync function guestSections(', reloadStart);
+  const reloadEnd = source.indexOf('\nasync function deepClean(', reloadStart);
   const runCaseStart = source.indexOf('async function runCase(c, fn) {');
   const runCaseEnd = source.indexOf('\nlet observedPort;', runCaseStart);
   assert.ok(settingsStart >= 0 && reloadStart > settingsStart && reloadEnd > reloadStart);
