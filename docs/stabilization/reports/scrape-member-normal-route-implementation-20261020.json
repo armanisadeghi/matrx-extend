@@ -28,6 +28,14 @@
       "run_id": "member-scrape-route-compile-20261020",
       "exit_code": 0,
       "resource": "valid"
+    },
+    "full_lint": {
+      "run_id": "member-scrape-route-full-lint-exact-20261020",
+      "files_checked": 3170,
+      "errors": 0,
+      "warnings": 927,
+      "resource": "valid exit0",
+      "limits": "Warnings remain existing repository debt, not a clean-warning claim."
     }
   },
   "limits": {
@@ -47,5 +55,12 @@
     "week_total_usd": 84.6,
     "week_cap_usd": 100,
     "interpretation": "84.60 below100 real-money ceiling; existing mostly-red Desktop finding is not account billing refusal. No workflow changed, new paid dispatch not started."
+  },
+  "ci_first_attempt": {
+    "run": 39507050504,
+    "source": "f0ad62db5c3e2580fba9f8f8d7721954708af075",
+    "conclusion": "failure",
+    "first_failure": "D187 JSON formatting missed by initial narrow source Biome invocation",
+    "correction": "Formatted exact defect record, full tracked-tree pnpm lint passed; new source CI required."
   }
 }
