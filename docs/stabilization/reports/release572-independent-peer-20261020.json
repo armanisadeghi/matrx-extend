@@ -1,0 +1,24 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_A": {
+    "package": "PASS: v0.2.572 tag=419a40f0370c51db281759615e44797912ac485c; exact local Store ZIP SHA-256 2385cc21f9ad7d02c532aa5c20e4b471595b2442b07ab76c6e3f111c0358606b matches receipt; unzip integrity PASS.",
+    "native_guest_chat": "PASS: exact candidate release artifact exercised on macos-15-intel; fresh guest had opening, same-conversation follow-up, and post-panel-reload new conversation terminal replies. Screenshots show exact per-run codes and full heading; each response names the requested content. All three canonical requests/resumes HTTP 200 with completed semantic success; backend SHA stable 4099043613385b5fff9d5049a4b195d037ac7018.",
+    "D265_original_recovery_branch": "PASS: helper started 08:21:05.703; empty-reason CPU_PENDING .03 at 08:21:14.977, .53 at 08:21:31.133, CPU_RECOVERED .11 at 08:21:47.308; helper ready at 08:21:48.012 with 3/3. Every row has all 11 finite fields; three-sample rule, thresholds, 15s interval and 90s deadline unchanged.",
+    "T13_values_escape": "FAIL: one trusted Escape received with focus inside visible open popover; after keydown popover remained open (diagnostic counts=1). Native run final guest child exit 1 at guest_values_chip_closed_not_observed."
+  },
+  "verdict_B": {
+    "source_quality": "PASS: D265 implementation accepts complete 11-field samples, counts empty-reason CPU_PENDING recovery observations, still checks native health before/after, and keeps policy/deadline guard authoritative. Release commit adds only generated catalog/docs, package version, and lock refresh.",
+    "provenance": "PASS: tag, receipt, source SHA, tree hash, package byte hash, and hosted run identities agree; release strict contract and receipt/tag verification jobs passed; no Store upload.",
+    "qualification": "Config manifest generated but NOT ATTESTED: advisory job failed importing dotenv. No config manifest attestation is claimed."
+  },
+  "native_run": {
+    "id": 39391905076,
+    "artifact_id": 12250552988,
+    "artifact_sha256": "8b1ae2bda2b00b84e5dfc99265efb0d98ebd45549bbd70a63aa0e749a9dfc1d0",
+    "report": "/Volumes/Samsung2TB/code/matrx-extend/test-results/readiness265-native-39391905076/matrx-extend/matrx-extend/test-results/guest-chat-store-3804453f-45e0-4f7b-aefb-b19643bf10ad.json",
+    "journals": "/Volumes/Samsung2TB/code/matrx-extend/test-results/readiness265-native-39391905076/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-39391905076-1.jsonl",
+    "screenshots": "/Volumes/Samsung2TB/code/matrx-extend/test-results/readiness265-native-39391905076/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-mygfG9/"
+  },
+  "limits": "This was a hosted unpacked install with candidate Store package manifest key adapted, not an actual Store UI installation. Member, reviewer/non-admin, whole-chat health, D261 member 504 remain unverified. D244 Values is a confirmed current-candidate failure.",
+  "changes": "No code changes or extra dispatches; package files and native artifact were existing external-volume evidence."
+}

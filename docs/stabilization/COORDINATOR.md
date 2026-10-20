@@ -12,23 +12,29 @@ published0.2.205, draft0.2.479 rejected, no pending, Upload enabled. Vault login
 no human-only access blocker is established. No new upload/submission has occurred.
 [Daily observation](reports/store-daily-20261020.json) also bounds official mail search to the October11 rejection only. Never infer private review state from old email/public listing or this checkpoint.
 
-Current prepared candidate **0.2.571**: guarded hosted release39385321887 SUCCESS;
-source/tag `6501f22db8c35a35ed4e535a8af6c0dc449f8df9`, artifact12247052065,
-Store ZIP SHA256 `26c8a1bfcde585e8ef29abee985648c20bc93be71213a3626e55ffa48124e9c7`.
-[Package/native checkpoint](reports/release571-native-capacity-20261020.json) verifies normal
-receipt/tag/ZIP/strict gates and normal guest planner PASS. No Store upload/submission.
-One exact571 native B39386228485 is terminal resource-invalid at post-setup readiness BEFORE
-Chat/Values UI. Package/browser finals valid, guest finalinvalid; backendd128 stable. No product
-pass/failure, no repeat attempt. Today's published205/live-server guest check is still pending;
-prior .205 evidence cannot substitute a current observation.
-**[D265](defects/EXT-D-0265.json) is source-fixed with fresh independent A/B PASS; native retest UNKNOWN.** Actual journal
-shows CPU_PENDING with empty reasons at2% and7%, then CPU_RECOVERED13%: canonical watchdog
-recognized three healthy samples, but guest helper reset the first two and counted only one.
-[Final source peer](reports/readiness265-final-peer-20261020.json) independently replayed the full actual journal,43focused tests and52negative source cases. Shared eleven-field measurement validation also closes malformed evidence at readiness/native boundary. All thresholds,
-three-healthy requirement, fresh health check and deadline remain unchanged. Full source CI and original native retest are next; no product credit or D244/D261 closure.
-Executable/test/manifest source is now frozen after this reviewed unit; current571 normal source
-eligibility must be rechecked after harness changes. Older568/570 evidence remains separate.
-Before upload repeat current source/runtime/package/private Store checks and real acceptance.
+Current prepared candidate **0.2.572**: guarded hosted release39391023031 SUCCESS;
+source/tag `419a40f0370c51db281759615e44797912ac485c`, artifact12250046601,
+Store ZIP SHA256 `2385cc21f9ad7d02c532aa5c20e4b471595b2442b07ab76c6e3f111c0358606b`.
+[Package/native checkpoint](reports/release572-native-20261020.json) and
+[fresh independent peer](reports/release572-independent-peer-20261020.json) confirm exact receipt/tag/bytes,
+strict release gates and native B39391905076. Full checks/resource CI39389758979 passed on combined
+main3c4d41e1f. Config-manifest attestation remains explicitly unavailable (advisory dotenv import failure).
+Native fresh guest opening, same-conversation and post-panel-reload replies independently PASS
+bounded T10 with exact code/full heading, HTTP200 and terminal completion against stable deployed
+`4099043613385b5fff9d5049a4b195d037ac7018`. This is candidate Store ZIP adapted unpacked,
+not Store-installed or whole Chat acceptance. Overall run FAILS separate T13/D244 Values Escape:
+one trusted key, confirmed document/popover focus, no competing dialog, still open. All3resource
+finals admitted/resourceInvalid=false; guest child_failed exit1. No Store upload/submission.
+**[D265](defects/EXT-D-0265.json) is narrowly CLOSED after fresh independent original native retest.**
+At native setup readiness08:21:05, full11-field healthy CPU_PENDING .03/.53 then CPU_RECOVERED .11
+count as3; helper ready08:21:48. Three guest replies and later readiness also pass. Thresholds,
+three-sample requirement, interval and deadline are unchanged. Source and native evidence close
+only the false readiness refusal, not product D244/D261. D244 product repair now owns the next
+source change; fresh reviewed shared-package repair, publication/adoption and exact native retest
+are required. D261 current non-admin acceptance remains unresolved; no blind capacity retry.
+Today's published205/live-server guest check is separately owned by published205_daily_guest_oct20;
+exact572 candidate proof cannot replace published205 proof. Before upload repeat current source,
+runtime/package/private Store checks and real guest/non-admin/reviewer acceptance.
 
 Exact568 candidate guest runs are terminal and independently reviewed:
 - A39357989631 PASS: guest Data T01 revalidated; T07 guest now passes hover, unique
@@ -171,7 +177,12 @@ repeat the same launch blindly or weaken guard thresholds.
 
 ## Source units and immediate next work
 
-**D244 remains open.** Source-only acceptance guard `75ad12b022d7968cf7b883ebd78f34789894062f` requires positive compact-popover focus and absence of competing visible dialogs BEFORE trusted Escape. Fresh independent source A/BPASS, actual-source40/40tests; immutable tag CI39381851078 SUCCESS atb284 includes the guard. [Final peer](reports/values244-guard-final-peer-20261020.json). No current native proof or product repair; public205 T13 failure remains. Frozen Store568 uses agents.170, CIdevelopment568/currentmain agents.173; equal extension versions are not equal runtimes.
+**D244 actual572 product failure is assigned to `values244_product_repair`.** Exact39391905076
+confirms the focus guard passed and trusted Escape reached the compact popover without dismissing
+it. Fix the shared owning component after a real component reproduction; source-only harness
+changes are not a product fix. Fresh independent source review, same-session package publish/adopt
+where required, and original native retest remain mandatory. Root integrates inventory/records.
+
 
 1. **D258 closed narrowly**, source `ff105b712`, exact568 original scroll479 native PASS above. Measured
    document-space hit conversion, same original button/backend identity and unchanged viewport
@@ -241,7 +252,7 @@ sanitized journals and safe reports. Unsupported API is not a safety refusal; ge
 safety refusal cannot be bypassed.
 
 Fetch/merge at boundaries and at least every15minutes, preserve contributors, exact-path commits,
-push verified units frequently. Current real weekly CI spend read is59.50/$100 complete/nonstale;
+push verified units frequently. Current real weekly CI spend read is72.23/$100 complete/nonstale;
 refresh before paid dispatch/publication. Off-track waste flags do not replace actual real total.
 No account billing block workaround. This Mac never runs manual builds/releases.
 
