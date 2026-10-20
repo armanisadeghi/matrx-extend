@@ -1,0 +1,63 @@
+{
+  "review": "Fresh read-only independent runtime evidence review of run 39357989631 on v0.2.568 candidate",
+  "status": "DONE_WITH_CONCERNS",
+  "evidence": {
+    "raw_artifact_id": 12235124736,
+    "raw_zip_sha256_verified": "638a7d0a89b5ff69397b3b4297773dd7c8043ce40bcde9acb951c121eec622b6",
+    "native_json": "matrx-extend/matrx-extend/test-results/data-guest-native-acceptance.json: case EXT-F-2005-T01, status pass, stage complete, native_stage exercise_panel, artifact v0.2.568 source 5aca3d4f9a21b752614a0bb33228c1ce4ae62544",
+    "resource_finals": "package, browser and guest each admitted=true, resourceInvalid=false, exitCode=0, decision=valid in ZIP journals",
+    "driver": "tests/browser/data-guest-native-acceptance.mjs plus data-guest-picker-driver.mjs and data-guest-picker-cancel.mjs; these files match workflow checkout 31c810ace375436e5a8c79b72e76be8859ba017a",
+    "canonical": "docs/stabilization/inventory.json EXT-F-2005-T01/T07 and C16/C18/C19/C21/C22"
+  },
+  "verdict_A_runtime": {
+    "EXT-F-2005-T01_guest": {
+      "verdict": "PASS_BOUNDED",
+      "basis": "Guest auth state asserted absent; controlled 3-row page; empty-picker Cancel closes picker with zero selected fields; two distinct field previews and two selected selectors; Pattern name/Save pattern absent; Sign in to save present and clicked; no observed panel-target non-GET /wbx_pattern request before auth. This is the selected native T01 sequence only."
+    },
+    "EXT-F-2005-C16_guest": {
+      "verdict": "PASS_BOUNDED",
+      "basis": "Driver opened empty picker, clicked overlay Cancel, waited for host detach and picker button return, asserted selectedFieldMarkers=0 and panel-target pattern-write requests=[]."
+    },
+    "EXT-F-2005-C18_guest": {
+      "verdict": "PASS_BOUNDED",
+      "basis": "Real pointer hover on distinct name and price elements; CDP read closed-shadow highlight display:block and top/left/width/height each within 1px of hovered target; native result records two different target rectangles."
+    },
+    "EXT-F-2005-C19_guest": {
+      "verdict": "PASS_BOUNDED",
+      "basis": "Trusted page click produced picker entry Cedar chair; Done returned field_1 selector in Data; page query found exactly one element and confirmed it was the clicked heading."
+    },
+    "EXT-F-2005-C21_guest": {
+      "verdict": "PASS_BOUNDED",
+      "basis": "After a fresh pick of the $429 element, driver asserted its picker entry, clicked overlay Cancel, waited for host detach, and compared Data selected-field/controls baseline before and after; panel-target pattern writes remained []."
+    },
+    "EXT-F-2005-C22_guest": {
+      "verdict": "PASS_BOUNDED",
+      "basis": "Fresh picker entry Cedar chair was present before Clear; after clicking Clear, closed-shadow #picked HTML had no picked-item."
+    },
+    "EXT-F-2005-T07_guest": {
+      "verdict": "PASS_BOUNDED",
+      "basis": "All guest T07 expected outcomes in inventory.json are observed in this native sequence: hover highlight tracks page elements, click adds an entry and uniquely identifies the clicked heading, Clear empties picker entries, selected-field Cancel exits without returning a field to Data, and the panel-target no-pattern-write observer saw zero non-GET /wbx_pattern requests. No additional guest T07 criterion remains unverified by this run; the observer scope is an evidence-quality limit, not a newly imposed acceptance requirement."
+    },
+    "EXT-F-2005-T07_member": "UNVERIFIED_THIS_RUN",
+    "EXT-F-2005-T07_admin": "UNVERIFIED_THIS_RUN",
+    "EXT-D-0258_original_nonzero_scroll": "UNVERIFIED_THIS_RUN",
+    "EXT-F-2005-T07_across_modes": {
+      "verdict": "PARTIAL",
+      "basis": "The canonical T07 procedure says to repeat the same sequence separately in guest, member and admin profiles. This run covers guest only. Member and admin are independent unverified axes; they do not reduce the guest verdict."
+    }
+  },
+  "verdict_B_quality_and_evidence": {
+    "verdict": "BOUNDED_EVIDENCE_WITH_LIMITS",
+    "strengths": [
+      "Raw ZIP hash, native JSON and three resource finals agree with a completed guest run; verdict does not rely on workflow green alone.",
+      "Driver uses real pointer actions and reads actual closed-shadow picker DOM, panel DOM and page selectors; hover geometry and C19 selector assertions are stronger than a fixture echo."
+    ],
+    "limits": [
+      "The artifact ZIP does not include the original release receipt; provenance fields in native JSON/report were not independently rederived from a release ZIP in this review.",
+      "No retained screenshot shows the completed picker or Data controls. The two QA images are setup captures; native DOM/CDP assertions are the interaction evidence, not post-control visual frames.",
+      "No scrollY or explicit nonzero scroll was recorded. scrollIntoViewIfNeeded in the pointer helper is insufficient to prove the original scrolled-page scenario.",
+      "No signed-in save or persistence readback; neither is an additional guest T07 acceptance criterion. The no-write observer listens to Network.requestWillBeSent on the panel CDP target for non-GET URLs ending /wbx_pattern; it does not monitor all browser targets or the backend. Current savePattern inserts extend.wbx_pattern via src/lib/supabase/queries.ts, so the path filter matches the expected table endpoint when a panel request is emitted.",
+      "Candidate is a key-adapted Store ZIP in a native harness; published Store-installed behavior is unverified. No whole Data feature or member/admin verdict follows."
+    ]
+  }
+}

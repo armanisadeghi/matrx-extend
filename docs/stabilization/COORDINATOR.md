@@ -23,15 +23,26 @@ rich-content.224 published AFTER build; actual source diffs show no mandatory ho
 Candidate is NOT registry-current; frozen acceptance allowed, no gate waiver or upload eligibility.
 Before any upload repeat current source/runtime/package/private Store checks and real acceptance.
 
-Two independent exact568 hosted native runs are ACTIVE:
-- **A39357989631** root/guest_data_scrolled_hosted_retest: guest Data controls, release-mode
-  key-only Store adaptation; supplemental fixture does not certify original nonzero scroll.
-- **B39358084388** root/guest567_scrolled_replay_owner: original public-demo scrolled Data Done,
-  surrounding reviewer controls and unchanged guest Chat/transport/paint gates. Normal admission
-  passed. Workflow checkout31c810ace; backend-before nowf8dd64696fd963685d259328a0776737a9d5aa23,
-  advanced since20bd build input. Record before/after drift; no product pass yet.
-No new Store upload. Both owners must retain terminal evidence/resource journals/cleanup before
-parent end. No further launches or source mutations until current batch adjudication.
+Exact568 candidate guest runs are terminal and independently reviewed:
+- A39357989631 PASS: guest Data T01 revalidated; T07 guest now passes hover, unique
+  selection, Clear and selected-field Cancel. Zero panel-target pattern writes observed.
+  Other modes are separate unverified axes. Whole Data is Unverified in the generated aggregate: partial coverage with two guest case passes, other cases/controls still unverified.
+- B39358084388 PASS: original public-demo scroll479 strict Done path, unique selector,
+  guest save explanation and cleanup; Article/Links/Schema/SEO plus three grounded terminal
+  replies. [Source-aware adjudication](reports/d258-native-adjudication-peer-20261020.json)
+  closes narrow D258 harness defect. Missing intermediate scalars/full Data paint are explicit
+  packaging limits; whole T14 and Store-installed acceptance remain partial/unverified.
+- Current member A39359003772 TERMINAL resource-invalid CPU/load watchdog, before product
+  evidence; no member verdict. Backend advanced f8dd→cd80 during run. Secret/local file removed.
+- Published guest B39359500330 TERMINAL: .205 public CRX unpacked, not Store-installed.
+  Independent review confirms actual grounded opening, same-conversation and post-reload terminal
+  answers against stable cd80cd8763b6bd0a5fc03706af6b478f599df9c6. Overall unverified: Values
+  Escape remains open (D244); published Article heading absent (already repaired in candidate D260).
+  Package/browser finals valid; guest admitted, resourceInvalid=false, child_failed exit1.
+  [Daily evidence](reports/published-guest-daily-20261020.json),
+  [fresh peer](reports/published205-native-peer-20261020.json). No retry or upload.
+No new Store upload. Current member evidence and private Store/source/package drift checks remain
+required. [Current guest report](reports/guest567-scrolled-replay-20261020.json).
 
 **Product acceptance remains blocked by actual non-admin first-turn failure [D261](defects/EXT-D-0261.json).**
 Independent native tester signed in through the real first-party flow, opened fresh member Chat
@@ -52,6 +63,10 @@ run finalization). New deployedf8dd has no relevant resume/pool/claim repair or 
 change relative to20bd. A fresh pass is current symptom evidence, not causal fix attribution.
 If failure recurs, request-correlated preparation phase timing is the next discriminator; no
 speculative client retry, pool cap or timeout change. Current member behavior remains unverified.
+[Capacity diagnosis](reports/member-host-capacity-diagnosis-20261020.json): two Intel member
+launches saturated CPU during browser startup with mixed Chromium/host work. Alternate allowed
+ARM hosts have also refused prior member runs; no proven larger/quiescent option exists. Do not
+repeat the same launch blindly or weaken guard thresholds.
 
 ## Verified product progress and exact limits
 
@@ -79,12 +94,12 @@ speculative client retry, pool cap or timeout change. Current member behavior re
 
 ## Source units and immediate next work
 
-1. **D258 fixed in source `ff105b712`**, native original replay B ACTIVE above. Measured
+1. **D258 closed narrowly**, source `ff105b712`, exact568 original scroll479 native PASS above. Measured
    document-space hit conversion, same original button/backend identity and unchanged viewport
    trusted mouse. Done/Cancel/Clear each tested at0,218,479scroll including horizontal offset;
    unsupported zoom/offset refuses. [Repair](reports/data-scrolled-hit-repair-20261020.json),
    [fresh final peer](reports/data-scroll-round2-peer-20261020.json). Focused684/684 and full
-   CI39356360500 pass;568 strict gates pass. This is a harness repair, no product/closure credit.
+   CI39356360500 pass;568 strict gates pass. This is a harness repair, no product-repair or broad feature-health credit.
 2. **D262 fixed in source `d4750c363` + import-only`4bc76ec8e`**. T22/T63 now require actual
    active guest Settings and rendered anchors before absence of admin controls may pass. Tests
    execute actual DOM-probe/case-recorder seam; [fresh peer](reports/settings-absence-round2-peer-20261020.json),
@@ -129,8 +144,8 @@ Personal Chrome profile8 keeps dev`cihdmkcdjjckfhjpgoedmgfpoljebaml`0.2.565 load
 Store`hnfolienncfklkgmdjjmhhegglimlamg`0.2.205. Last actual reload:
 CI39342629514/artifact12228829443/source`199e2e738ac928b661c8f1a55f1d4dcc6ddff440`,
 tree`f5c2313bc27330260b029824b178e1f667cd28e98aa23307d54531a8b6f607bf`.
-Latest verified development566 artifact12234085062 is from successful CI39351587471/source27b7defe,
-tree4099b912…c1141c, not promoted/reloaded. Later release567/main is not loaded. Import with current-test-artifact, promote
+Latest verified development567 artifact12235492570 is from successful CI39356360500/source8abb,
+not promoted/reloaded and stale after release568 package drift. No exact568/main dev artifact is loaded. Import with current-test-artifact, promote
 with promote-ci-dev-artifact and guard actual reload/path/ID/version/pins after local recovery.
 Personal principal is a real personal admin; never log it out. Use owned profiles for auth tests.
 

@@ -8,7 +8,7 @@
   "auth_mode": "guest; infrastructure observability, no product repair claim",
   "severity": "S2: three valid native reviewer failures cannot be localized from retained evidence",
   "priority": "P1: actionable original failure evidence before next candidate acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/reviewer_geometry_picker_repair",
   "preconditions": [
     "Resource-valid frozen562 guest run39329484777 completed three Chat replies but reviewer controls remained incomplete."
@@ -39,7 +39,10 @@
     "docs/stabilization/reports/data-done567-forensics-20261020.json",
     "docs/stabilization/reports/data-scrolled-hit-repair-20261020.json",
     "docs/stabilization/reports/data-scroll-fresh-peer-20261020.json",
-    "docs/stabilization/reports/data-scroll-round2-peer-20261020.json"
+    "docs/stabilization/reports/data-scroll-round2-peer-20261020.json",
+    "docs/stabilization/reports/guest567-scrolled-replay-20261020.json",
+    "docs/stabilization/reports/candidate568-native-b-peer-20261020.json",
+    "docs/stabilization/reports/d258-native-adjudication-peer-20261020.json"
   ],
   "sibling_census": "All three failed reviewer controls share the owned helper; member temporal paint repair remains separate D257. Article privacy-link presence was diagnostic only, not an assertion; initial contrary diagnosis is refuted. Links privacy check and Article heading/stages remain strict.",
   "acceptance_criteria": [
@@ -53,10 +56,12 @@
     "source": "56ca1354c source reviewed: exact offscreen control scroll, strict Article heading+intro content crop (not Re-capture button), bounded CDP failure names/codes/categories.52focusedtests/compile/fullLint pass; sourcepeer qualityPASS, nativepending. No DataDone productrepair.",
     "product": "ArticleproductfixD260 adminCI564nativepass only, exact565guestintro/visibleproofpending. DataDonecommandfailure and memberpaint remain open; no newproductpass.",
     "native": "Exact565B39342759083 resourcevalid: settings offswitch semanticpass butrecty919..939 outsideviewport373; Article heading/stages safeDOMpass butintro/visiblebody notproved; Done1picked/controlsfound rejectsatDOM.getNodeForLocation, nohitresult/mouseclick. NativepeerA partial; noD260closure.",
-    "forensic": "Fresh read-only escalation localized original564 failure to clickPickerDone catch BEFORE result wait. Downstream IPC/identity rejection is not established. New pre-Done count alone would not explain discarded first error."
+    "forensic": "Fresh read-only escalation localized original564 failure to clickPickerDone catch BEFORE result wait. Downstream IPC/identity rejection is not established. New pre-Done count alone would not explain discarded first error.",
+    "native_current": "Exact568 B39358084388 resource-valid original scrollY479 replay passes strict original button hit then trusted viewport click, selected field, unique exact workflow selector, guest explanation and Cancel cleanup. Article heading/intro, Links/Schema/SEO and three grounded terminal guest replies also observed. Source-aware fresh independent adjudication permits narrow harness closure; missing serialized intermediate assertions and full Data screenshot remain packaging limits. Not whole T14 or Store-installed acceptance.",
+    "adjudication": "Initial raw-only peer withheld closure because intermediate assertions/full Data image were not separately persisted. Immutable executed source plus native pass proves those unavoidable assertions; fresh independent source-aware peer accepts original criteria. Failure-branch reporting remains source/prior-failure evidence, not newly exercised in successful run."
   },
   "fix_commit": "ff105b712623b5a6e6e18f942325fcf106844d9b",
-  "next_action": "Wait both exact568 native runs to terminal; independent evidence review must prove original public-demo nonzero-scroll strict hit/selector and surrounding controls before closure. Supplemental guestData controls alone cannot establish original scrolled reproduction. No product repair claim from harness change.",
+  "next_action": "No further D258 repair. Keep whole T14 paint/aggregate and member/admin/Store-installed coverage separate; no product-repair credit.",
   "transition_history": [
     {
       "at": "2026-10-19T22:05:02.915114Z",
@@ -153,6 +158,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fresh round2 source peer, focused684/684, fullCI39356360500 and exact568 guardedrelease39356737665 pass. Native originalscrolledreplayB39358084388 and supplementalDataA39357989631 are ACTIVE; no closure/productpass."
+    },
+    {
+      "at": "2026-10-20T02:40:49.054483Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Exact568 original nonzero-scroll native replay and surrounding checks pass; fresh independent source-aware adjudication validates original mandatory criteria. Narrow harness closure with explicit evidence-packaging and failure-branch limits."
+    },
+    {
+      "at": "2026-10-20T02:40:49.054483Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Exact568 original nonzero-scroll native replay and surrounding checks pass; fresh independent source-aware adjudication validates original mandatory criteria. Narrow harness closure with explicit evidence-packaging and failure-branch limits."
     }
   ],
   "previous_fix_commits": [

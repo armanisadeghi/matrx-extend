@@ -1,34 +1,9 @@
 {
   "report_id": "guest567-scrolled-replay-20261020",
   "lane": "B",
-  "status": "prepared_admission_refused_no_dispatch",
-  "scope": "Exact 0.2.567 frozen Store artifact, public demo with natural nonzero scroll, Data Done strict hit and surrounding Article, Links, Schema, SEO and guest Chat route",
-  "frozen_candidate": {
-    "release_run_id": "39352466107",
-    "artifact_id": "12234116008",
-    "source_sha": "27b7defe7a4c123ff74076b15a5cb73e879e8500",
-    "store_zip_sha256": "4d6a42bd1cece0a8433fdbe403e2c4f02784716c62162fd5258bf82e87fcd40d",
-    "github_artifact_digest": "sha256:6a25443847a2bea80b3c353880d4632aac65e717a0fd36e6d2d577e2cb8b2ef5"
-  },
-  "harness": {
-    "repair_sha": "ff105b712623b5a6e6e18f942325fcf106844d9b",
-    "focused_ci_run_id": "39355860876",
-    "focused_ci_verdict": "success",
-    "full_ci_run_id": "39355860873",
-    "full_ci_verdict_at_preflight": "pending",
-    "current_checkout_sha_at_preflight": "fcca66f60051200fbad6cfb697404cdb058a85a1",
-    "current_checkout_matched_origin_main": true,
-    "dirty_at_preflight": false
-  },
-  "normal_admission": {
-    "command": "node scripts/hosted-remote-admission.mjs plan-guest-chat --lane B --case guest-chat --release-run-id 39352466107 --artifact-id 12234116008 --source-sha 27b7defe7a4c123ff74076b15a5cb73e879e8500",
-    "result": "HOSTED_REMOTE_REFUSED HOSTED_CHAT_RUNTIME_SOURCE_DRIFT",
-    "reason": "The existing release admission requires only documentation changes after the frozen release source. Subsequent commits include executable harness, settings tests and package.json changes; the scrolled picker fix itself is after the release.",
-    "dispatch": "not_attempted",
-    "bypass": "not_attempted"
-  },
-  "native_verdict": "unverified",
-  "next_candidate_release": {
+  "status": "native_pass_independent_narrow_D258_closure",
+  "scope": "Exact 0.2.568 key-adapted Store ZIP candidate; original public-demo scroll479 Data Done and bounded guest Chat/reviewer observations. Not Store-installed.",
+  "candidate": {
     "run_id": "39356737665",
     "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39356737665",
     "workflow": "release.yml",
@@ -70,9 +45,9 @@
     ],
     "external_job_cleanup": "hosted workflow terminal; no local process, profile, or staged secret; owned scratch download deleted after hash verification",
     "store_upload": "not_attempted",
-    "native_acceptance": "pending_fresh_peer_and_root_GO"
+    "native_acceptance": "guest_native_pass_bounded_independently_reviewed; member_unverified"
   },
-  "exact568_guest_b_replay": {
+  "native": {
     "run_id": "39358084388",
     "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39358084388",
     "workflow_head_sha_at_dispatch": "31c810ace375436e5a8c79b72e76be8859ba017a",
@@ -96,7 +71,7 @@
     "backend_sha_after": "f8dd64696fd963685d259328a0776737a9d5aa23",
     "runtime_tree_sha256": "8af9872212755906e6bfc08daa983fca189c8f887d1b1a19c4f7e80b08388cec",
     "native_data_done": {
-      "status": "pass_pending_independent_peer",
+      "status": "pass_independently_adjudicated",
       "public_demo_scroll_y_before": 479,
       "public_demo_scroll_y_after": 479,
       "visual_offsets_x_y": [0, 0],
@@ -122,9 +97,15 @@
       "actual_ai_requests": 3,
       "selected_model": "not_serialized_in_native_report",
       "model_override": "none_dispatched",
-      "visible_paint": "terminal replies observed; individual screenshots clip portions behind the composer, while separate scroll captures show the page-code, heading and Capture/Understand/Use stages; independent screenshot review pending"
+      "visible_paint": "Bounded actual content and terminal grounding supported collectively by native assertions and separate scroll captures; individual frames clip parts. Whole T14 paint remains partial."
     },
     "external_job_cleanup": "hosted workflow terminal; no local browser, process, profile or staged secret; owned artifact scratch deleted after durable evidence checkpoint"
   },
-  "next_action": "Obtain independent review of exact .568 native Data Done and clipped Chat screenshots before D258 or broad guest closure. Member A and current Store upload eligibility remain separate gates. No second B run or Store upload."
+  "independent_reviews": [
+    "docs/stabilization/reports/candidate568-native-b-peer-20261020.json",
+    "docs/stabilization/reports/d258-native-adjudication-peer-20261020.json"
+  ],
+  "owner_adjudication": "Earlier peer did not inspect immutable source. Fresh source-aware independent review establishes unavoidable same-button hit, selected field and guest explanation assertions executed before raw pass. Missing separate scalars/full Data image limits direct visual review but is not an additional original D258 criterion. Narrow harness closure only; whole T14 remains partial.",
+  "historical_note": "Earlier .567 admission refusal retained in Git history; current receipt supersedes that checkpoint.",
+  "next_action": "Member acceptance remains unresolved; recheck current source/runtime/packages and authenticated private Store state before any upload. No upload/submission performed."
 }

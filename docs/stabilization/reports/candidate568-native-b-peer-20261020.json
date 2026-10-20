@@ -1,0 +1,32 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "reviewer": "candidate568_native_b_peer",
+  "scope": "Exact .568 B39358084388 native/public Data Done and guest acceptance; zero authorship",
+  "artifact": {
+    "result_artifact_id": "12236796129",
+    "download_sha256": "0065a48f41d0ec6a6acbbe0a32e60490c321c105c1e823bf970654ae624548e2",
+    "release_source_sha": "5aca3d4f9a21b752614a0bb33228c1ce4ae62544",
+    "store_zip_sha256": "16dd16b2c1bfb4b63ba0d95c59b1e2c4213928b7b292fbc2761fdfc685ea8a3d",
+    "runtime_tree_sha256": "8af9872212755906e6bfc08daa983fca189c8f887d1b1a19c4f7e80b08388cec"
+  },
+  "verdictA": {
+    "overall": "PARTIAL",
+    "passes": [
+      "Artifact JSON identifies a key-adapted native Store ZIP candidate, exact source/tree/ZIP hashes; not API-only or Store-installed evidence.",
+      "All three journals (hosted-package, hosted-browser, hosted-guest) end admitted valid, exit 0, resourceInvalid false.",
+      "Public demo picker telemetry reports same target, scrollY 479, visual offset 0, selected_count 1, unique_selector_matches 1, workflow row match, and draft cleared. Article evidence shows heading and complete intro; page/assistant captures collectively show Capture, Understand, Use. Links, Schema, SEO and fresh capture-off observations are present. Backend SHA is f8dd64696fd963685d259328a0776737a9d5aa23 before and after.",
+      "Three distinct requests are HTTP 200 with terminal_success, transport_complete and semantic success. Opening is_new=true; same conversation is_new=false with same conversation fingerprint; post-reload new is_new=true with a different fingerprint. Observer saw result/resume success and no pending tools. Screenshots show assistant content with unpredictable page-code/heading and stages grounded in the page fixture."
+    ],
+    "missing_or_ambiguous": [
+      "The only Data Done screenshot is cropped to the Cancel control. JSON preserves scalar selection/geometry outcomes but does not serialize the strict same-button hit-test result/element identity before trusted click, nor a visible selected-field plus guest save-gate/explanation. Therefore the defining D258 visual/input and guest-save criterion is not independently proven by the raw artifact, despite successful counts and draft cleanup.",
+      "Answer screenshots clip lower content behind the composer. Visible portions and JSON terminal/grounding assertions support real answers, but do not show the full reply in one frame; stage captures supplement opening stages and separate heading/code captures supplement follow-ups."
+    ]
+  },
+  "verdictB": {
+    "overall": "PASS_WITH_EVIDENCE_PACKAGING_CONCERN",
+    "basis": "Raw artifact schema, journals and screenshots are internally consistent with the exact .568 candidate and hosted B run. No source/diff or tests were reviewed in this zero-authorship lane.",
+    "finding": "The in-tree wrapper is named guest567-scrolled-replay and its top-level frozen_candidate is .567, while exact .568 evidence is nested later. This history mix can send a reviewer to the wrong candidate unless they inspect exact568_guest_b_replay."
+  },
+  "d258_closure_eligible": false,
+  "reason": "The exact strict hit and selected-field/guest-save proof are not exposed in the artifact's persisted evidence; the cropped screenshot does not close that gap."
+}
