@@ -51,6 +51,7 @@ export function requireOpeningPageText({ events, requests, heading }) {
   );
   const match = events.find(
     (event) =>
+      event.tool_class === 'get_page_text' &&
       event.phase === 'completed' &&
       event.conversation_fingerprint === opening.conversation_fingerprint &&
       /^[a-f0-9]{16}$/.test(event.call_fingerprint ?? '') &&
@@ -63,5 +64,58 @@ export function requireOpeningPageText({ events, requests, heading }) {
     completed_actual_page_result: true,
     opening_conversation_fingerprint: opening.conversation_fingerprint,
     page_text_call_fingerprint: match.call_fingerprint,
+  };
+}
+
+/** Bounded, content-free diagnosis of the same opening join. */
+export function summarizeOpeningPageTextBoundary({ events, requests }) {
+  const openingRows = requests.filter((row) => row.attempt === 'opening');
+  const opening = openingRows.length === 1 ? openingRows[0] : null;
+  const delegated = new Set(
+    (opening?.semantic_events ?? [])
+      .filter((event) => event.event === 'tool_delegated')
+      .map((event) => event.call_fingerprint),
+  );
+  const page = events.filter((event) => event.tool_class === 'get_page_text');
+  const completed = page.filter((event) => event.phase === 'completed');
+  const conversation = completed.filter(
+    (event) => event.conversation_fingerprint === opening?.conversation_fingerprint,
+  );
+  const call = conversation.filter((event) => delegated.has(event.call_fingerprint));
+  const content = call.filter(
+    (event) => event.result_has_heading === true && event.result_has_stages === true,
+  );
+  const failure_code =
+    !opening || !/^[a-f0-9]{16}$/.test(opening.conversation_fingerprint ?? '')
+      ? 'reviewer_member_page_text_opening_unverified'
+      : page.length === 0
+        ? 'reviewer_member_page_text_event_missing'
+        : completed.length === 0
+          ? 'reviewer_member_page_text_completion_missing'
+          : conversation.length === 0
+            ? 'reviewer_member_page_text_conversation_mismatch'
+            : call.length === 0
+              ? 'reviewer_member_page_text_call_mismatch'
+              : content.length === 0
+                ? 'reviewer_member_page_text_content_mismatch'
+                : null;
+  return {
+    failure_code,
+    opening_conversation_fingerprint: opening?.conversation_fingerprint ?? null,
+    delegated_call_fingerprints: [...delegated].filter((value) => /^[a-f0-9]{16}$/.test(value)),
+    events: events.map((event) => ({
+      tool_class: ['get_page_text', 'read_page', 'find'].includes(event.tool_class)
+        ? event.tool_class
+        : 'other',
+      phase: ['started', 'completed', 'error'].includes(event.phase) ? event.phase : 'other',
+      call_fingerprint: /^[a-f0-9]{16}$/.test(event.call_fingerprint ?? '')
+        ? event.call_fingerprint
+        : null,
+      conversation_fingerprint: /^[a-f0-9]{16}$/.test(event.conversation_fingerprint ?? '')
+        ? event.conversation_fingerprint
+        : null,
+      result_has_heading: event.result_has_heading === true,
+      result_has_stages: event.result_has_stages === true,
+    })),
   };
 }

@@ -23,6 +23,7 @@ import {
   enterFirstPartyRoute,
   requireOpeningPageText,
   requireOriginalGuestSequence,
+  summarizeOpeningPageTextBoundary,
 } from './member-chat-original-repro.mjs';
 import { sendMemberChatOnTarget } from './member-chat-target.mjs';
 import {
@@ -526,9 +527,11 @@ async function startMemberPageTextProof(panel, heading) {
     const listener = (message) => {
       if (message?.__matrx !== true || message.kind !== 'tool:timeline-event') return;
       const event = message.payload;
-      if (event?.toolName !== 'get_page_text') return;
+      if (!event || typeof event !== 'object') return;
       const result = event.phase === 'completed' ? JSON.stringify(event.output ?? null) : '';
       observed.push({
+        tool_class: ['get_page_text', 'read_page', 'find'].includes(event.toolName)
+          ? event.toolName : 'other',
         phase: event.phase,
         call_id: event.callId ?? null,
         conversation_id: event.conversationId ?? null,
@@ -1929,14 +1932,40 @@ try {
           [demoHeading, 'Capture', 'Understand', 'Use'],
           ['Capture', 'Understand', 'Use'],
         );
-        await memberTransport.settle();
-        const pageTextEvents = await pageTextProof.snapshot();
-        report.page_text_proof = {
-          ...requireOpeningPageText({
+        stage = 'member_page_text_transport_settle';
+        try {
+          await memberTransport.settle();
+        } catch {
+          throw new Error('reviewer_member_page_text_transport_settle_failed');
+        }
+        stage = 'member_page_text_snapshot';
+        let pageTextEvents;
+        try {
+          pageTextEvents = await pageTextProof.snapshot();
+        } catch {
+          throw new Error('reviewer_member_page_text_snapshot_failed');
+        }
+        stage = 'member_page_text_join';
+        const pageTextBoundary = summarizeOpeningPageTextBoundary({
+          events: pageTextEvents,
+          requests: memberTransport.turnRequests(),
+        });
+        report.page_text_boundary = pageTextBoundary;
+        await writeReviewerReport(OUTPUT, report);
+        let pageTextJoin;
+        try {
+          pageTextJoin = requireOpeningPageText({
             events: pageTextEvents,
             requests: memberTransport.turnRequests(),
             heading: demoHeading,
-          }),
+          });
+        } catch {
+          throw new Error(
+            pageTextBoundary.failure_code ?? 'reviewer_member_page_text_join_unverified',
+          );
+        }
+        report.page_text_proof = {
+          ...pageTextJoin,
           event_count: pageTextEvents.length,
         };
         stage = 'reviewer_chat_transport';

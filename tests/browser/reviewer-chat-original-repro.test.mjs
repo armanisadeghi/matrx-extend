@@ -4,6 +4,7 @@ import {
   enterFirstPartyRoute,
   requireOpeningPageText,
   requireOriginalGuestSequence,
+  summarizeOpeningPageTextBoundary,
 } from './member-chat-original-repro.mjs';
 
 const first = 'a'.repeat(16);
@@ -96,6 +97,7 @@ test('D261 Page Text must be a completed delegated call on this member opening',
     },
   ];
   const event = {
+    tool_class: 'get_page_text',
     phase: 'completed',
     conversation_fingerprint: first,
     call_fingerprint: second,
@@ -108,6 +110,7 @@ test('D261 Page Text must be a completed delegated call on this member opening',
     second,
   );
   for (const mismatch of [
+    { ...event, tool_class: 'read_page' },
     { ...event, conversation_fingerprint: 'c'.repeat(16) },
     { ...event, call_fingerprint: 'c'.repeat(16) },
     { ...event, phase: 'started' },
@@ -126,5 +129,18 @@ test('D261 Page Text must be a completed delegated call on this member opening',
         heading: 'Matrx Extend Demo',
       }),
     /correlated completed Page Text/,
+  );
+  assert.equal(summarizeOpeningPageTextBoundary({ events: [event], requests }).failure_code, null);
+  assert.equal(
+    summarizeOpeningPageTextBoundary({ events: [{ ...event, tool_class: 'read_page' }], requests })
+      .failure_code,
+    'reviewer_member_page_text_event_missing',
+  );
+  assert.equal(
+    summarizeOpeningPageTextBoundary({
+      events: [{ ...event, call_fingerprint: 'c'.repeat(16) }],
+      requests,
+    }).failure_code,
+    'reviewer_member_page_text_call_mismatch',
   );
 });

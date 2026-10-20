@@ -29,6 +29,15 @@ const SAFE_FAILURE_CODES = new Set([
   'reviewer_native_panel_foreground_not_observed',
   'reviewer_member_panel_hidden_during_org_proof',
   'reviewer_member_original_panel_unverified',
+  'reviewer_member_page_text_transport_settle_failed',
+  'reviewer_member_page_text_snapshot_failed',
+  'reviewer_member_page_text_opening_unverified',
+  'reviewer_member_page_text_event_missing',
+  'reviewer_member_page_text_completion_missing',
+  'reviewer_member_page_text_conversation_mismatch',
+  'reviewer_member_page_text_call_mismatch',
+  'reviewer_member_page_text_content_mismatch',
+  'reviewer_member_page_text_join_unverified',
 ]);
 
 /** Capture only the native side panel; never include the web authentication form. */
