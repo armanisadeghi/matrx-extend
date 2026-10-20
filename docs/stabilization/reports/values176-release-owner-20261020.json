@@ -1,0 +1,60 @@
+{
+  "lane": "values176-release-owner",
+  "observed_at_utc": "2026-10-20T13:26:28Z",
+  "state": "CANDIDATE_READY_NATIVE_ACCEPTANCE_PENDING_NO_STORE_UPLOAD",
+  "classification": "Routine repair: the D244 mobile Values Escape fix and D261 member panel focus repair change behavior already covered by the saved Store listing. The emitted Store policy surface matches the approved 0.2.205 baseline.",
+  "source": {
+    "workflow_checkout_sha": "ef47116d499526eee1efa42d2c5dfc2e795be0c3",
+    "released_source_and_tag_sha": "7a2f6108416ea03feb6af0a0978e1d337119166d",
+    "tag": "v0.2.576",
+    "aidream_type_source_sha": "a34ce9e0415d76074ea81a9c1001eb0d7cd18041",
+    "d244_package": "@ai-matrx/agents@0.59.176; npm gitHead ca1c252beec48565c47288b33e1adbdffbd816a3",
+    "concurrent_main_commits_before_release_push": [
+      "374bd70ab D261 test evidence",
+      "8d6b9fa56 stabilization evidence"
+    ]
+  },
+  "workflow": {
+    "run_id": 39429651448,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39429651448",
+    "conclusion": "success",
+    "requested_by": "values176-release-owner",
+    "artifact_id": 12268110863,
+    "artifact_name": "matrx-extend-v0.2.576",
+    "artifact_archive_sha256": "d47ba270180411cc0d75017d54cfddd327bf903f33adab9fb328cf1f967831a7",
+    "blocking_checks": "All 17 release checks exit 0, including latest packages, typecheck, lint, unit tests, schema routing, migrations, tool drift; Store package validation and remote-code/policy risk gate passed.",
+    "advisory": "Config attestation and mandate findings are advisory; neither is a passed blocking gate."
+  },
+  "package": {
+    "version": "0.2.576",
+    "store_zip_sha256": "06ecd6bd92b98f372186841b983382b7d762c1981d5af86221ed0dda3ba52dbb",
+    "local_zip_sha256": "78d460a14bdd0bd4492dcf0948f985177eb6fd98843c68dd8cac30106968e09f",
+    "publisher_tree_sha256": "87fceef09be646ff8e8fa3bd3e70acc380fe581a332e1a9e550014e0cce3b8e4",
+    "original_store_tree_sha256": "58fddd9640d8f4a5f6a3da1bff16edd1971978cd67d65a5e7eeb5720bc22f611",
+    "native_key_adapted_tree_sha256": "77f7bc56e692130a0dfc32eea4f401adeb9724ddc81f7d278dac7768a1389579",
+    "download_directory": "test-results/values176-release-576/download/.output",
+    "native_adapted_directory": "test-results/values176-release-576/native-store/chrome-mv3-store",
+    "native_adapted_receipt": "test-results/values176-release-576/native-store/release-receipt.json",
+    "adaptation": "scripts/hosted-release-artifact.mjs added only the matching local-ZIP public manifest key to a separate native unpacked Store copy; original Store ZIP remains byte-for-byte unchanged."
+  },
+  "publisher": {
+    "observed_at_utc": "2026-10-20T13:22:45Z",
+    "primary_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "published_version": "0.2.205",
+    "draft_version": "0.2.479",
+    "draft_state": "Rejected: remotely hosted MV3 code",
+    "pending_revision": false,
+    "upload_new_package_enabled": true,
+    "saved_fields": "Listing and privacy match the canonical copy; 490-character reviewer instructions and non-admin reviewer credential fields are present; distribution is free/public/all regions.",
+    "action": "Authenticated read only; no package upload, draft save, submission, or notification."
+  },
+  "spend": {
+    "week_actual_usd": 79.12,
+    "week_cap_usd": 100,
+    "complete": true,
+    "stale": false,
+    "server_read_at_utc": "2026-10-20T12:26:25.475944Z",
+    "dispatch": "One existing public Ubuntu release workflow, no paid runner or new workflow."
+  },
+  "next_gate": "Exact 0.2.576 native guest original Values Escape/surrounding UI/full viewer/editor and three terminal Chat turns, then true non-admin original first and follow-up with Page Text evidence. Recheck source, package identity, and authenticated primary Store state immediately before any upload; submit only after these passes."
+}
