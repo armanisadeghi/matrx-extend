@@ -26,7 +26,10 @@ import {
   watchGuestAiRequests,
 } from './guest-chat-transport-observer.mjs';
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
-import { requireNativeResourceHealth } from './native-resource-boundary.mjs';
+import {
+  isCompleteResourceSample,
+  requireNativeResourceHealth,
+} from './native-resource-boundary.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
@@ -250,13 +253,26 @@ async function waitForGuestPostSetupHealth({
     const events = (await readEvents()).slice(baselineCount);
     let consecutive = 0;
     for (const event of events) {
-      if (event.code === 'RESOURCE_WATCH_HEALTHY' || event.code === 'RESOURCE_CPU_RECOVERED') {
+      if (
+        event.code === 'RESOURCE_WATCH_HEALTHY' ||
+        event.code === 'RESOURCE_CPU_RECOVERED' ||
+        event.code === 'RESOURCE_CPU_PENDING'
+      ) {
         assert.ok(
-          event.sample && Array.isArray(event.reasons) && event.reasons.length === 0,
+          isCompleteResourceSample(event.sample) &&
+            Array.isArray(event.reasons) &&
+            (event.code === 'RESOURCE_CPU_PENDING'
+              ? event.reasons.every(
+                  (reason) => typeof reason === 'string' && reason.startsWith('RESOURCE_CPU_'),
+                )
+              : event.reasons.length === 0),
           'guest_resource_journal_invalid',
         );
-        consecutive++;
-      } else if (event.code === 'RESOURCE_CPU_PENDING' || event.code === 'RESOURCE_WATCH_UNSAFE') {
+        // The guard emits CPU_PENDING during recovery until its own required
+        // healthy streak completes. Empty reasons are healthy measurements;
+        // checkHealth still refuses a native action while CPU is pending.
+        consecutive = event.reasons.length === 0 ? consecutive + 1 : 0;
+      } else if (event.code === 'RESOURCE_WATCH_UNSAFE') {
         consecutive = 0;
       }
     }

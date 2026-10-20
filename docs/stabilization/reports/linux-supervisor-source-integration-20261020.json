@@ -1,0 +1,39 @@
+{
+  "status": "READY_FOR_INDEPENDENT_REVIEW; uncommitted and unpushed by root hold",
+  "scope": "Bounded Linux process ownership preparation; no native route activation",
+  "changed_files": [
+    "package.json",
+    "scripts/hosted-resource-readiness-loop.test.mjs",
+    "scripts/stabilization-linux-host.mjs",
+    "scripts/linux-owned-supervisor.test.mjs",
+    "scripts/linux_owned_supervisor.py",
+    "scripts/supervisor_unit.py",
+    "scripts/supervisor_kernel.py"
+  ],
+  "behavior": "Numeric PGID stop rejects valid policy with RESOURCE_KERNEL_OWNERSHIP_REQUIRED and sends no signal. Dedicated single-threaded helper prepares pidfd/subreaper before fork, checks cancellation before fork, captures own direct children, pidfd signals only, __WALL reaps, and requires ECHILD completion. This helper is not wired to startup/IO or admission.",
+  "tests": "node --test scripts/linux-owned-supervisor.test.mjs scripts/hosted-resource-readiness-loop.test.mjs: 27 pass, 10 explicit Linux skips, 0 fail. python3 -m py_compile three Python files: pass. node_modules/.bin/biome check four JS/JSON files: pass. git diff --check owned tracked paths: pass.",
+  "ubuntu_ci": "Existing pnpm test:focused-acceptance in .github/workflows/ci.yml now includes scripts/linux-owned-supervisor.test.mjs through package.json; Linux kernel scenarios natural, descendant, churn, escalation, cancellation, pre-fork cancellation, stale handle remain unexecuted pending reviewed push and automatic CI.",
+  "limitations": "No process IO/startup transport, route integration, browser/native result, forced PID-number reuse, hard-death recovery, or Linux kernel proof on this Mac. Stale ownership holds; proc census omission never grants success. CPU/PSI gates and Mac behavior are unchanged.",
+  "review_focus": "Inspect dedicated-helper preflight and cancellation race, parenthood/pidfd acquisition before waitpid, ECHILD completion, numeric refusal, Linux churn fixture, and package focused-CI inclusion. Contract ruling: test-results/linux-ownership-atomic-prep/contract-attack.json corrected CLONE_PARENT finding (retracted).",
+  "sha256": {
+    "scripts/linux_owned_supervisor.py": "39e0ac5026a7df8f8c9f92c527d4d1a846d09d78ed325bbe0e0979542cad2dde",
+    "scripts/supervisor_unit.py": "ab511392284e998df351172ad2dac20e475bb60e58bc4ce9806577cd8d495e56",
+    "scripts/supervisor_kernel.py": "e0de712c167268db729282f88e2b1d9e4c7d20edda6b086aa9f97a2ff1955ed5",
+    "scripts/linux-owned-supervisor.test.mjs": "a2d30151fb79d7c958c65c12cb9d21f0de1d1f636c6084fcc2ab6332c4133832",
+    "scripts/stabilization-linux-host.mjs": "8204a86c86d75ed093cf9342bef979fc4e437b99ca6ce1589c3eb67208e8478f",
+    "scripts/hosted-resource-readiness-loop.test.mjs": "952ccceb28bc547c8272eeac8f32cb5745521fb9b89d752e5eef6fcda8a1c244",
+    "package.json": "447a93ee4d3b0cef92d5c320aa3418f95e15a205c11e0a3834f58136311c29b5"
+  },
+  "parent_ruling": "Source preparation A/B PASS accepted; native capability-unavailable/no-spawn, dropped-permission and stale-supervisor hard-death cases plus IO/handshake/pipe ownership are required before activation. Existing Linux route remains refused; no product pass.",
+  "source_commit": "c16ede823",
+  "parent_full_focused_check": {
+    "command": "pnpm test:focused-acceptance",
+    "tests": 721,
+    "pass": 711,
+    "skip": 10,
+    "fail": 0,
+    "duration_ms": 52719.884292,
+    "platform": "macOS; Linux-only branches explicitly skipped"
+  },
+  "ci_followthrough": "Existing CI39384199256 SUCCESS atf710575ef. Ubuntu focused721passed/0failed/0skipped; all7actual LINUX_OWNED_KERNEL scenarios. No Linux native activation/product proof; see linux-supervisor-ubuntu-evidence-20261020.json."
+}

@@ -4,6 +4,28 @@ import { performance } from 'node:perf_hooks';
 import { resourceLeaseRoot } from '../../scripts/stabilization-resource-lease.mjs';
 
 const RUN_ID = /^[A-Za-z0-9_.-]+$/;
+const RESOURCE_SAMPLE_FIELDS = [
+  'pressureLevel',
+  'availableMemoryGiB',
+  'requiredMemoryGiB',
+  'oneMinuteLoad',
+  'logicalCpus',
+  'cpuBusyFraction',
+  'swapUsedMiB',
+  'repoFreeGiB',
+  'profileFreeGiB',
+  'safetyFreeGiB',
+  'systemFreeGiB',
+];
+
+export function isCompleteResourceSample(sample) {
+  return (
+    sample !== null &&
+    typeof sample === 'object' &&
+    !Array.isArray(sample) &&
+    RESOURCE_SAMPLE_FIELDS.every((field) => Number.isFinite(sample[field]))
+  );
+}
 
 function refuse(reason) {
   throw new Error(`NATIVE_RESOURCE_BOUNDARY_REFUSED:${reason}`);
@@ -101,7 +123,7 @@ export async function requireNativeResourceHealth({
   const admitted = events.find(
     (event) =>
       event.code === 'RESOURCE_ADMITTED' &&
-      event.sample &&
+      isCompleteResourceSample(event.sample) &&
       Array.isArray(event.reasons) &&
       event.reasons.length === 0,
   );
@@ -111,7 +133,7 @@ export async function requireNativeResourceHealth({
     const event = events[index];
     if (event.code === 'RESOURCE_CPU_PENDING') {
       if (
-        !event.sample ||
+        !isCompleteResourceSample(event.sample) ||
         !Array.isArray(event.reasons) ||
         event.reasons.some(
           (reason) => typeof reason !== 'string' || !reason.startsWith('RESOURCE_CPU_'),
@@ -125,14 +147,21 @@ export async function requireNativeResourceHealth({
       if (
         !pending ||
         !Number.isFinite(Date.parse(event.at)) ||
-        !event.sample ||
+        !isCompleteResourceSample(event.sample) ||
         !Array.isArray(event.reasons) ||
         event.reasons.length
       )
         refuse('journal_invalid');
       pending = false;
-    } else if (event.code === 'RESOURCE_WATCH_HEALTHY' && pending) {
-      refuse('journal_invalid');
+    } else if (event.code === 'RESOURCE_WATCH_HEALTHY') {
+      if (
+        pending ||
+        !isCompleteResourceSample(event.sample) ||
+        !Array.isArray(event.reasons) ||
+        event.reasons.length ||
+        !Number.isFinite(Date.parse(event.at))
+      )
+        refuse('journal_invalid');
     } else if (event.code?.startsWith('RESOURCE_CPU_')) {
       refuse('journal_invalid');
     }
@@ -147,7 +176,7 @@ export async function requireNativeResourceHealth({
     );
   if (
     !latest ||
-    !latest.sample ||
+    !isCompleteResourceSample(latest.sample) ||
     !Array.isArray(latest.reasons) ||
     latest.reasons.length ||
     !Number.isFinite(Date.parse(latest.at))

@@ -7,21 +7,28 @@ Generated STATUS/CHECKLIST views derive from it. Earlier evidence remains in lin
 ## Current truth and release boundary
 
 Read the canonical [Chrome Web Store record](/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md)
-before any release action. Last authenticated primary dashboard: October19 16:20UTC,
+before any release action. Last authenticated primary dashboard: October20 07:02:11UTC,
 published0.2.205, draft0.2.479 rejected, no pending, Upload enabled. Vault login works;
 no human-only access blocker is established. No new upload/submission has occurred.
-Never infer private review state from old email/public listing or this checkpoint.
+[Daily observation](reports/store-daily-20261020.json) also bounds official mail search to the October11 rejection only. Never infer private review state from old email/public listing or this checkpoint.
 
-Current candidate **0.2.568**: guarded release39356737665 SUCCESS; source/tag
-`5aca3d4f9a21b752614a0bb33228c1ce4ae62544`, artifact12235302731, exact provenance in the
-[release checkpoint](reports/guest567-scrolled-replay-20261020.json) and canonical Store record.
-[Fresh package peer](reports/candidate568-package-peer-20261020.json) verifies receipt/tag/hash,
-all strict gates at immutable cut,2520tests/compile/fullLint/schema/tool/Store policy; static host
-compatibility passes.927lint warnings,6Mandate UNMEASURED and5skipped tests remain explicit limits.
-[Postbuild drift](reports/candidate568-postbuild-drift-20261020.json): associations.83 and
-rich-content.224 published AFTER build; actual source diffs show no mandatory host action.
-Candidate is NOT registry-current; frozen acceptance allowed, no gate waiver or upload eligibility.
-Before any upload repeat current source/runtime/package/private Store checks and real acceptance.
+Current prepared candidate **0.2.571**: guarded hosted release39385321887 SUCCESS;
+source/tag `6501f22db8c35a35ed4e535a8af6c0dc449f8df9`, artifact12247052065,
+Store ZIP SHA256 `26c8a1bfcde585e8ef29abee985648c20bc93be71213a3626e55ffa48124e9c7`.
+[Package/native checkpoint](reports/release571-native-capacity-20261020.json) verifies normal
+receipt/tag/ZIP/strict gates and normal guest planner PASS. No Store upload/submission.
+One exact571 native B39386228485 is terminal resource-invalid at post-setup readiness BEFORE
+Chat/Values UI. Package/browser finals valid, guest finalinvalid; backendd128 stable. No product
+pass/failure, no repeat attempt. Today's published205/live-server guest check is still pending;
+prior .205 evidence cannot substitute a current observation.
+**[D265](defects/EXT-D-0265.json) is source-fixed with fresh independent A/B PASS; native retest UNKNOWN.** Actual journal
+shows CPU_PENDING with empty reasons at2% and7%, then CPU_RECOVERED13%: canonical watchdog
+recognized three healthy samples, but guest helper reset the first two and counted only one.
+[Final source peer](reports/readiness265-final-peer-20261020.json) independently replayed the full actual journal,43focused tests and52negative source cases. Shared eleven-field measurement validation also closes malformed evidence at readiness/native boundary. All thresholds,
+three-healthy requirement, fresh health check and deadline remain unchanged. Full source CI and original native retest are next; no product credit or D244/D261 closure.
+Executable/test/manifest source is now frozen after this reviewed unit; current571 normal source
+eligibility must be rechecked after harness changes. Older568/570 evidence remains separate.
+Before upload repeat current source/runtime/package/private Store checks and real acceptance.
 
 Exact568 candidate guest runs are terminal and independently reviewed:
 - A39357989631 PASS: guest Data T01 revalidated; T07 guest now passes hover, unique
@@ -89,7 +96,7 @@ Bounded observations recorded; no wholeT08 or broadScrape/SEO/reload/mode/Store 
 through synchronized backend merge `db8f6d8f271de5f53bc853eb1fb23b4695c2fda0` after
 [fresh source peer](reports/member261-observability-fresh-review-20261020.json) and postmerge41
 focused passes/Ruff/diff check. Concurrent log-drain drop guard is repaired with task-scoped
-ContextVar and installed-handler blocked-drain RED→GREEN proof. Current live version endpoint reports `181b9d7fd340f21e2b73f7b4945f6999c1f49d6d`
+ContextVar and installed-handler blocked-drain RED→GREEN proof. Earlier live version endpoint reported `181b9d7fd340f21e2b73f7b4945f6999c1f49d6d`
 (built04:50:03UTC), which includes diagnostic source by Git ancestry. Actual runtime phase-marker
 availability is now bounded-observed in CloudWatch:144markers/no pagination across3time-correlated
 resumes with handoff781/710/963ms; opaque IDs prevent definitive owned-request join. These traces
@@ -131,13 +138,10 @@ repo, no registered self-hosted runners, larger Macs require organization Team/E
 is currently unsupported. Contained [Linux sampler/readiness preparation](reports/linux-native-capacity-20261020.json)
 now has fresh source B PASS / A PARTIAL. Local actual tests13pass+3explicitLinuxskips; CPUcounter,
 unreadablecensus, reusedowner and invaliddeadline negative guards proved. Sourceprep `dcf6c168a`, integration `289bb7e6624ed59ad02549b0a0c4fb79e138b8ac` preserves
-contributor package refreshes. Exact automatic CI39379731713 is PENDING behind existing mainCI;
-root owns terminal evidence follow-through. No sourceCI/Ubuntu/native pass yet; no browser dispatch. Active guard/workflow/normal routes
+contributor package refreshes. Exact automatic CI39379731713 is SUCCESS on Ubuntu; [independent kernel peer](reports/linux-ci-kernel-fresh-peer-20261020.json) confirms three live source checks: one real1s CPU/PSI interval, owned live-group identity and foreground child stop/mismatch refusal. CPUbusy0.740554/load1.03/4CPUs/PSI0us; this is not 60s readiness or native proof. No browser dispatch. Active guard/workflow/normal routes
 remain refused. Pressure/watchdog, typedjournals, mappedwindow/pixels, staleownership and the
 nonatomic census→PGID signal gap are activationholds, never productpasses or member support.
-Next source step: inspect exact automatic CI LINUX_KERNEL_INTERVAL and actualLinux-only tests;
-then independently review activeguard/ownership/display/strictBguesttuple/cost integration before
-any nativepilot. No retry of the two resource-invalid member launches without changed evidence. CPU readings are one-second snapshots, not a continuous ten-second
+Bounded pidfd/subreaper supervisor source preparation now has fresh independent A/B PASS ([peer](reports/linux-supervisor-fresh-source-peer-20261020.json)); Mac tests27pass/10explicitLinuxskips. Numeric PGID cleanup refuses. [Actual Ubuntu source proof](reports/linux-supervisor-ubuntu-evidence-20261020.json): CI39384199256/sourcef710575ef SUCCESS; focused721/721, zero skips and all7kernel scenarios (natural/descendant/churn/escalation/cancel/pre-cancel/stale-handle) passed. This is source/kernel proof only; no active guard/admission/browser/native product proof. Capability-unavailable/no-spawn, dropped-permission and stale-supervisor hard-death native holds, startup/IO/pipe handshake, pressure/watchdog, mapped pixels and exact route/cost integration remain required before nativepilot. No retry of the two resource-invalid member launches without changed evidence. CPU readings are one-second snapshots, not a continuous ten-second
 measurement. Guard decisions remain valid; broader capacity needs reviewed infrastructure. Do not
 repeat the same launch blindly or weaken guard thresholds.
 
@@ -166,6 +170,8 @@ repeat the same launch blindly or weaken guard thresholds.
   [release checkpoint](reports/store-release-v0566-acceptance-20261019.json).
 
 ## Source units and immediate next work
+
+**D244 remains open.** Source-only acceptance guard `75ad12b022d7968cf7b883ebd78f34789894062f` requires positive compact-popover focus and absence of competing visible dialogs BEFORE trusted Escape. Fresh independent source A/BPASS, actual-source40/40tests; immutable tag CI39381851078 SUCCESS atb284 includes the guard. [Final peer](reports/values244-guard-final-peer-20261020.json). No current native proof or product repair; public205 T13 failure remains. Frozen Store568 uses agents.170, CIdevelopment568/currentmain agents.173; equal extension versions are not equal runtimes.
 
 1. **D258 closed narrowly**, source `ff105b712`, exact568 original scroll479 native PASS above. Measured
    document-space hit conversion, same original button/backend identity and unchanged viewport
@@ -199,7 +205,7 @@ repeat the same launch blindly or weaken guard thresholds.
 
 ## Local resource constraint — not a human-only access gate
 
-On October20 around01:02UTC, system free space fell39→7.9GiB. Apple `cloudd` owns an actively
+On October20 around01:02UTC, system free space fell39→7.9GiB; latest06:25UTC observation is3.8GiB. Apple `cloudd` owns an actively
 growing CloudKit temporary cache file,34.38GiB allocated. Targeted growth matches disk loss.
 Canonical groom dry-run/apply recovered0B; no safe agent-owned12GiB cleanup target exists. No
 personal cache/data or Apple process was removed/stopped. Heavy Mac tests/UI remain on hold
