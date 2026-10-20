@@ -1270,17 +1270,22 @@ export function requireMemberDataDispatchAdmission({
   localSha,
   remoteSha,
   sourceSha,
+  artifactSourceSha = sourceSha,
   dirty,
   runs,
   secretNames,
 }) {
-  requireExactDispatchSource(
-    localSha,
-    remoteSha,
-    dirty,
-    sourceSha,
-    'HOSTED_MEMBER_DATA_SOURCE_DRIFT',
-  );
+  requireSynchronizedDispatchSource(localSha, remoteSha, dirty);
+  if (sourceSha !== remoteSha) refuse('HOSTED_MEMBER_DATA_SOURCE_DRIFT');
+  if (artifactSourceSha !== sourceSha) {
+    let compatibility;
+    try {
+      compatibility = sourceCompatibility(process.cwd(), artifactSourceSha);
+    } catch {
+      refuse('HOSTED_MEMBER_DATA_SOURCE_DRIFT');
+    }
+    if (compatibility.mainSha !== sourceSha) refuse('HOSTED_MEMBER_DATA_SOURCE_DRIFT');
+  }
   if (
     !Array.isArray(runs) ||
     runs.some((run) => run.status !== 'completed' && !/^Native B · /.test(run.name ?? ''))
@@ -1725,7 +1730,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         runId: developmentRunId,
         artifactId: developmentArtifactId,
         sourceSha,
-        ...(guestSeo && { allowRuntimeEquivalent: true }),
+        ...((guestSeo || memberData) && { allowRuntimeEquivalent: true }),
       });
       if (
         mode === 'dispatch-settings-member' ||
@@ -1814,17 +1819,36 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             remoteSha,
             dirty,
             sourceSha,
+            ...(memberData && { artifactSourceSha: artifact.sourceSha }),
             ...history,
             runs,
             secretNames: secrets.secrets?.map((secret) => secret.name),
           });
-          (memberData || settings ? requireExactDispatchSource : requireSynchronizedDispatchSource)(
-            execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
-            ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha,
-            execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
-            sourceSha,
-            memberData ? 'HOSTED_MEMBER_DATA_SOURCE_DRIFT' : 'HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT',
-          );
+          const afterAdmissionLocalSha = execFileSync('git', ['rev-parse', 'HEAD'], {
+            encoding: 'utf8',
+          }).trim();
+          const afterAdmissionRemoteSha = ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha;
+          const afterAdmissionDirty = execFileSync('git', ['status', '--porcelain'], {
+            encoding: 'utf8',
+          }).trim();
+          if (settings)
+            requireExactDispatchSource(
+              afterAdmissionLocalSha,
+              afterAdmissionRemoteSha,
+              afterAdmissionDirty,
+              sourceSha,
+              'HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT',
+            );
+          else
+            requireSynchronizedDispatchSource(
+              afterAdmissionLocalSha,
+              afterAdmissionRemoteSha,
+              afterAdmissionDirty,
+            );
+          if (memberData) {
+            const current = sourceCompatibility(process.cwd(), artifact.sourceSha);
+            if (current.mainSha !== sourceSha) refuse('HOSTED_MEMBER_DATA_SOURCE_DRIFT');
+          }
         }
         if (scrape || settingsGuest) {
           verifyHostedWorkflowCheckout({

@@ -1,0 +1,55 @@
+{
+  "id": "EXT-D-0270",
+  "feature_id": "EXT-F-2005",
+  "case_ids": ["EXT-F-2005-T03"],
+  "title": "Member Data native admission rejects proven documentation-only artifact drift",
+  "surface": "Hosted member-data CLI admission and artifact provenance",
+  "auth_mode": "approved ordinary member",
+  "organization_context": "Private approved member organization fixture, selected and verified before Data actions.",
+  "reproduction": [
+    "Use the successful CI development artifact at source 45b0cc8640643fdc9c34927b55a5fbd586654cfa (run 39450706517, artifact 12278752132).",
+    "Advance synchronized main through only docs/stabilization records, then run the normal guarded member-data lifecycle plan/dispatch with current main SHA."
+  ],
+  "expected": "The existing canonical sourceCompatibility proof admits this runtime-equivalent artifact, while refusing executable, harness, workflow, or lockfile drift and rechecking source before dispatch.",
+  "actual": "The member-data path required exact CI artifact/main SHA before the canonical documentation-only proof could run, falsely refusing the frozen artifact despite runtime equivalence.",
+  "severity": "S2: blocks the remaining member Data T03 native lifecycle acceptance; no product malfunction established.",
+  "priority": "P1: enable an eligible bounded T03 run through normal admission.",
+  "state": "fixed",
+  "owner": "data_t03_next_native",
+  "cause": "requireDevelopmentArtifact was invoked without its existing allowRuntimeEquivalent option and member-data dispatch used requireExactDispatchSource; the canonical documentation-only classifier was wired for guest SEO but not this member-data route.",
+  "sibling_census": "Guest SEO already uses the canonical runtime-equivalence proof and post-admission recheck. Settings and other route policies retain their exact-source rules. Member-data plan, dispatch, and artifact validation are changed together.",
+  "evidence": [
+    "scripts/hosted-remote-admission.test.mjs",
+    "scripts/hosted-remote-admission.mjs",
+    "docs/stabilization/reports/data-t03-repaired-native-20261020.json",
+    "/tmp/data-t03-next-native-20261020.json"
+  ],
+  "verification_status": "Old member-data CLI regression RED with HOSTED_DEVELOPMENT_RUN_INVALID on documentation-only drift; repaired focused CLI GREEN, including refusal for src, native harness, workflow and lockfile drift. Independent source review and actual T03 native run pending; zero new product credit.",
+  "transition_history": [
+    {
+      "at": "2026-10-20T16:06:38Z",
+      "from": null,
+      "to": "open",
+      "reason": "Normal member-data plan falsely refused the 45b artifact after documentation-only main commits."
+    },
+    {
+      "at": "2026-10-20T16:06:38Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Confirmed the branch-specific exact-source gate precedes the existing shared runtime-equivalence proof."
+    },
+    {
+      "at": "2026-10-20T16:06:38Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Added a real CLI regression that fails on the old refusal and protects executable-path exclusions."
+    },
+    {
+      "at": "2026-10-20T16:06:38Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Shared canonical proof wired into member-data artifact validation and source admission with post-admission recheck; focused red/green established, native pending."
+    }
+  ],
+  "next_action": "Independent source review; after exact-main CI and normal lane A admission, run the bounded member-data lifecycle against the approved fixture and record native resource/product/cleanup verdicts separately."
+}

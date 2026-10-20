@@ -1026,7 +1026,9 @@ function selectedSource(name, original) {
 if (process.argv[1].endsWith('/git')) {
   if (args[0] === 'rev-parse') process.stdout.write(selectedSource('local', cfg.localSha || cfg.sourceSha));
   else if (args[0] === 'status') process.stdout.write(cfg.dirty || '');
-  else if (args[0] === 'log' || args[0] === 'merge-base') fs.writeFileSync(cfg.log + '.history', args[0]);
+  else if (args[0] === 'diff' || args[0] === 'log') process.stdout.write((cfg.changedPath || '') + (cfg.changedPath ? '\\0' : ''));
+  else if (args[0] === 'merge-base') process.exit(cfg.notAncestor ? 1 : 0);
+  else if (args[0] === 'ls-files') process.stdout.write('');
   else process.exit(99);
 } else if (args[0] === 'workflow') {
   fs.writeFileSync(cfg.log, JSON.stringify(args));
@@ -1037,8 +1039,8 @@ if (process.argv[1].endsWith('/git')) {
   else if (endpoint.includes('/contents/')) result = { path: '.github/workflows/hosted-guest-acceptance.yml', type: 'file', encoding: 'base64', content: Buffer.from(cfg.workflow).toString('base64') };
   else if (endpoint.includes('/actions/secrets')) result = { secrets: cfg.noSecret ? [] : [{ name: 'MATRX_REVIEWER_MAGIC_LINK_JSON' }] };
   else if (endpoint.includes('/actions/workflows/')) result = { total_count: (cfg.runs || (endpoint.includes('hosted-resource-diagnostic') ? cfg.diagnosisRuns : []) || []).length, workflow_runs: cfg.runs || (endpoint.includes('hosted-resource-diagnostic') ? cfg.diagnosisRuns : []) || [] };
-  else if (endpoint.includes('/artifacts?')) result = { artifacts: [{ id: cfg.wrongArtifact || cfg.artifactId, expired: false, name: 'matrx-extend-development-test-' + cfg.sourceSha + '-' + cfg.runId + '-1', digest: cfg.digest }] };
-  else if (endpoint.endsWith('/actions/runs/' + cfg.runId)) result = { name: 'CI', path: '.github/workflows/ci.yml', event: 'push', head_branch: 'main', conclusion: 'success', head_sha: cfg.sourceSha, run_attempt: 1 };
+  else if (endpoint.includes('/artifacts?')) result = { artifacts: [{ id: cfg.wrongArtifact || cfg.artifactId, expired: false, name: 'matrx-extend-development-test-' + (cfg.artifactSourceSha || cfg.sourceSha) + '-' + cfg.runId + '-1', digest: cfg.digest }] };
+  else if (endpoint.endsWith('/actions/runs/' + cfg.runId)) result = { name: 'CI', path: '.github/workflows/ci.yml', event: 'push', head_branch: 'main', conclusion: 'success', head_sha: cfg.artifactSourceSha || cfg.sourceSha, run_attempt: 1 };
   else process.exit(98);
   process.stdout.write(JSON.stringify(result));
 }
@@ -1096,13 +1098,35 @@ if (process.argv[1].endsWith('/git')) {
     const memberDispatch = execute('dispatch');
     assert.equal(memberDispatch.status, 0, memberDispatch.stderr);
     assert.ok(JSON.parse(readFileSync(log, 'utf8')).includes('member_data_scope=lifecycle'));
+    const documentationOnly = {
+      artifactSourceSha: 'c'.repeat(40),
+      changedPath: 'docs/stabilization/reports/data-t03-repaired-native-20261020.json',
+    };
+    const equivalentPlan = execute('plan', documentationOnly);
+    assert.equal(equivalentPlan.status, 0, equivalentPlan.stderr);
+    assert.equal(JSON.parse(equivalentPlan.stdout).artifact.compatibility, 'runtime-equivalent');
+    const equivalentDispatch = execute('dispatch', documentationOnly);
+    assert.equal(equivalentDispatch.status, 0, equivalentDispatch.stderr);
+    assert.ok(JSON.parse(readFileSync(log, 'utf8')).includes('member_data_scope=lifecycle'));
+    for (const changedPath of [
+      'src/features/data/DataView.tsx',
+      'tests/browser/data-member-native-acceptance.mjs',
+      '.github/workflows/hosted-guest-acceptance.yml',
+      'pnpm-lock.yaml',
+    ]) {
+      rmSync(log, { force: true });
+      const refused = execute('dispatch', { ...documentationOnly, changedPath });
+      assert.equal(refused.status, 1, changedPath);
+      assert.match(refused.stderr, /HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT/);
+      assert.throws(() => readFileSync(log), /ENOENT/);
+    }
     for (const [change, code] of [
       [{ noSecret: true }, 'HOSTED_MEMBER_DATA_SECRET_MISSING'],
       [
         { runs: [{ name: 'Native A · member-data', status: 'in_progress' }] },
         'HOSTED_MEMBER_DATA_A_CAPACITY_REFUSED',
       ],
-      [{ moveAfterAdmission: true }, 'HOSTED_MEMBER_DATA_SOURCE_DRIFT'],
+      [{ moveAfterAdmission: true }, 'HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT'],
       [{ wrongArtifact: 1 }, 'HOSTED_DEVELOPMENT_ARTIFACT_INVALID'],
     ]) {
       rmSync(log, { force: true });
