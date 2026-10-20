@@ -130,8 +130,9 @@ ARM hosts have also refused prior member runs; no proven larger/quiescent option
 repo, no registered self-hosted runners, larger Macs require organization Team/Enterprise; Linux
 is currently unsupported. Contained [Linux sampler/readiness preparation](reports/linux-native-capacity-20261020.json)
 now has fresh source B PASS / A PARTIAL. Local actual tests13pass+3explicitLinuxskips; CPUcounter,
-unreadablecensus, reusedowner and invaliddeadline negative guards proved. Normal automatic UbuntuCI
-will capture real kernel/process evidence; no browser dispatch. Active guard/workflow/normal routes
+unreadablecensus, reusedowner and invaliddeadline negative guards proved. Sourceprep `dcf6c168a`, integration `289bb7e6624ed59ad02549b0a0c4fb79e138b8ac` preserves
+contributor package refreshes. Exact automatic CI39379731713 is PENDING behind existing mainCI;
+root owns terminal evidence follow-through. No sourceCI/Ubuntu/native pass yet; no browser dispatch. Active guard/workflow/normal routes
 remain refused. Pressure/watchdog, typedjournals, mappedwindow/pixels, staleownership and the
 nonatomic census→PGID signal gap are activationholds, never productpasses or member support.
 Next source step: inspect exact automatic CI LINUX_KERNEL_INTERVAL and actualLinux-only tests;

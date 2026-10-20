@@ -20,7 +20,7 @@
     "route": "Existing Ubuntu jobs in .github/workflows/ci.yml and focused-acceptance.yml run pnpm test:focused-acceptance, which already includes scripts/hosted-resource-readiness-loop.test.mjs. No workflow change or extra job is needed.",
     "output_marker": "LINUX_KERNEL_INTERVAL",
     "source": "Real /proc/stat, /proc/pressure/memory, /proc/meminfo, and /proc/loadavg on an existing light Ubuntu runner",
-    "actual_ubuntu_evidence": "PENDING_REVIEWED_PUSH_AND_AUTOMATIC_CI",
+    "actual_ubuntu_evidence": "PENDING_AUTOMATIC_CI39379731713",
     "genuine_pressure_interval": "UNKNOWN; no host stress authorized"
   },
   "local_checks": {
@@ -53,7 +53,13 @@
     "docs/stabilization/reports/linux-native-capacity-signal-peer-20261020.json",
     "docs/stabilization/reports/linux-native-capacity-skip-peer-20261020.json"
   ],
-  "source_ci": "PENDING_AUTOMATIC_CI_AFTER_NORMAL_PUSH",
+  "source_ci": {
+    "run_id": 39379731713,
+    "head_sha": "289bb7e6624ed59ad02549b0a0c4fb79e138b8ac",
+    "state": "pending",
+    "ownership": "stabilization-coordinator",
+    "next_action": "Inspect terminal checks and LINUX_KERNEL_INTERVAL plus Linux-only process tests from this exact automatic CI; do not infer Ubuntu/native pass before execution."
+  },
   "resume_contract": {
     "phase": "Unit1 pure telemetry/readiness and owned live-leader cleanup preparation only; no active Linux route integration.",
     "first_future_route": "Only B guest-scrape-development / seo-schema-empty / guest / exact frozen CI development artifact; all other Linux cases remain refused.",
@@ -67,5 +73,7 @@
     ],
     "pilot": "NONE",
     "product_behavior_credit": 0
-  }
+  },
+  "source_commit": "dcf6c168af096ce16e9c956cbcb4864311e797b7",
+  "integration_commit": "289bb7e6624ed59ad02549b0a0c4fb79e138b8ac"
 }
