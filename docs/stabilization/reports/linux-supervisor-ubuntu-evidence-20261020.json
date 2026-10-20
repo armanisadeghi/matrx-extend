@@ -1,0 +1,25 @@
+{
+  "status": "ACTUAL_UBUNTU_SOURCE_PROOF_PASS_NATIVE_UNVERIFIED",
+  "ci": {
+    "run_id": 39384199256,
+    "source_sha": "f710575efdae4f42bde2a99a321684fee5e34e97",
+    "conclusion": "success",
+    "checks_job": 118500024381,
+    "resource_job": "success",
+    "checks_raw_log_sha256": "a9fcaf663a72b36c0f7fd0166bc09467c9d94c5cb4cc57347f881d80cae48213",
+    "focused": "721 passed, 0 failed, 0 skipped",
+    "linux_actual_scenarios": [
+      "natural",
+      "descendant",
+      "churn",
+      "escalate",
+      "cancel",
+      "pre_cancel",
+      "stale-handle"
+    ],
+    "linux_scenario_status": "All seven LINUX_OWNED_KERNEL summaries occurred in actual Ubuntu focused log; matching owned supervisor subtests 80-92 passed including negative holds. No Linux-scenario skip. Unit tests 2519 passed, 6 skipped; CI terminal success."
+  },
+  "scope": "Bounded supervisor/source tests only, no active Linux guard, browser admission or product behavior",
+  "review_limits": "Unavailable-capability/no-spawn, dropped-permission and stale-supervisor hard-death native hold cases, startup/IO/control-pipe ownership, pressure/readiness/watchdog and mapped native pixels remain activation gates. No forced numeric PID reuse proof.",
+  "next_action": "Keep Linux native routes refused until remaining integration/proof. Exact candidate acceptance now has source freeze; do not change harness underneath prepared artifact."
+}

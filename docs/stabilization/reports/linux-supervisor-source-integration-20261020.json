@@ -35,5 +35,5 @@
     "duration_ms": 52719.884292,
     "platform": "macOS; Linux-only branches explicitly skipped"
   },
-  "ci_followthrough": "Source and checkpoint were pushed together with skip-ci tip; no automatic source CI launched. This evidence commit intentionally enables existing full CI for actual Ubuntu kernel checks. No workflow dispatch or additional workflow."
+  "ci_followthrough": "Existing CI39384199256 SUCCESS atf710575ef. Ubuntu focused721passed/0failed/0skipped; all7actual LINUX_OWNED_KERNEL scenarios. No Linux native activation/product proof; see linux-supervisor-ubuntu-evidence-20261020.json."
 }
