@@ -35,11 +35,17 @@ HANDOFF: native-like real-Radix guard passes OLD code, so no valid RED/no produc
 bounded Astra `values244_handler_identity_escalation` inspects actual compiled forwarding/DOM
 handler identity; no new native retry authorized. S3/P2 Values must not swallow all other work.
 [Release eligibility](reports/member-gate-release-eligibility-20261020.json) is NO GO: source
-allowlist rejects reviewed test-only/CI-only drift from574; no meaningful package/runtime update
-justifies duplicate packaging. [D267](defects/EXT-D-0267.json) now owns canonical source-proof
-repair under `member_source_admission_class_repair`; fresh plan attack conditions are binding
-(exact full harness CI, additive CI command/cost prose only, per-path actual build exclusion).
-No guard bypass/native/Store action. [Bounded API diagnosis](reports/member261-owned-api-diagnosis-20261020.json)
+source proof refuses574→current and [actual build inspection](reports/member-source-admission-class-repair-20261020.json)
+shows the initial “test-only” assumption was incomplete. Automatic Tailwind scanning includes
+reports/tests; frozen574 vs1b development globalCSS differs by inline-max (specific cause unproven).
+The guard is correct and unchanged; speculative broadening was fully removed,32original guards pass.
+[D267](defects/EXT-D-0267.json) is refined to actual build-input scope under `style_source_boundary_repair`:
+source **b2ad76e9f** scopes automatic scanning to app TS/TSX/WXT HTML, excludes tests/fixtures,
+and preserves both existing shared-package paths. Actual compiler/Oxide baselineRED/newGREEN,
+app/shared positives and cleanup independently verified; CI-selection gap fixed/fresh A/B PASS.
+D267 is source-fixed, not closed; fullCI/fresh meaningful candidate and real UI surrounding gates
+remain pending. No product UI pass/overall health is inferred.
+No sourceguard bypass/native/Store action. [Bounded API diagnosis](reports/member261-owned-api-diagnosis-20261020.json)
 is inconclusive: authenticated start/toolresults/resume200 but delegated reads remain pending,
 no terminal assistant; not native proof or closure. Current backend5c3beef2 remains stable.
 Fresh Values identity probe source unit is awaiting independent review; no further native authorized

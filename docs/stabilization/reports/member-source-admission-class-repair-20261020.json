@@ -1,0 +1,37 @@
+{
+  "task_id": "member-source-admission-class-repair-20261020",
+  "status": "HOLD_PROVEN_RUNTIME_EQUIVALENCE_GAP",
+  "decision": "Do not broaden hosted-release-member-admission for frozen 0.2.574. The existing release_member_product_changed refusal remains correct until the current harness is proved to leave the packaged Store bytes equivalent.",
+  "candidate": {
+    "release_run_id": 39409723565,
+    "source_sha": "d862a9ac93c336669f6abe6ae3a26a2cadb335c9",
+    "store_zip_sha256": "33ae86d8eaf331ec0b9af327769e39036b93e8954a5c0219f5fb51c5a3526ec5"
+  },
+  "reviewed_harness": {
+    "sha": "1b831c27d98dc690fcff5526e304b92c23f4c8aa",
+    "successful_main_push_ci_run_id": 39410623190,
+    "ci_jobs": ["checks: success", "resource-guard-integration: success"],
+    "required_regression_step": "Guest transport observer regression: success",
+    "ci_artifact_id": 12259880170,
+    "ci_artifact_provenance_source": "1b831c27d98dc690fcff5526e304b92c23f4c8aa",
+    "ci_artifact_provenance_version": "0.2.574"
+  },
+  "artifact_comparison": {
+    "release_store_globals_css_sha256": "debe22bbff05c26f217b26fb978bae172d46d25de10a0e293febb8ddfb7187d8",
+    "release_local_globals_css_sha256": "debe22bbff05c26f217b26fb978bae172d46d25de10a0e293febb8ddfb7187d8",
+    "current_ci_globals_css_sha256": "fee08bfcd874256cd3e2714f5cc9e28f8dc19a6d8e0eba0d5d1b44dea801a983",
+    "other_css_assets": "Four remaining CSS files match byte-for-byte.",
+    "observed_difference": "Current CI CSS adds one .inline-max{inline-size:max-content} rule (36 bytes). Its exact cause is unproven; the string exists in the candidate source as well, so release/CI scan or build environment may explain it.",
+    "tailwind_scan": "The installed Tailwind 4 Scanner includes tests/browser/guest-values-escape-probe.mjs and guest-values-escape-probe.test.mjs among scanned files. Therefore srcDir and JS import exclusion do not prove test files are outside the build graph."
+  },
+  "verification": {
+    "existing_admission_tests": "32/32 passed after restoring unchanged canonical source helper",
+    "compile_during_investigation": "passed",
+    "code_changes_retained": false,
+    "commit_or_push": false,
+    "build_or_dispatch": false,
+    "product_acceptance_claimed": false
+  },
+  "exact_gap": "A mechanical proof must account for Tailwind's project-wide source scan and establish Store-mode CSS equivalence between the frozen release artifact and the exact admitted harness source. The available immutable CI development artifact differs in global CSS, so it cannot serve as that proof. Do not substitute a filename-only tests/browser allowance, green CI alone, or a second Store build of unchanged product source.",
+  "next_action": "Keep the admission refusal. An independently reviewed source-contract design must either provide a valid Store-mode CSS equivalence proof from immutable artifacts or make the build's scan inputs explicitly exclude acceptance-only files in a future runtime-source release. Then repeat old RED, new GREEN, and planted negative guard checks before any member dispatch."
+}
