@@ -1,0 +1,27 @@
+{
+  "status": "DONE",
+  "verdict_A_current_claims": "PASS_WITH_BOUNDED_STALENESS",
+  "evidence": [
+    "At HEAD 8d6b9fa56, lockfile adoption is agents 0.59.176, chat 0.8.249, rich-content 0.2.237; installed agents JS has the Escape handler on the shared ContextRulesChip body consumed by both BottomSheet and Popover. Published tarball SHA/integrity and registry gitHead match the adoption report. CI 39427753847 is SUCCESS; consumer_gate is explicitly SKIPPED, so this is not consumer-gate proof.",
+    "Source repair/source peer and old-RED/new-GREEN component evidence are correctly labeled as source evidence. No post-fix trusted native D244 run is claimed; pre-fix guest T13 remains a fail and D244 awaits retest.",
+    "Member 575 resource-valid attempt is correctly partial: terminal HTTP200 answer and 3 delegated calls/results; Page Text join UNKNOWN, follow-up NOT_SENT, original 566 504 cause unresolved. No unique case credit/full T14 claim.",
+    "Personal Chrome report records dev 0.2.575 from d4ba, predating package adoption; Store 0.2.205. Store auth observation is timestamped 2026-10-20 07:02:11Z (public 205, rejected 479, no pending revision). These are not current-install/native or live-now claims.",
+    "I found no durable report for the newer 39429651448 candidate/run described by the owner. Treat the checkpoint as boundedly stale until its result is persisted; do not infer its outcome.",
+    "Inventory and status classify overall scope as incomplete, guest partial, member fail, and D244/D261 still open for native acceptance; no false overall-health claim found."
+  ],
+  "verdict_B_source_doctrine_quality": "PASS_WITH_ONE_ACTIONABLE_AMBIGUITY",
+  "docs_quality": [
+    {
+      "file": "docs/stabilization/defects/EXT-D-0244.json",
+      "quote": "\"state\": \"fixed\"",
+      "verdict": "REWRITE",
+      "reason": "The record's own actual/result fields say post-fix native is UNKNOWN. Although transition history explains that fixed means source unit only, the top-level machine-readable state can be read as product closure. Use a state such as source-fixed-awaiting-native, consistent with the coordinator and current_artifact_boundary."
+    }
+  ],
+  "limits": [
+    "No browser/native attempt, heavy test, workflow query, or package publication was performed.",
+    "No native post-fix D244 behavior verified; no Page Text join/follow-up verified for the member run; no authenticated Store observation newer than the cited timestamp verified."
+  ],
+  "source_label": "checkpoint-adoption-fresh-peer-20261020.json",
+  "source_summary_sha256": "7d02a404735c0616944e5e6d69a7722a76f50b227166448aacdb4f793b90547b"
+}

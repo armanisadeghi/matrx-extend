@@ -25,6 +25,8 @@ After every batch, review throughput in product terms: executable cases attempte
 
 ## Build and reload contract — included in every procedure
 
+Freeze the complete source used by a release candidate, including native test-driver and assertion files, before building it; the normal admission guard must refuse a later driver edit as source drift, even when app code is unchanged.
+
 Every test and retest begins with a resource permit and a build receipt: source SHA plus dirty-source hash when applicable, lockfile hash, output hash, WXT mode, extension runtime ID, Chrome version, profile label, auth/role/org state, permissions, backend identity, fixture IDs, and timestamp. No secrets in receipts.
 
 Receipts also declare login method, principal provenance, real data origin, build/env flags, response interception, mocks and seeded browser state. A real controlled test page is allowed and identified. Mock-backed/component/unit results are supporting evidence only; closure requires actual UI sign-in and real backend reads/writes without mocked service responses or injected sessions standing in for the authentication flow. Verify the effective running configuration rather than trusting a worker's label.

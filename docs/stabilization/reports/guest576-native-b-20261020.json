@@ -1,0 +1,60 @@
+{
+  "task_id": "guest576-native-b-20261020",
+  "lane": "B",
+  "model": "GPT-6",
+  "status": "BLOCKED_SOURCE_DRIFT",
+  "candidate": {
+    "version": "0.2.576",
+    "release_run_id": 39429651448,
+    "artifact_id": 12268110863,
+    "source_sha": "7a2f6108416ea03feb6af0a0978e1d337119166d",
+    "artifact_sha256": "d47ba270180411cc0d75017d54cfddd327bf903f33adab9fb328cf1f967831a7",
+    "store_zip_sha256": "06ecd6bd92b98f372186841b983382b7d762c1981d5af86221ed0dda3ba52dbb",
+    "runtime_tree_sha256": "77f7bc56e692130a0dfc32eea4f401adeb9724ddc81f7d278dac7768a1389579"
+  },
+  "preflight": {
+    "head": "cff24740e323108292acd835d12fadd8f146f4b2",
+    "origin_main": "cff24740e323108292acd835d12fadd8f146f4b2",
+    "clean": true,
+    "plan": "HOSTED_REMOTE_REFUSED HOSTED_CHAT_RUNTIME_SOURCE_DRIFT",
+    "changed_since_source": [
+      "docs/stabilization/reports/values176-release-owner-20261020.json",
+      "tests/browser/member-chat-original-repro.mjs",
+      "tests/browser/reviewer-chat-original-repro.test.mjs",
+      "tests/browser/reviewer-chat-store-acceptance.mjs"
+    ]
+  },
+  "spend": {
+    "status": 200,
+    "read_at": "2026-10-20T13:26:51.507839+00:00",
+    "stale": false,
+    "complete": true,
+    "week_total_usd": 79.12,
+    "cap_usd": 100
+  },
+  "verification": [
+    {
+      "case_id": "EXT-F-2013-T13",
+      "run_id": null,
+      "verdict": "NOT_RUN_SOURCE_DRIFT",
+      "evidence": "normal plan refused before dispatch"
+    }
+  ],
+  "resource": {
+    "workflow_dispatched": false,
+    "resource_journals": "not created; hosted browser/package work never started"
+  },
+  "cleanup": {
+    "artifact_zip_sha256_rechecked": true,
+    "duplicate_artifact_download": false,
+    "local_secrets_staged": false,
+    "owned_leases_or_profiles": false
+  },
+  "limitations": [
+    "No product/native verdicts. Reviewer Settings/Scrape/Data/SEO controls and Values Escape could not be exercised.",
+    "Exact frozen artifact cannot pass current helper while the listed browser harness files differ from release source; no waiver or retry was attempted."
+  ],
+  "next_action": "Prepare a fresh guarded release candidate after current browser-driver work lands, then rerun the same normal guest-chat B plan/dispatch on that exact candidate.",
+  "source_label": "guest576-native-b-20261020.json",
+  "source_summary_sha256": "256875c53ceed3b708ce33f6160e5fdb4015578e468104139b2884005ddeb41c"
+}

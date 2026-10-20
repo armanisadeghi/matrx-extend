@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-20T13:25:33.818449+00:00",
+  "review": "/tmp/checkpoint-adoption-fresh-peer-20261020.json",
+  "rulings": [
+    {
+      "finding": "D244 top state fixed may be confused with closure; suggested custom source-fixed-awaiting-native",
+      "decision": "REFUTED_CUSTOM_STATE; RETAIN_FIXED_WITH_EXPLICIT_NATIVE_UNVERIFIED",
+      "reason": "The user-mandated and PLAN canonical state path is open > triaged > in-fix > fixed > retest-pass/fail > closed. Fixed is required before retest; closed is separate. Native status and current artifact boundary explicitly say UNKNOWN, inventory retains failure and feature remains partial. Inventing an incompatible state would break the required schema; wording may be clarified without changing enum.",
+      "cost_if_wrong": "A reader overlooking explicit native limits could overstate completion; no closure/coverage pass is permitted without independent native evidence."
+    },
+    {
+      "finding": "Current new release run39429651448 absent from prior snapshot",
+      "decision": "CONFIRMED_BOUNDED_STALENESS",
+      "reason": "Release began after checkpoint; active ignored ledger owns exact livehandle; release owner must persist terminal provenance and new authenticated13:22:45 observation before turn end."
+    }
+  ],
+  "member_driver_review": "374bd70ab source A PARTIAL nativepending / B PASS; strictjoin missing still finalfailure. Independent reviewer confirms defer-onlyjoinassert until AFTER followup preserves requirements and yields additional basicChat evidence; fresh review of followup implementation required.",
+  "source_label": "test-results/checkpoint-adoption-root-rulings-20261020.json",
+  "source_summary_sha256": "838d8d17195ba426d023cf6e73aa831e15c2f8d2b4998ca0931df0a88d0716d6"
+}
