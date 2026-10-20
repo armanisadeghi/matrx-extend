@@ -1,0 +1,86 @@
+{
+  "status": "candidate_not_upload_eligible",
+  "candidate": {
+    "version": "0.2.567",
+    "releaseRun": 39352466107,
+    "releaseOutcome": "success",
+    "sourceSha": "92757742d13c8230bcc8447fdf7ddaf2c5db180b",
+    "artifactId": 12234116008,
+    "storeZipSha256": "4d6a42bd1cece0a8433fdbe403e2c4f02784716c62162fd5258bf82e87fcd40d",
+    "runtimeTreeSha256": "b0fc0b7893d280a665a553b01f2716eaf0d4572a6ad63ea23bfee221c66b1865",
+    "packagePeer": "docs/stabilization/reports/candidate567-package-peer-20261020.json"
+  },
+  "environment": {
+    "backendGitSha": "20bd8859ffb7c71d05c3edb7a78e2a3060876b59",
+    "backendStableAcrossGuestRun": true,
+    "sourceHeadAtRunDispatch": "f9ecfd619",
+    "note": "Both runs used the exact 0.2.567 Store ZIP and normal admission. No new product release, Store upload, or retry was dispatched after these failures."
+  },
+  "guestB": {
+    "run": 39353960745,
+    "artifactId": 12234891639,
+    "artifactSha256": "d4a2bd36a8bee8f9357df9deac409ebd4b28cf993caf02f9524ec8efb03f10c9",
+    "packageJournal": "valid",
+    "browserJournal": "valid",
+    "acceptanceJournal": "child_failed",
+    "resourceInvalid": false,
+    "reportStatus": "unverified",
+    "firstAcceptanceFailure": {
+      "stage": "real_same_conversation_followup_answer",
+      "code": "assertionerror",
+      "reason": "answer screenshot ineligible: answer_outside_viewport_or_fixture_missing",
+      "screenshotDiagnostic": "Fixture heading and code were in the answer, but the focused text was clipped by a scroll ancestor; screenshot proof did not qualify."
+    },
+    "boundedChatObservation": {
+      "openingTurn": "terminal_answer",
+      "sameConversationFollowup": "terminal_answer",
+      "sameConversationFingerprint": "ed1e382fe3acbb3a",
+      "transport": "Both turns returned HTTP 200 for agent start, tool_results, and resume, with terminal success and one accepted delegated tool result each.",
+      "guestAiTransportProvenByFullGate": false,
+      "afterReloadFollowup": "not_run"
+    },
+    "publicReviewer": {
+      "source": "pass",
+      "captureArticle": "pass",
+      "captureLinks": "pass_17_links",
+      "captureSchema": "pass",
+      "seoAudit": "pass",
+      "freshAutoCaptureOff": "pass",
+      "dataPickerDone": "fail",
+      "dataPickerDiagnostic": "One field was selected. The target remained visible and focused on the same foreground page with unchanged Done center; DOM.getNodeForLocation failed with no_node_at_location before mouse input resolved. No Data result was produced.",
+      "fullReviewerPass": false
+    },
+    "privateArtifact": "/Volumes/Samsung2TB/code/.stabilization-scratch/release567.sDuBaS/guest-run39353960745.zip"
+  },
+  "memberA": {
+    "run": 39354133238,
+    "artifactId": 12234347638,
+    "artifactSha256": "323e7d80d6d930b2b9874c2c9f44605bc58e0706d7d4e60c583a70ab43073c46",
+    "selectedAuthenticationPreflight": "success",
+    "packageJournal": "valid",
+    "browserJournal": "valid",
+    "acceptanceJournal": "invalid",
+    "resourceInvalid": true,
+    "resourceCodes": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+    "failureStage": "owned_profile",
+    "chatSendOccurred": false,
+    "d261Conclusion": "No new D261 product evidence; the original exact 0.2.566 member first-turn 504 remains open.",
+    "privateArtifact": "/Volumes/Samsung2TB/code/.stabilization-scratch/release567.sDuBaS/member-run39354133238.zip"
+  },
+  "cleanup": {
+    "oneUseGitHubMagicLinkSecret": "deleted_and_absence_verified_after_selected_auth_preflight",
+    "localOneUseMagicLinkFile": "deleted_and_absence_verified",
+    "activeRuns": 0
+  },
+  "gate": {
+    "storeUploadEligible": false,
+    "blockingEvidence": [
+      "Guest screenshot assertion failed and full guest acceptance is unverified.",
+      "Public reviewer Data picker Done failed before click despite foreground target visibility/focus.",
+      "Member 0.2.567 run was resource-invalid before Chat; D261 0.2.566 first-turn 504 has not been repaired or retested.",
+      "Current package registry and authenticated primary Store dashboard must be rechecked before any future upload."
+    ],
+    "latestPrimaryDashboardObservation": "2026-10-19T16:20:00Z: published 0.2.205; draft 0.2.479 rejected; no pending",
+    "nextAction": "Diagnose the Data Done target-lookup failure and screenshot clipping, then obtain a resource-valid exact-candidate member first-turn run after a supported changed condition. Do not infer Store readiness from source, package, or bounded chat passes."
+  }
+}
