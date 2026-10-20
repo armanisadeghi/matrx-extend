@@ -157,7 +157,10 @@ test('member Settings acceptance admits the verified load-ladder organization', 
   );
   assert.ok(requestProof, 'member sign-in must prove the live request-bound organization');
   assert.match(requestProof[0], /observeMemberLogicalOrganizationGet\(/);
-  assert.match(requestProof[0], /await refreshMemberLogicalOrganizationGet\(panel, observer\)/);
+  assert.match(
+    requestProof[0],
+    /await refreshMemberLogicalOrganizationGet\(panel, observer, click, onAuthDiagnostic\)/,
+  );
   assert.match(requestProof[0], /await observer\.verify\(\)/);
 });
 import { recordDataMemberDriverDiagnostic } from './data-member-driver-diagnostic.mjs';

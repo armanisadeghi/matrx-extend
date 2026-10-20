@@ -814,8 +814,16 @@ export async function signInSettings({
           );
           try {
             await observer.start();
-            await refreshMemberLogicalOrganizationGet(panel, observer);
+            await refreshMemberLogicalOrganizationGet(panel, observer, click, onAuthDiagnostic);
+            onAuthDiagnostic?.({
+              phase: 'logical_organization_request',
+              target: 'organization_request_wait',
+            });
             const proof = await observer.verify();
+            onAuthDiagnostic?.({
+              phase: 'logical_organization_request',
+              target: 'organization_settings_return',
+            });
             await click(panel, 'title', 'Settings');
             return proof;
           } finally {

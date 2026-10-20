@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 import {
   observeMemberLogicalOrganizationGet,
@@ -31,12 +32,12 @@ test('member request proof refuses a non-production backend or override', async 
   );
 });
 
-test('fresh compute read arms only after the picker is ready and before Refresh', async () => {
+test('fresh Records read arms only after Catalog is ready and before Records', async () => {
   const actions = [];
   const panel = {
     send: async (command) => {
       assert.equal(command, 'Runtime.evaluate');
-      return { result: { value: true } };
+      return { result: { value: 'catalog' } };
     },
   };
   await refreshMemberLogicalOrganizationGet(
@@ -44,7 +45,7 @@ test('fresh compute read arms only after the picker is ready and before Refresh'
     { arm: () => actions.push('arm') },
     async (_panel, kind) => actions.push(kind),
   );
-  assert.deepEqual(actions, ['title', 'chat-compute-trigger', 'arm', 'chat-compute-refresh']);
+  assert.deepEqual(actions, ['title', 'arm', 'tool-row']);
 });
 
 function networkPanel() {
@@ -58,11 +59,13 @@ function networkPanel() {
       return () => group.delete(listener);
     },
     async send(method) {
+      if (method === 'Runtime.evaluate')
+        return { result: { value: createHash('sha256').update('private-token').digest('hex') } };
       assert.equal(method, 'Network.enable');
     },
     emit({
       method = 'GET',
-      url = `${ORIGIN}/api/compute-targets/`,
+      url = `${ORIGIN}/tools/test/list`,
       organizationId = EXPECTED,
       authorization = 'Bearer private-token',
       status = 200,
@@ -99,8 +102,8 @@ test('real authenticated read binds the expected logical organization ID; a same
   assert.equal(matching.snapshot().exact_get_count, 0, 'pre-arm request is stale');
   matching.arm();
   matchingPanel.emit({ method: 'POST' });
-  matchingPanel.emit({ url: 'https://other.example/api/compute-targets/' });
-  matchingPanel.emit({ url: `${ORIGIN}/api/compute-targets/resolve` });
+  matchingPanel.emit({ url: 'https://other.example/tools/test/list' });
+  matchingPanel.emit({ url: `${ORIGIN}/tools/test/other` });
   assert.equal(matching.snapshot().exact_get_count, 0);
   matchingPanel.emit();
   assert.deepEqual(await matching.verify(), {

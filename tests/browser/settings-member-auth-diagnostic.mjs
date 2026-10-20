@@ -48,7 +48,7 @@ const WAIT_CODES = new Set([
   'd87_member_organization_option_unavailable',
   'd87_rendered_identity',
   'd87_member_logical_organization_get',
-  'member_compute_refresh_ready',
+  'showcase_tools_catalog_ready',
 ]);
 
 const POINTER_CODES = new Set([

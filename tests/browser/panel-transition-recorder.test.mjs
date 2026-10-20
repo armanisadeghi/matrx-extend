@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { createContext, runInContext } from 'node:vm';
@@ -545,7 +546,16 @@ test('real Scrape auth caller records first member selection, skip, identity, an
         assert.equal(expected, organizationId);
         assert.equal(origin, PRODUCTION_BACKEND_ORIGIN);
         proofActions.push('observe');
-        const observer = observeMemberLogicalOrganizationGet(panel, expected, origin);
+        const proofPanel = {
+          on: (...args) => panel.on(...args),
+          send: (method, params) =>
+            method === 'Runtime.evaluate' && params.expression.includes('crypto.subtle.digest')
+              ? Promise.resolve({
+                  result: { value: createHash('sha256').update('fixture-token').digest('hex') },
+                })
+              : panel.send(method, params),
+        };
+        const observer = observeMemberLogicalOrganizationGet(proofPanel, expected, origin);
         return {
           async start() {
             proofActions.push('start');
@@ -568,12 +578,12 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       refreshMemberLogicalOrganizationGet: async (_panel, observer) => {
         proofActions.push('refresh');
         observer.arm();
-        const requestId = 'fresh-compute-read';
+        const requestId = 'fresh-records-read';
         env.emitNetwork('Network.requestWillBeSent', {
           requestId,
           request: {
             method: 'GET',
-            url: `${PRODUCTION_BACKEND_ORIGIN}/api/compute-targets/`,
+            url: `${PRODUCTION_BACKEND_ORIGIN}/tools/test/list`,
             headers: {
               Authorization: 'Bearer fixture-token',
               'X-Organization-Id': proofOrganizationId,

@@ -1,0 +1,56 @@
+{
+  "id": "EXT-D-0271",
+  "feature_id": "EXT-F-2005",
+  "case_ids": ["EXT-F-2005-T03"],
+  "title": "Member organization proof requires a removed Chat compute picker",
+  "surface": "Shared native member authentication prerequisite",
+  "auth_mode": "ordinary member; approved organization",
+  "organization_context": "Existing private member identity and approved membership fixture; no fixture changes.",
+  "reproduction": [
+    "Run member logical-organization proof against current PackageChat artifact d90: legacy Compute trigger and dialog strings are absent from all 1284 emitted JavaScript files.",
+    "Run node --test tests/browser/member-records-proof271.test.mjs with old member-logical-org-proof implementation in a scratch copy: missing legacy trigger refuses before the actual read."
+  ],
+  "expected": "Use a present product control and prove its completed authenticated request carries the approved organization before Data writes.",
+  "actual": "Legacy helper clicks Chat then a deleted compute control. Hosted39456820094 reports pointer_target_not_unique within this broad prerequisite; exact failed click was not captured.",
+  "severity": "S2: acceptance harness prerequisite blocks product testing; no product defect established.",
+  "priority": "P1",
+  "state": "fixed",
+  "owner": "data_t03_stall_diagnosis",
+  "cause": "PackageChat replaced the old Chat composer; member logical-org helper retained its removed compute trigger and Refresh path. Source/emitted-artifact absence plus controlled real-pointer reproduction establishes the harness class, not exact native click attribution.",
+  "sibling_census": "Settings initial/reload and Scrape save use the same member helper and inherit repair. Showcase already uses real Tools/Records GET; its observer and native navigation are now shared, not copied.",
+  "fix": "Reuse existing Tools\u2192Catalog\u2192Records pointer path and existing completed GET observer; preserve exact approved-org header, add exact bearer fingerprint comparison, arm immediately before Records click, save fixed target/count diagnostics.",
+  "evidence": [
+    "tests/browser/member-records-proof271.test.mjs",
+    "tests/browser/member-logical-org-proof.test.mjs",
+    "tests/browser/showcase-request-boundary.test.mjs",
+    "tests/browser/scrape-save-org-admission.test.mjs",
+    "docs/stabilization/reports/data-t03-next-native-20261020.json"
+  ],
+  "verification_status": "Focused67/67 pass. Old implementation RED; constant-success and wrong-organization scratch mutants RED. New regression registered in automatic focused CI. Full compile/CI, independent review and native replay pending. Zero Data acceptance credit. CPU/resource invalidation remains unexplained; no CPU fix claimed.",
+  "transition_history": [
+    {
+      "at": "2026-10-20T16:41:20.169564+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Observed prerequisite failure; emitted-artifact/real-selector diagnostic confirms removed-control harness class."
+    },
+    {
+      "at": "2026-10-20T16:41:20.170017+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Legacy compute proof no longer has a matching current product surface."
+    },
+    {
+      "at": "2026-10-20T16:41:20.170019+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Reuse existing authenticated Records proof and add bounded diagnostic coverage."
+    },
+    {
+      "at": "2026-10-20T16:41:20.170020+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Self-tested source repair with RED/GREEN and rejected mutants; native and independent gates remain open."
+    }
+  ]
+}

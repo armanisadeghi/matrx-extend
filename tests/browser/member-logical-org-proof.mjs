@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { observeShowcaseProductRequest, panelBearerHash } from './organization-product-request.mjs';
+import { openOrganizationRecords } from './organization-records-navigation.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -19,89 +21,78 @@ export async function requireProductionBackendOrigin(panel) {
   return PRODUCTION_BACKEND_ORIGIN;
 }
 
-/** Trigger a fresh read after the hidden force-mounted Chat view has settled. */
-export async function refreshMemberLogicalOrganizationGet(panel, observer, clickControl = click) {
-  await clickControl(panel, 'title', 'Chat');
-  await clickControl(panel, 'chat-compute-trigger', 'Compute');
-  await waitFor(
-    'member_compute_refresh_ready',
-    () =>
-      evaluate(
-        panel,
-        `(() => {
-          const dialogs = [...document.querySelectorAll('[role="dialog"][data-state="open"]')]
-            .filter((dialog) => [...dialog.querySelectorAll('div')]
-              .some((node) => node.textContent.trim() === 'Agent compute target'));
-          const buttons = dialogs.flatMap((dialog) => [...dialog.querySelectorAll('button[title="Refresh"]')]);
-          return buttons.length === 1 && !buttons[0].disabled;
-        })()`,
-      ),
-    (ready) => ready === true,
-  );
-  observer.arm();
-  await clickControl(panel, 'chat-compute-refresh', 'Refresh');
+/** Use the existing read-only Records product door; PackageChat has no legacy Compute picker. */
+export async function refreshMemberLogicalOrganizationGet(
+  panel,
+  observer,
+  clickControl = click,
+  onDiagnostic = () => {},
+) {
+  let target = 'organization_tools_gate';
+  try {
+    await openOrganizationRecords(panel, {
+      clickControl,
+      beforeRecords: () => observer.arm(),
+      onStage: (stage) => {
+        target = stage;
+        onDiagnostic({ phase: 'logical_organization_request', target });
+      },
+    });
+  } catch (error) {
+    const count = (value) =>
+      Number.isSafeInteger(value) && value >= 0 && value <= 100 ? value : null;
+    onDiagnostic({
+      phase: 'logical_organization_request',
+      target,
+      matched_target_count: count(error?.driverFailure?.matchedTargetCount),
+      visible_target_count: count(error?.driverFailure?.visibleMatchCount),
+    });
+    throw error;
+  }
 }
 
 /** Observe the extension's own authenticated, read-only active-org request. */
 export function observeMemberLogicalOrganizationGet(panel, expectedOrganizationId, serverOrigin) {
   assert.ok(UUID.test(expectedOrganizationId ?? ''), 'd87_member_expected_organization_unverified');
   assert.ok(/^https:\/\/[^/]+$/.test(serverOrigin ?? ''), 'd87_member_backend_origin_unverified');
-  const requests = new Map();
-  let armed = false;
-  const header = (headers, name) =>
-    Object.entries(headers ?? {}).find(([key]) => key.toLowerCase() === name)?.[1];
-  const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
-    if (!armed) return;
-    try {
-      const url = new URL(request?.url);
-      if (
-        url.origin !== serverOrigin ||
-        url.pathname !== '/api/compute-targets/' ||
-        url.search !== '' ||
-        request?.method !== 'GET'
-      )
-        return;
-      requests.set(requestId, {
-        authenticated: /^Bearer \S+$/.test(header(request.headers, 'authorization') ?? ''),
-        organization_matches_expected:
-          header(request.headers, 'x-organization-id') === expectedOrganizationId,
-        response_ok: false,
-        finished: false,
-        failed: false,
-      });
-    } catch {
-      // Unrelated requests cannot establish the logical organization.
-    }
-  });
-  const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
-    const request = requests.get(requestId);
-    if (request) request.response_ok = response?.status === 200;
-  });
-  const offFinished = panel.on('Network.loadingFinished', ({ requestId }) => {
-    const request = requests.get(requestId);
-    if (request) request.finished = true;
-  });
-  const offFailed = panel.on('Network.loadingFailed', ({ requestId }) => {
-    const request = requests.get(requestId);
-    if (request) request.failed = true;
-  });
-  const snapshot = () => ({
-    exact_get_count: requests.size,
-    complete: [...requests.values()].every((request) => request.finished || request.failed),
-    authenticated: requests.size === 1 && [...requests.values()][0].authenticated,
-    organization_matches_expected:
-      requests.size === 1 && [...requests.values()][0].organization_matches_expected,
-    response_ok: requests.size === 1 && [...requests.values()][0].response_ok,
-  });
+  assert.equal(
+    serverOrigin,
+    PRODUCTION_BACKEND_ORIGIN,
+    'member_logical_org_backend_not_production',
+  );
+  let observer = null;
+  let bearerHash = null;
+  const snapshot = () => {
+    const result = observer?.result();
+    return {
+      exact_get_count: result?.exactRequestCount ?? 0,
+      complete:
+        result?.responseFinished === true ||
+        result?.loadingFailed === true ||
+        (result?.exactRequestCount ?? 0) > 1,
+      authenticated: result?.authenticatedPrincipalMatches === true,
+      organization_matches_expected: result?.productHeaderMatches === true,
+      response_ok: result?.successfulResponse === true,
+    };
+  };
   return {
-    start: () => panel.send('Network.enable'),
+    async start() {
+      bearerHash = await panelBearerHash(panel);
+      assert.match(
+        bearerHash ?? '',
+        /^[0-9a-f]{64}$/,
+        'd87_member_logical_organization_unauthenticated',
+      );
+      await panel.send('Network.enable');
+    },
     arm() {
-      requests.clear();
-      armed = true;
+      assert.ok(bearerHash, 'd87_member_logical_organization_unauthenticated');
+      observer?.stop();
+      observer = observeShowcaseProductRequest(panel, expectedOrganizationId, bearerHash);
     },
     snapshot,
     async verify(timeoutMs = 30_000) {
-      assert.equal(armed, true, 'd87_member_logical_organization_not_armed');
+      assert.ok(observer, 'd87_member_logical_organization_not_armed');
       const result = await waitFor(
         'd87_member_logical_organization_get',
         snapshot,
@@ -124,10 +115,7 @@ export function observeMemberLogicalOrganizationGet(panel, expectedOrganizationI
       };
     },
     stop() {
-      offRequest();
-      offResponse();
-      offFinished();
-      offFailed();
+      observer?.stop();
     },
   };
 }

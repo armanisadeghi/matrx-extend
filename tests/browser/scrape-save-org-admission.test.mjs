@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import {
@@ -20,9 +21,16 @@ function observedPanel() {
       listeners.set(event, callbacks);
       return () => callbacks.delete(callback);
     },
-    async send(command) {
+    async send(command, params) {
       assert.ok(['Network.enable', 'Runtime.evaluate'].includes(command));
-      if (command === 'Runtime.evaluate') return { result: { value: true } };
+      if (command === 'Runtime.evaluate')
+        return {
+          result: {
+            value: params.expression.includes('crypto.subtle.digest')
+              ? createHash('sha256').update('private-test-token').digest('hex')
+              : 'catalog',
+          },
+        };
       return {};
     },
     emit(event, payload) {
@@ -39,7 +47,7 @@ function emitRequest(
   {
     requestId = 'org-read',
     method = 'GET',
-    url = `${ORIGIN}/api/compute-targets/`,
+    url = `${ORIGIN}/tools/test/list`,
     headers = { Authorization: TOKEN, 'X-Organization-Id': EXPECTED_ORG },
   } = {},
 ) {
@@ -51,7 +59,7 @@ function emitRequest(
   panel.emit('Network.loadingFinished', { requestId });
 }
 
-test('D187 admission requires the authenticated compute-target GET to match the private fixture org', async () => {
+test('D187 admission requires the authenticated Records GET to match the private fixture org', async () => {
   const panel = observedPanel();
   const proof = observeMemberLogicalOrganizationGet(panel, EXPECTED_ORG, ORIGIN);
   await proof.start();
@@ -59,10 +67,10 @@ test('D187 admission requires the authenticated compute-target GET to match the 
   emitRequest(panel); // Stale/background GET before arming must not satisfy proof.
   assert.equal(proof.snapshot().exact_get_count, 0);
   emitRequest(panel, { method: 'POST' });
-  emitRequest(panel, { url: 'https://unrelated.invalid/api/compute-targets/' });
+  emitRequest(panel, { url: 'https://unrelated.invalid/tools/test/list' });
   proof.arm();
   emitRequest(panel, { method: 'POST' });
-  emitRequest(panel, { url: 'https://unrelated.invalid/api/compute-targets/' });
+  emitRequest(panel, { url: 'https://unrelated.invalid/tools/test/list' });
   await assert.rejects(() => proof.verify(20), /d87_member_logical_organization_get_not_observed/);
   proof.stop();
   assert.equal(panel.listenerCount(), 0);
@@ -134,15 +142,14 @@ test('the observer receipt contains only bounded facts, never the private org UU
   const actions = [];
   await refreshMemberLogicalOrganizationGet(panel, proof, async (_panel, kind, label) => {
     actions.push([kind, label]);
-    if (kind === 'chat-compute-refresh') emitRequest(panel);
+    if (kind === 'tool-row') emitRequest(panel);
   });
   const receipt = await proof.verify(20);
   proof.stop();
 
   assert.deepEqual(actions, [
-    ['title', 'Chat'],
-    ['chat-compute-trigger', 'Compute'],
-    ['chat-compute-refresh', 'Refresh'],
+    ['title', 'Tools'],
+    ['tool-row', 'records'],
   ]);
 
   assert.deepEqual(receipt, {
