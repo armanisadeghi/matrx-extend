@@ -1,0 +1,44 @@
+{
+  "observed_at_utc": "2026-10-20T20:06:08.475706+00:00",
+  "case": "settings-controls",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "development_run_id": 39487705655,
+  "development_artifact_id": 12294872340,
+  "artifact_name": "matrx-extend-development-test-26ebf23b7f4a905757d5ffbea62b8080c8a52006-39487705655-1",
+  "source_sha": "26ebf23b7f4a905757d5ffbea62b8080c8a52006",
+  "origin_main_at_dispatch": "9fd7043b2e488d7614a2220c082e9de0052a6cff",
+  "dispatched": false,
+  "product_verdict": "unverified",
+  "certificate": null,
+  "resource_journals": null,
+  "cleanup": "no hosted job or owned process started",
+  "spend_status": {
+    "observed_at_utc": "2026-10-20T20:05:53.335Z",
+    "read_at": "2026-10-20T19:29:46.723603+00:00",
+    "complete": true,
+    "stale": false,
+    "week_total_usd": 79.12,
+    "week_cap_usd": 100,
+    "off_track_flag": true,
+    "note": "Flag inconsistent with complete numeric total; no actual cap overage or billing refusal observed."
+  },
+  "attempt_history": [
+    {
+      "source_sha": "a429ea8428533e64c2533a5de81e4b4cf459287a",
+      "development_run_id": 39485701723,
+      "development_artifact_id": 12294285661,
+      "admission_refusal": "HOSTED_REMOTE_REFUSED HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED",
+      "admission_exit_code": 1,
+      "dispatched": false
+    }
+  ],
+  "development_run_conclusion": "success",
+  "current_checkpoint": "CI succeeded but source changed again before admission; no second dispatch attempt, no product verdict",
+  "remote_change_paths": [
+    "docs/TOOLS.generated.md",
+    "package.json",
+    "types/tool-catalog.json",
+    "types/tool-catalog.md"
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "run_id": "source-retry578-live-peer-20261020",
+  "verdict": "later_canonical_web_source_readback_pass_with_identity_limits",
+  "case_id": "EXT-F-1007-T22",
+  "source_sha": "9fd7043b2e488d7614a2220c082e9de0052a6cff",
+  "artifact_run_id": 39488355878,
+  "artifact_id": 12294519442,
+  "prior_evidence": "/tmp/scrape-dialog-current-native-20261020.json",
+  "cleanup": {
+    "browser_ui_actions": 0,
+    "queue_mutations": 0,
+    "record_mutations": 0,
+    "tabs_changed": 0,
+    "panel_changed": 0,
+    "permit_terminal": true,
+    "permit_absent_after_terminal": true,
+    "new_source_tab_closed": true,
+    "side_panel_closed": true,
+    "original_tabs_restored": true
+  },
+  "principal": "admin/member role unconfirmed",
+  "fresh_readback": {
+    "browser": "Chrome Profile 8, unpacked Matrx Extend 0.2.578 ID cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "source_id": "7f70b11a-d5ab-4153-af6c-b4b33d0953d5",
+    "source_url": "https://aimatrx.com/knowledge/sources/7f70b11a-d5ab-4153-af6c-b4b33d0953d5",
+    "saved_capture": "Matrx Extend Demo Page, https://www.aimatrx.com/matrx-extend-demo, saved listing dated 2026-10-20 1:18:41 PM, Captured by you",
+    "canonical_web_app": "Opened from saved capture. Source route loaded with Saved and Searchable status, matching title and original page URL. After Chrome full reload, Content tab showed Guest edit sentinel: amber orbit and Scroll fixture paragraphs 1–24.",
+    "remote_persistence": "Observed same canonical Source route and payload after full Chrome reload. No raw network trace or direct database query; original queued item ID/bytes/history were not independently captured.",
+    "principal": "signed-in [account email withheld]; admin-only tabs visible in extension, but backend role/org not independently verified",
+    "mutations": "read-only navigation/reload, no retry or record edit/archive/delete"
+  },
+  "resource_guard_readback": {
+    "journal": "test-results/stabilization-resource-journals/source-retry578-live-peer-readback-20261020.jsonl",
+    "admitted": true,
+    "decision": "valid",
+    "exit_code": 0,
+    "resource_invalid": false,
+    "permit_absent_after_terminal": true
+  },
+  "reconciled_outcome": "Initial manual Profile 8 admission was refused with zero browser action. A later separately admitted, valid read-only session reopened canonical Source 7f70b11a-d5ab-4153-af6c-b4b33d0953d5 and saw Saved/Searchable plus the edited content after Chrome page reload. The initial refusal and old remote_source field describe only the first attempt.",
+  "reconciliation_limit": "Canonical web-app persistence is observed, but original queue ID/bytes, backend role/organization, and direct network/database write trace remain unverified.",
+  "initial_attempt": {
+    "actual_readback": "No fresh native readback: manual Profile 8 browser admission was refused before any UI action. Previous Luna receipt reports local Saved captures entry and article content only.",
+    "remote_source": "Unproven: no canonical remote Source ID, direct server readback, or persisted payload after reopen/reload was observed by this peer.",
+    "resource_guard": {
+      "journal": "test-results/stabilization-resource-journals/source-retry578-live-peer-20261020.jsonl",
+      "admitted": false,
+      "decision": "refused",
+      "exit_code": 2,
+      "reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_DISK_LOW"],
+      "pressure_level": 1,
+      "profile_free_gib": 19.949844360351562
+    },
+    "outcome": "Admission refused before any UI action; no readback, queue mutation, or record mutation."
+  },
+  "actual_readback": "Later separately admitted native read-only session opened the canonical Source, saw Saved/Searchable status, then after full web Source-page reload saw amber-orbit edit and scroll fixture paragraphs1–24.",
+  "remote_source": "Canonical web-app Source 7f70b11a-d5ab-4153-af6c-b4b33d0953d5 persisted across web Source-page reload; no direct database query or network write trace.",
+  "resource_guard": {
+    "journal": "test-results/stabilization-resource-journals/source-retry578-live-peer-readback-20261020.jsonl",
+    "admitted": true,
+    "decision": "valid",
+    "exit_code": 0,
+    "resource_invalid": false,
+    "permit_absent_after_terminal": true
+  },
+  "case_binding_note": "Independent canonical Source readback corroborates signed-in Retry T22 only. Initial task named T43; Save-dialog dismissal evidence is a separate old-build owner observation."
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T19:08:49Z",
+  "updated_at": "2026-10-20T20:42:33Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -16473,7 +16473,46 @@
           "limits": "Zero Settings cases ran and no product defect is established. The native failure is a baseline shell-observation failure; failure_operation is stale metadata from the prior organization-proof stage. The Boolean identity diagnostic did not run because its exact gate targets d87_rendered_identity_not_observed at settings_ready. No current-main or Store credit."
         }
       ],
-      "source_audit_sha": "6f4e9d0211315949f50a3d11b35dfa732822abec"
+      "source_audit_sha": "6f4e9d0211315949f50a3d11b35dfa732822abec",
+      "execution_attempts": [
+        {
+          "at": "2026-10-20T20:23:53Z",
+          "mode": "guest",
+          "run_id": 39490478586,
+          "source_sha": "9fd7043b2e488d7614a2220c082e9de0052a6cff",
+          "development_ci_run_id": 39488355878,
+          "development_artifact_id": 12294519442,
+          "build_version": "0.2.578",
+          "status": "resource_invalid_no_product_verdict",
+          "reason": "Guest journal final invalid exit3: RESOURCE_CPU_HIGH_LOAD_BUSY; load10.13 on4 logical CPUs. No native case report or normal verifier certificate.",
+          "selected_case_ids": [
+            "EXT-F-1003-T04",
+            "EXT-F-1003-T10",
+            "EXT-F-1003-T13",
+            "EXT-F-1003-T16",
+            "EXT-F-1003-T19",
+            "EXT-F-1003-T22",
+            "EXT-F-1003-T28",
+            "EXT-F-1003-T31",
+            "EXT-F-1003-T34",
+            "EXT-F-1003-T37",
+            "EXT-F-1003-T40",
+            "EXT-F-1003-T46",
+            "EXT-F-1003-T63",
+            "EXT-F-1003-T64",
+            "EXT-F-1003-T67",
+            "EXT-F-1003-T70",
+            "EXT-F-1003-T73",
+            "EXT-F-1003-T76",
+            "EXT-F-1003-T92"
+          ],
+          "new_acceptance_credit": false,
+          "evidence": [
+            "docs/stabilization/reports/settings-guest578-frozen-20261020.json",
+            "docs/stabilization/reports/settings578-native-evidence-peer-20261020.json"
+          ]
+        }
+      ]
     },
     {
       "id": "EXT-F-1004",
@@ -28370,6 +28409,22 @@
               "report": "docs/stabilization/reports/remote-sources-1300.json",
               "runtime": "unverified"
             }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-20T20:36:37Z",
+              "mode": "signed-in role and organization unconfirmed",
+              "run_id": "scrape-dialog-current-native-20261020",
+              "status": "partial_unassigned_role",
+              "source_sha": "9fd7043b2e488d7614a2220c082e9de0052a6cff",
+              "build_version": "0.2.578",
+              "new_full_role_case_pass": false,
+              "detail": "One visible public demo queued Source Retry changed count1→0 on dev578; Saved captures showed matching title/URL and edited article. A later separately admitted peer reopened canonical Source 7f70b11a-d5ab-4153-af6c-b4b33d0953d5 after full web-page reload and saw amber-orbit edit plus scroll paragraphs1–24. Original queue ID/bytes/history, guest refusal/retry, repeated refusal, and backend role/org remain unproved.",
+              "evidence": [
+                "docs/stabilization/reports/scrape-dialog-current-native-20261020.json",
+                "docs/stabilization/reports/source-retry578-live-peer-20261020.json"
+              ]
+            }
           ]
         },
         {
@@ -29400,6 +29455,19 @@
                 "docs/stabilization/reports/scrape-source-save-fresh-peer-20261020.json"
               ],
               "new_full_role_case_pass": false
+            },
+            {
+              "at": "2026-10-20T20:18:41Z",
+              "mode": "signed-in role and organization unconfirmed",
+              "run_id": "scrape-dialog-current-native-20261020",
+              "status": "partial_unassigned_role",
+              "source_sha": "8aba01086df743fd1e8ec91265b81a34095eb0b1",
+              "build_version": "0.2.577",
+              "new_full_role_case_pass": false,
+              "detail": "Close and Escape each dismissed Save Source and retained edited in-memory capture before/after actual extension-manager Reload on dev577. Reload required recapture; original queue stayed count1 at that observation. No server-side no-write proof. These dialog steps were not repeated on dev578; its later public demo Retry is T22 progress, not T43 dismissal proof.",
+              "evidence": [
+                "docs/stabilization/reports/scrape-dialog-current-native-20261020.json"
+              ]
             }
           ]
         },
@@ -96435,7 +96503,8 @@
     "Settings source census is reconciled through source SHA 6f4e9d0; guest/member/admin controls now have explicit readiness procedures. Runtime additions and failure-injection paths remain unverified. Global scope_complete remains false.",
     "Settings follow-up: T60 now requires visible actionable clipboard failure feedback and no false copied-success state. Current console-only error handling is retained as unverified source lead EXT-L-SETTINGS-002, not a runtime defect or pass.",
     "Source snapshot636d0085 includes the independently reviewed six-file WebMCP delta since d6678732; see .research/inventory-source-delta-check-20261007.json. This does not re-census the historical baseline or establish native completeness; scope_complete and all feature/case/runtime data are unchanged.",
-    "2026-10-18 source-to-case reconciliation proposal from ignored stabilization audits. Reconciled against current checkout e4b5e32b5e6936e302905ec327b3ab60f858c792; source-only additions remain unverified. Existing result cells and bounded historical partial results are preserved. See node_modules/.cache/stabilization-pending-evidence-oct18/inventory-patch-verification-20261018.json."
+    "2026-10-18 source-to-case reconciliation proposal from ignored stabilization audits. Reconciled against current checkout e4b5e32b5e6936e302905ec327b3ab60f858c792; source-only additions remain unverified. Existing result cells and bounded historical partial results are preserved. See node_modules/.cache/stabilization-pending-evidence-oct18/inventory-patch-verification-20261018.json.",
+    "2026-10-20 actual dev578/source9fd CI39488355878/artifact12294519442 loaded/reloaded with tree dbd37aa6; import command exit1 remains despite independent provenance/hash PASS. Public demo Retry and canonical Source readback are bounded T22 progress. T43 Close/Escape belongs to prior dev577/source8aba only. Guest stale-profile D217 original not retested. Guest Settings hosted39490478586 resource-invalid; 19 selected cases receive zero new credit. Store577 remains Pending review at last authenticated 15:26:38Z observation, public205. See COORDINATOR and dated reports; source_sha retains earlier census snapshot and is not a claim of current runtime source."
   ],
   "source_review": "docs/stabilization/reports/takeover-inventory-reconciled.json"
 }

@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-20T20:23:53.518540+00:00",
+  "task_id": "settings_guest_578_frozen_run",
+  "feature_id": "EXT-F-1003",
+  "case": "settings-controls",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "auth_mode": "guest",
+  "source_sha": "9fd7043b2e488d7614a2220c082e9de0052a6cff",
+  "source_at_dispatch": "clean local HEAD and origin/main exact match",
+  "development": {
+    "ci_run_id": 39488355878,
+    "ci_conclusion": "success",
+    "artifact_id": 12294519442,
+    "artifact_name": "matrx-extend-development-test-9fd7043b2e488d7614a2220c082e9de0052a6cff-39488355878-1",
+    "artifact_digest": "sha256:d5e97e955249ccdce366253a73befe4bbf845f6211bac13d2a8af7449d2f0947"
+  },
+  "admission": {
+    "normal_cli_plan": "passed",
+    "normal_cli_dispatch": "passed",
+    "requested_by": "extend-stabilization",
+    "jobs_dispatched": 1
+  },
+  "hosted_run": {
+    "id": 39490478586,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39490478586",
+    "head_sha": "9fd7043b2e488d7614a2220c082e9de0052a6cff",
+    "conclusion": "failure",
+    "evidence_artifact_id": 12295906773,
+    "evidence_artifact_digest": "sha256:fb5fed27b5fa2c817a112e2bb3f854ff54fe055ff2faf8af1876c76d1c93c081",
+    "raw_zip": "/tmp/settings-guest578-frozen-39490478586/raw.zip"
+  },
+  "actual_observations": [
+    "hosted source/artifact gate accepted exact CI development artifact",
+    "native browser and one side-panel context appeared",
+    "uploaded side-panel screenshot shows only shell/navigation, with no Settings content",
+    "no native case report was uploaded before watchdog stop"
+  ],
+  "case_verdicts": {
+    "EXT-F-1003-T04": "unverified_no_pass_credit",
+    "EXT-F-1003-T10": "unverified_no_pass_credit",
+    "EXT-F-1003-T13": "unverified_no_pass_credit",
+    "EXT-F-1003-T16": "unverified_no_pass_credit",
+    "EXT-F-1003-T19": "unverified_no_pass_credit",
+    "EXT-F-1003-T22": "unverified_no_pass_credit",
+    "EXT-F-1003-T28": "unverified_no_pass_credit",
+    "EXT-F-1003-T31": "unverified_no_pass_credit",
+    "EXT-F-1003-T34": "unverified_no_pass_credit",
+    "EXT-F-1003-T37": "unverified_no_pass_credit",
+    "EXT-F-1003-T40": "unverified_no_pass_credit",
+    "EXT-F-1003-T46": "unverified_no_pass_credit",
+    "EXT-F-1003-T63": "unverified_no_pass_credit",
+    "EXT-F-1003-T64": "unverified_no_pass_credit",
+    "EXT-F-1003-T67": "unverified_no_pass_credit",
+    "EXT-F-1003-T70": "unverified_no_pass_credit",
+    "EXT-F-1003-T73": "unverified_no_pass_credit",
+    "EXT-F-1003-T76": "unverified_no_pass_credit",
+    "EXT-F-1003-T92": "unverified_no_pass_credit"
+  },
+  "product_verdict": "unverified_resource_invalid",
+  "resource_journals": {
+    "package": {
+      "decision": "valid",
+      "exit_code": 0
+    },
+    "browser": {
+      "decision": "valid",
+      "exit_code": 0
+    },
+    "guest": {
+      "decision": "invalid",
+      "exit_code": 3,
+      "resource_invalid": true,
+      "reason": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+      "observed_one_minute_load": 10.13,
+      "logical_cpus": 4,
+      "watchdog": "RESOURCE_STOP_AT_SAFE_BOUNDARY then SIGTERM process group"
+    }
+  },
+  "cleanup": {
+    "workflow_terminal": true,
+    "resource_group_stop_requested": true,
+    "guest_final_recorded": true,
+    "pending_journals_in_artifact": false,
+    "temporary_credentials_staged": false,
+    "local_heavy_processes_started": false,
+    "exact_child_process_exit_independently_verified": false
+  },
+  "normal_cli_certificate": null,
+  "certificate_reason": "Resource-invalid run with no native case report; no guest Settings normal verifier certificate applicable.",
+  "limits": [
+    "No retry or relocated job under this task.",
+    "No Settings case is marked passed from the screenshot or completed setup steps.",
+    "Actual product controls did not reach inspectable report evidence.",
+    "No Store-installed claim."
+  ],
+  "durable_terminal_journals": [
+    "docs/stabilization/resource-journals/hosted-package-39490478586-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-browser-39490478586-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-guest-39490478586-1.jsonl"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "at_utc": "2026-10-20T20:27:07.360854+00:00",
+  "scope": "bounded Mac resource recovery; no browser, VM, build, release, source edit, or manual deletion",
+  "before": {
+    "repo_free_gib": 1620.4801177978516,
+    "chrome_profile_volume_free_gib": 19.882450103759766,
+    "memory_free_percent": 70,
+    "memory_pressure_level": "not read independently before; parent observed 1"
+  },
+  "dry_run": {
+    "command": "python3 /Users/armanisadeghi/code/common-docs/meta/scripts/disk-groom/groom.py daily",
+    "result": "exit 1; inventory and worktrees JSONDecodeError Extra data line 250; Docker stopped; scoped dev-caches projected zero bytes"
+  },
+  "apply": {
+    "command": "python3 /Users/armanisadeghi/code/common-docs/meta/scripts/disk-groom/groom.py dev-caches --apply",
+    "log": "/tmp/stabilization-groom-apply-20261020.log",
+    "tool_reported_freed_bytes": 0,
+    "errors": "17 system temp entries denied by macOS Operation not permitted; one open path preserved; package caches below caps; no browser profiles/VMs/worktrees touched"
+  },
+  "after": {
+    "repo_free_gib": 1620.494972229004,
+    "chrome_profile_volume_free_gib": 20.066085815429688,
+    "memory_free_percent": 70,
+    "memory_pressure_level": 1,
+    "note": "Volume free space changed during interval but tool reported 0B; change cannot be attributed to this cleanup"
+  },
+  "resource_check": {
+    "command": "node scripts/stabilization-resource.mjs check --run-id stabilization-recovery-check-20261020-1 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "journal": "/Volumes/Samsung2TB/code/matrx-extend/test-results/stabilization-resource-journals/stabilization-recovery-check-20261020-1.jsonl",
+    "decision": "refused",
+    "reason": "RESOURCE_DISK_LOW",
+    "exit_code": 2,
+    "final_sample": {
+      "profile_free_gib": 20.066192626953125,
+      "pressure_level": 1,
+      "available_memory_gib": 11.2,
+      "cpu_busy_fraction": 0.16714285714285718
+    },
+    "reasons": [
+      "RESOURCE_DISK_LOW"
+    ],
+    "pressure_interpretation": "pressureLevel 1 is a sampled normal value, not a refusal reason"
+  },
+  "next_action": "Keep Mac browser work stopped. Obtain a separately proven safe internal-volume capacity gain using documented maintenance; rerun the unchanged guard once capacity is stable. Investigate daily inventory JSONDecodeError separately.",
+  "cleanup": {
+    "permit_absent": true,
+    "hold_absent": true,
+    "own_terminal_journal_archived_to_ignored_test_results": true
+  }
+}

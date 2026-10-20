@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "run_id": "scrape-dialog-current-native-20261020",
+  "case_id": "EXT-F-1007-T43",
+  "verdict": "partial_observation_dialog_old_build_current_artifact_verified_and_public_queue_retry_success",
+  "profile": {
+    "label": "Profile 8",
+    "path": "[Chrome profile path withheld]",
+    "chrome_version": "155.0.8059.82 (arm64)",
+    "principal": "signed-in email visible; role and organization unknown"
+  },
+  "loaded_extension": {
+    "kind": "development unpacked",
+    "version": "0.2.577",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "source_sha": "8aba01086df743fd1e8ec91265b81a34095eb0b1",
+    "artifact_run_id": 39478634445,
+    "artifact_id": 12289629521,
+    "pin_enabled": true,
+    "store_extension": {
+      "version": "0.2.205",
+      "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+      "enabled": true,
+      "pin_enabled": true
+    }
+  },
+  "current_source_lag": {
+    "main_sha_at_completion": "9fd7043b2e488d7614a2220c082e9de0052a6cff",
+    "latest_ci_run_id": 39488355878,
+    "latest_ci_state": "success_with_development_artifact_12294519442",
+    "latest_ci_artifact_lookup": "GitHub returned total_count 0 at lookup time",
+    "current_source_artifact_loaded": true
+  },
+  "fixture": {
+    "url": "https://www.iana.org/help/example-domains",
+    "title": "Example Domains",
+    "marker_before_reload": "Fixture marker: scrape-dialog-current-native-20261020.",
+    "marker_after_reload": "Fixture marker: scrape-dialog-current-native-20261020-post-reload.",
+    "capture_treatment": "Captured only for this test. Applied marker to the in-memory capture. After extension-manager reload the old capture was no longer active, so the page was re-captured and a new marker applied.",
+    "post_cleanup_state": "Test tab closed; the extension reports this test capture as retained locally from a previous page. It was not saved as a Source."
+  },
+  "observations": [
+    {
+      "phase": "before_extension_reload",
+      "dialog": {
+        "title": "Save Source",
+        "controls": [
+          "Close Save Source",
+          "Name: Example Domains",
+          "URL: https://www.iana.org/help/example-domains",
+          "Choose a place",
+          "Add to Library",
+          "Save Source"
+        ]
+      },
+      "close_button": {
+        "result": "dialog closed",
+        "capture_retained": true,
+        "marker_visible": true,
+        "existing_unsaved_queue_count": 1
+      },
+      "escape": {
+        "result": "dialog closed",
+        "capture_retained": true,
+        "marker_visible": true,
+        "existing_unsaved_queue_count": 1
+      }
+    },
+    {
+      "phase": "after_actual_extension_manager_reload",
+      "reload_evidence": "Chrome extension details page showed Reloaded toast; loaded-from path, version 0.2.577, ID cihdmkcdjjckfhjpgoedmgfpoljebaml and pin were visible.",
+      "capture_after_reload": "previous in-memory capture was no longer active; recaptured IANA fixture and applied post-reload marker",
+      "close_button": {
+        "result": "dialog closed",
+        "capture_retained": true,
+        "marker_visible": true,
+        "existing_unsaved_queue_count": 1
+      },
+      "escape": {
+        "result": "dialog closed",
+        "capture_retained": true,
+        "marker_visible": true,
+        "existing_unsaved_queue_count": 1
+      }
+    }
+  ],
+  "source_write": {
+    "save_source_clicked": false,
+    "observed_saved_source_created": true,
+    "network_proof": false,
+    "limitation": "The Save Source dialog was never submitted. One authorized Retry save action on the visible public demo queue item succeeded and a matching-title/source entry appeared in Saved captures; no network-level write proof or source ID was collected.",
+    "retry_save_clicked": true
+  },
+  "cleanup": {
+    "test_tab_closed": true,
+    "original_store_extension_details_tab_restored": true,
+    "side_panel_closed": true,
+    "resource_guard": "valid; admitted=true, resourceInvalid=false, exitCode=0, decision=valid",
+    "resource_journal": "test-results/scrape-dialog-current-native-20261020.jsonl",
+    "owned_temp_artifacts": "a429ea8428533e64c2533a5de81e4b4cf459287a CI import remains under ignored test-results; its promotion was refused after main advanced to 26ebf23b7, and it was not loaded",
+    "current578_resource_journal": "test-results/scrape-dialog-current-native-20261020-current578.jsonl",
+    "resource_guard_current578": "valid; admitted=true, resourceInvalid=false, exitCode=0, decision=valid"
+  },
+  "limitations": [
+    "Behavior was observed on the older loaded 0.2.577 artifact from source 8aba01086df743fd1e8ec91265b81a34095eb0b1, not current source 9fd7043b2e488d7614a2220c082e9de0052a6cff.",
+    "The profile's signed-in role and organization were not identified, so this does not pass the guest, member, or admin case cell.",
+    "No server-side no-write proof was collected.",
+    "The bounded dialog close/Escape behavior was observed first on old 0.2.577; the new 0.2.578 artifact was manager-reloaded and checked for exact identity/path/pin, but the full dialog control test was not repeated on 0.2.578."
+  ],
+  "current_source_artifact": {
+    "source_sha": "9fd7043b2e488d7614a2220c082e9de0052a6cff",
+    "run_id": 39488355878,
+    "artifact_id": 12294519442,
+    "artifact_digest": "sha256:d5e97e955249ccdce366253a73befe4bbf845f6211bac13d2a8af7449d2f0947",
+    "version": "0.2.578",
+    "tree_sha256": "dbd37aa68a18e90bfd62b76dac60393322ed8cb848603454e50bdd2d4720c536",
+    "import_command": "node scripts/current-test-artifact.mjs import 39488355878 12294519442",
+    "import_exit": 1,
+    "import_message": "test_artifact_operation_failed; import created evidence files but exited nonzero",
+    "promotion_command": "node scripts/promote-ci-dev-artifact.mjs test-results/ci-artifacts/9fd7043b2e488d7614a2220c082e9de0052a6cff/39488355878-1/chrome-mv3",
+    "promotion_result": "CI_DEV_PROMOTED; promoter independently verified imported evidence and tree",
+    "promoted_to": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev"
+  },
+  "current_loaded_extension": {
+    "kind": "development unpacked",
+    "version": "0.2.578",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "pin_enabled": true,
+    "enabled": true,
+    "actual_extension_manager_reload": "Reload button clicked; Chrome showed Reloaded toast"
+  },
+  "public_demo_retry": {
+    "action_scope": "one Retry save on visible public Matrx Extend Demo Page queue item; no discard/edit/archive/delete",
+    "queue_before": 1,
+    "visible_title": "Matrx Extend Demo Page",
+    "visible_url": "https://www.aimatrx.com/matrx-extend-demo",
+    "visible_error": "Could not read your organizations: permission denied for function mbr_for_user. This page is kept on this device; choose a workspace and retry.",
+    "role_or_organization": "unknown",
+    "retry_clicked_once": true,
+    "queue_after": 0,
+    "saved_captures_listing": "Matrx Extend Demo Page, www.aimatrx.com, dated 10/20/2026 1:18:41 PM, Captured by you",
+    "source_readback": "Opened the listing. Article showed The three workflow stages and Why page-aware assistance matters, including Guest edit sentinel: amber orbit and scroll fixture text.",
+    "source_id": "not exposed in this UI readback",
+    "network_proof": false,
+    "no_discard_delete_or_archive": true,
+    "identity_limit": "Title and URL match the visible queue item; original queue item ID/bytes/history were not independently proven."
+  },
+  "reconciled_outcome": "Close and Escape before/after extension-manager Reload were exercised only on dev 0.2.577/source8aba. Dev 0.2.578/source9fd was imported/promoted and manager-reloaded, then one public demo Retry changed queue 1 to 0. A later separate fresh read-only peer reopened the canonical saved Source after full web-page reload; see source-retry578-live-peer-20261020.json.",
+  "reconciled_limit": "No Close/Escape exercise on 578, role-mode case PASS, server no-write proof, or original guest stale-profile Save/Retry retest. Earlier current_source_lag lookup was transient and superseded by the later verified import/promotion; import command itself still exited 1."
+}
