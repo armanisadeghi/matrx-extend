@@ -74,11 +74,16 @@ root cause remain unverified, not repaired by inference.
 ## Source units and immediate next work
 
 Active owner `root/release_next_hosted_owner` owns the next exact567 A/B acceptance and release
-checkpoint. Exact567 guest B39353960745 and member A39354133238 are ACTIVE, both admitted
-from clean f9ecfd619 on separate hosted hosts. Release owner retains both external handles until
-terminal and owns evidence/cleanup. Member selected-auth preflight passed; its one-use link file
-and owned GitHub secret were deleted immediately, with absence verified. No new Store upload.
-Settings A39352539316 and the guarded build are terminal. Do not duplicate the active runs.
+checkpoint. Exact567 guest B39353960745 and member A39354133238 are TERMINAL failures.
+[Exact567 results](reports/store-release-v0567-acceptance-20261020.json): B resources valid;
+opening and same-conversation replies reached terminal answers, but answer screenshot clipped,
+so full guest gate UNVERIFIED. Data Done repeats no_node_at_location before mouse despite visible,
+focused original target; simple foreground hypothesis is refuted. Article/Links/Schema/SEO and
+capture-off have bounded passes only. A resources INVALID (CPU/load), stopped owned_profile,
+no member send/no new D261 evidence. One-use link/secret deleted with absence verified; no active
+external run or new Store upload. Fresh hard-stall agent root/data_done567_forensics owns read-only
+protocol diagnosis; root/settings_absence_assertion_repair fixes the T22/T63 absence-oracle bug
+with fresh peer/CI still required. Settings A39352539316 and the guarded build are terminal.
 Root owns integration/records. Source-only repairs are committed; verify origin/main and the next CI before relying on integration:
 
 1. **D248 `8d8fda5fe`**: shared trusted foreground restoration before organization proof;
@@ -93,7 +98,7 @@ Root owns integration/records. Source-only repairs are committed; verify origin/
    safe before/after geometry/visibility evidence, backend-node identity retained through final
    CDP session, fresh moved coordinates and strict hit equality. No blind retry/fake DOM.
   21targeted tests, meaningful mutations, compile and fresh source peer pass. Three Data suites
-   registered in focused CI. Native experiment pending; no product fix or native closure claim.
+   registered in focused CI. Exact567 native experiment failed at the same no-node boundary; no product fix or native closure claim.
    [Repair](reports/data566-foreground-experiment-20261019.json),
    [final peer](reports/data566-final-peer-20261019.json).
 3. Previous full focused command passed585/585 under a valid Mac guard, before the test-list
@@ -168,7 +173,7 @@ feature-mode claim; all unknown, stale, blocked and unverified coverage remains 
 all resource finals terminal and acceptance resource-valid/child_failed. T22 warm precondition is unproven (active=false, sections=[]); no whole-case pass is credited. T04/T28/T40
 have bounded observations but restoration/full-extension-reload criteria are missing. Remaining
 cases stopped at driver readiness/guest-state prerequisites. No product bug or retry is inferred.
-No unique case pass or overall Settings health claim. Fresh [boundary review](reports/settings-reload-boundary-diagnosis-20261020.json) localizes the first readiness failure to T04 baseline restoration; cause unknown. Failure-time tab membership/strip identity and restoration stage are missing. The screenshot preceded the failure and cannot diagnose it. No blind batch retry; A currently belongs to member acceptance.
+No unique case pass or overall Settings health claim. Fresh [boundary review](reports/settings-reload-boundary-diagnosis-20261020.json) localizes the first readiness failure to T04 baseline restoration; cause unknown. Failure-time tab membership/strip identity and restoration stage are missing. The screenshot preceded the failure and cannot diagnose it. No blind batch retry; member A is terminal resource-invalid.
 
 [Corrected auth census](reports/auth-inventory-fresh-check-20261020.json) uses canonical inventory,
 not obsolete refinement data. Nine solely removed-picker cases retain IDs/history as explicit N/A;
