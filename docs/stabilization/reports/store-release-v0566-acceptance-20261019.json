@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "status": "INCOMPLETE_NO_UPLOAD",
+  "store_eligibility": false,
+  "release": {
+    "workflow_run_id": "39347129008",
+    "workflow_conclusion": "success",
+    "workflow_input_sha": "2f21a8bf1396f1400e817e0b3feed187d517966f",
+    "candidate_sha": "c41ae6fd67057305c521791e404d2708882895f5",
+    "tag": "v0.2.566",
+    "version": "0.2.566",
+    "dependency_refresh_sha": "1d8c30ba9",
+    "artifact_id": "12231343581",
+    "github_artifact_digest": "sha256:3be67e7e5749621c5423aa9d57a6ff0bf809e9e0f4cf7006e4b90056aa6337ed",
+    "store_zip_sha256": "a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840",
+    "backend_sha_before_after": "9ef78d4ade91d8f1cb1951710266b094db5744bf",
+    "package_peer": "docs/stabilization/reports/candidate566-package-peer-20261019.json",
+    "package_proof": "Hosted release strict gates, tag, receipt, ZIP digest and Store risk passed. Independent package review matched exact ZIP and approved manifest surface; five changed locked shared packages matched npm latest at review time, with no required extension consumer edit found. Mandate references had six nonblocking warnings and advisory config attestation was unavailable. Package currency needs another point-of-use check before any later upload."
+  },
+  "source_admission": {
+    "guest_b_workflow_sha": "c41ae6fd67057305c521791e404d2708882895f5",
+    "member_a_workflow_sha": "c41ae6fd67057305c521791e404d2708882895f5",
+    "normal_guest_and_member_plans": "pass before dispatch; exact release artifact, receipt, tag, ZIP bytes, source and isolated lane capacity matched",
+    "later_documentation_commit": "69509c657e6ae2c01a642d0f58ffcd48a489f888 is documentation-only and did not change the frozen Store ZIP or either workflow checkout"
+  },
+  "guest_b": {
+    "run_id": "39348092593",
+    "conclusion": "failure",
+    "native_artifact_id": "12231998781",
+    "native_artifact_digest": "sha256:f429b1e08e7a38275ff955d542eadcea1807951f496372736584ae314a5c6912",
+    "installed_receipt_kind": "native_store_zip_candidate_key_adapted",
+    "runtime_tree_sha256": "c7f77d85068df8470a9ec9e19e2dbd4dd246095884a2ff4855469154cc2cce2e",
+    "resource_finals": {
+      "package": "valid, resourceInvalid=false, exitCode=0",
+      "browser": "valid, resourceInvalid=false, exitCode=0",
+      "guest": "child_failed, resourceInvalid=false, exitCode=1"
+    },
+    "reviewer_controls": {
+      "article": "pass: native DOM public heading and three stages; retained screenshot visually shows Article heading and first visible line of the introductory paragraph, with the next line clipped by the narrow crop. This is bounded introduction visibility, not a full-page visual proof.",
+      "links_schema_seo": "pass",
+      "auto_capture_off": "pass: native check says off; retained screenshot shows the off toggle only",
+      "data_picker_done": "fail: one field selected; DOM.getNodeForLocation rejected at Done center x=41.8359375,y=66.5 (box 29.671875x15), category no_node_at_location, exception name Error; hit equality and mouse click did not run; failure screenshot target was missing"
+    },
+    "chat": "Three native terminal page-grounded answers: opening, same-conversation follow-up with identity verified, and follow-up after real panel reload. Formal whole-run verdict remains unverified because the public reviewer Data path failed. No guest/reviewer overall pass is claimed.",
+    "backend_before_after": "HTTP 200 and unchanged SHA 9ef78d4ade91d8f1cb1951710266b094db5744bf",
+    "native_report_private": "test-results/release566-guest-B/matrx-extend/matrx-extend/test-results/guest-chat-store-8768532e-a579-497c-b00c-ee1125fb4ae1.json",
+    "article_screenshot_private": "test-results/release566-guest-B/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-mKwt8H/reviewer-capture-article.png",
+    "sanitized_resource_journals": "docs/stabilization/evidence/guest-chat-store-v0566/run39348092593/resource-journals/"
+  },
+  "member_a": {
+    "run_id": "39348194286",
+    "conclusion": "failure",
+    "native_artifact_id": "12231798617",
+    "native_artifact_digest": "sha256:a8dd1579d815990977ef5ae027b6c6540901c1bc13f5dd1770f428cc2dcea478",
+    "installed_receipt_kind": "native_store_zip_candidate_key_adapted",
+    "runtime_tree_sha256": "c7f77d85068df8470a9ec9e19e2dbd4dd246095884a2ff4855469154cc2cce2e",
+    "resource_finals": {
+      "package": "valid, resourceInvalid=false, exitCode=0",
+      "browser": "valid, resourceInvalid=false, exitCode=0",
+      "guest": "child_failed, resourceInvalid=false, exitCode=1"
+    },
+    "auth": "Existing reviewer signed into web and extension; canonical extension admin query found zero admins; approved organization was selected and its picker showed one checked option. One-use GitHub member-link secret and local file were deleted immediately after selected-authentication preflight; fresh absence verified, while the pre-existing approved-organization secret remained.",
+    "failure": "Native report unverified at reviewer_organization_resolve with sanitized unclassified_failure. Original panel remained visible through after_organization_open, became document-hidden after_extension_identity, and stayed hidden but focused through picker click, checked-option proof and Escape. Source intentionally refuses hidden visibility during organization proof before foreground restoration and before any Chat send. This proves an actual native panel visibility boundary, not an organization-selection or Chat reply defect.",
+    "native_report_private": "test-results/release566-member-A/matrx-extend/matrx-extend/test-results/reviewer-chat-store-08016141-1e83-4586-929a-af53a07cbe0d.json",
+    "sanitized_resource_journals": "docs/stabilization/evidence/member-chat-store-v0566/run39348194286/resource-journals/"
+  },
+  "store_state": "No 0.2.566 upload or submission. Last authenticated primary-dashboard observation remains Published 0.2.205 / Draft 0.2.479 Rejected / no pending at 2026-10-19 16:20 UTC; fresh private status remains required before any future eligible upload.",
+  "next_action": "Diagnose the exact Data no_node_at_location boundary and hidden member panel before another paid run; preserve failed verdicts. A reviewed harness-only change may test the same frozen 0.2.566 runtime only if the normal source-compatibility and resource admission plans accept the changed checkout without exception, the candidate ZIP and runtime tree remain identical, and relevant CI is green. A runtime/product change requires a new guarded candidate. After real guest, non-admin member and public reviewer acceptance plus current package/backend and authenticated primary-dashboard checks, upload and submit only the eligible Store ZIP."
+}
