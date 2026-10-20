@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-20 05:27 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T03:37:24.048612Z. 207 features · 831 cases · 1422 controls · 262 linked defect records.
+Generated 2026-10-20 05:34 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T03:37:24.048612Z. 207 features · 831 cases · 1422 controls · 262 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -1805,8 +1805,8 @@ These historical checks retain their original artifact boundary; they do not est
 
 - EXT-F-2013-T02 · member: Partial. Hosted local-development-ZIP 0.2.205 nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case.
   Evidence / build / date recorded: 37182939504, .research/hosted-member205-final.json
-- EXT-F-2013-T10 · guest: Fail. Actual firstguestreply grounded/UI-terminal; SAME-conversation followup omitted exact pagecode/fulluniqueheading despite completed page-text toolresult containingboth. Freshpeer accepts boundedfailure andpartial evidencequality; finalSSEframe unproven, postreload notreached. This doesnot establish current568 failure, sourcecause or actualStoreinstalled behavior. Earlierfrozen562 pass retainedinhistory.
-  Evidence / build / date recorded: 39373343402, ['docs/stabilization/reports/published205-post181b-guest-20261020.json', 'docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json']
+- EXT-F-2013-T10 · guest: Fail. Openingguestanswer grounded/UI-terminal. Followup providerrequest contained exactcode/fullheading; finalprovider/stored/native-sanitizedreply retaincode but incorrectly shortenheading, excludingprefixandunique suffix. Nativecodeabsenceflagcontradictsprovider/native text and isseparateD264 investigation. FinalSSEframeunproven/postreloadnotreached. No current568/Storeinstalled failure or backend/contributor attribution; priorfrozen562passretained.
+  Evidence / build / date recorded: 39373343402, ['docs/stabilization/reports/published205-post181b-guest-20261020.json', 'docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json', 'docs/stabilization/reports/guest263-provider-boundary-20261020.json']
 - EXT-F-2013-T12 · guest: Fail. Historical Store-installed176 failed genericerror/Retry at liveHTTP402. Exact205candidate passed fresh/returning exhaustedguest remedy/noRetry;205 is now published. Public205CRX fresh/reload answers passed37267858358 but this did not exercise allowance402 or actualStoreinstalledprofile; retain open installed-acceptance requirement.
   Evidence / build / date recorded: urgent-live-guest-20261004-01, .research/urgent-live-guest-20261004.json
 - EXT-F-2013-T13 · guest: Fail. Repeated trusted Escape failure on adapted public0.2.205 with valid resources after three completed replies. Native dev555 trigger/input-focused dismissal passed independently after settling, but its role/tooltip path and current556 guest remain unverified; full view, close control and reopening remain unverified.

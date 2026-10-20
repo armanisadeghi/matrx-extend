@@ -51903,12 +51903,13 @@
               "server_sha_before_after": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
               "evidence": [
                 "docs/stabilization/reports/published205-post181b-guest-20261020.json",
-                "docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json"
+                "docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json",
+                "docs/stabilization/reports/guest263-provider-boundary-20261020.json"
               ],
               "defect_ids": [
                 "EXT-D-0263"
               ],
-              "detail": "Actual firstguestreply grounded/UI-terminal; SAME-conversation followup omitted exact pagecode/fulluniqueheading despite completed page-text toolresult containingboth. Freshpeer accepts boundedfailure andpartial evidencequality; finalSSEframe unproven, postreload notreached. This doesnot establish current568 failure, sourcecause or actualStoreinstalled behavior. Earlierfrozen562 pass retainedinhistory."
+              "detail": "Openingguestanswer grounded/UI-terminal. Followup providerrequest contained exactcode/fullheading; finalprovider/stored/native-sanitizedreply retaincode but incorrectly shortenheading, excludingprefixandunique suffix. Nativecodeabsenceflagcontradictsprovider/native text and isseparateD264 investigation. FinalSSEframeunproven/postreloadnotreached. No current568/Storeinstalled failure or backend/contributor attribution; priorfrozen562passretained."
             }
           },
           "defect_verification": {

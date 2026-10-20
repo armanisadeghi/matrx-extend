@@ -55,15 +55,19 @@ Screenshots shell-only, actual native DOM/recorder assertions support Settings c
 claim. Missing live planted negative branch is a stated limit; source/VM negative guards and CI
 plus this positive native pass satisfy original criteria. Raw report/evidence pushed d41b2afbd.
 **B39373343402 is terminal resource-valid FAILURE on same-conversation guest grounding.**
-[Fresh peer](reports/published205-post181b-fresh-peer-20261020.json) confirms first answer
-grounded/UI-terminal, followup lacks exact code/full unique heading despite completed page-text
-result containing both. Five stream runs done/complete/success; final SSE frame not independently
+[Fresh peer](reports/published205-post181b-fresh-peer-20261020.json) confirms first answer grounded/UI-terminal and incomplete heading in followup.
+[Provider-boundary evidence](reports/guest263-provider-boundary-20261020.json) corrects the initial
+code-absence interpretation: exact code is in all3provider inputs, finalresponse, storedreply and
+matching sanitizedDOMtext. Fullheading is presentatproviderinput but provider wrongly shortens it
+from Matrx guest Chat grounding fixture plusuniquesuffix to Chat grounding fixture. Native
+answerContainsNonce=false contradictsactualreply; separate **D264 oracle investigation** owns it. Five stream runs done/complete/success; final SSE frame not independently
 proven. Stable deployed181b, public205 CRX unpacked/adapted NOT Store-installed. Package/browser
 resource finals valid; guest resourceInvalid=false/child_failed exit1. Post-reload not reached.
 **[D263](defects/EXT-D-0263.json) triaged P0 public guest acceptance blocker**, no cause/fix or
-backend/contributor attribution. Case is guest **T10**, separate from member-onlyT14/D261. Fresh provider-boundary owner
-**guest263_provider_boundary** is reading only the owned provider input/output vs actual tool,
-persisted and rendered reply; no newnative/API/modelcall or sourcechange. See [diagnosis](reports/guest181b-followup-diagnosis-20261020.json). Prior B39372274799 is terminal SUCCESS with all3resource finals valid;
+backend/contributor attribution. Case is guest **T10**, separate from member-onlyT14/D261. Provider-boundary read is complete; no data loss attool/context/persistence/render boundaries
+was found forcode/fullheadinginput. **guest264_grounding_oracle_fix** owns bounded source repair
+of conflicting exact-code observer, with original heading requirement preserved. No newnative
+job, modelcall or productagent/prompt change is underway. See [diagnosis](reports/guest181b-followup-diagnosis-20261020.json). Prior B39372274799 is terminal SUCCESS with all3resource finals valid;
 [fresh native peer](reports/scrape568-empty-fresh-peer-20261020.json) verifies only warm guest T08
 no-signal SEO and empty Schema panes/capture invariance on owned title-only localhost fixture.
 Two pane screenshots inspected, exact development568/source501998549/CI39366909321/artifact12239987691.

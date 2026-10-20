@@ -2,10 +2,10 @@
   "id": "EXT-D-0263",
   "feature_id": "EXT-F-2013",
   "case_ids": ["EXT-F-2013-T10"],
-  "title": "Public205 guest follow-up omits exact current-page code and unique heading despite completed page-text tool result",
+  "title": "Guest follow-up incorrectly shortens the current-page heading despite exact heading at provider input",
   "surface": "Guest Chat same-conversation page grounding",
   "auth_mode": "guest, fresh signed-out isolated profile",
-  "severity": "S2: basic same-conversation page question returns incorrect or incomplete page facts after a grounded opening reply",
+  "severity": "S3: assistant returns the exact requested code but incorrectly excludes part of the nearby heading",
   "priority": "P0: public guest acceptance blocker; investigate before next Store upload",
   "state": "triaged",
   "owner": "stabilization-coordinator",
@@ -22,17 +22,18 @@
     "Wait for actual tool/result and terminal assistant UI, then compare the last answer to the fixture exact followup code and full unique heading. Retain safe comparisons plus inspectable screenshot/tool evidence; do not treat HTTP200 as final protocol proof."
   ],
   "expected": "Same-conversation follow-up states the exact visible follow-up code and identifies its heading, with successful terminal completion.",
-  "actual": "Run39373343402 first answer grounded/UI-terminal; second versioned AI request was same conversation/is_new=false. Completed get_page_text result contained both exact expected facts, but terminal latest assistant answer failed exact code and unique heading predicates. Three continuations, five stream runs done/complete/success, UI stopped streaming. Final SSE frame not proven. Post-reload flow was not reached.",
+  "actual": "Owned run39373343402: grounded opening/UI-terminal, same-conversation request is_new=false. Completed page-text result and all three provider requests contain exact followup code/full heading. Final Anthropic response and stored assistant preserve exact code but name only Chat grounding fixture, incorrectly excluding Matrx guest and omitting unique suffix from full H2. Native latest text matches provider reply after sanitizer/Markdown flattening, yet answerContainsNonce=false; that separate harness inconsistency is being diagnosed under D264. Final SSE frame is not independently captured; post-reload not reached.",
   "evidence": [
     "docs/stabilization/reports/published205-post181b-guest-20261020.json",
     "docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json",
     "docs/stabilization/reports/guest181b-followup-diagnosis-20261020.json",
-    "docs/stabilization/evidence/published205-post181b-guest-20261020/run39373343402/screenshots/guest-chat-failure.png"
+    "docs/stabilization/evidence/published205-post181b-guest-20261020/run39373343402/screenshots/guest-chat-failure.png",
+    "docs/stabilization/reports/guest263-provider-boundary-20261020.json"
   ],
   "reproducibility": "One resource-valid current-server failure observed; prior cd80 public205 flow passed but differing fixtures/model/time are confounders. No deterministic source regression attribution or frequency established.",
-  "cause": "Unproven. Native evidence confirms page-text tool delivered required facts, but provider request/output versus persisted/rendered answer has not been compared. Inference of a literal placeholder from sanitized diagnostics needs source/serialization scrutiny; a placeholder in a redacted record alone is insufficient.",
+  "cause": "Exact heading first omitted during provider generation, not tool delivery, context rebuild, persistence, or rendering for this run. claude-sonnet-5-5 and output configuration match grounded opening. Why provider shortened heading is unproven; no backend regression or contributor attribution. Exact code is preserved, correcting prior interpretation based on native false predicate.",
   "fix_commit": null,
-  "next_action": "Read the owned followup provider-request snapshot after tool resume; compare exact controlled-fixture value presence at tool result, assembled provider input, provider output, persisted reply and rendered reply, privately. Fix only a demonstrated boundary. No retries/model changes or blame based solely on deployed SHA. D261 member timeout remains separate.",
+  "next_action": "Keep heading quality issue open. Compare current authored agent/mandate behavior through its canonical agent-quality process, using retained real run, before proposing any instruction/model change. Do not hand-write platform agent prompts or mask output. D264 owns separate exact-code oracle inconsistency; its mechanical repair/retest proceeds first. No new model override/retry or source data-loss fix is supported.",
   "transition_history": [
     {
       "at": "2026-10-20T05:24:09.880575+00:00",
@@ -45,6 +46,12 @@
       "from": "open",
       "to": "triaged",
       "reason": "Fresh independent native/source peer confirms missing exact facts despite completed page-text result; cause unproven, no full protocol or Store-installed proof."
+    }
+  ],
+  "diagnostic_corrections": [
+    {
+      "at": "2026-10-20T05:34:14.250074+00:00",
+      "correction": "Provider request/output and stored reply prove exact code present. Initial native code-absence interpretation retracted; full heading omission remains observed. D264 handles conflicting native predicate."
     }
   ]
 }

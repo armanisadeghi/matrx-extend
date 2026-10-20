@@ -1,0 +1,92 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "read_only_owned_run_provider_boundary",
+  "case": "EXT-D-0263",
+  "case_binding": "EXT-F-2013-T10 guest",
+  "owned_run": {
+    "workflow_run": 39373343402,
+    "window_utc": ["2026-10-20T05:17:20Z", "2026-10-20T05:19:00Z"],
+    "snapshot_match": "Exact static follow-up question phrase in provider request plus bounded UTC window; three rows share one user_request and conversation; joined tool_call by that user_request; joined message by response_message_id. No raw IDs retained.",
+    "snapshot_count": 3,
+    "tool_call_count": 2,
+    "opening_snapshot_count_same_conversation": 2,
+    "provider": "anthropic",
+    "selected_model": "claude-sonnet-5-5",
+    "model_and_output_config_equal_to_grounded_opening": true
+  },
+  "source_of_exact_facts": {
+    "tool": "get_page_text",
+    "status": "completed",
+    "success": true,
+    "code_digest_sha256_12": "c8408bd175e8",
+    "full_heading_digest_sha256_12": "6e4d4468e725",
+    "exact_code_present": true,
+    "full_heading_present": true,
+    "native_tool_event_confirms_fixture_match": true
+  },
+  "provider_boundary": {
+    "snapshot_times_utc": [
+      "2026-10-20T05:17:38.747456Z",
+      "2026-10-20T05:17:44.785077Z",
+      "2026-10-20T05:17:48.590175Z"
+    ],
+    "request_payload_exact_code_present": [true, true, true],
+    "request_payload_full_heading_present": [true, true, true],
+    "last_request_tool_result_paths": [
+      "/messages/2/content/0/content",
+      "/messages/6/content/0/content"
+    ],
+    "last_request_heading_only_tool_result_path": "/messages/8/content/0/content",
+    "final_response_payload_exact_code_present": true,
+    "final_response_payload_full_heading_present": false,
+    "final_raw_response_exact_code_present": true,
+    "final_raw_response_full_heading_present": false,
+    "final_stored_assistant_content_exact_code_present": true,
+    "final_stored_assistant_content_full_heading_present": false,
+    "final_stored_message_role": "assistant",
+    "final_stored_message_status": "active",
+    "final_stored_message_visible_to_user": true,
+    "final_provider_text_equals_stored_text": true,
+    "first_exact_heading_loss": "provider response generation after final request_payload; the stored assistant faithfully preserves that response",
+    "exact_code_loss": "none observed at provider response or stored assistant"
+  },
+  "native_oracle_reconciliation": {
+    "reported_answerContainsNonce": false,
+    "reported_answerContainsFixtureHeading": false,
+    "retained_latest_reply_contains_followup_marker": true,
+    "retained_latest_reply_contains_full_heading_marker": false,
+    "provider_text_after_exact_code_to_marker_and_markdown_flatten_equals_retained_native_reply": true,
+    "interpretation": "The final code is present in tool result, provider request, provider response and stored assistant text. The native latest reply is the same final response after its test sanitizer and Markdown rendering. The false code predicate is inconsistent with the retained latestReplyText and safeVisibleText implementation; exact mechanism of that predicate mismatch is not proven. Full unique heading really is absent in response, stored reply, and native reply."
+  },
+  "counterhypotheses": {
+    "tool_result_missing_fact": "ruled_out_for_owned_run",
+    "conversation_rebuild_or_trimming_dropped_fact": "ruled_out_by_final_provider_request",
+    "provider_response_had_full_heading_but_persistence_lost_it": "ruled_out",
+    "provider_response_had_exact_code_but_persistence_lost_it": "ruled_out",
+    "selected_model_or_output_config_changed_within_owned_conversation": "ruled_out",
+    "provider_ignored_full_heading_despite_wire_input": "supported_for_this_run; reason within model/prompt not established",
+    "native_exact_code_predicate_mechanism": "unresolved inconsistency; inspect same evaluate call if case proceeds"
+  },
+  "limitations": [
+    "One resource-valid public CRX unpacked guest run, not Store installed.",
+    "No new provider call, browser run, database write, source edit, or replay.",
+    "Source of heading omission within prompt or model behavior is not established.",
+    "Native predicate discrepancy requires a separate, direct same-frame assertion before treating exact code as absent.",
+    "Post-reload acceptance step was not reached."
+  ],
+  "evidence": {
+    "raw_native_json": "/tmp/published205-post181b-39373343402/matrx-extend/matrx-extend/test-results/guest-chat-store-a621ada6-add4-49fa-9207-f607059c650d.json",
+    "prior_diagnosis": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/guest181b-followup-diagnosis-20261020.json",
+    "snapshot_contract": "/Volumes/Samsung2TB/code/aidream/aidream/api/docs/request_snapshot_viewer_requirements.md",
+    "snapshot_model": "/Volumes/Samsung2TB/code/aidream/db/models/chat.py",
+    "native_observer": "/Volumes/Samsung2TB/code/matrx-extend/tests/browser/guest-chat-store-acceptance.mjs",
+    "native_dom_reader": "/Volumes/Samsung2TB/code/matrx-extend/tests/browser/package-chat-controls.mjs",
+    "query_door": "Supabase Management API schema-qualified read-only query endpoint; token privately loaded from mode-0600 fallback file",
+    "query_door_docs": "https://supabase.com/docs/reference/api/v1-read-only-query"
+  },
+  "heading_wording_clarification": {
+    "owned_fixture_heading": "Matrx guest Chat grounding fixture [unique-id]",
+    "final_answer_heading": "Chat grounding fixture",
+    "assessment": "Final answer supplied a generic, incorrect shortened heading. It omitted both the Matrx guest prefix and unique ID suffix, and explicitly treated the prefix as outside the heading. The user asked to name the heading directly above the codes; the full unique heading is the actual h2 and is necessary for an exact answer."
+  }
+}
