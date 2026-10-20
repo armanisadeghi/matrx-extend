@@ -32,7 +32,9 @@
     "docs/stabilization/reports/release572-native-20261020.json",
     "docs/stabilization/reports/release572-independent-peer-20261020.json",
     "docs/stabilization/resource-journals/hosted-guest-39391905076-1.jsonl",
-    "docs/stabilization/reports/values244-publish-adopt-20261020.json"
+    "docs/stabilization/reports/values244-publish-adopt-20261020.json",
+    "docs/stabilization/reports/release573-native-20261020.json",
+    "docs/stabilization/reports/release573-independent-peer-20261020.json"
   ],
   "severity": "S3: context inspection dialog dismissal by Escape fails; the three Chat replies completed.",
   "priority": "P2: current 0.2.572 guest native reproduced; repair the shared ContextRulesChip and retest a released candidate.",
@@ -67,8 +69,8 @@
       "reason": "Reviewed shared ContextRulesChip repair pushed as aidream a1c540b807 and published as @ai-matrx/agents 0.59.174 with matching registry gitHead and tarball handler; extension latest-package lockfile adoption and compile passed. Fixed denotes the pushed source unit only; exact installed/native guest T13 and independent behavior retest remain pending."
     }
   ],
-  "next_action": "Track extension adoption CI, then release through the guarded hosted path and run original-equivalent guest native T13 on the exact installed candidate with resource receipts and an independent behavior peer. Keep retest-pass/closed pending until that evidence exists; full-view and other modes remain separately unverified.",
-  "current_artifact_boundary": "Exact 0.2.572/source419a40f0370c51db281759615e44797912ac485c with @ai-matrx/agents0.59.173 failed original-equivalent compact focus/Escape T13 on native39391905076. Shared repair is published at agents0.59.174 (gitHead a1c540b807); extension candidate adopts it in source, with installed/native acceptance still unverified.",
+  "next_action": "Resolve measured initial owned-CDP startup condition without changing resource thresholds or blind retry; then run original-equivalent guest T13 on a fresh eligible exact candidate and obtain fresh independent behavior review. Keep state fixed until original/surrounding native cases pass; nonadminD261 and other Values modes remain separate.",
+  "current_artifact_boundary": "Source-reviewed shared repair published as agents0.59.174/gitHead a1c540b807; synchronized extension adoption adb10448d and fullCI39397452854 pass. Exact573 source19aa37bee23e02c8ab62a15ce4854d9e5c944f91 / Store ZIP5814c4683e270f8303263a26fda0946c91f9680a6c317150283eaafae0df2d4e contains compiled repair. Original native T13 B39399395330 stopped resource-invalid at CDP startup before UI, so no retest-pass/fail is supported. Previous572 actual failure remains valid history.",
   "source_harness_readiness": {
     "status": "fresh source peer PASS; native UNKNOWN, productstateopen",
     "summary": "Immediately prove documentfocus/visiblecompactfocus/singleopen/noothervisible dialogs before trustedEscape; unavailablefocus refused before key, distinct harnesspreconditionerror. Require zero open/visible compactdialogs +trustedkeydown after. Fullviewcontrolfocusedwithoutactivation; actualnativefocus sideeffectsunknown.",

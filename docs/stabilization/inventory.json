@@ -45297,6 +45297,19 @@
               "resource_valid": true,
               "scope": "Publicworkflow cell picker flow failed at Done; initialselection/returnedselector andSavegate remain unverified in thiscandidate.",
               "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
+            },
+            {
+              "run_id": 39399705944,
+              "version": "0.2.573",
+              "source_sha": "19aa37bee23e02c8ab62a15ce4854d9e5c944f91",
+              "mode": "guest",
+              "status": "unverified",
+              "resource_invalid": true,
+              "scope": "Initial CDP startup timed out before any product assertion. No product pass/fail credit; previous version-specific results preserved. No retry.",
+              "evidence": [
+                "docs/stabilization/reports/release573-independent-peer-20261020.json",
+                "docs/stabilization/reports/data573-native-lane-a-20261020.json"
+              ]
             }
           ],
           "native_store_observations": [
@@ -45851,6 +45864,21 @@
               ],
               "mode": "guest",
               "superseded_at": "2026-10-20T02:40:49.054483Z"
+            }
+          ],
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39399705944,
+              "version": "0.2.573",
+              "source_sha": "19aa37bee23e02c8ab62a15ce4854d9e5c944f91",
+              "mode": "guest",
+              "status": "unverified",
+              "resource_invalid": true,
+              "scope": "Initial CDP startup timed out before any product assertion. No product pass/fail credit; previous version-specific results preserved. No retry.",
+              "evidence": [
+                "docs/stabilization/reports/release573-independent-peer-20261020.json",
+                "docs/stabilization/reports/data573-native-lane-a-20261020.json"
+              ]
             }
           ]
         },
@@ -52531,6 +52559,21 @@
               },
               "superseded_at": "2026-10-20T08:29:12.701293+00:00",
               "reason": "Fresh independent exact572 per-case native verdict; separate T10 reply/T13 Escape outcomes."
+            }
+          ],
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39399395330,
+              "version": "0.2.573",
+              "source_sha": "19aa37bee23e02c8ab62a15ce4854d9e5c944f91",
+              "mode": "guest",
+              "status": "unverified",
+              "resource_invalid": true,
+              "scope": "Initial CDP startup timed out before any product assertion. No product pass/fail credit; previous version-specific results preserved. No retry.",
+              "evidence": [
+                "docs/stabilization/reports/release573-independent-peer-20261020.json",
+                "docs/stabilization/reports/release573-native-20261020.json"
+              ]
             }
           ]
         },

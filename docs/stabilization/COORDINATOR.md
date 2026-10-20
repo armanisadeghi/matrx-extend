@@ -24,8 +24,12 @@ assertion: B39399395330 Chat/Values and A39399705944 Data T01/T07 could not conn
 No screenshot, Values Escape retest, Data interaction or new product pass exists. Package/browser
 resource finals are valid, guest finals invalid/exit3; no retry. B backend before/after40990436
 is stable but unexercised; A has no backend capture. Config attestation remains NOT_ATTESTED
-(advisory missing dotenv). No Store upload/submission. Initial CDP startup diagnosis is active;
-no unchanged native retry or threshold increase. Earlier572 resource-valid guest T10 replies
+(advisory missing dotenv). No Store upload/submission. Initial [CDP diagnosis](reports/cdp573-startup-diagnosis-20261020.json) and bounded [escalation](reports/cdp-startup-escalation-20261020.json) are complete: causal Chromium phase unknown.
+Successful controls also had CPU pending; no source fix or threshold increase is justified.
+Existing dedicated current-development startup diagnostic can add the missing bounded post-timeout
+endpoint observation without reconnect/retry, preserving the original8s failure. Sol
+`cdp573_startup_diagnosis` owns preflight only, held on fullCI39401604000/exact development
+artifact, fresh spend/current clean source and root GO. No new native dispatch has occurred. Earlier572 resource-valid guest T10 replies
 remain separately bounded;573 cannot inherit them. Non-admin D261504 remains unresolved.
 **[D265](defects/EXT-D-0265.json) is narrowly CLOSED after fresh independent original native retest.**
 At native setup readiness08:21:05, full11-field healthy CPU_PENDING .03/.53 then CPU_RECOVERED .11
@@ -213,7 +217,7 @@ opened authentication pages before canonical readiness. Two minimal awaits now r
 existing health boundary first; denial has zero auth-page side effects. Actual-source RED/GREEN,
 21/21 tests and a fresh different [final source peer](reports/auth266-final-source-peer-20261020.json)
 PASS; the first peer's missing normal-CI wiring finding is addressed. No new policy/threshold,
-startup-capacity improvement or D261 backend repair is inferred. Post-integration full CI required.
+startup-capacity improvement or D261 backend repair is inferred. Source pushed `e78a9b11c`; focused39401604211 and resource integration pass, fullCI39401604000 remains in progress.
 The local cost checker still has baseline measured-spend/twin drift errors, distinct from the
 fresh official real-money72.23/100 status; no paid job is dispatched to bypass a spending refusal.
 
