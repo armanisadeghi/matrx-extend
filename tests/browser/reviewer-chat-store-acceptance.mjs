@@ -13,7 +13,8 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { classifyPackageGuestTurn as classifyMemberChatTurn } from './guest-chat-completion-oracle.mjs';
-import { watchGuestAiRequests } from './guest-chat-transport-observer.mjs';
+import { createGuestInputDriver } from './guest-chat-input-driver.mjs';
+import { requireGuestTransport, watchGuestAiRequests } from './guest-chat-transport-observer.mjs';
 import {
   requireMemberChatSequence,
   requireMemberOrganizationBinding,
@@ -74,7 +75,11 @@ const INTERACTIVE_REVIEWER = process.env.MATRX_REVIEWER_INTERACTIVE === '1';
 const INTERACTIVE_REVIEWER_EMAIL = process.env.MATRX_REVIEWER_EMAIL?.trim() || null;
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const DEMO_PATH = '/matrx-extend-demo';
-const QUESTION = 'What are the three workflow stages on this page?';
+const QUESTION =
+  'On this demo page, what is the main heading and what are the three table stages? Answer from the page.';
+const GUEST_QUESTION = 'What are the three table stages on this demo page?';
+const GUEST_FOLLOWUP = 'Name only the second table stage from your previous answer.';
+const MEMBER_FOLLOWUP = 'Name only the second workflow stage from our previous answer.';
 const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -405,14 +410,156 @@ async function chatObservation(panel) {
         assistantDom: controls.assistantDom,
         latestReplyText: controls.replies.at(-1) ?? '',
         errorNotice: [...(pane?.querySelectorAll('[role="alert"]') ?? [])].some(el => el.getBoundingClientRect().height > 0),
-        terminalAnswerError: false,
-        answerIsRefusal: false,
+        terminalAnswerError: /^\\s*Error\\s*:/i.test(controls.replies.at(-1) ?? ''),
+        answerIsRefusal: /(?:authentication (?:is )?required|you (?:must|need to) (?:sign.?in|log.?in|authenticate)|(?:sign.?in|log.?in) (?:to|before)|upgrade|subscribe|payment required|unauthori[sz]ed|forbidden|\\b401\\b|\\b403\\b)/i.test(controls.replies.at(-1) ?? ''),
         answerNamesWorkflowStages: ['Capture', 'Understand', 'Use'].every((term) =>
           (controls.replies.at(-1) ?? '').includes(term),
         ),
       };
     })()`,
   );
+}
+
+/** Exercise the original guest history before either first-party sign-in. */
+async function runOriginalGuestPrelude(native, marker) {
+  const { page, panel } = native;
+  stage = 'original_guest_demo';
+  await page.goto(`${WEB_ORIGIN}${DEMO_PATH}`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  assert.equal(safeLocation(page.url()), `${WEB_ORIGIN}${DEMO_PATH}`);
+  await page.evaluate((value) => {
+    document.documentElement.setAttribute('data-matrx-reviewer-target', value);
+  }, marker);
+  const guestIdentity = await memberPanelIdentity(panel);
+  assert.equal(guestIdentity.profileId, null, 'original prelude requires unseeded guest profile');
+  assert.equal(guestIdentity.accessTokenPresent, false, 'original prelude requires no session');
+  await click(panel, 'title', 'Chat');
+  const initial = await waitFor(
+    'original_guest_composer',
+    () => chatObservation(panel),
+    (value) => value?.selected && value.paneVisible && value.composerReady,
+    30_000,
+  );
+  assert.equal(initial.replyCount, 0, 'original guest prelude must start fresh');
+  const watcher = await watchGuestAiRequests({ ...native, mode: 'package' });
+  const guestReport = { composer_input_boundaries: [] };
+  const send = createGuestInputDriver({
+    evaluate,
+    waitFor,
+    observe: chatObservation,
+    click,
+    report: guestReport,
+  });
+  const requests = [];
+  let priorReplyCount = 0;
+  try {
+    for (const [attempt, question, expectedTerms] of [
+      ['opening', GUEST_QUESTION, ['Capture', 'Understand', 'Use']],
+      ['same_conversation_followup', GUEST_FOLLOWUP, ['Understand']],
+    ]) {
+      stage = `original_guest_${attempt}`;
+      await sendMemberChatOnTarget({
+        web: page,
+        panel,
+        evaluate,
+        expectedUrl: `${WEB_ORIGIN}${DEMO_PATH}`,
+        marker,
+        send: async () => {
+          watcher.arm(attempt);
+          await send(panel, question, `original_guest_${attempt}`, 'package');
+        },
+      });
+      const completed = await waitFor(
+        `original_guest_${attempt}_terminal`,
+        async () => {
+          await watcher.settle();
+          const state = await chatObservation(panel);
+          const verdict = classifyMemberChatTurn({
+            requests: watcher.snapshot(),
+            attempt,
+            state,
+            priorReplyCount,
+            expectedTerms,
+            orderedTerms: attempt === 'opening' ? expectedTerms : [],
+          });
+          return { state, verdict };
+        },
+        (value) => value?.verdict !== 'in_progress',
+        180_000,
+      );
+      assert.equal(completed.verdict, 'terminal_answer', `original_guest_${attempt}_answer`);
+      const stillGuest = await memberPanelIdentity(panel);
+      assert.equal(stillGuest.profileId, null, `original_guest_${attempt}_must_remain_guest`);
+      assert.equal(
+        stillGuest.accessTokenPresent,
+        false,
+        `original_guest_${attempt}_must_remain_guest`,
+      );
+      priorReplyCount = completed.state.replyCount;
+      requireGuestTransport(watcher.snapshot(), attempt, 'package');
+    }
+    requests.push(...watcher.snapshot());
+    assert.equal(requests.length, 2, 'original guest prelude requires exactly two turns');
+    assert.deepEqual(
+      requests.map((row) => row.attempt),
+      ['opening', 'same_conversation_followup'],
+    );
+    assert.equal(requests[0].is_new, true, 'guest opening requires a new conversation');
+    assert.equal(requests[1].is_new, false, 'guest followup requires the same conversation');
+    assert.equal(requests[1].conversation_fingerprint, requests[0].conversation_fingerprint);
+    assert.ok(requests[0].conversation_fingerprint, 'guest conversation identity required');
+    for (const row of requests)
+      assert.ok(
+        row.status === 200 &&
+          row.loading_finished &&
+          row.terminal_success &&
+          row.semantic_completion === 'success' &&
+          row.pending_tool_count === 0 &&
+          row.stream_error === false,
+        `original_guest_${row.attempt}_terminal_transport`,
+      );
+    return {
+      status: 'terminal_two_turn_guest',
+      question_fingerprints: [hash(GUEST_QUESTION), hash(GUEST_FOLLOWUP)],
+      requests,
+      completed_reply_count: priorReplyCount,
+      native_input_boundaries: guestReport.composer_input_boundaries.length,
+    };
+  } finally {
+    await watcher.stop();
+  }
+}
+
+/** Passive runtime message proof of real Page Text handler output. */
+async function startMemberPageTextProof(panel, heading) {
+  const installed = await evaluate(
+    panel,
+    `(() => {
+    window.__memberPageTextProof?.stop();
+    const observed = [];
+    const listener = (message) => {
+      if (message?.__matrx !== true || message.kind !== 'tool:timeline-event') return;
+      const event = message.payload;
+      if (event?.toolName !== 'get_page_text') return;
+      const result = event.phase === 'completed' ? JSON.stringify(event.output ?? null) : '';
+      observed.push({
+        phase: event.phase,
+        result_has_heading: result.includes(${JSON.stringify(heading)}),
+        result_has_stages: ['Capture', 'Understand', 'Use'].every((term) => result.includes(term)),
+      });
+    };
+    chrome.runtime.onMessage.addListener(listener);
+    window.__memberPageTextProof = {
+      snapshot: () => observed.slice(),
+      stop: () => chrome.runtime.onMessage.removeListener(listener),
+    };
+    return true;
+  })()`,
+  );
+  assert.equal(installed, true, 'member Page Text observer required');
+  return {
+    snapshot: () => evaluate(panel, 'window.__memberPageTextProof?.snapshot() ?? []'),
+    stop: () => evaluate(panel, 'window.__memberPageTextProof?.stop()'),
+  };
 }
 
 /** Observe the real canonical admin assignment response, without exporting its body. */
@@ -1225,11 +1372,19 @@ try {
       await sampleAuthBoundary('before_member_tab_create');
       stage = MAGIC_LINK ? 'open_reviewer_magic_link' : 'open_reviewer_web_login';
       await native.requireResourceHealth();
-      const web = await page.context().newPage();
-      await sampleAuthBoundary('after_member_tab_create');
+      let web = null;
       let memberTransport = null;
+      let pageTextProof = null;
       const memberTurns = {};
       try {
+        if (!UNINTERRUPTED) {
+          const guestMarker = randomUUID();
+          report.original_guest = await runOriginalGuestPrelude(native, guestMarker);
+          stage = 'original_guest_before_first_party_signin';
+          assert.equal(report.original_guest.status, 'terminal_two_turn_guest');
+        }
+        web = await page.context().newPage();
+        await sampleAuthBoundary('after_member_tab_create');
         if (!MAGIC_LINK) {
           await sampleAuthBoundary('before_login_navigation');
           await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
@@ -1308,6 +1463,9 @@ try {
         await sampleAuthBoundary('after_demo_navigation');
         if (safeLocation(web.url()) !== `${WEB_ORIGIN}${DEMO_PATH}`)
           throw new Error('reviewer_demo_route_unverified');
+        const demoHeading = (await web.locator('main h1').first().innerText()).trim();
+        assert.ok(demoHeading.length > 0, 'demo main heading must be observed from real page');
+        report.demo_main_heading_fingerprint = hash(demoHeading);
         const demoMarker = randomUUID();
         await web.evaluate((marker) => {
           document.documentElement.setAttribute('data-matrx-reviewer-target', marker);
@@ -1615,7 +1773,51 @@ try {
           (state) => state?.selected && state.paneVisible && state.composerReady,
           30_000,
         );
+        const beforeReloadChat = await chatObservation(panel);
+        report.original_guest_transition = {
+          retained_reply_count_before_reload: beforeReloadChat.replyCount,
+          capture_list_alert_before_reload: await evaluate(
+            panel,
+            `(() => [...document.querySelectorAll('[role="alert"]')].some((alert) =>
+              alert.getBoundingClientRect().height > 0 &&
+              /capture list/i.test(alert.textContent ?? '')))()`,
+          ),
+        };
+        stage = 'original_member_normal_panel_reload';
+        const beforeMemberReload = (await panel.send('Page.getFrameTree')).frameTree?.frame
+          ?.loaderId;
+        assert.ok(beforeMemberReload, 'member panel loader before normal reload required');
+        await panel.send('Page.reload', { ignoreCache: false });
+        await waitFor(
+          'original_member_new_panel_document',
+          async () => (await panel.send('Page.getFrameTree')).frameTree?.frame?.loaderId,
+          (loader) => Boolean(loader && loader !== beforeMemberReload),
+          30_000,
+        );
+        await waitFor(
+          'original_member_reloaded_chat_visible',
+          () => chatObservation(panel),
+          (state) => state?.selected && state.paneVisible && state.composerReady,
+          30_000,
+        );
+        const reloadedIdentity = await memberPanelIdentity(panel);
+        assert.equal(
+          reloadedIdentity.profileId,
+          webIdentity.userId,
+          'reloaded member identity required',
+        );
+        assert.equal(reloadedIdentity.accessTokenPresent, true, 'reloaded member session required');
+        assert.notEqual(reloadedIdentity.isAdmin, true, 'reloaded reviewer must remain non-admin');
+        report.original_member_reload = { new_document: true, method: 'normal_panel_reload' };
         await panelLifecycle.check('after_open_chat');
+        const freshMemberChat = await chatObservation(panel);
+        assert.equal(
+          freshMemberChat.replyCount,
+          0,
+          'original member Chat must be fresh after sign-in reload',
+        );
+        report.original_member_reload.fresh_chat = true;
+        pageTextProof = await startMemberPageTextProof(panel, demoHeading);
         report.screenshots = {
           before: await captureWithLifecycle(panel, artifacts, 'reviewer-chat-before'),
           action: null,
@@ -1667,7 +1869,7 @@ try {
 
         memberTransport = await observeAuthenticatedTransport(native, null, null);
         const turns = memberTurns;
-        const awaitTurn = async (attempt, priorReplyCount, expectedTerms) => {
+        const awaitTurn = async (attempt, priorReplyCount, expectedTerms, orderedTerms = []) => {
           const observed = await waitFor(
             'reviewer_chat_terminal_answer',
             async () => {
@@ -1679,6 +1881,7 @@ try {
                 state,
                 priorReplyCount,
                 expectedTerms,
+                orderedTerms,
               });
               report.chat_turn_observations ??= {};
               report.chat_turn_observations[attempt] = {
@@ -1718,7 +1921,24 @@ try {
             await click(panel, 'chat-send', '');
           },
         });
-        const completed = await awaitTurn('opening', 0, ['Capture', 'Understand', 'Use']);
+        const completed = await awaitTurn(
+          'opening',
+          0,
+          [demoHeading, 'Capture', 'Understand', 'Use'],
+          ['Capture', 'Understand', 'Use'],
+        );
+        const pageTextEvents = await pageTextProof.snapshot();
+        assert.ok(
+          pageTextEvents.some(
+            (event) =>
+              event.phase === 'completed' && event.result_has_heading && event.result_has_stages,
+          ),
+          'original member opening requires completed real Page Text with page heading and stages',
+        );
+        report.page_text_proof = {
+          completed_actual_page_result: true,
+          event_count: pageTextEvents.length,
+        };
         stage = 'reviewer_chat_transport';
         const network = memberTransport.snapshot();
         report.chat_transport = network;
@@ -1739,10 +1959,7 @@ try {
           'Chat response must match the sent conversation',
         );
         assert.ok(network.backend_request_fingerprint, 'real member Chat backend request required');
-        await typeQuestion(
-          'Name only the second workflow stage from our previous answer.',
-          'enter_same_conversation_followup',
-        );
+        await typeQuestion(MEMBER_FOLLOWUP, 'enter_same_conversation_followup');
         stage = 'send_same_conversation_followup';
         await panelLifecycle.check('before_followup_send');
         await sendMemberChatOnTarget({
@@ -1815,6 +2032,7 @@ try {
         report.chat = {
           visible: true,
           question_fingerprint: hash(QUESTION),
+          heading_fingerprint: hash(demoHeading),
           accepted: true,
           completed_real_answer: completed.completedReplyCount >= 1 && !completed.streaming,
           completed_reply_count: completed.completedReplyCount,
@@ -1829,7 +2047,8 @@ try {
             complete: false,
           };
         await memberTransport?.stop();
-        if (!web.isClosed()) await web.close();
+        await pageTextProof?.stop();
+        if (web && !web.isClosed()) await web.close();
       }
     },
   });
