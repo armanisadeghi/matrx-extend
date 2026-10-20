@@ -1,0 +1,22 @@
+{
+  "source_receipt": "/tmp/hosted9ed-native-evidence-peer-20261020.json",
+  "status": "DONE_WITH_CONCERNS",
+  "source_sha": "9ed32da30222a47faeeaf68cf72f8746512eac44",
+  "verdict_A": {
+    "member_scrape_T04_T29": "UNVERIFIED this run",
+    "guest_seo_T02_stacked_notice_subtarget": "PASS bounded",
+    "full_cases": "PARTIAL historical status unchanged"
+  },
+  "verdict_B": {
+    "provenance": "B valid normal CLI certificate and exact development artifact; A no certificate because hosted run failed",
+    "guard": "B three valid finals; A package/browser valid, guest child_failed exit 1, resourceInvalid false",
+    "cleanup": "A raw no-write/verified; B raw fixture two cleared, zero failed; worker reports secret removed and owned jobs terminal"
+  },
+  "review_summary": "Fresh independent A/B raw review accepts the exact-source guest T02 stacked-notice subtarget as bounded. Member Scrape remains unverified this run. All three guest resource finals and cleanup were valid; member package/browser valid, guest child failed before product and no-write cleanup verified.",
+  "remaining": [
+    "Diagnose A authentication boundary before an authorized fresh member run; preserve no-write cleanup and one-use-link secret removal",
+    "T04/T29 still need full save failure/retry, stale Saved clearance, destination alternatives, duplicate/refusal/reload and role/dimension coverage",
+    "T02 still needs freshness/stale advice, failure visibility, reload and broader role/state coverage; D0199/D247 not closed by this subtarget"
+  ],
+  "limits": "Does not establish full-case PASS, Store-wide acceptance, or defect closure."
+}

@@ -2,7 +2,7 @@
 /** Real member Save Source dialog, project edge, and exact owned-row cleanup. */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyHostedScrapeSaveAssociations } from '../../scripts/hosted-scrape-route.mjs';
@@ -14,6 +14,12 @@ import {
 } from './member-logical-org-proof.mjs';
 import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import {
+  recordScrapeMemberAuthFailure,
+  recordScrapeSaveFailure,
+  safeScrapeSaveFailureCode,
+  writeScrapeSaveReport,
+} from './scrape-save-auth-report.mjs';
 import { observeDuplicateSourceSave } from './scrape-save-duplicate-observer.mjs';
 import { cleanupProjectFixture, projectFixtureRequest } from './scrape-save-project-fixture.mjs';
 import { refuseFirstSourceRename } from './scrape-save-rename-refusal.mjs';
@@ -61,6 +67,9 @@ const report = {
   native_stage: null,
   artifact: null,
   authentication: null,
+  auth_stage: null,
+  auth_diagnostic: null,
+  auth_failure: null,
   observations: {},
   cleanup: null,
   failure_stage: null,
@@ -68,11 +77,6 @@ const report = {
     ? 'Controlled credential removal in the owned profile followed by real extension restore; guest Save/warm Retry/post-full-reload Retry, real member recovery, edited landing HTTP and Source read/cleanup. Server-caused refresh rejection and Store installation remain unverified.'
     : `Exact imported CI development artifact, real member sign-in, ${duplicateSave ? 'same-article duplicate landing and custom rename' : 'one custom-named Source saved'} with ${destinationMode === 'project' ? 'one disposable owned Project association' : 'no destination'}, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, ${renameRetry ? 'other refusal paths' : 'controlled rename refusal/retry'}, responsive timing, or full T04/T29 closure.`,
 };
-
-function safeFailureCode(error) {
-  const candidate = String(error?.message ?? 'native_acceptance_error').split(/[:\n]/, 1)[0];
-  return /^[a-z][a-z0-9_-]{1,100}$/.test(candidate) ? candidate : 'native_acceptance_error';
-}
 
 const ARTICLE_EXTRACTORS = new Set(['defuddle', 'readability', 'fallback']);
 
@@ -644,16 +648,28 @@ try {
       try {
         report.stage = 'member_auth';
         await requireResourceHealth();
-        const identity = await resourceAction(() =>
-          signInSettings({
-            mode: 'member',
-            page,
-            panel,
-            repo: REPO,
-            memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
-            allowLadderOrganization: true,
-          }),
-        );
+        let identity;
+        try {
+          identity = await resourceAction(() =>
+            signInSettings({
+              mode: 'member',
+              page,
+              panel,
+              repo: REPO,
+              memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+              allowLadderOrganization: true,
+              onStage: (value) => {
+                report.auth_stage = value;
+              },
+              onAuthDiagnostic: (value) => {
+                report.auth_diagnostic = { ...report.auth_diagnostic, ...value };
+              },
+            }),
+          );
+        } catch (error) {
+          recordScrapeMemberAuthFailure(report, error);
+          throw error;
+        }
         selectedOrganizationId = identity.organizationId;
         assert.equal(identity.web_signed_in, true, 'scrape_save_member_web_signin_missing');
         assert.equal(
@@ -1217,7 +1233,7 @@ try {
             report.cleanup = await resourceAction(cleanup);
           } catch (error) {
             cleanupError = error;
-            report.cleanup = { verified: false, error_code: safeFailureCode(error) };
+            report.cleanup = { verified: false, error_code: safeScrapeSaveFailureCode(error) };
           }
         } else report.cleanup = { verified: true, no_write_possible: true };
         if (projectFixture) {
@@ -1227,7 +1243,10 @@ try {
             );
           } catch (error) {
             cleanupError = error;
-            report.project_cleanup = { verified: false, error_code: safeFailureCode(error) };
+            report.project_cleanup = {
+              verified: false,
+              error_code: safeScrapeSaveFailureCode(error),
+            };
           }
         }
       }
@@ -1240,20 +1259,9 @@ try {
   report.status = 'pass';
   report.stage = 'complete';
 } catch (error) {
-  report.status = 'fail';
-  report.failure_stage = report.stage;
-  report.error_code = safeFailureCode(error);
+  const failureLine = recordScrapeSaveFailure(report, error);
   process.exitCode = 1;
-  process.stderr.write(
-    `SCRAPE_SAVE_NATIVE_ACCEPTANCE_FAILED ${report.stage} ${report.error_code}\n`,
-  );
+  process.stderr.write(failureLine);
 } finally {
-  await mkdir('test-results', { recursive: true });
-  await writeFile(
-    'test-results/scrape-save-native-acceptance.json',
-    `${JSON.stringify(report, null, 2)}\n`,
-    {
-      mode: 0o600,
-    },
-  );
+  await writeScrapeSaveReport(report);
 }

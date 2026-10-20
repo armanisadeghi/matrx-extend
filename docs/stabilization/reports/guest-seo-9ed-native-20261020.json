@@ -1,0 +1,40 @@
+{
+  "source_receipt": "/tmp/guest-seo-9ed-native-20261020.json",
+  "task_id": "guest-seo-9ed-native-20261020",
+  "lane": "B",
+  "status": "normal-certificate-valid-bounded-subtarget-pass",
+  "feature_id": "EXT-F-1008",
+  "case_id": "EXT-F-1008-T02",
+  "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+  "artifact": {
+    "source_sha": "9ed32da30222a47faeeaf68cf72f8746512eac44",
+    "ci_run_id": 39507646792,
+    "development_artifact_id": 12303743995,
+    "development_artifact_digest": "sha256:f4ad969d93d38d82c57aa8504e352c4db05577966a5793497fa785a1ab86b052",
+    "hosted_run_id": 39508759424,
+    "hosted_artifact_id": 12305135788,
+    "archive_digest": "26dbbb5de40056bd2b10c6406688f1f2e6c7876b54a830021ce90c93a6b1fe29"
+  },
+  "route": "normal guest-seo lane; notice-stacked; no fixture; diagnostics off; no interruption",
+  "observation": {
+    "verdict": "pass bounded subtarget",
+    "native_width_px": 360,
+    "distinct_notices": 2,
+    "long_notice_characters": 199,
+    "reaudit_click": "trusted click performed; action remained disabled/spinning during observed interval",
+    "target_hit_points": 9,
+    "notice_hit_points": 0,
+    "dismissal_counts": "2 -> 1 -> 0"
+  },
+  "resource_and_cleanup": {
+    "normal_certificate_valid": true,
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid (initial CPU pending recovered to valid)",
+    "fixtures_attempted": 2,
+    "fixtures_cleared": 2,
+    "fixture_clear_failures": 0,
+    "owned_job_terminal": "success"
+  },
+  "scope": "No full T02, full SEO, or D247 closure. Broader stale-advice replacement and failure-report assertions remain deferred."
+}

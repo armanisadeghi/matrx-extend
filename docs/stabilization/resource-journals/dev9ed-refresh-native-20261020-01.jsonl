@@ -1,0 +1,4 @@
+{"schema":1,"at":"2026-10-20T22:32:55.495Z","runId":"dev9ed-refresh-native-20261020-01","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-20T22:33:21.005Z","runId":"dev9ed-refresh-native-20261020-01","signal":"SIGINT","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-20T22:34:02.689Z","runId":"dev9ed-refresh-native-20261020-01","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-20T22:34:02.697Z","runId":"dev9ed-refresh-native-20261020-01","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}

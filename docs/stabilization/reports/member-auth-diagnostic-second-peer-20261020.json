@@ -1,0 +1,15 @@
+{
+  "status": "ADDRESSED_WITH_LIMITS",
+  "A_outcome": "First member auth boundary stage and safe code are persisted by actual Scrape caller and final JSON writer; two distinct stages verified.",
+  "A_evidence": "scrape-save-native-acceptance.mjs passes onStage/onAuthDiagnostic to signInSettings, catches and records memberAuthFailureReport before outer catch/finally; helper invokes real runMemberAuthBoundary projection and writes JSON.",
+  "B_doctrine": "No credential, account, or login behavior changed; native live path was not replayed. Test is valid at diagnostic report pipeline boundary, not proof of member sign-in or Source save.",
+  "B_redaction": "runMemberAuthBoundary drops secret-bearing external error text; JSON and stderr use fixed safe codes; test verifies absence of two secret strings and 0600 on a newly created file.",
+  "findings": [
+    "writeScrapeSaveReport mode:0600 only controls new file creation; an existing 0644 report would retain 0644 permissions. This predates change but weakens unconditional 0600 claim.",
+    "Caller excerpt test uses regex/New Function for wiring, while real boundary and writer test covers the production helpers; reasonable bounded coverage but no whole native caller execution."
+  ],
+  "checks": "node --test tests/browser/scrape-save-member-auth-diagnostic.test.mjs: 2/2 pass",
+  "limits": "No live signInSettings run, resource lease, full focused gate, compile, lint, push, or release.",
+  "next_action": "Root may run guarded full gate and integrate; if strict 0600 requirement includes preexisting report files, chmod or atomic recreate and test it first.",
+  "owner_ruling": "Accept bounded diagnostic-pipeline review. Newly created report mode is0600; existing-file mode is unchanged and no unconditional0600 claim is made. Report data is sanitized before writing. No authentication or Source product pass follows."
+}

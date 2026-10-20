@@ -76,7 +76,10 @@
     "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
     "docs/stabilization/reports/d187-cancel-throw-source-20261012.json",
     "docs/stabilization/reports/d187-cancel-throw-tests-peer-20261012.json",
-    "docs/stabilization/reports/member-scrape-normal-route-peer-final-20261020.json"
+    "docs/stabilization/reports/member-scrape-normal-route-peer-final-20261020.json",
+    "docs/stabilization/reports/member-scrape-9ed-native-20261020.json",
+    "docs/stabilization/reports/member9ed-auth-boundary-repair-20261020.json",
+    "docs/stabilization/reports/member-auth-diagnostic-second-peer-20261020.json"
   ],
   "cause": "Original client path omitted name/attach_to and awaited ancillary SEO audit. Subsequent native retest exposed modal focus escape and incomplete one-type browsing. A separate initial-organization hydration race remounted/dismissed the Save form and caused cumulative 10-second test waits; the builder repaired hydration/switch handling and the focused suite now passes. Remaining source sibling: pending destination creation was local to PlaceResults, so the parent Save action could land before the returned destination was staged.",
   "fix_commits": [
@@ -164,7 +167,7 @@
     }
   ],
   "closure_requirement": "Fresh peer checks product/source behavior; guarded development build is reloaded in installed Chrome; member/admin real-page save proves custom name, no destination, one and multiple destinations, optional Library, refusal/retry, duplicate rename, responsive confirmation, and scrolling/searching to select a project beyond the first visible rows; surrounding Scrape cases remain green. Guest sign-in flow is rechecked.",
-  "next_action": "Member single/no-destination normal hosted CLI route is independently source-reviewed. Guarded full focused suite 805 tests:795 pass,10 Linux-only skips,0 fail; new CLI test is included. Compile/source integration and fresh successful exact-source CI artifact required before lane A member dispatch. Then native original named Save/reopen/persistence/cleanup plus fresh independent retest; preserve all other existing destination, guest, latency and surrounding-case requirements. No new product acceptance from source-only checks.",
+  "next_action": "Current9ed member native39508709938 failed member_auth before any Source action; actual inner cause unknown. Reviewed diagnostic-only caller/report pipeline now preserves safe first stage/code, with real report projection/JSON writer guard. Complete guarded focused/compile/lint, push, await successful exact-source CI development artifact, then normal admitted member single/no-destination rerun with one-use link, original save/readback/reopen and cleanup. No source-only or warm-guest pass closes D187 or full T04/T29.",
   "release": {
     "version": "0.2.458",
     "source_sha": "991a70bee4f06c3e9f93254b9c1679e4f4259a08",

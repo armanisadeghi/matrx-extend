@@ -1,0 +1,33 @@
+{
+  "source_receipt": "/tmp/guest-seo-9ed-normal-certificate-20261020.json",
+  "run_id": "39508759424",
+  "attempt": "1",
+  "valid": true,
+  "workflow_sha": "9ed32da30222a47faeeaf68cf72f8746512eac44",
+  "workflow_source_sha256": "c001f41ae6e982998b923bf25e7470e4e84006055eba883358fae9ecb696bb8b",
+  "archive_digest": "26dbbb5de40056bd2b10c6406688f1f2e6c7876b54a830021ce90c93a6b1fe29",
+  "artifact": {
+    "source_sha": "9ed32da30222a47faeeaf68cf72f8746512eac44",
+    "main_sha": "9ed32da30222a47faeeaf68cf72f8746512eac44",
+    "compatibility": "exact-source",
+    "allowed_diff_paths": [],
+    "artifact_id": "12303743995",
+    "development_run_id": "39507646792",
+    "development_artifact_digest": "sha256:f4ad969d93d38d82c57aa8504e352c4db05577966a5793497fa785a1ab86b052"
+  },
+  "resource_receipts": {
+    "hosted-package": {
+      "decision": "valid",
+      "sha256": "1ba999b2fc849438d07c67156a1842d74d440700d28d848e3b3660deeb319e75"
+    },
+    "hosted-browser": {
+      "decision": "valid",
+      "sha256": "559e5cccdc2270ed3b92744aa6c83efe095bb3d5e62754161d3daef2f8ec97ee"
+    },
+    "hosted-guest": {
+      "decision": "valid",
+      "sha256": "5d351f1f49652d09f49bd23d346f6ab2745e653a3e8c6e9165b3f55498b3a9ec"
+    }
+  },
+  "note": "Curated normal certificate metadata only; no raw ZIP, screenshots, auth logs, tokens, or payloads."
+}

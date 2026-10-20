@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0187",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "auth_mode": "member",
+  "destination_mode": "none",
+  "save_scope": "single",
+  "status": "fail",
+  "stage": "member_auth",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "9ed32da30222a47faeeaf68cf72f8746512eac44",
+    "run_id": 39507646792,
+    "artifact_id": 12303743995,
+    "tree_sha256": "51414cd9e27017f583b0445d43529e8057197ea6afad7a44fffca20907704fa1",
+    "version": "0.2.578",
+    "github_artifact_digest": "sha256:f4ad969d93d38d82c57aa8504e352c4db05577966a5793497fa785a1ab86b052",
+    "ci_run_attempt": 1
+  },
+  "authentication": null,
+  "observations": {},
+  "cleanup": {
+    "verified": true,
+    "no_write_possible": true
+  },
+  "failure_stage": "member_auth",
+  "limits": "Exact imported CI development artifact, real member sign-in, one custom-named Source saved with no destination, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, controlled rename refusal/retry, responsive timing, or full T04/T29 closure.",
+  "harness_checkout_sha": "9ed32da30222a47faeeaf68cf72f8746512eac44",
+  "error_code": "member_auth_boundary_failed"
+}

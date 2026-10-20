@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T21:17:52Z",
+  "updated_at": "2026-10-20T22:46:41.906963Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -29868,6 +29868,28 @@
             "Links/Schema/reload/digest invariance in this run"
           ],
           "existing_issue": "Preexisting unsaved warning belongs to D217; no fresh Save/Retry was invoked, so not a new authenticated RPC failure. See scrape-org-warning-triage-20261019.json."
+        },
+        {
+          "run_id": "39508709938",
+          "mode": "member",
+          "build": "0.2.578 CI development artifact; source 9ed32da30222a47faeeaf68cf72f8746512eac44; CI39507646792/artifact12303743995",
+          "status": "auth-boundary-failure-before-product",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1007-T04",
+              "status": "unverified",
+              "subtarget": "no member session or Save action reached"
+            },
+            {
+              "case_id": "EXT-F-1007-T29",
+              "status": "unverified",
+              "subtarget": "no member session or Save action reached"
+            }
+          ],
+          "defect_id": "EXT-D-0187",
+          "evidence": "docs/stabilization/reports/member-scrape-9ed-native-20261020.json",
+          "proven": "Normal lane A dispatch on exact-source artifact reached member_auth then failed with member_auth_boundary_failed. Cleanup verified; no write was possible. Package and browser resource finals valid; guest child failed with resourceInvalid=false; normal verifier produced no certificate.",
+          "limits": "No member session, capture, dialog, Source write/readback/reopen, or product verdict. T04/T29 remain partial; D187 remains in-fix. Diagnose auth boundary before a newly admitted run."
         }
       ],
       "source_change_observations": [
@@ -34837,6 +34859,26 @@
           "report": "docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json",
           "proven": "19 passing controlled guest subtargets across T01/T02/T03/T07/T09/T14.",
           "limits": "Deferred criteria remain open, including races, database/history, other detail/social states, recommendations, Chat, member/admin and reload gaps. No full SEO/current-main/Store claim."
+        },
+        {
+          "run_id": "39508759424",
+          "mode": "guest",
+          "build": "0.2.578 CI development artifact; source 9ed32da30222a47faeeaf68cf72f8746512eac44; CI39507646792/artifact12303743995",
+          "status": "partial-bounded-subtarget-pass",
+          "actual_store_installed": false,
+          "resource_valid": true,
+          "case_links": [
+            {
+              "case_id": "EXT-F-1008-T02",
+              "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+              "status": "pass"
+            }
+          ],
+          "evidence": "docs/stabilization/reports/guest-seo-9ed-native-20261020.json",
+          "normal_certificate": "docs/stabilization/reports/guest-seo-9ed-normal-certificate-20261020.json",
+          "independent_review": "docs/stabilization/reports/hosted9ed-native-evidence-peer-20261020.json",
+          "proven": "At native width 360, two distinct notices included a 199-character notice; Re-audit was still disabled/spinning during observation; 9 target hit points and 0 notice hit points; two independent dismissals cleared notices 2→1→0. Normal certificate valid; all package/browser/guest resource finals valid; both owned notices cleared.",
+          "limits": "Only this T02 subtarget passed. Broader stale-advice replacement and failure-report assertions, full T02, full SEO, reload/role/state coverage and D247 closure remain unverified."
         }
       ]
     },

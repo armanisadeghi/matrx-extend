@@ -1,0 +1,28 @@
+{
+  "source_receipt": "/tmp/store205-native-focus-escalation-20261020.json",
+  "status": "PASS_bounded_actual_store_guest_two_turns",
+  "target": {
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.205 (prior verified receipt; not reread in this attempt)",
+    "auth_state": "guest"
+  },
+  "backend_sha": "74fc7a4e371692fb2363a8d88eab930633160ab3",
+  "conversation_observation": {
+    "same_conversation": true,
+    "first_terminal": true,
+    "followup_terminal": true,
+    "first_answer": "correctly supplied visible H1 “A clear three-stage browser workflow”",
+    "followup_answer": "correctly supplied Capture purpose and expected result",
+    "no_new_chat_between_turns": true,
+    "conversation_id_inspected": false,
+    "final_view": "Both actual assistant replies and user turns visible with the matching demo page."
+  },
+  "resource": {
+    "decision": "valid",
+    "resource_invalid": false,
+    "exit_code": 0,
+    "stop_confirmed": true
+  },
+  "cleanup": "UI stopped before SIGINT; guard exited cleanly; both extension copies preserved; no install, sign-out, or configuration change.",
+  "limits": "Warm two-turn observation only; no cold/reload conversation test, unique case pass, or D273 closure. Keep D273 triaged/open."
+}
