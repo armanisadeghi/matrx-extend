@@ -35,11 +35,12 @@
   ],
   "verification": {
     "focused": "RED old: false !== true at the actual catch assignment; GREEN repaired: focused test passes. Related guest sequence, completion oracle, and package DOM tests: 79 passed; pnpm compile passed; scoped Biome check passed.",
-    "native": "Pending guarded hosted original-symptom retest; no native pass or product-health claim.",
-    "independent_review": "Fresh source peer PASS A/B for scoped diagnostic repair; report docs/stabilization/reports/guest264-diagnostic-fresh-peer-20261020.json. Native UNKNOWN; missing direct tests of some pre-answer/Values stages remain explicit."
+    "native": "Single independent guarded native B39377242317 running; workflow1d73cd4248, diagnostic sourcedcab242a4, unchanged original T10/public205 CRX. No verdict or retry.",
+    "independent_review": "Fresh source peer PASS A/B for scoped diagnostic repair; report docs/stabilization/reports/guest264-diagnostic-fresh-peer-20261020.json. Native UNKNOWN; missing direct tests of some pre-answer/Values stages remain explicit.",
+    "full_ci": "Exact source CI39376052632 SUCCESS: checks and resource-guard integration."
   },
   "fix_sha": "dcab242a405083b421adebf5f81923864795f7a6",
-  "next_action": "Automatic exact-source CI pending after normalpushdcab242a4; then one guarded independent original T10 diagnostic retest, keep D263 heading failure and allactualanswer/auth/tab/terminalgates intact. Do not close before original retest.",
+  "next_action": "Observe independent original T10 diagnostic retest39377242317 and review actual branch/evidence before closure. D263 heading failure and original answer/auth/tab/terminal gates remain intact.",
   "transition_history": [
     {
       "at": "2026-10-20T05:35:42Z",
