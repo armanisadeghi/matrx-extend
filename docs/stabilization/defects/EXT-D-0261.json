@@ -8,7 +8,7 @@
   "severity": "S1: signed-in member gets no assistant answer on a basic page question",
   "priority": "P0: real non-admin release acceptance blocker",
   "state": "triaged",
-  "owner": "stabilization-coordinator",
+  "owner": "member_runtime_recovery / stabilization-coordinator",
   "preconditions": [
     "Use exact 0.2.566 candidate from source c41ae6fd67057305c521791e404d2708882895f5, Store ZIP sha256 a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840. Canonical test adaptation changes manifest key only; original runtime code is unchanged.",
     "Use a fresh owned Chrome profile under a valid resource guard; never sign out the personal Chrome profile.",
@@ -36,10 +36,15 @@
     "docs/stabilization/reports/member261-next-candidate-preflight-20261020.json",
     "docs/stabilization/reports/member261-original-repro-harness-20261020.json",
     "docs/stabilization/reports/member261-original-repro-fresh-peer-20261020.json",
-    "docs/stabilization/reports/member261-original-repro-final-peer-20261020.json"
+    "docs/stabilization/reports/member261-original-repro-final-peer-20261020.json",
+    "docs/stabilization/reports/member575-original-native-a-20261020.json",
+    "docs/stabilization/reports/member575-hosted-raw-peer-20261020.json",
+    "docs/stabilization/reports/member575-local-capacity-recovery-20261020.json",
+    "docs/stabilization/reports/member575-focus-native-retest-20261020.json",
+    "docs/stabilization/reports/member-focus-final-peer-20261020.json"
   ],
   "cause": "Localized: original mandate start and same-conversation tool_results returned200; subsequent resume entered the backend but no target headers arrived for59.999s, then ALB generated504. create_prepared_streaming_response awaits prepare_resume_conversation before constructing the response. Concurrent DB pool/connect/query timeouts are observed but their causal link to this request is unproven. Deployed20bd has identical inspected resume/pool implementation; a short postdeploy sample lacks the prior error burst, not a repair claim.",
-  "next_action": "Diagnostic source a5452ac5c6 was freshly reviewed and pushed through merge db8f6d8f271de5f53bc853eb1fb23b4695c2fda0. Source revision181b containing diagnostics is now observed on live health/version; verify actual raw/database phase visibility during a relevant request; do not claim production from push. Obtain a resource-valid current-server exact-candidate non-admin original guest-to-member reproduction plus first/follow-up with passive transport, actual selected model, approved identity/org and before/after server SHA. Two Intel startup refusals mean no blind same-host retry; capacity remedy remains unproven. Fresh-direct-member is a separate discriminator. A pass is symptom evidence, not causal attribution; do not close without original and surrounding independent retest.",
+  "next_action": "Repair missing Playwright setup in the existing guarded local path, then one newly admitted exact-current candidate original guest-to-member run with trusted focus, terminal first/follow-up, passive transport and backend SHA. Original566 first-turn504 remains unresolved. No member claim from575 attempts before request.",
   "transition_history": [
     {
       "at": "2026-10-20T00:56:58.460155Z",
@@ -81,5 +86,17 @@
     }
   },
   "current_api_observation": "API-only approvednonadmin start/tool_results/resume returned200 onstablebackend5c3beef2, but subsequentread_page/extract_table delegationsremainedpending; no terminalassistantanswer. No original504reproduced inthisshape, no causalfix/nativepass/closure. D267 style-input scope is source-fixed; a meaningful fresh candidate plus exact gates is required, not a sourceguard waiver.",
-  "current_native_preflight": "Original direct-member-only harness gap repaired at1d676a1c3/cc9ab970f. Fresh peer source A PARTIAL nativepending, B PASS; real guest→member original-question flow and opening-conversation/delegated-call Page Text proof now enforced. FullCI39419403236 pending; no native launch/member product pass or causal repair."
+  "current_native_preflight": {
+    "hosted575": "39422682206 resource-invalid before member Chat; independent peer partial only",
+    "local575": "resource-valid visible but unfocused panel after reload, member request NOT_SENT",
+    "latest_focus_attempt": "member575-focus-native-20261020 setup failed before browser: Playwright unavailable; no behavior",
+    "focus_source": "3a38887c7 + 05a605c03; peer A partial/native pending, B source PASS",
+    "evidence": [
+      "docs/stabilization/reports/member575-original-native-a-20261020.json",
+      "docs/stabilization/reports/member575-hosted-raw-peer-20261020.json",
+      "docs/stabilization/reports/member575-local-capacity-recovery-20261020.json",
+      "docs/stabilization/reports/member575-focus-native-retest-20261020.json",
+      "docs/stabilization/reports/member-focus-final-peer-20261020.json"
+    ]
+  }
 }

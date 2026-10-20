@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "completedAt": "2026-10-20T12:36:24.316Z",
+  "result": "refreshed_and_verified_in_personal_chrome",
+  "source": {
+    "mainSha": "d4ba8286e71e91b48c7f22e1d2e912dc4b9c1bbf",
+    "compatibility": "exact-source",
+    "ciRunId": 39422128797,
+    "ciRunAttempt": 1,
+    "artifactId": 12264187251,
+    "version": "0.2.575",
+    "treeSha256": "d7cd9de9e554ff94c4bcf7f2677fc3d6fbbc5741b0ec3004b67060acf6f06fc9",
+    "import": "verified by scripts/current-test-artifact.mjs",
+    "promotion": "verified by scripts/promote-ci-dev-artifact.mjs"
+  },
+  "chrome": {
+    "profile": "armansadeghi.com (arman@armansadeghi.com)",
+    "dev": {
+      "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "loadedFrom": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "versionBeforeReload": "0.2.568",
+      "versionAfterReload": "0.2.575",
+      "enabled": true,
+      "pinned": true
+    },
+    "store": {
+      "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+      "version": "0.2.205",
+      "enabled": true,
+      "pinned": true,
+      "changed": false
+    },
+    "uiEvidence": "Chrome Extensions details showed dev ID, stable Loaded from path, version 0.2.575, enabled, Pin to toolbar on; Store details showed expected Store ID/version 0.2.205, enabled, Pin to toolbar on."
+  },
+  "resourceAdmission": {
+    "preflightRunId": "personal-chrome-refresh-20261020",
+    "preflightAt": "2026-10-20T12:21:49.172Z",
+    "browserRunId": "personal-chrome-refresh-20261020",
+    "browserAdmittedAt": "2026-10-20T12:35:27.011Z",
+    "browserStopConfirmedAt": "2026-10-20T12:36:24.305Z",
+    "finalDecision": "valid",
+    "resourceInvalid": false,
+    "freeDiskGiB": 38.425,
+    "availableMemoryGiB": 12.32,
+    "cpuBusyFraction": 0.15,
+    "pressureLevel": 1,
+    "journals": [
+      "test-results/personal-chrome-dev-refresh-20261020/resource-admission-check.jsonl",
+      "test-results/personal-chrome-dev-refresh-20261020/resource-browser-reload.jsonl"
+    ]
+  },
+  "notes": [
+    "An earlier browser preflight was interrupted before admission and before any UI interaction; its finalized journal is preserved at test-results/personal-chrome-dev-refresh-20261020/resource-admission-observe.jsonl.",
+    "A Gmail local-network permission prompt appeared when focusing Chrome; Block was selected. No permission was granted.",
+    "Verification covers loaded extension identity, path, version, enabled state, and pins; it does not claim sidepanel feature behavior."
+  ]
+}

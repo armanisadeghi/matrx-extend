@@ -1,0 +1,33 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "lane": "fresh_zero_authorship_raw_peer",
+  "native_run_id": 39422519149,
+  "release_run_id": 39420649081,
+  "verdict_A": {
+    "guest_chat_opening": "PASS: terminal HTTP 200, delegated get_page_text/result/resume, answer includes unpredictable opening code and ordered Capture/Understand/Use; bounded screenshot shows some code and stages but not complete paint",
+    "same_conversation_followup": "PASS: same conversation fingerprint, terminal HTTP 200, delegated get_page_text/read_page, exact code and heading checks",
+    "post_panel_reload_new_conversation": "PASS: panel reload, no session, new conversation fingerprint, terminal HTTP 200, exact code and heading checks",
+    "values_T13_original_escape": "FAIL: one trusted Escape on focused button inside sole original open dialog; six capture/bubble phases, tooltip 1 to 0, dialog/popover remains open with zero observed DOM transitions",
+    "reviewer_public_demo": "PASS within bounded checks: Article, Links, Schema, SEO, Data workflow picker and draft cleared; no whole-feature or Store-installed credit",
+    "whole_candidate": "PARTIAL: T13 fails; no upload/publication or member acceptance in this lane"
+  },
+  "verdict_B": {
+    "evidence_provenance": "PASS: independently downloaded GitHub artifact 12264832311; all 21 archived files byte-identical to preserved copy; raw SHA b8a00c507bee115d20cf56dde75298a4af6d0993474e9497bf0d035712d15427; three journal SHAs match worker report",
+    "artifact_identity": "PASS: independent Store ZIP SHA f4e992b348d4c8a1c949bc1043d2654fd8960e03c0cc11b2b745af928fa3731a; Store tree 41b6be5a03e44a2ef5c1bd82a0c020314b24a0aaa07d3f68b5213a0c4362d273; key-only adapted tree 774d7d41fccc7a7fc6f1269ddbca9bd316bda09a18a4eb4973fded16a864403a equals native report; Store React chunk SHA 170c255c33fc0fb21e9e318b1e0daae6abdbc17b2c1fa79fe76097953da54d32 equals local React chunk, but Store and local sidepanel chunks differ",
+    "resource_validity": "PASS: package valid/exit0, browser valid/exit0, guest child_failed/exit1 with resourceInvalid=false; backend before/after 6297e34665eaf8ff769bd15889d2cabd146710fe",
+    "identity_probe": "LIMITED/UNKNOWN: actual Store React asset contains Escape callback at line0 column20674 within static comparator range20661..20750; 24-function graph truncated at depth4, all locations expected_script=false, expected callback not observed. Probe records no scriptParsed counts/URLs or script IDs, so zero matches cannot distinguish CDP registration/URL filter from a different mounted closure; DOM React onKeyDown property alone does not prove handler execution or absence",
+    "privacy_cleanup": "PASS privacy in preserved raw: fingerprinted codes/conversations and no bearer/cookie/password value found; hosted workflow terminal and disposable guest profile, but no explicit profile-deletion receipt. No credential staging seen.",
+    "paint_limit": "Visible failed screenshot confirms Values panel remains open; answer screenshot shows only a clipped viewport, while exact full answer is supported by DOM/transport checks."
+  },
+  "exact_probe_lead": "Inspect Debugger.scriptParsed on the panel session and the actual URL/ID for chunks/react-CIAGJaBG.js before interpreting expected_script=false; static comparator is correct for actual Store bytes, but no runtime script-registration evidence was retained.",
+  "raw_artifact": {
+    "github_artifact_id": 12264832311,
+    "zip_sha256": "4016ddcf06ca811f92cc28b2a066eaa2642ccc9c16bce78d83a40d39212d40e7",
+    "local_path": "test-results/guest575-raw-peer/artifact-12264832311.zip"
+  },
+  "limits": [
+    "No new native call, product edit, hosted dispatch, Store install/upload or overall health claim.",
+    "Guest screenshot does not prove all text painted at once.",
+    "Probe callback identity and exact cause of Escape failure remain unknown."
+  ]
+}

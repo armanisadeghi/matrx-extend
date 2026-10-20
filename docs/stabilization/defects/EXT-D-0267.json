@@ -51,7 +51,7 @@
       "reason": "Actual compiler/Oxide baseline RED on diagnostic candidate; scoped source GREEN with app/WXT HTML/direct+transitive package positives and fixture cleanup. Independent CSS peer A PASS, final CI-selection A/B PASS; source committed b2ad76e9f. Full CI/fresh package/native surrounding acceptance still pending; no product UI fix or closure claim."
     }
   ],
-  "next_action": "Full source CI including new actual compiler guard, then one meaningful fresh guarded Store candidate including scoped styles; exact guest/nonadmin/reviewer UI acceptance and independent retest before closure/upload. Preserve original member source guard unchanged.",
+  "next_action": "Compiler/source fix b2ad76e9f and fullCI39417471133 are verified; 0.2.575 was built before later source/package changes and is stale for next upload. Prepare a fresh guarded candidate only after final sync/gates, then real guest/nonadmin/reviewer UI and independent surrounding retest before closure/upload.",
   "diagnosis_revision": "The initial allegation of a false source-admission refusal was withdrawn after actual CSS/scanner inspection. The guard is correct and unchanged. This record now tracks the underlying build-input boundary, with original diagnosis preserved in reports/transition history; no guard-fix or product-UI claim.",
   "source_commit": "b2ad76e9f",
   "source_ci_verification": {

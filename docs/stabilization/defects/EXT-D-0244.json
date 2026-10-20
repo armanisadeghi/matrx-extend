@@ -1,18 +1,18 @@
 {
   "id": "EXT-D-0244",
   "feature_id": "EXT-F-2013",
-  "surface": "Chat context compact Values popover",
+  "surface": "Chat context compact Values responsive dialog (mobile BottomSheet, desktop Popover)",
   "auth_mode": "guest",
   "case_ids": ["EXT-F-2013-T13"],
   "control_ids": ["EXT-F-2013-C139", "EXT-F-2013-C140"],
-  "title": "Compact Values popover remains open after trusted Escape with focus inside",
+  "title": "Compact Values dialog remains open after trusted Escape on mobile",
   "reproduction": [
-    "Import the exact public0.2.205 CRX (SHA2567f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23), load unpacked under the resource guard in a fresh guest profile, and reload from its recorded receipt.",
-    "Open Chat and complete the controlled three-turn fixture flow as run39160396058. Click the compact Values chip and focus inside its popover; do not click Open full view.",
-    "Dispatch trusted Escape, then inspect actual dialog open state and focus; native evidence records one trusted Escape and one remaining open dialog."
+    "Load exact 0.2.575 Store ZIP from release39420649081 as an adapted unpacked extension in an admitted fresh guest profile, bound to source60bc14ea923c9dc7f11b26b43f2aea0111d8b340.",
+    "In the 360px side panel complete the controlled three-turn Chat fixture, open compact Values, and focus a control inside the mobile BottomSheet.",
+    "Send one trusted Escape and inspect tooltip count and actual sheet/dialog state. The original run39422519149 removed the tooltip but left the sheet open."
   ],
-  "expected": "Escape dismisses the focused compact Values popover.",
-  "actual": "The compact Values popover remains visibly open with focus inside after one trusted Escape.",
+  "expected": "One trusted Escape dismisses the focused compact Values dialog on both mobile BottomSheet and desktop Popover.",
+  "actual": "Exact pre-fix 0.2.575 mobile BottomSheet remains visibly open after one trusted Escape; tooltip dismisses. Post-fix native behavior unknown.",
   "evidence": [
     "docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json",
     "docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json",
@@ -40,15 +40,19 @@
     "docs/stabilization/reports/values244-native-failure-diagnosis-20261020.json",
     "docs/stabilization/reports/values244-changed-native-trace-20261020.json",
     "docs/stabilization/reports/values244-trace-native-raw-peer-20261020.json",
-    "docs/stabilization/reports/values244-prevented-event-causal-repair-20261020.json"
+    "docs/stabilization/reports/values244-prevented-event-causal-repair-20261020.json",
+    "docs/stabilization/reports/guest575-native-b-20261020.json",
+    "docs/stabilization/reports/guest575-raw-fresh-peer-20261020.json",
+    "docs/stabilization/reports/values244-mobile-causal-repair-20261020.json",
+    "docs/stabilization/reports/values-mobile-source-fresh-peer-20261020.json"
   ],
   "severity": "S3: context inspection dialog dismissal by Escape fails; the three Chat replies completed.",
-  "priority": "P2: current 0.2.572 guest native reproduced; repair the shared ContextRulesChip and retest a released candidate.",
-  "state": "in-fix",
-  "owner": "values244_handler_identity_escalation",
-  "reproducibility": "Independent exact1b native39411790358/resource-valid reproduces original one trustedEscape while focus/actualeventtarget/path are inside original openValues. All6eventboundaries reached; defaultPrevented falseatwindowcapture then trueatdocumentcapture onward; tooltip1to0, originaldialog unchanged. ThreeguestterminalgroundedrepliesPASS, stablebackend5c3beef2. No causalnewproductfix or Reacthandlerentry proof.",
-  "build_version": "0.2.574 CIdevelopment/source1b831c27d98dc690fcff5526e304b92c23f4c8aa",
-  "server_sha": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
+  "priority": "P2: mobile source repair published/adopted; exact new-candidate native retest and adjacent behavior remain.",
+  "state": "fixed",
+  "owner": "values_shared_publish_adopt / stabilization-coordinator",
+  "reproducibility": "Independent exact575 native39422519149/resource-valid reproduces original on 360px mobile BottomSheet with one trusted Escape; tooltip1→0 and sheet remains open. Old desktop-only handler missed mobile; old mobile RED/new source70/70 GREEN, fresh peer PASS. Post-fix native UNKNOWN.",
+  "build_version": "0.2.575 adapted unpacked Store ZIP/source60bc14ea923c9dc7f11b26b43f2aea0111d8b340 (pre-mobile-repair)",
+  "server_sha": "6297e34665eaf8ff769bd15889d2cabd146710fe",
   "transition_history": [
     {
       "at": "2026-10-18T20:03:02.431885+00:00",
@@ -85,12 +89,18 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "FreshSol verifiedactualcompiledhandler but lacked eventtarget/propagation/state-transition boundary evidence. Bounded Astra escalation values244_event_boundary_escalation owns neutral existingcase trace, no speculativeproductpatch."
+    },
+    {
+      "at": "2026-10-20T13:15:13.036852+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Verified source cause is 360px mobile BottomSheet missing shared Escape handler; old mobile RED/new70/70 GREEN and independent source peer PASS. Shared ca1c252bee published agents0.59.176, extension adoption 997f9efbe. Source-fixed only; exact post-fix trusted native unknown."
     }
   ],
-  "next_action": "Fresh boundedAstra escalation after Sol could not build valid OLD-RED native-like guard. Identify actual DOMhandler identity/forwarding/composition vs compiledsource or return one precise handler-entry discriminator. No speculativeproductpatch/extraEscape/waiver. KeepS3/P2 separate from urgentD261member504 and continue releaseeligibility lane inparallel.",
-  "current_artifact_boundary": "Current1b exactCI39410623190/artifact12259880170 treeeadcc799e1ec6a9671c8ac1553470e58b90522a4814342547685abb69fd56eaa stillfails; neutraltestobservertrace only. Store574 artifact12258863115 is a separate source/tag d862a9ac9 and has not been nativeaccepted/uploaded.",
+  "next_action": "After package0.59.176 adoption and final synchronized gates, prepare one meaningful guarded candidate; independently retest original 360px mobile BottomSheet with one trusted Escape plus desktop/inline neighbors. No native closure or Store claim until observed.",
+  "current_artifact_boundary": "0.2.575/source60bc14ea/39422519149 is pre-mobile-fix and original T13 FAIL. New shared cause/fix ca1c252beec48565c47288b33e1adbdffbd816a3; extension adopts agents0.59.176 at 997f9efbe; post-fix native UNKNOWN.",
   "source_harness_readiness": {
-    "status": "fresh source peer PASS; native UNKNOWN, productstateopen",
+    "status": "source fix/peer PASS; adopted agents0.59.176; fullCI39427753847 SUCCESS; post-fix native UNKNOWN",
     "summary": "Immediately prove documentfocus/visiblecompactfocus/singleopen/noothervisible dialogs before trustedEscape; unavailablefocus refused before key, distinct harnesspreconditionerror. Require zero open/visible compactdialogs +trustedkeydown after. Fullviewcontrolfocusedwithoutactivation; actualnativefocus sideeffectsunknown.",
     "tests": "40/40 actualsourceunit guards; oldsourceRED; alertdialog/HTMLdialogwithoutdata-state and targethiddenafterfocus refusalsdispatchzero keys. No productfix or currentcandidatepass.",
     "report": "docs/stabilization/reports/values244-focus-guard-20261020.json",

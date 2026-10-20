@@ -1,0 +1,158 @@
+{
+  "task_id": "freshrelease575",
+  "lane": "B",
+  "model": "GPT-6",
+  "status": "DONE_WITH_CONCERNS",
+  "candidate": {
+    "version": "0.2.575",
+    "release_run_id": 39420649081,
+    "release_artifact_id": 12264355137,
+    "release_artifact_digest": "sha256:f428987e5824b05d9f49f993c7034a67c0b5cf1a41d49cd716c84f1869b74e4c",
+    "release_source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+    "dispatch_main_sha": "d4ba8286e71e91b48c7f22e1d2e912dc4b9c1bbf",
+    "store_zip_sha256": "f4e992b348d4c8a1c949bc1043d2654fd8960e03c0cc11b2b745af928fa3731a",
+    "release_receipt": "release-receipt.json in release artifact 12264355137; validated by normal plan and dispatch helper",
+    "release_tree_sha256": "a086197a865310bd3029040da6b09d8453d4d2c858718ddc14109150e652141a"
+  },
+  "run": {
+    "id": 39422519149,
+    "job_id": 118626793872,
+    "status": "completed",
+    "conclusion": "failure",
+    "failure_stage": "guest_values_chip_observation",
+    "failure_code": "guest_values_chip_closed_not_observed",
+    "report_sha256": "b8a00c507bee115d20cf56dde75298a4af6d0993474e9497bf0d035712d15427",
+    "raw_report": "/tmp/guest575-native-b-39422519149/hosted-guest-39422519149-1/matrx-extend/matrx-extend/test-results/guest-chat-store-fe715f4d-7721-4d30-8c8c-621708d452ae.json",
+    "evidence_artifact_id": 12264832311,
+    "evidence_artifact_digest": "sha256:4016ddcf06ca811f92cc28b2a066eaa2642ccc9c16bce78d83a40d39212d40e7",
+    "evidence_artifact_path": "/tmp/guest575-native-b-39422519149/hosted-guest-39422519149-1"
+  },
+  "native_package": {
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "version": "0.2.575",
+    "runtime_tree_sha256": "774d7d41fccc7a7fc6f1269ddbca9bd316bda09a18a4eb4973fded16a864403a",
+    "expected_and_runtime_checked_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "identity_evidence": "native panel was acquired by exact chrome-extension URL and harness returned only after chrome.runtime.id equality; report omitted final extension_id because case threw before run result serialization",
+    "runtime_identity_gate_passed_before_case": true
+  },
+  "guest_chat": {
+    "opening": "terminal HTTP 200; unpredictable page code and Capture/Understand/Use order verified",
+    "same_conversation_followup": "terminal HTTP 200; exact follow-up code and heading; same conversation identity",
+    "post_panel_reload_new_conversation": "terminal HTTP 200; exact follow-up code and heading; distinct conversation identity",
+    "guest_fresh": true,
+    "session_absent_after_reload": true,
+    "backend_before": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+    "backend_after": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+    "backend_stable": true
+  },
+  "values_T13": {
+    "verdict": "FAIL",
+    "one_trusted_Escape": true,
+    "focus_inside_before_and_after": true,
+    "chip_count": 1,
+    "visible_open_popovers": 1,
+    "open_state_popovers": 1,
+    "dialog_open_after": true,
+    "tooltip_count_pre_post": [1, 0],
+    "trusted_boundaries": [
+      {
+        "boundary": "window_capture",
+        "phase": 1,
+        "defaultPrevented": false,
+        "cancelBubble": false,
+        "dialog_open": true
+      },
+      {
+        "boundary": "document_capture",
+        "phase": 1,
+        "defaultPrevented": true,
+        "cancelBubble": false,
+        "dialog_open": true
+      },
+      {
+        "boundary": "dialog_capture",
+        "phase": 1,
+        "defaultPrevented": true,
+        "cancelBubble": false,
+        "dialog_open": true
+      },
+      {
+        "boundary": "dialog_bubble",
+        "phase": 3,
+        "defaultPrevented": true,
+        "cancelBubble": false,
+        "dialog_open": true
+      },
+      {
+        "boundary": "document_bubble",
+        "phase": 3,
+        "defaultPrevented": true,
+        "cancelBubble": false,
+        "dialog_open": true
+      },
+      {
+        "boundary": "window_bubble",
+        "phase": 3,
+        "defaultPrevented": true,
+        "cancelBubble": false,
+        "dialog_open": true
+      }
+    ],
+    "dialog_react_keydown_prop_present": true,
+    "dom_transitions": 0,
+    "trace_sha256": "a60eb436503886bf652084732decf14acf51b5373220b3a5ba361f64d4d72fb7",
+    "mounted_handler_identity": "unknown",
+    "identity_reason": "expected_callback_not_observed",
+    "identity_graph_truncated": true,
+    "identity_probe_sha256": "3c63e2a5db9e9c9f27479be3e96ee4d5cf3c54c9e53be24a255c8ca0d1ba1c25",
+    "expected_compiled_script_ids_observed": 0,
+    "expected_compiled_nodes_matched": 0,
+    "identity_probe_status": "unknown: bounded CDP function graph did not expose a node in react-CIAGJaBG.js columns 20661–20750"
+  },
+  "neighbor_cases": {
+    "reviewer_demo": "pass",
+    "Article": "pass",
+    "Links": "pass",
+    "Schema": "pass",
+    "SEO": "pass",
+    "Data_workflow_picker": "pass"
+  },
+  "resource_finals": [
+    {
+      "name": "hosted-browser-39422519149-1.jsonl",
+      "sha256": "2343812a3b3146eee5fed3c8c2af35bd7134887cbd319ff03c71472bf6f15984",
+      "rows": 4,
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    {
+      "name": "hosted-guest-39422519149-1.jsonl",
+      "sha256": "d85a10c1ece29491c5c1483d42cb007cea9bcc8c263f70b8e5c336849eaa228c",
+      "rows": 25,
+      "decision": "child_failed",
+      "resourceInvalid": false,
+      "exitCode": 1
+    },
+    {
+      "name": "hosted-package-39422519149-1.jsonl",
+      "sha256": "514510d9aa51724178eba0e6fe755b64a684350f8d44e07dd6757b319feac690",
+      "rows": 4,
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0
+    }
+  ],
+  "preserved_evidence_directory": "/Volumes/Samsung2TB/code/matrx-extend/test-results/guest575-native-b-39422519149",
+  "screenshots_directory": "/tmp/guest575-native-b-39422519149/hosted-guest-39422519149-1/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-StLYvJ",
+  "cleanup": "workflow terminal; hosted disposable profile/process ended; all 3 resource journals terminal and byte-identical in ignored test-results; no member credentials staged, no credential changes; repo tracked tree clean",
+  "limitations": [
+    "T13 original Values dialog remained open after one trusted Escape; no second Escape or alternate event.",
+    "Handler identity remains UNKNOWN, not absent.",
+    "Candidate native package used the harness development identity after Store ZIP key adaptation; no Store installation/publication was tested.",
+    "Neighbor cases are bounded observations only; no whole-feature health claim.",
+    "No code or tracked evidence committed; root owns independent review and final evidence integration."
+  ],
+  "feature_ids": ["EXT-F-2013-T10", "EXT-F-2013-T13"],
+  "defect_ids": ["EXT-D-0243", "EXT-D-0244"]
+}

@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "task_id": "EXT-D-0261",
+  "lane": "local_different_capacity_exact_store575",
+  "status": "UNVERIFIED_MEMBER_NOT_SENT_CHILD_FAILED_RESOURCE_VALID",
+  "candidate": {
+    "release_run_id": 39420649081,
+    "artifact_id": 12264355137,
+    "release_source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+    "store_zip_sha256": "f4e992b348d4c8a1c949bc1043d2654fd8960e03c0cc11b2b745af928fa3731a",
+    "store_zip_key_adaptation": "manifest.key only; copied from matching-version local ZIP; original Store ZIP unchanged",
+    "runtime_tree_sha256": "774d7d41fccc7a7fc6f1269ddbca9bd316bda09a18a4eb4973fded16a864403a",
+    "workflow_source_sha": "d4ba8286e71e91b48c7f22e1d2e912dc4b9c1bbf"
+  },
+  "resource": {
+    "check": "valid",
+    "native_decision": "child_failed",
+    "admitted": true,
+    "resource_invalid": false,
+    "child_exit_code": 1,
+    "journals": [
+      "test-results/member575-local-store-20261020/resource-check.jsonl",
+      "test-results/member575-local-store-20261020/resource-native.jsonl"
+    ]
+  },
+  "backend": {
+    "before_sha": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+    "after_sha": "6297e34665eaf8ff769bd15889d2cabd146710fe"
+  },
+  "product": {
+    "guest_turns": 2,
+    "guest_terminal": "terminal_two_turn_guest",
+    "reviewer_web_signed_in": true,
+    "reviewer_extension_signed_in": true,
+    "approved_org_selected": true,
+    "normal_reload_new_document": true,
+    "member_first_turn": "NOT_SENT",
+    "member_followup": "NOT_SENT",
+    "failure_stage": "original_member_normal_panel_reload",
+    "failure_code": "reviewer_native_panel_foreground_not_observed",
+    "first_lifecycle": {
+      "phase": "before_open_chat",
+      "original_target": true,
+      "panel_visibility": "visible",
+      "panel_focused": true,
+      "frame_progress": true,
+      "frame_count": 1,
+      "transcript_mounted": true,
+      "transcript_opacity": 1
+    },
+    "after_open_lifecycle": {
+      "phase": "after_open_chat",
+      "original_target": true,
+      "panel_visibility": "visible",
+      "panel_focused": false,
+      "frame_progress": true,
+      "frame_count": 1,
+      "transcript_mounted": false,
+      "transcript_opacity": null
+    },
+    "after_activation_lifecycle": {
+      "phase": "after_open_chat_after_reopen",
+      "original_target": true,
+      "panel_visibility": "visible",
+      "panel_focused": false,
+      "frame_progress": true,
+      "frame_count": 2,
+      "transcript_mounted": false,
+      "transcript_opacity": null
+    }
+  },
+  "cleanup": {
+    "one_use_magic_link_deleted": true,
+    "owned_profile_dirs_remaining": 0,
+    "owned_browser_processes_remaining": 0,
+    "resource_lease_released": true,
+    "store_action": "none"
+  },
+  "evidence": {
+    "private_report": "test-results/member575-local-store-20261020/member-report.private.json",
+    "native_artifacts": "test-results/native-sidepanel-qa-vQUGWn/",
+    "relocated_receipt": "test-results/member575-local-store-20261020/release-receipt.json",
+    "backend_before": "test-results/member575-local-store-20261020/backend-before.json",
+    "backend_after": "test-results/member575-local-store-20261020/backend-after.json"
+  },
+  "next_action": "Do not retry unchanged. D261 remains unverified; root should adjudicate native original-panel focus failure before another resource-admitted member attempt. No source changes made in this lane."
+}

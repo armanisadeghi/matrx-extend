@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "task_id": "EXT-D-0261",
+  "lane": "member575_original_native_a",
+  "model": "GPT-6 Luna",
+  "status": "UNVERIFIED_RESOURCE_INVALID_BEFORE_MEMBER_CHAT",
+  "candidate": {
+    "release_run_id": 39420649081,
+    "release_source_tag_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+    "artifact_id": 12264355137,
+    "version": "0.2.575",
+    "store_zip_sha256": "f4e992b348d4c8a1c949bc1043d2654fd8960e03c0cc11b2b745af928fa3731a",
+    "tree_sha256": "a086197a865310bd3029040da6b09d8453d4d2c858718ddc14109150e652141a",
+    "workflow_source_sha": "d4ba8286e71e91b48c7f22e1d2e912dc4b9c1bbf"
+  },
+  "run": {
+    "id": 39422682206,
+    "attempt": 1,
+    "runner_label": "macos-15-intel",
+    "hosted_runner_name": "GitHub Actions 1000112771",
+    "artifact_id": 12264493519,
+    "artifact_sha256": "97f5b1a0f0b70be118b181f1f389458fb76aea598563737706c1c443ecd2db3c",
+    "started_at": "2026-10-20T12:29:51Z",
+    "completed_at": "2026-10-20T12:38:54Z",
+    "conclusion": "failure"
+  },
+  "spend_at_dispatch": {
+    "read_at": "2026-10-20T12:26:25.475944Z",
+    "week_total_usd": 79.12,
+    "week_total_complete": true,
+    "week_cap_usd": 100,
+    "stale": false,
+    "off_track": true,
+    "finding": "unrelated matrx-desktop ci $5.70/day mostly red; no cap/billing refusal"
+  },
+  "backend": {
+    "before_sha": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+    "after_sha": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+    "built_at": "2026-10-20T12:07:05Z"
+  },
+  "resource": {
+    "package": {
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "browser": {
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "guest_acceptance": {
+      "decision": "invalid",
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "child_exit_code": 1,
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+      "peak_sample_cpu_busy_fraction": 1,
+      "peak_sample_one_minute_load": 3.81
+    },
+    "profile_process_cleanup": "Hosted job terminal; all journals terminal; no explicit profile/process cleanup-error code observed. Exact hosted profile deletion receipt unavailable."
+  },
+  "product": {
+    "guest_prelude": {
+      "completed_turns": 2,
+      "opening": {
+        "http_status": 200,
+        "terminal_success": true,
+        "semantic_completion": "success",
+        "pending_tools": 0,
+        "delegated_calls": 1,
+        "tool_result_successes": 1
+      },
+      "same_conversation_followup": {
+        "http_status": 200,
+        "terminal_success": true,
+        "semantic_completion": "success",
+        "is_new": false,
+        "pending_tools": 0
+      }
+    },
+    "member_identity": {
+      "web_signed_in": true,
+      "extension_identity_observed": true
+    },
+    "member_chat": "NOT_REACHED",
+    "member_first_turn": "NOT_SENT",
+    "member_followup": "NOT_SENT",
+    "member_transport": "NOT_OBSERVED",
+    "selected_model": "NOT_OBSERVED",
+    "organization_header_fingerprints": "NOT_OBSERVED",
+    "failure_stage": "reviewer_native_panel_foreground",
+    "failure_substep": "visibility_wait",
+    "failure_class": "timeout",
+    "wait_budget_ms": 10000,
+    "snapshot": {
+      "web_closed": false,
+      "root_closed": false,
+      "targets_measured": true,
+      "exact_panel_target_present": true,
+      "visibility_measured": true,
+      "panel_visible": false
+    },
+    "first_hidden_boundary": {
+      "phase": "before_foreground_restore",
+      "previous_phase": "after_extension_identity",
+      "previous_visibility": "visible",
+      "same_target": true,
+      "same_document": true
+    },
+    "interpretation": "No member product verdict or 504 reproduction. The native assertion timed out opening a visible panel and the acceptance resource journal ended resource-invalid; do not infer product cause or retry unchanged."
+  },
+  "cleanup": {
+    "github_secret_absent": true,
+    "local_magic_link_absent": true,
+    "local_fixture_lease_absent": true,
+    "secret_staged_via_stdin": true,
+    "secret_removed_at_terminal": true,
+    "store_action": "none"
+  },
+  "admission": {
+    "initial_attempt": "refused release_member_receipt_invalid because current d4 main SHA was passed where frozen receipt/tag source SHA 60bc was required; secret/link/lease cleaned; no workflow started",
+    "corrected_plan": "PASS using frozen source/tag 60bc; current synchronized docs-only workflow SHA d4 separately verified; release/artifact bytes and digest matched",
+    "dispatch": "one guarded normal A dispatch"
+  },
+  "evidence": {
+    "raw_ignored_dir": "test-results/member575-native-a-run39422682206-1/",
+    "raw_run_artifact": "test-results/member575-native-a-run39422682206-1/raw-artifact.zip",
+    "native_report_private": "test-results/member575-native-a-run39422682206-1/native-report.raw.json",
+    "sanitized_journals": [
+      "test-results/member575-native-a-run39422682206-1/hosted-package.sanitized.jsonl",
+      "test-results/member575-native-a-run39422682206-1/hosted-browser.sanitized.jsonl",
+      "test-results/member575-native-a-run39422682206-1/hosted-guest.sanitized.jsonl"
+    ],
+    "artifact_digest_verified": true,
+    "workflow_artifact_upload": "success"
+  },
+  "next_action": "Do not retry unchanged. Keep D261 open/unverified; root to adjudicate foreground/host resource result and coordinate any supported next attempt. No tracked report commit until root releases source freeze."
+}

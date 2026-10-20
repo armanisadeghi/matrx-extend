@@ -1,0 +1,41 @@
+{
+  "status": "SOURCE_REVERIFY_COMPLETE_NATIVE_PENDING",
+  "verdict_a": {
+    "verdict": "PARTIAL",
+    "evidence": "The source path now attempts trusted re-entry on the exact visible panel after the ordinary reload, then requires the original target, visible document focus, rAF progress, and a mounted transcript with nonzero opacity before continuation. The cited native run predates this repair; its member question was not sent. A fresh Store 575 member run on the normal Mac is still required."
+  },
+  "verdict_b": {
+    "verdict": "PASS",
+    "evidence": "The prior Important test-boundary finding is ADDRESSED: the added default-path test omits refocusPanel, calls the actual canonical click helper through the guard, checks Runtime.evaluate and CDP Input.dispatchMouseEvent press/release, and rejects unchanged focus. The real click driver requires a unique visible target, stable geometry, clipping-aware hit testing, and no hit-affecting animation before dispatch."
+  },
+  "findings": [
+    {
+      "id": "prior_B_important_callback_stub",
+      "status": "ADDRESSED",
+      "detail": "The test no longer supplies a refocus callback that directly sets focus. It proves default wiring to click(panel, 'title', 'Chat'), protocol packet dispatch and fail-closed postcondition. Its CDP transport double changes mocked focus on mouseReleased; this is valid test-driver contract evidence, not evidence of native OS focus restoration."
+    },
+    {
+      "id": "native_member_acceptance",
+      "status": "OPEN_PARTIAL",
+      "detail": "No fresh native Mac proof after the source change."
+    }
+  ],
+  "verification": {
+    "command": "node --test tests/browser/member-chat-visible-proof.test.mjs",
+    "result": "16 passed, 0 failed",
+    "ci_registration": "The test file is included in pnpm test:focused-acceptance, invoked by both .github/workflows/ci.yml and .github/workflows/focused-acceptance.yml.",
+    "refusal_cases": [
+      "focus unchanged",
+      "wrong target",
+      "hidden panel",
+      "occluded click target",
+      "stalled frame",
+      "zero-opacity mounted transcript"
+    ],
+    "state_review": "The repair preserves original target ID and URL checks, member role and organization verification, existing cleanup and transport gates. It selects the existing Chat tab only; it does not alter role or organization state. Healthy state short-circuits and only one repair is allowed."
+  },
+  "limits": [
+    "The HappyDOM/CDP test does not establish that Chromium or macOS grants foreground focus after the dispatched click.",
+    "The prior resource-valid native attempt failed at the original panel foreground gate before sending the member turn; native post-fix outcome is unknown."
+  ]
+}
