@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "status": "RESOURCE_INVALID_NO_MEMBER_PRODUCT_VERDICT",
+  "scope": "One normally admitted exact 0.2.568 hosted lane A fresh-direct-member Chat discriminator on the current backend. This does not replay the original guest-to-member D261 sequence.",
+  "run": {
+    "id": 39359003772,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39359003772",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "event": "workflow_dispatch",
+    "checkout_sha": "abf0ff6e582e590e18d18145ad2da2d8615b3620",
+    "created_at_utc": "2026-10-20T02:27:27Z",
+    "updated_at_utc": "2026-10-20T02:34:58Z",
+    "workflow_conclusion": "failure",
+    "inputs": {
+      "acceptance_lane": "A",
+      "acceptance_case": "member-chat",
+      "release_run_id": 39356737665,
+      "runner_label": "macos-15-intel",
+      "requested_by": "release-member-admission"
+    },
+    "dispatch_count": 1
+  },
+  "candidate": {
+    "version": "0.2.568",
+    "release_run_id": 39356737665,
+    "release_artifact_id": 12235302731,
+    "release_source_sha": "5aca3d4f9a21b752614a0bb33228c1ce4ae62544",
+    "store_zip_sha256": "16dd16b2c1bfb4b63ba0d95c59b1e2c4213928b7b292fbc2761fdfc685ea8a3d",
+    "admission": "normal hosted-release-member-admission plan and dispatch passed frozen source compatibility and exact release artifact hash; storeEligibility=false"
+  },
+  "preflight": {
+    "local_head_equals_origin_main": true,
+    "approved_existing_nonadmin_identity_and_organization_helper_dry_run": "READY existing_reviewer_nonadmin_authority",
+    "selected_authentication_workflow_preflight": "success",
+    "actual_first_party_sign_in": "not observed; browser run stopped before native auth proof",
+    "approved_organization_actual_ui_and_header_match": "not observed",
+    "ci_spend": {
+      "read_at_utc": "2026-10-20T02:21:31.348653+00:00",
+      "http_status": 200,
+      "available": true,
+      "stale": false,
+      "week_total_complete": true,
+      "week_total_usd": 59.5,
+      "week_cap_usd": 100
+    },
+    "lane_a_conflict_at_dispatch": false,
+    "hosted_b_separate_lane_at_dispatch": "in_progress; terminal success by the time A appeared in the run list"
+  },
+  "backend": {
+    "health_version_before_browser_execution": "f8dd64696fd963685d259328a0776737a9d5aa23",
+    "health_version_after_terminal_run": "cd80cd8763b6bd0a5fc03706af6b478f599df9c6",
+    "stable_across_run": false,
+    "interpretation": "The backend changed during the acceptance window. No member request was observed, so neither version has a member product verdict from this run."
+  },
+  "resource": {
+    "package": "valid",
+    "browser": "valid",
+    "acceptance": "invalid",
+    "acceptance_admitted": true,
+    "acceptance_resource_invalid": true,
+    "watchdog_reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+    "stopped_at_safe_boundary": true,
+    "accepted_browser_context_observation": "One exact side-panel context became ready before the watchdog stop; no native Chat result was uploaded.",
+    "journals": [
+      "docs/stabilization/evidence/member-run39359003772-20261020/hosted-package-39359003772-1.sanitized.jsonl",
+      "docs/stabilization/evidence/member-run39359003772-20261020/hosted-browser-39359003772-1.sanitized.jsonl",
+      "docs/stabilization/evidence/member-run39359003772-20261020/hosted-guest-39359003772-1.sanitized.jsonl"
+    ]
+  },
+  "native_acceptance": {
+    "member_chat_send_observed": false,
+    "first_turn_terminal_reply": "not tested",
+    "same_conversation_followup": "not tested",
+    "passive_transport": "not available; no native report was uploaded",
+    "selected_model": "unknown; no UI or request evidence survived the resource stop",
+    "extension_id": "not retained in terminal artifact",
+    "actual_member_principal": "not observed in browser",
+    "d261_current_symptom": "unverified",
+    "d261_original_guest_to_member_reproduction": "not tested"
+  },
+  "artifact": {
+    "id": 12236433246,
+    "name": "hosted-guest-39359003772-1",
+    "zip_sha256": "cd8527923a1600a2c1a2b527daaea4fdfec17af2a7905a62acaddb6221ea527f",
+    "zip_crc": "pass",
+    "contents": "three terminal resource journals only; no native member acceptance report or screenshots"
+  },
+  "cleanup": {
+    "local_one_use_magic_link_file": "deleted and absence verified immediately after staging",
+    "github_one_use_magic_link_secret": "deleted and absence verified immediately after selected authentication preflight succeeded",
+    "workflow": "terminal; no owned external run remains active"
+  },
+  "verdict": "Resource-invalid infrastructure stop before a member Chat send. No evidence that the original 504 recurred or cleared. Preserve D261 triaged and Store upload blocked; next attempt requires a newly quiescent, normally admitted host and current backend/version receipt. Do not retry this run or change resource thresholds."
+}
