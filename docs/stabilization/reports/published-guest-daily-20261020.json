@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-20",
+  "status": "chat_bounded_pass_overall_unverified",
+  "run": {
+    "workflow": "hosted-guest-acceptance.yml",
+    "run_id": 39359500330,
+    "job_id": 118422065531,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39359500330",
+    "conclusion": "failure",
+    "source_sha": "74bbbdbce37a7af3c7e771188e49a8e1614d6e3d",
+    "workflow_sha": "74bbbdbce37a7af3c7e771188e49a8e1614d6e3d",
+    "artifact_id": 12236688968,
+    "artifact_zip_sha256": "1422db36ae3ea60d00b995432f4a5fd08ca351ea2fb6a97de4f0921747183236",
+    "native_report_sha256": "07db6bbebf3051999f598d57832b24aa34b33c31d2a699e7421cfe879f1ce70d",
+    "native_report_file": "test-results/guest-chat-store-f3d9e718-b888-4ace-b118-cf14b32b1e7d.json"
+  },
+  "target": {
+    "chrome_extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.205",
+    "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "download_source": "Google Chrome public update service",
+    "evidence_kind": "published_store_crx_unpacked",
+    "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "actual_store_installed": false
+  },
+  "server": {
+    "before_sha": "cd80cd8763b6bd0a5fc03706af6b478f599df9c6",
+    "after_sha": "cd80cd8763b6bd0a5fc03706af6b478f599df9c6",
+    "stable": true
+  },
+  "guest_chat": {
+    "fresh_signed_out_guest": true,
+    "access_token_absent": true,
+    "profile_absent": true,
+    "organization_absent": true,
+    "guest_ai_transport_proven": true,
+    "opening_turn": {
+      "verdict": "terminal_answer",
+      "assistant_reply_count": 1,
+      "contains_unpredictable_page_code": true,
+      "names_page_stages": true,
+      "stages_in_order": true,
+      "no_login_paywall_or_error": true,
+      "question_fingerprint": "8b0041e45eb47431",
+      "page_code_fingerprint": "72c82480fca4c9e3"
+    },
+    "same_conversation_followup": {
+      "verdict": "terminal_answer",
+      "completed": true,
+      "same_conversation_identity_verified": true,
+      "contains_unpredictable_page_code": true,
+      "assistant_reply_count": 3,
+      "question_fingerprint": "be2d5336e111bd21",
+      "page_code_fingerprint": "6a71395e52f6795a"
+    },
+    "followup_after_panel_reload": {
+      "completed": true,
+      "contains_unpredictable_page_code": true,
+      "names_fixture_heading": true,
+      "assistant_reply_count": 2
+    }
+  },
+  "later_failure": {
+    "stage": "guest_values_chip_observation",
+    "code": "guest_values_chip_closed_not_observed",
+    "overall_acceptance": "unverified",
+    "chat_failure": false,
+    "values_close_diagnostic": {
+      "chip_count": 1,
+      "visible_open_popovers": 1,
+      "open_state_popovers": 1,
+      "escape_keydown_count": 1,
+      "trusted_escape_keydown_count": 1,
+      "document_focused": true,
+      "focus_inside_popover": true
+    }
+  },
+  "resource_finals": {
+    "hosted-package-39359500330-1": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-39359500330-1": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-39359500330-1": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "cleanup": {
+    "workflow_terminal": true,
+    "post_checkout_action_completed": true,
+    "local_downloaded_artifact_removed": true,
+    "no_auth_values_recorded": true
+  },
+  "limits": [
+    "The overall workflow failed at the later Values-chip close assertion; only the bounded Chat observations above passed.",
+    "The public CRX was verified and loaded as an adapted unpacked extension; this does not prove behavior in a Store-installed Chrome profile.",
+    "The authenticated primary Store dashboard was not inspected for this probe; no private review or pending status is inferred."
+  ]
+}
