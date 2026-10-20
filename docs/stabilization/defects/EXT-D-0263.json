@@ -28,7 +28,9 @@
     "docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json",
     "docs/stabilization/reports/guest181b-followup-diagnosis-20261020.json",
     "docs/stabilization/evidence/published205-post181b-guest-20261020/run39373343402/screenshots/guest-chat-failure.png",
-    "docs/stabilization/reports/guest263-provider-boundary-20261020.json"
+    "docs/stabilization/reports/guest263-provider-boundary-20261020.json",
+    "docs/stabilization/reports/guest264-native-retest-20261020.json",
+    "docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json"
   ],
   "reproducibility": "One resource-valid current-server failure observed; prior cd80 public205 flow passed but differing fixtures/model/time are confounders. No deterministic source regression attribution or frequency established.",
   "cause": "Exact heading first omitted during provider generation, not tool delivery, context rebuild, persistence, or rendering for this run. claude-sonnet-5-5 and output configuration match grounded opening. Why provider shortened heading is unproven; no backend regression or contributor attribution. Exact code is preserved, correcting prior interpretation based on native false predicate.",
@@ -53,5 +55,8 @@
       "at": "2026-10-20T05:34:14.250074+00:00",
       "correction": "Provider request/output and stored reply prove exact code present. Initial native code-absence interpretation retracted; full heading omission remains observed. D264 handles conflicting native predicate."
     }
-  ]
+  ],
+  "verification": {
+    "latest_bounded_retest": "39377242317: originalheadingmissnotreproduced; opening/sameconversation/postreload code/fullheadingpassed. Backend181b\u2192f5f3changed; no causalfix/stablebackendclaim, earlierfailurepreserved. D263remainstriaged; T10latestbehaviorpassdoesnotcloseit."
+  }
 }

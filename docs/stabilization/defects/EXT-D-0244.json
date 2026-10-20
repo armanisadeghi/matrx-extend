@@ -21,13 +21,15 @@
     "docs/stabilization/runs/public-guest-chat-0.2.205-39283778031.json",
     "docs/stabilization/reports/dev555-native-peer-20261019.json",
     "docs/stabilization/reports/published-guest-daily-20261020.json",
-    "docs/stabilization/reports/published205-native-peer-20261020.json"
+    "docs/stabilization/reports/published205-native-peer-20261020.json",
+    "docs/stabilization/reports/guest264-native-retest-20261020.json",
+    "docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json"
   ],
   "severity": "S3: context inspection dialog dismissal by Escape fails; the three Chat replies completed.",
   "priority": "P2: verify current candidate and repair through the owning shared component if it reproduces.",
   "state": "open",
   "owner": "stabilization-coordinator",
-  "reproducibility": "Repeated on resource-valid (resourceInvalid=false) public205 native run39359500330 after three actual terminal guest replies, against stable deployed cd80cd8763b6bd0a5fc03706af6b478f599df9c6. One trusted Escape recorded; focused popover remained open. Overall child_failed exit1. Current568 candidate guest reviewer completes its current controls; this does not establish equivalence to the old205 compact-chip focus/settled-state/full-view surroundings. No owning source fix established.",
+  "reproducibility": "Repeated again on public205 native39377242317, resourceInvalid=false/child_failed exit1: after three grounded terminal replies, one trusted Escape withfocusinside leavescompactValuespopoveropen. Backend181b\u2192f5f3drift preventsstablebackendattribution. Current568 equivalent remainsunverified; original public205 observedfailnotcurrent-sourcefix evidence.",
   "build_version": "0.2.205 public CRX adapted unpacked",
   "server_sha": "a61289ffa374eb4b1a2ff8181d9db42e947f039a",
   "transition_history": [
