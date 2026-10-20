@@ -8,7 +8,7 @@
   "severity": "S1: signed-in member gets no assistant answer on a basic page question",
   "priority": "P0: real non-admin release acceptance blocker",
   "state": "triaged",
-  "owner": "member_runtime_recovery / stabilization-coordinator",
+  "owner": "member_page_text_boundary_repair / stabilization-coordinator",
   "preconditions": [
     "Use exact 0.2.566 candidate from source c41ae6fd67057305c521791e404d2708882895f5, Store ZIP sha256 a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840. Canonical test adaptation changes manifest key only; original runtime code is unchanged.",
     "Use a fresh owned Chrome profile under a valid resource guard; never sign out the personal Chrome profile.",
@@ -41,10 +41,11 @@
     "docs/stabilization/reports/member575-hosted-raw-peer-20261020.json",
     "docs/stabilization/reports/member575-local-capacity-recovery-20261020.json",
     "docs/stabilization/reports/member575-focus-native-retest-20261020.json",
-    "docs/stabilization/reports/member-focus-final-peer-20261020.json"
+    "docs/stabilization/reports/member-focus-final-peer-20261020.json",
+    "docs/stabilization/reports/member-runtime-recovery-20261020.json"
   ],
   "cause": "Localized: original mandate start and same-conversation tool_results returned200; subsequent resume entered the backend but no target headers arrived for59.999s, then ALB generated504. create_prepared_streaming_response awaits prepare_resume_conversation before constructing the response. Concurrent DB pool/connect/query timeouts are observed but their causal link to this request is unproven. Deployed20bd has identical inspected resume/pool implementation; a short postdeploy sample lacks the prior error burst, not a repair claim.",
-  "next_action": "Repair missing Playwright setup in the existing guarded local path, then one newly admitted exact-current candidate original guest-to-member run with trusted focus, terminal first/follow-up, passive transport and backend SHA. Original566 first-turn504 remains unresolved. No member claim from575 attempts before request.",
+  "next_action": "Inspect original Page Text/call/conversation join on bounded resource-valid Store575 first answer or add sanitized failure diagnostics; exact throw is unknown. Then one newly admitted independent original guest-to-member native retest with Page Text proof and terminal same-conversation follow-up. Original566 504 cause remains unknown; first-answer200 is partial symptom revalidation, not closure.",
   "transition_history": [
     {
       "at": "2026-10-20T00:56:58.460155Z",
@@ -96,7 +97,9 @@
       "docs/stabilization/reports/member575-hosted-raw-peer-20261020.json",
       "docs/stabilization/reports/member575-local-capacity-recovery-20261020.json",
       "docs/stabilization/reports/member575-focus-native-retest-20261020.json",
-      "docs/stabilization/reports/member-focus-final-peer-20261020.json"
-    ]
+      "docs/stabilization/reports/member-focus-final-peer-20261020.json",
+      "docs/stabilization/reports/member-runtime-recovery-20261020.json"
+    ],
+    "latest_resource_valid_member_attempt": "member575-runtime-recovery-20261020-01 on adapted Store575, workflow checkout997f9efbe: real guest2 terminal, nonadmin sign-in/org/reload/trusted focus, original member question sent HTTP200 and terminal 467-char heading+3-stage answer, 3 delegated calls/results. Page Text join unverified, same-conversation follow-up NOT_SENT, driver child_failed at send_three_stage_question; exact throw unavailable; no post-answer screenshot. Stable backend6297. Resource valid and cleanup complete."
   }
 }

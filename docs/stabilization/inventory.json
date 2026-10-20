@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T13:15:13.020036+00:00",
+  "updated_at": "2026-10-20T13:20:29.293953+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -52812,6 +52812,29 @@
                   "evidence": [
                     "docs/stabilization/reports/member575-focus-native-retest-20261020.json"
                   ]
+                },
+                {
+                  "run_id": "member575-runtime-recovery-20261020-01",
+                  "status": "resource_valid_partial_member_first_answer_terminal_followup_not_sent",
+                  "source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+                  "workflow_checkout_sha": "997f9efbef42a1ae99be191cd052e214736dfbd3",
+                  "build_version": "0.2.575",
+                  "build_kind": "adapted_unpacked_Store_ZIP",
+                  "actual_store_installed": false,
+                  "server_sha_before": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+                  "server_sha_after": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+                  "resource_valid": true,
+                  "first_answer_http_status": 200,
+                  "first_answer_terminal": true,
+                  "first_answer_expected_heading_and_stages": true,
+                  "delegated_calls": 3,
+                  "tool_results": 3,
+                  "page_text_join": "unverified",
+                  "member_followup": "not_sent",
+                  "evidence": [
+                    "docs/stabilization/reports/member-runtime-recovery-20261020.json"
+                  ],
+                  "detail": "Normal member sign-in/org/reload and trusted focus observed. Original question received one terminal 467-character answer with heading and three stages; Page Text/call/conversation join not proved and driver failed before follow-up. Bounded first-answer progress only; original566 504 remains unresolved."
                 }
               ]
             }
@@ -52872,9 +52895,10 @@
             "native-isolated-candidate-20261019-001",
             "39422682206",
             "member575-local-store-20261020",
-            "member575-focus-native-20261020"
+            "member575-focus-native-20261020",
+            "member575-runtime-recovery-20261020-01"
           ],
-          "retest_status": "Original exact566 non-admin first Chat504 remains failed/unresolved. Hosted575 invalid before member Chat; local575 valid setup reaches visible unfocused panel but no member request; latest focus retest missing Playwright before browser. Driver source repair/peer pass is not product acceptance."
+          "retest_status": "Original exact566 non-admin first-turn504 remains the failed repro. Exact575 resource-valid later attempt reached real member first question and terminal HTTP200 answer with expected heading/stages and three delegated calls/results, but Page Text join is unverified and member follow-up was not sent. No full T14 pass or D261 closure."
         },
         "admin": {
           "test_status": "unverified",
