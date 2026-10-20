@@ -1,0 +1,19 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "base": "99121bde3e732ab08326edd4b303b91af4dee48d",
+  "files_reviewed": [
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/guest-chat-store-sequence.test.mjs"
+  ],
+  "diff_sha256": "0250d4c4cba274e5e168aa5dedc05a33f32e209c947137d35f85ba5cda80448b",
+  "A_source_guard": "PARTIAL: source now focuses the visible compact popover's Open full view button without clicking it; immediately checks focus, one visible/open compact dialog and no visible competing role=dialog; refuses before key when checks fail; success requires trusted Escape plus zero open-state/visible compact dialogs. Existing Chat auth/code/heading/reload/tab assertions untouched.",
+  "A_native": "UNKNOWN: no native or current 0.2.568 evidence; public 0.2.205 original T13 failure remains observed/open. Source harness is not native acceptance.",
+  "B_source_quality": "FAIL: targeted unit coverage proves outside focus, unfocused document, competing role=dialog, and settled-open refusal; it does not prove a popover becoming hidden after initial open is refused before key, nor exclude competing role=alertdialog/other overlay types. Broad 'competing overlay' precondition is therefore not established.",
+  "verification": "node --test tests/browser/guest-chat-store-sequence.test.mjs: 40/40 pass; git diff --check clean. Builder reports HEAD-based RED on two selected checks; independently reran green suite.",
+  "important_findings": [
+    "Role=dialog-only census can miss a visible alertdialog overlay that owns Escape.",
+    "Add a just-before-Escape hidden-target negative case asserting no CDP key event; current pre-key code appears to refuse it, but no unit proves that transition.",
+    "The explicit Open full view control is focused programmatically, not activated; native focus side effects remain unknown."
+  ],
+  "scope": "Review only; no source edits and no claim of current 0.2.568, Store, full Chat, or native T13 pass."
+}

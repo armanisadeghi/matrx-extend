@@ -1,0 +1,23 @@
+{
+  "task_id": "EXT-D-0244",
+  "lane": "compact Values T13 source precondition/report accuracy",
+  "status": "SOURCE_GUARD_FRESH_PEER_PASS_NATIVE_UNKNOWN",
+  "actual_finding": "Current driver observed focus only after Escape and could classify a failed close without proving in-popover focus before input. Current native 0.2.568 behavior remains unknown. Public 0.2.205 native failure remains observed/open.",
+  "changed_files": [
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/guest-chat-store-sequence.test.mjs"
+  ],
+  "source_sha256": {
+    "acceptance": "aa93508ec93b655abe9eabf77f99aec33eecb8bcb334edea95f3fd464dd8a5d8",
+    "sequence_test": "b2791ecd0700b3c6d47b865ec01e57f58eac1f4f170d59ace9c231087ce777f9"
+  },
+  "pre_escape": "Driver focuses actual Open full view button without activating it; immediately reads document.hasFocus, visible compact containment/open state, and visible competing role=dialog, role=alertdialog and native dialog[open] census. Hidden target or any competing visible dialog refuses before CDP key. Native focus side effects remain unknown.",
+  "post_escape": "Requires zero open-state and visible compact dialogs plus trusted Escape keydown before success. Original conversation, reload, page-code, heading, auth, tab and protocol assertions unchanged.",
+  "red": "First scratch HEAD source RED as prior; round1 new negative cases RED against pre-round1 source (Missing expected rejection for alertdialog without data-state); then GREEN. Actual-source test also covers HTML dialog and target hidden after focus, each asserting zero key dispatch.",
+  "green": "node --test tests/browser/guest-chat-store-sequence.test.mjs: 40/40 pass; biome format 2 files clean; git diff --check clean.",
+  "native": "Not run under lane restriction; current artifact T13 unverified.",
+  "package_path": "Current candidate 0.2.568 release artifact 12235302731 per COORDINATOR; no local package path or hash verified in this lane. Public 0.2.205 CRX SHA256 7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23 per D244.",
+  "commit": "pending parent exactpath integration",
+  "peer": "docs/stabilization/reports/values244-guard-final-peer-20261020.json",
+  "actual_diff_sha256": "6fb01ea485ed7a39e7f433817974266ecf86b03f1a00302bedb6cc21e912e891"
+}

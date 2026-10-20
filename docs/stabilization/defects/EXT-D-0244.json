@@ -23,7 +23,11 @@
     "docs/stabilization/reports/published-guest-daily-20261020.json",
     "docs/stabilization/reports/published205-native-peer-20261020.json",
     "docs/stabilization/reports/guest264-native-retest-20261020.json",
-    "docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json"
+    "docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json",
+    "docs/stabilization/reports/values244-current-surface-diagnosis-20261020.json",
+    "docs/stabilization/reports/values244-focus-guard-20261020.json",
+    "docs/stabilization/reports/values244-guard-first-peer-20261020.json",
+    "docs/stabilization/reports/values244-guard-final-peer-20261020.json"
   ],
   "severity": "S3: context inspection dialog dismissal by Escape fails; the three Chat replies completed.",
   "priority": "P2: verify current candidate and repair through the owning shared component if it reproduces.",
@@ -40,5 +44,12 @@
       "reason": "Independent screenshot and DOM/event review confirms the observed dialog did not close; no cause or current-build equivalence inferred."
     }
   ],
-  "next_action": "Original public205 failure reconfirmed. Determine exact current568 guest equivalent focus/layer and settled-state behavior and surrounding full-view/close controls before source repair or closure; do not infer current-build failure from old205. Native guest Chat success is separate from Values dismissal."
+  "next_action": "Prove compactpopover focus-inside immediately before trustedEscape and settledclosed state in normal native driver (sourceguard review underway, no productfix inferred); then original-equivalent currentartifact T13 on a guarded admitted host. Preserve frozenStore568/agents170 vs development568/agents173 boundaries, fullview/close/reopen and othermodes as unverified. D244 staysopen.",
+  "current_artifact_boundary": "Frozen Store568/source5aca uses agents0.59.170; verified CI development568/source501998549 and currentmain use173. Neither exact artifact has original compactpopover focus/Escape/nativeT13 acceptance. Existingdisplay/sourceunits and555nativepass cannot close either currentboundary.",
+  "source_harness_readiness": {
+    "status": "fresh source peer PASS; native UNKNOWN, productstateopen",
+    "summary": "Immediately prove documentfocus/visiblecompactfocus/singleopen/noothervisible dialogs before trustedEscape; unavailablefocus refused before key, distinct harnesspreconditionerror. Require zero open/visible compactdialogs +trustedkeydown after. Fullviewcontrolfocusedwithoutactivation; actualnativefocus sideeffectsunknown.",
+    "tests": "40/40 actualsourceunit guards; oldsourceRED; alertdialog/HTMLdialogwithoutdata-state and targethiddenafterfocus refusalsdispatchzero keys. No productfix or currentcandidatepass.",
+    "report": "docs/stabilization/reports/values244-focus-guard-20261020.json"
+  }
 }

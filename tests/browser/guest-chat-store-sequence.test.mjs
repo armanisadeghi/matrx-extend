@@ -682,6 +682,7 @@ const { safeFailure, safeValuesCloseDiagnostic } = new Function(
 function valuesControlHarness(count, blocked = null) {
   let open = false;
   let hiddenAfterEscape = false;
+  let hiddenBeforeEscape = false;
   let onKeyDown = null;
   const calls = [];
   const buttons = Array.from({ length: count }, () => ({
@@ -690,20 +691,26 @@ function valuesControlHarness(count, blocked = null) {
   // The Store's desktop Values popover has Open full view, but this host omits
   // onToggleAll/onSetInclude, so the optional Send everything switch is absent.
   const hiddenAncestor = { parentElement: null };
+  const focusButton = {
+    focus: () => {
+      if (blocked !== 'focus-outside') document.activeElement = focusButton;
+      if (blocked === 'target-hidden-after-focus') hiddenBeforeEscape = true;
+    },
+    getBoundingClientRect: () => ({ width: blocked === 'button-zero-size' ? 0 : 28, height: 28 }),
+  };
   const dialog = {
     parentElement: blocked === 'ancestor-opacity-hidden' ? hiddenAncestor : null,
-    contains: () => true,
+    contains: (element) => element === focusButton,
     getBoundingClientRect: () => ({ width: blocked === 'zero-size' ? 0 : 340, height: 260 }),
     checkVisibility: () => blocked !== 'check-visibility-hidden',
     querySelector: (selector) =>
-      selector === '[aria-label="Open full view"]' && blocked !== 'unrelated'
-        ? {
-            getBoundingClientRect: () => ({
-              width: blocked === 'button-zero-size' ? 0 : 28,
-              height: 28,
-            }),
-          }
-        : null,
+      selector === '[aria-label="Open full view"]' && blocked !== 'unrelated' ? focusButton : null,
+  };
+  const otherDialog = {
+    getBoundingClientRect: () => ({ width: 180, height: 100 }),
+    checkVisibility: () => true,
+    querySelector: () => null,
+    parentElement: null,
   };
   const document = {
     activeElement: null,
@@ -716,12 +723,18 @@ function valuesControlHarness(count, blocked = null) {
     },
     querySelector: () => ({ getAttribute: () => 'chat-pane' }),
     getElementById: () => ({ querySelectorAll: () => buttons }),
-    querySelectorAll: (selector) =>
-      open &&
-      (selector === '[role="dialog"]' ||
-        (selector === '[role="dialog"][data-state="open"]' && blocked !== 'closed-remnant'))
-        ? [dialog]
-        : [],
+    querySelectorAll: (selector) => {
+      if (!open) return [];
+      if (selector === '[role="dialog"][data-state="open"]')
+        return blocked === 'closed-remnant' ? [] : [dialog];
+      if (selector === '[role="dialog"]') return [dialog];
+      if (selector === '[role="dialog"], [role="alertdialog"], dialog[open]') {
+        return ['other-overlay', 'alertdialog-overlay', 'html-dialog-overlay'].includes(blocked)
+          ? [dialog, otherDialog]
+          : [dialog];
+      }
+      return [];
+    },
   };
   const panel = {
     send: async (method, args) => {
@@ -744,7 +757,9 @@ function valuesControlHarness(count, blocked = null) {
         display: blocked === 'display-none' ? 'none' : 'block',
         visibility: blocked === 'visibility-hidden' ? 'hidden' : 'visible',
         opacity:
-          ((blocked === 'opacity-hidden' || (blocked === 'hidden-close' && hiddenAfterEscape)) &&
+          ((blocked === 'opacity-hidden' ||
+            (blocked === 'hidden-close' && hiddenAfterEscape) ||
+            (blocked === 'target-hidden-after-focus' && hiddenBeforeEscape)) &&
             element === dialog) ||
           (blocked === 'ancestor-opacity-hidden' && element === hiddenAncestor)
             ? '0'
@@ -777,6 +792,8 @@ test('published guest Chat Values must actually open and close when present', as
     exercised: true,
     escape_keydown_count: 1,
     trusted_escape_keydown_count: 1,
+    pre_escape_focus_inside_popover: true,
+    pre_escape_other_visible_dialogs: 0,
   });
   assert.deepEqual(harness.calls, [
     ['context-values', ''],
@@ -805,6 +822,18 @@ test('optional Values does not silently accept duplicate controls or a failed in
     valuesControlHarness(1, 'check-visibility-hidden').run,
     /guest_values_chip_open/,
   );
+  for (const blocked of [
+    'focus-outside',
+    'unfocused',
+    'other-overlay',
+    'alertdialog-overlay',
+    'html-dialog-overlay',
+    'target-hidden-after-focus',
+  ]) {
+    const harness = valuesControlHarness(1, blocked);
+    await assert.rejects(harness.run, /guest_values_focus_precondition_unavailable/);
+    assert.deepEqual(harness.calls, [['context-values', '']]);
+  }
   await assert.rejects(valuesControlHarness(1, 'close').run, /guest_values_chip_closed/);
   await assert.rejects(valuesControlHarness(1, 'key-missed').run, /guest_values_chip_closed/);
   await assert.rejects(valuesControlHarness(1, 'hidden-close').run, /guest_values_chip_closed/);
@@ -835,6 +864,7 @@ test('long Values close failure keeps key delivery and focus in structured recei
       trusted_escape_keydown_count: expectedKeyCount,
       document_focused: true,
       focus_inside_popover: true,
+      other_visible_dialogs: 0,
     });
   }
 });

@@ -539,7 +539,9 @@ async function openAndCloseGuestValuesChip(panel) {
       escapeKeyDownCount: document.__guestValuesEscapeProbe?.keyDownCount ?? 0,
       trustedEscapeKeyDownCount: document.__guestValuesEscapeProbe?.trustedKeyDownCount ?? 0,
       documentFocused: document.hasFocus(),
-      focusInsidePopover: openPanels.some((dialog) => dialog.contains(document.activeElement)),
+      focusInsidePopover: visibleOpenPanels.some((dialog) => dialog.contains(document.activeElement)),
+      otherVisibleDialogs: [...document.querySelectorAll('[role="dialog"], [role="alertdialog"], dialog[open]')]
+        .filter((dialog) => visible(dialog) && !openPanels.includes(dialog)).length,
     };
   })()`,
     );
@@ -553,6 +555,30 @@ async function openAndCloseGuestValuesChip(panel) {
   if (count === 0) return { present: false, exercised: false };
   await click(panel, 'context-values', '');
   await waitFor('guest_values_chip_open', readChip, (state) => state?.openPanelCount === 1);
+  const focusTarget = await evaluate(
+    panel,
+    `(() => {
+    const dialogs = [...document.querySelectorAll('[role="dialog"][data-state="open"]')];
+    const popover = dialogs.find((dialog) => dialog.querySelector('[aria-label="Open full view"]'));
+    const target = popover?.querySelector('[aria-label="Open full view"]');
+    if (!target) return false;
+    target.focus();
+    return popover.contains(document.activeElement);
+  })()`,
+  );
+  const preEscape = await readChip();
+  if (
+    !focusTarget ||
+    preEscape?.openPanelCount !== 1 ||
+    preEscape?.openStatePanelCount !== 1 ||
+    preEscape?.otherVisibleDialogs !== 0 ||
+    preEscape?.documentFocused !== true ||
+    preEscape?.focusInsidePopover !== true
+  ) {
+    const error = new Error('guest_values_focus_precondition_unavailable');
+    error.guestValuesCloseState = preEscape;
+    throw error;
+  }
   await evaluate(
     panel,
     `(() => {
@@ -589,7 +615,10 @@ async function openAndCloseGuestValuesChip(panel) {
           lastCloseState = await readChip();
           return lastCloseState;
         },
-        (state) => state?.openStatePanelCount === 0 && state.escapeKeyDownCount > 0,
+        (state) =>
+          state?.openStatePanelCount === 0 &&
+          state?.openPanelCount === 0 &&
+          state.trustedEscapeKeyDownCount > 0,
       );
     } catch (error) {
       if (lastCloseState && error instanceof Error) error.guestValuesCloseState = lastCloseState;
@@ -600,6 +629,8 @@ async function openAndCloseGuestValuesChip(panel) {
       exercised: true,
       escape_keydown_count: closed.escapeKeyDownCount,
       trusted_escape_keydown_count: closed.trustedEscapeKeyDownCount,
+      pre_escape_focus_inside_popover: preEscape.focusInsidePopover,
+      pre_escape_other_visible_dialogs: preEscape.otherVisibleDialogs,
     };
   } finally {
     await evaluate(
@@ -822,6 +853,7 @@ function safeValuesCloseDiagnostic(error) {
     trusted_escape_keydown_count: count(state.trustedEscapeKeyDownCount),
     document_focused: flag(state.documentFocused),
     focus_inside_popover: flag(state.focusInsidePopover),
+    other_visible_dialogs: count(state.otherVisibleDialogs),
   };
 }
 
