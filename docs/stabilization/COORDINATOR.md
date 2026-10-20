@@ -32,8 +32,8 @@ Package/browser validexit0; guest child_failed/resourceInvalid=false/exit1. Work
 no cleanup_error codes; explicit expiredguestprofile deletion receipt unavailable. No retry.
 Sol [causal repair attempt](reports/values244-prevented-event-causal-repair-20261020.json) returned
 HANDOFF: native-like real-Radix guard passes OLD code, so no valid RED/no product edit. Fresh
-bounded Astra `values244_handler_identity_escalation` inspects actual compiled forwarding/DOM
-handler identity; no new native retry authorized. S3/P2 Values must not swallow all other work.
+bounded Astra compiled inspection is complete: the expected shared handler exists, but mounted
+leaf identity remains unmeasured. The read-only CDP identity probe is source-reviewed; no causal fix. S3/P2 Values must not swallow all other work.
 [Release eligibility](reports/member-gate-release-eligibility-20261020.json) is NO GO: source
 source proof refuses574→current and [actual build inspection](reports/member-source-admission-class-repair-20261020.json)
 shows the initial “test-only” assumption was incomplete. Automatic Tailwind scanning includes
@@ -44,12 +44,21 @@ source **b2ad76e9f** scopes automatic scanning to app TS/TSX/WXT HTML, excludes 
 and preserves both existing shared-package paths. Actual compiler/Oxide baselineRED/newGREEN,
 app/shared positives and cleanup independently verified; CI-selection gap fixed/fresh A/B PASS.
 D267 is source-fixed, not closed; fullCI/fresh meaningful candidate and real UI surrounding gates
-remain pending. No product UI pass/overall health is inferred.
+remain pending. Source/evidence pushed through `db1b5e4aa`; fullCI39417471133 SUCCESS,
+focused39417470995 SUCCESS. Release-only `style_fixed_release_owner` owns the next meaningful
+candidate after green CI. Original member acceptance gap is repaired in
+`1d676a1c3` + `cc9ab970f`: real guest history before sign-in, normal member panel reload, original
+heading/stages question and completed Page Text joined to opening conversation/delegated call.
+[Fresh peer](reports/member261-original-repro-final-peer-20261020.json): A PARTIAL native pending,
+B PASS source scope; prior string-only guard replaced with actual imported behavioral checks,
+32 focused tests and constant-return negative guard pass. Initial CI pre-auth ready-path regression
+was corrected; current fullCI39419403236 running, focused39419403135 SUCCESS. Release-only owner
+holds until green/current-source/spend gates, then one meaningful guarded release. No native launch. No product UI pass/overall health is inferred.
 No sourceguard bypass/native/Store action. [Bounded API diagnosis](reports/member261-owned-api-diagnosis-20261020.json)
 is inconclusive: authenticated start/toolresults/resume200 but delegated reads remain pending,
 no terminal assistant; not native proof or closure. Current backend5c3beef2 remains stable.
-Fresh Values identity probe source unit is awaiting independent review; no further native authorized
-until exact source/CI/guard/priority checks. D244S3P2 and D261P0 remain open.
+The Values identity probe has fresh A=PARTIAL (native unmeasured), B=PASS review after correcting
+nonmatches to UNKNOWN; 52 focused guards pass. Exact source/CI/guard/priority checks still gate native use. D244S3P2 and D261P0 remain open.
 [SEO preflight](reports/seo-owned-target-preflight-20261020.json) found both supported metadata
 and narrow360px targets already had bounded passes; no redundant SEO run was launched.
 

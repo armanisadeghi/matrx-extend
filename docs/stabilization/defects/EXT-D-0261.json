@@ -32,7 +32,11 @@
     "docs/stabilization/reports/member261-phase-observability-peer-20261020.json",
     "docs/stabilization/reports/member261-pre-response-observability-20261020.json",
     "docs/stabilization/reports/member261-observability-fresh-review-20261020.json",
-    "docs/stabilization/reports/member261-owned-api-diagnosis-20261020.json"
+    "docs/stabilization/reports/member261-owned-api-diagnosis-20261020.json",
+    "docs/stabilization/reports/member261-next-candidate-preflight-20261020.json",
+    "docs/stabilization/reports/member261-original-repro-harness-20261020.json",
+    "docs/stabilization/reports/member261-original-repro-fresh-peer-20261020.json",
+    "docs/stabilization/reports/member261-original-repro-final-peer-20261020.json"
   ],
   "cause": "Localized: original mandate start and same-conversation tool_results returned200; subsequent resume entered the backend but no target headers arrived for59.999s, then ALB generated504. create_prepared_streaming_response awaits prepare_resume_conversation before constructing the response. Concurrent DB pool/connect/query timeouts are observed but their causal link to this request is unproven. Deployed20bd has identical inspected resume/pool implementation; a short postdeploy sample lacks the prior error burst, not a repair claim.",
   "next_action": "Diagnostic source a5452ac5c6 was freshly reviewed and pushed through merge db8f6d8f271de5f53bc853eb1fb23b4695c2fda0. Source revision181b containing diagnostics is now observed on live health/version; verify actual raw/database phase visibility during a relevant request; do not claim production from push. Obtain a resource-valid current-server exact-candidate non-admin original guest-to-member reproduction plus first/follow-up with passive transport, actual selected model, approved identity/org and before/after server SHA. Two Intel startup refusals mean no blind same-host retry; capacity remedy remains unproven. Fresh-direct-member is a separate discriminator. A pass is symptom evidence, not causal attribution; do not close without original and surrounding independent retest.",
@@ -76,5 +80,6 @@
       "report": "docs/stabilization/reports/guest181b-followup-diagnosis-20261020.json"
     }
   },
-  "current_api_observation": "API-only approvednonadmin start/tool_results/resume returned200 onstablebackend5c3beef2, but subsequentread_page/extract_table delegationsremainedpending; no terminalassistantanswer. No original504reproduced inthisshape, no causalfix/nativepass/closure. SourceadmissionD267blocks currentnative andisbeingrepaired."
+  "current_api_observation": "API-only approvednonadmin start/tool_results/resume returned200 onstablebackend5c3beef2, but subsequentread_page/extract_table delegationsremainedpending; no terminalassistantanswer. No original504reproduced inthisshape, no causalfix/nativepass/closure. D267 style-input scope is source-fixed; a meaningful fresh candidate plus exact gates is required, not a sourceguard waiver.",
+  "current_native_preflight": "Original direct-member-only harness gap repaired at1d676a1c3/cc9ab970f. Fresh peer source A PARTIAL nativepending, B PASS; real guest→member original-question flow and opening-conversation/delegated-call Page Text proof now enforced. FullCI39419403236 pending; no native launch/member product pass or causal repair."
 }

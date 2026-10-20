@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "task_id": "EXT-D-0261",
+  "status": "READ_ONLY_PREFLIGHT_COMPLETE_WITH_ACCEPTANCE_GAPS",
+  "scope": "Existing guarded hosted native member-chat lane A; no dispatch, fixture/secret mutation, product edit, or local heavy job performed.",
+  "evidence": {
+    "governing_state": "docs/stabilization/COORDINATOR.md; docs/stabilization/defects/EXT-D-0261.json",
+    "diagnosis": "docs/stabilization/reports/member261-owned-api-diagnosis-20261020.json",
+    "current_prepared574": "Not eligible: source admission correctly refuses it because current harness build inputs are not proven Store-byte equivalent (Tailwind global CSS differs). Do not alter/bypass guard. Parent reports fresh sourcefix b2ad/db1 and fullCI39417471133 pending; release owner is preparing a new candidate. No claim that candidate/CI/release is now ready.",
+    "lane": ".github/workflows/hosted-guest-acceptance.yml, acceptance_case=member-chat; scripts/hosted-release-member-admission.mjs; scripts/hosted-guest-acceptance.mjs; tests/browser/reviewer-chat-store-acceptance.mjs",
+    "resource_policy": "Hosted workflow wraps package/browser/acceptance phases in stabilization-resource guarded runs; valid resource finals and terminal cleanup are prerequisites. Do not run local Mac-heavy work under current disk hold."
+  },
+  "existing_lane_checks": {
+    "auth_org": "Ordinary reviewer magic-link login, explicit non-admin identity/role check, approved member org staged privately; selected org and both request X-Organization-Id fingerprints must match.",
+    "transport": "Passive CDP observer captures actual start/followup/resume traffic; opening and followup each require one 200, loading_finished, terminal_success, semantic success, zero pending tools, no stream error; followup must be is_new=false and share opening conversation fingerprint.",
+    "content": "Opening terminal DOM answer must contain Capture, Understand, Use; same-conversation followup asks for only the second stage and terminal DOM answer must contain Understand. Terminal answer oracle and visible answer screenshot proof both required.",
+    "diagnostics_limit": "Observer stores backend request fingerprint, not a backend phase-trace correlation key. Existing phase markers are visible but opaque IDs prevented definitive join in owned API diagnosis. On 504, lane can establish transport failure but cannot identify the stuck backend await without a supported passive request-correlated diagnostic.",
+    "sequence_gap": "Driver begins with web/reviewer sign-in and extension sign-in; it does not first run guest opening+followup, then sign in and normally reload side panel. Its opening QUESTION is 'What are the three workflow stages on this page?' rather than defect's original 'On this demo page, what is the main heading and what are the three table stages? Answer from the page.' Therefore a pass is useful bounded signed-in member evidence but is not exact original D261 reproduction/closure."
+  },
+  "candidate_gates_before_launch": [
+    "Fresh sourcefix candidate is built through authorized release path; capture exact successful release run, artifact ID, source SHA, tag SHA, Store ZIP SHA and matching receipt.",
+    "Required full CI and source-admission/runtime-equivalence proof succeed for exact candidate; verify current local main equals origin/main, clean dispatch source, no active lane A run, required workflow secrets present, and refresh live CI spend. Do not weaken any guard.",
+    "Parent confirms approved next action/launch after reviewing candidate and acceptance-gap handling; no dispatch in this preflight."
+  ],
+  "required_inputs": {
+    "workflow_dispatch": {
+      "workflow": "hosted-guest-acceptance.yml",
+      "ref": "main",
+      "acceptance_lane": "A",
+      "acceptance_case": "member-chat",
+      "release_run_id": "new eligible successful release run ID only",
+      "runner_label": "macos-15-intel (workflow default; hosted browser runner, not local Mac job)",
+      "requested_by": "release-member-admission"
+    },
+    "secrets": ["MATRX_PROFILE_APPROVED_ORGANIZATION_JSON", "MATRX_REVIEWER_MAGIC_LINK_JSON"],
+    "existing_command_shape_only": "gh workflow run hosted-guest-acceptance.yml --ref main -f acceptance_lane=A -f acceptance_case=member-chat -f release_run_id=<eligible-new-run-id> -f runner_label=macos-15-intel -f requested_by=release-member-admission -R armanisadeghi/matrx-extend"
+  },
+  "isolation_and_cleanup": {
+    "ownership": "Lane A is shared-credential/admin/member fixture lane; serialize use of one-time reviewer magic link and approved member organization across hosts. Use the workflow's disposable owned profile and unique run ID; no personal profile, manually injected session, or parallel member/admin fixture run.",
+    "staging": "Existing runner writes member link and approved organization config under verified private permissions; clears corresponding environment values before driver; finally unlinks staged member link and organization file. Never print or persist secret values.",
+    "cleanup_evidence": "Require all package/browser/guest resource journals terminal and resource-valid, child terminal, profile/process cleanup accounted, no cleanup error. Preserve sanitized copier-produced evidence only; confirm ephemeral profile/secret cleanup in final artifact/report before any retry."
+  },
+  "exact_original_acceptance": {
+    "repro": [
+      "Fresh owned profile and exact candidate; open public https://www.aimatrx.com/matrx-extend-demo as guest.",
+      "Send a guest opening page question and same-conversation followup; require grounded terminal answers (or explicitly report this as a separate observed transition), then complete the real first-party reviewer sign-in and extension sign-in.",
+      "Verify approved ordinary non-admin reviewer and exact approved acting organization; normally reload side panel into fresh member Chat; capture guest transcript/Capture-list alert separately if present.",
+      "Send exact D261 original: 'On this demo page, what is the main heading and what are the three table stages? Answer from the page.' Require real Page Text tool execution and terminal UI answer grounded in actual page heading plus ordered Capture, Understand, Use; reject API-only/synthetic tool result, delegated/pending completion, empty text, refusal, or mere HTTP 200.",
+      "Then send exact same-conversation followup: 'Name only the second workflow stage from our previous answer.' Require actual completed terminal answer containing Understand; assert is_new=false, same conversation fingerprint, same selected-org header, completed success and no pending tools.",
+      "Record passive correlated request/response statuses and timing. If original resume pre-header 504 recurs, join its request to live phase diagnostics only if an existing supported correlation is available; otherwise mark root phase unresolved and do not infer cause."
+    ],
+    "assertion_delta_needed": "Existing driver's answer oracle already proves terminal text and stage terms. Exact D261 acceptance additionally needs the original first question/heading assertion and guest-to-member transition; current driver does not enforce those. Treat as named acceptance limitation unless the authorized owner supplies an already-existing lane that enforces them; do not implement here."
+  },
+  "limits": [
+    "Current API-only probe is inconclusive: synthetic Page Text result, pending delegated read_page/extract_table, and no terminal assistant answer.",
+    "Current 200 SSE completion at a delegation is not terminal success; no D261 pass or backend causal repair is established.",
+    "Fresh direct member control is separate from original guest-to-member transition and should be recorded separately if scope permits; neither alone attributes a code fix.",
+    "No current candidate/source/CI/release is independently validated by this read-only lane."
+  ],
+  "next_action": "Wait for parent-owned sourcefix b2ad/db1, fullCI39417471133, and releaseworker's fresh candidate. Re-run exact admission on that new immutable candidate; resolve/document the acceptance gaps before any authorized lane A dispatch."
+}

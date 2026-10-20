@@ -53,5 +53,11 @@
   ],
   "next_action": "Full source CI including new actual compiler guard, then one meaningful fresh guarded Store candidate including scoped styles; exact guest/nonadmin/reviewer UI acceptance and independent retest before closure/upload. Preserve original member source guard unchanged.",
   "diagnosis_revision": "The initial allegation of a false source-admission refusal was withdrawn after actual CSS/scanner inspection. The guard is correct and unchanged. This record now tracks the underlying build-input boundary, with original diagnosis preserved in reports/transition history; no guard-fix or product-UI claim.",
-  "source_commit": "b2ad76e9f"
+  "source_commit": "b2ad76e9f",
+  "source_ci_verification": {
+    "source": "db1b5e4aa8e9505e3332bbfe0874ff0c0b8a812a",
+    "full_ci": 39417471133,
+    "focused_ci": 39417470995,
+    "result": "SUCCESS both; actual compiler source guard selected in existing CI; no native surrounding acceptance or defect closure"
+  }
 }

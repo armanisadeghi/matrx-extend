@@ -1,0 +1,38 @@
+{
+  "task": "EXT-D-0261 fresh source verifier",
+  "commit": "1d676a1c3ec4bf007af9583e4a10ac5346e89db0",
+  "scope": "Read-only; no native browser claim or candidate dispatch.",
+  "verdict_a": {
+    "result": "PARTIAL",
+    "evidence": [
+      "The hosted member driver now runs two guest turns before first-party sign-in; it requires guest identity/session absence, terminal semantic success, same conversation, and no pending tool.",
+      "The member route uses the exact original question, captures the live main heading, normally reloads the panel, requires fresh member Chat, real get_page_text output containing heading and all three stages, then requires terminal member answer and same-conversation follow-up.",
+      "Existing assertions bind member identity to the reviewer, enforce non-admin role, compare selected approved organization to actual request headers, and verify follow-up completion."
+    ],
+    "missing": [
+      "No hosted native run or admitted exact candidate was available; runtime UI, page grounding, identity/org, privacy/resource/cleanup gates remain unobserved. No D261 closure or product pass.",
+      "Page Text proof records any completed get_page_text event after observer installation, without binding its callId/conversationId to the opening turn; the sterile fresh-chat route makes stale evidence unlikely, but exact request correlation is not asserted."
+    ],
+    "extra": [],
+    "misunderstood": []
+  },
+  "verdict_b": {
+    "result": "FAIL",
+    "findings": [
+      "Important: new test is a source-string/change-detector test, contrary to forcing-function-tests §7. It parses source and asserts exact text/order, then removes substrings from an in-memory copy. This can fail harmless refactors and does not execute the native driver or verify runtime phase wiring. Lines 5-55, 58-77 in tests/browser/reviewer-chat-original-repro.test.mjs.",
+      "RED evidence: four in-memory substring removals make the parser assertion fail; this validates only its string detector, not product/harness behavior. No candidate runtime RED→GREEN proof."
+    ],
+    "strengths": [
+      "Source path itself has real assertions at the browser boundary rather than only reporting intended state.",
+      "Page Text output is observed from TOOL_TIMELINE_EVENT and contains the actual tool result object (dispatch.ts emits completed output); answer separately must contain the live heading and ordered stages."
+    ]
+  },
+  "verification": {
+    "commands": [
+      "node --test tests/browser/reviewer-chat-original-repro.test.mjs tests/browser/reviewer-chat-store-acceptance.mjs — 1 pass (the acceptance driver is not a node:test suite).",
+      "node --test tests/browser/guest-chat-completion-oracle.test.mjs tests/browser/guest-chat-transport-observer.test.mjs tests/browser/guest-chat-input-driver.test.mjs tests/browser/reviewer-chat-original-repro.test.mjs — 48 pass.",
+      "node --test tests/browser/member-chat-completion-oracle.test.mjs tests/browser/reviewer-chat-organization-boundary.test.mjs — 10 pass."
+    ],
+    "report_file": "/tmp/member261-original-repro-fresh-peer-20261020.json"
+  }
+}
