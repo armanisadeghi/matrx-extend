@@ -12,6 +12,29 @@
     "artifact_id": 12236688968,
     "artifact_zip_sha256": "1422db36ae3ea60d00b995432f4a5fd08ca351ea2fb6a97de4f0921747183236",
     "native_report_sha256": "07db6bbebf3051999f598d57832b24aa34b33c31d2a699e7421cfe879f1ce70d",
+    "member_count": 20,
+    "members": [
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-39359500330-1.jsonl",
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-39359500330-1.jsonl",
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-39359500330-1.jsonl",
+      "matrx-extend/matrx-extend/test-results/guest-chat-store-f3d9e718-b888-4ace-b118-cf14b32b1e7d.json",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/guest-chat-failure.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/guest-chat-real-answer.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/guest-chat-real-followup-answer.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/guest-chat-opening-understand.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/reviewer-seo-audit.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/guest-chat-opening-use.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/reviewer-settings-off.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/reviewer-data-workflow-picker.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/reviewer-capture-schema.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/reviewer-capture-links.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/guest-chat-same-conversation-heading.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/native-side-panel.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/guest-chat-opening-capture.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/guest-chat-followup-heading.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/normal-target-after-open.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-XUNKeV/guest-chat-same-conversation-followup.png"
+    ],
     "native_report_file": "test-results/guest-chat-store-f3d9e718-b888-4ace-b118-cf14b32b1e7d.json"
   },
   "target": {
@@ -60,6 +83,42 @@
       "assistant_reply_count": 2
     }
   },
+  "visual_evidence": {
+    "png_bytes_uploaded": true,
+    "chat_png_count": 9,
+    "inspected_chat_images": [
+      "guest-chat-real-answer.png",
+      "guest-chat-opening-use.png",
+      "guest-chat-same-conversation-followup.png",
+      "guest-chat-same-conversation-heading.png",
+      "guest-chat-followup-heading.png",
+      "guest-chat-real-followup-answer.png",
+      "guest-chat-failure.png"
+    ],
+    "observed": "Opening screenshot shows the answer code and Capture section; another shows Understand and Use. Same-conversation screenshots show its code and fixture heading. The after-reload heading screenshot shows fixture grounding. Failure screenshot shows the Values popover still open.",
+    "screenshot_sha256": {
+      "guest-chat-failure.png": "cab02a8a575f721f31c58f6efb6c8479ccf346f58d06ff1120b18f5cdb2471f5",
+      "guest-chat-followup-heading.png": "0cf7893992293e5da940d912a3c4be4f913a11688c57b19d637401a8020cbca1",
+      "guest-chat-opening-capture.png": "4d9b888dbe0cd56f71148a34b21c505a4d1d920f62961769a093ec423d7e73f3",
+      "guest-chat-opening-understand.png": "d26169a61d95adce7d12c0255730bf746dc8ad77653cd4c99ebb85fdac2f5825",
+      "guest-chat-opening-use.png": "30a9dc024eba8d6103afb9a2187558e3f760391947970820018c2b2006390645",
+      "guest-chat-real-answer.png": "3fae92559df79f55228aa5c8488f64e595f122837a0d1c65a5326f2f9897d5d2",
+      "guest-chat-real-followup-answer.png": "052e4a0585dddb60f455ee1b7c91921c6a301ca74ca9272fed37cfddcf6d55fd",
+      "guest-chat-same-conversation-followup.png": "1f5faf99bcde9a9838b15026b0fd8586c216ebe81cbcf2156f5b5591b3444635",
+      "guest-chat-same-conversation-heading.png": "a6ad94c2b1c61c31ebb68222c896c282761c6be4112f57bf59af722135593ac9",
+      "native-side-panel.png": "2ab3d0e5544ad29132a9707d0e8186abdb50aca3666a5e50bc4e6b6e60991198",
+      "normal-target-after-open.png": "6578d68343a6cd0fc2f2724a4db747617914e2c552a4c92ca24656cf24a434eb",
+      "reviewer-capture-links.png": "48087de6abda971b49eaff125482504d46ec4c5b1d51af73328017566da05833",
+      "reviewer-capture-schema.png": "030d6df96ffc9ce822932f51b20b545635843e3f1492bfe85887fd3abfeeab32",
+      "reviewer-data-workflow-picker.png": "21954724a603f0b33c4e2bdc233b954281f2e27ad2d97fe5640c1267cedf6621",
+      "reviewer-seo-audit.png": "b4ed6cef9535a0cfb0d1707398291902ec2533aa1c50685ccd20f436df3108bc",
+      "reviewer-settings-off.png": "810303884a028ce315dbc22b6e2cc8e69ebb73dd983b0e8b35867696ec8b194d"
+    },
+    "visual_coverage": "partial viewport crops; not a complete answer rendering",
+    "raw_assistant_text_retained": false,
+    "manual_visual_inspection_performed": true,
+    "independent_visual_peer_review": false
+  },
   "later_failure": {
     "stage": "guest_values_chip_observation",
     "code": "guest_values_chip_closed_not_observed",
@@ -80,20 +139,30 @@
       "admitted": true,
       "resource_invalid": false,
       "exit_code": 0,
-      "decision": "valid"
+      "decision": "valid",
+      "raw_sha256": "b15d10d20d8771ee88dc5018cb88dae5aa252443649980d643ddeed99e4cbefb",
+      "sanitized_file": "docs/stabilization/evidence/published-guest-daily-20261020/run39359500330/resource-journals/hosted-package-39359500330-1.sanitized.jsonl"
     },
     "hosted-browser-39359500330-1": {
       "admitted": true,
       "resource_invalid": false,
       "exit_code": 0,
-      "decision": "valid"
+      "decision": "valid",
+      "raw_sha256": "454db64f019d3f070bfeae42193a1c2523a3db0af5880a9d93653839ccafd7bf",
+      "sanitized_file": "docs/stabilization/evidence/published-guest-daily-20261020/run39359500330/resource-journals/hosted-browser-39359500330-1.sanitized.jsonl"
     },
     "hosted-guest-39359500330-1": {
       "admitted": true,
       "resource_invalid": false,
       "exit_code": 1,
-      "decision": "child_failed"
+      "decision": "child_failed",
+      "raw_sha256": "3760029e195dc61d448af70a135c24093de7156b42d9aa628e4880bfe1294d3f",
+      "sanitized_file": "docs/stabilization/evidence/published-guest-daily-20261020/run39359500330/resource-journals/hosted-guest-39359500330-1.sanitized.jsonl"
     }
+  },
+  "raw_resource_journals": {
+    "local_ignored_directory": "test-results/published-guest-daily-39359500330/raw/",
+    "byte_identical_to_artifact": true
   },
   "cleanup": {
     "workflow_terminal": true,
@@ -103,6 +172,7 @@
   },
   "limits": [
     "The overall workflow failed at the later Values-chip close assertion; only the bounded Chat observations above passed.",
+    "The artifact contains 20 members, including 16 PNGs and three resource journals. The native report retains content predicates and fingerprints, not raw assistant text; inspected screenshots are partial viewport crops and do not prove a complete answer rendering. Independent visual peer review is pending.",
     "The public CRX was verified and loaded as an adapted unpacked extension; this does not prove behavior in a Store-installed Chrome profile.",
     "The authenticated primary Store dashboard was not inspected for this probe; no private review or pending status is inferred."
   ]
