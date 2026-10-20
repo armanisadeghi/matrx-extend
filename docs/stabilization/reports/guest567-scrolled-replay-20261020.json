@@ -72,5 +72,21 @@
     "store_upload": "not_attempted",
     "native_acceptance": "pending_fresh_peer_and_root_GO"
   },
-  "next_action": "Track the single hosted release to terminal and bind its validated receipt, tag, source SHA, Store ZIP hash and artifact digest. Then obtain independent package review and root GO before normal lane B admission and one exact-candidate native replay. The .567 admission refusal remains binding; no .567 native credit is inferred."
+  "exact568_guest_b_replay": {
+    "run_id": "39358084388",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39358084388",
+    "workflow_head_sha_at_dispatch": "31c810ace375436e5a8c79b72e76be8859ba017a",
+    "normal_plan_verdict": "admitted",
+    "normal_dispatch_verdict": "dispatched_once",
+    "release_run_id": "39356737665",
+    "artifact_id": "12235302731",
+    "frozen_source_sha": "5aca3d4f9a21b752614a0bb33228c1ce4ae62544",
+    "backend_sha_before": "f8dd64696fd963685d259328a0776737a9d5aa23",
+    "spend_week_usd_before": 59.5,
+    "spend_cap_usd_before": 100,
+    "status_at_checkpoint": "dispatched_pending_terminal",
+    "resource_journals": "pending_hosted_artifact",
+    "external_job_cleanup": "hosted run owns ephemeral runner; no local browser, process, profile or staged secret"
+  },
+  "next_action": "Track B run 39358084388 to terminal; verify all hosted resource final decisions and exact .568 guest Chat, public demo Data Done at natural nonzero scroll, selector, surrounding panes and backend before/after. A separate screenshot clip failure must not silently count as a full guest pass. No Store upload."
 }
