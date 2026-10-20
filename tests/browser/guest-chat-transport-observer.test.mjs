@@ -1011,7 +1011,14 @@ test('package observer waits across delegated EOF, real result delivery and corr
   await emit(
     'result',
     '/ai/conversations/private-conversation/tool_results',
-    JSON.stringify({ resolved: ['private-call'], continuation_needed: true }),
+    JSON.stringify({
+      resolved: ['private-call'],
+      already_resolved: [],
+      not_found: [],
+      continuation_needed: true,
+      user_request_id: null,
+      conversation_id: 'private-conversation',
+    }),
     {
       results: [
         {
@@ -1095,6 +1102,124 @@ test('package observer waits across delegated EOF, real result delivery and corr
   await watch.stop();
 });
 
+test('D269 package result acknowledgement rejects malformed HTTP 200 and accepts resolved or already resolved', async () => {
+  const valid = {
+    resolved: ['private-call'],
+    already_resolved: [],
+    not_found: [],
+    continuation_needed: true,
+    user_request_id: null,
+    conversation_id: 'private-conversation',
+  };
+  const without = (field) =>
+    Object.fromEntries(Object.entries(valid).filter(([key]) => key !== field));
+  const cases = [
+    ['resolved', valid, true],
+    ['already_resolved', { ...valid, resolved: [], already_resolved: ['private-call'] }, true],
+    [
+      'missing_not_found',
+      {
+        resolved: ['private-call'],
+        already_resolved: [],
+        continuation_needed: true,
+        user_request_id: null,
+        conversation_id: 'private-conversation',
+      },
+      false,
+    ],
+    ['null_not_found', { ...valid, not_found: null }, false],
+    ['wrong_type_not_found', { ...valid, not_found: '' }, false],
+    [
+      'missing_already_resolved',
+      {
+        resolved: ['private-call'],
+        not_found: [],
+        continuation_needed: true,
+        user_request_id: null,
+        conversation_id: 'private-conversation',
+      },
+      false,
+    ],
+    ['wrong_type_resolved_member', { ...valid, resolved: [42] }, false],
+    ['missing_resolved', without('resolved'), false],
+    ['null_already_resolved', { ...valid, already_resolved: null }, false],
+    ['wrong_type_not_found_member', { ...valid, not_found: [42] }, false],
+    ['missing_continuation_needed', without('continuation_needed'), false],
+    ['missing_user_request_id', without('user_request_id'), false],
+    ['missing_conversation_id', without('conversation_id'), false],
+    ['not_found_call', { ...valid, not_found: ['private-call'] }, false],
+    ['wrong_conversation', { ...valid, conversation_id: 'another-conversation' }, false],
+  ];
+  for (const [name, ack, accepted] of cases) {
+    const events = new EventEmitter();
+    const bodies = new Map();
+    const panel = {
+      on(event, listener) {
+        events.on(event, listener);
+        return () => events.off(event, listener);
+      },
+      async send(method, { requestId } = {}) {
+        return method === 'Network.getResponseBody'
+          ? { body: bodies.get(requestId), base64Encoded: false }
+          : {};
+      },
+    };
+    const watch = await watchGuestAiRequests({
+      panel,
+      panelTarget: { url: 'chrome-extension://abc/sidepanel.html' },
+      mode: 'package',
+    });
+    watch.arm('opening');
+    const emit = async (id, path, body, postData) => {
+      bodies.set(id, body);
+      events.emit('Network.requestWillBeSent', {
+        requestId: id,
+        request: {
+          method: 'POST',
+          url: `https://server.invalid${path}`,
+          postData: JSON.stringify(postData),
+        },
+      });
+      events.emit('Network.responseReceived', { requestId: id, response: { status: 200 } });
+      events.emit('Network.loadingFinished', { requestId: id });
+      await watch.settle();
+    };
+    await emit(
+      'start',
+      '/ai/mandates/extend.browser_chat',
+      [
+        { event: 'tool_event', data: { event: 'tool_delegated', call_id: 'private-call' } },
+        { event: 'end', data: { reason: 'complete' } },
+      ]
+        .map(JSON.stringify)
+        .join('\n'),
+      { conversation_id: 'private-conversation', is_new: true },
+    );
+    await emit(
+      'result',
+      '/ai/conversations/private-conversation/tool_results',
+      JSON.stringify(ack),
+      {
+        results: [
+          {
+            call_id: 'private-call',
+            tool_name: 'get_page_text',
+            is_error: false,
+            output: {
+              ok: true,
+              url: 'https://www.aimatrx.com/matrx-extend-demo',
+              text: 'Capture, Understand, Use.',
+            },
+          },
+        ],
+      },
+    );
+    assert.equal(watch.snapshot()[0].tool_results[0].result_accepted, accepted, name);
+    assert.equal(watch.snapshot()[0].pending_tool_count, accepted ? 0 : 1, name);
+    await watch.stop();
+  }
+});
+
 for (const scenario of [
   'missing_result',
   'failed_result',
@@ -1155,7 +1280,14 @@ for (const scenario of [
       await emit(
         'result',
         '/ai/conversations/private-conversation/tool_results',
-        { resolved: ['private-call'], not_found: [], continuation_needed: true },
+        {
+          resolved: ['private-call'],
+          already_resolved: [],
+          not_found: [],
+          continuation_needed: true,
+          user_request_id: null,
+          conversation_id: 'private-conversation',
+        },
         scenario === 'failed_result' ? 500 : 200,
       );
     if (scenario === 'stale_completion')

@@ -357,17 +357,21 @@ export async function watchGuestAiRequests({
             const data = JSON.parse(
               base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body,
             );
+            const strings = (value) =>
+              Array.isArray(value) && value.every((item) => typeof item === 'string');
+            const validAck =
+              strings(data.resolved) &&
+              strings(data.already_resolved) &&
+              strings(data.not_found) &&
+              typeof data.continuation_needed === 'boolean' &&
+              (data.user_request_id === null || typeof data.user_request_id === 'string') &&
+              typeof data.conversation_id === 'string' &&
+              conversationFingerprint(data.conversation_id) === request.conversation_fingerprint;
             request.continuation_needed = data.continuation_needed === true;
-            request.resolved_calls = [
-              ...(Array.isArray(data.resolved) ? data.resolved : []),
-              ...(Array.isArray(data.already_resolved) ? data.already_resolved : []),
-            ]
-              .filter((value) => typeof value === 'string')
-              .map(conversationFingerprint);
-            request.result_accepted =
-              Array.isArray(data.resolved) &&
-              Array.isArray(data.not_found ?? []) &&
-              !data.not_found?.length;
+            request.resolved_calls = validAck
+              ? [...data.resolved, ...data.already_resolved].map(conversationFingerprint)
+              : [];
+            request.result_accepted = validAck && data.not_found.length === 0;
           } catch {
             request.result_accepted = false;
           }

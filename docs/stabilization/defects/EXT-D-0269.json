@@ -54,8 +54,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Test-only source repair passed old-source red/new green focused guard, constant-return and output.ok mutations, compile, scoped Biome, and guarded canonical focused suite (731 total, 721 pass, 10 platform skips, resource valid). Native replay and independent verification remain pending."
+    },
+    {
+      "at": "2026-10-20T15:39:00Z",
+      "from": "fixed",
+      "to": "in-fix",
+      "reason": "Fresh independent source peer found malformed HTTP 200 tool_results acknowledgement with absent not_found was accepted; native remains unknown."
+    },
+    {
+      "at": "2026-10-20T15:40:00Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Observer now validates required response arrays and types, matching conversation identity, and an empty not_found list before marking result accepted. Malformed acknowledgement guard old RED/new GREEN; missing not_found type-check mutation RED with identical restoration; focused 29/29, compile, scoped Biome PASS. Native remains pending."
     }
   ],
-  "verification_status": "Old-source focused guard RED; new focused observer and strict-driver tests 28/28 PASS; constant-return and output.ok mutations RED with identical restore; compile and scoped Biome PASS. Guarded canonical focused suite 731 total, 721 pass, 10 Mac platform skips, zero fail, child exit 0, resource valid (d269-focused-20261020-1534). Native future run, exact-source CI, and independent review pending; current 577 Store submission remains pending and untouched.",
-  "next_action": "After source push, run one admitted exact-source native member acceptance when Store/submission constraints permit. Require exact get_page_text canonical result/ack/resume plus terminal opening and same-conversation follow-up; obtain independent review before closing."
+  "verification_status": "Fresh peer source A PASS/native UNKNOWN; quality B PARTIAL found malformed acknowledgement acceptance and triggered fix round 1. Missing not_found case RED before fix; focused observer/driver suite now 29/29 PASS, including missing/null/wrong-type acknowledgements and resolved/already_resolved positives. Prior guarded canonical focused suite 731 total/721 pass/10 Mac skips/0 fail, resource valid; no full-suite repeat for this local shape check. Current round compile/Biome PASS; missing not_found type-check mutation RED with identical restoration; exact-source CI pending. No post-fix native run; Store 0.2.577 remains SUBMITTED_PENDING unchanged.",
+  "next_action": "Push round-1 source and let exact-main CI run. Fresh independent quality review of acknowledgement validation, then one admitted native member run when Store/submission constraints permit; require exact result/ack/resume plus opening and follow-up before closing."
 }
