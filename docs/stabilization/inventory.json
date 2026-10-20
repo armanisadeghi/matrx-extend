@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T03:37:24.048612Z",
+  "updated_at": "2026-10-20T06:09:55.100840+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -51888,29 +51888,27 @@
           ],
           "results": {
             "guest": {
-              "status": "fail",
-              "run_id": 39373343402,
+              "status": "pass",
+              "run_id": 39377242317,
               "build_version": "0.2.205",
               "build_channel": "published_public_crx_unpacked",
               "receipt_kind": "published_store_crx_unpacked",
               "actual_store_installed": false,
               "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
               "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
-              "execution_source_sha": "01c137f4d183e21d2c80801053382c89abdfed7f",
-              "workflow_checkout_sha": "a90836bbed6b640fc804db144e74af945ecd812b",
-              "resource_valid": true,
+              "execution_source_sha": "dcab242a405083b421adebf5f81923864795f7a6",
+              "workflow_checkout_sha": "1d73cd4248dce97696aaf376a4fe28d44e852f4c",
+              "resource_invalid": false,
               "guest_resource_decision": "child_failed",
               "guest_child_exit_code": 1,
-              "server_sha_before_after": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
+              "server_sha_before": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
+              "server_sha_after": "f5f3e47245f4e0af98aab56333117860cbe04d5f",
+              "server_stable": false,
               "evidence": [
-                "docs/stabilization/reports/published205-post181b-guest-20261020.json",
-                "docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json",
-                "docs/stabilization/reports/guest263-provider-boundary-20261020.json"
+                "docs/stabilization/reports/guest264-native-retest-20261020.json",
+                "docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json"
               ],
-              "defect_ids": [
-                "EXT-D-0263"
-              ],
-              "detail": "Openingguestanswer grounded/UI-terminal. Followup providerrequest contained exactcode/fullheading; finalprovider/stored/native-sanitizedreply retaincode but incorrectly shortenheading, excludingprefixandunique suffix. Nativecodeabsenceflagcontradictsprovider/native text and isseparateD264 investigation. FinalSSEframeunproven/postreloadnotreached. No current568/Storeinstalled failure or backend/contributor attribution; priorfrozen562passretained."
+              "detail": "Fresh independent per-case review PASS only T10 three real guest replies: opening code/stages, sameconversation matchingwire/is_new=false code/fullheading, actualreload then distinctwire/is_new=true code/fullheading; allHTTP200 and terminal_answer/nonstreaming. Guest auth absent. Later T13 ValuesEscape failed but does not erase completed T10 steps. Backend changed181b→f5f3, so no stablebackend/currentserver attribution, actualStoreinstalled/fullChat/candidate568 pass or D263 causalclosure. D264 originalwrongheadingcatchnotexercised; laterValuescatchcorrectcode/heading only."
             }
           },
           "defect_verification": {
@@ -52144,6 +52142,36 @@
               },
               "superseded_at": "2026-10-20T05:27:38.084187+00:00",
               "reason": "Retain frozen562 pass; current public205/server181b followup acceptance now fails separately."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "fail",
+                "run_id": 39373343402,
+                "build_version": "0.2.205",
+                "build_channel": "published_public_crx_unpacked",
+                "receipt_kind": "published_store_crx_unpacked",
+                "actual_store_installed": false,
+                "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+                "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+                "execution_source_sha": "01c137f4d183e21d2c80801053382c89abdfed7f",
+                "workflow_checkout_sha": "a90836bbed6b640fc804db144e74af945ecd812b",
+                "resource_valid": true,
+                "guest_resource_decision": "child_failed",
+                "guest_child_exit_code": 1,
+                "server_sha_before_after": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
+                "evidence": [
+                  "docs/stabilization/reports/published205-post181b-guest-20261020.json",
+                  "docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json",
+                  "docs/stabilization/reports/guest263-provider-boundary-20261020.json"
+                ],
+                "defect_ids": [
+                  "EXT-D-0263"
+                ],
+                "detail": "Openingguestanswer grounded/UI-terminal. Followup providerrequest contained exactcode/fullheading; finalprovider/stored/native-sanitizedreply retaincode but incorrectly shortenheading, excludingprefixandunique suffix. Nativecodeabsenceflagcontradictsprovider/native text and isseparateD264 investigation. FinalSSEframeunproven/postreloadnotreached. No current568/Storeinstalled failure or backend/contributor attribution; priorfrozen562passretained."
+              },
+              "superseded_at": "2026-10-20T06:09:55.100840+00:00",
+              "reason": "Fresh independent case-specific adjudication of run39377242317; T10 reply checks separate from T13 Escape failure, mixed backend explicit."
             }
           ],
           "attempt_history": [
@@ -52358,15 +52386,29 @@
           "results": {
             "guest": {
               "status": "fail",
-              "run_id": "39283778031",
-              "build_version": "0.2.205 public CRX adapted unpacked",
+              "run_id": 39377242317,
+              "build_version": "0.2.205",
+              "build_channel": "published_public_crx_unpacked",
+              "receipt_kind": "published_store_crx_unpacked",
+              "actual_store_installed": false,
+              "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+              "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+              "execution_source_sha": "dcab242a405083b421adebf5f81923864795f7a6",
+              "workflow_checkout_sha": "1d73cd4248dce97696aaf376a4fe28d44e852f4c",
+              "resource_invalid": false,
+              "guest_resource_decision": "child_failed",
+              "guest_child_exit_code": 1,
+              "server_sha_before": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
+              "server_sha_after": "f5f3e47245f4e0af98aab56333117860cbe04d5f",
+              "server_stable": false,
               "evidence": [
-                "docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json",
-                "docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json",
-                "docs/stabilization/runs/public-guest-chat-0.2.205-39283778031.json",
-                "docs/stabilization/reports/dev555-native-peer-20261019.json"
+                "docs/stabilization/reports/guest264-native-retest-20261020.json",
+                "docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json"
               ],
-              "detail": "Repeated trusted Escape failure on adapted public0.2.205 with valid resources after three completed replies. Native dev555 trigger/input-focused dismissal passed independently after settling, but its role/tooltip path and current556 guest remain unverified; full view, close control and reopening remain unverified."
+              "defect_ids": [
+                "EXT-D-0244"
+              ],
+              "detail": "One trustedEscape, focusedcompactValuespopoverstillopen; screenshot/rawrecorder corroborate bounded observedfail after three actual replies. Existingpublic205 D244 repeated; closecontrol/reopen/fullview/current568 and othermodes remainunverified. Mixedbackend181b→f5f3, no newcurrentbuild equivalence."
             },
             "member": {
               "status": "unverified"
@@ -52374,7 +52416,26 @@
             "admin": {
               "status": "unverified"
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "fail",
+                "run_id": "39283778031",
+                "build_version": "0.2.205 public CRX adapted unpacked",
+                "evidence": [
+                  "docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json",
+                  "docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json",
+                  "docs/stabilization/runs/public-guest-chat-0.2.205-39283778031.json",
+                  "docs/stabilization/reports/dev555-native-peer-20261019.json"
+                ],
+                "detail": "Repeated trusted Escape failure on adapted public0.2.205 with valid resources after three completed replies. Native dev555 trigger/input-focused dismissal passed independently after settling, but its role/tooltip path and current556 guest remain unverified; full view, close control and reopening remain unverified."
+              },
+              "superseded_at": "2026-10-20T06:09:55.100840+00:00",
+              "reason": "Fresh independent case-specific adjudication of run39377242317; T10 reply checks separate from T13 Escape failure, mixed backend explicit."
+            }
+          ]
         },
         {
           "id": "EXT-F-2013-T14",

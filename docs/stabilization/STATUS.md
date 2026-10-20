@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-20 05:40 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T03:37:24.048612Z. 207 features · 831 cases · 1422 controls · 263 linked defect records.
+Generated 2026-10-20 06:10 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T06:09:55.100840+00:00. 207 features · 831 cases · 1422 controls · 263 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1338** — Pass: 101 · Partial: 96 · Fail: 4 · Unverified: 1126 · N/A: 11.
+Applicable case-by-role slots: **1338** — Pass: 102 · Partial: 96 · Fail: 3 · Unverified: 1126 · N/A: 11.
 Unverified splits into **181 explicitly marked unverified** and **945 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -47,7 +47,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 30, n/a 0 | 0 |
 | [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 0 |
-| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 0 pass · 0 partial · 3 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 1 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 4, unverified 26, n/a 0 | 25 |
+| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 0 partial · 2 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 1 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | pass 1, partial 1, fail 3, unverified 26, n/a 0 | 25 |
 | [Pilot (deferred wave D)](#pilot-deferred-wave-d) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 5, n/a 0 | 1 |
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
@@ -1795,7 +1795,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-2013-T07 Send explicit page Source status in Chat context | N/A | Unverified | Unverified | EXT-F-2013-C134 |
 | EXT-F-2013-T08 Apply account default model when no extension model is selected | Unverified | Unverified | Unverified | EXT-F-2013-C135 |
 | EXT-F-2013-T09 Render typed decision answer in Chat live stream and conversation history | Unverified | Unverified | Unverified | EXT-F-2013-C136 |
-| EXT-F-2013-T10 Public guest Chat first reply, same-conversation follow-up, and new conversation after reload | Fail | N/A | N/A | EXT-F-2013-C08, EXT-F-2013-C10 |
+| EXT-F-2013-T10 Public guest Chat first reply, same-conversation follow-up, and new conversation after reload | Pass | N/A | N/A | EXT-F-2013-C08, EXT-F-2013-C10 |
 | EXT-F-2013-T11 Inspect actual context receipt blocks and delivered text | Unverified | Unverified | Unverified | EXT-F-2013-C137, EXT-F-2013-C138 |
 | EXT-F-2013-T12 Returning guest at the live usage limit receives free-account remedy without futile Retry | Fail | N/A | N/A | EXT-F-2013-C08, EXT-F-2013-C10, EXT-F-2013-C03 |
 | EXT-F-2013-T13 Inspect and dismiss context Values dialog | Fail | Unverified | Unverified | EXT-F-2013-C139, EXT-F-2013-C140 |
@@ -1805,12 +1805,12 @@ These historical checks retain their original artifact boundary; they do not est
 
 - EXT-F-2013-T02 · member: Partial. Hosted local-development-ZIP 0.2.205 nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case.
   Evidence / build / date recorded: 37182939504, .research/hosted-member205-final.json
-- EXT-F-2013-T10 · guest: Fail. Openingguestanswer grounded/UI-terminal. Followup providerrequest contained exactcode/fullheading; finalprovider/stored/native-sanitizedreply retaincode but incorrectly shortenheading, excludingprefixandunique suffix. Nativecodeabsenceflagcontradictsprovider/native text and isseparateD264 investigation. FinalSSEframeunproven/postreloadnotreached. No current568/Storeinstalled failure or backend/contributor attribution; priorfrozen562passretained.
-  Evidence / build / date recorded: 39373343402, ['docs/stabilization/reports/published205-post181b-guest-20261020.json', 'docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json', 'docs/stabilization/reports/guest263-provider-boundary-20261020.json']
+- EXT-F-2013-T10 · guest: Pass. Fresh independent per-case review PASS only T10 three real guest replies: opening code/stages, sameconversation matchingwire/is_new=false code/fullheading, actualreload then distinctwire/is_new=true code/fullheading; allHTTP200 and terminal_answer/nonstreaming. Guest auth absent. Later T13 ValuesEscape failed but does not erase completed T10 steps. Backend changed181b→f5f3, so no stablebackend/currentserver attribution, actualStoreinstalled/fullChat/candidate568 pass or D263 causalclosure. D264 originalwrongheadingcatchnotexercised; laterValuescatchcorrectcode/heading only.
+  Evidence / build / date recorded: 39377242317, ['docs/stabilization/reports/guest264-native-retest-20261020.json', 'docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json']
 - EXT-F-2013-T12 · guest: Fail. Historical Store-installed176 failed genericerror/Retry at liveHTTP402. Exact205candidate passed fresh/returning exhaustedguest remedy/noRetry;205 is now published. Public205CRX fresh/reload answers passed37267858358 but this did not exercise allowance402 or actualStoreinstalledprofile; retain open installed-acceptance requirement.
   Evidence / build / date recorded: urgent-live-guest-20261004-01, .research/urgent-live-guest-20261004.json
-- EXT-F-2013-T13 · guest: Fail. Repeated trusted Escape failure on adapted public0.2.205 with valid resources after three completed replies. Native dev555 trigger/input-focused dismissal passed independently after settling, but its role/tooltip path and current556 guest remain unverified; full view, close control and reopening remain unverified.
-  Evidence / build / date recorded: 39283778031, ['docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json', 'docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json', 'docs/stabilization/runs/public-guest-chat-0.2.205-39283778031.json', 'docs/stabilization/reports/dev555-native-peer-20261019.json']
+- EXT-F-2013-T13 · guest: Fail. One trustedEscape, focusedcompactValuespopoverstillopen; screenshot/rawrecorder corroborate bounded observedfail after three actual replies. Existingpublic205 D244 repeated; closecontrol/reopen/fullview/current568 and othermodes remainunverified. Mixedbackend181b→f5f3, no newcurrentbuild equivalence.
+  Evidence / build / date recorded: 39377242317, ['docs/stabilization/reports/guest264-native-retest-20261020.json', 'docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json']
 - EXT-F-2013-T14 · member: Fail. The first fresh member turn visibly ended in API error: 504 after roughly one minute at Page Text/Processing, without an assistant answer. Failed request endpoint, HTTP transport status, tool result/resume boundary and exact organization ID comparison were not captured. UI wording alone cannot assign a backend or extension cause.
   Evidence / build / date recorded: native-isolated-candidate-20261019-001, ['docs/stabilization/reports/native-isolated-candidate-20261019.json', 'docs/stabilization/reports/native566-evidence-peer-20261019.json', 'docs/stabilization/reports/member504-server-log-diagnosis-20261020.json']
 

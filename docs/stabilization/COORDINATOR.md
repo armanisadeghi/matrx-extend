@@ -69,10 +69,18 @@ was found forcode/fullheadinginput. **D264 source fixed/pushed `dcab242a405083b4
 [fresh source peer](reports/guest264-diagnostic-fresh-peer-20261020.json) A/BPASS forfailurediagnostics
 only;79focused/compile/formatpass. Catch had comparedopeningcodeafterfollowup; actualturnverdict
 was correctly code=true/heading=false. Alloriginalanswer/heading/auth/tab/terminalgates unchanged.
-Some pre-answer/Values stage cases are source-checked only. Exactsource fullCI39376052632 is
-SUCCESS. Fresh independent original guardednative B39377242317 is running, workflow1d73cd4248/source
-dcab242a4, unchangedpublic205CRX and T10 checks; no retry/product verdict yet. D264staysfixed,
-notclosed. No productagent/prompt change is underway. See [diagnosis](reports/guest181b-followup-diagnosis-20261020.json). Prior B39372274799 is terminal SUCCESS with all3resource finals valid;
+Some pre-answer stages remain source-checked only. Exactsource fullCI39376052632 is SUCCESS.
+**Independent native B39377242317 is terminal resource-valid child failure at separate Values
+Escape (D244/T13).** [Fresh per-case peer](reports/guest264-native-case-fresh-peer-20261020.json)
+verifies **T10 guest bounded PASS**: opening, same-conversation and post-reload actual code/fullheading
+terminal replies; wire200/is_new true,false,true with same then distinct conversation. Backend
+changed181b→f5f3, so no stable-backend/currentserver attribution or D263 causalclosure. Earlier
+D263 failure preserved. Guest auth absent before/after actualreload. Package/browser finalvalid;
+guest resourceInvalid=false/child_failed exit1. Three reply checks do not imply fullChat/Storeinstalled
+or candidate568 acceptance. T13 ValuesEscape separately FAIL: one trustedEscape, focusinside,
+compactpopoverremainsopen. Original D264 sameconversationwrongheadingcatch was NOT exercised because
+replypassed; laterValuescatchcorrectactivecode/heading=true provides only boundedbranchproof.
+D264 staysfixed, originalnativebranchUNKNOWN, notclosed. No retry or productagent/prompt change. See [diagnosis](reports/guest181b-followup-diagnosis-20261020.json). Prior B39372274799 is terminal SUCCESS with all3resource finals valid;
 [fresh native peer](reports/scrape568-empty-fresh-peer-20261020.json) verifies only warm guest T08
 no-signal SEO and empty Schema panes/capture invariance on owned title-only localhost fixture.
 Two pane screenshots inspected, exact development568/source501998549/CI39366909321/artifact12239987691.
@@ -120,8 +128,10 @@ launches saturated CPU during browser startup with mixed Chromium/host work. Alt
 ARM hosts have also refused prior member runs; no proven larger/quiescent option exists.
 [Fresh escalation](reports/member-capacity-fresh-escalation-20261020.json) verifies personal/public
 repo, no registered self-hosted runners, larger Macs require organization Team/Enterprise; Linux
-is currently unsupported; a bounded B guest-only headed Scrape route is under fresh plan attack
-before implementation, never a guard/billing bypass or member capability claim. CPU readings are one-second snapshots, not a continuous ten-second
+is currently unsupported. Contained Linux sampler/readiness preparation is under independent
+source fix/review; all native Linux workflow/normal routes remain refused. Pressure, mapped
+window/pixel proof, ownership/stale cleanup and real Ubuntu evidence are activation gates, never a
+guard/billing bypass or member capability claim. CPU readings are one-second snapshots, not a continuous ten-second
 measurement. Guard decisions remain valid; broader capacity needs reviewed infrastructure. Do not
 repeat the same launch blindly or weaken guard thresholds.
 

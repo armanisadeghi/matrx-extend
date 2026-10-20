@@ -25,7 +25,9 @@
   "evidence": [
     "docs/stabilization/reports/guest263-provider-boundary-20261020.json",
     "docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json",
-    "docs/stabilization/reports/guest264-grounding-oracle-fix-20261020.json"
+    "docs/stabilization/reports/guest264-grounding-oracle-fix-20261020.json",
+    "docs/stabilization/reports/guest264-native-retest-20261020.json",
+    "docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json"
   ],
   "reproducibility": "Deterministic source regression. A focused VM/DOM test executes the old catch assignment through the actual observer and returns false for a follow-up reply containing the exact code; the repaired path returns true.",
   "acceptance_criteria": [
@@ -35,12 +37,12 @@
   ],
   "verification": {
     "focused": "RED old: false !== true at the actual catch assignment; GREEN repaired: focused test passes. Related guest sequence, completion oracle, and package DOM tests: 79 passed; pnpm compile passed; scoped Biome check passed.",
-    "native": "Single independent guarded native B39377242317 running; workflow1d73cd4248, diagnostic sourcedcab242a4, unchanged original T10/public205 CRX. No verdict or retry.",
+    "native": "39377242317 independent resource-valid overallchildfailureatValuesEscape; three T10 replychecks passed, so originalsameconversationwrongheadingcatchNOTexercised. LaterValuescatchcorrectlyretainedactivefollowupcode/fullheading=true. Boundedlatecatchproofonly; originalbranchUNKNOWN; keepfixed notclosed.",
     "independent_review": "Fresh source peer PASS A/B for scoped diagnostic repair; report docs/stabilization/reports/guest264-diagnostic-fresh-peer-20261020.json. Native UNKNOWN; missing direct tests of some pre-answer/Values stages remain explicit.",
     "full_ci": "Exact source CI39376052632 SUCCESS: checks and resource-guard integration."
   },
   "fix_sha": "dcab242a405083b421adebf5f81923864795f7a6",
-  "next_action": "Observe independent original T10 diagnostic retest39377242317 and review actual branch/evidence before closure. D263 heading failure and original answer/auth/tab/terminal gates remain intact.",
+  "next_action": "Retain fixed/sourcepeerPASS/fullCIgreen. Originalsameconversationfailurecatch remainsunknown because independentlyretastedreplypassed. No blindretrysolelytoforcefailure; keepnegativeRED/GREENsourceguard and boundedlaterValuescatchproof. D263open, D244Escapeopen, memberD261unresolved.",
   "transition_history": [
     {
       "at": "2026-10-20T05:35:42Z",
