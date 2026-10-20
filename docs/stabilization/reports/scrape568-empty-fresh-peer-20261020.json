@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-20",
+  "reviewer": "fresh-independent-native-evidence-reviewer",
+  "task_id": "scrape568-empty-guest-native-20261020",
+  "review_scope": "EXT-F-1007-T08 guest_no_signal_seo_and_empty_schema_panes only",
+  "verdict_a": {
+    "status": "PASS",
+    "claim": "One native guest run against the frozen development artifact displayed the expected no-signal SEO pane and empty Schema pane for the owned title-only localhost fixture, while capture export identity and digest stayed unchanged through both pane selections.",
+    "evidence": [
+      "Visually inspected committed SEO and Schema screenshots; screenshots show the expected title, SEO description dash, performance group, and Schema JSON with null description/canonical, empty Open Graph/Twitter objects, empty schemaTypes, and empty ld_json.",
+      "The raw native report inside the ZIP says status pass and records fixture signals, pane observations, three export reads, and unchanged export identity/digest after each pane.",
+      "Native case source asserts the owned fixture has empty body and no metadata, links, images, headings, or JSON-LD; it asserts pane visibility/selection, exact values, empty optional SEO groups, and unchanged capture export.",
+      "The three copied resource journals each terminate with admitted=true, resourceInvalid=false, childExitCode=0, and decision=valid."
+    ],
+    "coverage_limits": [
+      "Only one guest title-only localhost fixture and one native-default 360px panel were exercised.",
+      "No member/admin, Store-installed, separate resize, full T08, broader SEO, or whole Scrape coverage is established.",
+      "The panel opening and fixture context are not visible in the two committed pane screenshots; raw report and the ZIP's additional screenshots provide supporting context but do not expand the tested subtarget."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "important_findings": [],
+    "evidence_quality": "The local raw ZIP SHA-256 matches the receipt and GitHub Actions artifact API digest. The ZIP contains exactly eight members including the native report, three journals, two target-pane screenshots, panel opening screenshot, and fixture screenshot. Both committed pane PNGs match their ZIP members byte-for-byte. GitHub reports the result artifact belongs to successful workflow run 39372274799, head SHA 5019985499cee06ec05f5fe89b24d0ee1b328558; that run's job and relevant exercise/upload steps succeeded. The workflow file at that SHA hashes to the workflow source digest in the receipt. GitHub's development artifact API record binds artifact 12239987691 and its digest to successful CI run 39366909321 at the same SHA; the native report's source, artifact, version, and tree fields agree with those records.",
+    "quality_limits": [
+      "This is a bounded live-evidence review, not a mutation or test-suite review. No code or tests were authored or changed.",
+      "The status observed in the raw report is accepted only alongside the visible screenshots, owned-fixture assertions in source, finalized resource journals, and independently checked artifact provenance; report fields alone are not treated as proof."
+    ]
+  },
+  "independent_checks": {
+    "result_zip_sha256": "5c8411d7392c445c6be0473050964f2b792a38df400952eb950d10130847d026",
+    "github_result_artifact_id": "12241878358",
+    "development_run_id": "39366909321",
+    "development_artifact_id": "12239987691",
+    "source_sha": "5019985499cee06ec05f5fe89b24d0ee1b328558",
+    "workflow_sha256": "c001f41ae6e982998b923bf25e7470e4e84006055eba883358fae9ecb696bb8b",
+    "seo_screenshot_sha256": "32536702e553cb0043676f17915adf7f47a09482005b51314bdaf1a4609f11b7",
+    "schema_screenshot_sha256": "6c86da7910b0959a594ceb70bb19255dbf7c46e598bbfe47872c406e1fd51272",
+    "resource_journals": {
+      "package": "valid; admitted; resourceInvalid=false; exitCode=0",
+      "browser": "valid; admitted; resourceInvalid=false; exitCode=0",
+      "guest": "valid; admitted; resourceInvalid=false; exitCode=0"
+    }
+  },
+  "owner_credit_recommendation": "Credit only the named T08 guest no-signal SEO and empty Schema subtarget. Keep all broader Scrape and role/Store/width coverage unverified."
+}
