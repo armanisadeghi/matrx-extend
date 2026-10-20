@@ -165,10 +165,10 @@ feature-mode claim; all unknown, stale, blocked and unverified coverage remains 
 ## Current batch/census checkpoint
 
 [Settings A report](reports/settings-guest-hosted-20261020.json): exact CI566/source27b7defe,
-all resource finals terminal and acceptance resource-valid/child_failed. T22 confirmed; T04/T28/T40
+all resource finals terminal and acceptance resource-valid/child_failed. T22 warm precondition is unproven (active=false, sections=[]); no whole-case pass is credited. T04/T28/T40
 have bounded observations but restoration/full-extension-reload criteria are missing. Remaining
 cases stopped at driver readiness/guest-state prerequisites. No product bug or retry is inferred.
-No new unique case pass or overall Settings health claim. A is now free.
+No unique case pass or overall Settings health claim. Fresh [boundary review](reports/settings-reload-boundary-diagnosis-20261020.json) localizes the first readiness failure to T04 baseline restoration; cause unknown. Failure-time tab membership/strip identity and restoration stage are missing. The screenshot preceded the failure and cannot diagnose it. No blind batch retry; A currently belongs to member acceptance.
 
 [Corrected auth census](reports/auth-inventory-fresh-check-20261020.json) uses canonical inventory,
 not obsolete refinement data. Nine solely removed-picker cases retain IDs/history as explicit N/A;

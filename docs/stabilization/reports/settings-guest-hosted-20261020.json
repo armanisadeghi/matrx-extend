@@ -103,8 +103,8 @@
     },
     {
       "case_id": "EXT-F-1003-T22",
-      "verdict": "pass for this bounded case",
-      "observed": "Guest Settings omitted Advanced agent capabilities/admin controls on warm view and after panel reload."
+      "verdict": "partial observation; warm precondition unproven, no whole-case pass",
+      "observed": "Runner marked absent admin controls as pass, but warm sample active=false and sections=[] does not prove Settings was open. Reload sample active=true provides a bounded negative-control observation only."
     },
     {
       "case_id": "EXT-F-1003-T28",
@@ -172,11 +172,11 @@
       "observed": "No warm observation completed after warm_observation stage failure."
     }
   ],
-  "case_count_note": "The already-pass controls in the fixed runner were surrounding regression/revalidation. Do not count them as new unique feature passes. Only T22 completed in this batch; T04/T28/T40 have bounded observations, not whole-case closure.",
+  "case_count_note": "Zero whole-case passes are credited from this batch after fresh read-only review. T22 warm negative-only check lacked an active Settings precondition; T04/T28/T40 remain bounded observations. Earlier independent evidence is not erased or transferred.",
   "possible_investigation_lead": {
     "confirmed_product_defect": false,
     "lead": "The native driver observed a theme baseline-restore failure after panel reload, then reported replacement Settings-tab readiness failures and later guest-state assertions. The report lacks a final baseline sample and a discriminating observation that separates extension behavior from stale/replaced panel targeting.",
-    "required_reproduction": "On the same frozen v0.2.566 artifact in a fresh signed-out guest profile, record original theme UI/storage presence/value, change Dark→Light→System with panel reload after each, restore the recorded original value, then capture the active Settings target identity plus selected/stored/applied appearance after reload. Keep the harness and product verdicts separate.",
+    "required_reproduction": "On the same frozen v0.2.566 artifact in a fresh signed-out guest profile, record original theme UI/storage presence/value, change Dark\u2192Light\u2192System with panel reload after each, restore the recorded original value, then capture the active Settings target identity plus selected/stored/applied appearance after reload. Keep the harness and product verdicts separate.",
     "disposition": "open investigation lead only; no defect ID allocated and no fix attempted"
   },
   "resource_finals": [
@@ -239,5 +239,6 @@
     "The existing runner does not exercise T70's unavailable/error/throttle branches; T52/T96 are outside its case set.",
     "A new independent review is required before any defect classification or accepting partial observations as case closure."
   ],
-  "next_action": "Root owns inventory/Git reconciliation and may ask the assigned independent reviewer to assess this one terminal hosted batch. Do not retry or claim T04/T28/T40 full acceptance from this run."
+  "next_action": "One isolated T04 diagnosis on the frozen artifact must retain baseline/restoration stage and failure-time tab titles/strip identity, pre/post target equality and bounded loading/error transitions. Correct T22 to require positive guest Settings readiness before absence assertions. No blind batch retry or product defect inferred.",
+  "fresh_review": "docs/stabilization/reports/settings-reload-boundary-diagnosis-20261020.json"
 }
