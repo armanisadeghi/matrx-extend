@@ -177,8 +177,94 @@ export async function pickerSelectedCount(page) {
   }
 }
 
+/** One foreground differential on the same owned page before the strict Done hit test. */
+export async function foregroundPickerDoneTarget(page) {
+  const diagnostic = { phase: 'before', before: null, after: null, target_equal: null };
+  let session;
+  const sample = async () => {
+    const state = await page.evaluate(() => ({
+      visible: document.visibilityState === 'visible',
+      focused: document.hasFocus(),
+      viewport_width: innerWidth,
+      viewport_height: innerHeight,
+      visual_width: visualViewport?.width ?? null,
+      visual_height: visualViewport?.height ?? null,
+      visual_offset_x: visualViewport?.offsetLeft ?? null,
+      visual_offset_y: visualViewport?.offsetTop ?? null,
+      scroll_x: scrollX,
+      scroll_y: scrollY,
+    }));
+    const nodeId = await pickerShadowNode(session, '#done');
+    const { node } = await session.send('DOM.describeNode', { nodeId });
+    assert.equal(node.nodeName, 'BUTTON', 'data_guest_done_not_button');
+    assert.ok(
+      Number.isSafeInteger(node.backendNodeId) && node.backendNodeId > 0,
+      'data_guest_done_backend_node_missing',
+    );
+    const { model } = await session.send('DOM.getBoxModel', { nodeId });
+    const [x1, y1, x2, y2, x3, y3, x4, y4] = model?.content ?? [];
+    const x = (x1 + x2 + x3 + x4) / 4;
+    const y = (y1 + y2 + y3 + y4) / 4;
+    assert.ok(Number.isFinite(x) && Number.isFinite(y), 'data_guest_done_geometry_missing');
+    return {
+      state,
+      box: {
+        center_x: x,
+        center_y: y,
+        width: Math.hypot(x2 - x1, y2 - y1),
+        height: Math.hypot(x4 - x1, y4 - y1),
+      },
+      backendNodeId: node.backendNodeId,
+    };
+  };
+  let firstError = null;
+  let backendNodeId = null;
+  try {
+    session = await page.context().newCDPSession(page);
+    await session.send('DOM.enable');
+    const before = await sample();
+    diagnostic.before = { state: before.state, box: before.box };
+    diagnostic.phase = 'bring_to_front';
+    await page.bringToFront();
+    diagnostic.phase = 'after';
+    const after = await sample();
+    diagnostic.after = { state: after.state, box: after.box };
+    backendNodeId = after.backendNodeId;
+    diagnostic.target_equal = after.backendNodeId === before.backendNodeId;
+    assert.equal(
+      after.backendNodeId,
+      before.backendNodeId,
+      'data_guest_done_target_changed_during_foreground',
+    );
+  } catch (error) {
+    firstError = error;
+    error.pickerForegroundDiagnostic = {
+      ...diagnostic,
+      exception_category: pickerErrorCategory(error),
+      exception_name: pickerErrorName(error),
+    };
+  }
+  if (session) {
+    try {
+      await session.detach();
+    } catch (error) {
+      if (!firstError) {
+        firstError = error;
+        error.pickerForegroundDiagnostic = {
+          ...diagnostic,
+          phase: 'detach',
+          exception_category: pickerErrorCategory(error),
+          exception_name: pickerErrorName(error),
+        };
+      }
+    }
+  }
+  if (firstError) throw firstError;
+  return { ...diagnostic, backendNodeId };
+}
+
 /** A trusted pointer is sent only after the exact closed-shadow button owns the hit. */
-async function clickPickerButton(page, buttonId) {
+async function clickPickerButton(page, buttonId, expectedBackendNodeId = null) {
   let session;
   let phase = 'new_session';
   let firstError = null;
@@ -205,6 +291,12 @@ async function clickPickerButton(page, buttonId) {
     phase = 'describe_button';
     const { node } = await session.send('DOM.describeNode', { nodeId });
     assert.equal(node.nodeName, 'BUTTON', `data_guest_${buttonId}_not_button`);
+    if (expectedBackendNodeId !== null)
+      assert.equal(
+        node.backendNodeId,
+        expectedBackendNodeId,
+        `data_guest_${buttonId}_target_changed_after_foreground`,
+      );
     phase = 'get_box_model';
     const { model } = await session.send('DOM.getBoxModel', { nodeId });
     const [x1, y1, x2, y2, x3, y3, x4, y4] = model?.content ?? [];
@@ -247,8 +339,8 @@ async function clickPickerButton(page, buttonId) {
   if (firstError) throw firstError;
 }
 
-export async function clickPickerDone(page) {
-  await clickPickerButton(page, 'done');
+export async function clickPickerDone(page, expectedBackendNodeId = null) {
+  await clickPickerButton(page, 'done', expectedBackendNodeId);
 }
 
 export async function clickPickerCancel(page) {

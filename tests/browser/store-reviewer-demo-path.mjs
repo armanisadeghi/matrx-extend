@@ -4,6 +4,7 @@ import {
   clickPickerCancel,
   clickPickerDone,
   clickPickerField,
+  foregroundPickerDoneTarget,
   pickerSelectedCount,
 } from './data-guest-picker-driver.mjs';
 import { guestTransportModeForReceipt } from './guest-chat-transport-observer.mjs';
@@ -53,8 +54,11 @@ function safeReviewerFailureCode(error) {
       'data_guest_picker_closed_shadow_missing',
       'data_guest_picker_shadow_target_missing',
       'data_guest_done_not_button',
+      'data_guest_done_backend_node_missing',
       'data_guest_done_geometry_missing',
       'data_guest_done_hit_target_changed',
+      'data_guest_done_target_changed_during_foreground',
+      'data_guest_done_target_changed_after_foreground',
       'reviewer_picker_done_unclassified',
       'reviewer_picker_field_not_selected_before_done',
       'reviewer_demo_title_missing',
@@ -152,6 +156,11 @@ const EVIDENCE_BOOLEANS = new Set([
   'picker_diagnostic_available',
   'picker_hit_equal',
   'picker_mouse_click_resolved',
+  'picker_foreground_target_equal',
+  'picker_before_visible',
+  'picker_before_focused',
+  'picker_after_visible',
+  'picker_after_focused',
 ]);
 const EVIDENCE_COUNTS = new Set([
   'link_count',
@@ -181,6 +190,30 @@ const EVIDENCE_GEOMETRY = new Set([
   'picker_box_width',
   'picker_box_height',
   'picker_exception_code',
+  'picker_before_viewport_width',
+  'picker_before_viewport_height',
+  'picker_before_visual_width',
+  'picker_before_visual_height',
+  'picker_before_visual_offset_x',
+  'picker_before_visual_offset_y',
+  'picker_before_scroll_x',
+  'picker_before_scroll_y',
+  'picker_before_box_center_x',
+  'picker_before_box_center_y',
+  'picker_before_box_width',
+  'picker_before_box_height',
+  'picker_after_viewport_width',
+  'picker_after_viewport_height',
+  'picker_after_visual_width',
+  'picker_after_visual_height',
+  'picker_after_visual_offset_x',
+  'picker_after_visual_offset_y',
+  'picker_after_scroll_x',
+  'picker_after_scroll_y',
+  'picker_after_box_center_x',
+  'picker_after_box_center_y',
+  'picker_after_box_width',
+  'picker_after_box_height',
 ]);
 const PICKER_PHASES = new Set([
   'new_session',
@@ -232,6 +265,11 @@ function projectReviewerEvidence(value) {
     else if (key === 'selected' && ['Article', 'Links', 'Schema'].includes(entry))
       result[key] = entry;
     else if (key === 'picker_failed_phase' && PICKER_PHASES.has(entry)) result[key] = entry;
+    else if (
+      key === 'picker_foreground_phase' &&
+      ['before', 'bring_to_front', 'after', 'detach'].includes(entry)
+    )
+      result[key] = entry;
     else if (key === 'picker_exception_category' && PICKER_ERROR_CATEGORIES.has(entry))
       result[key] = entry;
     else if (key === 'picker_exception_name' && PICKER_ERROR_NAMES.has(entry)) result[key] = entry;
@@ -620,6 +658,34 @@ async function pickerDoneFailureDiagnostic(page) {
   }
 }
 
+function pickerForegroundEvidence(diagnostic) {
+  if (!diagnostic) return {};
+  const result = {
+    picker_foreground_phase: diagnostic.phase,
+    picker_foreground_target_equal: diagnostic.target_equal,
+  };
+  for (const phase of ['before', 'after']) {
+    const sample = diagnostic[phase];
+    if (!sample) continue;
+    result[`picker_${phase}_visible`] = sample.state.visible;
+    result[`picker_${phase}_focused`] = sample.state.focused;
+    for (const key of [
+      'viewport_width',
+      'viewport_height',
+      'visual_width',
+      'visual_height',
+      'visual_offset_x',
+      'visual_offset_y',
+      'scroll_x',
+      'scroll_y',
+    ])
+      result[`picker_${phase}_${key}`] = sample.state[key];
+    for (const key of ['center_x', 'center_y', 'width', 'height'])
+      result[`picker_${phase}_box_${key}`] = sample.box[key];
+  }
+  return result;
+}
+
 /** Owns the exact-candidate navigation seam; reviewer failure does not skip Chat. */
 export async function runStoreReviewerPrelude({
   page,
@@ -985,8 +1051,10 @@ export async function runStoreReviewerDemoPath({
             picker_selected_before_done: selectedBeforeDone,
           },
         });
+      let foreground;
       try {
-        await clickPickerDone(page);
+        foreground = await foregroundPickerDoneTarget(page);
+        await clickPickerDone(page, foreground.backendNodeId);
       } catch (error) {
         const diagnostic = await pickerDoneFailureDiagnostic(page).catch(() => ({
           picker_diagnostic_available: false,
@@ -995,8 +1063,12 @@ export async function runStoreReviewerDemoPath({
           field_hit_confirmed: fieldHit?.chosen_hit === 'field',
           picker_selected_before_done: selectedBeforeDone,
           picker_failed_phase: error.pickerButtonDiagnostic?.phase,
-          picker_exception_category: error.pickerButtonDiagnostic?.exception_category,
-          picker_exception_name: error.pickerButtonDiagnostic?.exception_name,
+          picker_exception_category:
+            error.pickerButtonDiagnostic?.exception_category ??
+            error.pickerForegroundDiagnostic?.exception_category,
+          picker_exception_name:
+            error.pickerButtonDiagnostic?.exception_name ??
+            error.pickerForegroundDiagnostic?.exception_name,
           picker_exception_code: error.pickerButtonDiagnostic?.exception_code,
           picker_hit_equal: error.pickerButtonDiagnostic?.hit_equal,
           picker_mouse_click_resolved: error.pickerButtonDiagnostic?.mouse_click_resolved,
@@ -1004,6 +1076,7 @@ export async function runStoreReviewerDemoPath({
           picker_box_center_y: error.pickerButtonDiagnostic?.box_center_y,
           picker_box_width: error.pickerButtonDiagnostic?.box_width,
           picker_box_height: error.pickerButtonDiagnostic?.box_height,
+          ...pickerForegroundEvidence(error.pickerForegroundDiagnostic ?? foreground),
           ...diagnostic,
         };
         if (safeReviewerFailureCode(error) === 'reviewer_observation_failed')
@@ -1029,6 +1102,7 @@ export async function runStoreReviewerDemoPath({
         error.reviewerSafeDiagnostic = {
           field_hit_confirmed: fieldHit?.chosen_hit === 'field',
           picker_selected_before_done: selectedBeforeDone,
+          ...pickerForegroundEvidence(foreground),
         };
         throw error;
       }
@@ -1064,6 +1138,7 @@ export async function runStoreReviewerDemoPath({
         unique_selector_matches: target.count,
         workflow_row_matched: target.workflowRow,
         draft_cleared: true,
+        ...pickerForegroundEvidence(foreground),
       };
     } finally {
       if (pickerOpened) await clickPickerCancel(page).catch(() => {});

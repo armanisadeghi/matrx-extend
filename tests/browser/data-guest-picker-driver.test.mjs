@@ -5,6 +5,7 @@ import {
   clickPickerClear,
   clickPickerDone,
   clickPickerField,
+  foregroundPickerDoneTarget,
   hoverPickerField,
 } from './data-guest-picker-driver.mjs';
 
@@ -95,6 +96,158 @@ function ownedPage(hitBackendNodeId) {
   };
   return { page, calls };
 }
+
+function foregroundPage({
+  changedTarget = false,
+  replacedAfterForeground = false,
+  activationError = false,
+  hitBackendNodeId = 74,
+  movedBox = false,
+} = {}) {
+  const calls = [];
+  const hitParams = [];
+  let active = false;
+  let sessions = 0;
+  let boxReads = 0;
+  const session = {
+    async send(method, params) {
+      calls.push(method);
+      if (method === 'DOM.enable') return {};
+      if (method === 'DOM.getDocument') return { root: { nodeId: 1 } };
+      if (method === 'DOM.querySelector')
+        return { nodeId: params.selector === '#matrx-data-picker-host' ? 2 : 4 };
+      if (method === 'DOM.describeNode' && params.nodeId === 2)
+        return { node: { shadowRoots: [{ nodeId: 3, shadowRootType: 'closed' }] } };
+      if (method === 'DOM.describeNode' && params.nodeId === 4)
+        return {
+          node: {
+            nodeName: 'BUTTON',
+            backendNodeId:
+              (active && changedTarget) || (sessions > 1 && replacedAfterForeground) ? 91 : 74,
+          },
+        };
+      if (method === 'DOM.getBoxModel') {
+        const left = movedBox ? [27, 100, 200][boxReads++] : 27;
+        return {
+          model: { content: [left, 59, left + 29.671875, 59, left + 29.671875, 74, left, 74] },
+        };
+      }
+      if (method === 'DOM.getNodeForLocation') {
+        hitParams.push(params);
+        return { backendNodeId: replacedAfterForeground ? 91 : hitBackendNodeId };
+      }
+      throw new Error(`unexpected_cdp_method:${method}`);
+    },
+    async detach() {
+      calls.push('detach');
+    },
+  };
+  const page = {
+    evaluate: async () => ({
+      visible: active,
+      focused: active,
+      viewport_width: 366,
+      viewport_height: 813,
+      visual_width: 366,
+      visual_height: 813,
+      visual_offset_x: 0,
+      visual_offset_y: 0,
+      scroll_x: 0,
+      scroll_y: 0,
+    }),
+    context: () => ({
+      newCDPSession: async () => {
+        sessions++;
+        return session;
+      },
+    }),
+    async bringToFront() {
+      calls.push('bringToFront');
+      if (activationError) throw new Error('target_unavailable');
+      active = true;
+    },
+    mouse: {
+      async click(x, y) {
+        calls.push(['click', x, y]);
+      },
+    },
+  };
+  return { page, calls, hitParams };
+}
+
+test('Done foreground step remeasures the same closed-shadow target before strict CDP hit and trusted input', async () => {
+  const { page, calls } = foregroundPage();
+  const sample = await foregroundPickerDoneTarget(page);
+  await clickPickerDone(page, sample.backendNodeId);
+  assert.equal(sample.before.state.visible, false);
+  assert.equal(sample.after.state.visible, true);
+  assert.equal(sample.target_equal, true);
+  assert.equal(sample.before.box.center_x, 41.8359375);
+  assert.ok(calls.indexOf('bringToFront') > calls.indexOf('DOM.getBoxModel'));
+  assert.ok(calls.lastIndexOf('DOM.getBoxModel') > calls.indexOf('bringToFront'));
+  assert.ok(calls.indexOf('DOM.getNodeForLocation') > calls.indexOf('bringToFront'));
+  assert.deepEqual(
+    calls.filter((entry) => Array.isArray(entry)),
+    [['click', 41.8359375, 66.5]],
+  );
+});
+
+test('Done hit and trusted mouse use the third fresh box when the same target moves on activation and before click', async () => {
+  const { page, calls, hitParams } = foregroundPage({ movedBox: true });
+  const sample = await foregroundPickerDoneTarget(page);
+  await clickPickerDone(page, sample.backendNodeId);
+  assert.equal(sample.before.box.center_x, 41.8359375);
+  assert.equal(sample.after.box.center_x, 114.8359375);
+  assert.deepEqual(hitParams, [
+    { x: 215, y: 67, includeUserAgentShadowDOM: true, ignorePointerEventsNone: false },
+  ]);
+  assert.deepEqual(
+    calls.filter((entry) => Array.isArray(entry)),
+    [['click', 214.8359375, 66.5]],
+  );
+});
+
+test('Done refuses replacement between the post-foreground sample and final hit', async () => {
+  const { page, calls } = foregroundPage({ replacedAfterForeground: true });
+  const sample = await foregroundPickerDoneTarget(page);
+  await assert.rejects(
+    clickPickerDone(page, sample.backendNodeId),
+    /data_guest_done_target_changed_after_foreground/,
+  );
+  assert.equal(calls.includes('DOM.getNodeForLocation'), false);
+  assert.equal(
+    calls.some((entry) => Array.isArray(entry)),
+    false,
+  );
+});
+
+test('Done foreground step refuses a changed target or failed activation without input', async () => {
+  for (const options of [{ changedTarget: true }, { activationError: true }]) {
+    const { page, calls } = foregroundPage(options);
+    await assert.rejects(foregroundPickerDoneTarget(page), (error) => {
+      assert.equal(
+        error.pickerForegroundDiagnostic.phase,
+        options.changedTarget ? 'after' : 'bring_to_front',
+      );
+      return true;
+    });
+    assert.equal(
+      calls.some((entry) => Array.isArray(entry)),
+      false,
+    );
+    assert.equal(calls.includes('DOM.getNodeForLocation'), false);
+  }
+});
+
+test('Done foreground step does not weaken nonmatching CDP hit refusal', async () => {
+  const { page, calls } = foregroundPage({ hitBackendNodeId: 91 });
+  await foregroundPickerDoneTarget(page);
+  await assert.rejects(clickPickerDone(page), /data_guest_done_hit_target_changed/);
+  assert.equal(
+    calls.some((entry) => Array.isArray(entry)),
+    false,
+  );
+});
 
 test('Data guest Done receives trusted pointer only when exact closed-shadow button owns hit', async () => {
   const exact = ownedPage(74);

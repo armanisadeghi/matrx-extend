@@ -253,6 +253,7 @@ test('reviewer Data check selects a fixture field before requiring guest explana
   let combinedOriginalError = null;
   let pickerCount = 1;
   let doneClicks = 0;
+  let foregroundFailure = false;
   const io = {
     click: async (_panel, kind, value) => {
       if (kind === 'scrape-result-tab') tab = value;
@@ -307,6 +308,23 @@ test('reviewer Data check selects a fixture field before requiring guest explana
     },
     clickPickerField: async () => {},
     pickerSelectedCount: async () => pickerCount,
+    foregroundPickerDoneTarget: async () => {
+      if (foregroundFailure)
+        throw Object.assign(new Error('PRIVATE_FOREGROUND_CDP_791'), {
+          pickerForegroundDiagnostic: {
+            phase: 'bring_to_front',
+            before: {
+              state: { visible: false, focused: false, viewport_width: 366, viewport_height: 813 },
+              box: { center_x: 41.8359375, center_y: 66.5, width: 29.671875, height: 15 },
+            },
+            after: null,
+            target_equal: null,
+            exception_category: 'target_unavailable',
+            exception_name: 'Error',
+          },
+        });
+      return { phase: 'after', target_equal: true };
+    },
     clickPickerDone: async () => {
       doneClicks += 1;
       if (combinedDoneFailure) {
@@ -346,7 +364,7 @@ test('reviewer Data check selects a fixture field before requiring guest explana
       if (path === './settings-panel-driver.mjs')
         return `from '${stub(['click', 'evaluate', 'openSection', 'waitFor'])}'`;
       if (path === './data-guest-picker-driver.mjs')
-        return `from '${stub(['clickPickerCancel', 'clickPickerDone', 'clickPickerField', 'pickerSelectedCount'])}'`;
+        return `from '${stub(['clickPickerCancel', 'clickPickerDone', 'clickPickerField', 'foregroundPickerDoneTarget', 'pickerSelectedCount'])}'`;
       return `from '${new URL(path, sourceUrl).href}'`;
     });
     const { runStoreReviewerDemoPath } = await import(
@@ -489,6 +507,8 @@ test('reviewer Data check selects a fixture field before requiring guest explana
     assert.deepEqual(countedDone.checks.data_workflow_picker.failure_diagnostic, {
       field_hit_confirmed: false,
       picker_selected_before_done: 1,
+      picker_foreground_phase: 'after',
+      picker_foreground_target_equal: true,
       picker_diagnostic_available: true,
       picker_shadow_count: 1,
       picker_done_node_count: 0,
@@ -559,6 +579,30 @@ test('reviewer Data check selects a fixture field before requiring guest explana
     combinedDoneFailure = false;
     doneFailure = null;
     doneDiagnostic = null;
+    foregroundFailure = true;
+    const clicksBeforeForegroundFailure = doneClicks;
+    captured = false;
+    tab = 'Article';
+    const failedForeground = await runStoreReviewerDemoPath(args);
+    assert.equal(
+      failedForeground.checks.data_workflow_picker.failure_code,
+      'reviewer_picker_done_unclassified',
+    );
+    assert.equal(
+      failedForeground.checks.data_workflow_picker.failure_diagnostic.picker_foreground_phase,
+      'bring_to_front',
+    );
+    assert.equal(
+      failedForeground.checks.data_workflow_picker.failure_diagnostic.picker_exception_category,
+      'target_unavailable',
+    );
+    assert.equal(
+      failedForeground.checks.data_workflow_picker.failure_diagnostic.picker_before_viewport_width,
+      366,
+    );
+    assert.equal(doneClicks, clicksBeforeForegroundFailure);
+    assert.doesNotMatch(JSON.stringify(failedForeground), /PRIVATE_FOREGROUND_CDP_791/);
+    foregroundFailure = false;
     pickerCount = 0;
     const doneClicksBeforeEmptyPick = doneClicks;
     captured = false;
