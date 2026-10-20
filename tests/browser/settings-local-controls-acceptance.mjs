@@ -18,6 +18,7 @@ import {
   rerunGuestSettingsAfterExtensionReload,
   snapshotPanelDocumentReload,
 } from './settings-full-extension-rechecks.mjs';
+import { recordGuestAdminAbsence } from './settings-guest-absence.mjs';
 import {
   GUEST_PREFERENCES,
   observeGuestNewChatDefault,
@@ -32,7 +33,6 @@ import {
   GUEST_PRIVACY_SWITCHES,
   runGuestPrivacySwitchCase,
 } from './settings-guest-privacy-batch.mjs';
-import { recordGuestAdminAbsence } from './settings-guest-absence.mjs';
 import {
   runGuestAutoScrapeCase,
   runGuestAutoScrapeModeCase,
