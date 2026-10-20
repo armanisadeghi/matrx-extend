@@ -1,0 +1,62 @@
+{
+  "task_id": "EXT-D-0244",
+  "lane": "responsive Values causal repair",
+  "status": "SOURCE_FIX_PUSHED_AWAITING_FRESH_PEER_PUBLICATION_ADOPTION_NATIVE",
+  "source_commit": "ca1c252beec48565c47288b33e1adbdffbd816a3",
+  "product_native_fixed": false,
+  "cause": "The actual narrow sidepanel selects ContextRulesChip isMobile=true and renders BottomSheet. The prior Escape repair was attached only to desktop PopoverContent. A tooltip consumes the first Escape during document capture; the mobile Values body had no dismissal callback, so its sheet remained open. Prior regression tests only rendered the desktop branch.",
+  "actual_artifact": {
+    "version": "0.2.575",
+    "release_run": 39420649081,
+    "source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+    "store_zip_sha256": "f4e992b348d4c8a1c949bc1043d2654fd8960e03c0cc11b2b745af928fa3731a",
+    "native_run": 39422519149,
+    "resource_verdict": "independent previous peer: valid, guest child_failed product case",
+    "compiled_assets_sha256": {
+      "chunks/react-CIAGJaBG.js": "170c255c33fc0fb21e9e318b1e0daae6abdbc17b2c1fa79fe76097953da54d32",
+      "chunks/ConversationHistorySidebar-CHQCzWBw.js": "18bfdba215fff3f9f64e48063e5ae50027ca23100ff515f2674d54ae3920682d",
+      "chunks/media-query-XvUFrBrO.js": "05a0ded7214bf2a262fd4b3597bc959bbe04e0bb285856d9176c8cf0c9f10d6d",
+      "chunks/Combination-DuhgHhz4.js": "d7120f06fc80b041676014dec26f88fb884a247d2f405ab82e676bffc2803d7f",
+      "chunks/chunk-JEORLNWP-CICtPelD.js": "9ae5f15eb96b77b89603c6dad26762cff56c043152a107ffe7acecf6c0f90cf4"
+    }
+  },
+  "causal_evidence": {
+    "native_screenshot": "test-results/guest575-native-b-39422519149/native-sidepanel-qa-StLYvJ/guest-chat-failure.png",
+    "native_screenshot_sha256": "3b7cc89758a4a8dac85c739751a65c0203566b487003ebb0ee6741039fd873f9",
+    "screenshot_observation": "360px-wide responsive sheet with top drag handle, matching BottomSheet geometry, rather than desktop anchored PopoverContent.",
+    "compiled_caller": "ConversationHistorySidebar-CHQCzWBw.js function OC imports jn from media-query-XvUFrBrO.js, computes i=jn(), and passes isMobile:i to ContextRulesChip export Os. Hook matches (max-width: 767px).",
+    "compiled_branch": "react-CIAGJaBG.js ContextRulesChip Fe destructures isMobile:A; mobile A branch renders BottomSheet b without onKeyDown. Only desktop PopoverContent S gets the callback at column20674.",
+    "raw_handler_corroboration": "Recorded DOM handler at line0,column13169 uniquely matches FocusScope Tab-only callback in actual Store JS assets; children at5242 match useCallbackRef. Runtime script IDs/hash were omitted, so this is corroboration rather than independent runtime identity proof.",
+    "old_red": "Real component mobile=true x Reset all/Open full view: both FAIL because dialog remains after tooltip disappears. Desktop equivalents PASS. Test document capture observes [true] for defaultPrevented on exactly one Escape. Total40 pass/2 fail.",
+    "new_green": "Same test seam with shared-body bubble handler:42/42 pass; broader context React set70/70 pass across3files.",
+    "scope_limit": "Component KeyboardEvent is synthetic; existing actual trusted native failure supplies production provenance. No repaired native behavior claimed."
+  },
+  "repair": "Moved existing contained-target bubble Escape handler onto the body shared by Popover and BottomSheet. No capture handler, document/window listener, defaultPrevented bypass, timeout, second Escape, new host override, or parent-stays-open contract.",
+  "changed_files": [
+    "aidream/apps/shared/matrx-agents/context/react/ContextRulesChip.tsx",
+    "aidream/apps/shared/matrx-agents/context/react/context-react.test.tsx",
+    "aidream/apps/shared/matrx-agents/FEATURE.md"
+  ],
+  "verification": {
+    "old_red": {
+      "file": "/tmp/values244-mobile-red.log",
+      "sha256": "55b1c8e8c4dbe500b128027021dbe194daf5d891ad2017331cf665a963c5c1cf"
+    },
+    "context_green": {
+      "file": "/tmp/values244-context-green.log",
+      "sha256": "7e85d62d0c0475fc5d543da3e6252993ad4371db30fadab78005198ba8dcc31c",
+      "result": "70/70"
+    },
+    "gut_mutation": "plant.py replaced entire ContextRulesChip result with null: RED; restored and subsequent70/70green.",
+    "typecheck": "BLOCKED_BY_BASELINE: associations/src/core/rpcResult.ts cannot resolve @ai-matrx/api/net; icons/src/brand-glyphs-svg.tsx and ServiceBrandGlyph.tsx cannot resolve @ai-matrx/kit/dom. Exact same3errors reproduced with original chip via plant.py, restored. No changed-file diagnostics.",
+    "git": "aidream clean; source commit equals origin/main at push completion."
+  },
+  "limits": [
+    "Fresh independent source peer pending.",
+    "Package publication, consumer adoption and exact candidate native retest remain pending; parent owns coordinated same-session completion.",
+    "No native run, hosted workflow dispatch, build, package publication or Store action by this lane.",
+    "No new probe-only harness mode was added."
+  ],
+  "next_action": "Root fresh peer reviews source and independently checks mobile branch proof; resolve package validation baseline through authorized path, publish and adopt through guarded hosted flow, then retest original narrow Values dialog with one trusted Escape and surrounding behavior.",
+  "at": "2026-10-20T12:58:11.237428+00:00"
+}
