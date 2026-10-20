@@ -82,8 +82,11 @@ focused original target; simple foreground hypothesis is refuted. Article/Links/
 capture-off have bounded passes only. A resources INVALID (CPU/load), stopped owned_profile,
 no member send/no new D261 evidence. One-use link/secret deleted with absence verified; no active
 external run or new Store upload. Fresh hard-stall agent root/data_done567_forensics owns read-only
-protocol diagnosis; root/settings_absence_assertion_repair fixes the T22/T63 absence-oracle bug
-with fresh peer/CI still required. Settings A39352539316 and the guarded build are terminal.
+protocol diagnosis found a supported scroll coordinate mismatch: viewport Done center was sent
+to a document-space hit lookup with scrollY479. [Forensics](reports/data-done567-forensics-20261020.json);
+root/data_scrolled_hit_repair owns measured conversion and strict hit regression, no product patch.
+T22/T63 absence-oracle source fix d4750c363 passed fresh round2 source peer; focused39355397255
+and CI39355397290 are active, tests/native proof still pending. Settings A39352539316 and the guarded build are terminal.
 Root owns integration/records. Source-only repairs are committed; verify origin/main and the next CI before relying on integration:
 
 1. **D248 `8d8fda5fe`**: shared trusted foreground restoration before organization proof;

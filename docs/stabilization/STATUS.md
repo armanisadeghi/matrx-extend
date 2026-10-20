@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-20 01:28 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T01:28:20.989179Z. 207 features · 830 cases · 1421 controls · 260 linked defect records.
+Generated 2026-10-20 01:46 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T01:46:26.409097Z. 207 features · 831 cases · 1422 controls · 261 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1337** — Pass: 100 · Partial: 97 · Fail: 3 · Unverified: 1126 · N/A: 11.
-Unverified splits into **181 explicitly marked unverified** and **945 with no result record**.
+Applicable case-by-role slots: **1338** — Pass: 100 · Partial: 97 · Fail: 3 · Unverified: 1127 · N/A: 11.
+Unverified splits into **182 explicitly marked unverified** and **945 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -17,7 +17,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 1, fail 0, unverified 14, n/a 0 | 11 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 8, partial 3, fail 0, unverified 23, n/a 0 | 10 |
-| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 13, n/a 0 | 4 |
+| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 14, n/a 0 | 5 |
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 22, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
@@ -202,11 +202,11 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Validate and publish exact release candidate (EXT-F-0003)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 14. **Controls:** 12.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 15. **Controls:** 13.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0204, EXT-D-0210, EXT-D-0253, EXT-D-0258
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0204, EXT-D-0210, EXT-D-0253, EXT-D-0258, EXT-D-0262
 
-**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (closed), [EXT-D-0140](defects/EXT-D-0140.json) (closed), [EXT-D-0188](defects/EXT-D-0188.json) (closed), [EXT-D-0200](defects/EXT-D-0200.json) (closed), [EXT-D-0204](defects/EXT-D-0204.json) (fixed), [EXT-D-0206](defects/EXT-D-0206.json) (closed), [EXT-D-0208](defects/EXT-D-0208.json) (closed), [EXT-D-0209](defects/EXT-D-0209.json) (closed), [EXT-D-0210](defects/EXT-D-0210.json) (fixed), [EXT-D-0212](defects/EXT-D-0212.json) (closed), [EXT-D-0214](defects/EXT-D-0214.json) (closed), [EXT-D-0215](defects/EXT-D-0215.json) (closed), [EXT-D-0253](defects/EXT-D-0253.json) (fixed), [EXT-D-0258](defects/EXT-D-0258.json) (fixed)
+**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (closed), [EXT-D-0140](defects/EXT-D-0140.json) (closed), [EXT-D-0188](defects/EXT-D-0188.json) (closed), [EXT-D-0200](defects/EXT-D-0200.json) (closed), [EXT-D-0204](defects/EXT-D-0204.json) (fixed), [EXT-D-0206](defects/EXT-D-0206.json) (closed), [EXT-D-0208](defects/EXT-D-0208.json) (closed), [EXT-D-0209](defects/EXT-D-0209.json) (closed), [EXT-D-0210](defects/EXT-D-0210.json) (fixed), [EXT-D-0212](defects/EXT-D-0212.json) (closed), [EXT-D-0214](defects/EXT-D-0214.json) (closed), [EXT-D-0215](defects/EXT-D-0215.json) (closed), [EXT-D-0253](defects/EXT-D-0253.json) (fixed), [EXT-D-0258](defects/EXT-D-0258.json) (retest-fail), [EXT-D-0262](defects/EXT-D-0262.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -224,6 +224,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-0003-T12 Store package refuses the rejected remote script loader and preserves PDF output | Unverified | Unverified | Unverified | EXT-F-0003-C13 |
 | EXT-F-0003-T13 Exact-source CI Typecheck, Lint and WXT build gates | Unverified | Unverified | Unverified | EXT-F-0003-C14, EXT-F-0003-C15 |
 | EXT-F-0003-T14 Exact Store guest public-demo reviewer walkthrough | Unverified | N/A | N/A | EXT-F-0003-C16 |
+| EXT-F-0003-T15 Guest Settings absence oracle rejects an empty or wrong surface | Unverified | N/A | N/A | EXT-F-0003-C17 |
 
 **Recorded case details and evidence:**
 
@@ -278,8 +279,10 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: main-ci-continuity-20261003, ['docs/stabilization/defects/EXT-D-0092.json', '.research/guarded-phases-peer.json']
 - EXT-F-0003-T11 · admin: Pass. Shared auth-independent CI infrastructure: active main37102258819 and subsequent37102380063 finished successfully despite intervening pushes. Does not certify product or release gate health.
   Evidence / build / date recorded: main-ci-continuity-20261003, ['docs/stabilization/defects/EXT-D-0092.json', '.research/guarded-phases-peer.json']
-- EXT-F-0003-T14 · guest: Unverified. Three reviewer controls incomplete. D258 sourceobservability fixed, real source/render/input failures not yet resolved. No overall acceptance.
-  Evidence / build / date recorded: 39329484777, docs/stabilization/reports/store-release-v0562-acceptance-20261019.json
+- EXT-F-0003-T14 · guest: Unverified. Opening and same-conversation terminal replies observed; full visible screenshot/reviewer acceptance not passed. No Store-installed evidence.
+  Evidence / build / date recorded: 39353960745, docs/stabilization/reports/store-release-v0567-acceptance-20261020.json
+- EXT-F-0003-T15 · guest: Unverified. Original T22 warm false-positive confirmed; source repair under independent review, focused tests/native replay pending.
+  Evidence / build / date recorded: docs/stabilization/reports/settings-guest-hosted-20261020.json
 
 **Other remaining work:** Real successful release proven; exhaustive operational feature acceptance still needs per-case evidence reconciliation.; T08 CI lint parity requires the root-owned guarded red/green release fixture before full feature cells can pass.; EXT-F-0003-T14 requires actual exact-candidate native public-demo walkthrough evidence; source implementation and source reviews do not close this gap.
 
