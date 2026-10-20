@@ -41,9 +41,36 @@
     "ci_spend_week_total_usd": 59.5,
     "ci_spend_week_cap_usd": 100,
     "ci_spend_complete_and_nonstale": true,
-    "status_at_checkpoint": "in_progress_package_refresh",
-    "artifact_identity": "pending_verified_receipt",
-    "external_job_cleanup": "hosted workflow owns ephemeral runner; no local process, profile, or staged secret"
+    "status_at_checkpoint": "completed_success",
+    "artifact_id": "12235302731",
+    "artifact_name": "matrx-extend-v0.2.568",
+    "github_artifact_digest": "sha256:42ef88cbd588c9816f3e3daaa96928971a548ce35deb7c321c67fc3514b5f305",
+    "version": "0.2.568",
+    "receipt_source_sha": "5aca3d4f9a21b752614a0bb33228c1ce4ae62544",
+    "tag": "v0.2.568",
+    "tag_matches_receipt_source": true,
+    "receipt_publish_state": "pushed",
+    "store_zip_sha256": "16dd16b2c1bfb4b63ba0d95c59b1e2c4213928b7b292fbc2761fdfc685ea8a3d",
+    "local_zip_sha256": "50f245d1367208c5d3d457941b351f2b04b127e10b073039bf32c6f17d7adcd2",
+    "store_zip_hash_recomputed_from_artifact": true,
+    "package_refresh_commit": "99bf49c54",
+    "source_delta_paths_after_workflow_checkout": [
+      "pnpm-lock.yaml",
+      "package.json",
+      "docs/TOOLS.generated.md",
+      "types/python-generated/openapi-routes.json",
+      "types/tool-catalog.json",
+      "types/tool-catalog.md"
+    ],
+    "package_delta": [
+      "@ai-matrx/api 0.1.51 to 0.1.52",
+      "@ai-matrx/content-ir 0.24.31 to 0.24.32",
+      "@ai-matrx/design-system 0.86.229 to 0.86.232",
+      "@ai-matrx/records-ui 0.116.58 to 0.116.59 (transitive)"
+    ],
+    "external_job_cleanup": "hosted workflow terminal; no local process, profile, or staged secret; owned scratch download deleted after hash verification",
+    "store_upload": "not_attempted",
+    "native_acceptance": "pending_fresh_peer_and_root_GO"
   },
   "next_action": "Track the single hosted release to terminal and bind its validated receipt, tag, source SHA, Store ZIP hash and artifact digest. Then obtain independent package review and root GO before normal lane B admission and one exact-candidate native replay. The .567 admission refusal remains binding; no .567 native credit is inferred."
 }
