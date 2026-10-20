@@ -1,0 +1,63 @@
+{
+  "id": "EXT-D-0264",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "title": "Guest Chat failure report compares follow-up reply with opening code",
+  "surface": "Hosted native guest Chat acceptance failure diagnostic",
+  "auth_mode": "signed-out guest; test harness reporting only",
+  "severity": "S2: misleading exact-code failure evidence for a real same-conversation heading failure",
+  "priority": "P1: repair before the next guest Chat native retest",
+  "state": "in-fix",
+  "owner": "root/guest264_grounding_oracle_fix",
+  "preconditions": [
+    "Resource-valid public 0.2.205 unpacked CRX guest Chat run 39373343402 against stable server 181b; separate heading-quality defect EXT-D-0263 remains open.",
+    "Owned article has distinct unpredictable opening and follow-up codes and a full unique heading. Same-conversation follow-up reaches a terminal assistant reply after multiple tool continuations."
+  ],
+  "reproduction": [
+    "Run the normal guest Chat T10 flow with a grounded opening question, then its same-conversation follow-up asking for the follow-up code and full heading.",
+    "When the follow-up fails its full-heading assertion, inspect the failure observation. The waitForTerminalAnswer result has answerContainsNonce=true for the follow-up code, but catch overwrites failure_observation with a new observe call using fixture.openingCode.",
+    "The overwritten failure_observation reports answerContainsNonce=false while its sanitized latestAssistantReply contains [follow-up-code]."
+  ],
+  "expected": "Failure diagnostics compare the latest rendered reply with the code requested by the active turn; original terminal verdict, exact-code and full-heading acceptance assertions remain intact.",
+  "actual": "The catch path always injects fixture.openingCode, including same-conversation and post-reload follow-up phases. This is a diagnostic misclassification, not an acceptance false negative: the original sameTurn.state and terminal_wrong_answer verdict correctly reflect code present and heading absent.",
+  "cause": "The shared catch block hardcoded fixture.openingCode when re-observing after every failure. It overwrote the turn-specific observation already recorded before the assertion.",
+  "sibling_census": "The same catch handles opening, same-conversation follow-up, post-reload follow-up, and later Values-chip stages. All stage-specific failure observations are now mapped to the active question code; no product observer or terminal-answer threshold changed.",
+  "evidence": [
+    "docs/stabilization/reports/guest263-provider-boundary-20261020.json",
+    "docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json",
+    "docs/stabilization/reports/guest264-grounding-oracle-fix-20261020.json"
+  ],
+  "reproducibility": "Deterministic source regression. A focused VM/DOM test executes the old catch assignment through the actual observer and returns false for a follow-up reply containing the exact code; the repaired path returns true.",
+  "acceptance_criteria": [
+    "RED old/GREEN repaired failure assignment exercises production observe, waitForTerminalAnswer, and a multi-continuation reply.",
+    "Opening, same-conversation, and post-reload diagnostic phases compare the correct code; full-heading absence remains a failure.",
+    "Independent source review and original guarded native retest are required before closure."
+  ],
+  "verification": {
+    "focused": "RED old: false !== true at the actual catch assignment; GREEN repaired: focused test passes. Related guest sequence, completion oracle, and package DOM tests: 79 passed; pnpm compile passed; scoped Biome check passed.",
+    "native": "Pending guarded hosted original-symptom retest; no native pass or product-health claim.",
+    "independent_review": "Pending fresh peer review and root integration decision."
+  },
+  "fix_sha": null,
+  "next_action": "Fresh peer reviews the scoped source/test/defect diff. After root GO, integrate exact paths and allow automatic CI; independently rerun the original guarded T10 native flow, preserving EXT-D-0263 heading failure and all guest/auth/assigned-tab/stream-terminal checks. Do not close until that retest.",
+  "transition_history": [
+    {
+      "at": "2026-10-20T05:35:42Z",
+      "from": null,
+      "to": "open",
+      "reason": "Owned native failure report contradicted the retained follow-up code and exact provider/stored reply."
+    },
+    {
+      "at": "2026-10-20T05:35:42Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Catch block proved to overwrite the turn-specific observation using the opening code."
+    },
+    {
+      "at": "2026-10-20T05:35:42Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Scoped diagnostic repair and focused RED/GREEN guard prepared for independent review; original native retest pending."
+    }
+  ]
+}

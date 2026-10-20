@@ -5,7 +5,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { Window } from 'happy-dom';
+import { classifyGuestTurn, containsOrderedWholeTerms } from './guest-chat-completion-oracle.mjs';
 import { createGuestInputDriver } from './guest-chat-input-driver.mjs';
+import { readPackageChatControls } from './package-chat-controls.mjs';
 import {
   REVIEWER_DEMO_URL,
   assertReviewerDemoProof,
@@ -27,6 +29,190 @@ const source = await readFile(
   new URL('./guest-chat-store-acceptance.mjs', import.meta.url),
   'utf8',
 );
+
+// Break caught: the failure catch rechecks the opening code after a follow-up
+// verdict and overwrites a true follow-up-code observation with false.
+test('guest failure observation keeps the active turn code after tool continuations', async () => {
+  const fixture = {
+    openingCode: 'OPEN-742',
+    followupCode: 'FOLLOW-913',
+    title: 'Matrx guest Chat grounding fixture unique-title',
+  };
+  const window = new Window();
+  window.document.body.innerHTML = `<button role="tab" title="Chat" aria-selected="true" aria-controls="chat"></button>
+    <div id="chat" role="tabpanel" data-state="active"><textarea></textarea>
+    <article role="article" aria-label="Assistant answer"><div data-message-content>Opening ${fixture.openingCode}</div></article>
+    <article role="article" aria-label="Assistant answer"><div data-message-content>Tool continuation</div></article>
+    <article role="article" aria-label="Assistant answer"><div data-message-content>More tool work</div></article>
+    <article role="article" aria-label="Assistant answer"><div data-message-content>The follow-up check code is ${fixture.followupCode}. The heading is Chat grounding fixture.</div></article></div>`;
+  for (const element of window.document.querySelectorAll(
+    'button, #chat, article, [data-message-content], textarea',
+  )) {
+    element.getBoundingClientRect = () => ({ width: 100, height: 20 });
+  }
+  window.chrome = { storage: { local: { get: async () => ({}) } } };
+  window.__guestChatStreamTrace = {
+    snapshot: () => ({
+      runs: [
+        {
+          done: true,
+          delegated: true,
+          userRequestOutcome: 'success',
+          endReason: 'complete',
+          startReplyCount: 1,
+        },
+        {
+          done: true,
+          delegated: true,
+          userRequestOutcome: 'success',
+          endReason: 'complete',
+          startReplyCount: 2,
+        },
+        {
+          done: true,
+          delegated: false,
+          userRequestOutcome: 'success',
+          endReason: 'complete',
+          startReplyCount: 3,
+          doneAt: Date.now(),
+        },
+      ],
+      continuations: 2,
+      toolEvents: [],
+    }),
+  };
+  const observerBody = source.slice(
+    source.indexOf('async function observe('),
+    source.indexOf('async function installStreamTrace('),
+  );
+  const observer = new Function(
+    'evaluate',
+    'readPackageChatControls',
+    'nativeOAuthStoredBearerExpression',
+    'REQUIRED_ANSWER_TERMS',
+    'containsOrderedWholeTerms',
+    `${observerBody}; return observe;`,
+  )(
+    async (_panel, expression) => window.eval(expression),
+    readPackageChatControls,
+    'false',
+    ['Capture', 'Understand', 'Use'],
+    containsOrderedWholeTerms,
+  );
+  const waitBody = source.slice(
+    source.indexOf('async function waitForTerminalAnswer('),
+    source.indexOf('async function watchGuestContextRuleReads('),
+  );
+  const waitForTerminalAnswer = new Function(
+    'observe',
+    'classifyGuestTurn',
+    'REQUIRED_ANSWER_TERMS',
+    `${waitBody}; return waitForTerminalAnswer;`,
+  )(observer, classifyGuestTurn, ['Capture', 'Understand', 'Use']);
+  const turn = await waitForTerminalAnswer(
+    null,
+    { nonce: fixture.followupCode, fixtureHeading: fixture.title },
+    { priorRunCount: 2, priorReplyCount: 3, priorToolEventCount: 0 },
+  );
+  assert.equal(turn.verdict, 'terminal_wrong_answer');
+  assert.equal(turn.state.answerContainsNonce, true);
+  assert.equal(turn.state.answerContainsFixtureHeading, false);
+  const diagnosticBody = source.slice(
+    source.indexOf('function safeVisibleText('),
+    source.indexOf('try {\n  report.server_version_before'),
+  );
+  const { diagnosticState } = new Function(`${diagnosticBody}; return { diagnosticState };`)();
+  const captureStart = source.indexOf('async function captureGuestFailureObservation(');
+  const captureBody =
+    captureStart < 0
+      ? ''
+      : source.slice(captureStart, source.indexOf('try {\n  report.server_version_before'));
+  const capture = new Function(
+    'observe',
+    'diagnosticState',
+    `${captureBody}; return typeof captureGuestFailureObservation === 'function' ? captureGuestFailureObservation : undefined;`,
+  )(observer, diagnosticState);
+  const catchStart = source.indexOf(
+    '} catch (error) {',
+    source.indexOf("markStage('guest_values_chip_observation')"),
+  );
+  const assignmentStart = source.indexOf('report.failure_observation =', catchStart);
+  const assignment = source.slice(assignmentStart, source.indexOf(';\n', assignmentStart) + 1);
+  const runCatchAssignment = new Function(
+    'report',
+    'observe',
+    'diagnosticState',
+    'captureGuestFailureObservation',
+    'panel',
+    'fixture',
+    'stage',
+    `return (async () => { ${assignment} return report.failure_observation; })();`,
+  );
+  const observed = await runCatchAssignment(
+    {},
+    observer,
+    diagnosticState,
+    capture,
+    null,
+    fixture,
+    'real_same_conversation_followup_answer',
+  );
+  assert.equal(observed.answerContainsNonce, true);
+  assert.equal(observed.answerContainsFixtureHeading, false);
+  assert.equal(observed.streamTrace.continuations, 2);
+  assert.equal(observed.replyCount, 4);
+  assert.match(observed.latestAssistantReply, /\[follow-up-code\]/);
+  assert.equal(observed.latestAssistantReply.includes(fixture.followupCode), false);
+  const postReload = await runCatchAssignment(
+    {},
+    observer,
+    diagnosticState,
+    capture,
+    null,
+    fixture,
+    'real_guest_followup_answer',
+  );
+  assert.equal(postReload.answerContainsNonce, true);
+  window.document.querySelectorAll('[data-message-content]')[3].textContent =
+    `Opening ${fixture.openingCode}`;
+  const opening = await runCatchAssignment(
+    {},
+    observer,
+    diagnosticState,
+    capture,
+    null,
+    fixture,
+    'real_guest_answer',
+  );
+  assert.equal(opening.answerContainsNonce, true);
+  assert.equal(opening.latestAssistantReply.includes('[opening-code]'), true);
+  window.document.querySelectorAll('[data-message-content]')[3].textContent =
+    'No code in this reply.';
+  const missingCode = await runCatchAssignment(
+    {},
+    observer,
+    diagnosticState,
+    capture,
+    null,
+    fixture,
+    'real_same_conversation_followup_answer',
+  );
+  assert.equal(missingCode.answerContainsNonce, false);
+  window.document.querySelectorAll('[data-message-content]')[3].textContent =
+    `The follow-up check code is ${fixture.followupCode}, beneath ${fixture.title}.`;
+  const grounded = await runCatchAssignment(
+    {},
+    observer,
+    diagnosticState,
+    capture,
+    null,
+    fixture,
+    'real_same_conversation_followup_answer',
+  );
+  assert.equal(grounded.answerContainsNonce, true);
+  assert.equal(grounded.answerContainsFixtureHeading, true);
+  await window.happyDOM.abort();
+});
 const inputSource = await readFile(
   new URL('./guest-chat-input-driver.mjs', import.meta.url),
   'utf8',

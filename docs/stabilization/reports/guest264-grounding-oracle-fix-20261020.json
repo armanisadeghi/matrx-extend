@@ -1,0 +1,27 @@
+{
+  "id": "EXT-D-0264",
+  "status": "source_repair_under_review",
+  "scope": "Native guest Chat T10 failure-report predicate only; separate full-heading product defect EXT-D-0263 remains open.",
+  "root_cause": "The actual terminal follow-up observation compares fixture.followupCode, but the outer catch overwrites it with a new observation comparing fixture.openingCode. Its sanitized reply still replaces fixture.followupCode, yielding a misleading false predicate beside [follow-up-code].",
+  "evidence": {
+    "owned_native_run": 39373343402,
+    "prior_turn_verdict": "terminal_wrong_answer",
+    "provider_and_stored_reply_exact_uppercase_code_present": true,
+    "full_unique_heading_present": false,
+    "source_reproduction": "Focused DOM/VM test runs production observe and waitForTerminalAnswer over three terminal runs with two continuations, then executes the actual catch assignment. Before repair, it reports false for the follow-up code present in the latest rendered reply.",
+    "red": "node --test --test-name-pattern='guest failure observation keeps' tests/browser/guest-chat-store-sequence.test.mjs: failed false !== true at follow-up-code assertion before source repair.",
+    "green": "node --test --test-name-pattern='guest failure observation keeps' tests/browser/guest-chat-store-sequence.test.mjs: 1 passed after repair. Related focused suite: 79 passed; pnpm compile passed."
+  },
+  "change": "Catch re-observation selects the expected code by current guest Chat stage across opening, same-conversation, post-reload, and later phases. Terminal answer classifier, exact code/full heading assertions, refusal/auth/assigned-tab checks and stream completion remain unchanged.",
+  "changed_files": [
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/guest-chat-store-sequence.test.mjs",
+    "docs/stabilization/defects/EXT-D-0264.json",
+    "docs/stabilization/reports/guest264-grounding-oracle-fix-20261020.json"
+  ],
+  "verification_pending": [
+    "Fresh independent source review and root GO before exact-path commit/push",
+    "Original guarded native T10 retest and independent product verification before defect closure"
+  ],
+  "limitations": "This repairs failure evidence only. It does not make the omitted full heading correct, prove Store-installed behavior, or complete the post-reload step in the original run."
+}

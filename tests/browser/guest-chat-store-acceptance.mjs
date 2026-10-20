@@ -879,6 +879,26 @@ function diagnosticState(state, fixture) {
   };
 }
 
+async function captureGuestFailureObservation(panel, fixture, stage) {
+  const followupStage = [
+    'same_conversation_followup_question',
+    'real_same_conversation_followup_answer',
+    'real_panel_reload',
+    'guest_followup_composer',
+    'guest_followup_question',
+    'real_guest_followup_answer',
+    'guest_values_chip_observation',
+  ].includes(stage);
+  return diagnosticState(
+    await observe(panel, {
+      nonce: followupStage ? fixture?.followupCode : fixture?.openingCode,
+      fixtureHeading: fixture?.title,
+      diagnostics: true,
+    }).catch(() => null),
+    fixture,
+  );
+}
+
 try {
   report.server_version_before = await safeServerVersion();
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
@@ -1304,14 +1324,7 @@ try {
         report.failure_reason = failure.reason;
         recordGuestAnswerScreenshotFailure(report, error);
         report.values_close_diagnostic = safeValuesCloseDiagnostic(error);
-        report.failure_observation = diagnosticState(
-          await observe(panel, {
-            nonce: fixture?.openingCode,
-            fixtureHeading: fixture?.title,
-            diagnostics: true,
-          }).catch(() => null),
-          fixture,
-        );
+        report.failure_observation = await captureGuestFailureObservation(panel, fixture, stage);
         report.guest_ai_observer = (await networkWatch?.diagnostics()) ?? null;
         report.guest_ai_requests = networkWatch?.snapshot() ?? [];
         try {
