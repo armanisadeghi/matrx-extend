@@ -1163,6 +1163,136 @@ export function verifyHostedNotesLazyGeneralReport(report, identity) {
   return true;
 }
 
+/** Chrome may first announce a panel target before its URL identifies it as our document. */
+export function memberDataReplacementPanelProofBasis(lifecycle) {
+  const timeline = lifecycle?.timeline;
+  const entries = timeline?.entries;
+  const final = timeline?.final_snapshot;
+  if (!Array.isArray(entries) || !Array.isArray(final) || timeline.dropped_entries !== 0)
+    return null;
+  // Every producer channel is part of the proof, including polling snapshots.
+  // Validate the recorded clock before selecting evidence so a later event cannot
+  // hide an earlier malformed or contradictory observation.
+  const instants = entries.map((entry) =>
+    typeof entry?.at === 'string' ? Date.parse(entry.at) : Number.NaN,
+  );
+  if (instants.some((at, index) => !Number.isFinite(at) || (index > 0 && at < instants[index - 1])))
+    return null;
+  const snapshotPhases = ['initial_snapshot', 'pre_click_snapshot', 'poll_transition'];
+  const eventPhases = ['target_created', 'target_info_changed', 'target_destroyed'];
+  if (
+    entries.some(
+      (entry) =>
+        (snapshotPhases.includes(entry.phase) && !Array.isArray(entry.targets)) ||
+        (eventPhases.includes(entry.phase) && !entry.target),
+    )
+  )
+    return null;
+  const observations = entries.flatMap((entry, index) =>
+    [
+      ...(entry.target ? [entry.target] : []),
+      ...(Array.isArray(entry.targets) ? entry.targets : []),
+    ].map((target) => ({ target, index, at: instants[index], phase: entry.phase })),
+  );
+  const validTarget = (target) =>
+    target &&
+    typeof target.target_id === 'string' &&
+    target.target_id &&
+    (target.kind !== 'panel' || target.type === 'page') &&
+    (target.kind !== 'worker' || target.type === 'service_worker');
+  if (
+    !final.every(validTarget) ||
+    observations.some(({ target }) => !validTarget(target)) ||
+    new Set(final.map((target) => target.target_id)).size !== final.length
+  )
+    return null;
+  const preClickIndex = entries.findIndex((entry) => entry.phase === 'pre_click_snapshot');
+  const clickIndex = entries.findIndex(
+    (entry, index) => index > preClickIndex && entry.phase === 'click_started',
+  );
+  const preClick = entries[preClickIndex];
+  const clickAt = Date.parse(entries[clickIndex]?.at);
+  if (
+    preClickIndex < 0 ||
+    clickIndex < 0 ||
+    !Number.isFinite(clickAt) ||
+    !Number.isFinite(Date.parse(preClick.at)) ||
+    Date.parse(preClick.at) >= clickAt ||
+    !Array.isArray(preClick.targets) ||
+    timeline.pre_click_old_worker_present !== true ||
+    !preClick.targets.some(
+      (target) => target.target_id === timeline.old_worker_id && target.kind === 'worker',
+    ) ||
+    !preClick.targets.some(
+      (target) => target.target_id === timeline.old_panel_id && target.kind === 'panel',
+    )
+  )
+    return null;
+  const panels = final.filter((target) => target.kind === 'panel' && target.type === 'page');
+  if (panels.length !== 1) return null;
+  const replacementId = panels[0].target_id;
+  if (
+    typeof replacementId !== 'string' ||
+    !replacementId ||
+    replacementId === timeline.old_panel_id ||
+    preClick.targets.some((target) => target.target_id === replacementId) ||
+    final.some(
+      (target) =>
+        target.target_id === timeline.old_panel_id || target.target_id === timeline.old_worker_id,
+    ) ||
+    !final.some(
+      (target) => target.kind === 'worker' && target.target_id === timeline.replacement_worker_id,
+    )
+  )
+    return null;
+  const destroyedIndex = entries.findIndex(
+    (entry, index) =>
+      index > clickIndex &&
+      entry.phase === 'target_destroyed' &&
+      entry.target?.target_id === timeline.old_panel_id &&
+      entry.target.kind === 'panel' &&
+      entry.target.type === 'page' &&
+      Number.isFinite(Date.parse(entry.at)) &&
+      Date.parse(entry.at) > clickAt,
+  );
+  if (destroyedIndex < 0) return null;
+  const destroyedAt = Date.parse(entries[destroyedIndex].at);
+  const matchesReplacement = (entry, phase) =>
+    entry.phase === phase &&
+    entry.target?.target_id === replacementId &&
+    entry.target.kind === 'panel' &&
+    entry.target.type === 'page';
+  const materializations = observations.filter(
+    ({ target }) =>
+      target.target_id === replacementId && target.kind === 'panel' && target.type === 'page',
+  );
+  if (
+    !materializations.length ||
+    materializations.some(
+      ({ index, at, phase }) =>
+        index <= destroyedIndex || at <= destroyedAt || phase === 'target_destroyed',
+    )
+  )
+    return null;
+  const afterRetirement = entries.slice(destroyedIndex + 1);
+  if (
+    lifecycle.replacement_panel_created_event === false &&
+    entries.some((entry) => matchesReplacement(entry, 'target_created'))
+  )
+    return null;
+  if (
+    lifecycle.replacement_panel_created_event === true &&
+    afterRetirement.some((entry) => matchesReplacement(entry, 'target_created'))
+  )
+    return 'created_event';
+  if (
+    lifecycle.replacement_panel_created_event === false &&
+    afterRetirement.some((entry) => matchesReplacement(entry, 'target_info_changed'))
+  )
+    return 'correlated_panel_materialization';
+  return null;
+}
+
 /** T03 uses the production callback as ingress evidence; diagnostic worker hooks are refused. */
 export function verifyHostedMemberDataLifecycleReport(report, identity) {
   const o = report?.observations;
@@ -1229,7 +1359,7 @@ export function verifyHostedMemberDataLifecycleReport(report, identity) {
     lifecycle?.old_worker_absent !== true ||
     lifecycle.old_panel_absent !== true ||
     lifecycle.replacement_worker_present !== true ||
-    lifecycle.replacement_panel_created_event !== true ||
+    memberDataReplacementPanelProofBasis(lifecycle) === null ||
     timeline?.final_predicate !== true ||
     !timeline.old_worker_id ||
     !timeline.old_panel_id ||
@@ -2054,12 +2184,19 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         if (report.artifact?.source_sha !== artifact.sourceSha)
           refuse('HOSTED_NATIVE_REPORT_PROVENANCE_INVALID');
       }
+      let memberDataLifecycleProof;
       if (mode === 'verify' && memberDataScope === 'lifecycle') {
         verifyHostedMemberDataLifecycleReport(report, {
           sourceSha: artifact.sourceSha,
           developmentRunId: artifactRunId,
           developmentArtifactId: artifactId,
         });
+        memberDataLifecycleProof = {
+          replacementPanelBasis: memberDataReplacementPanelProofBasis(report.reload_lifecycle),
+          verifierFileSha256: createHash('sha256')
+            .update(readFileSync(new URL(import.meta.url)))
+            .digest('hex'),
+        };
         const secrets = ghJson(`repos/${OWNER}/actions/secrets?per_page=100`);
         if (secrets.total_count !== secrets.secrets?.length)
           refuse('HOSTED_MEMBER_DATA_SECRET_CLEANUP_UNVERIFIED');
@@ -2067,7 +2204,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       }
       const verdict = verifyHostedResourceJournals({ runId, attempt, files });
       process.stdout.write(
-        `${JSON.stringify({ runId, attempt, ...workflowSource, archiveDigest, artifact, ...(settings && { settingsProvenance }), ...verdict })}\n`,
+        `${JSON.stringify({ runId, attempt, ...workflowSource, archiveDigest, artifact, ...(settings && { settingsProvenance }), ...(memberDataLifecycleProof && { memberDataLifecycleProof }), ...verdict })}\n`,
       );
     } else refuse('HOSTED_MODE_INVALID');
   } catch (error) {

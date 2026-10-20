@@ -103,7 +103,33 @@ function lifecycleReport() {
         old_worker_id: 'worker-old',
         old_panel_id: 'panel-old',
         replacement_worker_id: 'worker-new',
-        final_snapshot: [{ kind: 'panel', target_id: 'panel-new' }],
+        pre_click_old_worker_present: true,
+        dropped_entries: 0,
+        entries: [
+          {
+            at: '2026-10-20T17:33:32.872Z',
+            phase: 'pre_click_snapshot',
+            targets: [
+              { kind: 'worker', type: 'service_worker', target_id: 'worker-old' },
+              { kind: 'panel', type: 'page', target_id: 'panel-old' },
+            ],
+          },
+          { at: '2026-10-20T17:33:32.873Z', phase: 'click_started' },
+          {
+            at: '2026-10-20T17:33:32.965Z',
+            phase: 'target_destroyed',
+            target: { kind: 'panel', type: 'page', target_id: 'panel-old' },
+          },
+          {
+            at: '2026-10-20T17:33:34.908Z',
+            phase: 'target_created',
+            target: { kind: 'panel', type: 'page', target_id: 'panel-new' },
+          },
+        ],
+        final_snapshot: [
+          { kind: 'worker', type: 'service_worker', target_id: 'worker-new' },
+          { kind: 'panel', type: 'page', target_id: 'panel-new' },
+        ],
       },
       open_panel_request: {
         received: true,
@@ -172,7 +198,7 @@ test('T03 report requires production callback ingress, reload saved rows and con
       r.reload_lifecycle.timeline.replacement_worker_id = 'worker-old';
     },
     (r) => {
-      r.reload_lifecycle.timeline.final_snapshot[0].target_id = 'panel-old';
+      r.reload_lifecycle.timeline.final_snapshot[1].target_id = 'panel-old';
     },
     (r) => {
       r.reload_context.exact_expected_appeared = false;
@@ -200,6 +226,147 @@ test('T03 report requires production callback ingress, reload saved rows and con
       () => admission.verifyHostedMemberDataLifecycleReport(report, identity),
       /HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID/,
     );
+  }
+});
+
+test('T03 accepts correlated post-click panel materialization and refuses mismatched evidence', () => {
+  const report = lifecycleReport();
+  const lifecycle = report.reload_lifecycle;
+  lifecycle.replacement_panel_created_event = false;
+  lifecycle.timeline.entries[3].phase = 'target_info_changed';
+  assert.equal(
+    admission.memberDataReplacementPanelProofBasis(lifecycle),
+    'correlated_panel_materialization',
+  );
+  assert.equal(admission.verifyHostedMemberDataLifecycleReport(report, identity), true);
+
+  // A poll may legitimately observe the new document before its classified event.
+  const snapshotFirst = structuredClone(report);
+  snapshotFirst.reload_lifecycle.timeline.entries.splice(3, 0, {
+    at: '2026-10-20T17:33:34.000Z',
+    phase: 'poll_transition',
+    targets: [structuredClone(lifecycle.timeline.final_snapshot[1])],
+  });
+  assert.equal(admission.verifyHostedMemberDataLifecycleReport(snapshotFirst, identity), true);
+
+  const mutations = [
+    (r) =>
+      r.reload_lifecycle.timeline.entries.splice(1, 0, r.reload_lifecycle.timeline.entries.pop()),
+    (r) => {
+      r.reload_lifecycle.timeline.entries[3].target.target_id = 'different-panel';
+    },
+    (r) => {
+      r.reload_lifecycle.timeline.final_snapshot[1].target_id = 'panel-old';
+    },
+    (r) => {
+      r.reload_lifecycle.timeline.entries[3].target.kind = 'extension_other';
+    },
+    (r) => {
+      r.reload_lifecycle.timeline.entries[3].target.type = 'other';
+    },
+    (r) => {
+      r.reload_lifecycle.timeline.entries[3].at = '2026-10-20T17:33:32.870Z';
+    },
+    (r) => {
+      r.reload_lifecycle.timeline.entries[2].at = '2026-10-20T17:33:35.000Z';
+    },
+    (r) => {
+      r.reload_lifecycle.timeline.entries.splice(2, 0, {
+        at: '2026-10-20T17:33:32.964Z',
+        phase: 'target_info_changed',
+        target: { kind: 'panel', type: 'page', target_id: 'panel-new' },
+      });
+    },
+    (r) => {
+      r.reload_lifecycle.timeline.entries[0].targets.shift();
+    },
+    (r) => {
+      r.reload_lifecycle.timeline.pre_click_old_worker_present = false;
+    },
+    (r) => {
+      r.reload_lifecycle.timeline.entries.push({
+        at: '2026-10-20T17:33:35.100Z',
+        phase: 'target_created',
+        target: { kind: 'panel', type: 'page', target_id: 'panel-new' },
+      });
+    },
+    (r) => {
+      r.reload_lifecycle.timeline.entries[0].targets.push({
+        kind: 'extension_other',
+        target_id: 'panel-new',
+      });
+    },
+    (r) => {
+      r.reload_lifecycle.open_panel_request.opened = false;
+    },
+    (r) => {
+      r.reload_context.exact_expected_appeared = false;
+    },
+    (r) => {
+      r.observations.saved_pattern_run_after_reload = false;
+    },
+    (r) => {
+      r.reload_lifecycle.timeline.entries[3].phase = 'target_created';
+    },
+  ];
+  for (const mutate of mutations) {
+    const changed = structuredClone(report);
+    mutate(changed);
+    assert.throws(
+      () => admission.verifyHostedMemberDataLifecycleReport(changed, identity),
+      /HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID/,
+    );
+  }
+});
+
+test('T03 rejects first ownership before retirement across every producer observation channel', () => {
+  const base = lifecycleReport();
+  base.reload_lifecycle.replacement_panel_created_event = false;
+  base.reload_lifecycle.timeline.entries[3].phase = 'target_info_changed';
+  for (const phase of [
+    'initial_snapshot',
+    'pre_click_snapshot',
+    'poll_transition',
+    'target_created',
+    'target_info_changed',
+    'target_destroyed',
+  ]) {
+    const report = structuredClone(base);
+    const timeline = report.reload_lifecycle.timeline;
+    const target = structuredClone(timeline.final_snapshot[1]);
+    const observation = {
+      at: '2026-10-20T17:33:32.964Z',
+      phase,
+      ...(phase.startsWith('target_') ? { target } : { targets: [target] }),
+    };
+    timeline.entries.splice(2, 0, observation);
+    assert.throws(
+      () => admission.verifyHostedMemberDataLifecycleReport(report, identity),
+      /HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID/,
+      phase,
+    );
+  }
+});
+
+test('T03 refuses malformed or contradictory proof instants even with a later valid event', () => {
+  for (const phase of ['poll_transition', 'target_info_changed']) {
+    for (const at of ['invalid', null, '', '2026-10-20T17:33:32.964Z']) {
+      const report = lifecycleReport();
+      report.reload_lifecycle.replacement_panel_created_event = false;
+      const timeline = report.reload_lifecycle.timeline;
+      timeline.entries[3].phase = 'target_info_changed';
+      const target = structuredClone(timeline.final_snapshot[1]);
+      timeline.entries.push({
+        at,
+        phase,
+        ...(phase === 'poll_transition' ? { targets: [target] } : { target }),
+      });
+      assert.throws(
+        () => admission.verifyHostedMemberDataLifecycleReport(report, identity),
+        /HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID/,
+        `${phase}: ${at}`,
+      );
+    }
   }
 });
 
@@ -363,6 +530,21 @@ else process.exit(99);
     const accepted = execute();
     assert.equal(accepted.status, 0, accepted.stderr);
     assert.equal(JSON.parse(accepted.stdout).valid, true);
+    assert.equal(
+      JSON.parse(accepted.stdout).memberDataLifecycleProof.verifierFileSha256,
+      createHash('sha256')
+        .update(readFileSync(resolve('scripts/hosted-remote-admission.mjs')))
+        .digest('hex'),
+    );
+    const correlated = lifecycleReport();
+    correlated.reload_lifecycle.replacement_panel_created_event = false;
+    correlated.reload_lifecycle.timeline.entries[3].phase = 'target_info_changed';
+    const correlatedResult = execute({ report: correlated });
+    assert.equal(correlatedResult.status, 0, correlatedResult.stderr);
+    assert.equal(
+      JSON.parse(correlatedResult.stdout).memberDataLifecycleProof.replacementPanelBasis,
+      'correlated_panel_materialization',
+    );
     const documentationOnly = {
       artifactSourceSha: 'c'.repeat(40),
       changedPath: 'docs/stabilization/reports/data-t03-repaired-native-20261020.json',
@@ -371,6 +553,7 @@ else process.exit(99);
     assert.equal(equivalent.status, 0, equivalent.stderr);
     assert.equal(JSON.parse(equivalent.stdout).artifact.compatibility, 'runtime-equivalent');
     for (const changedPath of [
+      'scripts/hosted-remote-admission.mjs',
       'src/features/data/DataView.tsx',
       'tests/browser/data-member-native-acceptance.mjs',
       '.github/workflows/hosted-guest-acceptance.yml',

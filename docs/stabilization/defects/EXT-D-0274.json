@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0274",
+  "feature_id": "EXT-F-2005",
+  "case_ids": ["EXT-F-2005-T03"],
+  "title": "Member Data lifecycle verifier rejects a materialized replacement panel without a classified creation event",
+  "surface": "Hosted normal member Data T03 report verifier",
+  "auth_mode": "approved ordinary member",
+  "organization_context": "The archived run verifies the selected approved organization, exact-org HTTP 201 save and owned-row cleanup.",
+  "reproduction": [
+    "Immutable hosted run 39465749057, source 08150841aea86868f28ada4ad03eecb619824ae8, artifact SHA256 bf6f335158fd4bef1e3276e0d6a0731ba8b637fb745ada0fd2bc3b2359d96133: native report pass/complete; normal verifier refuses HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID solely on replacement_panel_created_event=false.",
+    "The old verifier refuses that raw report via exported verifyHostedMemberDataLifecycleReport; the repaired predicate accepts it with correlated_panel_materialization while preserving the false creation-event field."
+  ],
+  "expected": "Accept a post-click extension sidepanel document materialized at one new target ID after the old panel is destroyed, with matching final target, replacement worker, opened request, exact extension context and actual post-reload Data continuity; retain direct creation-event proof where observed.",
+  "actual": "The panel producer labels Target.targetCreated only when its initial target URL already identifies the extension sidepanel. The archived panel first appears to both observers as Target.targetInfoChanged, then appears under the same ID in the final exact-panel snapshot and supports post-reload work. The verifier required the classified creation event regardless of this correlated evidence.",
+  "severity": "S2: normal oracle blocks T03 adjudication after a successful native product run; no product defect established.",
+  "priority": "P1",
+  "state": "fixed",
+  "owner": "data_lifecycle_event_oracle_diagnosis",
+  "cause": "The verifier promoted one lossy CDP event classification into a required product invariant. The archive cannot prove that Chrome allocated a fresh CDP node from nothing; that literal allocation is not the product requirement.",
+  "sibling_census": "The same reload producer serves other native paths. This repair is restricted to the member Data T03 verifier; other acceptance policies are unchanged.",
+  "fix": "Normalize every target event and initial/pre-click/poll snapshot into owned-target observations. Require finite, nondecreasing recorded instants and require every observation of the final replacement panel to follow old-panel destruction in both trace order and time. Validate target identity/type, complete canonical observation payloads and unique final IDs; reject a destroyed final replacement. Bind the classified creation event or correlated info-change to that exact final panel, retaining the old-worker/panel baseline and all request, context, continuity, cleanup and source gates. CLI proof basis and verifier hash remain separate from historical source identity.",
+  "evidence": [
+    "scripts/hosted-remote-admission.mjs",
+    "scripts/hosted-member-data-lifecycle.test.mjs",
+    "/tmp/data272-native-39465749057.zip",
+    "/tmp/data-lifecycle-event-oracle-diagnosis-20261020.json",
+    "/tmp/data274-structural-raw-results.json",
+    "/tmp/data274-escalated-fix-20261020.json"
+  ],
+  "verification_status": "Structural repair pending fresh independent review: original immutable report accepted retrospectively with created_event=false unchanged; four prior findings plus coherent snapshot-first, invalid first timestamp and conflicting timestamp mutants rejected. All 18 real-report channel/time variants rejected. Two new guards failed before repair and pass after; constant-success scratch mutant fails both. Focused 8/8, compile and scoped Biome pass. Normal historical CLI certificate remains ineligible after executable verifier drift.",
+  "transition_history": [
+    {
+      "at": "2026-10-20T17:40:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Normal verifier refused successful native report on the sole classified panel-creation event predicate."
+    },
+    {
+      "at": "2026-10-20T17:40:00Z",
+      "from": "open",
+      "to": "fixed",
+      "reason": "Correlated final-target materialization proof added and guarded against false positives; formal T03 verdict remains partial."
+    }
+  ],
+  "next_action": "Get independent source review. A newly committed executable verifier makes the old development artifact ineligible for the normal CLI sourceCompatibility gate; do not call an exported-function retrospective check a normal certificate. Obtain a fresh eligible CI artifact and native run only after review and authorized scheduling."
+}
