@@ -1,0 +1,77 @@
+{
+  "task_id": "candidate568-values-native-20261020",
+  "lane": "B",
+  "status": "preflight_refused_no_native_run",
+  "checked_at_local_date": "2026-10-20",
+  "scope": "Read-only preparation for one exact frozen Store 0.2.568 guest Chat/T13 Values Escape acceptance run. No product run or repair was performed.",
+  "checkout": {
+    "path": "/Volumes/Samsung2TB/code/matrx-extend",
+    "head": "75ad12b022d7968cf7b883ebd78f34789894062f",
+    "branch": "main",
+    "tracking": "origin/main",
+    "dirty": false
+  },
+  "target": {
+    "channel": "frozen release Store ZIP, unpacked for hosted guest acceptance; not Store-installed and not upload-eligible",
+    "version": "0.2.568",
+    "release_run_id": "39356737665",
+    "artifact_id": "12235302731",
+    "release_source_sha": "5aca3d4f9a21b752614a0bb33228c1ce4ae62544",
+    "tag": "v0.2.568",
+    "github_artifact_digest": "sha256:42ef88cbd588c9816f3e3daaa96928971a548ce35deb7c321c67fc3514b5f305",
+    "store_zip_sha256": "16dd16b2c1bfb4b63ba0d95c59b1e2c4213928b7b292fbc2761fdfc685ea8a3d",
+    "agents_package_boundary": "Frozen Store candidate uses @ai-matrx/agents 0.59.170; development 0.2.568/current main uses 0.59.173. These artifacts are not interchangeable."
+  },
+  "preflight_commands": [
+    {
+      "command": "node scripts/hosted-remote-admission.mjs plan-guest-chat --lane B --case guest-chat --runner-label macos-15-intel --release-run-id 39356737665 --artifact-id 12235302731 --source-sha 75ad12b022d7968cf7b883ebd78f34789894062f --workflow-ref main",
+      "purpose": "Read-only route validation; the source argument intentionally checked whether current checkout could stand in for the frozen release source.",
+      "result": "HOSTED_REMOTE_REFUSED release_member_receipt_invalid",
+      "meaning": "The supplied source SHA did not match the frozen release receipt/tag. No workflow dispatch occurred."
+    },
+    {
+      "command": "node scripts/hosted-remote-admission.mjs plan-guest-chat --lane B --case guest-chat --runner-label macos-15-intel --release-run-id 39356737665 --artifact-id 12235302731 --source-sha 5aca3d4f9a21b752614a0bb33228c1ce4ae62544 --workflow-ref main",
+      "purpose": "Read-only validation using exact frozen candidate identity.",
+      "result": "HOSTED_REMOTE_REFUSED HOSTED_CHAT_RUNTIME_SOURCE_DRIFT",
+      "meaning": "Normal route detected disallowed post-candidate runtime-source changes. No route bypass or dispatch was attempted."
+    },
+    {
+      "command": "gh run list --workflow hosted-guest-acceptance.yml --json databaseId,name,status,conclusion,headSha,createdAt,updatedAt --limit 30",
+      "purpose": "Read-only hosted run ownership/capacity inspection.",
+      "result": "No active runs in the returned list; latest Native B guest-chat run 39377242317 is completed with failure.",
+      "meaning": "The old failure is not an active owner/job and supplies no current 0.2.568 acceptance."
+    },
+    {
+      "command": "gh run list --workflow hosted-resource-diagnostic.yml --json databaseId,name,status,conclusion,headSha,createdAt,updatedAt --limit 30",
+      "purpose": "Read-only hosted diagnostic workflow ownership inspection.",
+      "result": "Returned jobs are completed; no active run observed."
+    }
+  ],
+  "evidence_performed_here": {
+    "source_and_route": "Inspected the existing guest Chat plan/dispatch route and its guard. The exact-candidate plan command downloaded the named release artifact and passed through release receipt/tag and ZIP-byte verification before the later admission check refused runtime source drift. No workflow was dispatched.",
+    "zip_hash_claim": "The values recorded above are the canonical prior receipt hashes, also checked by the route during the exact-candidate plan before refusal; no independent separate ZIP calculation was performed in this task.",
+    "source_guard": "Reused canonical source guard report docs/stabilization/reports/values244-guard-final-peer-20261020.json: fresh source peer PASS for pre-Escape guards; native/product behavior UNKNOWN. No tests were run in this task.",
+    "candidate_provenance": "Reused canonical docs/stabilization/reports/candidate568-package-peer-20261020.json and docs/stabilization/reports/candidate568-postbuild-drift-20261020.json for frozen release provenance and post-build registry drift. Their prior evidence is not new work in this lane.",
+    "current_defect_state": "Read docs/stabilization/defects/EXT-D-0244.json: D244 remains OPEN for compact Values popover Escape. Existing public 0.2.205 failure and prior current/development candidate observations are not 0.2.568 Store acceptance."
+  },
+  "execution": {
+    "native_workflow_dispatched": false,
+    "native_run_id": null,
+    "ui_or_browser_product_interaction": false,
+    "product_evidence_created": false,
+    "model_calls": 0,
+    "repository_edits": 0,
+    "credentials_or_secrets_accessed": false,
+    "resource_permit_or_hosted_job_started": false,
+    "owned_processes_or_job_cleanup": "None; no job was started."
+  },
+  "gates_and_limits": {
+    "source_full_ci": "Pending confirmation by root at time of handoff.",
+    "fresh_spend_check": "Pending confirmation by root at time of handoff.",
+    "explicit_root_go": "Not received before this preflight handoff.",
+    "frozen_acceptance": "Would be bounded guest T13 evidence only; not Store-installed acceptance, upload eligibility, or broad Chat health.",
+    "public_0_2_205_failure": "Remains separate and open; not retested here."
+  },
+  "next_eligible_artifact_required": "A new immutable release artifact whose receipt/tag/source SHA exactly match and whose post-build runtime-source history passes the existing route guard (or root-reviewed normal-route eligibility for this frozen candidate); exact current source CI and fresh spend must be green before dispatch. Preserve the normal lane-B guest-chat macos-15-intel route. Do not alter flags, bypass runtime-source refusal, or treat development 0.2.568 agents 0.59.173 as equivalent to frozen Store 0.2.568 agents 0.59.170.",
+  "next_action": "Root resolves HOSTED_CHAT_RUNTIME_SOURCE_DRIFT through the existing reviewed workflow, confirms source CI and spend, and sends explicit GO only if the normal route admits the exact target. This lane made zero native attempts; no retry is pending from this agent."
+}

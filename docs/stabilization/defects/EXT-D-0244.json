@@ -27,13 +27,14 @@
     "docs/stabilization/reports/values244-current-surface-diagnosis-20261020.json",
     "docs/stabilization/reports/values244-focus-guard-20261020.json",
     "docs/stabilization/reports/values244-guard-first-peer-20261020.json",
-    "docs/stabilization/reports/values244-guard-final-peer-20261020.json"
+    "docs/stabilization/reports/values244-guard-final-peer-20261020.json",
+    "docs/stabilization/reports/release570-hosted-preparation-20261020.json"
   ],
   "severity": "S3: context inspection dialog dismissal by Escape fails; the three Chat replies completed.",
   "priority": "P2: verify current candidate and repair through the owning shared component if it reproduces.",
   "state": "open",
   "owner": "stabilization-coordinator",
-  "reproducibility": "Repeated again on public205 native39377242317, resourceInvalid=false/child_failed exit1: after three grounded terminal replies, one trusted Escape withfocusinside leavescompactValuespopoveropen. Backend181b\u2192f5f3drift preventsstablebackendattribution. Current568 equivalent remainsunverified; original public205 observedfailnotcurrent-sourcefix evidence.",
+  "reproducibility": "Repeated again on public205 native39377242317, resourceInvalid=false/child_failed exit1: after three grounded terminal replies, one trusted Escape withfocusinside leavescompactValuespopoveropen. Backend181b→f5f3drift preventsstablebackendattribution. Current568 equivalent remainsunverified; original public205 observedfailnotcurrent-sourcefix evidence.",
   "build_version": "0.2.205 public CRX adapted unpacked",
   "server_sha": "a61289ffa374eb4b1a2ff8181d9db42e947f039a",
   "transition_history": [
@@ -44,12 +45,14 @@
       "reason": "Independent screenshot and DOM/event review confirms the observed dialog did not close; no cause or current-build equivalence inferred."
     }
   ],
-  "next_action": "Prove compactpopover focus-inside immediately before trustedEscape and settledclosed state in normal native driver (sourceguard review underway, no productfix inferred); then original-equivalent currentartifact T13 on a guarded admitted host. Preserve frozenStore568/agents170 vs development568/agents173 boundaries, fullview/close/reopen and othermodes as unverified. D244 staysopen.",
+  "next_action": "Original-equivalent compact Values focus/Escape T13 on exact570 through normal guarded route; sourcefocusguard independently passed. No current nativepass or productfix inferred; fullview/close/reopen and othermodes remain unverified. D244 staysopen.",
   "current_artifact_boundary": "Frozen Store568/source5aca uses agents0.59.170; verified CI development568/source501998549 and currentmain use173. Neither exact artifact has original compactpopover focus/Escape/nativeT13 acceptance. Existingdisplay/sourceunits and555nativepass cannot close either currentboundary.",
   "source_harness_readiness": {
     "status": "fresh source peer PASS; native UNKNOWN, productstateopen",
     "summary": "Immediately prove documentfocus/visiblecompactfocus/singleopen/noothervisible dialogs before trustedEscape; unavailablefocus refused before key, distinct harnesspreconditionerror. Require zero open/visible compactdialogs +trustedkeydown after. Fullviewcontrolfocusedwithoutactivation; actualnativefocus sideeffectsunknown.",
     "tests": "40/40 actualsourceunit guards; oldsourceRED; alertdialog/HTMLdialogwithoutdata-state and targethiddenafterfocus refusalsdispatchzero keys. No productfix or currentcandidatepass.",
-    "report": "docs/stabilization/reports/values244-focus-guard-20261020.json"
+    "report": "docs/stabilization/reports/values244-focus-guard-20261020.json",
+    "commit": "75ad12b022d7968cf7b883ebd78f34789894062f",
+    "ci": "Immutable tag CI39381851078 SUCCESS at b284 includes guard; new Store570 release39382974979 strict gates PASS atd1c80e5e409ebe73ce35f13639e1074360bfaf7f. Native570 UNKNOWN."
   }
 }

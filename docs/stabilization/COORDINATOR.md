@@ -12,16 +12,16 @@ published0.2.205, draft0.2.479 rejected, no pending, Upload enabled. Vault login
 no human-only access blocker is established. No new upload/submission has occurred.
 Never infer private review state from old email/public listing or this checkpoint.
 
-Current candidate **0.2.568**: guarded release39356737665 SUCCESS; source/tag
-`5aca3d4f9a21b752614a0bb33228c1ce4ae62544`, artifact12235302731, exact provenance in the
-[release checkpoint](reports/guest567-scrolled-replay-20261020.json) and canonical Store record.
-[Fresh package peer](reports/candidate568-package-peer-20261020.json) verifies receipt/tag/hash,
-all strict gates at immutable cut,2520tests/compile/fullLint/schema/tool/Store policy; static host
-compatibility passes.927lint warnings,6Mandate UNMEASURED and5skipped tests remain explicit limits.
-[Postbuild drift](reports/candidate568-postbuild-drift-20261020.json): associations.83 and
-rich-content.224 published AFTER build; actual source diffs show no mandatory host action.
-Candidate is NOT registry-current; frozen acceptance allowed, no gate waiver or upload eligibility.
-Before any upload repeat current source/runtime/package/private Store checks and real acceptance.
+Current prepared candidate **0.2.570**: guarded hosted release39382974979 SUCCESS;
+source/tag `d1c80e5e409ebe73ce35f13639e1074360bfaf7f`, artifact12246251773,
+Store ZIP SHA256 `9829e0bf9a05383e425be487a6c317a4bdc44863b9068ff4c79c50a97362af7f`.
+[Terminal package checkpoint](reports/release570-hosted-preparation-20261020.json) verifies
+receipt/tag/ZIP bytes, all strict gates,2520tests/compile/fullLint/schema/tool/Store policy.
+This is package preparation, not Store upload or real guest/member/reviewer acceptance.
+Exact570 acceptance is next; candidate568 evidence below remains separately bounded.
+Frozen568 Store/agents.170 cannot stand in for current570: current normal native preflight
+refuses runtime-source drift ([preflight](reports/candidate568-values-preflight-20261020.json)).
+Before upload repeat current source/runtime/package/private Store checks and real acceptance.
 
 Exact568 candidate guest runs are terminal and independently reviewed:
 - A39357989631 PASS: guest Data T01 revalidated; T07 guest now passes hover, unique
@@ -131,13 +131,10 @@ repo, no registered self-hosted runners, larger Macs require organization Team/E
 is currently unsupported. Contained [Linux sampler/readiness preparation](reports/linux-native-capacity-20261020.json)
 now has fresh source B PASS / A PARTIAL. Local actual tests13pass+3explicitLinuxskips; CPUcounter,
 unreadablecensus, reusedowner and invaliddeadline negative guards proved. Sourceprep `dcf6c168a`, integration `289bb7e6624ed59ad02549b0a0c4fb79e138b8ac` preserves
-contributor package refreshes. Exact automatic CI39379731713 is PENDING behind existing mainCI;
-root owns terminal evidence follow-through. No sourceCI/Ubuntu/native pass yet; no browser dispatch. Active guard/workflow/normal routes
+contributor package refreshes. Exact automatic CI39379731713 is SUCCESS on Ubuntu; [independent kernel peer](reports/linux-ci-kernel-fresh-peer-20261020.json) confirms three live source checks: one real1s CPU/PSI interval, owned live-group identity and foreground child stop/mismatch refusal. CPUbusy0.740554/load1.03/4CPUs/PSI0us; this is not 60s readiness or native proof. No browser dispatch. Active guard/workflow/normal routes
 remain refused. Pressure/watchdog, typedjournals, mappedwindow/pixels, staleownership and the
 nonatomic census→PGID signal gap are activationholds, never productpasses or member support.
-Next source step: inspect exact automatic CI LINUX_KERNEL_INTERVAL and actualLinux-only tests;
-then independently review activeguard/ownership/display/strictBguesttuple/cost integration before
-any nativepilot. No retry of the two resource-invalid member launches without changed evidence. CPU readings are one-second snapshots, not a continuous ten-second
+Next source step: integrate and independently review bounded pidfd/subreaper ownership preparation, execute actual Linux lifecycle cases through existing Ubuntu CI; activeguard/display/strictBguesttuple/cost integration and nativepilot remain separate unverified gates. No retry of the two resource-invalid member launches without changed evidence. CPU readings are one-second snapshots, not a continuous ten-second
 measurement. Guard decisions remain valid; broader capacity needs reviewed infrastructure. Do not
 repeat the same launch blindly or weaken guard thresholds.
 
@@ -166,6 +163,8 @@ repeat the same launch blindly or weaken guard thresholds.
   [release checkpoint](reports/store-release-v0566-acceptance-20261019.json).
 
 ## Source units and immediate next work
+
+**D244 remains open.** Source-only acceptance guard `75ad12b022d7968cf7b883ebd78f34789894062f` requires positive compact-popover focus and absence of competing visible dialogs BEFORE trusted Escape. Fresh independent source A/BPASS, actual-source40/40tests; immutable tag CI39381851078 SUCCESS atb284 includes the guard. [Final peer](reports/values244-guard-final-peer-20261020.json). No current native proof or product repair; public205 T13 failure remains. Frozen Store568 uses agents.170, CIdevelopment568/currentmain agents.173; equal extension versions are not equal runtimes.
 
 1. **D258 closed narrowly**, source `ff105b712`, exact568 original scroll479 native PASS above. Measured
    document-space hit conversion, same original button/backend identity and unchanged viewport
@@ -199,7 +198,7 @@ repeat the same launch blindly or weaken guard thresholds.
 
 ## Local resource constraint — not a human-only access gate
 
-On October20 around01:02UTC, system free space fell39→7.9GiB. Apple `cloudd` owns an actively
+On October20 around01:02UTC, system free space fell39→7.9GiB; latest06:25UTC observation is3.8GiB. Apple `cloudd` owns an actively
 growing CloudKit temporary cache file,34.38GiB allocated. Targeted growth matches disk loss.
 Canonical groom dry-run/apply recovered0B; no safe agent-owned12GiB cleanup target exists. No
 personal cache/data or Apple process was removed/stopped. Heavy Mac tests/UI remain on hold
