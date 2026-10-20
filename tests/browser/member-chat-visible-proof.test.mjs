@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { runInNewContext } from 'node:vm';
+import { Window } from 'happy-dom';
 import {
   createMemberPanelLifecycleGuard,
   recordReviewerFailure,
@@ -723,6 +724,112 @@ test('normal reload requires trusted re-entry to focus the same visible panel do
       report.panel_lifecycle.samples.map((row) => row.panel_focused),
       restoredByInput ? [true, false, true] : [true, false, false],
     );
+  }
+});
+
+test('default visible-panel repair dispatches a real canonical Chat click before accepting focus', async () => {
+  for (const outcome of [
+    'focus_restored',
+    'focus_unchanged',
+    'wrong_target',
+    'hidden',
+    'occluded',
+  ]) {
+    const window = new Window();
+    const { document } = window;
+    let focused = true;
+    let visibility = 'visible';
+    let targetId = 'original-panel';
+    let opens = 0;
+    const events = [];
+    window.innerWidth = 360;
+    window.innerHeight = 600;
+    document.body.innerHTML =
+      '<button role="tab" title="Chat" aria-controls="chat-pane"></button><div id="chat-pane"></div>';
+    const tab = document.querySelector('button');
+    tab.getBoundingClientRect = () => ({
+      x: 12,
+      y: 8,
+      left: 12,
+      top: 8,
+      right: 44,
+      bottom: 40,
+      width: 32,
+      height: 32,
+    });
+    tab.scrollIntoView = () => {};
+    tab.getAnimations = () => [];
+    document.elementFromPoint = () => (outcome === 'occluded' ? document.body : tab);
+    document.hasFocus = () => focused;
+    Object.defineProperty(document, 'visibilityState', { get: () => visibility });
+    window.requestAnimationFrame = (callback) => setTimeout(callback, 0);
+    window.cancelAnimationFrame = clearTimeout;
+    const panel = {
+      async send(method, args) {
+        if (method === 'Runtime.evaluate')
+          return { result: { value: await window.eval(args.expression) } };
+        assert.equal(method, 'Input.dispatchMouseEvent');
+        assert.equal(args.button, 'left');
+        events.push(args.type);
+        if (args.type === 'mouseReleased' && outcome === 'focus_restored') focused = true;
+        return {};
+      },
+    };
+    const report = { foreground_diagnostic: { visibility_wait_budget_ms: 10_000 } };
+    const guard = createMemberPanelLifecycleGuard({
+      native: {
+        panelTarget: { targetId: 'original-panel', url: 'chrome-extension://owned/sidepanel.html' },
+        browserSession: {
+          send: async () => ({
+            targetInfos: [
+              { type: 'page', url: 'chrome-extension://owned/sidepanel.html', targetId },
+            ],
+          }),
+        },
+        activatePanel: async () => {
+          throw new Error('target activation must not replace input');
+        },
+        reopenPanel: async () => {
+          opens += 1;
+        },
+      },
+      web: { isClosed: () => false, url: () => 'https://www.aimatrx.com/matrx-extend-demo' },
+      panel,
+      evaluate: async (target, expression) => {
+        const response = await target.send('Runtime.evaluate', { expression });
+        return response.result.value;
+      },
+      expectedUrl: 'https://www.aimatrx.com/matrx-extend-demo',
+      report,
+    });
+    try {
+      await guard.check('before_open_chat');
+      focused = false;
+      if (outcome === 'wrong_target') targetId = 'replacement-panel';
+      if (outcome === 'hidden') visibility = 'hidden';
+      if (outcome === 'focus_restored') {
+        assert.equal((await guard.check('after_open_chat')).panel_focused, true);
+        assert.deepEqual(events, ['mousePressed', 'mouseReleased']);
+        assert.deepEqual(
+          report.panel_lifecycle.samples.map((row) => row.panel_focused),
+          [true, false, true],
+        );
+      } else {
+        await assert.rejects(
+          guard.check('after_open_chat'),
+          outcome === 'wrong_target'
+            ? /reviewer_chat_target_unverified/
+            : /reviewer_native_panel_foreground_not_observed/,
+        );
+        assert.deepEqual(
+          events,
+          outcome === 'focus_unchanged' ? ['mousePressed', 'mouseReleased'] : [],
+        );
+      }
+      assert.equal(opens, outcome === 'hidden' ? 1 : 0);
+    } finally {
+      window.happyDOM.abort();
+    }
   }
 });
 
