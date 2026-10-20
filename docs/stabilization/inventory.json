@@ -52371,7 +52371,8 @@
             "The signed-in member receives a page-grounded assistant answer after the browser tool completes, with successful terminal completion; a same-conversation follow-up can then be tested."
           ],
           "defect_ids": [
-            "EXT-D-0261"
+            "EXT-D-0261",
+            "EXT-D-0263"
           ],
           "results": {
             "member": {
@@ -52518,6 +52519,9 @@
           "status": "unverified_current_main",
           "required_followup": "Verify actual current artifact default and opt-in surfaces separately; no historical result transfers to current source merely because a prior loader returned."
         }
+      ],
+      "defect_ids": [
+        "EXT-D-0263"
       ]
     },
     {

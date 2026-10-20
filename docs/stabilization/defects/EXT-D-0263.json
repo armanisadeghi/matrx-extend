@@ -1,0 +1,50 @@
+{
+  "id": "EXT-D-0263",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T14"],
+  "title": "Public205 guest follow-up omits exact current-page code and unique heading despite completed page-text tool result",
+  "surface": "Guest Chat same-conversation page grounding",
+  "auth_mode": "guest, fresh signed-out isolated profile",
+  "severity": "S2: basic same-conversation page question returns incorrect or incomplete page facts after a grounded opening reply",
+  "priority": "P0: public guest acceptance blocker; investigate before next Store upload",
+  "state": "triaged",
+  "owner": "stabilization-coordinator",
+  "preconditions": [
+    "Exact public0.2.205 CRX sha2567f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23 unpacked/adapted runtime tree08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8; this is not actual Store-installed evidence.",
+    "Fresh owned signed-out Chrome profile, no injected auth, valid guarded hosted laneB on macos-15-intel.",
+    "Use normal published guest acceptance driver tests/browser/guest-chat-store-acceptance.mjs through plan-published-guest-chat/dispatch-published-guest-chat. Its owned article fixture on the public demo contains a generated unique heading, distinct opening/followup check codes, and Capture/Understand/Use. The driver proves the fixture remains readable on the original assigned tab before send.",
+    "Observed deployed server181b9d7fd340f21e2b73f7b4945f6999c1f49d6d was unchanged before/after this run; preserve default model, which is not captured in retained evidence."
+  ],
+  "reproduction": [
+    "Load/reload the exact public CRX in the fresh guarded guest profile; open Chat on https://www.aimatrx.com/matrx-extend-demo and install the normal runner owned article fixture. Record exact generated codes/heading privately for comparisons.",
+    "Send: Read the unique opening check code from the article on my current tab. What are the three workflow stages in order? Include the exact code. Observe the grounded opening answer.",
+    "Without changing conversation or assigned tab, send: Read the unique follow-up check code from the article on my current tab and name the heading directly above the check codes. Include the exact code.",
+    "Wait for actual tool/result and terminal assistant UI, then compare the last answer to the fixture exact followup code and full unique heading. Retain safe comparisons plus inspectable screenshot/tool evidence; do not treat HTTP200 as final protocol proof."
+  ],
+  "expected": "Same-conversation follow-up states the exact visible follow-up code and identifies its heading, with successful terminal completion.",
+  "actual": "Run39373343402 first answer grounded/UI-terminal; second versioned AI request was same conversation/is_new=false. Completed get_page_text result contained both exact expected facts, but terminal latest assistant answer failed exact code and unique heading predicates. Three continuations, five stream runs done/complete/success, UI stopped streaming. Final SSE frame not proven. Post-reload flow was not reached.",
+  "evidence": [
+    "docs/stabilization/reports/published205-post181b-guest-20261020.json",
+    "docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json",
+    "docs/stabilization/reports/guest181b-followup-diagnosis-20261020.json",
+    "docs/stabilization/evidence/published205-post181b-guest-20261020/run39373343402/screenshots/guest-chat-failure.png"
+  ],
+  "reproducibility": "One resource-valid current-server failure observed; prior cd80 public205 flow passed but differing fixtures/model/time are confounders. No deterministic source regression attribution or frequency established.",
+  "cause": "Unproven. Native evidence confirms page-text tool delivered required facts, but provider request/output versus persisted/rendered answer has not been compared. Inference of a literal placeholder from sanitized diagnostics needs source/serialization scrutiny; a placeholder in a redacted record alone is insufficient.",
+  "fix_commit": null,
+  "next_action": "Read the owned followup provider-request snapshot after tool resume; compare exact controlled-fixture value presence at tool result, assembled provider input, provider output, persisted reply and rendered reply, privately. Fix only a demonstrated boundary. No retries/model changes or blame based solely on deployed SHA. D261 member timeout remains separate.",
+  "transition_history": [
+    {
+      "at": "2026-10-20T05:24:09.880575+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual guarded native guest followup did not meet exact page-fact acceptance after grounded opening."
+    },
+    {
+      "at": "2026-10-20T05:24:09.880575+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Fresh independent native/source peer confirms missing exact facts despite completed page-text result; cause unproven, no full protocol or Store-installed proof."
+    }
+  ]
+}

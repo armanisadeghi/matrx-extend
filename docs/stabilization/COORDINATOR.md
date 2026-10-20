@@ -54,7 +54,15 @@ Screenshots shell-only, actual native DOM/recorder assertions support Settings c
 **D262 closed narrowly as harness false-pass prevention**, no product-repair/whole Settings/T04
 claim. Missing live planted negative branch is a stated limit; source/VM negative guards and CI
 plus this positive native pass satisfy original criteria. Raw report/evidence pushed d41b2afbd.
-**Current B39373343402 is queued/running public205 guest refresh against newly deployed181b; owner published205_post181b_guest.** Prior B39372274799 is terminal SUCCESS with all3resource finals valid;
+**B39373343402 is terminal resource-valid FAILURE on same-conversation guest grounding.**
+[Fresh peer](reports/published205-post181b-fresh-peer-20261020.json) confirms first answer
+grounded/UI-terminal, followup lacks exact code/full unique heading despite completed page-text
+result containing both. Five stream runs done/complete/success; final SSE frame not independently
+proven. Stable deployed181b, public205 CRX unpacked/adapted NOT Store-installed. Package/browser
+resource finals valid; guest resourceInvalid=false/child_failed exit1. Post-reload not reached.
+**[D263](defects/EXT-D-0263.json) triaged P0 public guest acceptance blocker**, no cause/fix or
+backend/contributor attribution. Next discriminator is provider input/output vs actual tool,
+persisted and rendered reply. See [diagnosis](reports/guest181b-followup-diagnosis-20261020.json). Prior B39372274799 is terminal SUCCESS with all3resource finals valid;
 [fresh native peer](reports/scrape568-empty-fresh-peer-20261020.json) verifies only warm guest T08
 no-signal SEO and empty Schema panes/capture invariance on owned title-only localhost fixture.
 Two pane screenshots inspected, exact development568/source501998549/CI39366909321/artifact12239987691.
@@ -65,8 +73,9 @@ through synchronized backend merge `db8f6d8f271de5f53bc853eb1fb23b4695c2fda0` af
 focused passes/Ruff/diff check. Concurrent log-drain drop guard is repaired with task-scoped
 ContextVar and installed-handler blocked-drain RED→GREEN proof. Current live version endpoint reports `181b9d7fd340f21e2b73f7b4945f6999c1f49d6d`
 (built04:50:03UTC), which includes diagnostic source by Git ancestry. Actual runtime phase-marker
-availability and member outcome remain unverified; a bounded CloudWatch query through05:05UTC
-found no matching marker and proves no availability or absence of requests; no causal repair or product pass. Roughly50–60 WARNING rows
+availability is now bounded-observed in CloudWatch:144markers/no pagination across3time-correlated
+resumes with handoff781/710/963ms; opaque IDs prevent definitive owned-request join. These traces
+passed pre-header prep, not proof of D261 member repair; member outcome remains unverified; no causal repair or product pass. Roughly50–60 WARNING rows
 per resume, bounded queue/drop and DB-write failure limits remain. Global docs guard3untouched
 violations and broader retired-DB test failure are not waived. Verify normal auto-deployment,
 then live raw/DB phase visibility and resource-valid original member reproduction. No blind

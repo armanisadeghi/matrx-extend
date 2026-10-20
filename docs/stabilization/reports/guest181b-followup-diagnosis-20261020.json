@@ -1,0 +1,79 @@
+{
+  "status": "HANDOFF",
+  "scope": "read_only_diagnostic_no_source_change",
+  "run": {
+    "workflow_run": 39373343402,
+    "extension_version": "0.2.205",
+    "extension_receipt_kind": "published_store_crx_unpacked",
+    "server_sha_stable": true,
+    "server_sha": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
+    "opening_verdict": "terminal_answer",
+    "followup_verdict": "terminal_wrong_answer",
+    "same_conversation_http_200_is_new_false": true,
+    "followup_internal_runs_done_success": true,
+    "completed_page_text_result_contains_followup_code_and_full_heading": true,
+    "terminal_assigned_tab_matches_fixture": true,
+    "terminal_exact_code_predicate": false,
+    "terminal_exact_heading_predicate": false,
+    "final_reply_contains_sanitized_code_marker": true,
+    "literal_marker_inference": "Because answerContainsNonce and latestReplyText are derived from the same latestReply string by observe(), and safeVisibleText only substitutes the exact fixture code when present, false exact-code predicate plus visible [follow-up-code] supports that the raw reply itself contained the literal marker. Verify against unsanitized private state; do not treat the retained string alone as proof."
+  },
+  "resume_probe": {
+    "window_utc": ["2026-10-20T05:16:30Z", "2026-10-20T05:18:30Z"],
+    "cloudwatch_group": "/matrx/production/aidream",
+    "region": "us-east-1",
+    "events_fetched": 144,
+    "next_token_present": false,
+    "parsed_markers": 144,
+    "opaque_trace_count": 3,
+    "traces": [
+      {
+        "opaque_trace_digest": "29e4aa0ee0",
+        "route_enter_utc": "2026-10-20T05:17:30.141000+00:00",
+        "conversation_rebuild_complete": true,
+        "prepare_complete_elapsed_ms": 781,
+        "response_handoff_complete_elapsed_ms": 781,
+        "failed_or_cancelled_phases": 0,
+        "marker_count": 48
+      },
+      {
+        "opaque_trace_digest": "26a6b823c8",
+        "route_enter_utc": "2026-10-20T05:17:40.491000+00:00",
+        "conversation_rebuild_complete": true,
+        "prepare_complete_elapsed_ms": 709,
+        "response_handoff_complete_elapsed_ms": 710,
+        "failed_or_cancelled_phases": 0,
+        "marker_count": 48
+      },
+      {
+        "opaque_trace_digest": "029e0b633b",
+        "route_enter_utc": "2026-10-20T05:17:45.886000+00:00",
+        "conversation_rebuild_complete": true,
+        "prepare_complete_elapsed_ms": 963,
+        "response_handoff_complete_elapsed_ms": 963,
+        "failed_or_cancelled_phases": 0,
+        "marker_count": 48
+      }
+    ],
+    "interpretation": "All three time-correlated resumes completed pre-response preparation and handoff. Opaque trace lacks request or conversation join, so timing alone does not prove ownership or whole request completion; this is probe visibility, not D261 member repair."
+  },
+  "source_comparison": {
+    "baseline_backend_sha": "cd80cd8763b6bd0a5fc03706af6b478f599df9c6",
+    "current_backend_sha": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
+    "finding": "Diff changes include mandate metadata/value screening, variable diagnostics, config authored template check, and resume probe delivery; no direct guest follow-up fix established. Different fixtures, timing, and model choice confound SHA comparison.",
+    "screening_scope": "New message model_context screening applies only when is_mandate_door_context(ctx) is true; ordinary conversations return values unchanged. Whether this owned guest start carried a mandate mark is not established by available artifact/log markers, so do not attribute the missing code to this diff."
+  },
+  "cause": {
+    "confidence": "unproven",
+    "boundary": "Page text reached extension tool result; exact value did not survive to the final rendered answer. Provider wire payload versus generated answer remains unobserved.",
+    "next_discriminator": "Privately inspect only the owned follow-up post-tool-resume chat.request_snapshot.request_payload and matching provider response/stored assistant text. Emit fixed booleans: exact fixture code/full heading present in tool-result message at provider send; selected model/response-format equality to prior good run; exact code/full heading present in provider output, stored assistant row, and DOM. If absent at provider send, inspect handoff/rebuild/trimming origin; if present at send but absent in provider output, inspect authored prompt/model behavior; if present in provider output but absent in DOM, inspect persistence/rendering.",
+    "no_fix_proposed": true
+  },
+  "limits": [
+    "One fresh native failure; no deterministic reproduction rate.",
+    "No raw provider snapshot or matched response inspected.",
+    "No exact joined request identity in resume phase logs.",
+    "Post-reload turn was not reached.",
+    "The CRX was unpacked, not Store-installed."
+  ]
+}
