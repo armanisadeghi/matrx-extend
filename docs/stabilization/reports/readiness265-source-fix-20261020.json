@@ -1,0 +1,31 @@
+{
+  "status": "DONE_AWAITING_FRESH_PEER_GO",
+  "defect_id": "EXT-D-0265",
+  "cause": "Guest post-setup helper reset its healthy streak for every RESOURCE_CPU_PENDING event, including empty-reason healthy measurements that the canonical guard counts toward CPU recovery.",
+  "reproduction": {
+    "source": "test-results/hosted-guest-39386228485-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-39386228485-1.jsonl",
+    "samples_utc": [
+      "07:30:08.249 CPU_PENDING RESOURCE_CPU_BUSY .92",
+      "07:30:24.642 CPU_PENDING [] .02",
+      "07:30:40.840 CPU_PENDING [] .07",
+      "07:30:57.011 CPU_RECOVERED [] .13"
+    ],
+    "red_before_fix": "node --test --test-name-pattern='three healthy guard samples' tests/browser/guest-chat-store-sequence.test.mjs exited 1 guest_post_setup_resource_readiness_timeout",
+    "green_after_fix": "MATRX_GUEST_RESOURCE_JOURNAL=<archived actual journal> node --test --test-name-pattern='guest readiness counts|guest recovery readiness|post-setup readiness' tests/browser/guest-chat-store-sequence.test.mjs exited 0, 3 passed"
+  },
+  "change": "Count finite, reason-free CPU_PENDING recovery samples as healthy; reset on nonempty CPU reasons; reject malformed samples and reasons; preserve final fresh requireNativeResourceHealth probe and policy deadline.",
+  "negative_evidence": "Tests reject second busy reset, three empty pending samples with canonical health still pending, memory/disk watch unsafe, missing/nonfinite/non-numeric CPU samples, and invalid pending reasons.",
+  "sibling_census": "scripts/stabilization-resource.mjs canonical watcher counts every reason-free sample and requires healthySamplesToResume; scripts/hosted-resource-readiness-loop.mjs samples direct measurements; scripts/hosted-remote-admission.mjs already recognizes CPU_PENDING as a guard sample; tests/browser/native-resource-boundary.mjs retains CPU pending refusal until recovered. No same-class sibling edit required.",
+  "checks": [
+    "actual archived-journal replay green",
+    "node --test tests/browser/guest-chat-store-sequence.test.mjs: 42/42 pass",
+    "pnpm compile pass",
+    "pnpm exec biome check on both files pass",
+    "git diff --check on both files pass"
+  ],
+  "files_sha256": {
+    "tests/browser/guest-chat-store-acceptance.mjs": "7a810ca748ba4001c38bd6eb0dd526bb43b3853bf5b2007f12a572b874c61311",
+    "tests/browser/guest-chat-store-sequence.test.mjs": "be2c0a9747ac5735edd0fd0dd6092cd8580f058614c340a1bfbae08439e0f6b4"
+  },
+  "limits": "No native rerun, hosted dispatch, release, Store install, product acceptance, or claim of D-261504/D-244 closure. No commit until root's fresh-peer GO."
+}

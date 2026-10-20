@@ -12,15 +12,22 @@ published0.2.205, draft0.2.479 rejected, no pending, Upload enabled. Vault login
 no human-only access blocker is established. No new upload/submission has occurred.
 [Daily observation](reports/store-daily-20261020.json) also bounds official mail search to the October11 rejection only. Never infer private review state from old email/public listing or this checkpoint.
 
-Current prepared candidate **0.2.570**: guarded hosted release39382974979 SUCCESS;
-source/tag `d1c80e5e409ebe73ce35f13639e1074360bfaf7f`, artifact12246251773,
-Store ZIP SHA256 `9829e0bf9a05383e425be487a6c317a4bdc44863b9068ff4c79c50a97362af7f`.
-[Terminal package checkpoint](reports/release570-hosted-preparation-20261020.json) verifies
-receipt/tag/ZIP bytes, all strict gates,2520tests/compile/fullLint/schema/tool/Store policy.
-This is package preparation, not Store upload or real guest/member/reviewer acceptance.
-Exact570 normal preflight also refuses post-release source history: the later Linux preparation/test-script changes fall outside the documented documentation-only reuse policy, although no Mac product-runtime delta was found. [Diagnosis and ruling](reports/candidate570-runtime-boundary-20261020.json). Prepare one replacement candidate after the completed source unit/CI; freeze executable/test/manifest changes through its native acceptance. No route waiver, native run or product pass occurred. Candidate568 evidence below remains separately bounded.
-Frozen568 Store/agents.170 cannot stand in for current570: current normal native preflight
-refuses runtime-source drift ([preflight](reports/candidate568-values-preflight-20261020.json)).
+Current prepared candidate **0.2.571**: guarded hosted release39385321887 SUCCESS;
+source/tag `6501f22db8c35a35ed4e535a8af6c0dc449f8df9`, artifact12247052065,
+Store ZIP SHA256 `26c8a1bfcde585e8ef29abee985648c20bc93be71213a3626e55ffa48124e9c7`.
+[Package/native checkpoint](reports/release571-native-capacity-20261020.json) verifies normal
+receipt/tag/ZIP/strict gates and normal guest planner PASS. No Store upload/submission.
+One exact571 native B39386228485 is terminal resource-invalid at post-setup readiness BEFORE
+Chat/Values UI. Package/browser finals valid, guest finalinvalid; backendd128 stable. No product
+pass/failure, no repeat attempt. Today's published205/live-server guest check is still pending;
+prior .205 evidence cannot substitute a current observation.
+**[D265](defects/EXT-D-0265.json) is a confirmed readiness-harness defect, in fix.** Actual journal
+shows CPU_PENDING with empty reasons at2% and7%, then CPU_RECOVERED13%: canonical watchdog
+recognized three healthy samples, but guest helper reset the first two and counted only one.
+Repair that counting class with source RED/GREEN and fresh peer; preserve all thresholds,
+three-healthy requirement, fresh health check and deadline. No blind retry or product credit.
+Executable/test/manifest source freeze resumes after this unit; current571 normal source
+eligibility must be rechecked after harness changes. Older568/570 evidence remains separate.
 Before upload repeat current source/runtime/package/private Store checks and real acceptance.
 
 Exact568 candidate guest runs are terminal and independently reviewed:
@@ -89,7 +96,7 @@ Bounded observations recorded; no wholeT08 or broadScrape/SEO/reload/mode/Store 
 through synchronized backend merge `db8f6d8f271de5f53bc853eb1fb23b4695c2fda0` after
 [fresh source peer](reports/member261-observability-fresh-review-20261020.json) and postmerge41
 focused passes/Ruff/diff check. Concurrent log-drain drop guard is repaired with task-scoped
-ContextVar and installed-handler blocked-drain RED→GREEN proof. Current live version endpoint reports `181b9d7fd340f21e2b73f7b4945f6999c1f49d6d`
+ContextVar and installed-handler blocked-drain RED→GREEN proof. Earlier live version endpoint reported `181b9d7fd340f21e2b73f7b4945f6999c1f49d6d`
 (built04:50:03UTC), which includes diagnostic source by Git ancestry. Actual runtime phase-marker
 availability is now bounded-observed in CloudWatch:144markers/no pagination across3time-correlated
 resumes with handoff781/710/963ms; opaque IDs prevent definitive owned-request join. These traces

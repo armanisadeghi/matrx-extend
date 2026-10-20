@@ -1,0 +1,50 @@
+{
+  "id": "EXT-D-0265",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10", "EXT-F-2013-T13"],
+  "surface": "Hosted native guest Chat resource-readiness harness",
+  "auth_mode": "guest; harness only, not product behavior",
+  "title": "Healthy CPU recovery-pending samples reset guest readiness streak",
+  "severity": "S2: blocks native guest acceptance on a host that recovered under the unchanged canonical resource policy",
+  "priority": "P0: repair false refusal before further guest launches or Store acceptance",
+  "state": "in-fix",
+  "owner": "stabilization-coordinator",
+  "reproduction": [
+    "Use native run39386228485 exact571 release39385321887 source6501f22db8c35a35ed4e535a8af6c0dc449f8df9, policy healthySamplesToResume=3 and hostedReadinessWaitSeconds=90. Raw and sanitized journals retain the actual timestamped sequence.",
+    "Replay the guest readiness journal: CPU_PENDING reasons[RESOURCE_CPU_BUSY]/busy.92, then CPU_PENDING reasons[]/busy.02, CPU_PENDING reasons[]/busy.07, CPU_RECOVERED reasons[]/busy.13. Each sample has normal pressure, memory/disk headroom and no swap growth.",
+    "Canonical watchdog recovers after those three healthy samples, but waitForNativeResourceReadiness resets the first two because their event code is still CPU_PENDING. It counts only the RECOVERED event as one sample.",
+    "A later busy.76 resets the sequence; only two further healthy samples fit before deadline. Native setup times out before Chat or Values UI."
+  ],
+  "expected": "Count canonical healthy CPU recovery-pending measurements toward the same required three consecutive healthy samples, while requiring current canonical checkHealth success and preserving every unsafe reset/refusal and deadline.",
+  "actual": "The helper resets the streak on every CPU_PENDING event, even those carrying an empty reasons array and a healthy sample, effectively requiring additional healthy measurements beyond the canonical recovery requirement.",
+  "evidence": [
+    "docs/stabilization/reports/release571-native-capacity-20261020.json",
+    "docs/stabilization/resource-journals/hosted-guest-39386228485-1.jsonl",
+    "tests/browser/guest-chat-store-acceptance.mjs"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-20T07:39:08.159314+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Exact actual journal and source show canonical recovery discarded by readiness helper."
+    },
+    {
+      "at": "2026-10-20T07:39:08.159314+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Self-contained reproduction; source-only harness defect separate from product D244/D261."
+    },
+    {
+      "at": "2026-10-20T07:39:08.159314+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Implementation lane assigned actual-source RED/GREEN replay and unsafe/malformed negative guards."
+    }
+  ],
+  "verification": {
+    "native": "Original571 test resource-invalid before UI. No Chat/Values product verdict. Repaired native replay still required.",
+    "source": "Implementation and fresh independent peer pending."
+  },
+  "next_action": "Fix and independently review actual helper/sequence tests, retain all resource thresholds/deadlines; no blind retry or product health credit. Current571 source eligibility must be rechecked normally after any harness changes."
+}
