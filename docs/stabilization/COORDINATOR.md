@@ -26,10 +26,17 @@ resource finals are valid, guest finals invalid/exit3; no retry. B backend befor
 is stable but unexercised; A has no backend capture. Config attestation remains NOT_ATTESTED
 (advisory missing dotenv). No Store upload/submission. Initial [CDP diagnosis](reports/cdp573-startup-diagnosis-20261020.json) and bounded [escalation](reports/cdp-startup-escalation-20261020.json) are complete: causal Chromium phase unknown.
 Successful controls also had CPU pending; no source fix or threshold increase is justified.
-Existing dedicated current-development startup diagnostic can add the missing bounded post-timeout
-endpoint observation without reconnect/retry, preserving the original8s failure. Sol
-`cdp573_startup_diagnosis` owns preflight only, held on fullCI39401604000/exact development
-artifact, fresh spend/current clean source and root GO. No new native dispatch has occurred. Earlier572 resource-valid guest T10 replies
+[Current startup diagnostic](reports/startup39405302325-native-20261020.json)39405302325 is terminal SUCCESS;
+[fresh independent peer](reports/startup39405302325-independent-peer-20261020.json) verifies headed
+Chromium, CDP3034ms within unchanged8000ms, panel-ready and all package/browser/startup finals
+valid/resourceInvalid=false. Exact current CIdevelopment95d7ba509 / fullCI39404058065 / artifact12255454102.
+It did not exercise the late endpoint branch, prove causal repair, or test a product case.
+One new bounded guest B39407214496 is pinned to that95d development artifact: T10 three turns
+and conditional original ValuesEscape only. Values absent/exercisedfalse is unverified; fullT13
+close/reopen/member/fullview are outside this run. Owner `current_guest_values_native_b`; no retry.
+Latest dependency adoption is separately source/peer verified for the next candidate, not credited
+with B95d behavior. No account/spend block or human-only access blocker is established.
+ Earlier572 resource-valid guest T10 replies
 remain separately bounded;573 cannot inherit them. Non-admin D261504 remains unresolved.
 **[D265](defects/EXT-D-0265.json) is narrowly CLOSED after fresh independent original native retest.**
 At native setup readiness08:21:05, full11-field healthy CPU_PENDING .03/.53 then CPU_RECOVERED .11
@@ -146,7 +153,7 @@ awaits before response creation, no in-flight per-await correlation (timing pers
 run finalization). New deployedf8dd has no relevant resume/pool/claim repair or mandatory wire
 change relative to20bd. A fresh pass is current symptom evidence, not causal fix attribution.
 If failure recurs, request-correlated preparation phase timing is the next discriminator; no
-speculative client retry, pool cap or timeout change. Current member behavior remains unverified.
+speculative client retry, pool cap or timeout change. Current member behavior remains unverified. The later current-development startup diagnostic is healthy setup evidence only, not member repair or permission to skip fresh admission.
 [Capacity diagnosis](reports/member-host-capacity-diagnosis-20261020.json): two Intel member
 launches saturated CPU during browser startup with mixed Chromium/host work. Alternate allowed
 ARM hosts have also refused prior member runs; no proven larger/quiescent option exists.
@@ -217,9 +224,21 @@ opened authentication pages before canonical readiness. Two minimal awaits now r
 existing health boundary first; denial has zero auth-page side effects. Actual-source RED/GREEN,
 21/21 tests and a fresh different [final source peer](reports/auth266-final-source-peer-20261020.json)
 PASS; the first peer's missing normal-CI wiring finding is addressed. No new policy/threshold,
-startup-capacity improvement or D261 backend repair is inferred. Source pushed `e78a9b11c`; focused39401604211 and resource integration pass, but fullCI39401604000 FAILED two extracted-source test fixtures missing the new awaitNativeResourceHealth binding. Fresh Sol [fixture correction](reports/auth266-ci-seams-repair-20261020.json) supplies the imported helper to both source-extraction fixtures; entire exact failed step268cases/CDPscript passes locally. [Fresh peer](reports/auth266-ci-seams-fresh-peer-20261020.json) independently14/14 verifies readiness ordering/denial and preserved auth error/cleanup. Peer complete-step replay hit a separate pending-promise runner observation, leaf/rawlog unavailable; this is incomplete evidence, not a new reproduced product defect or waiver. Automatic fullCI after integration remains mandatory. Startup diagnostic remains undispatched until fresh exact-main CI/artifact pass; hold further tracked writes/pushes until diagnostic source pins.
+startup-capacity improvement or D261 backend repair is inferred. Source pushed `e78a9b11c`; focused39401604211 and resource integration pass, but fullCI39401604000 FAILED two extracted-source test fixtures missing the new awaitNativeResourceHealth binding. Fresh Sol [fixture correction](reports/auth266-ci-seams-repair-20261020.json) supplies the imported helper to both source-extraction fixtures; entire exact failed step268cases/CDPscript passes locally. [Fresh peer](reports/auth266-ci-seams-fresh-peer-20261020.json) independently14/14 verifies readiness ordering/denial and preserved auth error/cleanup. Peer complete-step replay hit a separate pending-promise runner observation, leaf/rawlog unavailable; this is incomplete evidence, not a new reproduced product defect or waiver. Corrected95d automatic fullCI39404058065 SUCCESS and focused39404058191 SUCCESS. Startup39405302325 is terminal valid; it did not exercise member auth. Source remains fixed/nativeunknown, not closed. Next package-adoption CI and Storecandidate acceptance are separate gates.
 The local cost checker still has baseline measured-spend/twin drift errors, distinct from the
 fresh official real-money72.23/100 status; no paid job is dispatched to bypass a spending refusal.
+
+
+**Next candidate package adoption is verified in source, not built or Store-tested.**
+[Adoption](reports/latest-release-adoption-20261020.json) and [fresh peer](reports/latest-release-adoption-peer-20261020.json)
+verify agents175, data83, design-system238, kit19, records108, plus transitive alchemy23.67 and
+rich-content2.235. All15 direct declarations remain latest; installed26-package graph is current
+exactly once, frozen install/compile/freshness pass. agents174→175 preserves the Values repair
+source. Minor incidental electron-to-chromium1.5.460→461 is accepted as pnpm transitive patch
+metadata, no manifest override/downgrade/source callsite change; no product pass inferred.
+Root integrates the reviewed lock with ordinary CI. Then a fresh release-only owner prepares the
+next guarded hosted Storecandidate and current guest/nonadmin/reviewer acceptance. Do not upload573
+from stale source or infer completed acceptance from startup/CI/this lockfile.
 
 
 1. **D258 closed narrowly**, source `ff105b712`, exact568 original scroll479 native PASS above. Measured
@@ -239,7 +258,7 @@ fresh official real-money72.23/100 status; no paid job is dispatched to bypass a
    [Final peer](reports/member566-click-boundary-peer-20261019.json). The567 member run stopped
    resource-invalid before Chat, so no member product or hidden-target fix closure is supported.
 4. **D261 triaged**, real566 member first-turn504 unresolved. After current A/B finish, prioritize
-   one resource-valid current-candidate member run with passive transport before send, actual selected model,
+   one resource-valid fresh eligible Storecandidate member run with passive transport before send, actual selected model,
    approved identity/org, before/after backend SHA and real terminal reply/follow-up. Require a
    quiescent admitted host;567 member CPU invalidation was not a product failure. Fresh-direct-member
    versus original guest→member sequence is a discriminator, not interchangeable closure evidence.
@@ -273,12 +292,13 @@ Personal Chrome profile8 keeps dev`cihdmkcdjjckfhjpgoedmgfpoljebaml`0.2.565 load
 Store`hnfolienncfklkgmdjjmhhegglimlamg`0.2.205. Last actual reload:
 CI39342629514/artifact12228829443/source`199e2e738ac928b661c8f1a55f1d4dcc6ddff440`,
 tree`f5c2313bc27330260b029824b178e1f667cd28e98aa23307d54531a8b6f607bf`.
-Latest verified development568 artifact12239987691 is from successful CI39366909321/source501998549,
+Latest local imported development568 artifact12239987691 is from successful CI39366909321/source501998549,
 ZIPsha256a19f1014…afc9b13/treee84e3500…6bdc5fd; imported through normal helper and used in
 independently reviewed native Scrape run39372274799. New lock refresh belongs to concurrent contributor. It is not promoted or
 reloaded in the personal profile; last native loaded observation remains565. Later main changes
 are evidence/docs only; never claim a current installed copy from source/artifact proof. Import with current-test-artifact, promote
 with promote-ci-dev-artifact and guard actual reload/path/ID/version/pins after local recovery.
+Current remote/native-verified CIdevelopment573 artifact12255454102/source95d7ba509/fullCI39404058065 is newer; it is not imported/promoted/reloaded in this personal profile.
 Personal principal is a real personal admin; never log it out. Use owned profiles for auth tests.
 
 ## Integration and continuity

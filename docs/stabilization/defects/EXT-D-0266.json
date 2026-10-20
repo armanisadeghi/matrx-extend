@@ -76,8 +76,17 @@
     }
   ],
   "verification": {
-    "source": "Original21/21 and sourceRED/GREEN+CIwiring verified. e78 fullCI39401604000 failed missing imported dependency in two source-extraction fixtures. Repair now independently14/14; builder entire exact step268cases/CDPscript pass. Full post-repair automaticCI still REQUIRED. Peer separate local native-harness pending-promise observation lacks leaf/rawlog, returned as incomplete evidence; not a proved new product defect.",
+    "source": "Source oldRED/currentGREEN and independent21/21 passed; fullCIe78 failed two extracted-source fixture dependencies, repaired95d7ba509f4e033c0ee0281d1dbceae15cb0b433. Fresh independent14/14 authsemantics pass, builder268case completeCIstep pass. Automatic fullCI39404058065 SUCCESS bothchecks/resourceintegration, focused39404058191 SUCCESS on exact95d. Separate local pendingpromise peer observation remains incomplete (no leaf/rawlog), no skip or waiver.",
     "native": "UNKNOWN. Frozen573 native jobs do not contain this uncommitted harness repair; no capacity or D261 fix claim."
   },
-  "next_action": "Integrate/push verified fixture correction, await green automatic fullCI and exact-main development artifact, hold tracked mutations until guarded existing startup diagnostic pins source. Native/product/D261/initialCDP causality remains UNKNOWN."
+  "next_action": "Source/CI verified; original native auth health-before-page behavior remains unverified. Successful setup39405302325 is not auth proof. Next eligible Storecandidate member acceptance must exercise canonical health before login; D261504 remains separate and unresolved.",
+  "source_integration": {
+    "readiness_commit": "e78a9b11cda25f7bc5b4c76a719d3f42a397f876",
+    "fixture_correction_commit": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+    "full_ci_run": 39404058065,
+    "full_ci": "success",
+    "focused_run": 39404058191,
+    "focused": "success",
+    "development_artifact": 12255454102
+  }
 }
