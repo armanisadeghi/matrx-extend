@@ -1,0 +1,23 @@
+{
+  "task_id": "guest-reply-screenshot-diagnosis-20261020",
+  "lane": "EXT-D-0235 guest native screenshot eligibility",
+  "status": "SOURCE_REPAIR_AND_PEER_NUMERIC_REVIEW_PUSHED_NATIVE_PENDING",
+  "cause": "Chromium reported focused Range right=336.02 CSS px against a horizontally clipped ancestor right=336; the 0.02 px fractional excess rejected a visibly painted latest-turn code. This is a harness false negative, not a wrong turn, missing fixture, or invisible product reply.",
+  "evidence": {
+    "run": "/Volumes/Samsung2TB/code/matrx-extend/test-results/guest-chat-store-161e333b-63ec-409d-8d27-7443985e1a31.json",
+    "actual_frame": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-1EKP3S/guest-chat-same-conversation-followup.png",
+    "failure_frame": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-1EKP3S/guest-chat-failure.png",
+    "diagnostic": "article/code/heading/focused-range/viewport true; only focused_text_unclipped false; line right 336.02, clipping right 336"
+  },
+  "own_shas": ["cecc19e4f", "6bd00727e"],
+  "old_RED_new_GREEN": "Initial 0.02 CSS px native-geometry case failed on pre-cecc helper and passed after repair. Peer-boundary cases reject +0.3 CSS px on all four clip edges at DPR 1 and +0.07 CSS px at DPR 4; +0.02 passes at DPR 1/4. Previous cecc fixed 0.25 CSS px would incorrectly accept the +0.07 case at DPR 4. Wrong code/turn, offscreen, unpainted pane and 3 px clip remain rejected.",
+  "verification": "50 focused guest tests pass locally; pnpm compile, Biome changed files and git diff --check pass; source commits pushed. Exact cecc acceptance CI passed run 39438789593; 6bd focused CI not yet established.",
+  "remaining_native": "Fresh source-bound exact-artifact native guest retest; inspect both code- and heading-focused frames and recorded DPR. Post-reload and Values cases remain unverified by prior .576 run.",
+  "cleanup": "No new browser, model call, profile, lease or heavy job; owned source paths clean after push. Shared checkout has unrelated concurrent dirty paths.",
+  "numeric_basis": "Source and DOM Range/clip rectangles are CSS px. The actual run differed by 0.02 CSS px and visibly painted the full code. 0.25 / max(1, devicePixelRatio) CSS px caps allowance at one quarter raster pixel at zoom/high-DPR; diagnostic now records actual DPR. Exact native scale has not yet been observed post-fix.",
+  "peer_rulings": {
+    "numeric_boundary": "addressed in 6bd00727e with four-side near-boundary and high-DPR tests",
+    "full_heading_paint": "First capture contract proves focused requested code in latest terminal assistant reply; semantic check also requires heading. A separate heading-focused capture is explicitly next in driver, but old run failed before reaching it. Do not claim full-heading visual proof until native retest inspects that second frame.",
+    "post_fix_native": "pending; source checks cannot close it"
+  }
+}

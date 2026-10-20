@@ -44,7 +44,9 @@
     "docs/stabilization/reports/guest575-native-b-20261020.json",
     "docs/stabilization/reports/guest575-raw-fresh-peer-20261020.json",
     "docs/stabilization/reports/values244-mobile-causal-repair-20261020.json",
-    "docs/stabilization/reports/values-mobile-source-fresh-peer-20261020.json"
+    "docs/stabilization/reports/values-mobile-source-fresh-peer-20261020.json",
+    "docs/stabilization/reports/values-focused-native-ui-20261020.json",
+    "docs/stabilization/reports/values-native-fresh-peer-20261020.json"
   ],
   "severity": "S3: context inspection dialog dismissal by Escape fails; the three Chat replies completed.",
   "priority": "P2: mobile source repair published/adopted; exact new-candidate native retest and adjacent behavior remain.",
@@ -97,8 +99,8 @@
       "reason": "Verified source cause is 360px mobile BottomSheet missing shared Escape handler; old mobile RED/new70/70 GREEN and independent source peer PASS. Shared ca1c252bee published agents0.59.176, extension adoption 997f9efbe. Source-fixed only; exact post-fix trusted native unknown."
     }
   ],
-  "next_action": "After package0.59.176 adoption and final synchronized gates, prepare one meaningful guarded candidate; independently retest original 360px mobile BottomSheet with one trusted Escape plus desktop/inline neighbors. No native closure or Store claim until observed.",
-  "current_artifact_boundary": "0.2.575/source60bc14ea/39422519149 is pre-mobile-fix and original T13 FAIL. New shared cause/fix ca1c252beec48565c47288b33e1adbdffbd816a3; extension adopts agents0.59.176 at 997f9efbe; post-fix native UNKNOWN.",
+  "next_action": "After reviewed final driver and current packages, prepare exact-source hosted candidate; independently retest original guest first-Escape plus close/reopen/full-view and adjacent paths. Keep fixed until original and surrounding retest pass.",
+  "current_artifact_boundary": "Original guest T13 FAIL on pre-mobile-fix0.2.575. Agents0.59.176 adopted997f9efbe. Two resource-valid signed-in-admin native development0.2.576 checks observed first trusted Escape closing Values; fresh peer also observed focused Open full view tooltip. Guest original/full T13/full-view/reload remain UNKNOWN. No retest-pass or closure.",
   "source_harness_readiness": {
     "status": "source fix/peer PASS; adopted agents0.59.176; fullCI39427753847 SUCCESS; post-fix native UNKNOWN",
     "summary": "Immediately prove documentfocus/visiblecompactfocus/singleopen/noothervisible dialogs before trustedEscape; unavailablefocus refused before key, distinct harnesspreconditionerror. Require zero open/visible compactdialogs +trustedkeydown after. Fullviewcontrolfocusedwithoutactivation; actualnativefocus sideeffectsunknown.",
@@ -106,5 +108,18 @@
     "report": "docs/stabilization/reports/values244-focus-guard-20261020.json",
     "commit": "75ad12b022d7968cf7b883ebd78f34789894062f",
     "ci": "Immutable tag CI39381851078 SUCCESS at b284 includes guard; new Store570 release39382974979 strict gates PASS atd1c80e5e409ebe73ce35f13639e1074360bfaf7f. Native570 UNKNOWN."
+  },
+  "partial_native_observation": {
+    "mode": "admin",
+    "behavior": "one trusted Escape closes mobile Values sheet, including focused Open full view with visible tooltip",
+    "version": "0.2.576 development",
+    "independent_peer": "docs/stabilization/reports/values-native-fresh-peer-20261020.json",
+    "limits": [
+      "Guest original reproduction untested after mobile source fix",
+      "Full case including close/reopen, full-view surface, measured360CSS width and fresh profile not verified",
+      "Peer did not independently inspect source/version; runtime identity linked to separate personal refresh receipt",
+      "Inline screenshots observed but not saved"
+    ],
+    "resource_final_decisions": "both admitted true, resourceInvalid false, exit0, valid"
   }
 }

@@ -1,0 +1,36 @@
+{
+  "task_id": "screenshot-guard-fresh-peer-20261020",
+  "commit": "cecc19e4fd983aac29a3ba7c632ebe3e295270df",
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "independent read-only review; no test rerun, browser launch, or file changes in repository",
+  "verdict_A_behavior_spec": {
+    "result": "PARTIAL; source repair is plausible and prior native failure was a false negative, but post-fix native acceptance remains UNKNOWN",
+    "evidence": [
+      "Inspected test-results/native-sidepanel-qa-1EKP3S/guest-chat-same-conversation-followup.png (360x421): requested follow-up code is visibly painted within the chat panel; screenshot predates cecc19e4.",
+      "Exact run diagnostic records line.right=336.02, clipping ancestor right=336, viewport width=360; all other pre-fix checks passed. This matches the code's 0.25 CSS-pixel allowance.",
+      "Helper selects the last visible assistant article, requires expected code/heading in its semantic text, and requires focus Range in viewport and outside overflow clips. Regression exercises a different code (wrong-turn proxy), 3px clipping, offscreen range, and opacity-zero pane."
+    ],
+    "gaps": [
+      "The whole answer/heading is not required to be painted: only focus (default code) gets range geometry. The inspected native frame shows the code, while following heading/body text is partly under the composer overlay. If acceptance means the complete requested reply or heading must be visible, current source does not prove that.",
+      "No native retest of the post-fix source/artifact is present; source tests and the pre-fix screenshot cannot establish post-fix screenshot acceptance."
+    ]
+  },
+  "verdict_B_code_quality": {
+    "result": "PARTIAL",
+    "positives": [
+      "Change is narrowly scoped to clipping tolerance and keeps viewport bounds strict; both axes and all four clipping edges use the tolerance.",
+      "Focused acceptance CI for this exact SHA passed: run 39438789593 (acceptance job, success). Broader CI run 39438789657 was in_progress at review time; unit tests and subsequent jobs pending."
+    ],
+    "gaps": [
+      "Tolerance coverage jumps from +0.02 to +3 CSS px. No exact/near 0.25 boundary, just-over-boundary, or negative-side tests establish the intended cutoff independently on left/top/bottom.",
+      "0.25 is a fixed CSS-pixel heuristic with no documented DPR/zoom calibration. CSS geometry is reported in CSS px while screenshot rasterization is device-pixel based; at high effective DPR/zoom this may tolerate more than a subpixel of painted clipping. Native post-fix evidence should cover actual configured scale, or tolerance should be justified against it."
+    ]
+  },
+  "automatic_status": {
+    "focused_acceptance": "PASS for exact source SHA cecc19e4fd983aac29a3ba7c632ebe3e295270df; https://github.com/armanisadeghi/matrx-extend/actions/runs/39438789593",
+    "general_CI": "IN_PROGRESS at observation; https://github.com/armanisadeghi/matrx-extend/actions/runs/39438789657",
+    "duplicate_suite_run": false
+  },
+  "native_post_fix": "UNKNOWN; exact-artifact fresh native retest and independent inspection required",
+  "recommendation": "Keep the source repair as a supported correction to the 0.02px false negative, but do not close visual acceptance from this evidence. Resolve whether full reply/heading paint is required; add boundary-side cases and verify at the native retest's actual DPR/zoom."
+}

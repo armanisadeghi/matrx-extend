@@ -52616,7 +52616,19 @@
               "status": "unverified"
             },
             "admin": {
-              "status": "unverified"
+              "status": "unverified",
+              "partial_observations": [
+                {
+                  "status": "bounded_control_pass_case_unverified",
+                  "behavior": "First trusted Escape closed Values sheet; independent native peer repeated with Open full view focused and tooltip visible",
+                  "evidence": [
+                    "docs/stabilization/reports/values-focused-native-ui-20261020.json",
+                    "docs/stabilization/reports/values-native-fresh-peer-20261020.json"
+                  ],
+                  "build_version": "0.2.576 development",
+                  "limits": "Original guest mode, full-view navigation, close/reopen,360CSS width and fresh-profile case remain unverified. Peer version/source not independently inspected; inline screenshots not saved."
+                }
+              ]
             }
           },
           "result_history": [

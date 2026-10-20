@@ -1,46 +1,65 @@
 {
   "schema_version": 1,
   "task_id": "data-t03-ci-dev-native-20261020",
-  "status": "normal_dispatch_guard_refused_source_drift",
-  "run": null,
+  "status": "native_attempt_terminal_auth_precondition_failed",
+  "run": {
+    "hosted_run_id": 39437922902,
+    "source_sha": "b44d643c9a8edab3cc0e1556eaa492c41f0e9d20",
+    "native_verdict": "unverified_no_T03_product_actions"
+  },
   "build": {
-    "source_sha": "e7f650c04abba15d945c4c1a4cdc899aec8d04b1",
-    "ci_run_id": 39431931395,
-    "artifact_id": 12269271196,
-    "tree_sha256": "82997fc536b79cbc0f15965c1e6bb58a8dc4818f32913577b21dfa43eae7f13e",
-    "plan": "passed exact CI artifact/provenance",
-    "main_source_sha": "1b07f72020983c4506ef62290eb95d7177b94966"
+    "ci_run_id": 39436145620,
+    "artifact_id": 12272232137,
+    "artifact_digest": "sha256:4927ba337ad52fd79c6f1e70d44c287b6ed1edac94a3f322fe3b5eddbf537491",
+    "runtime_tree_sha256": "9b61c50ae53ca3957b4e5d7b706c2349ae4d908b20fc0f30bfe63c34922c2760",
+    "artifact_zip_digest_matches": true
   },
   "roles": {
     "target": "ordinary member",
-    "verified": false,
+    "auth_identity_verified": false,
     "selected_organization_verified": false
   },
-  "cases": {
-    "verdict": "unverified",
-    "intended_new_coverage": [
-      "EXT-F-2005-T03 reload lifecycle",
-      "post-reload extract/copy bytes",
-      "exact-owned cleanup/readback"
-    ],
-    "actual_new_coverage_credit": 0
+  "case": {
+    "id": "EXT-F-2005-T03",
+    "stage": "member_auth",
+    "auth_stage": "member_organization_selection",
+    "safe_failure_code": "d87_member_organization_option_unavailable_not_observed",
+    "visible_org_options": 1,
+    "approved_org_exact_matches": 0
   },
   "resource": {
-    "hosted_run_created": false,
-    "normal_dispatch_guard": "HOSTED_MEMBER_DATA_SOURCE_DRIFT"
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "decision": "child_failed"
+    }
   },
   "evidence": {
-    "normal_plan": "passed",
-    "normal_dispatch": "refused before workflow launch",
-    "artifact_source_sha_differs_from_synchronized_main": true
+    "native_report_sha256": "86e8bd74e64db8f43d9c99db9c04d21b94e75b657c75aee3261c7ddc761c227d",
+    "raw_artifact_dir": "/tmp/data-t03-native-39437922902.UFdJkQ",
+    "raw_artifact_zip": "/tmp/data-t03-native-39437922902.UFdJkQ/hosted-guest-artifact.zip"
   },
   "cleanup": {
-    "secret_or_magic_link_staged": false,
-    "fixture_or_browser_started": false,
-    "owned_resources": 0
+    "data_pattern_save_reached": false,
+    "data_rows_created": 0,
+    "local_magic_link_file_absent": true,
+    "github_secret_name_absent_verified": true,
+    "workflow_terminal": true
   },
   "limits": [
-    "No T03 product result or coverage credit.",
-    "Do not retry or waive source guard; obtain a fresh current-source CI development artifact first."
+    "No picker, save, reload, extraction, clipboard, or Data-row cleanup behavior was exercised.",
+    "Resource-valid infrastructure does not establish T03 product behavior.",
+    "No retry, source change, or admission waiver. Reconcile the approved organization option before a separately authorized attempt."
   ]
 }

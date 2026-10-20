@@ -1,0 +1,33 @@
+{
+  "case": "EXT-D-0244 focused native Values first-Escape check",
+  "mode": "signed-in admin; account label observed",
+  "verdict": "pass: one trusted Escape closed the open Values bottom sheet",
+  "runtime": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.576",
+    "loaded_from": ".output/chrome-mv3-dev",
+    "profile": "existing personal Chrome profile",
+    "target": "existing public Matrx Extend Demo Page tab"
+  },
+  "surface": {
+    "before": "Values bottom sheet open; 8 included",
+    "focus_target": "existing Inline max for Route Brief field; value unchanged",
+    "tooltip_visible": false,
+    "action": "one native CUA Escape keypress",
+    "after": "Values sheet absent; focus returned to extension content"
+  },
+  "resources": {
+    "run_id": "values-focused-native-ui-20261020",
+    "admitted": true,
+    "resource_invalid": false,
+    "decision": "valid",
+    "journal": "test-results/values-focused-native-ui-20261020/resource-browser.jsonl"
+  },
+  "limits": [
+    "Screenshot panel span was about 495 raster px; 360 CSS px not established because the standard resize handle had no observed effect.",
+    "Tooltip was not visible.",
+    "Open full view control interaction closed the sheet without showing a full-view surface; full-view Escape neighbor remains unverified.",
+    "No new conversation, AI request, sign-in, user-context change, or value-setting change."
+  ],
+  "evidence": "Native accessibility state and screenshot before/after the single Escape; screenshots were not saved."
+}
