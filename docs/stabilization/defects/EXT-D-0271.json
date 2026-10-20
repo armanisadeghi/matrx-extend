@@ -14,7 +14,7 @@
   "actual": "Legacy helper clicks Chat then a deleted compute control. Hosted39456820094 reports pointer_target_not_unique within this broad prerequisite; exact failed click was not captured.",
   "severity": "S2: acceptance harness prerequisite blocks product testing; no product defect established.",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "data_t03_stall_diagnosis",
   "cause": "PackageChat replaced the old Chat composer; member logical-org helper retained its removed compute trigger and Refresh path. Source/emitted-artifact absence plus controlled real-pointer reproduction establishes the harness class, not exact native click attribution.",
   "sibling_census": "Settings initial/reload and Scrape save use the same member helper and inherit repair. Showcase already uses real Tools/Records GET; its observer and native navigation are now shared, not copied.",
@@ -24,9 +24,11 @@
     "tests/browser/member-logical-org-proof.test.mjs",
     "tests/browser/showcase-request-boundary.test.mjs",
     "tests/browser/scrape-save-org-admission.test.mjs",
-    "docs/stabilization/reports/data-t03-next-native-20261020.json"
+    "docs/stabilization/reports/data-t03-next-native-20261020.json",
+    "docs/stabilization/reports/data271-native-retest-20261020.json",
+    "docs/stabilization/reports/data577-raw-peer-20261020.json"
   ],
-  "verification_status": "Focused67/67 pass. Old implementation RED; constant-success and wrong-organization scratch mutants RED. New regression registered in automatic focused CI. Full compile/CI, independent review and native replay pending. Zero Data acceptance credit. CPU/resource invalidation remains unexplained; no CPU fix claimed.",
+  "verification_status": "Obsolete Compute prerequisite removed through shared current Tools/Records proof; actual ordinary member real GET matched approved org/principal and finished HTTP200, then Data save/run/clipboard/cancel passed. Fresh source review and independent native/raw peer support the repaired harness class; historical exact failed click remains unknown and post-reload Data remains incomplete.",
   "transition_history": [
     {
       "at": "2026-10-20T16:41:20.169564+00:00",
@@ -51,6 +53,31 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Self-tested source repair with RED/GREEN and rejected mutants; native and independent gates remain open."
+    },
+    {
+      "at": "2026-10-20T17:06:38.112908+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Obsolete Compute prerequisite removed through shared current Tools/Records proof; actual ordinary member real GET matched approved org/principal and finished HTTP200, then Data save/run/clipboard/cancel passed. Fresh source review and independent native/raw peer support the repaired harness class; historical exact failed click remains unknown and post-reload Data remains incomplete."
+    },
+    {
+      "at": "2026-10-20T17:06:38.112908+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Bounded original prerequisite reproduction and surrounding pre-reload cases passed independent native execution and raw evidence review. Test-only repair is pushed; no separate product release required. Full EXT-F-2005-T03, D270 equivalence and actual Store installation are not implied."
     }
-  ]
+  ],
+  "next_action": "No remaining work for this prerequisite defect. Keep post-reload Data readiness/persistence investigation and broader coverage open in case T03.",
+  "native_retest": {
+    "run_id": 39461020039,
+    "build_version": "0.2.577",
+    "source_sha": "ebe922a655b0bff320d1457e6b598bae3a1c1b10",
+    "resource_invalid": false,
+    "native_child": "child_failed_after_pre_reload_passes",
+    "full_case": "incomplete",
+    "evidence": [
+      "docs/stabilization/reports/data271-native-retest-20261020.json",
+      "docs/stabilization/reports/data577-raw-peer-20261020.json"
+    ]
+  }
 }
