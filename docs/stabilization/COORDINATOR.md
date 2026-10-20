@@ -128,10 +128,15 @@ launches saturated CPU during browser startup with mixed Chromium/host work. Alt
 ARM hosts have also refused prior member runs; no proven larger/quiescent option exists.
 [Fresh escalation](reports/member-capacity-fresh-escalation-20261020.json) verifies personal/public
 repo, no registered self-hosted runners, larger Macs require organization Team/Enterprise; Linux
-is currently unsupported. Contained Linux sampler/readiness preparation is under independent
-source fix/review; all native Linux workflow/normal routes remain refused. Pressure, mapped
-window/pixel proof, ownership/stale cleanup and real Ubuntu evidence are activation gates, never a
-guard/billing bypass or member capability claim. CPU readings are one-second snapshots, not a continuous ten-second
+is currently unsupported. Contained [Linux sampler/readiness preparation](reports/linux-native-capacity-20261020.json)
+now has fresh source B PASS / A PARTIAL. Local actual tests13pass+3explicitLinuxskips; CPUcounter,
+unreadablecensus, reusedowner and invaliddeadline negative guards proved. Normal automatic UbuntuCI
+will capture real kernel/process evidence; no browser dispatch. Active guard/workflow/normal routes
+remain refused. Pressure/watchdog, typedjournals, mappedwindow/pixels, staleownership and the
+nonatomic census→PGID signal gap are activationholds, never productpasses or member support.
+Next source step: inspect exact automatic CI LINUX_KERNEL_INTERVAL and actualLinux-only tests;
+then independently review activeguard/ownership/display/strictBguesttuple/cost integration before
+any nativepilot. No retry of the two resource-invalid member launches without changed evidence. CPU readings are one-second snapshots, not a continuous ten-second
 measurement. Guard decisions remain valid; broader capacity needs reviewed infrastructure. Do not
 repeat the same launch blindly or weaken guard thresholds.
 

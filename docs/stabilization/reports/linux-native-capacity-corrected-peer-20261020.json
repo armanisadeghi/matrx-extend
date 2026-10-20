@@ -1,0 +1,69 @@
+{
+  "reviewer": "fresh independent corrected-source peer; zero authorship and no repository edits",
+  "frozen_diff": "/tmp/linux-native-capacity-unit1-fix1-20261020.diff",
+  "frozen_diff_sha256": "4ed833668db3d707ff0ae0ff9e877491c55fd95261dfde55543e49327b7aeae1",
+  "observed_head": "6438baa4e2a7bc4707bc71db4bcee7d8d2361c0b",
+  "package_consistency": "git apply --reverse --check of the exact frozen patch succeeded against the four owned working files; no reviewed-unit drift observed. HEAD was not used as the review delta.",
+  "prior_findings": [
+    {
+      "finding": "Per-field CPU counter regression could look healthy",
+      "status": "ADDRESSED",
+      "evidence": "sampleLinuxHost compares each of the eight counted /proc/stat fields across the interval. Direct call with user 100->90, system 50->70, idle 850->930 now throws RESOURCE_MEASUREMENT_INVALID:linux-cpu-interval. New targeted test calls the actual sampler; builder recorded assertion RED before fix and GREEN after fix."
+    },
+    {
+      "finding": "EACCES during /proc group census could falsely mean all members gone",
+      "status": "ADDRESSED",
+      "evidence": "linuxProcessGroupMembers now ignores only ENOENT/ESRCH. Direct EACCES injection throws EACCES, and the targeted stopLinuxOwnedGroup test propagates it rather than returning true. Builder recorded assertion RED before fix and GREEN after fix."
+    },
+    {
+      "finding": "Stale group leader with surviving descendant lacks owned cleanup proof",
+      "status": "NOT ADDRESSED, explicitly unsupported and fail-closed",
+      "evidence": "stopLinuxOwnedGroup requires the original leader PID and startTicks in its initial census and throws RESOURCE_MEASUREMENT_INVALID:linux-process-owner when absent. This prevents an unsafe stop but leaves stale descendant cleanup incomplete. The report lists it as an activation hold."
+    }
+  ],
+  "verdict_A_source_readiness": {
+    "result": "PARTIAL",
+    "scope": "Unit 1 source preparation only",
+    "passes": [
+      "Strict CPU and PSI interval handling, malformed-input refusal, and synthetic pressure refusal are present.",
+      "Normal Linux admission remains refused by the active darwin-only resource guard, Mac-only hosted workflow runner labels, and Mac-only remote admission checks.",
+      "Frozen patch reverse-applies cleanly; targeted node tests pass 11/11 on macOS."
+    ],
+    "missing_or_unverified": [
+      "Actual Ubuntu kernel interval, real Linux process-group cleanup, and Linux-specific branches of the test file remain UNKNOWN until automatic CI after a reviewed push.",
+      "Linux source is not connected to the active guard/readiness/normal dispatch path; no live product or native SIDE_PANEL acceptance was performed.",
+      "No independent three-consecutive-healthy Linux sample proof through waitForResourceReadiness.",
+      "Stale leader with surviving descendant remains unsupported; native route activation stays on hold."
+    ]
+  },
+  "verdict_B_safety_quality": {
+    "result": "FAIL",
+    "addressed": "The two prior Important false-health/false-cleanup defects are corrected at the actual function seam.",
+    "important_new_findings": [
+      {
+        "location": "scripts/stabilization-linux-host.mjs:215-235",
+        "problem": "After the initial root PID/startTicks check, stopLinuxOwnedGroup never rechecks that ownership identity before its SIGKILL escalation. If the original group disappears and that numeric group ID is reused during the grace interval, SIGKILL is sent to a different group. The final RESOURCE_GROUP_UNCONFIRMED error is too late to prevent the signal.",
+        "reproduction": "Using the actual function and configured 10s/5s deadlines with a deterministic clock, initial census returned root pid 101/startTicks 500; subsequent censuses returned pid 101/startTicks 900. It sent [SIGTERM,SIGKILL] and then threw RESOURCE_GROUP_UNCONFIRMED.",
+        "required_before_source_safety_pass": "Reconfirm stable ownership before each group signal and refuse on changed or unprovable identity; do not relax this to force-kill unsupported descendants."
+      },
+      {
+        "location": "scripts/stabilization-linux-host.mjs:205-235",
+        "problem": "The stop primitive validates linuxProcessPollMs but not ownedGroupGraceSeconds or ownedGroupKillWaitSeconds. Zero, missing, nonnumeric, or negative deadlines make waitGone skip the intended grace/poll window and can issue immediate SIGKILL to a group that is still alive.",
+        "reproduction": "Actual function with zero deadlines and a persistent member sent SIGTERM then SIGKILL immediately, then threw RESOURCE_GROUP_UNCONFIRMED. Zero deadlines are invalid for this safety contract but are accepted by the function."
+      }
+    ],
+    "test_assessment": "Corrected regression tests are real-function checks with observable refusal and builder's recorded RED->GREEN; the two new signal-safety cases have no covering guard. macOS 11/11 does not exercise Linux-only branches."
+  },
+  "checks": [
+    "sha256sum frozen patch: expected checksum matched",
+    "git apply --reverse --check frozen patch: PASS",
+    "node --test scripts/hosted-resource-readiness-loop.test.mjs: PASS 11/11 on macOS; Linux-only branches returned without execution",
+    "direct actual-function CPU regression: refused",
+    "direct actual-function EACCES census: refused",
+    "direct actual-function ownership-change and deadline reproductions: unsafe SIGKILL observed",
+    "git diff --check: PASS"
+  ],
+  "dispatch": "NONE",
+  "product_verdict": "UNKNOWN",
+  "linux_native_admission": "CLOSED; no Ubuntu/native browser/product pass claimed"
+}

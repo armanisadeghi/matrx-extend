@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T06:09:55.100840+00:00",
+  "updated_at": "2026-10-20T06:18:23.587720+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -29605,6 +29605,16 @@
             "Links/Schema/reload/digest invariance in this run"
           ],
           "existing_issue": "Preexisting unsaved warning belongs to D217; no fresh Save/Retry was invoked, so not a new authenticated RPC failure. See scrape-org-warning-triage-20261019.json."
+        }
+      ],
+      "source_change_observations": [
+        {
+          "id": "LINUX-CAPACITY-UNIT1",
+          "kind": "infrastructure_preparation_only",
+          "state": "source_peer_pass_linux_native_activation_refused",
+          "report": "docs/stabilization/reports/linux-native-capacity-20261020.json",
+          "real_ubuntu_evidence": "pending automatic source CI",
+          "product_behavior_credit": 0
         }
       ]
     },

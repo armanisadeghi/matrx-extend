@@ -1,0 +1,16 @@
+{
+  "reviewer": "fresh independent explicit-skip source re-verifier; zero authorship",
+  "test_sha256": "c9fdf5e28496ea1d160898d2cde4f7d51ea29a9135445b4f3140a11f35549a86",
+  "B_source_preparation_quality": "PASS",
+  "evidence": [
+    "Read current test source; all three live Linux bodies use node:test skip predicates for non-Linux.",
+    "Mac node --test: 16 total, 13 pass, 3 skipped, 0 fail; reasons identify /proc, CPU+PSI, and process groups.",
+    "Malformed process-stat parser assertion remains a separate executed test; Linux-only assertions and test bodies remain present.",
+    "Existing focused-acceptance command still includes this test; focused-acceptance.yml and ci.yml invoke pnpm test:focused-acceptance on Ubuntu runners.",
+    "LINUX_KERNEL_INTERVAL evidence marker remains in the real Linux interval test.",
+    "No test deletion or weakened assertion observed in current source; skip metadata only addresses the three OS-dependent cases."
+  ],
+  "A_source_readiness": "PARTIAL; genuine Ubuntu/kernel/process-group evidence UNKNOWN until Ubuntu run",
+  "activation": "NO APPROVAL; no product/full acceptance claim; Linux route remains refused",
+  "checks": { "node_test": "PASS", "git_diff_check": "PASS" }
+}

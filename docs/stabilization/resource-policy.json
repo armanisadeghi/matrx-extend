@@ -22,6 +22,9 @@
   "minimumFreeDiskGiB": 20,
   "maximumSwapGrowthMiB": 256,
   "normalMacPressureLevel": 1,
+  "linuxCpuMeasurementIntervalMs": 1000,
+  "maximumLinuxMemoryPressureStallUsPerSample": 0,
+  "linuxProcessPollMs": 250,
   "cpuAdmissionRationale": "Admission samples a full 60-second window: refuse average CPU busy >=75%, or average busy >=60% if ANY sample has normalized one-minute load >=0.75. Missing samples refuse. The reported admission load is the window maximum normalized to the final CPU count.",
   "allowedCommands": [
     ["node", "scripts/install-test-chromium.mjs"],

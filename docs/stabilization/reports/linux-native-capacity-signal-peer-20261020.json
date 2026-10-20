@@ -1,0 +1,70 @@
+{
+  "reviewer": "fresh independent scoped source re-verifier; zero authorship; no repository edits",
+  "frozen_diff": "/tmp/linux-native-capacity-unit1-fix2-20261020.diff",
+  "frozen_diff_sha256": "db4b5e20b8cc83dd65cec5a5167880735bb49b219ef024b77100542518348c4a",
+  "package_consistency": "SHA-256 matched; git apply --reverse --check succeeded against the owned working files, including the new source/report files. HEAD was not used as the review delta.",
+  "prior_findings": [
+    {
+      "finding": "Per-field CPU counter regression could look healthy",
+      "status": "ADDRESSED",
+      "evidence": "sampleLinuxHost rejects any of eight counted /proc/stat fields decreasing at scripts/stabilization-linux-host.mjs:123-130. Actual sampler test for user counter reset passes."
+    },
+    {
+      "finding": "EACCES during /proc group census could falsely mean all members gone",
+      "status": "ADDRESSED",
+      "evidence": "linuxProcessGroupMembers ignores only ENOENT/ESRCH at lines 181-189; actual census and stop tests propagate EACCES."
+    },
+    {
+      "finding": "Changed/unprovable leader ownership could permit SIGKILL of reused numeric group",
+      "status": "ADDRESSED for observable census states, with atomicity hold",
+      "evidence": "stopLinuxOwnedGroup checks the original live leader PID, PGID and startTicks on every nonempty census and immediately before both signals at lines 219-253. Fresh direct calls with ownership changing before SIGTERM, during grace, and before SIGKILL refused; observed signal sequences were [], [SIGTERM], [SIGTERM]. POSIX negative-PGID signaling still cannot atomically bind a census to its target."
+    },
+    {
+      "finding": "Missing, zero, nonfinite or negative cleanup deadlines could cause immediate escalation",
+      "status": "ADDRESSED",
+      "evidence": "Validation at lines 206-218 precedes all censuses/signals; direct actual-function calls for both fields and undefined, zero, NaN, Infinity and -1 all refused with zero signals. Monotonic performance.now wait at lines 235-241 and deterministic deadline tests bound ordinary grace/kill waits."
+    },
+    {
+      "finding": "Stale leader with live child cannot be proven owned and cleaned",
+      "status": "NOT ADDRESSED, explicitly unsupported and fail-closed",
+      "evidence": "Direct initial census with only child PID 102/PGID 101 threw RESOURCE_MEASUREMENT_INVALID:linux-process-owner and sent no signal. This remains a route-activation hold."
+    }
+  ],
+  "verdict_A_readiness": {
+    "result": "PARTIAL",
+    "scope": "Linux source preparation only",
+    "passes": [
+      "Synthetic actual-function CPU/PSI interval, pressure refusal, malformed input, ownership, deadline and bounded-wait checks pass on macOS.",
+      "Existing focused-acceptance.yml and CI checks jobs run the focused acceptance command on ubuntu-latest; this source test file is included in that command.",
+      "Active resource guard, hosted guest workflow and normal remote admission still refuse Linux."
+    ],
+    "missing_or_unverified": [
+      "Actual Ubuntu kernel interval, real Linux foreground process-group cleanup, and the three Linux-only test bodies are UNKNOWN until automatic CI after reviewed push.",
+      "Three consecutive healthy Linux samples, real pressure event, stale-descendant cleanup, native SIDE_PANEL window and all browser/product outcomes are UNKNOWN or unsupported.",
+      "Census-to-negative-PGID signal reuse race remains unresolved and is an explicit activation hold."
+    ]
+  },
+  "verdict_B_source_quality": {
+    "result": "FAIL for the frozen test package; signal/deadline implementation defects addressed",
+    "important_findings": [
+      {
+        "location": "scripts/hosted-resource-readiness-loop.test.mjs:339-380",
+        "problem": "Three Ubuntu-only tests return normally on macOS. node --test reports 15 pass, 0 skipped although kernel measurement and real group-stop bodies did not execute. The automated summary silently represents unexecuted checks as green, contrary to the forcing-function test reporting bar.",
+        "reproduction": "Ran node --test scripts/hosted-resource-readiness-loop.test.mjs on macOS: 15 pass, 0 skipped; inspected lines 344, 354 and 380, each early-returns on non-Linux."
+      }
+    ],
+    "required_before_source_package_commit": "Mark each Linux-only branch as an explicit node:test skip on non-Linux, or otherwise make the runner report them as unexecuted. Preserve the parser assertion on macOS if splitting that test. Re-run the focused test; expect 12 pass, 3 skipped on macOS, with actual Ubuntu results still pending."
+  },
+  "checks": [
+    "Frozen diff SHA-256 and reverse apply: PASS",
+    "node --test scripts/hosted-resource-readiness-loop.test.mjs: 15 pass, 0 skipped on macOS; three Ubuntu-only bodies did not run",
+    "Direct actual stopLinuxOwnedGroup identity/deadline/stale-leader reproductions: expected fail-closed results",
+    "pnpm exec biome check on two scripts: PASS",
+    "git diff --check: PASS"
+  ],
+  "disposition": {
+    "source_preparation_commit": "HOLD for explicit skip reporting correction; then ordinary light Ubuntu CI commit/push is suitable solely to obtain actual measurements, subject to the owner's normal review process.",
+    "linux_native_route_activation": "NO GO; all browser routes remain refused and source checks do not prove atomic process cleanup or native product acceptance.",
+    "product_verdict": "UNKNOWN"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "lane": "independent_capacity_plan_attack",
+  "status": "FIX-FIRST",
+  "reviewed_plan": "/tmp/linux-native-capacity-plan-20261020.md",
+  "reviewed_plan_sha256": "8644443f282483101207d58398fdd3b70ebf55ce2690fabb87c165ab48bf816b",
+  "base_commit": "1d73cd4248dce97696aaf376a4fe28d44e852f4c",
+  "scope": "Read-only capacity-source review; no dispatch, browser, API spend, secrets, product-health verdict, or repository edit.",
+  "reality_first": {
+    "observed": "Member runs 39354133238 and 39359003772 reached CPU_PENDING at 100% busy on four logical CPUs; the latter then hit 84% busy and a terminal resource-invalid final before Chat. A successful guest comparison also spiked to 100% then recovered. The current T08 no-signal Scrape route is B/guest/development-artifact only; the driver runs a title-only localhost page, requests headed Chrome, verifies a SIDE_PANEL target, uses a trusted Playwright click, and captures CDP screenshots. The existing guard refuses non-Darwin hosts.",
+    "sources": [
+      "docs/stabilization/reports/member-host-capacity-diagnosis-20261020.json",
+      "docs/stabilization/reports/member-capacity-fresh-escalation-20261020.json",
+      "scripts/stabilization-resource.mjs:272-273",
+      "scripts/hosted-scrape-route.mjs:27-45",
+      "tests/browser/scrape-seo-schema-empty-guest.mjs:20-26,96-133"
+    ]
+  },
+  "coverage": {
+    "mapped": 9,
+    "total": 9,
+    "requirements": [
+      "initial B-only guest no-signal T08 scope and frozen artifact",
+      "normal CLI and direct workflow refusal of broader Linux tuples",
+      "unchanged Mac refusal thresholds and timing",
+      "Linux CPU, memory, pressure, load, swap and disk measurement",
+      "owned process and Xvfb lifecycle",
+      "real headed Chrome and side-panel proof",
+      "at most two hosted lanes and 15-minute bound",
+      "workflow cost registry and real spend gate",
+      "separate source, pilot and product verdicts"
+    ],
+    "unmapped": []
+  },
+  "blocking": [
+    {
+      "id": "LINUX-VISIBLE-PANEL-ORACLE",
+      "finding": "The plan calls for a live window and visible pane but does not make X11 display visibility an acceptance predicate. Current native screenshots are Page.captureScreenshot from CDP targets, while observePanelVisibility is optional and a failed native-window lookup is recorded as measured:false. Thus a headed Chromium with a SIDE_PANEL target could produce passing target screenshots even if its Xvfb window is unmapped, hidden, or the side panel is not present in the displayed browser frame.",
+      "evidence": [
+        "tests/browser/native-sidepanel-qa-harness.mjs:1125-1166",
+        "tests/browser/native-sidepanel-qa-harness.mjs:1290-1300",
+        "tests/browser/native-sidepanel-qa-harness.mjs:1860-1887",
+        "tests/browser/scrape-seo-schema-empty-guest.mjs:342-386"
+      ],
+      "fix": "Freeze an explicit Linux pass oracle before build: prove the owned browser has a mapped, non-minimized X11 window on its private DISPLAY; capture the X display/window pixels showing the selected native side panel and correlate them with the owned Chrome window and SIDE_PANEL target. Missing mapping, display screenshot, or correlation must refuse native credit. Keep CDP screenshots as additional detail. Add a targeted mutation where CDP target screenshots succeed while the window is unmapped and assert failure."
+    },
+    {
+      "id": "LINUX-PRESSURE-CRITERION",
+      "finding": "The plan requires a Linux pressure reading and an independently reviewed conservative criterion, but does not state the source, sampling window, numeric unsafe boundary, or how it maps to the existing pressureLevel=1 normal verdict. The shared reasons() function currently treats any pressureLevel other than 1 as unsafe. Leaving the translation to implementation allows a permissive mapping that silently changes host refusal while all unchanged CPU/memory thresholds appear intact.",
+      "evidence": [
+        "scripts/stabilization-resource.mjs:272-363",
+        "docs/stabilization/resource-policy.json:18-27"
+      ],
+      "fix": "Specify the exact Linux kernel pressure source and conservative unsafe rule in the frozen route contract, including sample window, malformed/unavailable refusal, and typed journal representation. Review that rule independently against captured healthy and pressured samples, then prove a forced-pressure mutation blocks admission and active work without altering the Mac branch."
+    }
+  ],
+  "advisory": [],
+  "owner_only": [],
+  "verdict_limit": "This evaluates feasibility and false-pass boundaries of a capacity plan; it says nothing about current product health or future Ubuntu pilot outcome."
+}
