@@ -14,7 +14,7 @@
   "actual": "The picker opened with one visible organization option and zero exact matches for the hardcoded target. The hosted member-data path staged only the link; it did not pass the approved organization fixture. Authentication stopped at member_organization_selection before picker/save/run/clipboard/reload or Data-row creation.",
   "severity": "S2: native member Data acceptance blocked; no product malfunction established.",
   "priority": "P1: unblock T03 member lifecycle acceptance without selecting an unapproved organization.",
-  "state": "fixed",
+  "state": "closed",
   "owner": "data-member-org-diagnosis",
   "cause": "The shared Settings sign-in driver compared the member's organization against a fixed legacy name. The hosted member-data route, unlike member-chat, did not stage or forward the already approved reviewer organization configuration.",
   "sibling_census": "Member-chat already stages/reads the approved fixture and checks selected organization against actual transport. Other shared Settings sign-in callers retain their existing behavior; member Data now requires the private fixture explicitly.",
@@ -26,9 +26,11 @@
     "tests/browser/reviewer-chat-organization-boundary.test.mjs",
     "docs/stabilization/resource-journals/data-member-org-source-check-20261020.jsonl",
     "docs/stabilization/resource-journals/data-member-org-focused-20261020.jsonl",
-    "docs/stabilization/resource-journals/data-member-org-focused2-20261020.jsonl"
+    "docs/stabilization/resource-journals/data-member-org-focused2-20261020.jsonl",
+    "docs/stabilization/reports/data271-native-retest-20261020.json",
+    "docs/stabilization/reports/data577-raw-peer-20261020.json"
   ],
-  "verification_status": "Red source guard reproduced the hardcoded-name mismatch; repaired focused organization suite passed 25/25, compile and scoped Biome passed, guarded full focused suite passed 720 with 10 platform skips and a valid resource final. Fresh exact-source native member Data retest and independent source review remain pending. Original run gives no T03 product credit. The single visible option's identity was not captured, so native selection remains unverified.",
+  "verification_status": "Original stale approved-organization fixture blocker no longer reproduces: actual ordinary member approved-org selection and authenticated Records request passed, followed by org-bound HTTP201 Data save and adjacent pre-reload actions. Fresh source review/gates plus independent native tier and raw peer support this narrow test-fixture repair, not full Data lifecycle.",
   "transition_history": [
     {
       "at": "2026-10-20T14:29:53Z",
@@ -53,6 +55,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source guard red then green; compile, scoped Biome and full guarded focused suite green. Independent source review and fresh native acceptance pending."
+    },
+    {
+      "at": "2026-10-20T17:06:38.112908+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original stale approved-organization fixture blocker no longer reproduces: actual ordinary member approved-org selection and authenticated Records request passed, followed by org-bound HTTP201 Data save and adjacent pre-reload actions. Fresh source review/gates plus independent native tier and raw peer support this narrow test-fixture repair, not full Data lifecycle."
+    },
+    {
+      "at": "2026-10-20T17:06:38.112908+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Bounded original prerequisite reproduction and surrounding pre-reload cases passed independent native execution and raw evidence review. Test-only repair is pushed; no separate product release required. Full EXT-F-2005-T03, D270 equivalence and actual Store installation are not implied."
     }
   ],
   "source_verification": {
@@ -61,7 +75,7 @@
     "biome": "scoped check: pass",
     "focused": "720 pass, 10 platform skips, 0 fail; resource final valid"
   },
-  "next_action": "Diagnose the recorded member logical-organization pointer boundary before a changed-hypothesis guarded Data lifecycle run. Approved org selection diagnostic is not full authentication or independent native repair closure.",
+  "next_action": "No remaining work for this prerequisite defect. Keep post-reload Data readiness/persistence investigation and broader coverage open in case T03.",
   "current_native_observation": {
     "run_id": 39456820094,
     "source_sha": "d90bd7b778c17943d420f9e27ed386c10dc85bd2",
@@ -70,5 +84,17 @@
     "remaining_boundary": "authentication proof null; pointer_target_not_unique at member_logical_organization_proof",
     "cleanup": "exact run name and approved org readback zero rows/active/tombstones; local one-use file and temporary secret absent",
     "evidence": "docs/stabilization/reports/data-t03-next-native-20261020.json"
+  },
+  "native_retest": {
+    "run_id": 39461020039,
+    "build_version": "0.2.577",
+    "source_sha": "ebe922a655b0bff320d1457e6b598bae3a1c1b10",
+    "resource_invalid": false,
+    "native_child": "child_failed_after_pre_reload_passes",
+    "full_case": "incomplete",
+    "evidence": [
+      "docs/stabilization/reports/data271-native-retest-20261020.json",
+      "docs/stabilization/reports/data577-raw-peer-20261020.json"
+    ]
   }
 }
