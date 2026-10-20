@@ -1,0 +1,29 @@
+{
+  "review": "fresh independent source review of /tmp/settings-guest-admin-absence-focus-review-20261020.diff",
+  "verdict_A_acceptance_source": {
+    "status": "PASS_SOURCE_ONLY",
+    "findings": [],
+    "evidence": [
+      "The focused case is admitted in the workflow input, shell case gate, central HOSTED_ACCEPTANCE_CASES allowlist, development-artifact gate, isolated guest B-lane planner, child environment, native driver dispatch, and result upload.",
+      "The native driver uses guestSettingsState and the existing recordGuestAdminAbsence actual DOM probe on active guest Settings; its fresh and replacement observations require signed-out identity, Account/Organization/Appearance anchors, and absence of the advanced section, labels, and permission control.",
+      "The sequence uses the harness reloadExtension controller, requires management reload, retired targets, replaced worker and panel, complete retirement timeline, distinct panel target, and the same original normal page target.",
+      "T22 passes only on four passing criteria across both phases; T63 leaves the ordinary-member clause unverified and the report partial. T04 and the full Settings batch remain excluded.",
+      "The build report serializes exact source SHA, CI run and attempt, artifact ID, GitHub digest, version and tree hash after imported evidence validation. The focused wrapper refuses missing or mismatched source/run/artifact fields."
+    ],
+    "unverified": "No fresh hosted native run or live product observation was performed or supplied; source readiness is not product acceptance."
+  },
+  "verdict_B_quality_and_gates": {
+    "status": "PARTIAL_GATE_OPEN",
+    "findings": [
+      "The required workflow cost checker remains red on cross-repo aidream forecast and matrx-sandbox checker drift; the implementer report accurately states this. It must not be reported as a passed gate, though this patch only changes the existing workflow benefit/basis and adds no schedule or job.",
+      "The focused unit tests inject prepareSettings and reloadExtension, so they test negative observation and receipt refusal boundaries, not native UI operation. The planned hosted native run remains the required forcing evidence."
+    ],
+    "evidence": [
+      "No duplicate guest-absence predicate was introduced; the new driver reuses the existing recorder and panel helpers.",
+      "Source tests exercise missing active pane, missing positive anchor, wrong guest identity, present forbidden labels/control, replacement failure, fake reload flags, changed page target, and dropped/mismatched provenance fields.",
+      "The workflow cost manifest describes replacement within the existing on-demand volume; no resource guard or threshold changed. The supplied report states actual authenticated aggregate spend $59.50/$100 but local checker failure is still open."
+    ],
+    "unverified": "I did not run tests, browser, jobs, or billing checks under this read-only lane."
+  },
+  "owner_adjudication": "Source-ready accepted. Native verification remains mandatory/unverified, not a source-review failure. Full cost checker red remains explicit: legacy global forecast/twin drift, no incremental runner/job/cadence/cost in own edit; current authoritative real-spend service complete/nonstale59.50/100. No thresholds, billing block or cap bypass; no checker-pass claim."
+}

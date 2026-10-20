@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "status": "NO_CURRENTLY_EVIDENCED_SAFE_CAPACITY_CHANGE",
+  "recorded_at_utc": "2026-10-20T03:03:02.807380+00:00",
+  "scope": "Fresh read-only escalation; no browser, job, model API, secret, source, policy, workflow, or billing mutation.",
+  "source_head": "38cb30ec7d8567f34cc7d80c67529d4237d24010",
+  "source_sha256": {
+    "scripts/stabilization-resource-safety.mjs": "f7653569286611ec7938f4223d12ced26d76dfa43ed835c17e55ec65e36ae62b",
+    "scripts/stabilization-resource.mjs": "59d6dc57a20e0826520831e52e875a2c218bc7ebad4641be06dd601949788e8a",
+    "scripts/stabilization-resource-cpu.mjs": "c2c7546df86617ab584132b1b3fb9298fb130c91e42dab06915c79198cad06d4",
+    "tests/browser/native-sidepanel-qa-harness.mjs": "dfdd5e759d74527904e177727a200ef3d2c8be4f428c9592c900c038fb171733",
+    "tests/browser/native-resource-boundary.mjs": "9d87c18514e38c0d49f46f499e635ff4ee8bb8e336e1f50fe28bfda1b49d3c1c",
+    ".github/workflows/hosted-guest-acceptance.yml": "c001f41ae6e982998b923bf25e7470e4e84006055eba883358fae9ecb696bb8b",
+    "scripts/hosted-release-member-admission.mjs": "2f1e889d558b6a592c24ecb659e7ba7d727189a50d7ae4731e243bb34b353314"
+  },
+  "hypotheses": [
+    {
+      "cause": "Duplicate member browser or leftover preflight browser",
+      "falsifiable_prediction": "A second Chromium root or browser-launching preflight exists before failure; removing it reduces load.",
+      "finding": "Not established. Native harness launches one child at lines1662ff; member login creates page in same context after startup; preflight only installs/downloads. Prior process evidence and current source agree."
+    },
+    {
+      "cause": "CPU value is boot-average/parser artifact",
+      "falsifiable_prediction": "Guard takes the first iostat row or malformed data.",
+      "finding": "Refuted by source: strict two-row parser uses final one-second interval row; 100% and84% raw samples correctly cross unchanged thresholds."
+    },
+    {
+      "cause": "An already supported larger runner can be selected",
+      "falsifiable_prediction": "Current dispatch mapping/admission supports a larger host available to this repository.",
+      "finding": "Refuted: only macos-15-intel and macos-15 supported; repo is User-owned/public; self-hosted inventory empty; official larger-host eligibility excludes personal repos."
+    },
+    {
+      "cause": "Member-specific work is required to trigger overload",
+      "falsifiable_prediction": "Equivalent guest startup lacks CPU spike.",
+      "finding": "Refuted as a necessary cause: successful same568 guest also starts100% then recovers3%,22%. Separate hosts prevent guest/member causal attribution."
+    }
+  ],
+  "measurement_correction": {
+    "prior_report": "docs/stabilization/reports/member-host-capacity-diagnosis-20261020.json",
+    "incorrect_phrase": "full 10-second guard sample",
+    "actual": "CPU watchdog observations are one-second iostat intervals. cpuSampleIntervalSeconds=10 spaces admission samples; watchIntervalSeconds=15 spaces watchdog sampling. The two unsafe observations establish the configured stop condition, not continuous saturation throughout the intervening17seconds.",
+    "source": "scripts/stabilization-resource-safety.mjs:7-12; scripts/stabilization-resource.mjs:382-392",
+    "raw_brackets": [
+      {
+        "event_at": "2026-10-20T02:34:30.325Z",
+        "iostat_started_at": "2026-10-20T02:34:28.746Z",
+        "iostat_completed_at": "2026-10-20T02:34:29.900Z",
+        "category_cpu_seconds": {
+          "ownedChromium": 0.81,
+          "ownedOther": 0.03,
+          "hostProvisioner": 0.03,
+          "otherHost": 2.98
+        }
+      },
+      {
+        "event_at": "2026-10-20T02:34:47.746Z",
+        "iostat_started_at": "2026-10-20T02:34:46.458Z",
+        "iostat_completed_at": "2026-10-20T02:34:47.641Z",
+        "category_cpu_seconds": {
+          "ownedChromium": 1.09,
+          "ownedOther": 0.04,
+          "hostProvisioner": 0.74,
+          "otherHost": 0.52
+        }
+      }
+    ],
+    "consequence": "Correct the diagnosis prose only. No guard defect or threshold relaxation is justified. Full continuous per-process accounting remains unavailable."
+  },
+  "capacity_facts": {
+    "repo_api": {
+      "endpoint": "GET repos/armanisadeghi/matrx-extend",
+      "owner_type": "User",
+      "visibility": "public",
+      "caller_admin": true
+    },
+    "self_hosted_api": {
+      "endpoint": "GET repos/armanisadeghi/matrx-extend/actions/runners",
+      "total_count": 0
+    },
+    "current_hosted_choices": "4logical Intel or3logical ARM; ARM historical refusal is not evidence of larger/quieter capacity.",
+    "linux_substitution": "Not supported: sample() explicitly refuses platform()!=darwin; native harness and current workflow are macOS paths.",
+    "local_mac": "Latest coordinator reports system free space below20GiB due to active CloudKit cache; no safe owned cleanup established. Not remeasured or altered by this lane.",
+    "larger_host_eligibility": "Official GitHub documentation: organizations/enterprises with Team or Enterprise Cloud only. Current personally owned repo cannot obtain this merely by a label change.",
+    "larger_host_specs": "macos-15-large:12Intel CPUs/30GB RAM; macos-15-xlarge:5ARM CPUs/14GB RAM. Both advertise14GB SSD: actual free disk must meet unchanged20GiB guard; nominal spec alone is not admission evidence.",
+    "not_a_billing_or_auth_refusal": true
+  },
+  "bounded_infrastructure_prerequisite": {
+    "not_an_implementation_or_dispatch_recommendation": "Any broader host route requires a separate reviewed infrastructure change; current task permits none.",
+    "qualification_requirements": [
+      "Establish a legitimately accessible macOS host with measured CPU/memory/disk capacity; no assumed runner label.",
+      "Preserve artifact hashes, identity/org, one owned browser, normal resource admission/watchdog, native visible proof and terminal cleanup.",
+      "Review ownership/routing and cost before any organization transfer or separate infrastructure job; do not silently move this job.",
+      "Update cost registry and runner/admission guard coverage before any newly supported execution route.",
+      "Obtain resource-valid product result before any D261 status change."
+    ],
+    "published_compute_cost_only": {
+      "source": "https://docs.github.com/en/billing/reference/actions-runner-pricing",
+      "intel12_usd_per_minute": 0.077,
+      "arm5_usd_per_minute": 0.102,
+      "existing_timeout_minutes": 15,
+      "one_job_compute_ceiling_intel_usd": 1.155,
+      "one_job_compute_ceiling_arm_usd": 1.53,
+      "excludes": "Any new subscription, setup, artifact storage and changed billing terms. Refresh real weekly total first; latest supplied total59.50/100 is not a fresh read by this lane."
+    },
+    "cheaper_existing_route": "Local native work can resume if normal capacity admission later succeeds after genuine disk recovery. This lane establishes no recovery and proposes no personal-process/cache action."
+  },
+  "sources": [
+    "https://docs.github.com/en/actions/concepts/runners/larger-runners",
+    "https://docs.github.com/en/actions/reference/runners/larger-runners",
+    "https://docs.github.com/en/billing/reference/actions-runner-pricing",
+    "test-results/member568-run39359003772/hosted-guest-39359003772-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-39359003772-1.jsonl",
+    "docs/stabilization/reports/member568-current-acceptance-20261020.json",
+    "docs/stabilization/reports/member-host-capacity-diagnosis-20261020.json"
+  ],
+  "verdict": "No safe enabling change established within existing supported routes. This is an execution-capacity constraint, not a demonstrated member defect cause, human-only authorization blocker, or account spend block. Preserve D261 unresolved, avoid blind retry, and require a real capacity change plus normal admission before another member run."
+}

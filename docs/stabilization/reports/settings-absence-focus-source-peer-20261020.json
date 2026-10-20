@@ -1,0 +1,49 @@
+{
+  "review": "fresh read-only source and forcing-quality review",
+  "base": "8b6c46fed1b234b4741810aa60a7f8f03001d624",
+  "package": "/tmp/settings-guest-admin-absence-focus-review-20261020.diff",
+  "A_acceptance_source": {
+    "verdict": "PARTIAL",
+    "evidence": [
+      "The new normal guest admission planner and CLI mode allowlist include only settings-guest-admin-absence on lane B; the workflow retains the CI-development-only requirement and uploads its scoped receipt.",
+      "The native route observes active signed-out Settings plus Account/Organization/Appearance anchors and forbidden controls at fresh and post-reload phases. The harness supplies its real reload-controller callback; assertions require old targets retired, worker/panel replacement, completed retirement timeline, distinct panel target, and unchanged original page.",
+      "T22 is only credited after four fresh/reload criteria pass. T63 is expressly guest-only; its ordinary-member clause remains unverified, and T04/full-batch credit is excluded."
+    ],
+    "blockers": [
+      {
+        "finding": "The uploaded native report does not preserve the exact CI development artifact identity required by the plan.",
+        "source": "tests/browser/settings-guest-admin-absence-native.mjs:194-212",
+        "detail": "prepareDevelopment/verifyImportedNativeEvidence validates sourceSha, runId, artifactId, and githubArtifactDigest, but report.build serializes only kind, publishState, version, and treeSha256. The report cannot independently link its UI result to the imported exact run/artifact, and the focused test does not assert that provenance survives into the receipt.",
+        "fix": "Serialize the verified CI provenance fields into report.build and assert them in the focused seam/report test."
+      },
+      {
+        "finding": "Native acceptance has not run.",
+        "detail": "Source and reported tests do not establish that the actual guest Settings UI passes on the exact admitted development artifact; that guarded hosted replay remains required."
+      }
+    ]
+  },
+  "B_quality_and_gates": {
+    "verdict": "FAIL",
+    "evidence": [
+      "The predicate delegates to the existing guestSettingsChecks and recordGuestAdminAbsence DOM probe; inactive/wrong-identity/missing-anchor/admin-control cases are exercised at the recorder seam.",
+      "The sequence test rejects absent reload lifecycle evidence, same panel target, and changed original page; it also preserves the guest-only T63 unverified state.",
+      "The added route remains under the existing B-lane/resource/artifact admission. Workflow SHA pin matches the edited workflow bytes. The workflow cost entry adds no runner, job, or schedule and retains the existing 289-run estimate."
+    ],
+    "blockers": [
+      {
+        "finding": "Missing report-level artifact provenance is a quality/evidence failure as well as an acceptance-source gap.",
+        "source": "tests/browser/settings-guest-admin-absence-native.mjs:204-226"
+      }
+    ],
+    "cost_adjudication": "No cost defect introduced by this change: the hosted workflow remains manual, with unchanged runner/job/schedule and the existing on-demand volume estimate. The reported cost-check refusal is cross-repo/global stale forecast and checker-twin drift; root independently confirmed actual billed spend at $59.50/$100. Do not call the checker green, but this is not an actionable cost defect in the touched route and does not justify a waiver."
+  },
+  "native_status": "unverified; no hosted browser run launched or credited",
+  "summary": [
+    "A acceptance-source: PARTIAL \u2014 route and guest oracle are correctly scoped, but the uploaded report omits verified CI source/run/artifact provenance.",
+    "B quality/gates: FAIL \u2014 require report-level provenance fields plus a test that retains them.",
+    "The native route uses the existing real reload controller and exact-artifact admission; source tests are not native acceptance.",
+    "T22 can be credited only after guarded native replay; T63 remains guest-only partial, with ordinary-member denial unverified.",
+    "Cost: no incremental workflow/job/schedule or changed run estimate; checker refusal is global/cross-repo drift, not caused by this route."
+  ],
+  "owner_adjudication": "FIX: persist exact validated CI source/run/attempt/artifact/digest plus actual report seam guard; canonical central case allowlist also fixed by implementer. Fresh round2 source review in progress. No native product credit."
+}

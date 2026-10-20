@@ -72,7 +72,11 @@ If failure recurs, request-correlated preparation phase timing is the next discr
 speculative client retry, pool cap or timeout change. Current member behavior remains unverified.
 [Capacity diagnosis](reports/member-host-capacity-diagnosis-20261020.json): two Intel member
 launches saturated CPU during browser startup with mixed Chromium/host work. Alternate allowed
-ARM hosts have also refused prior member runs; no proven larger/quiescent option exists. Do not
+ARM hosts have also refused prior member runs; no proven larger/quiescent option exists.
+[Fresh escalation](reports/member-capacity-fresh-escalation-20261020.json) verifies personal/public
+repo, no registered self-hosted runners, larger Macs require organization Team/Enterprise; Linux
+is explicitly unsupported. CPU readings are one-second snapshots, not a continuous ten-second
+measurement. Guard decisions remain valid; broader capacity needs reviewed infrastructure. Do not
 repeat the same launch blindly or weaken guard thresholds.
 
 ## Verified product progress and exact limits
