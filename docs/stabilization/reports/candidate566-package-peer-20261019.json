@@ -1,0 +1,37 @@
+{
+  "status": "DONE_WITH_ADVISORY_UNKNOWN",
+  "candidate": {
+    "version": "0.2.566",
+    "source_commit": "c41ae6fd67057305c521791e404d2708882895f5",
+    "tag": "v0.2.566",
+    "workflow_run": "39347129008",
+    "artifact_id": "12231343581",
+    "zip_path": "/tmp/release566-artifact/.output/matrx-extend-0.2.566-store.zip",
+    "zip_sha256": "a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840",
+    "outer_artifact_digest": "sha256:3be67e7e5749621c5423aa9d57a6ff0bf809e9e0f4cf7006e4b90056aa6337ed"
+  },
+  "verdict_A_spec_eligibility": {
+    "verdict": "PASS_AT_REVIEW_TIME",
+    "evidence": [
+      "Receipt sourceSha/version matches tag; run succeeded and pushed from workflow input 2f21a8b; tag source c41ae6f equals current origin/main release source.",
+      "Independent sha256sum of exact extracted Store ZIP matches receipt. ZIP manifest version is 0.2.566; Chrome Web Store risk gate passed. Approved baseline policy fields match (action default_title compared; emitted default_icon is packaging metadata).",
+      "Exact lock versions now match npm latest: agents 0.59.170, chat 0.8.237, records 0.99.96, records-ui 0.116.55, rich-content 0.2.222; specs remain latest. This is fresh hosted candidate proof, not the Mac node_modules graph.",
+      "Shared changelogs/source diffs reviewed: agents 0.59.170 docs/metadata only; chat adds retryable-503 behavior plus optional aiWatch host port (extension leaves it absent/off); records adds optional splitMulti, not used by extension callsites; records-ui changes chart/enrich/stage-rule UI, no direct extension imports; rich-content changes named-fence/paste behavior with no noted consumer action; no required extension consumer edit found."
+    ],
+    "limits": [
+      "npm latest is a point-in-time observation; recheck immediately before upload if delayed."
+    ]
+  },
+  "verdict_B_evidence_quality": {
+    "verdict": "PASS_WITH_ADVISORY_UNKNOWN",
+    "evidence": [
+      "Hosted release run 39347129008 succeeded; strict release/type/build/lint/unit/schema/migration/tool-drift/store-risk/package gates completed successfully per run log.",
+      "Exact ZIP hash and receipt agree; current baseline policy surface is unchanged. No artifact/source/runtime identity mismatch found."
+    ],
+    "advisories": [
+      "Six mandate-reference findings are nonblocking warnings, not verified clean.",
+      "Config-manifest attestation was advisory and not produced. Package proof does not establish native product acceptance or Store reviewer-path acceptance.",
+      "No independent runtime check of the 0.2.566 ZIP was done in this lane; keep native evidence separate."
+    ]
+  }
+}

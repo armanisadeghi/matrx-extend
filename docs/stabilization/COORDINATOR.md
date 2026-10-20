@@ -14,30 +14,31 @@ before a release action. Its latest authenticated primary-item observation remai
 Vault login works; no human-only access blocker is known. Do not infer a new dashboard state
 from old email, public listing or this checkpoint.
 
-Hosted release39341777746 produced **0.2.565**, source/tag
-`a0c86f20b9fb070c09e00c0a574a0ffbf8f2b656`, artifact12229886228,
-Store ZIP SHA256 `fb55565b7c9bad1b73ada70b7ea54eda67217bde3f1bb1216ab9933bebf0a0c4`.
-It passed its strict release gates, then npm packages advanced. It is **upload-ineligible**.
-Exact guestB39342759083 and memberA39343298322 are terminal failures with valid resource finals.
-No new Store upload/submission occurred. One-use member secret and local link are deleted,
-absence verified. No release-lane external job is in flight.
+Current candidate **0.2.566** was built by guarded hosted release39347129008,
+source/tag`c41ae6fd67057305c521791e404d2708882895f5`, artifact12231343581,
+StoreZIPsha256`a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840`.
+[Fresh package review](reports/candidate566-package-peer-20261019.json) passed at review time:
+strict release gates, then-current npm latest and required Consumer actions were checked.
+Advisory Mandate/config findings remain explicitly unknown. Native acceptance is in progress,
+not passed. No new Store upload/submission has occurred.
 
-- [Release/acceptance checkpoint](reports/store-release-v0565-acceptance-20261019.json)
-- [Independent package review](reports/candidate565-package-peer-20261019.json)
-- [Independent native evidence review](reports/candidate565-native-peer-20261019.json)
-
-Guest opening/followup and member two-turn transport completed, but readable native proof failed.
-Guest Article heading/stages were detected; introduction/visible result were not independently
-proven. Those partial observations do not pass whole Chat, Scrape, current main or the Store.
-Backend observed by these runs was `9ef78d4ade91d8f1cb1951710266b094db5744bf`;
-recheck deployment/runtime before another acceptance or release action.
+Prior565 guestB39342759083 and memberA39343298322 failed with valid resources;
+never turn their transport/DOM partials into readable UI passes or upload565.
+All their temporary member credentials are deleted. [Checkpoint](reports/store-release-v0565-acceptance-20261019.json),
+[package peer](reports/candidate565-package-peer-20261019.json),
+[native peer](reports/candidate565-native-peer-20261019.json).
+Backend last observed9ef78d4ade91d8f1cb1951710266b094db5744bf; recheck drift before release actions.
 
 ## Active ownership and immediate next actions
 
 Owner: primary Codex chat. At this checkpoint all hosted runs and Mac guards are terminal.
-All current workers have finished. Source guard commit `cd6cd7ca9` is pushed; its relevant
-CI39345963058 is in progress. No source working diff remains. Root is preparing the next
-release-only and independent testing lanes; assign explicit ownership before resuming work.
+Active release-only owner: `root/release566_owner`; native isolated acceptance owner:
+`root/native_isolated_candidate_acceptance`. Source guardcd6cd7ca9 and relevant CI39345963058
+are successful. GuestB39348092593 and memberA39348194286 are in progress on isolated hosts. A auth preflight
+succeeded and owned one-use link/secret were deleted with absence verification. Native Mac lane
+will test a fresh unseeded guest first, then approved ordinary member, on an owned isolated
+Chrome profile; preserve personalProfile8 session. No new Store upload/submission.
+[Package review](reports/candidate566-package-peer-20261019.json).
 Root owns canonical stabilization records and final integration/release follow-through.
 
 1. Retest [D248](defects/EXT-D-0248.json) member visibility guard on the next exact candidate.
@@ -73,7 +74,7 @@ Root owns canonical stabilization records and final integration/release follow-t
    observed. Guest565 introduction/visible proof is missing, so the defect stays fixed, not closed.
    Correct inventory link is **EXT-F-1007-T08**, not Settings EXT-F-1003-T08.
    [Native admin report](reports/native-article-retest-20261019.json).
-5. After reviewed source units are committed/pushed and relevant CI succeeds, synchronize main,
+5. For subsequent source units, after commit/push and relevant CI success, synchronize main,
    refresh actual package/runtime/spend eligibility, and build ONE guarded hosted candidate.
    Run exact-candidate guest/non-admin acceptance on isolated A/B hosts. Never upload565, transfer
    old artifact passes to a newer package, or rebuild repeatedly before diagnosing a red run.
