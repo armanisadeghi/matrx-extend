@@ -1,0 +1,69 @@
+{
+  "id": "EXT-D-0275",
+  "feature_id": "EXT-F-2013",
+  "case_ids": [],
+  "classification": "INTERNAL_STABILIZATION_PREREQUISITE_NOT_PRODUCT_BUG",
+  "title": "Hindsight Reviewer mandate omitted the offered review bundle from its variable binding",
+  "surface": "Existing hindsight.reviewer mandate evidence provisioning for D273 quality review",
+  "auth_mode": "internal existing-account system mandate; no guest product-mode result",
+  "severity": "S2: contained quality review returned an empty-evidence answer despite a supplied bundle; no product data loss or Chat defect established",
+  "priority": "P1: unblock evidence-grounded contained review before quality Builder work",
+  "state": "closed",
+  "owner": "stabilization coordinator / reviewer binding repair",
+  "preconditions": [
+    "Existing hindsight.reviewer holder 9bc0924d-9995-41ed-b00c-09e9cf9101f1 pinned to version ad6074af-3d54-4c5b-bec7-879c15a338b1.",
+    "A 27723-character review_bundle was offered for the D273 real failed and successful cases; default_consumption_map was null."
+  ],
+  "reproduction": [
+    "Initial mandate-path review completed but its two provider snapshots omitted the exact H1 and failed case ID; reviewer reported no operational evidence. Its saved tools=[] did not prevent one read-only scope overview.",
+    "Direct variables.bundle positive control contained the heading and failed case ID with zero tools, localizing the missing evidence to mandate consumption."
+  ],
+  "expected": "The mandate maps offered review_bundle into reviewer variable bundle so the existing reviewer can evaluate the supplied real cases.",
+  "actual": "Two initial mandate provider snapshots lacked the offered bundle, producing an empty-evidence terminal review.",
+  "cause": "The existing mandate default had no consumption map for the offered review_bundle, so the guaranteed provision did not land in reviewer variable bundle.",
+  "fix": "Supported PUT to the same hindsight.reviewer default-holder set only default_consumption_map.bundle to mapType offered_value, target review_bundle, deliver variable. Same holder and pinned version remained; config overrides and auto-run stayed null.",
+  "evidence": [
+    "docs/stabilization/reports/guest273-contained-review-binding-repair-20261020.json",
+    "docs/stabilization/reports/guest273-binding-repair-fresh-peer-20261020.json"
+  ],
+  "verification_status": "Repaired mandate-run event shows offered review_bundle supplied and landed in variable bundle; fresh peer readback of provider snapshot 1862c26e-dea8-4428-b2e3-0a1640c529f0 includes exact H1 and failed case ID, completed request 54450cfa-86ff-4167-962a-57a26762b779 with zero tools. Fresh peer Verdict A PASS and B PASS_FOR_BINDING_SCOPE. This closes the internal binding prerequisite only; D273 remains triaged and no native case gets credit.",
+  "transition_history": [
+    {
+      "at": "2026-10-20",
+      "from": null,
+      "to": "open",
+      "reason": "First contained reviewer response falsely reported no bundle despite 27723 offered characters; exact discovery time not retained in source report."
+    },
+    {
+      "at": "2026-10-20",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Two provider snapshots omitted heading/case while direct variables.bundle positive control included both; exact triage time not retained."
+    },
+    {
+      "at": "2026-10-20",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Supported same-holder/same-version consumption-map repair selected; exact start time not retained."
+    },
+    {
+      "at": "2026-10-20T21:14:44.210777+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Live mandate contract check recorded repaired bundle mapping; no holder/version advance."
+    },
+    {
+      "at": "2026-10-20",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Later repaired mandate request/provider readback and fresh independent A/B peer pass. Peer report did not retain exact readback timestamp; date only recorded."
+    },
+    {
+      "at": "2026-10-20",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Binding prerequisite alone verified. D273 guest product behavior remains triaged/unfixed; no native acceptance credit. Exact closure time not retained."
+    }
+  ],
+  "dependency_note": "D275 supplies a working contained reviewer for D273. Reviewer extractor-defect claim is rejected as unproven; supported DOM verification behavior is a quality candidate, not applied. Real browser-capable Builder proof set and existing-agent process remain open."
+}

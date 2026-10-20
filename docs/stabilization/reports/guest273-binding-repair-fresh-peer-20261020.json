@@ -1,0 +1,30 @@
+{
+  "status": "DONE",
+  "scope": "Independent read-only verification of hindsight.reviewer prerequisite binding repair; no new provider requests, database writes, browser activity, source edits, or commits.",
+  "verdict_A": {
+    "result": "PASS",
+    "claim": "The live mandate now delivers the offered review_bundle to reviewer variable bundle, and the repaired mandate path produced an evidence-grounded review.",
+    "evidence": [
+      "Fresh live mandate.definition read: sole consumption map key bundle has mapType=offered_value and target=review_bundle.",
+      "Repaired mandate-run event for conversation 7f3df42b-893f-4e5f-90c3-d3f29588c998 reports review_bundle supplied=true, value_ref=variables.bundle, landed channel=variable target=bundle, value_chars=29082, and provision_applied=true.",
+      "Fresh live chat.request_snapshot read: repaired provider snapshot 1862c26e-dea8-4428-b2e3-0a1640c529f0 includes exact heading 'A clear three-stage browser workflow' and failed conversation ID ec595d2d-340a-42a7-9f87-3e9942f5beae. Both earlier mandate snapshots 5688d8c7-9b91-47d8-8af2-71b153036f59 and e85ab16d-d8ae-459d-aae2-c496f12a6a98 omit both markers; direct-variable control d206f87d-0f9d-4aae-bd6d-9ae733f0e02a includes both.",
+      "Fresh live chat.user_request 54450cfa-86ff-4167-962a-57a26762b779 is completed, with zero tool calls. Its stored assistant message names both case IDs, the exact heading, and DOM fallback, and gives substantive findings."
+    ]
+  },
+  "verdict_B": {
+    "result": "PASS_FOR_BINDING_SCOPE",
+    "claim": "The repair is confined to the existing default mandate consumption map and retains the same reviewer holder and pinned version.",
+    "evidence": [
+      "Fresh live mandate.definition read: holder 9bc0924d-9995-41ed-b00c-09e9cf9101f1 and pinned version ad6074af-3d54-4c5b-bec7-879c15a338b1 match implementer's recorded before/after values; default_config_overrides and default_auto_run are null; consumption map contains only bundle.",
+      "Fresh live chat.user_request for the repaired run resolves to the same agent and version; zero tool calls. The mandate-run event reports config_overrides={} and test_run=false. No browser-agent, enrollment, or holder-promotion evidence appears in this verification."
+    ],
+    "limit": "A live current-state read cannot independently prove that no unrelated historical write occurred; the before/after report and mandate event support the narrow repair. No code diff or tests apply to this database mapping change."
+  },
+  "new_gap": null,
+  "outside_scope_observation": "The reviewer output asserts the extraction pipeline strips the H1. The supplied evidence shows the H1 was outside the article extraction scope, so that causal claim remains unconfirmed. This is an output-quality/adjudication issue already identified by the implementer, not a failure of the mandate binding. Do not treat it as proof of an extractor defect or as a guest EXT-D-0273 fix.",
+  "read_only_checks": [
+    "Inspected /tmp/guest273-verify-live-repair.mjs before execution; ran it once.",
+    "Additional read-only PostgREST GETs to mandate.definition, chat.user_request, and chat.message; output was limited to IDs, statuses, booleans, and nonsecret scope fields.",
+    "Inspected the saved mandate-run event in /tmp/guest273-binding-positive-control-response.txt."
+  ]
+}

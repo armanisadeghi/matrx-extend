@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T21:01:14Z",
+  "updated_at": "2026-10-20T21:17:52Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -53673,8 +53673,10 @@
         "EXT-D-0266",
         "EXT-D-0267",
         "EXT-D-0269",
-        "EXT-D-0273"
-      ]
+        "EXT-D-0273",
+        "EXT-D-0275"
+      ],
+      "internal_dependency_note": "EXT-D-0275 is a closed internal Hindsight Reviewer evidence-binding prerequisite for D273 quality review, not a Chat product defect or native case result. Repaired reviewer route received the offered bundle; D273 remains triaged and uncorrected. See reports/guest273-contained-review-binding-repair-20261020.json and fresh peer. No feature-role cell or case PASS derives from this dependency."
     },
     {
       "id": "EXT-F-2014",

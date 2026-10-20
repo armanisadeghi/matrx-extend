@@ -34,10 +34,13 @@
     "docs/stabilization/reports/guest-heading-context-contract-repair-20261020.json",
     "docs/stabilization/reports/checkpoint-fresh-evidence-peer-20261020.json",
     "docs/stabilization/reports/guest273-actual-target-provenance-20261020.json",
-    "docs/stabilization/reports/guest273-quality-route-20261020.json"
+    "docs/stabilization/reports/guest273-quality-route-20261020.json",
+    "docs/stabilization/reports/guest273-contained-review-binding-repair-20261020.json",
+    "docs/stabilization/reports/guest273-binding-repair-fresh-peer-20261020.json",
+    "docs/stabilization/defects/EXT-D-0275.json"
   ],
   "verification": "Fresh independent native evidence peer confirms heading FAIL despite terminal reply and correct Capture cell; inline-only screenshot cannot be reopened. Existing focused context tests32pass establish intended mechanics, not guest answer-quality success. No fix or live retest claimed.",
-  "next_action": "Use real failed/successful request evidence for the existing extend.browser_chat / Matrx Browser Agent v14 canonical Builder/agent-quality process. Actual dispatch provenance and current DB default are now known; fresh guest resolution/cache state remains bounded. No direct agent instruction/model/Holder changes. Independently retest exact H1 plus first/follow-up/reopen surroundings after an authorized quality repair; no source data-loss fix or contributor attribution is supported.",
+  "next_action": "Prepare a real browser-capable proof set for existing-agent Builder using the failed and successful D273 conversations; current textual cases lack necessary client-tool context. Follow the existing agent-authoring rule when a production-ready candidate exists. Do not treat D275 binding closure as Chat product repair or a whole-campaign human block. After an authorized quality change, independently retest exact guest H1 and Capture cell plus first/follow-up/reopen surroundings; no extractor patch is supported by current evidence.",
   "transition_history": [
     {
       "at": "2026-10-20T17:28:02Z",
@@ -59,5 +62,5 @@
     "version_id": "a8944432-24e4-41d2-8cbf-1f925fa1a7e6",
     "evidence": "Failed and successful real request/conversation metadata agree; current database default same active agent/version with no override bindings. No fresh guest endpoint/cache verdict."
   },
-  "quality_route_status": "Hindsight focused review requires enrollment; fresh live read found none. Creation is active-only and may schedule standing reviews; manual review may auto-replay tools. No enrollment/review/rebuild/promotion started. Paid evaluation is authorized; containment/replay-contract work remains, not a demonstrated human-only credential gate."
+  "quality_route_status": "Contained Hindsight Reviewer route now works after internal prerequisite D275: offered review_bundle binds to reviewer variable bundle on the same holder/pinned version, repaired provider snapshot includes exact H1 and failed case ID, and fresh independent peer A/B passed. Three completed reviews cost $0.0776775. Reviewer claim of extractor contract defect was adjudicated unproven because the H1 is outside article scope; a DOM check when requested visible facts are missing from article text is a supported quality candidate, not applied. No enrollment/new agent/model/prompt/holder advance/factory build or guest native retest. D273 remains triaged, quality unfixed."
 }

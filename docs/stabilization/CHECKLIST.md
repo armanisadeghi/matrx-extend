@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-20 21:11 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-20T21:01:14Z.
+Generated 2026-10-20 21:19 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-20T21:17:52Z.
 
 ## Current truth
 
@@ -8,7 +8,7 @@ Generated 2026-10-20 21:11 UTC from inventory.json, defect records, daily Store 
 - Case results: pass 105, partial 102, fail 1, unverified 1119, n/a 11; 180 explicitly unverified and 939 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/402 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 0 missing steps; 0 missing expected outcomes; 0 missing control links; 1 explicitly control-less procedures.
-- Defect states: closed 151, retest-pass 10, fixed 82, in-fix 23, open 2. A fixed or closed defect is not a feature-level UI pass.
+- Defect states: closed 152, retest-pass 10, fixed 82, in-fix 23, open 2. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current Store release observations
 
@@ -26,7 +26,7 @@ These observations are bounded to their recorded times; submission does not esta
 
 ## Inventory freshness review
 
-Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **13 `src/` paths changed** through `7b53546df4af7a4d2380a82ad48902a5f7723a7b`. A direct path-anchor comparison matched 5 and left 8 without an exact inventory anchor.
+Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **13 `src/` paths changed** through `7478a9c480b985a22c4e0f70db69981f267456d6`. A direct path-anchor comparison matched 5 and left 8 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities
