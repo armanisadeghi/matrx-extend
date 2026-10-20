@@ -7,8 +7,8 @@
   "auth_mode": "signed-out guest; test harness reporting only",
   "severity": "S2: misleading exact-code failure evidence for a real same-conversation heading failure",
   "priority": "P1: repair before the next guest Chat native retest",
-  "state": "in-fix",
-  "owner": "root/guest264_grounding_oracle_fix",
+  "state": "fixed",
+  "owner": "stabilization-coordinator",
   "preconditions": [
     "Resource-valid public 0.2.205 unpacked CRX guest Chat run 39373343402 against stable server 181b; separate heading-quality defect EXT-D-0263 remains open.",
     "Owned article has distinct unpredictable opening and follow-up codes and a full unique heading. Same-conversation follow-up reaches a terminal assistant reply after multiple tool continuations."
@@ -36,10 +36,10 @@
   "verification": {
     "focused": "RED old: false !== true at the actual catch assignment; GREEN repaired: focused test passes. Related guest sequence, completion oracle, and package DOM tests: 79 passed; pnpm compile passed; scoped Biome check passed.",
     "native": "Pending guarded hosted original-symptom retest; no native pass or product-health claim.",
-    "independent_review": "Pending fresh peer review and root integration decision."
+    "independent_review": "Fresh source peer PASS A/B for scoped diagnostic repair; report docs/stabilization/reports/guest264-diagnostic-fresh-peer-20261020.json. Native UNKNOWN; missing direct tests of some pre-answer/Values stages remain explicit."
   },
-  "fix_sha": null,
-  "next_action": "Fresh peer reviews the scoped source/test/defect diff. After root GO, integrate exact paths and allow automatic CI; independently rerun the original guarded T10 native flow, preserving EXT-D-0263 heading failure and all guest/auth/assigned-tab/stream-terminal checks. Do not close until that retest.",
+  "fix_sha": "dcab242a405083b421adebf5f81923864795f7a6",
+  "next_action": "Automatic exact-source CI pending after normalpushdcab242a4; then one guarded independent original T10 diagnostic retest, keep D263 heading failure and allactualanswer/auth/tab/terminalgates intact. Do not close before original retest.",
   "transition_history": [
     {
       "at": "2026-10-20T05:35:42Z",
@@ -58,6 +58,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Scoped diagnostic repair and focused RED/GREEN guard prepared for independent review; original native retest pending."
+    },
+    {
+      "at": "2026-10-20T05:39:59.373888+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Reviewed source repair pushed dcab242a4; focused79/79/compile/scopedformat and fresh independent source peer pass. FullCI/nativepending, no productrepair."
     }
   ]
 }

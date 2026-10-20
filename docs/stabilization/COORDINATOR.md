@@ -65,9 +65,12 @@ proven. Stable deployed181b, public205 CRX unpacked/adapted NOT Store-installed.
 resource finals valid; guest resourceInvalid=false/child_failed exit1. Post-reload not reached.
 **[D263](defects/EXT-D-0263.json) triaged P0 public guest acceptance blocker**, no cause/fix or
 backend/contributor attribution. Case is guest **T10**, separate from member-onlyT14/D261. Provider-boundary read is complete; no data loss attool/context/persistence/render boundaries
-was found forcode/fullheadinginput. **guest264_grounding_oracle_fix** owns bounded source repair
-of conflicting exact-code observer, with original heading requirement preserved. No newnative
-job, modelcall or productagent/prompt change is underway. See [diagnosis](reports/guest181b-followup-diagnosis-20261020.json). Prior B39372274799 is terminal SUCCESS with all3resource finals valid;
+was found forcode/fullheadinginput. **D264 source fixed/pushed `dcab242a405083b421adebf5f81923864795f7a6`**,
+[fresh source peer](reports/guest264-diagnostic-fresh-peer-20261020.json) A/BPASS forfailurediagnostics
+only;79focused/compile/formatpass. Catch had comparedopeningcodeafterfollowup; actualturnverdict
+was correctly code=true/heading=false. Alloriginalanswer/heading/auth/tab/terminalgates unchanged.
+Some pre-answer/Values stage cases are source-checked only; fullCI and original guardednative
+retest pending beforeD264closure. No native/modeljob or productagent/prompt change is underway. See [diagnosis](reports/guest181b-followup-diagnosis-20261020.json). Prior B39372274799 is terminal SUCCESS with all3resource finals valid;
 [fresh native peer](reports/scrape568-empty-fresh-peer-20261020.json) verifies only warm guest T08
 no-signal SEO and empty Schema panes/capture invariance on owned title-only localhost fixture.
 Two pane screenshots inspected, exact development568/source501998549/CI39366909321/artifact12239987691.

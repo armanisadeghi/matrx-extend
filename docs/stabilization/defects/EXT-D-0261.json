@@ -52,7 +52,7 @@
   "diagnostic_source": {
     "commit": "a5452ac5c6",
     "integration_head": "db8f6d8f271de5f53bc853eb1fb23b4695c2fda0",
-    "status": "pushed_source_revision_observed_deployed_runtime_marker_and_product_outcome_unverified",
+    "status": "source_revision_and_bounded_raw_phase_markers_observed_member_outcome_unverified",
     "fresh_peer": "docs/stabilization/reports/member261-observability-fresh-review-20261020.json",
     "owner_verification": "Postmerge41 focused tests passed in9.72s with lock sampler disabled; Ruff and diff check passed. Subsequent incoming change only package CHANGELOG, reconciled before push. Broader suite and global docs guard failures remain explicit, not waived.",
     "limits": "Roughly50-60 WARNING records per resume, bounded asynchronous queue can overflow and DB failures lose batches; live raw sink availability unverified. No timeout/model/pool/auth/org/response behavior change.",
@@ -65,13 +65,14 @@
     },
     "runtime_marker_query": {
       "log_group": "/matrx/production/aidream",
-      "window_start_ms": 1792471531501,
-      "window_end_ms": 1792472731501,
-      "filter": "resume_pre_response",
+      "window_utc": ["2026-10-20T05:16:30Z", "2026-10-20T05:18:30Z"],
       "query_ok": true,
-      "matched_event_count": 0,
+      "parsed_markers": 144,
       "paginated": false,
-      "conclusion": "No observed markers; no test request made by this query. Availability remains unknown, not a telemetry failure finding."
+      "opaque_traces": 3,
+      "handoff_elapsed_ms": [781, 710, 963],
+      "conclusion": "Raw runtime markers visible; all3time-correlated resumes completed pre-header preparation. Opaque IDs prevent definitive ownedrequestjoin and no D261memberfix is established.",
+      "report": "docs/stabilization/reports/guest181b-followup-diagnosis-20261020.json"
     }
   }
 }

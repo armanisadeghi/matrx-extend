@@ -88,5 +88,15 @@
     "owned_fixture_heading": "Matrx guest Chat grounding fixture [unique-id]",
     "final_answer_heading": "Chat grounding fixture",
     "assessment": "Final answer supplied a generic, incorrect shortened heading. It omitted both the Matrx guest prefix and unique ID suffix, and explicitly treated the prefix as outside the heading. The user asked to name the heading directly above the codes; the full unique heading is the actual h2 and is necessary for an exact answer."
+  },
+  "case_sensitive_clarification": {
+    "fixture_code_from_tool_is_uppercase": true,
+    "provider_final_contains_exact_case_fixture_code": true,
+    "stored_final_contains_exact_case_fixture_code": true,
+    "comparison_used_casefold": false,
+    "native_comparison": "Exact-case replacement of tool-extracted code with sanitizer marker, followed only by removal of Markdown punctuation; byte-equal to retained sanitized latest reply.",
+    "literal_marker_in_raw_provider_response": false,
+    "full_source_heading_case_exact_in_provider_request": true,
+    "final_answer_kept_case_exact_interior_words_only": true
   }
 }
