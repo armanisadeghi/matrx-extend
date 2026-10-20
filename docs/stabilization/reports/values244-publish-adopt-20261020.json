@@ -1,0 +1,28 @@
+{
+  "task_id": "EXT-D-0244",
+  "lane": "shared package publication and extension adoption",
+  "recorded_at": "2026-10-20T08:59:17Z",
+  "status": "source_fixed_native_pending",
+  "aidream_source_commit": "a1c540b80761a8f3281af06881a9cbc146a15341",
+  "component_sha256": "0111a6c30ed7f640c97e2b5b079838b7008513c33933f71ba47113b29db81739",
+  "source_review": "Fresh peer: focused real-component tests 38/38 pass, tooltip Escape and inline editor cancel boundary pass; exact candidate native T13 pending.",
+  "publish": {
+    "package": "@ai-matrx/agents",
+    "version": "0.59.174",
+    "automatic_run": "https://github.com/AI-Matrix-Engine/aidream/actions/runs/39395389156",
+    "run_result": "The run was superseded and cancelled after publishing agents; the next run planned against registry state and omitted agents as already published.",
+    "replacement_run": "https://github.com/AI-Matrix-Engine/aidream/actions/runs/39396416601",
+    "registry_gitHead": "a1c540b80761a8f3281af06881a9cbc146a15341",
+    "registry_tarball_sha1": "c9e571f978f7e8f606591b6d0488c178e33222a3",
+    "artifact_check": "Downloaded public registry tarball matches registry SHA1; dist/context/react/index.js contains the Escape containment and setOpen(false) handler."
+  },
+  "extension_adoption": {
+    "package_declarations": "All @ai-matrx dependencies remain latest in package.json.",
+    "lockfile": "All 26 @ai-matrx packages resolved to npm latest; agents 0.59.174.",
+    "consumer_actions": "Reviewed changed package changelogs. The Vault openWebVault extension action is already wired in VaultView; no new call-site changes required.",
+    "verification": ["pnpm install --frozen-lockfile --ignore-scripts PASS", "pnpm compile PASS", "pnpm check:matrx-packages PASS", "git diff --check PASS"],
+    "automatic_ci": "pending source push"
+  },
+  "native_acceptance": "UNKNOWN: original-equivalent compact Values focus/tooltip/Escape T13 and independent peer must run on the released exact candidate.",
+  "next_action": "Track adoption CI; release through guarded hosted path, then perform exact-candidate guest native T13 and independent behavior retest."
+}
