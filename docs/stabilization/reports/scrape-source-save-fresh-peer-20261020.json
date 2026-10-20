@@ -1,0 +1,65 @@
+{
+  "task_id": "scrape-source-save-fresh-peer-20261020",
+  "lane": "independent native product verification",
+  "status": "bounded_pass",
+  "reviewed_owner_report": "/tmp/scrape-save-auth-recovery-20261020.json",
+  "target": {
+    "browser": "Chrome Profile 8",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.577",
+    "source_sha": "e157ebe9e3b1d7eef3a53e95698b2906ee2fc4e7",
+    "ci_run": "39474432457",
+    "artifact": "12288703340",
+    "backend_sha": "unknown"
+  },
+  "identity": {
+    "visible_account": "arman@armansadeghi.com",
+    "role": "unconfirmed",
+    "organization": "AI Matrx visible in web app; extension write header not independently inspected"
+  },
+  "a_behavior": {
+    "verdict": "PASS for signed-in observed principal's bounded Save lifecycle; role matrix PARTIAL",
+    "fresh_fixture": "https://www.iana.org/domains/reserved",
+    "source_id": "16dee21b-72a5-4715-bc3e-5c759e6878b1",
+    "title": "SCRAPE-SAVE-PEER-20261020-1901-OWNED — IANA Reserved Domains",
+    "marker": "SCRAPE-SAVE-PEER-20261020-1901-OWNED",
+    "observations": [
+      "Fresh capture showed 253 original words and IANA content.",
+      "Edited article applied with marker appended; page showed EDITED.",
+      "Save dialog close preserved unsaved edited capture; reopened dialog and saved named Source.",
+      "Extension showed Saved, and existing demo unsaved queue remained exactly 1.",
+      "Web Source opened at exact ID with Saved state, IANA URL and title; Content pane included marker and original article sections.",
+      "After full web-page reload, Content pane still included exact marker.",
+      "Pretty pane displayed original article without marker while Content pane displayed edited text; panes distinguish original from edited but no raw/backend field comparison was made."
+    ],
+    "cleanup": "Archived only exact owned Source ID via named confirmation promising restore from Trash; Archived toast observed; closed owned web and IANA tabs and side panel.",
+    "untouched": "Existing Matrx Extend Demo Page queued draft was not retried or discarded; Store 0.2.205 extension was not changed."
+  },
+  "b_quality_evidence": {
+    "verdict": "PASS for provenance and bounded assertions; PARTIAL for role/org/backend/image/retry scope",
+    "checks": [
+      "Independent second public page and marker avoid reusing owner's IANA help fixture or source ID.",
+      "Persistence asserted after page reload, beyond extension's optimistic Saved button.",
+      "Original public article structure and headings remained available after edit; exact stored Original field was not inspected.",
+      "Cleanup confirmation named owned title and used recoverable archive; no permanent delete.",
+      "No claim for image asset persistence, failed-draft Retry, guest D217, ordinary member, or Store-installed build."
+    ]
+  },
+  "resource": {
+    "run_id": "scrape-save-fresh-peer-20261020-01",
+    "journal": "/Volumes/Samsung2TB/code/matrx-extend/test-results/stabilization-resource-journals/scrape-save-fresh-peer-20261020-01.jsonl",
+    "admitted": true,
+    "decision": "valid",
+    "exit_code": 0,
+    "browser_stop_confirmed": true,
+    "permit_absent_after_terminal": true,
+    "durable_journal": "docs/stabilization/evidence/scrape-source-save-20261020/scrape-save-fresh-peer-20261020-01.jsonl"
+  },
+  "limitations": [
+    "Actual account role was not independently established; admin-only tabs are not role proof.",
+    "The source-readback web app/backend commit SHA and network request headers were not captured.",
+    "No safe newly failed draft existed, so Retry and guest denied-save behavior remain unverified.",
+    "Archived Source remains recoverable in Trash by design."
+  ],
+  "repository": "No source edits, workflow dispatch, commit, or push by peer. Terminal valid journal archived in ignored test-results; no untracked repo paths left by peer."
+}

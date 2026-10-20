@@ -27,11 +27,13 @@
     "docs/stabilization/runs/guest-scrape-controls-https-20261012.json",
     "docs/stabilization/runs/guest-save-d217-source-verification-20261012.json",
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38306513126",
-    "docs/stabilization/runs/ext-d-0217-native-retest-20261012-resource-refused.json"
+    "docs/stabilization/runs/ext-d-0217-native-retest-20261012-resource-refused.json",
+    "docs/stabilization/reports/scrape-save-auth-recovery-20261020.json",
+    "docs/stabilization/reports/scrape-source-save-fresh-peer-20261020.json"
   ],
   "fix_sha": "c5e739074325d553a59c42e2e9d113b668cbcd4d",
   "review": "Fresh independent source review passed A correctness and B evidence after the guarded RED/GREEN/mutation/compile report. Exact-main CI at 3e5b8f182 passed and its v0.2.509 development artifact was promoted on disk; Chrome loaded state is not verified.",
-  "next_action": "Repeat the original stale-profile guest Save and Retry in a guarded Chrome run bound to the promoted 3e5b8f182 development artifact. Verify edited draft retention, sign-in remedy, no guest organization/landing call, full reload, and signed-in Retry landing the edited text. The first native retest was resource-refused before launch; it is not a product verdict. Keep postreload and Store-installed states separate.",
+  "next_action": "Repeat original stale-profile guest Save and Retry on the latest successfully imported/reloaded development artifact in COORDINATOR.md, not the old3e5 build. Verify edited draft retention, sign-in remedy, no guest organization/landing call, full extension reload and signed-in Retry landing edited text. Preserve existing demo queue; own disposable fixture only. Current signed-in Save successes are surrounding evidence, not this guest original reproduction or closure.",
   "transition_history": [
     {
       "at": "2026-10-12T20:18:00Z",
@@ -57,5 +59,6 @@
       "to": "fixed",
       "reason": "The verified-bearer source repair passed meaningful guarded RED/GREEN/mutation/compile checks, fresh independent review, and exact-main hosted CI. Native original-reproduction retest is pending after a resource refusal before launch."
     }
-  ]
+  ],
+  "current_surrounding_retest": "Two independent signed-in e157 native IANA fixtures saved edited markers and reopened exact Sources; fresh peer web-page reload retained marker and original article remained separately visible. Exact own Sources archived. Actual account role/org-header unconfirmed; neither Retry nor stale-profile guest was tested, state stays fixed."
 }

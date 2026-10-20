@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T18:47:45Z",
+  "updated_at": "2026-10-20T19:08:49Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -25050,7 +25050,7 @@
               "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
             }
           },
-          "verification_status": "unverified-after-source-change",
+          "verification_status": "Partial signed-in native edit/Apply/Save/reopen persistence independently observed on e157; role unconfirmed, no new full role cell pass. Guest D217 original reproduction still unverified after source fix.",
           "result_history": [
             {
               "mode": "guest",
@@ -25066,6 +25066,33 @@
                 ]
               },
               "superseded_at": "2026-10-12T20:22:00Z"
+            }
+          ],
+          "bounded_candidate_observations": [
+            {
+              "observed_at": "2026-10-20T19:01:00Z",
+              "auth_mode": "signed-in arman@armansadeghi.com; role unconfirmed",
+              "status": "partial_unassigned_role",
+              "source_sha": "e157ebe9e3b1d7eef3a53e95698b2906ee2fc4e7",
+              "build_version": "0.2.577",
+              "development_ci_run_id": 39474432457,
+              "development_artifact_id": 12288703340,
+              "verified_subtargets": [
+                "Two independent native IANA captures edited/Applied then Saved; exact marker read back in web Source",
+                "Fresh peer full web-page reload retained edited marker; Pretty retained original article while Content held edited marker",
+                "Exact owned Sources archived with named UI confirmation; existing demo queued draft not retried/discarded and count stayed1"
+              ],
+              "unverified": [
+                "actual member/admin role and org-header proof",
+                "extension full reload",
+                "exact raw stored Original comparison",
+                "guest/D217 refused Save/Retry; Store-installed acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/scrape-save-auth-recovery-20261020.json",
+                "docs/stabilization/reports/scrape-source-save-fresh-peer-20261020.json"
+              ],
+              "new_full_role_case_pass": false
             }
           ]
         },
@@ -29363,6 +29390,16 @@
               "evidence": [
                 "docs/stabilization/reports/scrape577-copy-dismiss-retry-20261020.json"
               ]
+            },
+            {
+              "at": "2026-10-20T19:01:00Z",
+              "mode": "signed-in role unconfirmed",
+              "status": "partial_unassigned_role",
+              "detail": "Fresh peer closed Save Source dialog and observed edited capture retained before reopening/saving. Escape, no-write network proof, extension reload and guest/member/admin matrix remain unverified.",
+              "evidence": [
+                "docs/stabilization/reports/scrape-source-save-fresh-peer-20261020.json"
+              ],
+              "new_full_role_case_pass": false
             }
           ]
         },

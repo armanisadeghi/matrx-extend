@@ -1,0 +1,31 @@
+{
+  "task_id": "scrape-save-auth-recovery-20261020",
+  "status": "bounded_save_pass_retry_unverified",
+  "observed_at_utc": "2026-10-20T18:55:51Z–18:58:14Z",
+  "target": {
+    "profile": "Chrome Profile 8",
+    "dev_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.577",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "artifact_source": "e157ebe9e3b1d7eef3a53e95698b2906ee2fc4e7",
+    "ci_run": "39474432457",
+    "artifact": "12288703340"
+  },
+  "auth_ui": "Development side panel showed arman@armansadeghi.com, personalized Morning Arman chat, and admin-only tabs; signed in, role and selected organization not explicitly confirmed. Store 0.2.205 separate and untouched.",
+  "prior_queue_ui": "Before and after test: one Not yet a Source card for Matrx Extend Demo Page at https://www.aimatrx.com/matrx-extend-demo with prior mbr_for_user permission-denied message; its Retry save and Discard were untouched.",
+  "prior_draft_risk": "Prior agent used Capture only. src/hooks/use-scrape.ts captureActiveTab sets current in-memory capture; save-capture.ts writes the unsaved queue only in saveCaptureAsSource/retryUnsavedCapture, keyed by canonicalUrl; canonical.ts strips fragments. Thus no queue rewrite was triggered by the prior Capture. No pre-capture byte snapshot exists, so original draft text cannot be compared or reconstructed.",
+  "own_test": "Captured https://www.iana.org/help/example-domains (distinct canonical path), edited article with marker SCRAPE-SAVE-20261020-1856-OWNED, applied, named Source SCRAPE-SAVE-20261020-1856-OWNED — IANA Example Domains, clicked Save Source; UI changed to Saved with queue count still 1.",
+  "readback": "Web app opened Source 928348be-5d8a-4769-ad9e-4b6adb4ce8c1; showed exact test title, Saved/Searchable, IANA URL, and edited marker in Content view.",
+  "cleanup": "Archived exact owned Source from its page; confirmation named same title and promised restore from Trash, then toast acknowledged Archived. No permanent delete. Closed test tabs/side panel and restored original Store extension details view.",
+  "retry_limit": "No safe newly failed draft arose: signed-in Save succeeded. Did not alter account, organization, or network to force failure; did not Retry existing demo row. D217 stale-profile guest scenario remains unverified in this run.",
+  "resource": {
+    "journal": "/Volumes/Samsung2TB/code/matrx-extend/test-results/stabilization-resource-journals/scrape-save-auth-recovery-20261020-01.jsonl",
+    "decision": "valid",
+    "admitted": true,
+    "exit_code": 0,
+    "browser_stop_confirmed": true,
+    "permit_absent": true,
+    "durable_journal": "docs/stabilization/evidence/scrape-source-save-20261020/scrape-save-auth-recovery-20261020-01.jsonl"
+  },
+  "repo": "No code edits, commits, workflows, or tracked changes."
+}

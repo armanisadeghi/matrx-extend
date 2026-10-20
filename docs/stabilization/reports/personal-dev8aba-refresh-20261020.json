@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "task": "personal development artifact refresh for exact source 8aba01086df743fd1e8ec91265b81a34095eb0b1",
+  "ci": {
+    "workflow": ".github/workflows/ci.yml",
+    "run_id": 39478634445,
+    "attempt": 1,
+    "status": "success",
+    "artifact_id": 12289629521,
+    "artifact_name": "matrx-extend-development-test-8aba01086df743fd1e8ec91265b81a34095eb0b1-39478634445-1",
+    "artifact_size_bytes": 42702818,
+    "artifact_digest": "sha256:e7d57aaae22e721a13a045e385b9cad358ba2c57364dfc37aa457de45c94a833",
+    "source_sha": "8aba01086df743fd1e8ec91265b81a34095eb0b1"
+  },
+  "artifact": {
+    "version": "0.2.577",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "eligible_store": false,
+    "publish_state": "not_published",
+    "tree_sha256": "3dd21254a496de9673438b16b55f3e0e6c520aa529729f8386a0a150e181aa73",
+    "file_count": 2467,
+    "imported_path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/8aba01086df743fd1e8ec91265b81a34095eb0b1/39478634445-1/chrome-mv3"
+  },
+  "promotion": {
+    "compatibility": "exact-source",
+    "main_sha": "8aba01086df743fd1e8ec91265b81a34095eb0b1",
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "tree_sha256": "3dd21254a496de9673438b16b55f3e0e6c520aa529729f8386a0a150e181aa73",
+    "receipt": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-dev-promotion-receipt.json",
+    "result": "CI_DEV_PROMOTED"
+  },
+  "chrome": {
+    "profile": "Chrome Profile 8 (Arman / armansadeghi.com)",
+    "developer_extension": {
+      "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "version": "0.2.577",
+      "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "enabled": true,
+      "pinned": true,
+      "reload_confirmed": true
+    },
+    "store_extension": {
+      "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+      "version": "0.2.205",
+      "source": "Chrome Web Store",
+      "enabled": true,
+      "pinned": true
+    },
+    "auth_or_settings_changed": false,
+    "product_smoke": "not run; no queue, save, sign-out, or data operations performed",
+    "auth_state": "not inspected; no login, logout, or session changes performed"
+  },
+  "resource": {
+    "check_journal": "test-results/stabilization-resource-journals/personal-dev8aba-refresh-20261020-check.jsonl",
+    "check_decision": "valid",
+    "browser_journal": "test-results/stabilization-resource-journals/personal-dev8aba-refresh-20261020-browser.jsonl",
+    "browser_decision": "valid",
+    "browser_stop_signal": "SIGINT",
+    "browser_stop_confirmed": true,
+    "exit_code": 0,
+    "heavy_permit_absent_after_exit": true,
+    "journals_archived_to_ignored_test_results": true,
+    "durable_check_journal": "docs/stabilization/evidence/personal-dev8aba-refresh-20261020/personal-dev8aba-refresh-20261020-check.jsonl",
+    "durable_browser_journal": "docs/stabilization/evidence/personal-dev8aba-refresh-20261020/personal-dev8aba-refresh-20261020-browser.jsonl"
+  },
+  "evidence_sources": [
+    "GitHub Actions run metadata and artifact list",
+    "scripts/current-test-artifact.mjs import verification",
+    "scripts/promote-ci-dev-artifact.mjs promotion receipt",
+    "Chrome Extensions details for the reloaded development ID and Store ID in Profile 8"
+  ]
+}
