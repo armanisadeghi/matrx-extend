@@ -1,0 +1,54 @@
+{
+  "task_id": "EXT-D-0244",
+  "lane": "independent shared-component peer verification",
+  "status": "VERDICT_A_PARTIAL_VERDICT_B_PARTIAL",
+  "reviewed_current_diff_sha256": "f320fdec1efa6e3247f28290a2014eb0f60492cca71cc3ff31a4dd4deb4d507f",
+  "changed_source_sha256": {
+    "ContextRulesChip.tsx": "0111a6c30ed7f640c97e2b5b079838b7008513c33933f71ba47113b29db81739",
+    "context-react.test.tsx": "77f2e6bba63f170a7f98d6824f5760afe082ba00d773b44bb7ca0ff15f060c78",
+    "FEATURE.md": "c76ac740197bcccd898a6f6a5be8fa39e73ab4b28dc5835aaea33ef096701ed3",
+    "CHANGELOG.md": "63995cc96c013b7d3173ed14b176295ca92461814c7969667d5cf672bcbc8a7a"
+  },
+  "verdict_a": {
+    "result": "PARTIAL",
+    "evidence": [
+      "From apps/shared/matrx-agents: pnpm exec vitest run context/react/context-react.test.tsx --reporter=dot passed 37/37; it runs production ContextRulesChip with real @ai-matrx/design-system Tooltip/Popover primitives, no mocks in the test file. New cases focus each tooltip-bearing action and assert one Escape removes the tooltip and dialog; ArrowDown keeps dialog open.",
+      "This is jsdom/component evidence only. It does not reproduce trusted native keydown in exact572 / Chat; the provided native exact572 T13 failure predates this source diff and no post-fix native attempt is in evidence. Thus the requested real-user/native outcome stays unverified."
+    ],
+    "findings": [],
+    "cannot_verify": [
+      "After consuming the changed package, re-run exact candidate Chat T13 with actual focus confirmed inside compact Values before one trusted Escape and zero visible/open Values dialog after settling. Do not close EXT-D-0244 from this source test."
+    ]
+  },
+  "verdict_b": {
+    "result": "PARTIAL",
+    "findings": [
+      {
+        "severity": "Minor",
+        "location": "apps/shared/matrx-agents/context/react/context-react.test.tsx:253",
+        "issue": "The new guard covers Radix-tooltip focus, unrelated-key preservation, and the main close outcome, but not the existing inline editor's Escape contract when mounted inside the compact chip. InlineMaxInput currently calls stopPropagation, so source logic appears to preserve its local revert; no integration assertion proves this boundary. A regression removing that stop would close the entire Values popover when the editor is focused.",
+        "why_it_matters": "The brief includes adjacent editor behavior, and the new parent key handler is exactly the boundary whose interaction with the editor must remain observable. Add a test that opens the chip, focuses/edits an inline max, presses Escape, asserts draft reverts while both relevant surfaces remain in the intended state; separately cover the narrow inline-max nested popover if it is in scope."
+      }
+    ],
+    "positive_evidence": [
+      "Source-level ownership is appropriate: common-docs systems/architecture/execution-runtime/PACKAGE-CONTRACT.md D1 assigns package authorship to aidream/apps/shared/matrx-agents; its FEATURE.md declares ContextRulesChip a shared React leaf. The local boundary avoids changing global Radix Popover semantics and checks DOM containment so a portaled nested editor surface does not get treated as a child target.",
+      "The actual tooltip layer is the Radix design-system TooltipContent plus PopoverContent from apps/shared/design-system/src/tooltip.tsx and popover.tsx. The source test imports the production primitives directly. The synthetic test demonstrates current component behavior but is not trusted native UI.",
+      "Independent package focused test: 37/37 pass. git diff --check: pass. Package tsc: three errors only in ../associations/src/core/rpcResult.ts (missing @ai-matrx/api/net) and ../icons/src/brand-glyphs-svg.tsx plus ServiceBrandGlyph.tsx (missing @ai-matrx/kit/dom); no changed-file diagnostics. These are unchanged sibling workspace-resolution failures, bound to the package's three imports, not waived as a green package typecheck."
+    ],
+    "sibling_census": [
+      "ContextRulesTable's InlineMaxButton is a nested Popover with InlineMaxInput; the new contains(target) guard appears to preserve portaled nested-surface key ownership, but this combined case is not asserted by the touched test.",
+      "AgentListDropdown wraps its PopoverTrigger with a Tooltip and explicitly supplies open=false to that Tooltip while the popover is open; this does not reproduce the observed inner-control chain.",
+      "ModelListDropdown has a reachable similar surface: its desktop PopoverContent wraps TooltipProvider; ModelRow is role=button/tabIndex=0, with descendant DelayedHint spans and title-bearing focusable favorite buttons. I attempted a temporary production-component interaction probe; Vite failed before tests ran resolving @ai-matrx/kit/dom from shared icons, matching the package typecheck failure. Therefore this sibling is unverified, not a confirmed sibling defect. It should not be called resolved by this ContextRulesChip-only patch without a working focused probe or explicit scope ruling."
+    ],
+    "mutations": "I did not mutate shared source. Builder's old-RED/new-GREEN and constant-close mutation statements are in its report but were not independently replayed here; current-source test was rerun independently.",
+    "docs": "Read the package FEATURE.md, binding context-delivery RULES.md and STATE.md, plus the @ai-matrx/agents PACKAGE-CONTRACT.md and required reviewer-playbook/subagent-dispatch/forcing-function-tests skills."
+  },
+  "commands": [
+    "pnpm exec vitest run context/react/context-react.test.tsx --reporter=dot (pass, 37/37; independently rerun)",
+    "pnpm exec tsc --noEmit -p tsconfig.json --pretty false (exit 2; three listed pre-existing sibling import errors)",
+    "git diff --check (pass)",
+    "Temporary ModelListDropdown peer test (no product file retained): Vite failed before test collection on missing @ai-matrx/kit/dom; not behavioral evidence."
+  ],
+  "workspace_integrity": "Only the four builder-owned files remain modified in aidream/apps/shared/matrx-agents; scratch probe file removed. Extension checkout was inspected read-only and not modified.",
+  "next_action": "Keep native T13 pending until exact post-consumption retest. Consider one package test for the inline editor Escape boundary; do not expand the fix into global Popover or ModelListDropdown behavior without observed same defect."
+}

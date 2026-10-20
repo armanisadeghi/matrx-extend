@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T07:49:16.216593+00:00",
+  "updated_at": "2026-10-20T09:28:17.491526+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -41904,6 +41904,9 @@
             "warm",
             "reload",
             "auth-transition"
+          ],
+          "defect_ids": [
+            "EXT-D-0266"
           ]
         },
         {
@@ -42322,7 +42325,10 @@
                 "docs/stabilization/reports/auth-inventory-fresh-check-20261020.json"
               ]
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0266"
+          ]
         },
         {
           "id": "EXT-F-1015-T45",
@@ -42418,7 +42424,21 @@
           ],
           "new_product_passes": 0,
           "detail": "Only nine solely removed-picker cases are N/A. Surviving Settings loading/switch/error/archive and external-update cases remain unverified; their stale procedure clauses are tracked in the source census and not silently retired."
+        },
+        {
+          "at": "2026-10-20T09:28:17.491526+00:00",
+          "defect_id": "EXT-D-0266",
+          "status": "in-fix; source only",
+          "evidence": [
+            "docs/stabilization/reports/auth266-source-gap-20261020.json",
+            "docs/stabilization/reports/auth266-implementation-20261020.json",
+            "docs/stabilization/reports/auth266-first-peer-20261020.json"
+          ],
+          "detail": "Missing member-auth readiness boundary proved in shared sign-in and original Chat harness. Canonical awaits and regression guards implemented; fresh CI-wiring reverify pending. No product coverage credit or D261 capacity/backend repair."
         }
+      ],
+      "defect_ids": [
+        "EXT-D-0266"
       ]
     },
     {
@@ -45277,6 +45297,19 @@
               "resource_valid": true,
               "scope": "Publicworkflow cell picker flow failed at Done; initialselection/returnedselector andSavegate remain unverified in thiscandidate.",
               "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
+            },
+            {
+              "run_id": 39399705944,
+              "version": "0.2.573",
+              "source_sha": "19aa37bee23e02c8ab62a15ce4854d9e5c944f91",
+              "mode": "guest",
+              "status": "unverified",
+              "resource_invalid": true,
+              "scope": "Initial CDP startup timed out before any product assertion. No product pass/fail credit; previous version-specific results preserved. No retry.",
+              "evidence": [
+                "docs/stabilization/reports/release573-independent-peer-20261020.json",
+                "docs/stabilization/reports/data573-native-lane-a-20261020.json"
+              ]
             }
           ],
           "native_store_observations": [
@@ -45831,6 +45864,21 @@
               ],
               "mode": "guest",
               "superseded_at": "2026-10-20T02:40:49.054483Z"
+            }
+          ],
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39399705944,
+              "version": "0.2.573",
+              "source_sha": "19aa37bee23e02c8ab62a15ce4854d9e5c944f91",
+              "mode": "guest",
+              "status": "unverified",
+              "resource_invalid": true,
+              "scope": "Initial CDP startup timed out before any product assertion. No product pass/fail credit; previous version-specific results preserved. No retry.",
+              "evidence": [
+                "docs/stabilization/reports/release573-independent-peer-20261020.json",
+                "docs/stabilization/reports/data573-native-lane-a-20261020.json"
+              ]
             }
           ]
         },
@@ -51899,26 +51947,23 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 39377242317,
-              "build_version": "0.2.205",
-              "build_channel": "published_public_crx_unpacked",
-              "receipt_kind": "published_store_crx_unpacked",
+              "run_id": 39391905076,
+              "build_version": "0.2.572",
+              "build_channel": "candidate_store_zip_adapted_unpacked",
               "actual_store_installed": false,
-              "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
-              "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
-              "execution_source_sha": "dcab242a405083b421adebf5f81923864795f7a6",
-              "workflow_checkout_sha": "1d73cd4248dce97696aaf376a4fe28d44e852f4c",
+              "source_sha": "419a40f0370c51db281759615e44797912ac485c",
+              "store_zip_sha256": "2385cc21f9ad7d02c532aa5c20e4b471595b2442b07ab76c6e3f111c0358606b",
               "resource_invalid": false,
               "guest_resource_decision": "child_failed",
-              "guest_child_exit_code": 1,
-              "server_sha_before": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
-              "server_sha_after": "f5f3e47245f4e0af98aab56333117860cbe04d5f",
-              "server_stable": false,
+              "server_sha_before": "4099043613385b5fff9d5049a4b195d037ac7018",
+              "server_sha_after": "4099043613385b5fff9d5049a4b195d037ac7018",
+              "server_stable": true,
               "evidence": [
-                "docs/stabilization/reports/guest264-native-retest-20261020.json",
-                "docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json"
+                "docs/stabilization/reports/release572-native-20261020.json",
+                "docs/stabilization/reports/release572-independent-peer-20261020.json"
               ],
-              "detail": "Fresh independent per-case review PASS only T10 three real guest replies: opening code/stages, sameconversation matchingwire/is_new=false code/fullheading, actualreload then distinctwire/is_new=true code/fullheading; allHTTP200 and terminal_answer/nonstreaming. Guest auth absent. Later T13 ValuesEscape failed but does not erase completed T10 steps. Backend changed181b→f5f3, so no stablebackend/currentserver attribution, actualStoreinstalled/fullChat/candidate568 pass or D263 causalclosure. D264 originalwrongheadingcatchnotexercised; laterValuescatchcorrectcode/heading only."
+              "detail": "Opening/same-conversation/postreload actual code/full-heading terminal replies, HTTP200; bounded guest T10 only. Overall run fails separate T13; no causal D263 closure or full Chat/member/Store-installed health.",
+              "defect_ids": []
             }
           },
           "defect_verification": {
@@ -52182,6 +52227,34 @@
               },
               "superseded_at": "2026-10-20T06:09:55.100840+00:00",
               "reason": "Fresh independent case-specific adjudication of run39377242317; T10 reply checks separate from T13 Escape failure, mixed backend explicit."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 39377242317,
+                "build_version": "0.2.205",
+                "build_channel": "published_public_crx_unpacked",
+                "receipt_kind": "published_store_crx_unpacked",
+                "actual_store_installed": false,
+                "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+                "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+                "execution_source_sha": "dcab242a405083b421adebf5f81923864795f7a6",
+                "workflow_checkout_sha": "1d73cd4248dce97696aaf376a4fe28d44e852f4c",
+                "resource_invalid": false,
+                "guest_resource_decision": "child_failed",
+                "guest_child_exit_code": 1,
+                "server_sha_before": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
+                "server_sha_after": "f5f3e47245f4e0af98aab56333117860cbe04d5f",
+                "server_stable": false,
+                "evidence": [
+                  "docs/stabilization/reports/guest264-native-retest-20261020.json",
+                  "docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json"
+                ],
+                "detail": "Fresh independent per-case review PASS only T10 three real guest replies: opening code/stages, sameconversation matchingwire/is_new=false code/fullheading, actualreload then distinctwire/is_new=true code/fullheading; allHTTP200 and terminal_answer/nonstreaming. Guest auth absent. Later T13 ValuesEscape failed but does not erase completed T10 steps. Backend changed181b→f5f3, so no stablebackend/currentserver attribution, actualStoreinstalled/fullChat/candidate568 pass or D263 causalclosure. D264 originalwrongheadingcatchnotexercised; laterValuescatchcorrectcode/heading only."
+              },
+              "superseded_at": "2026-10-20T08:29:12.701293+00:00",
+              "reason": "Fresh independent exact572 per-case native verdict; separate T10 reply/T13 Escape outcomes."
             }
           ],
           "attempt_history": [
@@ -52259,6 +52332,21 @@
                 "Fresh561candidate acceptance"
               ],
               "evidence": "docs/stabilization/reports/store205-guest-chat-backend2b53-20261019.json"
+            },
+            {
+              "run_id": 39393936846,
+              "version": "0.2.205",
+              "mode": "guest",
+              "server_sha": "4099043613385b5fff9d5049a4b195d037ac7018",
+              "status": "pass",
+              "resource_valid": true,
+              "actual_store_installed": false,
+              "new_unique_case_pass": false,
+              "observed": "Fresh independent first/same-conversation/post-panel-reload terminal grounded assistant replies; HTTP200, exact codes/full heading, same then distinct conversation. Public CRX adapted unpacked only. Overall run fails separate T13; public Article heading also fails. No D263 causalfix or sourceSHA inferred from CRX.",
+              "evidence": [
+                "docs/stabilization/reports/published205-daily-guest-20261020.json",
+                "docs/stabilization/reports/published205-daily-fresh-peer-20261020.json"
+              ]
             }
           ],
           "native_store_observations": [
@@ -52396,29 +52484,25 @@
           "results": {
             "guest": {
               "status": "fail",
-              "run_id": 39377242317,
-              "build_version": "0.2.205",
-              "build_channel": "published_public_crx_unpacked",
-              "receipt_kind": "published_store_crx_unpacked",
+              "run_id": 39391905076,
+              "build_version": "0.2.572",
+              "build_channel": "candidate_store_zip_adapted_unpacked",
               "actual_store_installed": false,
-              "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
-              "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
-              "execution_source_sha": "dcab242a405083b421adebf5f81923864795f7a6",
-              "workflow_checkout_sha": "1d73cd4248dce97696aaf376a4fe28d44e852f4c",
+              "source_sha": "419a40f0370c51db281759615e44797912ac485c",
+              "store_zip_sha256": "2385cc21f9ad7d02c532aa5c20e4b471595b2442b07ab76c6e3f111c0358606b",
               "resource_invalid": false,
               "guest_resource_decision": "child_failed",
-              "guest_child_exit_code": 1,
-              "server_sha_before": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
-              "server_sha_after": "f5f3e47245f4e0af98aab56333117860cbe04d5f",
-              "server_stable": false,
+              "server_sha_before": "4099043613385b5fff9d5049a4b195d037ac7018",
+              "server_sha_after": "4099043613385b5fff9d5049a4b195d037ac7018",
+              "server_stable": true,
               "evidence": [
-                "docs/stabilization/reports/guest264-native-retest-20261020.json",
-                "docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json"
+                "docs/stabilization/reports/release572-native-20261020.json",
+                "docs/stabilization/reports/release572-independent-peer-20261020.json"
               ],
+              "detail": "Original compact Values failure repeats on exact572: one trusted Escape, document focused, focus inside visible popover, no other visible dialogs; popover remains open. Close-control/reopen/full-view/member/admin unverified.",
               "defect_ids": [
                 "EXT-D-0244"
-              ],
-              "detail": "One trustedEscape, focusedcompactValuespopoverstillopen; screenshot/rawrecorder corroborate bounded observedfail after three actual replies. Existingpublic205 D244 repeated; closecontrol/reopen/fullview/current568 and othermodes remainunverified. Mixedbackend181b→f5f3, no newcurrentbuild equivalence."
+              ]
             },
             "member": {
               "status": "unverified"
@@ -52444,6 +52528,52 @@
               },
               "superseded_at": "2026-10-20T06:09:55.100840+00:00",
               "reason": "Fresh independent case-specific adjudication of run39377242317; T10 reply checks separate from T13 Escape failure, mixed backend explicit."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "fail",
+                "run_id": 39377242317,
+                "build_version": "0.2.205",
+                "build_channel": "published_public_crx_unpacked",
+                "receipt_kind": "published_store_crx_unpacked",
+                "actual_store_installed": false,
+                "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+                "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+                "execution_source_sha": "dcab242a405083b421adebf5f81923864795f7a6",
+                "workflow_checkout_sha": "1d73cd4248dce97696aaf376a4fe28d44e852f4c",
+                "resource_invalid": false,
+                "guest_resource_decision": "child_failed",
+                "guest_child_exit_code": 1,
+                "server_sha_before": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
+                "server_sha_after": "f5f3e47245f4e0af98aab56333117860cbe04d5f",
+                "server_stable": false,
+                "evidence": [
+                  "docs/stabilization/reports/guest264-native-retest-20261020.json",
+                  "docs/stabilization/reports/guest264-native-case-fresh-peer-20261020.json"
+                ],
+                "defect_ids": [
+                  "EXT-D-0244"
+                ],
+                "detail": "One trustedEscape, focusedcompactValuespopoverstillopen; screenshot/rawrecorder corroborate bounded observedfail after three actual replies. Existingpublic205 D244 repeated; closecontrol/reopen/fullview/current568 and othermodes remainunverified. Mixedbackend181b→f5f3, no newcurrentbuild equivalence."
+              },
+              "superseded_at": "2026-10-20T08:29:12.701293+00:00",
+              "reason": "Fresh independent exact572 per-case native verdict; separate T10 reply/T13 Escape outcomes."
+            }
+          ],
+          "bounded_candidate_observations": [
+            {
+              "run_id": 39399395330,
+              "version": "0.2.573",
+              "source_sha": "19aa37bee23e02c8ab62a15ce4854d9e5c944f91",
+              "mode": "guest",
+              "status": "unverified",
+              "resource_invalid": true,
+              "scope": "Initial CDP startup timed out before any product assertion. No product pass/fail credit; previous version-specific results preserved. No retry.",
+              "evidence": [
+                "docs/stabilization/reports/release573-independent-peer-20261020.json",
+                "docs/stabilization/reports/release573-native-20261020.json"
+              ]
             }
           ]
         },
@@ -52474,7 +52604,8 @@
             "The signed-in member receives a page-grounded assistant answer after the browser tool completes, with successful terminal completion; a same-conversation follow-up can then be tested."
           ],
           "defect_ids": [
-            "EXT-D-0261"
+            "EXT-D-0261",
+            "EXT-D-0266"
           ],
           "results": {
             "member": {
@@ -52628,12 +52759,24 @@
           "status": "source fixed; fresh independent A/B PASS; native original-repro retest UNKNOWN, no product pass",
           "evidence": "docs/stabilization/reports/readiness265-final-peer-20261020.json",
           "summary": "Exact571 native39386228485 resource-invalid before UI; actual canonical healthy CPU_PENDING reasons[] samples reset readiness streak. Three healthy recovery measurements became one. Source fix/review/native retest pending."
+        },
+        {
+          "at": "2026-10-20T09:28:17.491526+00:00",
+          "defect_id": "EXT-D-0266",
+          "status": "in-fix; source only",
+          "evidence": [
+            "docs/stabilization/reports/auth266-source-gap-20261020.json",
+            "docs/stabilization/reports/auth266-implementation-20261020.json",
+            "docs/stabilization/reports/auth266-first-peer-20261020.json"
+          ],
+          "detail": "Missing member-auth readiness boundary proved in shared sign-in and original Chat harness. Canonical awaits and regression guards implemented; fresh CI-wiring reverify pending. No product coverage credit or D261 capacity/backend repair."
         }
       ],
       "defect_ids": [
         "EXT-D-0263",
         "EXT-D-0264",
-        "EXT-D-0265"
+        "EXT-D-0265",
+        "EXT-D-0266"
       ]
     },
     {

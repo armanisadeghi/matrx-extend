@@ -5,7 +5,7 @@
   "auth_mode": "guest",
   "case_ids": ["EXT-F-2013-T13"],
   "control_ids": ["EXT-F-2013-C139", "EXT-F-2013-C140"],
-  "title": "Compact Values popover remains open after trusted Escape in public205 guest run",
+  "title": "Compact Values popover remains open after trusted Escape with focus inside",
   "reproduction": [
     "Import the exact public0.2.205 CRX (SHA2567f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23), load unpacked under the resource guard in a fresh guest profile, and reload from its recorded receipt.",
     "Open Chat and complete the controlled three-turn fixture flow as run39160396058. Click the compact Values chip and focus inside its popover; do not click Open full view.",
@@ -28,25 +28,49 @@
     "docs/stabilization/reports/values244-focus-guard-20261020.json",
     "docs/stabilization/reports/values244-guard-first-peer-20261020.json",
     "docs/stabilization/reports/values244-guard-final-peer-20261020.json",
-    "docs/stabilization/reports/release570-hosted-preparation-20261020.json"
+    "docs/stabilization/reports/release570-hosted-preparation-20261020.json",
+    "docs/stabilization/reports/release572-native-20261020.json",
+    "docs/stabilization/reports/release572-independent-peer-20261020.json",
+    "docs/stabilization/resource-journals/hosted-guest-39391905076-1.jsonl",
+    "docs/stabilization/reports/values244-publish-adopt-20261020.json",
+    "docs/stabilization/reports/release573-native-20261020.json",
+    "docs/stabilization/reports/release573-independent-peer-20261020.json"
   ],
   "severity": "S3: context inspection dialog dismissal by Escape fails; the three Chat replies completed.",
-  "priority": "P2: verify current candidate and repair through the owning shared component if it reproduces.",
-  "state": "open",
-  "owner": "stabilization-coordinator",
-  "reproducibility": "Repeated again on public205 native39377242317, resourceInvalid=false/child_failed exit1: after three grounded terminal replies, one trusted Escape withfocusinside leavescompactValuespopoveropen. Backend181b→f5f3drift preventsstablebackendattribution. Current568 equivalent remainsunverified; original public205 observedfailnotcurrent-sourcefix evidence.",
-  "build_version": "0.2.205 public CRX adapted unpacked",
-  "server_sha": "a61289ffa374eb4b1a2ff8181d9db42e947f039a",
+  "priority": "P2: current 0.2.572 guest native reproduced; repair the shared ContextRulesChip and retest a released candidate.",
+  "state": "fixed",
+  "owner": "values244-product-repair",
+  "reproducibility": "Current exact 0.2.572/source 419a40f0370c51db281759615e44797912ac485c reproduced on native39391905076: one trusted Escape, document focused, focus inside visible/open compact Values popover, zero other visible dialogs; popover remained open. Three guest replies completed, backend stable4099043613385b5fff9d5049a4b195d037ac7018; package/browser/guest resource finals valid, guest child_failed exit1 at Values. Prior public205 reproduced; this current-source result removes the artifact-equivalence uncertainty.",
+  "build_version": "0.2.572 frozen CRX/source419a40f0370c51db281759615e44797912ac485c",
+  "server_sha": "4099043613385b5fff9d5049a4b195d037ac7018",
   "transition_history": [
     {
       "at": "2026-10-18T20:03:02.431885+00:00",
       "from": null,
       "to": "open",
       "reason": "Independent screenshot and DOM/event review confirms the observed dialog did not close; no cause or current-build equivalence inferred."
+    },
+    {
+      "at": "2026-10-20T08:39:34.614947+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Exact 0.2.572 native39391905076 resource-valid guest run reproduced the original focus/Escape symptom with stable backend and no competing visible dialog; focused real-component test localized tooltip dismissal layer."
+    },
+    {
+      "at": "2026-10-20T08:39:34.614947+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Assigned shared @ai-matrx/agents ContextRulesChip source repair and old-RED/new-GREEN component guard to values244-product-repair; independent source review, npm publication/adoption, and native retest remain pending."
+    },
+    {
+      "at": "2026-10-20T08:59:00+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Reviewed shared ContextRulesChip repair pushed as aidream a1c540b807 and published as @ai-matrx/agents 0.59.174 with matching registry gitHead and tarball handler; extension latest-package lockfile adoption and compile passed. Fixed denotes the pushed source unit only; exact installed/native guest T13 and independent behavior retest remain pending."
     }
   ],
-  "next_action": "Original-equivalent compact Values focus/Escape T13 on exact570 through normal guarded route; sourcefocusguard independently passed. No current nativepass or productfix inferred; fullview/close/reopen and othermodes remain unverified. D244 staysopen.",
-  "current_artifact_boundary": "Frozen Store568/source5aca uses agents0.59.170; verified CI development568/source501998549 and currentmain use173. Neither exact artifact has original compactpopover focus/Escape/nativeT13 acceptance. Existingdisplay/sourceunits and555nativepass cannot close either currentboundary.",
+  "next_action": "Resolve measured initial owned-CDP startup condition without changing resource thresholds or blind retry; then run original-equivalent guest T13 on a fresh eligible exact candidate and obtain fresh independent behavior review. Keep state fixed until original/surrounding native cases pass; nonadminD261 and other Values modes remain separate.",
+  "current_artifact_boundary": "Source-reviewed shared repair published as agents0.59.174/gitHead a1c540b807; synchronized extension adoption adb10448d and fullCI39397452854 pass. Exact573 source19aa37bee23e02c8ab62a15ce4854d9e5c944f91 / Store ZIP5814c4683e270f8303263a26fda0946c91f9680a6c317150283eaafae0df2d4e contains compiled repair. Original native T13 B39399395330 stopped resource-invalid at CDP startup before UI, so no retest-pass/fail is supported. Previous572 actual failure remains valid history.",
   "source_harness_readiness": {
     "status": "fresh source peer PASS; native UNKNOWN, productstateopen",
     "summary": "Immediately prove documentfocus/visiblecompactfocus/singleopen/noothervisible dialogs before trustedEscape; unavailablefocus refused before key, distinct harnesspreconditionerror. Require zero open/visible compactdialogs +trustedkeydown after. Fullviewcontrolfocusedwithoutactivation; actualnativefocus sideeffectsunknown.",

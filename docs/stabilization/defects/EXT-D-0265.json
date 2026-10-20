@@ -7,7 +7,7 @@
   "title": "Healthy CPU recovery-pending samples reset guest readiness streak",
   "severity": "S2: blocks native guest acceptance on a host that recovered under the unchanged canonical resource policy",
   "priority": "P0: repair false refusal before further guest launches or Store acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "stabilization-coordinator",
   "reproduction": [
     "Use native run39386228485 exact571 release39385321887 source6501f22db8c35a35ed4e535a8af6c0dc449f8df9, policy healthySamplesToResume=3 and hostedReadinessWaitSeconds=90. Raw and sanitized journals retain the actual timestamped sequence.",
@@ -24,7 +24,10 @@
     "docs/stabilization/reports/readiness265-source-fix-20261020.json",
     "docs/stabilization/reports/readiness265-first-peer-20261020.json",
     "docs/stabilization/reports/readiness265-final-peer-20261020.json",
-    "docs/stabilization/reports/readiness265-ci-wiring-peer-20261020.json"
+    "docs/stabilization/reports/readiness265-ci-wiring-peer-20261020.json",
+    "docs/stabilization/reports/release572-native-20261020.json",
+    "docs/stabilization/reports/release572-independent-peer-20261020.json",
+    "docs/stabilization/resource-journals/hosted-guest-39391905076-1.jsonl"
   ],
   "transition_history": [
     {
@@ -50,13 +53,26 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source fix independently replayed actual full journal; 43 focused tests plus 52 negative actual-source cases; fresh A/B PASS. Native original reproduction remains pending."
+    },
+    {
+      "at": "2026-10-20T08:29:12.701293+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent exact572 native39391905076 proves original native setup recovery: full11-field healthy CPU_PENDING .03/.53 then CPU_RECOVERED .11 counted as3; readiness passes unchanged policy. Subsequent three guest terminal replies and later readiness pass; separate D244 Values product failure remains."
+    },
+    {
+      "at": "2026-10-20T08:29:12.701293+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original harness reproduction and surrounding readiness/native flow independently pass on immutable419a40f package; narrow infrastructure closure only, no product or Store acceptance claim."
     }
   ],
   "verification": {
-    "native": "Original571 resource-invalid before UI; repaired current-source native replay UNKNOWN, no product verdict or closure.",
-    "source": "Fresh independent A/B PASS; actual full journal replay returns healthy_samples=3 with current native health probes; all43 focused tests and independent52 negative source cases pass. Full source CI pending.",
-    "ci_wiring": "New malformed measurement regression included in existing focused CI command; independent wiring A/B PASS; full local focused722 total/712pass/10Linuxskips/0fail. Exact final-source CI still pending."
+    "source": "Fresh A/B PASS; actual archived full-sample replay, 43 focused tests, 52 independent negative cases.",
+    "ci": "Full checks and resource-guard CI39389758979 SUCCESS on3c4d41e1f; reviewed repair and CI wiring included in exact572 package419a40f.",
+    "native": "Independent A/B PASS for D265 original native setup branch in39391905076; all samples complete, helper3/3, subsequent fresh guest three terminal replies; resourceInvalid=false. Overall run fails separate D244 Values Escape.",
+    "report": "docs/stabilization/reports/release572-independent-peer-20261020.json"
   },
-  "next_action": "Complete exact-source CI, freeze executable/test/manifest source, prepare next eligible artifact through guarded hosted release and run one normal guarded native guest acceptance. Require original recovery measurements and surrounding cases before retest-pass/closure; no UI/product or D244/D261 closure from source proof.",
+  "next_action": "No D265 work remains. Preserve unchanged canonical policy. Product D244 actual572 Values Escape failure assigned separately; D261 member504 remains unresolved.",
   "fix_sha": "3e6c34bab46858f07e6e6fca2a331d645274c647"
 }

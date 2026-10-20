@@ -1,0 +1,97 @@
+{
+  "status": "ADOPTION_READY_FOR_FRESH_PEER_REVIEW_UNCOMMITTED",
+  "observed_at_utc": "2026-10-20T10:22:01.297609+00:00",
+  "source_head_at_audit": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+  "current_private_store_bounded_state": {
+    "published": "0.2.205",
+    "rejected_draft": "0.2.479",
+    "pending": false,
+    "upload_enabled_at_utc": "2026-10-20T07:02:11Z",
+    "basis": "canonical CHROME-WEB-STORE.md / daily authenticated dashboard receipt; no new dashboard visit"
+  },
+  "candidate": {
+    "version": "0.2.573",
+    "source": "19aa37bee23e02c8ab62a15ce4854d9e5c944f91",
+    "release_run": 39398454280,
+    "artifact": 12253811524,
+    "zip_sha256": "5814c4683e270f8303263a26fda0946c91f9680a6c317150283eaafae0df2d4e",
+    "eligibility": "not upload eligible: exact573 guest/Values and Data native lanes resource-invalid before product actions; current non-admin acceptance unresolved"
+  },
+  "latest_package_findings": [
+    {
+      "package": "@ai-matrx/agents",
+      "installed": "0.59.174",
+      "npm_latest": "0.59.175",
+      "consumer_action": "none; changelog says docs/metadata only, no shipped-source changes"
+    },
+    {
+      "package": "@ai-matrx/data",
+      "installed": "0.29.82",
+      "npm_latest": "0.29.83",
+      "consumer_action": "no extension callsite action identified; shipped source diff 06855e3c1f..31700667ba only generated Database types for request_values, memory_trial, point provision"
+    },
+    {
+      "package": "@ai-matrx/design-system",
+      "installed": "0.86.237",
+      "npm_latest": "0.86.238",
+      "consumer_action": "none; registry gitHead 1a5545d63b matches local source; diff since .237 adds opt-in accents.ts/accent.css and styles.css import; Unreleased changelog calls additive and inert without accent attribute"
+    },
+    {
+      "package": "@ai-matrx/kit",
+      "installed": "0.45.18",
+      "npm_latest": "0.45.19",
+      "consumer_action": "none; source diff 62cc7cc1c6..fd6c15b440 restores SHEET_CELL_SUFFIX export; no extension use"
+    },
+    {
+      "package": "@ai-matrx/records",
+      "installed": "0.99.107",
+      "npm_latest": "0.99.108",
+      "consumer_action": "no known required extension change; source diff d9d7d647b9..31700667ba adds optional filter_ignored to reads, system view key and numeric XLSX export; extension imports /core, verify via compile after adoption"
+    },
+    {
+      "package": "@ai-matrx/alchemy",
+      "installed_before": "0.23.66",
+      "adopted": "0.23.67",
+      "consumer_action": "none; transitive release restores typed Excel cells and copy path per local changelog/source diff"
+    },
+    {
+      "package": "@ai-matrx/rich-content",
+      "installed_before": "0.2.234",
+      "adopted": "0.2.235",
+      "consumer_action": "none; transitive release adds existing Copy/Full screen handlers to right-click block menus for CSV/Mermaid/SVG/table; exact source diff inspected"
+    }
+  ],
+  "manifest_declarations": "all 15 direct @ai-matrx packages are latest in package.json; five installed versions lag npm at audit time",
+  "changed_files": ["pnpm-lock.yaml"],
+  "evidence": [
+    "npm view each direct package version 2026-10-20",
+    "installed node_modules package.json versions",
+    "aidream apps/shared changelogs and exact source diffs",
+    "canonical common-docs/systems/apps/extension/CHROME-WEB-STORE.md"
+  ],
+  "limits": [
+    "No code change required by inspected Consumer actions; all 15 direct declarations remain latest",
+    "No commit/push pending fresh independent peer and root coordination",
+    "No heavy Mac tests, local build/release, hosted dispatch, Store upload or new private dashboard observation in this lane",
+    "Earlier exact573 native attempts resource-invalid; current non-admin acceptance unresolved"
+  ],
+  "next_action": "Fresh peer reviews only pnpm-lock.yaml at SHA256 above against inspected release notes and compile/freshness evidence; root then authorizes exact-path commit/push if accepted. Later new candidate needs separate full gates.",
+  "lockfile_sha256": "6e67bb5fa7ceb21cbd2d47e9a99f000089ef10afde7230c6820c3ccb508aa38f",
+  "adopted_versions": {
+    "agents": "0.59.175",
+    "data": "0.29.83",
+    "design-system": "0.86.238",
+    "kit": "0.45.19",
+    "records": "0.99.108",
+    "alchemy": "0.23.67",
+    "rich-content": "0.2.235"
+  },
+  "verification": {
+    "pnpm_up_lockfile_only": "PASS",
+    "pnpm_install_frozen_ignore_scripts": "PASS",
+    "pnpm_compile": "PASS",
+    "pnpm_check_matrx_packages": "PASS (26 package graph at npm latest exactly once)",
+    "git_diff_check": "PASS",
+    "biome_format_lockfile": "N/A: Biome ignores pnpm-lock.yaml"
+  }
+}

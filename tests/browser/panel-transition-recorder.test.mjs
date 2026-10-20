@@ -454,6 +454,7 @@ test('real Scrape auth caller records first member selection, skip, identity, an
     const identity = { userId: '123e4567-e89b-42d3-a456-426614174000', email: 'member@matrx.test' };
     const organizationId = '123e4567-e89b-42d3-a456-426614174001';
     const proofActions = [];
+    const authEntry = [];
     const accountIdentity = async () => ({
       signInEnabled: true,
       emailMatches: true,
@@ -535,6 +536,10 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       signInAdminSettings: async () => identity,
       observeMemberExtensionIdentity,
       runMemberAuthBoundary,
+      awaitNativeResourceHealth: async ({ repo }) => {
+        assert.equal(repo, '');
+        authEntry.push('resource_ready');
+      },
       requireProductionBackendOrigin: async () => PRODUCTION_BACKEND_ORIGIN,
       observeMemberLogicalOrganizationGet: (panel, expected, origin) => {
         assert.equal(expected, organizationId);
@@ -594,7 +599,15 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       url: () => web.current,
       close: async () => {},
     };
-    const page = { context: () => ({ newPage: async () => web }), bringToFront: async () => {} };
+    const page = {
+      context: () => ({
+        newPage: async () => {
+          authEntry.push('auth_page_created');
+          return web;
+        },
+      }),
+      bringToFront: async () => {},
+    };
     const report = {};
     const run = runSetup(source, signInSettings, report);
     const args = {
@@ -618,6 +631,7 @@ test('real Scrape auth caller records first member selection, skip, identity, an
     } finally {
       assert.equal(env.networkListenerCount(), 0, 'member logical-org observer must clean up');
     }
+    assert.deepEqual(authEntry, ['resource_ready', 'auth_page_created']);
     return { report, inputs, cleanup, proofActions };
   }
 

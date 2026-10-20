@@ -1224,6 +1224,7 @@ try {
         });
       await sampleAuthBoundary('before_member_tab_create');
       stage = MAGIC_LINK ? 'open_reviewer_magic_link' : 'open_reviewer_web_login';
+      await native.requireResourceHealth();
       const web = await page.context().newPage();
       await sampleAuthBoundary('after_member_tab_create');
       let memberTransport = null;

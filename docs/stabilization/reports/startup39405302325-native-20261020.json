@@ -1,0 +1,161 @@
+{
+  "status": "DONE_DIAGNOSTIC_TERMINAL_SUCCESS_NO_PRODUCT_VERDICT",
+  "task": "One existing hosted startup-resource-diagnostic on current development artifact; diagnostic only, no product acceptance.",
+  "route": {
+    "script": "scripts/hosted-remote-admission.mjs",
+    "plan_mode": "plan-startup-diagnostic",
+    "dispatch_mode": "dispatch-startup-diagnostic",
+    "workflow": "hosted-guest-acceptance.yml",
+    "inputs": {
+      "acceptance_lane": "A",
+      "acceptance_case": "startup-resource-diagnostic",
+      "startup_display_mode": "headed",
+      "runner_label": "macos-15-intel",
+      "requested_by": "extend-stabilization",
+      "scrape_auth_mode": "guest"
+    },
+    "guards": [
+      "exact local/remote/source SHA",
+      "clean checkout",
+      "successful exact main-push CI and live development artifact",
+      "reviewed workflow blob",
+      "no active conflicting A/global native jobs"
+    ]
+  },
+  "source_boundary": {
+    "source_sha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+    "full_ci_run_id": 39404058065,
+    "full_ci_status": "success",
+    "focused_ci_run_id": 39404058191,
+    "focused_ci_status": "success",
+    "local_main_sha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+    "remote_main_sha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+    "checkout_clean": true
+  },
+  "spend": {
+    "official_http_status": 200,
+    "read_at": "2026-10-20T09:24:58.256649+00:00",
+    "stale": false,
+    "week_total_usd": 72.23,
+    "week_cap_usd": 100,
+    "components_usd_week": {
+      "github_actions_billed": 0,
+      "runson_aws": 47.08,
+      "github_enterprise": 24.23,
+      "github_pro": 0.92,
+      "runson_license": 0
+    },
+    "note": "off_track field true indicates cost/waste context; official real total below cap. Recheck before dispatch.",
+    "fresh_read_http_status": 200
+  },
+  "capacity_at_last_read": {
+    "hosted_guest_active": 0,
+    "hosted_resource_diagnostic_active": 0,
+    "statuses_checked": ["queued", "in_progress", "waiting", "pending", "requested"],
+    "at": "preflight immediately before ROOT GO"
+  },
+  "diagnostic_behavior": "Existing script writes startup-interval-diagnostic.json schema2; uses headed owned Chromium, original8s CDP deadline, records cdp_timeout and bounded post_timeout endpoint observation up to one watch interval; no product action or acceptance claim. It may wait for resource health after panel ready. No browser/test launched locally.",
+  "pending": [],
+  "run_id": 39405302325,
+  "artifact_id": null,
+  "resource_finals": {
+    "package": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "at": "2026-10-20T10:07:10.605Z",
+      "sha256": "565a2ee6fd14618dffe4c939e943fe4cb50a9d3f22d8ce0d0ec4ba094fb41f74"
+    },
+    "browser": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "at": "2026-10-20T10:09:14.242Z",
+      "sha256": "2cb1c28123688d578c8f2a2e04101d669a04de5a5cd40b73794591a03a21677a"
+    },
+    "startup": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "at": "2026-10-20T10:12:08.502Z",
+      "sha256": "b2f99e2426961280f744135665d42718d8803ceec2cdcc1ef87040c521a8ee24",
+      "watch": "RESOURCE_WATCH_HEALTHY at 10:11:15,10:11:31,10:11:47,10:12:03 UTC; no CPU_PENDING"
+    }
+  },
+  "endpoint_timing": {
+    "browser_spawn_at": "2026-10-20T10:11:20.034Z",
+    "cdp_connect_stage_at": "2026-10-20T10:11:20.038Z",
+    "cdp_connected_observation_at": "2026-10-20T10:11:23.132Z",
+    "connected_elapsed_ms": 3034,
+    "endpoint_present": true,
+    "exit_observed": false,
+    "detailed_phases_elapsed_ms": {
+      "endpoint_read": 1988,
+      "owner_check_started": 1988,
+      "owner_verified": 2036,
+      "socket_constructed": 2055,
+      "probe_tcp_connected": 2069,
+      "socket_open": 3027,
+      "connector_settled": 3028
+    },
+    "longest_timer_delay_ms": 7,
+    "result": "Endpoint arrived and CDP connected within original 8000ms policy; post-timeout observation branch was not exercised."
+  },
+  "cleanup": {
+    "workflow_terminal": true,
+    "owned_chromium": "Native harness returned only after owned Chromium child termination, per existing route contract; no independent post-host PID census possible on ephemeral VM.",
+    "job_exit_code": 0,
+    "external_artifact_storage": true,
+    "no_local_browser_launched": true
+  },
+  "limitations": [
+    "Single healthy current-development startup diagnostic, not the frozen release573 package or either prior VM.",
+    "No late endpoint in this run, so post-timeout branch and its behavior remain unobserved here.",
+    "No product interactions/assertions; panel-ready is setup evidence only.",
+    "Official spend read was nonstale at API read time but its read_at timestamp did not advance beyond 09:24:58 UTC; no billing block existed.",
+    "No independent host process census after ephemeral workflow cleanup."
+  ],
+  "tool_calls_this_assignment_approx": 34,
+  "development_artifact": {
+    "id": 12255454102,
+    "name": "matrx-extend-development-test-95d7ba509f4e033c0ee0281d1dbceae15cb0b433-39404058065-1",
+    "size_bytes": 42696970,
+    "digest": "sha256:08bf85bab9dddef5d38a80fbd4042025023747e45de8243ff5e209a43e753f3b",
+    "expired": false,
+    "verified_by": "plan-startup-diagnostic requireDevelopmentArtifact"
+  },
+  "plan_verdict": "PASS; exact guarded plan command accepted artifact and reviewed local workflow. Dispatch mode separately rechecks remote workflow, source, artifact, and capacity.",
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39405302325",
+  "workflow_status": "completed",
+  "workflow_conclusion": "success",
+  "workflow_head_sha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+  "result_artifact": {
+    "id": 12257500889,
+    "name": "hosted-guest-39405302325-1",
+    "digest": "sha256:bd80569a30a8ff8f0683321ed9ea9479e5fa19aacf36890a4a84f26f48f9849b",
+    "size_bytes": 41216,
+    "expired": false,
+    "local_external_ignored_root": "/Volumes/Samsung2TB/code/matrx-extend/test-results/cdp-startup-39405302325"
+  },
+  "native_result": {
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/cdp-startup-39405302325/_temp/guest-acceptance/startup-interval-diagnostic.json",
+    "sha256": "26723b2a79d018e9ef5a39b1402de07ebaed0ca3700ceb70ee84459e0573c761",
+    "schema": 2,
+    "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE",
+    "sourceSha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+    "runId": 39404058065,
+    "artifactId": 12255454102,
+    "runnerArch": "X64",
+    "requestedDisplayMode": "headed",
+    "observedDisplayMode": "headed",
+    "browserLaunchVerifiedBy": "Browser.getBrowserCommandLine",
+    "panelReadyAt": "2026-10-20T10:11:27.856Z",
+    "completedAt": "2026-10-20T10:12:08.296Z",
+    "lastNativeStage": "exercise_panel",
+    "failureCode": null
+  },
+  "interpretation": "Changed discriminator was executed once but healthy hosted host published DevToolsActivePort in about 2s and connected in 3.034s. It did not exercise the late-after-8s branch previously observed in another run. Two release573 resource-invalid failures remain unexplained causally; startup environment pressure is a live correlate, not a proven root cause. No D244/D261/auth266 product repair or acceptance credit."
+}

@@ -1,0 +1,63 @@
+{
+  "status": "HANDOFF_NO_CAUSAL_SOURCE_FIX_EXISTING_EXECUTABLE_DISCRIMINATOR_VERIFIED",
+  "scope": "Initial hosted owned Chromium/CDP startup only; no browser, job, dispatch, paid call, source modification, release or product claim.",
+  "observations": [
+    {
+      "claim": "Successful572 and failed573 used identical startup source in harness, connector, CDP observer, installer and policy.",
+      "evidence": "Actual workflow checkout SHAs419a40f0370c51db281759615e44797912ac485c and19aa37bee23e02c8ab62a15ce4854d9e5c944f91; git diff on five relevant files is empty. Both raw logs identify macOS image20260824.0482.1 and Chromium141.0.7390.37 build1194."
+    },
+    {
+      "claim": "CPU pending alone does not entail endpoint timeout.",
+      "evidence": "572 log RESOURCE_CPU_PENDING at08:20:58.870Z busy0.96; endpoint read4107ms and socket open5634ms.573B no endpoint in243 polls/8002ms. This rejects a sufficient-cause claim, not transient CPU influence."
+    },
+    {
+      "claim": "Saved diagnostics do not indicate Node poll-loop starvation as sufficient cause.",
+      "evidence": "Failed573B longest timer delay140ms and longest endpoint read47ms; successful572 longest timer delay537ms."
+    },
+    {
+      "claim": "Larger absolute hostCPU bracket total is not measured greater sustained backgroundCPU rate.",
+      "evidence": "Complete snapshot spans:57210.7/6.284=1.703 CPU-seconds/second;2057.14/4.178=1.709;573B14.14/8.324=1.699. Process churn, nonidentical snapshot boundaries and transient contention remain unmeasured."
+    },
+    {
+      "claim": "573 ordinary guest callers did not run the existing post-timeout observation.",
+      "evidence": "runNativeSidepanelQa defaults startupEndpointObservationMs=0; guest-chat-store-acceptance.mjs and data-guest-native-acceptance.mjs do not pass callback/window. Diagnostic env flags enable connector/CPU diagnostics only."
+    },
+    {
+      "claim": "Existing dedicated route already demonstrated late endpoint publication after a failure.",
+      "evidence": "docs/stabilization/evidence/startup-probe-lane-a/run39312706355/startup-interval-diagnostic.sanitized.json: headed, timeout elapsed8471ms, post-timeout first present at2026-10-19T19:45:26.268Z,9322ms after browser_spawn.542ms is watcher duration, not time since deadline. Resource final invalid; no CDP reconnection and no product credit."
+    }
+  ],
+  "root_cause": "Unknown: Chromium did not publish DevToolsActivePort within8s. No deterministic source defect established. Fresh-profile ownership, child liveness, valid polling and identical startup implementation are observed; extension payload and ephemeral host remain confounders.",
+  "exact_missing_evidence": [
+    "For failed573, endpoint state after timeout before cleanup was never recorded and cannot be reconstructed from current artifacts.",
+    "Even a late endpoint does not identify Chromium internal blocked startup phase or prove host contention, display, or extension payload as cause. No browser internal startup trace/stack or controlled same-artifact intervention exists."
+  ],
+  "changes": [],
+  "commits": [],
+  "self_verification": {
+    "command": "node /tmp/cdp-startup-discriminator-20261020.mjs",
+    "result": "PASS; exercises actual existing observeOwnedEndpointAfterTimeout function extracted unchanged into VM with real filesystem: missing endpoint, subsequently published endpoint, child-exit observation. No child spawned or socket opened. Also regenerates archived control comparison.",
+    "limits": "Diagnostic seam verification only; child-exit property is controlled external input, not real child process; does not reproduce Chromium startup or earn product credit."
+  },
+  "next_action": {
+    "eligible_route": "Existing plan-startup-diagnostic then, ONLY after root GO, dispatch-startup-diagnostic; laneA, case startup-resource-diagnostic, macos-15-intel, headed.",
+    "plan_command_template": "node scripts/hosted-remote-admission.mjs plan-startup-diagnostic --lane A --case startup-resource-diagnostic --runner-label macos-15-intel --startup-display-mode headed --development-run-id CURRENT_SUCCESSFUL_CI_RUN --development-artifact-id ITS_DEVELOPMENT_ARTIFACT_ID --source-sha EXACT_SYNCHRONIZED_SOURCE_SHA",
+    "eligibility": "Exact successful current CI development artifact, synchronized clean local/remote source, lane capacity, normal resource and spend admission, root explicit GO before dispatch. A finished CI failure is ineligible. No bypass, no old573 artifact substitution.",
+    "discriminator": "Existing scripts/hosted-startup-interval-diagnostic.mjs passes callback and watchIntervalSeconds*1000 window(15000ms). observeOwnedEndpointAfterTimeout only lstats the owned profile endpoint and checks original child exit state. It never reconnects, retries, accepts a late endpoint, extends8s deadline, changes ownership or suppresses original error.",
+    "outcome_rule": "Connected within8s with complete valid journals demonstrates current operational startup only. Timeout then endpoint present demonstrates late publication; timeout then absent/live demonstrates continued nonpublication through bounded observation; child exit distinguishes exit. Any resource-invalid journal earns no product verdict. One run cannot establish573-specific cause because dedicated route uses current development artifact.",
+    "no_infrastructure_expansion": true
+  },
+  "evidence_hashes": {
+    "/tmp/cdp-startup-control572-20261020.log": "abac376e8eee2a943b90da2f777e52d69d1deb3f8d08ed16de3c76ca0f47e290",
+    "/tmp/cdp-startup-control205-20261020.log": "95a08357768174192255ad095e033e26d090fb85cea794bf29079d16f554c391",
+    "/tmp/cdp-startup-failed573B-20261020.log": "115bdd6cb18eb8209a305510112eb306dde7ac7d732c93fa531230e80830be9a",
+    "/tmp/cdp-startup-discriminator-20261020.mjs": "b7eede534b22522355798e3c9f84db8e2d794979438ba6604c6d4265796b20ed",
+    "/tmp/cdp-startup-discriminator-result-20261020.json": "fb0184625feef5667e8b70eadad3d7d67f9e062420e68d82ab0e1649547c653c"
+  },
+  "limits": [
+    "No shared source edits, tests committed or commits needed.",
+    "No auth, D244, D261, D266 or Store conclusion.",
+    "No threshold/deadline/ownership/cleanup changes.",
+    "Root fresh independent review still required before treating proposed diagnostic as authorized next action."
+  ]
+}

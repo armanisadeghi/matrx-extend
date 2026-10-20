@@ -1,0 +1,44 @@
+{
+  "task_id": "auth266-final-source-peer-20261020",
+  "status": "DONE",
+  "scope": "Independent, zero-authorship source re-verification of EXT-D-0266 seven-file change.",
+  "verdict_A": {
+    "source_behavior": "PASS",
+    "native_acceptance": "UNKNOWN",
+    "evidence": [
+      "Ran node --test tests/browser/member-pre-auth-resource-boundary.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/native-resource-boundary.test.mjs: 21 passed, 0 failed.",
+      "Reviewer Chat test executes the actual source prefix, observes health check before auth page creation on the ready path, and confirms refusal occurs before page creation on the denied path.",
+      "Ran the same new regression test against the saved pre-change reviewer source: both cases failed as expected (missing refusal; missing health-before-page ordering).",
+      "Settings member auth calls the existing awaitNativeResourceHealth before its only newPage call. The canonical boundary suite covers refusal and healthy/recovery paths."
+    ],
+    "limitation": "No native hosted acceptance job, browser, or build was run; source tests do not establish native acceptance."
+  },
+  "verdict_B": {
+    "status": "PASS_WITH_EXISTING_REPOSITORY_BLOCKERS",
+    "prior_finding": {
+      "status": "ADDRESSED",
+      "finding": "New reviewer Chat source regression test was previously absent from ordinary CI.",
+      "evidence": [
+        "Exact test is now in the existing explicit node --test command in .github/workflows/ci.yml.",
+        "Exact test is also in package.json test:focused-acceptance.",
+        "The exact changed test set ran locally and passed."
+      ]
+    },
+    "quality_evidence": [
+      "Regression guard fails against pre-change source and passes current source; it observes behavior rather than a source token.",
+      "Both auth entries use the existing canonical resource-health boundary. No new counter, policy, deadline, or ownership rule is introduced.",
+      "Workflow change adds no job or runner; it adds a test to the existing public Ubuntu command. Manifest prose reflects the named benefit and $0 billed increment."
+    ],
+    "existing_blockers": "python3 scripts/check_workflow_runner_cost.py remains red on baseline repository state: the matrx-extend manifest has no measured-spend block; the six-manifest measured/forecast total is about $150.16/week against the $100/week ceiling (the output attributes about $150.16 to aidream); and scripts/check_workflow_runner_cost.py differs from the matrx-sandbox twin. The two .ci-cost.json edits change benefit/basis prose only, not numeric inputs. These are pre-existing blockers, not regressions from this seven-file change; I did not expand scope to repair them."
+  },
+  "changed_paths_reviewed": [
+    ".github/ci-cost.json",
+    ".github/workflows/ci.yml",
+    "package.json",
+    "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "tests/browser/settings-native-auth-driver.mjs",
+    "tests/browser/settings-native-auth-driver.test.mjs",
+    "tests/browser/member-pre-auth-resource-boundary.test.mjs"
+  ],
+  "out_of_scope": "No claim about CPU capacity, EXT-D-0261 backend behavior, or native acceptance."
+}
