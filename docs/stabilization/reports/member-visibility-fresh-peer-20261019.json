@@ -1,0 +1,16 @@
+{
+  "reviewer": "fresh independent source/test review",
+  "scope": "Three assigned working-diff files only; no edits, Git actions, browser, or product run.",
+  "verdict_A_actual_spec": "PARTIAL; native visibility UNKNOWN. Prior candidate evidence supports correct auth/org, one target, two terminal replies, and the same transcript article. Its screenshot proves readable pixels after failure only. This diff adds DOM visibility sampling and one reopen attempt, but no native UI observation proving the panel was physically visible to the person or that the exact candidate acceptance now passes.",
+  "verdict_A_evidence": "Ran node --test tests/browser/member-chat-visible-proof.test.mjs (10/10 pass) and node --check tests/browser/reviewer-chat-store-acceptance.mjs (pass). These are orchestration/unit checks, not native acceptance. No acceptance run was performed in this verifier lane.",
+  "verdict_B_quality": "PARTIAL; meaningful safety direction, but the guard does not establish its reported lifecycle properties. It verifies target id and document visibility and bounds reopen to once. It refuses a target replacement after reopen and a still-hidden document.",
+  "B_findings": [
+    "Important: createMemberPanelLifecycleGuard.check returns success for any document visibility='visible', even when focused=false, opacity=0, frame_count is absent/stalled, or opacity is invalid. Therefore it can proceed to open/send while the transcript is unreadable; recorded opacity/frame/focus are diagnostic only.",
+    "Important: sample schedules requestAnimationFrame and reads frame_count in the same synchronous evaluation. The callback cannot have run before that read, so the sample is stale and does not prove frame progress. The unit double manually supplies frame_count and never executes the evaluator expression.",
+    "Minor: tests assert mock event order and mocked target/visibility outcomes, but do not exercise a target list with duplicate same-URL pages, unknown visibility, visible-but-unfocused/opacity-zero states, or same-target identity loss. Duplicate targets are conservatively rejected by current matching logic; other states can false-pass when visibility is visible."
+  ],
+  "fault_test_notes": "The focused tests provide useful refusal coverage for permanently hidden state and replacement after the repair. They do not prove the lifecycle invariant at the actual CDP/evaluate seam. No mutations were run; the task was bounded review, and unit success does not resolve the known missing physical-visibility proof.",
+  "privacy_cleanup": "No browser or account data accessed; no repository edits. Report contains no personal identifiers.",
+  "disposition": "Do not treat this diff as native acceptance or as proof of frame/paint recovery. Parent should resolve the important guard false-pass findings before any GO; then obtain the separately required exact-candidate native proof.",
+  "root_scope_note": "No native full-product pass or defect closure follows; preserve explicit evidence limits."
+}

@@ -30,7 +30,11 @@
     "docs/stabilization/reports/reviewer-geometry-picker-source-peer-20261019.json",
     "docs/stabilization/reports/data-done-hard-stall-diagnosis-20261019.json",
     "docs/stabilization/reports/reviewer-done-first-phase-repair-20261019.json",
-    "docs/stabilization/reports/reviewer-done-first-phase-final-peer-20261019.json"
+    "docs/stabilization/reports/reviewer-done-first-phase-final-peer-20261019.json",
+    "docs/stabilization/reports/store-release-v0565-acceptance-20261019.json",
+    "docs/stabilization/reports/candidate565-native-peer-20261019.json",
+    "docs/stabilization/reports/reviewer565-failure-repair-20261019.json",
+    "docs/stabilization/reports/reviewer565-source-peer-20261019.json"
   ],
   "sibling_census": "All three failed reviewer controls share the owned helper; member temporal paint repair remains separate D257. Article privacy-link presence was diagnostic only, not an assertion; initial contrary diagnosis is refuted. Links privacy check and Article heading/stages remain strict.",
   "acceptance_criteria": [
@@ -41,13 +45,13 @@
     "Independent source A/B review, then fresh native replay retaining actionable original first-failure evidence."
   ],
   "verification": {
-    "source": "0708b300 integrated first Done helper phase/category and bounded geometry/hit evidence, preserving original failure through detach cleanup. Independent source review and14fault tests/76adjacent tests/compile/fullLint pass; no native product pass.",
-    "product": "Article cause localized and source repair tracked separately as D260; Data Done and automatic-capture screenshot geometry remain unclassified.",
-    "native": "Exact564B39336624267 resource-valid: precise crop geometry code and Article text/node evidence were retained, but geometry coordinates and selected-before-Done state were missing. New bounded numeric/count diagnostics await fresh native replay.",
+    "source": "56ca1354c source reviewed: exact offscreen control scroll, strict Article heading+intro content crop (not Re-capture button), bounded CDP failure names/codes/categories.52focusedtests/compile/fullLint pass; sourcepeer qualityPASS, nativepending. No DataDone productrepair.",
+    "product": "ArticleproductfixD260 adminCI564nativepass only, exact565guestintro/visibleproofpending. DataDonecommandfailure and memberpaint remain open; no newproductpass.",
+    "native": "Exact565B39342759083 resourcevalid: settings offswitch semanticpass butrecty919..939 outsideviewport373; Article heading/stages safeDOMpass butintro/visiblebody notproved; Done1picked/controlsfound rejectsatDOM.getNodeForLocation, nohitresult/mouseclick. NativepeerA partial; noD260closure.",
     "forensic": "Fresh read-only escalation localized original564 failure to clickPickerDone catch BEFORE result wait. Downstream IPC/identity rejection is not established. New pre-Done count alone would not explain discarded first error."
   },
-  "fix_commit": "0708b3001019f570b34f0fcd7ee835edf3f53331",
-  "next_action": "Require fresh relevant CI, guarded current candidate and exact native replay. Diagnose first Done operation/category alongside actual pre-Done picked count and bounded screenshot geometry; preserve original pass/cleanup requirements.",
+  "fix_commit": "56ca1354c46645849dab2b106b8cc8549ce94633",
+  "next_action": "Resolve real CDP lookup mechanism with guarded no-AI fixture; independently review member visibility-boundary repair; then fresh synchronized candidate/current packages/native acceptance, retaining actual Article heading+intro and readable Chat proof. Do not upload565 or count source changes as productpasses.",
   "transition_history": [
     {
       "at": "2026-10-19T22:05:02.915114Z",
@@ -90,11 +94,30 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Diagnostic continuation reviewed and pushed at436fec00c; fresh native replay remains pending."
+    },
+    {
+      "at": "2026-10-19T23:47:29.500Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Exact565 valid native evidence still cannot prove Articleintro/crop and firstDoneexception loses reason."
+    },
+    {
+      "at": "2026-10-19T23:47:29.500Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Focused screenshot content/visibility and safeprotocolerror evidence repair."
+    },
+    {
+      "at": "2026-10-19T23:55:16Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "56ca1354c reviewed source committed/pushed; native replay pending, no DataDone productfix."
     }
   ],
   "previous_fix_commits": [
     "8ec03ea5b08968780a8470540710234df197dc10",
     "3ecfcd1c79f75bec56be26a942188480069ba5c8",
-    "436fec00c71da4e14ba6fce281bb38fa02566019"
+    "436fec00c71da4e14ba6fce281bb38fa02566019",
+    "0708b3001019f570b34f0fcd7ee835edf3f53331"
   ]
 }

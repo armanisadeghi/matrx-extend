@@ -28,7 +28,14 @@
     "docs/stabilization/reports/d248-auth-topology-trace-20261019.json",
     "docs/stabilization/reports/reviewer-trace-source-peer-20261019.json",
     "docs/stabilization/reports/store-release-v0561-acceptance-20261019.json",
-    "docs/stabilization/reports/member-panel-hard-stall-diagnosis-20261019.json"
+    "docs/stabilization/reports/member-panel-hard-stall-diagnosis-20261019.json",
+    "docs/stabilization/reports/store-release-v0565-acceptance-20261019.json",
+    "docs/stabilization/reports/member565-unpainted-escalation-20261019.json",
+    "docs/stabilization/reports/member-visibility-fresh-peer-20261019.json",
+    "docs/stabilization/reports/member-visibility-final-peer-20261019.json",
+    "docs/stabilization/reports/member-visibility-boundary-repair-20261019.json",
+    "docs/stabilization/reports/member-visibility-policy-peer-20261019.json",
+    "docs/stabilization/reports/member-visibility-owner-adjudication-20261019.json"
   ],
   "build_version": "0.2.556 exact Store ZIP under hosted test identity; workflow1f3904936",
   "transition_history": [
@@ -87,7 +94,7 @@
       "reason": "Fresh bounded Astra escalation reproduced neither generic tab nor popup cause locally. Safe auth topology instrumentation41b7cecdd passes independent source review; hosted first hidden transition still requires replay before selecting a repair."
     }
   ],
-  "next_action": "Retain narrow original-boundary observations in next exact candidate member acceptance with D257 same-article paint repair. No further picker behavior change without new evidence. Preserve originaltarget/org/visibility/resource gates; no wholememberpass until pairedpaint and surrounding cases pass.",
+  "next_action": "RelevantCI then fresh guarded exact candidate and original-target lifecycle differential. Sourceguardcd6cd7ca9 is reviewed/tested and pushed; no product opacity fix is claimed. Refuse beforeAI if originalpanel cannot recovervisible/focused/frame/opacity under existingforegrounddeadline.",
   "fix_sha": "b20df1b31",
   "reviewer": "Fresh source-contract review accepts safe instrumentation; native issue remains unresolved, no repair or member Chat pass claimed.",
   "diagnostic_sha": "a7f4d9eb385386cff1c91cdd761ef14fea2e96f0",
@@ -105,5 +112,17 @@
     "first": "FAIL: diagnostic persistence interrupted cleanup; related source extraction tests red.",
     "final": "A source instrumentation PASS/native outcome pending; B PASS after all findings addressed;20/20 focused+adjacent checks.",
     "evidence": "docs/stabilization/reports/member-picker-trace-final-peer-20261019.json"
-  }
+  },
+  "latest_native_observation": {
+    "run_id": 39343298322,
+    "version": "0.2.565",
+    "source_sha": "a0c86f20b9fb070c09e00c0a574a0ffbf8f2b656",
+    "resource_valid": true,
+    "auth": "real signed-in non-admin with approved organization",
+    "chat_transport": "two HTTP200 terminal replies sameconversation with toolresume",
+    "visible_answer": "FAIL: doc.hidden/transcriptopacity0 persisted atproof; later screenshot renderable text cannotprovephysicalvisibility",
+    "cause": "first hide transition afterlastforegroundrestore remainsunobserved; screenshotfailurepath lackedpostcaptureprobe",
+    "state_scope": "in-fix; no product source repair proven"
+  },
+  "visibility_guard_source_commit": "cd6cd7ca9130c3a36342ef9c4c984567f744d187"
 }

@@ -1,0 +1,36 @@
+{
+  "task": "native_dev_refresh565",
+  "observedAt": "2026-10-19T23:49:45Z",
+  "profile": "armansadeghi.com",
+  "promotion": {
+    "runId": 39342629514,
+    "artifactId": 12228829443,
+    "sourceSha": "199e2e738ac928b661c8f1a55f1d4dcc6ddff440",
+    "version": "0.2.565",
+    "treeSha256": "f5c2313bc27330260b029824b178e1f667cd28e98aa23307d54531a8b6f607bf",
+    "loadedFrom": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev"
+  },
+  "dev": {
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "initialVersion": "0.2.564",
+    "finalVersion": "0.2.565",
+    "enabled": true,
+    "pinned": true,
+    "reloaded": true,
+    "loadedFromVerified": true
+  },
+  "store": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.205",
+    "enabled": true,
+    "pinned": true,
+    "source": "Chrome Web Store"
+  },
+  "resourceJournal": "docs/stabilization/resource-journals/native-dev-refresh565-20261019.sanitized.jsonl",
+  "unknowns": [
+    "No post-reload feature behavior tested; scope was install freshness and pins only."
+  ],
+  "resource_journal_sanitized": "docs/stabilization/resource-journals/native-dev-refresh565-20261019.sanitized.jsonl",
+  "raw_sha256": "2891717e3b4ac4e2c2d41b285630f01e7eb4786418a50f30d391a1b9119b13b4",
+  "scope_limit": "CI development565 source199e2e; loadedfacts verified, not Store565 publication or overallproductpass."
+}

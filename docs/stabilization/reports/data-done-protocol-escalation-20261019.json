@@ -1,0 +1,54 @@
+{
+  "kind": "isolated actual-source protocol fixture; not product acceptance",
+  "cases": [
+    {
+      "mode": "initial",
+      "ok": true
+    }
+  ],
+  "selectedBefore": 1,
+  "after": {
+    "hostPresent": false,
+    "messageKinds": ["data:picker-result"],
+    "fieldCounts": [1],
+    "visibility": "visible",
+    "width": 500,
+    "height": 813
+  },
+  "chrome_version": "155.0.8059.82",
+  "proven": [
+    "Actual565 failed within DOM.getNodeForLocation command, before hit assertion, mouse click or Done result dispatch.",
+    "Current helper sends integer x/y; fractional diagnostic center is not fractional CDP input.",
+    "Actual source closed-shadow picker and current unmodified helper successfully complete one selected field via trusted CDP mouse input on local Chrome.",
+    "Resource guard admitted and finished valid with exit0; owned Chrome closed and fresh profile deleted."
+  ],
+  "refuted": [
+    "Fractional CDP parameters as cause in current helper.",
+    "Universal incompatibility of current DOM.getNodeForLocation command with this closed-shadow picker on installed local Chrome."
+  ],
+  "uncertainty": [
+    "Original565 protocol error message was discarded; precise reason remains unknown.",
+    "Local Chrome minimum window produced innerWidth500, not narrow native sidepanel viewport; fixture did not replicate exact565 geometry.",
+    "Browser version/environment may differ from hosted565.",
+    "Successful fixture did not retain computed geometry or Browser.getVersion protocol version; no rejection occurred to capture.",
+    "Visibility/layout/target race is not proved or refuted by one healthy fixture.",
+    "Fixture stubs only chrome.runtime.sendMessage at outgoing boundary; it does not verify extension IPC/persistence or product acceptance."
+  ],
+  "source": {
+    "picker": "src/lib/data-pattern/picker.ts",
+    "helper": "tests/browser/data-guest-picker-driver.mjs",
+    "helper_commit": "56ca1354c",
+    "actual_style": "host fixed inset0 pointer-events:none; panel fixed right16 top16 width320 padding12 border1 pointer-events:auto; shadow mode closed"
+  },
+  "exact_next_action": "On already-authorized exact-candidate native replay use current bounded categories from56ca1354c: invalid_parameters, no_node_at_location, stale_node_or_context, target_unavailable, unsupported_command. Preserve first rejection category/name/code before cleanup. If no_node_at_location: one same-session Page.bringToFront differential followed by recomputed geometry and unchanged strict hit identity is diagnostic; never bypass the hit assertion. Do not pay for a new full-package run solely to repeat this local fixture.",
+  "guard": {
+    "run_id": "data-done-protocol-escalation-20261019",
+    "admitted": "2026-10-19T23:57:52.922Z",
+    "final": "2026-10-19T23:58:38.074Z",
+    "decision": "valid",
+    "exit_code": 0
+  },
+  "root_scope_note": "No native full-product pass or defect closure follows; preserve explicit evidence limits.",
+  "resource_journal_sanitized": "docs/stabilization/resource-journals/data-done-protocol-escalation-20261019.sanitized.jsonl",
+  "raw_journal_sha256": "455337e5a72417322b052dff4e6b199907b6f9e190e95f49e9f432becbf16be3"
+}

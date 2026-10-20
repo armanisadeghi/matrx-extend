@@ -1,0 +1,30 @@
+{
+  "status": "source_guard_experiment_ready_native_pending",
+  "commit": "cd6cd7ca9130c3a36342ef9c4c984567f744d187",
+  "prior_peer": "member-visibility-policy-peer-20261019.json",
+  "rulings": [
+    {
+      "finding": "Unsynchronized imports fail Biome",
+      "decision": "RESOLVED",
+      "evidence": "Worker applied formatter; owned Biome/fullLint/compile passed before exact-path source commit."
+    },
+    {
+      "finding": "Coverage did not prove deadline consumed by CDP target lookup",
+      "decision": "RESOLVED in controlled evaluator test, native still unknown",
+      "evidence": "Added controlled clock advance during Target.getTargets; existing shared deadline expires, real evaluator schedules no rAF, late callback cannot write."
+    },
+    {
+      "finding": "Physical native visibility not demonstrated",
+      "decision": "ACCEPTED only for source guarding experiment, not product acceptance",
+      "evidence": "Next exact-candidate differential must prove original visible/focused/painting panel or stop before AI; no CSS/timing/paint waiver."
+    }
+  ],
+  "owner_verification": {
+    "command": "node --test tests/browser/member-chat-visible-proof.test.mjs tests/browser/member-chat-completion-oracle.test.mjs",
+    "passed": 17,
+    "failed": 0,
+    "full_lint": "exit0,927existingwarnings"
+  },
+  "product_pass": false,
+  "defect_closure": false
+}

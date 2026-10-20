@@ -1,0 +1,134 @@
+{
+  "schema": 1,
+  "run_id": "native-account-mode-acceptance-20261019",
+  "lane": "real Chrome native account-mode/navigation acceptance",
+  "status": "partial_guard_ended_before_dev_acceptance",
+  "time_utc": "2026-10-20T00:14:37Z",
+  "browser": {
+    "profile": "Chrome Profile 8 / armansadeghi.com",
+    "target_dev_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "target_dev_version_observed_in_extensions_list": "0.2.565",
+    "store_extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "store_version_observed": "0.2.205",
+    "loaded_tree_sha_expected": "f5c2313bc27330260b029824b178e1f667cd28e98aa23307d54531a8b6f607bf"
+  },
+  "identity": {
+    "original_principal_was_personal_admin_role": true,
+    "original_principal_is_test_admin": false,
+    "actual_private_email_recorded": false,
+    "test_admin_credential_source_presence_checked_privately": true,
+    "restoration_to_original_principal_proven": false,
+    "logout_or_signin_performed": false
+  },
+  "case_verdicts": [
+    {
+      "case_id": "EXT-F-1001-T19",
+      "mode": "guest",
+      "verdict": "unknown",
+      "reason": "Only Store guest observed during valid guard; Dev guest not tested."
+    },
+    {
+      "case_id": "EXT-F-1001-T20",
+      "mode": "member",
+      "verdict": "unknown",
+      "reason": "No member principal tested."
+    },
+    {
+      "case_id": "EXT-F-1001-T21",
+      "mode": "admin",
+      "verdict": "unknown_no_credit",
+      "reason": "Dev Profile navigation was observed after the resource guard finalized; unguarded and excluded from acceptance."
+    },
+    {
+      "case_id": "EXT-F-1001-T22",
+      "mode": "guest",
+      "verdict": "unknown",
+      "reason": "Store guest UI was observed but its Profile/Preferences navigation was not tested."
+    },
+    {
+      "case_id": "EXT-F-1001-T23",
+      "mode": "member",
+      "verdict": "unknown",
+      "reason": "No member principal tested."
+    },
+    {
+      "case_id": "EXT-F-1001-T24",
+      "mode": "admin",
+      "verdict": "unknown_no_credit",
+      "reason": "Dev Preferences navigation and ADMIN role were observed after the resource guard finalized; unguarded and excluded from acceptance."
+    },
+    {
+      "case_id": "EXT-F-1001-T25",
+      "mode": "guest",
+      "verdict": "unknown",
+      "reason": "Guest sign-out not exercised."
+    },
+    {
+      "case_id": "EXT-F-1001-T26",
+      "mode": "member",
+      "verdict": "unknown",
+      "reason": "No member principal or sign-out tested."
+    },
+    {
+      "case_id": "EXT-F-1001-T27",
+      "mode": "admin",
+      "verdict": "unknown",
+      "reason": "Admin sign-out deliberately not exercised because the original principal differed from the test admin and restoration was unproven."
+    }
+  ],
+  "sanitized_ui_evidence": [
+    {
+      "surface": "actual Chrome sidepanel accessibility tree during valid guard",
+      "observed": [
+        "chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html",
+        "You're using Matrx as a guest",
+        "Chat, Scrape, Data, SEO, Settings tabs"
+      ],
+      "captured": "2026-10-20T00:11Z",
+      "acceptance_credit": "Store only; not the target Dev extension"
+    },
+    {
+      "surface": "chrome://extensions overview accessibility tree during valid guard",
+      "observed": [
+        "Matrx Extend 0.2.565, unpacked, enabled, ID cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "Matrx Extend 0.2.205, Chrome Web Store, enabled, ID hnfolienncfklkgmdjjmhhegglimlamg"
+      ],
+      "captured": "2026-10-20T00:12Z"
+    },
+    {
+      "surface": "Dev sidepanel navigation observed after guard finalized",
+      "observed": [
+        "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html",
+        "Signed-in personal principal; Profile opened",
+        "Preferences opened Settings; visible role ADMIN"
+      ],
+      "captured": "2026-10-20T00:15Z",
+      "acceptance_credit": "None; outside valid resource lease"
+    },
+    {
+      "surface": "final Chrome UI state",
+      "observed": "Selected tab remains the Store extension details page; Dev sidepanel closed",
+      "captured": "2026-10-20T00:15Z"
+    }
+  ],
+  "actions_and_preservation": {
+    "signout_or_login": "none",
+    "settings_or_preferences_changed": false,
+    "organization_or_capture_changed": false,
+    "extension_pins_changed": false,
+    "user_tabs_closed": false,
+    "agent_created_tab": "one temporary tab was closed",
+    "final_selected_chrome_tab": "original Store extension details tab",
+    "vault_or_password_values_read": false
+  },
+  "resource": {
+    "guard": "RESOURCE_ADMITTED then RESOURCE_BROWSER_STOP_CONFIRMED",
+    "decision": "valid for the admitted run; Dev observations occurred after its terminal final decision",
+    "resource_invalid": false,
+    "journal": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/native-account-mode-acceptance-20261019.jsonl"
+  },
+  "limitation": "The admitted run verified the Store sidepanel guest and that both extension copies are installed. The correct Dev sidepanel was selected only after the resource guard finalized. Those later Profile/Preferences observations are recorded transparently but receive no acceptance credit. No auth action was taken because the original principal was not the test admin and a safe restoration path was not proven.",
+  "resource_journal_sanitized": "docs/stabilization/resource-journals/native-account-mode-acceptance-20261019.sanitized.jsonl",
+  "raw_sha256": "07717b91876848dd24ef02d28953eaac6836b8e761b37c883c19904fcf068c60",
+  "owner_credit": "Zero product case credit. Store-only preflight covered by valid guard; later Dev navigation outside lease excluded."
+}

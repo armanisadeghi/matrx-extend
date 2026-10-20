@@ -1,0 +1,20 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_A": "PARTIAL: native visibility unknown",
+  "verdict_B": "PARTIAL: new500ms deadline falsely tightened foreground policy",
+  "findings": [
+    "status: DONE_WITH_CONCERNS",
+    "scope: Three assigned files only; no edits, Git mutation, browser, or product run.",
+    "A_actual_spec: PARTIAL; native visibility remains UNKNOWN. Guard samples visibility/focus/frame/transcript opacity and preserves target identity, but no native run proves physical visibility or exact-candidate acceptance.",
+    "A_evidence: node --test tests/browser/member-chat-visible-proof.test.mjs passed 11/11; node --check tests/browser/reviewer-chat-store-acceptance.mjs passed. These are local guard checks, not native acceptance.",
+    "B_quality: PARTIAL, substantial repair; both prior important false-pass findings are addressed in the implementation and focused test.",
+    "B_finding_1: ADDRESSED. Success now requires visible + focused + completed rAF; mounted transcript requires finite positive opacity. Test exercises the actual Runtime.evaluate expression through evaluatePanel with a controlled VM environment, including zero opacity.",
+    "B_finding_2: ADDRESSED. rAF callback is awaited with a timeout; hidden document skips waiting. Test proves callback execution and rejects a stalled frame.",
+    "Target/failure: Exact unique original page target is rechecked around repair; one reopen/activation max. Same-article post-failure probe compares hash and selected indices; capture cannot change failed eligibility/verdict.",
+    "Remaining quality concern: New 500ms rAF deadline is not the existing foreground policy (member-foreground-diagnostic polls visibility up to 10s). It can reject a panel whose normal first frame is delayed beyond 500ms; no native differential supports this tighter bound.",
+    "Evaluate seam: Meaningful evaluator-expression test, but VM/CDP-double is not actual CDP or native rendering; do not claim physical foreground/paint proof.",
+    "Native/product evidence: NOT RUN; UNKNOWN.",
+    "Commit readiness: Guarding experiment is reviewable, but no native PASS; retain native differential as pending and avoid a product-fix claim."
+  ],
+  "normalization": "Original concise line report normalized into valid JSON without changing findings."
+}
