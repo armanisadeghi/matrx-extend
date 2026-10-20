@@ -1,5 +1,5 @@
 {
-  "status": "DONE_AWAITING_FRESH_PEER_GO",
+  "status": "FIX_ROUND_1_DONE_AWAITING_FRESH_DIFFERENT_PEER",
   "defect_id": "EXT-D-0265",
   "cause": "Guest post-setup helper reset its healthy streak for every RESOURCE_CPU_PENDING event, including empty-reason healthy measurements that the canonical guard counts toward CPU recovery.",
   "reproduction": {
@@ -13,19 +13,21 @@
     "red_before_fix": "node --test --test-name-pattern='three healthy guard samples' tests/browser/guest-chat-store-sequence.test.mjs exited 1 guest_post_setup_resource_readiness_timeout",
     "green_after_fix": "MATRX_GUEST_RESOURCE_JOURNAL=<archived actual journal> node --test --test-name-pattern='guest readiness counts|guest recovery readiness|post-setup readiness' tests/browser/guest-chat-store-sequence.test.mjs exited 0, 3 passed"
   },
-  "change": "Count finite, reason-free CPU_PENDING recovery samples as healthy; reset on nonempty CPU reasons; reject malformed samples and reasons; preserve final fresh requireNativeResourceHealth probe and policy deadline.",
-  "negative_evidence": "Tests reject second busy reset, three empty pending samples with canonical health still pending, memory/disk watch unsafe, missing/nonfinite/non-numeric CPU samples, and invalid pending reasons.",
-  "sibling_census": "scripts/stabilization-resource.mjs canonical watcher counts every reason-free sample and requires healthySamplesToResume; scripts/hosted-resource-readiness-loop.mjs samples direct measurements; scripts/hosted-remote-admission.mjs already recognizes CPU_PENDING as a guard sample; tests/browser/native-resource-boundary.mjs retains CPU pending refusal until recovered. No same-class sibling edit required.",
+  "change": "Count reason-free CPU_PENDING recovery samples as healthy; reset on nonempty CPU reasons. A shared complete finite sample validator now checks all eleven fields at guest readiness and native admission, CPU pending/recovered, and WATCH_HEALTHY decision points. Fresh native health probe and policy deadline remain unchanged.",
+  "negative_evidence": "Tests reject second busy reset, three empty pending samples with canonical health still pending, stale-health-only, memory/disk watch unsafe, every required sample field missing/null/nonfinite/non-numeric at pending and recovered and latest WATCH_HEALTHY, invalid whole shapes, and invalid pending reasons.",
+  "sibling_census": "scripts/stabilization-resource.mjs canonical watcher counts every reason-free sample and requires healthySamplesToResume; scripts/hosted-resource-readiness-loop.mjs samples direct measurements; scripts/hosted-remote-admission.mjs already recognizes CPU_PENDING as a guard sample. tests/browser/native-resource-boundary.mjs shared the malformed-sample gap and now uses the same complete finite sample validator as guest readiness; CPU pending refusal until recovered remains intact.",
   "checks": [
-    "actual archived-journal replay green",
-    "node --test tests/browser/guest-chat-store-sequence.test.mjs: 42/42 pass",
+    "actual archived full-sample journal replay green",
+    "node --test guest-chat-store-sequence.test.mjs native-resource-boundary.test.mjs: 43/43 pass",
     "pnpm compile pass",
-    "pnpm exec biome check on both files pass",
-    "git diff --check on both files pass"
+    "pnpm exec biome check on all four files pass",
+    "git diff --check on all four files pass"
   ],
   "files_sha256": {
-    "tests/browser/guest-chat-store-acceptance.mjs": "7a810ca748ba4001c38bd6eb0dd526bb43b3853bf5b2007f12a572b874c61311",
-    "tests/browser/guest-chat-store-sequence.test.mjs": "be2c0a9747ac5735edd0fd0dd6092cd8580f058614c340a1bfbae08439e0f6b4"
+    "tests/browser/guest-chat-store-acceptance.mjs": "4f9108f8c9031cc045ae6931ee7fa7902a9a85bf90c8292809abcd91a8c6d8e0",
+    "tests/browser/guest-chat-store-sequence.test.mjs": "709e48c212f53b468b175b92585e5ff5e91c9c0ea3e02d6b1c74a9c5bb5b90b5",
+    "tests/browser/native-resource-boundary.mjs": "e8cd17c9478ced62957f7ea81ea58ad063365db5bdbf643ef03277f502a215c4",
+    "tests/browser/native-resource-boundary.test.mjs": "e67ddc2a5e4f605b1a7ff2ec2248cfa493db159df370c5539594331cbbc3b56c"
   },
   "limits": "No native rerun, hosted dispatch, release, Store install, product acceptance, or claim of D-261504/D-244 closure. No commit until root's fresh-peer GO."
 }

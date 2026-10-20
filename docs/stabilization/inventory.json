@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T07:39:08.159314+00:00",
+  "updated_at": "2026-10-20T07:49:16.216593+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -52625,8 +52625,8 @@
         {
           "at": "2026-10-20T07:39:08.159314+00:00",
           "defect_id": "EXT-D-0265",
-          "status": "in-fix; source harness defect, no product pass",
-          "evidence": "docs/stabilization/reports/release571-native-capacity-20261020.json",
+          "status": "source fixed; fresh independent A/B PASS; native original-repro retest UNKNOWN, no product pass",
+          "evidence": "docs/stabilization/reports/readiness265-final-peer-20261020.json",
           "summary": "Exact571 native39386228485 resource-invalid before UI; actual canonical healthy CPU_PENDING reasons[] samples reset readiness streak. Three healthy recovery measurements became one. Source fix/review/native retest pending."
         }
       ],

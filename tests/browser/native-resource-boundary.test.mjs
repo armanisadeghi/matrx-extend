@@ -10,6 +10,20 @@ import {
   runNativeResourceAction,
 } from './native-resource-boundary.mjs';
 
+const completeSample = {
+  pressureLevel: 1,
+  availableMemoryGiB: 12.6,
+  requiredMemoryGiB: 4,
+  oneMinuteLoad: 1.44,
+  logicalCpus: 4,
+  cpuBusyFraction: 0.13,
+  swapUsedMiB: 0,
+  repoFreeGiB: 108.12,
+  profileFreeGiB: 108.12,
+  safetyFreeGiB: 108.12,
+  systemFreeGiB: 108.12,
+};
+
 // Harbor Dental's native Scrape run may start another UI batch only while its
 // own admitted guard has recent healthy evidence and no unsafe signal.
 test('native Scrape resource boundary permits fresh own-run health and refuses unsafe, stale, and wrong-run evidence', async (t) => {
@@ -36,7 +50,7 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
     runId,
     code: 'RESOURCE_ADMITTED',
     at: '2026-10-04T09:14:06.000Z',
-    sample: { memoryAvailableGiB: 12 },
+    sample: completeSample,
     reasons: [],
   };
   const healthy = {
@@ -44,7 +58,7 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
     runId,
     code: 'RESOURCE_WATCH_HEALTHY',
     at: '2026-10-04T09:14:20.000Z',
-    sample: { memoryAvailableGiB: 12 },
+    sample: completeSample,
     reasons: [],
   };
   const journalPath = join(journalDir, `${runId}.pending.jsonl`);
@@ -65,6 +79,28 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
     at: healthy.at,
     ageMs: 2000,
   });
+  const busy = {
+    ...healthy,
+    code: 'RESOURCE_CPU_PENDING',
+    at: '2026-10-04T09:14:18.000Z',
+    reasons: ['RESOURCE_CPU_BUSY'],
+    sample: { ...completeSample, cpuBusyFraction: 0.92 },
+  };
+  const recovering = { ...busy, at: '2026-10-04T09:14:19.000Z', reasons: [] };
+  const recovered = { ...healthy, code: 'RESOURCE_CPU_RECOVERED' };
+  for (const field of Object.keys(completeSample)) {
+    for (const value of [undefined, null, Number.POSITIVE_INFINITY, '0.1']) {
+      const malformed = { ...completeSample, [field]: value };
+      if (value === undefined) delete malformed[field];
+      await writeEvents([admitted, { ...healthy, sample: malformed }]);
+      await assert.rejects(check(), /journal_invalid/, `latest ${field} ${String(value)}`);
+      await writeEvents([admitted, { ...busy, sample: malformed }, recovering, recovered]);
+      await assert.rejects(check(), /journal_invalid/, `pending ${field} ${String(value)}`);
+      await writeEvents([admitted, busy, recovering, { ...recovered, sample: malformed }]);
+      await assert.rejects(check(), /journal_invalid/, `recovered ${field} ${String(value)}`);
+    }
+  }
+  await writeEvents([admitted, healthy]);
   await writeEvents([
     {
       schema: 1,

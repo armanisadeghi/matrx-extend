@@ -21,12 +21,12 @@ One exact571 native B39386228485 is terminal resource-invalid at post-setup read
 Chat/Values UI. Package/browser finals valid, guest finalinvalid; backendd128 stable. No product
 pass/failure, no repeat attempt. Today's published205/live-server guest check is still pending;
 prior .205 evidence cannot substitute a current observation.
-**[D265](defects/EXT-D-0265.json) is a confirmed readiness-harness defect, in fix.** Actual journal
+**[D265](defects/EXT-D-0265.json) is source-fixed with fresh independent A/B PASS; native retest UNKNOWN.** Actual journal
 shows CPU_PENDING with empty reasons at2% and7%, then CPU_RECOVERED13%: canonical watchdog
 recognized three healthy samples, but guest helper reset the first two and counted only one.
-Repair that counting class with source RED/GREEN and fresh peer; preserve all thresholds,
-three-healthy requirement, fresh health check and deadline. No blind retry or product credit.
-Executable/test/manifest source freeze resumes after this unit; current571 normal source
+[Final source peer](reports/readiness265-final-peer-20261020.json) independently replayed the full actual journal,43focused tests and52negative source cases. Shared eleven-field measurement validation also closes malformed evidence at readiness/native boundary. All thresholds,
+three-healthy requirement, fresh health check and deadline remain unchanged. Full source CI and original native retest are next; no product credit or D244/D261 closure.
+Executable/test/manifest source is now frozen after this reviewed unit; current571 normal source
 eligibility must be rechecked after harness changes. Older568/570 evidence remains separate.
 Before upload repeat current source/runtime/package/private Store checks and real acceptance.
 

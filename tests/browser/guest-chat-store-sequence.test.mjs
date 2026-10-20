@@ -7,6 +7,7 @@ import test from 'node:test';
 import { Window } from 'happy-dom';
 import { classifyGuestTurn, containsOrderedWholeTerms } from './guest-chat-completion-oracle.mjs';
 import { createGuestInputDriver } from './guest-chat-input-driver.mjs';
+import { isCompleteResourceSample } from './native-resource-boundary.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
 import {
   REVIEWER_DEMO_URL,
@@ -248,8 +249,206 @@ const readinessBody = source.slice(
 const waitForGuestPostSetupHealth = new Function(
   'assert',
   'join',
+  'isCompleteResourceSample',
   `${readinessBody}; return waitForGuestPostSetupHealth;`,
-)(assert, join);
+)(assert, join, isCompleteResourceSample);
+
+const resourceSample = {
+  pressureLevel: 1,
+  availableMemoryGiB: 12.6,
+  requiredMemoryGiB: 4,
+  oneMinuteLoad: 1.44,
+  logicalCpus: 4,
+  cpuBusyFraction: 0.13,
+  swapUsedMiB: 0,
+  repoFreeGiB: 108.12,
+  profileFreeGiB: 108.12,
+  safetyFreeGiB: 108.12,
+  systemFreeGiB: 108.12,
+};
+
+test('guest readiness counts the three healthy guard samples in a CPU recovery episode', async () => {
+  // The safe watchdog sequence from hosted guest run 39386228485. Admission
+  // precedes native setup and therefore cannot count toward post-setup health.
+  const expectedObservations = [
+    ['2026-10-20T07:30:08.249Z', 'RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY'], 0.92],
+    ['2026-10-20T07:30:24.642Z', 'RESOURCE_CPU_PENDING', [], 0.02],
+    ['2026-10-20T07:30:40.840Z', 'RESOURCE_CPU_PENDING', [], 0.07],
+    ['2026-10-20T07:30:57.011Z', 'RESOURCE_CPU_RECOVERED', [], 0.13],
+  ];
+  const archivedJournal = process.env.MATRX_GUEST_RESOURCE_JOURNAL;
+  const capturedEvents = archivedJournal
+    ? (await readFile(archivedJournal, 'utf8'))
+        .trimEnd()
+        .split('\n')
+        .map((line) => JSON.parse(line))
+        .filter((event) => ['RESOURCE_CPU_PENDING', 'RESOURCE_CPU_RECOVERED'].includes(event.code))
+        .slice(0, 4)
+    : null;
+  if (capturedEvents) {
+    assert.deepEqual(
+      capturedEvents.map((event) => [
+        event.at,
+        event.code,
+        event.reasons,
+        event.sample?.cpuBusyFraction,
+      ]),
+      expectedObservations,
+      'the replay must use the exact four safe samples from the archived native journal',
+    );
+  }
+  const observations =
+    capturedEvents ??
+    expectedObservations.map(([at, code, reasons, busy]) => ({
+      at,
+      code,
+      reasons,
+      sample: { ...resourceSample, cpuBusyFraction: busy },
+    }));
+  const events = [{ code: 'RESOURCE_ADMITTED' }];
+  let elapsed = 0;
+  let probes = 0;
+  const result = await waitForGuestPostSetupHealth({
+    repo: '/repo',
+    env: { MATRX_RESOURCE_RUN_ID: 'hosted-guest-39386228485-1' },
+    readEvidence: async (path) =>
+      path.endsWith('resource-policy.json')
+        ? JSON.stringify({
+            healthySamplesToResume: 3,
+            hostedReadinessWaitSeconds: 8,
+            maximumHostedReadinessWaitSeconds: 8,
+            watchIntervalSeconds: 15,
+          })
+        : `${events.map((event) => JSON.stringify(event)).join('\n')}\n`,
+    checkHealth: async () => {
+      probes++;
+      if (events.at(-1)?.code !== 'RESOURCE_CPU_RECOVERED')
+        throw new Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:cpu_pending');
+      return { event: 'RESOURCE_CPU_RECOVERED' };
+    },
+    now: () => elapsed,
+    wait: async (ms) => {
+      elapsed += ms;
+      const observation = observations.shift();
+      if (observation) events.push(observation);
+    },
+  });
+  assert.deepEqual(result, { healthy_samples: 3, policy_samples_required: 3 });
+  assert.equal(elapsed, 6000);
+  assert.equal(probes, 6, 'the native health boundary is checked again before release');
+});
+
+test('guest recovery readiness rejects missing measurements and never releases on unsafe or pending health', async () => {
+  const good = (code, reasons = [], busy = 0.1) => ({
+    code,
+    reasons,
+    sample: { ...resourceSample, cpuBusyFraction: busy },
+  });
+  const pending = good('RESOURCE_CPU_PENDING');
+  const recovered = good('RESOURCE_CPU_RECOVERED');
+  const cases = [
+    {
+      name: 'a second busy CPU sample resets the healthy streak',
+      events: [
+        good('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY'], 0.92),
+        pending,
+        pending,
+        good('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY'], 0.76),
+        pending,
+        recovered,
+      ],
+      health: 'recovered',
+      error: /readiness_timeout/,
+    },
+    {
+      name: 'three empty pending samples cannot bypass a pending native health gate',
+      events: [
+        good('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY'], 0.92),
+        pending,
+        pending,
+        pending,
+      ],
+      health: 'pending',
+      error: /readiness_timeout/,
+    },
+    ...['RESOURCE_MEMORY_LOW', 'RESOURCE_DISK_LOW'].map((reason) => ({
+      name: `${reason} watch refusal remains binding`,
+      events: [pending, good('RESOURCE_WATCH_UNSAFE', [reason]), recovered],
+      health: 'unsafe',
+      error: /unsafe_sample/,
+    })),
+    ...[null, {}, []].map((sample) => ({
+      name: `malformed healthy measurement ${JSON.stringify(sample)}`,
+      events: [pending, { ...pending, sample }, recovered],
+      health: 'recovered',
+      error: /journal_invalid/,
+    })),
+    ...Object.keys(resourceSample).flatMap((field) =>
+      [undefined, null, Number.POSITIVE_INFINITY, '0.1'].flatMap((value) =>
+        ['RESOURCE_CPU_PENDING', 'RESOURCE_CPU_RECOVERED'].map((code) => {
+          const sample = { ...resourceSample, [field]: value };
+          if (value === undefined) delete sample[field];
+          return {
+            name: `${code} ${field} ${String(value)} is refused`,
+            events: [pending, { code, reasons: [], sample }, recovered],
+            health: 'recovered',
+            error: /journal_invalid/,
+          };
+        }),
+      ),
+    ),
+    {
+      name: 'malformed pending reasons are refused',
+      events: [pending, good('RESOURCE_CPU_PENDING', ['RESOURCE_MEMORY_LOW']), recovered],
+      health: 'recovered',
+      error: /journal_invalid/,
+    },
+    {
+      name: 'stale health alone never releases even after three healthy samples',
+      events: [pending, pending, recovered],
+      health: 'stale',
+      error: /readiness_timeout/,
+    },
+  ];
+  for (const scenario of cases) {
+    const journal = [{ code: 'RESOURCE_ADMITTED' }];
+    let elapsed = 0;
+    await assert.rejects(
+      waitForGuestPostSetupHealth({
+        repo: '/repo',
+        env: { MATRX_RESOURCE_RUN_ID: 'hosted-guest-recovery' },
+        readEvidence: async (path) =>
+          path.endsWith('resource-policy.json')
+            ? JSON.stringify({
+                healthySamplesToResume: 3,
+                hostedReadinessWaitSeconds: 3,
+                maximumHostedReadinessWaitSeconds: 3,
+                watchIntervalSeconds: 15,
+              })
+            : `${journal.map((event) => JSON.stringify(event)).join('\n')}\n`,
+        checkHealth: async () => {
+          if (
+            scenario.health === 'unsafe' &&
+            journal.some((event) => event.code === 'RESOURCE_WATCH_UNSAFE')
+          )
+            throw new Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample');
+          if (scenario.health === 'pending')
+            throw new Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:cpu_pending');
+          if (scenario.health === 'stale')
+            throw new Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:stale_health');
+          return { event: 'RESOURCE_CPU_RECOVERED' };
+        },
+        now: () => elapsed,
+        wait: async (ms) => {
+          elapsed += ms;
+          journal.push(...scenario.events);
+        },
+      }),
+      scenario.error,
+      scenario.name,
+    );
+  }
+});
 
 test('post-setup readiness requires three new healthy watchdog measurements and refuses unsafe evidence', async () => {
   const policy = {
@@ -259,7 +458,11 @@ test('post-setup readiness requires three new healthy watchdog measurements and 
     watchIntervalSeconds: 15,
   };
   const admission = { code: 'RESOURCE_ADMITTED' };
-  const healthy = { code: 'RESOURCE_WATCH_HEALTHY', sample: { cpuBusyFraction: 0.2 }, reasons: [] };
+  const healthy = {
+    code: 'RESOURCE_WATCH_HEALTHY',
+    sample: { ...resourceSample, cpuBusyFraction: 0.2 },
+    reasons: [],
+  };
   const events = [admission, healthy, healthy];
   let elapsed = 0;
   let unsafe = false;
