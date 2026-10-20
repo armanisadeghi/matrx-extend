@@ -1,0 +1,45 @@
+{
+  "task_id": "scrape577-native-controls-20261020",
+  "lane": "native-mac personal Chrome warm UI",
+  "model": "GPT-6",
+  "status": "partial-pass; no fixes",
+  "feature_ids": ["EXT-F-1007", "EXT-F-1008"],
+  "defect_ids": [],
+  "summary": "Real page capture and bounded Article/Links/Schema/SEO views rendered on exact dev577 runtime.",
+  "build": {
+    "version": "0.2.577",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "source_sha": "45b0cc864",
+    "ci_run": "39450706517",
+    "artifact_id": "12278752132",
+    "tree_sha256": "26319e198efcb7bbe863c3968b325dec3915a506a28dd95b9c2906852ad3c225",
+    "role": "ADMIN (panel)"
+  },
+  "verification": [
+    {
+      "case_id": "EXT-F-1007-T08",
+      "run_id": "scrape577-native-controls-20261020-01",
+      "verdict": "partial pass",
+      "controls": ["EXT-F-1007-C08"],
+      "clicks": ["Capture", "Links 17", "Schema", "Scrape SEO"],
+      "expected": "capture/result tabs render page data",
+      "actual": "Article title/intro/headings rendered; Links showed 17; Schema & Metadata rendered; SEO showed title/canonical/social preview, 2 schema types, 4 headings, 18 links, 2 images, readability and performance"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "run_id": "scrape577-native-controls-20261020-01",
+      "verdict": "partial pass",
+      "controls": ["EXT-F-1008-C09"],
+      "clicks": ["top-level SEO tab"],
+      "expected": "available SEO groups render for current page",
+      "actual": "completed Looks good / No problems found audit; title, canonical, social preview, language, Article/Organization links, headings, links, images, readability and HTTP/load/transfer details displayed"
+    }
+  ],
+  "limitations": "Warm admin only; no text-input smoke, saved screenshot (UI tool exposed observation only), reload, link activation, clipboard, re-audit, save/history or other modes. Pre-existing unsaved Source card showed mbr_for_user permission-denied; Retry/Discard untouched; not attributed as new defect.",
+  "resource_journal": "test-results/scrape577-native-controls-20261020-01.jsonl (valid terminal, exit 0; SHA-256 7744b559632af8a74fe4cb15779fe4d34b63376741f3581bfc24e628e3fcf7d0)",
+  "changed_files": [],
+  "commit_shas": [],
+  "open_questions": [],
+  "next_action": "Use as bounded warm observation; untested criteria remain unverified."
+}

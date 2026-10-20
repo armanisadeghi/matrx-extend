@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T15:57:36.844059+00:00",
+  "updated_at": "2026-10-20T16:35:00.726016+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -25430,6 +25430,21 @@
               "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
               "viewport": "600px owned SIDE_PANEL CDP viewport emulation; actual headed browser, not physical resize proof",
               "verified_at": "2026-10-05T04:38:29.178906+00:00"
+            },
+            "admin": {
+              "status": "partial",
+              "run_id": "scrape577-native-controls-20261020-01",
+              "build_version": "0.2.577",
+              "source_sha": "45b0cc8640643fdc9c34927b55a5fbd586654cfa",
+              "resource_invalid": false,
+              "evidence": [
+                "docs/stabilization/reports/scrape577-native-controls-20261020.json"
+              ],
+              "detail": "Article title/intro/headings rendered; Links showed 17; Schema & Metadata rendered; SEO showed title/canonical/social preview, 2 schema types, 4 headings, 18 links, 2 images, readability and performance",
+              "tested_controls": [
+                "EXT-F-1007-C08"
+              ],
+              "remaining_criteria": "Warm admin only; Images/Video and empty states not exercised in this slice. Reload, outbound link activation, clipboard, re-audit, save/history and other applicable criteria remain unverified. No saved independently inspectable image; tester observations only."
             }
           },
           "previous_results": [
@@ -32314,6 +32329,21 @@
                 }
               ],
               "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Three sanitized completed resource journals were later recovered and independently reviewed by the journal-recovery addendum; the original peer review remains immutable and scoped to its earlier evidence. No product credit changed. Reviewed hosted run 38052238895 adds only the bounded Airbnb hreflang/schema-door target; 25 native targets passed and the Wikipedia door target remains unverified. The other selected target rows are re-observations with no new credit. T09, all six guest SEO cases, and the feature remain partial. Independently reviewed run 38058774504 adds one owned-fixture T09 target on frozen v0.2.466 source 99bc43a89: unique hreflang es and Article candidates matched the displayed SEO doors, trusted activations reached expected destinations, and the source page remained unchanged after each. Resource finals valid. This is not current-main 6bca evidence; T09 and guest SEO remain partial, and Wikipedia remains unverified. Independent repeat confirmation: run 38060126213 was reviewed PASS for the same owned-fixture guest T09 target on frozen v0.2.466 product source 998cfc86 (CI 38059544877/artifact 11672931022); workflow source 663f8bb2. All three resource finals are valid. This confirms the existing target on the newer frozen artifact but adds no distinct subtarget credit. Current-main 663 product bytes, Wikipedia, remaining SEO dimensions, other cases, member/admin, and Store behavior remain unverified. Independent hosted run 38107414974 plus the native peer review passes only guest_detail_content_and_controls_reachable_at_360px on exact development v0.2.490 source 5b01a35 (CI 38106946361/artifact 11690348157); the 360px dimension is covered. Peer auditability remains limited because numeric layout/target counts and a detail-pane screenshot were not retained, and no independent reproduction occurred. Other T09 dimensions, guest SEO cases, member/admin and Store remain open."
+            },
+            "admin": {
+              "status": "partial",
+              "run_id": "scrape577-native-controls-20261020-01",
+              "build_version": "0.2.577",
+              "source_sha": "45b0cc8640643fdc9c34927b55a5fbd586654cfa",
+              "resource_invalid": false,
+              "evidence": [
+                "docs/stabilization/reports/scrape577-native-controls-20261020.json"
+              ],
+              "detail": "completed Looks good / No problems found audit; title, canonical, social preview, language, Article/Organization links, headings, links, images, readability and HTTP/load/transfer details displayed",
+              "tested_controls": [
+                "EXT-F-1008-C09"
+              ],
+              "remaining_criteria": "Warm admin only; Images/Video and empty states not exercised in this slice. Reload, outbound link activation, clipboard, re-audit, save/history and other applicable criteria remain unverified. No saved independently inspectable image; tester observations only."
             }
           },
           "result_history": [
@@ -45454,7 +45484,8 @@
           "defect_ids": [
             "EXT-D-0053",
             "EXT-D-0054",
-            "EXT-D-0268"
+            "EXT-D-0268",
+            "EXT-D-0270"
           ],
           "verification_note": "Shared export helper changes linked via source audit; native JSON/TSV/AI copied bytes and special cells remain unverified in Data.",
           "results": {
@@ -45625,6 +45656,20 @@
               "evidence": [
                 "docs/stabilization/reports/data-t03-repaired-native-20261020.json",
                 "docs/stabilization/reports/data-startup-resource-diagnosis-20261020.json"
+              ]
+            }
+          ],
+          "current_candidate_observations": [
+            {
+              "run_id": 39456820094,
+              "mode": "member",
+              "build_version": "0.2.577",
+              "source_sha": "d90bd7b778c17943d420f9e27ed386c10dc85bd2",
+              "status": "unverified_resource_invalid_before_Data",
+              "new_product_credit": false,
+              "detail": "Organization selection diagnostic matched approved fixture; member authentication proof null and pointer_target_not_unique before Data picker/save/run/clipboard/reload. Final resourceInvalid true exit3; no CPU causal attribution. Exact owned row readback zero; one-use secret/file removed.",
+              "evidence": [
+                "docs/stabilization/reports/data-t03-next-native-20261020.json"
               ]
             }
           ]
@@ -46127,7 +46172,8 @@
           "defect_ids": [
             "EXT-D-0053",
             "EXT-D-0054",
-            "EXT-D-0197"
+            "EXT-D-0197",
+            "EXT-D-0270"
           ],
           "run_ids": [
             "38045479599",
@@ -46152,7 +46198,8 @@
         "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel."
       ],
       "defect_ids": [
-        "EXT-D-0268"
+        "EXT-D-0268",
+        "EXT-D-0270"
       ]
     },
     {

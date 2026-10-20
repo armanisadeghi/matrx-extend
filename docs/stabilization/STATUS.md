@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-20 15:57 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T15:57:36.844059+00:00. 207 features · 831 cases · 1422 controls · 268 linked defect records.
+Generated 2026-10-20 16:35 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T16:35:00.726016+00:00. 207 features · 831 cases · 1422 controls · 269 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1338** — Pass: 103 · Partial: 100 · Fail: 1 · Unverified: 1123 · N/A: 11.
-Unverified splits into **180 explicitly marked unverified** and **943 with no result record**.
+Applicable case-by-role slots: **1338** — Pass: 103 · Partial: 102 · Fail: 1 · Unverified: 1121 · N/A: 11.
+Unverified splits into **180 explicitly marked unverified** and **941 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -25,8 +25,8 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 7 pass · 7 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 40 unverified · 0 deferred; 0/1 full | pass 7, partial 17, fail 0, unverified 86, n/a 0 | 12 |
-| [SEO](#seo) | 1 | 0 pass · 7 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 7, fail 0, unverified 41, n/a 0 | 3 |
+| [Scrape](#scrape) | 1 | 7 pass · 7 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 39 unverified · 0 deferred; 0/1 full | pass 7, partial 18, fail 0, unverified 85, n/a 0 | 12 |
+| [SEO](#seo) | 1 | 0 pass · 7 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 8, fail 0, unverified 40, n/a 0 | 3 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 6 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 48, n/a 0 | 2 |
@@ -39,7 +39,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tasks capture flow](#tasks-capture-flow) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 2, n/a 0 | 0 |
 | [Lists side-panel](#lists-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 10, n/a 0 | 0 |
 | [Agenda side-panel](#agenda-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
-| [Data side-panel](#data-side-panel) | 1 | 2 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 3, partial 2, fail 0, unverified 16, n/a 1 | 2 |
+| [Data side-panel](#data-side-panel) | 1 | 2 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 3, partial 2, fail 0, unverified 16, n/a 1 | 3 |
 | [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 3, n/a 0 | 4 |
 | [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 4 |
 | [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 2, fail 0, unverified 4, n/a 0 | 0 |
@@ -903,7 +903,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Capture and manage current page scrape (EXT-F-1007)
 
-**Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 44. **Controls:** 42.
+**Role status:** guest: Partial · member: Partial · admin: Partial. **Cases:** 44. **Controls:** 42.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138, EXT-D-0139, EXT-D-0166, EXT-D-0187, EXT-D-0192, EXT-D-0217
 
@@ -918,7 +918,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1007-T05 Article markdown edit/apply | Partial | Unverified | Unverified | EXT-F-1007-C05 |
 | EXT-F-1007-T06 Article markdown cancel | Partial | Unverified | Unverified | EXT-F-1007-C06 |
 | EXT-F-1007-T07 Article scroll sync | Partial | Unverified | Unverified | EXT-F-1007-C07 |
-| EXT-F-1007-T08 Scrape result tabs | Partial | Partial | Unverified | EXT-F-1007-C08 |
+| EXT-F-1007-T08 Scrape result tabs | Partial | Partial | Partial | EXT-F-1007-C08 |
 | EXT-F-1007-T09 Copy capture and section data | Pass | Unverified | Unverified | EXT-F-1007-C09 |
 | EXT-F-1007-T10 Remove image | Pass | Partial | Unverified | EXT-F-1007-C10 |
 | EXT-F-1007-T11 Add image URL validation | Pass | Partial | Unverified | EXT-F-1007-C11 |
@@ -984,6 +984,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: guest-scrape-controls-https-20261012, docs/stabilization/runs/guest-scrape-controls-https-20261012.json
 - EXT-F-1007-T08 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Image and video empty states and reload lifecycle need full observation. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
+- EXT-F-1007-T08 · admin: Partial. Article title/intro/headings rendered; Links showed 17; Schema & Metadata rendered; SEO showed title/canonical/social preview, 2 schema types, 4 headings, 18 links, 2 images, readability and performance
+  Evidence / build / date recorded: scrape577-native-controls-20261020-01, ['docs/stabilization/reports/scrape577-native-controls-20261020.json']
 - EXT-F-1007-T09 · guest: Pass. Guest copy menu options and current-capture output passed across warm state, navigation, and full extension reload.
   Evidence / build / date recorded: 38021736744, ['docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json', 'docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl']
 - EXT-F-1007-T10 · guest: Pass. Guest image remove/add behavior passed warm and after full extension reload.
@@ -1018,7 +1020,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Audit page SEO and manage audit history (EXT-F-1008)
 
-**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 16. **Controls:** 16.
+**Role status:** guest: Partial · member: Unverified · admin: Partial. **Cases:** 16. **Controls:** 16.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0198, EXT-D-0199, EXT-D-0247
 
@@ -1034,7 +1036,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1008-T06 History empty/loading/error states | Partial | Unverified | Unverified | EXT-F-1008-C06 |
 | EXT-F-1008-T07 Copy audit formats and role gate | Partial | Unverified | Unverified | EXT-F-1008-C07 |
 | EXT-F-1008-T08 Live versus saved diff/verdict | Unverified | Unverified | Unverified | EXT-F-1008-C08 |
-| EXT-F-1008-T09 SEO details and links | Partial | Unverified | Unverified | EXT-F-1008-C09 |
+| EXT-F-1008-T09 SEO details and links | Partial | Unverified | Partial | EXT-F-1008-C09 |
 | EXT-F-1008-T10 AI recommendation start/stop/retry | Unverified | Unverified | Unverified | EXT-F-1008-C10 |
 | EXT-F-1008-T11 AI recommendation copy/regenerate/agent link | Unverified | Unverified | Unverified | EXT-F-1008-C11 |
 | EXT-F-1008-T12 Stage one SEO fix in Chat | Unverified | Unverified | Unverified | EXT-F-1008-C12 |
@@ -1057,6 +1059,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: 38016503649, ['.research/seo-controlled-followon-38016503649.json', '.research/seo-controlled-followon-38016503649-peer.json', '.research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json']
 - EXT-F-1008-T09 · guest: Partial.  Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Three sanitized completed resource journals were later recovered and independently reviewed by the journal-recovery addendum; the original peer review remains immutable and scoped to its earlier evidence. No product credit changed. Reviewed hosted run 38052238895 adds only the bounded Airbnb hreflang/schema-door target; 25 native targets passed and the Wikipedia door target remains unverified. The other selected target rows are re-observations with no new credit. T09, all six guest SEO cases, and the feature remain partial. Independently reviewed run 38058774504 adds one owned-fixture T09 target on frozen v0.2.466 source 99bc43a89: unique hreflang es and Article candidates matched the displayed SEO doors, trusted activations reached expected destinations, and the source page remained unchanged after each. Resource finals valid. This is not current-main 6bca evidence; T09 and guest SEO remain partial, and Wikipedia remains unverified. Independent repeat confirmation: run 38060126213 was reviewed PASS for the same owned-fixture guest T09 target on frozen v0.2.466 product source 998cfc86 (CI 38059544877/artifact 11672931022); workflow source 663f8bb2. All three resource finals are valid. This confirms the existing target on the newer frozen artifact but adds no distinct subtarget credit. Current-main 663 product bytes, Wikipedia, remaining SEO dimensions, other cases, member/admin, and Store behavior remain unverified. Independent hosted run 38107414974 plus the native peer review passes only guest_detail_content_and_controls_reachable_at_360px on exact development v0.2.490 source 5b01a35 (CI 38106946361/artifact 11690348157); the 360px dimension is covered. Peer auditability remains limited because numeric layout/target counts and a detail-pane screenshot were not retained, and no independent reproduction occurred. Other T09 dimensions, guest SEO cases, member/admin and Store remain open.
   Evidence / build / date recorded: 38016503649, ['.research/seo-controlled-followon-38016503649.json', '.research/seo-controlled-followon-38016503649-peer.json', '.research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json', 'docs/stabilization/evidence/guest-seo-behavior/run38024829250/receipt.json', 'docs/stabilization/evidence/guest-seo-behavior/run38024829250/native-report.sanitized.json', 'docs/stabilization/evidence/seo-readability-hosted/run38034766398/receipt.sanitized.json', 'docs/stabilization/evidence/seo-readability-hosted/run38034766398/native-report.sanitized.json', 'docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-package-38034766398-1.jsonl', 'docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-browser-38034766398-1.jsonl', 'docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-guest-38034766398-1.jsonl', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json', 'docs/stabilization/evidence/guest-seo-metadata/run38052238895/receipt.sanitized.json', 'docs/stabilization/evidence/guest-seo-metadata/run38052238895/native-report.sanitized.json', 'docs/stabilization/evidence/guest-seo-metadata/run38052238895/product-artifact.sanitized.json', 'docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-finals.sanitized.json', 'docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-package-38052238895-1.jsonl', 'docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-browser-38052238895-1.jsonl', 'docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-guest-38052238895-1.jsonl', 'docs/stabilization/reports/peer-review-run38052238895.json', 'docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/receipt.sanitized.json', 'docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/native-report.sanitized.json', 'docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/resource-finals.sanitized.json', 'docs/stabilization/reports/guest-seo-run38054415137-adjudication.json', 'docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/seo-guest-acceptance.json', 'docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/review-notes.json', 'docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/hosted-package-38107414974-1.jsonl', 'docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/hosted-browser-38107414974-1.jsonl', 'docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/hosted-guest-38107414974-1.jsonl', 'docs/stabilization/reports/seo-t09-native-peer-20261011.json', 'docs/stabilization/runs/dev-artifact-promotion-20261011-01.json']
+- EXT-F-1008-T09 · admin: Partial. completed Looks good / No problems found audit; title, canonical, social preview, language, Article/Organization links, headings, links, images, readability and HTTP/load/transfer details displayed
+  Evidence / build / date recorded: scrape577-native-controls-20261020-01, ['docs/stabilization/reports/scrape577-native-controls-20261020.json']
 - EXT-F-1008-T14 · guest: Partial.  Reviewed frozen guest controlled run38041517954 adds 2 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass.
   Evidence / build / date recorded: 38016503649, ['.research/seo-controlled-followon-38016503649.json', '.research/seo-controlled-followon-38016503649-peer.json', '.research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json']
 
@@ -1567,9 +1571,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Unverified · member: Partial · admin: Partial. **Cases:** 9. **Controls:** 34.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0054, EXT-D-0268
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0054, EXT-D-0268, EXT-D-0270
 
-**Linked defects:** [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0197](defects/EXT-D-0197.json) (closed), [EXT-D-0268](defects/EXT-D-0268.json) (fixed)
+**Linked defects:** [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0197](defects/EXT-D-0197.json) (closed), [EXT-D-0268](defects/EXT-D-0268.json) (fixed), [EXT-D-0270](defects/EXT-D-0270.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

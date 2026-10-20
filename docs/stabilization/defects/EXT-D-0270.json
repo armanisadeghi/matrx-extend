@@ -24,9 +24,12 @@
     "docs/stabilization/reports/data-t03-repaired-native-20261020.json",
     "/tmp/data-t03-next-native-20261020.json",
     "scripts/hosted-member-data-lifecycle.test.mjs",
-    "/tmp/data270-fresh-peer-20261020.json"
+    "/tmp/data270-fresh-peer-20261020.json",
+    "docs/stabilization/reports/data-runtime-equivalence-repair-20261020.json",
+    "docs/stabilization/reports/data270-fresh-peer-20261020.json",
+    "docs/stabilization/reports/data270-final-peer-20261020.json"
   ],
-  "verification_status": "Independent round-1 peer found three verifier assumptions that rejected docs-only artifacts after dispatch. Actual verify CLI regression RED on old source at archived artifact/current-main mismatch, then GREEN after archive provenance, CI artifact proof, and lifecycle identity separate immutable artifact SHA from workflow/main SHA. Wrong archived SHA and runtime/harness/workflow/lockfile changes still refuse. Focused 3/3 and compile pass; round-2 peer and native pending. Zero new product credit.",
+  "verification_status": "Fresh final independent source/spec A PASS, quality B PASS; all three verifier findings ADDRESSED. Focused14/14 and exact fullCI39455176447 SUCCESS. Normal laneA run39456820094 source/artifact admitted; native failed at member logical organization proof before Data and resource final invalid=true/exit3. Normal verifier correctly refused failed run HOSTED_RUN_NOT_SUCCESSFUL. No new product credit; defect remains fixed, not retest-pass/closed.",
   "transition_history": [
     {
       "at": "2026-10-20T16:06:38Z",
@@ -65,5 +68,5 @@
       "reason": "Actual verify CLI old RED/new GREEN; post-proof archived source must equal frozen CI SHA while workflow checkout must equal current main SHA; executable drift and false archived claim refused."
     }
   ],
-  "next_action": "Fresh independent source review; after exact-head CI, clean normal lane A admission and approved fixture/spend checks, run one member-data lifecycle native case and record product/resource/cleanup separately."
+  "next_action": "Bounded fresh diagnosis of member logical organization pointer failure and resource validity before another product attempt; no blind rerun. Preserve source/native/Store distinctions."
 }

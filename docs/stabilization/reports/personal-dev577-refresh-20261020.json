@@ -1,13 +1,14 @@
 {
   "task": "personal Chrome development refresh",
-  "result": "complete",
+  "result": "latest successful CI development artifact is promoted and loaded",
   "artifact": {
-    "ciRun": 39450706517,
-    "artifactId": 12278752132,
-    "sourceSha": "45b0cc8640643fdc9c34927b55a5fbd586654cfa",
-    "digest": "sha256:a956aac9338e14379967f764804bee04b073b93f107c47a2e7e7becc30e6141c",
+    "ciRun": 39455176447,
+    "artifactId": 12280457374,
+    "sourceSha": "d90bd7b778c17943d420f9e27ed386c10dc85bd2",
+    "digest": "sha256:fd7b3a73045400024ed16e2e50bb4ac75726055a22bae3070bfd97bea2ed808a",
     "version": "0.2.577",
-    "treeSha256": "26319e198efcb7bbe863c3968b325dec3915a506a28dd95b9c2906852ad3c225",
+    "treeSha256": "a7aa66a0074d46ecbfae995dfe69bc16557459ce187b647bb4f8c5f8a0134069",
+    "stableTreeVerified": true,
     "eligibility": "CI development artifact; not Store eligible"
   },
   "chrome": {
@@ -22,34 +23,53 @@
     "storeVersion": "0.2.205",
     "storePinned": true
   },
-  "about": {
-    "browser": "Chrome",
-    "installedVersion": "0.2.577",
-    "extensionIdMatches": true,
-    "savedLoginBrowserApis": "Available",
-    "updateCheck": "Your browser did not find an update right now",
-    "principalRole": "ADMIN"
-  },
-  "t72Bound": "About identity/version/browser and available saved-login API observed; unavailable API, other update outcomes, and full T72 remain unverified.",
-  "resource": {
-    "runId": "personal-dev577-refresh-20261020",
-    "journal": "/Volumes/Samsung2TB/code/matrx-extend/test-results/personal-dev577-refresh-20261020.jsonl",
-    "decision": "valid",
-    "resourceInvalid": false,
-    "exitCode": 0,
-    "admittedAt": "2026-10-20T15:55:03.040Z",
-    "terminalAt": "2026-10-20T15:56:28.211Z"
+  "resource": [
+    {
+      "runId": "personal-dev577-refresh-latest-20261020",
+      "journal": "/Volumes/Samsung2TB/code/matrx-extend/test-results/personal-dev577-refresh-latest-20261020.jsonl",
+      "decision": "refused",
+      "reason": "RESOURCE_PRESSURE_UNSAFE during preflight; early CPU samples .99/.95"
+    },
+    {
+      "runId": "personal-dev577-readiness-20261020",
+      "journal": "/Volumes/Samsung2TB/code/matrx-extend/test-results/personal-dev577-readiness-20261020.jsonl",
+      "decision": "valid",
+      "sample": "pressure1, 12.16GiB available, avg busy22.1%, normalized load3.81"
+    },
+    {
+      "runId": "personal-dev577-refresh-retry-20261020",
+      "journal": "/Volumes/Samsung2TB/code/matrx-extend/test-results/personal-dev577-refresh-retry-20261020.jsonl",
+      "decision": "valid",
+      "admittedAt": "2026-10-20T16:29:27.095Z",
+      "terminalAt": "2026-10-20T16:29:59.190Z",
+      "resourceInvalid": false
+    }
+  ],
+  "historicalAbout": {
+    "sourceSha": "45b0cc8640643fdc9c34927b55a5fbd586654cfa",
+    "observed": "Chrome /0.2.577/matching ID/saved-login APIs available/update check no update",
+    "scope": "Earlier v577 artifact only; not rerun on latest CI bytes; full T72 remains unverified.",
+    "buildReceipt": {
+      "ciRun": 39450706517,
+      "artifactId": 12278752132,
+      "treeSha256": "26319e198efcb7bbe863c3968b325dec3915a506a28dd95b9c2906852ad3c225",
+      "version": "0.2.577",
+      "resourceJournal": "test-results/personal-dev577-refresh-20261020.jsonl",
+      "resourceDecision": "valid",
+      "terminalAt": "2026-10-20T15:56:28.211Z"
+    }
   },
   "cleanup": {
-    "ownTerminalJournalMovedToIgnoredTestResults": true,
-    "guardSessionExited": true,
+    "allOwnTerminalJournalsMovedToIgnoredTestResults": true,
+    "guardSessionsExited": true,
     "heavyLeasePresent": false,
-    "authOrgOrPreferencesChanged": false
+    "authOrgOrPreferencesChanged": false,
+    "remoteDataTouched": false
   },
   "evidence": [
-    "Chrome Extensions details showed enabled v0.2.577, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, Loaded from .output/chrome-mv3-dev, Pin to toolbar on.",
-    "Chrome Extensions details for Store ID showed v0.2.205 and Pin to toolbar on; extensions menu showed both Matrx Extend entries pinned.",
-    "Actual development side panel About showed Chrome, installed v0.2.577, matching dev ID, saved-login APIs Available, and no update found; screenshot captured in the native UI transcript."
+    "Latest artifact import digest was verified; promotion receipt and post-reload stable directory hash both equal a7aa66a0074d46ecbfae995dfe69bc16557459ce187b647bb4f8c5f8a0134069.",
+    "Chrome Extensions details after actual Reload showed enabled v0.2.577, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, Loaded from .output/chrome-mv3-dev and Pin to toolbar on.",
+    "Chrome Extensions menu showed Unpin actions for both Matrx Extend entries; Store ID remains version0.2.205 and pinned. Screenshot captured in native UI transcript."
   ],
-  "nextAction": "None for refresh; preserve pending Store 577 publication and do not treat it as live until publication is verified."
+  "nextAction": "None for latest-artifact refresh; keep Store577 pending until publication is verified."
 }

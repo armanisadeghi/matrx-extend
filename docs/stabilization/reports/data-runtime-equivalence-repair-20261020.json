@@ -1,0 +1,37 @@
+{
+  "task_id": "data-runtime-equivalence-repair-20261020",
+  "lane": "A member Data T03 admission",
+  "model": "Codex; no paid product call",
+  "status": "SOURCE_FIXED_INDEPENDENT_PASS_NATIVE_GATE_UNVERIFIED",
+  "feature_ids": ["EXT-F-2005"],
+  "defect_ids": ["EXT-D-0270"],
+  "summary": "Normal member-data plan, dispatch and verify now use the existing canonical docs-only runtime-equivalence proof; immutable CI artifact SHA remains separate from current workflow/main SHA.",
+  "changed_files": [
+    "scripts/hosted-remote-admission.mjs",
+    "scripts/hosted-remote-admission.test.mjs",
+    "scripts/hosted-member-data-lifecycle.test.mjs",
+    "docs/stabilization/defects/EXT-D-0270.json"
+  ],
+  "commit_shas": ["5a8570345", "d90bd7b77"],
+  "verification": [
+    {
+      "case_id": "EXT-F-2005-T03",
+      "run_id": "source-only",
+      "verdict": "plan/dispatch old RED then GREEN; verify CLI old RED then GREEN; runtime/harness/workflow/lockfile and forged archived SHA refused",
+      "evidence": "focused node --test 3/3; pnpm compile pass; scoped Biome pass"
+    },
+    {
+      "case_id": "EXT-F-2005-T03",
+      "run_id": "39456820094",
+      "verdict": "resource-invalid member-auth pointer failure before Data; zero product credit",
+      "evidence": "/tmp/data-t03-next-native-20261020.json"
+    }
+  ],
+  "limitations": [
+    "Fresh independent round-2 peer A source PASS/B quality PASS; exact d90 CI39455176447 SUCCESS.",
+    "One normally admitted native run39456820094 resource-invalid at member auth before Data; no product verdict; exact owned row DB readback zero.",
+    "One-use member link file and GitHub secret absent; no second run."
+  ],
+  "open_questions": [],
+  "next_action": "Keep D270 source fixed, native T03 unverified; investigate member logical-organization pointer failure/resource invalidity before another run."
+}
