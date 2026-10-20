@@ -319,6 +319,44 @@ test('T03 accepts correlated post-click panel materialization and refuses mismat
   }
 });
 
+test('T03 accepts millisecond ties only when the recorded entries prove all three boundaries', () => {
+  // Hosted run 39472238118 recorded pre_click_snapshot and click_started in
+  // this order at the same millisecond; its native report otherwise passed.
+  const boundary = (ties) => {
+    const report = lifecycleReport();
+    report.reload_lifecycle.replacement_panel_created_event = false;
+    report.reload_lifecycle.timeline.entries[3].phase = 'target_info_changed';
+    const entries = report.reload_lifecycle.timeline.entries;
+    if (ties.includes(0)) entries[0].at = entries[1].at;
+    if (ties.includes(1)) entries[2].at = entries[1].at;
+    if (ties.includes(2)) entries[3].at = entries[2].at;
+    return report;
+  };
+  for (const ties of [[0], [1], [2], [0, 1, 2]]) {
+    const report = boundary(ties);
+    assert.equal(
+      admission.memberDataReplacementPanelProofBasis(report.reload_lifecycle),
+      'correlated_panel_materialization',
+      `equal timestamp at boundaries ${ties.join(',')}`,
+    );
+    assert.equal(admission.verifyHostedMemberDataLifecycleReport(report, identity), true);
+  }
+  for (const [first, second] of [
+    [0, 1],
+    [1, 2],
+    [2, 3],
+  ]) {
+    const report = boundary([0, 1, 2]);
+    const entries = report.reload_lifecycle.timeline.entries;
+    [entries[first], entries[second]] = [entries[second], entries[first]];
+    assert.equal(admission.memberDataReplacementPanelProofBasis(report.reload_lifecycle), null);
+    assert.throws(
+      () => admission.verifyHostedMemberDataLifecycleReport(report, identity),
+      /HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID/,
+    );
+  }
+});
+
 test('T03 rejects first ownership before retirement across every producer observation channel', () => {
   const base = lifecycleReport();
   base.reload_lifecycle.replacement_panel_created_event = false;

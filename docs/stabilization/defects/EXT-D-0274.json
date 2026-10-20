@@ -8,17 +8,18 @@
   "organization_context": "The archived run verifies the selected approved organization, exact-org HTTP 201 save and owned-row cleanup.",
   "reproduction": [
     "Immutable hosted run 39465749057, source 08150841aea86868f28ada4ad03eecb619824ae8, artifact SHA256 bf6f335158fd4bef1e3276e0d6a0731ba8b637fb745ada0fd2bc3b2359d96133: native report pass/complete; normal verifier refuses HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID solely on replacement_panel_created_event=false.",
-    "The old verifier refuses that raw report via exported verifyHostedMemberDataLifecycleReport; the repaired predicate accepts it with correlated_panel_materialization while preserving the false creation-event field."
+    "The old verifier refuses that raw report via exported verifyHostedMemberDataLifecycleReport; the repaired predicate accepts it with correlated_panel_materialization while preserving the false creation-event field.",
+    "Immutable hosted run 39472238118, raw report /tmp/data274-hosted-39472238118-report.json: native T03 pass/complete with 3 valid resource decisions and owned-row cleanup; pre_click_snapshot and click_started are ordinally ordered but both timestamped 2026-10-20T18:16:32.954Z. The e12c4d7 proof helper returns null solely on its >= clock comparison."
   ],
   "expected": "Accept a post-click extension sidepanel document materialized at one new target ID after the old panel is destroyed, with matching final target, replacement worker, opened request, exact extension context and actual post-reload Data continuity; retain direct creation-event proof where observed.",
-  "actual": "The panel producer labels Target.targetCreated only when its initial target URL already identifies the extension sidepanel. The archived panel first appears to both observers as Target.targetInfoChanged, then appears under the same ID in the final exact-panel snapshot and supports post-reload work. The verifier required the classified creation event regardless of this correlated evidence.",
+  "actual": "The follow-up native run proved the correlated-panel repair in product, but the verifier rejected its pre-click and click entries sharing one millisecond despite strict recorded order. All three lifecycle boundaries can share a clock tick while their array indices establish order.",
   "severity": "S2: normal oracle blocks T03 adjudication after a successful native product run; no product defect established.",
   "priority": "P1",
   "state": "fixed",
   "owner": "data_lifecycle_event_oracle_diagnosis",
-  "cause": "The verifier promoted one lossy CDP event classification into a required product invariant. The archive cannot prove that Chrome allocated a fresh CDP node from nothing; that literal allocation is not the product requirement.",
+  "cause": "The verifier required strict Date.parse inequality across three already strictly ordered trace edges. Millisecond timestamp quantization collapsed real adjacent events into equal instants; the nondecreasing clock and array order remain independent evidence.",
   "sibling_census": "The same reload producer serves other native paths. This repair is restricted to the member Data T03 verifier; other acceptance policies are unchanged.",
-  "fix": "Normalize every target event and initial/pre-click/poll snapshot into owned-target observations. Require finite, nondecreasing recorded instants and require every observation of the final replacement panel to follow old-panel destruction in both trace order and time. Validate target identity/type, complete canonical observation payloads and unique final IDs; reject a destroyed final replacement. Bind the classified creation event or correlated info-change to that exact final panel, retaining the old-worker/panel baseline and all request, context, continuity, cleanup and source gates. CLI proof basis and verifier hash remain separate from historical source identity.",
+  "fix": "At pre-click\u2192click, click\u2192old-panel destruction, and destruction\u2192first replacement-panel observation, allow equal finite timestamps only when the existing strict array-index checks establish order. Retain nondecreasing global clock, finite timestamps, identity/type/ownership checks, dropped-entry refusal, contradictory-event flags, and all normal T03 eligibility gates.",
   "evidence": [
     "scripts/hosted-remote-admission.mjs",
     "scripts/hosted-member-data-lifecycle.test.mjs",
@@ -27,9 +28,13 @@
     "/tmp/data274-structural-raw-results.json",
     "/tmp/data274-escalated-fix-20261020.json",
     "docs/stabilization/reports/data274-escalated-fix-20261020.json",
-    "docs/stabilization/reports/data274-structural-final-peer-20261020.json"
+    "docs/stabilization/reports/data274-structural-final-peer-20261020.json",
+    "/tmp/data274-hosted-39472238118.zip",
+    "/tmp/data274-hosted-39472238118-report.json",
+    "/tmp/data274-prospective-cleanup-20261020.json",
+    "/tmp/data274-clock-precision-fix-20261020.json"
   ],
-  "verification_status": "Structural repair pending fresh independent review: original immutable report accepted retrospectively with created_event=false unchanged; four prior findings plus coherent snapshot-first, invalid first timestamp and conflicting timestamp mutants rejected. All 18 real-report channel/time variants rejected. Two new guards failed before repair and pass after; constant-success scratch mutant fails both. Focused 8/8, compile and scoped Biome pass. Normal historical CLI certificate remains ineligible after executable verifier drift.",
+  "verification_status": "Targeted seam guard failed before repair and passed after; original immutable 39472238118 raw lifecycle now returns correlated_panel_materialization. Native pass/complete and 3 valid resource decisions remain historical evidence, not a new normal CLI certificate. Fresh independent source review and an eligible post-change artifact/native run remain pending.",
   "transition_history": [
     {
       "at": "2026-10-20T17:40:00Z",
@@ -42,8 +47,26 @@
       "from": "open",
       "to": "fixed",
       "reason": "Correlated final-target materialization proof added and guarded against false positives; formal T03 verdict remains partial."
+    },
+    {
+      "at": "2026-10-20T18:21:17Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "New native run 39472238118 exposed same-millisecond pre-click/click verifier refusal despite T03 pass and valid resources."
+    },
+    {
+      "at": "2026-10-20T18:21:17Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Reproduced original raw lifecycle refusal and wrote a red guard for clock ties at all three ordered edges."
+    },
+    {
+      "at": "2026-10-20T18:21:17Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Permitted equal finite instants only with existing strict event indices; original raw seam and targeted guard pass. Independent review and new normal certificate pending."
     }
   ],
-  "next_action": "Get independent source review. A newly committed executable verifier makes the old development artifact ineligible for the normal CLI sourceCompatibility gate; do not call an exported-function retrospective check a normal certificate. Obtain a fresh eligible CI artifact and native run only after review and authorized scheduling.",
+  "next_action": "Obtain independent review of the three-edge quantization repair; then produce a fresh eligible development artifact and native T03 run for the normal CLI certificate. Historical 39472238118 remains raw product evidence, not a post-change certificate.",
   "fix_commit": "e12c4d75320bf3862500f71e633096ddc64baa74"
 }

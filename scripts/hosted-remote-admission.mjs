@@ -1217,7 +1217,9 @@ export function memberDataReplacementPanelProofBasis(lifecycle) {
     clickIndex < 0 ||
     !Number.isFinite(clickAt) ||
     !Number.isFinite(Date.parse(preClick.at)) ||
-    Date.parse(preClick.at) >= clickAt ||
+    // The entry indices establish strict order; Date timestamps have only
+    // millisecond precision, so adjacent events may have equal instants.
+    Date.parse(preClick.at) > clickAt ||
     !Array.isArray(preClick.targets) ||
     timeline.pre_click_old_worker_present !== true ||
     !preClick.targets.some(
@@ -1253,7 +1255,7 @@ export function memberDataReplacementPanelProofBasis(lifecycle) {
       entry.target.kind === 'panel' &&
       entry.target.type === 'page' &&
       Number.isFinite(Date.parse(entry.at)) &&
-      Date.parse(entry.at) > clickAt,
+      Date.parse(entry.at) >= clickAt,
   );
   if (destroyedIndex < 0) return null;
   const destroyedAt = Date.parse(entries[destroyedIndex].at);
@@ -1270,7 +1272,7 @@ export function memberDataReplacementPanelProofBasis(lifecycle) {
     !materializations.length ||
     materializations.some(
       ({ index, at, phase }) =>
-        index <= destroyedIndex || at <= destroyedAt || phase === 'target_destroyed',
+        index <= destroyedIndex || at < destroyedAt || phase === 'target_destroyed',
     )
   )
     return null;
