@@ -1,0 +1,25 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Fresh read-only independent adjudication of existing hosted native run 39363918633 and raw artifacts; no browser run, tests, code edit, or product repair.",
+  "verdict_A_spec_native": {
+    "EXT-F-1003-T22_guest": "PASS on frozen development 0.2.568 at source 9185b3c6728df8dc0ea188b6a344848ded6954fa: active signed-out Settings, Sign in once/Sign out absent, Account/Organization/Appearance anchors, and no Advanced section, audit/permission labels or permission control in fresh and real extension-reloaded observations.",
+    "EXT-F-1003-T63_guest": "PASS for guest cell only on the same fresh and real extension-reloaded observations; actual Settings navigation was exercised via Account and Organization sections. The combined T63 case remains PARTIAL/UNVERIFIED because ordinary-member denial was not run.",
+    "EXT-F-1003-T63_member": "UNVERIFIED; no ordinary-member principal or native member execution in this artifact.",
+    "limits": "No T04 preference-restoration, full Settings, admin, member, Store-installed or current-main acceptance. Side-panel screenshot paints shell only; Settings predicates come from recorded native DOM observation, not screenshot pixels."
+  },
+  "verdict_B_quality": {
+    "D262_original_false_pass_class": "CLOSURE ELIGIBLE for the harness defect only: current source and frozen CI source require an active guest Settings pane, signed-out identity and Account/Organization/Appearance anchors before absence can pass; both T22 and T63 call the shared recorder. CI ran VM DOM/criterion negative guards for empty, inactive, loading, wrong-mode and forbidden-control observations. This fresh native positive is valid and reached active rendered Settings on both sides of reload.",
+    "limits": "No live planted failure branch or executed return-expected mutation evidence reviewed. Existing unit/VM negatives and CI establish the guard, while this run establishes positive native behavior; neither proves unrelated product repair."
+  },
+  "provenance": {
+    "native_run": "39363918633, completed success, job 118436219624, head 9185b3c6728df8dc0ea188b6a344848ded6954fa",
+    "raw_artifact": "12238862303, GitHub digest and independently downloaded ZIP SHA256 ee2456457562eefa5e05990d14946cd14073d60f44af3e8c19d4a0937e3350f0",
+    "raw_zip_census": "Exactly 6 entries: one native JSON, two PNGs, three terminal resource journals; no pending journal or other entry.",
+    "native_json": "Raw SHA256 f60968beb30793d9d5aef56b95cb63d55fddeb1f7a441896ccab92816e879e7a; persisted formatted report differs in bytes but jq-sorted semantic hashes equal (82ecaee6e1003cb62f544672d452cb06ace7cfeb7f7ae4a0617da3ec9de7b7a7).",
+    "development_artifact": "CI run 39362901256 success, artifact 12238730842; GitHub digest and downloaded ZIP SHA256 01f7395724bd0e90851efc797a85cf3e335dfde71762441a181ee619a8449f3c; raw receipt/provenance source 9185b3c6728df8dc0ea188b6a344848ded6954fa, version 0.2.568, independently recomputed unpacked tree SHA256 243e26e6896d0abbf724c429cc1c25104fccdf3df33f36e42465855b51f57c07; development, unpublished, Store-ineligible.",
+    "resource_finals": "Raw package/browser/guest journals each admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Guest CPU pending recovered before valid final.",
+    "reload": "Raw native JSON records management reload click, old target retirement, worker and panel replacement, distinct panel target IDs, and preserved original normal-page target; source runner asserts full timeline and these conditions before post-reload pass.",
+    "cleanup": "Hosted job terminal; native harness finally cleanup is documented in source; raw resource finals are terminal. No independent operating-system inspection of the expired hosted VM is possible."
+  },
+  "root_action": "May credit T22 guest and T63 guest cell, leave T63 member and combined case unverified, and close D262 as harness false-pass prevention only. Record screenshot and mutation-proof limits without extending them into acceptance criteria."
+}

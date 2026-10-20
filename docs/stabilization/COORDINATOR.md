@@ -41,23 +41,25 @@ Exact568 candidate guest runs are terminal and independently reviewed:
   Package/browser finals valid; guest admitted, resourceInvalid=false, child_failed exit1.
   [Daily evidence](reports/published-guest-daily-20261020.json),
   [fresh peer](reports/published205-native-peer-20261020.json). No retry or upload.
-Focused D262 route is implemented/reviewed at e6b2d2602; first CI39362436880 failed
-six legacy source-slice tests after canonical helper extraction. Fresh reviewed two-test repair
-9185b3c6728df8dc0ea188b6a344848ded6954fa passes **CI39362901256** completely.
-Development artifact12238730842, SHA256
-`01f7395724bd0e90851efc797a85cf3e335dfde71762441a181ee619a8449f3c`, exact source above.
-**B39363918633 ACTIVE**, case settings-guest-admin-absence, owner
-settings568_native_runtime_handoff; normal admission and CI provenance/import gates pass,
-browser readiness running. No product result yet; retain actual native criteria/all resource
-finals and cleanup, then fresh independent artifact review before any D262 closure.
-T22 targets guest warm+real extension reload. T63 raw combined report may remain partial;
-canonical inventory modes are guest/member separately, so a complete guest criterion set can
-earn guest-cell pass only after native peer; member remains unverified. Never claim T04 or
-full Settings from this focused run. No additional launch/source mutation while frozen B runs.
-[Source peer](reports/settings-absence-focus-round2-peer-20261020.json),
-[CI repair peer](reports/settings-shared-helper-ci-fix-peer-20261020.json).
+**Focused Settings native B39363918633 is terminal SUCCESS and independently verified.**
+Exact CI39362901256/source9185b3c6728df8dc0ea188b6a344848ded6954fa, development
+artifact12238730842/version0.2.568/tree243e26e6…51f57c07. Result artifact12238862303,
+SHA256ee2456457562eefa5e05990d14946cd14073d60f44af3e8c19d4a0937e3350f0.
+[Fresh raw review](reports/settings568-native-independent-peer-20261020.json) passes T22 guest
+and T63 GUEST cell: active signed-out Settings, positive normal anchors and forbidden-control
+absence before/after real extension replacement; Account/Organization navigation exercised.
+Member is a separate unverified axis; raw combined T63 partial does not downgrade guest.
+All3resource finals valid; cleanup finally/job terminal, no expired-host process census.
+Screenshots shell-only, actual native DOM/recorder assertions support Settings criteria.
+**D262 closed narrowly as harness false-pass prevention**, no product-repair/whole Settings/T04
+claim. Missing live planted negative branch is a stated limit; source/VM negative guards and CI
+plus this positive native pass satisfy original criteria. Raw report/evidence pushed d41b2afbd.
+No current hosted native run remains. **member261_pre_response_observability** owns backend
+source-only implementation of safe pre-header phase diagnostics independent of run finalizer,
+with meaningful blocked/cancel/failure tests; no deploy/source push until fresh peer/root gate.
 [Independent current-backend delta](reports/member261-cd80-delta-20261020.json) establishes no
-relevant causal D261 repair from f8dd→cd80; member remains unresolved.
+causal D261 repair f8dd→cd80; member remains unresolved. No new member attempt without changed
+capacity condition. No known human-only access blocker.
 No new Store upload. Current member evidence and private Store/source/package drift checks remain
 required. [Current guest report](reports/guest567-scrolled-replay-20261020.json).
 
@@ -121,10 +123,11 @@ repeat the same launch blindly or weaken guard thresholds.
    unsupported zoom/offset refuses. [Repair](reports/data-scrolled-hit-repair-20261020.json),
    [fresh final peer](reports/data-scroll-round2-peer-20261020.json). Focused684/684 and full
    CI39356360500 pass;568 strict gates pass. This is a harness repair, no product-repair or broad feature-health credit.
-2. **D262 fixed in source `d4750c363` + import-only`4bc76ec8e`**. T22/T63 now require actual
+2. **D262 closed narrowly**, source `d4750c363` + import-only`4bc76ec8e`. T22/T63 now require actual
    active guest Settings and rendered anchors before absence of admin controls may pass. Tests
    execute actual DOM-probe/case-recorder seam; [fresh peer](reports/settings-absence-round2-peer-20261020.json),
-   focused680/680/fullCI39355672626 pass. Native Settings replay pending. Prior batch T22 warm
+   focused680/680/fullCI39355672626 and repaired fullCI39362901256 pass. Independent exact568
+   focused native replay39363918633 passes T22/T63 guest criteria; see current truth above. Prior batch T22 warm
    `active=false,sections=[]` credit was removed. T04 reload failure remains separate/unlocalized.
 3. **D248 `8d8fda5fe`**, source quality pass/native pending. Org proof retains original target
    and visibility immediately before each native pointer press, after pointer-settling polls.
@@ -165,8 +168,10 @@ Personal Chrome profile8 keeps dev`cihdmkcdjjckfhjpgoedmgfpoljebaml`0.2.565 load
 Store`hnfolienncfklkgmdjjmhhegglimlamg`0.2.205. Last actual reload:
 CI39342629514/artifact12228829443/source`199e2e738ac928b661c8f1a55f1d4dcc6ddff440`,
 tree`f5c2313bc27330260b029824b178e1f667cd28e98aa23307d54531a8b6f607bf`.
-Latest verified development567 artifact12235492570 is from successful CI39356360500/source8abb,
-not promoted/reloaded and stale after release568 package drift. No exact568/main dev artifact is loaded. Import with current-test-artifact, promote
+Latest verified development568 artifact12238730842 is from successful CI39362901256/source9185b3c67,
+tree243e26e6…51f57c07, independently downloaded/recomputed by native peer. It is not promoted or
+reloaded in the personal profile; last native loaded observation remains565. Later main changes
+are evidence/docs only; never claim a current installed copy from source/artifact proof. Import with current-test-artifact, promote
 with promote-ci-dev-artifact and guard actual reload/path/ID/version/pins after local recovery.
 Personal principal is a real personal admin; never log it out. Use owned profiles for auth tests.
 

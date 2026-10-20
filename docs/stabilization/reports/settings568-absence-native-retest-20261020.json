@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "task_id": "settings568_absence_native_retest",
-  "state": "terminal_evidence_pending_independent_peer",
+  "state": "independently_verified_bounded_guest_cases",
   "scope": "One existing hosted native guest Settings admin-absence run; no new dispatch, source edit, credential use, model call, or Store action.",
   "workflow": {
     "run_id": 39363918633,
@@ -53,14 +53,14 @@
     {
       "case_id": "EXT-F-1003-T22",
       "mode": "guest",
-      "verdict": "native_runner_pass_pending_independent_peer",
-      "reason": "All four focused criteria passed on active signed-out Settings before and after the real extension reload."
+      "verdict": "pass_guest_cell_independently_verified",
+      "reason": "Complete guest warm and real extension-reload criteria pass, independently verified from raw native DOM/recorder and exact receipts."
     },
     {
       "case_id": "EXT-F-1003-T63",
       "mode": "guest",
-      "verdict": "guest_subtarget_pass_whole_case_unverified",
-      "reason": "The same four guest criteria passed; ordinary-member denial was not exercised."
+      "verdict": "pass_guest_cell_independently_verified",
+      "reason": "Complete guest-mode warm and real extension-reload criteria pass. T63 member axis remains unverified; native raw combined partial is retained, not a reason to block the independently tested guest cell."
     }
   ],
   "excluded_verdicts": [
@@ -110,5 +110,6 @@
     "credentials": "Guest mode; no guest sign-in or credential step. No credential values copied into repository evidence.",
     "local_download_temp": "removed after persisted evidence and native-report semantic-equality verification"
   },
-  "next_action": "Fresh independent peer should inspect the raw artifact and adjudicate T22 guest and T63 guest-only evidence; retain member/T04/full Settings limits. Hold commits until root GO."
+  "next_action": "Credit only T22 guest and T63 guest cells; close D262 harness false-pass class. Keep T04, other Settings cases, member/admin, Store and overall health unverified. No new native run.",
+  "independent_review": "docs/stabilization/reports/settings568-native-independent-peer-20261020.json"
 }

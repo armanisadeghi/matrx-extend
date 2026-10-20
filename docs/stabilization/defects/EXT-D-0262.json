@@ -8,7 +8,7 @@
   "auth_mode": "signed-out guest; harness evidence only",
   "severity": "S2: false acceptance evidence for a negative-only control",
   "priority": "P1: repair before the next guest Settings batch",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/settings_absence_assertion_repair",
   "preconditions": [
     "Frozen development artifact 0.2.566, source 27b7defe7a4c123ff74076b15a5cb73e879e8500, hosted run 39352539316 had resource-valid acceptance execution but runner exit 1.",
@@ -28,7 +28,12 @@
     "docs/stabilization/reports/settings-guest-hosted-20261020.json",
     "docs/stabilization/reports/settings-absence-fresh-peer-20261020.json",
     "docs/stabilization/reports/settings-absence-assertion-repair-20261020.json",
-    "docs/stabilization/reports/settings-absence-round2-peer-20261020.json"
+    "docs/stabilization/reports/settings-absence-round2-peer-20261020.json",
+    "docs/stabilization/reports/settings-guest-admin-absence-focus-20261020.json",
+    "docs/stabilization/reports/settings-absence-focus-round2-peer-20261020.json",
+    "docs/stabilization/reports/settings-shared-helper-ci-fix-peer-20261020.json",
+    "docs/stabilization/reports/settings568-absence-native-retest-20261020.json",
+    "docs/stabilization/reports/settings568-native-independent-peer-20261020.json"
   ],
   "acceptance_criteria": [
     "At the actual T22/T63 assertion seam, missing, inactive, loading or wrong-mode Settings observations fail.",
@@ -38,10 +43,11 @@
   ],
   "verification": {
     "source": "Fresh round2 peer: previous predicate-only regression gap ADDRESSED in actual DOM-probe/case-recorder seam; both real T22/T63 callsites wired. Live, test and RED/GREEN execution still unverified until CI/replay.",
-    "focused_tests": "PASS680/680 in focused39355397255 on d475; import-only correction4bc76ec8 fullCI39355672626 SUCCESS (compile/fullLint/unit/transport/resource/build/artifact). Source harness proof only; physical native original replay pending.",
-    "native": "NOT RUN: guarded hosted replay after reviewed integration required."
+    "focused_tests": "Repaired source fullCI39362901256 SUCCESS, including focused688 guards and actual DOM/criterion negative cases. Original source d475 positive guard and both callsites independently reviewed; additional reviewed focused-route/test-helper integration e6b2d2602 and9185b3c67. Not product repair/health proof.",
+    "native": "PASS bounded: exact development .568/source9185b3c6728df8dc0ea188b6a344848ded6954fa, CI39362901256 artifact12238730842, native39363918633 artifact12238862303. Active signed-out Settings and Account/Organization/Appearance anchors plus forbidden-control absence pass fresh and after real extension reload with replaced panel/worker, retired targets and original normal page preserved. All three resource finals valid. Fresh independent raw receipt/tree/native review permits narrow harness closure; screenshots shell-only, actual DOM/recorder is evidence.",
+    "limits": "No live planted failure branch or executed return-expected mutation evidence reviewed by runtime peer. Existing actual DOM/recorder negative unit guards plus native positive proof cover original criteria; unrelated T04 restoration/full Settings/member/Store remain unverified."
   },
-  "next_action": "Guarded original guest Settings native replay must prove active guest Settings and forbidden-control absence before retest-pass/closed. T04 reload boundary remains separate; source/CI green is not native acceptance.",
+  "next_action": "No further D262 repair. Continue independent product cases, including unresolved T04 readiness; ordinary-member admin denial remains its own unverified axis. No overall Settings or product-repair claim.",
   "transition_history": [
     {
       "at": "2026-10-20T01:41:39Z",
@@ -66,6 +72,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Meaningful actual DOM/case seam regression passed focused680; fresh round2 source peer and corrected4bc fullCI passed. No native closure/product credit."
+    },
+    {
+      "at": "2026-10-20T03:37:24.048612Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent raw native review proves positive actual guest Settings/absence and real extension replacement; actual DOM/recorder negative guards and full CI prevent original false-pass class. Narrow harness closure only."
+    },
+    {
+      "at": "2026-10-20T03:37:24.048612Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Fresh independent raw native review proves positive actual guest Settings/absence and real extension replacement; actual DOM/recorder negative guards and full CI prevent original false-pass class. Narrow harness closure only."
     }
   ],
   "fix_sha": "d4750c363b9eeff9ea734b4da05320c9c728dfe1"
