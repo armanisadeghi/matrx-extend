@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T09:28:17.491526+00:00",
+  "updated_at": "2026-10-20T11:30:55.916466+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -51947,15 +51947,15 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 39407214496,
-              "source_sha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
-              "build_version": "0.2.573",
+              "run_id": 39411790358,
+              "source_sha": "1b831c27d98dc690fcff5526e304b92c23f4c8aa",
+              "build_version": "0.2.574",
               "build_kind": "ci_development_test",
               "actual_store_installed": false,
-              "development_ci_run_id": 39404058065,
-              "development_artifact_id": 12255454102,
-              "development_artifact_digest": "sha256:08bf85bab9dddef5d38a80fbd4042025023747e45de8243ff5e209a43e753f3b",
-              "runtime_tree_sha256": "3e8a60c448edb17a6c3c5d5b5213b0d730b06b21e9ae363b242a34df2f716c02",
+              "development_ci_run_id": 39410623190,
+              "development_artifact_id": 12259880170,
+              "development_artifact_digest": "sha256:1d49aca9024ddeb665b8ed8592b9c5f71a638295b21ee1d8cd41faa85aa6aafc",
+              "runtime_tree_sha256": "eadcc799e1ec6a9671c8ac1553470e58b90522a4814342547685abb69fd56eaa",
               "resource_invalid": false,
               "guest_resource_decision": "child_failed",
               "guest_child_exit_code": 1,
@@ -51963,10 +51963,10 @@
               "server_sha_after": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
               "server_stable": true,
               "evidence": [
-                "docs/stabilization/reports/guest573-current-dev-native-20261020.json",
-                "docs/stabilization/reports/guest573-current-dev-native-peer-20261020.json"
+                "docs/stabilization/reports/values244-changed-native-trace-20261020.json",
+                "docs/stabilization/reports/values244-trace-native-raw-peer-20261020.json"
               ],
-              "detail": "Bounded guest three real terminal replies: openingunpredictablecode+stageorder; sameconversationfullheading/code; afterrealpanelreloadnewconversationcode/fullheading. HTTP200/is_new true,false,true, same then distinct conversation. Rawtoolpayloadprivacy-suppressed, renderedgrounding/protocol supportpass. No wholeChat/member/admin/Store-installation/latest419 claim; no unique newcasepass."
+              "detail": "Independently verified three actual grounded terminal guest replies: opening, same-conversation follow-up, new conversation after panel reload; HTTP200 success. Stable backend5c3beef2, guest identity absent. Narrow screenshot and preattach observation limits; no wholeChat/nonadmin/actualStore-installed claim or unique newcasepass."
             }
           },
           "defect_verification": {
@@ -52283,6 +52283,34 @@
               },
               "superseded_at": "2026-10-20T10:42:58.885247+00:00",
               "reason": "Fresh independent current95d CIdevelopment per-case native39407214496; not latest419/Store-installed acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 39407214496,
+                "source_sha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+                "build_version": "0.2.573",
+                "build_kind": "ci_development_test",
+                "actual_store_installed": false,
+                "development_ci_run_id": 39404058065,
+                "development_artifact_id": 12255454102,
+                "development_artifact_digest": "sha256:08bf85bab9dddef5d38a80fbd4042025023747e45de8243ff5e209a43e753f3b",
+                "runtime_tree_sha256": "3e8a60c448edb17a6c3c5d5b5213b0d730b06b21e9ae363b242a34df2f716c02",
+                "resource_invalid": false,
+                "guest_resource_decision": "child_failed",
+                "guest_child_exit_code": 1,
+                "server_sha_before": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
+                "server_sha_after": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
+                "server_stable": true,
+                "evidence": [
+                  "docs/stabilization/reports/guest573-current-dev-native-20261020.json",
+                  "docs/stabilization/reports/guest573-current-dev-native-peer-20261020.json"
+                ],
+                "detail": "Bounded guest three real terminal replies: openingunpredictablecode+stageorder; sameconversationfullheading/code; afterrealpanelreloadnewconversationcode/fullheading. HTTP200/is_new true,false,true, same then distinct conversation. Rawtoolpayloadprivacy-suppressed, renderedgrounding/protocol supportpass. No wholeChat/member/admin/Store-installation/latest419 claim; no unique newcasepass."
+              },
+              "superseded_at": "2026-10-20T11:14:46.159785+00:00",
+              "reason": "Current frozen1b native39411790358 independently verifies bounded guest replies and reproduces original Values failure with event trace."
             }
           ],
           "attempt_history": [
@@ -52512,15 +52540,15 @@
           "results": {
             "guest": {
               "status": "fail",
-              "run_id": 39407214496,
-              "source_sha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
-              "build_version": "0.2.573",
+              "run_id": 39411790358,
+              "source_sha": "1b831c27d98dc690fcff5526e304b92c23f4c8aa",
+              "build_version": "0.2.574",
               "build_kind": "ci_development_test",
               "actual_store_installed": false,
-              "development_ci_run_id": 39404058065,
-              "development_artifact_id": 12255454102,
-              "development_artifact_digest": "sha256:08bf85bab9dddef5d38a80fbd4042025023747e45de8243ff5e209a43e753f3b",
-              "runtime_tree_sha256": "3e8a60c448edb17a6c3c5d5b5213b0d730b06b21e9ae363b242a34df2f716c02",
+              "development_ci_run_id": 39410623190,
+              "development_artifact_id": 12259880170,
+              "development_artifact_digest": "sha256:1d49aca9024ddeb665b8ed8592b9c5f71a638295b21ee1d8cd41faa85aa6aafc",
+              "runtime_tree_sha256": "eadcc799e1ec6a9671c8ac1553470e58b90522a4814342547685abb69fd56eaa",
               "resource_invalid": false,
               "guest_resource_decision": "child_failed",
               "guest_child_exit_code": 1,
@@ -52528,13 +52556,13 @@
               "server_sha_after": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
               "server_stable": true,
               "evidence": [
-                "docs/stabilization/reports/guest573-current-dev-native-20261020.json",
-                "docs/stabilization/reports/guest573-current-dev-native-peer-20261020.json"
+                "docs/stabilization/reports/values244-changed-native-trace-20261020.json",
+                "docs/stabilization/reports/values244-trace-native-raw-peer-20261020.json"
               ],
               "defect_ids": [
                 "EXT-D-0244"
               ],
-              "detail": "PresentcompactValuesstillvisible/open1 after onetrustedEscape; documentfocused/focusinside/zerootherdialogs. Actualtestedbundlecontains174fix, so originalnative symptom persists. Close/reopen/fullview/neighbor/member/admin unverified; sourcecauseeventboundarynotcaptured."
+              "detail": "Original one trustedEscape still fails with actual focusedbutton target/path inside originaldialog. Windowcapture defaultPreventedfalse; documentcapture through allremainingphases true; no propagationstop; tooltip1to0, no dialogclose/removal/reopen. ReactDOMprop presence doesnotprovehandlerexecution. FullT13 close/reopen/fullview/neighbor/othermodes remain unverified; no productfix yet."
             },
             "member": {
               "status": "unverified"
@@ -52618,6 +52646,37 @@
               },
               "superseded_at": "2026-10-20T10:42:58.885247+00:00",
               "reason": "Fresh independent current95d CIdevelopment per-case native39407214496; not latest419/Store-installed acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "fail",
+                "run_id": 39407214496,
+                "source_sha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+                "build_version": "0.2.573",
+                "build_kind": "ci_development_test",
+                "actual_store_installed": false,
+                "development_ci_run_id": 39404058065,
+                "development_artifact_id": 12255454102,
+                "development_artifact_digest": "sha256:08bf85bab9dddef5d38a80fbd4042025023747e45de8243ff5e209a43e753f3b",
+                "runtime_tree_sha256": "3e8a60c448edb17a6c3c5d5b5213b0d730b06b21e9ae363b242a34df2f716c02",
+                "resource_invalid": false,
+                "guest_resource_decision": "child_failed",
+                "guest_child_exit_code": 1,
+                "server_sha_before": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
+                "server_sha_after": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
+                "server_stable": true,
+                "evidence": [
+                  "docs/stabilization/reports/guest573-current-dev-native-20261020.json",
+                  "docs/stabilization/reports/guest573-current-dev-native-peer-20261020.json"
+                ],
+                "defect_ids": [
+                  "EXT-D-0244"
+                ],
+                "detail": "PresentcompactValuesstillvisible/open1 after onetrustedEscape; documentfocused/focusinside/zerootherdialogs. Actualtestedbundlecontains174fix, so originalnative symptom persists. Close/reopen/fullview/neighbor/member/admin unverified; sourcecauseeventboundarynotcaptured."
+              },
+              "superseded_at": "2026-10-20T11:14:46.159785+00:00",
+              "reason": "Current frozen1b native39411790358 independently verifies bounded guest replies and reproduces original Values failure with event trace."
             }
           ],
           "bounded_candidate_observations": [
@@ -52664,7 +52723,8 @@
           ],
           "defect_ids": [
             "EXT-D-0261",
-            "EXT-D-0266"
+            "EXT-D-0266",
+            "EXT-D-0267"
           ],
           "results": {
             "member": {
@@ -52731,7 +52791,8 @@
             "EXT-D-0113",
             "EXT-D-0240",
             "EXT-D-0242",
-            "EXT-D-0261"
+            "EXT-D-0261",
+            "EXT-D-0267"
           ],
           "run_ids": [
             "39154980480",
@@ -52835,7 +52896,8 @@
         "EXT-D-0263",
         "EXT-D-0264",
         "EXT-D-0265",
-        "EXT-D-0266"
+        "EXT-D-0266",
+        "EXT-D-0267"
       ]
     },
     {

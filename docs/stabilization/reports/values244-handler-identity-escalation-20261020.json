@@ -1,0 +1,55 @@
+{
+  "task_id": "EXT-D-0244",
+  "lane": "actual compiled handler identity escalation",
+  "status": "HANDOFF_NO_CAUSE_PROVEN_NO_PRODUCT_EDIT",
+  "evidence": {
+    "artifact_id": 12259880170,
+    "ci_run": 39410623190,
+    "native_run": 39411790358,
+    "artifact_sha256_verified": "1d49aca9024ddeb665b8ed8592b9c5f71a638295b21ee1d8cd41faa85aa6aafc",
+    "agents_version_from_actual_sourcemap": "0.59.175",
+    "artifact_local": "/Volumes/Samsung2TB/code/matrx-extend/test-results/values244-handler-identity-artifact/unpacked",
+    "callback": {
+      "file": "chunks/react-CIAGJaBG.js",
+      "line_1based": 1,
+      "onKeyDown_property_column_0based": 20661,
+      "sha256": "170c255c33fc0fb21e9e318b1e0daae6abdbc17b2c1fa79fe76097953da54d32",
+      "body": "e=>{e.key===`Escape`&&e.currentTarget.contains(e.target)&&z(!1)}"
+    }
+  },
+  "findings": [
+    "Exact compiled agents ContextRulesChip uses uncontrolled openState unless openProp is provided; extension caller supplies no open prop.",
+    "Callback passes through compiled shared PopoverContent chunk-PX73WJME-BhvIibDp.js via spread y, then Radix PopoverContentNonModal/Impl dist-XkYVdjsC.js via spreads e/p to PopperContent.",
+    "Actual FocusScope 1.1.16 supplies its own Tab handler on an asChild primitive. Actual Slot 1.3.3 mergeProps composes childPropValue first and slotPropValue second with no defaultPrevented condition. The mounted DOM onKeyDown is consequently expected to be a composed function, not the literal Values closure.",
+    "DismissableLayer 1.1.19 preserves layerProps.onKeyDown; its document capture Escape handler prevents default and calls onDismiss. PopperContent 1.3.7 preserves contentProps.onKeyDown.",
+    "No obvious callback overwrite/defaultPrevented filtering exists in this exact compiled chain. Native DOM prop presence cannot establish that this expected composed closure is the actual mounted callback, nor handler entry.",
+    "Existing neutral observer was inspected; it reads DOM props and never invokes or wraps the callback."
+  ],
+  "next_discriminator": {
+    "action": "One read-only pre-Escape CDP function-identity snapshot in the existing native lane; no package edit, new build, broad observer, or callback invocation.",
+    "steps": [
+      "Resolve the original open Values dialog by the existing selector and its Open full view descendant. Read its __reactProps$*.onKeyDown with Runtime.evaluate returnByValue=false in an isolated CDP objectGroup.",
+      "Use Runtime.getProperties on that function: record only [[FunctionLocation]], then inspect [[Scopes]] and recursively follow only function-valued closure bindings for composed handlers. In this exact minified Slot merge closure childPropValue is a and slotPropValue is i; generated composition body is (...e)=>{let t=a(...e);return i(...e),t}. Do not serialize arbitrary scope values, component props, text, or account data.",
+      "Map function scriptId/line/column to the loaded script URLs. Expected child leaf lies in react-CIAGJaBG.js at the Values callback immediately after property column 20661; sibling leaf lies in Combination-DuhgHhz4.js FocusScope. Retain only function locations, composition edges, and match booleans; release objectGroup.",
+      "Absent Values leaf proves actual mounted composition mismatch and localizes the next source investigation. Present Values leaf rules out handler omission and makes natural handler entry/state transition the next boundary; do not infer entry from identity."
+    ],
+    "fallback_limit": "If Chromium omits optimized closure bindings, report identity unavailable; do not invoke functions or waive defaultPrevented. A later targeted debugger breakpoint at the known callback on the same single trusted Escape is the bounded alternative, with timing perturbation disclosed."
+  },
+  "changed_files": [],
+  "scratch_files": [
+    "test-results/values244-handler-identity-artifact/ (ignored exact artifact and extracted source maps)",
+    "/tmp/values244-handler-identity-escalation-20261020.json"
+  ],
+  "verification": {
+    "artifact_digest": "PASS",
+    "compiled_callback_chain_inspection": "PASS; no mismatch established",
+    "old_red_new_green": "NOT ESTABLISHED",
+    "native_retest": "NOT RUN"
+  },
+  "limits": [
+    "No product or test changes, publication, build, dispatch, commit or push.",
+    "No new unit attempt: previous realistic old-code tests already passed.",
+    "Native handler identity, entry, and state update remain unmeasured.",
+    "D244S3P2 remains open; no Store-health claim; other product lanes are not blocked."
+  ]
+}

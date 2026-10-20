@@ -1,0 +1,29 @@
+{
+  "task_id": "member-gate-release-eligibility-20261020",
+  "status": "NO_GO_FOR_MEMBER_DISPATCH_AND_STORE_SUBMISSION",
+  "observed_head": "771f8bc10",
+  "candidate": {
+    "version": "0.2.574",
+    "release_run_id": 39409723565,
+    "artifact_id": 12258863115,
+    "source_sha": "d862a9ac93c336669f6abe6ae3a26a2cadb335c9",
+    "package_bytes_verified_by": "/tmp/release574-artifact-checkpoint-20261020.json"
+  },
+  "admission": {
+    "method": "read-only proveSource(candidate, current HEAD)",
+    "result": "release_member_product_changed",
+    "reason": "Post-candidate 1b831c27 adds .github/ci-cost.json, .github/workflows/ci.yml, tests/browser/guest-values-escape-probe.mjs and its test; these are outside requireReleaseMemberSource allowlist. Current dirty/untracked stabilization journals also fail exact-source proof until integrated or removed by their owners. No guard bypass, waiver, old checkout, dispatch or build attempted."
+  },
+  "npm": {
+    "method": "pnpm -s check:matrx-packages plus package/lock comparison to .574 source",
+    "result": "gate exit 1 solely because local node_modules has orphan older chat@0.8.246 and data@0.29.83 copies; direct current chat@0.8.248 and data@0.29.84 and all reported packages are npm latest; pnpm-lock.yaml contains only latest chat/data; package.json and pnpm-lock.yaml unchanged since .574. This does not establish a meaningful fresh runtime candidate. A clean install graph may resolve local orphan copies, but would not change frozen artifact bytes."
+  },
+  "product": {
+    "member": "D261 original non-admin 504 unresolved; no resource-valid current original member pass",
+    "values": "D244 resource-valid Escape failure and latest trace retest still FAIL"
+  },
+  "store": {
+    "last_private_observation": "2026-10-20 07:02:11 UTC, published 0.2.205, draft 0.2.479 rejected, no pending; no later check required before eligible candidate"
+  },
+  "exact_next_action": "Do not dispatch member from .574 on current main: guard legitimately refuses. Finish D244 causal repair and D261 resource-valid non-admin verification using supported routes. Only if a real runtime/source change makes a new candidate necessary, coordinate one guarded hosted release on synchronized main, then plan one member-chat run through existing admission after host/secret/resource preflight and root GO. If tests/docs alone change, seek separate reviewed source-contract resolution rather than rebuilding identical bytes or weakening admission."
+}

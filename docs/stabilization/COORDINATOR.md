@@ -21,9 +21,29 @@ digest is metadata-only. No574 native acceptance/upload/submission; D244/D261 re
 Newer main1b831c27d adds neutral trace/CI/evidence, not a product repair; fullCI39410623190 and
 focused39410623174 SUCCESS, developmentartifact12259880170 (GitHubdigest
 `1d49aca9024ddeb665b8ed8592b9c5f71a638295b21ee1d8cd41faa85aa6aafc`).
-One changed diagnostic **nativeB39411790358** is active, pinned1b/artifact12259880170 under
-`values244_changed_native_trace`; one original Escape, no retry, actualresourceguards. No verdict
-yet. Finalize exact raw report/cleanup then fresh independent review before any closure.
+Changed diagnostic **nativeB39411790358** is terminal resource-valid FAILURE, independently
+verified from a separately downloaded digest-matched artifact. [Actual trace](reports/values244-changed-native-trace-20261020.json),
+[fresh raw peer](reports/values244-trace-native-raw-peer-20261020.json). Frozen1b/dev574 passes
+bounded T10 three grounded terminal replies against stable5c3beef2; original T13 Escape still
+fails. Actual focusedbutton target/path inside original dialog; all6eventphases reached, window
+capture defaultPrevented=false then documentcapture onward=true; tooltip1→0, no dialogtransition.
+DOMReactprop presence does not prove handler entry; observer timing effect remains unknown.
+Package/browser validexit0; guest child_failed/resourceInvalid=false/exit1. Workflowterminal,
+no cleanup_error codes; explicit expiredguestprofile deletion receipt unavailable. No retry.
+Sol [causal repair attempt](reports/values244-prevented-event-causal-repair-20261020.json) returned
+HANDOFF: native-like real-Radix guard passes OLD code, so no valid RED/no product edit. Fresh
+bounded Astra `values244_handler_identity_escalation` inspects actual compiled forwarding/DOM
+handler identity; no new native retry authorized. S3/P2 Values must not swallow all other work.
+[Release eligibility](reports/member-gate-release-eligibility-20261020.json) is NO GO: source
+allowlist rejects reviewed test-only/CI-only drift from574; no meaningful package/runtime update
+justifies duplicate packaging. [D267](defects/EXT-D-0267.json) now owns canonical source-proof
+repair under `member_source_admission_class_repair`; fresh plan attack conditions are binding
+(exact full harness CI, additive CI command/cost prose only, per-path actual build exclusion).
+No guard bypass/native/Store action. [Bounded API diagnosis](reports/member261-owned-api-diagnosis-20261020.json)
+is inconclusive: authenticated start/toolresults/resume200 but delegated reads remain pending,
+no terminal assistant; not native proof or closure. Current backend5c3beef2 remains stable.
+Fresh Values identity probe source unit is awaiting independent review; no further native authorized
+until exact source/CI/guard/priority checks. D244S3P2 and D261P0 remain open.
 [SEO preflight](reports/seo-owned-target-preflight-20261020.json) found both supported metadata
 and narrow360px targets already had bounded passes; no redundant SEO run was launched.
 

@@ -1,0 +1,21 @@
+{
+  "task_id": "EXT-D-0244",
+  "lane": "prevented-event causal package repair",
+  "status": "HANDOFF_CAUSAL_BOUNDARY_UNRESOLVED",
+  "product_fix": false,
+  "changed_files": [],
+  "native_evidence": "Run 39411790358: trusted Escape targeted focused button inside original open Values dialog; window capture defaultPrevented=false, document capture=true with tooltip count 1\u21920; dialog capture/bubble and document/window bubble continued; dialog remained open, no DOM state transition.",
+  "source_finding": "@radix-ui/react-dismissable-layer tooltip document-capture Escape listener prevents default and dismisses the tooltip; its code calls preventDefault before onDismiss. The popover DismissableLayer sees the prevented event and does not dismiss. The package ContextRulesChip onKeyDown closure is still expected to handle this path, but handler entry/setOpen were not observed natively.",
+  "reproduction": "Temporary focused test used actual shared ContextRulesChip, Radix Tooltip and Popover, direct bubbling KeyboardEvent from focused Open full view/Reset all button, observed defaultPrevented=true at document capture, and forced React flush there. Both OLD cases passed (popover closed); temporary test was removed. Existing fireEvent regression also passes.",
+  "causal_gap": "Native probe records a React onKeyDown DOM prop but not whether it executed or what setOpen/onOpenChange did. Source-only patch would be a guess because old package code passes the closest local reproduction.",
+  "sibling_check": "ContextRulesChip has one desktop PopoverContent Escape handler. InlineMaxInput Escape deliberately stops propagation to revert draft. Other package tooltip/popover surfaces were not shown to share this exact failure.",
+  "next_action": "Measure handler entry plus containment result and local setOpen(false) invocation in one trusted native Escape, preserving one-key acceptance. Then make a red-capable guard at that first divergent boundary before editing package code.",
+  "verification": {
+    "focused_temporary_run": "2 passed on old source, so invalid as regression RED",
+    "working_tree": "temporary test fully reverted; exact product/test paths clean"
+  },
+  "limitations": [
+    "No package publication/adoption/build/native retry performed.",
+    "Values D244 remains open."
+  ]
+}

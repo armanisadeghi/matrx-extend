@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0267",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T14"],
+  "title": "Member native source proof rejects reviewed nonruntime acceptance changes",
+  "surface": "Release acceptance tooling (not an observed product defect)",
+  "auth_mode": "member",
+  "reproduction": [
+    "Keep frozen v0.2.574 release source d862a9ac93c336669f6abe6ae3a26a2cadb335c9 and artifact12258863115 immutable.",
+    "At clean synchronized main771f8bc10 call existing proveSource for that release and current harness source; reviewed1b changes add Values diagnostic helper/tests and existing Linux regression selection/cost basis, with no runtime package/source change.",
+    "Observe release_member_product_changed before member dispatch. Later dirty harness changes independently require fresh current CI; do not discard them or bypass refusal."
+  ],
+  "expected": "A reviewed acceptance-only harness revision with exact successful current full CI and proven exclusion from frozen product inputs can test unchanged candidate bytes; actual product/runtime/operational safety drift still refuses.",
+  "actual": "Exact-path source allowlist rejects new nonruntime test helpers/CI test selection; current member first-turn/followup cannot run through supported source admission.",
+  "evidence": [
+    "docs/stabilization/reports/member-gate-release-eligibility-20261020.json",
+    "docs/stabilization/reports/member-source-contract-plan-attack-20261020.json"
+  ],
+  "severity": "S2: tooling blocks real non-admin acceptance and release progress; no new product malfunction inferred.",
+  "priority": "P1: remove tooling obstacle to P0 member D261 acceptance without duplicate build or guard waiver.",
+  "state": "in-fix",
+  "owner": "member_source_admission_class_repair",
+  "transition_history": [
+    {
+      "at": "2026-10-20T11:30:55.916466+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent read-only source proof reproduces refusal."
+    },
+    {
+      "at": "2026-10-20T11:30:55.916466+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Nonruntime test/CI paths localized; candidate package/lock remains unchanged. No supported dispatch allowed."
+    },
+    {
+      "at": "2026-10-20T11:30:55.916466+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Fresh plan attack FIX-FIRST conditions accepted: immutable exact harness fullCI proof, additive CI test-only diff/cost basis-only, per-path build exclusion; Sol owns existing canonical contract repair."
+    }
+  ],
+  "next_action": "Selfverify actual oldRED/newGREEN and negative runtime/config/lock/revert/dirty/CI/capacity refusal guards; fresh source peer; integrate separate unit then fullCI and resource-valid independent member native retest. No external bypass/unchanged Store rebuild/product pass."
+}
