@@ -1,0 +1,32 @@
+{
+  "task_id": "EXT-D-0244",
+  "lane": "S3P2 actual mounted handler identity discriminator",
+  "status": "SOURCE_AND_UNIT_VERIFIED_AWAITING_FRESH_PEER",
+  "changed_paths": [
+    "tests/browser/guest-values-handler-identity.mjs",
+    "tests/browser/guest-values-handler-identity.test.mjs",
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/guest-chat-store-sequence.test.mjs",
+    ".github/workflows/ci.yml",
+    ".github/ci-cost.json"
+  ],
+  "behavior": "One pre-Escape read-only CDP snapshot of the mounted dialog onKeyDown function graph. Traverses bounded Closure/Block function bindings; an exact compiled callback location yields present, every unmatched graph yields unknown with expected_callback_not_observed. Releases object group, retains only locations and finite graph edges. Original Escape and verdict remain unchanged; receipt appears on success and failure.",
+  "source_anchor": {
+    "artifact_sha256": "1d49aca9024ddeb665b8ed8592b9c5f71a638295b21ee1d8cd41faa85aa6aafc",
+    "compiled_file": "react-CIAGJaBG.js",
+    "onKeyDown_property_line": 0,
+    "onKeyDown_property_column": 20661,
+    "expected_callback_column_range": [20661, 20750]
+  },
+  "verification": {
+    "focused_tests": "PASS 52/52 after review correction",
+    "biome_changed_files": "PASS",
+    "node_syntax": "PASS",
+    "git_diff_check": "PASS",
+    "native": "NOT_RUN_BY_THIS_LANE",
+    "peer": "FRESH_PEER_PENDING; root review found and corrected false absence claim"
+  },
+  "ci_cost_basis": "Existing ci.yml Linux checks job and regression command; three new tests in same invocation, observed focused suite under 0.4 seconds; zero added jobs, runners, triggers, dispatches, or actual billed cost. Existing rounded runtime estimate unchanged.",
+  "known_guard_failure": "check_workflow_runner_cost.py remains red on preexisting global measured-spend absence and matrx-sandbox twin drift; no spend/block workaround attempted.",
+  "limits": "The narrow function-only graph cannot prove callback absence through object-valued closure bindings, so no absent verdict is emitted. No native execution, product source edits, build, dispatch, publication, commit, or push. CDP inspector availability in native Chromium remains unmeasured."
+}

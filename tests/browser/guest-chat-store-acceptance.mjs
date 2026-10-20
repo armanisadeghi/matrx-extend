@@ -26,6 +26,7 @@ import {
   watchGuestAiRequests,
 } from './guest-chat-transport-observer.mjs';
 import { guestValuesEscapeProbeExpression } from './guest-values-escape-probe.mjs';
+import { inspectGuestValuesHandlerIdentity } from './guest-values-handler-identity.mjs';
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 import {
   isCompleteResourceSample,
@@ -585,6 +586,7 @@ async function openAndCloseGuestValuesChip(panel) {
   })()`,
   );
   const preEscape = await readChip();
+  const handlerIdentity = await inspectGuestValuesHandlerIdentity(panel);
   if (
     !focusTarget ||
     preEscape?.openPanelCount !== 1 ||
@@ -595,6 +597,7 @@ async function openAndCloseGuestValuesChip(panel) {
   ) {
     const error = new Error('guest_values_focus_precondition_unavailable');
     error.guestValuesCloseState = preEscape;
+    error.guestValuesHandlerIdentity = handlerIdentity;
     throw error;
   }
   await evaluate(panel, guestValuesEscapeProbeExpression);
@@ -637,7 +640,11 @@ async function openAndCloseGuestValuesChip(panel) {
       trusted_escape_keydown_count: closed.trustedEscapeKeyDownCount,
       pre_escape_focus_inside_popover: preEscape.focusInsidePopover,
       pre_escape_other_visible_dialogs: preEscape.otherVisibleDialogs,
+      handler_identity: handlerIdentity,
     };
+  } catch (error) {
+    if (error instanceof Error) error.guestValuesHandlerIdentity = handlerIdentity;
+    throw error;
   } finally {
     await evaluate(
       panel,
@@ -848,7 +855,8 @@ function safeFailure(error) {
 
 function safeValuesCloseDiagnostic(error) {
   const state = error instanceof Error ? error.guestValuesCloseState : null;
-  if (!state || typeof state !== 'object') return null;
+  const identity = error instanceof Error ? (error.guestValuesHandlerIdentity ?? null) : null;
+  if (!state || typeof state !== 'object') return identity ? { handler_identity: identity } : null;
   const count = (value) => (Number.isInteger(value) && value >= 0 && value <= 1000 ? value : null);
   const flag = (value) => (typeof value === 'boolean' ? value : null);
   return {
@@ -861,6 +869,7 @@ function safeValuesCloseDiagnostic(error) {
     document_focused: flag(state.documentFocused),
     focus_inside_popover: flag(state.focusInsidePopover),
     other_visible_dialogs: count(state.otherVisibleDialogs),
+    handler_identity: identity,
   };
 }
 

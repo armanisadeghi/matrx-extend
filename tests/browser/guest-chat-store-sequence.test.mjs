@@ -874,6 +874,7 @@ const valuesDriver = new Function(
   'waitFor',
   'assert',
   'guestValuesEscapeProbeExpression',
+  'inspectGuestValuesHandlerIdentity',
   `${valuesDriverSource}; return openAndCloseGuestValuesChip;`,
 );
 const failureSanitizersSource = source.slice(
@@ -1003,6 +1004,14 @@ function valuesControlHarness(count, blocked = null) {
     },
     assert,
     guestValuesEscapeProbeExpression,
+    async () => ({
+      status: 'unknown',
+      reason: 'synthetic_host',
+      expected_compiled_match: false,
+      nodes: [],
+      edges: [],
+      truncated: false,
+    }),
   );
   return { run: () => run(panel), calls };
 }
@@ -1023,6 +1032,14 @@ test('published guest Chat Values must actually open and close when present', as
     trusted_escape_keydown_count: 1,
     pre_escape_focus_inside_popover: true,
     pre_escape_other_visible_dialogs: 0,
+    handler_identity: {
+      status: 'unknown',
+      reason: 'synthetic_host',
+      expected_compiled_match: false,
+      nodes: [],
+      edges: [],
+      truncated: false,
+    },
   });
   assert.deepEqual(harness.calls, [
     ['context-values', ''],
@@ -1095,6 +1112,14 @@ test('long Values close failure keeps key delivery and focus in structured recei
       document_focused: true,
       focus_inside_popover: true,
       other_visible_dialogs: 0,
+      handler_identity: {
+        status: 'unknown',
+        reason: 'synthetic_host',
+        expected_compiled_match: false,
+        nodes: [],
+        edges: [],
+        truncated: false,
+      },
     });
   }
 });

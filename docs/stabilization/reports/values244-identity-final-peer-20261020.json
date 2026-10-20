@@ -1,0 +1,17 @@
+{
+  "task_id": "EXT-D-0244",
+  "scope": "Fresh read-only peer review of original identity diagnostic unit plus no-absence correction; no edits, delegation, native run, build, workflow, commit, or push.",
+  "VERDICT_A": "PARTIAL",
+  "A_evidence": "tests/browser/guest-chat-store-acceptance.mjs:589 captures the mounted pre-Escape identity; :643 exports it on success, :599-600 and :645-647 attach it on precondition/close failure, :856-873 sanitize it into failure JSON, and :603-630 retain the original Escape delivery/verdict. Unit cannot establish actual mounted Chromium callback without a native receipt.",
+  "VERDICT_B": "PASS",
+  "B_evidence": "tests/browser/guest-values-handler-identity.mjs:47-71 uses attached panel.on/send with Debugger.scriptParsed/enable and Runtime.evaluate; :91-145 uses CDP Runtime.getProperties [[FunctionLocation]] and [[Scopes]] shapes, bounded Closure/Block function traversal; :149-155 makes exact compiled location PRESENT and all nonmatches UNKNOWN. :105-162 exports only finite locations, graph indices, flags, limits; :165-175 attempts object-group/debugger/listener cleanup. No handler call/wrap/replacement, breakpoint, pause, event/focus/key/acceptance mutation in helper.",
+  "correction": "The prior peer’s complete-graph ABSENT inference was unsound because object-valued bindings can retain the callback. Current code emits no absent status. Tests/browser/guest-values-handler-identity.test.mjs:110-127 checks object-held, hidden, and capped unmatched cases as UNKNOWN; :86-108 checks positive location and privacy; :129-144 checks failure cleanup.",
+  "source_anchor": "Verified local artifact chunks/react-CIAGJaBG.js sha256 170c255c33fc0fb21e9e318b1e0daae6abdbc17b2c1fa79fe76097953da54d32: 0-based column 20661 begins onKeyDown property; callback lies in 20661..20750. This is exact-artifact evidence only.",
+  "protocol": "Official CDP Runtime documents getProperties internalProperties, RemoteObject.value/objectId and inherited object group; Debugger documents enable/scriptParsed replay. Live optimized [[Scopes]] availability and exact native location remain unmeasured.",
+  "checks": "node --test identity+sequence+Escape probe: 52/52 pass; git diff --check pass; biome check changed paths pass. CI adds identity test to existing Linux test command; cost file updates basis only, no new job/runner/trigger/dispatch.",
+  "limits": "No native panel execution or actual emitted receipt in this lane; mocked CDP tests are not proof of native identity, handler entry, state update, product fix, or D244 closure. Cleanup is best-effort on CDP failure. No red-green mutant run performed under zero-authorship.",
+  "references": [
+    "https://chromedevtools.github.io/devtools-protocol/tot/Runtime/",
+    "https://chromedevtools.github.io/devtools-protocol/tot/Debugger/"
+  ]
+}

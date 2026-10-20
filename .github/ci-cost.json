@@ -17,7 +17,7 @@
       "crons": [],
       "benefit": "Extension build/lint/tests on every push and PR, including pre-auth resource admission regression; macOS resource-guard integration.",
       "owner_reason": "Before it, nothing was enforced on PRs (AUDIT P0-8).",
-      "basis": "observed 2026-10-02..09 (runs list + sampled jobs' billed minutes): ~2500 runs/week; sampled Linux 3.2 min, macOS 1.5 min. Adding one Node test to the existing public Ubuntu job adds no job and $0 actual billed spend. D244 adds the seven-test DOM Escape observer guard to that same Linux regression command (local complete run ~0.18 seconds; estimate <1 second incremental), with no new runner, job, trigger, or dispatch; existing rounded runtime estimate and $0 actual billed increment remain unchanged.",
+      "basis": "observed 2026-10-02..09 (runs list + sampled jobs' billed minutes): ~2500 runs/week; sampled Linux 3.2 min, macOS 1.5 min. Adding one Node test to the existing public Ubuntu job adds no job and $0 actual billed spend. D244 adds the seven-test DOM Escape observer guard and three-test CDP identity guard to that same Linux regression command (focused local run under 0.4 seconds; estimate <1 second incremental), with no new runner, job, trigger, or dispatch; existing rounded runtime estimate and $0 actual billed increment remain unchanged.",
       "usd_per_week": 280.5,
       "legs": {
         "linux": {
