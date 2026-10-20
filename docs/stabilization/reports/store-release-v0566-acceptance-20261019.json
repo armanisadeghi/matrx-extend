@@ -41,7 +41,7 @@
       "auto_capture_off": "pass: native check says off; retained screenshot shows the off toggle only",
       "data_picker_done": "fail: one field selected; DOM.getNodeForLocation rejected at Done center x=41.8359375,y=66.5 (box 29.671875x15), category no_node_at_location, exception name Error; hit equality and mouse click did not run; failure screenshot target was missing"
     },
-    "chat": "Three native terminal page-grounded answers: opening, same-conversation follow-up with identity verified, and follow-up after real panel reload. Formal whole-run verdict remains unverified because the public reviewer Data path failed. No guest/reviewer overall pass is claimed.",
+    "chat": "Three native terminal page-grounded answers: opening, same-conversation follow-up with identity verified, and a new-conversation follow-up after real panel reload. Formal whole-run verdict remains unverified because the public reviewer Data path failed. No guest/reviewer overall pass is claimed.",
     "backend_before_after": "HTTP 200 and unchanged SHA 9ef78d4ade91d8f1cb1951710266b094db5744bf",
     "native_report_private": "test-results/release566-guest-B/matrx-extend/matrx-extend/test-results/guest-chat-store-8768532e-a579-497c-b00c-ee1125fb4ae1.json",
     "article_screenshot_private": "test-results/release566-guest-B/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-mKwt8H/reviewer-capture-article.png",
