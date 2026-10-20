@@ -7,10 +7,10 @@ Generated STATUS/CHECKLIST views derive from it. Earlier evidence remains in lin
 ## Current truth and release boundary
 
 Read the canonical [Chrome Web Store record](/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md)
-before any release action. Last authenticated primary dashboard: October19 16:20UTC,
+before any release action. Last authenticated primary dashboard: October20 07:02:11UTC,
 published0.2.205, draft0.2.479 rejected, no pending, Upload enabled. Vault login works;
 no human-only access blocker is established. No new upload/submission has occurred.
-Never infer private review state from old email/public listing or this checkpoint.
+[Daily observation](reports/store-daily-20261020.json) also bounds official mail search to the October11 rejection only. Never infer private review state from old email/public listing or this checkpoint.
 
 Current prepared candidate **0.2.570**: guarded hosted release39382974979 SUCCESS;
 source/tag `d1c80e5e409ebe73ce35f13639e1074360bfaf7f`, artifact12246251773,
@@ -134,7 +134,7 @@ unreadablecensus, reusedowner and invaliddeadline negative guards proved. Source
 contributor package refreshes. Exact automatic CI39379731713 is SUCCESS on Ubuntu; [independent kernel peer](reports/linux-ci-kernel-fresh-peer-20261020.json) confirms three live source checks: one real1s CPU/PSI interval, owned live-group identity and foreground child stop/mismatch refusal. CPUbusy0.740554/load1.03/4CPUs/PSI0us; this is not 60s readiness or native proof. No browser dispatch. Active guard/workflow/normal routes
 remain refused. Pressure/watchdog, typedjournals, mappedwindow/pixels, staleownership and the
 nonatomic census→PGID signal gap are activationholds, never productpasses or member support.
-Next source step: integrate and independently review bounded pidfd/subreaper ownership preparation, execute actual Linux lifecycle cases through existing Ubuntu CI; activeguard/display/strictBguesttuple/cost integration and nativepilot remain separate unverified gates. No retry of the two resource-invalid member launches without changed evidence. CPU readings are one-second snapshots, not a continuous ten-second
+Bounded pidfd/subreaper supervisor source preparation now has fresh independent A/B PASS ([peer](reports/linux-supervisor-fresh-source-peer-20261020.json)); Mac tests27pass/10explicitLinuxskips. Numeric PGID cleanup refuses. Actual Linux lifecycle cases await existing automatic Ubuntu CI; no activation/native proof. Capability-unavailable/no-spawn, dropped-permission and stale-supervisor hard-death native holds, startup/IO/pipe handshake, pressure/watchdog, mapped pixels and exact route/cost integration remain required before nativepilot. No retry of the two resource-invalid member launches without changed evidence. CPU readings are one-second snapshots, not a continuous ten-second
 measurement. Guard decisions remain valid; broader capacity needs reviewed infrastructure. Do not
 repeat the same launch blindly or weaken guard thresholds.
 
