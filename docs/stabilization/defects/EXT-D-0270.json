@@ -22,9 +22,11 @@
     "scripts/hosted-remote-admission.test.mjs",
     "scripts/hosted-remote-admission.mjs",
     "docs/stabilization/reports/data-t03-repaired-native-20261020.json",
-    "/tmp/data-t03-next-native-20261020.json"
+    "/tmp/data-t03-next-native-20261020.json",
+    "scripts/hosted-member-data-lifecycle.test.mjs",
+    "/tmp/data270-fresh-peer-20261020.json"
   ],
-  "verification_status": "Old member-data CLI regression RED with HOSTED_DEVELOPMENT_RUN_INVALID on documentation-only drift; repaired focused CLI GREEN, including refusal for src, native harness, workflow and lockfile drift. Independent source review and actual T03 native run pending; zero new product credit.",
+  "verification_status": "Independent round-1 peer found three verifier assumptions that rejected docs-only artifacts after dispatch. Actual verify CLI regression RED on old source at archived artifact/current-main mismatch, then GREEN after archive provenance, CI artifact proof, and lifecycle identity separate immutable artifact SHA from workflow/main SHA. Wrong archived SHA and runtime/harness/workflow/lockfile changes still refuse. Focused 3/3 and compile pass; round-2 peer and native pending. Zero new product credit.",
   "transition_history": [
     {
       "at": "2026-10-20T16:06:38Z",
@@ -49,7 +51,19 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Shared canonical proof wired into member-data artifact validation and source admission with post-admission recheck; focused red/green established, native pending."
+    },
+    {
+      "at": "2026-10-20T16:10:53Z",
+      "from": "fixed",
+      "to": "in-fix",
+      "reason": "Independent reviewer found archive, artifact validation, and lifecycle identity still assumed artifact SHA equals dispatch main SHA."
+    },
+    {
+      "at": "2026-10-20T16:10:53Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Actual verify CLI old RED/new GREEN; post-proof archived source must equal frozen CI SHA while workflow checkout must equal current main SHA; executable drift and false archived claim refused."
     }
   ],
-  "next_action": "Independent source review; after exact-main CI and normal lane A admission, run the bounded member-data lifecycle against the approved fixture and record native resource/product/cleanup verdicts separately."
+  "next_action": "Fresh independent source review; after exact-head CI, clean normal lane A admission and approved fixture/spend checks, run one member-data lifecycle native case and record product/resource/cleanup separately."
 }

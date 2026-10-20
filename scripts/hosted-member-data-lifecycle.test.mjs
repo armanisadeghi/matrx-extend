@@ -281,19 +281,37 @@ test('normal T03 verify binds the lifecycle archive and refuses incomplete termi
 const c=JSON.parse(process.env.T03_VERIFY_STUB),e=process.argv[3];let r;
 if(e.includes('/contents/')) r={path:'.github/workflows/hosted-guest-acceptance.yml',type:'file',encoding:'base64',content:Buffer.from(c.workflow).toString('base64')};
 else if(e.includes('/actions/secrets')) r={total_count:c.secretPresent?1:0,secrets:c.secretPresent?[{name:'MATRX_REVIEWER_MAGIC_LINK_JSON'}]:[]};
-else if(e.includes('/artifacts?')) r={artifacts:e.includes('/'+c.runId+'/')?[{name:'hosted-guest-'+c.runId+'-1',expired:false,digest:c.archiveDigest}]:[{id:11700000000,expired:false,name:'matrx-extend-development-test-'+c.sourceSha+'-38116138170-1',digest:'sha256:'+'b'.repeat(64)}]};
+else if(e.includes('/artifacts?')) r={artifacts:e.includes('/'+c.runId+'/')?[{name:'hosted-guest-'+c.runId+'-1',expired:false,digest:c.archiveDigest}]:[{id:11700000000,expired:false,name:'matrx-extend-development-test-'+(c.artifactSourceSha||c.sourceSha)+'-38116138170-1',digest:'sha256:'+'b'.repeat(64)}]};
 else if(e.endsWith('/'+c.runId)) r={name:'Native A · member-data',path:'.github/workflows/hosted-guest-acceptance.yml',event:'workflow_dispatch',head_branch:'main',head_sha:c.workflowSha||c.sourceSha,conclusion:'success',run_attempt:1};
-else if(e.endsWith('/38116138170')) r={name:'CI',path:'.github/workflows/ci.yml',event:'push',head_branch:'main',head_sha:c.sourceSha,conclusion:'success',run_attempt:1};
+else if(e.endsWith('/38116138170')) r={name:'CI',path:'.github/workflows/ci.yml',event:'push',head_branch:'main',head_sha:c.artifactSourceSha||c.sourceSha,conclusion:'success',run_attempt:1};
 else process.exit(98);
 process.stdout.write(JSON.stringify(r));
 `;
   writeFileSync(join(dir, 'gh'), fake);
   chmodSync(join(dir, 'gh'), 0o700);
+  const fakeGit = `#!/usr/bin/env node
+const c=JSON.parse(process.env.T03_VERIFY_STUB),a=process.argv.slice(2);
+if(a[0]==='rev-parse') process.stdout.write(c.sourceSha);
+else if(a[0]==='status'||a[0]==='ls-files') process.stdout.write('');
+else if(a[0]==='merge-base') process.exit(c.notAncestor?1:0);
+else if(a[0]==='diff'||a[0]==='log') process.stdout.write(c.changedPath?c.changedPath+'\\0':'');
+else process.exit(99);
+`;
+  writeFileSync(join(dir, 'git'), fakeGit);
+  chmodSync(join(dir, 'git'), 0o700);
   const execute = (change = {}) => {
     rmSync(zip, { force: true });
     writeFileSync(
       join(dir, 'data-member-native-acceptance.json'),
-      JSON.stringify(change.report ?? lifecycleReport()),
+      JSON.stringify(
+        change.report ?? {
+          ...lifecycleReport(),
+          artifact: {
+            ...lifecycleReport().artifact,
+            source_sha: change.artifactSourceSha ?? sourceSha,
+          },
+        },
+      ),
     );
     for (const prefix of ['hosted-package', 'hosted-browser', 'hosted-guest']) {
       const basename = `${prefix}-${runId}-1`;
@@ -345,6 +363,28 @@ process.stdout.write(JSON.stringify(r));
     const accepted = execute();
     assert.equal(accepted.status, 0, accepted.stderr);
     assert.equal(JSON.parse(accepted.stdout).valid, true);
+    const documentationOnly = {
+      artifactSourceSha: 'c'.repeat(40),
+      changedPath: 'docs/stabilization/reports/data-t03-repaired-native-20261020.json',
+    };
+    const equivalent = execute(documentationOnly);
+    assert.equal(equivalent.status, 0, equivalent.stderr);
+    assert.equal(JSON.parse(equivalent.stdout).artifact.compatibility, 'runtime-equivalent');
+    for (const changedPath of [
+      'src/features/data/DataView.tsx',
+      'tests/browser/data-member-native-acceptance.mjs',
+      '.github/workflows/hosted-guest-acceptance.yml',
+      'pnpm-lock.yaml',
+    ]) {
+      const refused = execute({ ...documentationOnly, changedPath });
+      assert.equal(refused.status, 1, changedPath);
+      assert.match(refused.stderr, /HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT/);
+    }
+    const wrongClaim = lifecycleReport();
+    wrongClaim.artifact.source_sha = 'd'.repeat(40);
+    const mismatchedReport = execute({ ...documentationOnly, report: wrongClaim });
+    assert.equal(mismatchedReport.status, 1);
+    assert.match(mismatchedReport.stderr, /HOSTED_NATIVE_REPORT_PROVENANCE_INVALID/);
     for (const [change, code] of [
       [{ scope: 'auto-extract' }, 'HOSTED_ARCHIVE_ENTRY_MISSING_OR_DUPLICATE'],
       [{ requestedArtifact: '11700000001' }, 'HOSTED_DEVELOPMENT_ARTIFACT_INVALID'],

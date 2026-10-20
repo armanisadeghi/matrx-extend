@@ -1523,7 +1523,7 @@ export function verifyHostedGuestSeoReport(
     refuse('HOSTED_SEO_NATIVE_REPORT_PROVENANCE_INVALID');
   return true;
 }
-function verifyArchive(zip, bytes, runId, attempt, sourceSha, acceptanceCase, memberDataScope) {
+function verifyArchive(zip, bytes, runId, attempt, acceptanceCase, memberDataScope) {
   const listing = ghJson(`repos/${OWNER}/actions/runs/${runId}/artifacts?per_page=100`);
   const name = `hosted-guest-${runId}-${attempt}`;
   const matches = listing.artifacts?.filter(
@@ -1570,7 +1570,7 @@ function verifyArchive(zip, bytes, runId, attempt, sourceSha, acceptanceCase, me
     acceptanceCase === 'member-data' &&
     (report.case_id !== (memberDataScope === 'lifecycle' ? 'EXT-F-2005-T03' : 'EXT-F-2005-T08') ||
       report.auth_mode !== 'member' ||
-      report.artifact?.source_sha !== sourceSha ||
+      !SHA.test(report.artifact?.source_sha ?? '') ||
       !DECIMAL.test(String(report.artifact?.run_id ?? '')) ||
       !DECIMAL.test(String(report.artifact?.artifact_id ?? '')))
   )
@@ -1954,7 +1954,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         zip === '-' ? Buffer.concat(chunks) : null,
         runId,
         attempt,
-        sourceSha,
         settings
           ? 'settings-account-popover-member'
           : scrape
@@ -1984,7 +1983,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         runId: artifactRunId,
         artifactId,
         sourceSha,
-        ...(guestSeo && { allowRuntimeEquivalent: true }),
+        ...((guestSeo || mode === 'verify') && { allowRuntimeEquivalent: true }),
         ...((guestSeo || notes || scrape) && {
           expectedDigest: report.imported_artifact.githubArtifactDigest,
         }),
@@ -2050,10 +2049,14 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           developmentArtifactId: artifact.artifactId,
         });
       }
-      if (mode === 'verify' && memberDataScope === 'lifecycle') {
+      if (mode === 'verify') {
         if (run.head_sha !== sourceSha) refuse('HOSTED_MEMBER_DATA_SOURCE_DRIFT');
+        if (report.artifact?.source_sha !== artifact.sourceSha)
+          refuse('HOSTED_NATIVE_REPORT_PROVENANCE_INVALID');
+      }
+      if (mode === 'verify' && memberDataScope === 'lifecycle') {
         verifyHostedMemberDataLifecycleReport(report, {
-          sourceSha,
+          sourceSha: artifact.sourceSha,
           developmentRunId: artifactRunId,
           developmentArtifactId: artifactId,
         });
