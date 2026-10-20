@@ -28,7 +28,9 @@
     "docs/stabilization/reports/auth266-first-peer-20261020.json",
     "docs/stabilization/reports/auth266-final-source-peer-20261020.json",
     "docs/stabilization/reports/auth266-ci-seams-repair-20261020.json",
-    "docs/stabilization/reports/auth266-ci-seams-fresh-peer-20261020.json"
+    "docs/stabilization/reports/auth266-ci-seams-fresh-peer-20261020.json",
+    "docs/stabilization/reports/settings578-guarded-test-isolation-fix-20261020.json",
+    "docs/stabilization/reports/settings578-guarded-test-isolation-peer-20261020.json"
   ],
   "source_sha_at_reproduction": "19aa37bee23e02c8ab62a15ce4854d9e5c944f91",
   "transition_history": [
@@ -88,5 +90,11 @@
     "focused_run": 39404058191,
     "focused": "success",
     "development_artifact": 12255454102
+  },
+  "guarded_negative_test_followthrough": {
+    "at_utc": "2026-10-20T21:09:49.177697+00:00",
+    "change": "Missing-resource negative cases now use unique empty repository fixtures, preserving actual inherited resource ownership and existing refusal/no-side-effect assertions.",
+    "verification": "Normal resource-valid focused suite: 792 passed, 10 explicit Linux-only skips, 0 failures. Independent source peer passed.",
+    "limits": "Harness-only supporting regression; state remains fixed. Original native authentication acceptance is not newly established."
   }
 }

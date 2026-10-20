@@ -1,0 +1,16 @@
+{
+  "status": "DONE",
+  "scope": "Read-only review of the narrow negative-test fixture change in tests/browser/settings-native-auth-driver.test.mjs.",
+  "verdictA_functional_test": {
+    "result": "PASS",
+    "evidence": "Each observer variant passes a new empty mkdtemp directory as repo. signInSettings calls awaitNativeResourceHealth({repo}) before page.context().newPage() or onStage, and requireNativeResourceHealth reads policy and pending journal under that repo. Thus even with inherited live guard identity and lease, the repo-scoped evidence is absent and the path refuses. Both tests retain the NATIVE_RESOURCE_BOUNDARY_REFUSED assertion and empty page-operation/stage assertions.",
+    "limit": "The asserted refusal prefix does not pin the evidence_missing reason. An unrelated stop or unsafe-hold state could also satisfy it; the empty repo fixture nevertheless removes the earlier accidental valid-evidence path."
+  },
+  "verdictB_quality_isolation": {
+    "result": "PASS",
+    "evidence": "The change edits only the test fixture. It leaves source guard and environment untouched, does not unset inherited guard variables, and removes the uniquely named temporary directory in finally. Assertions were preserved. No guard bypass or policy weakening was introduced."
+  },
+  "verification": "Static diff and guard call-path inspection only; no tests or heavy checks run, per brief.",
+  "independent_open_item": "The CPU diagnostic patch and its global cost gate remain separate; this verdict does not waive the reported cost-validator failures.",
+  "durable_report": "docs/stabilization/reports/settings578-guarded-test-isolation-peer-20261020.json"
+}

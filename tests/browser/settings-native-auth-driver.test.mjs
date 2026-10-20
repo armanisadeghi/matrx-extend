@@ -743,24 +743,29 @@ test('Scrape requires the approved selected organization while Settings keeps it
 
 for (const observerPresent of [false, true]) {
   test(`member auth refuses missing resource evidence before creating a page with stage observer present=${observerPresent}`, async () => {
+    const repo = await mkdtemp(join(tmpdir(), 'settings-missing-resource-'));
     const operations = [];
     const stages = [];
     const page = {
       context: () => ({ newPage: async () => ({ close: async () => operations.push('closed') }) }),
       bringToFront: async () => operations.push('root_activated'),
     };
-    await assert.rejects(
-      signInSettings({
-        mode: 'member',
-        page,
-        panel: {},
-        repo: '.',
-        ...(observerPresent && { onStage: (stage) => stages.push(stage) }),
-      }),
-      (error) => error?.message?.startsWith('NATIVE_RESOURCE_BOUNDARY_REFUSED:'),
-    );
-    assert.deepEqual(operations, []);
-    assert.deepEqual(stages, []);
+    try {
+      await assert.rejects(
+        signInSettings({
+          mode: 'member',
+          page,
+          panel: {},
+          repo,
+          ...(observerPresent && { onStage: (stage) => stages.push(stage) }),
+        }),
+        (error) => error?.message?.startsWith('NATIVE_RESOURCE_BOUNDARY_REFUSED:'),
+      );
+      assert.deepEqual(operations, []);
+      assert.deepEqual(stages, []);
+    } finally {
+      await rm(repo, { recursive: true, force: true });
+    }
   });
 }
 
