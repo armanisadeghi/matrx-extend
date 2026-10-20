@@ -1,0 +1,19 @@
+/* Tailwind's index.css imports, with source(none) on utilities. Keeping this
+   in the first import preserves the package sheets' cascade position. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@layer utilities {
+  @tailwind utilities source(none);
+}
+
+/* Only shipped WXT source contributes utility candidates. Automatic source
+   discovery starts at the repository root and also reads diagnostics and
+   browser tests, so a non-product file can change packaged Store CSS. */
+@source "../**/*.{ts,tsx,html}";
+@source not "../**/*.test.{ts,tsx,js,jsx,mjs}";
+@source not "../**/*.spec.{ts,tsx,js,jsx,mjs}";
+@source not "../**/*.fixture.{ts,tsx,js,jsx,mjs}";
+@source not "../**/__tests__";
+@source not "../**/__fixtures__";
+@source not "../**/__snapshots__";

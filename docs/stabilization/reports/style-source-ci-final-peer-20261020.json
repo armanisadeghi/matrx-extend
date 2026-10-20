@@ -1,0 +1,10 @@
+{
+  "verdict_a": "PASS",
+  "verdict_a_evidence": "Re-ran node --test tests/unit/tailwind-source-boundary.test.mjs: 1/1 pass, 0.759s total. CSS split, source scope, package globs, and test source files match the prior repair/fresh-peer evidence; no CSS/test source edits in this verifier lane.",
+  "verdict_b": "PASS",
+  "previous_ci_gap": "ADDRESSED: .github/workflows/ci.yml explicitly runs the .mjs guard in the existing Linux regression step, after the existing published-store test.",
+  "ci_cost": "ci-cost.json valid JSON; basis records measured ~0.8s focused local runtime, $0 incremental billed spend, and no added runner/job/trigger/dispatch.",
+  "scope": "Only CI selection and cost metadata were corrected; source guard passes in its exact node --test form.",
+  "limits": "Cross-repo forecast $150.16/week, missing spend measurement, sandbox twin drift, and native/UI behavior remain outside this correction and unproven. No waiver, reprice, deploy, or broader validation implied.",
+  "repo_edits": false
+}

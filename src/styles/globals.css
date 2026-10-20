@@ -7,7 +7,7 @@
    package defaults could beat this app's own theme. */
 @layer matrx-tap-lock, matrx-design-system-tokens, matrx-design-system;
 
-@import "tailwindcss";
+@import "./tailwind.css";
 
 /* The design-system's REQUIRED sheets. `tokens.css` gives every
    `--matrx-glass-*` / `--matrx-overlay-scrim*` / `--matrx-sheet-divider`

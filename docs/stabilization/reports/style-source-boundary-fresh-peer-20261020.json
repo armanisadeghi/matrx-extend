@@ -1,0 +1,12 @@
+{
+  "verdict_a": "PASS",
+  "verdict_a_evidence": "node --test tests/unit/tailwind-source-boundary.test.mjs passes against actual @tailwindcss/node compile metadata + @tailwindcss/oxide Scanner; old automatic root RED reproduced (docs probe z-[991199px] admitted).",
+  "source_scope": "src currently contains runtime TS/TSX/HTML plus CSS; test excludes diagnostics/docs, tests, fixtures and Markdown while admitting app TSX and WXT HTML probes. Direct agents and transitive records-ui package candidate sources/classes are asserted.",
+  "css_semantics": "globals import position preserved; scoped import keeps theme, preflight, utilities layers and package stylesheet/source imports; actual compiler test passes. No source edits by verifier.",
+  "verdict_b": "FAIL_WITH_ACTIONABLE_GAP",
+  "integration": "New test directly executes checked-in CSS with real Tailwind compiler/Oxide, no mocks; direct node --test passes.",
+  "ci_selection": "Vitest config includes only tests/unit/**/*.test.ts(x), src/**/*.test.ts(x); vitest run tests/unit/tailwind-source-boundary.test.mjs reports No test files found. CI invokes Vitest suite, no explicit Node invocation found. Thus guard is not CI-selected.",
+  "reuse_and_cleanup": "Package @source globs remain in globals.css. Direct guard leaves no probe fixtures; old-root RED temp probe cleaned in finally.",
+  "limitations": "No bundle, build, UI, native, release or full-health claim. Core guest/nonadmin/reviewer remain required.",
+  "recommendation": "Root should ensure this guard is explicitly run by CI or adapt its extension to Vitest's included patterns before calling integrated/guarded."
+}
