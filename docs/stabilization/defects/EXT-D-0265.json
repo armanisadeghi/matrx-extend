@@ -23,7 +23,8 @@
     "tests/browser/guest-chat-store-acceptance.mjs",
     "docs/stabilization/reports/readiness265-source-fix-20261020.json",
     "docs/stabilization/reports/readiness265-first-peer-20261020.json",
-    "docs/stabilization/reports/readiness265-final-peer-20261020.json"
+    "docs/stabilization/reports/readiness265-final-peer-20261020.json",
+    "docs/stabilization/reports/readiness265-ci-wiring-peer-20261020.json"
   ],
   "transition_history": [
     {
@@ -53,7 +54,9 @@
   ],
   "verification": {
     "native": "Original571 resource-invalid before UI; repaired current-source native replay UNKNOWN, no product verdict or closure.",
-    "source": "Fresh independent A/B PASS; actual full journal replay returns healthy_samples=3 with current native health probes; all43 focused tests and independent52 negative source cases pass. Full source CI pending."
+    "source": "Fresh independent A/B PASS; actual full journal replay returns healthy_samples=3 with current native health probes; all43 focused tests and independent52 negative source cases pass. Full source CI pending.",
+    "ci_wiring": "New malformed measurement regression included in existing focused CI command; independent wiring A/B PASS; full local focused722 total/712pass/10Linuxskips/0fail. Exact final-source CI still pending."
   },
-  "next_action": "Complete exact-source CI, freeze executable/test/manifest source, prepare next eligible artifact through guarded hosted release and run one normal guarded native guest acceptance. Require original recovery measurements and surrounding cases before retest-pass/closure; no UI/product or D244/D261 closure from source proof."
+  "next_action": "Complete exact-source CI, freeze executable/test/manifest source, prepare next eligible artifact through guarded hosted release and run one normal guarded native guest acceptance. Require original recovery measurements and surrounding cases before retest-pass/closure; no UI/product or D244/D261 closure from source proof.",
+  "fix_sha": "3e6c34bab46858f07e6e6fca2a331d645274c647"
 }
