@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "review_kind": "fresh_independent_native_evidence",
+  "date": "2026-10-20",
+  "run_id": 39373343402,
+  "artifact_id": 12243145055,
+  "verdict_a_native_flow": {
+    "status": "PARTIAL",
+    "opening": "PASS: signed-out guest reached Chat and produced one UI-terminal, page-grounded reply with the unpredictable opening code and Capture, Understand, Use in order. The first screenshot clips the full response, so the raw observed predicates and stage screenshots carry the complete-stage claim.",
+    "same_conversation_followup": "FAIL: the second request used the same conversation fingerprint and is_new=false. After three continuation runs, four assistant articles were present and the final turn stopped streaming, but the final assistant reply did not contain the exact follow-up code or the fixture's full unique heading. The final answer used the generic heading Chat grounding fixture. The completed get_page_text tool result had the fixture URL, code, and heading, and the assigned tab matched the fixture at terminal observation.",
+    "post_reload": "NOT_REACHED: the assertion on the same-conversation follow-up stopped the test before panel reload.",
+    "reproduction": "On public unpacked extension 0.2.205, in a fresh signed-out guest profile, open the owned article containing generated opening and follow-up codes under a generated unique heading. Ask the exact opening question from tests/browser/guest-chat-store-acceptance.mjs, then ask its exact FOLLOWUP_QUESTION in the same conversation. In this run the opening answer grounded correctly; the follow-up fetched the page yet finished without the exact follow-up code or unique heading."
+  },
+  "verdict_b_evidence_oracle": {
+    "status": "PARTIAL",
+    "strong_evidence": "The oracle compares the live latest assistant reply against generated fixture values, not a fixed answer. Raw state records answerContainsNonce=false and answerContainsFixtureHeading=false; the completed get_page_text result records resultContainsFollowupCode=true and resultContainsFixtureHeading=true. Guest transport observer records two versioned HTTP 200 requests with the same conversation fingerprint, opening is_new=true and follow-up is_new=false. The five internal stream runs ended done=true, endReason=complete, userRequestOutcome=success with no recorded error, so the follow-up was UI terminal with wrong content rather than pending.",
+    "sanitization_limit": "The retained latestAssistantReply passes through safeVisibleText, which replaces a generated code with [follow-up-code] if found. Therefore that placeholder alone cannot establish the exact words the model rendered. The live false exact-code predicate is the direct evidence for the missing required value. The failure screenshot shows only the lower portion of the reply; it independently shows the shortened heading but cannot establish the full code text.",
+    "protocol_limit": "The CDP transport observer establishes versioned HTTP 200 request/response and conversation identity. It does not directly prove a final SSE protocol terminal; the internal stream trace and UI state establish terminal completion. HTTP 200 alone is not the acceptance proof.",
+    "scope_limit": "This was a published Store CRX unpacked into Chromium, not an extension installed from Chrome Web Store. One bounded run does not attribute root cause to extension or server. No post-reload behavior is evidenced."
+  },
+  "provenance": {
+    "artifact_zip_sha256": "6db2703b0bc3d62e757e8fcfa99b1d0ee8a85f22fad4c7a1a5dcf4f0300f575a",
+    "artifact_member_count": 16,
+    "raw_native_json_sha256": "4e45d3fe501a4bad19b73287d908d530ac4c3f54adda6118e941a3ed6b186c6f",
+    "extension_version": "0.2.205",
+    "receipt_kind": "published_store_crx_unpacked",
+    "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "workflow_checkout_sha": "a90836bbed6b640fc804db144e74af945ecd812b",
+    "source_sha": "01c137f4d183e21d2c80801053382c89abdfed7f",
+    "server_git_sha_before_and_after": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
+    "resource_finals": {
+      "package": "valid exit 0",
+      "browser": "valid exit 0",
+      "guest": "child_failed exit 1; resource_invalid=false"
+    },
+    "source_records": [
+      "/tmp/published205-post181b-39373343402/artifact.zip",
+      "/tmp/published205-post181b-39373343402/matrx-extend/matrx-extend/test-results/guest-chat-store-a621ada6-add4-49fa-9207-f607059c650d.json",
+      "docs/stabilization/reports/published205-post181b-guest-20261020.json",
+      "tests/browser/guest-chat-store-acceptance.mjs"
+    ]
+  }
+}
