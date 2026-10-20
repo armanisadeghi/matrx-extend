@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "verdict": "PASS",
+  "scope": "Pinned two-file test-only delta at /tmp/settings-guest-admin-absence-ci-repair-20261020.diff",
+  "source_behavior": "PASS",
+  "quality": "PASS",
+  "evidence": [
+    "Both tests source the actual exported openGuestSettings body from settings-panel-driver.mjs, then execute it with explicit dependency seams.",
+    "The replacement-tab test checks the full acceptance runner's settings wrapper delegates to openGuestSettings and preserves the readiness-before-click event contract.",
+    "Reload boundary cases compile the shared opening helper together with the real runner settings/reload source, so the runner's delegation is exercised in the tested chain.",
+    "Existing negative-control branches remain: readiness bypass, reload preflight perturbation, and reacquisition diagnostic dropping; no assertion weakening or copied helper implementation is present.",
+    "Read-only diff inspection shows only the two requested test files changed; no product source is altered. The supplied report records 16/16 focused tests, both negative-mutant suites failing as expected, Biome and compile passing."
+  ],
+  "limits": [
+    "I did not run tests or independent commands, per verifier constraints.",
+    "The full 688-test hosted checks job and native browser behavior remain unverified locally; next hosted CI result is still required for that evidence."
+  ]
+}

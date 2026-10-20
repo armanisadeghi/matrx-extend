@@ -47,7 +47,15 @@ independent settings_absence_focus_plan_attack accepted scope with two required 
 T22/guest-only T63 evidence leaves full-batch T04 and exact CI-dev receipt/guard unchanged.
 [Independent current-backend delta](reports/member261-cd80-delta-20261020.json) confirms no
 relevant resume/member/org/async-pool/default-model fix in f8dd→cd80; sync-connection READ WRITE
-change does not establish original stalled-await causality. No member product verdict/deploy. No native launch or extra CI trigger yet.
+change does not establish original stalled-await causality. No member product verdict/deploy. Source e6b2d2602 pushed after independent source review; CI39362436880 failed6/688
+focused tests because legacy tests compiled the extracted local helper. The two-file repair now
+executes canonical shared helper and runner delegation;16/16 exact tests and original negative
+mutants retain force. [Fresh repair peer](reports/settings-shared-helper-ci-fix-peer-20261020.json)
+PASS source-only. Next repaired-source CI is required; fresh settings568_absence_native_retest
+waits outside repo for exact successful CI artifact/root GO. No native launch yet.
+Hold repo commits between next source CI push and Settings B dispatch: exact-main source
+equality is required by normal admission. Local external-handle checkpoint is
+`test-results/current-stabilization-lanes.json`; promote terminal evidence after dispatch.
 No new Store upload. Current member evidence and private Store/source/package drift checks remain
 required. [Current guest report](reports/guest567-scrolled-replay-20261020.json).
 
