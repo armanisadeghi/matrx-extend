@@ -61,8 +61,9 @@ result containing both. Five stream runs done/complete/success; final SSE frame 
 proven. Stable deployed181b, public205 CRX unpacked/adapted NOT Store-installed. Package/browser
 resource finals valid; guest resourceInvalid=false/child_failed exit1. Post-reload not reached.
 **[D263](defects/EXT-D-0263.json) triaged P0 public guest acceptance blocker**, no cause/fix or
-backend/contributor attribution. Next discriminator is provider input/output vs actual tool,
-persisted and rendered reply. See [diagnosis](reports/guest181b-followup-diagnosis-20261020.json). Prior B39372274799 is terminal SUCCESS with all3resource finals valid;
+backend/contributor attribution. Case is guest **T10**, separate from member-onlyT14/D261. Fresh provider-boundary owner
+**guest263_provider_boundary** is reading only the owned provider input/output vs actual tool,
+persisted and rendered reply; no newnative/API/modelcall or sourcechange. See [diagnosis](reports/guest181b-followup-diagnosis-20261020.json). Prior B39372274799 is terminal SUCCESS with all3resource finals valid;
 [fresh native peer](reports/scrape568-empty-fresh-peer-20261020.json) verifies only warm guest T08
 no-signal SEO and empty Schema panes/capture invariance on owned title-only localhost fixture.
 Two pane screenshots inspected, exact development568/source501998549/CI39366909321/artifact12239987691.

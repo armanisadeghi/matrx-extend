@@ -51882,31 +51882,33 @@
             "EXT-D-0233",
             "EXT-D-0235",
             "EXT-D-0237",
-            "EXT-D-0243"
+            "EXT-D-0243",
+            "EXT-D-0263"
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": 39329484777,
-              "build_version": "0.2.562",
-              "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
-              "receipt_kind": "native_store_zip_candidate_key_adapted",
-              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
-              "build_tree_sha256": "4017019295c9a2273dccce52ea64767f5886d36a3ee4b4985568eb7da07d573f",
+              "status": "fail",
+              "run_id": 39373343402,
+              "build_version": "0.2.205",
+              "build_channel": "published_public_crx_unpacked",
+              "receipt_kind": "published_store_crx_unpacked",
+              "actual_store_installed": false,
+              "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+              "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+              "execution_source_sha": "01c137f4d183e21d2c80801053382c89abdfed7f",
+              "workflow_checkout_sha": "a90836bbed6b640fc804db144e74af945ecd812b",
               "resource_valid": true,
-              "aggregate_run_status": "failed_reviewerdemo_incomplete",
               "guest_resource_decision": "child_failed",
               "guest_child_exit_code": 1,
-              "server_sha_before_after": "e22bbed21c10e88a0d267061e897fbb05fc9ecff",
-              "current_main_status": "stale_after_package_and_operational_source_changes",
-              "independent_review": "docs/stabilization/reports/candidate562-guest-behavior-context-recheck-20261019.json",
+              "server_sha_before_after": "181b9d7fd340f21e2b73f7b4945f6999c1f49d6d",
               "evidence": [
-                "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json",
-                "docs/stabilization/evidence/candidate562-guest-b/guest-chat-real-answer.png",
-                "docs/stabilization/evidence/candidate562-guest-b/guest-chat-same-conversation-followup.png",
-                "docs/stabilization/evidence/candidate562-guest-b/guest-chat-real-followup-answer.png"
+                "docs/stabilization/reports/published205-post181b-guest-20261020.json",
+                "docs/stabilization/reports/published205-post181b-fresh-peer-20261020.json"
               ],
-              "detail": "Bounded frozen T10 PASS independently reviewed: freshguest real opening+sameconversation followup+NEWconversationafterreload, grounded expectedcodes/stages/heading, threeHTTP200terminalsuccess. Guest acceptance childfailed for separatepublicreviewercontrols, resourceInvalidfalse. Partial screenshots plus turn-scopedDOMproof; no actualStoreinstallation, currentmain, member/admin or fullChat claim. Browserversion not separately retained in receipt."
+              "defect_ids": [
+                "EXT-D-0263"
+              ],
+              "detail": "Actual firstguestreply grounded/UI-terminal; SAME-conversation followup omitted exact pagecode/fulluniqueheading despite completed page-text toolresult containingboth. Freshpeer accepts boundedfailure andpartial evidencequality; finalSSEframe unproven, postreload notreached. This doesnot establish current568 failure, sourcecause or actualStoreinstalled behavior. Earlierfrozen562 pass retainedinhistory."
             }
           },
           "defect_verification": {
@@ -52112,6 +52114,34 @@
                 "detail": "Bounded T10 PASS: three distinct grounded terminal replies, actual same-conversation is_new=false then new conversation after reload, fresh guest and valid resource finals. Overall workflow PARTIAL because later Values Escape close failed (D244/T13). Not actual Store-installed lifecycle, current548, member/admin, other controls or full Chat."
               },
               "retained_reason": "Prior public205 adapted-CRX frozen scope retained; new independently reviewed562 candidate evidence recorded separately."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 39329484777,
+                "build_version": "0.2.562",
+                "source_sha": "417ca98041e94f91f7fa618db0b96681f170e66b",
+                "receipt_kind": "native_store_zip_candidate_key_adapted",
+                "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+                "build_tree_sha256": "4017019295c9a2273dccce52ea64767f5886d36a3ee4b4985568eb7da07d573f",
+                "resource_valid": true,
+                "aggregate_run_status": "failed_reviewerdemo_incomplete",
+                "guest_resource_decision": "child_failed",
+                "guest_child_exit_code": 1,
+                "server_sha_before_after": "e22bbed21c10e88a0d267061e897fbb05fc9ecff",
+                "current_main_status": "stale_after_package_and_operational_source_changes",
+                "independent_review": "docs/stabilization/reports/candidate562-guest-behavior-context-recheck-20261019.json",
+                "evidence": [
+                  "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json",
+                  "docs/stabilization/evidence/candidate562-guest-b/guest-chat-real-answer.png",
+                  "docs/stabilization/evidence/candidate562-guest-b/guest-chat-same-conversation-followup.png",
+                  "docs/stabilization/evidence/candidate562-guest-b/guest-chat-real-followup-answer.png"
+                ],
+                "detail": "Bounded frozen T10 PASS independently reviewed: freshguest real opening+sameconversation followup+NEWconversationafterreload, grounded expectedcodes/stages/heading, threeHTTP200terminalsuccess. Guest acceptance childfailed for separatepublicreviewercontrols, resourceInvalidfalse. Partial screenshots plus turn-scopedDOMproof; no actualStoreinstallation, currentmain, member/admin or fullChat claim. Browserversion not separately retained in receipt."
+              },
+              "superseded_at": "2026-10-20T05:27:38.084187+00:00",
+              "reason": "Retain frozen562 pass; current public205/server181b followup acceptance now fails separately."
             }
           ],
           "attempt_history": [
@@ -52371,8 +52401,7 @@
             "The signed-in member receives a page-grounded assistant answer after the browser tool completes, with successful terminal completion; a same-conversation follow-up can then be tested."
           ],
           "defect_ids": [
-            "EXT-D-0261",
-            "EXT-D-0263"
+            "EXT-D-0261"
           ],
           "results": {
             "member": {

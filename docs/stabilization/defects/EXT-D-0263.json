@@ -1,7 +1,7 @@
 {
   "id": "EXT-D-0263",
   "feature_id": "EXT-F-2013",
-  "case_ids": ["EXT-F-2013-T14"],
+  "case_ids": ["EXT-F-2013-T10"],
   "title": "Public205 guest follow-up omits exact current-page code and unique heading despite completed page-text tool result",
   "surface": "Guest Chat same-conversation page grounding",
   "auth_mode": "guest, fresh signed-out isolated profile",
