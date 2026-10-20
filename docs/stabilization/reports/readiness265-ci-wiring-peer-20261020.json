@@ -1,0 +1,16 @@
+{
+  "A_wiring": "PASS: package.json changes only the existing test:focused-acceptance command, prepending tests/browser/native-resource-boundary.test.mjs; both .github/workflows/ci.yml and focused-acceptance.yml already invoke that script.",
+  "A_scope": "No workflow/job/command option/dependency/version changes in the package.json delta (1 insertion, 1 deletion).",
+  "B_guard_quality": "PASS: test iterates every completeSample measurement across missing/null/Infinity/string values and checks malformed latest, pending, and recovered events reject as journal_invalid; it also verifies blocked actions do not run for unsafe/stale/wrong-run evidence.",
+  "native_UNKNOWN": "This unit test does not establish what a live native resource probe reports when the measurement is unknown; that remains separate from CI wiring and guard quality.",
+  "test_execution": "Not run here; root owns the active focused acceptance run (session 56542).",
+  "parent_verification": {
+    "command": "pnpm test:focused-acceptance",
+    "tests": 722,
+    "pass": 712,
+    "skip": 10,
+    "fail": 0,
+    "duration_ms": 51517.099291,
+    "platform": "macOS; Linux-only cases explicitly skipped; no native browser/product proof"
+  }
+}
