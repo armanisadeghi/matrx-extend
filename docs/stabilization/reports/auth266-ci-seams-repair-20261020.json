@@ -1,0 +1,21 @@
+{
+  "status": "DONE",
+  "changed_paths": [
+    "tests/browser/authenticated-panel-host.test.mjs",
+    "tests/browser/panel-transition-recorder.test.mjs"
+  ],
+  "causal_repro": "The two source-evaluating tests extracted signInSettings into new Function without its newly imported awaitNativeResourceHealth binding. The first threw ReferenceError before its credential-failure assertion; the second threw before exercising the Scrape auth trace. The unchanged production function now receives a controlled resource dependency in both test seams.",
+  "verification": {
+    "old_RED": "node --test tests/browser/authenticated-panel-host.test.mjs tests/browser/panel-transition-recorder.test.mjs: 13 tests, 11 pass, 2 fail; both ReferenceError: awaitNativeResourceHealth is not defined",
+    "new_GREEN": "Same command: 14 tests, 14 pass, 0 fail. Ready health precedes member page creation and credential failure retains its original boundary; refused health prevents page creation and host observation.",
+    "full_failed_CI_step": "All 12 exact commands in .github/workflows/ci.yml Guest transport observer regression passed locally: 268 node --test cases plus owned flat CDP script PASS, exit 0.",
+    "compile": "pnpm compile: exit 0",
+    "biome": "pnpm exec biome format --write on both changed files, then pnpm exec biome check on both: exit 0",
+    "diff": "git diff --check: exit 0; scoped diff reviewed"
+  },
+  "sha256": {
+    "tests/browser/authenticated-panel-host.test.mjs": "67602c62c41931013441dcb61f5f4761a361928251c3cf198cf7d417f76e6638",
+    "tests/browser/panel-transition-recorder.test.mjs": "183037edbd0d25437e65d6ee6caca5b9181ca086f4d8a1883e756520483aff31"
+  },
+  "limits": "No production source or policy changed. No browser job, CI dispatch, build, commit, or push performed. Root owns the concurrent D266 documentation changes and integration after fresh independent review."
+}

@@ -26,7 +26,9 @@
     "docs/stabilization/reports/auth266-source-gap-20261020.json",
     "docs/stabilization/reports/auth266-implementation-20261020.json",
     "docs/stabilization/reports/auth266-first-peer-20261020.json",
-    "docs/stabilization/reports/auth266-final-source-peer-20261020.json"
+    "docs/stabilization/reports/auth266-final-source-peer-20261020.json",
+    "docs/stabilization/reports/auth266-ci-seams-repair-20261020.json",
+    "docs/stabilization/reports/auth266-ci-seams-fresh-peer-20261020.json"
   ],
   "source_sha_at_reproduction": "19aa37bee23e02c8ab62a15ce4854d9e5c944f91",
   "transition_history": [
@@ -53,11 +55,29 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fresh different peer independently passes21 actual-source tests, verifies old-source RED/current GREEN and prior CI-wiring finding addressed; native unverified."
+    },
+    {
+      "at": "2026-10-20T09:44:52.787187+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Automatic fullCI39401604000 fails two existing actual-source testseams on ReferenceError awaitNativeResourceHealth after the new import. This is source/CI regression, not native product evidence."
+    },
+    {
+      "at": "2026-10-20T09:44:52.787187+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Fresh Sol owns dependency injection repair for extracted Settings auth source fixtures; original readiness/denial behavior and assertions must remain intact."
+    },
+    {
+      "at": "2026-10-20T09:54:04.235164+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh independent14/14 actual-source seam checks pass readiness ordering/denial and original auth-error/cleanup; builder completed exact failedCIstep268cases/CDPscript. Peer fullstep replay incomplete on separate pending-promise observation; full automaticCI mandatory, no waiver/nativeclaim."
     }
   ],
   "verification": {
-    "source": "Fresh independent21/21 PASS, actual original-source guard RED, normal CI and focused wiring verified. Pre-existing local cost-checker blockers remain bounded in peer report; full post-integration CI required.",
+    "source": "Original21/21 and sourceRED/GREEN+CIwiring verified. e78 fullCI39401604000 failed missing imported dependency in two source-extraction fixtures. Repair now independently14/14; builder entire exact step268cases/CDPscript pass. Full post-repair automaticCI still REQUIRED. Peer separate local native-harness pending-promise observation lacks leaf/rawlog, returned as incomplete evidence; not a proved new product defect.",
     "native": "UNKNOWN. Frozen573 native jobs do not contain this uncommitted harness repair; no capacity or D261 fix claim."
   },
-  "next_action": "Commit/push verified source unit; require automatic full CI green. Native remains UNKNOWN; no D261504 or initial CDP capacity repair claim."
+  "next_action": "Integrate/push verified fixture correction, await green automatic fullCI and exact-main development artifact, hold tracked mutations until guarded existing startup diagnostic pins source. Native/product/D261/initialCDP causality remains UNKNOWN."
 }

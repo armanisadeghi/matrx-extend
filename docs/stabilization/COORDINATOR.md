@@ -212,12 +212,12 @@ trigger-tooltip is explicitly disabled while open and does not share observed in
 D244 is fixed for source only; native closure requires actual exact-package T13.
 
 
-**[D266](defects/EXT-D-0266.json) source-fixed, native unverified.** Shared Settings/member Chat
+**[D266](defects/EXT-D-0266.json) source-fixed after CI-fixture repair; fullCI/native pending.** Shared Settings/member Chat
 opened authentication pages before canonical readiness. Two minimal awaits now require the
 existing health boundary first; denial has zero auth-page side effects. Actual-source RED/GREEN,
 21/21 tests and a fresh different [final source peer](reports/auth266-final-source-peer-20261020.json)
 PASS; the first peer's missing normal-CI wiring finding is addressed. No new policy/threshold,
-startup-capacity improvement or D261 backend repair is inferred. Source pushed `e78a9b11c`; focused39401604211 and resource integration pass, fullCI39401604000 remains in progress.
+startup-capacity improvement or D261 backend repair is inferred. Source pushed `e78a9b11c`; focused39401604211 and resource integration pass, but fullCI39401604000 FAILED two extracted-source test fixtures missing the new awaitNativeResourceHealth binding. Fresh Sol [fixture correction](reports/auth266-ci-seams-repair-20261020.json) supplies the imported helper to both source-extraction fixtures; entire exact failed step268cases/CDPscript passes locally. [Fresh peer](reports/auth266-ci-seams-fresh-peer-20261020.json) independently14/14 verifies readiness ordering/denial and preserved auth error/cleanup. Peer complete-step replay hit a separate pending-promise runner observation, leaf/rawlog unavailable; this is incomplete evidence, not a new reproduced product defect or waiver. Automatic fullCI after integration remains mandatory. Startup diagnostic remains undispatched until fresh exact-main CI/artifact pass; hold further tracked writes/pushes until diagnostic source pins.
 The local cost checker still has baseline measured-spend/twin drift errors, distinct from the
 fresh official real-money72.23/100 status; no paid job is dispatched to bypass a spending refusal.
 

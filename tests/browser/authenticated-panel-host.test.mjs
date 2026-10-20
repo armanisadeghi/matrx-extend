@@ -221,6 +221,7 @@ test('failed optional host observation cannot replace the actual authentication 
     'privateJson',
     'requireSettingsCredential',
     'runMemberAuthBoundary',
+    'awaitNativeResourceHealth',
     `${auth.slice(auth.indexOf('export async function signInSettings')).replace('export ', '')}; return signInSettings;`,
   )(
     assert,
@@ -229,6 +230,7 @@ test('failed optional host observation cannot replace the actual authentication 
     },
     () => {},
     runMemberAuthBoundary,
+    async () => events.push('resource_ready'),
   );
   await assert.rejects(
     () =>
@@ -248,5 +250,28 @@ test('failed optional host observation cannot replace the actual authentication 
       error.memberAuthBoundary === 'member_credential_validation' &&
       error.memberAuthFailureCode === 'member_credential_validation_failed',
   );
-  assert.deepEqual(events, ['close', 'activate']);
+  assert.deepEqual(events, ['resource_ready', 'close', 'activate']);
+});
+
+test('refused resource health prevents the member authentication page and host observation', async () => {
+  const events = [];
+  const signIn = new Function(
+    'assert',
+    'awaitNativeResourceHealth',
+    `${auth.slice(auth.indexOf('export async function signInSettings')).replace('export ', '')}; return signInSettings;`,
+  )(assert, async () => {
+    events.push('resource_refused');
+    throw Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:cpu_pending');
+  });
+  await assert.rejects(
+    signIn({
+      mode: 'member',
+      page: {
+        context: () => ({ newPage: async () => events.push('page_created') }),
+      },
+      observeBoundary: async () => events.push('host_observed'),
+    }),
+    /NATIVE_RESOURCE_BOUNDARY_REFUSED:cpu_pending/,
+  );
+  assert.deepEqual(events, ['resource_refused']);
 });
