@@ -1,0 +1,54 @@
+{
+  "candidate_source": "d1c80e5e409ebe73ce35f13639e1074360bfaf7f",
+  "current_main": "f710575efdae4f42bde2a99a321684fee5e34e97",
+  "normal_plan_refusal": "HOSTED_CHAT_RUNTIME_SOURCE_DRIFT",
+  "reproduction": "Read-only invocation of requireGuestChatDispatchAdmission with actual git log --no-renames --format= --name-only -z candidate..HEAD, current HEAD/origin/main, clean status, ancestor true and empty runs yields HOSTED_CHAT_RUNTIME_SOURCE_DRIFT. The captured normal plan yielded the identical code after artifact receipt and ZIP-byte verification.",
+  "source_evidence": [
+    "scripts/hosted-remote-admission.mjs:277-312: normal guest plan computes committed history via git log, then calls requireGuestChatDispatchAdmission.",
+    "scripts/hosted-remote-admission.mjs:218-239: any changed path outside isRuntimeEquivalentDocumentationPath causes HOSTED_CHAT_RUNTIME_SOURCE_DRIFT.",
+    "scripts/development-source-compatibility.mjs:4-13: classifier permits docs/stabilization records only; executable files and package.json excluded.",
+    "scripts/hosted-remote-admission.mjs:350-392: release receipt/tag/archive bytes are checked, then the same admission runs again before plan output/dispatch.",
+    ".github/workflows/ci.yml:74 and focused-acceptance.yml:36 execute the changed package script; no changes to the guest workflow itself."
+  ],
+  "changed_paths_classification": {
+    "accepted_docs": [
+      "docs/stabilization/COORDINATOR.md",
+      "docs/stabilization/defects/EXT-D-0244.json",
+      "docs/stabilization/reports/candidate568-values-preflight-20261020.json",
+      "docs/stabilization/reports/linux-ci-kernel-fresh-peer-20261020.json",
+      "docs/stabilization/reports/linux-native-capacity-20261020.json",
+      "docs/stabilization/reports/linux-supervisor-fresh-source-peer-20261020.json",
+      "docs/stabilization/reports/linux-supervisor-source-integration-20261020.json",
+      "docs/stabilization/reports/release570-hosted-preparation-20261020.json",
+      "docs/stabilization/reports/store-daily-20261020.json"
+    ],
+    "refused_executable_or_manifest": [
+      "package.json",
+      "scripts/hosted-resource-readiness-loop.test.mjs",
+      "scripts/linux-owned-supervisor.test.mjs",
+      "scripts/linux_owned_supervisor.py",
+      "scripts/stabilization-linux-host.mjs",
+      "scripts/supervisor_kernel.py",
+      "scripts/supervisor_unit.py"
+    ]
+  },
+  "manifest_fields": {
+    "changed": ["scripts.test:focused-acceptance"],
+    "change": "adds scripts/linux-owned-supervisor.test.mjs to focused test command",
+    "unchanged": ["version", "dependencies", "devDependencies", "other scripts"]
+  },
+  "genuine_runtime_delta": "No src/, public/, WXT config, pnpm lock, guest workflow, release workflow, or admission/classifier delta. The refusal is nonetheless intentional policy: frozen release reuse permits only documentation-only committed history. package.json changes a CI-executed test script, and operational Linux helper/test files changed. These are not extension bundle changes, but the classifier does not purport to prove bundle-only equivalence.",
+  "guard_reason": "Candidate-to-main history contains seven paths outside the sole allowed documentation class; package.json alone is sufficient. No evidence of a false classification under current policy.",
+  "smallest_safe_next_step": "Do not amend the classifier or waive admission for .570. Preserve .570 as an immutable release receipt, and use a new successful release artifact sourced from current main if native guest acceptance must run under current source; independently verify all normal receipt, backend, resource, and capacity gates. Alternatively stop this exact-.570 attempt as ineligible. A future deliberate policy expansion would need a separately approved contract and adversarial RED/GREEN coverage, not a one-off allowlist.",
+  "changes_made": "Report only; no repo edits, candidate builds, workflow dispatches, or native runs.",
+  "reachability": {
+    "mac_guest_route": "Changed Linux helper, Python kernel/supervisor files, Linux tests, and focused test package script are not imported or invoked by scripts/hosted-guest-acceptance.mjs, scripts/stabilization-resource.mjs, or .github/workflows/hosted-guest-acceptance.yml based on direct import/call search. The Linux helper is imported by scripts/hosted-resource-readiness-loop.test.mjs; the new test is invoked by package.json test:focused-acceptance through ci.yml and focused-acceptance.yml.",
+    "extension_bundle": "No changed paths in src/, public/, wxt.config.ts, pnpm-lock.yaml, guest workflow, release workflow, guest admission, guest acceptance script, or stabilization-resource.mjs. The manifest version/dependency fields are unchanged; only scripts.test:focused-acceptance changed.",
+    "policy": "These facts establish no direct Mac guest product/runtime code drift, yet current frozen release compatibility policy deliberately treats every non-documentation path as inadmissible. A false refusal relative to bundle-only equivalence is not a guard bug under the current contract."
+  },
+  "bounded_options": [
+    "Preferred: complete the in-flight Linux/source integration, then obtain a fresh reviewed release candidate/artifact from the resulting current main and run the unchanged normal guest plan. Exact .570 cannot be admitted under the current policy.",
+    "Alternative only as a separate contract change: define provable lane-specific runtime equivalence and add RED/GREEN normal-route tests for Linux-only test/helper paths and script-only manifest changes, while asserting refusal for actual Chat/product, guest harness, resource/guard, workflow, dependency, lockfile, receipt and backend drift. This changes policy and must be independently reviewed before use; no such code was edited here."
+  ],
+  "owner_ruling": "Keep existing documentation-only reuse policy. Prepare one replacement candidate after completed Linux source unit and source CI; freeze all executable/test/manifest changes until native guest acceptance is pinned and complete. No route waiver. This is source-boundary compliance, not a product fix or native pass."
+}
