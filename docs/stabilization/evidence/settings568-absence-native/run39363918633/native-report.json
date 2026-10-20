@@ -1,0 +1,414 @@
+{
+  "schema_version": 1,
+  "acceptance_case": "settings-guest-admin-absence",
+  "role": "guest",
+  "scope": "focused guest Settings admin absence before and after a real extension reload",
+  "excluded_scope": ["ordinary-member denial", "T04 preference restoration", "full Settings batch"],
+  "status": "partial",
+  "cases": [
+    {
+      "id": "EXT-F-1003-T22",
+      "role": "guest",
+      "scope": "complete guest case",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "fresh",
+          "action": "Observe active guest Settings identity",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "emailUnavailable": true,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "signedOut": true
+          }
+        },
+        {
+          "phase": "fresh",
+          "action": "Inspect active guest Settings anchors and admin controls",
+          "observation": {
+            "signedOut": true,
+            "active": true,
+            "guest": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        },
+        {
+          "phase": "extension_reload",
+          "action": "Observe active guest Settings identity",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "emailUnavailable": true,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "signedOut": true
+          }
+        },
+        {
+          "phase": "extension_reload",
+          "action": "Inspect active guest Settings anchors and admin controls",
+          "observation": {
+            "signedOut": true,
+            "active": true,
+            "guest": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "fresh: signed-out Settings identity",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "emailUnavailable": true,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "signedOut": true
+          }
+        },
+        {
+          "name": "fresh: admin section and controls absent in active guest Settings",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "active": true,
+            "guest": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        },
+        {
+          "name": "extension_reload: signed-out Settings identity",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "emailUnavailable": true,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "signedOut": true
+          }
+        },
+        {
+          "name": "extension_reload: admin section and controls absent in active guest Settings",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "active": true,
+            "guest": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "EXT-F-1003-T63",
+      "role": "guest",
+      "scope": "guest-only subtarget; ordinary-member clause unverified",
+      "status": "unverified",
+      "steps": [
+        {
+          "phase": "fresh",
+          "action": "Observe active guest Settings identity",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "emailUnavailable": true,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "signedOut": true
+          }
+        },
+        {
+          "phase": "fresh",
+          "action": "Inspect active guest Settings anchors and admin controls",
+          "observation": {
+            "signedOut": true,
+            "active": true,
+            "guest": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        },
+        {
+          "phase": "extension_reload",
+          "action": "Observe active guest Settings identity",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "emailUnavailable": true,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "signedOut": true
+          }
+        },
+        {
+          "phase": "extension_reload",
+          "action": "Inspect active guest Settings anchors and admin controls",
+          "observation": {
+            "signedOut": true,
+            "active": true,
+            "guest": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "fresh: signed-out Settings identity",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "emailUnavailable": true,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "signedOut": true
+          }
+        },
+        {
+          "name": "fresh: admin section and controls absent in active guest Settings",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "active": true,
+            "guest": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        },
+        {
+          "name": "extension_reload: signed-out Settings identity",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "emailUnavailable": true,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "signedOut": true
+          }
+        },
+        {
+          "name": "extension_reload: admin section and controls absent in active guest Settings",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "active": true,
+            "guest": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        },
+        {
+          "name": "ordinary-member denial before and after reload",
+          "status": "unverified",
+          "evidence": "This guest-only runner has no ordinary-member principal."
+        }
+      ]
+    }
+  ],
+  "build": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "9185b3c6728df8dc0ea188b6a344848ded6954fa",
+    "runId": 39362901256,
+    "runAttempt": 1,
+    "artifactId": 12238730842,
+    "githubArtifactDigest": "sha256:01f7395724bd0e90851efc797a85cf3e335dfde71762441a181ee619a8449f3c",
+    "version": "0.2.568",
+    "treeSha256": "243e26e6896d0abbf724c429cc1c25104fccdf3df33f36e42465855b51f57c07",
+    "verified": true
+  },
+  "reload": {
+    "managementReloadClicked": true,
+    "oldTargetsRetired": true,
+    "workerReplaced": true,
+    "panelReplaced": true,
+    "originalPageTargetPreserved": true,
+    "originalPanelTargetId": "FEB54E87FC3DB01B5AD06695745B2CEC",
+    "replacementPanelTargetId": "BD4807EDD4C0D8D4FAE023E1581881DC"
+  },
+  "focused_guest_subtargets_status": "pass",
+  "artifacts": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-Z4yBvD"
+}

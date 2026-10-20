@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "task_id": "settings568_absence_native_retest",
+  "state": "terminal_evidence_pending_independent_peer",
+  "scope": "One existing hosted native guest Settings admin-absence run; no new dispatch, source edit, credential use, model call, or Store action.",
+  "workflow": {
+    "run_id": 39363918633,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39363918633",
+    "job_id": 118436219624,
+    "event": "workflow_dispatch",
+    "display_title": "Native B · settings-guest-admin-absence (by extend-stabilization)",
+    "checkout_sha": "9185b3c6728df8dc0ea188b6a344848ded6954fa",
+    "runner": "macos-15-intel",
+    "acceptance_case": "settings-guest-admin-absence",
+    "auth_mode": "guest",
+    "started_at_utc": "2026-10-20T03:22:14Z",
+    "completed_at_utc": "2026-10-20T03:29:56Z",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "development_artifact": {
+    "ci_run_id": 39362901256,
+    "ci_conclusion": "success",
+    "artifact_id": 12238730842,
+    "github_artifact_digest": "sha256:01f7395724bd0e90851efc797a85cf3e335dfde71762441a181ee619a8449f3c",
+    "source_sha": "9185b3c6728df8dc0ea188b6a344848ded6954fa",
+    "version": "0.2.568",
+    "tree_sha256": "243e26e6896d0abbf724c429cc1c25104fccdf3df33f36e42465855b51f57c07",
+    "extension_id_class": "development",
+    "imported_native_receipt_verified": true,
+    "eligible_store": false
+  },
+  "result_artifact": {
+    "id": 12238862303,
+    "name": "hosted-guest-39363918633-1",
+    "github_digest": "sha256:ee2456457562eefa5e05990d14946cd14073d60f44af3e8c19d4a0937e3350f0",
+    "downloaded_zip_sha256": "ee2456457562eefa5e05990d14946cd14073d60f44af3e8c19d4a0937e3350f0",
+    "zip_census": "Six files: native report, two PNGs, and exactly three terminal resource journals; no pending journal in the ZIP.",
+    "native_report_sha256": "f60968beb30793d9d5aef56b95cb63d55fddeb1f7a441896ccab92816e879e7a",
+    "persisted_formatted_report_sha256": "95f208be1c10bcbfc4bf9d6401ba25ea7dfbaa4c1e9ec1c3936433539affa371",
+    "evidence_directory": "docs/stabilization/evidence/settings568-absence-native/run39363918633"
+  },
+  "native_observation": {
+    "runner_status": "partial",
+    "focused_guest_subtargets_status": "pass",
+    "fresh": "Active guest Settings; signed out; Sign in present once and Sign out absent; Account, Organization, and Appearance anchors rendered; no admin section or permission controls.",
+    "extension_reload": "Management reload clicked; old targets retired; worker and panel replaced; panel target changed while original normal-page target persisted. Replacement active guest Settings repeated the same identity, anchors, and admin-absence observations.",
+    "reload_target_ids_distinct": true,
+    "native_build_verified": true,
+    "screenshot_limit": "The side-panel screenshot shows the panel shell rather than the Settings pane. The recorded native DOM observations, not the screenshot, support the Settings predicates."
+  },
+  "case_verdicts": [
+    {
+      "case_id": "EXT-F-1003-T22",
+      "mode": "guest",
+      "verdict": "native_runner_pass_pending_independent_peer",
+      "reason": "All four focused criteria passed on active signed-out Settings before and after the real extension reload."
+    },
+    {
+      "case_id": "EXT-F-1003-T63",
+      "mode": "guest",
+      "verdict": "guest_subtarget_pass_whole_case_unverified",
+      "reason": "The same four guest criteria passed; ordinary-member denial was not exercised."
+    }
+  ],
+  "excluded_verdicts": [
+    "EXT-F-1003-T04 preference restoration remains unverified by this run.",
+    "Full Settings, member/admin, Store-installed, and post-dispatch-source acceptance remain unverified."
+  ],
+  "resource_finals": [
+    {
+      "run_id": "hosted-package-39363918633-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "sanitized_journal_sha256": "2c38e0194b02d2957bda13c2cccbba220b818aabd51559b673327172c34c0e48"
+    },
+    {
+      "run_id": "hosted-browser-39363918633-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "sanitized_journal_sha256": "02e861cdef84c6064f27bfa02f78d43b3d4d15da0681e0eacdf4519d0bf0a96d"
+    },
+    {
+      "run_id": "hosted-guest-39363918633-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "sanitized_journal_sha256": "1cb8219c864c23646cd8577adee2bc1e0886ee1037d1f647d54738c1a989d086"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "docs/stabilization/evidence/settings568-absence-native/run39363918633/native-side-panel.png",
+      "sha256": "56b09e310419e89265dee4290e706fc868ff83044d3518f1cdee668ab38992b7"
+    },
+    {
+      "file": "docs/stabilization/evidence/settings568-absence-native/run39363918633/normal-target-after-open.png",
+      "sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c"
+    }
+  ],
+  "cleanup": {
+    "hosted_job_terminal": true,
+    "owned_chromium": "Native harness finally calls owned-child stop and temporary-profile removal; successful job and valid terminal resource final reported no cleanup error. No post-run host process census was available from the ephemeral runner.",
+    "hosted_vm": "Ephemeral GitHub-hosted job completed with terminal post-steps; no independent post-run profile census was available.",
+    "credentials": "Guest mode; no guest sign-in or credential step. No credential values copied into repository evidence.",
+    "local_download_temp": "removed after persisted evidence and native-report semantic-equality verification"
+  },
+  "next_action": "Fresh independent peer should inspect the raw artifact and adjudicate T22 guest and T63 guest-only evidence; retain member/T04/full Settings limits. Hold commits until root GO."
+}
