@@ -1,7 +1,7 @@
 {
   "lane": "values176-release-owner",
-  "observed_at_utc": "2026-10-20T13:26:28Z",
-  "state": "CANDIDATE_READY_NATIVE_ACCEPTANCE_PENDING_NO_STORE_UPLOAD",
+  "observed_at_utc": "2026-10-20T13:50:30Z",
+  "state": "V576_INELIGIBLE_SOURCE_DRIFT_NEW_HOSTED_CANDIDATE_REQUIRED_NO_STORE_UPLOAD",
   "classification": "Routine repair: the D244 mobile Values Escape fix and D261 member panel focus repair change behavior already covered by the saved Store listing. The emitted Store policy surface matches the approved 0.2.205 baseline.",
   "source": {
     "workflow_checkout_sha": "ef47116d499526eee1efa42d2c5dfc2e795be0c3",
@@ -56,5 +56,11 @@
     "server_read_at_utc": "2026-10-20T12:26:25.475944Z",
     "dispatch": "One existing public Ubuntu release workflow, no paid runner or new workflow."
   },
-  "next_gate": "Exact 0.2.576 native guest original Values Escape/surrounding UI/full viewer/editor and three terminal Chat turns, then true non-admin original first and follow-up with Page Text evidence. Recheck source, package identity, and authenticated primary Store state immediately before any upload; submit only after these passes."
+  "next_gate": "The 0.2.576 artifact is ineligible and must not be uploaded. After a new source-aligned guarded hosted artifact, run exact native guest Values Escape/surrounding/full viewer/editor and three terminal Chat turns, plus true non-admin original first/follow-up with Page Text evidence; then recheck source/package identity and private Store state immediately before upload.",
+  "eligibility": {
+    "native_admission": "REFUSED_HOSTED_CHAT_RUNTIME_SOURCE_DRIFT",
+    "evidence": "/tmp/guest576-native-b-20261020.json",
+    "cause": "Reviewed member follow-up test-driver changes after the frozen 7a2f61084 release source; normal hosted native admission refused before any browser run. The final driver repair e7f650c04 passed peer review, full focused tests, compile, and hosted CI 39431931395.",
+    "new_candidate": "Wait for the relevant @ai-matrx/chat package from aidream 32bfec95d5 to be served and inspect its Consumer action; then dispatch one fresh source-aligned guarded hosted release from synchronized main, without weakening the frozen-source rule."
+  }
 }
