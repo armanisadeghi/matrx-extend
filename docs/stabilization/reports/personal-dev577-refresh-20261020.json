@@ -1,0 +1,55 @@
+{
+  "task": "personal Chrome development refresh",
+  "result": "complete",
+  "artifact": {
+    "ciRun": 39450706517,
+    "artifactId": 12278752132,
+    "sourceSha": "45b0cc8640643fdc9c34927b55a5fbd586654cfa",
+    "digest": "sha256:a956aac9338e14379967f764804bee04b073b93f107c47a2e7e7becc30e6141c",
+    "version": "0.2.577",
+    "treeSha256": "26319e198efcb7bbe863c3968b325dec3915a506a28dd95b9c2906852ad3c225",
+    "eligibility": "CI development artifact; not Store eligible"
+  },
+  "chrome": {
+    "profile": "armansadeghi.com",
+    "account": "arman@armansadeghi.com",
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.577",
+    "loadedFrom": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "enabled": true,
+    "devPinned": true,
+    "storeId": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "storeVersion": "0.2.205",
+    "storePinned": true
+  },
+  "about": {
+    "browser": "Chrome",
+    "installedVersion": "0.2.577",
+    "extensionIdMatches": true,
+    "savedLoginBrowserApis": "Available",
+    "updateCheck": "Your browser did not find an update right now",
+    "principalRole": "ADMIN"
+  },
+  "t72Bound": "About identity/version/browser and available saved-login API observed; unavailable API, other update outcomes, and full T72 remain unverified.",
+  "resource": {
+    "runId": "personal-dev577-refresh-20261020",
+    "journal": "/Volumes/Samsung2TB/code/matrx-extend/test-results/personal-dev577-refresh-20261020.jsonl",
+    "decision": "valid",
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "admittedAt": "2026-10-20T15:55:03.040Z",
+    "terminalAt": "2026-10-20T15:56:28.211Z"
+  },
+  "cleanup": {
+    "ownTerminalJournalMovedToIgnoredTestResults": true,
+    "guardSessionExited": true,
+    "heavyLeasePresent": false,
+    "authOrgOrPreferencesChanged": false
+  },
+  "evidence": [
+    "Chrome Extensions details showed enabled v0.2.577, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, Loaded from .output/chrome-mv3-dev, Pin to toolbar on.",
+    "Chrome Extensions details for Store ID showed v0.2.205 and Pin to toolbar on; extensions menu showed both Matrx Extend entries pinned.",
+    "Actual development side panel About showed Chrome, installed v0.2.577, matching dev ID, saved-login APIs Available, and no update found; screenshot captured in the native UI transcript."
+  ],
+  "nextAction": "None for refresh; preserve pending Store 577 publication and do not treat it as live until publication is verified."
+}

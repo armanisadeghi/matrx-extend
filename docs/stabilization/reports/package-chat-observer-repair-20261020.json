@@ -1,0 +1,35 @@
+{
+  "task_id": "EXT-D-0269",
+  "lane": "package_chat_observer_repair",
+  "model": "GPT-6.1 Sol",
+  "status": "SOURCE_FIXED_ROUND1_NATIVE_PENDING",
+  "feature_ids": ["EXT-F-2013"],
+  "defect_ids": ["EXT-D-0269"],
+  "summary": "Passive package Chat result join now also rejects malformed HTTP 200 acknowledgements unless required resolved/already_resolved/not_found arrays and contract fields are typed and conversation matches. Exact call/resume/terminal guard preserved; Store 577 untouched.",
+  "changed_files": [
+    "tests/browser/guest-chat-transport-observer.mjs",
+    "tests/browser/guest-chat-transport-observer.test.mjs",
+    "docs/stabilization/defects/EXT-D-0269.json"
+  ],
+  "commit_shas": [
+    "20dfa4065ed84ee8b93c9830d871e740d7327305",
+    "45b0cc8640643fdc9c34927b55a5fbd586654cfa"
+  ],
+  "verification": [
+    {
+      "case_id": "EXT-F-2013-T14",
+      "run_id": "d269-focused-20261020-1534",
+      "verdict": "source PASS: old RED/new 28 GREEN; constant-return/output.ok mutants RED; compile/Biome PASS; guarded full focused 731 total/721 pass/10 Mac skips/0 fail; resource valid",
+      "evidence": "docs/stabilization/resource-journals/d269-focused-20261020-1534.jsonl"
+    },
+    {
+      "case_id": "EXT-F-2013-T14",
+      "run_id": "D269-round1-focused",
+      "verdict": "old missing-not_found RED; new 29/29 PASS; not_found type mutation RED/identical restore; compile/Biome PASS",
+      "evidence": "tests/browser/guest-chat-transport-observer.test.mjs"
+    }
+  ],
+  "limitations": "Fresh peer source A PASS/native UNKNOWN; quality B PARTIAL finding repaired in round 1, awaiting new independent review and exact-source CI. No post-fix native replay. Store 0.2.577 remains SUBMITTED_PENDING unchanged.",
+  "open_questions": [],
+  "next_action": "Root tracks exact-main CI on 45b0cc864 and fresh quality review, then a resource-admitted native member acceptance; no duplicate Store build or submission."
+}

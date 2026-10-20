@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T13:20:29.293953+00:00",
+  "updated_at": "2026-10-20T15:57:36.844059+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -14444,21 +14444,47 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
-              "run_id": "release-native-verification",
-              "evidence": "docs/stabilization/runs/release-native-verification.json",
+              "status": "partial",
+              "run_id": "personal-dev577-refresh-20261020",
+              "build_version": "0.2.577",
+              "source_sha": "45b0cc8640643fdc9c34927b55a5fbd586654cfa",
+              "resource_invalid": false,
+              "evidence": [
+                "docs/stabilization/reports/personal-dev577-refresh-20261020.json"
+              ],
               "verified_substeps": [
-                "Chrome/version/extensionID correct on0.2.56",
+                "Native About Chrome/version/development ID matched actual reloaded extension",
                 "Saved-login APIs Available",
-                "Read-only update check reports no update"
+                "Read-only update check accurately reported no update"
               ],
               "remaining_criteria": [
                 "API-unavailable remedy",
                 "update-available/throttled/error outcomes",
                 "readiness reload persistence"
-              ]
+              ],
+              "limits": "Personal authorized account displayed ADMIN, not separate admin@admin.com fixture; inline screenshot only, no saved independently reopenable image; no whole-case pass."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "admin",
+              "result": {
+                "status": "unverified",
+                "run_id": "release-native-verification",
+                "evidence": "docs/stabilization/runs/release-native-verification.json",
+                "verified_substeps": [
+                  "Chrome/version/extensionID correct on0.2.56",
+                  "Saved-login APIs Available",
+                  "Read-only update check reports no update"
+                ],
+                "remaining_criteria": [
+                  "API-unavailable remedy",
+                  "update-available/throttled/error outcomes",
+                  "readiness reload persistence"
+                ]
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T73",
@@ -52878,7 +52904,8 @@
           "defect_ids": [
             "EXT-D-0261",
             "EXT-D-0266",
-            "EXT-D-0267"
+            "EXT-D-0267",
+            "EXT-D-0269"
           ],
           "results": {
             "member": {
@@ -52898,7 +52925,7 @@
               ]
             }
           },
-          "retest_status": "pending; no same-conversation member follow-up or root cause established",
+          "retest_status": "577 original member first/follow-up semantic behavior passes with authoritative tool receipts; original566504 causal attribution unknown. Automated child failed old observer. D269 source repair independently reviewed and exact CI green, post-fix native replay pending; case remains partial.",
           "current_candidate_observations": [
             {
               "mode": "member",
@@ -53021,7 +53048,7 @@
             "39160396058",
             "39422519149"
           ],
-          "retest_status": "Exact 0.2.575 guest T10 three terminal turns pass; original T13 Values mobile Escape fails. Shared mobile source fix and agents0.59.176 adoption have no post-fix native retest. Whole Chat and Store installation remain unverified."
+          "retest_status": "Exact577 adapted Store candidate guest opening/follow-up/reload passed, including original Values Escape. Full T13 and actual Store-installed577 remain unverified; D244 publication follow-through open."
         },
         "member": {
           "test_status": "fail",
@@ -53032,7 +53059,8 @@
             "EXT-D-0240",
             "EXT-D-0242",
             "EXT-D-0261",
-            "EXT-D-0267"
+            "EXT-D-0267",
+            "EXT-D-0269"
           ],
           "run_ids": [
             "39154980480",
@@ -53042,7 +53070,7 @@
             "member575-focus-native-20261020",
             "member575-runtime-recovery-20261020-01"
           ],
-          "retest_status": "Original exact566 non-admin first-turn504 remains the failed repro. Exact575 resource-valid later attempt reached real member first question and terminal HTTP200 answer with expected heading/stages and three delegated calls/results, but Page Text join is unverified and member follow-up was not sent. No full T14 pass or D261 closure."
+          "retest_status": "Original566504 historical failure remains open D261; current577 first/follow-up and canonical tool semantics passed. D269 old observer caused automated child failure; repaired source/fresh peer/exact CI pass, post-fix native unknown. Whole member Chat not verified."
         },
         "admin": {
           "test_status": "unverified",
@@ -53141,7 +53169,8 @@
         "EXT-D-0264",
         "EXT-D-0265",
         "EXT-D-0266",
-        "EXT-D-0267"
+        "EXT-D-0267",
+        "EXT-D-0269"
       ]
     },
     {

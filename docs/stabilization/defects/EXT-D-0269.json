@@ -12,7 +12,7 @@
   "source_candidate": "91d7696626537676d0a5a1239ca29eb3fbed7331",
   "store_version": "0.2.577 SUBMITTED_PENDING; no new extension artifact or version for this test-only repair",
   "reproduction": [
-    "Exact 0.2.577 native run 39443241939 shows member opening conversation d267b8af803a54ab, delegated get_page_text call db760ddbd90bd7ff, two successful tool result POSTs and resumes, and terminal opening and follow-up answers.",
+    "Exact 0.2.577 local native member run member577-native-mac-20261020 used the package from release 39443241939; opening conversation fingerprint d267b8af803a54ab and delegated get_page_text call db760ddbd90bd7ff had successful tool result POSTs/resumes and terminal opening/follow-up answers.",
     "The old strict Page Text join reads only extension tool:timeline-event started/completed messages; the run captured started but no completed event and exited child_failed after preserving the follow-up.",
     "Package Chat invokes the handler with a result sink, owns its lifecycle in Redux, and submits the canonical POST /ai/conversations/{id}/tool_results. The sink does not emit an extension timeline completed event."
   ],
@@ -28,7 +28,9 @@
     "/tmp/member577-semantic-final-peer-20261020.json",
     "tests/browser/reviewer-chat-original-repro.test.mjs",
     "tests/browser/guest-chat-transport-observer.test.mjs",
-    "docs/stabilization/resource-journals/d269-focused-20261020-1534.jsonl"
+    "docs/stabilization/resource-journals/d269-focused-20261020-1534.jsonl",
+    "docs/stabilization/reports/observer269-final-peer-20261020.json",
+    "docs/stabilization/reports/package-chat-observer-repair-20261020.json"
   ],
   "transition_history": [
     {
@@ -68,6 +70,6 @@
       "reason": "Observer now validates required response arrays and types, matching conversation identity, and an empty not_found list before marking result accepted. Malformed acknowledgement guard old RED/new GREEN; missing not_found type-check mutation RED with identical restoration; focused 29/29, compile, scoped Biome PASS. Native remains pending."
     }
   ],
-  "verification_status": "Fresh peer source A PASS/native UNKNOWN; quality B PARTIAL found malformed acknowledgement acceptance and triggered fix round 1. Missing not_found case RED before fix; focused observer/driver suite now 29/29 PASS, including missing/null/wrong-type acknowledgements and resolved/already_resolved positives. Prior guarded canonical focused suite 731 total/721 pass/10 Mac skips/0 fail, resource valid; no full-suite repeat for this local shape check. Current round compile/Biome PASS; missing not_found type-check mutation RED with identical restoration; exact-source CI pending. No post-fix native run; Store 0.2.577 remains SUBMITTED_PENDING unchanged.",
-  "next_action": "Push round-1 source and let exact-main CI run. Fresh independent quality review of acknowledgement validation, then one admitted native member run when Store/submission constraints permit; require exact result/ack/resume plus opening and follow-up before closing."
+  "verification_status": "Round-1 source 45b0cc864: fresh independent source/spec A PASS, quality B PASS, previous malformed acknowledgement finding ADDRESSED. Focused observer tests 24/24 independently passed; builder suite29/29 with old-source and mutation RED evidence. Exact-source full CI39450706517 SUCCESS and focused39450706353 SUCCESS. Prior guarded full focused731 total/721 pass/10 Mac skips/0fail resource valid. Post-fix native replay UNKNOWN; fixed is not closed. Pending Store0.2.577 unchanged.",
+  "next_action": "One normally admitted native member replay with the repaired observer; require exact result/ack/resume plus opening and same-conversation follow-up before retest-pass/closure. Preserve pending577."
 }

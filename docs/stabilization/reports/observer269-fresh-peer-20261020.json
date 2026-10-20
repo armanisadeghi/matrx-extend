@@ -1,0 +1,21 @@
+{
+  "task_id": "EXT-D-0269",
+  "reviewer": "fresh_peer",
+  "verdict_a": {
+    "source_spec": "PASS",
+    "native_postfix": "UNKNOWN",
+    "evidence": "Observer joins actual tool_results POST metadata to exact delegated call + opening conversation; checks successful body fields/current URL/stage terms, response resolved fingerprint, subsequent resume terminal success, and strict same-conversation follow-up. 577 evidence is pre-fix; no post-fix native claim."
+  },
+  "verdict_b": {
+    "quality": "PARTIAL",
+    "findings": [
+      "Response contract in src/lib/api/routes/tool-results.ts declares resolved, already_resolved, not_found, continuation_needed, user_request_id, conversation_id; observer accepts a response with resolved array and missing not_found because it defaults missing not_found to []. Require not_found array (or otherwise validate the actual contract) to reject malformed HTTP-200 bodies."
+    ],
+    "strengths": [
+      "Wrong tool/call/conversation, error/output/current-URL/content, failed/missing acknowledgement, resume and terminal failures are tested; payloads are fingerprinted/sanitized; URL and text are not retained."
+    ],
+    "no_source_edits": true
+  },
+  "test_assessment": "Synthetic observer seam covers transport parsing and joins, with reported old-source RED, mutant RED, and green suite. It is not post-fix native proof; do not mark native acceptance complete.",
+  "commit": "20dfa4065ed84ee8b93c9830d871e740d7327305"
+}
