@@ -23,8 +23,9 @@ const DISPATCH_REQUESTER = 'extend-stabilization';
 // Notes CDP opt-in uses startup_display_mode; SEO diagnostics share one input, leaving 25.
 // D221 adds only the reviewed lane A admin Screenshots case on an exact CI development artifact.
 // EXT-D-0243 enables existing startup observers for guest/member Chat after independent review.
+// EXT-D-0262 adds one guest Settings admin-absence route on the existing guarded lane.
 // The existing phase, fixture, and credential guards remain mandatory.
-const REVIEWED_WORKFLOW_SHA256 = '5015475e91f9999a8f82c5554c4b84b543f820ec5bf65e928ed31f13540dd6b1';
+const REVIEWED_WORKFLOW_SHA256 = 'c001f41ae6e982998b923bf25e7470e4e84006055eba883358fae9ecb696bb8b';
 const RESOURCE_POLICY = JSON.parse(
   readFileSync(new URL('../docs/stabilization/resource-policy.json', import.meta.url), 'utf8'),
 );
@@ -839,7 +840,11 @@ export function requireSettingsMemberDispatchAdmission({
 /** Reviewed guest Settings cases on the isolated B lane, from one frozen CI development artifact. */
 export function planHostedSettingsGuest({ lane, acceptanceCase, runnerLabel, ...input }) {
   if (lane !== 'B') refuse('HOSTED_SETTINGS_GUEST_LANE_REFUSED');
-  if (!['settings-controls', 'settings-auto-scrape-capture'].includes(acceptanceCase))
+  if (
+    !['settings-controls', 'settings-guest-admin-absence', 'settings-auto-scrape-capture'].includes(
+      acceptanceCase,
+    )
+  )
     refuse('HOSTED_SETTINGS_GUEST_CASE_REFUSED');
   if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_SETTINGS_GUEST_RUNNER_REFUSED');
   if (!SHA.test(input.sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
@@ -1623,7 +1628,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         refuse('HOSTED_SETTINGS_MEMBER_CASE_MODE_MISMATCH');
       if (
         settingsGuest &&
-        !['settings-controls', 'settings-auto-scrape-capture'].includes(args.get('--case'))
+        ![
+          'settings-controls',
+          'settings-guest-admin-absence',
+          'settings-auto-scrape-capture',
+        ].includes(args.get('--case'))
       )
         refuse('HOSTED_SETTINGS_GUEST_CASE_MODE_MISMATCH');
       if (memberData)

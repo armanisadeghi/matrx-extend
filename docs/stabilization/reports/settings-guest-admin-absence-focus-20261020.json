@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0262",
+  "feature_id": "EXT-F-1003",
+  "acceptance_case": "settings-guest-admin-absence",
+  "state": "source_ready_for_independent_review",
+  "source_base_sha": "8b6c46fed1b234b4741810aa60a7f8f03001d624",
+  "artifact_requirement": "exact-main CI development test artifact; release and Store bytes unsupported by the Settings lane",
+  "artifact_provenance": "native report.build records source SHA, CI run and attempt, artifact ID, GitHub artifact digest, version and tree hash from verifyImportedNativeEvidence; it refuses a mismatch with hosted source or selected run/artifact",
+  "runner": "existing macos-15-intel hosted guest B lane with unchanged resource permit, watchdog, and artifact admission",
+  "scope": {
+    "EXT-F-1003-T22": "fresh signed-out active Settings and the same guest admin-absence oracle after real extension reload",
+    "EXT-F-1003-T63": "guest-only fresh and post-reload subtarget; whole case remains unverified until separate ordinary-member evidence"
+  },
+  "oracle": "existing guestSettingsChecks identity plus recordGuestAdminAbsence over the actual active Settings pane, Sign in/no Sign out, Account/Organization/Appearance anchors, and absent admin controls",
+  "reload_boundary": "existing native harness management reload controller must prove clicked reload, retired old targets, replaced worker and side panel, complete timeline, distinct panel target, and preserved original normal page target",
+  "excluded": [
+    "T04 preference restoration",
+    "full Settings batch verdict",
+    "ordinary-member denial",
+    "resource thresholds or hosted runner changes",
+    "authentication or model overrides"
+  ],
+  "source_checks": {
+    "focused_native_seam": "pass: new test exercises active/anchor/identity/admin negatives, real-reload boundary negatives, and drops/mismatches in the validated CI provenance fields",
+    "hosted_admission": "pass: 34 tests including exact workflow blob, Settings guest plan, source/artifact and capacity refusals",
+    "workflow_lane": "pass: 57 route/admission tests, including current guarded route and artifact upload",
+    "typecheck": "pass: pnpm compile on the Mac without browser or build work",
+    "ci_cost_manifest": "entry updated before workflow edit; local checker reports no measured block as a warning and fails on cross-repo aidream forecast $150.16/week over $100 plus matrx-sandbox checker twin drift; this repo's billed forecast is $0"
+  },
+  "native_verdict": "unverified: no hosted browser run dispatched; resource admission and exact CI artifact pending",
+  "release_verdict": "unverified",
+  "next_action": "independent source review, exact-path non-skip source commit and main CI artifact, then separate root GO for one guarded hosted guest run"
+}

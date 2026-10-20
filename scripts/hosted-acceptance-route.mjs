@@ -16,6 +16,7 @@ const HOSTED_ACCEPTANCE_CASES = new Set([
   'notes-lazy-general-member',
   'settings-controls',
   'settings-theme-rendering',
+  'settings-guest-admin-absence',
   'settings-auto-scrape-capture',
   'settings-persistence',
   'settings-persistence-admin',

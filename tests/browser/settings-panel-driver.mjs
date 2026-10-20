@@ -107,6 +107,28 @@ export async function waitForReplacementSettingsTab(panel, timeoutMs = 10000) {
   return { first, last };
 }
 
+export async function openGuestSettings(panel, onStep = () => {}) {
+  onStep('settings_tab_wait_started');
+  await waitForReplacementSettingsTab(panel);
+  onStep('before_click');
+  await click(panel, 'title', 'Settings');
+  onStep('click_returned');
+  onStep('guest_wait_started');
+  await waitFor(
+    'guest_settings',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+    const text = document.body?.innerText ?? '';
+    return { active: !!document.querySelector('button[title="Settings"][data-state="active"]'),
+      guest: text.includes("You're using Matrx as a guest.") || text.includes('Sign in to choose') };
+  })()`,
+      ),
+    (state) => state?.active && state.guest,
+  );
+}
+
 export async function openSection(panel, label) {
   const section = await waitFor(
     `${label}_section_ready`,

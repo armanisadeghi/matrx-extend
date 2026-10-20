@@ -1126,6 +1126,16 @@ if (process.argv[1].endsWith('/git')) {
     );
     const capturePlan = execute('plan-settings-guest', {}, [], 'settings-auto-scrape-capture');
     assert.equal(capturePlan.status, 0, capturePlan.stderr);
+    const absencePlan = execute('plan-settings-guest', {}, [], 'settings-guest-admin-absence');
+    assert.equal(absencePlan.status, 0, absencePlan.stderr);
+    assert.deepEqual(
+      JSON.parse(absencePlan.stdout).plan.args,
+      admission.planHostedSettingsGuest({
+        ...input,
+        lane: 'B',
+        acceptanceCase: 'settings-guest-admin-absence',
+      }).args,
+    );
     const captureExpected = [
       'workflow',
       'run',
@@ -1148,6 +1158,14 @@ if (process.argv[1].endsWith('/git')) {
       'development_artifact_id=11730000001',
     ];
     assert.deepEqual(JSON.parse(capturePlan.stdout).plan.args, captureExpected);
+    assert.deepEqual(
+      JSON.parse(absencePlan.stdout).plan.args,
+      captureExpected.map((part) =>
+        part === 'acceptance_case=settings-auto-scrape-capture'
+          ? 'acceptance_case=settings-guest-admin-absence'
+          : part,
+      ),
+    );
     for (const guestCase of ['settings-theme-rendering', 'settings-persistence', 'member-data']) {
       const refused = execute('dispatch-settings-guest', {}, [], guestCase);
       assert.notEqual(refused.status, 0);

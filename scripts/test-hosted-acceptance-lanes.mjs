@@ -32,6 +32,19 @@ const admission = guest.steps[0].run;
 // Psych implements YAML 1.1 and reads the GitHub Actions `on` key as boolean true.
 const dispatch = (acceptanceYaml.on ?? acceptanceYaml.true).workflow_dispatch;
 
+test('focused guest Settings route retains CI artifact admission and uploads its native receipt', () => {
+  assert.ok(dispatch.inputs.acceptance_case.options.includes('settings-guest-admin-absence'));
+  assert.match(admission, /settings-guest-admin-absence/);
+  const devGate = guest.steps.find(
+    (step) => step.name === 'Require a matching CI development artifact for Settings acceptance',
+  );
+  assert.match(devGate.run, /settings-guest-admin-absence/);
+  const upload = guest.steps.find(
+    (step) => step.name === 'Upload browser result and native-panel screenshots',
+  );
+  assert.match(upload.with.path, /test-results\/settings-guest-admin-absence-native\.json/);
+});
+
 test('hosted acceptance has exactly two fixed concurrency lanes, including diagnosis', () => {
   assert.deepEqual(dispatch.inputs.acceptance_lane.options, ['A', 'B']);
   assert.equal(dispatch.inputs.acceptance_lane.default, 'A');

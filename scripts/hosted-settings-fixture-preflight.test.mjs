@@ -29,6 +29,18 @@ test('the native hosted route admits every account popover role before browser l
   );
 });
 
+test('focused guest admin absence resolves on the same development route', () => {
+  const route = hostedAcceptanceRoute(
+    'settings-guest-admin-absence',
+    'development',
+    { kind: 'ci_development_test', eligibleStore: false },
+    'guest',
+    { lane: 'B' },
+  );
+  assert.equal(route.acceptanceCase, 'settings-guest-admin-absence');
+  assert.equal(route.scrapeRoute, null);
+});
+
 test('Settings provenance is rejected before release downloads and browser resource admission', async () => {
   const workflow = await readFile(
     new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
@@ -54,6 +66,7 @@ test('Settings provenance is rejected before release downloads and browser resou
   for (const acceptanceCase of [
     'settings-controls',
     'settings-theme-rendering',
+    'settings-guest-admin-absence',
     'settings-auto-scrape-capture',
     'settings-account-popover-guest',
     'settings-account-popover-member',

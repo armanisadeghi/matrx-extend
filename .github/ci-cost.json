@@ -53,9 +53,9 @@
     "hosted-guest-acceptance.yml": {
       "triggers": ["workflow_dispatch"],
       "crons": [],
-      "benefit": "Native side-panel acceptance on a hosted Mac guest, including EXT-D-0217 retained-profile Save/Retry and EXT-D-0221 admin Screenshots T04/T05 on the existing guarded lane; no extra job or schedule.",
+      "benefit": "Native side-panel acceptance on a hosted Mac guest, including EXT-D-0217 retained-profile Save/Retry, EXT-D-0221 admin Screenshots T04/T05, and a focused EXT-D-0262 Settings guest admin-absence check on the existing guarded lane; no extra job or schedule.",
       "owner_reason": "Extension acceptance on a real browser.",
-      "basis": "observed 2026-10-02..09: 288 dispatches/week x 4.8 macOS min plus one on-demand D221 Screenshots run/week. The readiness window now permits two additional 15-second intervals at each of three stages; budget 1.75 extra minutes per run, including observed ~1-second/sample overhead, for all 289 runs. Public runner billed $0.",
+      "basis": "observed 2026-10-02..09: 288 dispatches/week x 4.8 macOS min plus one on-demand D221 Screenshots run/week. The focused D262 guest Settings check replaces a broader Settings rerun within the existing 289 on-demand runs/week. The readiness window permits two additional 15-second intervals at each of three stages; budget 1.75 extra minutes per run, including observed ~1-second/sample overhead, for all 289 runs. Public runner billed $0.",
       "usd_per_week": 117.54,
       "legs": {
         "macos": {

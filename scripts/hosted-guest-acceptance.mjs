@@ -326,9 +326,12 @@ async function run(prepared, artifactMode) {
   if (acceptanceCase.startsWith('desktop-settings-'))
     console.log(`HOSTED_DESKTOP_SETTINGS_CASE ${desktopCase}`);
   if (
-    ['settings-controls', 'settings-theme-rendering', 'settings-auto-scrape-capture'].includes(
-      acceptanceCase,
-    ) ||
+    [
+      'settings-controls',
+      'settings-theme-rendering',
+      'settings-guest-admin-absence',
+      'settings-auto-scrape-capture',
+    ].includes(acceptanceCase) ||
     acceptanceCase.startsWith('settings-account-popover-')
   )
     assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
@@ -676,9 +679,12 @@ async function run(prepared, artifactMode) {
             : {}),
         }
       : {}),
-    ...(['settings-controls', 'settings-theme-rendering', 'settings-auto-scrape-capture'].includes(
-      acceptanceCase,
-    )
+    ...([
+      'settings-controls',
+      'settings-theme-rendering',
+      'settings-guest-admin-absence',
+      'settings-auto-scrape-capture',
+    ].includes(acceptanceCase)
       ? {
           SETTINGS_DEV_EXTENSION_DIR: extensionDir,
           SETTINGS_DEV_BUILD_RECEIPT: relocatedReceipt,
@@ -744,16 +750,19 @@ async function run(prepared, artifactMode) {
       ([
         'settings-controls',
         'settings-theme-rendering',
+        'settings-guest-admin-absence',
         'settings-auto-scrape-capture',
         'settings-account-popover-guest',
         'settings-account-popover-member',
         'settings-account-popover-admin',
       ].includes(acceptanceCase)
-        ? acceptanceCase.startsWith('settings-account-popover-')
-          ? 'tests/browser/settings-account-popover-native.mjs'
-          : acceptanceCase === 'settings-auto-scrape-capture'
-            ? 'tests/browser/settings-auto-scrape-capture-native.mjs'
-            : 'tests/browser/settings-local-controls-acceptance.mjs'
+        ? acceptanceCase === 'settings-guest-admin-absence'
+          ? 'tests/browser/settings-guest-admin-absence-native.mjs'
+          : acceptanceCase.startsWith('settings-account-popover-')
+            ? 'tests/browser/settings-account-popover-native.mjs'
+            : acceptanceCase === 'settings-auto-scrape-capture'
+              ? 'tests/browser/settings-auto-scrape-capture-native.mjs'
+              : 'tests/browser/settings-local-controls-acceptance.mjs'
         : acceptanceCase === 'guest-data'
           ? 'tests/browser/data-guest-native-acceptance.mjs'
           : acceptanceCase === 'member-data'
