@@ -1,0 +1,63 @@
+{
+  "checked_at": "2026-10-20T01:34:07.934Z",
+  "source": "live ai.test_model_choice via Supabase Matrix ai schema RPC",
+  "choices": {
+    "plumbing": {
+      "why": "Cheapest priced chat model that supports tool calls (input plus output price), not restricted. Use it for anything that does not depend on the provider or the quality of the answer.",
+      "source": "computed",
+      "purpose": "plumbing",
+      "model_id": "9f6c69bc-768f-4232-a30b-12b78bc9557d",
+      "provider": "OpenAI",
+      "model_name": "openai/gpt-oss-20b",
+      "served_via": "Matrx Fast",
+      "common_name": "GPT OSS 20B",
+      "price_in_per_1m_usd": 0.075,
+      "price_out_per_1m_usd": 0.3,
+      "restricted_min_cost_rating": 6
+    },
+    "intelligence": {
+      "why": "Recommended default for tests that measure real intelligence (ai.test_models/intelligence_model). Pick another model if the job needs it, but never one in restricted_models.",
+      "source": "knob",
+      "purpose": "intelligence",
+      "model_id": "3f1c9a52-7b4e-4d2a-9c61-5e8a0b2d7f15",
+      "provider": "Anthropic",
+      "model_name": "claude-sonnet-5-5",
+      "served_via": "Anthropic",
+      "common_name": "Claude Sonnet 5.5",
+      "restricted_models": [
+        "Claude Fable 5",
+        "Claude Fable 5 Max",
+        "Claude Fable 5.1",
+        "Claude Mythos 5",
+        "Claude Mythos 5.1",
+        "Claude Opus 4.8 Max",
+        "Claude Opus 5 Max",
+        "Claude Opus 5.5 Max",
+        "Claude Sonnet 5 Max",
+        "Claude Sonnet 5.5 Max",
+        "Flux 2 Max",
+        "FLUX 2 Max (Replicate)",
+        "FLUX Kontext Max",
+        "Gemini Deep Research Max",
+        "GPT-6 Astra",
+        "Qwen3.7 Max"
+      ],
+      "price_in_per_1m_usd": 2,
+      "price_out_per_1m_usd": 10,
+      "restricted_min_cost_rating": 6
+    },
+    "provider": {
+      "why": "Cheapest priced chat model served by Anthropic (input plus output price), not restricted. Use it when the test depends on that provider.",
+      "source": "computed",
+      "purpose": "provider",
+      "model_id": "c5a1f7e3-6d28-4b9c-8e47-2f3a9d0b6c21",
+      "provider": "Anthropic",
+      "model_name": "claude-haiku-5-5",
+      "served_via": "Anthropic",
+      "common_name": "Claude Haiku 5.5",
+      "price_in_per_1m_usd": 0.1,
+      "price_out_per_1m_usd": 0.5,
+      "restricted_min_cost_rating": 6
+    }
+  }
+}

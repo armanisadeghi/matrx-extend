@@ -74,10 +74,11 @@ root cause remain unverified, not repaired by inference.
 ## Source units and immediate next work
 
 Active owner `root/release_next_hosted_owner` owns the next exact567 A/B acceptance and release
-checkpoint. Its build and Settings A39352539316 are terminal; no browser run is assumed pending.
-Normal B admission waits this clean evidence integration; member A follows package/product gates.
-Prior one-use links/secrets and owned profile/browser
-were deleted, with bounded cleanup evidence in reports. No unrecorded external action is pending.
+checkpoint. Exact567 guest B39353960745 and member A39354133238 are ACTIVE, both admitted
+from clean f9ecfd619 on separate hosted hosts. Release owner retains both external handles until
+terminal and owns evidence/cleanup. Member selected-auth preflight passed; its one-use link file
+and owned GitHub secret were deleted immediately, with absence verified. No new Store upload.
+Settings A39352539316 and the guarded build are terminal. Do not duplicate the active runs.
 Root owns integration/records. Source-only repairs are committed; verify origin/main and the next CI before relying on integration:
 
 1. **D248 `8d8fda5fe`**: shared trusted foreground restoration before organization proof;
@@ -106,7 +107,11 @@ Root owns integration/records. Source-only repairs are committed; verify origin/
 5. Reproduce D261 on an independently admitted host with passive transport attached BEFORE send:
    classify start/tool_results/resume HTTP statuses and terminal event names, fingerprint identities,
    exact approved principal/org, actual foreground, before/after server SHA. One watched short
-   call; no raw headers/bodies/auth values. Fresh-direct-member vs original guest→member transition
+   call; no raw headers/bodies/auth values. Live catalog read recovered through current Matrix
+   RPC: [choice receipt](reports/test-catalog-read-recovery-20261020.json). Plumbing choice is
+   GPT OSS20B; the single current member discriminator preserves its actual persisted selection
+   and must record it, since changing model would not reproduce the original Sonnet5.5 incident.
+   Fresh-direct-member vs original guest→member transition
    is a discriminator, not interchangeable closure evidence. Use current catalog/test-model skill.
    [Prepared observer handoff](reports/member566-network-repro-20261020.json).
 6. Continue Settings/navigation and Scrape/Data/SEO registered product cases on independent hosts;
