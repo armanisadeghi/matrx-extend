@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T16:35:00.726016+00:00",
+  "updated_at": "2026-10-20T17:06:38.112908+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -7923,18 +7923,23 @@
           ],
           "results": {
             "admin": {
-              "status": "partial",
-              "run_id": "settings-mounted-admin-full6-20261003-01",
-              "native_run_status": "pass",
-              "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
-              "build_version": "0.2.176",
-              "build_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
-              "evidence": [
-                ".research/settings-all-modes-evidence-peer.json",
-                ".research/settings-mounted-native.json"
+              "status": "pass",
+              "run_id": "theme577-independent-20261020",
+              "build_version": "0.2.577",
+              "source_sha": "ebe922a655b0bff320d1457e6b598bae3a1c1b10",
+              "resource_invalid": false,
+              "verified_dimensions": [
+                "Light and Dark applied visibly and persisted after full extension Reload/panel reopen",
+                "System tracked native macOS Light and Dark and persisted after Reload/reopen",
+                "original app System and macOS Auto restored and re-observed"
               ],
-              "detail": "Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.",
-              "release_scope": "Development artifact only; newer than frozen Store package."
+              "identity": "actual Profile8 arman@armansadeghi.com/ADMIN observed; no auth/org changes",
+              "evidence": [
+                "docs/stabilization/reports/dev-latest-theme-native-peer-20261020.json",
+                "docs/stabilization/reports/theme577-native-batch-20261020.json"
+              ],
+              "evidence_quality": "Two independent actual native sessions; latest session completes System→OS match. Live AX/inline screenshots only, no saved image export. Resource final independently read valid at16:57:09.339Z; journal SHA44045b8dd7b3c65bc49c59ede557f93bf8bdf252db9281492c6898222c35128b.",
+              "scope": "Admin case only; guest/member Theme and full Settings/Store installed remain unverified."
             }
           },
           "linked_defects": [
@@ -7950,8 +7955,26 @@
                 "detail": "Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy."
               },
               "retained_reason": "Preserve earlier bounded evidence; current exact-development-artifact evidence separately identifies panel reload and visual limits."
+            },
+            {
+              "mode": "admin",
+              "result": {
+                "status": "partial",
+                "run_id": "settings-mounted-admin-full6-20261003-01",
+                "native_run_status": "pass",
+                "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+                "build_version": "0.2.176",
+                "build_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+                "evidence": [
+                  ".research/settings-all-modes-evidence-peer.json",
+                  ".research/settings-mounted-native.json"
+                ],
+                "detail": "Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.",
+                "release_scope": "Development artifact only; newer than frozen Store package."
+              }
             }
-          ]
+          ],
+          "retest_status": "Admin Theme full warm/reload/OS-following case passed on exact577/ebe; no broader mode/surface claim."
         },
         {
           "id": "EXT-F-1003-T07",
@@ -45485,33 +45508,38 @@
             "EXT-D-0053",
             "EXT-D-0054",
             "EXT-D-0268",
-            "EXT-D-0270"
+            "EXT-D-0270",
+            "EXT-D-0271"
           ],
           "verification_note": "Shared export helper changes linked via source audit; native JSON/TSV/AI copied bytes and special cells remain unverified in Data.",
           "results": {
             "member": {
               "status": "partial",
-              "run_id": "38010692863",
-              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
-              "workflow_source_sha": "9d0d68341bc45bda826be02dca2976be14a4c89f",
-              "development_ci_run_id": 37998294843,
-              "development_artifact_id": 11647758423,
-              "hosted_result_artifact_id": 11653034732,
-              "build_version": "0.2.456",
-              "resource_valid": true,
-              "evidence": [
-                "docs/stabilization/evidence/member-data-behavior/run38010692863/receipt.json",
-                "docs/stabilization/evidence/member-data-behavior/run38010692863/native-report.json",
-                "docs/stabilization/evidence/member-data-behavior/run38010692863/cleanup-check.json",
-                "docs/stabilization/evidence/member-data-behavior/run38010692863/hosted-guest-38010692863-1.jsonl",
-                "docs/stabilization/evidence/member-data-behavior/run38023539449/receipt.json",
-                "docs/stabilization/evidence/member-data-behavior/run38023539449/native-report.json",
-                "docs/stabilization/evidence/member-data-behavior/run38023539449/cleanup-check.json",
-                "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-package-38023539449-1.jsonl",
-                "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-browser-38023539449-1.jsonl",
-                "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-guest-38023539449-1.jsonl"
+              "run_id": 39461020039,
+              "build_version": "0.2.577",
+              "source_sha": "ebe922a655b0bff320d1457e6b598bae3a1c1b10",
+              "resource_invalid": false,
+              "automation_exit": "child_failed_after_reload",
+              "verified_subtargets": [
+                "actual member authentication and approved-org proof",
+                "two distinct field picker previews",
+                "HTTP201 save with body/header organization match and saved-list lookup",
+                "refresh and pre-reload run matched explicitly chosen fixture field values",
+                "native TSV/JSON/AI clipboard readbacks matched selected row",
+                "unsaved selection Cancel cleared state"
               ],
-              "detail": "The latest bounded member run re-observed identity/org, two previews, selected-org save/refresh, saved-pattern run, clipboard readbacks and Cancel. Reload retired the old panel and activated a replacement worker, but no replacement panel appeared. The exact owned fixture now has a matching tombstone and zero active residuals after post-action readback; the mutation response did not pass its strict verifier. Full reload persistence, admin and Store behavior remain unverified. A later diagnostic-only run (38028339414) repeated the pre-reload member observations but adds no T03 lifecycle credit; replacement-worker instrumentation saw no message ingress, while handler execution and Chrome open settlement remain unobserved. Its native cleanup was unverified; a separately verified exact run-owned soft-delete left one tombstone and zero active rows. T03 remains Partial. Later diagnostic-only hosted run 38045479599 verified sender refresh/replacement ingress/open settlement, then stopped at `pointer_target_not_unique` in visibility_filter with zero visible Data targets. It adds zero T03 lifecycle credit and proves no product defect; post-reload pattern state/send response were unavailable. Cleanup lacked post-delete active-row readback; secret and local private files were absent after cleanup."
+              "unverified": [
+                "post-reload saved pattern reopening",
+                "post-reload extraction run",
+                "cause of loading skeleton/Data target absent after reload"
+              ],
+              "cleanup": "exact owned-name+org DELETE1/readback0; hard-delete schema, tombstones not applicable; secret/file absence owner-verified; exact PID exit not independently proven",
+              "new_lifecycle_pass": false,
+              "evidence": [
+                "docs/stabilization/reports/data271-native-retest-20261020.json",
+                "docs/stabilization/reports/data577-raw-peer-20261020.json"
+              ],
+              "backend_sha": "not recorded in this raw Data acceptance bundle; no server source attribution"
             },
             "admin": {
               "status": "partial",
@@ -45672,7 +45700,37 @@
                 "docs/stabilization/reports/data-t03-next-native-20261020.json"
               ]
             }
-          ]
+          ],
+          "result_history": [
+            {
+              "mode": "member",
+              "result": {
+                "status": "partial",
+                "run_id": "38010692863",
+                "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+                "workflow_source_sha": "9d0d68341bc45bda826be02dca2976be14a4c89f",
+                "development_ci_run_id": 37998294843,
+                "development_artifact_id": 11647758423,
+                "hosted_result_artifact_id": 11653034732,
+                "build_version": "0.2.456",
+                "resource_valid": true,
+                "evidence": [
+                  "docs/stabilization/evidence/member-data-behavior/run38010692863/receipt.json",
+                  "docs/stabilization/evidence/member-data-behavior/run38010692863/native-report.json",
+                  "docs/stabilization/evidence/member-data-behavior/run38010692863/cleanup-check.json",
+                  "docs/stabilization/evidence/member-data-behavior/run38010692863/hosted-guest-38010692863-1.jsonl",
+                  "docs/stabilization/evidence/member-data-behavior/run38023539449/receipt.json",
+                  "docs/stabilization/evidence/member-data-behavior/run38023539449/native-report.json",
+                  "docs/stabilization/evidence/member-data-behavior/run38023539449/cleanup-check.json",
+                  "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-package-38023539449-1.jsonl",
+                  "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-browser-38023539449-1.jsonl",
+                  "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-guest-38023539449-1.jsonl"
+                ],
+                "detail": "The latest bounded member run re-observed identity/org, two previews, selected-org save/refresh, saved-pattern run, clipboard readbacks and Cancel. Reload retired the old panel and activated a replacement worker, but no replacement panel appeared. The exact owned fixture now has a matching tombstone and zero active residuals after post-action readback; the mutation response did not pass its strict verifier. Full reload persistence, admin and Store behavior remain unverified. A later diagnostic-only run (38028339414) repeated the pre-reload member observations but adds no T03 lifecycle credit; replacement-worker instrumentation saw no message ingress, while handler execution and Chrome open settlement remain unobserved. Its native cleanup was unverified; a separately verified exact run-owned soft-delete left one tombstone and zero active rows. T03 remains Partial. Later diagnostic-only hosted run 38045479599 verified sender refresh/replacement ingress/open settlement, then stopped at `pointer_target_not_unique` in visibility_filter with zero visible Data targets. It adds zero T03 lifecycle credit and proves no product defect; post-reload pattern state/send response were unavailable. Cleanup lacked post-delete active-row readback; secret and local private files were absent after cleanup."
+              }
+            }
+          ],
+          "retest_status": "D268/D271 prerequisite defects independently retest-pass/closed. Current577 pre-reload Data subtargets pass, but child failed before post-reload assertion; T03 remains partial. Source diagnosis proves missing mounted-tab readiness, not transient versus permanent product bootstrap cause."
         },
         {
           "id": "EXT-F-2005-T04",
@@ -46173,7 +46231,8 @@
             "EXT-D-0053",
             "EXT-D-0054",
             "EXT-D-0197",
-            "EXT-D-0270"
+            "EXT-D-0270",
+            "EXT-D-0271"
           ],
           "run_ids": [
             "38045479599",
@@ -46199,7 +46258,8 @@
       ],
       "defect_ids": [
         "EXT-D-0268",
-        "EXT-D-0270"
+        "EXT-D-0270",
+        "EXT-D-0271"
       ]
     },
     {

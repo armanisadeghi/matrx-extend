@@ -1,0 +1,33 @@
+{
+  "task_id": "data577-raw-peer-20261020",
+  "role": "independent raw Data acceptance peer; zero source authorship",
+  "source_changes": [],
+  "verdict_A": "PARTIAL native subtargets; EXT-F-2005-T03 incomplete with zero lifecycle certificate; EXT-D-0268 repaired original approved-org fixture blocker supported; EXT-D-0271 repaired obsolete-Compute-proof blocker supported; EXT-D-0270 docs-only equivalence original branch not exercised by this exact-source run, retain fixed source verdict only.",
+  "verdict_B": "Raw native report, screenshot, resource journals and GitHub provenance agree on pre-reload progress and terminal failure. Evidence does not establish post-reload persistence/run or a product root cause; no overall acceptance claim. Source quality for D268/D271 had prior red/green and independent review; current run supplies native boundary proof, while D270 source equivalence remains a separate source/CLI finding.",
+  "provenance": {
+    "hosted_run": 39461020039,
+    "hosted_conclusion": "failure",
+    "hosted_sha": "ebe922a655b0bff320d1457e6b598bae3a1c1b10",
+    "raw_artifact_id": 12282258946,
+    "raw_zip_sha256": "89b618e7bfcf775a656be10b7447859480684112e9cec1341dcf3b6ab4276bd0",
+    "report_sha256": "2e73e03f825aeb317b750c4dd43156276804b4a3248e39369ff39bbbdcbb8f67",
+    "ci_run": 39459725589,
+    "ci_conclusion": "success",
+    "ci_source_sha": "ebe922a655b0bff320d1457e6b598bae3a1c1b10",
+    "dev_artifact_id": 12283301050,
+    "dev_digest": "sha256:fe3fac03eded273373fe04cf8b81736b3313e84f283119570da4bc2506c55e91"
+  },
+  "native_subtargets": "Member web/extension auth, non-admin check, approved org selected/verified via load ladder and actual GET; 3 fixture cards Cedar chair/$189, Walnut desk/$429, Linen lamp/$74; 2 distinct picker previews; one save 201 with body/header org matching selected org and row lookup; refresh; pre-reload run returned exactly [{field_1:'Cedar chair',field_2:'$429'}]; TSV/JSON/AI native clipboard readbacks matched this expected row; unsaved selection cancel cleared.",
+  "reload_gap": "Extension old worker and panel retired, replacement worker and panel appeared, open-panel request replied opened; Data tab locator matched 0/visible 0, panel screenshot shows loading skeleton, error pointer_target_not_unique. No persistence/reopen or post-reload run proof; screenshot/driver cannot assign product-versus-driver cause.",
+  "resources": "Package and browser journals valid exit0; guest acceptance resourceInvalid=false but child exit1/decision child_failed. CPU busy sample recovered before failure and does not explain pointer. Normal verifier HOSTED_RUN_NOT_SUCCESSFUL and no certificate are appropriate.",
+  "cleanup": "Native report asserts exact owned name+approved-org DELETE 1 and active readback 0; driver requires HTTP200, row ID/org match, then exact name+org empty lookup. This is hard delete, not tombstone proof. Independent external DB receipt absent from archive. One-use local file and temporary GitHub secret absence are owner handoff assertions, not independently proven by these six raw files; ephemeral hosted runner ended.",
+  "defect_scope": "D268 original stale hardcoded org label failed before Data; this run crossed approved-org selection and org-bound save, supporting repair. D271 original obsolete Compute path was source/controlled-probe diagnosis without exact old failed-click receipt; this run crossed actual current Records GET and Data, supporting repair of that class, not retroactive exact-click attribution. D270 run used current source SHA matching CI artifact, so it cannot demonstrate docs-only drift admission; retain prior source/CLI review and fixed status, no new native equivalence credit.",
+  "evidence_paths": [
+    "/tmp/data271-native-39461020039.zip",
+    "/tmp/data271-native-39461020039/matrx-extend/matrx-extend/test-results/data-member-native-acceptance.json",
+    "/tmp/data271-native-39461020039/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-{package,browser,guest}-39461020039-1.jsonl",
+    "/tmp/data271-native-39461020039/_temp/guest-acceptance/native-sidepanel-qa-PSYxql/native-side-panel.png",
+    "/tmp/data271-native-39461020039/_temp/guest-acceptance/native-sidepanel-qa-PSYxql/normal-target-after-open.png"
+  ],
+  "limits": "No new native/paid run, source edit, or heavy test. Raw report is a driver-generated assertion record, not a network trace of the selected principal/org values; fixture values and assertion paths were checked against source. No admin, Store, other member, or full T03 lifecycle credit."
+}

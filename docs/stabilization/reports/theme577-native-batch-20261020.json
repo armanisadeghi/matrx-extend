@@ -1,0 +1,25 @@
+{
+  "case": "EXT-F-1003-T06",
+  "control": "EXT-F-1003-C02",
+  "scope": "Admin native Chrome side panel; Theme only",
+  "browser": "Approved Chromedev577; enabled/pinned beside Store205; Chrome profile armansadeghi.com",
+  "build": "0.2.577; .output/chrome-mv3-dev; id cihdmkcdjjckfhjpgoedmgfpoljebaml; tree a7aa66a0074d46ecbfae995dfe69bc16557459ce187b647bb4f8c5f8a0134069; CI39455176447/artifact12280457374",
+  "role": "ADMIN, visible in Settings; no organization read or changed",
+  "baseline_selection": "System",
+  "warm_appearance": {
+    "Light": "visible light panel",
+    "Dark": "visible dark panel",
+    "System": "visible light panel; macOS appearance not independently observed"
+  },
+  "reload_persistence": {
+    "Light": "selected after actual extension Reload and panel reopen",
+    "Dark": "selected after actual extension Reload and panel reopen",
+    "System": "selected after actual extension Reload and panel reopen"
+  },
+  "restoration": "System restored and selected after final actual reload/reopen; matches original visible selection",
+  "permissions": "Only pre-existing extension permissions; no prompt or change",
+  "other_changes": "None intended; no auth/org/other preferences/OS appearance/database/AI actions",
+  "evidence": "Native AX plus inline screenshots; no supported screenshot-file export",
+  "resource": "Admitted; healthy samples; terminal decision valid, resourceInvalid=false, exitCode=0; journal /tmp/theme577-native-batch-20261020-resource.jsonl; lease absent",
+  "verdict": "Bounded T06/C02 observation only; no whole-Settings/feature claim"
+}

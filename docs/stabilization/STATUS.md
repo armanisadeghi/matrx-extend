@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-20 16:35 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T16:35:00.726016+00:00. 207 features · 831 cases · 1422 controls · 269 linked defect records.
+Generated 2026-10-20 17:07 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T17:06:38.112908+00:00. 207 features · 831 cases · 1422 controls · 270 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1338** — Pass: 103 · Partial: 102 · Fail: 1 · Unverified: 1121 · N/A: 11.
+Applicable case-by-role slots: **1338** — Pass: 104 · Partial: 101 · Fail: 1 · Unverified: 1121 · N/A: 11.
 Unverified splits into **180 explicitly marked unverified** and **941 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -21,7 +21,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 22, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 18 pass · 7 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 13 pass · 9 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | pass 33, partial 19, fail 0, unverified 48, n/a 1 | 6 |
+| [Settings](#settings) | 1 | 18 pass · 7 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 14 pass · 8 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | pass 34, partial 18, fail 0, unverified 48, n/a 1 | 6 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -39,7 +39,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tasks capture flow](#tasks-capture-flow) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 2, n/a 0 | 0 |
 | [Lists side-panel](#lists-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 10, n/a 0 | 0 |
 | [Agenda side-panel](#agenda-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
-| [Data side-panel](#data-side-panel) | 1 | 2 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 3, partial 2, fail 0, unverified 16, n/a 1 | 3 |
+| [Data side-panel](#data-side-panel) | 1 | 2 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 3, partial 2, fail 0, unverified 16, n/a 1 | 2 |
 | [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 3, n/a 0 | 4 |
 | [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 4 |
 | [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 2, fail 0, unverified 4, n/a 0 | 0 |
@@ -442,7 +442,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T03 admin: Organization selector | N/A | N/A | Pass | EXT-F-1003-C01 |
 | EXT-F-1003-T04 guest: Theme | Partial | N/A | N/A | EXT-F-1003-C02 |
 | EXT-F-1003-T05 member: Theme | N/A | Partial | N/A | EXT-F-1003-C02 |
-| EXT-F-1003-T06 admin: Theme | N/A | N/A | Partial | EXT-F-1003-C02 |
+| EXT-F-1003-T06 admin: Theme | N/A | N/A | Pass | EXT-F-1003-C02 |
 | EXT-F-1003-T07 guest: Default agent | Pass | N/A | N/A | EXT-F-1003-C03 |
 | EXT-F-1003-T08 member: Default agent | N/A | Unverified | N/A | EXT-F-1003-C03 |
 | EXT-F-1003-T09 admin: Default agent | N/A | N/A | Pass | EXT-F-1003-C03 |
@@ -544,8 +544,9 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: 39070057081, ['docs/stabilization/runs/hosted-settings-controls-39070057081.json', 'docs/stabilization/evidence/settings-controls-b-39070057081/native-report.sanitized.json', 'docs/stabilization/evidence/settings-controls-b-39070057081/native-side-panel.png']
 - EXT-F-1003-T05 · member: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
   Evidence / build / date recorded: settings-mounted-member-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
-- EXT-F-1003-T06 · admin: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
-  Evidence / build / date recorded: settings-mounted-admin-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
+- EXT-F-1003-T06 · admin: Pass.
+  Evidence quality: Two independent actual native sessions; latest session completes System→OS match. Live AX/inline screenshots only, no saved image export. Resource final independently read valid at16:57:09.339Z; journal SHA44045b8dd7b3c65bc49c59ede557f93bf8bdf252db9281492c6898222c35128b.
+  Evidence / build / date recorded: theme577-independent-20261020, ['docs/stabilization/reports/dev-latest-theme-native-peer-20261020.json', 'docs/stabilization/reports/theme577-native-batch-20261020.json']
 - EXT-F-1003-T07 · guest: Pass. Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy.
   Evidence / build / date recorded: guest-settings-007, docs/stabilization/runs/guest-settings-007.json
 - EXT-F-1003-T09 · admin: Pass. FreshSol visual+AX/detail reconciled sameQuickTestAgent plus2memberbadge; actualchosenidentity persisted afterfullreload, originalMatrxBrowserAgent restored.
@@ -1571,9 +1572,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Unverified · member: Partial · admin: Partial. **Cases:** 9. **Controls:** 34.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0054, EXT-D-0268, EXT-D-0270
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0054, EXT-D-0270
 
-**Linked defects:** [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0197](defects/EXT-D-0197.json) (closed), [EXT-D-0268](defects/EXT-D-0268.json) (fixed), [EXT-D-0270](defects/EXT-D-0270.json) (fixed)
+**Linked defects:** [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0197](defects/EXT-D-0197.json) (closed), [EXT-D-0268](defects/EXT-D-0268.json) (closed), [EXT-D-0270](defects/EXT-D-0270.json) (fixed), [EXT-D-0271](defects/EXT-D-0271.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1591,8 +1592,8 @@ These historical checks retain their original artifact boundary; they do not est
 
 - EXT-F-2005-T01 · guest: Pass. Independent exact568 guest T01 pass: empty Cancel, two distinct previews/selectors, guest name/save withheld, sign-in action used, zero panel-target non-GET /wbx_pattern requests before auth. Native DOM/CDP assertions support actions; setup-only images do not provide final-control paint. No backend persistence readback, nonzero-scroll evidence from this fixture, member/admin or Store-installed credit. Whole Data remains unverified with partial case coverage.
   Evidence / build / date recorded: 39357989631, ['docs/stabilization/reports/guest-data-scrolled-hosted-retest-20261020.json', 'docs/stabilization/reports/data568-native-fresh-peer-20261020.json']
-- EXT-F-2005-T03 · member: Partial. The latest bounded member run re-observed identity/org, two previews, selected-org save/refresh, saved-pattern run, clipboard readbacks and Cancel. Reload retired the old panel and activated a replacement worker, but no replacement panel appeared. The exact owned fixture now has a matching tombstone and zero active residuals after post-action readback; the mutation response did not pass its strict verifier. Full reload persistence, admin and Store behavior remain unverified. A later diagnostic-only run (38028339414) repeated the pre-reload member observations but adds no T03 lifecycle credit; replacement-worker instrumentation saw no message ingress, while handler execution and Chrome open settlement remain unobserved. Its native cleanup was unverified; a separately verified exact run-owned soft-delete left one tombstone and zero active rows. T03 remains Partial. Later diagnostic-only hosted run 38045479599 verified sender refresh/replacement ingress/open settlement, then stopped at `pointer_target_not_unique` in visibility_filter with zero visible Data targets. It adds zero T03 lifecycle credit and proves no product defect; post-reload pattern state/send response were unavailable. Cleanup lacked post-delete active-row readback; secret and local private files were absent after cleanup.
-  Evidence / build / date recorded: 38010692863, ['docs/stabilization/evidence/member-data-behavior/run38010692863/receipt.json', 'docs/stabilization/evidence/member-data-behavior/run38010692863/native-report.json', 'docs/stabilization/evidence/member-data-behavior/run38010692863/cleanup-check.json', 'docs/stabilization/evidence/member-data-behavior/run38010692863/hosted-guest-38010692863-1.jsonl', 'docs/stabilization/evidence/member-data-behavior/run38023539449/receipt.json', 'docs/stabilization/evidence/member-data-behavior/run38023539449/native-report.json', 'docs/stabilization/evidence/member-data-behavior/run38023539449/cleanup-check.json', 'docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-package-38023539449-1.jsonl', 'docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-browser-38023539449-1.jsonl', 'docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-guest-38023539449-1.jsonl']
+- EXT-F-2005-T03 · member: Partial.
+  Evidence / build / date recorded: 39461020039, ['docs/stabilization/reports/data271-native-retest-20261020.json', 'docs/stabilization/reports/data577-raw-peer-20261020.json']
 - EXT-F-2005-T03 · admin: Partial. Actualfieldpicker/manualCSSsave/Data+Showcase replay JSON/AI/TSV preserve719594charbookfield identicalhash; Data refreshreplaypasses. D53closed; D54quotes/spreadsheetpaste open; ShowcaseAIURLmissingD55; broaderauth/cancel/failurestatesunverified.
   Evidence / build / date recorded: data-picker-long-native-20260928-01, ['docs/stabilization/reports/data-picker-long-native.json', 'docs/stabilization/reports/showcase-export-guarded-runtime.json']
 - EXT-F-2005-T07 · guest: Pass. Independent exact568 guest T07 pass: hover geometry tracks two elements, trusted selection uniquely matches clicked heading, Clear removes entries, selected-field Cancel restores Data baseline, zero observed panel-target pattern writes. All current guest T07 expected outcomes covered; other modes are separate axes. Native DOM/CDP assertions support actions; setup-only images do not provide final-control paint. No backend persistence readback, nonzero-scroll evidence from this fixture, member/admin or Store-installed credit. Whole Data remains unverified with partial case coverage.

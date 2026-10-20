@@ -1,0 +1,17 @@
+{
+  "task_id": "data271-fresh-peer-20261020",
+  "commit": "ebe922a65",
+  "authorship": "none",
+  "A_spec_live_verdict": "SOURCE_CLASS_CONFIRMED; NATIVE_UNVERIFIED: d90 artifact lacks legacy Compute controls and controlled old path reproduces matched=0; run39456820094 is resource-invalid before Data and lacks exact failed-click receipt. No new product or T03 credit; CPU cause unknown.",
+  "B_quality_verdict": "PASS_SOURCE_GUARDS_WITH_NATIVE_GATE_OPEN: real shared Tools/Catalog/Records navigation and shared completed GET observer; request requires one exact product GET, approved-org header, current stored bearer hash, HTTP200 and loadingFinished. No auth stand-in or secret in receipt.",
+  "focused_check": "node --test six directly affected browser suites: 57/57 pass; builder 67/67 log inspected; old path RED and constant-success/wrong-org scratch mutants RED for relevant assertions.",
+  "findings": [],
+  "limits": "Controlled CDP probe is not live native proof. Prior failed native run cannot attribute exact pointer or CPU cause. Fresh eligible artifact, valid resource gate, and member Data replay remain required.",
+  "evidence": [
+    "/tmp/data-t03-stall-diagnosis-20261020.json",
+    "/tmp/data271-old-red.log",
+    "/tmp/data271-constant-red.log",
+    "/tmp/data271-wrong_org-red.log",
+    "docs/stabilization/reports/data-t03-next-native-20261020.json"
+  ]
+}

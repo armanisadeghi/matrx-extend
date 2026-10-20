@@ -1,0 +1,71 @@
+{
+  "task_id": "data-t03-stall-diagnosis-20261020",
+  "lane": "bounded D271 source diagnosis and repair",
+  "model": "inherited model; no product AI calls",
+  "status": "SOURCE_FIXED_PUSHED_NATIVE_PENDING",
+  "feature_ids": ["EXT-F-2005"],
+  "defect_ids": ["EXT-D-0271"],
+  "A": {
+    "native": "39456820094 resource-invalid before Data; selected/matched organization diagnostic true but authentication receipt null; exact failed pointer not captured",
+    "source": "Legacy Compute trigger/dialog absent across1284 emitted d90 JS files; actual pointer selector on controlled PackageChat shell returns pointer_target_not_unique/matched0/visible0; this establishes harness class, not exact historical click",
+    "behavior_credit": 0,
+    "cpu": "Pending/recovered/pending episodes do not establish app-vs-host attribution; remains unknown"
+  },
+  "B": {
+    "repair": "Extract existing Showcase Records observer and native Tools/Catalog/Records navigation into shared helpers; member proof reuses both, arms before Records, checks exact approved organization and bearer fingerprint plus completed HTTP200; fixed targets/counts retained in Data auth diagnostic",
+    "source_checks": "67/67 focused and10/10 final diagnostic/new checks passed; old implementation RED and constant-success/wrong-org scratch mutants RED; biome13 files clean; pnpm compile PASS (tsc --noEmit, exit0).",
+    "limitations": "Controlled CDP tests are source guards, not native product proof. Full/focused automatic CI and independent review pending."
+  },
+  "changed_files": [
+    "package.json",
+    "docs/stabilization/defects/EXT-D-0271.json",
+    "tests/browser/member-logical-org-proof.mjs",
+    "tests/browser/member-logical-org-proof.test.mjs",
+    "tests/browser/member-records-proof271.test.mjs",
+    "tests/browser/organization-product-request.mjs",
+    "tests/browser/organization-records-navigation.mjs",
+    "tests/browser/showcase-organization-checkpoint.mjs",
+    "tests/browser/settings-native-auth-driver.mjs",
+    "tests/browser/settings-native-auth-driver.test.mjs",
+    "tests/browser/settings-member-auth-diagnostic.mjs",
+    "tests/browser/scrape-save-org-admission.test.mjs",
+    "tests/browser/panel-transition-recorder.test.mjs"
+  ],
+  "commit_shas": ["ebe922a655b0bff320d1457e6b598bae3a1c1b10"],
+  "push": "origin/main confirmed",
+  "verification": [
+    {
+      "case_id": "EXT-F-2005-T03",
+      "verdict": "source repair verified; native unverified",
+      "evidence": [
+        "/tmp/data271-final-focused.log",
+        "/tmp/data271-diagnostic-final.log",
+        "/tmp/data271-old-red.log",
+        "/tmp/data271-constant-red.log",
+        "/tmp/data271-wrong_org-red.log",
+        "/tmp/data-t03-pointer-repro-20261020.mjs",
+        "/tmp/data271-compile.log"
+      ]
+    }
+  ],
+  "local_path": "Existing local member Chat success does not prove local Data executable admission. Direct Data requires CI receipt and numeric GITHUB_RUN_ID/ATTEMPT; resource policy admits hosted wrapper rather than direct Data runner. No local Data bypass, fake execution IDs or credential staging performed.",
+  "limitations": [
+    "No heavy/native/paid launch; no active owned process or temporary credential. No CPU thresholds or retries changed. No inventory/COORD edits.",
+    "Current d90 artifact predates harness repair; normal new successful CI/source eligibility required before replay."
+  ],
+  "open_questions": [],
+  "next_action": "Independent source A/B review of ebe922a65, verify normal automatic full/focused CI; then root authorizes one normally admitted member Data lifecycle against eligible immutable artifact, preserving resource gates and private approved member fixture.",
+  "automatic_ci": {
+    "source_sha": "ebe922a655b0bff320d1457e6b598bae3a1c1b10",
+    "full": {
+      "run_id": 39459725589,
+      "status": "in_progress",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39459725589"
+    },
+    "focused": {
+      "run_id": 39459725311,
+      "status": "in_progress",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39459725311"
+    }
+  }
+}
