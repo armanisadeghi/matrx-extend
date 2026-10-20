@@ -12,9 +12,24 @@ published0.2.205, draft0.2.479 rejected, no pending, Upload enabled. Vault login
 no human-only access blocker is established. No new upload/submission has occurred.
 [Daily observation](reports/store-daily-20261020.json) also bounds official mail search to the October11 rejection only. Never infer private review state from old email/public listing or this checkpoint.
 
-Current prepared candidate **0.2.573**: guarded hosted release39398454280 SUCCESS;
+Latest prepared candidate **0.2.574**: concurrent contributor's guarded release39409723565
+SUCCESS; source/tag `d862a9ac93c336669f6abe6ae3a26a2cadb335c9`, artifact12258863115,
+StoreZIPsha256 `33ae86d8eaf331ec0b9af327769e39036b93e8954a5c0219f5fb51c5a3526ec5`.
+[Independent release-only checkpoint](reports/release574-artifact-checkpoint-20261020.json)
+verifies receipt/tag/source ancestry, bothZIP digests, localtree and manifests. Outer archive
+digest is metadata-only. No574 native acceptance/upload/submission; D244/D261 remain open.
+Newer main1b831c27d adds neutral trace/CI/evidence, not a product repair; fullCI39410623190 and
+focused39410623174 SUCCESS, developmentartifact12259880170 (GitHubdigest
+`1d49aca9024ddeb665b8ed8592b9c5f71a638295b21ee1d8cd41faa85aa6aafc`).
+One changed diagnostic **nativeB39411790358** is active, pinned1b/artifact12259880170 under
+`values244_changed_native_trace`; one original Escape, no retry, actualresourceguards. No verdict
+yet. Finalize exact raw report/cleanup then fresh independent review before any closure.
+[SEO preflight](reports/seo-owned-target-preflight-20261020.json) found both supported metadata
+and narrow360px targets already had bounded passes; no redundant SEO run was launched.
+
+Prior prepared candidate **0.2.573**: guarded hosted release39398454280 SUCCESS;
 source/tag `19aa37bee23e02c8ab62a15ce4854d9e5c944f91`, artifact12253811524,
-Store ZIP SHA256 `5814c4683e270f8303263a26fda0946c91f9680a6c317150283eaafae0df2d4e`.
+StoreZIPsha256 `5814c4683e270f8303263a26fda0946c91f9680a6c317150283eaafae0df2d4e`.
 [Package/native checkpoint](reports/release573-native-20261020.json),
 [Data A](reports/data573-native-lane-a-20261020.json), and
 [fresh independent peer](reports/release573-independent-peer-20261020.json) verify exact receipt/tag/bytes,
@@ -48,14 +63,14 @@ DOM-transition trace; [fresh peer](reports/values244-event-boundary-trace-peer-2
 passes neutral trace only,49focused guards pass. [Builder](reports/values244-event-boundary-trace-20261020.json)
 wired the observer into existing Linux CI (96selected cases pass, no new job/runner/trigger).
 Local cost guard self-tests pass; sibling forecast150.16/$100 and sandbox twin drift remain
-existing cross-repo guard failures, distinct from current actual72.23/$100. No guard waiver.
+existing cross-repo guard failures, distinct from current actual79.12/$100. No guard waiver.
 Retained output is bounded; document-wide mutation callback work and native timing effect remain
 explicit observer limits. One changed diagnostic still requires exact green CI/source and normal admission.
 No extra Escape, weaker acceptance, resource threshold change, or blind retry is authorized.
 Dependency adoption419fe157f passed fullCI39408181597/focused39408181614; its artifact12258336638
-is not credited with B95d behavior. Concurrent main5a3c3498b refreshes chat248/data84; guarded
-release39409723565 is in progress under its separate lock-catch-up owner. Do not duplicate or
-assume it uploaded/submitted; exact artifact/gates/source drift must be read after terminal.
+is not credited with B95d behavior. Concurrent package refresh through release574 is integrated; its package-only receipt is above.
+Do not duplicate the build or assume it uploaded/submitted; source/runtime and actual acceptance
+remain separate gates.
 No account/spend block or human-only access blocker is established. Non-admin D261504 remains
 unresolved. Earlier candidate/public results remain separately bounded.
 **[D265](defects/EXT-D-0265.json) is narrowly CLOSED after fresh independent original native retest.**
@@ -293,7 +308,7 @@ from stale source or infer completed acceptance from startup/CI/this lockfile.
 
 ## Local resource constraint — not a human-only access gate
 
-On October20 around01:02UTC, system free space fell39→7.9GiB; latest06:25UTC observation is3.8GiB. Apple `cloudd` owns an actively
+On October20 around01:02UTC, system free space fell39→7.9GiB; latest11:01UTC observation is4.5GiB (still below20GiB floor). Apple `cloudd` owns an actively
 growing CloudKit temporary cache file,34.38GiB allocated. Targeted growth matches disk loss.
 Canonical groom dry-run/apply recovered0B; no safe agent-owned12GiB cleanup target exists. No
 personal cache/data or Apple process was removed/stopped. Heavy Mac tests/UI remain on hold
@@ -330,8 +345,9 @@ sanitized journals and safe reports. Unsupported API is not a safety refusal; ge
 safety refusal cannot be bypassed.
 
 Fetch/merge at boundaries and at least every15minutes, preserve contributors, exact-path commits,
-push verified units frequently. Current real weekly CI spend read is72.23/$100 complete/nonstale;
-refresh before paid dispatch/publication. Off-track waste flags do not replace actual real total.
+push verified units frequently. Current real weekly CI spend read is79.12/$100 complete/nonstale (read10:25:34UTC);
+refresh before paid dispatch/publication. Off-track finding is unrelated desktopCI5.70/day mostly
+red, reported in chat; no billing/cap refusal is established. Off-track waste flags do not replace actual real total.
 No account billing block workaround. This Mac never runs manual builds/releases.
 
 Update canonical records and generated views together; never promote source/CI/fixtures to
