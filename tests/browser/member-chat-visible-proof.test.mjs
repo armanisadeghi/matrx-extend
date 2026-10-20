@@ -664,6 +664,68 @@ test('first hidden panel transition reopens the exact original target once befor
   await assert.rejects(guard.check('before_followup'), /reviewer_chat_target_unverified/);
 });
 
+test('normal reload requires trusted re-entry to focus the same visible panel document', async () => {
+  for (const restoredByInput of [true, false]) {
+    let focused = true;
+    let trustedClicks = 0;
+    let targetActivations = 0;
+    const report = { foreground_diagnostic: { visibility_wait_budget_ms: 10_000 } };
+    const guard = createMemberPanelLifecycleGuard({
+      native: {
+        panelTarget: { targetId: 'original-panel', url: 'chrome-extension://owned/sidepanel.html' },
+        browserSession: {
+          send: async () => ({
+            targetInfos: [
+              {
+                type: 'page',
+                url: 'chrome-extension://owned/sidepanel.html',
+                targetId: 'original-panel',
+              },
+            ],
+          }),
+        },
+        activatePanel: async () => {
+          targetActivations += 1;
+        },
+      },
+      web: { isClosed: () => false, url: () => 'https://www.aimatrx.com/matrx-extend-demo' },
+      panel: {},
+      evaluate: async () => ({
+        visibility: 'visible',
+        focused,
+        frame_progress: true,
+        frame_count: 1,
+        transcript_mounted: false,
+        transcript_opacity: null,
+      }),
+      refocusPanel: async () => {
+        trustedClicks += 1;
+        if (restoredByInput) focused = true;
+      },
+      expectedUrl: 'https://www.aimatrx.com/matrx-extend-demo',
+      report,
+    });
+    await guard.check('before_open_chat');
+    focused = false; // A normal Page.reload creates the observed unfocused document.
+    if (restoredByInput) {
+      const result = await guard.check('after_open_chat');
+      assert.equal(result.panel_focused, true);
+    } else {
+      await assert.rejects(
+        guard.check('after_open_chat'),
+        /reviewer_native_panel_foreground_not_observed/,
+      );
+    }
+    assert.equal(trustedClicks, 1);
+    assert.equal(targetActivations, 0);
+    assert.equal(report.panel_lifecycle.original_target_preserved, true);
+    assert.deepEqual(
+      report.panel_lifecycle.samples.map((row) => row.panel_focused),
+      restoredByInput ? [true, false, true] : [true, false, false],
+    );
+  }
+});
+
 test('repair refuses a replaced target or a panel that remains hidden', async () => {
   for (const outcome of ['replacement', 'still_hidden']) {
     let targetId = 'original-panel';
@@ -786,13 +848,16 @@ test('real evaluator waits for a visible frame and refuses a mounted zero-opacit
         }),
       },
       activatePanel: async () => {
-        activations += 1;
-        focused = true;
+        throw new Error('target activation is not native input');
       },
     },
     web: { isClosed: () => false, url: () => 'https://www.aimatrx.com/matrx-extend-demo' },
     panel,
     evaluate: evaluatePanel,
+    refocusPanel: async () => {
+      activations += 1;
+      focused = true;
+    },
     expectedUrl: 'https://www.aimatrx.com/matrx-extend-demo',
     report,
   });
@@ -883,6 +948,9 @@ test('target lookup consuming the foreground deadline leaves no frame budget bef
     web: { isClosed: () => false, url: () => 'https://www.aimatrx.com/matrx-extend-demo' },
     panel,
     evaluate: evaluatePanel,
+    refocusPanel: async () => {
+      activations += 1;
+    },
     expectedUrl: 'https://www.aimatrx.com/matrx-extend-demo',
     report,
     now: () => clockMs,

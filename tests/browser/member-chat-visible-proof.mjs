@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { restoreMemberForeground } from './member-foreground-diagnostic.mjs';
-import { waitFor } from './settings-panel-driver.mjs';
+import { click, waitFor } from './settings-panel-driver.mjs';
 
 const SAFE_REASONS = new Set([
   'eligible',
@@ -83,6 +83,7 @@ export function createMemberPanelLifecycleGuard({
   expectedUrl,
   report,
   now = Date.now,
+  refocusPanel = () => click(panel, 'title', 'Chat'),
 }) {
   const targetId = native.panelTarget.targetId;
   const panelUrl = native.panelTarget.url;
@@ -168,7 +169,9 @@ export function createMemberPanelLifecycleGuard({
     report.panel_lifecycle.repair_attempted = true;
     try {
       if (before.panel_visibility === 'hidden') await native.reopenPanel({ page: web });
-      else await native.activatePanel();
+      // Target.activateTarget does not restore focus to a reloaded side-panel
+      // document. Re-enter the original visible panel through trusted input.
+      else await refocusPanel();
     } catch {
       report.panel_lifecycle.repair_failed = true;
       throw new Error('reviewer_native_panel_foreground_not_observed');
