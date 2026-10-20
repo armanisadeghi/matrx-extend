@@ -1,0 +1,43 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_at_utc": "2026-10-20",
+  "scope": "Read-only independent review of latest @ai-matrx adoption lockfile only",
+  "frozen_lockfile_sha256": "6e67bb5fa7ceb21cbd2d47e9a99f000089ef10afde7230c6820c3ccb508aa38f",
+  "verdict_A_behavior_source_compatibility": {
+    "result": "PASS_FOR_ADOPTION_COMPATIBILITY; NO_PRODUCT_ACCEPTANCE_CREDIT",
+    "evidence": [
+      "All 15 direct @ai-matrx manifest declarations remain latest.",
+      "Independent pnpm check:matrx-packages confirms all 26 installed packages are npm latest exactly once.",
+      "pnpm compile (tsc --noEmit) passes against the adopted install graph.",
+      "The lockfile adopts agents 0.59.175, data 0.29.83, design-system 0.86.238, kit 0.45.19, records 0.99.108, plus transitive alchemy 0.23.67 and rich-content 0.2.235.",
+      "Fresh npm registry queries confirmed versions and dist.integrity for all seven adopted packages match the lockfile, including kit.",
+      "Extension src is byte-for-byte unchanged from review base 95d7ba509f4e033c0ee0281d1dbceae15cb0b433; no product behavior or Store acceptance was exercised.",
+      "Correction: my prior check compared apps/shared/matrx-agents/src, which does not contain ContextRulesChip.tsx; that empty-tree comparison was inadequate evidence for the repair and is withdrawn.",
+      "At both npm gitHeads (agents 0.59.174 a1c540b80761a8f3281af06881a9cbc146a15341 and 0.59.175 fd6c15b4405f8c9605124a177348c13856d310e4), the tracked apps/shared/matrx-agents/context/react/ContextRulesChip.tsx exists and independently computed SHA-256 is 0111a6c30ed7f640c97e2b5b079838b7008513c33933f71ba47113b29db81739.",
+      "The installed integrity-verified 0.59.175 dist/context/react/index.js contains the compiled guard `event.key === \"Escape\" && event.currentTarget.contains(event.target)` followed by `setOpen`; source around the same branch documents first-Escape closure when a focused control tooltip is open."
+    ],
+    "consumer_action_assessment": "No required extension source action found for the listed updates. Agents 0.59.175 ships no new ContextRulesChip source versus 0.59.174; the actual component path is outside src and its nonempty source hash matches across both npm gitHeads, and installed 0.59.175 compiled output contains the repaired guard. Data adds generated database types; design-system adds opt-in accents; kit restores an export with no extension use identified; records changes are optional/additive and extension compilation passes. Alchemy and rich-content changes are transitive. These support package adoption only, not user-visible acceptance."
+  },
+  "verdict_B_change_quality": {
+    "result": "PASS_WITH_MINOR",
+    "findings": [
+      {
+        "severity": "Minor",
+        "finding": "The lockfile also advances electron-to-chromium 1.5.460 to 1.5.461 as incidental transitive freshness. This is an upgrade, not a downgrade, and its lock resolution is updated consistently; it is outside the named @ai-matrx adoption but is a small unrelated graph delta."
+      }
+    ],
+    "evidence": [
+      "git status shows only pnpm-lock.yaml modified; extension source is unchanged.",
+      "git diff --check passes.",
+      "Lock diff contains only seven expected @ai-matrx package updates (five direct and two transitive) and the electron-to-chromium patch upgrade; no hidden downgrades found.",
+      "All seven integrity values match fresh npm registry metadata.",
+      "Frozen lockfile, install, compile and latest-graph checks are reported by owner; compile and latest-graph checks independently rerun successfully here."
+    ]
+  },
+  "not_verified": [
+    "No browser/UI/product acceptance, Store candidate, deployment, release, heavy tests or hosted dispatch; these remain outside this lockfile-only review.",
+    "The prior `apps/shared/matrx-agents/src` empty-diff check did not cover ContextRulesChip.tsx and was inadequate; this report replaces that claim with a check of the actual tracked component and the installed compiled output."
+  ],
+  "commit_or_push": "none",
+  "reviewer_authorship": "zero"
+}
