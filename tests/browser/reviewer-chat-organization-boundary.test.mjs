@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { EventEmitter } from 'node:events';
+import { mkdtemp, readFile, rm, stat, unlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -21,78 +22,114 @@ const hostedSource = await readFile(
   'utf8',
 );
 
-test('hosted member paths stage the actual private approved organization before child execution', async () => {
+// Execute the contiguous production orchestration, preserving its own try/finally.
+// Only child process launch is replaced; staging, routing, forwarding and cleanup run unchanged.
+test('hosted member paths remove the private organization on success and child launch failure', async () => {
+  const start = hostedSource.indexOf('  const needsApprovedMemberOrganization =');
+  const end = hostedSource.indexOf('\n}\n\n// Each phase runs', start);
+  assert.ok(start >= 0 && end > start);
+  const lifecycle = hostedSource.slice(start, end);
   const directory = await mkdtemp(join(tmpdir(), 'member-approved-org-'));
   const path = join(directory, 'approved-member-organization-private.json');
-  const start = hostedSource.indexOf(
-    '  if (needsApprovedAdminOrganization)\n    await stageProfileOrganizationConfig(',
-  );
-  const end = hostedSource.indexOf('  const childEnv = {', start);
-  assert.ok(start >= 0 && end > start);
-  const stage = hostedSource.slice(start, end);
-  const envStart = hostedSource.indexOf('    MATRX_REVIEWER_EXTENSION_DIR: extensionDir,', end);
-  const envEnd = hostedSource.indexOf('    ...(tabGroupsRoute?.env ?? {}),', envStart);
-  assert.ok(envStart >= 0 && envEnd > envStart);
-  const childEnvFields = hostedSource.slice(envStart, envEnd);
+  const memberLinkPath = join(directory, 'member-link.json');
   const env = {
     MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: JSON.stringify({
       approved_organization_name: 'Matrx Review Organization',
       approved_organization_id: '72336a38-f816-442f-ad48-18610128fb67',
     }),
+    MATRX_HOSTED_MEMBER_LINK_JSON: '{}',
   };
-  const execute = async (body, acceptanceCase) =>
-    runInNewContext(`(async () => { ${body} })()`, {
+  const execute = async (body, acceptanceCase, failAfterStage) => {
+    let launched = false;
+    await runInNewContext(`(async () => { ${body} })()`, {
       acceptanceCase,
-      needsApprovedAdminOrganization: false,
       approvedMemberOrganizationPath: path,
+      memberLinkPath,
       stageProfileOrganizationConfig,
-      process: { env },
+      unlink,
+      writeFile,
+      join,
+      assert,
+      process: { env, execPath: process.execPath },
+      repo: directory,
+      packageDir: directory,
+      extensionDir: '/private/extension',
+      relocatedReceipt: '/private/receipt',
+      artifactMode: 'store',
+      kind: 'store',
+      needsMemberLink: true,
+      needsApprovedAdminOrganization: false,
+      adminCredentialsCreated: false,
+      screenshotPrivateFiles: [],
+      scrapeRoute:
+        acceptanceCase === 'scrape-save-member'
+          ? { driver: 'tests/browser/scrape-save-native-acceptance.mjs' }
+          : null,
+      scrapeSelection: acceptanceCase === 'scrape-save-member' ? { mode: 'member' } : null,
+      scrapeSaveScope: 'full',
+      scrapeSaveDestination: null,
+      scrapeReloadDiagnostic: null,
+      seoRoute: null,
+      showcaseRoute: null,
+      tabGroupsRoute: null,
+      nativeAiProbeRoute: null,
+      notesFindRoute: null,
+      screenshotRoute: null,
+      spawn: (_command, args, options) => {
+        launched = true;
+        assert.equal(options.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE, path);
+        assert.equal(options.env.MATRX_HOSTED_PROFILE_ORGANIZATION_JSON, undefined);
+        const expectedDriver = {
+          'member-chat': 'reviewer-chat-store-acceptance.mjs',
+          'member-data': 'data-member-native-acceptance.mjs',
+          'scrape-save-member': 'scrape-save-native-acceptance.mjs',
+        }[acceptanceCase];
+        assert.equal(args[0], join(directory, 'tests/browser', expectedDriver));
+        const child = new EventEmitter();
+        // Model an external process-launch failure after real fixture staging.
+        stat(path)
+          .then(async (info) => {
+            assert.equal(info.mode & 0o777, 0o600);
+            assert.deepEqual(
+              JSON.parse(await readFile(path, 'utf8')),
+              JSON.parse(env.MATRX_HOSTED_PROFILE_ORGANIZATION_JSON),
+            );
+            if (failAfterStage) child.emit('error', new Error('injected_after_staging'));
+            else child.emit('exit', 0, null);
+          })
+          .catch((error) => child.emit('error', error));
+        return child;
+      },
     });
+    assert.equal(launched, true, 'acceptance child must execute');
+  };
+  const requireCleanup = async (body, acceptanceCase, failure) => {
+    if (failure)
+      await assert.rejects(execute(body, acceptanceCase, true), /injected_after_staging/);
+    else await execute(body, acceptanceCase, false);
+    await assert.rejects(stat(path), { code: 'ENOENT' }, 'approved organization must be removed');
+    await assert.rejects(stat(memberLinkPath), { code: 'ENOENT' });
+  };
   try {
-    const forwarded = (fields, acceptanceCase) =>
-      runInNewContext(`({ ${fields} })`, {
-        acceptanceCase,
-        approvedMemberOrganizationPath: path,
-        extensionDir: '/private/extension',
-        relocatedReceipt: '/private/receipt',
-      });
-    for (const acceptanceCase of ['member-chat', 'member-data']) {
-      await execute(stage, acceptanceCase);
-      assert.equal((await stat(path)).mode & 0o777, 0o600);
-      assert.equal(
-        JSON.parse(await readFile(path, 'utf8')).approved_organization_id,
-        '72336a38-f816-442f-ad48-18610128fb67',
-      );
-      assert.equal(
-        forwarded(childEnvFields, acceptanceCase).MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
-        path,
-      );
-      await rm(path);
+    for (const acceptanceCase of ['member-chat', 'member-data', 'scrape-save-member']) {
+      await requireCleanup(lifecycle, acceptanceCase, false);
+      await requireCleanup(lifecycle, acceptanceCase, true);
     }
-    const withoutForwarding = childEnvFields.replace(
-      / {4}\.\.\.\(acceptanceCase === 'member-chat'[\s\S]*? {6}: \{\}\),\n/,
-      '',
-    );
-    assert.notEqual(withoutForwarding, childEnvFields);
-    assert.throws(
-      () =>
-        assert.equal(
-          forwarded(withoutForwarding, 'member-data').MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
-          path,
-        ),
-      /undefined/,
-      'removed child env forwarding must turn the path proof red',
-    );
-    const withoutMemberStaging = stage.replace(
-      / {2}if \(acceptanceCase === 'member-chat' \|\| acceptanceCase === 'member-data'\)\n {4}await stageProfileOrganizationConfig\(approvedMemberOrganizationPath, process\.env\);\n/,
-      '',
-    );
-    assert.notEqual(withoutMemberStaging, stage);
-    await execute(withoutMemberStaging, 'member-data');
+    const cleanup =
+      '    if (memberOrganizationCreated) await unlink(approvedMemberOrganizationPath);';
+    assert.equal(lifecycle.split(cleanup).length, 2);
+    const deleted = lifecycle.replace(cleanup, '');
+    const movedAfterFinally = `${deleted}\n${cleanup}`;
+    for (const mutant of [deleted, movedAfterFinally]) {
+      await assert.rejects(
+        requireCleanup(mutant, 'scrape-save-member', true),
+        /approved organization must be removed/,
+      );
+      await unlink(path);
+    }
     await assert.rejects(
-      async () => assert.equal((await stat(path)).mode & 0o777, 0o600),
-      { code: 'ENOENT' },
-      'removed member staging must turn the file proof red',
+      requireCleanup('return undefined;', 'member-chat', false),
+      /acceptance child must execute/,
     );
   } finally {
     await rm(directory, { recursive: true, force: true });

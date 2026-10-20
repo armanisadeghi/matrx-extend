@@ -1,0 +1,29 @@
+{
+  "mode": "verify-scrape",
+  "run_id": "39513516651",
+  "attempt": 1,
+  "valid": true,
+  "workflow_sha": "3fa388219f7a188717c08d2d09f78517fd1f7312",
+  "workflow_source_sha256": "c001f41ae6e982998b923bf25e7470e4e84006055eba883358fae9ecb696bb8b",
+  "archive_digest": "sha256:84b89df0bf05999ed3f67745409c1f0df0ca0d385de67aff966d5052d1492f25",
+  "development_artifact": {
+    "run_id": "39512021108",
+    "artifact_id": "12306880342",
+    "source_sha": "3fa388219f7a188717c08d2d09f78517fd1f7312",
+    "github_digest": "sha256:9139a8e70f211913d38a3ff6e18dae557d808fa1d78f15b19b79259e03d26fc2"
+  },
+  "resource_receipts": {
+    "hosted-browser-39513516651-1": {
+      "valid": true,
+      "sha256": "111955d9edd9b7b2015a24f0248b7b1aabd79858f061f1e835f8dd26f5f1d147"
+    },
+    "hosted-guest-39513516651-1": {
+      "valid": true,
+      "sha256": "fb223dba0ce9441c7dec5cc09cc0d1109bf30a36ed0e7b95309190819a6c4841"
+    },
+    "hosted-package-39513516651-1": {
+      "valid": true,
+      "sha256": "9ec51fab5a4c04268bf4a56294279176beaecc4c086b58f4e880e2f1f34a8239"
+    }
+  }
+}

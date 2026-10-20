@@ -1,0 +1,13 @@
+{
+  "scope": "Read-only peer review; no UI, dispatch, or product-source edits.",
+  "source": "3fa388219f7a188717c08d2d09f78517fd1f7312; CI run 39512021108, artifact 12306880342, digest sha256:9139a8e70f211913d38a3ff6e18dae557d808fa1d78f15b19b79259e03d26fc2.",
+  "verdict_a_guest": "PASS only EXT-F-1007-T08 guest_no_signal_seo_and_empty_schema_panes: report and SEO/Schema screenshots agree; title present, description absent, no schema/JSON-LD signals, export identity+digest unchanged after both panes. 360px native panel; one owned localhost title-only fixture.",
+  "verdict_a_member": "No product verdict. Run 39513434786 stopped before product action at member organization selection: menu observed open, one visible option, zero exact matches; no Source save/readback. Actual app missing organization vs driver wrong configuration is unresolved; screenshots do not expose the menu or selection.",
+  "verdict_b_guest": "Evidence provenance consistent: raw report SHA d5be42654ceb6f90bb866cd60b2f96a7b64f1dce4a869725a8486fd75bf386c9; ZIP SHA matches terminal and certificate (84b89df0bf05999ed3f67745409c1f0df0ca0d385de67aff966d5052d1492f25); CI source/artifact/digest match. Normal verify-scrape certificate valid; certificate SHA matches summary.",
+  "resource_guest": "All 3 package/browser/guest journals terminate with RESOURCE_FINAL_DECISION valid, exit 0, resourceInvalid false.",
+  "resource_member": "Package/browser journals valid; guest journal terminates child_failed/1, resourceInvalid false. No normal certificate; normal verifier says HOSTED_RUN_NOT_SUCCESSFUL.",
+  "cleanup": "Member raw report supports cleanup.verified and no_write_possible; summary additionally reports one-use link absent and temporary secret removed. Guest supplied report does not explicitly prove fixture cleanup, so cleanup is unverified here.",
+  "boundaries": "No whole-T08, T04/T29, full Scrape, admin, Store, responsive-width, or overall mode PASS. Separate prior native-personal RESOURCE_PRESSURE_UNSAFE batch remains invalid and earns zero product credit per supplied context.",
+  "limits": "The fresh reload-only run was not ready/in scope; no claims made. Existing worktree is dirty in unrelated test files and two pending resource journals; left untouched.",
+  "next_action": "Treat guest subtarget as bounded evidence only. Diagnose member org selection inputs/configuration before a new exact-source admitted run; do not infer product failure from this auth-stage stop."
+}

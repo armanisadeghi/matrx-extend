@@ -657,6 +657,9 @@ try {
               panel,
               repo: REPO,
               memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+              memberApprovedOrganizationFile:
+                process.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE ??
+                assert.fail('scrape_save_approved_organization_file_required'),
               allowLadderOrganization: true,
               onStage: (value) => {
                 report.auth_stage = value;

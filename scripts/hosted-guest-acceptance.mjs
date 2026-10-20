@@ -563,8 +563,11 @@ async function run(prepared, artifactMode) {
   }
   if (needsApprovedAdminOrganization)
     await stageProfileOrganizationConfig(approvedAdminOrganizationPath, process.env);
-  if (acceptanceCase === 'member-chat' || acceptanceCase === 'member-data')
-    await stageProfileOrganizationConfig(approvedMemberOrganizationPath, process.env);
+  const needsApprovedMemberOrganization =
+    acceptanceCase === 'member-chat' ||
+    acceptanceCase === 'member-data' ||
+    acceptanceCase === 'scrape-save-member';
+  let memberOrganizationCreated = false;
   const childEnv = {
     ...process.env,
     // Acceptance must consume the same runtime this wrapper just verified.
@@ -599,7 +602,7 @@ async function run(prepared, artifactMode) {
       : {}),
     MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_RELEASE_RECEIPT: relocatedReceipt,
-    ...(acceptanceCase === 'member-chat' || acceptanceCase === 'member-data'
+    ...(['member-chat', 'member-data', 'scrape-save-member'].includes(acceptanceCase)
       ? { MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE: approvedMemberOrganizationPath }
       : {}),
     ...(tabGroupsRoute?.env ?? {}),
@@ -732,6 +735,10 @@ async function run(prepared, artifactMode) {
     }
   }
   try {
+    if (needsApprovedMemberOrganization) {
+      await stageProfileOrganizationConfig(approvedMemberOrganizationPath, process.env);
+      memberOrganizationCreated = true;
+    }
     if (screenshotRoute) {
       const credentials = JSON.parse(await readFile(adminCredentialsPath, 'utf8'));
       await mkdir(dirname(screenshotAdminEnvPath), { recursive: true, mode: 0o700 });
@@ -821,8 +828,7 @@ async function run(prepared, artifactMode) {
       await unlink(memberLinkPath);
     if (adminCredentialsCreated) await unlink(adminCredentialsPath);
     if (needsApprovedAdminOrganization) await unlink(approvedAdminOrganizationPath);
-    if (acceptanceCase === 'member-chat' || acceptanceCase === 'member-data')
-      await unlink(approvedMemberOrganizationPath);
+    if (memberOrganizationCreated) await unlink(approvedMemberOrganizationPath);
   }
 }
 

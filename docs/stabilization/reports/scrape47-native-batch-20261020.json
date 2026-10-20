@@ -1,0 +1,12 @@
+{
+  "status": "CORRECTED: prior Scrape T08/T09 observations receive ZERO acceptance credit; resource-unverified, not partial pass.",
+  "prior_run": "scrape47-native-batch-20261020-01 was invalid: first RESOURCE_PRESSURE_UNSAFE at 23:17:37, repeated; terminal stop confirmed but RESOURCE_FINAL_DECISION invalid/exitCode 3. Later reasons=[] reflect latched invalidity.",
+  "prior_copy": "Find-field pasteback was incomplete and is NOT a clipboard-format pass. No Scrape case accepted. No further copy testing performed.",
+  "source_sha": "3fa388219f7a188717c08d2d09f78517fd1f7312",
+  "ci_artifact": "12306880342 / CI 39512021108, digest sha256:9139a8e70f211913d38a3ff6e18dae557d808fa1d78f15b19b79259e03d26fc2; previously normally imported/promoted, v0.2.578.",
+  "reload_only_guard": "dev3fa-reload-only-20261020-01 admitted 23:22:38.895Z after recovery samples; no unsafe warning. Stop requested 23:23:58.326Z; RESOURCE_BROWSER_STOP_CONFIRMED resourceInvalid=false; RESOURCE_FINAL_DECISION valid exitCode 0; lease exited.",
+  "dev_native": "Chrome Profile 8: dev Matrx Extend v0.2.578, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, enabled; source /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev; Pin to toolbar on. Clicked actual Reload; Chrome showed Reloaded; version/id/path/pin rechecked afterward.",
+  "store_native": "Store Matrx Extend v0.2.205, ID hnfolienncfklkgmdjjmhhegglimlamg; enabled, Pin to toolbar on; verified after dev reload.",
+  "ui_boundary": "No capture/copy/large paste; cleared prior local Find bar and used only chrome://extensions details/reload. UI stopped before guard SIGINT.",
+  "changes": "No tracked files, source, docs, or HEAD changes."
+}

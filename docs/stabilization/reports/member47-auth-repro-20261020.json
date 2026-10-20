@@ -1,0 +1,49 @@
+{
+  "task_id": "member47-auth-repro-20261020",
+  "lane": "A",
+  "status": "AUTH_BOUNDARY_FAILED_NO_PRODUCT_VERDICT",
+  "source_sha": "3fa388219f7a188717c08d2d09f78517fd1f7312",
+  "extension_version": "0.2.578",
+  "ci": {
+    "run_id": 39512021108,
+    "conclusion": "success",
+    "artifact_id": 12306880342,
+    "digest": "sha256:9139a8e70f211913d38a3ff6e18dae557d808fa1d78f15b19b79259e03d26fc2"
+  },
+  "hosted": {
+    "run_id": 39513434786,
+    "attempt": 1,
+    "conclusion": "failure",
+    "artifact_id": 12306454529,
+    "archive_sha256": "70684ea47c75ee788ebca219cfe8159b283bfeced1a9c5326f4a1692284de091"
+  },
+  "actual": {
+    "stage": "member_organization_selection",
+    "code": "d87_member_organization_option_unavailable_not_observed",
+    "menu_open": true,
+    "visible_option_count": 1,
+    "exact_match_count": 0,
+    "exact_visible_match_count": 0,
+    "product_action_started": false
+  },
+  "resource_finals": {
+    "package": "valid/0",
+    "browser": "valid/0",
+    "guest": "child_failed/1",
+    "resource_invalid": false
+  },
+  "normal_verifier": {
+    "result": "HOSTED_RUN_NOT_SUCCESSFUL",
+    "certificate": null
+  },
+  "cleanup": {
+    "no_write_possible": true,
+    "native_cleanup_verified": true,
+    "local_one_use_link_absent": true,
+    "temporary_secret_removed": true,
+    "temporary_secret_name_count": 0,
+    "owned_run_terminal": true
+  },
+  "scope": "Single Source Save with no destination; EXT-F-1007-T04/T29 remain partial and EXT-D-0187 remains in-fix. No member Source save, persisted readback, or full-case verdict.",
+  "next_action": "Diagnose approved-organization option mismatch using this first safe stage/code and archived screenshots; change no product source until cause is evidenced, then use a new exact-source admitted run."
+}

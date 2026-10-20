@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T22:46:41.906963Z",
+  "updated_at": "2026-10-20T23:33:50.705111Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -26089,6 +26089,31 @@
                 "docs/stabilization/evidence/chrome-native-20261019/store205-scrape.sanitized.jsonl"
               ],
               "detail": "Operator observed Capture, Article, Links17 and matching Schema on public demo. Full cases remain partial; Images/Video/SEO, error recovery and reload unverified in this run; no current-main or development coverage."
+            },
+            {
+              "run_id": "39513516651",
+              "mode": "guest",
+              "version": "0.2.578",
+              "source_sha": "3fa388219f7a188717c08d2d09f78517fd1f7312",
+              "development_ci_run_id": 39512021108,
+              "development_artifact_id": 12306880342,
+              "tree_sha256": "73407b3d18b494139223246ec2a63bdad31027698384f29fe026d2a7f055ca1e",
+              "status": "verified-bounded-pass",
+              "resource_valid": true,
+              "new_unique_case_pass": false,
+              "scope": "guest_no_signal_seo_and_empty_schema_panes on one owned localhost title-only fixture at native 360px panel width; export identity/digest unchanged after pane selection.",
+              "passed_subtargets": [
+                "SEO pane showed title with no description signal.",
+                "Schema pane showed no schema/JSON-LD signal.",
+                "Capture export remained unchanged after each pane."
+              ],
+              "evidence": [
+                "docs/stabilization/reports/guest-scrape3fa-native-20261020.json",
+                "docs/stabilization/reports/scrape3fa-native-evidence-peer-20261020.json",
+                "docs/stabilization/evidence/scrape3fa-native/scrape-t08-seo-pane.png",
+                "docs/stabilization/evidence/scrape3fa-native/scrape-t08-schema-pane.png"
+              ],
+              "limits": "No full T08, reload, other roles, public-page SEO, Store, or full Scrape acceptance. Guest fixture cleanup was not explicitly evidenced. Independent peer accepted this named subtarget and its provenance."
             }
           ],
           "bounded_candidate_observations": [
@@ -26428,6 +26453,20 @@
                 ".research/scrape-live-peer-20261008-1544.json"
               ],
               "detail": "Guest copy formats and current-content equality remain covered warm and after reload."
+            },
+            {
+              "at": "2026-10-20T23:17:37Z",
+              "run_id": "scrape47-native-batch-20261020-01",
+              "mode": "guest",
+              "status": "resource-invalid-zero-credit",
+              "resource_valid": false,
+              "build_version": "0.2.578",
+              "source_sha": "3fa388219f7a188717c08d2d09f78517fd1f7312",
+              "evidence": [
+                "docs/stabilization/reports/scrape47-native-batch-20261020.json",
+                "docs/stabilization/reports/dev3fa-reload-only-20261020.json"
+              ],
+              "detail": "RESOURCE_PRESSURE_UNSAFE latched; terminal resource decision invalid/exit 3. Find-field pasteback contained only the first line and cannot establish complete clipboard formats. No Scrape acceptance credit; subsequent reload-only run establishes extension identity/reload only."
             }
           ]
         },

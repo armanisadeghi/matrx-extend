@@ -1,0 +1,47 @@
+{
+  "status": "source_reviewed_local_gates_pass_native_pending",
+  "changes": [
+    "Replaced reconstructed try/finally with contiguous production lifecycle execution in reviewer-chat-organization-boundary.test.mjs; no production module changes.",
+    "scrape-save-member-auth-diagnostic.test.mjs: pass real assert to extracted caller, provide approved fixture path, assert forwarding before injected auth failure; shared report pipeline untouched."
+  ],
+  "evidence": [
+    "11 focused tests pass after formatting.",
+    "Actual staging and filesystem lifecycle execute for member-chat, member-data, scrape-save-member; spawn alone is substituted.",
+    "Checks child driver, forwarded fixture path, private mode, content, success cleanup and failure cleanup.",
+    "Final targeted run: 13/13 pass across organization boundary, org admission and auth diagnostics."
+  ],
+  "guardMutants": [
+    "Scratch production source cleanup deletion: exit 1, approved organization must be removed.",
+    "Scratch production source cleanup moved after real finally: exit 1, approved organization must be removed.",
+    "In-memory constant-return lifecycle: rejected because child never executes.",
+    "Embedded delete and move-after-finally self-tests remain in guard."
+  ],
+  "limitations": [
+    "No native UI, hosted launch, account/org changes, full suite, commit or push performed.",
+    "This proves harness lifecycle, not live native organization selection."
+  ],
+  "nextAction": "Push verified source/evidence unit, await exact synchronized-main CI success, then normal admitted member Scrape Save original and surrounding retest; no product closure yet.",
+  "owner_gate_checkpoint": {
+    "fresh_peer": "docs/stabilization/reports/member-org-final-executable-peer-20261020.json",
+    "focused": {
+      "passed": 798,
+      "failed": 0,
+      "skipped_linux": 10,
+      "journal": "docs/stabilization/resource-journals/member-approved-org-final-focused-20261020.jsonl"
+    },
+    "compile": {
+      "exit": 0,
+      "resource_valid": true,
+      "journal": "docs/stabilization/resource-journals/member-approved-org-final-compile-20261020.jsonl"
+    },
+    "lint": {
+      "exit": 0,
+      "resource_valid": true,
+      "files": 3175,
+      "errors": 0,
+      "existing_warnings": 927,
+      "journal": "docs/stabilization/resource-journals/member-approved-org-final-lint-20261020.jsonl"
+    },
+    "native": "pending exact-source CI and normal admitted member retest"
+  }
+}

@@ -28,6 +28,7 @@ const runAuth = new Function(
   'panel',
   'REPO',
   'process',
+  'assert',
   `return (async () => { ${authCall[0]} })();`,
 );
 
@@ -38,6 +39,7 @@ test('Scrape member auth retains the first safe boundary and failure code', asyn
   ]) {
     const report = {};
     const secret = 'private-action-link';
+    const approvedFile = '/private/approved-member-organization.json';
     const failure = new Error('member_auth_boundary_failed');
     failure.memberAuthBoundary = stage;
     failure.memberAuthFailureCode = code;
@@ -45,7 +47,8 @@ test('Scrape member auth retains the first safe boundary and failure code', asyn
       runAuth(
         report,
         (action) => action(),
-        async ({ onStage, onAuthDiagnostic }) => {
+        async ({ onStage, onAuthDiagnostic, memberApprovedOrganizationFile }) => {
+          assert.equal(memberApprovedOrganizationFile, approvedFile);
           onStage?.(stage);
           onAuthDiagnostic?.({ phase: stage, outcome: 'unobserved' });
           throw failure;
@@ -54,7 +57,13 @@ test('Scrape member auth retains the first safe boundary and failure code', asyn
         {},
         {},
         '.',
-        { env: { MATRX_REVIEWER_MAGIC_LINK_FILE: secret } },
+        {
+          env: {
+            MATRX_REVIEWER_MAGIC_LINK_FILE: secret,
+            MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE: approvedFile,
+          },
+        },
+        assert,
       ),
       (error) => error === failure,
     );

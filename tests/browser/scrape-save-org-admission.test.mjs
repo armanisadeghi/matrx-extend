@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { runInNewContext } from 'node:vm';
 import {
   observeMemberLogicalOrganizationGet,
   refreshMemberLogicalOrganizationGet,
@@ -11,6 +12,40 @@ const EXPECTED_ORG = 'a4152086-c3e5-44e8-a853-8e3da9918dd8';
 const OTHER_ORG = '3e26f91c-6654-4ab8-b554-13e404918d3b';
 const TOKEN = 'Bearer private-test-token';
 const ORIGIN = 'https://server.app.matrxserver.com';
+
+test('D187 passes the staged approved organization to real member sign-in', async () => {
+  const source = await readFile(
+    new URL('./scrape-save-native-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const start = source.indexOf('resourceAction(() =>\n            signInSettings({');
+  const end = source.indexOf('\n          );', start);
+  assert.ok(start >= 0 && end > start, 'scrape_save_member_signin_boundary_missing');
+  const run = (approvedFile) =>
+    runInNewContext(
+      `(async () => { return await ${source.slice(start, end + '\n          );'.length)} })()`,
+      {
+        resourceAction: (action) => action(),
+        signInSettings: async (options) => options,
+        assert,
+        process: {
+          env: {
+            MATRX_REVIEWER_MAGIC_LINK_FILE: '/private/member-link.json',
+            ...(approvedFile && { MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE: approvedFile }),
+          },
+        },
+        page: {},
+        panel: {},
+        REPO: '/checkout',
+        report: { auth_diagnostic: {} },
+      },
+    );
+  const actual = await run('/private/approved-member.json');
+  assert.equal(actual.mode, 'member');
+  assert.equal(actual.memberApprovedOrganizationFile, '/private/approved-member.json');
+  assert.equal(actual.memberLinkFile, '/private/member-link.json');
+  await assert.rejects(run(null), /scrape_save_approved_organization_file_required/);
+});
 
 function observedPanel() {
   const listeners = new Map();
