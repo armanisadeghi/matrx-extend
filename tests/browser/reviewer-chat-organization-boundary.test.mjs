@@ -102,7 +102,10 @@ test('member driver loads the staged config and requires the selected UI organiz
   const selectionStart = source.indexOf(
     '        if (!UNINTERRUPTED)\n          assert.equal(\n            selectedOrganizationFingerprint,',
   );
-  const selectionEnd = source.indexOf('        const storageShape = ', selectionStart);
+  const selectionEnd = source.indexOf(
+    '        if (!UNINTERRUPTED)\n          requireOriginalMemberPanel(',
+    selectionStart,
+  );
   assert.ok(
     loadStart >= 0 &&
       loadEnd > loadStart &&
@@ -213,7 +216,9 @@ test('signed-in member reaches Chat without a persisted device organization over
       report: { account: {} },
       stage: '',
       sampleAuthBoundary: async (phase) => phases.push(phase),
-      restoreMemberForegroundWithReport: async () => {},
+      createMemberPanelLifecycleGuard: () => ({ check: async () => {} }),
+      WEB_ORIGIN: 'https://www.aimatrx.com',
+      DEMO_PATH: '/matrx-extend-demo',
       web: {},
       page: {},
       native: {},
@@ -227,7 +232,7 @@ test('signed-in member reaches Chat without a persisted device organization over
       click: async (_panel, kind, label) => clicks.push([kind, label]),
     });
     assert.deepEqual(waits, ['reviewer_swipe_file_tab_visible']);
-    assert.deepEqual(phases, ['before_foreground_restore', 'after_foreground_restore']);
+    assert.deepEqual(phases, []);
     assert.deepEqual(
       clicks,
       [['title', 'Chat']],

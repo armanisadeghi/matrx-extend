@@ -186,6 +186,18 @@ test('cleanup failure cannot erase the classified visible-answer rejection', () 
   assert.equal(report.failure_code, 'reviewer_chat_visible_answer_unverified');
 });
 
+test('organization foreground failures retain specific safe receipt codes', () => {
+  for (const code of [
+    'reviewer_member_panel_hidden_during_org_proof',
+    'reviewer_member_original_panel_unverified',
+  ]) {
+    const report = {};
+    recordReviewerFailure(report, 'reviewer_organization_resolve', new Error(code));
+    assert.equal(report.failure_code, code);
+    assert.equal(report.status, 'unverified');
+  }
+});
+
 // A reviewer receives two terminal turns, but the final answer may be offscreen.
 test('runner persists a real CDP panel image and sanitized failure report before rejecting an ineligible answer', async () => {
   const artifacts = await mkdtemp(join(tmpdir(), 'member-visible-proof-'));

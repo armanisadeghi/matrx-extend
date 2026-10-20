@@ -21,6 +21,24 @@ export function recordMemberForegroundVisibility(diagnostic, observation) {
   });
 }
 
+/** Refuse a replacement or hidden document before native member picker input. */
+export function requireOriginalMemberPanel(before, after, expectedTargetId) {
+  const uniqueDocument = (row) =>
+    row?.panel_targets_measured === true &&
+    row.topology_measured === true &&
+    row.panel_target_id === expectedTargetId &&
+    row.panel_target_ids?.length === 1 &&
+    row.panel_target_ids[0] === expectedTargetId &&
+    row.panel_contexts?.length === 1 &&
+    typeof row.panel_contexts[0].context_id === 'string' &&
+    typeof row.panel_contexts[0].document_id === 'string';
+  if (!uniqueDocument(before) || !uniqueDocument(after))
+    throw new Error('reviewer_member_original_panel_unverified');
+  if (after.panel_visibility !== 'visible')
+    throw new Error('reviewer_member_panel_hidden_during_org_proof');
+  return after;
+}
+
 export function classifyMemberForegroundFailure(error, transportFailureClass) {
   const message = String(error?.message ?? '');
   if (/native_sidepanel_open_refused/.test(message)) return 'opener_refused';
@@ -144,12 +162,30 @@ export async function recordMemberAuthTopologyBoundary({
   writeReport,
 }) {
   report.auth_topology ??= [];
+  let snapshot;
   try {
-    report.auth_topology.push(await sampleMemberAuthTopology(native, panel, phase));
+    snapshot = await sampleMemberAuthTopology(native, panel, phase);
   } catch {
-    report.auth_topology.push({ phase, topology_measured: false, probe_failed: true });
+    snapshot = { phase, topology_measured: false, probe_failed: true };
   }
+  const previous = report.auth_topology.at(-1);
+  report.auth_topology.push(snapshot);
+  if (snapshot.panel_visibility === 'hidden' && !report.first_hidden_boundary)
+    report.first_hidden_boundary = {
+      phase,
+      previous_phase: previous?.phase ?? null,
+      previous_visibility: previous?.panel_visibility ?? null,
+      same_target:
+        typeof previous?.panel_target_id === 'string' &&
+        previous.panel_target_id === snapshot.panel_target_id,
+      same_document:
+        previous?.panel_contexts?.length === 1 &&
+        snapshot.panel_contexts?.length === 1 &&
+        typeof previous.panel_contexts[0].document_id === 'string' &&
+        previous.panel_contexts[0].document_id === snapshot.panel_contexts[0].document_id,
+    };
   await writeReport(output, report);
+  return snapshot;
 }
 
 async function failureSnapshot({ web, page, native, panel, evaluate }) {

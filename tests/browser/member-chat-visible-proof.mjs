@@ -27,6 +27,8 @@ const SAFE_FAILURE_CODES = new Set([
   'reviewer_chat_visible_answer_unverified',
   'reviewer_chat_visible_answer_screenshot_missing',
   'reviewer_native_panel_foreground_not_observed',
+  'reviewer_member_panel_hidden_during_org_proof',
+  'reviewer_member_original_panel_unverified',
 ]);
 
 /** Capture only the native side panel; never include the web authentication form. */

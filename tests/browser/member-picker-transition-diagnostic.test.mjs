@@ -160,7 +160,10 @@ test('checked UUID proof retains trusted picker action and Escape ordering', asy
     },
     hash: (value) => `fingerprint:${value === id}`,
     UUID: /^[0-9a-f-]{36}$/,
-    samplePickerBoundary: async (phase) => actions.push(`sample:${phase}`),
+    samplePickerBoundary: async (phase) => {
+      actions.push(`sample:${phase}`);
+      return { panel_visibility: 'visible' };
+    },
   });
   assert.equal(fingerprint, 'fingerprint:true');
   assert.deepEqual(actions, [
@@ -174,6 +177,92 @@ test('checked UUID proof retains trusted picker action and Escape ordering', asy
     'Input.dispatchKeyEvent:keyUp',
     'sample:after_escape_keyup',
   ]);
+});
+
+test('hidden member panel refuses picker input before trusted click', async () => {
+  const actions = [];
+  await assert.rejects(
+    selectedMemberOrganizationFingerprint({
+      panel: { send: async () => actions.push('native_key') },
+      click: async () => actions.push('native_click'),
+      evaluate: async () => {
+        throw new Error('hidden DOM proof must not run');
+      },
+      waitFor: async () => {
+        throw new Error('hidden wait must not run');
+      },
+      hash: () => {
+        throw new Error('hidden hash must not run');
+      },
+      UUID: /^[0-9a-f-]{36}$/,
+      samplePickerBoundary: async (phase) => {
+        actions.push(phase);
+        return { panel_visibility: 'hidden' };
+      },
+    }),
+    /reviewer_member_panel_hidden_during_org_proof/,
+  );
+  assert.deepEqual(actions, ['before_picker_click']);
+});
+
+test('checked-UUID picker rechecks after pointer settling before mouse press', async () => {
+  const actions = [];
+  let visible = true;
+  await assert.rejects(
+    selectedMemberOrganizationFingerprint({
+      panel: { send: async () => actions.push('native_key') },
+      click: async (_panel, _kind, _label, _onPhase, beforeDispatch) => {
+        visible = false;
+        await beforeDispatch();
+        actions.push('mousePressed');
+      },
+      evaluate: async () => {
+        throw new Error('picker did not open');
+      },
+      waitFor: async () => {
+        throw new Error('picker did not open');
+      },
+      hash: () => 'fingerprint',
+      UUID: /^[0-9a-f-]{36}$/,
+      samplePickerBoundary: async () => ({ panel_visibility: 'visible' }),
+      assertPanelReady: async () => {
+        if (!visible) throw new Error('reviewer_member_panel_hidden_during_org_proof');
+        actions.push('original_visible');
+      },
+    }),
+    /reviewer_member_panel_hidden_during_org_proof/,
+  );
+  assert.deepEqual(actions, ['original_visible']);
+});
+
+test('panel hidden after picker open refuses UUID credit after releasing Escape', async () => {
+  const actions = [];
+  await assert.rejects(
+    selectedMemberOrganizationFingerprint({
+      panel: { send: async (_method, args) => actions.push(args.type) },
+      click: async () => actions.push('click'),
+      evaluate: async () => ({
+        pickerCount: 1,
+        checkedCount: 1,
+        value: 'a4152086-c3e5-44e8-a853-8e3da9918dd8',
+        labelMatches: true,
+      }),
+      waitFor: async (_label, read, accept) => {
+        const result = await read();
+        assert.equal(accept(result), true);
+        return result;
+      },
+      hash: () => 'fingerprint',
+      UUID: /^[0-9a-f-]{36}$/,
+      samplePickerBoundary: async (phase) => {
+        actions.push(phase);
+        return { panel_visibility: phase === 'after_picker_click' ? 'hidden' : 'visible' };
+      },
+    }),
+    /reviewer_member_panel_hidden_during_org_proof/,
+  );
+  assert.ok(actions.indexOf('click') > actions.indexOf('before_picker_click'));
+  assert.ok(actions.indexOf('keyUp') > actions.indexOf('keyDown'));
 });
 
 test('ambiguous checked options refuse proof and still release the native key', async () => {
@@ -197,7 +286,10 @@ test('ambiguous checked options refuse proof and still release the native key', 
           throw new Error('must not hash ambiguity');
         },
         UUID: /^[0-9a-f-]{36}$/,
-        samplePickerBoundary: async (phase) => actions.push(phase),
+        samplePickerBoundary: async (phase) => {
+          actions.push(phase);
+          return { panel_visibility: 'visible' };
+        },
       }),
     /member_selected_organization_option_not_observed/,
   );
@@ -212,6 +304,7 @@ test('ambiguous checked options refuse proof and still release the native key', 
 });
 
 for (const failingPhase of [
+  'before_picker_click',
   'after_picker_click',
   'before_escape_keydown',
   'after_escape_keydown',
@@ -239,12 +332,18 @@ for (const failingPhase of [
           samplePickerBoundary: async (phase) => {
             actions.push(phase);
             if (phase === failingPhase) throw new Error('private write failure');
+            return { panel_visibility: 'visible' };
           },
         }),
-      /member_picker_trace_persist_failed/,
+      failingPhase === 'before_picker_click'
+        ? /reviewer_member_panel_hidden_during_org_proof/
+        : /member_picker_trace_persist_failed/,
     );
-    assert.ok(actions.indexOf('keyDown') >= 0);
-    assert.ok(actions.indexOf('keyUp') > actions.indexOf('keyDown'));
-    assert.equal(actions.at(-1), 'after_escape_keyup');
+    if (failingPhase === 'before_picker_click') assert.deepEqual(actions, ['before_picker_click']);
+    else {
+      assert.ok(actions.indexOf('keyDown') >= 0);
+      assert.ok(actions.indexOf('keyUp') > actions.indexOf('keyDown'));
+      assert.equal(actions.at(-1), 'after_escape_keyup');
+    }
   });
 }

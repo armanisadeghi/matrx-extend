@@ -417,7 +417,7 @@ export async function toolsCatalogState(panel) {
   );
 }
 
-export async function click(panel, kind, label, onPhase = undefined) {
+export async function click(panel, kind, label, onPhase = undefined, beforeDispatch = undefined) {
   const pointerSample = () =>
     evaluate(
       panel,
@@ -1031,6 +1031,9 @@ export async function click(panel, kind, label, onPhase = undefined) {
     throw error;
   }
   onPhase?.('target_selected');
+  // Callers with a native visibility/ownership prerequisite can recheck it
+  // after pointer settling and immediately before the first mouse event.
+  await beforeDispatch?.();
   try {
     onPhase?.('press_attempted');
     await panel.send('Input.dispatchMouseEvent', {

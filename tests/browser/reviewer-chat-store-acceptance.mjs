@@ -30,6 +30,7 @@ import {
 import {
   recordMemberAuthTopologyBoundary,
   recordMemberForegroundVisibility,
+  requireOriginalMemberPanel,
 } from './member-foreground-diagnostic.mjs';
 import {
   authenticatedWebIdentity,
@@ -302,9 +303,12 @@ async function storedSessionShape(panel) {
   return evaluate(panel, storageShapeExpression());
 }
 
-async function selectReviewerOrganization(panel) {
+async function selectReviewerOrganization(panel, beforeInput = async () => {}) {
   const expectedName = UNINTERRUPTED ? approvedOrganization.name : "Matrx's Org";
-  await click(panel, 'organization', '');
+  await beforeInput('before_default_org_picker_click');
+  await click(panel, 'organization', '', undefined, () =>
+    beforeInput('before_default_org_picker_press'),
+  );
   const target = await evaluate(
     panel,
     `(() => {
@@ -335,6 +339,7 @@ async function selectReviewerOrganization(panel) {
   if (UNINTERRUPTED) {
     try {
       // The shared driver scrolls and requires a stable point inside every overflow clip.
+      await beforeInput('before_default_org_option_click');
       await click(panel, 'option', expectedName);
       return { ...diagnostics, pointer_target_verified: true };
     } catch (error) {
@@ -342,6 +347,7 @@ async function selectReviewerOrganization(panel) {
       throw error;
     }
   }
+  await beforeInput('before_default_org_option_click');
   await panel.send('Input.dispatchMouseEvent', {
     type: 'mousePressed',
     x: target.x,
@@ -1377,6 +1383,39 @@ try {
         } finally {
           await adminCheck.stop();
         }
+        let restoredPanelTopology = null;
+        if (!UNINTERRUPTED) {
+          stage = 'reviewer_native_panel_foreground';
+          const beforeForeground = await sampleAuthBoundary('before_foreground_restore');
+          report.foreground_diagnostic = {
+            steps: [],
+            visibility_observations: [],
+            failure_substep: null,
+            failure_class: null,
+            failure_snapshot: null,
+          };
+          let afterForeground;
+          try {
+            await restoreMemberForegroundWithReport({
+              web,
+              page,
+              native,
+              panel,
+              waitFor,
+              evaluate,
+              output: OUTPUT,
+              report,
+              stage,
+            });
+          } finally {
+            afterForeground = await sampleAuthBoundary('after_foreground_restore');
+          }
+          restoredPanelTopology = requireOriginalMemberPanel(
+            beforeForeground,
+            afterForeground,
+            native.panelTarget.targetId,
+          );
+        }
         const samplePickerBoundary = (phase) =>
           recordMemberPickerBoundary({
             panel,
@@ -1385,8 +1424,18 @@ try {
             output: OUTPUT,
             writeReport: writeReviewerReport,
           });
-        if (!UNINTERRUPTED) await samplePickerBoundary('after_admin_check_stop');
+        if (!UNINTERRUPTED) {
+          const firstPickerSample = await samplePickerBoundary('after_admin_check_stop');
+          if (firstPickerSample.panel_visibility !== 'visible')
+            throw new Error('reviewer_member_panel_hidden_during_org_proof');
+        }
         stage = 'reviewer_organization_resolve';
+        const assertMemberPickerReady = async (phase) =>
+          requireOriginalMemberPanel(
+            restoredPanelTopology,
+            await sampleAuthBoundary(phase),
+            native.panelTarget.targetId,
+          );
         let account = await waitFor(
           'reviewer_organization_resolved',
           () => accountObservation(panel, email),
@@ -1396,9 +1445,18 @@ try {
         let selectionDiagnostics = null;
         if (UNINTERRUPTED || !account.organizationSelected) {
           stage = 'select_reviewer_default_organization';
-          await sampleAuthBoundary('before_organization_select');
+          const beforeSelection = await sampleAuthBoundary('before_organization_select');
+          if (!UNINTERRUPTED)
+            requireOriginalMemberPanel(
+              restoredPanelTopology,
+              beforeSelection,
+              native.panelTarget.targetId,
+            );
           try {
-            selectionDiagnostics = await selectReviewerOrganization(panel);
+            selectionDiagnostics = await selectReviewerOrganization(
+              panel,
+              UNINTERRUPTED ? undefined : assertMemberPickerReady,
+            );
             await sampleAuthBoundary('after_organization_select');
           } catch (error) {
             report.account = {
@@ -1472,12 +1530,19 @@ try {
               hash,
               UUID,
               samplePickerBoundary,
+              assertPanelReady: assertMemberPickerReady,
             });
         if (!UNINTERRUPTED)
           assert.equal(
             selectedOrganizationFingerprint,
             hash(approvedOrganization.id),
             'member_selected_organization_must_match_approved_config',
+          );
+        if (!UNINTERRUPTED)
+          requireOriginalMemberPanel(
+            restoredPanelTopology,
+            await sampleAuthBoundary('after_organization_proof'),
+            native.panelTarget.targetId,
           );
         const storageShape = await storedSessionShape(panel);
         report.account = {
@@ -1505,39 +1570,13 @@ try {
         if (
           !UNINTERRUPTED &&
           report.organization_picker_transition?.some(
-            (sample) => sample.panel_visibility === 'hidden',
+            (sample) => sample.panel_visibility !== 'visible',
           )
         )
           throw new Error('reviewer_member_panel_hidden_during_org_proof');
         if (UNINTERRUPTED) {
           await exerciseApproval(native);
           return;
-        }
-
-        stage = 'reviewer_native_panel_foreground';
-        await sampleAuthBoundary('before_foreground_restore');
-        // Restore the native member panel after web authentication.
-        report.foreground_diagnostic = {
-          steps: [],
-          visibility_observations: [],
-          failure_substep: null,
-          failure_class: null,
-          failure_snapshot: null,
-        };
-        try {
-          await restoreMemberForegroundWithReport({
-            web,
-            page,
-            native,
-            panel,
-            waitFor,
-            evaluate,
-            output: OUTPUT,
-            report,
-            stage,
-          });
-        } finally {
-          await sampleAuthBoundary('after_foreground_restore');
         }
 
         stage = 'signed_in_swipe_file_tab';

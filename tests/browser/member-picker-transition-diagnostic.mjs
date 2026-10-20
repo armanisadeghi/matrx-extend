@@ -76,18 +76,30 @@ export async function selectedMemberOrganizationFingerprint({
   hash,
   UUID,
   samplePickerBoundary,
+  assertPanelReady = async () => {},
 }) {
   let sampleFailed = false;
+  let hiddenObserved = false;
   const sample = async (phase) => {
     try {
-      await samplePickerBoundary(phase);
+      const observation = await samplePickerBoundary(phase);
+      if (observation?.panel_visibility !== 'visible') {
+        hiddenObserved = true;
+        if (phase === 'before_picker_click')
+          throw new Error('reviewer_member_panel_hidden_during_org_proof');
+      }
     } catch {
+      if (phase === 'before_picker_click')
+        throw new Error('reviewer_member_panel_hidden_during_org_proof');
       // Preserve native input cleanup, then refuse the unpersisted diagnostic.
       sampleFailed = true;
     }
   };
   await sample('before_picker_click');
-  await click(panel, 'organization', '');
+  await assertPanelReady('before_checked_org_picker_click');
+  await click(panel, 'organization', '', undefined, () =>
+    assertPanelReady('before_checked_org_picker_press'),
+  );
   let fingerprint;
   try {
     await sample('after_picker_click');
@@ -142,5 +154,6 @@ export async function selectedMemberOrganizationFingerprint({
     }
   }
   if (sampleFailed) throw new Error('member_picker_trace_persist_failed');
+  if (hiddenObserved) throw new Error('reviewer_member_panel_hidden_during_org_proof');
   return fingerprint;
 }
