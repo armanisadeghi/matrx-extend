@@ -1,0 +1,11 @@
+{
+  "case": "EXT-D-0274 clock precision repair",
+  "scope": "Independent read-only review of three dirty files at HEAD 4a7ec28bf; no edits, commit, hosted, UI, or AI calls",
+  "verdict_A": "PASS for retrospective raw 39472238118 T03: immutable report returns correlated_panel_materialization and full predicate true; native report pass/complete with valid resources and cleanup. Formal normal CLI certificate remains pending because executable verifier changed after artifact source e12c4d7.",
+  "verdict_B": "PASS for narrow repair quality: all three timestamp relaxations retain finite nondecreasing clock, strict array order, panel/worker identity, and normal source eligibility gates; no findings.",
+  "raw_sha256": "162c933a3701c3e4aabfed63be50872dcd34f9b6db6cb2cd727ecc7fafe9dafa",
+  "archive_sha256": "51bc811f6555f161358c3f3f989f3e9af58c55082ef1f5f9b0a865dd2ea1822e",
+  "red_green": "Evaluated committed HEAD proof function against unchanged raw: null; dirty repaired function: correlated_panel_materialization. New clock-tie test is in touched suite, 9/9 pass.",
+  "independent_mutants": "Unchanged raw cloned in memory: same-ms reversed order at each boundary; invalid first timestamp; reversed clock; replacement in pre-click or before retirement; wrong final/replacement/old-panel identity; contradictory creation flag; dropped entries all refused.",
+  "review_limit": "Historical native run predates verifier edit; it proves product behavior and retrospective predicate only, not a new eligible post-change artifact/native certificate."
+}

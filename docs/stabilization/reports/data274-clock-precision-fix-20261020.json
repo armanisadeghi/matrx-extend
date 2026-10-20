@@ -1,0 +1,15 @@
+{
+  "case": "EXT-D-0274",
+  "state": "fixed; independent review and new eligible native certificate pending",
+  "source_head_at_start": "4a7ec28bf",
+  "scope": [
+    "scripts/hosted-remote-admission.mjs",
+    "scripts/hosted-member-data-lifecycle.test.mjs",
+    "docs/stabilization/defects/EXT-D-0274.json"
+  ],
+  "cause": "Date.parse millisecond precision tied three ordinally ordered lifecycle boundaries",
+  "fix": "Allow equal finite instants at pre-click/click, click/destruction, and destruction/first-panel only with existing strict array indices; preserve nondecreasing global clock and all other gates",
+  "red": "original immutable 39472238118 raw panel basis null; new targeted test failed on pre-click tie",
+  "green": "original raw panel basis correlated_panel_materialization and full report predicate true; 9/9 targeted tests, compile, scoped Biome, diff check pass",
+  "remaining": "No commit or push by this worker; root to obtain independent review, commit, and schedule new eligible artifact/native run. Historical raw is not a certificate."
+}

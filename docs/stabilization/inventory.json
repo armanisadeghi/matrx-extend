@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T17:58:00Z",
+  "updated_at": "2026-10-20T18:25:00Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -32415,18 +32415,22 @@
             },
             "admin": {
               "status": "partial",
-              "run_id": "scrape577-native-controls-20261020-01",
+              "run_id": "seo577-admin-native-details-20261020",
               "build_version": "0.2.577",
-              "source_sha": "45b0cc8640643fdc9c34927b55a5fbd586654cfa",
+              "source_sha": "e12c4d75320bf3862500f71e633096ddc64baa74",
+              "development_ci_run_id": 39470457561,
+              "development_artifact_id": 12287281978,
               "resource_invalid": false,
+              "detail": "Actual Re-audit rendered title/description/canonical/social/language/Article+Organization/4headings/18links/2images/readability/performance; schema Article link loaded schema.org and original audit persisted on return.",
+              "unverified": [
+                "robots directives/groups not rendered",
+                "360px/reload/broken-preview variants",
+                "saved independently inspectable screenshot"
+              ],
               "evidence": [
-                "docs/stabilization/reports/scrape577-native-controls-20261020.json"
-              ],
-              "detail": "completed Looks good / No problems found audit; title, canonical, social preview, language, Article/Organization links, headings, links, images, readability and HTTP/load/transfer details displayed",
-              "tested_controls": [
-                "EXT-F-1008-C09"
-              ],
-              "remaining_criteria": "Warm admin only; Images/Video and empty states not exercised in this slice. Reload, outbound link activation, clipboard, re-audit, save/history and other applicable criteria remain unverified. No saved independently inspectable image; tester observations only."
+                "docs/stabilization/reports/seo577-admin-native-details-20261020.json",
+                "docs/stabilization/reports/final-product-evidence-peer-20261020.json"
+              ]
             }
           },
           "result_history": [
@@ -32839,6 +32843,26 @@
                 "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T09 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred."
               },
               "superseded_at": "2026-10-10T04:50:06.670236Z"
+            },
+            {
+              "mode": "admin",
+              "result": {
+                "status": "partial",
+                "run_id": "scrape577-native-controls-20261020-01",
+                "build_version": "0.2.577",
+                "source_sha": "45b0cc8640643fdc9c34927b55a5fbd586654cfa",
+                "resource_invalid": false,
+                "evidence": [
+                  "docs/stabilization/reports/scrape577-native-controls-20261020.json"
+                ],
+                "detail": "completed Looks good / No problems found audit; title, canonical, social preview, language, Article/Organization links, headings, links, images, readability and HTTP/load/transfer details displayed",
+                "tested_controls": [
+                  "EXT-F-1008-C09"
+                ],
+                "remaining_criteria": "Warm admin only; Images/Video and empty states not exercised in this slice. Reload, outbound link activation, clipboard, re-audit, save/history and other applicable criteria remain unverified. No saved independently inspectable image; tester observations only."
+              },
+              "superseded_at": "2026-10-20T18:25:00Z",
+              "reason": "New e12 admin native actual re-audit and schema link activation; older frozen observations retained."
             }
           ],
           "defect_ids": [
@@ -33131,6 +33155,17 @@
               ],
               "independent_review": "docs/stabilization/reports/peer-review-run38058774504.json",
               "detail": "One bounded owned fixture target passed on frozen v0.2.466. The local DOM source had one hreflang es candidate and one Article schema candidate; matching SEO detail doors opened their expected destinations through trusted input, while the original page remained open and unchanged after each. Package, browser, and guest resource finals are all valid, admitted, resource_invalid=false, child exit 0; guest CPU-pending recovered. This establishes no other target, current-main 6bca behavior, full T09/guest SEO, member/admin, or Store behavior."
+            },
+            {
+              "at": "2026-10-20T18:25:00Z",
+              "mode": "guest",
+              "run_id": "preflight-guest-seo-metadata-native-b-20261020",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "detail": "Normal hosted planner refused metadata/owned scope HOSTED_SEO_SCOPE_REFUSED. No native job/secret/fixture or bypass. Ordinary separate admin Mac case does not verify guest metadata.",
+              "evidence": [
+                "docs/stabilization/reports/guest-seo-metadata-native-b-20261020.json"
+              ]
             }
           ],
           "revalidation_history": [
@@ -45573,39 +45608,41 @@
             "EXT-D-0272",
             "EXT-D-0274"
           ],
-          "verification_note": "Member081 native clipboard bytes and pre/post-reload lifecycle observed; formal certificate remains refused by D274. This is not admin, special-cell, whole-Data or actual Store577 coverage.",
+          "verification_note": "Member e12 native pre/post-reload lifecycle and clipboard bytes observed, normal certificate refused on same-ms precision. e157 source fix independently checked, new eligible native certificate pending. Not admin/special-cell/whole-Data/Store577 acceptance.",
           "results": {
             "member": {
               "status": "partial",
-              "run_id": 39465749057,
+              "run_id": 39472238118,
               "build_version": "0.2.577",
-              "source_sha": "08150841aea86868f28ada4ad03eecb619824ae8",
+              "source_sha": "e12c4d75320bf3862500f71e633096ddc64baa74",
               "resource_invalid": false,
               "automation_exit": "success",
               "native_report": "pass/stage complete",
-              "formal_verifier": "HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID: replacement_panel_created_event=false; no normal certificate",
+              "formal_verifier": "HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID: pre-click and click-start both18:16:32.954Z rejected by strict time inequality. Clock-precision source fix e157 independently passes; new eligible certificate pending.",
               "verified_subtargets": [
-                "actual member/non-admin authentication and approved-org proof",
-                "two distinct picker previews",
-                "org-matched HTTP201 save and saved-list lookup",
-                "pre-reload saved-pattern run",
-                "native TSV/JSON/AI clipboard readbacks",
-                "unsaved selection Cancel clears state",
-                "replacement worker and exact panel/context/request opening",
-                "same target/frame visible Data readiness0→1 after2679ms",
-                "post-reload saved-pattern/run and all three clipboard readbacks"
+                "actual member/non-admin and approved-org proof",
+                "org-matched HTTP201 save/list/refresh",
+                "pre/post-reload saved-pattern run",
+                "pre/post-reload native TSV/JSON/AI clipboard matching chosen fixture fields",
+                "unsaved Cancel clears state",
+                "replacement exact panel/context/request after old-panel destruction"
               ],
               "unverified": [
-                "normal current-source lifecycle certificate: D274 event-only oracle mismatch",
+                "normal current-source lifecycle certificate after e157 clock-precision fix",
                 "broader Data cases and admin/guest modes outside this run"
               ],
-              "cleanup": "exact owned row DELETE1/active readback0; hard-delete schema tombstones N/A; local link and owned Actions secret absent; exact Chrome process/profile exit not independently proved",
+              "cleanup": "owned row DELETE1/active readback0; hard-delete schema tombstones N/A; fresh names-only Actions secret absence and exact local link absence confirmed; no independently proved exact process/profile exit",
               "new_lifecycle_pass": false,
               "backend_sha": "not recorded in raw Data bundle; no server source attribution",
               "evidence": [
-                "docs/stabilization/reports/data272-native-retest-20261020.json",
-                "docs/stabilization/reports/checkpoint-fresh-evidence-peer-20261020.json"
-              ]
+                "docs/stabilization/reports/data274-prospective-native-20261020.json",
+                "docs/stabilization/reports/data274-prospective-cleanup-20261020.json",
+                "docs/stabilization/reports/final-product-evidence-peer-20261020.json"
+              ],
+              "workflow_source_sha": "4a7ec28bf47064baa7e7d532e05594b37378ba77",
+              "development_ci_run_id": 39470457561,
+              "development_artifact_id": 12287281978,
+              "result_artifact_id": 12288405742
             },
             "admin": {
               "status": "partial",
@@ -45827,6 +45864,43 @@
               },
               "superseded_at": "2026-10-20T17:43:30Z",
               "reason": "081 native replay observes post-reload behavior, but normal formal certificate is still refused by D274."
+            },
+            {
+              "mode": "member",
+              "result": {
+                "status": "partial",
+                "run_id": 39465749057,
+                "build_version": "0.2.577",
+                "source_sha": "08150841aea86868f28ada4ad03eecb619824ae8",
+                "resource_invalid": false,
+                "automation_exit": "success",
+                "native_report": "pass/stage complete",
+                "formal_verifier": "HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID: replacement_panel_created_event=false; no normal certificate",
+                "verified_subtargets": [
+                  "actual member/non-admin authentication and approved-org proof",
+                  "two distinct picker previews",
+                  "org-matched HTTP201 save and saved-list lookup",
+                  "pre-reload saved-pattern run",
+                  "native TSV/JSON/AI clipboard readbacks",
+                  "unsaved selection Cancel clears state",
+                  "replacement worker and exact panel/context/request opening",
+                  "same target/frame visible Data readiness0→1 after2679ms",
+                  "post-reload saved-pattern/run and all three clipboard readbacks"
+                ],
+                "unverified": [
+                  "normal current-source lifecycle certificate: D274 event-only oracle mismatch",
+                  "broader Data cases and admin/guest modes outside this run"
+                ],
+                "cleanup": "exact owned row DELETE1/active readback0; hard-delete schema tombstones N/A; local link and owned Actions secret absent; exact Chrome process/profile exit not independently proved",
+                "new_lifecycle_pass": false,
+                "backend_sha": "not recorded in raw Data bundle; no server source attribution",
+                "evidence": [
+                  "docs/stabilization/reports/data272-native-retest-20261020.json",
+                  "docs/stabilization/reports/checkpoint-fresh-evidence-peer-20261020.json"
+                ]
+              },
+              "superseded_at": "2026-10-20T18:25:00Z",
+              "reason": "New eligible e12 run actual lifecycle passed; current formal refusal is same-ms ordinal proof, not product behavior."
             }
           ],
           "retest_status": "D268/D271 prerequisite defects independently retest-pass/closed. Current577 pre-reload Data subtargets pass, but child failed before post-reload assertion; T03 remains partial. Source diagnosis proves missing mounted-tab readiness, not transient versus permanent product bootstrap cause."

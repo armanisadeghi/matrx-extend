@@ -19,7 +19,7 @@
   "owner": "data_lifecycle_event_oracle_diagnosis",
   "cause": "The verifier required strict Date.parse inequality across three already strictly ordered trace edges. Millisecond timestamp quantization collapsed real adjacent events into equal instants; the nondecreasing clock and array order remain independent evidence.",
   "sibling_census": "The same reload producer serves other native paths. This repair is restricted to the member Data T03 verifier; other acceptance policies are unchanged.",
-  "fix": "At pre-click\u2192click, click\u2192old-panel destruction, and destruction\u2192first replacement-panel observation, allow equal finite timestamps only when the existing strict array-index checks establish order. Retain nondecreasing global clock, finite timestamps, identity/type/ownership checks, dropped-entry refusal, contradictory-event flags, and all normal T03 eligibility gates.",
+  "fix": "At pre-click→click, click→old-panel destruction, and destruction→first replacement-panel observation, allow equal finite timestamps only when the existing strict array-index checks establish order. Retain nondecreasing global clock, finite timestamps, identity/type/ownership checks, dropped-entry refusal, contradictory-event flags, and all normal T03 eligibility gates.",
   "evidence": [
     "scripts/hosted-remote-admission.mjs",
     "scripts/hosted-member-data-lifecycle.test.mjs",
@@ -32,9 +32,13 @@
     "/tmp/data274-hosted-39472238118.zip",
     "/tmp/data274-hosted-39472238118-report.json",
     "/tmp/data274-prospective-cleanup-20261020.json",
-    "/tmp/data274-clock-precision-fix-20261020.json"
+    "/tmp/data274-clock-precision-fix-20261020.json",
+    "docs/stabilization/reports/data274-prospective-native-20261020.json",
+    "docs/stabilization/reports/final-product-evidence-peer-20261020.json",
+    "docs/stabilization/reports/data274-clock-precision-fix-20261020.json",
+    "docs/stabilization/reports/data274-clock-fresh-peer-20261020.json"
   ],
-  "verification_status": "Targeted seam guard failed before repair and passed after; original immutable 39472238118 raw lifecycle now returns correlated_panel_materialization. Native pass/complete and 3 valid resource decisions remain historical evidence, not a new normal CLI certificate. Fresh independent source review and an eligible post-change artifact/native run remain pending.",
+  "verification_status": "Clock-precision source fix e157 independently passes A/B review,9focused tests,compile/Biome. Immutable39472238118 raw predicate now passes with strict ordinal/finite-clock checks. CI39474432457 still in progress; no new eligible artifact/native normal certificate. Historical normal refusal is preserved.",
   "transition_history": [
     {
       "at": "2026-10-20T17:40:00Z",
@@ -67,6 +71,10 @@
       "reason": "Permitted equal finite instants only with existing strict event indices; original raw seam and targeted guard pass. Independent review and new normal certificate pending."
     }
   ],
-  "next_action": "Obtain independent review of the three-edge quantization repair; then produce a fresh eligible development artifact and native T03 run for the normal CLI certificate. Historical 39472238118 remains raw product evidence, not a post-change certificate.",
-  "fix_commit": "e12c4d75320bf3862500f71e633096ddc64baa74"
+  "next_action": "After CI39474432457 SUCCESS, use its new artifact through normal source/resource/fixture/spend admission for one member T03 lifecycle. Independently review raw/normal certificate and cleanup before retest-pass/closure. Do not certify the historical e12 run as current e157.",
+  "fix_commit": "e157ebe9e3b1d7eef3a53e95698b2906ee2fc4e7",
+  "fix_commits": [
+    "e12c4d75320bf3862500f71e633096ddc64baa74",
+    "e157ebe9e3b1d7eef3a53e95698b2906ee2fc4e7"
+  ]
 }

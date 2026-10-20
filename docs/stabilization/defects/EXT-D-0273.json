@@ -32,10 +32,11 @@
     "docs/stabilization/reports/dev081-guest-cold-native-20261020.json",
     "docs/stabilization/reports/store205-heading-boundary-diagnosis-20261020.json",
     "docs/stabilization/reports/guest-heading-context-contract-repair-20261020.json",
-    "docs/stabilization/reports/checkpoint-fresh-evidence-peer-20261020.json"
+    "docs/stabilization/reports/checkpoint-fresh-evidence-peer-20261020.json",
+    "docs/stabilization/reports/guest273-actual-target-provenance-20261020.json"
   ],
   "verification": "Fresh independent native evidence peer confirms heading FAIL despite terminal reply and correct Capture cell; inline-only screenshot cannot be reopened. Existing focused context tests32pass establish intended mechanics, not guest answer-quality success. No fix or live retest claimed.",
-  "next_action": "Resolve current dynamic mandate extend.browser_chat and its actual Holder/manifest through the supported platform route. Use failing real request and successful sibling as replayable agent-quality evidence. Prepare repair through the canonical Builder/quality process, never direct agent prompt edits or article/context heuristics; independent actual guest replay must verify H1 and surrounding first/follow-up/reopen cases. Continue other stabilization lanes; no human-only blocker established.",
+  "next_action": "Use real failed/successful request evidence for the existing extend.browser_chat / Matrx Browser Agent v14 canonical Builder/agent-quality process. Actual dispatch provenance and current DB default are now known; fresh guest resolution/cache state remains bounded. No direct agent instruction/model/Holder changes. Independently retest exact H1 plus first/follow-up/reopen surroundings after an authorized quality repair; no source data-loss fix or contributor attribution is supported.",
   "transition_history": [
     {
       "at": "2026-10-20T17:28:02Z",
@@ -49,5 +50,12 @@
       "to": "triaged",
       "reason": "Real request/provider/tool receipts locate absent requested heading at source-selection boundary; canonical deterministic contracts tested, no source repair justified."
     }
-  ]
+  ],
+  "actual_agent_provenance": {
+    "mandate": "extend.browser_chat",
+    "agent_id": "443dd7ff-e7cc-47b8-907a-0a14834caa48",
+    "version": 14,
+    "version_id": "a8944432-24e4-41d2-8cbf-1f925fa1a7e6",
+    "evidence": "Failed and successful real request/conversation metadata agree; current database default same active agent/version with no override bindings. No fresh guest endpoint/cache verdict."
+  }
 }

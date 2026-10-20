@@ -1,0 +1,39 @@
+{
+  "defect": "EXT-D-0273",
+  "status": "READ_ONLY_PACKET; NOT_FIXED; NO_LIVE_PASS",
+  "failed_run": {
+    "request_id": "0010cfcc-c5a4-4e4e-905b-bdbfce17ad27",
+    "conversation_id": "ec595d2d-340a-42a7-9f87-3e9942f5beae",
+    "provider_snapshots": [
+      "f9db97fb-e19a-429e-a56e-c7458bff0806",
+      "2b3eebe4-a7c1-4512-a900-571e37ba47f2"
+    ],
+    "tool_call": "e51334af-7962-4e74-9db2-5d286cc2e5b4",
+    "utc": "2026-10-20T17:27:35Z"
+  },
+  "working_run": {
+    "conversation_id": "990f606b-ddf2-4ae8-8fc0-7dbed7c5797d",
+    "evidence": "store205-heading-boundary-diagnosis-20261020.json: used query_elements({selector:'h1'}) and returned the exact visible heading"
+  },
+  "question_and_oracle": {
+    "question": "According to this page, what is the exact main heading, and what expected result does the table list for Capture?",
+    "h1": "A clear three-stage browser workflow",
+    "capture": "Article text, links, media, metadata, and schema"
+  },
+  "actual_provenance": "Not resolved in this packet. The captured diagnosis identifies provider inputs/tool receipt but not the dispatched agent id/version/mandate resolution; fixture 443dd7ff-e7cc-47b8-907a-0a14834caa48 is stale and excluded.",
+  "live_holder": "Not resolved. Supported GET /mandates/extend.browser_chat/resolution is explicitly guest/fingerprint read, but no existing guest fingerprint credential or connected Admin/Supabase read tool was available here; no new fingerprint/auth was minted.",
+  "manifest_evidence": "Extension catalog docs/TOOLS.generated.md documents query_elements(selector) for DOM matching; prior successful run proves h1 retrieval worked. The actual live provider tool manifest and system-agent instructions were not read, so whether that agent explicitly teaches page_brief/heading retrieval is unknown.",
+  "boundary": "Failure: correct H1 in deferred page_brief; it was absent from both provider payloads; get_page_text/article text begins at H2. Capture answer was correct. No deterministic context/article contract defect proven.",
+  "owner_route": "Canonical target is system Mandate/agent definition for extend.browser_chat in aidream. Per common-docs/policies/agents-never-author-agents.md and create-agent skill, quality change belongs in Builder with owner vision/replay, never direct prompt editing; the actual agent/version must first be proven.",
+  "next_replay": "On existing signed-out Store 0.2.205 guest, replay the exact question above; pass only if exact H1 and Capture oracle are both returned, then independently check first/follow-up/reopen cases.",
+  "limitations": [
+    "No agent/model/prompt/definition/tool/DB writes; no AI call; no live replay.",
+    "Exact live runtime holder and actual failed run dispatch remain an explicit evidence gap."
+  ],
+  "source_reports": [
+    "docs/stabilization/reports/store205-heading-boundary-diagnosis-20261020.json",
+    "docs/stabilization/reports/guest-heading-context-contract-repair-20261020.json"
+  ],
+  "canonical_policy_read": "/Users/armanisadeghi/code/common-docs/policies/agents-never-author-agents.md",
+  "root_adjudication": "The access gap was limited to this read-only worker; later existing authorized admin/Supabase reads proved actual dispatch and current DB default. No human-only access blocker. See guest273-actual-target-provenance-20261020.json."
+}

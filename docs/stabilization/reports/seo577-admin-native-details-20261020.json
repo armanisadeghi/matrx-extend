@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "task_id": "EXT-F-1008-T09",
+  "mode": "admin",
+  "model": "UNKNOWN",
+  "status": "partial_pass",
+  "build": {
+    "version": "0.2.577",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "ci_run": 39470457561,
+    "artifact_id": 12287281978,
+    "source_sha": "e12c4d75320bf3862500f71e633096ddc64baa74",
+    "role": "admin@ account; admin-only tabs visible"
+  },
+  "resource": {
+    "run_id": "seo577-admin-native-details-20261020",
+    "decision": "valid",
+    "journal": "test-results/seo577-admin-native-details-20261020.resource.jsonl",
+    "permit_absent": true
+  },
+  "page": "https://www.aimatrx.com/matrx-extend-demo",
+  "one_step_input_smoke": "typed and cleared local chat composer; no send",
+  "audit": {
+    "run": "Re-audit completed; summary Looks Good / No problems found",
+    "title_description": "title 33 chars; description 121 chars",
+    "canonical": "same demo URL",
+    "social": "summary_large_image; og/twitter title, description, URL, type and image displayed",
+    "language": "en",
+    "structured_data": ["Article", "Organization"],
+    "headings": "4: H1 plus three H2",
+    "links": "18 total; 17 internal, 1 external",
+    "images": "2 total; 0 missing alt",
+    "readability": "37.3, Difficult—college; 234 words, 14 sentences",
+    "performance": "HTTP 200; navigate; 2,015 ms; 15 KB"
+  },
+  "url_activation": "Clicked Article schema.org link; target loaded successfully in its own tab; returned to original demo tab and confirmed current audit remained visible",
+  "unverified": [
+    "robots directives and groups not present in rendered detail text",
+    "360px layout, reload, broken-preview variants, saved screenshot"
+  ],
+  "changed_files": [],
+  "commit_shas": []
+}
