@@ -167,15 +167,21 @@ export function prepareGuestAnswerScreenshot({ code, heading = null, focus = cod
     }
   }
   const line = rangeRect();
+  // Chromium can report a text Range a few hundredths of a CSS pixel beyond
+  // its painted clip edge. The native .576 frame showed the full code while
+  // reporting right=336.02 for a container ending at 336.
+  const fractionalPaintTolerance = 0.25;
   const clippingAncestor = (element) => {
     for (let node = element, depth = 0; node; node = node.parentElement, depth++) {
       const css = getComputedStyle(node);
       const clip = node.getBoundingClientRect();
       if (
         (/(auto|scroll|hidden|clip)/.test(css.overflowY) &&
-          (line.top < clip.top || line.bottom > clip.bottom)) ||
+          (line.top < clip.top - fractionalPaintTolerance ||
+            line.bottom > clip.bottom + fractionalPaintTolerance)) ||
         (/(auto|scroll|hidden|clip)/.test(css.overflowX) &&
-          (line.left < clip.left || line.right > clip.right))
+          (line.left < clip.left - fractionalPaintTolerance ||
+            line.right > clip.right + fractionalPaintTolerance))
       )
         return {
           depth,

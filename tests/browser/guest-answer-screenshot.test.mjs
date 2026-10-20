@@ -151,6 +151,57 @@ test('horizontally clipped requested code cannot authorize a panel screenshot', 
   await window.happyDOM.abort();
 });
 
+test('painted code at a fractional clip edge remains eligible without admitting a clipped reply', async () => {
+  const window = new Window();
+  window.document.body.innerHTML = `<button role="tab" title="Chat" aria-selected="true" aria-controls="chat"></button>
+    <div id="chat" data-state="active" style="overflow-x:hidden">
+      <article role="article" aria-label="Assistant answer"><div data-message-content>Follow-up check code: CODE-791. Heading: Research brief</div></article>
+    </div>`;
+  const pane = window.document.getElementById('chat');
+  for (const element of window.document.querySelectorAll('*')) {
+    element.getBoundingClientRect = () => ({
+      left: 16,
+      right: 336,
+      top: 63,
+      bottom: 239,
+      width: 320,
+      height: 176,
+    });
+    element.scrollIntoView = () => {};
+  }
+  let right = 336.02;
+  let top = 128;
+  window.document.createRange = () => ({
+    setStart() {},
+    setEnd() {},
+    getBoundingClientRect() {
+      return { left: 40, right, top, bottom: top + 57, width: right - 40, height: 57 };
+    },
+  });
+  Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 360 });
+  Object.defineProperty(window.document.documentElement, 'clientHeight', { value: 421 });
+  const verify = (expected = { code: 'CODE-791', heading: 'Research brief' }) =>
+    runInNewContext(`(${prepareGuestAnswerScreenshot.toString()})(expected)`, {
+      document: window.document,
+      getComputedStyle: (element) => window.getComputedStyle(element),
+      expected,
+    });
+  try {
+    assert.equal(verify().eligible, true, 'the native 0.02px range excess is invisible in paint');
+    right = 339;
+    assert.equal(verify().eligible, false, 'a materially clipped code remains ineligible');
+    right = 336.02;
+    top = 450;
+    assert.equal(verify().eligible, false, 'offscreen code remains ineligible');
+    top = 128;
+    assert.equal(verify({ code: 'OLD-482', heading: 'Research brief' }).eligible, false);
+    pane.style.opacity = '0';
+    assert.equal(verify().eligible, false, 'an unpainted pane remains ineligible');
+  } finally {
+    await window.happyDOM.abort();
+  }
+});
+
 test('long completed answer scrolls the requested code line into the captured viewport', async () => {
   const window = new Window();
   window.document.body.innerHTML = `<button role="tab" title="Chat" aria-selected="true" aria-controls="chat"></button>
