@@ -177,11 +177,24 @@ repeat the same launch blindly or weaken guard thresholds.
 
 ## Source units and immediate next work
 
-**D244 actual572 product failure is assigned to `values244_product_repair`.** Exact39391905076
-confirms the focus guard passed and trusted Escape reached the compact popover without dismissing
-it. Fix the shared owning component after a real component reproduction; source-only harness
-changes are not a product fix. Fresh independent source review, same-session package publish/adopt
-where required, and original native retest remain mandatory. Root integrates inventory/records.
+**D244 source repair passed fresh independent component review; publication/adoption is active.**
+Real shared ContextRulesChip/Tooltip/Popover reproduction confirms the inner tooltip consumes first
+Escape and leaves the compact popover. The reviewed component handler dismisses only for Escape
+from DOM-contained focus. Actual old-source RED/new-source GREEN; full component suite38/38;
+constant-close and inline draft-cancel mutations fail their guards. First peer's missing combined
+editor assertion is addressed; final fresh B PASS/A component PASS, native post-fix pending.
+Do not impose a new parent-stays-open contract on inline editor Escape: the observed baseline
+may close parent while cancelling; guard proves no draft write and original after reopen.
+[Repair](reports/values244-product-source-repair-20261020.json),
+[first peer](reports/values244-product-first-peer-20261020.json),
+[final peer](reports/values244-product-final-peer-20261020.json).
+`values244_publish_adopt` owns exact-path shared source push, automatic changed-only npm publish,
+registry gitHead proof and latest extension adoption; root owns subsequent candidate/native.
+Direct local package tsc remains red on3 unchanged sibling imports; required hosted install-for-gate
+and consumer/type checks cannot be waived. ModelListDropdown sibling remains unverified after
+missingkit/dom prevented collection; no speculative repair or resolved-class claim. AgentListDropdown
+trigger-tooltip is explicitly disabled while open and does not share observed inner-control chain.
+D244 stays in-fix until published/adopted source; native closure requires actual exact-package T13.
 
 
 1. **D258 closed narrowly**, source `ff105b712`, exact568 original scroll479 native PASS above. Measured
