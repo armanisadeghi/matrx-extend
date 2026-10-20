@@ -47,10 +47,11 @@
     "docs/stabilization/reports/member-page-text-fresh-peer-20261020.json",
     "docs/stabilization/reports/member-followup-fresh-peer-20261020.json",
     "docs/stabilization/reports/guest576-native-b-20261020.json",
-    "docs/stabilization/reports/member576-native-mac-20261020.json"
+    "docs/stabilization/reports/member576-native-mac-20261020.json",
+    "docs/stabilization/reports/member-org-gate-final-peer-20261020.json"
   ],
   "cause": "Localized: original mandate start and same-conversation tool_results returned200; subsequent resume entered the backend but no target headers arrived for59.999s, then ALB generated504. create_prepared_streaming_response awaits prepare_resume_conversation before constructing the response. Concurrent DB pool/connect/query timeouts are observed but their causal link to this request is unproven. Deployed20bd has identical inspected resume/pool implementation; a short postdeploy sample lacks the prior error burst, not a repair claim.",
-  "next_action": "Investigate actual failed Focused acceptance guard in CI39430894263; make minimal driver/guard correction, pass full canonical focused gate plus compile and fresh independent review before a fresh guarded release freezes all source. Then original guest-to-member native with Page Text join and terminal first/follow-up. Original566 504 cause remains unknown; first-answer575 partial, D261 triaged.",
+  "next_action": "Driver e7 full focused/compile/full CI and fresh peer are complete. Await newly served shared Chat package, freeze final app and driver source, prepare fresh guarded release candidate, then independently retest original guest-to-member Chat with exact get_page_text opening join and terminal first/follow-up. Original566 504 cause remains unknown; 575 first answer partial; D261 triaged.",
   "transition_history": [
     {
       "at": "2026-10-20T00:56:58.460155Z",
@@ -113,13 +114,15 @@
     "behavior": "Requires exact get_page_text event joined to opening conversation and delegated call, logs sanitized typed failure. Actual same-conversation follow-up and its terminal proof are persisted before unchanged strict Page Text join; missing join remains final failure and opening prerequisites remain fatal.",
     "proof": "Old wrong-tool event accepted before374; new19 tests PASS. Follow-up ordering old RED/new24 focused tests PASS. Independent peers:374 A partial/native pending B pass;21b A/B pass source only.",
     "native_after_fix": "UNKNOWN; 0.2.576 native attempts source-drift refused before browser, zero product verdict",
-    "source_gate": "CI39430894263 at cff: Focused acceptance guards step FAILED while later steps were ongoing at checkpoint; no new candidate dispatch until full canonical focused gate, compile and fresh peer pass on frozen final driver.",
+    "source_gate": "Prior CI39430894263 at cff failed focused test419 because a VM-evaluated source slice contained await. e7 replaces that brittle test with the real exported opening transport guard used by production driver. Guarded canonical focused 730 total/720 pass/10 Mac skips/0 fail, compile/Biome PASS; exact full CI39431931395 SUCCESS; fresh source A/B PASS. No native after source fix.",
     "evidence": [
       "docs/stabilization/reports/member-page-text-boundary-repair-20261020.json",
       "docs/stabilization/reports/member-page-text-fresh-peer-20261020.json",
       "docs/stabilization/reports/member-followup-fresh-peer-20261020.json",
       "docs/stabilization/reports/guest576-native-b-20261020.json",
-      "docs/stabilization/reports/member576-native-mac-20261020.json"
-    ]
+      "docs/stabilization/reports/member576-native-mac-20261020.json",
+      "docs/stabilization/reports/member-org-gate-final-peer-20261020.json"
+    ],
+    "focused_ci_repair_commit": "e7f650c04abba15d945c4c1a4cdc899aec8d04b1"
   }
 }

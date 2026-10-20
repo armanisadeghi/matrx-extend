@@ -40,6 +40,21 @@
       "Fresh independent source review and admitted native candidate run are root-owned."
     ]
   },
+  "focused_ci_repair": {
+    "status": "SOURCE_REPAIRED_FULL_FOCUSED_GREEN",
+    "ci_run_id": 39430894263,
+    "ci_source_sha": "cff24740e323108292acd835d12fadd8f146f4b2",
+    "exact_ci_failure": "Focused acceptance test 419, tests/browser/reviewer-chat-organization-boundary.test.mjs:246, member Chat verdict refuses absent/rejected/uncorrelated organization transport. It vm-evaluated a driver source slice that now contains await runFollowupBeforeOpeningPageTextJoin; synchronous vm raised SyntaxError: await is only valid in async functions. CI total 730, 729 pass, 1 fail.",
+    "local_old_red": "node --test tests/browser/reviewer-chat-organization-boundary.test.mjs reproduced 5 pass, 1 fail with the same SyntaxError.",
+    "fix": "Export and call requireOpeningMemberTransport from the actual deferred-followup helper; test that real helper directly against accepted, absent, rejected, mismatched, and missing transport cases. Removes only brittle source-slice oracle and preserves all opening checks before follow-up.",
+    "commit": "e7f650c04",
+    "pushed_to": "origin/main",
+    "new_green": "Guarded canonical pnpm test:focused-acceptance admitted by stabilization-resource run d261-focused-ci-repair-20261020: 730 tests, 720 pass, 10 platform skips, 0 fail, childExitCode 0, resourceInvalid false. Targeted test 6/6 passes; pnpm compile and exact-path Biome pass.",
+    "private_log": "test-results/d261-focused-ci-repair-20261020.log",
+    "limitation": "Fresh peer review and any new release/native acceptance are root-owned; no browser or release dispatch in this lane.",
+    "resource_journal": "test-results/d261-focused-ci-repair-20261020/resource-focused.jsonl",
+    "journal_cleanup": "terminal RESOURCE_FINAL_DECISION valid, exitCode 0; moved only this owned journal into ignored test-results"
+  },
   "source_label": "member-page-text-boundary-repair-20261020.json",
-  "source_summary_sha256": "e2cebf7515c9c70f1ec6e91c47e15cf2b69419f4a62329aee4d2ec2f71cd8783"
+  "source_summary_sha256": "ad196a13e479ba29eaa3a8e9a97697b72411f62e1b5b5babf044f4b9ba23b585"
 }
