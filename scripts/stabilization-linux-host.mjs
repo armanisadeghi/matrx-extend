@@ -191,18 +191,11 @@ export async function linuxProcessGroupMembers(groupId, { list = readdir, read =
   return members;
 }
 
-/** A preparation-only Linux stop primitive; the active guard still refuses Linux. */
-export async function stopLinuxOwnedGroup(
-  groupId,
-  rootStartTicks,
-  policy,
-  {
-    members = linuxProcessGroupMembers,
-    send = process.kill,
-    sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
-    now = () => performance.now(),
-  } = {},
-) {
+/** Numeric identities cannot authorize atomic Linux cleanup. Ownership must
+ * begin at spawn under a retained kernel owner; old/stale groups remain held.
+ * Preparation only: the active guard continues to refuse Linux.
+ */
+export async function stopLinuxOwnedGroup(groupId, rootStartTicks, policy) {
   if (
     !Number.isSafeInteger(groupId) ||
     groupId <= 0 ||
@@ -216,41 +209,5 @@ export async function stopLinuxOwnedGroup(
     )
   )
     throw fail('process-owner');
-  const census = async () => {
-    const live = await members(groupId);
-    if (live.length === 0) return false;
-    if (
-      !live.some(
-        (member) =>
-          member.pid === groupId &&
-          member.groupId === groupId &&
-          member.startTicks === rootStartTicks &&
-          member.state !== 'Z',
-      )
-    )
-      throw fail('process-owner');
-    return true;
-  };
-  if (!(await census())) throw fail('process-owner');
-  const waitGone = async (seconds) => {
-    const deadline = now() + seconds * 1000;
-    while (now() < deadline) {
-      if (!(await census())) return true;
-      await sleep(Math.min(policy.linuxProcessPollMs, deadline - now()));
-    }
-    return !(await census());
-  };
-  for (const [signal, seconds] of [
-    ['SIGTERM', policy.ownedGroupGraceSeconds],
-    ['SIGKILL', policy.ownedGroupKillWaitSeconds],
-  ]) {
-    if (!(await census())) return true;
-    try {
-      send(-groupId, signal);
-    } catch (error) {
-      if (error.code !== 'ESRCH') throw error;
-    }
-    if (await waitGone(seconds)) return true;
-  }
-  throw new Error('RESOURCE_GROUP_UNCONFIRMED');
+  throw new Error('RESOURCE_KERNEL_OWNERSHIP_REQUIRED');
 }

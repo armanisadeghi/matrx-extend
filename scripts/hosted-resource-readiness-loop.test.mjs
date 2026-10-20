@@ -1,6 +1,4 @@
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
-import { once } from 'node:events';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { waitForResourceReadiness } from './hosted-resource-readiness-loop.mjs';
@@ -190,150 +188,57 @@ test('Linux CPU interval refuses a reset user counter even when aggregate busy l
   );
 });
 
-test('Linux cleanup refuses an unreadable live process instead of declaring the group gone', async () => {
+test('Linux census refuses an unreadable live process instead of declaring the group gone', async () => {
   const inaccessible = Object.assign(new Error('permission denied'), { code: 'EACCES' });
-  const processSource = {
-    list: async () => ['101'],
-    read: async () => {
-      throw inaccessible;
-    },
-  };
-  await assert.rejects(linuxProcessGroupMembers(101, processSource), /permission denied/);
-  let calls = 0;
   await assert.rejects(
-    stopLinuxOwnedGroup(101, 500, policy, {
-      members: () =>
-        calls++ === 0
-          ? Promise.resolve([{ pid: 101, groupId: 101, startTicks: 500, state: 'S' }])
-          : linuxProcessGroupMembers(101, processSource),
-      send: () => {},
-      sleep: async () => {},
+    linuxProcessGroupMembers(101, {
+      list: async () => ['101'],
+      read: async () => {
+        throw inaccessible;
+      },
     }),
     /permission denied/,
   );
 });
 
-const ownedRoot = { pid: 101, groupId: 101, startTicks: 500, state: 'S' };
-const reusedRoot = { ...ownedRoot, startTicks: 900 };
-
-test('Linux cleanup refuses changed or unprovable ownership throughout the signal lifecycle', async () => {
-  for (const [name, snapshots, expectedSignals] of [
-    ['before SIGTERM', [[ownedRoot], [reusedRoot]], []],
-    ['during grace', [[ownedRoot], [ownedRoot], [reusedRoot]], ['SIGTERM']],
-    [
-      'before SIGKILL',
-      [[ownedRoot], [ownedRoot], [ownedRoot], [ownedRoot], [reusedRoot]],
-      ['SIGTERM'],
-    ],
-    [
-      'leader missing with a survivor',
-      [[ownedRoot], [ownedRoot], [{ ...ownedRoot, pid: 102 }]],
-      ['SIGTERM'],
-    ],
-    [
-      'after SIGKILL',
-      [[ownedRoot], [ownedRoot], [ownedRoot], [ownedRoot], [ownedRoot], [reusedRoot]],
-      ['SIGTERM', 'SIGKILL'],
-    ],
-  ]) {
-    let index = 0;
-    let clockMs = 0;
+for (const scenario of [
+  'matching leader',
+  'reused leader',
+  'missing leader with descendant',
+  'empty census',
+]) {
+  test(`numeric cleanup refuses ${scenario} without issuing any signal`, async () => {
     const signals = [];
+    let censusCalls = 0;
     await assert.rejects(
-      stopLinuxOwnedGroup(
-        101,
-        500,
-        { ...policy, ownedGroupGraceSeconds: 0.01, ownedGroupKillWaitSeconds: 0.01 },
-        {
-          members: async () => snapshots[Math.min(index++, snapshots.length - 1)],
-          send: (_, signal) => signals.push(signal),
-          sleep: async (ms) => {
-            clockMs += ms;
-          },
-          now: () => clockMs,
+      stopLinuxOwnedGroup(101, 500, policy, {
+        members: async () => {
+          censusCalls++;
+          return scenario === 'empty census'
+            ? []
+            : [
+                {
+                  pid: scenario === 'missing leader with descendant' ? 102 : 101,
+                  groupId: 101,
+                  startTicks: scenario === 'reused leader' ? 900 : 500,
+                  state: 'S',
+                },
+              ];
         },
-      ),
-      /RESOURCE_MEASUREMENT_INVALID:linux-process-owner/,
-      name,
+        send: (...args) => signals.push(args),
+        sleep: async () => {},
+      }),
+      /RESOURCE_KERNEL_OWNERSHIP_REQUIRED/,
     );
-    assert.deepEqual(signals, expectedSignals, name);
-  }
-});
-
-test('Linux cleanup rejects missing, zero, nonfinite and negative deadlines before any signal', async () => {
-  for (const field of ['ownedGroupGraceSeconds', 'ownedGroupKillWaitSeconds']) {
-    for (const value of [undefined, 0, Number.NaN, Number.POSITIVE_INFINITY, -1]) {
-      const signals = [];
-      await assert.rejects(
-        stopLinuxOwnedGroup(
-          101,
-          500,
-          { ...policy, [field]: value },
-          {
-            members: async () => [ownedRoot],
-            send: (_, signal) => signals.push(signal),
-            sleep: async () => {},
-          },
-        ),
-        /RESOURCE_MEASUREMENT_INVALID:linux-process-owner/,
-        `${field}=${value}`,
-      );
-      assert.deepEqual(signals, [], `${field}=${value}`);
-    }
-  }
-});
-
-test('Linux cleanup waits within its deadlines, completes a proven stop, and refuses an unconfirmed stop', async () => {
-  for (const [snapshots, expectedSignals, completes] of [
-    [[[ownedRoot], [ownedRoot], [ownedRoot], []], ['SIGTERM'], true],
-    [
-      [[ownedRoot], [ownedRoot], [ownedRoot], [ownedRoot], [ownedRoot], [ownedRoot], [ownedRoot]],
-      ['SIGTERM', 'SIGKILL'],
-      false,
-    ],
-  ]) {
-    let index = 0;
-    let clockMs = 0;
-    const waits = [];
-    const signals = [];
-    const stop = stopLinuxOwnedGroup(
-      101,
-      500,
-      {
-        ...policy,
-        ownedGroupGraceSeconds: 0.01,
-        ownedGroupKillWaitSeconds: 0.01,
-      },
-      {
-        members: async () => snapshots[Math.min(index++, snapshots.length - 1)],
-        send: (_, signal) => signals.push(signal),
-        sleep: async (ms) => {
-          waits.push(ms);
-          clockMs += ms;
-        },
-        now: () => clockMs,
-      },
-    );
-    if (completes) assert.equal(await stop, true);
-    else await assert.rejects(stop, /RESOURCE_GROUP_UNCONFIRMED/);
-    assert.deepEqual(signals, expectedSignals);
-    assert.deepEqual(waits, completes ? [10] : [10, 10]);
-  }
-});
-
-test('Linux cleanup cancellation during grace propagates without escalation', async () => {
-  const signals = [];
+    assert.deepEqual(signals, []);
+    assert.equal(censusCalls, 0, 'census cannot grant kernel ownership');
+  });
+}
+test('numeric cleanup retains policy validation', async () => {
   await assert.rejects(
-    stopLinuxOwnedGroup(101, 500, policy, {
-      members: async () => [ownedRoot],
-      send: (_, signal) => signals.push(signal),
-      sleep: async () => {
-        throw new Error('cancelled');
-      },
-    }),
-    /cancelled/,
+    stopLinuxOwnedGroup(101, 500, { ...policy, ownedGroupGraceSeconds: Number.NaN }),
+    /RESOURCE_MEASUREMENT_INVALID:linux-process-owner/,
   );
-  assert.deepEqual(signals, ['SIGTERM']);
 });
 
 test('Linux process-group parser rejects malformed identity', () => {
@@ -386,35 +291,16 @@ test(
 );
 
 test(
-  'Linux group stop reaps an owned foreground child and refuses a mismatched process identity',
+  'Linux refuses retrospective ownership even for its own current live group',
   { skip: process.platform !== 'linux' && 'requires live Linux process groups' },
   async () => {
-    const child = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], {
-      detached: true,
-      stdio: 'ignore',
-    });
-    const exited = once(child, 'exit');
-    try {
-      await once(child, 'spawn');
-      const root = parseLinuxProcessStat(await readFile(`/proc/${child.pid}/stat`, 'utf8'));
-      assert.equal(root.groupId, child.pid);
-      await assert.rejects(
-        stopLinuxOwnedGroup(root.groupId, root.startTicks + 1, policy),
-        /RESOURCE_MEASUREMENT_INVALID:linux-process-owner/,
-      );
-      assert.ok(
-        (await linuxProcessGroupMembers(root.groupId)).some((member) => member.pid === child.pid),
-      );
-      assert.equal(await stopLinuxOwnedGroup(root.groupId, root.startTicks, policy), true);
-      await exited;
-      assert.deepEqual(await linuxProcessGroupMembers(root.groupId), []);
-    } finally {
-      if (child.exitCode === null && child.signalCode === null) {
-        try {
-          process.kill(-child.pid, 'SIGKILL');
-        } catch {}
-        await exited;
-      }
-    }
+    const root = parseLinuxProcessStat(await readFile(`/proc/${process.pid}/stat`, 'utf8'));
+    await assert.rejects(
+      stopLinuxOwnedGroup(root.groupId, root.startTicks, policy),
+      /RESOURCE_KERNEL_OWNERSHIP_REQUIRED/,
+    );
+    assert.ok(
+      (await linuxProcessGroupMembers(root.groupId)).some((member) => member.pid === process.pid),
+    );
   },
 );
