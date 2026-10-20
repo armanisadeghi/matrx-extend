@@ -10,6 +10,16 @@ import {
   observeSettingsReacquisition,
 } from './settings-reload-boundary.mjs';
 
+async function sharedGuestOpeningSource() {
+  const source = await readFile(new URL('./settings-panel-driver.mjs', import.meta.url), 'utf8');
+  const start = source.indexOf(
+    'export async function openGuestSettings(panel, onStep = () => {}) {',
+  );
+  const end = source.indexOf('\nexport async function openSection(', start);
+  assert.ok(start >= 0 && end > start, 'actual shared guest Settings opening must be present');
+  return source.slice(start, end).replace('export async function', 'async function');
+}
+
 test('reload failure keeps the first click boundary and only safe pointer fields', () => {
   const error = new Error('private browser content must not reach evidence');
   error.driverFailure = {
@@ -174,7 +184,7 @@ for (const scenario of [
     };
     let trustedClicks = 0;
     let diagnosticCalls = 0;
-    const opening = source.slice(start, end);
+    const opening = `${await sharedGuestOpeningSource()}\n${source.slice(start, end)}`;
     const subject =
       process.env.SETTINGS_NEGATIVE_CONTROL_PREFLIGHT === '1'
         ? opening.replace(
@@ -300,7 +310,7 @@ test('failed native Settings panel reload serializes the owned document and cont
     'observeSettingsReacquisition',
     'EXTENSION_ID',
     'criterion',
-    `${source.slice(settingsStart, reloadEnd)}\n${runCaseSource}\nreturn { reloadSettings, runCase };`,
+    `${await sharedGuestOpeningSource()}\n${source.slice(settingsStart, reloadEnd)}\n${runCaseSource}\nreturn { reloadSettings, runCase };`,
   )(
     (ownedPanel) => waitForReplacementSettingsTab(ownedPanel, 120),
     () => {

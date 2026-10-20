@@ -54,14 +54,21 @@ test('replacement Settings readiness rejects a tab that never renders', async ()
 });
 
 test('native guest Settings opening awaits replacement readiness before trusted click', async () => {
-  const source = await readFile(
+  const source = await readFile(new URL('./settings-panel-driver.mjs', import.meta.url), 'utf8');
+  const start = source.indexOf(
+    'export async function openGuestSettings(panel, onStep = () => {}) {',
+  );
+  const end = source.indexOf('\nexport async function openSection(', start);
+  assert.ok(start >= 0 && end > start, 'shared native Settings opening function must be present');
+  const opening = source.slice(start, end).replace('export async function', 'async function');
+  const fullRunner = await readFile(
     new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
     'utf8',
   );
-  const start = source.indexOf('async function settings(panel, onStep = () => {}) {');
-  const end = source.indexOf('\nasync function reloadSettings(', start);
-  assert.ok(start >= 0 && end > start, 'native Settings opening function must be present');
-  const opening = source.slice(start, end);
+  assert.match(
+    fullRunner,
+    /async function settings\(panel, onStep = \(\) => \{\}\) \{\s*await openGuestSettings\(panel, onStep\);/,
+  );
   const readinessCall = '  await waitForReplacementSettingsTab(panel);';
   assert.ok(opening.includes(readinessCall), 'native Settings opening must await tab readiness');
   const subject =
@@ -74,7 +81,7 @@ test('native guest Settings opening awaits replacement readiness before trusted 
     'click',
     'waitFor',
     'evaluate',
-    `${subject}; return settings;`,
+    `${subject}; return openGuestSettings;`,
   )(
     async () => {
       events.push('tab_ready');
