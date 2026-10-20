@@ -1,0 +1,21 @@
+{
+  "task": "EXT-D-0274 fresh zero-authorship review",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_A_spec_evidence": {
+    "status": "PARTIAL",
+    "supported": "The immutable 39465749057 ZIP SHA256 bf6f335158fd4bef1e3276e0d6a0731ba8b637fb745ada0fd2bc3b2359d96133 retains replacement_panel_created_event=false. The unchanged raw report passes the repaired exported verifier with correlated_panel_materialization. Its timeline contains an owned old panel before click, its destruction, a different owned panel first classified by Target.targetInfoChanged, a final snapshot with the new worker and panel, opened production callback, exact context, and post-reload Data continuity. The fix does not claim literal fresh CDP-node allocation.",
+    "missing": "The predicate does not enforce replacement materialization after old-panel destruction, even though the D274 expected/fix text requires it. It also does not enforce pre-click old-worker presence despite calling the final worker a replacement.",
+    "could_not_verify": "No fresh hosted native run or eligible normal CLI certificate was launched in this review. The raw archive remains immutable historical evidence; exported-function acceptance alone is not a normal certificate."
+  },
+  "verdict_B_code_quality_forcing_tests": {
+    "status": "FAIL",
+    "important_findings": [
+      "At scripts/hosted-remote-admission.mjs:1208-1232, old-panel destruction and new-panel event are independent after-click existential checks. On the raw report, changing old-panel target_destroyed.at from 17:33:32.965Z to 17:33:36.965Z, later than the replacement target_info_changed at 17:33:34.908Z, still returns PASS correlated_panel_materialization. Moving the changed event before the destroy entry also passes. Add a forcing test for the order and require the matching materialization event to be after the old-panel destruction in both entry order and timestamp.",
+      "At scripts/hosted-remote-admission.mjs:1185-1205, deleting the old worker from pre_click_snapshot and setting pre_click_old_worker_present=false still passes the unchanged raw report. Require the owned old worker in that snapshot and the producer's flag, or explain in the contract why this evidence is dispensable.",
+      "At scripts/hosted-remote-admission.mjs:1223-1232, a report with replacement_panel_created_event=false plus an added owned target_created event for the same final replacement ID still passes through correlated_panel_materialization. The flags and timeline contradict. Add a refusal case so a false flag cannot mask a classified creation event."
+    ],
+    "checks": "node --test scripts/hosted-member-data-lifecycle.test.mjs: 6/6 pass; pnpm compile: pass; Biome scoped 2/2 pass; git diff --check: pass. These do not catch the three falsifications above.",
+    "provenance": "Normal CLI calls requireDevelopmentArtifact and sourceCompatibility. scripts/hosted-remote-admission.mjs is excluded from runtime-equivalent paths; after it is committed, old 08150841 development artifact cannot yield a valid normal certificate. The new verifier SHA256 field is separate from frozen report/source SHA; no observed code path rewrites archive or source identity. Current verifier file SHA256 is 8ce5363d60103208d3426e78e86be37478bb6029536833ecb2fa34273df8627a."
+  },
+  "repository_changes": "none"
+}

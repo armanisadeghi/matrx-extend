@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T17:06:38.112908+00:00",
+  "updated_at": "2026-10-20T17:58:00Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -25112,6 +25112,20 @@
               "detail": "Warm behavior confirmed on the exact frozen development artifact; no post-reload editor state was available.",
               "evidence_quality": "Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.",
               "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
+            },
+            "admin": {
+              "status": "partial",
+              "run_id": "scrape577-copy-dismiss-retry-20261020-02",
+              "build_version": "0.2.577",
+              "source_sha": "08150841aea86868f28ada4ad03eecb619824ae8",
+              "development_ci_run_id": 39464156241,
+              "development_artifact_id": 12285071255,
+              "resource_invalid": false,
+              "detail": "Warm Edit temporary CANCEL-SMOKE then Cancel restored original179-word article; no Save/write. Full-reload editor and independent inspectable image remain unverified.",
+              "evidence": [
+                "docs/stabilization/reports/scrape577-copy-dismiss-retry-20261020.json"
+              ],
+              "evidence_quality": "Tester actual native UI/clipboard pasteback; inline screenshots only, no saved independently reopenable image. Case stays partial."
             }
           },
           "result_history": [
@@ -25456,18 +25470,17 @@
             },
             "admin": {
               "status": "partial",
-              "run_id": "scrape577-native-controls-20261020-01",
+              "run_id": "scrape577-copy-dismiss-retry-20261020-02",
               "build_version": "0.2.577",
-              "source_sha": "45b0cc8640643fdc9c34927b55a5fbd586654cfa",
+              "source_sha": "08150841aea86868f28ada4ad03eecb619824ae8",
+              "development_ci_run_id": 39464156241,
+              "development_artifact_id": 12285071255,
               "resource_invalid": false,
+              "detail": "Warm Article, two Images, empty Video/Add URL,17Links,SEO and Article/Organization Schema panes rendered. No media extraction or reload claim.",
               "evidence": [
-                "docs/stabilization/reports/scrape577-native-controls-20261020.json"
+                "docs/stabilization/reports/scrape577-copy-dismiss-retry-20261020.json"
               ],
-              "detail": "Article title/intro/headings rendered; Links showed 17; Schema & Metadata rendered; SEO showed title/canonical/social preview, 2 schema types, 4 headings, 18 links, 2 images, readability and performance",
-              "tested_controls": [
-                "EXT-F-1007-C08"
-              ],
-              "remaining_criteria": "Warm admin only; Images/Video and empty states not exercised in this slice. Reload, outbound link activation, clipboard, re-audit, save/history and other applicable criteria remain unverified. No saved independently inspectable image; tester observations only."
+              "evidence_quality": "Tester actual native UI/clipboard pasteback; inline screenshots only, no saved independently reopenable image. Case stays partial."
             }
           },
           "previous_results": [
@@ -25790,6 +25803,26 @@
                 ]
               },
               "superseded_at": "2026-10-12T20:22:00Z"
+            },
+            {
+              "mode": "admin",
+              "result": {
+                "status": "partial",
+                "run_id": "scrape577-native-controls-20261020-01",
+                "build_version": "0.2.577",
+                "source_sha": "45b0cc8640643fdc9c34927b55a5fbd586654cfa",
+                "resource_invalid": false,
+                "evidence": [
+                  "docs/stabilization/reports/scrape577-native-controls-20261020.json"
+                ],
+                "detail": "Article title/intro/headings rendered; Links showed 17; Schema & Metadata rendered; SEO showed title/canonical/social preview, 2 schema types, 4 headings, 18 links, 2 images, readability and performance",
+                "tested_controls": [
+                  "EXT-F-1007-C08"
+                ],
+                "remaining_criteria": "Warm admin only; Images/Video and empty states not exercised in this slice. Reload, outbound link activation, clipboard, re-audit, save/history and other applicable criteria remain unverified. No saved independently inspectable image; tester observations only."
+              },
+              "superseded_at": "2026-10-20T17:58:00Z",
+              "reason": "New bounded081 warm native slice; prior frozen evidence retained."
             }
           ],
           "attempt_history": [
@@ -26120,6 +26153,20 @@
                 "Member/admin modes were not exercised."
               ],
               "detail": "Guest copy menu options and current-capture output passed across warm state, navigation, and full extension reload."
+            },
+            "admin": {
+              "status": "partial",
+              "run_id": "scrape577-copy-dismiss-retry-20261020-02",
+              "build_version": "0.2.577",
+              "source_sha": "08150841aea86868f28ada4ad03eecb619824ae8",
+              "development_ci_run_id": 39464156241,
+              "development_artifact_id": 12285071255,
+              "resource_invalid": false,
+              "detail": "Actual native pasteback verified179-word ArticleMarkdown,17URLs and SchemaJSON against displayed capture. Images/videos/SEO formats and other representations/reload remain unverified.",
+              "evidence": [
+                "docs/stabilization/reports/scrape577-copy-dismiss-retry-20261020.json"
+              ],
+              "evidence_quality": "Tester actual native UI/clipboard pasteback; inline screenshots only, no saved independently reopenable image. Case stays partial."
             }
           },
           "linked_defects": [
@@ -29304,6 +29351,19 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-20T17:58:00Z",
+              "mode": "admin",
+              "run_id": "scrape577-copy-dismiss-retry-20261020-02",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "detail": "Existing same-URL unsaved Source card exposes Retry save, not Save Source modal. Queue preserved, no retry/save/discard; modal dismissal not attempted.",
+              "evidence": [
+                "docs/stabilization/reports/scrape577-copy-dismiss-retry-20261020.json"
+              ]
+            }
           ]
         },
         {
@@ -45509,37 +45569,43 @@
             "EXT-D-0054",
             "EXT-D-0268",
             "EXT-D-0270",
-            "EXT-D-0271"
+            "EXT-D-0271",
+            "EXT-D-0272",
+            "EXT-D-0274"
           ],
-          "verification_note": "Shared export helper changes linked via source audit; native JSON/TSV/AI copied bytes and special cells remain unverified in Data.",
+          "verification_note": "Member081 native clipboard bytes and pre/post-reload lifecycle observed; formal certificate remains refused by D274. This is not admin, special-cell, whole-Data or actual Store577 coverage.",
           "results": {
             "member": {
               "status": "partial",
-              "run_id": 39461020039,
+              "run_id": 39465749057,
               "build_version": "0.2.577",
-              "source_sha": "ebe922a655b0bff320d1457e6b598bae3a1c1b10",
+              "source_sha": "08150841aea86868f28ada4ad03eecb619824ae8",
               "resource_invalid": false,
-              "automation_exit": "child_failed_after_reload",
+              "automation_exit": "success",
+              "native_report": "pass/stage complete",
+              "formal_verifier": "HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID: replacement_panel_created_event=false; no normal certificate",
               "verified_subtargets": [
-                "actual member authentication and approved-org proof",
-                "two distinct field picker previews",
-                "HTTP201 save with body/header organization match and saved-list lookup",
-                "refresh and pre-reload run matched explicitly chosen fixture field values",
-                "native TSV/JSON/AI clipboard readbacks matched selected row",
-                "unsaved selection Cancel cleared state"
+                "actual member/non-admin authentication and approved-org proof",
+                "two distinct picker previews",
+                "org-matched HTTP201 save and saved-list lookup",
+                "pre-reload saved-pattern run",
+                "native TSV/JSON/AI clipboard readbacks",
+                "unsaved selection Cancel clears state",
+                "replacement worker and exact panel/context/request opening",
+                "same target/frame visible Data readiness0→1 after2679ms",
+                "post-reload saved-pattern/run and all three clipboard readbacks"
               ],
               "unverified": [
-                "post-reload saved pattern reopening",
-                "post-reload extraction run",
-                "cause of loading skeleton/Data target absent after reload"
+                "normal current-source lifecycle certificate: D274 event-only oracle mismatch",
+                "broader Data cases and admin/guest modes outside this run"
               ],
-              "cleanup": "exact owned-name+org DELETE1/readback0; hard-delete schema, tombstones not applicable; secret/file absence owner-verified; exact PID exit not independently proven",
+              "cleanup": "exact owned row DELETE1/active readback0; hard-delete schema tombstones N/A; local link and owned Actions secret absent; exact Chrome process/profile exit not independently proved",
               "new_lifecycle_pass": false,
+              "backend_sha": "not recorded in raw Data bundle; no server source attribution",
               "evidence": [
-                "docs/stabilization/reports/data271-native-retest-20261020.json",
-                "docs/stabilization/reports/data577-raw-peer-20261020.json"
-              ],
-              "backend_sha": "not recorded in this raw Data acceptance bundle; no server source attribution"
+                "docs/stabilization/reports/data272-native-retest-20261020.json",
+                "docs/stabilization/reports/checkpoint-fresh-evidence-peer-20261020.json"
+              ]
             },
             "admin": {
               "status": "partial",
@@ -45728,6 +45794,39 @@
                 ],
                 "detail": "The latest bounded member run re-observed identity/org, two previews, selected-org save/refresh, saved-pattern run, clipboard readbacks and Cancel. Reload retired the old panel and activated a replacement worker, but no replacement panel appeared. The exact owned fixture now has a matching tombstone and zero active residuals after post-action readback; the mutation response did not pass its strict verifier. Full reload persistence, admin and Store behavior remain unverified. A later diagnostic-only run (38028339414) repeated the pre-reload member observations but adds no T03 lifecycle credit; replacement-worker instrumentation saw no message ingress, while handler execution and Chrome open settlement remain unobserved. Its native cleanup was unverified; a separately verified exact run-owned soft-delete left one tombstone and zero active rows. T03 remains Partial. Later diagnostic-only hosted run 38045479599 verified sender refresh/replacement ingress/open settlement, then stopped at `pointer_target_not_unique` in visibility_filter with zero visible Data targets. It adds zero T03 lifecycle credit and proves no product defect; post-reload pattern state/send response were unavailable. Cleanup lacked post-delete active-row readback; secret and local private files were absent after cleanup."
               }
+            },
+            {
+              "mode": "member",
+              "result": {
+                "status": "partial",
+                "run_id": 39461020039,
+                "build_version": "0.2.577",
+                "source_sha": "ebe922a655b0bff320d1457e6b598bae3a1c1b10",
+                "resource_invalid": false,
+                "automation_exit": "child_failed_after_reload",
+                "verified_subtargets": [
+                  "actual member authentication and approved-org proof",
+                  "two distinct field picker previews",
+                  "HTTP201 save with body/header organization match and saved-list lookup",
+                  "refresh and pre-reload run matched explicitly chosen fixture field values",
+                  "native TSV/JSON/AI clipboard readbacks matched selected row",
+                  "unsaved selection Cancel cleared state"
+                ],
+                "unverified": [
+                  "post-reload saved pattern reopening",
+                  "post-reload extraction run",
+                  "cause of loading skeleton/Data target absent after reload"
+                ],
+                "cleanup": "exact owned-name+org DELETE1/readback0; hard-delete schema, tombstones not applicable; secret/file absence owner-verified; exact PID exit not independently proven",
+                "new_lifecycle_pass": false,
+                "evidence": [
+                  "docs/stabilization/reports/data271-native-retest-20261020.json",
+                  "docs/stabilization/reports/data577-raw-peer-20261020.json"
+                ],
+                "backend_sha": "not recorded in this raw Data acceptance bundle; no server source attribution"
+              },
+              "superseded_at": "2026-10-20T17:43:30Z",
+              "reason": "081 native replay observes post-reload behavior, but normal formal certificate is still refused by D274."
             }
           ],
           "retest_status": "D268/D271 prerequisite defects independently retest-pass/closed. Current577 pre-reload Data subtargets pass, but child failed before post-reload assertion; T03 remains partial. Source diagnosis proves missing mounted-tab readiness, not transient versus permanent product bootstrap cause."
@@ -46259,7 +46358,9 @@
       "defect_ids": [
         "EXT-D-0268",
         "EXT-D-0270",
-        "EXT-D-0271"
+        "EXT-D-0271",
+        "EXT-D-0272",
+        "EXT-D-0274"
       ]
     },
     {
@@ -52127,7 +52228,8 @@
             "EXT-D-0237",
             "EXT-D-0243",
             "EXT-D-0263",
-            "EXT-D-0264"
+            "EXT-D-0264",
+            "EXT-D-0273"
           ],
           "results": {
             "guest": {
@@ -52645,6 +52747,34 @@
               "scope": "Actual Store205 guest opening and same-conversation followup visible; no post-reload or network terminal proof in this native observation. Existing frozen-candidate result is unchanged.",
               "new_unique_case_pass": false,
               "evidence": "docs/stabilization/reports/store205-guest-chat-current-backend-20261019.json"
+            },
+            {
+              "run_id": "store205-guest-actual-native-20261020",
+              "mode": "guest",
+              "version": "0.2.205",
+              "build_kind": "actual_store_installed",
+              "status": "partial",
+              "resource_valid": true,
+              "server_sha": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+              "scope": "Existing guest first and same-conversation follow-up grounded/terminal; no fresh install or reload. Guard used actual Profile8 child on same APFS volume rather than required user-data root; metadata deviation explicit.",
+              "new_unique_case_pass": false,
+              "evidence": "docs/stabilization/reports/store205-guest-actual-native-20261020.json"
+            },
+            {
+              "run_id": "dev081-guest-cold-native-20261020",
+              "mode": "guest",
+              "version": "0.2.205",
+              "build_kind": "actual_store_installed",
+              "status": "fail",
+              "resource_valid": true,
+              "server_sha": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+              "scope": "Correct-root guard; panel close/reopen new conversation completed and Capture cell correct, but visibleH1 answer wrong (D273). Not full extension reload/new install. Prior candidate577 result unchanged; no current205 guest-health pass.",
+              "new_unique_case_pass": false,
+              "evidence": [
+                "docs/stabilization/reports/dev081-guest-cold-native-20261020.json",
+                "docs/stabilization/reports/store205-heading-boundary-diagnosis-20261020.json",
+                "docs/stabilization/reports/guest-heading-context-contract-repair-20261020.json"
+              ]
             }
           ],
           "bounded_candidate_observations": [
@@ -53277,7 +53407,8 @@
         "EXT-D-0265",
         "EXT-D-0266",
         "EXT-D-0267",
-        "EXT-D-0269"
+        "EXT-D-0269",
+        "EXT-D-0273"
       ]
     },
     {

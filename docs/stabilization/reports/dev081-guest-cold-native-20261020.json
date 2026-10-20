@@ -1,0 +1,57 @@
+{
+  "task_id": "dev081-guest-cold-native-20261020",
+  "lane": "Mac native exact-main dev refresh plus existing Store205 guest Chat",
+  "status": "partial: exact-main dev refreshed; cold Store guest reply terminal but heading answer incorrect; Store manager exposes no Reload button",
+  "source": {
+    "sha": "08150841aea86868f28ada4ad03eecb619824ae8",
+    "origin_main": "08150841aea86868f28ada4ad03eecb619824ae8",
+    "git_status": "clean; no tracked source/docs changed"
+  },
+  "development_artifact": {
+    "workflow": "CI run 39464156241 attempt 1, success",
+    "artifact_id": 12285071255,
+    "artifact_digest": "sha256:8fc42c396818d8da118ef49e61ee6f6681ae759a15fa17e4874faba6d152293e",
+    "version": "0.2.577",
+    "development_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "tree_sha256": "abc0cf53614b72b3bf3d018742b03d79954b70579b7649d0cd5a1150561d42a5",
+    "promotion_receipt": "test-results/ci-dev-promotion-receipt.json",
+    "native_loaded_evidence": "Chrome extensions details showed version 0.2.577, exact development ID, enabled, stable Loaded from path, Pin to toolbar on; clicked Reload and observed Reloaded."
+  },
+  "store_guest_case": {
+    "store_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.205",
+    "install_source": "Chrome Web Store",
+    "enabled": true,
+    "pinned": true,
+    "initial_guest_conversation": "Before closing the panel, Chrome AX showed the explicit guest banner and the prior two terminal turns from store205-guest-actual-native-20261020.json; first answer contained page H1 and stage meanings, follow-up returned Capture expected result.",
+    "cold_reopen": "Closed side panel, returned to https://www.aimatrx.com/matrx-extend-demo, opened the pinned extension chooser and selected the Store ID (sidepanel URL chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html). It showed the explicit guest banner and a blank/new conversation.",
+    "reload_boundary": "The Chrome Web Store extension details page showed no Reload button. A browser restart or enabled-state toggle was not done. Exact dev extension did receive a full manager Reload; Store panel was closed and reopened cold.",
+    "question": "According to this page, what is the exact main heading, and what expected result does the table list for Capture?",
+    "answer_observed": "Expected result for Capture: Article text, links, media, metadata, and schema. For main heading, assistant said captured content had no H1, listed two H2s, and offered to check the live page.",
+    "verdict": "Terminal reply produced and Capture result correct. Heading portion failed: screenshot showed visible H1 'A clear three-stage browser workflow' while assistant claimed no H1. Working/Stop disappeared and Send returned.",
+    "screenshot": "Inline screenshot captured in CUA transcript; no screenshot-file export was available. It visibly includes guest banner, live H1 and table, assistant response, and returned Send button."
+  },
+  "backend": {
+    "url": "https://server.app.matrxserver.com/health/version",
+    "http_status": 200,
+    "git_sha": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+    "built_at": "2026-10-20T13:37:00Z",
+    "observed_at_utc": "2026-10-20T17:28:02Z"
+  },
+  "resource": {
+    "run_id": "dev081-guest-cold-native-20261020",
+    "mode": "browser",
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "decision": "valid",
+    "final_at_utc": "2026-10-20T17:28:04.062Z",
+    "journal": "test-results/dev081-guest-cold-native-20261020/resource-journal.jsonl",
+    "journal_sha256": "e0e37ee22158cfc0092823cef4e2ae53ae77a07cae1f9d401e20b1fcb8468632",
+    "final_guard_confirmed_stop": true,
+    "lease": "guard completed and released its permit"
+  },
+  "scope": "No authentication, account, organization, extension permission, preference, or database changes. No fresh-install claim. No repeated AI call."
+}

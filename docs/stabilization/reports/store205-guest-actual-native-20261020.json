@@ -1,0 +1,52 @@
+{
+  "task_id": "published-store-guest-actual-native-20261020",
+  "status": "pass: two guest turns completed in one conversation",
+  "client": {
+    "source": "Chrome Web Store",
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "mode_ui": "You're using Matrx as a guest.",
+    "agent_model": "not exposed; UI says Sign in to choose an agent",
+    "install_state": "Already present in existing Chrome Profile 8; signed-out guest mode, not a fresh install."
+  },
+  "target": {
+    "url": "https://www.aimatrx.com/matrx-extend-demo",
+    "heading": "A clear three-stage browser workflow"
+  },
+  "backend_health_version": {
+    "url": "https://server.app.matrxserver.com/health/version",
+    "http_status": 200,
+    "git_sha": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+    "built_at": "2026-10-20T13:37:00Z"
+  },
+  "turn1": {
+    "prompt": "Asked exact main heading and Capture/Understand/Use table meanings.",
+    "reply_excerpt": "A clear three-stage browser workflow; Capture turns the page into readable content; Understand asks about page content; Use extracts structured rows.",
+    "terminal_ui": "Working and Stop disappeared; Send returned."
+  },
+  "turn2": {
+    "prompt": "According to the visible table, what expected result is listed for Capture?",
+    "reply_excerpt": "Article text, links, media, metadata, and schema.",
+    "same_conversation": true,
+    "terminal_ui": "Working and Stop disappeared; Send returned."
+  },
+  "evidence": "Native Chrome accessibility tree and inline screenshot showed Store ID/version, guest banner, prompts/replies, and terminal Send state. Screenshot was viewable inline; no persistent screenshot export was available.",
+  "privacy": "No profile/account identity or guest auth/fingerprint value read or recorded.",
+  "scope": "No source edits, preference changes, authentication changes, permissions changes, or external actions.",
+  "resource": {
+    "run_id": "store205-guest-actual-native-20261020",
+    "mode": "browser",
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "decision": "valid",
+    "final_at_utc": "2026-10-20T17:16:15.210Z",
+    "watch_healthy_at_utc": [
+      "2026-10-20T17:15:38.777Z",
+      "2026-10-20T17:15:54.801Z",
+      "2026-10-20T17:16:10.828Z"
+    ],
+    "profile_dir_basis": "chrome://version active Profile 8 subdirectory was passed (same APFS volume), not the Chrome user-data root.",
+    "ignored_journal": "test-results/store205-guest-actual-native-20261020/resource-journal.jsonl"
+  }
+}

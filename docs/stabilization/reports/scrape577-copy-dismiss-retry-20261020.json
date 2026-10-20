@@ -1,0 +1,41 @@
+{
+  "task_id": "scrape577-copy-dismiss-retry-20261020",
+  "lane": "native-mac-personal-chrome",
+  "model": "UNKNOWN",
+  "status": "partial-pass",
+  "feature_ids": ["EXT-F-1007"],
+  "defect_ids": [],
+  "summary": "Corrected-root admission valid; chose dev577 through Chrome extension chooser, verified ID ci...baml and version0.2.577, signed-in admin (account menu and admin-only Pilot tab visible). T08 rendered Article, 2 Images (one image plus one small), empty Video pane with Add video URL, 17 Links, SEO and Article/Organization schema. T09 actual pasteback verified article Markdown, 17 URLs and JSON schema. T06 warm edit Cancel dropped CANCEL-SMOKE and original 179-word article remained. T43 not attempted: same-URL unsaved Source card holds sole Retry save; preserved without retry/discard/save.",
+  "changed_files": [],
+  "commit_shas": [],
+  "verification": [
+    {
+      "case_id": "EXT-F-1007-T08",
+      "run_id": "scrape577-copy-dismiss-retry-20261020-02",
+      "verdict": "partial_pass",
+      "evidence": "test-results/scrape577-copy-dismiss-retry-20261020/resource-journal.jsonl; live native UI observations"
+    },
+    {
+      "case_id": "EXT-F-1007-T09",
+      "run_id": "scrape577-copy-dismiss-retry-20261020-02",
+      "verdict": "partial_pass",
+      "evidence": "Actual pasteback readbacks: 179-word article Markdown; 17 URLs; JSON with title/canonical and Article+Organization schema"
+    },
+    {
+      "case_id": "EXT-F-1007-T06",
+      "run_id": "scrape577-copy-dismiss-retry-20261020-02",
+      "verdict": "partial_pass",
+      "evidence": "Warm editor showed temporary CANCEL-SMOKE; after Cancel preview returned with original content and 179-word count"
+    },
+    {
+      "case_id": "EXT-F-1007-T43",
+      "run_id": "scrape577-copy-dismiss-retry-20261020-02",
+      "verdict": "unverified",
+      "evidence": "Save Source modal unavailable while unsaved-capture card holds this URL; only Retry save would open/persist; no action taken"
+    }
+  ],
+  "limitations": "Bound to dev artifact CI39464156241/artifact12285071255, source08150841, treeabc0cf53614b72b3bf3d018742b03d79954b70579b7649d0cd5a1150561d42a5; no exact-latest-main claim. No AI send, backend write, permission/auth/pref changes or source edits. No saved inspectable screenshot; visible user capture queue retained. Image listing only; no media extraction claim. Watch reported healthy; terminal valid, exit0, resourceInvalid=false; heavy permit absent after stop. Journal SHA-256 ae78956a197510ca2b5ea65c56fe8353bdae5206b6e428ecb1de746c7b98c04f.",
+  "resource_journal": "test-results/scrape577-copy-dismiss-retry-20261020/resource-journal.jsonl",
+  "open_questions": [],
+  "next_action": "None; report bounded native findings to coordinator, keep T43 and untested warm/reload criteria unverified."
+}

@@ -1,0 +1,35 @@
+{
+  "task": "EXT-D-0274 final fresh zero-authorship re-verification",
+  "status": "DONE_WITH_CONCERNS",
+  "prior_important_findings": [
+    {
+      "finding": "Old panel destruction after replacement materialization accepted",
+      "status": "ADDRESSED",
+      "evidence": "Immutable raw report modified so old-panel target_destroyed timestamp is 17:33:36.965Z, later than matching replacement target_info_changed at 17:33:34.908Z; exported verifier now refuses HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID."
+    },
+    {
+      "finding": "Absent pre-click old worker accepted",
+      "status": "ADDRESSED",
+      "evidence": "Removing old worker from pre_click_snapshot and setting pre_click_old_worker_present=false on immutable raw report is refused."
+    },
+    {
+      "finding": "False creation-event flag plus matching creation event accepted",
+      "status": "ADDRESSED",
+      "evidence": "Appending owned target_created for final panel ID while replacement_panel_created_event=false is refused."
+    }
+  ],
+  "verdict_A_spec_evidence": {
+    "status": "PARTIAL",
+    "supported": "Immutable run 39465749057 ZIP SHA256 bf6f335158fd4bef1e3276e0d6a0731ba8b637fb745ada0fd2bc3b2359d96133 passes the current exported report verifier as correlated_panel_materialization with replacement_panel_created_event=false. Raw timeline has pre-click old worker/panel, after-click old panel destruction, later exact owned target_info_changed for unique final panel ID, final replacement worker and panel, opened production callback, exact context, and post-reload Data continuity. No literal CDP creation claim is made.",
+    "missing": "The general predicate does not require the first owned appearance of the final panel ID to follow old-panel destruction; an earlier owned event for the same ID can be ignored when a later matching event exists. This contradicts D274 expected and fix text requiring destruction before materialization.",
+    "cannot_verify": "No new hosted native run or eligible normal CLI certificate was performed. The historical source 08150841 development artifact will be ineligible after executable verifier drift; exported retrospective verification is not a normal certificate."
+  },
+  "verdict_B_code_quality_guards": {
+    "status": "FAIL",
+    "important_finding": "At scripts/hosted-remote-admission.mjs:1221-1244, afterRetirement.some selects a later target_info_changed even if the same final replacement panel ID was already classified as owned before old-panel destruction. On unchanged raw report, insert {at:'2026-10-20T17:33:32.964Z', phase:'target_info_changed', target: final exact panel} just before old-panel target_destroyed at 17:33:32.965Z; retain actual later 17:33:34.908Z event. memberDataReplacementPanelProofBasis still returns correlated_panel_materialization and verifyHostedMemberDataLifecycleReport still returns true. Require no matching owned panel materialization before old retirement, including trace order and timestamp, and add this mutant to the forcing test.",
+    "nonblocking_observation": "The report verifier accepts an artificial final_snapshot worker with type page and an artificial old-panel target_destroyed with kind extension_other; the producer's describe() derives these kinds from service_worker type or exact panel URL, so these mutations cannot arise from that producer path. No separate important finding raised.",
+    "checks": "node --test scripts/hosted-member-data-lifecycle.test.mjs: 6/6 pass; pnpm compile: pass; Biome scoped three owned files: pass; git diff --check: pass. Raw archive SHA256 verified. Current verifier file SHA256 1e923da4382b3a64124cca21a0ec0cb4bc1b67791f4e96ae2441c34244081680.",
+    "provenance": "CLI still calls requireDevelopmentArtifact and sourceCompatibility; verifierFileSha256 and replacementPanelBasis are separate output metadata, not rewritten archive or source identity."
+  },
+  "repository_changes": "none"
+}

@@ -1,0 +1,54 @@
+{
+  "task": "EXT-D-0274 escalated fresh zero-authorship review",
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_verifier_sha256": "c417f6d7766115161b55ee16cde774e23aeee9266adbad1b32efa9407b88b0f5",
+  "prior_findings": [
+    {
+      "finding": "Destruction later than replacement materialization",
+      "status": "ADDRESSED",
+      "evidence": "Replayed independently against a clone of immutable run 39465749057; refused with HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID."
+    },
+    {
+      "finding": "Missing baseline old worker",
+      "status": "ADDRESSED",
+      "evidence": "Replayed independently against a clone of immutable run 39465749057; refused with HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID."
+    },
+    {
+      "finding": "False created-event flag contradicts matching creation event",
+      "status": "ADDRESSED",
+      "evidence": "Replayed independently against a clone of immutable run 39465749057; refused with HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID."
+    },
+    {
+      "finding": "Earlier matching owned event hidden by later matching event",
+      "status": "ADDRESSED",
+      "evidence": "Replayed independently against a clone of immutable run 39465749057; refused with HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID."
+    }
+  ],
+  "verdict_A_actual_spec_evidence": {
+    "status": "PARTIAL",
+    "actual_captured_run": "PASS, scoped retrospective evidence: immutable ZIP SHA256 bf6f335158fd4bef1e3276e0d6a0731ba8b637fb745ada0fd2bc3b2359d96133; original report accepted as correlated_panel_materialization with replacement_panel_created_event=false unchanged. Original ordered trace shows old panel retirement before first replacement ownership, baseline old worker, exact final replacement identities, successful production open callback, context, and post-reload continuity.",
+    "spec_gap": "Predicate can accept a trace where an owned replacement document is already present in a poll snapshot before old-panel destruction. This violates the required retirement-before-first-owned-materialization condition.",
+    "not_verified": "No fresh native execution or current-source normal CLI certificate. Historical 08150841 evidence is retrospective only. Executable verifier changes remain outside the runtime-equivalent documentation allowlist; normal CLI still invokes requireDevelopmentArtifact/sourceCompatibility and must refuse that historical artifact after source drift."
+  },
+  "verdict_B_guard_quality": {
+    "status": "FAIL",
+    "important_findings": [
+      {
+        "title": "First ownership search ignores snapshot observations",
+        "location": "scripts/hosted-remote-admission.mjs:1230",
+        "reproduction": "Clone actual report. Remove old-panel target_destroyed from original position, set at=2026-10-20T17:33:34.000Z and insert immediately before first new-panel target_info_changed at 17:33:34.908Z. Put the exact final new panel target into first poll_transition.targets at 17:33:33.194Z. All entry timestamps remain monotonically ordered. Retain later matching events and final snapshot. verifyHostedMemberDataLifecycleReport returns true and proof basis correlated_panel_materialization.",
+        "why_real": "Native capture snapshot() records exact owned target classifications via the same describe() as target events. Its worker-retirement polling starts immediately after click_resolved and can observe targets before the old panel destruction event. A snapshot already showing the replacement is ownership evidence; ignoring it while counting a later info-change launders the forbidden earlier materialization. No fresh global blank-node requirement is assumed.",
+        "required": "Derive earliest matching owned appearance across target events AND target snapshots; ensure all observed first-appearance evidence satisfies retirement order/time. Add a coherent snapshot-first real-report mutant."
+      }
+    ],
+    "additional_observations": [
+      "Malformed first matching event timestamp is accepted because Date.parse(...)=NaN makes <= false, and a later valid event supplies afterRetirement.some. The current producer uses ISO timestamps, so this is recorded as defensive evidence-validation weakness rather than a separate product-realistic blocker.",
+      "A later trace matching event with a timestamp before retirement is accepted; the algorithm checks timestamp only on first event by array order. This contradicts a strict earliest-in-both-orders interpretation, but requires timestamp/trace disagreement and is not the primary finding."
+    ],
+    "checks": "Focused node test suite 6/6 PASS; scoped Biome 3 files PASS; scoped git diff --check PASS. Raw wrong-open/context/continuity mutants rejected. Four prior mutants rejected. New coherent snapshot-first mutant accepted.",
+    "mutation_evidence": "/tmp/data274-escalated-mutation-results-20261020.json",
+    "reproducer": "/tmp/data274-escalated-mutations-20261020.mjs"
+  },
+  "repository_changes": "none; scratch report and reproducer only",
+  "recommendation": "Do not call the invariant fixed or issue a normal certificate yet. Resolve the snapshot-first hole before source promotion; preserve historical/current-source provenance separation."
+}

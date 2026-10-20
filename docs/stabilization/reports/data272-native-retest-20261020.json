@@ -1,0 +1,15 @@
+{
+  "task_id": "data272-native-retest-20261020",
+  "status": "normal_verifier_refused",
+  "source_sha": "08150841aea86868f28ada4ad03eecb619824ae8",
+  "full_ci": "39464156241 success; development artifact 12285071255; digest sha256:8fc42c396818d8da118ef49e61ee6f6681ae759a15fa17e4874faba6d152293e",
+  "admission": "Normal plan/dispatch passed; lane A member-data lifecycle; clean synchronized main.",
+  "native_run": "39465749057 success; result artifact 12285696990; raw zip sha256 bf6f335158fd4bef1e3276e0d6a0731ba8b637fb745ada0fd2bc3b2359d96133",
+  "native_report": "pass/complete; actual member/non-admin and approved-org proof; HTTP 201 exact-org save; saved pattern run before/after reload; TSV/JSON/AI clipboard before/after reload; Cancel.",
+  "normal_verifier": "HOSTED_MEMBER_DATA_LIFECYCLE_REPORT_INVALID; sole failed predicate: replacement_panel_created_event=false. Reload evidence: old worker/panel absent, replacement worker present, final target and opened request/callback reply true.",
+  "resource": "Package/browser/guest journals independently pass existing verifier; retain all 3 from raw artifact.",
+  "cleanup": "Report verifies exact owned-name/org DELETE=1 and active readback=0; backend source attribution not recorded. One-use GitHub secret is absent after auth preflight; local link file absent.",
+  "raw_zip": "/tmp/data272-native-39465749057.zip",
+  "private_evidence": "/tmp/data272-native-39465749057/ (report, screenshots, 3 journals; directory mode 0700).",
+  "overall_t03": "partial; no closure or normal verifier certificate; fresh raw peer/root adjudication pending."
+}

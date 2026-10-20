@@ -14,7 +14,7 @@
   "actual": "The member driver called click(panel, 'title', 'Data') immediately after panel adoption. One matching SIDE_PANEL runtime context at 21 ms did not establish that React had mounted the Data tab; the pointer refused with zero targets before any post-reload Data assertion.",
   "severity": "S2: acceptance harness can stop at reload before measuring saved-pattern persistence; no persistent product bootstrap defect established.",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "data_reload_causal_diagnosis",
   "cause": "The Data reload path omitted the visible replacement-tab precondition that the shared Settings path already applies. The harness proved URL/context and replacement target, but dispatched the first Data pointer before checking mounted controls.",
   "sibling_census": "Settings replacement tab already used bounded readiness and remains on the shared helper. Scrape has a separate replacement-tab helper; this repair touches the member Data pointer path without changing its other lifecycle assertions or auth.",
@@ -22,9 +22,12 @@
   "evidence": [
     "docs/stabilization/reports/data-reload-causal-diagnosis-20261020.json",
     "tests/browser/data-member-reload-readiness.test.mjs",
-    "tests/browser/data-member-reload-adoption.test.mjs"
+    "tests/browser/data-member-reload-adoption.test.mjs",
+    "docs/stabilization/reports/data272-fresh-peer-20261020.json",
+    "docs/stabilization/reports/data272-native-retest-20261020.json",
+    "docs/stabilization/reports/checkpoint-fresh-evidence-peer-20261020.json"
   ],
-  "verification_status": "Controlled actual-driver delayed-mount seam RED on old code and GREEN after repair; negative cases and constant-readiness mutant refuse input. Focused tests, compile and scoped Biome passed. Fresh source peer, native member replay, and post-reload product persistence remain unverified.",
+  "verification_status": "Fresh source A/B PASS35checks; resource-valid native39465749057 observed same adopted target/frame Data tab count0 then1 after2679ms, trusted pointer proceeded and actual saved pattern/run/clipboard after reload passed. Fresh independent raw peer confirms bounded original readiness repro and surrounding behavior. Strict lifecycle certificate remains refused by separate D274 event-only oracle; no full T03 certificate or product bootstrap causal fix is claimed.",
   "transition_history": [
     {
       "at": "2026-10-20T17:12:00Z",
@@ -49,7 +52,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Old seam red, repaired seam green; negative and constant-return checks pass. Native verification remains pending."
+    },
+    {
+      "at": "2026-10-20T17:43:30Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent native wait on same target/frame observed0→1 visible Data tab after2679ms before pointer; post-reload assertions passed with all3resourcejournals valid."
+    },
+    {
+      "at": "2026-10-20T17:43:30Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original missing-readiness driver class independently verified with source negatives and real delayed-mount replay. Full lifecycle certificate remains a separate D274 gate; not a product bootstrap closure."
     }
   ],
-  "next_action": "Obtain independent source review, then one eligible normal native member replay. If readiness never arrives on a stable correct target/frame, investigate product bootstrap with the captured first failed boundary; do not claim T03 persistence until real post-reload assertions pass."
+  "next_action": "No further readiness repair. D274 owns strict lifecycle proof mismatch; continue actual Data coverage and require normal current-source certification before formal T03 PASS.",
+  "fix_commit": "08150841aea86868f28ada4ad03eecb619824ae8"
 }

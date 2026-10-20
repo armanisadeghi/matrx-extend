@@ -25,7 +25,9 @@
     "/tmp/data272-native-39465749057.zip",
     "/tmp/data-lifecycle-event-oracle-diagnosis-20261020.json",
     "/tmp/data274-structural-raw-results.json",
-    "/tmp/data274-escalated-fix-20261020.json"
+    "/tmp/data274-escalated-fix-20261020.json",
+    "docs/stabilization/reports/data274-escalated-fix-20261020.json",
+    "docs/stabilization/reports/data274-structural-final-peer-20261020.json"
   ],
   "verification_status": "Structural repair pending fresh independent review: original immutable report accepted retrospectively with created_event=false unchanged; four prior findings plus coherent snapshot-first, invalid first timestamp and conflicting timestamp mutants rejected. All 18 real-report channel/time variants rejected. Two new guards failed before repair and pass after; constant-success scratch mutant fails both. Focused 8/8, compile and scoped Biome pass. Normal historical CLI certificate remains ineligible after executable verifier drift.",
   "transition_history": [
@@ -42,5 +44,6 @@
       "reason": "Correlated final-target materialization proof added and guarded against false positives; formal T03 verdict remains partial."
     }
   ],
-  "next_action": "Get independent source review. A newly committed executable verifier makes the old development artifact ineligible for the normal CLI sourceCompatibility gate; do not call an exported-function retrospective check a normal certificate. Obtain a fresh eligible CI artifact and native run only after review and authorized scheduling."
+  "next_action": "Get independent source review. A newly committed executable verifier makes the old development artifact ineligible for the normal CLI sourceCompatibility gate; do not call an exported-function retrospective check a normal certificate. Obtain a fresh eligible CI artifact and native run only after review and authorized scheduling.",
+  "fix_commit": "e12c4d75320bf3862500f71e633096ddc64baa74"
 }
