@@ -77,7 +77,9 @@ Active owner `root/release_next_hosted_owner` owns the next exact567 A/B accepta
 checkpoint. Exact567 guest B39353960745 and member A39354133238 are TERMINAL failures.
 [Exact567 results](reports/store-release-v0567-acceptance-20261020.json): B resources valid;
 opening and same-conversation replies reached terminal answers, but answer screenshot clipped,
-so full guest gate UNVERIFIED. Data Done repeats no_node_at_location before mouse despite visible,
+so full guest gate UNVERIFIED. [Clip diagnosis](reports/guest567-answer-clip-diagnosis-20261020.json)
+localizes rejection to a0.02CSSpx Range/ancestor mismatch; actual paint/readability remains unknown,
+not a demonstrated persistent product scrolling bug. No tolerance or visible-proof waiver. Data Done repeats no_node_at_location before mouse despite visible,
 focused original target; simple foreground hypothesis is refuted. Article/Links/Schema/SEO and
 capture-off have bounded passes only. A resources INVALID (CPU/load), stopped owned_profile,
 no member send/no new D261 evidence. [Resource boundary](reports/member567-resource-boundary-20261020.json)
@@ -87,11 +89,17 @@ external run or new Store upload. Fresh hard-stall agent root/data_done567_foren
 protocol diagnosis found a supported scroll coordinate mismatch: viewport Done center was sent
 to a document-space hit lookup with scrollY479. [Forensics](reports/data-done567-forensics-20261020.json);
 Measured conversion source fix ff105b712 passed two fresh source peers; Done/Cancel/Clear
-each have three scroll cases, strict target identity and viewport mouse preserved. Focused39355860876
-and CI39355860873 are pending/in progress; root/guest_data_scrolled_hosted_retest prepares normal
-B guest-data admission but cannot dispatch before root GO and exact CI artifact. No product patch/pass.
+each have three scroll cases, strict target identity and viewport mouse preserved. Focused39355860876 PASS684/684; CI39355860873 cancelled before jobs when evidence-only
+8abbdb3d4 triggered successor CI39356360500, now active; root/guest_data_scrolled_hosted_retest prepares normal
+A guest-data admission but cannot dispatch before root GO and successful current-source CI artifact.
+This is supplemental: its fixture does not certify nonzero scroll and cannot close original D258.
+Normal old567 B replay was source-drift REFUSED, no bypass. Root authorized ONE new guarded
+hosted build from synchronized main after fresh preflight; release owner root/guest567_scrolled_replay_owner
+retains dispatch/run handle. This build runs every mandatory exact-candidate gate; source CI and
+release checks may run on independent hosts, no gate waiver. Original public-demo B replay waits
+new verified candidate plus independent package review/admission/root GO. No product patch/pass.
 T22/T63 absence-oracle source d4750c363 and import-only correction4bc76ec8e passed focused680/680;
-full CI39355672626 remains active (prior d475 full CI lint-red import ordering, corrected). Native proof pending. Settings A39352539316 and the guarded build are terminal.
+full CI39355672626 SUCCESS (prior d475 lint-red import ordering corrected). D262 fixed, native proof pending. Settings A39352539316 and the guarded build are terminal.
 Root owns integration/records. Source-only repairs are committed; verify origin/main and the next CI before relying on integration:
 
 1. **D248 `8d8fda5fe`**: shared trusted foreground restoration before organization proof;

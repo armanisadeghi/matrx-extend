@@ -8,7 +8,7 @@
   "auth_mode": "signed-out guest; harness evidence only",
   "severity": "S2: false acceptance evidence for a negative-only control",
   "priority": "P1: repair before the next guest Settings batch",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/settings_absence_assertion_repair",
   "preconditions": [
     "Frozen development artifact 0.2.566, source 27b7defe7a4c123ff74076b15a5cb73e879e8500, hosted run 39352539316 had resource-valid acceptance execution but runner exit 1.",
@@ -38,10 +38,10 @@
   ],
   "verification": {
     "source": "Fresh round2 peer: previous predicate-only regression gap ADDRESSED in actual DOM-probe/case-recorder seam; both real T22/T63 callsites wired. Live, test and RED/GREEN execution still unverified until CI/replay.",
-    "focused_tests": "NOT RUN: Mac below disk resource guard. Existing focused acceptance command now registers the new suite; syntax/JSON checks are not test credit.",
+    "focused_tests": "PASS680/680 in focused39355397255 on d475; import-only correction4bc76ec8 fullCI39355672626 SUCCESS (compile/fullLint/unit/transport/resource/build/artifact). Source harness proof only; physical native original replay pending.",
     "native": "NOT RUN: guarded hosted replay after reviewed integration required."
   },
-  "next_action": "Independent source review, then root integrates exact files and lets authoritative CI verify. After resource admission, replay guest Settings on a fresh owned profile and retain both positive readiness and absence observations. T04 reload failure is a separate diagnosis, not repaired here.",
+  "next_action": "Guarded original guest Settings native replay must prove active guest Settings and forbidden-control absence before retest-pass/closed. T04 reload boundary remains separate; source/CI green is not native acceptance.",
   "transition_history": [
     {
       "at": "2026-10-20T01:41:39Z",
@@ -60,6 +60,13 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Shared positive guest Settings readiness and forbidden-control assertion prepared for independent review."
+    },
+    {
+      "at": "2026-10-20T02:02:16.297835Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Meaningful actual DOM/case seam regression passed focused680; fresh round2 source peer and corrected4bc fullCI passed. No native closure/product credit."
     }
-  ]
+  ],
+  "fix_sha": "d4750c363b9eeff9ea734b4da05320c9c728dfe1"
 }
