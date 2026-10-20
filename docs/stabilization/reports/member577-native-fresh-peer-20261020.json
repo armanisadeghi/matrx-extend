@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "task_id": "EXT-D-0261",
+  "review": "independent raw-evidence review; no product changes",
+  "A_behavior": {
+    "guest_two_turns": "PASS: report records two terminal-success turns in one conversation; opening delegated one tool and has a successful result post/resume.",
+    "nonadmin_member_identity": "PASS_WITH_LIMIT: signed-in web and extension; canonical admin check matched the current extension user and returned 0 rows. Role category itself is absent.",
+    "member_org_and_server": "PASS_WITH_LIMIT: selected org fingerprint and both X-Organization fingerprints match the approved-org fingerprint; opening and follow-up responses correlate to the same conversation and both terminate successfully.",
+    "member_opening_answer": "PARTIAL: report records 533-character terminal answer with expected terms and painted DOM diagnostics, but no opening-result screenshot was saved; later capture places the prior article above the viewport. Opening visual acceptance is not independently shown.",
+    "member_followup": "PASS: same-conversation follow-up terminal reply is recorded and saved screenshot visibly shows ‘The second workflow stage is Understand.’",
+    "page_text_tool_behavior": "UNVERIFIED: strict join has STARTED for get_page_text and an unrelated ‘other’ call, with no matching COMPLETED event. Successful HTTP tool-result posts/resumes and final answer do not establish get_page_text completion."
+  },
+  "B_evidence_integrity": "PARTIAL: timestamps, conversation/call fingerprints, terminal events, responses, org fingerprints, DOM diagnostics and screenshot are internally useful; report correctly marks D261 not closed. Strict event-boundary proof is missing. Saved image proves only the visible follow-up fragment; no saved opening-result image.",
+  "artifact_boundary": "Source SHA 91d7696; CI Store ZIP SHA recorded, but runtime extension is a derived tree with manifest.key-only adaptation copied from matching-version local ZIP. This is not proof of installing/running the untouched Store ZIP or a Chrome Web Store installed release.",
+  "cleanup_proof": "NOT INDEPENDENTLY PROVEN: summary claims link/lease/profile/process absence and clean tree, but native resource journal ends child_failed (exit 1) and contains no cleanup confirmations; private report has no cleanup section. Treat these as assertions, not journal-backed proof.",
+  "D261_closure_eligible": false,
+  "reason": "Required strict get_page_text completion-to-call/result join is absent; do not close based on HTTP 200, successful posts/resumes, or grounded terminal prose.",
+  "separate_T75_evidence": "PASS_WITH_LIMIT for bounded identity/role persistence: report binds source ad92e14/CI 39440966391 artifact tree to exact loaded dev extension and records matching identity/ADMIN/Sign out before and after exact reload. Inline-only screenshots cannot be independently inspected from saved files; not whole Settings acceptance and separate from 0.2.577 evidence.",
+  "T81_T72": "T81 PARTIAL (offline/not connected shown; no bridge health/pairing); T72 UNVERIFIED (About not opened)."
+}

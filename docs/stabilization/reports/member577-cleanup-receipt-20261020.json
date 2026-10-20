@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "task_id": "EXT-D-0261",
+  "lane": "member577_native_mac_cleanup",
+  "observed_at_utc": "2026-10-20T15:19:11.124Z",
+  "run_window_utc": {
+    "begin": "2026-10-20T15:07:59Z",
+    "terminal": "2026-10-20T15:09:58Z"
+  },
+  "source": "separate post-terminal host readback; resource journal has no cleanup events",
+  "exact_owned_profile_path": null,
+  "exact_owned_chrome_pid": null,
+  "exact_owned_process_group": null,
+  "identity_limit": "The harness did not persist its random mkdtemp profile path or Chrome PID/group in the native report or resource journal; exact per-process exit cannot be reconstructed.",
+  "profile_readback": {
+    "scratch_root": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+    "prefix": "matrx-native-sidepanel-qa-",
+    "creation_window_utc": {
+      "begin": "2026-10-20T15:07:59.000Z",
+      "end": "2026-10-20T15:10:00.000Z"
+    },
+    "remaining_matching_created_directories": [],
+    "absent_in_window": true
+  },
+  "process_readback": {
+    "selector": "actual executable command begins with installed Chrome-for-Testing path and contains matrx-native-sidepanel-qa- profile prefix",
+    "matching_pids": [],
+    "zero_scoped_processes": true
+  },
+  "one_use_link": {
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/member577-native-mac-20261020/member-link.private.json",
+    "absent": true
+  },
+  "normal_lease": {
+    "path": "/var/tmp/matrx-stabilization-resource-501/heavy",
+    "absent": true
+  },
+  "git_clean": true,
+  "limitations": [
+    "No journal-backed exact profile/PID cleanup receipt; observed host readback is scoped by path prefix and creation interval."
+  ],
+  "correction": "Earlier broad string search matched the readback command itself; this receipt uses an executable-anchored selector."
+}

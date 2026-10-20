@@ -51,7 +51,7 @@
     "docs/stabilization/reports/member-org-gate-final-peer-20261020.json"
   ],
   "cause": "Localized: original mandate start and same-conversation tool_results returned200; subsequent resume entered the backend but no target headers arrived for59.999s, then ALB generated504. create_prepared_streaming_response awaits prepare_resume_conversation before constructing the response. Concurrent DB pool/connect/query timeouts are observed but their causal link to this request is unproven. Deployed20bd has identical inspected resume/pool implementation; a short postdeploy sample lacks the prior error burst, not a repair claim.",
-  "next_action": "Driver e7 full focused/compile/full CI and fresh peer are complete. Await newly served shared Chat package, freeze final app and driver source, prepare fresh guarded release candidate, then independently retest original guest-to-member Chat with exact get_page_text opening join and terminal first/follow-up. Original566 504 cause remains unknown; 575 first answer partial; D261 triaged.",
+  "next_action": "Keep original504 investigation open without claiming a causal repair; current577 reproduction passes semantic first/follow-up/tool checks. Repair observer D269 against canonical result transport and header scope. If504 recurs, preserve exact request/call and server trace before retry; no unchanged blind rerun.",
   "transition_history": [
     {
       "at": "2026-10-20T00:56:58.460155Z",
@@ -124,5 +124,22 @@
       "docs/stabilization/reports/member-org-gate-final-peer-20261020.json"
     ],
     "focused_ci_repair_commit": "e7f650c04abba15d945c4c1a4cdc899aec8d04b1"
+  },
+  "current_native_observation": {
+    "version": "0.2.577",
+    "source_sha": "91d7696626537676d0a5a1239ca29eb3fbed7331",
+    "original_question": "terminal HTTP200, heading and Capture/Understand/Use; no504 observed",
+    "same_conversation_followup": "terminal HTTP200 and painted Understand reply",
+    "server_sha_stable": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+    "semantic_tool_proof": "Authoritative exact-call/conv backend confirms completed get_page_text success and stage body; complementary query_elements(h1) confirms visible H1. Header omission by PageText is its intended contract. Independent semantic peer accepts actual user behavior.",
+    "automated_child_status": "child_failed retained: wrong legacy completion event/header expectations, separate harness repair D269",
+    "limits": "No saved standalone opening image; source/test adaptation is not actual Store-installed577; original566504 cause and causal fix attribution unknown.",
+    "evidence": [
+      "docs/stabilization/reports/member577-native-mac-20261020.json",
+      "docs/stabilization/reports/member577-native-fresh-peer-20261020.json",
+      "docs/stabilization/reports/member577-page-text-contract-proof-20261020.json",
+      "docs/stabilization/reports/member577-semantic-final-peer-20261020.json",
+      "docs/stabilization/reports/member577-cleanup-receipt-20261020.json"
+    ]
   }
 }

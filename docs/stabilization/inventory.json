@@ -14717,7 +14717,24 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "settings-native-identity-20261020-b",
+              "build_version": "0.2.576",
+              "source_sha": "ad92e14c656f283a15ea345520a97441e417c94b",
+              "development_ci_run_id": 39440966391,
+              "development_artifact_id": 12274887311,
+              "actual_store_installed": false,
+              "resource_invalid": false,
+              "detail": "Known authorized admin account identity, ADMIN badge and Sign out matched warm and after exact development extension reload/reopen. Native AX and inline-only screenshots; receipt/tree/runtime binding verified. Not wholeSettings or577Store evidence.",
+              "evidence": [
+                "docs/stabilization/reports/settings-actual-native-20261020.json",
+                "docs/stabilization/reports/member577-native-fresh-peer-20261020.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T76",
@@ -15059,7 +15076,24 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "settings-native-identity-20261020-b",
+              "build_version": "0.2.576",
+              "source_sha": "ad92e14c656f283a15ea345520a97441e417c94b",
+              "development_ci_run_id": 39440966391,
+              "development_artifact_id": 12274887311,
+              "actual_store_installed": false,
+              "resource_invalid": false,
+              "detail": "Native Matrx2 not running / Local not connected shown warm and afterreload; no health response or pairing/backend behavior proof.",
+              "evidence": [
+                "docs/stabilization/reports/settings-actual-native-20261020.json",
+                "docs/stabilization/reports/member577-native-fresh-peer-20261020.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T85",
@@ -45554,17 +45588,20 @@
               "visible_target_count": 0
             }
           ],
-          "active_retest": {
-            "run_id": 39442944171,
-            "mode": "member",
-            "source_sha": "ad92e14c656f283a15ea345520a97441e417c94b",
-            "ci_run_id": 39440966391,
-            "artifact_id": 12274887311,
-            "status": "running_no_product_verdict",
-            "fixture_owner": "data_t03_repaired_native",
-            "source_peer": "docs/stabilization/reports/data-org-fix-fresh-peer-20261020.json",
-            "cleanup": "secret and fixture exclusively owned until terminal; local one-use file removed"
-          }
+          "bounded_candidate_observations": [
+            {
+              "mode": "member",
+              "run_id": 39442944171,
+              "source_sha": "ad92e14c656f283a15ea345520a97441e417c94b",
+              "status": "unverified_resource_invalid_before_auth",
+              "new_product_credit": 0,
+              "detail": "Owned CDP endpoint absent through8s; CPU pressure invalidated run. No auth/Data actions or rows; secret/link absence verified, exact Chrome exit after VM teardown unproven. Previous456partial remains.",
+              "evidence": [
+                "docs/stabilization/reports/data-t03-repaired-native-20261020.json",
+                "docs/stabilization/reports/data-startup-resource-diagnosis-20261020.json"
+              ]
+            }
+          ]
         },
         {
           "id": "EXT-F-2005-T04",
@@ -51961,50 +51998,20 @@
           ],
           "results": {
             "guest": {
-              "run_id": 39422519149,
               "status": "pass",
-              "build_version": "0.2.575",
-              "release_source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
-              "release_run_id": 39420649081,
-              "artifact_id": 12264355137,
-              "build_kind": "adapted_unpacked_Store_ZIP",
+              "run_id": 39444885231,
+              "build_version": "0.2.577",
+              "source_sha": "91d7696626537676d0a5a1239ca29eb3fbed7331",
+              "receipt_kind": "candidate_store_zip_key_adapted_unpacked",
               "actual_store_installed": false,
-              "resource_valid": true,
-              "backend_sha": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+              "resource_invalid": false,
+              "server_sha_before": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+              "server_sha_after": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+              "detail": "Scoped native guest opening, same-conversation follow-up and panel-reload new conversation each grounded terminal; code and heading screenshot evidence. Independent raw peer PASS. Adapted577 Store ZIP; not Store-installed.",
               "evidence": [
-                "docs/stabilization/reports/guest575-native-b-20261020.json",
-                "docs/stabilization/reports/guest575-raw-fresh-peer-20261020.json"
-              ],
-              "detail": "Independent bounded guest opening, same-conversation, and post-panel-reload terminal replies PASS. No new unique case credit; candidate changed after this run.",
-              "result_history": [
-                {
-                  "status": "pass",
-                  "run_id": 39411790358,
-                  "source_sha": "1b831c27d98dc690fcff5526e304b92c23f4c8aa",
-                  "build_version": "0.2.574",
-                  "build_kind": "ci_development_test",
-                  "actual_store_installed": false,
-                  "development_ci_run_id": 39410623190,
-                  "development_artifact_id": 12259880170,
-                  "development_artifact_digest": "sha256:1d49aca9024ddeb665b8ed8592b9c5f71a638295b21ee1d8cd41faa85aa6aafc",
-                  "runtime_tree_sha256": "eadcc799e1ec6a9671c8ac1553470e58b90522a4814342547685abb69fd56eaa",
-                  "resource_invalid": false,
-                  "guest_resource_decision": "child_failed",
-                  "guest_child_exit_code": 1,
-                  "server_sha_before": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
-                  "server_sha_after": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
-                  "server_stable": true,
-                  "evidence": [
-                    "docs/stabilization/reports/values244-changed-native-trace-20261020.json",
-                    "docs/stabilization/reports/values244-trace-native-raw-peer-20261020.json"
-                  ],
-                  "detail": "Independently verified three actual grounded terminal guest replies: opening, same-conversation follow-up, new conversation after panel reload; HTTP200 success. Stable backend5c3beef2, guest identity absent. Narrow screenshot and preattach observation limits; no wholeChat/nonadmin/actualStore-installed claim or unique newcasepass."
-                }
-              ],
-              "source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
-              "server_sha_before": "6297e34665eaf8ff769bd15889d2cabd146710fe",
-              "server_sha_after": "6297e34665eaf8ff769bd15889d2cabd146710fe",
-              "server_stable": true
+                "docs/stabilization/reports/guest577-native-b-20261020.json",
+                "docs/stabilization/reports/guest577-raw-fresh-peer-20261020.json"
+              ]
             }
           },
           "defect_verification": {
@@ -52349,6 +52356,57 @@
               },
               "superseded_at": "2026-10-20T11:14:46.159785+00:00",
               "reason": "Current frozen1b native39411790358 independently verifies bounded guest replies and reproduces original Values failure with event trace."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "run_id": 39422519149,
+                "status": "pass",
+                "build_version": "0.2.575",
+                "release_source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+                "release_run_id": 39420649081,
+                "artifact_id": 12264355137,
+                "build_kind": "adapted_unpacked_Store_ZIP",
+                "actual_store_installed": false,
+                "resource_valid": true,
+                "backend_sha": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+                "evidence": [
+                  "docs/stabilization/reports/guest575-native-b-20261020.json",
+                  "docs/stabilization/reports/guest575-raw-fresh-peer-20261020.json"
+                ],
+                "detail": "Independent bounded guest opening, same-conversation, and post-panel-reload terminal replies PASS. No new unique case credit; candidate changed after this run.",
+                "result_history": [
+                  {
+                    "status": "pass",
+                    "run_id": 39411790358,
+                    "source_sha": "1b831c27d98dc690fcff5526e304b92c23f4c8aa",
+                    "build_version": "0.2.574",
+                    "build_kind": "ci_development_test",
+                    "actual_store_installed": false,
+                    "development_ci_run_id": 39410623190,
+                    "development_artifact_id": 12259880170,
+                    "development_artifact_digest": "sha256:1d49aca9024ddeb665b8ed8592b9c5f71a638295b21ee1d8cd41faa85aa6aafc",
+                    "runtime_tree_sha256": "eadcc799e1ec6a9671c8ac1553470e58b90522a4814342547685abb69fd56eaa",
+                    "resource_invalid": false,
+                    "guest_resource_decision": "child_failed",
+                    "guest_child_exit_code": 1,
+                    "server_sha_before": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
+                    "server_sha_after": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
+                    "server_stable": true,
+                    "evidence": [
+                      "docs/stabilization/reports/values244-changed-native-trace-20261020.json",
+                      "docs/stabilization/reports/values244-trace-native-raw-peer-20261020.json"
+                    ],
+                    "detail": "Independently verified three actual grounded terminal guest replies: opening, same-conversation follow-up, new conversation after panel reload; HTTP200 success. Stable backend5c3beef2, guest identity absent. Narrow screenshot and preattach observation limits; no wholeChat/nonadmin/actualStore-installed claim or unique newcasepass."
+                  }
+                ],
+                "source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+                "server_sha_before": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+                "server_sha_after": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+                "server_stable": true
+              },
+              "superseded_at": "2026-10-20T15:32:37.877406+00:00",
+              "reason": "Fresh independent exact577 native evidence; no Store-installed equivalence."
             }
           ],
           "attempt_history": [
@@ -52577,55 +52635,20 @@
           ],
           "results": {
             "guest": {
-              "run_id": 39422519149,
-              "status": "fail",
-              "build_version": "0.2.575",
-              "release_source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
-              "release_run_id": 39420649081,
-              "artifact_id": 12264355137,
-              "build_kind": "adapted_unpacked_Store_ZIP",
+              "status": "partial",
+              "run_id": 39444885231,
+              "build_version": "0.2.577",
+              "source_sha": "91d7696626537676d0a5a1239ca29eb3fbed7331",
+              "receipt_kind": "candidate_store_zip_key_adapted_unpacked",
               "actual_store_installed": false,
-              "resource_valid": true,
-              "defect_ids": [
-                "EXT-D-0244"
-              ],
+              "resource_invalid": false,
+              "server_sha_before": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+              "server_sha_after": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+              "detail": "Original guest first trusted Escape closes/unmounts dialog and removes tooltip; independent native peer PASS for D244. FullT13 close control/reopen/full-view and surrounding broader paths remain unverified; auxiliary handler identity unknown.",
               "evidence": [
-                "docs/stabilization/reports/guest575-native-b-20261020.json",
-                "docs/stabilization/reports/guest575-raw-fresh-peer-20261020.json"
-              ],
-              "detail": "Original 360px mobile BottomSheet stays open after one trusted Escape. This precedes shared mobile source ca1c252bee and extension agents0.59.176 adoption 997f9efbe; repaired native outcome unknown.",
-              "result_history": [
-                {
-                  "status": "fail",
-                  "run_id": 39411790358,
-                  "source_sha": "1b831c27d98dc690fcff5526e304b92c23f4c8aa",
-                  "build_version": "0.2.574",
-                  "build_kind": "ci_development_test",
-                  "actual_store_installed": false,
-                  "development_ci_run_id": 39410623190,
-                  "development_artifact_id": 12259880170,
-                  "development_artifact_digest": "sha256:1d49aca9024ddeb665b8ed8592b9c5f71a638295b21ee1d8cd41faa85aa6aafc",
-                  "runtime_tree_sha256": "eadcc799e1ec6a9671c8ac1553470e58b90522a4814342547685abb69fd56eaa",
-                  "resource_invalid": false,
-                  "guest_resource_decision": "child_failed",
-                  "guest_child_exit_code": 1,
-                  "server_sha_before": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
-                  "server_sha_after": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
-                  "server_stable": true,
-                  "evidence": [
-                    "docs/stabilization/reports/values244-changed-native-trace-20261020.json",
-                    "docs/stabilization/reports/values244-trace-native-raw-peer-20261020.json"
-                  ],
-                  "defect_ids": [
-                    "EXT-D-0244"
-                  ],
-                  "detail": "Original one trustedEscape still fails with actual focusedbutton target/path inside originaldialog. Windowcapture defaultPreventedfalse; documentcapture through allremainingphases true; no propagationstop; tooltip1to0, no dialogclose/removal/reopen. ReactDOMprop presence doesnotprovehandlerexecution. FullT13 close/reopen/fullview/neighbor/othermodes remain unverified; no productfix yet."
-                }
-              ],
-              "source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
-              "server_sha_before": "6297e34665eaf8ff769bd15889d2cabd146710fe",
-              "server_sha_after": "6297e34665eaf8ff769bd15889d2cabd146710fe",
-              "server_stable": true
+                "docs/stabilization/reports/guest577-native-b-20261020.json",
+                "docs/stabilization/reports/guest577-raw-fresh-peer-20261020.json"
+              ]
             },
             "member": {
               "status": "unverified"
@@ -52752,6 +52775,62 @@
               },
               "superseded_at": "2026-10-20T11:14:46.159785+00:00",
               "reason": "Current frozen1b native39411790358 independently verifies bounded guest replies and reproduces original Values failure with event trace."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "run_id": 39422519149,
+                "status": "fail",
+                "build_version": "0.2.575",
+                "release_source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+                "release_run_id": 39420649081,
+                "artifact_id": 12264355137,
+                "build_kind": "adapted_unpacked_Store_ZIP",
+                "actual_store_installed": false,
+                "resource_valid": true,
+                "defect_ids": [
+                  "EXT-D-0244"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/guest575-native-b-20261020.json",
+                  "docs/stabilization/reports/guest575-raw-fresh-peer-20261020.json"
+                ],
+                "detail": "Original 360px mobile BottomSheet stays open after one trusted Escape. This precedes shared mobile source ca1c252bee and extension agents0.59.176 adoption 997f9efbe; repaired native outcome unknown.",
+                "result_history": [
+                  {
+                    "status": "fail",
+                    "run_id": 39411790358,
+                    "source_sha": "1b831c27d98dc690fcff5526e304b92c23f4c8aa",
+                    "build_version": "0.2.574",
+                    "build_kind": "ci_development_test",
+                    "actual_store_installed": false,
+                    "development_ci_run_id": 39410623190,
+                    "development_artifact_id": 12259880170,
+                    "development_artifact_digest": "sha256:1d49aca9024ddeb665b8ed8592b9c5f71a638295b21ee1d8cd41faa85aa6aafc",
+                    "runtime_tree_sha256": "eadcc799e1ec6a9671c8ac1553470e58b90522a4814342547685abb69fd56eaa",
+                    "resource_invalid": false,
+                    "guest_resource_decision": "child_failed",
+                    "guest_child_exit_code": 1,
+                    "server_sha_before": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
+                    "server_sha_after": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
+                    "server_stable": true,
+                    "evidence": [
+                      "docs/stabilization/reports/values244-changed-native-trace-20261020.json",
+                      "docs/stabilization/reports/values244-trace-native-raw-peer-20261020.json"
+                    ],
+                    "defect_ids": [
+                      "EXT-D-0244"
+                    ],
+                    "detail": "Original one trustedEscape still fails with actual focusedbutton target/path inside originaldialog. Windowcapture defaultPreventedfalse; documentcapture through allremainingphases true; no propagationstop; tooltip1to0, no dialogclose/removal/reopen. ReactDOMprop presence doesnotprovehandlerexecution. FullT13 close/reopen/fullview/neighbor/othermodes remain unverified; no productfix yet."
+                  }
+                ],
+                "source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+                "server_sha_before": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+                "server_sha_after": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+                "server_stable": true
+              },
+              "superseded_at": "2026-10-20T15:32:37.877406+00:00",
+              "reason": "Fresh independent exact577 native evidence; no Store-installed equivalence."
             }
           ],
           "bounded_candidate_observations": [
@@ -52803,70 +52882,108 @@
           ],
           "results": {
             "member": {
-              "status": "fail",
-              "run_id": "native-isolated-candidate-20261019-001",
-              "build_version": "0.2.566",
-              "source_sha": "c41ae6fd67057305c521791e404d2708882895f5",
-              "receipt_kind": "native_store_zip_candidate_key_adapted",
-              "resource_valid": true,
-              "new_unique_case_pass": false,
+              "status": "partial",
+              "build_version": "0.2.577",
+              "source_sha": "91d7696626537676d0a5a1239ca29eb3fbed7331",
+              "resource_invalid": false,
+              "automated_child_status": "child_failed_legacy_observer_contract_mismatch",
+              "semantic_behavior": "pass_first_and_followup_same_conversation_and_actual_canonical_tool_results",
+              "original504_causal_repair": "unknown_D261_open",
+              "actual_store_installed": false,
+              "detail": "Current577 native first/followup terminalHTTP200 with heading/stages and paintedfollowup. Backend exactget_page_text andcomplementaryh1query completedsuccessfully; header omission isexpectedcontract. No standaloneopeningimage; automatedobserverfixpendingD269/fullcasepartial. Historical566fail isnot current577productfailure.",
               "evidence": [
-                "docs/stabilization/reports/native-isolated-candidate-20261019.json",
-                "docs/stabilization/reports/native566-evidence-peer-20261019.json",
-                "docs/stabilization/reports/member504-server-log-diagnosis-20261020.json"
-              ],
-              "detail": "The first fresh member turn visibly ended in API error: 504 after roughly one minute at Page Text/Processing, without an assistant answer. Failed request endpoint, HTTP transport status, tool result/resume boundary and exact organization ID comparison were not captured. UI wording alone cannot assign a backend or extension cause.",
-              "transport_correlation": "ALB same-conversation start200 andtool_results200, thenresume504after59.999s/noheaders; source9ef examined, later20bd same inspected implementation, current-state retest pending.",
-              "subsequent_attempts": [
-                {
-                  "run_id": 39422682206,
-                  "status": "resource_invalid_before_member_chat",
-                  "evidence": [
-                    "docs/stabilization/reports/member575-original-native-a-20261020.json",
-                    "docs/stabilization/reports/member575-hosted-raw-peer-20261020.json"
-                  ]
-                },
-                {
-                  "run_id": "member575-local-store-20261020",
-                  "status": "resource_valid_child_failed_before_member_chat",
-                  "evidence": [
-                    "docs/stabilization/reports/member575-local-capacity-recovery-20261020.json"
-                  ]
-                },
-                {
-                  "run_id": "member575-focus-native-20261020",
-                  "status": "resource_valid_setup_failed_before_browser",
-                  "evidence": [
-                    "docs/stabilization/reports/member575-focus-native-retest-20261020.json"
-                  ]
-                },
-                {
-                  "run_id": "member575-runtime-recovery-20261020-01",
-                  "status": "resource_valid_partial_member_first_answer_terminal_followup_not_sent",
-                  "source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
-                  "workflow_checkout_sha": "997f9efbef42a1ae99be191cd052e214736dfbd3",
-                  "build_version": "0.2.575",
-                  "build_kind": "adapted_unpacked_Store_ZIP",
-                  "actual_store_installed": false,
-                  "server_sha_before": "6297e34665eaf8ff769bd15889d2cabd146710fe",
-                  "server_sha_after": "6297e34665eaf8ff769bd15889d2cabd146710fe",
-                  "resource_valid": true,
-                  "first_answer_http_status": 200,
-                  "first_answer_terminal": true,
-                  "first_answer_expected_heading_and_stages": true,
-                  "delegated_calls": 3,
-                  "tool_results": 3,
-                  "page_text_join": "unverified",
-                  "member_followup": "not_sent",
-                  "evidence": [
-                    "docs/stabilization/reports/member-runtime-recovery-20261020.json"
-                  ],
-                  "detail": "Normal member sign-in/org/reload and trusted focus observed. Original question received one terminal 467-character answer with heading and three stages; Page Text/call/conversation join not proved and driver failed before follow-up. Bounded first-answer progress only; original566 504 remains unresolved."
-                }
+                "docs/stabilization/reports/member577-native-mac-20261020.json",
+                "docs/stabilization/reports/member577-page-text-contract-proof-20261020.json",
+                "docs/stabilization/reports/member577-semantic-final-peer-20261020.json"
               ]
             }
           },
-          "retest_status": "pending; no same-conversation member follow-up or root cause established"
+          "retest_status": "pending; no same-conversation member follow-up or root cause established",
+          "current_candidate_observations": [
+            {
+              "mode": "member",
+              "version": "0.2.577",
+              "status": "semantic_behavior_pass_with_evidence_limits",
+              "automated_child": "child_failed legacy observer; do not rewrite green",
+              "original504_causal_attribution": "unknown",
+              "proof": "Exact authoritative get_page_text and complementary h1 query successful; native first/follow-up terminal in same conversation. Opening screenshot not saved; actual Store-installed version unverified.",
+              "evidence": [
+                "docs/stabilization/reports/member577-native-mac-20261020.json",
+                "docs/stabilization/reports/member577-page-text-contract-proof-20261020.json",
+                "docs/stabilization/reports/member577-semantic-final-peer-20261020.json"
+              ]
+            }
+          ],
+          "result_history": [
+            {
+              "mode": "member",
+              "result": {
+                "status": "fail",
+                "run_id": "native-isolated-candidate-20261019-001",
+                "build_version": "0.2.566",
+                "source_sha": "c41ae6fd67057305c521791e404d2708882895f5",
+                "receipt_kind": "native_store_zip_candidate_key_adapted",
+                "resource_valid": true,
+                "new_unique_case_pass": false,
+                "evidence": [
+                  "docs/stabilization/reports/native-isolated-candidate-20261019.json",
+                  "docs/stabilization/reports/native566-evidence-peer-20261019.json",
+                  "docs/stabilization/reports/member504-server-log-diagnosis-20261020.json"
+                ],
+                "detail": "The first fresh member turn visibly ended in API error: 504 after roughly one minute at Page Text/Processing, without an assistant answer. Failed request endpoint, HTTP transport status, tool result/resume boundary and exact organization ID comparison were not captured. UI wording alone cannot assign a backend or extension cause.",
+                "transport_correlation": "ALB same-conversation start200 andtool_results200, thenresume504after59.999s/noheaders; source9ef examined, later20bd same inspected implementation, current-state retest pending.",
+                "subsequent_attempts": [
+                  {
+                    "run_id": 39422682206,
+                    "status": "resource_invalid_before_member_chat",
+                    "evidence": [
+                      "docs/stabilization/reports/member575-original-native-a-20261020.json",
+                      "docs/stabilization/reports/member575-hosted-raw-peer-20261020.json"
+                    ]
+                  },
+                  {
+                    "run_id": "member575-local-store-20261020",
+                    "status": "resource_valid_child_failed_before_member_chat",
+                    "evidence": [
+                      "docs/stabilization/reports/member575-local-capacity-recovery-20261020.json"
+                    ]
+                  },
+                  {
+                    "run_id": "member575-focus-native-20261020",
+                    "status": "resource_valid_setup_failed_before_browser",
+                    "evidence": [
+                      "docs/stabilization/reports/member575-focus-native-retest-20261020.json"
+                    ]
+                  },
+                  {
+                    "run_id": "member575-runtime-recovery-20261020-01",
+                    "status": "resource_valid_partial_member_first_answer_terminal_followup_not_sent",
+                    "source_sha": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+                    "workflow_checkout_sha": "997f9efbef42a1ae99be191cd052e214736dfbd3",
+                    "build_version": "0.2.575",
+                    "build_kind": "adapted_unpacked_Store_ZIP",
+                    "actual_store_installed": false,
+                    "server_sha_before": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+                    "server_sha_after": "6297e34665eaf8ff769bd15889d2cabd146710fe",
+                    "resource_valid": true,
+                    "first_answer_http_status": 200,
+                    "first_answer_terminal": true,
+                    "first_answer_expected_heading_and_stages": true,
+                    "delegated_calls": 3,
+                    "tool_results": 3,
+                    "page_text_join": "unverified",
+                    "member_followup": "not_sent",
+                    "evidence": [
+                      "docs/stabilization/reports/member-runtime-recovery-20261020.json"
+                    ],
+                    "detail": "Normal member sign-in/org/reload and trusted focus observed. Original question received one terminal 467-character answer with heading and three stages; Page Text/call/conversation join not proved and driver failed before follow-up. Bounded first-answer progress only; original566 504 remains unresolved."
+                  }
+                ]
+              },
+              "superseded_at": "2026-10-20T15:36:42.470551+00:00",
+              "reason": "Historical566 failure retained; fresh577 semantic behavior passes with independent backend proof. Original504 causal investigation remains open; automated observer child failure not rewritten."
+            }
+          ]
         }
       ],
       "cells": {

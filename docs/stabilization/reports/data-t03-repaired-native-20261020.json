@@ -1,0 +1,60 @@
+{
+  "task_id": "data-t03-repaired-native-20261020",
+  "lane": "hosted A",
+  "model": "Codex / no product AI call observed",
+  "status": "resource-invalid native precondition failure; no retry",
+  "feature_ids": ["EXT-F-2005"],
+  "case_id": "EXT-F-2005-T03",
+  "defect_id": "EXT-D-0268",
+  "source_sha": "ad92e14c656f283a15ea345520a97441e417c94b",
+  "summary": "Exact-main CI, source review, artifact import/digest/provenance, and promotion passed. Hosted run 39442944171 failed before auth/Data at owned CDP startup; zero T03 credit.",
+  "build": {
+    "ci_run_id": 39440966391,
+    "artifact_id": 12274887311,
+    "artifact_digest": "sha256:c6fc31ed5d6631a5f69e5d310e4906b017259519cbaba42bb3b972b2398f9c92",
+    "tree_sha256": "c58bef6971afe39f86fa70c846ce2b7128458b10cbaf6921186e402792eb6716",
+    "version": "0.2.576"
+  },
+  "gates": {
+    "exact_main_ci": "pass",
+    "focused_and_source_peer": "pass",
+    "import_and_provenance": "pass",
+    "promotion": "pass",
+    "package_resource": "pass",
+    "browser_resource": "pass",
+    "acceptance_resource": "invalid; RESOURCE_FINAL_DECISION resourceInvalid=true exitCode=3"
+  },
+  "native": {
+    "run_id": 39442944171,
+    "artifact_id": 12274844223,
+    "artifact_digest": "sha256:025fd5f3d55c0803abd83519a772182515154bc3eb4c719773f87b5d0542cfef",
+    "verdict": "unverified; no T03 credit",
+    "stage": "input/cdp_connect",
+    "actual": "owned_cdp_endpoint_timeout after 8045ms; Chrome spawn observed, no endpoint/stderr; first CPU refusal at 14:57:42Z RESOURCE_CPU_PENDING (busy=1.0, load=6.93/4 CPUs), then final resource invalid",
+    "expected": "Connect to owned Chrome, authenticate as designated member, verify approved organization before Data actions."
+  },
+  "behaviors": {
+    "authentication": "not reached",
+    "organization": "unknown; no picker, selection, fallback, or mismatch observed",
+    "save_run_clipboard_reload": "not reached",
+    "screenshots": "none; CDP did not connect",
+    "rows_created": 0,
+    "exact_run_pattern": "Northline Furnishings catalog member 39442944171-1",
+    "active_rows_after_run": "0 expected from no write path; no DB readback performed"
+  },
+  "cleanup": {
+    "member_link_secret_absent": "verified via Actions secret listing",
+    "local_one_use_link_absent": "verified",
+    "profile_path": "/Users/runner/work/_temp/guest-resource-profile on ephemeral hosted VM; job ended",
+    "process_cleanup": "resource process snapshot captured; no explicit per-process cleanup receipt after VM teardown",
+    "data_pattern": "no insert/save reached; no row to delete",
+    "approved_org_secret": "retained with fixture matching the designated reviewer identity"
+  },
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39442944171",
+    "/tmp/data-t03-repaired-native-39442944171/hosted-guest-39442944171-1/matrx-extend/matrx-extend/test-results/data-member-native-acceptance.json",
+    "/tmp/data-t03-repaired-native-39442944171/hosted-run.log"
+  ],
+  "limitations": "Host startup/resource failure, not a product verdict. No independent native verification, no Data lifecycle behavior, no active-row DB readback, and no manual screenshot.",
+  "next_action": "Root diagnoses the captured CDP startup and CPU class before authorizing any changed-hypothesis, normally guarded retest."
+}

@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "task_id": "EXT-D-0261",
+  "status": "OBSERVER_CONTRACT_MISMATCH_SEMANTIC_RESULT_UNVERIFIED",
+  "cause": "PackageChat deviceTools.invoke uses runDeviceToolCall -> handleCall sink. The sink branch returns handler result before extension postResult/deliverToolResult, so it never emits a terminal TOOL_TIMELINE_EVENT. The package separately updates Redux lifecycle and submits tool_results. The strict observer watches only extension timeline events and therefore cannot see normal package completion.",
+  "real_repro": "577 native report: opening delegated call db760ddbd90bd7ff matched get_page_text STARTED in same conversation d267b8af803a54ab; second 1565d1dace91d42e classified other; zero timeline COMPLETED; two accepted result POSTs, two resumes, terminal 533-char opening and 40-char follow-up, both HTTP200. Inline node assertion against report and source passed.",
+  "first_bad_boundary": "SW handleCall sink returns without terminal timeline broadcast; this is expected for package delivery, but the browser driver requires extension timeline completion.",
+  "not_proven": "Saved report does not retain call-specific tool_results is_error, output.ok, heading/stages content, or resolved call identity. Accepted POSTs and grounded prose do not prove semantic get_page_text success. D261 remains open; do not alias second call to read_page.",
+  "next_experiment": "At existing passive CDP seam capture sanitized booleans from actual /tool_results request and response for exact delegated get_page_text call and opening conversation: is_error=false, output.ok=true, output.text contains unpredictable heading plus Capture/Understand/Use, server resolved/already_resolved contains call; then correlated resume and painted answer. Separately assert package lifecycle terminal. Retest once on eligible native run after root ruling.",
+  "evidence": [
+    "test-results/member577-native-mac-20261020/member-report.private.json",
+    "tests/browser/reviewer-chat-store-acceptance.mjs:startMemberPageTextProof",
+    "src/lib/tools/dispatch.ts:handleCall sink",
+    "src/features/package-chat/host.ts:invokeDeviceTool",
+    "/Users/armanisadeghi/code/aidream/apps/shared/chat/src/agents/redux/execution-system/thunks/dispatch-matrx-extend-tool.thunk.ts"
+  ],
+  "changes": "none"
+}

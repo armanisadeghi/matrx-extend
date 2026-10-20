@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "task_id": "EXT-D-0261",
+  "status": "PAGE_TEXT_CONTRACT_EXPLAINS_H1_OMISSION_COMPLEMENTARY_H1_CALL_PROVED",
+  "exact_join": {
+    "conversation_fingerprint": "d267b8af803a54ab",
+    "page_text_call_fingerprint": "db760ddbd90bd7ff",
+    "page_text_args": {},
+    "page_text_completed": true,
+    "page_text_success": true,
+    "page_text_is_error": false,
+    "page_text_output_ok": true,
+    "page_text_url": "https://www.aimatrx.com/matrx-extend-demo",
+    "page_text_chars": 862
+  },
+  "readable_article": {
+    "stage_terms_in_text": ["Capture", "Understand", "Use"],
+    "observed_main_h1_in_text": false,
+    "observed_main_h1": "A clear three-stage browser workflow",
+    "text_starts": "The three workflow stages",
+    "title": "Matrx Extend Demo Page — AI Matrx",
+    "unique_current_marker_in_text": false
+  },
+  "contract": {
+    "description": "Extract clean readable text; drops header",
+    "handler": "get_page_text selects main then dom-access.readableText skips header descendants",
+    "fixture": "live demo article header contains main h1; stage table follows header",
+    "expected_h1_in_get_page_text": false
+  },
+  "complementary_call": {
+    "call_fingerprint": "1565d1dace91d42e",
+    "tool_name": "query_elements",
+    "arguments": {
+      "selector": "h1"
+    },
+    "completed": true,
+    "success": true,
+    "is_error": false,
+    "result_visible": true,
+    "result_text": "A clear three-stage browser workflow",
+    "selector_path_ends": "main > div > article > header > h1"
+  },
+  "target_binding": {
+    "driver": "sendMemberChatOnTarget checked active tab URL and one-use DOM marker before send",
+    "backend_page_text_url_matches_target": true,
+    "backend_marker_cannot_be_proved_from_text": true
+  },
+  "interpretation": "Exact page content and H1 were retrieved in two complementary real calls. Requiring the H1 in get_page_text output contradicts its header-stripping contract; the one-use marker was checked at send but is not textual proof in the backend result. No claim of a unique fixture code in get_page_text."
+}

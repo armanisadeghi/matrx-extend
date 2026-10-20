@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-20T15:24:55.791956+00:00",
+  "candidate_version": "0.2.577",
+  "source_sha": "91d7696626537676d0a5a1239ca29eb3fbed7331",
+  "rulings": [
+    {
+      "finding": "Native member child failed strict legacy timeline completion join.",
+      "ruling": "CONFIRMED harness contract defect; do not rewrite child_failed to pass. Canonical backend receipts independently establish successful exact call/conversation tool results and actual native terminal member first/follow-up.",
+      "evidence": [
+        "docs/stabilization/reports/member-tool-completion-diagnosis-20261020.json",
+        "docs/stabilization/reports/member577-backend-result-proof-20261020.json",
+        "docs/stabilization/reports/member577-page-text-contract-proof-20261020.json",
+        "docs/stabilization/reports/member577-semantic-final-peer-20261020.json"
+      ]
+    },
+    {
+      "finding": "get_page_text result omits fixture H1.",
+      "ruling": "REFUTED as product defect: readableText deliberately excludes headers; actual H1 is inside article header. Exact complementary query_elements(h1) completed successfully in same turn and returned visible H1. Required Chat heading/stages and successful requested PageText semantics are proved jointly. No tool alias or HTTP200-only assumption."
+    },
+    {
+      "finding": "Candidate must be Store-installed before upload.",
+      "ruling": "REFUTED as pre-upload gate: authorized normal acceptance path verifies matching-version Store ZIP with manifest.key-only identity adaptation. Keep this separate from actual Store installation/publication; neither is claimed. Post-publication Store-installed acceptance remains due.",
+      "risk": "Identity-specific behavior is not fully represented by dev-ID adaptation; unchanged approved manifest/identity contract and explicit postpublication checks remain required."
+    },
+    {
+      "finding": "Opening member result lacks standalone saved screenshot.",
+      "ruling": "ACCEPTED evidence limitation: terminal content and native DOM diagnostics exist; follow-up has actual saved painted proof. Do not invent an opening image or use this to claim untouched Store installation."
+    },
+    {
+      "finding": "Original D261 566 server504 causal repair is proved.",
+      "ruling": "REFUTED: original user reproduction currently reaches two terminal replies on577/stable32bf; causal attribution is unknown. Keep original investigation open separately from current semantic acceptance."
+    }
+  ],
+  "release_decision": "Latest eligible synchronized candidate may proceed through fresh normal source/npm/spend/primary-dashboard checks to authorized upload/submission. No source edits before release eligibility/transition completes; no pending submission replaced.",
+  "harness_followthrough": "Repair passive canonical tool-result observer and header-scope expectations with red/green and peer review after submission; no extension version/package rebuild solely for test-only changes."
+}
