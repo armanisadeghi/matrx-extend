@@ -35,6 +35,7 @@ export function safeAnswerScreenshotDiagnostic(error) {
     failed_checks: Object.entries(safeChecks)
       .filter(([, passed]) => !passed)
       .map(([name]) => name),
+    device_pixel_ratio: number(source.devicePixelRatio),
     viewport: {
       width: number(source.viewport?.width),
       height: number(source.viewport?.height),

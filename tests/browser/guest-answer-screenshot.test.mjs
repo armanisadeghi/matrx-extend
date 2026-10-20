@@ -79,6 +79,7 @@ test('guest rejection writes bounded screenshot diagnostic and never calls CDP c
     assert.equal(captured, 0);
     assert.doesNotMatch(serialized, /PRIVATE_REPLY|PRIVATE_AUTH|CODE-791|Bearer/);
     assert.equal(persisted.answer_screenshot_diagnostic.checks.code_in_answer_text, false);
+    assert.equal(persisted.answer_screenshot_diagnostic.device_pixel_ratio, 1);
     assert.deepEqual(persisted.answer_screenshot_diagnostic.failed_checks, [
       'code_in_answer_text',
       'focused_text_found',
@@ -154,7 +155,7 @@ test('horizontally clipped requested code cannot authorize a panel screenshot', 
 test('painted code at a fractional clip edge remains eligible without admitting a clipped reply', async () => {
   const window = new Window();
   window.document.body.innerHTML = `<button role="tab" title="Chat" aria-selected="true" aria-controls="chat"></button>
-    <div id="chat" data-state="active" style="overflow-x:hidden">
+    <div id="chat" data-state="active" style="overflow-x:hidden;overflow-y:hidden">
       <article role="article" aria-label="Assistant answer"><div data-message-content>Follow-up check code: CODE-791. Heading: Research brief</div></article>
     </div>`;
   const pane = window.document.getElementById('chat');
@@ -169,13 +170,15 @@ test('painted code at a fractional clip edge remains eligible without admitting 
     });
     element.scrollIntoView = () => {};
   }
+  let left = 40;
   let right = 336.02;
   let top = 128;
+  let bottom = 185;
   window.document.createRange = () => ({
     setStart() {},
     setEnd() {},
     getBoundingClientRect() {
-      return { left: 40, right, top, bottom: top + 57, width: right - 40, height: 57 };
+      return { left, right, top, bottom, width: right - left, height: bottom - top };
     },
   });
   Object.defineProperty(window.document.documentElement, 'clientWidth', { value: 360 });
@@ -187,13 +190,38 @@ test('painted code at a fractional clip edge remains eligible without admitting 
       expected,
     });
   try {
-    assert.equal(verify().eligible, true, 'the native 0.02px range excess is invisible in paint');
+    assert.equal(verify().eligible, true, 'the native 0.02px excess is below a device pixel');
+    assert.equal(verify().diagnostic.devicePixelRatio, 1);
+    right = 336.24;
+    assert.equal(verify().eligible, true, 'a sub-quarter-pixel edge remains eligible at DPR 1');
+    right = 336.3;
+    assert.equal(verify().eligible, false, 'a 0.3px right crop crosses the bounded allowance');
+    right = 336.02;
+    left = 15.7;
+    assert.equal(verify().eligible, false, 'a 0.3px left crop is rejected');
+    left = 40;
+    top = 62.7;
+    bottom = 119.7;
+    assert.equal(verify().eligible, false, 'a 0.3px top crop is rejected');
+    top = 182.3;
+    bottom = 239.3;
+    assert.equal(verify().eligible, false, 'a 0.3px bottom crop is rejected');
+    top = 128;
+    bottom = 185;
+    Object.defineProperty(window, 'devicePixelRatio', { value: 4, configurable: true });
+    assert.equal(verify().eligible, true, 'the observed 0.02 CSS px still fits at DPR 4');
+    right = 336.07;
+    assert.equal(verify().eligible, false, 'high DPR reduces CSS-pixel allowance');
+    right = 336.02;
+    Object.defineProperty(window, 'devicePixelRatio', { value: 1, configurable: true });
     right = 339;
     assert.equal(verify().eligible, false, 'a materially clipped code remains ineligible');
     right = 336.02;
     top = 450;
+    bottom = 507;
     assert.equal(verify().eligible, false, 'offscreen code remains ineligible');
     top = 128;
+    bottom = 185;
     assert.equal(verify({ code: 'OLD-482', heading: 'Research brief' }).eligible, false);
     pane.style.opacity = '0';
     assert.equal(verify().eligible, false, 'an unpainted pane remains ineligible');

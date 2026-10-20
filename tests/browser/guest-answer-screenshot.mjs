@@ -169,8 +169,11 @@ export function prepareGuestAnswerScreenshot({ code, heading = null, focus = cod
   const line = rangeRect();
   // Chromium can report a text Range a few hundredths of a CSS pixel beyond
   // its painted clip edge. The native .576 frame showed the full code while
-  // reporting right=336.02 for a container ending at 336.
-  const fractionalPaintTolerance = 0.25;
+  // reporting right=336.02 CSS px for a container ending at 336. Allow at
+  // most one quarter of a device pixel, so zoom/high-DPR captures cannot
+  // turn this rounding allowance into a whole clipped raster pixel.
+  const devicePixelRatio = document.defaultView?.devicePixelRatio || 1;
+  const fractionalPaintTolerance = 0.25 / Math.max(1, devicePixelRatio);
   const clippingAncestor = (element) => {
     for (let node = element, depth = 0; node; node = node.parentElement, depth++) {
       const css = getComputedStyle(node);
@@ -232,6 +235,7 @@ export function prepareGuestAnswerScreenshot({ code, heading = null, focus = cod
     reason: 'answer_outside_viewport_or_fixture_missing',
     diagnostic: {
       checks,
+      devicePixelRatio,
       viewport: { width: viewportWidth, height: viewportHeight },
       article: { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom },
       line: line
