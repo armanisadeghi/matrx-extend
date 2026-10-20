@@ -4,7 +4,7 @@
   "task_id": "scrape568-empty-guest-native-20261020",
   "lane": "B",
   "model": "gpt-6-luna",
-  "status": "terminal-bounded-pass-awaiting-independent-review",
+  "status": "terminal-bounded-pass-independently-verified",
   "feature_ids": ["EXT-F-1007"],
   "defect_ids": [],
   "summary": "One normally admitted native guest Scrape/SEO attempt completed against the exact synchronized-main development artifact. The owned localhost title-only fixture produced the expected no-signal SEO and empty Schema panes, with unchanged capture export. This is only the T08 subtarget; it does not pass whole T08 or Scrape.",
@@ -13,7 +13,7 @@
     "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
     "auth_mode": "guest",
     "scope": "seo-schema-empty",
-    "result": "PASS for this bounded subtarget, pending fresh independent review",
+    "result": "PASS for named bounded guest subtarget only; full T08 remains partial/unverified",
     "limits": [
       "No full T08 or whole Scrape claim.",
       "No member/admin, Store-installed, or separate physical-resize claim.",
@@ -104,8 +104,9 @@
     ]
   },
   "independent_review": {
-    "status": "pending",
-    "coverage_claim": "No canonical coverage update until fresh peer review."
+    "status": "PASS for bounded native and evidence-quality verdicts",
+    "report": "docs/stabilization/reports/scrape568-empty-fresh-peer-20261020.json",
+    "coverage_claim": "Only named guest subtargets added as bounded native development observations; no full case pass or other mode update."
   },
   "changed_files": [
     "docs/stabilization/reports/scrape568-empty-native-20261020.json",
@@ -118,10 +119,9 @@
     "docs/stabilization/evidence/guest-scrape-development/run39372274799/resource-journals/hosted-guest-39372274799-1.jsonl"
   ],
   "limitations": [
-    "Independent review is pending; no inventory coverage status was changed.",
     "Only one owned title-only localhost fixture and one default 360px narrow native panel were exercised.",
     "The screenshots show only the final SEO and Schema panes; the opening native panel image and other unneeded screenshot were retained only inside the ignored raw ZIP.",
     "This run does not establish full T08, member/admin behavior, Store behavior, public-page SEO behavior, or whole Scrape health."
   ],
-  "next_action": "Fresh peer review the sanitized native report, both pane screenshots, all three finalized resource journals, and exact artifact provenance; keep all broader coverage unverified."
+  "next_action": "Continue remaining T08 panes/controls and reload/mode cases; never infer full scraper or broad SEO health from this fixture."
 }

@@ -25945,6 +25945,29 @@
               "scope": "Article heading,introduction,stages179words retained on Capture/Re-capture after extension/page reload; Links/Schema/SEO bounded observations. No guest/member or all-tabs pass. No durable full-panel screenshot/content snapshot retained.",
               "new_unique_case_pass": false,
               "evidence": "docs/stabilization/reports/native-article-retest-20261019.json"
+            },
+            {
+              "run_id": 39372274799,
+              "mode": "guest",
+              "version": "0.2.568",
+              "source_sha": "5019985499cee06ec05f5fe89b24d0ee1b328558",
+              "development_ci_run_id": 39366909321,
+              "development_artifact_id": 12239987691,
+              "tree_sha256": "e84e3500883b87f9c968897edbd8bc135ec05e51a5b257feff5bf976d6bdc5fd",
+              "resource_valid": true,
+              "status": "partial",
+              "scope": "Fresh independent native evidence passes named warm guest no-signal SEO and empty Schema subtarget on owned title-only localhost fixture; matching metadata/zero optional groups and unchanged capture export. Two pane screenshots inspected. No full T08, all six panes, reload, media, member/admin, Store, broad SEO/copy or resize pass.",
+              "new_unique_case_pass": false,
+              "passed_subtargets": [
+                "guest_no_signal_seo_pane",
+                "guest_empty_schema_pane",
+                "capture_export_unchanged_across_pane_selection"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/scrape568-empty-native-20261020.json",
+                "docs/stabilization/reports/scrape568-empty-fresh-peer-20261020.json"
+              ],
+              "verified_at": "2026-10-20T05:09:48.044065+00:00"
             }
           ]
         },
