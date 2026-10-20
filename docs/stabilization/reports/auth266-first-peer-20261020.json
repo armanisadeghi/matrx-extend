@@ -1,0 +1,67 @@
+{
+  "task_id": "auth266-implementation-20261020",
+  "reviewer_status": "DONE_WITH_CONCERNS",
+  "reviewed_paths": [
+    "tests/browser/settings-native-auth-driver.mjs",
+    "tests/browser/settings-native-auth-driver.test.mjs",
+    "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "tests/browser/member-pre-auth-resource-boundary.test.mjs"
+  ],
+  "verdict_A_behavior": {
+    "source_boundary": "PASS",
+    "native_acceptance": "PENDING",
+    "evidence": [
+      "Settings actual-source probe exited 0: missing resource guard identity refused before auth page creation.",
+      "Reviewer Chat source-prefix behavior test passed both pending refusal with zero auth page creation and ready ordering (health check before page creation).",
+      "The reviewer source-prefix guard failed against an isolated copy of pre-change HEAD source: 2/2 failures with expected missing refusal / wrong operation ordering.",
+      "Canonical native resource boundary suite passed, including malformed complete-sample fields, wrong owner/run, stale evidence, unsafe evidence, pending refusal, healthy recovery, and bounded failed recovery."
+    ],
+    "limitation": "No pinned native hosted job was run in this review; source and boundary tests do not establish native acceptance."
+  },
+  "verdict_B_doctrine_quality": {
+    "status": "FAIL",
+    "findings": [
+      {
+        "severity": "Important",
+        "file": "tests/browser/member-pre-auth-resource-boundary.test.mjs:1",
+        "finding": "The sole regression test for the reviewer Chat pre-auth gate is not wired into any normal CI test command. `vitest.config.ts` only discovers tests/unit and src TypeScript tests; `package.json` `test:focused-acceptance` omits this file; the explicit browser Node test list in `.github/workflows/ci.yml` also omits it. I confirmed `pnpm exec vitest list tests/browser/member-pre-auth-resource-boundary.test.mjs` does not discover it.",
+        "why_it_matters": "Removing the Chat `requireResourceHealth()` call would leave all configured CI green because the current Settings auth test and generic resource-boundary test do not exercise the reviewer Chat source prefix. The acceptance safety contract could regress silently.",
+        "recommendation": "Wire this exact test into a normal CI Node test command before integration/push, then rerun that configured command."
+      }
+    ],
+    "positive_quality_evidence": [
+      "The new test runs the actual source prefix and its operation-order assertion fails against an isolated pre-change copy, so it guards behavior rather than only checking for a token in source.",
+      "The resource-health call uses the existing canonical boundary; no new counters, thresholds, deadlines, or ownership rules were added.",
+      "The existing Settings auth test is in the explicit CI node:test list, and the canonical native resource boundary is in focused acceptance CI."
+    ]
+  },
+  "commands_run": [
+    {
+      "command": "node --test tests/browser/member-pre-auth-resource-boundary.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/native-resource-boundary.test.mjs",
+      "result": "21 passed, 0 failed"
+    },
+    {
+      "command": "node /tmp/member-pre-auth-boundary-red-20261020.mjs",
+      "result": "exit 0 against current source; zero auth page creations on missing guard identity"
+    },
+    {
+      "command": "node --test /tmp/auth266-review-mutant-20261020/member-pre-auth-resource-boundary.test.mjs",
+      "result": "2 failed against isolated pre-change reviewer source copy, as required for RED proof"
+    },
+    {
+      "command": "pnpm exec vitest list tests/browser/member-pre-auth-resource-boundary.test.mjs",
+      "result": "not discovered by Vitest; explicit Node test wiring also absent"
+    }
+  ],
+  "scope_limits": [
+    "No source files were edited.",
+    "No browser, manual build, release, dispatch, secret, or Store action was used.",
+    "This review gives no evidence that the change fixes CPU saturation or D261/504 and no closure credit for D261."
+  ],
+  "source_hashes_reviewed": {
+    "tests/browser/settings-native-auth-driver.mjs": "5c5c4c4e830a0767cdd5d5251376fb42303c12d83c830c7a5f9cc43da109efd5",
+    "tests/browser/settings-native-auth-driver.test.mjs": "0ec926b9b5ae6675a8a9bd93e76079f9237d34c4e75f9ab57a090ac5a9ba239d",
+    "tests/browser/reviewer-chat-store-acceptance.mjs": "9f3b9209d2a3d8b553fc12ed1ddd264dc7a619c3853f51548d99886594aa5849",
+    "tests/browser/member-pre-auth-resource-boundary.test.mjs": "8901843c8165fa0c22869db3a6d30b4165f2169a84ef5c02bb699bb193839ddd"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "id": "EXT-D-0266",
+  "feature_id": "EXT-F-1015",
+  "affected_feature_ids": ["EXT-F-1015", "EXT-F-2013"],
+  "case_ids": ["EXT-F-1015-T34", "EXT-F-1015-T44", "EXT-F-2013-T14"],
+  "surface": "Native member authentication acceptance harness",
+  "auth_mode": "member; harness safety only; no product failure or admin/guest result inferred",
+  "title": "Member authentication creates a page before canonical resource readiness",
+  "severity": "S2: authentication UI can start while resource health is withheld, invalidating acceptance and wasting constrained test capacity; no demonstrated product defect or backend cause",
+  "priority": "P1: close the missing readiness boundary before further member acceptance",
+  "state": "fixed",
+  "owner": "stabilization-coordinator / auth266_implement_after_pin",
+  "preconditions": [
+    "Use original source19aa37bee23e02c8ab62a15ce4854d9e5c944f91 in an isolated source test, no browser/model/credential access.",
+    "Provide a page-context newPage spy and canonical resource denial, leaving policy unchanged."
+  ],
+  "reproduction": [
+    "From repo root import signInSettings from tests/browser/settings-native-auth-driver.mjs and invoke mode=member with panel={}, repo=process.cwd(), and page.context().newPage() spy returning a close() stub. No resource guard identity is present. Expect identity_missing and zero page creations; original source creates one auth page before a later credential-boundary failure.",
+    "For the original member Chat driver, extract the actual exercisePanel callback prefix before let memberTransport = null; supply native.requireResourceHealth rejecting cpu_pending and a newPage spy. Original source creates one page and calls health zero times. The committed new member-pre-auth-resource-boundary.test.mjs is the portable assertion loop after this repair unit lands.",
+    "The expected error must be asserted: a bare probe exiting from an uncaught expected refusal is not positive verification."
+  ],
+  "expected": "Canonical readiness resolves before any member authentication page creation/navigation; denial or timeout has zero auth side effects. Existing policy, complete samples, lease/ownership and recovery remain authoritative.",
+  "actual": "Shared Settings member sign-in and original member Chat callback both create authentication pages before the canonical resource-health call. Source gap independently reproduced; initial host saturation and D261 backend504 causality remain unproven.",
+  "reproducibility": "Deterministic actual-source seams; no native product proof. New targeted tests fail against original reviewer source and pass repaired source.",
+  "evidence": [
+    "docs/stabilization/reports/auth266-source-gap-20261020.json",
+    "docs/stabilization/reports/auth266-implementation-20261020.json",
+    "docs/stabilization/reports/auth266-first-peer-20261020.json",
+    "docs/stabilization/reports/auth266-final-source-peer-20261020.json"
+  ],
+  "source_sha_at_reproduction": "19aa37bee23e02c8ab62a15ce4854d9e5c944f91",
+  "transition_history": [
+    {
+      "at": "2026-10-20T09:28:17.491526+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual imported Settings and actual Chat callback-prefix probes show auth side effects before health."
+    },
+    {
+      "at": "2026-10-20T09:28:17.491526+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Two source reproduction loops are self-contained; related user cases remain unverified rather than counted as product failures."
+    },
+    {
+      "at": "2026-10-20T09:28:17.491526+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Minimal canonical awaits implemented; first peer found new Chat test absent from normal CI, wiring repaired and fresh different peer reverify pending."
+    },
+    {
+      "at": "2026-10-20T09:32:24.169794+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh different peer independently passes21 actual-source tests, verifies old-source RED/current GREEN and prior CI-wiring finding addressed; native unverified."
+    }
+  ],
+  "verification": {
+    "source": "Fresh independent21/21 PASS, actual original-source guard RED, normal CI and focused wiring verified. Pre-existing local cost-checker blockers remain bounded in peer report; full post-integration CI required.",
+    "native": "UNKNOWN. Frozen573 native jobs do not contain this uncommitted harness repair; no capacity or D261 fix claim."
+  },
+  "next_action": "Commit/push verified source unit; require automatic full CI green. Native remains UNKNOWN; no D261504 or initial CDP capacity repair claim."
+}

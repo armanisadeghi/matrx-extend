@@ -15,9 +15,9 @@
     "ci.yml": {
       "triggers": ["pull_request", "push"],
       "crons": [],
-      "benefit": "Extension build/lint/tests on every push and PR; macOS resource-guard integration.",
+      "benefit": "Extension build/lint/tests on every push and PR, including pre-auth resource admission regression; macOS resource-guard integration.",
       "owner_reason": "Before it, nothing was enforced on PRs (AUDIT P0-8).",
-      "basis": "observed 2026-10-02..09 (runs list + sampled jobs' billed minutes): ~2500 runs/week; sampled Linux 3.2 min, macOS 1.5 min",
+      "basis": "observed 2026-10-02..09 (runs list + sampled jobs' billed minutes): ~2500 runs/week; sampled Linux 3.2 min, macOS 1.5 min. Adding one Node test to the existing public Ubuntu job adds no job and $0 actual billed spend.",
       "usd_per_week": 280.5,
       "legs": {
         "linux": {

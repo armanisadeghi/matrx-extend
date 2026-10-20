@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T08:47:07.827841+00:00",
+  "updated_at": "2026-10-20T09:28:17.491526+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -41904,6 +41904,9 @@
             "warm",
             "reload",
             "auth-transition"
+          ],
+          "defect_ids": [
+            "EXT-D-0266"
           ]
         },
         {
@@ -42322,7 +42325,10 @@
                 "docs/stabilization/reports/auth-inventory-fresh-check-20261020.json"
               ]
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0266"
+          ]
         },
         {
           "id": "EXT-F-1015-T45",
@@ -42418,7 +42424,21 @@
           ],
           "new_product_passes": 0,
           "detail": "Only nine solely removed-picker cases are N/A. Surviving Settings loading/switch/error/archive and external-update cases remain unverified; their stale procedure clauses are tracked in the source census and not silently retired."
+        },
+        {
+          "at": "2026-10-20T09:28:17.491526+00:00",
+          "defect_id": "EXT-D-0266",
+          "status": "in-fix; source only",
+          "evidence": [
+            "docs/stabilization/reports/auth266-source-gap-20261020.json",
+            "docs/stabilization/reports/auth266-implementation-20261020.json",
+            "docs/stabilization/reports/auth266-first-peer-20261020.json"
+          ],
+          "detail": "Missing member-auth readiness boundary proved in shared sign-in and original Chat harness. Canonical awaits and regression guards implemented; fresh CI-wiring reverify pending. No product coverage credit or D261 capacity/backend repair."
         }
+      ],
+      "defect_ids": [
+        "EXT-D-0266"
       ]
     },
     {
@@ -52541,7 +52561,8 @@
             "The signed-in member receives a page-grounded assistant answer after the browser tool completes, with successful terminal completion; a same-conversation follow-up can then be tested."
           ],
           "defect_ids": [
-            "EXT-D-0261"
+            "EXT-D-0261",
+            "EXT-D-0266"
           ],
           "results": {
             "member": {
@@ -52695,12 +52716,24 @@
           "status": "source fixed; fresh independent A/B PASS; native original-repro retest UNKNOWN, no product pass",
           "evidence": "docs/stabilization/reports/readiness265-final-peer-20261020.json",
           "summary": "Exact571 native39386228485 resource-invalid before UI; actual canonical healthy CPU_PENDING reasons[] samples reset readiness streak. Three healthy recovery measurements became one. Source fix/review/native retest pending."
+        },
+        {
+          "at": "2026-10-20T09:28:17.491526+00:00",
+          "defect_id": "EXT-D-0266",
+          "status": "in-fix; source only",
+          "evidence": [
+            "docs/stabilization/reports/auth266-source-gap-20261020.json",
+            "docs/stabilization/reports/auth266-implementation-20261020.json",
+            "docs/stabilization/reports/auth266-first-peer-20261020.json"
+          ],
+          "detail": "Missing member-auth readiness boundary proved in shared sign-in and original Chat harness. Canonical awaits and regression guards implemented; fresh CI-wiring reverify pending. No product coverage credit or D261 capacity/backend repair."
         }
       ],
       "defect_ids": [
         "EXT-D-0263",
         "EXT-D-0264",
-        "EXT-D-0265"
+        "EXT-D-0265",
+        "EXT-D-0266"
       ]
     },
     {

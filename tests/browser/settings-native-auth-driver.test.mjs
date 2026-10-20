@@ -713,7 +713,7 @@ test('Scrape requires the approved selected organization while Settings keeps it
 });
 
 for (const observerPresent of [false, true]) {
-  test(`member auth reaches credential validation with stage observer present=${observerPresent}`, async () => {
+  test(`member auth refuses missing resource evidence before creating a page with stage observer present=${observerPresent}`, async () => {
     const operations = [];
     const stages = [];
     const page = {
@@ -728,13 +728,10 @@ for (const observerPresent of [false, true]) {
         repo: '.',
         ...(observerPresent && { onStage: (stage) => stages.push(stage) }),
       }),
-      (error) =>
-        error?.message === 'member_auth_boundary_failed' &&
-        error.memberAuthBoundary === 'member_credential_validation' &&
-        error.memberAuthFailureCode === 'd87_member_link_file_required',
+      (error) => error?.message?.startsWith('NATIVE_RESOURCE_BOUNDARY_REFUSED:'),
     );
-    assert.deepEqual(operations, ['closed', 'root_activated']);
-    assert.deepEqual(stages, observerPresent ? ['member_credential_validation'] : []);
+    assert.deepEqual(operations, []);
+    assert.deepEqual(stages, []);
   });
 }
 

@@ -13,6 +13,7 @@ import {
   supabaseOrigin,
 } from './member-native-auth-proof.mjs';
 import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
+import { awaitNativeResourceHealth } from './native-resource-boundary.mjs';
 import {
   observeMemberExtensionIdentity,
   runMemberAuthBoundary,
@@ -636,6 +637,7 @@ export async function signInSettings({
       rendered_identity: rendered,
     };
   }
+  await awaitNativeResourceHealth({ repo });
   const web = await page.context().newPage();
   try {
     await observeBoundary('member_web_created').catch(() => {});

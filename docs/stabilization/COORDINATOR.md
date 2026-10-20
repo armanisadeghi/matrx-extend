@@ -12,26 +12,27 @@ published0.2.205, draft0.2.479 rejected, no pending, Upload enabled. Vault login
 no human-only access blocker is established. No new upload/submission has occurred.
 [Daily observation](reports/store-daily-20261020.json) also bounds official mail search to the October11 rejection only. Never infer private review state from old email/public listing or this checkpoint.
 
-Current prepared candidate **0.2.572**: guarded hosted release39391023031 SUCCESS;
-source/tag `419a40f0370c51db281759615e44797912ac485c`, artifact12250046601,
-Store ZIP SHA256 `2385cc21f9ad7d02c532aa5c20e4b471595b2442b07ab76c6e3f111c0358606b`.
-[Package/native checkpoint](reports/release572-native-20261020.json) and
-[fresh independent peer](reports/release572-independent-peer-20261020.json) confirm exact receipt/tag/bytes,
-strict release gates and native B39391905076. Full checks/resource CI39389758979 passed on combined
-main3c4d41e1f. Config-manifest attestation remains explicitly unavailable (advisory dotenv import failure).
-Native fresh guest opening, same-conversation and post-panel-reload replies independently PASS
-bounded T10 with exact code/full heading, HTTP200 and terminal completion against stable deployed
-`4099043613385b5fff9d5049a4b195d037ac7018`. This is candidate Store ZIP adapted unpacked,
-not Store-installed or whole Chat acceptance. Overall run FAILS separate T13/D244 Values Escape:
-one trusted key, confirmed document/popover focus, no competing dialog, still open. All3resource
-finals admitted/resourceInvalid=false; guest child_failed exit1. No Store upload/submission.
+Current prepared candidate **0.2.573**: guarded hosted release39398454280 SUCCESS;
+source/tag `19aa37bee23e02c8ab62a15ce4854d9e5c944f91`, artifact12253811524,
+Store ZIP SHA256 `5814c4683e270f8303263a26fda0946c91f9680a6c317150283eaafae0df2d4e`.
+[Package/native checkpoint](reports/release573-native-20261020.json),
+[Data A](reports/data573-native-lane-a-20261020.json), and
+[fresh independent peer](reports/release573-independent-peer-20261020.json) verify exact receipt/tag/bytes,
+strict release gates and compiled agents0.59.174 Escape repair. Full CI39397452854 and focused39397452861 passed.
+Both exact573 native lanes are terminal **resource-invalid startup failures**, before any product
+assertion: B39399395330 Chat/Values and A39399705944 Data T01/T07 could not connect CDP.
+No screenshot, Values Escape retest, Data interaction or new product pass exists. Package/browser
+resource finals are valid, guest finals invalid/exit3; no retry. B backend before/after40990436
+is stable but unexercised; A has no backend capture. Config attestation remains NOT_ATTESTED
+(advisory missing dotenv). No Store upload/submission. Initial CDP startup diagnosis is active;
+no unchanged native retry or threshold increase. Earlier572 resource-valid guest T10 replies
+remain separately bounded;573 cannot inherit them. Non-admin D261504 remains unresolved.
 **[D265](defects/EXT-D-0265.json) is narrowly CLOSED after fresh independent original native retest.**
 At native setup readiness08:21:05, full11-field healthy CPU_PENDING .03/.53 then CPU_RECOVERED .11
 count as3; helper ready08:21:48. Three guest replies and later readiness also pass. Thresholds,
 three-sample requirement, interval and deadline are unchanged. Source and native evidence close
-only the false readiness refusal, not product D244/D261. D244 product repair now owns the next
-source change; fresh reviewed shared-package repair, publication/adoption and exact native retest
-are required. D261 current non-admin acceptance remains unresolved; no blind capacity retry.
+only the false readiness refusal, not product D244/D261. D244 shared-package source repair is published/adopted; exact573 includes it, but native
+closure remains unverified because startup stopped before UI. D261 current non-admin acceptance remains unresolved; no blind capacity retry.
 Today's published205 check39393936846 is terminal and independently reviewed: T10 guest three
 terminal grounded replies PASS against stable40990436; public Article and T13 Values remain FAIL.
 [Daily proof](reports/published205-daily-guest-20261020.json), [peer](reports/published205-daily-fresh-peer-20261020.json).
@@ -197,15 +198,24 @@ may close parent while cancelling; guard proves no draft write and original afte
 Shared source `a1c540b80761a8f3281af06881a9cbc146a15341` is published as agents0.59.174;
 registry gitHead/tarball bytes and compiled Escape handler verified. Extension adoption `adb10448d`
 refreshes all26 Matrx packages to latest; frozen install, compile, package freshness and lint pass.
-[Adoption](reports/values244-publish-adopt-20261020.json). Automatic fullCI39397452854 is running;
-focused39397452861 passed. Fresh independent adoption peer is pending. Candidate/native owner
-`values244_candidate_native_owner` waits for fullCI+peer before one guarded release and original
-T13 guest retest. Existing572 has the older package; no post-fix native or Store pass is claimed.
+[Adoption](reports/values244-publish-adopt-20261020.json) and [fresh adoption peer](reports/values244-adoption-peer-20261020.json) PASS. FullCI39397452854 and focused39397452861 passed.
+Release573 includes the published repair. Both native lanes stopped resource-invalid at CDP
+startup before product assertions; no post-fix native or Store pass is claimed.
 Direct local package tsc remains red on3 unchanged sibling imports; required hosted install-for-gate
 and consumer/type checks cannot be waived. ModelListDropdown sibling remains unverified after
 missingkit/dom prevented collection; no speculative repair or resolved-class claim. AgentListDropdown
 trigger-tooltip is explicitly disabled while open and does not share observed inner-control chain.
 D244 is fixed for source only; native closure requires actual exact-package T13.
+
+
+**[D266](defects/EXT-D-0266.json) source-fixed, native unverified.** Shared Settings/member Chat
+opened authentication pages before canonical readiness. Two minimal awaits now require the
+existing health boundary first; denial has zero auth-page side effects. Actual-source RED/GREEN,
+21/21 tests and a fresh different [final source peer](reports/auth266-final-source-peer-20261020.json)
+PASS; the first peer's missing normal-CI wiring finding is addressed. No new policy/threshold,
+startup-capacity improvement or D261 backend repair is inferred. Post-integration full CI required.
+The local cost checker still has baseline measured-spend/twin drift errors, distinct from the
+fresh official real-money72.23/100 status; no paid job is dispatched to bypass a spending refusal.
 
 
 1. **D258 closed narrowly**, source `ff105b712`, exact568 original scroll479 native PASS above. Measured
@@ -225,7 +235,7 @@ D244 is fixed for source only; native closure requires actual exact-package T13.
    [Final peer](reports/member566-click-boundary-peer-20261019.json). The567 member run stopped
    resource-invalid before Chat, so no member product or hidden-target fix closure is supported.
 4. **D261 triaged**, real566 member first-turn504 unresolved. After current A/B finish, prioritize
-   one resource-valid .568 member run with passive transport before send, actual selected model,
+   one resource-valid current-candidate member run with passive transport before send, actual selected model,
    approved identity/org, before/after backend SHA and real terminal reply/follow-up. Require a
    quiescent admitted host;567 member CPU invalidation was not a product failure. Fresh-direct-member
    versus original guest→member sequence is a discriminator, not interchangeable closure evidence.
