@@ -493,6 +493,9 @@
    "application/json"
   ]
  },
+ "/admin/tool-layer/tools/{tool_id}/detail": {
+  "get": []
+ },
  "/admin/tool-layer/tools/{tool_id}/order": {
   "post": [
    "application/json"
@@ -1406,6 +1409,9 @@
   "get": []
  },
  "/bandwidth-status/public/status": {
+  "get": []
+ },
+ "/baremetrics/public/status": {
   "get": []
  },
  "/base-move/jobs": {
@@ -6365,6 +6371,9 @@
  "/proposify/public/status": {
   "get": []
  },
+ "/provision-window/snapshots/{snapshot_id}": {
+  "get": []
+ },
  "/provision-window/{point_key}/capture": {
   "post": [
    "application/json"
@@ -7132,6 +7141,9 @@
   "get": []
  },
  "/runs/waiting": {
+  "get": []
+ },
+ "/runs/{request_id}/snapshots": {
   "get": []
  },
  "/runs/{run_id}": {
@@ -10343,6 +10355,9 @@
   "post": [
    "application/json"
   ]
+ },
+ "/workflows/{definition_id}/overview": {
+  "get": []
  },
  "/workflows/{definition_id}/plan-blockers": {
   "get": []
