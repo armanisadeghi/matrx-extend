@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T20:42:33Z",
+  "updated_at": "2026-10-20T21:01:14Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -31743,6 +31743,28 @@
           ],
           "defect_ids": [
             "EXT-D-0247"
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-20T21:01:14Z",
+              "mode": "signed-in role and organization unconfirmed",
+              "run_id": "seo578-history-native",
+              "status": "bounded_observation_no_full_case_pass",
+              "source_sha": "9fd7043b2e488d7614a2220c082e9de0052a6cff",
+              "development_ci_run_id": 39488355878,
+              "development_artifact_id": 12294519442,
+              "build_version": "0.2.578",
+              "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "resource_valid": true,
+              "new_full_role_case_pass": false,
+              "evidence": [
+                "docs/stabilization/reports/seo578-history-native-20261020.json",
+                "docs/stabilization/resource-journals/seo578-history-20261020-01.jsonl",
+                "docs/stabilization/resource-journals/seo578-history-20261020-02.jsonl"
+              ],
+              "defect_link_scope": "D247 is related to an existing guest case only; signed-in readback is not original guest reproduction or retest.",
+              "detail": "Actual dev578 signed-in IANA reserved-domains page: one existing saved audit row dated Oct20 12:00:40 PM (310 words) opened as Saved snapshot; Live returned to current audit/comparison. Webpage refresh and side-panel close/reopen retained the row/snapshot. Re-audit clicked once, but completion could not be distinguished. No extension-manager reload, two-snapshot switching, identified role/org, or owned audit write."
+            }
           ]
         },
         {
@@ -31805,6 +31827,28 @@
           "verification_status": "partial-bounded-guest-synthetic-error-retry; live-backend, reload, member and admin unverified",
           "defect_ids": [
             "EXT-D-0247"
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-20T21:01:14Z",
+              "mode": "signed-in role and organization unconfirmed",
+              "run_id": "seo578-history-native",
+              "status": "bounded_observation_no_full_case_pass",
+              "source_sha": "9fd7043b2e488d7614a2220c082e9de0052a6cff",
+              "development_ci_run_id": 39488355878,
+              "development_artifact_id": 12294519442,
+              "build_version": "0.2.578",
+              "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "resource_valid": true,
+              "new_full_role_case_pass": false,
+              "evidence": [
+                "docs/stabilization/reports/seo578-history-native-20261020.json",
+                "docs/stabilization/resource-journals/seo578-history-20261020-01.jsonl",
+                "docs/stabilization/resource-journals/seo578-history-20261020-02.jsonl"
+              ],
+              "defect_link_scope": "D247 is related to an existing guest case only; signed-in readback is not original guest reproduction or retest.",
+              "detail": "One existing history row displayed and closed cleanly. Empty/loading/error states and D198 original error were not encountered. This signed-in observation adds no guest-case result or full T06 pass."
+            }
           ]
         },
         {

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "subject": "hosted Settings guest 0.2.578 run 39490478586 attempt 1",
+  "status": "BOUNDARY_LOCALIZED_CAUSAL_SHARE_UNPROVEN",
+  "first_bad_boundary": "The admitted guest acceptance child crossed from healthy host sampling at 20:22:33.773Z (one-minute load 1.36/4, CPU busy 0.31) to CPU pending at 20:22:50.059Z (load 10.58/4, busy 1.00). The same child had imported/prepared the exact 9fd artifact at 20:22:34-37Z; its Chromium/panel startup was underway. No Settings control assertion or case report existed before the watchdog stopped the process group at 20:23:06.527Z.",
+  "evidence": {
+    "run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39490478586",
+    "source_sha": "9fd7043b2e488d7614a2220c082e9de0052a6cff",
+    "journal": "docs/stabilization/resource-journals/hosted-guest-39490478586-1.jsonl",
+    "other_phases": "Package and browser journals finalized valid; the guest admission at 20:22:17.605Z had load 1.49/4, CPU busy 0.02, 12.6 GiB free memory, zero swap and >108 GiB free disk.",
+    "chronology_utc": [
+      "20:22:18.095 HOSTED_BROWSER_READY acceptance",
+      "20:22:33.773 healthy watch: load 1.36, busy 0.31",
+      "20:22:34.211 imported development artifact; 20:22:37.475 prepared exact tree",
+      "20:22:50.059 first unsafe watch: load 10.58, busy 1.00; 20:22:50.295 one process snapshot",
+      "20:22:53.919 exact expected side-panel context appeared",
+      "20:23:06.284 second unsafe watch: load 10.13, busy 0.62; 20:23:06.527 group SIGTERM; 20:23:07.583 invalid exit 3"
+    ],
+    "process_snapshot": "At 20:22:50.295Z, owned node PID 9424 was child of process group root 8957, owned Chromium PID 9449 and its helpers showed 31.2%, 29.4%, 21.3%, 5.3% CPU (plus lower helpers). Unrelated macOS PIDs included corespeechd 48.4%, provjobd26886000 26.3%, SafariLaunchAgen 25.6%, lsd 14.1%, and others. This is one ps %cpu snapshot, not interval-integrated CPU time or causality proof.",
+    "termination": "The guard required two unsafe watches and stopped the group; memory, pressure, swap and disk stayed healthy. The uploaded artifact contains three journals and two screenshots, but no Settings report or normal certificate. Exact child process exit is not independently persisted."
+  },
+  "hypotheses_ranked": [
+    {
+      "id": "H1",
+      "cause_if_true": "Owned Chromium startup alone creates most of the overload on the four-core host.",
+      "falsifiable_prediction": "Before/after process CPU-time brackets spanning the first unsafe interval attribute most incremental CPU time to PID 9449 and descendants; background services contribute little incremental CPU time.",
+      "present_observation": "Owned Chromium and helpers were active at the spike, but one ps snapshot cannot measure their share of the interval or explain load 10.58.",
+      "one_variable_discriminator": "Record the already supported guarded startup interval process-time bracket across Chromium startup, without changing load thresholds."
+    },
+    {
+      "id": "H2",
+      "cause_if_true": "Independent macOS background services create most of the overload while the owned browser starts.",
+      "falsifiable_prediction": "The same process-time bracket assigns most incremental CPU time to non-descendants such as corespeechd/provjobd/SafariLaunchAgen, with comparatively low owned Chromium time.",
+      "present_observation": "Those non-descendants were simultaneously active, but the snapshot has no prior rate or duration.",
+      "one_variable_discriminator": "Compare owned and non-owned process CPU-time deltas over the same guarded interval."
+    },
+    {
+      "id": "H3",
+      "cause_if_true": "Launching the owned browser triggers macOS services, and the combined startup spike overwhelms the host.",
+      "falsifiable_prediction": "Pre-launch non-owned service CPU is low, then rises shortly after Chromium launch alongside owned CPU; a subsequent browser-free guarded observation lacks the service rise.",
+      "present_observation": "The service and browser processes coexisted only in one post-launch snapshot; there is no pre-launch service snapshot or process start chronology.",
+      "one_variable_discriminator": "Bracket service CPU time immediately before and after browser launch within an authorized, already guarded run."
+    }
+  ],
+  "what_is_proven": "The product was untested because the resource guard correctly marked the guest stage invalid after sustained CPU/load pressure. The spike began after artifact preparation and during native Chromium/panel startup; both owned browser descendants and non-owned macOS services were active.",
+  "what_is_not_proven": "The existing records do not attribute the excess CPU/load to browser code, unrelated host work, or browser-triggered host services. A one-minute load average counts runnable tasks and the one-shot ps %cpu values are not an interval CPU budget. No retry, timeout, threshold, workflow or product-code correction is justified from this evidence.",
+  "safe_next_action": "Keep all 19 current-source guest Settings cases unverified and continue other admitted product lanes. Before scheduling any further Settings acceptance, capture one pre-launch and one during-launch owned/non-owned process CPU-time bracket inside the existing guarded path, then use normal admission and require a real case report plus normal certificate. Do not dispatch an unmeasured repeat or relocate the job. The current workflow enables MATRX_STARTUP_INTERVAL_DIAGNOSTIC only for guest/member chat, so Settings lacks that bracket today; adding it would be a separately reviewed, costed workflow change.",
+  "repository_edits": "none"
+}
