@@ -307,10 +307,56 @@ async function clickPickerButton(page, buttonId, expectedBackendNodeId = null) {
     diagnostic.box_width = Math.hypot(x2 - x1, y2 - y1);
     diagnostic.box_height = Math.hypot(x4 - x1, y4 - y1);
     assert.ok(Number.isFinite(x) && Number.isFinite(y), `data_guest_${buttonId}_geometry_missing`);
+    // DOM.getBoxModel is viewport-relative, while Chromium's getNodeForLocation
+    // interprets its input in document space. Keep the trusted mouse point in
+    // viewport space; only the CDP hit probe receives the document offset.
+    phase = 'get_hit_metrics';
+    const [{ product }, { cssLayoutViewport: layout, cssVisualViewport: visual }] =
+      await Promise.all([
+        session.send('Browser.getVersion'),
+        session.send('Page.getLayoutMetrics'),
+      ]);
+    diagnostic.browser_version = typeof product === 'string' ? product.slice(0, 80) : null;
+    diagnostic.layout_viewport = layout
+      ? {
+          pageX: layout.pageX,
+          pageY: layout.pageY,
+          clientWidth: layout.clientWidth,
+          clientHeight: layout.clientHeight,
+        }
+      : null;
+    diagnostic.visual_viewport = visual
+      ? {
+          pageX: visual.pageX,
+          pageY: visual.pageY,
+          offsetX: visual.offsetX,
+          offsetY: visual.offsetY,
+          scale: visual.scale,
+          zoom: visual.zoom,
+          clientWidth: visual.clientWidth,
+          clientHeight: visual.clientHeight,
+        }
+      : null;
+    const supported =
+      Number.isFinite(layout?.pageX) &&
+      Number.isFinite(layout?.pageY) &&
+      Number.isFinite(visual?.pageX) &&
+      Number.isFinite(visual?.pageY) &&
+      visual.scale === 1 &&
+      visual.zoom === 1 &&
+      visual.offsetX === 0 &&
+      visual.offsetY === 0 &&
+      visual.pageX === layout.pageX &&
+      visual.pageY === layout.pageY;
+    assert.ok(supported, `data_guest_${buttonId}_unsupported_viewport_geometry`);
+    const hitX = Math.round(x + layout.pageX);
+    const hitY = Math.round(y + layout.pageY);
+    diagnostic.hit_document_x = hitX;
+    diagnostic.hit_document_y = hitY;
     phase = 'get_node_for_location';
     const hit = await session.send('DOM.getNodeForLocation', {
-      x: Math.round(x),
-      y: Math.round(y),
+      x: hitX,
+      y: hitY,
       includeUserAgentShadowDOM: true,
       ignorePointerEventsNone: false,
     });

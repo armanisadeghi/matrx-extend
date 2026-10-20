@@ -1,0 +1,23 @@
+{
+  "reviewer": "fresh independent source reviewer; no authorship",
+  "verdict_A": "SOURCE_PASS_WITH_LIVE_UNVERIFIED",
+  "verdict_B": "IMPORTANT_FORCING_GAP",
+  "source_findings": [
+    "tests/browser/data-guest-picker-driver.mjs:310-360: Chromium 155 source confirms GetBoxModel frame-to-viewport output and getNodeForLocation document-to-frame input. For the supported scale=zoom=1, offset=0 case, measured cssLayoutViewport.pageY 479 plus box y66.5 yields hit y546 while mouse remains viewport y66.5. Browser.getVersion and getLayoutMetrics are captured before hit.",
+    "The shared clickPickerButton is called by Done, Cancel and Clear. Done still compares the post-foreground backendNodeId to the original and all three require strict hit.backendNodeId equality before page.mouse.click. A mismatched or missing hit refuses input. Unsupported pinch scale, page zoom, visual offset, unequal layout/visual pages, or missing zoom refuse before hit and click.",
+    "The hosted567 evidence recorded scrollY479 and viewport box center 41.8359375,66.5 with no_node before mouse; it did not record cssLayoutViewport, cssVisualViewport, Chrome version, or a corrected live hit. Source supports the repair but does not establish the hosted browser meets the supported-metrics precondition or that the actual button is hit."
+  ],
+  "quality_findings": [
+    {
+      "severity": "Important",
+      "location": "tests/browser/data-guest-picker-driver.test.mjs:286-344",
+      "issue": "The actual sender is called and its probe/mouse arguments are asserted, but each button has only one scroll value (Done479, Cancel218, Clear0). A sender that hardcodes a per-button document Y can pass. Repeat the same button at a second nonzero measured scroll and a zero-scroll control in the same forcing case; keep mismatch/no-click checks. No executed constant-return gut check or RED/GREEN is available under the Mac resource guard."
+    },
+    {
+      "severity": "Important",
+      "location": "tests/browser/data-guest-picker-driver.test.mjs:318-323",
+      "issue": "The CDP double grants backendNodeId74 exactly when the sender supplies the test's expected coordinate. This proves sender wiring, not Chromium hit semantics or product outcome. A guarded real-browser naturally scrolled picker must capture Browser version/layout metrics, exact same button hit, unchanged viewport trusted click, and Done result; Cancel/Clear need their product outcomes."
+    }
+  ],
+  "verification": "Read source diff and primary Chromium 155 inspector_dom_agent.cc, inspector_highlight.cc, inspector_page_agent.cc; checked DevTools protocol types for CSS metrics and optional zoom. No test/build/browser/Git operation was run due to Mac resource guard."
+}

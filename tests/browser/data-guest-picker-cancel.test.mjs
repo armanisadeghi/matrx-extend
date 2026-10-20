@@ -22,6 +22,19 @@ function fixture({
   const session = {
     async send(method, params) {
       if (method === 'DOM.enable') return {};
+      if (method === 'Browser.getVersion') return { product: 'Chrome/155.0.8059.82' };
+      if (method === 'Page.getLayoutMetrics')
+        return {
+          cssLayoutViewport: { pageX: 0, pageY: 0 },
+          cssVisualViewport: {
+            pageX: 0,
+            pageY: 0,
+            offsetX: 0,
+            offsetY: 0,
+            scale: 1,
+            zoom: 1,
+          },
+        };
       if (method === 'DOM.getDocument') return { root: { nodeId: 1 } };
       if (method === 'DOM.querySelector') {
         actions.push(params.selector);

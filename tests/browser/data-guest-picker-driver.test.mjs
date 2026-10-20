@@ -70,6 +70,19 @@ function ownedPage(hitBackendNodeId) {
     async send(method, params) {
       calls.push({ method, params });
       if (method === 'DOM.enable') return {};
+      if (method === 'Browser.getVersion') return { product: 'Chrome/155.0.8059.82' };
+      if (method === 'Page.getLayoutMetrics')
+        return {
+          cssLayoutViewport: { pageX: 0, pageY: 0 },
+          cssVisualViewport: {
+            pageX: 0,
+            pageY: 0,
+            offsetX: 0,
+            offsetY: 0,
+            scale: 1,
+            zoom: 1,
+          },
+        };
       if (method === 'DOM.getDocument') return { root: { nodeId: 1 } };
       if (method === 'DOM.querySelector')
         return { nodeId: params.selector === '#matrx-data-picker-host' ? 2 : 4 };
@@ -113,6 +126,19 @@ function foregroundPage({
     async send(method, params) {
       calls.push(method);
       if (method === 'DOM.enable') return {};
+      if (method === 'Browser.getVersion') return { product: 'Chrome/155.0.8059.82' };
+      if (method === 'Page.getLayoutMetrics')
+        return {
+          cssLayoutViewport: { pageX: 0, pageY: 0 },
+          cssVisualViewport: {
+            pageX: 0,
+            pageY: 0,
+            offsetX: 0,
+            offsetY: 0,
+            scale: 1,
+            zoom: 1,
+          },
+        };
       if (method === 'DOM.getDocument') return { root: { nodeId: 1 } };
       if (method === 'DOM.querySelector')
         return { nodeId: params.selector === '#matrx-data-picker-host' ? 2 : 4 };
@@ -267,6 +293,107 @@ test('Data guest Done receives trusted pointer only when exact closed-shadow but
   assert.equal(covered.calls.at(-1).method, 'detach');
 });
 
+// The old viewport-coordinate sender probes y=67 at every scroll value; a
+// fixed offset for any one button also fails when that button moves again.
+test('each picker button probes its measured document point across scroll positions', async () => {
+  for (const [click, selector] of [
+    [clickPickerDone, '#done'],
+    [clickPickerCancel, '#cancel'],
+    [clickPickerClear, '#clear'],
+  ]) {
+    for (const [scrollX, scrollY] of [
+      [0, 0],
+      [0, 218],
+      [13, 479],
+    ]) {
+      const calls = [];
+      const session = {
+        async send(method, params) {
+          calls.push({ method, params });
+          if (method === 'DOM.enable') return {};
+          if (method === 'DOM.getDocument') return { root: { nodeId: 1 } };
+          if (method === 'DOM.querySelector') {
+            assert.ok(['#matrx-data-picker-host', selector].includes(params.selector));
+            return { nodeId: params.selector === selector ? 4 : 2 };
+          }
+          if (method === 'DOM.describeNode' && params.nodeId === 2)
+            return { node: { shadowRoots: [{ nodeId: 3, shadowRootType: 'closed' }] } };
+          if (method === 'DOM.describeNode' && params.nodeId === 4)
+            return { node: { nodeName: 'BUTTON', backendNodeId: 74 } };
+          if (method === 'DOM.getBoxModel')
+            return { model: { content: [27, 59, 56.671875, 59, 56.671875, 74, 27, 74] } };
+          if (method === 'Browser.getVersion') return { product: 'Chrome/155.0.8059.82' };
+          if (method === 'Page.getLayoutMetrics')
+            return {
+              cssLayoutViewport: { pageX: scrollX, pageY: scrollY },
+              cssVisualViewport: {
+                pageX: scrollX,
+                pageY: scrollY,
+                offsetX: 0,
+                offsetY: 0,
+                scale: 1,
+                zoom: 1,
+              },
+            };
+          if (method === 'DOM.getNodeForLocation') {
+            if (
+              params.x !== Math.round(41.8359375 + scrollX) ||
+              params.y !== Math.round(66.5 + scrollY)
+            )
+              throw new Error('No node found at given location');
+            return { backendNodeId: 74 };
+          }
+          throw new Error(`unexpected_cdp_method:${method}`);
+        },
+        async detach() {
+          calls.push({ method: 'detach' });
+        },
+      };
+      const page = {
+        context: () => ({ newCDPSession: async () => session }),
+        mouse: { click: async (x, y) => calls.push({ method: 'click', x, y }) },
+      };
+      await click(page, selector === '#done' ? 74 : undefined);
+      assert.deepEqual(calls.find((call) => call.method === 'DOM.getNodeForLocation')?.params, {
+        x: Math.round(41.8359375 + scrollX),
+        y: Math.round(66.5 + scrollY),
+        includeUserAgentShadowDOM: true,
+        ignorePointerEventsNone: false,
+      });
+      assert.deepEqual(
+        calls.filter((call) => call.method === 'click'),
+        [{ method: 'click', x: 41.8359375, y: 66.5 }],
+      );
+      assert.equal(calls.at(-1).method, 'detach');
+    }
+  }
+});
+
+test('Done refuses scaled or offset viewports before a hit probe or pointer input', async () => {
+  for (const changed of [{ scale: 1.25 }, { zoom: 1.25 }, { offsetY: 12 }, { zoom: undefined }]) {
+    const { page, calls } = ownedPage(74);
+    const session = await page.context().newCDPSession();
+    const send = session.send.bind(session);
+    session.send = async (method, params) => {
+      if (method === 'Page.getLayoutMetrics') {
+        const metrics = await send(method, params);
+        Object.assign(metrics.cssVisualViewport, changed);
+        return metrics;
+      }
+      return send(method, params);
+    };
+    await assert.rejects(clickPickerDone(page), /data_guest_done_unsupported_viewport_geometry/);
+    assert.equal(
+      calls.some((call) => call.method === 'DOM.getNodeForLocation'),
+      false,
+    );
+    assert.equal(
+      calls.some((call) => call.method === 'click'),
+      false,
+    );
+  }
+});
+
 test('Done helper preserves first failed phase and projects no raw protocol details', async () => {
   const privateValue = 'PRIVATE_DONE_PROTOCOL_791';
   for (const phase of [
@@ -278,6 +405,7 @@ test('Done helper preserves first failed phase and projects no raw protocol deta
     ['query_button', 'DOM.querySelector'],
     ['describe_button', 'DOM.describeNode'],
     ['get_box_model', 'DOM.getBoxModel'],
+    ['get_hit_metrics', 'Page.getLayoutMetrics'],
     ['get_node_for_location', 'DOM.getNodeForLocation'],
     ['mouse_click', null],
     ['detach', null],

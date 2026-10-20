@@ -1,0 +1,16 @@
+{
+  "reviewer": "fresh narrow read-only re-verifier",
+  "previous_finding": "ADDRESSED: the actual shared Done/Cancel/Clear sender is exercised for each button at measured scroll (0,0), (0,218), and (13,479); a fixed per-button document offset cannot satisfy all three cases.",
+  "verdict_A": "SOURCE_PASS_WITH_LIVE_UNVERIFIED",
+  "verdict_B": "FORCING_GAP_ADDRESSED_WITH_SIMULATION_LIMIT",
+  "source_findings": [
+    "The sender obtains Browser.getVersion and Page.getLayoutMetrics before DOM.getNodeForLocation, admits only finite layout/visual page positions with scale=zoom=1, zero visual offsets, and equal visual/layout page positions, and adds measured layout pageX/pageY only to the hit probe.",
+    "The trusted page.mouse.click continues to use the original viewport box center. Done retains the expected post-foreground backendNodeId check; all buttons require exact hit.backendNodeId equality and refuse missing/mismatched hits before mouse input.",
+    "No new source-level breakage found in the reviewed diff. The focused package command now includes the Cancel suite."
+  ],
+  "quality_findings": [
+    "The nine-position sender-seam oracle now defeats the prior per-button fixed-offset false positive and asserts exact document probe plus unchanged viewport mouse point. Mismatch/no-click checks remain in existing tests.",
+    "The CDP double grants backendNodeId 74 at expected coordinates, so this is source wiring proof, not native Chromium hit or product outcome proof. Hosted natural-scroll evidence still must capture actual browser/layout metrics, same-button hit, trusted click, and Done/Cancel/Clear outcomes."
+  ],
+  "verification": "Read current diff and sender/test source; node --check passed for the three modified MJS files and git diff --check passed. No test, build, or browser run under Mac resource guard."
+}

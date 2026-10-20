@@ -1,0 +1,27 @@
+{
+  "status": "SOURCE_REPAIR_PREPARED_UNVERIFIED",
+  "cause": "Chromium DOM.getBoxModel returns viewport coordinates while DOM.getNodeForLocation interprets x/y as document coordinates. Hosted567 had scrollY=479 and passed viewport y=67 unchanged, reaching frame y=-412 and failing before trusted input.",
+  "changed_files": [
+    "tests/browser/data-guest-picker-driver.mjs",
+    "tests/browser/data-guest-picker-driver.test.mjs",
+    "tests/browser/data-guest-picker-cancel.test.mjs",
+    "package.json"
+  ],
+  "repair": "The shared Done/Cancel/Clear sender reads Browser.getVersion and Page.getLayoutMetrics immediately before the hit probe, requires unscaled, unoffset visual/layout metrics, converts the box center to document coordinates with measured cssLayoutViewport.pageX/pageY, retains exact backendNodeId comparison, and clicks at the original viewport center only after a matching hit. Failure diagnostics keep bounded browser and viewport metrics.",
+  "regression": "The existing focused command now includes the Cancel test. One sender-seam test drives Done, Cancel and Clear each at scroll (0,0), (0,218), and (13,479). The old viewport sender fails all nonzero cases; a per-button constant offset also fails. The oracle requires exact document hit, exact backendNodeId, and an unchanged viewport trusted mouse point. A separate test refuses pinch scale, page zoom, visual offset, or missing zoom before hit or click. CDP responses are simulated; native physical proof remains pending.",
+  "verification": {
+    "node_check": "PASS for all three modified MJS files",
+    "git_diff_check": "PASS",
+    "focused_node_test": "NOT_RUN: Mac resource guard",
+    "real_browser_scrolled_red_green": "PENDING: guarded hosted lane",
+    "product_acceptance": "PENDING: exact-candidate native Data guest-save replay"
+  },
+  "primary_sources": [
+    "https://chromium.googlesource.com/chromium/src/+/155.0.8059.82/third_party/blink/renderer/core/inspector/inspector_dom_agent.cc#1873",
+    "https://chromium.googlesource.com/chromium/src/+/155.0.8059.82/third_party/blink/renderer/core/frame/local_frame_view.cc#3851",
+    "https://chromium.googlesource.com/chromium/src/+/155.0.8059.82/third_party/blink/renderer/core/inspector/inspector_highlight.cc#2099",
+    "https://chromium.googlesource.com/chromium/src/+/155.0.8059.82/third_party/blink/renderer/core/inspector/inspector_page_agent.cc#1645",
+    "https://github.com/ChromeDevTools/devtools-protocol/blob/master/types/protocol.d.ts#L17256"
+  ],
+  "next_action": "On an admitted hosted browser, run focused sender tests, capture real Browser version and layout/visual metrics for a naturally scrolled picker, prove strict same-button backendNodeId and trusted viewport click, then replay exact guest-save acceptance. Refuse unsupported zoom/offset rather than treating source checks as browser proof."
+}

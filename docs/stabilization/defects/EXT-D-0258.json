@@ -8,7 +8,7 @@
   "auth_mode": "guest; infrastructure observability, no product repair claim",
   "severity": "S2: three valid native reviewer failures cannot be localized from retained evidence",
   "priority": "P1: actionable original failure evidence before next candidate acceptance",
-  "state": "retest-fail",
+  "state": "in-fix",
   "owner": "root/reviewer_geometry_picker_repair",
   "preconditions": [
     "Resource-valid frozen562 guest run39329484777 completed three Chat replies but reviewer controls remained incomplete."
@@ -21,7 +21,7 @@
   ],
   "expected": "Preserve safe precise first failure evidence, strict original pass criteria and cleanup; distinguish unknown capture stages without adding debug APIs, second capture or untrusted error text.",
   "actual": "Failures cannot be reproduced/localized from the original records alone; a Re-capture button crop is not Article content proof.",
-  "cause": "Generic catches and limited safe DOM projections drop the relevant boundary state.",
+  "cause": "Actual567 Data failure localized to harness coordinate mismatch: DOM.getBoxModel viewport center42,67 passed unchanged to document-space DOM.getNodeForLocation while page scrollY479; Chromium subtracts scroll, producing off-document frame y=-412. Shared Done/Cancel/Clear sender affected. Prior zero-scroll fixtures masked mismatch; foreground-only hypothesis refuted. Other earlier observability repairs remain bounded.",
   "evidence": [
     "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json",
     "docs/stabilization/reports/public-reviewer-probe-repair-20261019.json",
@@ -35,7 +35,11 @@
     "docs/stabilization/reports/candidate565-native-peer-20261019.json",
     "docs/stabilization/reports/reviewer565-failure-repair-20261019.json",
     "docs/stabilization/reports/reviewer565-source-peer-20261019.json",
-    "docs/stabilization/reports/store-release-v0567-acceptance-20261020.json"
+    "docs/stabilization/reports/store-release-v0567-acceptance-20261020.json",
+    "docs/stabilization/reports/data-done567-forensics-20261020.json",
+    "docs/stabilization/reports/data-scrolled-hit-repair-20261020.json",
+    "docs/stabilization/reports/data-scroll-fresh-peer-20261020.json",
+    "docs/stabilization/reports/data-scroll-round2-peer-20261020.json"
   ],
   "sibling_census": "All three failed reviewer controls share the owned helper; member temporal paint repair remains separate D257. Article privacy-link presence was diagnostic only, not an assertion; initial contrary diagnosis is refuted. Links privacy check and Article heading/stages remain strict.",
   "acceptance_criteria": [
@@ -52,7 +56,7 @@
     "forensic": "Fresh read-only escalation localized original564 failure to clickPickerDone catch BEFORE result wait. Downstream IPC/identity rejection is not established. New pre-Done count alone would not explain discarded first error."
   },
   "fix_commit": "56ca1354c46645849dab2b106b8cc8549ce94633",
-  "next_action": "Fresh escalation owns actual protocol/session/frame/hit-test discrepancy diagnosis. No blind rerun, relaxed hit oracle or speculative product fix. Exact567 member run resource-invalid before Chat; D261 remains unresolved.",
+  "next_action": "Await exact-source focused/full CI on reviewed measured conversion; then normal guarded hosted no-model Data replay with nonzero scroll, exact button hit and viewport trusted click. No physical RED/GREEN or product pass yet. Do not relax unsupported scale/zoom refusals or source/resource gates.",
   "transition_history": [
     {
       "at": "2026-10-19T22:05:02.915114Z",
@@ -137,6 +141,12 @@
       "from": "fixed",
       "to": "retest-fail",
       "reason": "Exact567 B39353960745 resource-valid repeated DOM.getNodeForLocation no_node_at_location before mouse despite original target visible/focused; foreground-only hypothesis refuted. No Data product verdict/closure."
+    },
+    {
+      "at": "2026-10-20T01:52:38.273195Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Escalated primary-source/actual567 evidence identifies viewport-vs-document coordinate mismatch at scrollY479, masked by zero-scroll fixtures. Shared Done/Cancel/Clear source conversion independently reviewed; tests/native execution pending."
     }
   ],
   "previous_fix_commits": [
