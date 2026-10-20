@@ -42,8 +42,12 @@ Exact568 candidate guest runs are terminal and independently reviewed:
   [Daily evidence](reports/published-guest-daily-20261020.json),
   [fresh peer](reports/published205-native-peer-20261020.json). No retry or upload.
 Focused D262 guest Settings admin-absence route is being implemented by member568_current_acceptance;
-independent settings_absence_focus_plan_attack checks scoped T22/guest-only T63 evidence, unchanged
-full-batch T04 and exact CI-dev receipt/guard. No native launch or extra CI trigger yet.
+independent settings_absence_focus_plan_attack accepted scope with two required wiring fixes
+(normal admission case allowlists and persisted focused artifact). Implementer must include both.
+T22/guest-only T63 evidence leaves full-batch T04 and exact CI-dev receipt/guard unchanged.
+[Independent current-backend delta](reports/member261-cd80-delta-20261020.json) confirms no
+relevant resume/member/org/async-pool/default-model fix in f8dd→cd80; sync-connection READ WRITE
+change does not establish original stalled-await causality. No member product verdict/deploy. No native launch or extra CI trigger yet.
 No new Store upload. Current member evidence and private Store/source/package drift checks remain
 required. [Current guest report](reports/guest567-scrolled-replay-20261020.json).
 

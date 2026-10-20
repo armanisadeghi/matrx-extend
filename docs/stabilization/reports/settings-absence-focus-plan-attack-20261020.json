@@ -1,0 +1,59 @@
+{
+  "verdict": "FIX-FIRST",
+  "snapshot": "84f3af81f (reviewed source; frozen implementer plan pending)",
+  "scope": "Read-only precommitment attack of focused guest T22/T63 native route for EXT-D-0262",
+  "coverage": {
+    "mapped": [
+      "focused T22 without T04",
+      "canonical DOM probe/recorder",
+      "real full extension reload and replacement lifecycle",
+      "guest-only T63 partial scope",
+      "CI development artifact",
+      "lane B guarded run",
+      "workflow cost declaration"
+    ],
+    "unmapped": [
+      "normal CLI guest admission planner/mode acceptance",
+      "report artifact upload/evidence path"
+    ]
+  },
+  "blocking": [
+    {
+      "finding": "The proposal names workflow/router but omits the normal guest Settings CLI admission planner and mode allowlist. Those currently accept only settings-controls and settings-auto-scrape-capture, so normal dispatch of the new case refuses before launch or bypasses existing admission.",
+      "source": [
+        "scripts/hosted-remote-admission.mjs:840",
+        "scripts/hosted-remote-admission.mjs:1626"
+      ],
+      "fix": "Extend the existing planHostedSettingsGuest and CLI guest mode allowlists for this exact case; retain source synchronization, occupied-B capacity, exact CI artifact, and wrong-lane refusals. Add route/admission tests for each."
+    },
+    {
+      "finding": "The focused driver uses a separate report, but the proposal does not state how CI uploads it. The workflow upload list is path-specific and does not include a new absence report.",
+      "source": [
+        ".github/workflows/hosted-guest-acceptance.yml:579",
+        "tests/browser/settings-local-controls-acceptance.mjs:55"
+      ],
+      "fix": "Add the focused report path to workflow artifact upload and assert evidence includes run/artifact identity, warm T22 and post-extension-reload T63 criteria. Keep ordinary-member T63 unverified."
+    }
+  ],
+  "verification_required": [
+    "Exercise actual route/admission selection, canonical DOM probe/recorder and real reload lifecycle branch; injected inactive/missing-anchor/wrong-mode/forbidden-control states must fail without a second oracle.",
+    "Guarded hosted native replay against exact current CI development run/artifact, normal B resource guard, fresh guest profile, with independent receipt review; no T04 or full-T63 credit."
+  ],
+  "owner_only": [],
+  "frozen_plan": "Implementer message 2026-10-20: explicit settings-guest-admin-absence normal guarded workflow/router, CI development only, lane B, focused native driver calling canonical probe/recorder for warm T22 and post-real-extension-reload guest-only T63; no T04/full-batch credit; tests at driver seam; ci-cost declaration.",
+  "advisory": [
+    {
+      "finding": "If the new driver shares report output with the full batch, ensure the schema and scope make T22/T63-only evidence unmistakable; never inherit full-batch status or enforceFullExtensionRechecks on this scoped case.",
+      "source": [
+        "tests/browser/settings-local-controls-acceptance.mjs:72",
+        "tests/browser/settings-local-controls-acceptance.mjs:1186"
+      ]
+    }
+  ],
+  "owner_adjudication": {
+    "decision": "FIX_BOTH_BEFORE_IMPLEMENTATION",
+    "amended_plan": "Explicit normal planHostedSettingsGuest + CLI settingsGuest case allowlists retain exact source/artifact/capacity refusal; focused native report path added to existing workflow artifact upload. All other scopes unchanged.",
+    "attacked": "2026-10-20; standard; 2 blockers accepted/fixed in implementation brief, 0 rejected",
+    "native_status": "not_launched; source implementation pending independent review"
+  }
+}
