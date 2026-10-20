@@ -1,0 +1,699 @@
+{
+  "schema_version": 1,
+  "reload_open_diagnostic": {
+    "enabled": false,
+    "evidence_class": "acceptance_eligible",
+    "perturbation": "none"
+  },
+  "reload_sender_document_diagnostic": {
+    "enabled": false,
+    "evidence_class": "acceptance_eligible",
+    "perturbation": "none"
+  },
+  "case_id": "EXT-F-2005-T03",
+  "auth_mode": "member",
+  "status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "e157ebe9e3b1d7eef3a53e95698b2906ee2fc4e7",
+    "run_id": 39474432457,
+    "artifact_id": 12288703340,
+    "tree_sha256": "0e0d922f7f4130d6c155a887ab4a91e1e33593c89a6dfab3de234018eb28aef9",
+    "version": "0.2.577"
+  },
+  "authentication": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_identity_verified": true,
+    "canonical_nonadmin_check_passed": true,
+    "organization_selected": true,
+    "organization_resolution": "load_ladder",
+    "selected_organization_id_verified": true
+  },
+  "observations": {
+    "picker_field_clicks_landed": true,
+    "two_distinct_previews": true,
+    "save_pattern_visible": true,
+    "pattern_name_visible": true,
+    "pattern_write_requests": 1,
+    "pattern_write_status": 201,
+    "pattern_response_body_capture": "body_id_valid",
+    "saved_row_lookup_verified": true,
+    "request_body_organization_present": true,
+    "request_body_organization_matched_selected": true,
+    "request_header_organization_matched_body": true,
+    "request_header_organization_matched_selected": true,
+    "saved_pattern_refreshed": true,
+    "saved_pattern_run_before_reload": true,
+    "clipboard_before_reload": {
+      "tsv_matches_fixture": true,
+      "json_matches_fixture": true,
+      "ai_contains_all_fixture_rows": true,
+      "native_copy_feedback_observed": true,
+      "clipboard_readback": true,
+      "observation_permission_restored": true
+    },
+    "cancel_cleared_unsaved_selection": true,
+    "reload_replacement_adopted": true,
+    "saved_pattern_survived_extension_reload": true,
+    "saved_pattern_run_after_reload": true,
+    "clipboard_after_reload": {
+      "tsv_matches_fixture": true,
+      "json_matches_fixture": true,
+      "ai_contains_all_fixture_rows": true,
+      "native_copy_feedback_observed": true,
+      "clipboard_readback": true,
+      "observation_permission_restored": true
+    },
+    "pattern_write_observation": [
+      {
+        "status": 201,
+        "failed": false,
+        "patternIdPresent": true,
+        "bodyCapture": "body_id_valid",
+        "requestBodyCapture": "request_body_valid",
+        "requestOrganizationPresent": true,
+        "requestNameMatches": true,
+        "requestOrganizationMatchesSelected": true,
+        "headerOrganizationPresent": true,
+        "headerOrganizationMatchesBody": true,
+        "headerOrganizationMatchesSelected": true
+      }
+    ],
+    "member_save_succeeded": true
+  },
+  "cleanup": {
+    "verified": true,
+    "deleted_rows": 1,
+    "exact_owned_name_organization_lookup": true,
+    "active_rows_after_delete": 0
+  },
+  "failure_stage": null,
+  "limits": "Native member picker, save, run, clipboard, cancel and extension-reload behavior on the exact imported development artifact; no admin or Store claim.",
+  "auth_stage": "member_logical_organization_proof",
+  "auth_diagnostic": {
+    "phase": "logical_organization_request",
+    "organization_selected": true,
+    "expected_organization_matches": true,
+    "target": "organization_settings_return"
+  },
+  "reload_sender_document": {
+    "refresh_requested": false,
+    "refresh_completed": false,
+    "new_document_observed": false,
+    "same_url_observed": null
+  },
+  "reload_open_probe": null,
+  "reload_lifecycle": {
+    "sender_document": {
+      "refresh_requested": false,
+      "refresh_completed": false,
+      "new_document_observed": false,
+      "same_url_observed": null
+    },
+    "old_worker_destroyed_event": true,
+    "old_worker_execution_retired": true,
+    "old_worker_absent": true,
+    "old_panel_absent": true,
+    "replacement_worker_present": true,
+    "replacement_worker_created_event": true,
+    "replacement_panel_created_event": false,
+    "observed_worker_count": 1,
+    "management": null,
+    "open_panel_request": {
+      "click_monotonic_ms": 131356,
+      "worker_at_click": {
+        "status": "activated",
+        "running_status": "running"
+      },
+      "received": true,
+      "ok": true,
+      "opened": true,
+      "category": "opened",
+      "fixture": {
+        "availability": "ready",
+        "click_received": true,
+        "send_invoked": true,
+        "send_returned": true,
+        "callback_entered": true,
+        "callback_has_reply": true,
+        "callback_last_error": false,
+        "send_threw": false
+      }
+    },
+    "timeline": {
+      "old_worker_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+      "old_panel_id": "51B111D3498450A0319920526E37C6DB",
+      "replacement_worker_id": "39E7315FE6D0787C78C2C10CA517E121",
+      "pre_click_old_worker_present": true,
+      "entries": [
+        {
+          "at": "2026-10-20T18:44:06.186Z",
+          "phase": "discovery_enabled"
+        },
+        {
+          "at": "2026-10-20T18:44:06.187Z",
+          "phase": "initial_snapshot",
+          "targets": [
+            {
+              "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+              "type": "service_worker",
+              "kind": "worker",
+              "attached": true
+            },
+            {
+              "target_id": "51B111D3498450A0319920526E37C6DB",
+              "type": "page",
+              "kind": "panel",
+              "attached": true
+            }
+          ]
+        },
+        {
+          "at": "2026-10-20T18:44:06.187Z",
+          "phase": "listeners_registered"
+        },
+        {
+          "at": "2026-10-20T18:44:06.188Z",
+          "phase": "pre_click_snapshot",
+          "targets": [
+            {
+              "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+              "type": "service_worker",
+              "kind": "worker",
+              "attached": true
+            },
+            {
+              "target_id": "51B111D3498450A0319920526E37C6DB",
+              "type": "page",
+              "kind": "panel",
+              "attached": true
+            }
+          ]
+        },
+        {
+          "at": "2026-10-20T18:44:06.188Z",
+          "phase": "click_started"
+        },
+        {
+          "at": "2026-10-20T18:44:06.607Z",
+          "phase": "target_info_changed",
+          "target": {
+            "target_id": "51B111D3498450A0319920526E37C6DB",
+            "type": "page",
+            "kind": "panel",
+            "attached": false
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:06.608Z",
+          "phase": "target_destroyed",
+          "target": {
+            "target_id": "51B111D3498450A0319920526E37C6DB",
+            "type": "page",
+            "kind": "panel",
+            "attached": false
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:06.965Z",
+          "phase": "click_resolved"
+        },
+        {
+          "at": "2026-10-20T18:44:06.966Z",
+          "phase": "poll_transition",
+          "targets": [
+            {
+              "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+              "type": "service_worker",
+              "kind": "worker",
+              "attached": true
+            }
+          ]
+        },
+        {
+          "at": "2026-10-20T18:44:07.037Z",
+          "phase": "target_info_changed",
+          "target": {
+            "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+            "type": "service_worker",
+            "kind": "worker",
+            "attached": false
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:07.093Z",
+          "phase": "poll_transition",
+          "targets": []
+        },
+        {
+          "at": "2026-10-20T18:44:07.219Z",
+          "phase": "target_created",
+          "target": {
+            "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+            "type": "service_worker",
+            "kind": "worker",
+            "attached": false
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:07.220Z",
+          "phase": "target_info_changed",
+          "target": {
+            "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+            "type": "service_worker",
+            "kind": "worker",
+            "attached": true
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:07.375Z",
+          "phase": "poll_transition",
+          "targets": [
+            {
+              "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+              "type": "service_worker",
+              "kind": "worker",
+              "attached": true
+            }
+          ]
+        },
+        {
+          "at": "2026-10-20T18:44:07.702Z",
+          "phase": "target_destroyed",
+          "target": {
+            "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+            "type": "service_worker",
+            "kind": "worker",
+            "attached": false
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:08.512Z",
+          "phase": "target_info_changed",
+          "target": {
+            "target_id": "4077F5362F0FCBB077F8CF7AA65C25AD",
+            "type": "page",
+            "kind": "panel",
+            "attached": false
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:08.514Z",
+          "phase": "poll_transition",
+          "targets": [
+            {
+              "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+              "type": "service_worker",
+              "kind": "worker",
+              "attached": true
+            },
+            {
+              "target_id": "4077F5362F0FCBB077F8CF7AA65C25AD",
+              "type": "page",
+              "kind": "panel",
+              "attached": false
+            }
+          ]
+        },
+        {
+          "at": "2026-10-20T18:44:08.529Z",
+          "phase": "target_info_changed",
+          "target": {
+            "target_id": "4077F5362F0FCBB077F8CF7AA65C25AD",
+            "type": "page",
+            "kind": "panel",
+            "attached": false
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:08.698Z",
+          "phase": "target_info_changed",
+          "target": {
+            "target_id": "4077F5362F0FCBB077F8CF7AA65C25AD",
+            "type": "page",
+            "kind": "panel",
+            "attached": true
+          }
+        }
+      ],
+      "dropped_entries": 0,
+      "final_snapshot": [
+        {
+          "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+          "type": "service_worker",
+          "kind": "worker",
+          "attached": true
+        },
+        {
+          "target_id": "4077F5362F0FCBB077F8CF7AA65C25AD",
+          "type": "page",
+          "kind": "panel",
+          "attached": false
+        }
+      ],
+      "final_predicate": true
+    },
+    "reload_lifetime": {
+      "availability": "ready",
+      "browser_version": {
+        "protocol_version": "1.3",
+        "product": "Chrome/141.0.7390.37",
+        "revision": "@9f043f63b0e5b728c8d09f3e3ddfc1681a4bd58e"
+      },
+      "independent_targets": [
+        {
+          "at": "2026-10-20T18:44:06.173Z",
+          "phase": "created",
+          "target": {
+            "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+            "type": "service_worker",
+            "kind": "worker",
+            "attached": true
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:06.173Z",
+          "phase": "created",
+          "target": {
+            "target_id": "51B111D3498450A0319920526E37C6DB",
+            "type": "page",
+            "kind": "panel",
+            "attached": true
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:06.177Z",
+          "phase": "initial",
+          "target": {
+            "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+            "type": "service_worker",
+            "kind": "worker",
+            "attached": true
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:06.177Z",
+          "phase": "initial",
+          "target": {
+            "target_id": "51B111D3498450A0319920526E37C6DB",
+            "type": "page",
+            "kind": "panel",
+            "attached": true
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:06.607Z",
+          "phase": "changed",
+          "target": {
+            "target_id": "51B111D3498450A0319920526E37C6DB",
+            "type": "page",
+            "kind": "panel",
+            "attached": false
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:06.607Z",
+          "phase": "destroyed",
+          "target": {
+            "target_id": "51B111D3498450A0319920526E37C6DB",
+            "type": "other",
+            "kind": "panel",
+            "attached": null
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:07.043Z",
+          "phase": "changed",
+          "target": {
+            "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+            "type": "service_worker",
+            "kind": "worker",
+            "attached": false
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:07.220Z",
+          "phase": "created",
+          "target": {
+            "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+            "type": "service_worker",
+            "kind": "worker",
+            "attached": false
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:07.220Z",
+          "phase": "changed",
+          "target": {
+            "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+            "type": "service_worker",
+            "kind": "worker",
+            "attached": true
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:07.702Z",
+          "phase": "destroyed",
+          "target": {
+            "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+            "type": "other",
+            "kind": "worker",
+            "attached": null
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:08.513Z",
+          "phase": "changed",
+          "target": {
+            "target_id": "4077F5362F0FCBB077F8CF7AA65C25AD",
+            "type": "page",
+            "kind": "panel",
+            "attached": false
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:08.529Z",
+          "phase": "changed",
+          "target": {
+            "target_id": "4077F5362F0FCBB077F8CF7AA65C25AD",
+            "type": "page",
+            "kind": "panel",
+            "attached": false
+          }
+        },
+        {
+          "at": "2026-10-20T18:44:08.698Z",
+          "phase": "changed",
+          "target": {
+            "target_id": "4077F5362F0FCBB077F8CF7AA65C25AD",
+            "type": "page",
+            "kind": "panel",
+            "attached": true
+          }
+        }
+      ],
+      "versions": [
+        {
+          "at": "2026-10-20T18:44:06.184Z",
+          "version_id": "0",
+          "registration_id": "0",
+          "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+          "running_status": "running",
+          "status": "activated"
+        },
+        {
+          "at": "2026-10-20T18:44:06.900Z",
+          "version_id": "0",
+          "registration_id": "0",
+          "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+          "running_status": "stopping",
+          "status": "activated"
+        },
+        {
+          "at": "2026-10-20T18:44:06.934Z",
+          "version_id": "0",
+          "registration_id": "0",
+          "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+          "running_status": "stopping",
+          "status": "redundant"
+        },
+        {
+          "at": "2026-10-20T18:44:06.939Z",
+          "version_id": "0",
+          "registration_id": "0",
+          "target_id": "3AEA4EB626BDEBF6913CC35ADFDC34E7",
+          "running_status": "stopping",
+          "status": "redundant"
+        },
+        {
+          "at": "2026-10-20T18:44:07.046Z",
+          "version_id": "0",
+          "registration_id": "0",
+          "target_id": null,
+          "running_status": "stopped",
+          "status": "redundant"
+        },
+        {
+          "at": "2026-10-20T18:44:07.262Z",
+          "version_id": "1",
+          "registration_id": "1",
+          "target_id": null,
+          "running_status": "stopped",
+          "status": "new"
+        },
+        {
+          "at": "2026-10-20T18:44:07.285Z",
+          "version_id": "1",
+          "registration_id": "1",
+          "target_id": null,
+          "running_status": "stopped",
+          "status": "new"
+        },
+        {
+          "at": "2026-10-20T18:44:07.292Z",
+          "version_id": "1",
+          "registration_id": "1",
+          "target_id": null,
+          "running_status": "starting",
+          "status": "new"
+        },
+        {
+          "at": "2026-10-20T18:44:07.296Z",
+          "version_id": "1",
+          "registration_id": "1",
+          "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+          "running_status": "starting",
+          "status": "new"
+        },
+        {
+          "at": "2026-10-20T18:44:08.228Z",
+          "version_id": "1",
+          "registration_id": "1",
+          "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+          "running_status": "starting",
+          "status": "installing"
+        },
+        {
+          "at": "2026-10-20T18:44:08.229Z",
+          "version_id": "1",
+          "registration_id": "1",
+          "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+          "running_status": "running",
+          "status": "installing"
+        },
+        {
+          "at": "2026-10-20T18:44:08.310Z",
+          "version_id": "1",
+          "registration_id": "1",
+          "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+          "running_status": "running",
+          "status": "installed"
+        },
+        {
+          "at": "2026-10-20T18:44:08.310Z",
+          "version_id": "1",
+          "registration_id": "1",
+          "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+          "running_status": "running",
+          "status": "activating"
+        },
+        {
+          "at": "2026-10-20T18:44:08.311Z",
+          "version_id": "1",
+          "registration_id": "1",
+          "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+          "running_status": "running",
+          "status": "activated"
+        },
+        {
+          "at": "2026-10-20T18:44:08.507Z",
+          "version_id": "1",
+          "registration_id": "1",
+          "target_id": "39E7315FE6D0787C78C2C10CA517E121",
+          "running_status": "running",
+          "status": "activated"
+        }
+      ],
+      "registrations": [
+        {
+          "at": "2026-10-20T18:44:06.184Z",
+          "registration_id": "0",
+          "is_deleted": false
+        },
+        {
+          "at": "2026-10-20T18:44:06.931Z",
+          "registration_id": "0",
+          "is_deleted": true
+        },
+        {
+          "at": "2026-10-20T18:44:07.261Z",
+          "registration_id": "1",
+          "is_deleted": false
+        },
+        {
+          "at": "2026-10-20T18:44:08.229Z",
+          "registration_id": "1",
+          "is_deleted": false
+        }
+      ],
+      "pre_click_version_count": 1,
+      "version_events_dropped": 0,
+      "old_version_id": "0",
+      "old_version_mapping": "correlated",
+      "version_observation": "visible",
+      "old_host_probe": null,
+      "replacement_host_probe": null,
+      "replacement_worker_errors": [],
+      "fresh_replacement": null
+    }
+  },
+  "reload_context": {
+    "first": {
+      "side_panel_count": 1,
+      "exact_expected_count": 0,
+      "elapsed_ms": 18
+    },
+    "last": {
+      "side_panel_count": 1,
+      "exact_expected_count": 1,
+      "elapsed_ms": 123
+    },
+    "attempts": 2,
+    "exact_expected_appeared": true,
+    "query_failed": false
+  },
+  "reload_data_readiness": {
+    "first": {
+      "matched": 0,
+      "visible": 0,
+      "targetMatches": true,
+      "frameMatches": true,
+      "targetQueryFailed": false,
+      "frameQueryFailed": false,
+      "observationUnavailable": false,
+      "readyState": "interactive",
+      "rootCount": 1,
+      "loadingIndicatorCount": 0,
+      "renderErrorPresent": false
+    },
+    "last": {
+      "matched": 1,
+      "visible": 1,
+      "targetMatches": true,
+      "frameMatches": true,
+      "targetQueryFailed": false,
+      "frameQueryFailed": false,
+      "observationUnavailable": false,
+      "readyState": "complete",
+      "rootCount": 1,
+      "loadingIndicatorCount": 1,
+      "renderErrorPresent": false
+    },
+    "elapsed_ms": 809,
+    "stage": "ready"
+  },
+  "runtime_tree_after": "0e0d922f7f4130d6c155a887ab4a91e1e33593c89a6dfab3de234018eb28aef9"
+}

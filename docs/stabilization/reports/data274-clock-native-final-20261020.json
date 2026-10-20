@@ -1,0 +1,48 @@
+{
+  "task_id": "data274-clock-native-final-20261020",
+  "lane": "A",
+  "status": "NORMAL_CERTIFICATE_PASS",
+  "case_id": "EXT-F-2005-T03",
+  "defect_id": "EXT-D-0274",
+  "run_id": "39476062252",
+  "attempt": 1,
+  "workflow_sha": "0201d36bf317db69141828849f2c3991e35cecf1",
+  "source_sha": "e157ebe9e3b1d7eef3a53e95698b2906ee2fc4e7",
+  "development_run_id": "39474432457",
+  "development_artifact_id": "12288703340",
+  "hosted_artifact_id": "12289074514",
+  "archive_sha256": "95acb4ee729c63a0402ae586f9dcf897246421faf12f2c9e200e699d870dabe0",
+  "raw_zip": "/tmp/data274-clock-native-final-39476062252.zip",
+  "raw_report": "/tmp/data274-clock-native-final-39476062252-report.json",
+  "raw_report_sha256": "3dfb5cd96846ac27b91ad33f024b590fa7a75dbf9e1ad50f554dfc74e149edeb",
+  "verification": {
+    "normal_cli_valid": true,
+    "basis": "correlated_panel_materialization",
+    "resource_journals": {
+      "hosted-package": "valid",
+      "hosted-browser": "valid",
+      "hosted-guest": "valid"
+    },
+    "member_nonadmin_approved_org": true,
+    "http_save_status": 201,
+    "saved_row_before_after_extension_reload": true,
+    "pre_post_run_and_tsv_json_ai_copy": true,
+    "cancel": true,
+    "error_code_key_present": false
+  },
+  "cleanup": {
+    "native_verified": true,
+    "exact_owned_lookup": true,
+    "deleted_rows": 1,
+    "active_rows_after_delete": 0,
+    "temporary_secret_present": false,
+    "local_link_present": false
+  },
+  "limitations": "Exact Chrome PID/profile exit and hard-delete tombstone are not independently persisted; development artifact only, no Store or whole Data claim.",
+  "next_action": "Independent raw peer review, then root updates narrowly verified T03/D274 state.",
+  "normal_verifier": {
+    "exit_code": 0,
+    "receipt_path": "/tmp/data274-clock-native-final-39476062252-certificate.json",
+    "command": "node scripts/hosted-remote-admission.mjs verify --run-id 39476062252 --attempt 1 --artifact-zip /tmp/data274-clock-native-final-39476062252.zip --member-data-scope lifecycle --source-sha 0201d36bf317db69141828849f2c3991e35cecf1 --development-run-id 39474432457 --development-artifact-id 12288703340"
+  }
+}

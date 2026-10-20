@@ -1,0 +1,48 @@
+{
+  "task": "EXT-F-2005-T03 / EXT-D-0274 fresh zero-authorship certificate peer",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_A_behavior_evidence": {
+    "status": "PASS_SCOPED_T03",
+    "supported": "Run 39476062252 archive SHA256 95acb4ee729c63a0402ae586f9dcf897246421faf12f2c9e200e699d870dabe0 contains the exact raw member Data report (SHA256 3dfb5cd96846ac27b91ad33f024b590fa7a75dbf9e1ad50f554dfc74e149edeb). It records authenticated non-admin selected organization, one org-matched HTTP 201 pattern write, saved row lookup and refresh, run and TSV/JSON/AI clipboard readback before and after real extension/panel reload, and Cancel clearing an unsaved selection. The producer compares actual clipboard readText() with fixed TSV bytes, parsed JSON rows, and parsed AI JSON rows before recording booleans; raw bytes are intentionally absent from the report. The producer also checks the saved pattern after reopening Data on the replacement panel.",
+    "replacement_proof": "Raw trace has pre-click old worker 3AEA4EB626BDEBF6913CC35ADFDC34E7 and panel 51B111D3498450A0319920526E37C6DB; old panel destroyed at 18:44:06.608Z; distinct new worker 39E7315FE6D0787C78C2C10CA517E121 and exact new panel 4077F5362F0FCBB077F8CF7AA65C25AD appear afterward, first panel target_info_changed at 18:44:08.512Z. The report records production open callback and exact extension context; exported verifier returns correlated_panel_materialization/true. No literal panel target_created event is claimed. Same-millisecond pre-click/click entries retain strict trace order and finite nondecreasing time.",
+    "normal_certificate": "Normal CLI certificate /tmp/data274-clock-native-final-39476062252-certificate.json has valid=true and binds workflow 0201d36bf317db69141828849f2c3991e35cecf1, source e157ebe9e3b1d7eef3a53e95698b2906ee2fc4e7, CI 39474432457/artifact 12288703340, archive digest, runtime-equivalent docs-only diff, and verifier SHA256 21233983c0cf1c2602a2354ca0daf42b48ebdd407e68edef73f10549c4106ee9. All three archive journals independently end valid/resourceInvalid=false/exitCode=0, and their hashes match the certificate.",
+    "cleanup": "Raw report records exact owned name/organization lookup, one deleted row and zero active rows after delete. Independently checked the one-use local link path absent and GitHub Actions secret name list contains zero MATRX_REVIEWER_MAGIC_LINK_JSON entries.",
+    "dev_build": "Receipt source and promoted development trees both independently hash 0e0d922f7f4130d6c155a887ab4a91e1e33593c89a6dfab3de234018eb28aef9; manifest computes dev ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.577. Pinned/reloaded Chrome state is owner-observed and independently receipt-checked; this peer did not personally click the Chrome UI.",
+    "missing": "No independent persisted backend SHA, exact Chrome PID/profile exit, or hard-delete tombstone proof. Archive screenshots show initial blank sidepanel/callback fixture only and do not independently prove final Data UI. Scope is the selected member T03 on the development artifact, not Store or the whole Data surface.",
+    "extra": "None established.",
+    "misunderstood": "None established. The report has no error_code key; absence must not be recast as JSON null.",
+    "durable_evidence": "docs/stabilization/evidence/member-data-behavior/run39476062252/ contains native-report.sanitized.json, receipt.json, and all three hosted journals. At peer check, the durable native report is byte-identical to the immutable ZIP report member (SHA256 3dfb5cd9...), and all three journals are byte-identical to ZIP members with hashes matching the certificate. If later formatting changes report bytes, parsed content equivalence and the immutable ZIP digest remain the provenance basis; do not claim byte equality afterward."
+  },
+  "verdict_B_quality_provenance": {
+    "status": "PASS_SCOPED",
+    "evidence": "Current verifier file hash equals the certificate's verifierFileSha256. Normal certificate source/artifact/tree/path IDs match the raw report, promotion receipt and clean held main; e157..0201 diff contains only the certificate's listed docs paths. Re-ran focused lifecycle tests: 9/9 pass. Read source producer: clipboard flags follow actual navigator.clipboard.readText() comparisons and restoration of temporary observation permission; save, run, reload and cleanup flags follow asserted live outcomes. The replacement predicate requires every exact new-panel materialization to follow old-panel retirement across event and poll channels; previous independent structural review covered counterexample mutations. Report/verifier correctly preserve absent error_code.",
+    "boundary": "Archive report and journals contain no credential/token/password/magic-link/authorization/cookie/HTTP URL/email strings in a targeted scan; one @ in the report is a Chrome revision hash. This is suitable for a durable sanitized proof copy if repository handling allows it. The normal certificate does not prove backend SHA or process teardown by itself."
+  },
+  "evidence_paths": [
+    "/tmp/data274-clock-native-final-39476062252.zip",
+    "/tmp/data274-clock-native-final-39476062252-report.json",
+    "/tmp/data274-clock-native-final-39476062252-certificate.json",
+    "/tmp/data274-clock-native-final-20261020.json",
+    "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-dev-promotion-receipt.json",
+    "/tmp/personal-dev274-clock-refresh-20261020.json",
+    "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/evidence/member-data-behavior/run39476062252/native-report.sanitized.json",
+    "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/evidence/member-data-behavior/run39476062252/receipt.json",
+    "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/evidence/member-data-behavior/run39476062252/hosted-package-39476062252-1.jsonl",
+    "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/evidence/member-data-behavior/run39476062252/hosted-browser-39476062252-1.jsonl",
+    "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/evidence/member-data-behavior/run39476062252/hosted-guest-39476062252-1.jsonl"
+  ],
+  "repository_changes": "none",
+  "checkpoint_docs_review": {
+    "status": "PASS_SCOPED",
+    "scope": [
+      "docs/stabilization/COORDINATOR.md",
+      "docs/stabilization/inventory.json EXT-F-2005-T03.member",
+      "docs/stabilization/defects/EXT-D-0274.json",
+      "generated STATUS.md/STATUS.html/CHECKLIST.md"
+    ],
+    "finding_and_resolution": "Current inventory cleanup initially called hard-delete tombstones N/A despite no independent tombstone check; root changed it to \u201cTombstone status not independently checked.\u201d Fresh read confirms correction.",
+    "consistency": "Selected member T03 is Pass only for run39476062252 development artifact; D274 is closed via fixed\u2192retest-pass\u2192closed; referenced run/certificate/peer/durable evidence files exist; source e157/CI39474432457/artifact12288703340/workflow0201 and current normal valid=true agree. Admin, special-cell, other Data and Store-installed acceptance remain incomplete. Historical refused runs remain superseded rather than overwritten. No stale next action requiring a new T03 certificate found. Generated STATUS member Pass and admin Partial agree with inventory.",
+    "residual": "COORD operating sentence to hold own HEAD commits through normal verification reads as a standing constraint; current normal verification has completed, so it does not invalidate the present checkpoint. No broader product health conclusion is supported.",
+    "checks": "JSON parse passed, all five selected evidence links exist, git diff --check passed."
+  }
+}

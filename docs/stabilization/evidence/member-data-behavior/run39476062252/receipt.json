@@ -1,0 +1,58 @@
+{
+  "runId": "39476062252",
+  "attempt": "1",
+  "workflowSha": "0201d36bf317db69141828849f2c3991e35cecf1",
+  "workflowSourceSha256": "c001f41ae6e982998b923bf25e7470e4e84006055eba883358fae9ecb696bb8b",
+  "archiveDigest": "95acb4ee729c63a0402ae586f9dcf897246421faf12f2c9e200e699d870dabe0",
+  "artifact": {
+    "sourceSha": "e157ebe9e3b1d7eef3a53e95698b2906ee2fc4e7",
+    "mainSha": "0201d36bf317db69141828849f2c3991e35cecf1",
+    "compatibility": "runtime-equivalent",
+    "allowedDiffPaths": [
+      "docs/stabilization/CHECKLIST.md",
+      "docs/stabilization/COORDINATOR.md",
+      "docs/stabilization/STATUS.html",
+      "docs/stabilization/STATUS.md",
+      "docs/stabilization/defects/EXT-D-0273.json",
+      "docs/stabilization/defects/EXT-D-0274.json",
+      "docs/stabilization/inventory.json",
+      "docs/stabilization/reports/clock-checkpoint-docs-peer-20261020.json",
+      "docs/stabilization/reports/data274-clock-fresh-peer-20261020.json",
+      "docs/stabilization/reports/data274-clock-precision-fix-20261020.json",
+      "docs/stabilization/reports/data274-prospective-cleanup-20261020.json",
+      "docs/stabilization/reports/data274-prospective-native-20261020.json",
+      "docs/stabilization/reports/final-product-evidence-peer-20261020.json",
+      "docs/stabilization/reports/guest-seo-metadata-native-b-20261020.json",
+      "docs/stabilization/reports/guest273-actual-target-provenance-20261020.json",
+      "docs/stabilization/reports/guest273-live-target-packet-20261020.json",
+      "docs/stabilization/reports/personal-dev274-refresh-20261020.json",
+      "docs/stabilization/reports/seo577-admin-native-details-20261020.json"
+    ],
+    "artifactId": "12288703340",
+    "developmentRunId": "39474432457",
+    "developmentRunAttempt": 1,
+    "githubArtifactDigest": "sha256:611718c3025c12a3e9bd724a26cf437c61a111a273d93776ac59d341e858fd2c"
+  },
+  "memberDataLifecycleProof": {
+    "replacementPanelBasis": "correlated_panel_materialization",
+    "verifierFileSha256": "21233983c0cf1c2602a2354ca0daf42b48ebdd407e68edef73f10549c4106ee9"
+  },
+  "valid": true,
+  "receipts": {
+    "hosted-package": {
+      "runId": "hosted-package-39476062252-1",
+      "sha256": "309f88182495c6dedf5ea6701321ef545ff7acb18c915d7ea68ce6893ef9972b",
+      "decision": "valid"
+    },
+    "hosted-browser": {
+      "runId": "hosted-browser-39476062252-1",
+      "sha256": "d45e5ab141a1875f2aa9801b6c03fe84e476e050c1bf5ff5bb9f545463c82b41",
+      "decision": "valid"
+    },
+    "hosted-guest": {
+      "runId": "hosted-guest-39476062252-1",
+      "sha256": "2d26fad28ec0cf76c2a805116b8d3d64b84e66c3995f43de1a0a3881b038cc31",
+      "decision": "valid"
+    }
+  }
+}
