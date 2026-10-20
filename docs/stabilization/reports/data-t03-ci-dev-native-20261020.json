@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "task_id": "data-t03-ci-dev-native-20261020",
+  "status": "normal_dispatch_guard_refused_source_drift",
+  "run": null,
+  "build": {
+    "source_sha": "e7f650c04abba15d945c4c1a4cdc899aec8d04b1",
+    "ci_run_id": 39431931395,
+    "artifact_id": 12269271196,
+    "tree_sha256": "82997fc536b79cbc0f15965c1e6bb58a8dc4818f32913577b21dfa43eae7f13e",
+    "plan": "passed exact CI artifact/provenance",
+    "main_source_sha": "1b07f72020983c4506ef62290eb95d7177b94966"
+  },
+  "roles": {
+    "target": "ordinary member",
+    "verified": false,
+    "selected_organization_verified": false
+  },
+  "cases": {
+    "verdict": "unverified",
+    "intended_new_coverage": [
+      "EXT-F-2005-T03 reload lifecycle",
+      "post-reload extract/copy bytes",
+      "exact-owned cleanup/readback"
+    ],
+    "actual_new_coverage_credit": 0
+  },
+  "resource": {
+    "hosted_run_created": false,
+    "normal_dispatch_guard": "HOSTED_MEMBER_DATA_SOURCE_DRIFT"
+  },
+  "evidence": {
+    "normal_plan": "passed",
+    "normal_dispatch": "refused before workflow launch",
+    "artifact_source_sha_differs_from_synchronized_main": true
+  },
+  "cleanup": {
+    "secret_or_magic_link_staged": false,
+    "fixture_or_browser_started": false,
+    "owned_resources": 0
+  },
+  "limits": [
+    "No T03 product result or coverage credit.",
+    "Do not retry or waive source guard; obtain a fresh current-source CI development artifact first."
+  ]
+}

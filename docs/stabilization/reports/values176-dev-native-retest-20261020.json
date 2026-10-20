@@ -1,0 +1,65 @@
+{
+  "task_id": "values176-dev-native-retest-20261020",
+  "lane": "EXT-D-0244 original Values native retest",
+  "status": "UNVERIFIED",
+  "source": {
+    "artifact_sha": "e7f650c04abba15d945c4c1a4cdc899aec8d04b1",
+    "runner_checkout_sha": "1b07f72020983c4506ef62290eb95d7177b94966",
+    "post_artifact_changes": "docs-only"
+  },
+  "extension": {
+    "mode": "development local_dev_unpacked",
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.576",
+    "tree_sha256": "82997fc536b79cbc0f15965c1e6bb58a8dc4818f32913577b21dfa43eae7f13e"
+  },
+  "backend": {
+    "before_sha": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+    "after_sha": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+    "stable": true
+  },
+  "resource": {
+    "run_id": "values176-dev-native-retest-20261020",
+    "admitted": true,
+    "resource_invalid": false,
+    "decision": "child_failed",
+    "exit_code": 1,
+    "journal": "/Volumes/Samsung2TB/code/matrx-extend/test-results/values176-dev-native-20261020/resource-journal.jsonl"
+  },
+  "cases": {
+    "fresh_guest": "pass",
+    "opening_grounded_reply": "pass",
+    "same_conversation_followup": "code and heading matched; runner later failed screenshot eligibility",
+    "post_reload": "not reached",
+    "Values trusted Escape": "not reached",
+    "360px/fullview/cancel/nonEscape": "not reached",
+    "Article/Links/Schema/SEO/Data prelude": "skipped for local_dev_unpacked"
+  },
+  "failure": {
+    "stage": "real_same_conversation_followup_answer",
+    "code": "assertionerror",
+    "reason": "answer screenshot ineligible: answer_outside_viewport_or_fixture_missing",
+    "overall": "unverified"
+  },
+  "model_client_usage": {
+    "agent": "not exposed",
+    "resolved_model": "not exposed",
+    "usage": "not exposed",
+    "conversation_fingerprint": "210d9918ca373fe2",
+    "additional_AI_calls": "none"
+  },
+  "evidence": {
+    "report": "/Volumes/Samsung2TB/code/matrx-extend/test-results/guest-chat-store-161e333b-63ec-409d-8d27-7443985e1a31.json",
+    "raw_screenshots": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-1EKP3S"
+  },
+  "cleanup": {
+    "owned_browser": "stopped",
+    "profile": "removed by runner",
+    "lease": "released",
+    "completed_journal": "moved to ignored evidence folder"
+  },
+  "limits": [
+    "One admitted run only; Values remains unverified.",
+    "Store acceptance remains unverified."
+  ]
+}
