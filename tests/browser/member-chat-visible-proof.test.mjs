@@ -4,12 +4,35 @@ import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
+import { runInNewContext } from 'node:vm';
 import {
+  createMemberPanelLifecycleGuard,
   recordReviewerFailure,
   requireMemberAnswerEvidence,
+  restoreMemberForegroundWithReport,
   runMemberAnswerProofBoundary,
   sanitizeMemberAnswerDiagnostic,
 } from './member-chat-visible-proof.mjs';
+import { evaluate as evaluatePanel } from './settings-panel-driver.mjs';
+
+test('lifecycle frame budget comes from the existing foreground visibility wait', async () => {
+  const report = { foreground_diagnostic: { steps: [], visibility_observations: [] } };
+  await restoreMemberForegroundWithReport({
+    output: '/unused',
+    report,
+    stage: 'foreground',
+    web: { bringToFront: async () => {} },
+    page: {},
+    native: { reopenPanel: async () => {} },
+    panel: {},
+    evaluate: async () => 'visible',
+    waitFor: async (_label, read, accept, timeoutMs) => {
+      assert.equal(timeoutMs, 10_000);
+      assert.equal(accept(await read()), true);
+    },
+  });
+  assert.equal(report.foreground_diagnostic.visibility_wait_budget_ms, 10_000);
+});
 
 test('a later painted sample of the same assistant becomes proof only with a paired screenshot', async () => {
   const secret = 'Bearer private-message-id-and-answer';
@@ -195,6 +218,8 @@ test('runner persists a real CDP panel image and sanitized failure report before
       token: unsafe,
       diagnostic: {
         article_id_hash: '0123456789abcdef',
+        selected_article_index: 1,
+        selected_transcript_index: 0,
         article_rect: { x: 4, y: 274, width: 300, height: 30 },
         scroll: { top: 0, client_height: 180, scroll_height: 520 },
         composer_top: 200,
@@ -224,13 +249,18 @@ test('runner persists a real CDP panel image and sanitized failure report before
         },
         evaluateProof: async (_panel, _terms, phase) => {
           phases.push(phase);
-          return proof;
+          return phase === 'post_failure_capture'
+            ? { ...proof, eligible: true, reason: 'eligible', term_visible: [true] }
+            : proof;
         },
       }),
       /reviewer_chat_visible_answer_unverified/,
     );
     assert.equal(captureObservedReport, true);
-    assert.deepEqual(phases, ['immediate', 'paint_ready']);
+    assert.deepEqual(phases, ['immediate', 'paint_ready', 'post_failure_capture']);
+    assert.equal(report.member_answer_diagnostic.post_failure_capture_same_article, true);
+    assert.equal(report.member_answer_diagnostic.post_failure_capture?.eligible, true);
+    assert.equal(report.member_answer_proof.eligible, false);
     assert.equal(captureCallCount, 1);
     assert.deepEqual(
       report.member_answer_diagnostic?.immediate?.article_rect,
@@ -345,7 +375,7 @@ test('a failed diagnostic probe cannot turn an unpainted answer into acceptance'
     }),
     /reviewer_chat_visible_answer_unverified/,
   );
-  assert.deepEqual(phases, ['immediate', 'paint_ready']);
+  assert.deepEqual(phases, ['immediate', 'paint_ready', 'post_failure_capture']);
   assert.equal(report.member_answer_diagnostic.paint_ready_failed, true);
   assert.equal(report.member_answer_diagnostic.phase_timing.immediate.exception_category, null);
   assert.equal(
@@ -551,4 +581,306 @@ test('paint readiness cannot replace the terminal assistant selected by the imme
   assert.equal(report.member_answer_diagnostic.paint_ready.article_id_hash, 'fedcba9876543210');
   assert.equal(report.member_answer_proof.eligible, false);
   assert.equal(report.member_answer_proof.reason, 'paired_proof_unverified');
+});
+
+test('first hidden panel transition reopens the exact original target once before another action', async () => {
+  const events = [];
+  let visibility = 'visible';
+  let targetId = 'original-panel';
+  let frames = 0;
+  const report = { foreground_diagnostic: { visibility_wait_budget_ms: 10_000 } };
+  const web = { isClosed: () => false, url: () => 'https://www.aimatrx.com/matrx-extend-demo' };
+  const guard = createMemberPanelLifecycleGuard({
+    native: {
+      panelTarget: { targetId: 'original-panel', url: 'chrome-extension://owned/sidepanel.html' },
+      browserSession: {
+        send: async (method) => {
+          assert.equal(method, 'Target.getTargets');
+          events.push('targets');
+          return {
+            targetInfos: [
+              { type: 'page', url: 'chrome-extension://owned/sidepanel.html', targetId },
+            ],
+          };
+        },
+      },
+      reopenPanel: async ({ page }) => {
+        assert.equal(page, web);
+        events.push('trusted_reopen');
+        visibility = 'visible';
+        frames += 1;
+      },
+    },
+    web,
+    panel: {},
+    evaluate: async (_panel, expression) => {
+      assert.match(expression, /requestAnimationFrame/);
+      events.push('renderer');
+      return {
+        visibility,
+        focused: true,
+        frame_progress: visibility === 'visible',
+        frame_count: frames,
+        transcript_mounted: false,
+        transcript_opacity: null,
+      };
+    },
+    expectedUrl: 'https://www.aimatrx.com/matrx-extend-demo',
+    report,
+  });
+  // The guard's opener must receive the same owned demo page used throughout the run.
+  // This case starts visible, then observes the first hidden transition after capture.
+  await guard.check('before_capture');
+  visibility = 'hidden';
+  await guard.check('after_capture');
+  assert.deepEqual(events, [
+    'targets',
+    'renderer',
+    'targets',
+    'renderer',
+    'trusted_reopen',
+    'targets',
+    'renderer',
+  ]);
+  assert.equal(report.panel_lifecycle.repair_attempted, true);
+  assert.equal(report.panel_lifecycle.original_target_preserved, true);
+  assert.equal(report.panel_lifecycle.samples.at(-1).frame_count, 1);
+  visibility = 'hidden';
+  await assert.rejects(guard.check('before_send'), /reviewer_native_panel_foreground_not_observed/);
+  assert.equal(events.filter((event) => event === 'trusted_reopen').length, 1);
+  targetId = 'replacement-panel';
+  await assert.rejects(guard.check('before_followup'), /reviewer_chat_target_unverified/);
+});
+
+test('repair refuses a replaced target or a panel that remains hidden', async () => {
+  for (const outcome of ['replacement', 'still_hidden']) {
+    let targetId = 'original-panel';
+    let visibility = 'hidden';
+    let opens = 0;
+    const guard = createMemberPanelLifecycleGuard({
+      native: {
+        panelTarget: { targetId, url: 'chrome-extension://owned/sidepanel.html' },
+        browserSession: {
+          send: async () => ({
+            targetInfos: [
+              { type: 'page', url: 'chrome-extension://owned/sidepanel.html', targetId },
+            ],
+          }),
+        },
+        reopenPanel: async () => {
+          opens += 1;
+          if (outcome === 'replacement') {
+            targetId = 'replacement-panel';
+            visibility = 'visible';
+          }
+        },
+      },
+      web: {
+        isClosed: () => false,
+        url: () => 'https://www.aimatrx.com/matrx-extend-demo',
+      },
+      panel: {},
+      evaluate: async () => ({
+        visibility,
+        focused: false,
+        frame_progress: false,
+        frame_count: 0,
+        transcript_mounted: false,
+        transcript_opacity: null,
+      }),
+      expectedUrl: 'https://www.aimatrx.com/matrx-extend-demo',
+      report: { foreground_diagnostic: { visibility_wait_budget_ms: 10_000 } },
+    });
+    await assert.rejects(
+      guard.check('before_send'),
+      outcome === 'replacement'
+        ? /reviewer_chat_target_unverified/
+        : /reviewer_native_panel_foreground_not_observed/,
+    );
+    assert.equal(opens, 1);
+  }
+});
+
+test('real evaluator waits for a visible frame and refuses a mounted zero-opacity transcript before send', async () => {
+  let visibility = 'visible';
+  let focused = false;
+  let opacity = 0;
+  let frames = 0;
+  let frameAllowed = true;
+  let pendingFrame = null;
+  let cancelledFrames = 0;
+  let activations = 0;
+  const window = {};
+  const scroller = {};
+  const pane = { querySelector: () => scroller };
+  const tab = { title: 'Chat', getAttribute: () => 'chat-pane' };
+  const document = {
+    get visibilityState() {
+      return visibility;
+    },
+    hasFocus: () => focused,
+    querySelectorAll: () => [tab],
+    getElementById: () => pane,
+  };
+  const panel = {
+    send: async (method, args) => {
+      assert.equal(method, 'Runtime.evaluate');
+      assert.equal(args.awaitPromise, true);
+      assert.equal(args.returnByValue, true);
+      return {
+        result: {
+          value: await runInNewContext(args.expression, {
+            window,
+            document,
+            getComputedStyle: () => ({ opacity: String(opacity) }),
+            requestAnimationFrame: (callback) => {
+              if (frameAllowed === 'delayed')
+                setTimeout(() => {
+                  frames += 1;
+                  callback();
+                }, 5);
+              else if (frameAllowed)
+                queueMicrotask(() => {
+                  frames += 1;
+                  callback();
+                });
+              else pendingFrame = callback;
+              return 1;
+            },
+            cancelAnimationFrame: () => {
+              cancelledFrames += 1;
+            },
+            setTimeout: (callback, delay) =>
+              frameAllowed ? setTimeout(callback, delay) : queueMicrotask(callback),
+            clearTimeout,
+          }),
+        },
+      };
+    },
+  };
+  const report = { foreground_diagnostic: { visibility_wait_budget_ms: 10_000 } };
+  const guard = createMemberPanelLifecycleGuard({
+    native: {
+      panelTarget: { targetId: 'original-panel', url: 'chrome-extension://owned/sidepanel.html' },
+      browserSession: {
+        send: async () => ({
+          targetInfos: [
+            {
+              type: 'page',
+              url: 'chrome-extension://owned/sidepanel.html',
+              targetId: 'original-panel',
+            },
+          ],
+        }),
+      },
+      activatePanel: async () => {
+        activations += 1;
+        focused = true;
+      },
+    },
+    web: { isClosed: () => false, url: () => 'https://www.aimatrx.com/matrx-extend-demo' },
+    panel,
+    evaluate: evaluatePanel,
+    expectedUrl: 'https://www.aimatrx.com/matrx-extend-demo',
+    report,
+  });
+  await assert.rejects(guard.check('before_send'), /reviewer_native_panel_foreground_not_observed/);
+  assert.equal(activations, 1);
+  assert.equal(frames, 2, 'both visible samples must await a real frame callback');
+  assert.equal(report.panel_lifecycle.samples[0].transcript_opacity, 0);
+  assert.equal(report.panel_lifecycle.samples[1].transcript_opacity, 0);
+  visibility = 'hidden';
+  await assert.rejects(
+    guard.check('after_capture'),
+    /reviewer_native_panel_foreground_not_observed/,
+  );
+  assert.equal(frames, 2, 'hidden sample must never await a frame');
+  visibility = 'visible';
+  focused = true;
+  opacity = 1;
+  frameAllowed = false;
+  await assert.rejects(
+    guard.check('before_followup_send'),
+    /reviewer_native_panel_foreground_not_observed/,
+  );
+  assert.equal(frames, 2, 'visible but stalled sample cannot claim frame progress');
+  assert.equal(cancelledFrames, 1);
+  const settledFrames = window.__matrxReviewerFrameProbe.frames;
+  pendingFrame();
+  assert.equal(window.__matrxReviewerFrameProbe.frames, settledFrames);
+  frameAllowed = 'delayed';
+  const recovered = await guard.check('delayed_frame_within_foreground_budget');
+  assert.equal(recovered.frame_progress, true);
+  assert.equal(recovered.transcript_opacity, 1);
+});
+
+test('target lookup consuming the foreground deadline leaves no frame budget before send', async () => {
+  const budgetMs = 10_000;
+  let clockMs = 1_000_000;
+  let frameRequests = 0;
+  let activations = 0;
+  const window = {};
+  const panel = {
+    send: async (method, args) => {
+      assert.equal(method, 'Runtime.evaluate');
+      return {
+        result: {
+          value: await runInNewContext(args.expression, {
+            window,
+            Date: { now: () => clockMs },
+            document: {
+              visibilityState: 'visible',
+              hasFocus: () => true,
+              querySelectorAll: () => [],
+              getElementById: () => null,
+            },
+            requestAnimationFrame: () => {
+              frameRequests += 1;
+              return 1;
+            },
+            cancelAnimationFrame: () => {},
+            setTimeout,
+            clearTimeout,
+          }),
+        },
+      };
+    },
+  };
+  const report = { foreground_diagnostic: { visibility_wait_budget_ms: budgetMs } };
+  const guard = createMemberPanelLifecycleGuard({
+    native: {
+      panelTarget: { targetId: 'original-panel', url: 'chrome-extension://owned/sidepanel.html' },
+      browserSession: {
+        send: async () => {
+          clockMs += budgetMs + 1;
+          return {
+            targetInfos: [
+              {
+                type: 'page',
+                url: 'chrome-extension://owned/sidepanel.html',
+                targetId: 'original-panel',
+              },
+            ],
+          };
+        },
+      },
+      activatePanel: async () => {
+        activations += 1;
+      },
+    },
+    web: { isClosed: () => false, url: () => 'https://www.aimatrx.com/matrx-extend-demo' },
+    panel,
+    evaluate: evaluatePanel,
+    expectedUrl: 'https://www.aimatrx.com/matrx-extend-demo',
+    report,
+    now: () => clockMs,
+  });
+  await assert.rejects(guard.check('before_send'), /reviewer_native_panel_foreground_not_observed/);
+  assert.equal(activations, 1);
+  assert.equal(frameRequests, 0, 'expired deadline must not schedule a frame');
+  assert.deepEqual(
+    report.panel_lifecycle.samples.map((sample) => sample.frame_progress),
+    [false, false],
+  );
+  assert.equal(window.__matrxReviewerFrameProbe.frames, 0);
 });

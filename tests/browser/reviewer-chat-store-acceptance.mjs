@@ -21,6 +21,7 @@ import {
 import { sendMemberChatOnTarget } from './member-chat-target.mjs';
 import {
   captureReviewerPanel as capture,
+  createMemberPanelLifecycleGuard,
   recordReviewerFailure,
   restoreMemberForegroundWithReport,
   runMemberAnswerProofBoundary,
@@ -1552,6 +1553,21 @@ try {
         // Device storage is diagnostic only; the real Chat transport is the oracle.
 
         stage = 'open_chat';
+        const panelLifecycle = createMemberPanelLifecycleGuard({
+          native,
+          web,
+          panel,
+          evaluate,
+          expectedUrl: `${WEB_ORIGIN}${DEMO_PATH}`,
+          report,
+        });
+        const captureWithLifecycle = async (target, directory, label) => {
+          await panelLifecycle.check(`before_${label}`);
+          const image = await capture(target, directory, label);
+          await panelLifecycle.check(`after_${label}`);
+          return image;
+        };
+        await panelLifecycle.check('before_open_chat');
         await click(panel, 'title', 'Chat');
         await waitFor(
           'reviewer_chat_visible',
@@ -1559,8 +1575,9 @@ try {
           (state) => state?.selected && state.paneVisible && state.composerReady,
           30_000,
         );
+        await panelLifecycle.check('after_open_chat');
         report.screenshots = {
-          before: await capture(panel, artifacts, 'reviewer-chat-before'),
+          before: await captureWithLifecycle(panel, artifacts, 'reviewer-chat-before'),
           action: null,
           result: null,
         };
@@ -1602,7 +1619,11 @@ try {
           }
         };
         await typeQuestion(QUESTION, 'enter_three_stage_question');
-        report.screenshots.action = await capture(panel, artifacts, 'reviewer-chat-action');
+        report.screenshots.action = await captureWithLifecycle(
+          panel,
+          artifacts,
+          'reviewer-chat-action',
+        );
 
         memberTransport = await observeAuthenticatedTransport(native, null, null);
         const turns = memberTurns;
@@ -1645,6 +1666,7 @@ try {
           return observed.state;
         };
         stage = 'send_three_stage_question';
+        await panelLifecycle.check('before_opening_send');
         await sendMemberChatOnTarget({
           web,
           panel,
@@ -1682,6 +1704,7 @@ try {
           'enter_same_conversation_followup',
         );
         stage = 'send_same_conversation_followup';
+        await panelLifecycle.check('before_followup_send');
         await sendMemberChatOnTarget({
           web,
           panel,
@@ -1733,15 +1756,22 @@ try {
           report,
           artifacts,
           output: OUTPUT,
+          capture: captureWithLifecycle,
           evaluateProof: (target, terms, phase) => {
             const sample = `(${prepareMemberAnswerScreenshot.toString()})(${JSON.stringify(terms)}, ${JSON.stringify(phase)})`;
             return evaluate(target, sample);
           },
         });
-        report.screenshots.result = await capture(panel, artifacts, 'reviewer-chat-result');
+        report.screenshots.result = await captureWithLifecycle(
+          panel,
+          artifacts,
+          'reviewer-chat-result',
+        );
+        await panelLifecycle.check('before_store_candidate_capture');
         report.screenshots.store_candidate_640x400 = await captureStoreCandidate(panel, artifacts, [
           'Understand',
         ]);
+        await panelLifecycle.check('after_store_candidate_capture');
         report.chat = {
           visible: true,
           question_fingerprint: hash(QUESTION),

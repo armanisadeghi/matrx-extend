@@ -26,6 +26,7 @@ const SAFE_FAILURE_CODES = new Set([
   'reviewer_chat_target_unverified',
   'reviewer_chat_visible_answer_unverified',
   'reviewer_chat_visible_answer_screenshot_missing',
+  'reviewer_native_panel_foreground_not_observed',
 ]);
 
 /** Capture only the native side panel; never include the web authentication form. */
@@ -61,9 +62,121 @@ export async function persistMemberForegroundFailure(output, report, stage, erro
 export async function restoreMemberForegroundWithReport({ output, report, stage, ...options }) {
   await restoreMemberForeground({
     ...options,
+    waitFor: (...args) => {
+      if (args[0] === 'reviewer_native_panel_foreground')
+        report.foreground_diagnostic.visibility_wait_budget_ms = args[3];
+      return options.waitFor(...args);
+    },
     diagnostic: report.foreground_diagnostic,
     onFailure: (error) => persistMemberForegroundFailure(output, report, stage, error),
   });
+}
+
+/** One bounded native lifecycle repair on the pinned panel, with no replacement target. */
+export function createMemberPanelLifecycleGuard({
+  native,
+  web,
+  panel,
+  evaluate,
+  expectedUrl,
+  report,
+  now = Date.now,
+}) {
+  const targetId = native.panelTarget.targetId;
+  const panelUrl = native.panelTarget.url;
+  const budgetMs = report.foreground_diagnostic?.visibility_wait_budget_ms;
+  if (!Number.isFinite(budgetMs) || budgetMs <= 0)
+    throw new Error('reviewer_native_panel_foreground_not_observed');
+  let repairAttempted = false;
+  report.panel_lifecycle = {
+    samples: [],
+    repair_attempted: false,
+    original_target_preserved: null,
+  };
+  const sample = async (phase, deadline) => {
+    const targets = (await native.browserSession.send('Target.getTargets')).targetInfos;
+    const matching = targets.filter((item) => item.type === 'page' && item.url === panelUrl);
+    const original = matching.length === 1 && matching[0].targetId === targetId;
+    const state = await evaluate(
+      panel,
+      `(async () => {
+        const key = '__matrxReviewerFrameProbe';
+        const previous = window[key] ?? { frames: 0 };
+        window[key] = previous;
+        const visibility = document.visibilityState;
+        const remainingMs = Math.max(0, ${deadline} - Date.now());
+        // Never await a frame in a hidden document: Chromium may suspend its rAF queue.
+        const frame_progress = visibility === 'visible' && remainingMs > 0
+          ? await new Promise(resolve => {
+              let settled = false;
+              const frame = requestAnimationFrame(() => {
+                if (settled) return;
+                settled = true; clearTimeout(timer); previous.frames += 1; resolve(true);
+              });
+              const timer = setTimeout(() => {
+                if (settled) return;
+                settled = true; cancelAnimationFrame(frame); resolve(false);
+              }, remainingMs);
+            })
+          : false;
+        const tab = [...document.querySelectorAll('button[role="tab"]')].find(el => el.title === 'Chat');
+        const pane = tab ? document.getElementById(tab.getAttribute('aria-controls') ?? '') : null;
+        const scroller = pane?.querySelector('div[class*="overflow-y-auto"][class*="pt-12"]');
+        return { visibility, focused: document.hasFocus(), frame_progress,
+          frame_count: previous.frames, transcript_mounted: Boolean(scroller),
+          transcript_opacity: scroller ? Number(getComputedStyle(scroller).opacity) : null };
+      })()`,
+    );
+    const row = {
+      phase,
+      original_target: original,
+      panel_visibility: ['visible', 'hidden', 'prerender'].includes(state?.visibility)
+        ? state.visibility
+        : null,
+      panel_focused: state?.focused === true,
+      frame_progress: state?.frame_progress === true,
+      frame_count: Number.isSafeInteger(state?.frame_count) ? state.frame_count : null,
+      transcript_mounted: state?.transcript_mounted === true,
+      transcript_opacity:
+        Number.isFinite(state?.transcript_opacity) &&
+        state.transcript_opacity >= 0 &&
+        state.transcript_opacity <= 1
+          ? state.transcript_opacity
+          : null,
+    };
+    report.panel_lifecycle.samples.push(row);
+    report.panel_lifecycle.original_target_preserved = original;
+    return row;
+  };
+  const check = async (phase) => {
+    const deadline = now() + budgetMs;
+    if (web.isClosed() || web.url() !== expectedUrl)
+      throw new Error('reviewer_chat_target_unverified');
+    const before = await sample(phase, deadline);
+    if (!before.original_target) throw new Error('reviewer_chat_target_unverified');
+    const healthy = (row) =>
+      row.panel_visibility === 'visible' &&
+      row.panel_focused &&
+      row.frame_progress &&
+      (!row.transcript_mounted || (row.transcript_opacity !== null && row.transcript_opacity > 0));
+    if (healthy(before)) return before;
+    if (!['visible', 'hidden'].includes(before.panel_visibility) || repairAttempted)
+      throw new Error('reviewer_native_panel_foreground_not_observed');
+    repairAttempted = true;
+    report.panel_lifecycle.repair_attempted = true;
+    try {
+      if (before.panel_visibility === 'hidden') await native.reopenPanel({ page: web });
+      else await native.activatePanel();
+    } catch {
+      report.panel_lifecycle.repair_failed = true;
+      throw new Error('reviewer_native_panel_foreground_not_observed');
+    }
+    const after = await sample(`${phase}_after_reopen`, deadline);
+    if (!after.original_target) throw new Error('reviewer_chat_target_unverified');
+    if (!healthy(after)) throw new Error('reviewer_native_panel_foreground_not_observed');
+    return after;
+  };
+  return { check };
 }
 
 /** Keep only fixed diagnostic values; browser DOM text never enters the report. */
@@ -243,6 +356,23 @@ export async function requireMemberAnswerEvidence({
         );
       } catch {
         report.member_answer_diagnostic.initial_screenshot_capture_failed = true;
+      } finally {
+        try {
+          const afterFailureCapture = await probe('post_failure_capture');
+          report.member_answer_diagnostic.post_failure_capture =
+            sanitizeMemberAnswerDiagnostic(afterFailureCapture);
+          const original = immediate?.diagnostic;
+          const after = afterFailureCapture?.diagnostic;
+          report.member_answer_diagnostic.post_failure_capture_same_article =
+            typeof original?.article_id_hash === 'string' &&
+            original.article_id_hash === after?.article_id_hash &&
+            Number.isInteger(original.selected_article_index) &&
+            original.selected_article_index === after?.selected_article_index &&
+            Number.isInteger(original.selected_transcript_index) &&
+            original.selected_transcript_index === after?.selected_transcript_index;
+        } catch {
+          report.member_answer_diagnostic.post_failure_capture_failed = true;
+        }
       }
       throw new Error('reviewer_chat_visible_answer_unverified');
     }
@@ -329,6 +459,7 @@ export async function runMemberAnswerProofBoundary({
   output,
   evaluateProof,
   waitForReady,
+  capture = captureReviewerPanel,
 }) {
   try {
     return await requireMemberAnswerEvidence({
@@ -337,7 +468,7 @@ export async function runMemberAnswerProofBoundary({
       report,
       artifacts,
       evaluateProof,
-      capture: captureReviewerPanel,
+      capture,
       ...(waitForReady && { waitForReady }),
     });
   } catch (error) {
