@@ -41,21 +41,23 @@ Exact568 candidate guest runs are terminal and independently reviewed:
   Package/browser finals valid; guest admitted, resourceInvalid=false, child_failed exit1.
   [Daily evidence](reports/published-guest-daily-20261020.json),
   [fresh peer](reports/published205-native-peer-20261020.json). No retry or upload.
-Focused D262 guest Settings admin-absence route is being implemented by member568_current_acceptance;
-independent settings_absence_focus_plan_attack accepted scope with two required wiring fixes
-(normal admission case allowlists and persisted focused artifact). Implementer must include both.
-T22/guest-only T63 evidence leaves full-batch T04 and exact CI-dev receipt/guard unchanged.
-[Independent current-backend delta](reports/member261-cd80-delta-20261020.json) confirms no
-relevant resume/member/org/async-pool/default-model fix in f8dd→cd80; sync-connection READ WRITE
-change does not establish original stalled-await causality. No member product verdict/deploy. Source e6b2d2602 pushed after independent source review; CI39362436880 failed6/688
-focused tests because legacy tests compiled the extracted local helper. The two-file repair now
-executes canonical shared helper and runner delegation;16/16 exact tests and original negative
-mutants retain force. [Fresh repair peer](reports/settings-shared-helper-ci-fix-peer-20261020.json)
-PASS source-only. Next repaired-source CI is required; fresh settings568_absence_native_retest
-waits outside repo for exact successful CI artifact/root GO. No native launch yet.
-Hold repo commits between next source CI push and Settings B dispatch: exact-main source
-equality is required by normal admission. Local external-handle checkpoint is
-`test-results/current-stabilization-lanes.json`; promote terminal evidence after dispatch.
+Focused D262 route is implemented/reviewed at e6b2d2602; first CI39362436880 failed
+six legacy source-slice tests after canonical helper extraction. Fresh reviewed two-test repair
+9185b3c6728df8dc0ea188b6a344848ded6954fa passes **CI39362901256** completely.
+Development artifact12238730842, SHA256
+`01f7395724bd0e90851efc797a85cf3e335dfde71762441a181ee619a8449f3c`, exact source above.
+**B39363918633 ACTIVE**, case settings-guest-admin-absence, owner
+settings568_native_runtime_handoff; normal admission and CI provenance/import gates pass,
+browser readiness running. No product result yet; retain actual native criteria/all resource
+finals and cleanup, then fresh independent artifact review before any D262 closure.
+T22 targets guest warm+real extension reload. T63 raw combined report may remain partial;
+canonical inventory modes are guest/member separately, so a complete guest criterion set can
+earn guest-cell pass only after native peer; member remains unverified. Never claim T04 or
+full Settings from this focused run. No additional launch/source mutation while frozen B runs.
+[Source peer](reports/settings-absence-focus-round2-peer-20261020.json),
+[CI repair peer](reports/settings-shared-helper-ci-fix-peer-20261020.json).
+[Independent current-backend delta](reports/member261-cd80-delta-20261020.json) establishes no
+relevant causal D261 repair from f8dd→cd80; member remains unresolved.
 No new Store upload. Current member evidence and private Store/source/package drift checks remain
 required. [Current guest report](reports/guest567-scrolled-replay-20261020.json).
 
