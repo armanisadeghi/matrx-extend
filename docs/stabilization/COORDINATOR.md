@@ -32,8 +32,11 @@ three-sample requirement, interval and deadline are unchanged. Source and native
 only the false readiness refusal, not product D244/D261. D244 product repair now owns the next
 source change; fresh reviewed shared-package repair, publication/adoption and exact native retest
 are required. D261 current non-admin acceptance remains unresolved; no blind capacity retry.
-Today's published205/live-server guest check is separately owned by published205_daily_guest_oct20;
-exact572 candidate proof cannot replace published205 proof. Before upload repeat current source,
+Today's published205 check39393936846 is terminal and independently reviewed: T10 guest three
+terminal grounded replies PASS against stable40990436; public Article and T13 Values remain FAIL.
+[Daily proof](reports/published205-daily-guest-20261020.json), [peer](reports/published205-daily-fresh-peer-20261020.json).
+This public CRX is adapted unpacked, not Store-installed. No retry, all resource finals valid; no
+source attribution from CRX receipt. The separately tested exact572 boundary is unchanged. Before upload repeat current source,
 runtime/package/private Store checks and real guest/non-admin/reviewer acceptance.
 
 Exact568 candidate guest runs are terminal and independently reviewed:

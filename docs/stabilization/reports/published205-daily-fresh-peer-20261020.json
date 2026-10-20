@@ -1,0 +1,96 @@
+{
+  "reviewer": "fresh independent peer; zero authorship",
+  "run": {
+    "workflow": "hosted-guest-acceptance.yml",
+    "run_id": 39393936846,
+    "job_id": 118531894463,
+    "attempt": 1,
+    "conclusion": "failure at T13 Values Escape",
+    "head_sha": "e38f815d0330b0e828a99f9ba0c5a55877ce24a0",
+    "admitted_source_sha": "419a40f0370c51db281759615e44797912ac485c"
+  },
+  "target": {
+    "version": "0.2.205",
+    "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "evidence_kind": "public CRX unpacked/adapted",
+    "actual_store_installed": false,
+    "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "public_crx_receipt_source_sha": null
+  },
+  "verdict_a_behavior": {
+    "T10_guest_chat": {
+      "verdict": "PASS, bounded",
+      "http_statuses": [200, 200, 200],
+      "is_new": [true, false, true],
+      "conversation_fingerprint_relation": "opening and same-conversation match; post-reload conversation is distinct",
+      "terminal_answers": 3,
+      "visible_guest_ui": true,
+      "guest_session_absent_after_reload": true,
+      "screenshots_show_unpredictable_page_code": true,
+      "opening_answer_has_ordered_stages": true
+    },
+    "T13_values_escape": {
+      "verdict": "FAIL",
+      "trusted_escape_count": 1,
+      "focus_inside_popover": true,
+      "popover_remained_open": true,
+      "other_visible_dialogs": 0
+    },
+    "reviewer_public_article_capture": {
+      "verdict": "FAIL on public 0.2.205",
+      "article_selected": true,
+      "rendered_public_heading": false,
+      "capture_payload": false,
+      "attribution": "Known D260 publication gap; this run does not establish a new defect or test the candidate repair."
+    },
+    "other_prelude_cases": {
+      "Links": "PASS",
+      "Schema": "PASS",
+      "SEO": "PASS",
+      "Data_workflow_picker": "PASS"
+    }
+  },
+  "verdict_b_provenance_quality": {
+    "verdict": "PASS for bounded evidence, with stated limits",
+    "artifact_id": 12251476865,
+    "artifact_name": "hosted-guest-39393936846-1",
+    "artifact_sha256": "3b4064634b7b5747ff05b21c7d7fabe2ae78ce3436294a9b0bfd119755b77317",
+    "artifact_size_bytes": 339033,
+    "raw_report_sha256": "5c6d9c377286b8bb0de1e633b9a2f2565bcc315dafaa03006971e1c01ad15c18",
+    "verified_zip_sha256_matches_artifact": true,
+    "verified_raw_report_sha256_matches": true,
+    "resource_finals": {
+      "package": {
+        "decision": "valid",
+        "resourceInvalid": false,
+        "exitCode": 0
+      },
+      "browser": {
+        "decision": "valid",
+        "resourceInvalid": false,
+        "exitCode": 0
+      },
+      "guest": {
+        "decision": "child_failed",
+        "resourceInvalid": false,
+        "exitCode": 1
+      }
+    },
+    "backend_before_sha": "4099043613385b5fff9d5049a4b195d037ac7018",
+    "backend_after_sha": "4099043613385b5fff9d5049a4b195d037ac7018",
+    "backend_stable": true,
+    "workflow_source_linkage": "Workflow head and admitted source SHAs are recorded, but the public CRX receipt has no source SHA tying the binary to either."
+  },
+  "limits": [
+    "Public CRX unpacked/adapted, not actual Store-installed acceptance.",
+    "No whole Chat or overall health claim follows from these bounded cases.",
+    "Overall workflow failure is attributable to the observed T13 Values Escape failure; resourceInvalid is false.",
+    "No repeat attempt occurred."
+  ],
+  "evidence_paths": {
+    "worker_report": "/tmp/published205-daily-guest-oct20.json",
+    "raw_chat_observation": "/Volumes/Samsung2TB/code/matrx-extend/test-results/published205-daily-guest-oct20-artifacts/hosted-guest-39393936846-1/matrx-extend/matrx-extend/test-results/guest-chat-store-78865f2c-310b-400b-a12f-e415ce9fe0de.json",
+    "screenshots": "/Volumes/Samsung2TB/code/matrx-extend/test-results/published205-daily-guest-oct20-artifacts/hosted-guest-39393936846-1/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-CpWNei/",
+    "resource_journals": "/Volumes/Samsung2TB/code/matrx-extend/test-results/published205-daily-guest-oct20-artifacts/hosted-guest-39393936846-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/"
+  }
+}
