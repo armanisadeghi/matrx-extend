@@ -12,12 +12,18 @@ published0.2.205, draft0.2.479 rejected, no pending, Upload enabled. Vault login
 no human-only access blocker is established. No new upload/submission has occurred.
 [Daily observation](reports/store-daily-20261020.json) also bounds official mail search to the October11 rejection only. Never infer private review state from old email/public listing or this checkpoint.
 
-Latest prepared candidate **0.2.574**: concurrent contributor's guarded release39409723565
-SUCCESS; source/tag `d862a9ac93c336669f6abe6ae3a26a2cadb335c9`, artifact12258863115,
-StoreZIPsha256 `33ae86d8eaf331ec0b9af327769e39036b93e8954a5c0219f5fb51c5a3526ec5`.
-[Independent release-only checkpoint](reports/release574-artifact-checkpoint-20261020.json)
-verifies receipt/tag/source ancestry, bothZIP digests, localtree and manifests. Outer archive
-digest is metadata-only. No574 native acceptance/upload/submission; D244/D261 remain open.
+Latest prepared candidate **0.2.575**: guarded hosted release39420649081 SUCCESS, source/tag
+`60bc14ea923c9dc7f11b26b43f2aea0111d8b340`, artifact12264355137, StoreZIPsha256
+`f4e992b348d4c8a1c949bc1043d2654fd8960e03c0cc11b2b745af928fa3731a`.
+[Release-only receipt](reports/style-fixed-release-owner-20261020.json) verifies downloaded outer/inner
+digests, tag/source, blocking gates and actual Values comparator applicability. Config attestation
+is advisory NOT_ATTESTED (pinned aidream Python dotenv unavailable), not silently passed.
+Exact native guest and original non-admin acceptance are PENDING; no Store upload/submission.
+Owners `member575_original_native_a` and `guest575_native_b` prepare isolated A/B, max2hosted runs;
+root releases dispatch after clean synchronized checkpoint. Stage member single-use auth privately,
+serialize shared credential fixtures and record exact cleanup. New Data member lifecycle T03
+[preflight](reports/data-member-new-coverage-preflight-20261020.json) is next after memberA cleanup;
+pre-reload historical passes get no new credit. No overall health claim.
 Newer main1b831c27d adds neutral trace/CI/evidence, not a product repair; fullCI39410623190 and
 focused39410623174 SUCCESS, developmentartifact12259880170 (GitHubdigest
 `1d49aca9024ddeb665b8ed8592b9c5f71a638295b21ee1d8cd41faa85aa6aafc`).
@@ -52,8 +58,8 @@ heading/stages question and completed Page Text joined to opening conversation/d
 [Fresh peer](reports/member261-original-repro-final-peer-20261020.json): A PARTIAL native pending,
 B PASS source scope; prior string-only guard replaced with actual imported behavioral checks,
 32 focused tests and constant-return negative guard pass. Initial CI pre-auth ready-path regression
-was corrected; current fullCI39419403236 running, focused39419403135 SUCCESS. Release-only owner
-holds until green/current-source/spend gates, then one meaningful guarded release. No native launch. No product UI pass/overall health is inferred.
+was corrected; fullCI39419403236 and focused39419403135 SUCCESS. The guarded575 release receipt above
+is the current candidate; native outcomes remain pending. No product UI pass/overall health is inferred.
 No sourceguard bypass/native/Store action. [Bounded API diagnosis](reports/member261-owned-api-diagnosis-20261020.json)
 is inconclusive: authenticated start/toolresults/resume200 but delegated reads remain pending,
 no terminal assistant; not native proof or closure. Current backend5c3beef2 remains stable.
@@ -402,3 +408,12 @@ No unique case pass or overall Settings health claim. Fresh [boundary review](re
 not obsolete refinement data. Nine solely removed-picker cases retain IDs/history as explicit N/A;
 two current load-ladder cases are newly registered unverified. Surviving Settings/error/archive/
 cross-context cases remain unverified and stale clauses are tracked. Zero product passes gained.
+
+Personal development refresh: prior disk hold is STALE. October20 12:19 df reports ~41.6GiB
+available; fresh normal resource check12:21:49 passes (CPU .1614, available memory13.12GiB,
+system free38.39GiB). `personal_chrome_dev_refresh` owns normal helper promotion/reload after
+exact-current-main CIdevelopment artifact; imported receipt alone never proves actual Chrome reload.
+The resource guard currently hardcodes active journals under docs/stabilization/resource-journals;
+there is no alternate-path flag. Serialize source-sensitive native admission before the personal
+Chrome permit, then preserve/move only owned terminal journals into ignored test-results. Never
+move an active journal or bypass the source/resource checks.

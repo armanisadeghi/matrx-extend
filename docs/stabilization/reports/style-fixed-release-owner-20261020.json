@@ -1,0 +1,93 @@
+{
+  "status": "DONE_CANDIDATE_PREPARED_NATIVE_PENDING",
+  "task": "One meaningful guarded hosted release for EXT-D-0267 style source boundary and reviewed D261 original-repro harness",
+  "changes": {
+    "product_source_commit": "b2ad76e9f",
+    "reviewed_harness_commit": "cc9ab970fde392cd454d66be818a9e384348d07c",
+    "pre_release_main": "6efbedf5523ab471c7e4a7a81cdbcfa1a735116f",
+    "release_generated_commit": "60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+    "release_generated_paths": [
+      "package.json",
+      "docs/TOOLS.generated.md",
+      "types/tool-catalog.json",
+      "types/tool-catalog.md"
+    ],
+    "tag": "v0.2.575",
+    "pushed_main_equals_tag": true
+  },
+  "verification": {
+    "source_full_ci": {
+      "run_id": 39419403236,
+      "conclusion": "success",
+      "sha": "cc9ab970fde392cd454d66be818a9e384348d07c"
+    },
+    "source_focused_ci": {
+      "run_id": 39419403135,
+      "conclusion": "success",
+      "sha": "cc9ab970fde392cd454d66be818a9e384348d07c"
+    },
+    "review": "member261 original-repro fresh peer source-addressed; native pending",
+    "release_run": {
+      "id": 39420649081,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39420649081",
+      "conclusion": "success",
+      "workflow_head_sha": "6efbedf5523ab471c7e4a7a81cdbcfa1a735116f",
+      "aidream_type_source_sha": "ea4d03b07dc3a6e09f7e9cf91e6dbf24a51720c8",
+      "requested_by": "style-fixed-release-owner"
+    },
+    "release_contract_checks": "All blocking checks exit 0: package latest, typecheck, lint, unit, schema routing, migration ledger, tool drift; Store risk gate passed published 0.2.205 policy surface and emitted remote-code scan. Receipt/tag/source and artifact upload steps passed.",
+    "config_attestation": "NOT_ATTESTED advisory: pinned aidream attest script lacked python dotenv; release remained success",
+    "callback_comparator": {
+      "applies": true,
+      "asset": "chunks/react-CIAGJaBG.js",
+      "sha256": "170c255c33fc0fb21e9e318b1e0daae6abdbc17b2c1fa79fe76097953da54d32",
+      "line": 0,
+      "onKeyDown_column": 20661,
+      "expected_column_range": [20661, 20750],
+      "snippet": "onKeyDown:e=>{e.key===`Escape`&&e.currentTarget.contains(e.target)&&z(!1)}",
+      "limit": "Static compiled anchor only; native mounted-handler result remains pending."
+    }
+  },
+  "artifact": {
+    "id": 12264355137,
+    "name": "matrx-extend-v0.2.575",
+    "version": "0.2.575",
+    "github_archive_sha256": "f428987e5824b05d9f49f993c7034a67c0b5cf1a41d49cd716c84f1869b74e4c",
+    "store_zip_sha256": "f4e992b348d4c8a1c949bc1043d2654fd8960e03c0cc11b2b745af928fa3731a",
+    "local_zip_sha256": "5cdd618ff4f90b6f34e29e8f03dd7cdb35efaf81697ab849fd699dcfac1eaa7b",
+    "tree_sha256": "a086197a865310bd3029040da6b09d8453d4d2c858718ddc14109150e652141a",
+    "file_count": 2467,
+    "local_files": {
+      "archive": "/Volumes/Samsung2TB/code/matrx-extend/test-results/style-fixed-release-575/artifact-12264355137.zip",
+      "store_zip": "/Volumes/Samsung2TB/code/matrx-extend/test-results/style-fixed-release-575/.output/matrx-extend-0.2.575-store.zip",
+      "local_zip": "/Volumes/Samsung2TB/code/matrx-extend/test-results/style-fixed-release-575/.output/matrx-extend-0.2.575-local.zip",
+      "receipt": "/Volumes/Samsung2TB/code/matrx-extend/test-results/style-fixed-release-575/.output/release-receipt.json",
+      "log": "/Volumes/Samsung2TB/code/matrx-extend/test-results/style-fixed-release-575/tmp/release-logs/latest.log"
+    },
+    "digest_verification": "Downloaded outer archive SHA matches GitHub API; both downloaded inner ZIP SHAs match receipt; Store manifest version 0.2.575."
+  },
+  "ci_spend": {
+    "read_at": "2026-10-20T11:25:58Z",
+    "stale": false,
+    "weekly_real_usd": 79.12,
+    "cap_usd": 100,
+    "billing_block": false,
+    "note": "off_track flag names unrelated matrx-desktop CI waste; actual weekly total below cap"
+  },
+  "native_admission": {
+    "member_plan": "node scripts/hosted-release-member-admission.mjs plan 39420649081 12264355137 60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+    "member_dispatch_after_plan": "node scripts/hosted-release-member-admission.mjs dispatch 39420649081 12264355137 60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+    "member_current_refusal": "hosted_member_link_secret_required (single-use member auth staging pending)",
+    "guest_plan": "node scripts/hosted-remote-admission.mjs plan-guest-chat --lane B --case guest-chat --release-run-id 39420649081 --artifact-id 12264355137 --source-sha 60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+    "guest_dispatch_after_plan": "node scripts/hosted-remote-admission.mjs dispatch-guest-chat --lane B --case guest-chat --release-run-id 39420649081 --artifact-id 12264355137 --source-sha 60bc14ea923c9dc7f11b26b43f2aea0111d8b340",
+    "guest_current_refusal": "HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED because another worker had an untracked personal-chrome-refresh journal; owner is moving it to ignored test-results, then rerun normal plan.",
+    "store_limit": "No guest or non-admin acceptance of exact 575 candidate yet; no upload/submission. Private Store state must be refreshed before eventual upload."
+  },
+  "files": [
+    "/Volumes/Samsung2TB/code/matrx-extend/test-results/style-fixed-release-575/artifact-12264355137.zip",
+    "/Volumes/Samsung2TB/code/matrx-extend/test-results/style-fixed-release-575/.output/release-receipt.json",
+    "/Volumes/Samsung2TB/code/matrx-extend/test-results/style-fixed-release-575/.output/matrx-extend-0.2.575-store.zip",
+    "/Volumes/Samsung2TB/code/matrx-extend/test-results/style-fixed-release-575/.output/matrx-extend-0.2.575-local.zip"
+  ],
+  "questions": []
+}
