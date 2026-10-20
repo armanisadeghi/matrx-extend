@@ -1,0 +1,48 @@
+{
+  "task_id": "EXT-D-0244 / frozen 0.2.573 candidate native review",
+  "reviewer_status": "DONE",
+  "verdict_A_behavior": {
+    "EXT-F-2013-T13_D244_guest_chat_lane_B": {
+      "verdict": "UNVERIFIED",
+      "evidence": [
+        "Existing native-b39399395330.zip contains the actual result report and resource journals. The result is status=unverified, failure_stage=owned_profile, failure_code=owned_cdp_endpoint_timeout; guest/chat are null, there are no screenshots or opening-stage screenshots, no composer or send boundaries, no guest AI requests, no context-rule reads, no grounding diagnostics, and guest_ai_transport_proven=false. The guest resource journal ends RESOURCE_FINAL_DECISION with decision=invalid, resourceInvalid=true, exitCode=3. Package and browser subjobs have valid final decisions.",
+        "The A raw result independently reports the same 0.2.573 source SHA, Store ZIP digest, receipt kind, and adapted runtime tree hash as B, confirming the failed B attempt targeted the same frozen candidate."
+      ],
+      "case_outcome": "No Chat UI or authored guest message was reached. The run records zero evidence for three terminal replies, grounding or transport protocol, the original compact Values focus state, trusted Escape key, post-Escape open-dialog count/focus, close/reopen, or surrounding interaction. It neither passes nor reproduces D244."
+    },
+    "Data_T01_T07_lane_A": {
+      "verdict": "UNVERIFIED_INFRASTRUCTURE_STOP_NO_PRODUCT_VERDICT",
+      "evidence": [
+        "The existing raw A native result at test-results/guest-data-lane-a-39399705944/matrx-extend/matrx-extend/test-results/data-guest-native-acceptance.json hashes to 1777547862f20e43c2ba7e9d056a549155d767c2a05994819bf20b2844a87d4b, matching the lane report. It identifies case_id=EXT-F-2005-T01, stage=input/native_stage=cdp_connect, no observations, and no T01/T07 assertions.",
+        "The three raw journal hashes match the lane report. Package and browser resource finals are valid; guest is invalid with RESOURCE_CPU_PENDING (RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY), then RESOURCE_FINAL_DECISION invalid/resourceInvalid=true/exitCode=3.",
+        "The report lists no uploaded screenshots. Backend before/after is explicitly not captured because CDP never connected. The workflow job is terminal and no retry was made."
+      ],
+      "case_outcome": "No T01 save gate, sign-in action, or pattern-write observation exists; no T07 clear/select/hover/cancel target was exercised. The dispatch requested T01 and T07, but the raw result is labeled T01 and asserts neither. No product pass/fail credit; Data remains unverified.",
+      "cleanup_limit": "Workflow cleanup completed, but post-job profile-process absence was not independently verified."
+    }
+  },
+  "verdict_B_provenance_quality": {
+    "status": "PASS_FOR_FROZEN_CANDIDATE_IDENTITY",
+    "evidence": [
+      "Existing outer release artifact SHA256 is 67283c178eb98f76e12e70187f5385685258d45a8879879ff89f635e87fc3e75, matching the owner record.",
+      "Its embedded release receipt identifies source commit 19aa37bee23e02c8ab62a15ce4854d9e5c944f91, version 0.2.573, release tree hash 6cf8cf568e5cdd462ad98fd411bc13bd409f11fa8d286558f787358ef5d952de, and 2,467 compiled files.",
+      "The embedded Store ZIP SHA256 matches 5814c4683e270f8303263a26fda0946c91f9680a6c317150283eaafae0df2d4e; its manifest reports Matrx Extend 0.2.573, Manifest V3. The local ZIP hash also matches receipt value 26f7ed765d3d8702542698b398f33b1c5b50a71a286b8329d4a364b3816dce62.",
+      "The pinned source commit lockfile resolves @ai-matrx/agents 0.59.174. The existing Store ZIP source map identifies bundled @ai-matrx/agents 0.59.174 and contains the ContextRulesChip Escape handler calling setOpen(false), confirming the published fix is in the compiled package.",
+      "The raw A native result binds source SHA 19aa37bee23e02c8ab62a15ce4854d9e5c944f91, Store ZIP SHA256 5814c4683e270f8303263a26fda0946c91f9680a6c317150283eaafae0df2d4e, version 0.2.573, and adapted runtime tree hash ca3ac4dda16250641c224f766486295ac911913c93738bc1ac858bed10f11b6d. The B native report records the same version and identical adapted runtime tree hash/receipt kind, linking both attempted lanes to the candidate recorded by A.",
+      "The B run result has no standalone release receipt or Store ZIP digest; its exact candidate linkage is cross-checked through the A raw result sharing the same adapted runtime tree, source SHA, and Store ZIP hash."
+    ]
+  },
+  "server_and_resource_observations": {
+    "backend_before": "4099043613385b5fff9d5049a4b195d037ac7018",
+    "backend_after": "4099043613385b5fff9d5049a4b195d037ac7018",
+    "interpretation": "The run report records reachable/stable backend version checks before and after; because no product actions ran, this does not prove backend stability during an exercised interaction.",
+    "guest_resource_final": "invalid; resourceInvalid=true; exitCode=3",
+    "package_browser_resource_finals": "valid; exitCode=0"
+  },
+  "scope_limits": [
+    "No download was initiated; only existing release/native artifacts and lane reports were read.",
+    "No native browser was launched, no source or builder file was edited, and no retry or release action was taken.",
+    "No overall product-health conclusion and no D261 closure claim. AUTH266 is unrelated to the frozen573 candidate and is not attributed to it.",
+    "Both native lanes are terminal, but their resource-invalid CDP-start failures leave the requested product cases unverified."
+  ]
+}
