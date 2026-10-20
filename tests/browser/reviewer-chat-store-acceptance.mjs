@@ -21,8 +21,8 @@ import {
 } from './member-chat-completion-oracle.mjs';
 import {
   enterFirstPartyRoute,
-  requireOpeningPageText,
   requireOriginalGuestSequence,
+  runFollowupBeforeOpeningPageTextJoin,
   summarizeOpeningPageTextBoundary,
 } from './member-chat-original-repro.mjs';
 import { sendMemberChatOnTarget } from './member-chat-target.mjs';
@@ -1952,102 +1952,85 @@ try {
         });
         report.page_text_boundary = pageTextBoundary;
         await writeReviewerReport(OUTPUT, report);
-        let pageTextJoin;
-        try {
-          pageTextJoin = requireOpeningPageText({
-            events: pageTextEvents,
-            requests: memberTransport.turnRequests(),
-            heading: demoHeading,
-          });
-        } catch {
-          throw new Error(
-            pageTextBoundary.failure_code ?? 'reviewer_member_page_text_join_unverified',
-          );
-        }
-        report.page_text_proof = {
-          ...pageTextJoin,
-          event_count: pageTextEvents.length,
-        };
         stage = 'reviewer_chat_transport';
         const network = memberTransport.snapshot();
         report.chat_transport = network;
-        assert.equal(network.start_count, 1, 'one actual member Chat start required');
-        assert.ok(
-          network.organization_header_fingerprint,
-          'member Chat must carry a valid organization',
-        );
-        assert.equal(
-          network.organization_header_matches_approved,
-          true,
-          'member Chat header must match approved organization config',
-        );
-        assert.equal(network.start_http_status, 200, 'server must accept member Chat organization');
-        assert.equal(
-          network.response_matches_request_conversation,
-          true,
-          'Chat response must match the sent conversation',
-        );
-        assert.ok(network.backend_request_fingerprint, 'real member Chat backend request required');
-        await typeQuestion(MEMBER_FOLLOWUP, 'enter_same_conversation_followup');
-        stage = 'send_same_conversation_followup';
-        await panelLifecycle.check('before_followup_send');
-        await sendMemberChatOnTarget({
-          web,
-          panel,
-          evaluate,
-          expectedUrl: `${WEB_ORIGIN}${DEMO_PATH}`,
-          marker: demoMarker,
-          send: async () => {
-            memberTransport.armTurn('same_conversation_followup');
-            await click(panel, 'chat-send', '');
-          },
-        });
-        const followup = await awaitTurn(
-          'same_conversation_followup',
-          completed.completedReplyCount,
-          ['Understand'],
-        );
-        stage = 'reviewer_two_turn_terminal_proof';
-        const sequence = requireMemberChatSequence(memberTransport.turnRequests(), turns);
-        const afterFollowup = memberTransport.snapshot();
-        assert.equal(afterFollowup.start_count, 1, 'member requires one actual Chat start');
-        assert.equal(
-          afterFollowup.member_turn_requests.length,
-          2,
-          'member requires one actual Chat followup',
-        );
-        assert.ok(
-          afterFollowup.member_turn_requests.every(
-            (row) =>
-              row.http_status === 200 &&
-              row.organization_header_fingerprint === network.organization_header_fingerprint,
-          ),
-          'member followup requires same valid organization',
-        );
-        const organizationBinding = requireMemberOrganizationBinding(
-          selectedOrganizationFingerprint,
-          afterFollowup.member_turn_requests,
-        );
-        report.chat_sequence = {
-          ...sequence,
-          ...organizationBinding,
-          turns,
+        const pageTextJoin = await runFollowupBeforeOpeningPageTextJoin({
+          openingTransport: network,
+          events: pageTextEvents,
           requests: memberTransport.turnRequests(),
-          followup_completed_reply_count: followup.completedReplyCount,
-          same_organization: true,
-        };
-        await runMemberAnswerProofBoundary({
-          panel,
-          expectedTerms: ['Understand'],
-          report,
-          artifacts,
-          output: OUTPUT,
-          capture: captureWithLifecycle,
-          evaluateProof: (target, terms, phase) => {
-            const sample = `(${prepareMemberAnswerScreenshot.toString()})(${JSON.stringify(terms)}, ${JSON.stringify(phase)})`;
-            return evaluate(target, sample);
+          heading: demoHeading,
+          pageTextFailureCode: pageTextBoundary.failure_code,
+          runFollowup: async () => {
+            await typeQuestion(MEMBER_FOLLOWUP, 'enter_same_conversation_followup');
+            stage = 'send_same_conversation_followup';
+            await panelLifecycle.check('before_followup_send');
+            await sendMemberChatOnTarget({
+              web,
+              panel,
+              evaluate,
+              expectedUrl: `${WEB_ORIGIN}${DEMO_PATH}`,
+              marker: demoMarker,
+              send: async () => {
+                memberTransport.armTurn('same_conversation_followup');
+                await click(panel, 'chat-send', '');
+              },
+            });
+            const followup = await awaitTurn(
+              'same_conversation_followup',
+              completed.completedReplyCount,
+              ['Understand'],
+            );
+            stage = 'reviewer_two_turn_terminal_proof';
+            const sequence = requireMemberChatSequence(memberTransport.turnRequests(), turns);
+            const afterFollowup = memberTransport.snapshot();
+            assert.equal(afterFollowup.start_count, 1, 'member requires one actual Chat start');
+            assert.equal(
+              afterFollowup.member_turn_requests.length,
+              2,
+              'member requires one actual Chat followup',
+            );
+            assert.ok(
+              afterFollowup.member_turn_requests.every(
+                (row) =>
+                  row.http_status === 200 &&
+                  row.organization_header_fingerprint === network.organization_header_fingerprint,
+              ),
+              'member followup requires same valid organization',
+            );
+            const organizationBinding = requireMemberOrganizationBinding(
+              selectedOrganizationFingerprint,
+              afterFollowup.member_turn_requests,
+            );
+            report.chat_transport = afterFollowup;
+            report.chat_sequence = {
+              ...sequence,
+              ...organizationBinding,
+              turns,
+              requests: memberTransport.turnRequests(),
+              followup_completed_reply_count: followup.completedReplyCount,
+              same_organization: true,
+            };
+            await runMemberAnswerProofBoundary({
+              panel,
+              expectedTerms: ['Understand'],
+              report,
+              artifacts,
+              output: OUTPUT,
+              capture: captureWithLifecycle,
+              evaluateProof: (target, terms, phase) => {
+                const sample = `(${prepareMemberAnswerScreenshot.toString()})(${JSON.stringify(terms)}, ${JSON.stringify(phase)})`;
+                return evaluate(target, sample);
+              },
+            });
+            return report.chat_sequence;
+          },
+          persistFollowup: async () => {
+            await writeReviewerReport(OUTPUT, report);
+            stage = 'member_page_text_join';
           },
         });
+        report.page_text_proof = { ...pageTextJoin, event_count: pageTextEvents.length };
         report.screenshots.result = await captureWithLifecycle(
           panel,
           artifacts,

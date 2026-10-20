@@ -4,6 +4,7 @@ import {
   enterFirstPartyRoute,
   requireOpeningPageText,
   requireOriginalGuestSequence,
+  runFollowupBeforeOpeningPageTextJoin,
   summarizeOpeningPageTextBoundary,
 } from './member-chat-original-repro.mjs';
 
@@ -63,6 +64,79 @@ test('D261 opens first-party sign-in only after two terminal guest turns', async
     /guest prelude must finish/,
   );
   assert.equal(opened, false, 'unfinished guest turn must prevent first-party login');
+});
+
+test('D261 persists a real follow-up before a still-fatal opening Page Text join', async () => {
+  const openingTransport = {
+    start_count: 1,
+    organization_header_fingerprint: 'c'.repeat(16),
+    organization_header_matches_approved: true,
+    start_http_status: 200,
+    response_matches_request_conversation: true,
+    backend_request_fingerprint: 'd'.repeat(16),
+  };
+  const requests = [
+    {
+      attempt: 'opening',
+      conversation_fingerprint: first,
+      semantic_events: [{ event: 'tool_delegated', call_fingerprint: second }],
+    },
+  ];
+  const matching = [
+    {
+      tool_class: 'get_page_text',
+      phase: 'completed',
+      conversation_fingerprint: first,
+      call_fingerprint: second,
+      result_has_heading: true,
+      result_has_stages: true,
+    },
+  ];
+  const run = (events, transport = openingTransport) => {
+    const order = [];
+    return {
+      order,
+      args: {
+        openingTransport: transport,
+        events,
+        requests,
+        heading: 'Matrx Extend Demo',
+        pageTextFailureCode: 'reviewer_member_page_text_event_missing',
+        runFollowup: async () => {
+          order.push('followup');
+          return { terminal: true, conversation_fingerprint: first };
+        },
+        persistFollowup: async (proof) => {
+          assert.deepEqual(proof, { terminal: true, conversation_fingerprint: first });
+          order.push('persist');
+        },
+      },
+    };
+  };
+
+  const missing = run([]);
+  await assert.rejects(
+    runFollowupBeforeOpeningPageTextJoin(missing.args),
+    /reviewer_member_page_text_event_missing/,
+  );
+  assert.deepEqual(missing.order, ['followup', 'persist']);
+
+  const badTransport = run(matching, {
+    ...openingTransport,
+    response_matches_request_conversation: false,
+  });
+  await assert.rejects(
+    runFollowupBeforeOpeningPageTextJoin(badTransport.args),
+    /Chat response must match the sent conversation/,
+  );
+  assert.deepEqual(badTransport.order, []);
+
+  const complete = run(matching);
+  assert.equal(
+    (await runFollowupBeforeOpeningPageTextJoin(complete.args)).page_text_call_fingerprint,
+    second,
+  );
+  assert.deepEqual(complete.order, ['followup', 'persist']);
 });
 
 test('D261 guest sequence refuses a skipped, uncorrelated or delegated follow-up', () => {

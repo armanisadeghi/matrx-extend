@@ -119,3 +119,47 @@ export function summarizeOpeningPageTextBoundary({ events, requests }) {
     })),
   };
 }
+
+/** Retain a real same-conversation follow-up before the strict Page Text verdict. */
+export async function runFollowupBeforeOpeningPageTextJoin({
+  openingTransport,
+  events,
+  requests,
+  heading,
+  pageTextFailureCode,
+  runFollowup,
+  persistFollowup,
+}) {
+  assert.equal(openingTransport.start_count, 1, 'one actual member Chat start required');
+  assert.ok(
+    openingTransport.organization_header_fingerprint,
+    'member Chat must carry a valid organization',
+  );
+  assert.equal(
+    openingTransport.organization_header_matches_approved,
+    true,
+    'member Chat header must match approved organization config',
+  );
+  assert.equal(
+    openingTransport.start_http_status,
+    200,
+    'server must accept member Chat organization',
+  );
+  assert.equal(
+    openingTransport.response_matches_request_conversation,
+    true,
+    'Chat response must match the sent conversation',
+  );
+  assert.ok(
+    openingTransport.backend_request_fingerprint,
+    'real member Chat backend request required',
+  );
+
+  const followupProof = await runFollowup();
+  await persistFollowup(followupProof);
+  try {
+    return requireOpeningPageText({ events, requests, heading });
+  } catch {
+    throw new Error(pageTextFailureCode ?? 'reviewer_member_page_text_join_unverified');
+  }
+}
