@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-20 19:09 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-20T19:08:49Z.
+Generated 2026-10-20 20:47 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-20T20:42:33Z.
 
 ## Current truth
 
@@ -12,10 +12,10 @@ Generated 2026-10-20 19:09 UTC from inventory.json, defect records, daily Store 
 
 ## Current Store release observations
 
-Last observed **2026-10-11T17:25:49Z**; [daily Store record](reports/store-release-followthrough-20261011.json).
-**Public listing:** 0.2.205. Public listing does not establish private review state.
-**Authenticated dashboard:** Pending review; Draft package 0.2.479; Published package 0.2.205; Upload new package disabled. Observer: Owning release session, 2026-10-11 about 17:25 UTC; exact primary item under Matrx publisher.
-These observations are bounded to their recorded times; source versions and local artifacts do not establish Store publication or product acceptance.
+Last observed **2026-10-20T15:26:38Z**; [Store submission receipt](reports/store577-submission-20261020.json).
+**Public listing:** no public listing observation in this receipt; publication remains unverified.
+**Authenticated dashboard:** Pending review; This draft is pending review; Draft package 0.2.577; Published package 0.2.205.
+These observations are bounded to their recorded times; submission does not establish Store publication, installation, or product acceptance.
 
 ## Historical audit checkpoint (coverage-audit-20261001.json)
 
@@ -26,7 +26,7 @@ These observations are bounded to their recorded times; source versions and loca
 
 ## Inventory freshness review
 
-Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **13 `src/` paths changed** through `8aba01086df743fd1e8ec91265b81a34095eb0b1`. A direct path-anchor comparison matched 5 and left 8 without an exact inventory anchor.
+Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **13 `src/` paths changed** through `a6658b2a7b1dfe32f68068c84f7af34dfc4aedd5`. A direct path-anchor comparison matched 5 and left 8 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities

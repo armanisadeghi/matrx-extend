@@ -60,3 +60,61 @@ def test_generated_release_uses_latest_valid_daily_observation():
                 assert 'No valid dated daily Store record' in (tracker.BASE / name).read_text()
         finally:
             tracker.BASE = original
+
+
+def test_authenticated_submission_supersedes_older_daily_without_inventing_public_listing():
+    inventory, defects = tracker.read()
+    original = tracker.BASE
+    with tempfile.TemporaryDirectory() as directory:
+        tracker.BASE = Path(directory)
+        reports = tracker.BASE / 'reports'
+        reports.mkdir()
+        old = original / 'reports/store-release-followthrough-20261011.json'
+        receipt = original / 'reports/store577-submission-20261020.json'
+        (reports / old.name).write_text(old.read_text())
+        (reports / receipt.name).write_text(receipt.read_text())
+        try:
+            tracker.render(inventory, defects)
+            for name in ('STATUS.md', 'CHECKLIST.md', 'STATUS.html'):
+                output = (tracker.BASE / name).read_text()
+                plain = re.sub('<[^>]+>', '', html.unescape(output)).replace('**', '')
+                assert '2026-10-20T15:26:38Z' in plain
+                assert 'Pending review' in plain and '0.2.577' in plain
+                assert 'Published package 0.2.205' in plain
+                assert 'reports/store577-submission-20261020.json' in output
+                assert 'Public listing: 0.2.205' not in plain
+                assert '0.2.479' not in plain.split('Current Store release observations', 1)[1].split('\n## ', 1)[0]
+
+            # A later dated daily observation wins over the submission.
+            future = json.loads(old.read_text())
+            future['observed_at'] = '2026-10-21T17:25:49Z'
+            future['public_listing']['rendered_details_version'] = '0.2.578'
+            future['private_status']['authenticated_dashboard_observation'] = 'Published package 0.2.578; no pending revision'
+            (reports / 'store-release-followthrough-20261021.json').write_text(json.dumps(future))
+            tracker.render(inventory, defects)
+            for name in ('STATUS.md', 'CHECKLIST.md', 'STATUS.html'):
+                output = (tracker.BASE / name).read_text()
+                assert '2026-10-21T17:25:49Z' in output
+                assert '0.2.578' in output
+
+            (reports / 'store-release-followthrough-20261021.json').unlink()
+            for mutation in (
+                {'dashboard_submission': {'final_status': 'Unknown'}},
+                {'candidate': {'version': '0.2.579'}},
+                {'observed_at_utc': '2026-10-21T15:26:38Z'},
+                {'primary_item_id': 'unknown-item'},
+                {'schema': 99},
+            ):
+                bad = json.loads(receipt.read_text())
+                bad.update(mutation)
+                (reports / receipt.name).write_text(json.dumps(bad))
+                tracker.render(inventory, defects)
+                for name in ('STATUS.md', 'CHECKLIST.md', 'STATUS.html'):
+                    output = (tracker.BASE / name).read_text()
+                    assert '2026-10-11T17:25:49Z' in output
+                    assert 'reports/store577-submission-20261020.json' not in output
+            (reports / receipt.name).write_text('{malformed')
+            tracker.render(inventory, defects)
+            assert '2026-10-11T17:25:49Z' in (tracker.BASE / 'STATUS.md').read_text()
+        finally:
+            tracker.BASE = original

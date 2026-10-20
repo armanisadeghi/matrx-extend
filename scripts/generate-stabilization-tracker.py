@@ -30,7 +30,7 @@ def read_coverage_audit():
 
 
 def current_store_release_lines():
-    """Select dated observations; listing presence does not imply review approval."""
+    """Select the latest valid Store observation without equating a dashboard with a listing."""
     records = []
     for path in (BASE / "reports").glob("store-release-followthrough-????????.json"):
         try:
@@ -43,12 +43,44 @@ def current_store_release_lines():
             version = listing["rendered_details_version"]
             if observed.tzinfo is None or observed.date() != day or not isinstance(version, str) or not version:
                 continue
-            records.append((observed, path.name, data))
+            records.append((observed, path.name, "daily", data))
+        except (ValueError, KeyError, TypeError, AttributeError):
+            continue
+    for path in (BASE / "reports").glob("store*-submission-????????.json"):
+        try:
+            data = json.loads(path.read_text())
+            observed_text = data["observed_at_utc"]
+            observed = datetime.datetime.fromisoformat(observed_text.replace("Z", "+00:00"))
+            day = datetime.datetime.strptime(path.stem[-8:], "%Y%m%d").date()
+            candidate = data["candidate"]
+            dashboard = data["dashboard_submission"]
+            if (data.get("schema") != 1 or data.get("status") != "SUBMITTED_PENDING_REVIEW"
+                    or observed.tzinfo is None or observed.date() != day
+                    or data.get("primary_item_id") != "hnfolienncfklkgmdjjmhhegglimlamg"
+                    or not isinstance(candidate, dict) or not isinstance(dashboard, dict)
+                    or not isinstance(candidate.get("version"), str)
+                    or re.fullmatch(r"\d+\.\d+\.\d+", candidate["version"]) is None
+                    or dashboard.get("draft_version_after_upload") != candidate["version"]
+                    or not isinstance(dashboard.get("published_version"), str)
+                    or re.fullmatch(r"\d+\.\d+\.\d+", dashboard["published_version"]) is None
+                    or dashboard.get("uploaded_file") != f"matrx-extend-{candidate['version']}-store.zip"
+                    or dashboard.get("confirmation") != "Your extension was submitted for review"
+                    or dashboard.get("final_status") != "Pending review; This draft is pending review"):
+                continue
+            records.append((observed, path.name, "submission", data))
         except (ValueError, KeyError, TypeError, AttributeError):
             continue
     if not records:
-        return ["No valid dated daily Store record; current public version and private review state are unverified."]
-    _, name, data = max(records, key=lambda record: (record[0], record[1]))
+        return ["No valid dated daily Store record or submission receipt; current public version and private review state are unverified."]
+    _, name, kind, data = max(records, key=lambda record: (record[0], record[1]))
+    if kind == "submission":
+        dashboard = data["dashboard_submission"]
+        return [
+            f"Last observed **{data['observed_at_utc']}**; [Store submission receipt](reports/{name}).",
+            "**Public listing:** no public listing observation in this receipt; publication remains unverified.",
+            f"**Authenticated dashboard:** {dashboard['final_status']}; Draft package {dashboard['draft_version_after_upload']}; Published package {dashboard['published_version']}.",
+            "These observations are bounded to their recorded times; submission does not establish Store publication, installation, or product acceptance.",
+        ]
     lines = [f"Last observed **{data['observed_at']}**; [daily Store record](reports/{name}).",
              f"**Public listing:** {data['public_listing']['rendered_details_version']}. Public listing does not establish private review state."]
     private = data.get("private_status", {})
@@ -69,8 +101,8 @@ def current_store_release_html():
     for line in current_store_release_lines():
         value = esc(line)
         value = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", value)
-        value = re.sub(r"\[daily Store record\]\((reports/store-release-followthrough-[0-9]{8}\.json)\)",
-                       r'<a href="\1">daily Store record</a>', value)
+        value = re.sub(r"\[(daily Store record|Store submission receipt)\]\((reports/(?:store-release-followthrough|store[0-9]+-submission)-[0-9]{8}\.json)\)",
+                       r'<a href="\2">\1</a>', value)
         paragraphs.append(f"<p>{value}</p>")
     return '<section aria-labelledby="store-release"><h2 id="store-release">Current Store release observations</h2>' + ''.join(paragraphs) + '</section>'
 

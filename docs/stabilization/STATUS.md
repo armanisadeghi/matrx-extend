@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-20 19:09 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T19:08:49Z. 207 features · 831 cases · 1422 controls · 273 linked defect records.
+Generated 2026-10-20 20:47 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T20:42:33Z. 207 features · 831 cases · 1422 controls · 273 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -59,10 +59,10 @@ Role counts include only case-role combinations listed in each case. The all-rol
 
 ## Current Store release observations
 
-Last observed **2026-10-11T17:25:49Z**; [daily Store record](reports/store-release-followthrough-20261011.json).
-**Public listing:** 0.2.205. Public listing does not establish private review state.
-**Authenticated dashboard:** Pending review; Draft package 0.2.479; Published package 0.2.205; Upload new package disabled. Observer: Owning release session, 2026-10-11 about 17:25 UTC; exact primary item under Matrx publisher.
-These observations are bounded to their recorded times; source versions and local artifacts do not establish Store publication or product acceptance.
+Last observed **2026-10-20T15:26:38Z**; [Store submission receipt](reports/store577-submission-20261020.json).
+**Public listing:** no public listing observation in this receipt; publication remains unverified.
+**Authenticated dashboard:** Pending review; This draft is pending review; Draft package 0.2.577; Published package 0.2.205.
+These observations are bounded to their recorded times; submission does not establish Store publication, installation, or product acceptance.
 
 ## Historical audit checkpoint (coverage-audit-20261001.json)
 
