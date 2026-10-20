@@ -61,5 +61,14 @@
     "biome": "scoped check: pass",
     "focused": "720 pass, 10 platform skips, 0 fail; resource final valid"
   },
-  "next_action": "After green source gates and independent source review, admit one fresh exact-source hosted member-data run through normal resource/source/secret guards; verify approved organization, T03 lifecycle and zero active exact-owned rows."
+  "next_action": "Diagnose the recorded member logical-organization pointer boundary before a changed-hypothesis guarded Data lifecycle run. Approved org selection diagnostic is not full authentication or independent native repair closure.",
+  "current_native_observation": {
+    "run_id": 39456820094,
+    "source_sha": "d90bd7b778c17943d420f9e27ed386c10dc85bd2",
+    "verdict": "resource-invalid before Data; no product credit",
+    "organization_selection": "diagnostic selected=true and expected_organization_matches=true",
+    "remaining_boundary": "authentication proof null; pointer_target_not_unique at member_logical_organization_proof",
+    "cleanup": "exact run name and approved org readback zero rows/active/tombstones; local one-use file and temporary secret absent",
+    "evidence": "docs/stabilization/reports/data-t03-next-native-20261020.json"
+  }
 }
