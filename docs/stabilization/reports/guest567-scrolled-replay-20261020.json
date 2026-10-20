@@ -84,9 +84,47 @@
     "backend_sha_before": "f8dd64696fd963685d259328a0776737a9d5aa23",
     "spend_week_usd_before": 59.5,
     "spend_cap_usd_before": 100,
-    "status_at_checkpoint": "dispatched_pending_terminal",
-    "resource_journals": "pending_hosted_artifact",
-    "external_job_cleanup": "hosted run owns ephemeral runner; no local browser, process, profile or staged secret"
+    "status_at_checkpoint": "completed_success",
+    "result_artifact_id": "12236796129",
+    "result_artifact_digest": "sha256:0065a48f41d0ec6a6acbbe0a32e60490c321c105c1e823bf970654ae624548e2",
+    "result_report_status": "pass",
+    "resource_journals": {
+      "hosted-package-39358084388-1": "valid_admitted_exit_0",
+      "hosted-browser-39358084388-1": "valid_admitted_exit_0",
+      "hosted-guest-39358084388-1": "valid_admitted_exit_0"
+    },
+    "backend_sha_after": "f8dd64696fd963685d259328a0776737a9d5aa23",
+    "runtime_tree_sha256": "8af9872212755906e6bfc08daa983fca189c8f887d1b1a19c4f7e80b08388cec",
+    "native_data_done": {
+      "status": "pass_pending_independent_peer",
+      "public_demo_scroll_y_before": 479,
+      "public_demo_scroll_y_after": 479,
+      "visual_offsets_x_y": [0, 0],
+      "same_foreground_target": true,
+      "strict_same_button_hit": "asserted_by_exact_runner_before_trusted_mouse_click_and_reached_selected_field",
+      "selected_count": 1,
+      "unique_selector_matches": 1,
+      "workflow_row_matched": true,
+      "guest_explanation": "asserted_by_exact_runner",
+      "draft_cleared": true
+    },
+    "surrounding_reviewer_checks": {
+      "fresh_auto_capture_off": "pass",
+      "article": "pass",
+      "links": "pass",
+      "schema": "pass",
+      "seo": "pass"
+    },
+    "guest_chat": {
+      "opening": "http_200_terminal_grounded_answer",
+      "same_conversation": "http_200_terminal_grounded_answer",
+      "post_reload_new_conversation": "http_200_terminal_grounded_answer",
+      "actual_ai_requests": 3,
+      "selected_model": "not_serialized_in_native_report",
+      "model_override": "none_dispatched",
+      "visible_paint": "terminal replies observed; individual screenshots clip portions behind the composer, while separate scroll captures show the page-code, heading and Capture/Understand/Use stages; independent screenshot review pending"
+    },
+    "external_job_cleanup": "hosted workflow terminal; no local browser, process, profile or staged secret; owned artifact scratch deleted after durable evidence checkpoint"
   },
-  "next_action": "Track B run 39358084388 to terminal; verify all hosted resource final decisions and exact .568 guest Chat, public demo Data Done at natural nonzero scroll, selector, surrounding panes and backend before/after. A separate screenshot clip failure must not silently count as a full guest pass. No Store upload."
+  "next_action": "Obtain independent review of exact .568 native Data Done and clipped Chat screenshots before D258 or broad guest closure. Member A and current Store upload eligibility remain separate gates. No second B run or Store upload."
 }
