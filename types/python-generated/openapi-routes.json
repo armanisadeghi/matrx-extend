@@ -6698,6 +6698,14 @@
  "/reclaim/public/status": {
   "get": []
  },
+ "/records-computed/refresh-jobs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/records-computed/refresh-jobs/{job_id}": {
+  "get": []
+ },
  "/recovery/audit/{audit_id}/applied": {
   "post": [
    "application/json"
