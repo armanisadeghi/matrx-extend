@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "task_id": "personal-dev7b-refresh-20261020",
+  "lane": "current development artifact import/promotion and native Chrome refresh",
+  "status": "blocked_by_normal_promotion_eligibility_gate",
+  "ci": {
+    "run_id": 39498170160,
+    "conclusion": "success",
+    "source_sha": "7b53546df4af7a4d2380a82ad48902a5f7723a7b",
+    "artifact_id": 12298494700,
+    "artifact_name": "matrx-extend-development-test-7b53546df4af7a4d2380a82ad48902a5f7723a7b-39498170160-1",
+    "artifact_expired": false,
+    "version": "0.2.578",
+    "expected_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "bc07023d47be5275eadcee943854ad86bd7d5fda9978a939d8c2c06eb338e29a"
+  },
+  "checkout": {
+    "head_sha": "91c28baac5e85d37bd0a8bec41192486c6733d43",
+    "origin_main_sha": "91c28baac5e85d37bd0a8bec41192486c6733d43",
+    "working_tree_clean_at_import": true,
+    "source_to_head_changes": "stabilization documentation and evidence paths only"
+  },
+  "import": {
+    "command": "node scripts/current-test-artifact.mjs import 39498170160 12298494700",
+    "result": "DEVELOPMENT_TEST_IMPORTED .../7b53546df4af7a4d2380a82ad48902a5f7723a7b/39498170160-1 exact_pushed_commit_only",
+    "imported_path": "test-results/ci-artifacts/7b53546df4af7a4d2380a82ad48902a5f7723a7b/39498170160-1/chrome-mv3",
+    "evidence": {
+      "provenance_path": "test-results/ci-artifacts/7b53546df4af7a4d2380a82ad48902a5f7723a7b/39498170160-1/provenance.json",
+      "ci_receipt_path": "test-results/ci-artifacts/7b53546df4af7a4d2380a82ad48902a5f7723a7b/39498170160-1/ci-receipt.json",
+      "import_status_path": "test-results/ci-artifacts/7b53546df4af7a4d2380a82ad48902a5f7723a7b/39498170160-1/import-status.json",
+      "github_artifact_digest": "sha256:b1f53ee6e0f3aa863ca264136e5d5352350ec3b653ed632a6e001cd13ba8149a"
+    }
+  },
+  "promotion": {
+    "command": "node scripts/promote-ci-dev-artifact.mjs test-results/ci-artifacts/7b53546df4af7a4d2380a82ad48902a5f7723a7b/39498170160-1/chrome-mv3",
+    "result": "refused",
+    "error": "ci_dev_runtime_source_changed",
+    "reason": "The committed source-to-current-main path list includes docs/stabilization/reports/settings578-startup-measurement-reviewed-unapplied-20261020.patch. The promoter's runtime-equivalent documentation allowlist accepts evidence extensions such as json/jsonl/md/html/txt/log/png/jpg/jpeg/webp, but not .patch.",
+    "gate_bypassed": false,
+    "stable_dev_output_changed": false,
+    "previous_promotion_receipt": {
+      "source_sha": "9fd7043b2e488d7614a2220c082e9de0052a6cff",
+      "run_id": 39488355878,
+      "artifact_id": 12294519442,
+      "version": "0.2.578",
+      "tree_sha256": "dbd37aa68a18e90bfd62b76dac60393322ed8cb848603454e50bdd2d4720c536",
+      "observed_at": "2026-10-20T20:28:11.019Z"
+    }
+  },
+  "native_chrome": {
+    "attempted": false,
+    "reload_observed": false,
+    "profile": "Chrome user profile was not touched during this refresh attempt."
+  },
+  "resource_journals": [],
+  "cleanup": "No browser permit was started; no Chrome UI action or output-directory promotion occurred. Imported artifact retained for follow-up under its exact CI source/run path.",
+  "next_action": "Resolve the normal promoter eligibility mismatch on the shared checkout or produce a newer successful artifact after an eligible checkpoint. Re-run the unchanged normal import/promotion checks, then use a fresh browser permit to verify Chrome's actual Loaded from path, development ID/version, and pin beside Store 205.",
+  "owner_next_action": "Allow the existing automatic main CI to build this checkpoint source; adopt its successful exact-source artifact through normal promotion and then guarded Chrome reload. Previous stable output and loaded dev578 source9fd are unchanged."
+}
