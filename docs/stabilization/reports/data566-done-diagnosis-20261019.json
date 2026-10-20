@@ -1,0 +1,27 @@
+{
+  "status": "DONE_READ_ONLY_FIRST_BOUNDARY_LOCALIZED_CAUSE_UNPROVEN",
+  "scope": "Exact v0.2.566 guest B run 39348092593, artifact 12231998781; diagnosis only, no source or workflow changes.",
+  "verdict_a_current_native_evidence": {
+    "first_failing_boundary": "In clickPickerButton(page, 'done'), the same page CDP session resolved closed-shadow button#done and DOM.getBoxModel, then DOM.getNodeForLocation rejected at rounded CSS point (42,67) with category no_node_at_location. The measured content center was (41.8359375,66.5), size 29.671875x15. Hit identity assertion, trusted mouse click, picker result dispatch and DataView update were never reached.",
+    "prior_success": "The public page field received a trusted pointer selection; closed-shadow .picked-item count was 1 before Done. This excludes failure to select the field as the first failing boundary.",
+    "remaining_unknown": "The retained exact-run summary does not provide simultaneous page visibility/focus, viewport and visualViewport dimensions, scroll, DOM.getNodeForLocation result for a control point, compositor state, or a same-session foreground differential. It cannot establish why Chrome returned no node. Failure screenshot target missing is a later observation and does not prove the Done button was absent.",
+    "resource": "Package and browser resource finals valid; guest child_failed because the acceptance step failed, with resourceInvalid=false."
+  },
+  "verdict_b_source_guard": {
+    "driver": "tests/browser/data-guest-picker-driver.mjs computes content-quad center from DOM.getBoxModel, rounds x/y only for DOM.getNodeForLocation, requires backendNodeId equality with button#done, then sends page.mouse.click at the unrounded center. It preserves the first protocol error through detach and maps 'No node found at given location' to no_node_at_location.",
+    "harness": "tests/browser/store-reviewer-demo-path.mjs checks exactly one .picked-item before Done and captures safe phase/box/failure diagnostics in the Done catch. The native harness foregrounds the public page for initial panel opening, then captures panel screenshots and exercises panel controls; the reviewer Data path has no explicit page.bringToFront immediately before its Done hit test. This is a testable difference, not a proven cause.",
+    "local_differentials": "Actual-source Chrome 155 fixtures at CSS widths 500 and emulated 366 both hit the exact Done content quad and complete trusted Done with one field. Thus viewport width 366 alone and universal closed-shadow/CDP incompatibility are refuted. Fresh headed public-demo success at a wider Done center (490,66) confirms the path can work but does not isolate the difference."
+  },
+  "smallest_testable_existing_primitive_experiment": "In one admitted exact-candidate native session, before changing any hit assertion or sending a click, record page visibility/focus, innerWidth/innerHeight, visualViewport, scroll and DOM.getLayoutMetrics with Done box. Call page.bringToFront once, recompute Done box in a fresh same-page CDP session, rerun the unchanged strict DOM.getNodeForLocation/backendNodeId equality and trusted click. Compare pre/post rounded point and phase; a foreground-only recovery would support activation/compositor state, while repeated no_node_at_location requires a same-session known-visible page point control and coordinate-space investigation. Preserve original failure and exact frozen runtime provenance.",
+  "ruled_out_as_repairs": "Do not relax hit identity, substitute DOM click, add timing sleep, change picker CSS, or alter CSP on this evidence.",
+  "source_files": [
+    "tests/browser/data-guest-picker-driver.mjs",
+    "tests/browser/store-reviewer-demo-path.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "src/lib/data-pattern/picker.ts",
+    "docs/stabilization/reports/store-release-v0566-acceptance-20261019.json",
+    "docs/stabilization/reports/data-picker-geometry-fixture-20261019.json",
+    "docs/stabilization/reports/data-done-protocol-escalation-20261019.json"
+  ],
+  "changed_files": []
+}

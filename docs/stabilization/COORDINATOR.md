@@ -1,133 +1,139 @@
 # Stabilization resume checkpoint
 
-The campaign is active and incomplete. No overall health or bug-free claim is supported.
-Use [PLAN.md](PLAN.md) for the approved operating rules and [inventory.json](inventory.json)
-for every feature/mode/case, linked defect and retest. Generated [STATUS.md](STATUS.md),
-[STATUS.html](STATUS.html) and [CHECKLIST.md](CHECKLIST.md) derive only from that inventory.
-Past observations remain in their linked reports and Git; this file describes current work.
+Campaign active and incomplete. No overall health or bug-free claim is supported.
+[PLAN.md](PLAN.md) governs execution; [inventory.json](inventory.json) is the coverage truth.
+Generated STATUS/CHECKLIST views derive from it. Earlier evidence remains in linked reports/Git.
 
-## Current release boundary
+## Current truth and release boundary
 
 Read the canonical [Chrome Web Store record](/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md)
-before a release action. Its latest authenticated primary-item observation remains published
-0.2.205, draft0.2.479 rejected, no pending, Upload enabled (October19,16:20UTC).
-Vault login works; no human-only access blocker is known. Do not infer a new dashboard state
-from old email, public listing or this checkpoint.
+before any release action. Last authenticated primary dashboard: October19 16:20UTC,
+published0.2.205, draft0.2.479 rejected, no pending, Upload enabled. Vault login works;
+no human-only access blocker is established. No new upload/submission has occurred.
+Never infer private review state from old email/public listing or this checkpoint.
 
-Current candidate **0.2.566** was built by guarded hosted release39347129008,
-source/tag`c41ae6fd67057305c521791e404d2708882895f5`, artifact12231343581,
+Candidate **0.2.566**: guarded release39347129008, source/tag
+`c41ae6fd67057305c521791e404d2708882895f5`, artifact12231343581,
 StoreZIPsha256`a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840`.
-[Fresh package review](reports/candidate566-package-peer-20261019.json) passed at review time:
-strict release gates, then-current npm latest and required Consumer actions were checked.
-Advisory Mandate/config findings remain explicitly unknown. Native acceptance is in progress,
-not passed. No new Store upload/submission has occurred.
+[Package peer](reports/candidate566-package-peer-20261019.json) passed at review time;
+strict gates passed, advisory Mandate/config findings remain unknown. Recheck package/backend
+and source eligibility immediately before release actions. Later source is not this artifact.
 
-Prior565 guestB39342759083 and memberA39343298322 failed with valid resources;
-never turn their transport/DOM partials into readable UI passes or upload565.
-All their temporary member credentials are deleted. [Checkpoint](reports/store-release-v0565-acceptance-20261019.json),
-[package peer](reports/candidate565-package-peer-20261019.json),
-[native peer](reports/candidate565-native-peer-20261019.json).
-Backend last observed9ef78d4ade91d8f1cb1951710266b094db5744bf; recheck drift before release actions.
+**Release remains blocked by actual non-admin first-turn failure [D261](defects/EXT-D-0261.json).**
+Independent native tester signed in through the real first-party flow, opened fresh member Chat
+after normal panel reload, sent the public-demo question and saw Page Text/Processing end in
+`API error: 504`, no assistant answer. The request endpoint/tool-result/resume boundary was not
+captured; UI wording alone does not prove HTTP status or backend cause. Member follow-up was not
+run. Prior guest-to-member retained transcript/Capture-list alert and inert controls are a
+provisional separate lead, with driver activation not excluded. Exact-org-ID comparison was
+not captured; visible acting org and non-admin identity were verified by the canonical helper.
+[Native report](reports/native-isolated-candidate-20261019.json),
+[image/evidence peer](reports/native566-evidence-peer-20261019.json),
+[diagnosis](reports/member566-tool-stall-diagnosis-20261019.json).
 
-## Active ownership and immediate next actions
+## Verified product progress and exact limits
 
-Owner: primary Codex chat. At this checkpoint all hosted runs and Mac guards are terminal.
-Active release-only owner: `root/release566_owner`; native isolated acceptance owner:
-`root/native_isolated_candidate_acceptance`. Source guardcd6cd7ca9 and relevant CI39345963058
-are successful. GuestB39348092593 and memberA39348194286 are in progress on isolated hosts. A auth preflight
-succeeded and owned one-use link/secret were deleted with absence verification. Native Mac lane
-will test a fresh unseeded guest first, then approved ordinary member, on an owned isolated
-Chrome profile; preserve personalProfile8 session. No new Store upload/submission.
-[Package review](reports/candidate566-package-peer-20261019.json).
-Root owns canonical stabilization records and final integration/release follow-through.
+- **[D260](defects/EXT-D-0260.json) closed for its original Article reproduction.** Product fix
+  `d1bd25d7d` preserves heading-bearing semantic article headers only in cloned extraction input.
+  Independent exact566 fresh guest Capture/Re-capture retains original heading, full introduction
+  and Capture/Understand/Use179words; actual screenshot was peer-reviewed and owner rechecked.
+  Links17, SchemaArticle and SEO neighboring checks were observed. Earlier independent admin
+  reload/recapture also passed. WholeT08/media/member/reload coverage remains partial; this repair
+  is not Store-published. Member Chat504 is separate, not an Article closure criterion.
+- Native fresh unseeded guest first and same-conversation replies, Page Text/resume UI, Data one
+  field→Done→unique selector→guest save gate, default auto-capture off, Article/Links/Schema/SEO
+  have bounded observations. Only named cases are credited; no formal native network-terminal or
+  before/after server-SHA pair was captured. Backend diagnostic separately read9ef78d4ade91d8f1cb1951710266b094db5744bf.
+- Exact566 hostedB39348092593 completed three grounded protocol-terminal guest replies: opening,
+  SAME-conversation second, NEW conversation after panel reload third. Demo checks passed except
+  Data Done: `DOM.getNodeForLocation` returned `no_node_at_location` before mouse input. Resources
+  valid. Actual native Done succeeded in a different window geometry; width alone is refuted by
+  actual-source366px/500px fixtures, and activation cause remains a hypothesis.
+- Exact566 hostedA39348194286 stopped before Chat because the original panel became hidden
+  between organization-open and extension-identity observations, before any picker input/Escape.
+  It is a driver visibility refusal, not demonstrated organization or Chat product failure.
+  Both A/B terminal failures and six sanitized resource finals are in the
+  [release checkpoint](reports/store-release-v0566-acceptance-20261019.json).
 
-1. Retest [D248](defects/EXT-D-0248.json) member visibility guard on the next exact candidate.
-   Exact565 remained document-hidden with transcript opacity0 despite successful replies.
-   [Astra diagnosis](reports/member565-unpainted-escalation-20261019.json) localized missing
-   visibility checks across Chat navigation/captures/sends. The implementation checks the same
-   original target, focus, actual frame and mounted-transcript opacity; one trusted restoration
-   is allowed, then stop before AI if unhealthy. Failure capture must retain same-article
-   postcapture state without turning hidden rendering into a visible pass. The first peer found
-   false passes; the next found an unsupported new500msframe cutoff. Reuse the existing foreground
-   deadline and cancellation repairs are committed atcd6cd7ca9; controlled transit-expiry test
-   and source peer findings are resolved. Native cause remains unknown; no product repair claim.
-   [Owner adjudication](reports/member-visibility-owner-adjudication-20261019.json).
-   [First peer](reports/member-visibility-fresh-peer-20261019.json),
-   [deadline finding](reports/member-visibility-final-peer-20261019.json).
-2. [D258](defects/EXT-D-0258.json) source repair `56ca1354c` is pushed: scroll exact Settings
-   switch into view, crop actual Article heading+intro rather than Re-capture button, preserve
-   bounded CDP exception categories/names/codes.52focusedtests/compile/fullLint pass;
-   independent source qualityPASS, native replay pending. This is not a Data Done product fix.
-   [Repair](reports/reviewer565-failure-repair-20261019.json),
-   [source peer](reports/reviewer565-source-peer-20261019.json).
-3. Data Done565 selected1field and found Done/Cancel, then **DOM.getNodeForLocation itself rejected**
-   before hit equality or mouse click. No downstream IPC/identity defect is proven.
-   Actual-source isolated Chrome fixtures succeed at500px and366px; the latter matches the failing
-   button quad exactly. Unsupported-CDP and narrow-width-only hypotheses are refuted. Public demo
-   HEAD200 has no CSP header. No more speculative fixture variants: next authorized native replay
-   must retain the new bounded exception category/name/code and actual viewport/target evidence.
-   [Protocol fixture](reports/data-done-protocol-escalation-20261019.json),
-   [matching geometry fixture](reports/data-picker-geometry-fixture-20261019.json).
-4. [D260](defects/EXT-D-0260.json) Article product fix `d1bd25d7d` preserves heading-bearing
-   semantic article headers only in cloned extraction input. Independent ADMIN Chrome capture and
-   recapture after reload retain heading, introduction and stages179words; surrounding panes were
-   observed. Guest565 introduction/visible proof is missing, so the defect stays fixed, not closed.
-   Correct inventory link is **EXT-F-1007-T08**, not Settings EXT-F-1003-T08.
-   [Native admin report](reports/native-article-retest-20261019.json).
-5. For subsequent source units, after commit/push and relevant CI success, synchronize main,
-   refresh actual package/runtime/spend eligibility, and build ONE guarded hosted candidate.
-   Run exact-candidate guest/non-admin acceptance on isolated A/B hosts. Never upload565, transfer
-   old artifact passes to a newer package, or rebuild repeatedly before diagnosing a red run.
-6. Continue non-Chat/Pilot Settings/navigation and Scrape/Data/SEO product cases in parallel with
-   urgent public regressions/release acceptance. Do not make inventory completion a testing gate.
-   Member/admin/full-surface/reload gaps remain explicit in the inventory. No full feature-role
-   pair is established healthy. [D217](defects/EXT-D-0217.json) stale-session Save/Retry,
-   [D198](defects/EXT-D-0198.json) SEO history and other fixed-but-unretested records remain open
-   at their own scopes. A pre-existing local unsaved capture/error card was preserved; its old
-   message alone is not a fresh failed Save reproduction.
+## Source units and immediate next work
+
+All prior workers/jobs/Chrome guards are terminal; one-use links/secrets and owned profile/browser
+were deleted, with bounded cleanup evidence in reports. No unrecorded external action is pending.
+Root owns integration/records. Source-only repairs are committed; verify origin/main and the next CI before relying on integration:
+
+1. **D248 `8d8fda5fe`**: shared trusted foreground restoration before organization proof;
+   original-target/visibility checks before every org picker/option input, including after shared
+   pointer settling immediately before press. Release-after-press cleanup remains unconditional.
+   Fresh peers found two real gaps; both repaired,70focused/adjacent tests pass and final source
+   qualityPASS. Native replay pending, D248 remains in-fix. Six existing/new guard suites are now
+   registered in the existing automatic focused CI command. No new workflow/job.
+   [Repair](reports/member566-foreground-repair-20261019.json),
+   [final peer](reports/member566-click-boundary-peer-20261019.json).
+2. **D258 `02503153b`**: one canonical original-page foreground step before strict Done hit;
+   safe before/after geometry/visibility evidence, backend-node identity retained through final
+   CDP session, fresh moved coordinates and strict hit equality. No blind retry/fake DOM.
+  21targeted tests, meaningful mutations, compile and fresh source peer pass. Three Data suites
+   registered in focused CI. Native experiment pending; no product fix or native closure claim.
+   [Repair](reports/data566-foreground-experiment-20261019.json),
+   [final peer](reports/data566-final-peer-20261019.json).
+3. Previous full focused command passed585/585 under a valid Mac guard, before the test-list
+   registration; separate member70/Data21 suites passed. Combined automatic suite and full lint
+   must be verified in next CI. Local full lint was REFUSED before spawn for swap growth; never
+   call it passed. Appropriate source/compile/Biome checks passed. No release until full CI/gates.
+4. Use normal source admission to determine whether reviewed harness changes may retest frozen566.
+   Do not expand an allowlist as an exception or waive a refusal. A new candidate, if required,
+   uses only guarded hosted release after source/runtime/package/spend checks. No stale candidate
+   upload or pending-submission replacement.
+5. Reproduce D261 on an independently admitted host with passive transport attached BEFORE send:
+   classify start/tool_results/resume HTTP statuses and terminal event names, fingerprint identities,
+   exact approved principal/org, actual foreground, before/after server SHA. One watched short
+   call; no raw headers/bodies/auth values. Fresh-direct-member vs original guest→member transition
+   is a discriminator, not interchangeable closure evidence. Use current catalog/test-model skill.
+   [Prepared observer handoff](reports/member566-network-repro-20261020.json).
+6. Continue Settings/navigation and Scrape/Data/SEO registered product cases on independent hosts;
+   deeper Chat/Pilot remains deferred except release/basic-flow regressions. D217 stale-session
+   Save/Retry, D198 SEO history and other fixed-but-unretested cases remain open at their scopes.
+
+## Local resource constraint — not a human-only access gate
+
+On October20 around01:02UTC, system free space fell39→7.9GiB. Apple `cloudd` owns an actively
+growing CloudKit temporary cache file,34.38GiB allocated. Targeted growth matches disk loss.
+Canonical groom dry-run/apply recovered0B; no safe agent-owned12GiB cleanup target exists. No
+personal cache/data or Apple process was removed/stopped. Heavy Mac tests/UI remain on hold
+below the20GiB guard minimum; never lower thresholds or remove the unsafe hold/lease.
+[Recovery](reports/mac-resource-recovery-20261020.json),
+[writer diagnosis](reports/mac-disk-growth-diagnosis-20261020.json).
+Independent hosted guards/CI are not globally blocked by this Mac constraint. This is not an
+account billing/spend refusal and no blocked job may be relocated to bypass an account block.
+Prepared fresh local member repro never launched/minted credentials/called a model and is
+checkpointed; do not claim it tested anything. Resume local work only after normal admission.
 
 ## Installed development copy
 
-Chrome profile8 (armansadeghi.com) has development ID `cihdmkcdjjckfhjpgoedmgfpoljebaml`
-loaded from `/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev`, enabled/pinned beside
-Store ID `hnfolienncfklkgmdjjmhhegglimlamg`0.2.205. Last actual reload verified dev0.2.565
-from CI39342629514/artifact12228829443/source`199e2e738ac928b661c8f1a55f1d4dcc6ddff440`,
+Personal Chrome profile8 keeps dev`cihdmkcdjjckfhjpgoedmgfpoljebaml`0.2.565 loaded from
+`/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev`, enabled/pinned beside actual
+Store`hnfolienncfklkgmdjjmhhegglimlamg`0.2.205. Last actual reload:
+CI39342629514/artifact12228829443/source`199e2e738ac928b661c8f1a55f1d4dcc6ddff440`,
 tree`f5c2313bc27330260b029824b178e1f667cd28e98aa23307d54531a8b6f607bf`.
-Later harness changes are not yet rebuilt/loaded; do not call it current merely because main advances.
-[Install evidence](reports/native-dev-refresh565-20261019.json).
-Import the successful eligible CI artifact with `scripts/current-test-artifact.mjs`, promote with
-`scripts/promote-ci-dev-artifact.mjs`, then guarded native reload and verify path/ID/version/pins.
-This Mac runs no manual builds/releases; use guarded hosted `.github/workflows/release.yml`.
+CI39348412398 at69509c657 is green; development566 artifact12232307392 is available but not
+promoted/reloaded. Later main/source is not loaded. Import with current-test-artifact, promote
+with promote-ci-dev-artifact and guard actual reload/path/ID/version/pins after local recovery.
+Personal principal is a real personal admin; never log it out. Use owned profiles for auth tests.
 
-## Execution and integration safeguards
+## Integration and continuity
 
-- At most3workers beside owner; flat lanes. At most2hosted browser runs on isolated hosts/profiles,
-  one guarded heavy job per physical host including this Mac. Existing safe admission/resource
-  refusal is binding. No UI/Chrome launch before actual ADMITTED plus owner verification.
-  Unrelated CI on another host is not a global capacity block. Serialize fixtures/credentials.
-- Fetch/merge at boundaries and at least every15minutes; reconcile before push. Shared main,
-  exact-path commits, preserve contributor changes. Never reset/stash/force/new worktree.
-  Source units require appropriate tests/compile/full lint and independent review. Documentation
-  checkpoints can skip duplicate CI; actual source changes and exact candidate gates cannot.
-- Read current `ci-spend` before paid dispatch/publication. The complete23:20UTC read was
-  $59.50/$100; refresh it rather than treating that number as a permanent budget permit.
-  Never relocate an account/billing-blocked job. Preserve both actual spend and advisory limits.
-- Active pending guard journals stay in place. After final decision, use
-  `scripts/copy-hosted-resource-journal.mjs` to a NEW sanitized path. Preserve raw bytes/hash in
-  ignored `test-results` only after terminal. Do not commit raw logs, credentials, auth URLs,
-  browser profiles or guest authentication values. Unsupported copier output needs review.
-- Retest is required for closure: original reproduction plus neighboring cases independently
-  pass. A resource-invalid run earns zero product credit. Source/CI/fixture checks are never
-  counted as actual product behavior passes. Failed runs retain their failed verdict.
-- After inventory edits regenerate with `python3 scripts/generate-stabilization-tracker.py`.
-  Keep stable IDs and explicit partial/unknown/blocked/stale states. Validate new JSON reports;
-  format ignored JSON via Biome stdin if the direct-path formatter processes no files.
-- Before ending a turn, every worker must finish or checkpoint exact ownership, external run
-  handles, cleanup, versions/provenance, files/commits, evidence limits and next action.
+At most3workers beside root; two hosted browser lanes on isolated hosts, one guarded heavy job
+per physical host. Actual ADMITTED plus root GO precedes UI; no UI after guard final. Terminal
+raw journals are preserved byte-identically in ignored test-results; commit only copier-produced
+sanitized journals and safe reports. Unsupported API is not a safety refusal; genuine browser
+safety refusal cannot be bypassed.
 
-Native account-mode navigation attempt earns zero case credit: initial valid guard covered the
-Store guest preflight; subsequent Dev Profile/Preferences navigation occurred after guard ended
-and is excluded. No sign-out or authentication/settings/capture mutation occurred. The current
-Dev principal is a personal admin, not the test account; do not log it out without proven restore.
-Use an owned isolated test profile for guest/member flows instead.
-[Chronology](reports/native-account-mode-acceptance-20261019.json).
+Fetch/merge at boundaries and at least every15minutes, preserve contributors, exact-path commits,
+push verified units frequently. Current real weekly CI spend read is59.50/$100 complete/nonstale;
+refresh before paid dispatch/publication. Off-track waste flags do not replace actual real total.
+No account billing block workaround. This Mac never runs manual builds/releases.
+
+Update canonical records and generated views together; never promote source/CI/fixtures to
+product passes. Before ending, every worker and external action must finish or checkpoint exact
+ownership/handles/provenance/credentials cleanup/next action. The inventory has no overall healthy
+feature-mode claim; all unknown, stale, blocked and unverified coverage remains explicit.

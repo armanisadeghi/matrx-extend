@@ -1,0 +1,43 @@
+{
+  "captured_at_utc": "2026-10-20T01:02:01.813943+00:00",
+  "system_data_volume": {
+    "mount": "/System/Volumes/Data",
+    "free_bytes": 8495480832,
+    "free_gib": 7.912
+  },
+  "confirmed_active_writer": {
+    "process": "cloudd",
+    "pid": 690,
+    "open_fd": "21",
+    "file_birth_local": "2026-10-19T17:57:49-0700",
+    "logical_bytes": 42430627840,
+    "allocated_bytes": 36915118080,
+    "allocated_gib": 34.38,
+    "last_modification_utc": "2026-10-20T01:02:01.813911+00:00",
+    "ownership": "Apple CloudKit / iCloud cache; not agent-owned",
+    "path_class": "~/Library/Caches/CloudKit/com.apple.bird/<account-cache>/MMCS/<temporary file>"
+  },
+  "growth_samples": [
+    { "epoch": 1792458074.270707, "allocated_gib": 34.206, "free_gib": 8.094 },
+    { "epoch": 1792458079.2809448, "allocated_gib": 34.258, "free_gib": 8.039 },
+    { "epoch": 1792458084.282075, "allocated_gib": 34.263, "free_gib": 8.032 }
+  ],
+  "finding": "The CloudKit file gained allocated blocks while volume free space fell at essentially the same rate. Its roughly 34 GiB allocation explains the reported ~31 GiB free-space drop. Trigger of iCloud activity is unknown.",
+  "other_checks": {
+    "open_deleted_large_files": "none >100 MB via lsof +L1",
+    "data_volume_snapshots": "none",
+    "targeted_cache_kib": {
+      "codex_home": 6424944,
+      "codex_runtimes": 1982616,
+      "private_tmp": 2691908,
+      "CloudKit": 36108244
+    },
+    "canonical_groom": "daily dry-run/apply already completed by prior lane; 0 bytes recovered"
+  },
+  "safe_action": {
+    "files_deleted": [],
+    "processes_stopped": [],
+    "reason": "CloudKit file and cloudd are Apple/iCloud-managed, potentially personal sync data; agent caches are insufficient or active. No proven agent-owned safe target >=12 GiB."
+  },
+  "admission": "Keep heavy tests, browsers, local builds, and release work on hold while free system space is below 20 GiB; recheck free space before resuming."
+}

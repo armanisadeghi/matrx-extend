@@ -1,0 +1,42 @@
+{
+  "id": "EXT-D-0261",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T14"],
+  "title": "Signed-in non-admin first Chat turn ends in 504 after Page Text",
+  "surface": "Chat first message and browser tool continuation",
+  "auth_mode": "member after real guest-to-member sign-in; fresh-direct-member discriminator pending",
+  "severity": "S1: signed-in member gets no assistant answer on a basic page question",
+  "priority": "P0: real non-admin release acceptance blocker",
+  "state": "open",
+  "owner": "root/member566_network_repro",
+  "preconditions": [
+    "Use exact 0.2.566 candidate from source c41ae6fd67057305c521791e404d2708882895f5, Store ZIP sha256 a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840. Canonical test adaptation changes manifest key only; original runtime code is unchanged.",
+    "Use a fresh owned Chrome profile under a valid resource guard; never sign out the personal Chrome profile.",
+    "Use the existing approved ordinary reviewer and test organization through canonical real first-party sign-in; retrieve private access at point of use. No injected auth/session values."
+  ],
+  "reproduction": [
+    "Load/reload exact candidate and public https://www.aimatrx.com/matrx-extend-demo; record extension ID/version/tree and current live backend before the run.",
+    "In a fresh unseeded guest profile, send a page question and same-conversation follow-up; the observed guest answers succeeded.",
+    "Complete real first-party reviewer sign-in, then extension Settings Sign in. Verify non-admin identity and visible acting organization.",
+    "Normally reload the side panel to open a fresh member Chat; record separately the prior retained guest transcript/Capture list unavailable alert.",
+    "With Matrx Browser Agent and the observed Claude Sonnet 5.5 selection, send: On this demo page, what is the main heading and what are the three table stages? Answer from the page.",
+    "Observe Page Text -> Processing, then terminal API error: 504 with Retry/Details, no assistant prose, Stop gone and Send restored. Do not count a follow-up as tested."
+  ],
+  "expected": "The signed-in member receives a page-grounded assistant answer after the browser tool completes, with successful terminal completion; a same-conversation follow-up can then be tested.",
+  "actual": "The first fresh member turn visibly ended in API error: 504 after roughly one minute at Page Text/Processing, without an assistant answer. Failed request endpoint, HTTP transport status, tool result/resume boundary and exact organization ID comparison were not captured. UI wording alone cannot assign a backend or extension cause.",
+  "evidence": [
+    "docs/stabilization/reports/native-isolated-candidate-20261019.json",
+    "docs/stabilization/reports/native566-evidence-peer-20261019.json",
+    "docs/stabilization/reports/member566-tool-stall-diagnosis-20261019.json"
+  ],
+  "cause": "Unknown; distinguish initial stream, tool-result delivery, resume, or streamed error using a new guarded passive-observer run. Prior inert New chat/Send observations remain provisional because driver activation was not excluded.",
+  "next_action": "Run one bounded fresh-direct-member reproduction on the same immutable runtime with passive endpoint-class/status/event correlation attached before send. Verify actual principal/approved organization, model eligibility and foreground. Never log headers, payloads, tokens or raw conversation identifiers. Repair only the localized boundary and independently retest original reproduction plus surrounding guest/member cases.",
+  "transition_history": [
+    {
+      "at": "2026-10-20T00:56:58.460155Z",
+      "from": null,
+      "to": "open",
+      "reason": "Resource-valid actual native non-admin first message visibly ended in 504/no answer; independent screenshot review supports failure, cause unlocalized."
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-19T23:40:39.810Z",
+  "updated_at": "2026-10-20T00:58:26.521287Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -25762,6 +25762,20 @@
               "resource_valid": true,
               "scope": "Links/Schema passed ownpublicsource checks; Article content present/stages present but heading unlocalized. Images/Video/otherTabcontrols not tested.",
               "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
+            },
+            {
+              "run_id": "native-isolated-candidate-20261019-001",
+              "mode": "guest",
+              "version": "0.2.566",
+              "source_sha": "c41ae6fd67057305c521791e404d2708882895f5",
+              "status": "partial",
+              "resource_valid": true,
+              "new_unique_case_pass": false,
+              "scope": "D260 original Article header/intro loss independently retest-passed on Capture/Re-capture; Links17/SchemaArticle/SEO observed. Images/Video/full reload/member result tabs remain unverified. D260 closed, wholeT08 remains partial.",
+              "evidence": [
+                "docs/stabilization/reports/native-isolated-candidate-20261019.json",
+                "docs/stabilization/reports/native566-evidence-peer-20261019.json"
+              ]
             }
           ],
           "native_store_observations": [
@@ -51879,6 +51893,53 @@
               "status": "unverified"
             }
           }
+        },
+        {
+          "id": "EXT-F-2013-T14",
+          "title": "Ordinary member first page-tool reply after real sign-in",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-2013-C08",
+            "EXT-F-2013-C10"
+          ],
+          "preconditions": [
+            "Use exact 0.2.566 candidate from source c41ae6fd67057305c521791e404d2708882895f5, Store ZIP sha256 a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840. Canonical test adaptation changes manifest key only; original runtime code is unchanged.",
+            "Use a fresh owned Chrome profile under a valid resource guard; never sign out the personal Chrome profile.",
+            "Use the existing approved ordinary reviewer and test organization through canonical real first-party sign-in; retrieve private access at point of use. No injected auth/session values."
+          ],
+          "steps": [
+            "Load/reload exact candidate and public https://www.aimatrx.com/matrx-extend-demo; record extension ID/version/tree and current live backend before the run.",
+            "In a fresh unseeded guest profile, send a page question and same-conversation follow-up; the observed guest answers succeeded.",
+            "Complete real first-party reviewer sign-in, then extension Settings Sign in. Verify non-admin identity and visible acting organization.",
+            "Normally reload the side panel to open a fresh member Chat; record separately the prior retained guest transcript/Capture list unavailable alert.",
+            "With Matrx Browser Agent and the observed Claude Sonnet 5.5 selection, send: On this demo page, what is the main heading and what are the three table stages? Answer from the page.",
+            "Observe Page Text -> Processing, then terminal API error: 504 with Retry/Details, no assistant prose, Stop gone and Send restored. Do not count a follow-up as tested."
+          ],
+          "expected": [
+            "The signed-in member receives a page-grounded assistant answer after the browser tool completes, with successful terminal completion; a same-conversation follow-up can then be tested."
+          ],
+          "defect_ids": [
+            "EXT-D-0261"
+          ],
+          "results": {
+            "member": {
+              "status": "fail",
+              "run_id": "native-isolated-candidate-20261019-001",
+              "build_version": "0.2.566",
+              "source_sha": "c41ae6fd67057305c521791e404d2708882895f5",
+              "receipt_kind": "native_store_zip_candidate_key_adapted",
+              "resource_valid": true,
+              "new_unique_case_pass": false,
+              "evidence": [
+                "docs/stabilization/reports/native-isolated-candidate-20261019.json",
+                "docs/stabilization/reports/native566-evidence-peer-20261019.json"
+              ],
+              "detail": "The first fresh member turn visibly ended in API error: 504 after roughly one minute at Page Text/Processing, without an assistant answer. Failed request endpoint, HTTP transport status, tool result/resume boundary and exact organization ID comparison were not captured. UI wording alone cannot assign a backend or extension cause."
+            }
+          },
+          "retest_status": "pending; no same-conversation member follow-up or root cause established"
         }
       ],
       "cells": {
@@ -51917,18 +51978,20 @@
           "retest_status": "Independently reviewed bounded public205 T10 three-turn PASS on stable server a61289ff; Values Escape failure D244/T13 open. Exact548/native Store install/member/admin/full feature remain unverified."
         },
         "member": {
-          "test_status": "unverified",
+          "test_status": "fail",
           "defect_ids": [
             "EXT-D-0074",
             "EXT-D-0075",
             "EXT-D-0113",
             "EXT-D-0240",
-            "EXT-D-0242"
+            "EXT-D-0242",
+            "EXT-D-0261"
           ],
           "run_ids": [
-            "39154980480"
+            "39154980480",
+            "native-isolated-candidate-20261019-001"
           ],
-          "retest_status": "Latest candidate .546 remains unverified: Candidate .546 two terminal HTTP200 replies; painted-answer gate failed and approved-org comparison was not loaded. Zero visible-answer credit; paint cause unresolved. Earlier bounded evidence remains bound to its original build/server."
+          "retest_status": "Exact566 native first member turn visibly fails with API error504/no answer (D261). Prior hidden-panel hosted A is a separate driver refusal. No member follow-up or overall Chat pass."
         },
         "admin": {
           "test_status": "unverified",

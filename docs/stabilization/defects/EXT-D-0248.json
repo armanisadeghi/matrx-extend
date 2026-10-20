@@ -12,7 +12,7 @@
   "reproduction": [
     "Run exact556 nonadmin Store acceptance A39291881216 through successful selected-authentication/org preflight.",
     "The runner opens https://www.aimatrx.com/matrx-extend-demo, then calls restoreMemberForegroundWithReport with its web tab and the original Research brief root page before sending Chat.",
-    "The helper closes web, brings the unrelated root page forward and reopens the panel. It asks for this page\u2019s workflow stages but grades the reply against the now-closed demo\u2019s Capture/Understand/Use stages."
+    "The helper closes web, brings the unrelated root page forward and reopens the panel. It asks for this page’s workflow stages but grades the reply against the now-closed demo’s Capture/Understand/Use stages."
   ],
   "expected": "Foreground/auth recovery preserves the intended acceptance target; actual assigned URL/page identity is verified before sending and grading against that page.",
   "actual": "The native diagnostic records web_close and root_foreground before send. The canonical request/tool flow succeeds but reply is graded against a different page; no product wrong-answer conclusion is supported.",
@@ -94,7 +94,7 @@
       "reason": "Fresh bounded Astra escalation reproduced neither generic tab nor popup cause locally. Safe auth topology instrumentation41b7cecdd passes independent source review; hosted first hidden transition still requires replay before selecting a repair."
     }
   ],
-  "next_action": "RelevantCI then fresh guarded exact candidate and original-target lifecycle differential. Sourceguardcd6cd7ca9 is reviewed/tested and pushed; no product opacity fix is claimed. Refuse beforeAI if originalpanel cannot recovervisible/focused/frame/opacity under existingforegrounddeadline.",
+  "next_action": "After synchronized-main CI and resource admission, independently replay original exact-candidate boundary using the repaired harness. Preserve hidden/no-hit refusal, approved org/hash and terminal-answer gates. Actual member Chat 504 is separate D261 and blocks release. Never waive admission or transfer older product passes.",
   "fix_sha": "b20df1b31",
   "reviewer": "Fresh source-contract review accepts safe instrumentation; native issue remains unresolved, no repair or member Chat pass claimed.",
   "diagnostic_sha": "a7f4d9eb385386cff1c91cdd761ef14fea2e96f0",
@@ -124,5 +124,19 @@
     "cause": "first hide transition afterlastforegroundrestore remainsunobserved; screenshotfailurepath lackedpostcaptureprobe",
     "state_scope": "in-fix; no product source repair proven"
   },
-  "visibility_guard_source_commit": "cd6cd7ca9130c3a36342ef9c4c984567f744d187"
+  "visibility_guard_source_commit": "cd6cd7ca9130c3a36342ef9c4c984567f744d187",
+  "source_experiments": [
+    {
+      "at": "2026-10-20T01:05:02.708075Z",
+      "commit": "8d8fda5fe",
+      "status": "independent_source_pass_native_pending",
+      "evidence": [
+        "docs/stabilization/reports/member566-foreground-repair-20261019.json",
+        "docs/stabilization/reports/member566-foreground-peer-20261019.json",
+        "docs/stabilization/reports/member566-foreground-final-peer-20261019.json",
+        "docs/stabilization/reports/member566-click-boundary-peer-20261019.json"
+      ],
+      "detail": "Harness-only original-target foreground/input guards; not a product fix or native acceptance pass. Full585 focused suite and separate70 member/21 Data suites pass; new automatic CI registration added, combined CI/full lint pending after local lint resource refusal."
+    }
+  ]
 }

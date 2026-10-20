@@ -1,0 +1,35 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Read-only diagnosis of exact 0.2.566 member run A39348194286; no code, browser, CI, or credential actions",
+  "verdict_a_live_evidence": {
+    "status": "PARTIAL",
+    "first_defensible_boundary": "Original side-panel target/context/document is visible at after_organization_open and hidden at after_extension_identity. The first hidden sample precedes admin-check stop and every organization-picker input. The trace samples an interval, not the visibilitychange event within it.",
+    "evidence": [
+      "Report auth_topology keeps target 4A648E68313536CEB1E025197CAE86B4, context 85798ccf-1bfc-43d0-9f5d-01490716ab94 and document CED69A8DB80220A66B1347CFF51DACC8 through both sides of the transition; focused normal window and active tab are unchanged.",
+      "after_extension_identity reports visibility=hidden and hasFocus=true; after_admin_check_stop and all seven picker phases remain hidden. The picker has one checked option while expanded, then collapses on Escape. The approved organization fingerprint comparison passed.",
+      "Account and web identities are signed in; canonical admin lookup is HTTP 200 with zero rows. Chat is null. foreground_diagnostic is null because the explicit hidden guard throws before restoreMemberForegroundWithReport.",
+      "Resource-valid version 0.2.562 member run 39329142176 recorded all seven picker/Escape samples visible (EXT-D-0248), falsifying a deterministic Escape-caused hide claim. Version 0.2.565 resource-valid run later hid after foreground restore, so visibility may change at more than one lifecycle boundary."
+    ],
+    "unknown": [
+      "No event-level visibilitychange timestamp identifies the instruction or browser event between after_organization_open and after_extension_identity.",
+      "document.visibilityState=hidden with hasFocus=true and persistent CDP target does not establish physical closure versus native side-panel lifecycle state; no failure-time screenshot or post-restore observation exists in this 566 report.",
+      "No member Chat answer, visible answer, or send-time source proof was reached."
+    ]
+  },
+  "verdict_b_source_quality": {
+    "status": "PARTIAL",
+    "finding": "The runner correctly refuses a hidden panel before model spend, but it collects approved-organization picker proof while document.visibilityState is hidden, then throws before the already shared trusted foreground reopen and visible wait. The generic failure_code is unclassified_failure because reviewer_member_panel_hidden_during_org_proof is absent from SAFE_FAILURE_CODES.",
+    "source_boundaries": [
+      "reviewer-chat-store-acceptance.mjs: after_organization_open -> identity wait/role verification -> after_extension_identity -> adminCheck.stop -> picker proof -> hidden guard -> foreground restoration",
+      "member-foreground-diagnostic.mjs: restoreMemberForeground foregrounds the demo tab, calls native.reopenPanel({page:web}), then requires document.visibilityState=visible",
+      "native-sidepanel-qa-harness.mjs: activateOwnedSidePanel only opens the exact owned panel when hidden; it preserves the existing target when visible and samples post-open visibility"
+    ],
+    "not_a_proven_cause": "Neither the read-only topology samples nor screenshot capture in unrelated earlier phases can be assigned causality; no failure screenshot exists here. The picker click and Escape occur after the first hidden observation, so changing them cannot explain this run. CSS, visibility override, synthetic focus, or fake DOM would weaken the gate."
+  },
+  "smallest_testable_next_step": {
+    "one_variable_experiment": "At the first after_extension_identity hidden observation, invoke the already shared restoreMemberForegroundWithReport on the original target before native picker input. Keep the approved UUID proof, verify document visibility and the exact target/context/document again before the click, after checked-option proof, after dismissal, and before Chat. If the original target cannot become and remain visible, stop before send with the existing foreground diagnostic.",
+    "red_green_guard": "RED: extract the actual runner prerequisite and drive a hidden same-target panel; the current ordering performs picker input before any trusted reopen. GREEN after moving the shared restore: hidden panel triggers trusted reopen first, rejects failed visible wait, and only then performs the real checked UUID/fingerprint proof. Mutants that force visibility=true, skip the approved hash comparison, change target, or permit hidden after picker must fail. This source guard is not native acceptance.",
+    "bounded_native_acceptance": "On one fresh exact candidate with all resource journals valid and real non-admin account, record original target/context/document and document visibility at the identity boundary; require trusted reopen to produce visible original panel before picker, checked approved UUID, collapsed picker, visible original panel after dismissal, then existing demo-target, two-turn Chat, and readable answer gates. If reopen fails, retain foreground failure substep/snapshot and do not spend model calls. If visibility first drops again only during the picker, isolate that later boundary in a new one-variable probe.",
+    "capture_improvement": "Add the specific safe failure code and persist bounded visibility/target snapshots at the pre-picker and first-hidden boundaries; avoid screenshot as a substitute for the visibility predicate. A native screenshot at first hide can help distinguish physical display, but capture itself is a CDP operation and needs before/after samples."
+  }
+}

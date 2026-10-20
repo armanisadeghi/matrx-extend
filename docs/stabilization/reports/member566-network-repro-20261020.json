@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "status": "NOT_RUN_LOCAL_RESOURCE_REFUSAL",
+  "scope": "Fresh native non-admin member first-turn Page Text 504 transport localization for exact v0.2.566 candidate",
+  "candidate": {
+    "runtime_dir": "/tmp/matrx-native-candidate-20261019.v0lKMO/chrome-mv3-store",
+    "runtime_receipt": "/tmp/matrx-native-candidate-20261019.v0lKMO/release-receipt.json",
+    "source_sha": "c41ae6fd67057305c521791e404d2708882895f5",
+    "version": "0.2.566",
+    "runtime_tree_sha256_from_prior_receipt": "c7f77d85068df8470a9ec9e19e2dbd4dd246095884a2ff4855469154cc2cce2e",
+    "published_store_zip_sha256_from_prior_receipt": "a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840",
+    "prior_native_report": "/tmp/native-isolated-candidate-20261019.json",
+    "prior_diagnosis": "/tmp/member566-tool-stall-diagnosis-20261019.json",
+    "independent_hash_recheck": false
+  },
+  "preparation": {
+    "temp_cdp_bridge": "/tmp/member566-network-20261020/cdp-owned.mjs",
+    "temp_passive_observer": "/tmp/member566-network-20261020/observer.mjs",
+    "syntax_checks": "pass",
+    "observer_method": "Existing watchGuestAiRequests package-mode offscreen Network observer plus temp passive generic route classifier for agent or mandate start, tool_results, resume, and conversation turn; attach before first send. Retain only endpoint class, HTTP status, allowlisted terminal event names, continuation-needed boolean, result/resume counts and conversation fingerprints; no headers, bodies, auth values, raw IDs or token-bearing URLs.",
+    "private_identity_file_available": "test-results/reviewer-account-recovery-private.json",
+    "approved_org_config_available": "test-results/files-saved-private-config.json",
+    "one_use_link_created": false,
+    "live_catalog_query": "attempted read-only CLI query, interrupted before result on resource refusal; no model selection made",
+    "backend_precheck_git_sha": "9ef78d4ade91d8f1cb1951710266b094db5744bf",
+    "backend_postcheck": "not_applicable_no_model_call"
+  },
+  "resource": {
+    "guard_started": false,
+    "admitted": false,
+    "reason": "Root reported local system free space 7.9 GiB below 20 GiB guard minimum; 34 GiB allocation is personal Apple CloudKit data and is outside agent cleanup.",
+    "actual_browser_started": false,
+    "actual_ui_actions": 0,
+    "model_calls": 0,
+    "external_jobs_owned": 0,
+    "owned_processes_remaining": 0,
+    "browser_profile_created_empty_then_removed": true,
+    "one_use_link_absent": true,
+    "secrets_created_or_retained": false
+  },
+  "discriminator_for_hosted_run": "On an independently admitted host, load the exact receipt-bound candidate in an owned Chrome profile, sign the existing approved non-admin member in directly before any guest chat, verify exact approved organization ID, attach passive offscreen transport observer before one public-demo first-turn send of the prior prompt, and record classified start/tool_results/resume requests with statuses and terminal event names. Stop after first failed turn; no follow-up. A 504 on start, tool_results, resume, or a 2xx stream with error event separates the four causal boundaries in the prior diagnosis.",
+  "conclusion": "No new product observation or root cause. Prior member UI 504 remains reproduced only in the earlier native run and transport boundary remains unknown. Local browser work awaits resource recovery; independent hosted execution is viable and does not require a human-only step."
+}

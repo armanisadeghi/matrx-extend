@@ -1,0 +1,42 @@
+{
+  "status": "DONE_WITH_CONCERNS_ROUND2_PEER_GAP_REPAIRED",
+  "scope": "Source-only bounded repair for exact566 member hidden-before-picker interval; no native replay, workflow, credential, docs/defect/inventory, or Git action",
+  "changed_files": [
+    "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "tests/browser/member-foreground-diagnostic.mjs",
+    "tests/browser/member-picker-transition-diagnostic.mjs",
+    "tests/browser/member-chat-visible-proof.mjs",
+    "tests/browser/member-org-foreground-prerequisite.test.mjs",
+    "tests/browser/member-picker-transition-diagnostic.test.mjs",
+    "tests/browser/member-chat-visible-proof.test.mjs",
+    "tests/browser/reviewer-chat-organization-boundary.test.mjs",
+    "tests/browser/settings-panel-driver.mjs"
+  ],
+  "behavior": [
+    "After role/identity proof and admin observer stop, default member lane samples original topology, uses the existing restoreMemberForegroundWithReport on the demo tab, samples again, and requires the exact original panel target and a visible single SIDE_PANEL context before any organization picker input.",
+    "The first post-restore picker sample and immediate pre-click sample must both report visible. A later hidden/unmeasured picker phase refuses UUID credit after native Escape cleanup. The approved organization UUID fingerprint comparison remains unchanged; an after-proof topology sample again requires the original target and visible document.",
+    "For the no-selected-organization branch, the actual runner requires the original visible target after reviewer_organization_resolved and before selectReviewerOrganization. That helper invokes the same original-target/visibility callback immediately before opening the picker and again before option mouse input. The checked-UUID helper invokes it before its own picker click.",
+    "The shared click driver now accepts an optional beforeDispatch guard after its pointer-stability polling and immediately before mousePressed. Both member organization picker callers pass the existing original-target/visibility check. Once press begins, mouseReleased remains unconditional cleanup even if the panel hides.",
+    "The first hidden topology transition is persisted with bounded phase, prior phase/visibility, and same-target/document booleans. The two new foreground refusal codes are classified safely in the report."
+  ],
+  "red_green": {
+    "before": "New actual-runner prerequisite suite: 4/4 failed against old ordering because restore was never called before picker input and failed-restore/replacement refusals were absent. Initial run lacked helper export; after adding it, runner assertions failed behaviorally as expected.",
+    "after": "70/70 focused and adjacent source tests pass, including actual runner extraction, failed trusted restore, target replacement, hidden-before-click no input, hidden-after-click refusal with Escape release, no-selected branch hidden-before-selection and hidden-between-picker-and-option refusal, actual shared-click pointer-wait timing, approved-org binding, and legacy foreground/pointer checks.",
+    "mutation": "Same actual runner excerpt with restoreMemberForegroundWithReport call replaced by a no-op goes red on hidden original panel and performs no picker input. Direct target-replacement scenario goes red before picker. In the no-selected actual runner branch, removing both boundary and input callbacks admits picker-input:hidden. Before the shared click guard, actual helper plus actual click emitted mousePressed:hidden and mousePressed on replacement after pointer wait; with the guard, both emit zero press. A hide after press still releases. A same-target document remount remains allowed."
+  },
+  "verification": {
+    "focused_node_tests": "PASS 70/70: member-org-foreground-prerequisite, member-picker-transition-diagnostic, reviewer-chat-foreground-restoration, reviewer-chat-organization-boundary, member-chat-visible-proof, settings-pointer-animation",
+    "compile": "PASS pnpm compile",
+    "biome": "PASS pnpm exec biome check over all nine touched files after formatting"
+  },
+  "review_package": {
+    "verdict_a_live_evidence": "PENDING native exact-candidate retest; source checks do not transfer a Store acceptance pass or show Chat result.",
+    "verdict_b_source_quality": "Peer A1/B1 no-selected organization gap fixed in round 1; peer A2/B2 pointer-settling gap fixed in round 2; fresh independent re-review pending. Inspect shared click optional pre-dispatch guard, release cleanup, both organization picker callers, untouched approved UUID hash and Chat gates, safe report fields, and actual-click RED/GREEN guard.",
+    "native_acceptance": "Resource-valid real non-admin exact candidate: original target visible after trusted reopen before picker, checked approved UUID, visible original panel after dismissal, demo source unchanged, two terminal same-conversation turns, readable answer; no model call if restore fails."
+  },
+  "limitations": [
+    "Exact566 B Data no_node_at_location is out of scope.",
+    "No native run was launched; root owns native candidate and integration.",
+    "No Git action was taken because root retained exclusive index ownership."
+  ]
+}

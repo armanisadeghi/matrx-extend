@@ -51,7 +51,7 @@
     "forensic": "Fresh read-only escalation localized original564 failure to clickPickerDone catch BEFORE result wait. Downstream IPC/identity rejection is not established. New pre-Done count alone would not explain discarded first error."
   },
   "fix_commit": "56ca1354c46645849dab2b106b8cc8549ce94633",
-  "next_action": "Resolve real CDP lookup mechanism with guarded no-AI fixture; independently review member visibility-boundary repair; then fresh synchronized candidate/current packages/native acceptance, retaining actual Article heading+intro and readable Chat proof. Do not upload565 or count source changes as productpasses.",
+  "next_action": "After synchronized-main CI and resource admission, independently replay original exact-candidate boundary using the repaired harness. Preserve hidden/no-hit refusal, approved org/hash and terminal-answer gates. Actual member Chat 504 is separate D261 and blocks release. Never waive admission or transfer older product passes.",
   "transition_history": [
     {
       "at": "2026-10-19T22:05:02.915114Z",
@@ -112,6 +112,24 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "56ca1354c reviewed source committed/pushed; native replay pending, no DataDone productfix."
+    },
+    {
+      "at": "2026-10-20T01:05:02.708075Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Exact566 hostedB with valid resource finals still fails Data Done at DOM.getNodeForLocation no_node_at_location before click."
+    },
+    {
+      "at": "2026-10-20T01:05:02.708075Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Bounded one-time original-page foreground and cross-session target-continuity experiment."
+    },
+    {
+      "at": "2026-10-20T01:05:02.708075Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Reviewed source experiment and strict hit/moving-geometry guards pass; native hosted replay still mandatory."
     }
   ],
   "previous_fix_commits": [
@@ -119,5 +137,18 @@
     "3ecfcd1c79f75bec56be26a942188480069ba5c8",
     "436fec00c71da4e14ba6fce281bb38fa02566019",
     "0708b3001019f570b34f0fcd7ee835edf3f53331"
+  ],
+  "source_experiments": [
+    {
+      "at": "2026-10-20T01:05:02.708075Z",
+      "commit": "02503153b",
+      "status": "independent_source_pass_native_pending",
+      "evidence": [
+        "docs/stabilization/reports/data566-foreground-experiment-20261019.json",
+        "docs/stabilization/reports/data566-foreground-peer-20261019.json",
+        "docs/stabilization/reports/data566-final-peer-20261019.json"
+      ],
+      "detail": "Harness-only original-target foreground/input guards; not a product fix or native acceptance pass. Full585 focused suite and separate70 member/21 Data suites pass; new automatic CI registration added, combined CI/full lint pending after local lint resource refusal."
+    }
   ]
 }
