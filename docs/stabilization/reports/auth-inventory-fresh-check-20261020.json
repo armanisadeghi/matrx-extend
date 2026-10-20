@@ -1,0 +1,232 @@
+{
+  "feature_id": "EXT-F-1015",
+  "canonical_source": "docs/stabilization/inventory.json",
+  "scope": "source-only corrective census; no UI, test, build, model, Git, or canonical edits",
+  "control_count": 22,
+  "case_count": 43,
+  "controls": [
+    {
+      "id": "EXT-F-1015-C01",
+      "canonical_label": "Organization picker appears for held request",
+      "canonical_action": "Trigger a request with no active organization; verify dialog opens from pending flag after panel-open and from broadcast while panel is already open.",
+      "source_status": "retired",
+      "finding": "Held-request picker and pending-flag/broadcast entry have no source; load ladder chooses at window load.",
+      "source_evidence": "src/lib/org/active-org.ts:12-32,353-368; src/features/org/OrganizationPickerDialog.tsx absent",
+      "case_ids": ["EXT-F-1015-T01", "EXT-F-1015-T02", "EXT-F-1015-T03", "EXT-F-1015-T41"],
+      "safe_change": "Retire T01-T03 procedure and expectation. Preserve cases/evidence; replacement checks load ladder and zero-membership refusal in new or revised cases."
+    },
+    {
+      "id": "EXT-F-1015-C02",
+      "canonical_label": "Organization list loading and retry",
+      "canonical_action": "Open picker; verify loading state, backend read failure state, then retry after service recovery.",
+      "source_status": "replaced",
+      "finding": "Membership loading and read error survive in Settings; picker and explicit retry button do not appear there. Hook exposes reload.",
+      "source_evidence": "src/hooks/use-active-organization.ts:18-51; src/features/settings/SettingsView.tsx:249-268",
+      "case_ids": ["EXT-F-1015-T04", "EXT-F-1015-T05"],
+      "safe_change": "Replace T04-T05 picker steps with Settings Organization loading, failed read shown as error, and recovery after reload/reopen or filter change; do not assert a Retry button until implemented."
+    },
+    {
+      "id": "EXT-F-1015-C03",
+      "canonical_label": "Select organization",
+      "canonical_action": "Choose a listed membership; verify active device organization is updated and held request resumes.",
+      "source_status": "replaced",
+      "finding": "Settings explicit switch persists device choice and account last active; no held request resumes.",
+      "source_evidence": "src/features/settings/SettingsView.tsx:287-310; src/lib/org/active-org.ts:376-442",
+      "case_ids": ["EXT-F-1015-T06", "EXT-F-1015-T07", "EXT-F-1015-T40"],
+      "safe_change": "Replace T06-T07 with Settings switch, device selection, account propagation, and subsequent request header. Remove dialog close/held-resume claims."
+    },
+    {
+      "id": "EXT-F-1015-C04",
+      "canonical_label": "Picker cannot be dismissed while choice is required",
+      "canonical_action": "With organizations available, press Escape and click outside; dialog remains until choice.",
+      "source_status": "retired",
+      "finding": "Required-choice dialog is absent; normal load selects a membership.",
+      "source_evidence": "src/lib/org/active-org.ts:12-32; src/features/org/OrganizationPickerDialog.tsx absent",
+      "case_ids": ["EXT-F-1015-T08", "EXT-F-1015-T09", "EXT-F-1015-T10"],
+      "safe_change": "Retire T08-T10 Escape/outside-click checks; preserve historical evidence."
+    },
+    {
+      "id": "EXT-F-1015-C05",
+      "canonical_label": "No memberships",
+      "canonical_action": "With an empty membership list, verify honest empty state and create/join link.",
+      "source_status": "replaced",
+      "finding": "Zero memberships remains a typed refusal with create/join URL in remedy; Settings has an empty state but no visible create/join link in inspected branch.",
+      "source_evidence": "src/lib/org/active-org.ts:116-141,357-368; src/features/settings/SettingsView.tsx:263-279",
+      "case_ids": ["EXT-F-1015-T11", "EXT-F-1015-T12"],
+      "safe_change": "Replace T11-T12 with zero-membership refusal/remedy and Settings empty state. Treat clickable create/join remedy as a gap, not a pass."
+    },
+    {
+      "id": "EXT-F-1015-C06",
+      "canonical_label": "Close empty-state picker",
+      "canonical_action": "Close after no-members state; pending request flag clears.",
+      "source_status": "retired",
+      "finding": "No empty-state picker or pending flag exists.",
+      "source_evidence": "src/lib/org/active-org.ts:12-32; src/features/org/OrganizationPickerDialog.tsx absent",
+      "case_ids": ["EXT-F-1015-T13", "EXT-F-1015-T14", "EXT-F-1015-T15"],
+      "safe_change": "Retire T13-T15 picker-close/pending-clear steps; preserve historical evidence."
+    },
+    {
+      "id": "EXT-F-1015-C07",
+      "canonical_label": "Choose failure",
+      "canonical_action": "Force selection failure; verify error remains visible and retry is possible.",
+      "source_status": "replaced",
+      "finding": "Settings choose failure sets visible orgError; picker remains absent.",
+      "source_evidence": "src/features/settings/SettingsView.tsx:292-329; src/lib/org/active-org.ts:424-434",
+      "case_ids": ["EXT-F-1015-T16", "EXT-F-1015-T17"],
+      "safe_change": "Replace T16-T17 with failed Settings switch, visible error, retained prior selection, and successful retry by selecting again."
+    },
+    {
+      "id": "EXT-F-1015-C08",
+      "canonical_label": "External active-org resolution",
+      "canonical_action": "Resolve selection through another surface; picker closes when active organization changes.",
+      "source_status": "replaced",
+      "finding": "External storage selection is observed and hook reloads; there is no picker to close.",
+      "source_evidence": "src/lib/org/active-org.ts:456-469; src/hooks/use-active-organization.ts:35-51",
+      "case_ids": ["EXT-F-1015-T18", "EXT-F-1015-T19", "EXT-F-1015-T20"],
+      "safe_change": "Replace T18-T20 with cross-context selection reflected in Settings and a request using the new organization; coordinate with T42-T43 instead of claiming picker closure."
+    },
+    {
+      "id": "EXT-F-1015-C09",
+      "canonical_label": "Settings organization selector",
+      "canonical_action": "Select among memberships; no org fallback occurs while unset; surface error is shown on selection failure.",
+      "source_status": "current_with_stale_clause",
+      "finding": "Settings selector and selection-error display survive; unset fallback premise is stale because load ladder selects an active membership.",
+      "source_evidence": "src/features/settings/SettingsView.tsx:249-329; src/lib/org/active-org.ts:12-32",
+      "case_ids": ["EXT-F-1015-T21", "EXT-F-1015-T22", "EXT-F-1015-T40", "EXT-F-1015-T41"],
+      "safe_change": "Revise T21-T22: verify load ladder display, explicit switch, error, subsequent request. Remove no-fallback-while-unset assertion."
+    },
+    {
+      "id": "EXT-F-1015-C10",
+      "canonical_label": "Avatar account menu",
+      "canonical_action": "Open/close the identity popover and inspect current account and desktop status.",
+      "source_status": "current",
+      "finding": "Avatar identity popover and desktop state render from live hooks.",
+      "source_evidence": "src/components/UserMenu.tsx:24-82",
+      "case_ids": ["EXT-F-1015-T23", "EXT-F-1015-T24", "EXT-F-1015-T25"],
+      "safe_change": "Keep T23-T25; source supports control, not a live pass."
+    },
+    {
+      "id": "EXT-F-1015-C11",
+      "canonical_label": "User-menu Profile route",
+      "canonical_action": "Choose Profile and verify it opens only when signed in.",
+      "source_status": "current",
+      "finding": "Profile route is guarded by signed-in visibility.",
+      "source_evidence": "src/components/UserMenu.tsx:83-89",
+      "case_ids": ["EXT-F-1015-T26", "EXT-F-1015-T27"],
+      "safe_change": "Keep T26-T27; source supports control, not a live pass."
+    },
+    {
+      "id": "EXT-F-1015-C12",
+      "canonical_label": "User-menu Preferences route",
+      "canonical_action": "Choose Preferences and verify Settings opens.",
+      "source_status": "current",
+      "finding": "Preferences routes to Settings through sidepanel tab store.",
+      "source_evidence": "src/components/UserMenu.tsx:89-95",
+      "case_ids": ["EXT-F-1015-T28", "EXT-F-1015-T29", "EXT-F-1015-T30"],
+      "safe_change": "Keep T28-T30; source supports control, not a live pass."
+    },
+    {
+      "id": "EXT-F-1015-C13",
+      "canonical_label": "Sign out from user menu",
+      "canonical_action": "Sign out and verify auth state changes without exposing stale signed-in-only tabs.",
+      "source_status": "current",
+      "finding": "Sign-out action remains in user menu and auth hook clears user/admin state.",
+      "source_evidence": "src/components/UserMenu.tsx:101-113; src/hooks/use-auth.ts:291-304",
+      "case_ids": ["EXT-F-1015-T31", "EXT-F-1015-T32"],
+      "safe_change": "Keep T31-T32; stale-tab visibility requires product verification."
+    },
+    {
+      "id": "EXT-F-1015-C14",
+      "canonical_label": "Retry sign-in after auth error",
+      "canonical_action": "When sign-in fails, activate Try again and inspect progress/error recovery.",
+      "source_status": "current",
+      "finding": "AuthGate shows Try again and useAuth.retry can restart sign-in or recheck canonical session.",
+      "source_evidence": "src/components/AuthGate.tsx:16-39; src/hooks/use-auth.ts:280-289",
+      "case_ids": ["EXT-F-1015-T33", "EXT-F-1015-T34", "EXT-F-1015-T35", "EXT-F-1015-T37"],
+      "safe_change": "Keep T33-T35; source supports control, not a live pass."
+    },
+    {
+      "id": "EXT-F-1015-C15",
+      "canonical_label": "Start Safari sign-in in a background tab",
+      "canonical_action": "Start Safari OAuth from the extension using the configured Safari client and complete the callback into the extension session.",
+      "source_status": "current_with_stale_clause",
+      "finding": "Safari authorization and callback survive, but chrome.tabs.create uses active: true; the canonical background-tab label is inaccurate if it means a nonfocused tab.",
+      "source_evidence": "src/lib/auth/safari-background.ts:82-120 (tabs.create({url: about:blank, active: true})),123-187",
+      "case_ids": ["EXT-F-1015-T36"],
+      "safe_change": "Keep T36 OAuth callback/session checks. Correct C15 label to Safari sign-in in an extension-owned tab; do not assert a nonfocused/background browser tab. Safari product pass remains unverified."
+    },
+    {
+      "id": "EXT-F-1015-C16",
+      "canonical_label": "Cancel or replace Safari sign-in attempt",
+      "canonical_action": "Cancel a pending sign-in or start a replacement; clear its state and close only the extension-owned authorization/callback tab.",
+      "source_status": "current",
+      "finding": "Safari cancellation/replacement clears current attempt and closes only owned authorization/callback tab.",
+      "source_evidence": "src/lib/auth/safari-background.ts:47-79,87-95,189-199",
+      "case_ids": ["EXT-F-1015-T37"],
+      "safe_change": "Keep T37 related clauses; Safari product pass remains unverified."
+    },
+    {
+      "id": "EXT-F-1015-C17",
+      "canonical_label": "Recover from Safari callback failure or timeout",
+      "canonical_action": "Surface cancellation, invalid callback, completion failure, or timeout and allow the person to retry.",
+      "source_status": "current",
+      "finding": "Safari callback failure, completion failure, and timeout produce retryable failure paths.",
+      "source_evidence": "src/lib/auth/safari-background.ts:123-166,181-215",
+      "case_ids": ["EXT-F-1015-T37"],
+      "safe_change": "Keep T37 related clauses; Safari product pass remains unverified."
+    },
+    {
+      "id": "EXT-F-1015-C18",
+      "canonical_label": "Retire organization-required notice after explicit selection",
+      "canonical_action": "An organization-required notice clears when a device organization is chosen, including a late-arriving stale notice.",
+      "source_status": "replaced",
+      "finding": "Notice retirement on active organization still exists, including late arrival; selection path is Settings/load ladder, not picker.",
+      "source_evidence": "src/components/NoticeHost.tsx:44-70; src/lib/org/active-org.ts:353-368",
+      "case_ids": ["EXT-F-1015-T38"],
+      "safe_change": "Revise T38: exercise a real no-org refusal, then restoration/selection and late notice. Remove clear-device-and-trigger-picker premise; verify zero-member remedy separately."
+    },
+    {
+      "id": "EXT-F-1015-C19",
+      "canonical_label": "Archived organization eligibility and stale-choice recovery",
+      "canonical_action": "Archived organizations are not active request targets; a stale stored choice requires explicit active selection. Archived memberships remain discoverable through the archive filter.",
+      "source_status": "replaced",
+      "finding": "Archived organizations are excluded from active choice; stale device selection is cleared and load ladder may choose next active membership automatically.",
+      "source_evidence": "src/lib/org/active-org.ts:204-280,410-434; src/features/settings/SettingsView.tsx:137-140,287-324",
+      "case_ids": ["EXT-F-1015-T40"],
+      "safe_change": "Revise T40: verify archived choice rejected/cleared, ladder outcome for zero/one/many memberships, archive discovery. Remove explicit-selection-always requirement."
+    },
+    {
+      "id": "EXT-F-1015-C20",
+      "canonical_label": "Organization archive filter in Settings and required-choice dialog",
+      "canonical_action": "Use shared Active only, All and Archived only controls; view archived memberships and restore remedy while preserving actual active organization.",
+      "source_status": "replaced",
+      "finding": "Archive filter survives in Settings; required-choice dialog is absent.",
+      "source_evidence": "src/features/settings/SettingsView.tsx:249-324; src/features/org/OrganizationPickerDialog.tsx absent",
+      "case_ids": ["EXT-F-1015-T41"],
+      "safe_change": "Revise T41 to Settings filter only. Remove dialog and held-resume assertions. Check filter does not change actual active organization."
+    },
+    {
+      "id": "EXT-F-1015-C21",
+      "canonical_label": "Revalidate the admin gate across contexts and storage failures",
+      "canonical_action": "Serialize role-gate writes by auth generation, revalidate current identity and role, and surface storage/read failures without leaving an authorized stale gate.",
+      "source_status": "current",
+      "finding": "Auth hook clears admin gate before revalidation and reports role/storage failures.",
+      "source_evidence": "src/hooks/use-auth.ts:143-194",
+      "case_ids": ["EXT-F-1015-T39"],
+      "safe_change": "Keep T39; concurrency/storage rejection outcomes still need product or targeted verification."
+    },
+    {
+      "id": "EXT-F-1015-C22",
+      "canonical_label": "External active-organization update across extension contexts",
+      "canonical_action": "Update the device organization from a separate extension context; verify the live selection and a real organization-scoped request use the new organization, then restore the original choice.",
+      "source_status": "current",
+      "finding": "Shared storage observer invalidates resolver cache and hook reloads across contexts.",
+      "source_evidence": "src/lib/org/active-org.ts:64-82,456-469; src/hooks/use-active-organization.ts:35-51",
+      "case_ids": ["EXT-F-1015-T42", "EXT-F-1015-T43"],
+      "safe_change": "Keep T42-T43 as historical native verification procedure; no new product pass claimed."
+    }
+  ],
+  "historical_evidence_policy": "Keep all case IDs, cells, run IDs, defect IDs, and prior evidence. Source status is not a live pass. Modify stale steps/expected text only after carrying history forward.",
+  "case_status_policy": "Only inspected behavior is classified; uninspected assertions within otherwise current cases remain UNKNOWN until exercised.",
+  "key_correction": "C02 is replaced, not retired: Settings membership load/error survive. Its old picker and explicit Retry-button claims are stale. C15-C22 labels come verbatim from canonical inventory.json."
+}

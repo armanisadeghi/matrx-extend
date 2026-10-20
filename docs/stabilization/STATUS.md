@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-20 00:58 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T00:58:26.521287Z. 207 features · 828 cases · 1420 controls · 260 linked defect records.
+Generated 2026-10-20 01:28 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-20T01:28:20.989179Z. 207 features · 830 cases · 1421 controls · 260 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1335** — Pass: 100 · Partial: 97 · Fail: 3 · Unverified: 1133 · N/A: 2.
-Unverified splits into **179 explicitly marked unverified** and **954 with no result record**.
+Applicable case-by-role slots: **1337** — Pass: 100 · Partial: 97 · Fail: 3 · Unverified: 1126 · N/A: 11.
+Unverified splits into **181 explicitly marked unverified** and **945 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -33,7 +33,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 30, n/a 0 | 11 |
 | [Token broker](#token-broker) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 9, n/a 0 | 0 |
 | [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 1 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 56, n/a 0 | 0 |
-| [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 48, n/a 0 | 2 |
+| [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 17 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 17 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 41, n/a 9 | 2 |
 | [Keyboard commands](#keyboard-commands) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | pass 0, partial 0, fail 0, unverified 0, n/a 0 | 0 |
 | [Tasks side-panel](#tasks-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
 | [Tasks capture flow](#tasks-capture-flow) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 2, n/a 0 | 0 |
@@ -1376,7 +1376,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Authentication and active organization selection (EXT-F-1015)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 43. **Controls:** 22.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 45. **Controls:** 23.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0069, EXT-D-0207
 
@@ -1384,21 +1384,21 @@ These historical checks retain their original artifact boundary; they do not est
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-1015-T01 guest: Organization picker appears for held request | Unverified | N/A | N/A | EXT-F-1015-C01 |
-| EXT-F-1015-T02 member: Organization picker appears for held request | N/A | Unverified | N/A | EXT-F-1015-C01 |
-| EXT-F-1015-T03 admin: Organization picker appears for held request | N/A | N/A | Unverified | EXT-F-1015-C01 |
+| EXT-F-1015-T01 guest: Organization picker appears for held request | N/A | N/A | N/A | EXT-F-1015-C01 |
+| EXT-F-1015-T02 member: Organization picker appears for held request | N/A | N/A | N/A | EXT-F-1015-C01 |
+| EXT-F-1015-T03 admin: Organization picker appears for held request | N/A | N/A | N/A | EXT-F-1015-C01 |
 | EXT-F-1015-T04 member: Organization list loading and retry | N/A | Unverified | N/A | EXT-F-1015-C02 |
 | EXT-F-1015-T05 admin: Organization list loading and retry | N/A | N/A | Unverified | EXT-F-1015-C02 |
 | EXT-F-1015-T06 member: Select organization | N/A | Unverified | N/A | EXT-F-1015-C03 |
 | EXT-F-1015-T07 admin: Select organization | N/A | N/A | Unverified | EXT-F-1015-C03 |
-| EXT-F-1015-T08 guest: Picker cannot be dismissed while choice is required | Unverified | N/A | N/A | EXT-F-1015-C04 |
-| EXT-F-1015-T09 member: Picker cannot be dismissed while choice is required | N/A | Unverified | N/A | EXT-F-1015-C04 |
-| EXT-F-1015-T10 admin: Picker cannot be dismissed while choice is required | N/A | N/A | Unverified | EXT-F-1015-C04 |
+| EXT-F-1015-T08 guest: Picker cannot be dismissed while choice is required | N/A | N/A | N/A | EXT-F-1015-C04 |
+| EXT-F-1015-T09 member: Picker cannot be dismissed while choice is required | N/A | N/A | N/A | EXT-F-1015-C04 |
+| EXT-F-1015-T10 admin: Picker cannot be dismissed while choice is required | N/A | N/A | N/A | EXT-F-1015-C04 |
 | EXT-F-1015-T11 member: No memberships | N/A | Unverified | N/A | EXT-F-1015-C05 |
 | EXT-F-1015-T12 admin: No memberships | N/A | N/A | Unverified | EXT-F-1015-C05 |
-| EXT-F-1015-T13 guest: Close empty-state picker | Unverified | N/A | N/A | EXT-F-1015-C06 |
-| EXT-F-1015-T14 member: Close empty-state picker | N/A | Unverified | N/A | EXT-F-1015-C06 |
-| EXT-F-1015-T15 admin: Close empty-state picker | N/A | N/A | Unverified | EXT-F-1015-C06 |
+| EXT-F-1015-T13 guest: Close empty-state picker | N/A | N/A | N/A | EXT-F-1015-C06 |
+| EXT-F-1015-T14 member: Close empty-state picker | N/A | N/A | N/A | EXT-F-1015-C06 |
+| EXT-F-1015-T15 admin: Close empty-state picker | N/A | N/A | N/A | EXT-F-1015-C06 |
 | EXT-F-1015-T16 member: Choose failure | N/A | Unverified | N/A | EXT-F-1015-C07 |
 | EXT-F-1015-T17 admin: Choose failure | N/A | N/A | Unverified | EXT-F-1015-C07 |
 | EXT-F-1015-T18 guest: External active-org resolution | Unverified | N/A | N/A | EXT-F-1015-C08 |
@@ -1427,11 +1427,35 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1015-T41 Archive discovery stays separate from active organization selection | N/A | Unverified | Unverified | EXT-F-1015-C01, EXT-F-1015-C09, EXT-F-1015-C20 |
 | EXT-F-1015-T42 member: External active-organization update remains selected | N/A | Unverified | N/A | EXT-F-1015-C22 |
 | EXT-F-1015-T43 admin: External active-organization update remains selected | N/A | N/A | Unverified | EXT-F-1015-C22 |
+| EXT-F-1015-T44 member: automatic active organization load ladder | N/A | Unverified | N/A | EXT-F-1015-C23 |
+| EXT-F-1015-T45 admin: automatic active organization load ladder | N/A | N/A | Unverified | EXT-F-1015-C23 |
 
 **Recorded case details and evidence:**
 
+- EXT-F-1015-T01 · guest: N/A. This case tests the removed held-request picker only. The automatic organization ladder and surviving Settings/zero-membership behaviors remain separately unverified; not a pass.
+  Evidence / build / date recorded: ['docs/stabilization/reports/auth-inventory-fresh-check-20261020.json']
+- EXT-F-1015-T02 · member: N/A. This case tests the removed held-request picker only. The automatic organization ladder and surviving Settings/zero-membership behaviors remain separately unverified; not a pass.
+  Evidence / build / date recorded: ['docs/stabilization/reports/auth-inventory-fresh-check-20261020.json']
+- EXT-F-1015-T03 · admin: N/A. This case tests the removed held-request picker only. The automatic organization ladder and surviving Settings/zero-membership behaviors remain separately unverified; not a pass.
+  Evidence / build / date recorded: ['docs/stabilization/reports/auth-inventory-fresh-check-20261020.json']
+- EXT-F-1015-T08 · guest: N/A. This case tests the removed held-request picker only. The automatic organization ladder and surviving Settings/zero-membership behaviors remain separately unverified; not a pass.
+  Evidence / build / date recorded: ['docs/stabilization/reports/auth-inventory-fresh-check-20261020.json']
+- EXT-F-1015-T09 · member: N/A. This case tests the removed held-request picker only. The automatic organization ladder and surviving Settings/zero-membership behaviors remain separately unverified; not a pass.
+  Evidence / build / date recorded: ['docs/stabilization/reports/auth-inventory-fresh-check-20261020.json']
+- EXT-F-1015-T10 · admin: N/A. This case tests the removed held-request picker only. The automatic organization ladder and surviving Settings/zero-membership behaviors remain separately unverified; not a pass.
+  Evidence / build / date recorded: ['docs/stabilization/reports/auth-inventory-fresh-check-20261020.json']
+- EXT-F-1015-T13 · guest: N/A. This case tests the removed held-request picker only. The automatic organization ladder and surviving Settings/zero-membership behaviors remain separately unverified; not a pass.
+  Evidence / build / date recorded: ['docs/stabilization/reports/auth-inventory-fresh-check-20261020.json']
+- EXT-F-1015-T14 · member: N/A. This case tests the removed held-request picker only. The automatic organization ladder and surviving Settings/zero-membership behaviors remain separately unverified; not a pass.
+  Evidence / build / date recorded: ['docs/stabilization/reports/auth-inventory-fresh-check-20261020.json']
+- EXT-F-1015-T15 · admin: N/A. This case tests the removed held-request picker only. The automatic organization ladder and surviving Settings/zero-membership behaviors remain separately unverified; not a pass.
+  Evidence / build / date recorded: ['docs/stabilization/reports/auth-inventory-fresh-check-20261020.json']
 - EXT-F-1015-T35 · admin: Unverified.
   Evidence / build / date recorded: auth-role-failure-dev093-001, docs/stabilization/runs/auth-role-failure-dev093-001.json
+- EXT-F-1015-T44 · member: Unverified. Replacement procedure registered from explicit current contract; no UI execution or acceptance credit.
+  Evidence / build / date recorded: ['docs/stabilization/reports/auth-inventory-fresh-check-20261020.json']
+- EXT-F-1015-T45 · admin: Unverified. Replacement procedure registered from explicit current contract; no UI execution or acceptance credit.
+  Evidence / build / date recorded: ['docs/stabilization/reports/auth-inventory-fresh-check-20261020.json']
 
 
 ## Keyboard commands
@@ -1755,7 +1779,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096, EXT-D-0156, EXT-D-0211, EXT-D-0226, EXT-D-0227, EXT-D-0228, EXT-D-0229, EXT-D-0230, EXT-D-0231, EXT-D-0233, EXT-D-0234, EXT-D-0235, EXT-D-0237, EXT-D-0239, EXT-D-0240, EXT-D-0241, EXT-D-0242, EXT-D-0243, EXT-D-0244, EXT-D-0247, EXT-D-0261
 
-**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (closed), [EXT-D-0211](defects/EXT-D-0211.json) (fixed), [EXT-D-0226](defects/EXT-D-0226.json) (in-fix), [EXT-D-0227](defects/EXT-D-0227.json) (in-fix), [EXT-D-0228](defects/EXT-D-0228.json) (in-fix), [EXT-D-0229](defects/EXT-D-0229.json) (in-fix), [EXT-D-0230](defects/EXT-D-0230.json) (in-fix), [EXT-D-0231](defects/EXT-D-0231.json) (open), [EXT-D-0233](defects/EXT-D-0233.json) (in-fix), [EXT-D-0234](defects/EXT-D-0234.json) (in-fix), [EXT-D-0235](defects/EXT-D-0235.json) (fixed), [EXT-D-0237](defects/EXT-D-0237.json) (fixed), [EXT-D-0239](defects/EXT-D-0239.json) (fixed), [EXT-D-0240](defects/EXT-D-0240.json) (fixed), [EXT-D-0241](defects/EXT-D-0241.json) (fixed), [EXT-D-0242](defects/EXT-D-0242.json) (fixed), [EXT-D-0243](defects/EXT-D-0243.json) (fixed), [EXT-D-0244](defects/EXT-D-0244.json) (open), [EXT-D-0247](defects/EXT-D-0247.json) (fixed), [EXT-D-0261](defects/EXT-D-0261.json) (open)
+**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (closed), [EXT-D-0211](defects/EXT-D-0211.json) (fixed), [EXT-D-0226](defects/EXT-D-0226.json) (in-fix), [EXT-D-0227](defects/EXT-D-0227.json) (in-fix), [EXT-D-0228](defects/EXT-D-0228.json) (in-fix), [EXT-D-0229](defects/EXT-D-0229.json) (in-fix), [EXT-D-0230](defects/EXT-D-0230.json) (in-fix), [EXT-D-0231](defects/EXT-D-0231.json) (open), [EXT-D-0233](defects/EXT-D-0233.json) (in-fix), [EXT-D-0234](defects/EXT-D-0234.json) (in-fix), [EXT-D-0235](defects/EXT-D-0235.json) (fixed), [EXT-D-0237](defects/EXT-D-0237.json) (fixed), [EXT-D-0239](defects/EXT-D-0239.json) (fixed), [EXT-D-0240](defects/EXT-D-0240.json) (fixed), [EXT-D-0241](defects/EXT-D-0241.json) (fixed), [EXT-D-0242](defects/EXT-D-0242.json) (fixed), [EXT-D-0243](defects/EXT-D-0243.json) (fixed), [EXT-D-0244](defects/EXT-D-0244.json) (open), [EXT-D-0247](defects/EXT-D-0247.json) (fixed), [EXT-D-0261](defects/EXT-D-0261.json) (triaged)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1785,7 +1809,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-2013-T13 · guest: Fail. Repeated trusted Escape failure on adapted public0.2.205 with valid resources after three completed replies. Native dev555 trigger/input-focused dismissal passed independently after settling, but its role/tooltip path and current556 guest remain unverified; full view, close control and reopening remain unverified.
   Evidence / build / date recorded: 39283778031, ['docs/stabilization/runs/public-guest-chat-0.2.205-39160396058.json', 'docs/stabilization/reports/public205-chat-fresh-peer-39160396058.json', 'docs/stabilization/runs/public-guest-chat-0.2.205-39283778031.json', 'docs/stabilization/reports/dev555-native-peer-20261019.json']
 - EXT-F-2013-T14 · member: Fail. The first fresh member turn visibly ended in API error: 504 after roughly one minute at Page Text/Processing, without an assistant answer. Failed request endpoint, HTTP transport status, tool result/resume boundary and exact organization ID comparison were not captured. UI wording alone cannot assign a backend or extension cause.
-  Evidence / build / date recorded: native-isolated-candidate-20261019-001, ['docs/stabilization/reports/native-isolated-candidate-20261019.json', 'docs/stabilization/reports/native566-evidence-peer-20261019.json']
+  Evidence / build / date recorded: native-isolated-candidate-20261019-001, ['docs/stabilization/reports/native-isolated-candidate-20261019.json', 'docs/stabilization/reports/native566-evidence-peer-20261019.json', 'docs/stabilization/reports/member504-server-log-diagnosis-20261020.json']
 
 **Controls without a mapped case:** EXT-F-2013-C01 Retry loading / dismiss error; EXT-F-2013-C05 Task panel chip; EXT-F-2013-C09 Microphone; EXT-F-2013-C11 Suggestion chip; EXT-F-2013-C12 Copy message/reply/conversation; EXT-F-2013-C13 Agent approval/ask-user cards; EXT-F-2013-C14 Gmail review card; EXT-F-2013-C15 Tool receipt dialog; EXT-F-2013-C16 Variable panel; EXT-F-2013-C34 Dismiss voice error; EXT-F-2013-C77 Queue message edit; EXT-F-2013-C78 Queue message save edit; EXT-F-2013-C79 Queue message cancel edit; EXT-F-2013-C80 Queue message remove; EXT-F-2013-C81 Queue message interrupt current run; EXT-F-2013-C84 Open agent variables panel; EXT-F-2013-C85 Edit agent text variable; EXT-F-2013-C86 Edit agent multiline variable; EXT-F-2013-C87 Observe required variable gap; EXT-F-2013-C88 Open attached highlight; EXT-F-2013-C89 Clear attached highlight; EXT-F-2013-C95 Open queued message edit; EXT-F-2013-C96 Cancel queued message; EXT-F-2013-C97 Save queued message edit; EXT-F-2013-C98 Choose notify action; EXT-F-2013-C99 Choose notify Other; EXT-F-2013-C100 Choose secret answer; EXT-F-2013-C101 Choose action choice; EXT-F-2013-C104 Agent picker search; EXT-F-2013-C105 Agent picker clear search; EXT-F-2013-C110 Agent picker Sort menu; EXT-F-2013-C111 Agent picker choose sort; EXT-F-2013-C112 Agent picker favorites filter; EXT-F-2013-C113 Agent picker archive filter; EXT-F-2013-C114 Agent picker category filter; EXT-F-2013-C115 Agent picker category search; EXT-F-2013-C116 Agent picker select category; EXT-F-2013-C117 Agent picker clear categories; EXT-F-2013-C118 Agent picker tags filter; EXT-F-2013-C119 Agent picker tag search; EXT-F-2013-C120 Agent picker select tag; EXT-F-2013-C121 Agent picker clear tags; EXT-F-2013-C122 Agent picker reset filters; EXT-F-2013-C123 Agent picker select row; EXT-F-2013-C124 Agent picker favorite toggle; EXT-F-2013-C125 Agent picker show details; EXT-F-2013-C126 Agent picker detail select; EXT-F-2013-C127 Agent picker detail sneak peek; EXT-F-2013-C128 Agent picker detail open chat; EXT-F-2013-C129 Agent picker detail open new tab; EXT-F-2013-C130 Agent picker dismiss default drift; EXT-F-2013-C131 Agent picker retry default row
 

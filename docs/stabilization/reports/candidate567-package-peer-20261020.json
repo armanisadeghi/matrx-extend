@@ -1,0 +1,120 @@
+{
+  "status": "review_complete_provenance_pass_post_build_registry_drift",
+  "candidate": {
+    "version": "0.2.567",
+    "workflowRun": 39352466107,
+    "workflowHead": "27b7defe7a4c123ff74076b15a5cb73e879e8500",
+    "sourceSha": "92757742d13c8230bcc8447fdf7ddaf2c5db180b",
+    "tag": "v0.2.567",
+    "artifactId": 12234116008,
+    "outerArtifactSha256": "6a25443847a2bea80b3c353880d4632aac65e717a0fd36e6d2d577e2cb8b2ef5",
+    "storeZipSha256": "4d6a42bd1cece0a8433fdbe403e2c4f02784716c62162fd5258bf82e87fcd40d"
+  },
+  "verdictA_packageProvenanceAndEligibility": {
+    "provenance": "PASS",
+    "strictGateAtImmutableBuildCut": "PASS",
+    "currentRegistryCurrency": "DRIFTED_POST_BUILD",
+    "sourcePackageEligibility": "PASS_FOR_FROZEN_CANDIDATE_REVIEW; current product/upload gates remain separate",
+    "evidence": [
+      "GitHub run 39352466107 completed success, head 27b7defe7; artifact 12234116008 is matrx-extend-v0.2.567.",
+      "Local v0.2.567 tag dereferences to 92757742d; release merge first parent is 27b7defe7.",
+      "Outer artifact, Store ZIP, inner Store ZIP, and both receipt copies match supplied hashes and source/version; ZIP CRC test passed.",
+      "Store manifest version is 0.2.567; each approved policy-surface field matches published baseline; archived risk gate passed.",
+      "Archived strict checks exit 0: @ai-matrx latest-at-HEAD (26 packages), typecheck, lint, 359 test files/2520 tests, schema routing, migrations, tool-DB drift, Store package/risk gates.",
+      "Release log states npm currency judged at HEAD commit time 2026-10-20T01:18:08Z with 120-second grace; later npm publishes do not retroactively fail this check."
+    ],
+    "warnings": [
+      "Mandate scanner reported six UNMEASURED findings due unknown repo identity; non-blocking, and its report did not reach database.",
+      "Package-twins ratchet lists six pre-existing censused items; strict ratchet passed.",
+      "Receipt sourcePath points at release assembly temp tree; it is a provenance field, not proof of member workflow success."
+    ]
+  },
+  "verdictB_qualityAndConsumerActions": {
+    "staticHostCompatibility": "PASS_WITH_RUNTIME_ACCEPTANCE_PENDING",
+    "requiredExtensionConsumerEditsFound": false,
+    "productAcceptance": "NOT_ESTABLISHED",
+    "evidence": [
+      "Every changed published package version has generated UNKNOWN Consumer action note; exact source ranges inspected rather than treating note as clearance.",
+      "api .51 adds optional ConversationContinueRequest.dry_run type only.",
+      "chat .238 caches successfully listed staged chips per conversation/tab and excludes preview-only dry_run from normal continuation; no new host port.",
+      "design-system .228-.229 adjusts table/control appearance and facets plus IntroStage; no required public prop change found.",
+      "records-ui .56-.58 changes internal capture/export/read-refusal/form behavior; extension has no direct records-ui source imports.",
+      "records .97-.99 adds stalled-copy refusal, memory table_facts, removes debug log; extension imports core client but does not call tableDuplicate.",
+      "rich-content .223 renders named math/timeline/table fences, no required extension host API change; extension has no direct rich-content import.",
+      "Extension already imports @ai-matrx/summon/styles.css as required by existing chat consumer note."
+    ],
+    "limits": [
+      "Static source/host review cannot establish guest, member, or public reviewer acceptance.",
+      "Original member 504/D261 and deployed backend 20bd are external product gates, not evidenced as resolved by this package review.",
+      "Design-system and rich-content runtime visuals were not UI-tested in this read-only lane."
+    ]
+  },
+  "changedPackages": [
+    {
+      "name": "@ai-matrx/api",
+      "from": "0.1.50",
+      "to": "0.1.51",
+      "consumerImpact": "optional generated dry_run type, no mandatory host edit"
+    },
+    {
+      "name": "@ai-matrx/chat",
+      "from": "0.8.237",
+      "to": "0.8.238",
+      "consumerImpact": "internal staged-chip cache and continuation routing, no mandatory host edit"
+    },
+    {
+      "name": "@ai-matrx/design-system",
+      "from": "0.86.227",
+      "to": "0.86.229",
+      "consumerImpact": "runtime visual/table behavior, no mandatory host prop edit found"
+    },
+    {
+      "name": "@ai-matrx/records-ui",
+      "from": "0.116.55",
+      "to": "0.116.58",
+      "consumerImpact": "runtime records UI changes, no direct extension import"
+    },
+    {
+      "name": "@ai-matrx/records",
+      "from": "0.99.96",
+      "to": "0.99.99",
+      "consumerImpact": "copy stall refusal and memory preview door, no extension call to changed method"
+    },
+    {
+      "name": "@ai-matrx/rich-content",
+      "from": "0.2.222",
+      "to": "0.2.223",
+      "consumerImpact": "named fence rendering, no mandatory extension host edit"
+    }
+  ],
+  "postBuildRegistryDrift": {
+    "checkedAtUtc": "2026-10-20T01:26:32Z",
+    "scope": "all 26 @ai-matrx packages in candidate pnpm lockfile",
+    "differences": [
+      {
+        "name": "@ai-matrx/api",
+        "candidate": "0.1.51",
+        "npmLatest": "0.1.52",
+        "publishedAtUtc": "2026-10-20T01:18:29.148Z",
+        "sourceGitHead": "fac3d8270c8efc3f4aa0e436d423d9c89fe677fd",
+        "impact": "generated optional dry_run and retry/preview request contract types; no runtime implementation or mandatory extension consumer change"
+      },
+      {
+        "name": "@ai-matrx/design-system",
+        "candidate": "0.86.229",
+        "npmLatest": "0.86.230",
+        "publishedAtUtc": "2026-10-20T01:25:08.479Z",
+        "sourceGitHead": "89975731e094bfe52ec65ed998d3f250c2b34e94",
+        "impact": "MatrxDataTable phone cards mount only when visible and use row window; no public prop/mandatory extension consumer change"
+      }
+    ],
+    "interpretation": "Current lock is not registry-current. Both publishes followed immutable release commit; no retroactive strict-gate failure or rebuild justified solely by version label. Any new candidate must pass its own current gates."
+  },
+  "anyBlockingFinding": false,
+  "remainingExternalGates": [
+    "current source/runtime acceptance",
+    "private primary Store state",
+    "guest/non-admin member/public reviewer product checks",
+    "original member 504/D261 resolution"
+  ]
+}

@@ -7,7 +7,7 @@
   "auth_mode": "member after real guest-to-member sign-in; fresh-direct-member discriminator pending",
   "severity": "S1: signed-in member gets no assistant answer on a basic page question",
   "priority": "P0: real non-admin release acceptance blocker",
-  "state": "open",
+  "state": "triaged",
   "owner": "root/member566_network_repro",
   "preconditions": [
     "Use exact 0.2.566 candidate from source c41ae6fd67057305c521791e404d2708882895f5, Store ZIP sha256 a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840. Canonical test adaptation changes manifest key only; original runtime code is unchanged.",
@@ -27,16 +27,23 @@
   "evidence": [
     "docs/stabilization/reports/native-isolated-candidate-20261019.json",
     "docs/stabilization/reports/native566-evidence-peer-20261019.json",
-    "docs/stabilization/reports/member566-tool-stall-diagnosis-20261019.json"
+    "docs/stabilization/reports/member566-tool-stall-diagnosis-20261019.json",
+    "docs/stabilization/reports/member504-server-log-diagnosis-20261020.json"
   ],
-  "cause": "Unknown; distinguish initial stream, tool-result delivery, resume, or streamed error using a new guarded passive-observer run. Prior inert New chat/Send observations remain provisional because driver activation was not excluded.",
-  "next_action": "Run one bounded fresh-direct-member reproduction on the same immutable runtime with passive endpoint-class/status/event correlation attached before send. Verify actual principal/approved organization, model eligibility and foreground. Never log headers, payloads, tokens or raw conversation identifiers. Repair only the localized boundary and independently retest original reproduction plus surrounding guest/member cases.",
+  "cause": "Localized: original mandate start and same-conversation tool_results returned200; subsequent resume entered the backend but no target headers arrived for59.999s, then ALB generated504. create_prepared_streaming_response awaits prepare_resume_conversation before constructing the response. Concurrent DB pool/connect/query timeouts are observed but their causal link to this request is unproven. Deployed20bd has identical inspected resume/pool implementation; a short postdeploy sample lacks the prior error burst, not a repair claim.",
+  "next_action": "After candidate gates, one guarded current-server member retest with passive transport is justified by changed deployed environment20bd. Preserve original guest-to-member reproduction versus fresh-direct-member discriminator. Do not attribute a pass to an unproven code fix or close the incident without original-reproduction/surrounding evidence. Fix only a localized cause; no speculative timeout/pool increases.",
   "transition_history": [
     {
       "at": "2026-10-20T00:56:58.460155Z",
       "from": null,
       "to": "open",
       "reason": "Resource-valid actual native non-admin first message visibly ended in 504/no answer; independent screenshot review supports failure, cause unlocalized."
+    },
+    {
+      "at": "2026-10-20T01:21:40.725798Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Read-only production ALB/app evidence correlates exact same-conversation start200,tool_results200,resume pre-response60s504. Request boundary proven; underlying cause not yet established."
     }
   ]
 }

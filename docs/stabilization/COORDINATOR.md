@@ -12,24 +12,40 @@ published0.2.205, draft0.2.479 rejected, no pending, Upload enabled. Vault login
 no human-only access blocker is established. No new upload/submission has occurred.
 Never infer private review state from old email/public listing or this checkpoint.
 
-Candidate **0.2.566**: guarded release39347129008, source/tag
+Prior candidate **0.2.566**: guarded release39347129008, source/tag
 `c41ae6fd67057305c521791e404d2708882895f5`, artifact12231343581,
 StoreZIPsha256`a76ad27eec12ef74d737986fa37bbc28f3d5c3ad2ad5ee10c30fd2886fe92840`.
 [Package peer](reports/candidate566-package-peer-20261019.json) passed at review time;
 strict gates passed, advisory Mandate/config findings remain unknown. Recheck package/backend
 and source eligibility immediately before release actions. Later source is not this artifact.
 
-**Release remains blocked by actual non-admin first-turn failure [D261](defects/EXT-D-0261.json).**
+Current candidate **0.2.567**: guarded release39352466107 SUCCESS, source/tag
+`92757742d13c8230bcc8447fdf7ddaf2c5db180b`, artifact12234116008,
+StoreZIPsha256`4d6a42bd1cece0a8433fdbe403e2c4f02784716c62162fd5258bf82e87fcd40d`.
+[Fresh package peer](reports/candidate567-package-peer-20261020.json) verifies exact source,
+receipt, hashes and archived strict gates at build cut. Registry subsequently advanced api.51→.52
+(optional types/contracts) and design-system.229→.230 (table phone-card windowing); source ranges
+reviewed, no mandatory host action found. Candidate is NOT registry-current. Root allows guarded
+acceptance of this frozen main artifact; no strict gate is waived and upload remains pending
+fresh source/runtime/Store eligibility plus product acceptance. Do not rebuild merely for a
+higher version label without reviewing actual drift/Consumer actions.
+
+**Product acceptance remains blocked by actual non-admin first-turn failure [D261](defects/EXT-D-0261.json).**
 Independent native tester signed in through the real first-party flow, opened fresh member Chat
 after normal panel reload, sent the public-demo question and saw Page Text/Processing end in
-`API error: 504`, no assistant answer. The request endpoint/tool-result/resume boundary was not
-captured; UI wording alone does not prove HTTP status or backend cause. Member follow-up was not
+`API error: 504`, no assistant answer. The original native run did not capture transport; later read-only ALB/app correlation proves
+start200, tool_results200, then resume entered the router and received no response headers for
+59.999s before ALB504. Concurrent DB timeout errors are correlated, not a proven cause. Member follow-up was not
 run. Prior guest-to-member retained transcript/Capture-list alert and inert controls are a
 provisional separate lead, with driver activation not excluded. Exact-org-ID comparison was
 not captured; visible acting org and non-admin identity were verified by the canonical helper.
 [Native report](reports/native-isolated-candidate-20261019.json),
 [image/evidence peer](reports/native566-evidence-peer-20261019.json),
-[diagnosis](reports/member566-tool-stall-diagnosis-20261019.json).
+[initial diagnosis](reports/member566-tool-stall-diagnosis-20261019.json),
+[production correlation](reports/member504-server-log-diagnosis-20261020.json).
+Live backend advanced to20bd8859ffb7c71d05c3edb7a78e2a3060876b59; inspected resume/pool code
+is unchanged. Short postdeploy logs lack the prior timeout burst; current member behavior and
+root cause remain unverified, not repaired by inference.
 
 ## Verified product progress and exact limits
 
@@ -57,7 +73,10 @@ not captured; visible acting org and non-admin identity were verified by the can
 
 ## Source units and immediate next work
 
-All prior workers/jobs/Chrome guards are terminal; one-use links/secrets and owned profile/browser
+Active owner `root/release_next_hosted_owner` owns the next exact567 A/B acceptance and release
+checkpoint. Its build and Settings A39352539316 are terminal; no browser run is assumed pending.
+Normal B admission waits this clean evidence integration; member A follows package/product gates.
+Prior one-use links/secrets and owned profile/browser
 were deleted, with bounded cleanup evidence in reports. No unrecorded external action is pending.
 Root owns integration/records. Source-only repairs are committed; verify origin/main and the next CI before relying on integration:
 
@@ -77,9 +96,9 @@ Root owns integration/records. Source-only repairs are committed; verify origin/
    [Repair](reports/data566-foreground-experiment-20261019.json),
    [final peer](reports/data566-final-peer-20261019.json).
 3. Previous full focused command passed585/585 under a valid Mac guard, before the test-list
-   registration; separate member70/Data21 suites passed. Combined automatic suite and full lint
-   must be verified in next CI. Local full lint was REFUSED before spawn for swap growth; never
-   call it passed. Appropriate source/compile/Biome checks passed. No release until full CI/gates.
+   registration; separate member70/Data21 suites passed. Combined automatic suite676/676 and full lint
+   passed in CI39351587471/focused39351587375 at27b7defe; exact567 release gates also passed. Local full lint was REFUSED before spawn for swap growth; never
+   call it passed. Appropriate source/compile/Biome checks passed. Real product gates remain pending.
 4. Use normal source admission to determine whether reviewed harness changes may retest frozen566.
    Do not expand an allowlist as an exception or waive a refusal. A new candidate, if required,
    uses only guarded hosted release after source/runtime/package/spend checks. No stale candidate
@@ -115,8 +134,8 @@ Personal Chrome profile8 keeps dev`cihdmkcdjjckfhjpgoedmgfpoljebaml`0.2.565 load
 Store`hnfolienncfklkgmdjjmhhegglimlamg`0.2.205. Last actual reload:
 CI39342629514/artifact12228829443/source`199e2e738ac928b661c8f1a55f1d4dcc6ddff440`,
 tree`f5c2313bc27330260b029824b178e1f667cd28e98aa23307d54531a8b6f607bf`.
-CI39348412398 at69509c657 is green; development566 artifact12232307392 is available but not
-promoted/reloaded. Later main/source is not loaded. Import with current-test-artifact, promote
+Latest verified development566 artifact12234085062 is from successful CI39351587471/source27b7defe,
+tree4099b912…c1141c, not promoted/reloaded. Later release567/main is not loaded. Import with current-test-artifact, promote
 with promote-ci-dev-artifact and guard actual reload/path/ID/version/pins after local recovery.
 Personal principal is a real personal admin; never log it out. Use owned profiles for auth tests.
 
@@ -137,3 +156,16 @@ Update canonical records and generated views together; never promote source/CI/f
 product passes. Before ending, every worker and external action must finish or checkpoint exact
 ownership/handles/provenance/credentials cleanup/next action. The inventory has no overall healthy
 feature-mode claim; all unknown, stale, blocked and unverified coverage remains explicit.
+
+## Current batch/census checkpoint
+
+[Settings A report](reports/settings-guest-hosted-20261020.json): exact CI566/source27b7defe,
+all resource finals terminal and acceptance resource-valid/child_failed. T22 confirmed; T04/T28/T40
+have bounded observations but restoration/full-extension-reload criteria are missing. Remaining
+cases stopped at driver readiness/guest-state prerequisites. No product bug or retry is inferred.
+No new unique case pass or overall Settings health claim. A is now free.
+
+[Corrected auth census](reports/auth-inventory-fresh-check-20261020.json) uses canonical inventory,
+not obsolete refinement data. Nine solely removed-picker cases retain IDs/history as explicit N/A;
+two current load-ladder cases are newly registered unverified. Surviving Settings/error/archive/
+cross-context cases remain unverified and stale clauses are tracked. Zero product passes gained.
