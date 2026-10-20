@@ -33,7 +33,8 @@
     "docs/stabilization/reports/store205-heading-boundary-diagnosis-20261020.json",
     "docs/stabilization/reports/guest-heading-context-contract-repair-20261020.json",
     "docs/stabilization/reports/checkpoint-fresh-evidence-peer-20261020.json",
-    "docs/stabilization/reports/guest273-actual-target-provenance-20261020.json"
+    "docs/stabilization/reports/guest273-actual-target-provenance-20261020.json",
+    "docs/stabilization/reports/guest273-quality-route-20261020.json"
   ],
   "verification": "Fresh independent native evidence peer confirms heading FAIL despite terminal reply and correct Capture cell; inline-only screenshot cannot be reopened. Existing focused context tests32pass establish intended mechanics, not guest answer-quality success. No fix or live retest claimed.",
   "next_action": "Use real failed/successful request evidence for the existing extend.browser_chat / Matrx Browser Agent v14 canonical Builder/agent-quality process. Actual dispatch provenance and current DB default are now known; fresh guest resolution/cache state remains bounded. No direct agent instruction/model/Holder changes. Independently retest exact H1 plus first/follow-up/reopen surroundings after an authorized quality repair; no source data-loss fix or contributor attribution is supported.",
@@ -57,5 +58,6 @@
     "version": 14,
     "version_id": "a8944432-24e4-41d2-8cbf-1f925fa1a7e6",
     "evidence": "Failed and successful real request/conversation metadata agree; current database default same active agent/version with no override bindings. No fresh guest endpoint/cache verdict."
-  }
+  },
+  "quality_route_status": "Hindsight focused review requires enrollment; fresh live read found none. Creation is active-only and may schedule standing reviews; manual review may auto-replay tools. No enrollment/review/rebuild/promotion started. Paid evaluation is authorized; containment/replay-contract work remains, not a demonstrated human-only credential gate."
 }

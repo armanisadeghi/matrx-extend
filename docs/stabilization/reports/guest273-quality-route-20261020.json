@@ -1,0 +1,51 @@
+{
+  "task_id": "EXT-D-0273-quality-route",
+  "status": "FOCUSED_HINDSIGHT_REVIEW_CONTRACT_FOUND; NO_EXISTING_ENROLLMENT; NO_REVIEW_DISPATCH",
+  "accepted_existing_record": "docs/stabilization/defects/EXT-D-0273.json",
+  "scope": "Read-only inspection of recorded guest runs, current target provenance, canonical agent-authoring policy, Builder and Hindsight contracts; one read-only authenticated PostgREST enrollment lookup returned []. No browser, provider, agent, database or source mutation; no paid job.",
+  "actual_target": {
+    "mandate_key": "extend.browser_chat",
+    "agent_id": "443dd7ff-e7cc-47b8-907a-0a14834caa48",
+    "agent_name": "Matrx Browser Agent",
+    "version": 14,
+    "version_id": "a8944432-24e4-41d2-8cbf-1f925fa1a7e6",
+    "failed_user_request_id": "0010cfcc-c5a4-4e4e-905b-bdbfce17ad27",
+    "failed_conversation_id": "ec595d2d-340a-42a7-9f87-3e9942f5beae",
+    "working_conversation_id": "990f606b-ddf2-4ae8-8fc0-7dbed7c5797d",
+    "provenance": "Both recorded failed and working Store205 runs dispatched the same agent/version; current system mandate defaults to this agent with no active override binding. The record does not prove future guest cache resolution."
+  },
+  "quality_failure": {
+    "question": "According to this page, what is the exact main heading, and what expected result does the table list for Capture?",
+    "expected_heading": "A clear three-stage browser workflow",
+    "expected_capture_result": "Article text, links, media, metadata, and schema",
+    "observed": "Failed reply denied an H1 while correctly returning the Capture cell. The correct H1 was in deferred page_brief.structure.headings; the failed agent only retrieved article-only page_full_content. The working sibling queried query_elements(h1).",
+    "verdict": "Agent source-selection/answer-quality defect, with no demonstrated deterministic extension context or article extraction violation."
+  },
+  "supported_quality_routes": [
+    {
+      "route": "Existing-agent Builder rebuild via agent_author rebuild / agent_factory door_agent_author_rebuild",
+      "contract": "Rebuild of the same agent compares a candidate with today's version, uses recorded real proof cases and blind judging, and promotes a new version on a pass. Paid evaluation itself is authorized by this task; automatic production promotion is a separate consequential effect. No build was dispatched."
+    },
+    {
+      "route": "Hindsight focused review",
+      "endpoint": "POST /hindsight/enrollments/{enrollment_id}/review with {\"example_ids\":[\"ec595d2d-340a-42a7-9f87-3e9942f5beae\"]",
+      "contract": "Reviews exactly the named conversation, bypasses the settle window, verifies that its initial agent or version belongs to the enrolled agent, and does not advance the enrollment watermark. It writes a review and proposed findings/assists, invokes a paid reviewer, and automatically executes capped full-conversation replays for machine-applicable findings; it does not apply or promote an agent version. A read-only live lookup found no Hindsight enrollment for agent 443dd7ff-e7cc-47b8-907a-0a14834caa48. POST /hindsight/enrollments creates an active standing enrollment; there is no paused-at-creation option. No enrollment or review was dispatched."
+    },
+    {
+      "route": "Hindsight snapshot regression case / wire replay",
+      "contract": "An active regression case enters standing shadow recompilation. Its wire replay runs one provider request without tool execution, so it cannot recreate the multi-step source selection that distinguished the failed and working conversations. No case or replay was created."
+    }
+  ],
+  "missing_prerequisite": "The existing review-only endpoint requires a Hindsight enrollment, and the live agent has none. Creating one starts active standing review enrollment (no create-paused field); the manual focused review may also auto-run full conversational tool replays, so it is not a reviewer-only evaluation. Paid evaluation is authorized; these are endpoint semantics and replay-containment gaps, not a human-only or credential blocker. A Builder rebuild has a separate production promotion gate.",
+  "next_action": "Keep EXT-D-0273 triaged. If a bounded focused Hindsight review is chosen, establish an enrollment lifecycle that cannot trigger a standing drain and inspect replay side effects before invoking POST /review on the failed conversation. Alternatively use the Builder only when proof cases and production promotion are explicitly governed. Do not modify the prompt, model, mandate binding, or extension extractor directly from this evidence.",
+  "sources": [
+    "docs/stabilization/defects/EXT-D-0273.json",
+    "docs/stabilization/reports/guest273-actual-target-provenance-20261020.json",
+    "docs/stabilization/reports/guest-heading-context-contract-repair-20261020.json",
+    "/Users/armanisadeghi/code/common-docs/policies/agents-never-author-agents.md",
+    ".claude/skills/create-agent/SKILL.md",
+    ".claude/skills/create-agent/factory-route.md",
+    "/Users/armanisadeghi/code/aidream/aidream/services/agent_factory/FEATURE.md",
+    "/Users/armanisadeghi/code/aidream/aidream/services/hindsight/FEATURE.md"
+  ]
+}
