@@ -1,79 +1,130 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import {
+  enterFirstPartyRoute,
+  requireOpeningPageText,
+  requireOriginalGuestSequence,
+} from './member-chat-original-repro.mjs';
 
-const source = await readFile(
-  new URL('./reviewer-chat-store-acceptance.mjs', import.meta.url),
-  'utf8',
-);
+const first = 'a'.repeat(16);
+const second = 'b'.repeat(16);
+const guestTurns = () => [
+  {
+    attempt: 'opening',
+    is_new: true,
+    conversation_fingerprint: first,
+    status: 200,
+    loading_finished: true,
+    terminal_success: true,
+    semantic_completion: 'success',
+    pending_tool_count: 0,
+    stream_error: false,
+  },
+  {
+    attempt: 'same_conversation_followup',
+    is_new: false,
+    conversation_fingerprint: first,
+    status: 200,
+    loading_finished: true,
+    terminal_success: true,
+    semantic_completion: 'success',
+    pending_tool_count: 0,
+    stream_error: false,
+  },
+];
 
-function requireOriginalD261Route(driver) {
-  const between = (start, end) => {
-    const first = driver.indexOf(start);
-    const last = driver.indexOf(end, first + start.length);
-    assert.ok(first >= 0 && last > first, `D261 boundary missing: ${start}`);
-    return driver.slice(first, last);
-  };
-  const guest = between(
-    'async function runOriginalGuestPrelude(',
-    '/** Passive runtime message proof',
+test('D261 opens first-party sign-in only after two terminal guest turns', async () => {
+  const steps = [];
+  const entered = await enterFirstPartyRoute({
+    checkResource: async () => {
+      steps.push('resource_checked');
+    },
+    runGuest: async () => {
+      steps.push('guest_opening_and_followup');
+      return requireOriginalGuestSequence(guestTurns());
+    },
+    openTab: async () => {
+      steps.push('first_party_tab');
+      return { tab: 'owned' };
+    },
+  });
+  assert.deepEqual(steps, ['resource_checked', 'guest_opening_and_followup', 'first_party_tab']);
+  assert.deepEqual(entered.web, { tab: 'owned' });
+  let opened = false;
+  await assert.rejects(
+    enterFirstPartyRoute({
+      checkResource: async () => {},
+      runGuest: async () => ({ status: 'pending_guest' }),
+      openTab: async () => {
+        opened = true;
+      },
+    }),
+    /guest prelude must finish/,
   );
-  assert.match(guest, /createGuestInputDriver\(/);
-  assert.match(guest, /watchGuestAiRequests\(/);
-  assert.match(guest, /\['opening', GUEST_QUESTION/);
-  assert.match(guest, /\['same_conversation_followup', GUEST_FOLLOWUP/);
-  assert.match(guest, /requests\[1\]\.is_new, false/);
-  assert.match(
-    guest,
-    /requests\[1\]\.conversation_fingerprint, requests\[0\]\.conversation_fingerprint/,
-  );
-  assert.match(guest, /row\.pending_tool_count === 0/);
+  assert.equal(opened, false, 'unfinished guest turn must prevent first-party login');
+});
 
-  const route = between('      let web = null;', '        if (!MAGIC_LINK) {');
-  assert.match(route, /await runOriginalGuestPrelude\(native, guestMarker\)/);
-  assert.ok(
-    route.indexOf('runOriginalGuestPrelude(native, guestMarker)') <
-      route.indexOf('page.context().newPage()'),
-    'guest sends must precede the first-party login tab',
-  );
-
-  assert.match(
-    driver,
-    /On this demo page, what is the main heading and what are the three table stages\? Answer from the page\./,
-  );
-  const member = between(
-    "        stage = 'original_member_normal_panel_reload';",
-    "        stage = 'reviewer_chat_transport';",
-  );
-  assert.match(member, /await panel\.send\('Page\.reload', \{ ignoreCache: false \}\)/);
-  assert.match(member, /freshMemberChat\.replyCount,\s*0/);
-  assert.match(member, /startMemberPageTextProof\(panel, demoHeading\)/);
-  assert.match(member, /\[demoHeading, 'Capture', 'Understand', 'Use'\]/);
-  assert.match(
-    member,
-    /event\.phase === 'completed' && event\.result_has_heading && event\.result_has_stages/,
-  );
-}
-
-test('D261 hosted member acceptance requires the original guest-to-member path and Page Text answer', () => {
-  requireOriginalD261Route(source);
-  for (const missing of [
-    'await runOriginalGuestPrelude(native, guestMarker)',
-    "await panel.send('Page.reload', { ignoreCache: false })",
-    "[demoHeading, 'Capture', 'Understand', 'Use']",
-    'event.result_has_heading && event.result_has_stages',
+test('D261 guest sequence refuses a skipped, uncorrelated or delegated follow-up', () => {
+  assert.equal(requireOriginalGuestSequence(guestTurns()).completed_turns, 2);
+  for (const changed of [
+    (rows) => rows.pop(),
+    (rows) => {
+      rows[1].conversation_fingerprint = second;
+    },
+    (rows) => {
+      rows[1].is_new = true;
+    },
+    (rows) => {
+      rows[1].pending_tool_count = 1;
+    },
+    (rows) => {
+      rows[0].terminal_success = false;
+    },
   ]) {
-    const scope =
-      missing === "await panel.send('Page.reload', { ignoreCache: false })"
-        ? source.indexOf("        stage = 'original_member_normal_panel_reload';")
-        : 0;
-    const removal = source.indexOf(missing, scope);
-    assert.ok(removal >= 0, `test mutation must find ${missing}`);
-    assert.throws(
-      () =>
-        requireOriginalD261Route(source.slice(0, removal) + source.slice(removal + missing.length)),
-      { code: 'ERR_ASSERTION' },
-      `removing ${missing} must turn D261 acceptance red`,
-    );
+    const rows = guestTurns();
+    changed(rows);
+    assert.throws(() => requireOriginalGuestSequence(rows), { code: 'ERR_ASSERTION' });
   }
+});
+
+test('D261 Page Text must be a completed delegated call on this member opening', () => {
+  const requests = [
+    {
+      attempt: 'opening',
+      conversation_fingerprint: first,
+      semantic_events: [{ event: 'tool_delegated', call_fingerprint: second }],
+    },
+  ];
+  const event = {
+    phase: 'completed',
+    conversation_fingerprint: first,
+    call_fingerprint: second,
+    result_has_heading: true,
+    result_has_stages: true,
+  };
+  assert.equal(
+    requireOpeningPageText({ events: [event], requests, heading: 'Matrx Extend Demo' })
+      .page_text_call_fingerprint,
+    second,
+  );
+  for (const mismatch of [
+    { ...event, conversation_fingerprint: 'c'.repeat(16) },
+    { ...event, call_fingerprint: 'c'.repeat(16) },
+    { ...event, phase: 'started' },
+    { ...event, result_has_heading: false },
+    { ...event, result_has_stages: false },
+  ])
+    assert.throws(
+      () => requireOpeningPageText({ events: [mismatch], requests, heading: 'Matrx Extend Demo' }),
+      /correlated completed Page Text/,
+    );
+  assert.throws(
+    () =>
+      requireOpeningPageText({
+        events: [event],
+        requests: [{ ...requests[0], semantic_events: [] }],
+        heading: 'Matrx Extend Demo',
+      }),
+    /correlated completed Page Text/,
+  );
 });

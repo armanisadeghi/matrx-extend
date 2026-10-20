@@ -19,6 +19,11 @@ import {
   requireMemberChatSequence,
   requireMemberOrganizationBinding,
 } from './member-chat-completion-oracle.mjs';
+import {
+  enterFirstPartyRoute,
+  requireOpeningPageText,
+  requireOriginalGuestSequence,
+} from './member-chat-original-repro.mjs';
 import { sendMemberChatOnTarget } from './member-chat-target.mjs';
 import {
   captureReviewerPanel as capture,
@@ -498,27 +503,9 @@ async function runOriginalGuestPrelude(native, marker) {
       requireGuestTransport(watcher.snapshot(), attempt, 'package');
     }
     requests.push(...watcher.snapshot());
-    assert.equal(requests.length, 2, 'original guest prelude requires exactly two turns');
-    assert.deepEqual(
-      requests.map((row) => row.attempt),
-      ['opening', 'same_conversation_followup'],
-    );
-    assert.equal(requests[0].is_new, true, 'guest opening requires a new conversation');
-    assert.equal(requests[1].is_new, false, 'guest followup requires the same conversation');
-    assert.equal(requests[1].conversation_fingerprint, requests[0].conversation_fingerprint);
-    assert.ok(requests[0].conversation_fingerprint, 'guest conversation identity required');
-    for (const row of requests)
-      assert.ok(
-        row.status === 200 &&
-          row.loading_finished &&
-          row.terminal_success &&
-          row.semantic_completion === 'success' &&
-          row.pending_tool_count === 0 &&
-          row.stream_error === false,
-        `original_guest_${row.attempt}_terminal_transport`,
-      );
+    const sequence = requireOriginalGuestSequence(requests);
     return {
-      status: 'terminal_two_turn_guest',
+      ...sequence,
       question_fingerprints: [hash(GUEST_QUESTION), hash(GUEST_FOLLOWUP)],
       requests,
       completed_reply_count: priorReplyCount,
@@ -543,6 +530,8 @@ async function startMemberPageTextProof(panel, heading) {
       const result = event.phase === 'completed' ? JSON.stringify(event.output ?? null) : '';
       observed.push({
         phase: event.phase,
+        call_id: event.callId ?? null,
+        conversation_id: event.conversationId ?? null,
         result_has_heading: result.includes(${JSON.stringify(heading)}),
         result_has_stages: ['Capture', 'Understand', 'Use'].every((term) => result.includes(term)),
       });
@@ -557,7 +546,15 @@ async function startMemberPageTextProof(panel, heading) {
   );
   assert.equal(installed, true, 'member Page Text observer required');
   return {
-    snapshot: () => evaluate(panel, 'window.__memberPageTextProof?.snapshot() ?? []'),
+    snapshot: async () =>
+      (await evaluate(panel, 'window.__memberPageTextProof?.snapshot() ?? []')).map(
+        ({ call_id, conversation_id, ...event }) => ({
+          ...event,
+          call_fingerprint: typeof call_id === 'string' ? hash(call_id) : null,
+          conversation_fingerprint:
+            typeof conversation_id === 'string' ? hash(conversation_id) : null,
+        }),
+      ),
     stop: () => evaluate(panel, 'window.__memberPageTextProof?.stop()'),
   };
 }
@@ -1371,19 +1368,24 @@ try {
         });
       await sampleAuthBoundary('before_member_tab_create');
       stage = MAGIC_LINK ? 'open_reviewer_magic_link' : 'open_reviewer_web_login';
-      await native.requireResourceHealth();
       let web = null;
       let memberTransport = null;
       let pageTextProof = null;
       const memberTurns = {};
       try {
+        const entry = await enterFirstPartyRoute({
+          checkResource: () => native.requireResourceHealth(),
+          ...(!UNINTERRUPTED && {
+            runGuest: () => runOriginalGuestPrelude(native, randomUUID()),
+          }),
+          openTab: () => page.context().newPage(),
+        });
+        web = entry.web;
         if (!UNINTERRUPTED) {
-          const guestMarker = randomUUID();
-          report.original_guest = await runOriginalGuestPrelude(native, guestMarker);
+          report.original_guest = entry.guest;
           stage = 'original_guest_before_first_party_signin';
           assert.equal(report.original_guest.status, 'terminal_two_turn_guest');
         }
-        web = await page.context().newPage();
         await sampleAuthBoundary('after_member_tab_create');
         if (!MAGIC_LINK) {
           await sampleAuthBoundary('before_login_navigation');
@@ -1927,16 +1929,14 @@ try {
           [demoHeading, 'Capture', 'Understand', 'Use'],
           ['Capture', 'Understand', 'Use'],
         );
+        await memberTransport.settle();
         const pageTextEvents = await pageTextProof.snapshot();
-        assert.ok(
-          pageTextEvents.some(
-            (event) =>
-              event.phase === 'completed' && event.result_has_heading && event.result_has_stages,
-          ),
-          'original member opening requires completed real Page Text with page heading and stages',
-        );
         report.page_text_proof = {
-          completed_actual_page_result: true,
+          ...requireOpeningPageText({
+            events: pageTextEvents,
+            requests: memberTransport.turnRequests(),
+            heading: demoHeading,
+          }),
           event_count: pageTextEvents.length,
         };
         stage = 'reviewer_chat_transport';
