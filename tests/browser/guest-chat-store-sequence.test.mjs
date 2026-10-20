@@ -7,6 +7,7 @@ import test from 'node:test';
 import { Window } from 'happy-dom';
 import { classifyGuestTurn, containsOrderedWholeTerms } from './guest-chat-completion-oracle.mjs';
 import { createGuestInputDriver } from './guest-chat-input-driver.mjs';
+import { guestValuesEscapeProbeExpression } from './guest-values-escape-probe.mjs';
 import { isCompleteResourceSample } from './native-resource-boundary.mjs';
 import { readPackageChatControls } from './package-chat-controls.mjs';
 import {
@@ -872,6 +873,7 @@ const valuesDriver = new Function(
   'click',
   'waitFor',
   'assert',
+  'guestValuesEscapeProbeExpression',
   `${valuesDriverSource}; return openAndCloseGuestValuesChip;`,
 );
 const failureSanitizersSource = source.slice(
@@ -955,19 +957,41 @@ function valuesControlHarness(count, blocked = null) {
     },
   };
   const run = valuesDriver(
-    async (_panel, expression) =>
-      new Function('document', 'getComputedStyle', `return ${expression}`)(document, (element) => ({
-        display: blocked === 'display-none' ? 'none' : 'block',
-        visibility: blocked === 'visibility-hidden' ? 'hidden' : 'visible',
-        opacity:
-          ((blocked === 'opacity-hidden' ||
-            (blocked === 'hidden-close' && hiddenAfterEscape) ||
-            (blocked === 'target-hidden-after-focus' && hiddenBeforeEscape)) &&
-            element === dialog) ||
-          (blocked === 'ancestor-opacity-hidden' && element === hiddenAncestor)
-            ? '0'
-            : '1',
-      })),
+    async (_panel, expression) => {
+      // Observer is an external dependency of this driver-only synthetic DOM harness.
+      // Its actual CDP expression/event phases are exercised in guest-values-escape-probe.test.mjs.
+      if (expression === guestValuesEscapeProbeExpression) {
+        const probe = {
+          keyDownCount: 0,
+          trustedKeyDownCount: 0,
+          snapshot: () => null,
+          stop: () => {
+            onKeyDown = null;
+          },
+        };
+        onKeyDown = (event) => {
+          probe.keyDownCount++;
+          if (event.isTrusted) probe.trustedKeyDownCount++;
+        };
+        document.__guestValuesEscapeProbe = probe;
+        return;
+      }
+      return new Function('document', 'getComputedStyle', `return ${expression}`)(
+        document,
+        (element) => ({
+          display: blocked === 'display-none' ? 'none' : 'block',
+          visibility: blocked === 'visibility-hidden' ? 'hidden' : 'visible',
+          opacity:
+            ((blocked === 'opacity-hidden' ||
+              (blocked === 'hidden-close' && hiddenAfterEscape) ||
+              (blocked === 'target-hidden-after-focus' && hiddenBeforeEscape)) &&
+              element === dialog) ||
+            (blocked === 'ancestor-opacity-hidden' && element === hiddenAncestor)
+              ? '0'
+              : '1',
+        }),
+      );
+    },
     async (_panel, kind, label) => {
       calls.push([kind, label]);
       if (blocked !== 'open') open = true;
@@ -978,6 +1002,7 @@ function valuesControlHarness(count, blocked = null) {
       return state;
     },
     assert,
+    guestValuesEscapeProbeExpression,
   );
   return { run: () => run(panel), calls };
 }
@@ -993,6 +1018,7 @@ test('published guest Chat Values must actually open and close when present', as
   assert.deepEqual(await harness.run(), {
     present: true,
     exercised: true,
+    escape_boundary_trace: null,
     escape_keydown_count: 1,
     trusted_escape_keydown_count: 1,
     pre_escape_focus_inside_popover: true,
@@ -1060,6 +1086,7 @@ test('long Values close failure keeps key delivery and focus in structured recei
     assert.equal(truncated.reason.length, 120);
     assert.equal(truncated.reason.includes('trustedEscapeKeyDownCount'), false);
     assert.deepEqual(safeValuesCloseDiagnostic(failure), {
+      escape_boundary_trace: null,
       chip_count: 1,
       visible_open_popovers: 1,
       open_state_popovers: 1,

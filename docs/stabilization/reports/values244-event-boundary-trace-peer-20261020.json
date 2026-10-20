@@ -1,0 +1,62 @@
+{
+  "task_id": "EXT-D-0244",
+  "reviewer_lane": "fresh independent verifier, zero authorship",
+  "scope": [
+    "tests/browser/guest-values-escape-probe.mjs",
+    "tests/browser/guest-values-escape-probe.test.mjs",
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/guest-chat-store-sequence.test.mjs"
+  ],
+  "summary_under_15_lines": [
+    "Verdict A: PASS for the requested narrow claim: neutral shape-only trace supports one later native diagnostic; this is NOT a product pass and D244 remains open.",
+    "The existing single CDP Escape keyDown/keyUp, focus precondition, wait predicate, and visible/open-dialog acceptance checks are unchanged from HEAD.",
+    "Verdict B: PASS with a material observation limit: listeners do not mutate events, alter focus, invoke/wrap handlers, or call product callbacks; cleanup removes listeners and disconnects the observer.",
+    "The exact serialized probe expression is exercised in Happy DOM; tests cover target/focus divergence, propagation boundaries, transitions/removal, caps/cleanup, tooltip/prop presence, and JSON sanitizer forwarding.",
+    "Failure receipts attach the trace from the last observed close state and place it in values_close_diagnostic; the sanitizer test serializes a trace produced by the exact probe expression.",
+    "Privacy: only fixed shape vocabulary, event booleans/numbers, boundary names, and bounded arrays are retained; no text, HTML, URL, IDs, classes, values, or auth data are read into records.",
+    "Focused rerun: node --test tests/browser/guest-values-escape-probe.test.mjs tests/browser/guest-chat-store-sequence.test.mjs — 49 passed, 0 failed.",
+    "Limit: no native rerun was performed, so observer timing effects remain unmeasured; the MutationObserver watches document-wide child-list churn, though retained output is capped.",
+    "No product/build/workflow/native/commit/push actions were performed."
+  ],
+  "verdict_a": {
+    "status": "PASS_NARROW_DIAGNOSTIC_ONLY",
+    "claim": "A neutral truthful trace supports one later native diagnostic; it does not establish that Values Escape works.",
+    "evidence": [
+      "HEAD diff confirms the prior one native Escape delivery remains one keyDown plus keyUp; no extra native key was added.",
+      "Pre-Escape focus checks and close predicate (zero open-state and visible dialogs plus trusted key delivery) are unchanged.",
+      "The trace can distinguish target/path outside while focus remains inside; missing event boundaries; close/reopen/removal; tooltip count; and forwarded handler-prop presence, with stated interpretation limits.",
+      "The success receipt includes escape_boundary_trace. On the failure route, the last observed close state is attached to the timeout error, safeValuesCloseDiagnostic forwards it, and the main catch assigns that diagnostic into the report.",
+      "Observer test builds a trace by executing the exact serialized expression, passes it through the real sanitizer, and JSON serializes the resulting receipt."
+    ],
+    "open": [
+      "No native run was performed by this verifier; Values Escape remains a native product defect under the prior trusted failure.",
+      "The trace does not prove React handler entry or callback/state-setter execution. dialogReactKeyDownPropPresent relies on a private React DOM prop naming convention and is explicitly presence-only.",
+      "Listeners added after existing listeners may miss a boundary if stopImmediatePropagation is used; absent boundaries localize an interval, not a precise listener.",
+      "MutationObserver captures callback-time DOM state and may miss batched state changes with no DOM mutation; it observes the original dialog only."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_LIMITATION",
+    "quality": [
+      "No product source or event behavior is modified. Observer only reads DOM/event state, installs passive-by-behavior listeners (no preventDefault/stopPropagation calls), and observes mutations.",
+      "stop is idempotent, drains pending records, disconnects the observer, and removes listeners; driver retains its existing finally cleanup.",
+      "Records and transition arrays are capped at 32 with explicit dropped counters; composed paths are capped at 16 fixed-vocabulary shapes with explicit truncation flag.",
+      "The two new observer tests cover real observer logic in synthetic DOM; existing synthetic driver tests stub the observer dependency, clearly documented in the harness."
+    ],
+    "privacy": "PASS: the observer never stores event text, element text/HTML, URL, IDs, class names, attribute values beyond a boolean old data-state, or auth material. Unknown tags collapse to 'other'.",
+    "forcing_guard_review": "The focused tests fail when expected boundary sequences or transitions are absent, and exercise the serialization path. Builder-reported scratch mutation results were not independently rerun in this verifier; no product test is claimed by these unit tests.",
+    "limitation": "The MutationObserver subscribes to document-wide childList changes and loops over each delivered mutation to detect original-dialog removal/reinsertion. Output storage is bounded, but callback work is not strictly bounded by the record cap; native timing perturbation remains unmeasured."
+  },
+  "verification": {
+    "command": "node --test tests/browser/guest-values-escape-probe.test.mjs tests/browser/guest-chat-store-sequence.test.mjs",
+    "passed": 49,
+    "failed": 0,
+    "not_performed": ["native browser run", "build", "publish", "workflow dispatch", "commit", "push", "product edits"],
+    "sha256": {
+      "tests/browser/guest-values-escape-probe.mjs": "fb865c3d17c3024657b2bb79d34e506fab54779096d74de36119e308b56ef74d",
+      "tests/browser/guest-values-escape-probe.test.mjs": "ba0f03736ca0652946c5f683fa8dd347d3964e69f01702e895a5b8d54b950ab7",
+      "tests/browser/guest-chat-store-acceptance.mjs": "9a2d39a31d8d7827ea69b8335c71c26495707129b89583ad7fa5d20c49983022",
+      "tests/browser/guest-chat-store-sequence.test.mjs": "6030f86936eec2456eaa6e96997dfb59006a45fc7e36fba13c98779f787c7547"
+    }
+  }
+}

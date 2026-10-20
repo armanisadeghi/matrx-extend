@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "review": "independent evidence-only behavior review",
+  "run_id": 39407214496,
+  "reviewer_authorship_of_run": false,
+  "actions": {
+    "dispatched": false,
+    "browser_retried": false,
+    "repo_files_written": false,
+    "stabilization_records_changed": false
+  },
+  "canonical_case_basis": {
+    "source": "docs/stabilization/inventory.json",
+    "t10": "EXT-F-2013-T10 requires guest opening reply grounded in the controlled page, a distinct same-conversation reply on the same actual wire identity with is_new=false, then panel reload and a grounded reply on a different wire identity with is_new=true. Unpacked evidence is not Store-installed or whole-Chat acceptance.",
+    "t13": "EXT-F-2013-T13 requires open Values, focus inside its dialog, trusted Escape plus dialog/focus inspection, and separate close-control/reopen checks; unexercised paths remain unverified.",
+    "d244_state": {
+      "source": "docs/stabilization/defects/EXT-D-0244.json",
+      "state": "fixed",
+      "meaning": "Published/adopted source repair only; exact-candidate native T13 remains required."
+    }
+  },
+  "t10": {
+    "verdict": "BOUNDED_PASS",
+    "evidence_file": "test-results/guest-chat-store-59d5cf48-7daf-4cf3-9a26-8350f7891091.json",
+    "fresh_guest": true,
+    "guest_auth_absent": {
+      "access_token": true,
+      "profile": true,
+      "organization": true
+    },
+    "turns": [
+      {
+        "attempt": "opening",
+        "verdict": "terminal_answer",
+        "http_status": 200,
+        "terminal_success": true,
+        "semantic_completion": "success",
+        "conversation_fingerprint": "74d582e8979f2ead",
+        "is_new": true,
+        "grounding_report": {
+          "unpredictable_page_code": true,
+          "stages_named": true,
+          "stages_in_order": true
+        },
+        "screenshots": ["guest-chat-real-answer.png"]
+      },
+      {
+        "attempt": "same_conversation_followup",
+        "verdict": "terminal_answer",
+        "http_status": 200,
+        "terminal_success": true,
+        "semantic_completion": "success",
+        "conversation_fingerprint": "74d582e8979f2ead",
+        "is_new": false,
+        "grounding_report": {
+          "page_code": true,
+          "fixture_heading": true
+        },
+        "screenshots": ["guest-chat-same-conversation-heading.png"]
+      },
+      {
+        "attempt": "post_reload_new_conversation",
+        "panel_reloaded": true,
+        "prior_guest_session_absent_after_reload": true,
+        "verdict": "terminal_answer",
+        "http_status": 200,
+        "terminal_success": true,
+        "semantic_completion": "success",
+        "conversation_fingerprint": "8fd1fc6a8c45ce9d",
+        "is_new": true,
+        "grounding_report": {
+          "unpredictable_page_code": true,
+          "fixture_heading": true
+        },
+        "screenshots": ["guest-chat-real-followup-answer.png", "guest-chat-followup-heading.png"]
+      }
+    ],
+    "transport": "All three requests completed; delegated tool result and resume requests were accepted and completed successfully.",
+    "evidence_limit": "Sanitized raw report omits tool-result payload matching fields (null); grounded terminal assertions and rendered screenshots support the bounded observations."
+  },
+  "t13": {
+    "verdict": "FAIL_REPRODUCED_BOUNDED_GUEST_ESCAPE_PATH",
+    "evidence_file": "test-results/guest-chat-store-59d5cf48-7daf-4cf3-9a26-8350f7891091.json",
+    "raw_post_escape_observation": {
+      "values_chip_count": 1,
+      "visible_open_popovers": 1,
+      "open_state_popovers": 1,
+      "document_focused": true,
+      "focus_inside_popover": true,
+      "other_visible_dialogs": 0,
+      "escape_keydown_count": 1,
+      "trusted_escape_keydown_count": 1
+    },
+    "focused_control_evidence": "The driver source tests/browser/guest-chat-store-acceptance.mjs focuses the Values dialog's actual [aria-label=\"Open full view\"] button, asserts focus is inside the one visible Values popover and that no other visible dialog exists, then sends Escape via CDP. The sanitized run report does not preserve a separate pre-Escape focus field, so this is driver-defined action/precondition plus exported post-state, not an independently serialized pre-state receipt.",
+    "event_evidence_limit": "The report records one trusted Escape at the document capture probe. It does not record event target, currentTarget, defaultPrevented, or propagation details.",
+    "visual_evidence_limit": "The failure screenshot shows the Values surface but does not independently make the still-open post-Escape state legible; the exported DOM/focus diagnostics support that observation.",
+    "unverified": ["close control", "reopen", "neighbor controls", "full view", "member", "admin"]
+  },
+  "identity": {
+    "native_run_id": 39407214496,
+    "native_result_artifact_id": 12258053202,
+    "native_result_artifact_sha256": "528c4fd1161f307eb2f7199fa5edcc9f1c07f05ad4577ff0f374cfcf87d4f6de",
+    "development_ci_run_id": 39404058065,
+    "development_artifact_id": 12255454102,
+    "development_artifact_sha256": "08bf85bab9dddef5d38a80fbd4042025023747e45de8243ff5e209a43e753f3b",
+    "source_sha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+    "native_receipt": {
+      "version": "0.2.573",
+      "kind": "local_dev_unpacked",
+      "tree_sha256": "3e8a60c448edb17a6c3c5d5b5213b0d730b06b21e9ae363b242a34df2f716c02"
+    },
+    "backend_before": {
+      "http_status": 200,
+      "git_sha": "5c3beef2e7c0c4cad4346a25262941bf45a1803f"
+    },
+    "backend_after": {
+      "http_status": 200,
+      "git_sha": "5c3beef2e7c0c4cad4346a25262941bf45a1803f"
+    },
+    "backend_stable": true,
+    "report_sha256": "8b86a7c1e9fa26068ede0179119bd61b84cf6db1954410f2aee169d1ffab93f6"
+  },
+  "resource_validity": {
+    "package": {
+      "run_id": "hosted-package-39407214496-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "run_id": "hosted-browser-39407214496-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "run_id": "hosted-guest-39407214496-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "interpretation": "The three T10 observations and bounded T13 observation remain usable; guest exit 1 is the product assertion failure, not resource invalidation. The later startup measurement was skipped."
+  },
+  "published_fix_in_exact_ci_artifact": {
+    "verdict": "UNKNOWN",
+    "reason": "No development ZIP, source map, detailed runtime log, or install receipt beyond the native tree receipt was present in the existing local raw evidence directory or /tmp. Exact run/artifact/source/tree provenance is recorded, but the compiled @ai-matrx/agents 0.59.174 Escape handler was not independently inspected inside this exact artifact. No download was initiated."
+  },
+  "claim_limits": [
+    "No whole T13, close/reopen, full-view, member/admin, Store-installed, or whole Chat acceptance credit.",
+    "The run shows the D244 symptom persisting in this bounded 0.2.573 development artifact; it does not establish source-level cause or exact compiled package contents."
+  ]
+}

@@ -31,19 +31,39 @@ Successful controls also had CPU pending; no source fix or threshold increase is
 Chromium, CDP3034ms within unchanged8000ms, panel-ready and all package/browser/startup finals
 valid/resourceInvalid=false. Exact current CIdevelopment95d7ba509 / fullCI39404058065 / artifact12255454102.
 It did not exercise the late endpoint branch, prove causal repair, or test a product case.
-One new bounded guest B39407214496 is pinned to that95d development artifact: T10 three turns
-and conditional original ValuesEscape only. Values absent/exercisedfalse is unverified; fullT13
-close/reopen/member/fullview are outside this run. Owner `current_guest_values_native_b`; no retry.
-Latest dependency adoption is separately source/peer verified for the next candidate, not credited
-with B95d behavior. No account/spend block or human-only access blocker is established.
- Earlier572 resource-valid guest T10 replies
-remain separately bounded;573 cannot inherit them. Non-admin D261504 remains unresolved.
+**Current development native B39407214496 is terminal, resource-valid FAILURE.** Exact
+95d7ba509/fullCI39404058065/artifact12255454102/version573 against stable deployed
+5c3beef2e7c0c4cad4346a25262941bf45a1803f passes bounded T10: opening, same-conversation
+and post-panel-reload guest replies, actual grounded answers, HTTP200 terminal success.
+T13 original Values Escape FAILS: one trusted Escape, focus inside original dialog, dialog
+still open. Fresh independent evidence review agrees. The tested compiled agents174 Escape
+handler is present, so stale/missing repair is ruled out; event propagation/handler execution
+is not yet measured. D244 is **in-fix**, not fixed/closed. [Native](reports/guest573-current-dev-native-20261020.json),
+[peer](reports/guest573-current-dev-native-peer-20261020.json),
+[compiled/source diagnosis](reports/values244-native-failure-diagnosis-20261020.json).
+No full T13 close/reopen/fullview/member/admin or Store-installed claim; no new unique T10
+coverage increment. Package/browser valid, guest child_failed/resourceInvalid=false/exit1.
+Fresh Astra escalation found no causal product edit and prepared bounded test-only event/focus/
+DOM-transition trace; [fresh peer](reports/values244-event-boundary-trace-peer-20261020.json)
+passes neutral trace only,49focused guards pass. [Builder](reports/values244-event-boundary-trace-20261020.json)
+wired the observer into existing Linux CI (96selected cases pass, no new job/runner/trigger).
+Local cost guard self-tests pass; sibling forecast150.16/$100 and sandbox twin drift remain
+existing cross-repo guard failures, distinct from current actual72.23/$100. No guard waiver.
+Retained output is bounded; document-wide mutation callback work and native timing effect remain
+explicit observer limits. One changed diagnostic still requires exact green CI/source and normal admission.
+No extra Escape, weaker acceptance, resource threshold change, or blind retry is authorized.
+Dependency adoption419fe157f passed fullCI39408181597/focused39408181614; its artifact12258336638
+is not credited with B95d behavior. Concurrent main5a3c3498b refreshes chat248/data84; guarded
+release39409723565 is in progress under its separate lock-catch-up owner. Do not duplicate or
+assume it uploaded/submitted; exact artifact/gates/source drift must be read after terminal.
+No account/spend block or human-only access blocker is established. Non-admin D261504 remains
+unresolved. Earlier candidate/public results remain separately bounded.
 **[D265](defects/EXT-D-0265.json) is narrowly CLOSED after fresh independent original native retest.**
 At native setup readiness08:21:05, full11-field healthy CPU_PENDING .03/.53 then CPU_RECOVERED .11
 count as3; helper ready08:21:48. Three guest replies and later readiness also pass. Thresholds,
 three-sample requirement, interval and deadline are unchanged. Source and native evidence close
-only the false readiness refusal, not product D244/D261. D244 shared-package source repair is published/adopted; exact573 includes it, but native
-closure remains unverified because startup stopped before UI. D261 current non-admin acceptance remains unresolved; no blind capacity retry.
+only the false readiness refusal, not product D244/D261. D244 shared-package repair is published/adopted but failed the later resource-valid native
+retest above; it is back in-fix. D261 current non-admin acceptance remains unresolved; no blind capacity retry.
 Today's published205 check39393936846 is terminal and independently reviewed: T10 guest three
 terminal grounded replies PASS against stable40990436; public Article and T13 Values remain FAIL.
 [Daily proof](reports/published205-daily-guest-20261020.json), [peer](reports/published205-daily-fresh-peer-20261020.json).
@@ -298,7 +318,7 @@ independently reviewed native Scrape run39372274799. New lock refresh belongs to
 reloaded in the personal profile; last native loaded observation remains565. Later main changes
 are evidence/docs only; never claim a current installed copy from source/artifact proof. Import with current-test-artifact, promote
 with promote-ci-dev-artifact and guard actual reload/path/ID/version/pins after local recovery.
-Current remote/native-verified CIdevelopment573 artifact12255454102/source95d7ba509/fullCI39404058065 is newer; it is not imported/promoted/reloaded in this personal profile.
+CIdevelopment573 artifact12255454102/source95d7ba509/fullCI39404058065 was imported into the ignored external forensic cache and actually tested as bounded above, but not promoted/reloaded in the personal profile. Newer419 artifact12258336638 has CI proof only; current main has advanced again.
 Personal principal is a real personal admin; never log it out. Use owned profiles for auth tests.
 
 ## Integration and continuity

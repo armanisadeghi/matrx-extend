@@ -51947,23 +51947,26 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 39391905076,
-              "build_version": "0.2.572",
-              "build_channel": "candidate_store_zip_adapted_unpacked",
+              "run_id": 39407214496,
+              "source_sha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+              "build_version": "0.2.573",
+              "build_kind": "ci_development_test",
               "actual_store_installed": false,
-              "source_sha": "419a40f0370c51db281759615e44797912ac485c",
-              "store_zip_sha256": "2385cc21f9ad7d02c532aa5c20e4b471595b2442b07ab76c6e3f111c0358606b",
+              "development_ci_run_id": 39404058065,
+              "development_artifact_id": 12255454102,
+              "development_artifact_digest": "sha256:08bf85bab9dddef5d38a80fbd4042025023747e45de8243ff5e209a43e753f3b",
+              "runtime_tree_sha256": "3e8a60c448edb17a6c3c5d5b5213b0d730b06b21e9ae363b242a34df2f716c02",
               "resource_invalid": false,
               "guest_resource_decision": "child_failed",
-              "server_sha_before": "4099043613385b5fff9d5049a4b195d037ac7018",
-              "server_sha_after": "4099043613385b5fff9d5049a4b195d037ac7018",
+              "guest_child_exit_code": 1,
+              "server_sha_before": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
+              "server_sha_after": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
               "server_stable": true,
               "evidence": [
-                "docs/stabilization/reports/release572-native-20261020.json",
-                "docs/stabilization/reports/release572-independent-peer-20261020.json"
+                "docs/stabilization/reports/guest573-current-dev-native-20261020.json",
+                "docs/stabilization/reports/guest573-current-dev-native-peer-20261020.json"
               ],
-              "detail": "Opening/same-conversation/postreload actual code/full-heading terminal replies, HTTP200; bounded guest T10 only. Overall run fails separate T13; no causal D263 closure or full Chat/member/Store-installed health.",
-              "defect_ids": []
+              "detail": "Bounded guest three real terminal replies: openingunpredictablecode+stageorder; sameconversationfullheading/code; afterrealpanelreloadnewconversationcode/fullheading. HTTP200/is_new true,false,true, same then distinct conversation. Rawtoolpayloadprivacy-suppressed, renderedgrounding/protocol supportpass. No wholeChat/member/admin/Store-installation/latest419 claim; no unique newcasepass."
             }
           },
           "defect_verification": {
@@ -52255,6 +52258,31 @@
               },
               "superseded_at": "2026-10-20T08:29:12.701293+00:00",
               "reason": "Fresh independent exact572 per-case native verdict; separate T10 reply/T13 Escape outcomes."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 39391905076,
+                "build_version": "0.2.572",
+                "build_channel": "candidate_store_zip_adapted_unpacked",
+                "actual_store_installed": false,
+                "source_sha": "419a40f0370c51db281759615e44797912ac485c",
+                "store_zip_sha256": "2385cc21f9ad7d02c532aa5c20e4b471595b2442b07ab76c6e3f111c0358606b",
+                "resource_invalid": false,
+                "guest_resource_decision": "child_failed",
+                "server_sha_before": "4099043613385b5fff9d5049a4b195d037ac7018",
+                "server_sha_after": "4099043613385b5fff9d5049a4b195d037ac7018",
+                "server_stable": true,
+                "evidence": [
+                  "docs/stabilization/reports/release572-native-20261020.json",
+                  "docs/stabilization/reports/release572-independent-peer-20261020.json"
+                ],
+                "detail": "Opening/same-conversation/postreload actual code/full-heading terminal replies, HTTP200; bounded guest T10 only. Overall run fails separate T13; no causal D263 closure or full Chat/member/Store-installed health.",
+                "defect_ids": []
+              },
+              "superseded_at": "2026-10-20T10:42:58.885247+00:00",
+              "reason": "Fresh independent current95d CIdevelopment per-case native39407214496; not latest419/Store-installed acceptance."
             }
           ],
           "attempt_history": [
@@ -52484,25 +52512,29 @@
           "results": {
             "guest": {
               "status": "fail",
-              "run_id": 39391905076,
-              "build_version": "0.2.572",
-              "build_channel": "candidate_store_zip_adapted_unpacked",
+              "run_id": 39407214496,
+              "source_sha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+              "build_version": "0.2.573",
+              "build_kind": "ci_development_test",
               "actual_store_installed": false,
-              "source_sha": "419a40f0370c51db281759615e44797912ac485c",
-              "store_zip_sha256": "2385cc21f9ad7d02c532aa5c20e4b471595b2442b07ab76c6e3f111c0358606b",
+              "development_ci_run_id": 39404058065,
+              "development_artifact_id": 12255454102,
+              "development_artifact_digest": "sha256:08bf85bab9dddef5d38a80fbd4042025023747e45de8243ff5e209a43e753f3b",
+              "runtime_tree_sha256": "3e8a60c448edb17a6c3c5d5b5213b0d730b06b21e9ae363b242a34df2f716c02",
               "resource_invalid": false,
               "guest_resource_decision": "child_failed",
-              "server_sha_before": "4099043613385b5fff9d5049a4b195d037ac7018",
-              "server_sha_after": "4099043613385b5fff9d5049a4b195d037ac7018",
+              "guest_child_exit_code": 1,
+              "server_sha_before": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
+              "server_sha_after": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
               "server_stable": true,
               "evidence": [
-                "docs/stabilization/reports/release572-native-20261020.json",
-                "docs/stabilization/reports/release572-independent-peer-20261020.json"
+                "docs/stabilization/reports/guest573-current-dev-native-20261020.json",
+                "docs/stabilization/reports/guest573-current-dev-native-peer-20261020.json"
               ],
-              "detail": "Original compact Values failure repeats on exact572: one trusted Escape, document focused, focus inside visible popover, no other visible dialogs; popover remains open. Close-control/reopen/full-view/member/admin unverified.",
               "defect_ids": [
                 "EXT-D-0244"
-              ]
+              ],
+              "detail": "PresentcompactValuesstillvisible/open1 after onetrustedEscape; documentfocused/focusinside/zerootherdialogs. Actualtestedbundlecontains174fix, so originalnative symptom persists. Close/reopen/fullview/neighbor/member/admin unverified; sourcecauseeventboundarynotcaptured."
             },
             "member": {
               "status": "unverified"
@@ -52559,6 +52591,33 @@
               },
               "superseded_at": "2026-10-20T08:29:12.701293+00:00",
               "reason": "Fresh independent exact572 per-case native verdict; separate T10 reply/T13 Escape outcomes."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "fail",
+                "run_id": 39391905076,
+                "build_version": "0.2.572",
+                "build_channel": "candidate_store_zip_adapted_unpacked",
+                "actual_store_installed": false,
+                "source_sha": "419a40f0370c51db281759615e44797912ac485c",
+                "store_zip_sha256": "2385cc21f9ad7d02c532aa5c20e4b471595b2442b07ab76c6e3f111c0358606b",
+                "resource_invalid": false,
+                "guest_resource_decision": "child_failed",
+                "server_sha_before": "4099043613385b5fff9d5049a4b195d037ac7018",
+                "server_sha_after": "4099043613385b5fff9d5049a4b195d037ac7018",
+                "server_stable": true,
+                "evidence": [
+                  "docs/stabilization/reports/release572-native-20261020.json",
+                  "docs/stabilization/reports/release572-independent-peer-20261020.json"
+                ],
+                "detail": "Original compact Values failure repeats on exact572: one trusted Escape, document focused, focus inside visible popover, no other visible dialogs; popover remains open. Close-control/reopen/full-view/member/admin unverified.",
+                "defect_ids": [
+                  "EXT-D-0244"
+                ]
+              },
+              "superseded_at": "2026-10-20T10:42:58.885247+00:00",
+              "reason": "Fresh independent current95d CIdevelopment per-case native39407214496; not latest419/Store-installed acceptance."
             }
           ],
           "bounded_candidate_observations": [

@@ -1,0 +1,64 @@
+{
+  "task_id": "EXT-D-0244",
+  "lane": "native failure diagnosis and source repair",
+  "status": "HANDOFF_MISSING_EVENT_BOUNDARY_EVIDENCE_NO_SOURCE_EDIT",
+  "repro": {
+    "native_run": 39407214496,
+    "development_source_sha": "95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+    "development_artifact_id": 12255454102,
+    "development_tree_sha256": "3e8a60c448edb17a6c3c5d5b5213b0d730b06b21e9ae363b242a34df2f716c02",
+    "result_artifact_id": 12258053202,
+    "verdict": "FAIL_REPRODUCED",
+    "observed": "The unique compact Values dialog remained visibly and logically open after one trusted Escape; the document was focused and its active element was inside the dialog; no other visible dialog existed. Three guest Chat turns had terminal grounded answers and the backend SHA was stable.",
+    "raw_report": "/Volumes/Samsung2TB/code/matrx-extend/test-results/guest-values-native-B-39407214496/matrx-extend/matrx-extend/test-results/guest-chat-store-59d5cf48-7daf-4cf3-9a26-8350f7891091.json"
+  },
+  "actual_compiled_provenance": {
+    "provenance_file": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/95d7ba509f4e033c0ee0281d1dbceae15cb0b433/39404058065-1/provenance.json",
+    "bundle_file": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/95d7ba509f4e033c0ee0281d1dbceae15cb0b433/39404058065-1/chrome-mv3/chunks/react-CIAGJaBG.js",
+    "bundle_sha256": "170c255c33fc0fb21e9e318b1e0daae6abdbc17b2c1fa79fe76097953da54d32",
+    "package_from_bundle_map": "@ai-matrx/agents@0.59.174/dist/context/react/index.js",
+    "component_source_sha256": "0111a6c30ed7f640c97e2b5b079838b7008513c33933f71ba47113b29db81739",
+    "compiled_handler_present": true,
+    "compiled_handler": "onKeyDown:e=>{e.key===`Escape`&&e.currentTarget.contains(e.target)&&z(!1)}"
+  },
+  "event_facts": {
+    "native_probe": "Document capture saw one trusted Escape keydown; document.activeElement was inside the open popover before and after.",
+    "native_probe_does_not_record": [
+      "KeyboardEvent.target or composedPath",
+      "whether keydown reached PopoverContent capture/bubble or React onKeyDown",
+      "event.defaultPrevented and propagation state at each boundary",
+      "tooltip open state before Escape",
+      "whether dialog briefly closed and reopened"
+    ],
+    "source_component_test": "Existing test uses fireEvent.keyDown on the focused trigger and passes; its event target is necessarily that trigger and therefore cannot distinguish the missing native event path. The original native failure remains authoritative."
+  },
+  "hypotheses_to_discriminate": [
+    {
+      "cause": "CDP keydown reaches document but its target/path bypasses PopoverContent despite focus inside",
+      "prediction": "Document capture records Escape, dialog capture and bubble do not; the event target/path does not contain the dialog."
+    },
+    {
+      "cause": "A nested tooltip or layer changes propagation before React handles the popover",
+      "prediction": "Tooltip is open before Escape; dialog native capture sees the key, but dialog bubble/React handler does not, or event is stopped before that boundary."
+    },
+    {
+      "cause": "Popover handler runs but its DOM containment predicate is false",
+      "prediction": "Dialog/React keydown handler is entered, target is outside dialog, and contains is false."
+    },
+    {
+      "cause": "Popover handler closes and a later state transition reopens it",
+      "prediction": "Dialog data-state or mounted node transitions through closed/absent to open after the key; onOpenChange sequence includes false then true."
+    }
+  ],
+  "siblings": "The shared package has other PopoverContent users in InlineMaxButton, ModelListDropdown, and AgentListDropdown; no native failure for those was established, so none was changed.",
+  "causal_fix": null,
+  "tests": {
+    "new_tests": 0,
+    "reason": "A source change or another fireEvent test would not be causal until the first native event boundary mismatch is observed."
+  },
+  "remaining_limits": [
+    "No new native run, hosted workflow, browser, model call, build, publish, commit, or push was started in this lane.",
+    "D244 native T13 remains failing; no Store submission or closure is justified."
+  ],
+  "next_action": "On the next authorized native retest, record one bounded Escape event trace: capture target/path/activeElement/defaultPrevented at document and dialog capture+bubble, React handler entry and contains result, tooltip open state before key, and dialog state mutations for the short post-key window. Preserve booleans and tag names only, no page text. Use that first differing boundary to design a minimal old-RED/new-GREEN source repair and realistic guard."
+}

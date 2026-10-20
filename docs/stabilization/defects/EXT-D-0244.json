@@ -34,15 +34,18 @@
     "docs/stabilization/resource-journals/hosted-guest-39391905076-1.jsonl",
     "docs/stabilization/reports/values244-publish-adopt-20261020.json",
     "docs/stabilization/reports/release573-native-20261020.json",
-    "docs/stabilization/reports/release573-independent-peer-20261020.json"
+    "docs/stabilization/reports/release573-independent-peer-20261020.json",
+    "docs/stabilization/reports/guest573-current-dev-native-20261020.json",
+    "docs/stabilization/reports/guest573-current-dev-native-peer-20261020.json",
+    "docs/stabilization/reports/values244-native-failure-diagnosis-20261020.json"
   ],
   "severity": "S3: context inspection dialog dismissal by Escape fails; the three Chat replies completed.",
   "priority": "P2: current 0.2.572 guest native reproduced; repair the shared ContextRulesChip and retest a released candidate.",
-  "state": "fixed",
-  "owner": "values244-product-repair",
+  "state": "in-fix",
+  "owner": "values244_event_boundary_escalation",
   "reproducibility": "Current exact 0.2.572/source 419a40f0370c51db281759615e44797912ac485c reproduced on native39391905076: one trusted Escape, document focused, focus inside visible/open compact Values popover, zero other visible dialogs; popover remained open. Three guest replies completed, backend stable4099043613385b5fff9d5049a4b195d037ac7018; package/browser/guest resource finals valid, guest child_failed exit1 at Values. Prior public205 reproduced; this current-source result removes the artifact-equivalence uncertainty.",
-  "build_version": "0.2.572 frozen CRX/source419a40f0370c51db281759615e44797912ac485c",
-  "server_sha": "4099043613385b5fff9d5049a4b195d037ac7018",
+  "build_version": "0.2.573 CIdevelopment/source95d7ba509f4e033c0ee0281d1dbceae15cb0b433",
+  "server_sha": "5c3beef2e7c0c4cad4346a25262941bf45a1803f",
   "transition_history": [
     {
       "at": "2026-10-18T20:03:02.431885+00:00",
@@ -67,10 +70,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Reviewed shared ContextRulesChip repair pushed as aidream a1c540b807 and published as @ai-matrx/agents 0.59.174 with matching registry gitHead and tarball handler; extension latest-package lockfile adoption and compile passed. Fixed denotes the pushed source unit only; exact installed/native guest T13 and independent behavior retest remain pending."
+    },
+    {
+      "at": "2026-10-20T10:42:58.885247+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Independent current95d development native39407214496 reproduces original presentcompactValues/one trustedEscape/stillopen1 with resource-valid journals. Threeguestterminalreplies PASS, stablebackend5c3beef2. Published174 fix is present in actual tested compiled bundle; it did not resolve native symptom."
+    },
+    {
+      "at": "2026-10-20T10:42:58.885247+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "FreshSol verifiedactualcompiledhandler but lacked eventtarget/propagation/state-transition boundary evidence. Bounded Astra escalation values244_event_boundary_escalation owns neutral existingcase trace, no speculativeproductpatch."
     }
   ],
-  "next_action": "Resolve measured initial owned-CDP startup condition without changing resource thresholds or blind retry; then run original-equivalent guest T13 on a fresh eligible exact candidate and obtain fresh independent behavior review. Keep state fixed until original/surrounding native cases pass; nonadminD261 and other Values modes remain separate.",
-  "current_artifact_boundary": "Source-reviewed shared repair published as agents0.59.174/gitHead a1c540b807; synchronized extension adoption adb10448d and fullCI39397452854 pass. Exact573 source19aa37bee23e02c8ab62a15ce4854d9e5c944f91 / Store ZIP5814c4683e270f8303263a26fda0946c91f9680a6c317150283eaafae0df2d4e contains compiled repair. Original native T13 B39399395330 stopped resource-invalid at CDP startup before UI, so no retest-pass/fail is supported. Previous572 actual failure remains valid history.",
+  "next_action": "Finish/review/test minimal neutral native event trace in existing Values helper, integrate source and exact currentCIartifact, then one guarded original-case discriminator. Preserve original oneEscape verdict; no retry withoutchangeddiagnostic, no Store submission or sourcefixedclaim.",
+  "current_artifact_boundary": "Actual native39407214496 CIdevelopment tree3e8a60c448edb17a6c3c5d5b5213b0d730b06b21e9ae363b242a34df2f716c02 / artifact12255454102(source95d) containscompiledagents174Escapehandler; originalfailurepersists. Latest419adoptionagents175preserves samecomponent, no nativefixclaim. FullCI39408181597/focused39408181614 success validatesadoption/sourceonly, notproductrepair.",
   "source_harness_readiness": {
     "status": "fresh source peer PASS; native UNKNOWN, productstateopen",
     "summary": "Immediately prove documentfocus/visiblecompactfocus/singleopen/noothervisible dialogs before trustedEscape; unavailablefocus refused before key, distinct harnesspreconditionerror. Require zero open/visible compactdialogs +trustedkeydown after. Fullviewcontrolfocusedwithoutactivation; actualnativefocus sideeffectsunknown.",

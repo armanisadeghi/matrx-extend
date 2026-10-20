@@ -25,6 +25,7 @@ import {
   requireGuestTransport,
   watchGuestAiRequests,
 } from './guest-chat-transport-observer.mjs';
+import { guestValuesEscapeProbeExpression } from './guest-values-escape-probe.mjs';
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 import {
   isCompleteResourceSample,
@@ -552,6 +553,7 @@ async function openAndCloseGuestValuesChip(panel) {
       count: matches.length,
       openPanelCount: visibleOpenPanels.length,
       openStatePanelCount: openPanels.length,
+      escapeBoundaryTrace: document.__guestValuesEscapeProbe?.snapshot() ?? null,
       escapeKeyDownCount: document.__guestValuesEscapeProbe?.keyDownCount ?? 0,
       trustedEscapeKeyDownCount: document.__guestValuesEscapeProbe?.trustedKeyDownCount ?? 0,
       documentFocused: document.hasFocus(),
@@ -595,20 +597,7 @@ async function openAndCloseGuestValuesChip(panel) {
     error.guestValuesCloseState = preEscape;
     throw error;
   }
-  await evaluate(
-    panel,
-    `(() => {
-    const probe = { keyDownCount: 0, trustedKeyDownCount: 0 };
-    const onKeyDown = (event) => {
-      if (event.key !== 'Escape') return;
-      probe.keyDownCount++;
-      if (event.isTrusted) probe.trustedKeyDownCount++;
-    };
-    document.addEventListener('keydown', onKeyDown, true);
-    probe.stop = () => document.removeEventListener('keydown', onKeyDown, true);
-    document.__guestValuesEscapeProbe = probe;
-  })()`,
-  );
+  await evaluate(panel, guestValuesEscapeProbeExpression);
   try {
     await panel.send('Input.dispatchKeyEvent', {
       type: 'keyDown',
@@ -643,6 +632,7 @@ async function openAndCloseGuestValuesChip(panel) {
     return {
       present: true,
       exercised: true,
+      escape_boundary_trace: closed.escapeBoundaryTrace,
       escape_keydown_count: closed.escapeKeyDownCount,
       trusted_escape_keydown_count: closed.trustedEscapeKeyDownCount,
       pre_escape_focus_inside_popover: preEscape.focusInsidePopover,
@@ -862,6 +852,7 @@ function safeValuesCloseDiagnostic(error) {
   const count = (value) => (Number.isInteger(value) && value >= 0 && value <= 1000 ? value : null);
   const flag = (value) => (typeof value === 'boolean' ? value : null);
   return {
+    escape_boundary_trace: state.escapeBoundaryTrace ?? null,
     chip_count: count(state.count),
     visible_open_popovers: count(state.openPanelCount),
     open_state_popovers: count(state.openStatePanelCount),
