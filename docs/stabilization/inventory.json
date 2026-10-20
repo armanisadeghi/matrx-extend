@@ -45393,7 +45393,8 @@
           ],
           "defect_ids": [
             "EXT-D-0053",
-            "EXT-D-0054"
+            "EXT-D-0054",
+            "EXT-D-0268"
           ],
           "verification_note": "Shared export helper changes linked via source audit; native JSON/TSV/AI copied bytes and special cells remain unverified in Data.",
           "results": {
@@ -45552,7 +45553,18 @@
               "matched_target_count": 0,
               "visible_target_count": 0
             }
-          ]
+          ],
+          "active_retest": {
+            "run_id": 39442944171,
+            "mode": "member",
+            "source_sha": "ad92e14c656f283a15ea345520a97441e417c94b",
+            "ci_run_id": 39440966391,
+            "artifact_id": 12274887311,
+            "status": "running_no_product_verdict",
+            "fixture_owner": "data_t03_repaired_native",
+            "source_peer": "docs/stabilization/reports/data-org-fix-fresh-peer-20261020.json",
+            "cleanup": "secret and fixture exclusively owned until terminal; local one-use file removed"
+          }
         },
         {
           "id": "EXT-F-2005-T04",
@@ -46075,6 +46087,9 @@
       "missing_items": [],
       "readiness_gaps": [
         "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel."
+      ],
+      "defect_ids": [
+        "EXT-D-0268"
       ]
     },
     {
