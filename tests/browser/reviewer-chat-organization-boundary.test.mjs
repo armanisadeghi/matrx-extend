@@ -21,7 +21,7 @@ const hostedSource = await readFile(
   'utf8',
 );
 
-test('hosted member path stages the actual private approved organization before child execution', async () => {
+test('hosted member paths stage the actual private approved organization before child execution', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'member-approved-org-'));
   const path = join(directory, 'approved-member-organization-private.json');
   const start = hostedSource.indexOf(
@@ -40,29 +40,35 @@ test('hosted member path stages the actual private approved organization before 
       approved_organization_id: '72336a38-f816-442f-ad48-18610128fb67',
     }),
   };
-  const execute = async (body) =>
+  const execute = async (body, acceptanceCase) =>
     runInNewContext(`(async () => { ${body} })()`, {
-      acceptanceCase: 'member-chat',
+      acceptanceCase,
       needsApprovedAdminOrganization: false,
       approvedMemberOrganizationPath: path,
       stageProfileOrganizationConfig,
       process: { env },
     });
   try {
-    await execute(stage);
-    assert.equal((await stat(path)).mode & 0o777, 0o600);
-    assert.equal(
-      JSON.parse(await readFile(path, 'utf8')).approved_organization_id,
-      '72336a38-f816-442f-ad48-18610128fb67',
-    );
-    const forwarded = (fields) =>
+    const forwarded = (fields, acceptanceCase) =>
       runInNewContext(`({ ${fields} })`, {
-        acceptanceCase: 'member-chat',
+        acceptanceCase,
         approvedMemberOrganizationPath: path,
         extensionDir: '/private/extension',
         relocatedReceipt: '/private/receipt',
       });
-    assert.equal(forwarded(childEnvFields).MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE, path);
+    for (const acceptanceCase of ['member-chat', 'member-data']) {
+      await execute(stage, acceptanceCase);
+      assert.equal((await stat(path)).mode & 0o777, 0o600);
+      assert.equal(
+        JSON.parse(await readFile(path, 'utf8')).approved_organization_id,
+        '72336a38-f816-442f-ad48-18610128fb67',
+      );
+      assert.equal(
+        forwarded(childEnvFields, acceptanceCase).MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
+        path,
+      );
+      await rm(path);
+    }
     const withoutForwarding = childEnvFields.replace(
       / {4}\.\.\.\(acceptanceCase === 'member-chat'[\s\S]*? {6}: \{\}\),\n/,
       '',
@@ -70,17 +76,19 @@ test('hosted member path stages the actual private approved organization before 
     assert.notEqual(withoutForwarding, childEnvFields);
     assert.throws(
       () =>
-        assert.equal(forwarded(withoutForwarding).MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE, path),
+        assert.equal(
+          forwarded(withoutForwarding, 'member-data').MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
+          path,
+        ),
       /undefined/,
       'removed child env forwarding must turn the path proof red',
     );
-    await rm(path);
     const withoutMemberStaging = stage.replace(
-      / {2}if \(acceptanceCase === 'member-chat'\)\n {4}await stageProfileOrganizationConfig\(approvedMemberOrganizationPath, process\.env\);\n/,
+      / {2}if \(acceptanceCase === 'member-chat' \|\| acceptanceCase === 'member-data'\)\n {4}await stageProfileOrganizationConfig\(approvedMemberOrganizationPath, process\.env\);\n/,
       '',
     );
     assert.notEqual(withoutMemberStaging, stage);
-    await execute(withoutMemberStaging);
+    await execute(withoutMemberStaging, 'member-data');
     await assert.rejects(
       async () => assert.equal((await stat(path)).mode & 0o777, 0o600),
       { code: 'ENOENT' },

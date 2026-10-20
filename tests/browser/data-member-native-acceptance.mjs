@@ -310,12 +310,17 @@ try {
       let { panel } = native;
       report.stage = 'member_auth';
       await requireResourceHealth();
+      assert.ok(
+        process.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
+        'data_member_approved_organization_required',
+      );
       const identity = await signInSettings({
         mode: 'member',
         page,
         panel,
         repo: REPO,
         memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+        memberApprovedOrganizationFile: process.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
         allowLadderOrganization: true,
         onAuthDiagnostic: (value) => {
           report.auth_diagnostic = { ...report.auth_diagnostic, ...value };

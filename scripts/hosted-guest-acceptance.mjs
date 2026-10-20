@@ -563,7 +563,7 @@ async function run(prepared, artifactMode) {
   }
   if (needsApprovedAdminOrganization)
     await stageProfileOrganizationConfig(approvedAdminOrganizationPath, process.env);
-  if (acceptanceCase === 'member-chat')
+  if (acceptanceCase === 'member-chat' || acceptanceCase === 'member-data')
     await stageProfileOrganizationConfig(approvedMemberOrganizationPath, process.env);
   const childEnv = {
     ...process.env,
@@ -599,7 +599,7 @@ async function run(prepared, artifactMode) {
       : {}),
     MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_RELEASE_RECEIPT: relocatedReceipt,
-    ...(acceptanceCase === 'member-chat'
+    ...(acceptanceCase === 'member-chat' || acceptanceCase === 'member-data'
       ? { MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE: approvedMemberOrganizationPath }
       : {}),
     ...(tabGroupsRoute?.env ?? {}),
@@ -821,7 +821,8 @@ async function run(prepared, artifactMode) {
       await unlink(memberLinkPath);
     if (adminCredentialsCreated) await unlink(adminCredentialsPath);
     if (needsApprovedAdminOrganization) await unlink(approvedAdminOrganizationPath);
-    if (acceptanceCase === 'member-chat') await unlink(approvedMemberOrganizationPath);
+    if (acceptanceCase === 'member-chat' || acceptanceCase === 'member-data')
+      await unlink(approvedMemberOrganizationPath);
   }
 }
 

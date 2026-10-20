@@ -78,6 +78,32 @@ test('member organization proof distinguishes load ladder from a device choice',
   }
 });
 
+test('member organization proof accepts the approved fixture name instead of the legacy label', () => {
+  const id = '123e4567-e89b-42d3-a456-426614174001';
+  const approvedName = 'Harbor Dental';
+  assert.equal(
+    resolveMemberOrganizationSelection(
+      { organizationId: id, organizationName: approvedName },
+      approvedName,
+      true,
+      id,
+      approvedName,
+    ),
+    'device_choice',
+  );
+  assert.throws(
+    () =>
+      resolveMemberOrganizationSelection(
+        { organizationId: id, organizationName: MEMBER_TEST_ORGANIZATION_NAME },
+        MEMBER_TEST_ORGANIZATION_NAME,
+        true,
+        id,
+        approvedName,
+      ),
+    /d87_member_organization_label_unverified/,
+  );
+});
+
 test('member Settings acceptance admits the verified load-ladder organization', async () => {
   const source = await readFile(
     new URL('./settings-d87-native-acceptance.mjs', import.meta.url),
@@ -125,7 +151,7 @@ test('member Settings acceptance admits the verified load-ladder organization', 
     /organizationId: expectedOrganizationId \?\? selected\.organizationId/,
   );
   assert.match(initialIdentityCheck[0], /organizationResolution,/);
-  assert.match(initialIdentityCheck[0], /requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME/);
+  assert.match(initialIdentityCheck[0], /requiredOrganizationName,/);
   const requestProof = authDriver.match(
     /const logicalOrganizationRequest = await runMemberAuthBoundary\([\s\S]*?return \{\s*mode,\s*profileId: identity\.userId/,
   );
@@ -817,7 +843,7 @@ test('Data acceptance aggregates organization diagnostics across real auth bound
     };
     const stderr = [];
     const processBoundary = {
-      env: {},
+      env: { MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE: '/private/approved-member.json' },
       stderr: { write: (value) => stderr.push(value) },
       exitCode: 0,
     };

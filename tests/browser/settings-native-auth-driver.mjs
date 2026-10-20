@@ -87,12 +87,9 @@ export function resolveMemberOrganizationSelection(
   visibleLabel,
   allowLadder = false,
   expectedOrganizationId = null,
+  requiredOrganizationName = MEMBER_TEST_ORGANIZATION_NAME,
 ) {
-  assert.equal(
-    visibleLabel,
-    MEMBER_TEST_ORGANIZATION_NAME,
-    'd87_member_organization_label_unverified',
-  );
+  assert.equal(visibleLabel, requiredOrganizationName, 'd87_member_organization_label_unverified');
   if (stored?.organizationId === null && stored.organizationName === null) {
     assert.equal(allowLadder, true, 'd87_member_organization_uuid_unverified');
     if (allowLadder)
@@ -104,8 +101,7 @@ export function resolveMemberOrganizationSelection(
     return 'load_ladder';
   }
   assert.ok(
-    UUID.test(stored?.organizationId ?? '') &&
-      stored.organizationName === MEMBER_TEST_ORGANIZATION_NAME,
+    UUID.test(stored?.organizationId ?? '') && stored.organizationName === requiredOrganizationName,
     'd87_member_organization_storage_unverified',
   );
   if (expectedOrganizationId !== null)
@@ -494,6 +490,7 @@ export async function signInSettings({
   repo,
   adminCredentialsFile,
   memberLinkFile,
+  memberApprovedOrganizationFile,
   allowLadderOrganization = false,
   onStage,
   onAuthDiagnostic,
@@ -647,7 +644,20 @@ export async function signInSettings({
         JSON.stringify(await privateJson(memberLinkFile, 'd87_member_link')),
       ),
     );
-    const expectedOrganizationId = allowLadderOrganization ? secret.organization_id : null;
+    const approvedOrganization = memberApprovedOrganizationFile
+      ? await runMemberAuthBoundary('member_credential_validation', onStage, async () =>
+          approvedShowcaseOrganization(memberApprovedOrganizationFile),
+        )
+      : null;
+    if (approvedOrganization)
+      assert.equal(
+        secret.organization_id,
+        approvedOrganization.id,
+        'd87_member_approved_organization_mismatch',
+      );
+    const requiredOrganizationName = approvedOrganization?.name ?? MEMBER_TEST_ORGANIZATION_NAME;
+    const expectedOrganizationId =
+      approvedOrganization?.id ?? (allowLadderOrganization ? secret.organization_id : null);
     if (allowLadderOrganization) {
       await runMemberAuthBoundary('member_credential_validation', null, async () =>
         assert.match(
@@ -735,11 +745,11 @@ export async function signInSettings({
         ),
       );
       const selectionRequired =
-        !org.organizationSelected || org.organizationLabel !== "Matrx's Org";
+        !org.organizationSelected || org.organizationLabel !== requiredOrganizationName;
       await onTrace?.(selectionRequired ? 'auth_org_select' : 'auth_org_skip');
       if (selectionRequired) {
         await runMemberAuthBoundary('member_organization_selection', onStage, () =>
-          selectOrganization(panel, MEMBER_TEST_ORGANIZATION_NAME, onAuthDiagnostic),
+          selectOrganization(panel, requiredOrganizationName, onAuthDiagnostic),
         );
       }
       await onTrace?.('auth_org_after');
@@ -755,11 +765,12 @@ export async function signInSettings({
                 phase: 'organization_selected',
                 organization_selected: value?.organizationSelected === true,
                 expected_organization_matches:
-                  value?.organizationLabel === MEMBER_TEST_ORGANIZATION_NAME,
+                  value?.organizationLabel === requiredOrganizationName,
               });
               return value;
             },
-            (value) => value?.organizationSelected && value.organizationLabel === "Matrx's Org",
+            (value) =>
+              value?.organizationSelected && value.organizationLabel === requiredOrganizationName,
             30_000,
           ),
       );
@@ -774,6 +785,7 @@ export async function signInSettings({
             visibleOrganization.organizationLabel,
             allowLadderOrganization,
             expectedOrganizationId,
+            requiredOrganizationName,
           );
         },
       );
@@ -786,7 +798,7 @@ export async function signInSettings({
           profileId: identity.userId,
           organizationId: expectedOrganizationId ?? selected.organizationId,
           organizationResolution,
-          requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
+          requiredOrganizationName,
         }),
       );
       await onTrace?.('auth_identity_after');
