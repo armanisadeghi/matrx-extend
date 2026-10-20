@@ -1,0 +1,36 @@
+{
+  "source_receipt": "/tmp/guest273-executable-proofcases-20261020.json",
+  "defect": "EXT-D-0273",
+  "status": "CAPTURED_CASES_SOURCE_VALIDATED_FACTORY_NOT_REPLAYABLE",
+  "capture_summary": {
+    "real_captured_cases": 3,
+    "conversation_count": 2,
+    "people_count": 1,
+    "case_roles": [
+      "cold-panel failure",
+      "warm first-turn success",
+      "warm follow-up success"
+    ],
+    "oracle": "The exact visible H1 and Capture expected result were present across captured outcomes; raw prompts, answers, provider snapshots and tool payloads omitted."
+  },
+  "factory": {
+    "typed_cases_complete": false,
+    "representative_minimum": 6,
+    "current_cases": 3,
+    "distinct-source_requirement": "not met; all cases from one person",
+    "browser_replay": "not supported by current factory path because page context and delegated tool outputs are not passed",
+    "build_started": false,
+    "promotion_attempted": false,
+    "verdict": "not ready"
+  },
+  "required_runtime_binding": {
+    "context": "captured page brief/full content, assigned-tab URL, browser capability manifest",
+    "tools": [
+      "query_elements",
+      "get_page_text",
+      "find_text_on_page"
+    ],
+    "behavior": "Replay browser context and per-case tool results while preserving exact user turn; judge exact H1/Capture facts without putting the answer in user text."
+  },
+  "limits": "No factory build or D273 fix/retest. Do not mark inventory cases PASS or close D273."
+}

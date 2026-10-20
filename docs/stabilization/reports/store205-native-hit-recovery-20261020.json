@@ -1,0 +1,18 @@
+{
+  "source_receipt": "/tmp/store205-native-hit-recovery-20261020.json",
+  "status": "input_boundary_unresolved_resource_invalid",
+  "target": {
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.205",
+    "initial_panel": "Chat selected; guest state and SEO/Settings/History controls visible"
+  },
+  "attempts_summary": "Five native accessibility or coordinate interactions did not change the side panel; focus stayed on the webpage. Further input lost the active Chrome target and exposed the profile picker.",
+  "resource": {
+    "decision": "invalid",
+    "resource_invalid": true,
+    "exit_code": 3,
+    "stop_confirmed": true,
+    "product_credit": "none"
+  },
+  "limits": "No SEO/Settings transition, sign-in remedy, or two-turn guest chat observed. This establishes an unresolved native input/window boundary, not a product defect. No public demo retest."
+}

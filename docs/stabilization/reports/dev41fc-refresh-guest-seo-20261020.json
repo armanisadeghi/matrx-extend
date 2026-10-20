@@ -1,0 +1,43 @@
+{
+  "source_receipt": "/tmp/dev41fc-refresh-guest-seo-20261020.json",
+  "status": "DEV_REFRESH_COMPLETE; STORE_GUEST_SEO_NOT_ATTEMPTED",
+  "ci": {
+    "run_id": 39499822972,
+    "workflow": "CI",
+    "head_sha": "41fc69c9ad131e15aac3a38aa950b76fa00d92bb",
+    "conclusion": "success",
+    "artifact_id": 12300840235,
+    "artifact_digest": "sha256:6a463389986a9eb9506d4c81cf5e53050e6491013f47ea8a915030ac49fa33de",
+    "source_run_match": true
+  },
+  "artifact": {
+    "import": "success",
+    "promotion": "success",
+    "version": "0.2.578",
+    "tree_sha256": "d54ddf136b6eaa23165cd0917108f0f05e9c7473a60ad52a1ebd9aaa90647839",
+    "post_promotion_hash_match": true,
+    "store_eligible": false,
+    "source_scope": "exact CI source 41fc only; repository HEAD later"
+  },
+  "chrome": {
+    "dev_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "dev_version": "0.2.578",
+    "enabled": true,
+    "loaded_path": ".output/chrome-mv3-dev",
+    "pin_enabled": true,
+    "reload_clicked": true,
+    "reload_toast": "not captured in this receipt",
+    "store_extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "store_version": "0.2.205",
+    "store_enabled": true,
+    "store_pinned": true
+  },
+  "resource": {
+    "decision": "valid",
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "stop_confirmed": true
+  },
+  "limits": "Store guest SEO was not attempted in this receipt; profile-picker ambiguity prevented proceeding. No product-case credit."
+}

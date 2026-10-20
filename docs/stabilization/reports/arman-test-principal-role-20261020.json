@@ -1,0 +1,18 @@
+{
+  "source_receipt": "/tmp/arman-test-principal-role-20261020.json",
+  "scope": "read-only role preflight for existing signed-in development extension UI",
+  "status": "GLOBAL_ROLE_VERIFIED_ACTIVE_ORG_UNVERIFIED",
+  "identity_match": "Visible UI principal email matched one Auth user and its admin row; personal identifiers omitted.",
+  "role": {
+    "global_role": "super_admin",
+    "is_admin": true,
+    "scope": "platform global admin; not an organization membership role"
+  },
+  "limits": {
+    "active_organization": "unverified",
+    "organization_membership_role": "unverified",
+    "native_case_acceptance": "none",
+    "auth_session_equivalence": "no UI token comparison"
+  },
+  "actions": "No database writes, role/account changes, Chrome operations, AI calls, or billing operations."
+}

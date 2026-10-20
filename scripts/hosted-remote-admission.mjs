@@ -715,6 +715,121 @@ export function requireScrapeDispatchAdmission({ localSha, remoteSha, sourceSha,
   return true;
 }
 
+/** D187 original member Save, with the shared lane A account and no mutable Project fixture. */
+export function planHostedMemberScrapeSave({
+  lane,
+  acceptanceCase,
+  destination,
+  scope,
+  runnerLabel,
+  ...input
+}) {
+  if (lane !== 'A') refuse('HOSTED_MEMBER_SCRAPE_LANE_REFUSED');
+  if (acceptanceCase !== 'scrape-save-member' || destination !== 'none' || scope !== 'single')
+    refuse('HOSTED_MEMBER_SCRAPE_SCOPE_REFUSED');
+  if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_MEMBER_SCRAPE_RUNNER_REFUSED');
+  planHostedMemberData({ ...input, lane });
+  return {
+    command: 'gh',
+    args: [
+      'workflow',
+      'run',
+      'hosted-guest-acceptance.yml',
+      '--ref',
+      'main',
+      ...[
+        'acceptance_lane=A',
+        'acceptance_case=scrape-save-member',
+        `requested_by=${DISPATCH_REQUESTER}`,
+        'scrape_auth_mode=member',
+        'scrape_save_destination=none',
+        'scrape_save_scope=single',
+        'runner_label=macos-15-intel',
+        `development_run_id=${input.developmentRunId}`,
+        `development_artifact_id=${input.developmentArtifactId}`,
+      ].flatMap((field) => ['-f', field]),
+    ],
+  };
+}
+
+export function requireMemberScrapeSaveDispatchAdmission(input) {
+  requireExactDispatchSource(
+    input.localSha,
+    input.remoteSha,
+    input.dirty,
+    input.sourceSha,
+    'HOSTED_MEMBER_SCRAPE_SOURCE_DRIFT',
+  );
+  if (
+    !Array.isArray(input.runs) ||
+    input.runs.some((run) => run.status !== 'completed' && !/^Native B · /.test(run.name ?? ''))
+  )
+    refuse('HOSTED_MEMBER_SCRAPE_A_CAPACITY_REFUSED');
+  if (!input.secretNames?.includes('MATRX_REVIEWER_MAGIC_LINK_JSON'))
+    refuse('HOSTED_MEMBER_SCRAPE_SECRET_MISSING');
+  return true;
+}
+
+export function verifyHostedMemberScrapeSaveReport(report, identity) {
+  const o = report?.observations;
+  const auth = report?.authentication;
+  const artifact = report?.artifact;
+  if (
+    report?.schema_version !== 1 ||
+    report.feature_id !== 'EXT-F-1007' ||
+    report.defect_id !== 'EXT-D-0187' ||
+    JSON.stringify(report.case_ids) !== '["EXT-F-1007-T04","EXT-F-1007-T29"]' ||
+    report.auth_mode !== 'member' ||
+    report.destination_mode !== 'none' ||
+    report.save_scope !== 'single' ||
+    report.status !== 'pass' ||
+    report.stage !== 'complete' ||
+    report.native_stage !== 'exercise_panel' ||
+    report.failure_stage !== null ||
+    report.error_code !== undefined ||
+    auth?.mode !== 'member' ||
+    !['load_ladder', 'device_choice'].includes(auth.organization_resolution) ||
+    [
+      'web_signed_in',
+      'extension_signed_in',
+      'non_admin_role_verified',
+      'selected_organization_verified',
+    ].some((key) => auth[key] !== true) ||
+    artifact?.kind !== 'ci_development_test' ||
+    artifact.eligible_store !== false ||
+    artifact.source_sha !== identity.sourceSha ||
+    String(artifact.run_id) !== identity.developmentRunId ||
+    String(artifact.artifact_id) !== identity.developmentArtifactId ||
+    !/^[a-f0-9]{64}$/.test(artifact.tree_sha256 ?? '') ||
+    artifact.github_artifact_digest !== identity.githubArtifactDigest ||
+    artifact.ci_run_attempt !== identity.developmentRunAttempt ||
+    [
+      'dialog_opened_from_captured_article',
+      'prefilled_name_visible',
+      'custom_name_entered_by_trusted_keyboard',
+      'saved_confirmation_visible',
+      'source_row_read_from_service',
+      'custom_name_persisted',
+      'organization_scope_persisted',
+      'original_file_id_present',
+      'no_destination_associations_persisted',
+      'saved_original_read_ready',
+      'saved_source_reopened_in_ui',
+      'cleanup_verified',
+    ].some((key) => o?.[key] !== true) ||
+    ['detail_open', 'name_matches', 'url_matches'].some((key) => o.reopen_header?.[key] !== true) ||
+    ['article_title_matches', 'heading_matches', 'marker_matches'].some(
+      (key) => o.capture?.[key] !== true || o.saved_original?.[key] !== true,
+    ) ||
+    ['heading_matches', 'marker_matches'].some((key) => o.reopen_ui?.[key] !== true) ||
+    report.cleanup?.verified !== true ||
+    report.cleanup.run_owned_source_soft_deleted !== true ||
+    report.cleanup.source_associations_removed !== true
+  )
+    refuse('HOSTED_MEMBER_SCRAPE_REPORT_INVALID');
+  return true;
+}
+
 export function verifyHostedScrapeReport(report, identity) {
   const a = report?.artifact;
   const o = report?.observations;
@@ -1688,15 +1803,17 @@ function verifyArchive(zip, bytes, runId, attempt, acceptanceCase, memberDataSco
   const reportName =
     acceptanceCase === 'settings-account-popover-member'
       ? 'settings-account-popover-member.json'
-      : acceptanceCase === 'guest-scrape-development'
-        ? 'scrape-seo-schema-empty-guest-native.json'
-        : acceptanceCase === 'guest-seo'
-          ? 'seo-guest-acceptance.json'
-          : ['notes-find-member', 'notes-lazy-general-member'].includes(acceptanceCase)
-            ? 'notes-native-acceptance.json'
-            : memberDataScope === 'lifecycle'
-              ? 'data-member-native-acceptance.json'
-              : 'data-member-auto-extract-acceptance.json';
+      : acceptanceCase === 'scrape-save-member'
+        ? 'scrape-save-native-acceptance.json'
+        : acceptanceCase === 'guest-scrape-development'
+          ? 'scrape-seo-schema-empty-guest-native.json'
+          : acceptanceCase === 'guest-seo'
+            ? 'seo-guest-acceptance.json'
+            : ['notes-find-member', 'notes-lazy-general-member'].includes(acceptanceCase)
+              ? 'notes-native-acceptance.json'
+              : memberDataScope === 'lifecycle'
+                ? 'data-member-native-acceptance.json'
+                : 'data-member-auto-extract-acceptance.json';
   const report = JSON.parse(archiveEntry(zip, bytes, find(reportName)));
   if (
     acceptanceCase === 'member-data' &&
@@ -1735,6 +1852,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       mode === 'dispatch-guest-seo' ||
       mode === 'plan-scrape' ||
       mode === 'dispatch-scrape' ||
+      mode === 'plan-member-scrape-save' ||
+      mode === 'dispatch-member-scrape-save' ||
       mode === 'plan-settings-member' ||
       mode === 'dispatch-settings-member' ||
       mode === 'plan-settings-guest' ||
@@ -1753,6 +1872,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       const settingsGuest = mode.endsWith('-settings-guest');
       const notes = mode.endsWith('-notes') || mode.endsWith('-notes-lazy-general');
       const scrape = mode.endsWith('-scrape');
+      const memberScrape = mode.endsWith('-member-scrape-save');
       const memberData = mode === 'plan' || mode === 'dispatch';
       const memberDataScope = args.get('--member-data-scope') ?? 'auto-extract';
       if (
@@ -1784,7 +1904,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             ].includes(key)
           )
             refuse('HOSTED_ARGUMENT_INVALID');
-      if (notes || scrape || settings || settingsGuest || memberData)
+      if (notes || scrape || memberScrape || settings || settingsGuest || memberData)
         for (const key of args.keys())
           if (
             ![
@@ -1792,6 +1912,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
               '--case',
               '--runner-label',
               ...(scrape ? ['--scrape-scope', '--auth-mode'] : []),
+              ...(memberScrape ? ['--destination', '--scope'] : []),
               ...(memberData ? ['--member-data-scope'] : []),
               '--development-run-id',
               '--development-artifact-id',
@@ -1808,55 +1929,66 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             developmentArtifactId,
             sourceSha,
           })
-        : scrape
-          ? planHostedScrape({
+        : memberScrape
+          ? planHostedMemberScrapeSave({
               lane,
               acceptanceCase: args.get('--case'),
-              scrapeScope: args.get('--scrape-scope'),
-              authMode: args.get('--auth-mode'),
+              destination: args.get('--destination'),
+              scope: args.get('--scope'),
               runnerLabel: args.get('--runner-label'),
               developmentRunId,
               developmentArtifactId,
               sourceSha,
             })
-          : notes
-            ? planHostedNotes({
+          : scrape
+            ? planHostedScrape({
                 lane,
                 acceptanceCase: args.get('--case'),
+                scrapeScope: args.get('--scrape-scope'),
+                authMode: args.get('--auth-mode'),
                 runnerLabel: args.get('--runner-label'),
                 developmentRunId,
                 developmentArtifactId,
                 sourceSha,
               })
-            : guestSeo
-              ? planHostedGuestSeo({
+            : notes
+              ? planHostedNotes({
                   lane,
                   acceptanceCase: args.get('--case'),
-                  seoCaseScope: args.get('--seo-case-scope'),
-                  seoMetadataFixture: args.get('--seo-metadata-fixture'),
-                  seoResourceDiagnostic: args.get('--seo-resource-diagnostic'),
-                  seoInterruptAfterTarget: args.get('--seo-interrupt-after-target'),
                   runnerLabel: args.get('--runner-label'),
                   developmentRunId,
                   developmentArtifactId,
                   sourceSha,
                 })
-              : settings
-                ? planHostedSettingsMember({
+              : guestSeo
+                ? planHostedGuestSeo({
                     lane,
                     acceptanceCase: args.get('--case'),
+                    seoCaseScope: args.get('--seo-case-scope'),
+                    seoMetadataFixture: args.get('--seo-metadata-fixture'),
+                    seoResourceDiagnostic: args.get('--seo-resource-diagnostic'),
+                    seoInterruptAfterTarget: args.get('--seo-interrupt-after-target'),
                     runnerLabel: args.get('--runner-label'),
                     developmentRunId,
                     developmentArtifactId,
                     sourceSha,
                   })
-                : planHostedMemberData({
-                    lane,
-                    memberDataScope,
-                    developmentRunId,
-                    developmentArtifactId,
-                    sourceSha,
-                  });
+                : settings
+                  ? planHostedSettingsMember({
+                      lane,
+                      acceptanceCase: args.get('--case'),
+                      runnerLabel: args.get('--runner-label'),
+                      developmentRunId,
+                      developmentArtifactId,
+                      sourceSha,
+                    })
+                  : planHostedMemberData({
+                      lane,
+                      memberDataScope,
+                      developmentRunId,
+                      developmentArtifactId,
+                      sourceSha,
+                    });
       if (!SHA.test(sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
       const artifact = requireDevelopmentArtifact({
         runId: developmentRunId,
@@ -1871,7 +2003,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         mode === 'dispatch-guest-seo' ||
         mode === 'dispatch-notes' ||
         mode === 'dispatch-notes-lazy-general' ||
-        mode === 'dispatch-scrape'
+        mode === 'dispatch-scrape' ||
+        mode === 'dispatch-member-scrape-save'
       ) {
         const localSha = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
         const remoteSha = ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha;
@@ -1892,7 +2025,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           { encoding: 'utf8' },
         ).trim();
         requireSynchronizedDispatchSource(localSha, remoteSha, dirty);
-        if (notes || settings || memberData) {
+        if (notes || settings || memberData || memberScrape) {
           verifyHostedWorkflowCheckout({
             path: '.github/workflows/hosted-guest-acceptance.yml',
             head_sha: remoteSha,
@@ -1934,9 +2067,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
                   refuse(
                     memberData
                       ? 'HOSTED_MEMBER_DATA_A_CAPACITY_REFUSED'
-                      : settings
-                        ? 'HOSTED_SETTINGS_MEMBER_A_CAPACITY_REFUSED'
-                        : 'HOSTED_NOTES_A_CAPACITY_REFUSED',
+                      : memberScrape
+                        ? 'HOSTED_MEMBER_SCRAPE_A_CAPACITY_REFUSED'
+                        : settings
+                          ? 'HOSTED_SETTINGS_MEMBER_A_CAPACITY_REFUSED'
+                          : 'HOSTED_NOTES_A_CAPACITY_REFUSED',
                   );
                 return listing.workflow_runs;
               }),
@@ -1944,9 +2079,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           const secrets = ghJson(`repos/${OWNER}/actions/secrets?per_page=100`);
           (memberData
             ? requireMemberDataDispatchAdmission
-            : settings
-              ? requireSettingsMemberDispatchAdmission
-              : requireNotesDispatchAdmission)({
+            : memberScrape
+              ? requireMemberScrapeSaveDispatchAdmission
+              : settings
+                ? requireSettingsMemberDispatchAdmission
+                : requireNotesDispatchAdmission)({
             localSha,
             remoteSha,
             dirty,
@@ -1963,13 +2100,15 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           const afterAdmissionDirty = execFileSync('git', ['status', '--porcelain'], {
             encoding: 'utf8',
           }).trim();
-          if (settings)
+          if (settings || memberScrape)
             requireExactDispatchSource(
               afterAdmissionLocalSha,
               afterAdmissionRemoteSha,
               afterAdmissionDirty,
               sourceSha,
-              'HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT',
+              memberScrape
+                ? 'HOSTED_MEMBER_SCRAPE_SOURCE_DRIFT'
+                : 'HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT',
             );
           else
             requireSynchronizedDispatchSource(
@@ -2043,7 +2182,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       mode === 'verify-guest-seo' ||
       mode === 'verify-notes' ||
       mode === 'verify-notes-lazy-general' ||
-      mode === 'verify-scrape'
+      mode === 'verify-scrape' ||
+      mode === 'verify-member-scrape-save'
     ) {
       const runId = args.get('--run-id');
       const attempt = args.get('--attempt');
@@ -2055,18 +2195,21 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       const notes = mode === 'verify-notes' || mode === 'verify-notes-lazy-general';
       const lazyGeneral = mode === 'verify-notes-lazy-general';
       const scrape = mode === 'verify-scrape';
+      const memberScrape = mode === 'verify-member-scrape-save';
       const memberDataScope = args.get('--member-data-scope') ?? 'auto-extract';
       if (mode === 'verify' && !['lifecycle', 'auto-extract'].includes(memberDataScope))
         refuse('HOSTED_MEMBER_DATA_SCOPE_REFUSED');
       const expectedRunName = settings
         ? 'Native A · settings-account-popover-member'
-        : scrape
-          ? 'Native B · guest-scrape-development'
-          : guestSeo
-            ? 'Native B · guest-seo'
-            : notes
-              ? `Native A · ${lazyGeneral ? 'notes-lazy-general-member' : 'notes-find-member'}`
-              : 'Native A · member-data';
+        : memberScrape
+          ? 'Native A · scrape-save-member'
+          : scrape
+            ? 'Native B · guest-scrape-development'
+            : guestSeo
+              ? 'Native B · guest-seo'
+              : notes
+                ? `Native A · ${lazyGeneral ? 'notes-lazy-general-member' : 'notes-find-member'}`
+                : 'Native A · member-data';
       if (
         run.path !== '.github/workflows/hosted-guest-acceptance.yml' ||
         !matchesHostedRunName(run.name, expectedRunName) ||
@@ -2088,25 +2231,35 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         attempt,
         settings
           ? 'settings-account-popover-member'
-          : scrape
-            ? 'guest-scrape-development'
-            : guestSeo
-              ? 'guest-seo'
-              : notes
-                ? lazyGeneral
-                  ? 'notes-lazy-general-member'
-                  : 'notes-find-member'
-                : 'member-data',
+          : memberScrape
+            ? 'scrape-save-member'
+            : scrape
+              ? 'guest-scrape-development'
+              : guestSeo
+                ? 'guest-seo'
+                : notes
+                  ? lazyGeneral
+                    ? 'notes-lazy-general-member'
+                    : 'notes-find-member'
+                  : 'member-data',
         memberDataScope,
       );
       const artifactRunId =
-        notes || scrape || settings || (mode === 'verify' && memberDataScope === 'lifecycle')
+        notes ||
+        scrape ||
+        memberScrape ||
+        settings ||
+        (mode === 'verify' && memberDataScope === 'lifecycle')
           ? args.get('--development-run-id')
           : guestSeo
             ? String(report.imported_artifact?.runId ?? '')
             : String(report.artifact.run_id);
       const artifactId =
-        notes || scrape || settings || (mode === 'verify' && memberDataScope === 'lifecycle')
+        notes ||
+        scrape ||
+        memberScrape ||
+        settings ||
+        (mode === 'verify' && memberDataScope === 'lifecycle')
           ? args.get('--development-artifact-id')
           : guestSeo
             ? String(report.imported_artifact?.artifactId ?? '')
@@ -2180,6 +2333,20 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           ...artifact,
           developmentArtifactId: artifact.artifactId,
         });
+      }
+      if (memberScrape) {
+        if (run.head_sha !== sourceSha) refuse('HOSTED_MEMBER_SCRAPE_SOURCE_DRIFT');
+        verifyHostedMemberScrapeSaveReport(report, {
+          sourceSha: artifact.sourceSha,
+          developmentRunId: artifactRunId,
+          developmentArtifactId: artifactId,
+          githubArtifactDigest: artifact.githubArtifactDigest,
+          developmentRunAttempt: artifact.developmentRunAttempt,
+        });
+        const secrets = ghJson(`repos/${OWNER}/actions/secrets?per_page=100`);
+        if (secrets.total_count !== secrets.secrets?.length)
+          refuse('HOSTED_MEMBER_SCRAPE_SECRET_CLEANUP_UNVERIFIED');
+        requireMemberDataSecretCleanup(secrets.secrets?.map((secret) => secret.name));
       }
       if (mode === 'verify') {
         if (run.head_sha !== sourceSha) refuse('HOSTED_MEMBER_DATA_SOURCE_DRIFT');
