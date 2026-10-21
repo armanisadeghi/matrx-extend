@@ -31,7 +31,8 @@
     "docs/stabilization/reports/scrape-save-auth-recovery-20261020.json",
     "docs/stabilization/reports/scrape-source-save-fresh-peer-20261020.json",
     "docs/stabilization/reports/scrape-dialog-current-native-20261020.json",
-    "docs/stabilization/reports/source-retry578-live-peer-20261020.json"
+    "docs/stabilization/reports/source-retry578-live-peer-20261020.json",
+    "docs/stabilization/reports/hosted-reload-evidence-adjudication-20261021.json"
   ],
   "fix_sha": "c5e739074325d553a59c42e2e9d113b668cbcd4d",
   "review": "Fresh independent source review passed A correctness and B evidence after the guarded RED/GREEN/mutation/compile report. Exact-main CI at 3e5b8f182 passed and its v0.2.509 development artifact was promoted on disk; Chrome loaded state is not verified.",
@@ -62,5 +63,11 @@
       "reason": "The verified-bearer source repair passed meaningful guarded RED/GREEN/mutation/compile checks, fresh independent review, and exact-main hosted CI. Native original-reproduction retest is pending after a resource refusal before launch."
     }
   ],
-  "current_surrounding_retest": "Earlier e157 signed-in IANA fixtures saved edited markers and reopened exact Sources; their owned records were archived. Later dev578/source9fd signed-in Profile8 public demo Retry once changed visible queue1→0 and a Saved captures listing opened. A separately admitted fresh peer reopened canonical Source7f70b11a-d5ab-4153-af6c-b4b33d0953d5 after web Source-page reload and saw the amber-orbit edit plus scroll paragraphs1–24. Initial peer admission refusal is retained in its report. Backend role/org and original queued item ID/bytes/history remain unverified. Original guest stale-profile Save and refused Retry were not retested; D217 stays fixed awaiting reproduction, not closed."
+  "current_surrounding_retest": {
+    "run_id": 39670665256,
+    "source_sha": "7d92195705c2a3f7997594814d0ffe125b7c81cf",
+    "status": "original_guest_assertions_unverified",
+    "detail": "Normal A dispatch admitted; approved-org member auth and credential-removal/fullReload fixture completed, then member_auth/native_acceptance_error before guest_restore_observed. No Save/Retry/write. Temporary secret deleted and zero active run-owned Sources checked. Diagnose Settings tooltip-label locator and safe exact substep before normal independent rerun.",
+    "evidence": "docs/stabilization/reports/d217-current-normal-20261021.json"
+  }
 }

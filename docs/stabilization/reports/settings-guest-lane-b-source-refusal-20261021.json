@@ -1,0 +1,80 @@
+{
+  "task_id": "settings-guest-lane-b-20261021",
+  "lane": "hosted guest Settings B",
+  "model": "GPT-6",
+  "status": "blocked_before_product_run",
+  "feature_ids": ["EXT-F-1003"],
+  "defect_ids": [],
+  "summary": "Normal dispatch admission refused because shared local main is behind origin/main; artifact SHA does not equal synchronized main. No hosted run launched and no product verdict earned.",
+  "changed_files": [],
+  "commit_shas": [],
+  "verification": [],
+  "case_inventory": {
+    "guest_applicable_case_ids": [
+      "EXT-F-1003-T01",
+      "EXT-F-1003-T04",
+      "EXT-F-1003-T07",
+      "EXT-F-1003-T10",
+      "EXT-F-1003-T13",
+      "EXT-F-1003-T16",
+      "EXT-F-1003-T19",
+      "EXT-F-1003-T22",
+      "EXT-F-1003-T25",
+      "EXT-F-1003-T28",
+      "EXT-F-1003-T31",
+      "EXT-F-1003-T34",
+      "EXT-F-1003-T37",
+      "EXT-F-1003-T40",
+      "EXT-F-1003-T43",
+      "EXT-F-1003-T46",
+      "EXT-F-1003-T49",
+      "EXT-F-1003-T52",
+      "EXT-F-1003-T63",
+      "EXT-F-1003-T64",
+      "EXT-F-1003-T67",
+      "EXT-F-1003-T70",
+      "EXT-F-1003-T73",
+      "EXT-F-1003-T76",
+      "EXT-F-1003-T79",
+      "EXT-F-1003-T82",
+      "EXT-F-1003-T92",
+      "EXT-F-1003-T93",
+      "EXT-F-1003-T96"
+    ],
+    "current_inventory_snapshot": "Read from local inventory at 7d92195705c2a3f7997594814d0ffe125b7c81cf; old results not counted as new credit."
+  },
+  "source": {
+    "local_sha": "7d92195705c2a3f7997594814d0ffe125b7c81cf",
+    "remote_main_sha": "1048e371adf3620d32cba07d94d9c5499e97b377",
+    "relation": "local main behind origin/main by 3 commits",
+    "artifact_run_id": "39668827533",
+    "artifact_id": "12378807961",
+    "artifact_source_sha": "7d92195705c2a3f7997594814d0ffe125b7c81cf",
+    "artifact_digest": "sha256:a68c027b61e2c13e18e2ea2eeca60b736c13bc4382089c667c25e39a2bb33c92",
+    "normal_plan": "plan-settings-guest succeeded",
+    "normal_dispatch_gate": "dispatch-settings-guest refused: HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED",
+    "workflow_run_id": null
+  },
+  "capacity": {
+    "active_lane_b_run": null,
+    "other_active_run": "39670665256 Native A · scrape-save-member (owned by separate lane A)",
+    "lane_b_available_at_observation": true
+  },
+  "spend": {
+    "endpoint_read_at": "2026-10-21T19:40:00.088577+00:00",
+    "week_total_usd": 91.79,
+    "week_total_complete": true,
+    "week_cap_usd": 100,
+    "off_track": true,
+    "reason": "finding is costly matrx-desktop ci weekly workflow ($2.32/day, mostly red); unrelated to this repo/run.",
+    "paid_action_launched": false
+  },
+  "resource": {
+    "remote_runner_admission": "not reached; normal source gate refused before runner",
+    "resource_journals": [],
+    "local_mac": "not used; root reports ~2GiB free from active Apple cloud transfers, unrelated to remote lane"
+  },
+  "fixture_and_credentials": "No member/owner secret or shared fixture staged or mutated; lane is guest.",
+  "limitations": ["No current product behavior observed; no new case IDs passed/failed."],
+  "next_action": "Owner must provide a synchronized source SHA and matching successful CI artifact, or otherwise reconcile shared main through its normal process; then rerun only normal lane-B dispatch admission."
+}

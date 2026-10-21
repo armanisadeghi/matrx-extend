@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0217",
+  "case_ids": [
+    "EXT-F-1007-T05",
+    "EXT-F-1007-T22"
+  ],
+  "auth_mode": "member",
+  "destination_mode": "none",
+  "save_scope": "stale-profile-retry",
+  "status": "fail",
+  "stage": "member_auth",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "7d92195705c2a3f7997594814d0ffe125b7c81cf",
+    "run_id": 39668827533,
+    "artifact_id": 12378807961,
+    "tree_sha256": "511cfd95071c6305d9b80d867f32c33645155138bd7c3fc1aade9a54b134a1ee",
+    "version": "0.2.586",
+    "github_artifact_digest": "sha256:a68c027b61e2c13e18e2ea2eeca60b736c13bc4382089c667c25e39a2bb33c92",
+    "ci_run_attempt": 1
+  },
+  "authentication": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_role_verified": true,
+    "selected_organization_verified": true,
+    "organization_resolution": "load_ladder"
+  },
+  "auth_stage": "member_logical_organization_proof",
+  "auth_diagnostic": {
+    "phase": "logical_organization_request",
+    "organization_selected": true,
+    "expected_organization_matches": true,
+    "target": "organization_settings_return"
+  },
+  "auth_failure": null,
+  "observations": {
+    "d217": {
+      "fixture": {
+        "credentials_removed": true,
+        "restore_via_full_extension_reload": true
+      }
+    }
+  },
+  "cleanup": {
+    "verified": false,
+    "no_active_run_row": false
+  },
+  "failure_stage": "member_auth",
+  "limits": "Controlled credential removal in the owned profile followed by real extension restore; guest Save/warm Retry/post-full-reload Retry, real member recovery, edited landing HTTP and Source read/cleanup. Server-caused refresh rejection and Store installation remain unverified.",
+  "harness_checkout_sha": "7d92195705c2a3f7997594814d0ffe125b7c81cf",
+  "error_code": "native_acceptance_error"
+}

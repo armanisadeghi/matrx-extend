@@ -16667,6 +16667,19 @@
       "source_audit_sha": "6f4e9d0211315949f50a3d11b35dfa732822abec",
       "execution_attempts": [
         {
+          "at": "2026-10-21T20:59:11.113616+00:00",
+          "mode": "guest",
+          "run_id": 39672454379,
+          "source_sha": "1048e371adf3620d32cba07d94d9c5499e97b377",
+          "build_version": "0.2.586",
+          "status": "replacement_settings_prerequisite_failed_cascaded_cases_unverified",
+          "new_acceptance_credit": false,
+          "confirmed_substeps": "T04 dark/light/system selected, storage and visible appearance matched; all three survived panel-document reload (six passing assertions). Full extension-reload recheck and original preference restoration did not complete.",
+          "evidence": [
+            "docs/stabilization/reports/hosted-reload-evidence-adjudication-20261021.json"
+          ]
+        },
+        {
           "at": "2026-10-20T20:23:53Z",
           "mode": "guest",
           "run_id": 39490478586,

@@ -27,10 +27,11 @@
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/39666115123",
     "tmp/d282-first-main-ci-failure-20261021.log",
     "docs/stabilization/reports/d282-scope-gate-repair-20261021.json",
-    "docs/stabilization/reports/d282-scope-gate-peer-20261021.json"
+    "docs/stabilization/reports/d282-scope-gate-peer-20261021.json",
+    "docs/stabilization/reports/hosted-reload-evidence-adjudication-20261021.json"
   ],
   "reproducibility": "Exact GitHub Actions API and release workflow/source inspection confirm both observed release commits lack a CI run.",
-  "next_action": "Push reviewed scope-gate repair, observe successful exact-main fullCI development artifact, normal import/promotion and owner Chrome Reload; then normal D217 acceptance. Keep D282 fixed until original bot-release→CI path independently passes.",
+  "next_action": "Ordinary fullCI39668827533/7d and39670695687/104 succeeded and normal import/promotion produced DEV586. Owner Chrome Reload refused disk guard before UI. Keep fixed until natural hosted bot-release-to-exactCI artifact independently passes; pending Store577 remains untouched.",
   "transition_history": [
     {
       "at": "2026-10-21T19:15:00Z",
@@ -87,5 +88,5 @@
       "docs/stabilization/reports/d282-timeout-final-peer-20261021.json"
     ]
   },
-  "original_repro_retest": "Pending natural hosted release→exact-source full CI artifact; source/CLI tests alone do not close this defect."
+  "original_repro_retest": "Pending natural hosted release\u2192exact-source full CI artifact; source/CLI tests alone do not close this defect."
 }
