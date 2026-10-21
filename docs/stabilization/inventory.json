@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T05:34:58.291937+00:00",
+  "updated_at": "2026-10-21T17:24:00Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -29996,8 +29996,48 @@
               "new_acceptance_credit": false,
               "detail": "Readonly DB no-write baseline could not authenticate through configured operator keys. Vault metadata-only lookup did not recover scoped operator credential; no secret/DB change. Native Save dismissal actions never started; existing server-side SQL UI remains a possible operator path. Root guard valid0/process0 only.",
               "evidence": "docs/stabilization/reports/continuation-checkpoint-20261021-1638.json"
+            },
+            {
+              "at": "2026-10-21T17:14Z",
+              "run_id": "guest584-source-dismiss-20261021-1710",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.584",
+              "source_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
+              "evidence": [
+                "docs/stabilization/reports/guest584-source-dismiss-native-20261021.json",
+                "docs/stabilization/reports/source-dismiss-fresh-native-peer-20261021.json",
+                "docs/stabilization/resource-journals/guest584-source-dismiss-20261021-1710.jsonl"
+              ],
+              "detail": "Primaryobserved4dismissals/capture-retained but sharedguard laterpressure2 invalid3/actualprocess3; allproductcreditexcluded. Peer stoppedbeforeoriginalreplay/freshSQL. SQLUI operator access recovered, but secondaggregate stillbaselinetimestamp; no-writeunverified. Guest/member/admincase notpromoted."
             }
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "guest584-source-dismiss-20261021-1710",
+              "build_version": "0.2.584",
+              "source_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "detail": "No canonical productPASS: sharedprimary+peer lease invalid3 at17:13:50 afterpressure2; raw4dismissal observations retained but excluded. DBfreshafter-read unverified; independentpeer stoppedbeforeoriginalreplay. Separatecleanupvalid0 closedownedSQL, ownerrefreshvalid0 laterclosed2ownedGuesttabs. AllUIstopped; ownerDEVnownewb8artifact, so nextT43run mustrecordnewtuple.",
+              "unverified_dimensions": [
+                "resource-valid warm Close and Escape",
+                "resource-valid postReload Close and Escape",
+                "fresh authoritative aggregate no-write",
+                "independent original-reproduction retest"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/guest584-source-dismiss-native-20261021.json",
+                "docs/stabilization/reports/source-dismiss-fresh-native-peer-20261021.json",
+                "docs/stabilization/reports/source-dismiss-owned-tab-cleanup-20261021.json",
+                "docs/stabilization/reports/owner-b8-native-reload-20261021.json",
+                "docs/stabilization/resource-journals/guest584-source-dismiss-20261021-1710.jsonl"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1007-T44",

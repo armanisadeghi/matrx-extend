@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "test_id": "EXT-F-1007-T43",
+  "run_id": "guest584-source-dismiss-20261021-1710",
+  "status": "INVALID_RESOURCE_ZERO_ACCEPTANCE_CREDIT",
+  "ui_status": "STOPPED",
+  "cua_calls": 32,
+  "cua_call_limit": 32,
+  "environment": {
+    "browser": "Google Chrome native on macOS",
+    "guest_profile": "Matrx Guest Test",
+    "guest_profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_version": "0.2.584",
+    "extension_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "extension_enabled": true,
+    "manager_reload_before_warm_test": true,
+    "manager_reload_after_warm_test": true,
+    "guest_settings_email": "—",
+    "guest_settings_sign_in_button": true,
+    "fixture_url": "https://www.aimatrx.com/matrx-extend-demo",
+    "fixture_heading": "A clear three-stage browser workflow"
+  },
+  "cases": [
+    {
+      "name": "warm Close Save Source",
+      "result": "PASS",
+      "evidence": "After page Capture, Save opened the Save Source dialog; Close Save Source returned to the Scrape article with Re-capture and the fixture heading visible."
+    },
+    {
+      "name": "warm Escape",
+      "result": "PASS",
+      "evidence": "Reopened Save Source, pressed Escape, and saw the captured Scrape article and Re-capture button still visible."
+    },
+    {
+      "name": "postreload Close Save Source",
+      "result": "PASS",
+      "evidence": "Used the DEV extension manager Reload control, reloaded the fixture page, recaptured it, opened Save Source, then closed it; the captured article and Re-capture remained visible."
+    },
+    {
+      "name": "postreload Escape",
+      "result": "PASS",
+      "evidence": "Reopened Save Source after manager and page reload, pressed Escape, and saw the captured article and Re-capture remain visible."
+    }
+  ],
+  "database_check": {
+    "method": "Existing authenticated admin SQL UI, read-only aggregate SELECT from /tmp/extend-source-dismiss-baseline.sql",
+    "baseline": {
+      "observed_at": "2026-10-21T17:09:50.007446+00:00",
+      "matching_rows": 1,
+      "row_state_digest": "294de7adeb19b13032c9712f0e595c20"
+    },
+    "follow_up": "Execute was clicked after four dismissals, but the final visible result retained the baseline observed_at timestamp, so a new aggregate result was not confirmed.",
+    "no_write_verified": false,
+    "read_only_query": "select clock_timestamp() as observed_at, count(*) as matching_rows, md5(coalesce(string_agg(md5(to_jsonb(p)::text), '' order by p.id), '')) as row_state_digest from docproc.processed_documents p where canonical_identity like '%www.aimatrx.com/matrx-extend-demo%';\n"
+  },
+  "limits": [
+    "No product Save Source or Add to Library action was taken.",
+    "The owner SQL tab remained open at the CUA call cap; it was created for this run in the authenticated Arman (armansadeghi.com) Chrome profile at manage.aimatrx.com/administration/database/database-admin?tab=sql.",
+    "The guest fixture and DEV manager tabs remained open in Profile 10 at the CUA call cap.",
+    "The resource journal was healthy at the last permitted read at 2026-10-21T17:10:28.552Z."
+  ],
+  "operator_status_before_guard_final": "PARTIAL_DB_NO_WRITE_UNVERIFIED",
+  "owner_guard_adjudication": {
+    "first_unsafe_at": "2026-10-21T17:13:08.778Z",
+    "reason": "RESOURCE_PRESSURE_UNSAFE; OS pressureLevel2. Later samplesback1 do notclear latched invalidity.",
+    "guard_final_at": "2026-10-21T17:13:50.750Z",
+    "decision": "invalid",
+    "resourceInvalid": true,
+    "exitCode": 3,
+    "actual_exec_exit_code": 3,
+    "acceptance_credit": "none for entire sharedprimary+peerbatch; raw UIobservations retained but notproductPASS.",
+    "no_write": "unverified: stale baseline timestamp and no independent reread beforeguardstop.",
+    "cleanup": "Completed by separate valid0 cleanup and ownerreload guards: SQLtabclosed first, then verifiedProfile10 ownedfixture+managerclosed. See owner-b8-native-reload-20261021.json; invalidtestcredit remainszero."
+  }
+}

@@ -1,12 +1,15 @@
 /**
  * The extension's package-chat context source: the page context the package asks for on every turn.
- * It must return the same keys `buildChatContext` builds, and nothing (not a throw) when the build
- * fails or is empty.
+ * It hands the package the RAW values `buildChatContextValues` collects — never a copy already
+ * filtered by a rule (the package's door applies the person's rules, so a value turned off keeps
+ * its row) — and nothing (not a throw) when the build fails or is empty.
  */
 import { describe, expect, it, vi } from 'vitest';
 
 const build = vi.fn();
-vi.mock('@/lib/chat/build-context', () => ({ buildChatContext: (...a: unknown[]) => build(...a) }));
+vi.mock('@/lib/chat/context', () => ({
+  buildChatContextValues: (...a: unknown[]) => build(...a),
+}));
 vi.mock('@/lib/chat/active-tab', () => ({
   resolveActiveTab: async () => ({ id: 7, url: 'https://harborlightdental.com/lab-policy' }),
 }));
@@ -21,22 +24,25 @@ const input = {
 };
 
 describe('extension page context source', () => {
-  it('hands the built page context to the turn', async () => {
+  it('hands every raw page value to the turn, unwrapped and unfiltered', async () => {
     build.mockResolvedValueOnce({
-      context: { page_brief: { url: 'https://harborlightdental.com/lab-policy' } },
-      rows: [],
-      withheld: [],
+      page_brief: { url: 'https://harborlightdental.com/lab-policy' },
+      page_meta: { lang: 'en' },
+      selection: undefined,
     });
     const out = await extensionPageContextSource.contribute(input);
     expect(out).toEqual({
-      context: { page_brief: { url: 'https://harborlightdental.com/lab-policy' } },
+      context: {
+        page_brief: { url: 'https://harborlightdental.com/lab-policy' },
+        page_meta: { lang: 'en' },
+      },
     });
     expect(build).toHaveBeenCalledWith(
       expect.objectContaining({ conversationId: input.conversationId }),
     );
   });
   it('contributes nothing when the page gave nothing', async () => {
-    build.mockResolvedValueOnce({ context: undefined, rows: [], withheld: [] });
+    build.mockResolvedValueOnce({});
     expect(await extensionPageContextSource.contribute(input)).toBeNull();
   });
   it('a failed build is skipped, not thrown', async () => {

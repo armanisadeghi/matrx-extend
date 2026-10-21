@@ -36,14 +36,16 @@
     "docs/stabilization/reports/guard-native584-fresh-review-20261021.json",
     "docs/stabilization/reports/ci-malformed-proof-repair-20261021.json",
     "docs/stabilization/reports/ci-malformed-json-peer-20261021.json",
-    "docs/stabilization/reports/ci-malformed-json-final-peer-20261021.json"
+    "docs/stabilization/reports/ci-malformed-json-final-peer-20261021.json",
+    "docs/stabilization/reports/owner-b8-native-reload-20261021.json",
+    "docs/stabilization/reports/b8-refresh-final-evidence-peer-20261021.json"
   ],
   "reproducibility": "Original live queue cancellation and failed first source review retained. Corrective fixtures and fresh peer establish source repair; original hosted queue/artifact and owner-reload retest pending.",
   "attempted_source_sha": "9ebbb76bdb4be1a9dcc823954d9934f4c81baf69",
   "fix_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
   "reviewer": "/root/ci_proof_fresh_review: source A pass with hosted confirmation pending; B pass with minor conservative extra-run concern",
-  "verification_limits": "Prior f9 fullCI39631079179 succeeded and CLIquota recovered16:50UTC. New malformedJSON followup has source review, originalRED, GREEN16fixtures/lint0 and independent constant-nullgut; malformedCLI routing and freshhostedCI/newartifactownerreload remain pending. No productcasePASS or defectclosure.",
-  "next_action": "Observe automatic exactsource fullCI after malformedJSON repair push; require successful source/artifact, normal import/promote and actual ownerChrome reload/path/id/version/pins. Preserve pendingStore577. Resume D217 originalretest only through normal source/resource/cost/credentialadmission; do not relocate a refusedjob.",
+  "verification_limits": "Correctedsource719 is now in successfulmainb8 fullCI39640552208 andFocused39640552226. Normalartifact12365851226 import/promotion, rootbefore/aftertreehash and actualownerProfile8DEV584Reload/path/ID/pins/panelverified under valid0/process0 guard, with freshevidencepeer. Malformedproof CLI direct invocation and actualcancelled-runtime ancestor sequencing remain source/fixture-only; keepfixed, notclosed. No productcasePASS.",
+  "next_action": "Fresh independent closure review should assess originalcancelled-runtime ancestor guard against remaining limitations; preservefixed state until gate is proven. Continue newb8 nativeT43 with short separate primary/peer leases and freshaggregate timestamps. PreservependingStore577.",
   "transition_history": [
     {
       "at": "2026-10-21T15:20Z",
