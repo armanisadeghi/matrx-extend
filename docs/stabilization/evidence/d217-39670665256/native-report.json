@@ -2,10 +2,7 @@
   "schema_version": 1,
   "feature_id": "EXT-F-1007",
   "defect_id": "EXT-D-0217",
-  "case_ids": [
-    "EXT-F-1007-T05",
-    "EXT-F-1007-T22"
-  ],
+  "case_ids": ["EXT-F-1007-T05", "EXT-F-1007-T22"],
   "auth_mode": "member",
   "destination_mode": "none",
   "save_scope": "stale-profile-retry",
