@@ -171,7 +171,8 @@ function matchXml(
   // else stays literal text — see parseBlocks' knownXmlTags doc.
   if (!knownXmlTags || !knownXmlTags.has(tag.toLowerCase())) return null;
   const attrsStr = openMatch[2] ?? '';
-  const selfClosing = !!openMatch[4];
+  // XML_OPEN_RE captures: 1 tag name, 2 attrs, 3 the self-closing slash.
+  const selfClosing = !!openMatch[3];
   const openLen = openMatch[0].length;
   const attrs = parseAttrs(attrsStr);
 
