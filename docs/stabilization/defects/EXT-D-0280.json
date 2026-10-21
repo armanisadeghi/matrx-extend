@@ -1,0 +1,64 @@
+{
+  "id": "EXT-D-0280",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T22"],
+  "related_defects": ["EXT-D-0217"],
+  "title": "Normal hosted admission rejects the registered stale-profile Retry reproduction",
+  "surface": "Hosted Scrape Save/Retry test admission",
+  "auth_mode": "Intended originalguest then nonadminmember recovery; no native result in refusedattempt",
+  "severity": "S2: known product repair cannot receive its original native retest through normal admitted route",
+  "priority": "P1: unblock original D217 verification",
+  "state": "fixed",
+  "owner": "/root",
+  "implementation_lane": "/root/d280_stale_retry_route_fix",
+  "preconditions": [
+    "Currentmain5a successfulCI39649558400/artifact12369911241.",
+    "Existing workflow/native driver register stale-profile-retry."
+  ],
+  "reproduction": [
+    "Use normal plan-member-scrape-save for currenteligibleCI artifact, destinationnone, scopestale-profile-retry.",
+    "Observe exit1 HOSTED_MEMBER_SCRAPE_SCOPE_REFUSED before dispatch."
+  ],
+  "expected": "Existing reviewed driver scope can be selected only through a normal plan/dispatch/verifier contract that enforces that exactscope, artifact/provenance, fixture/principal, hostresource and cost gates.",
+  "actual": "Normal helper admits only single and emits scrape_save_scope=single; no supported plan reaches original stale-profile guest Save/Retry steps.",
+  "evidence": [
+    "docs/stabilization/reports/d217-hosted-original-retest-20261021-1817.json",
+    "docs/stabilization/reports/d280-stale-retry-route-fix-20261021.json",
+    "docs/stabilization/reports/d280-final-peer-20261021.json",
+    "docs/stabilization/reports/d280-log-contract-adjudication-20261021.json"
+  ],
+  "reproducibility": "One exact normal CLI plan refused; helper condition confirms cause. No job or product failure inferred.",
+  "cause": "Planner admitted only single and certificate only D187 proof; existing registered native stale-profile scope had no complete normal route.",
+  "transition_history": [
+    {
+      "at": "2026-10-21T18:18:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Fresh normal original-retest plan refuses before launch."
+    },
+    {
+      "at": "2026-10-21T18:18:01Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Exact helper condition identified; workflow/driver scope alone does not establish verifier readiness."
+    },
+    {
+      "at": "2026-10-21T18:18:02Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded end-to-end normal-route implementation assigned; no guard bypass or native job."
+    },
+    {
+      "at": "2026-10-21T18:57:25.109376+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Normal route and strict certificate repaired with guarded GREEN/four meaningful restored REDs; final independent source review passes after actual hosted-log evidence refutes missing-output concern. Merged-lock compile/800-test batch/lint valid. Original native D217 still pending."
+    }
+  ],
+  "next_action": "Obtain successful current-main CI artifact then normal plan/dispatch/verifier original D217 native run. Close this admission defect only after legitimate normal-route retest; keep product D217 independently open until original/adjacent browser evidence passes.",
+  "review_checkpoint": {
+    "at": "2026-10-21T18:52:17.706784+00:00",
+    "state": "Fresh adjudication A PASS/B PASS_WITH_NATIVE_LIMIT; missing-output finding REFUTED by actual GitHub log. Prior partial retained.",
+    "finding": "Reviewer alleged missing step env log fields. Owner retrieved actual run39524463666 log showing both exact fields automatically emitted by runner; fresh independent adjudication requested. No workflow edit warranted from source search alone."
+  }
+}

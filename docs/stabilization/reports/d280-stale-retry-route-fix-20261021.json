@@ -1,0 +1,288 @@
+{
+  "task_id": "EXT-D-0280-stale-retry-route-fix-20261021",
+  "status": "guarded_source_validation_complete_pending_native",
+  "reported_symptom": "The normal plan-member-scrape-save route refused the registered D217 stale-profile-retry scope with HOSTED_MEMBER_SCRAPE_SCOPE_REFUSED before dispatch.",
+  "confirmed_cause": "The normal planner admitted and emitted only single; the normal certificate required only the D187 single report and did not bind the dispatched scope to the native report.",
+  "source_changes": [
+    "Admit only single with none or project, or stale-profile-retry with none, and emit the selected scope unchanged.",
+    "Require exact D217 defect, cases, destination, guest save and retry refusals, full reload, recovered member landing, persisted edit, queue clearance, and the existing artifact, identity, source, association, and cleanup proof.",
+    "Certify exactly one SCRAPE_SAVE_SCOPE value from the hosted run log against the native report, alongside the existing destination binding."
+  ],
+  "changed_files": [
+    "scripts/hosted-remote-admission.mjs",
+    "scripts/hosted-member-scrape-save-admission.test.mjs"
+  ],
+  "forcing_evidence": {
+    "test_command": "node --test scripts/hosted-member-scrape-save-admission.test.mjs",
+    "classification": "debug_only_unaccepted: raw node --test was used, including inside plant.py; no registered resource guard, journal, or captured run artifact accompanied these invocations.",
+    "green_actual_stdout": "✔ member Save Source plans only single or no-destination D217 lane A runs; ✔ member Save dispatch scope must occur once and match native report; ✔ member Save Source dispatch refuses occupied lane, missing login and source drift; ✔ member Save Source certificate requires real saved row, UI readback and exact cleanup; ℹ tests 4; ℹ pass 4; ℹ fail 0; ℹ duration_ms 4790.084583",
+    "green_invocations": "Raw node --test ran twice successfully, once before and once after mutations. The exact stdout above is from the final invocation, retained in the task tool transcript; no independent stdout artifact was saved.",
+    "reported_bug_red": "Sanctioned plant removed only the D217 planner alternative; the test failed with HOSTED_MEMBER_SCRAPE_SCOPE_REFUSED and plant.py restored the helper identically.",
+    "verifier_bypass_red": "Sanctioned plant bypassed D217 observations, then a return-true verifier mutant; each caused the test's invalid-report assertion to fail and restored the helper identically.",
+    "scope_binding_bypass_red": "Sanctioned plant made dispatch-scope certification return the report scope; direct and full CLI certificate tests failed, and plant.py restored the helper identically.",
+    "mutation_actual_stdout": [
+      "Original route mutation: ✖ member Save Source plans only single or no-destination D217 lane A runs; Error: HOSTED_MEMBER_SCRAPE_SCOPE_REFUSED; ℹ pass 3; ℹ fail 1; VERDICT: RED (rc=1, expected RED).",
+      "D217 evidence bypass: ✖ member Save Source certificate requires real saved row, UI readback and exact cleanup; AssertionError: Missing expected exception; ℹ pass 3; ℹ fail 1; VERDICT: RED (rc=1, expected RED).",
+      "Return-true verifier: ✖ member Save Source certificate requires real saved row, UI readback and exact cleanup; AssertionError: Missing expected exception; ℹ pass 3; ℹ fail 1; VERDICT: RED (rc=1, expected RED).",
+      "Scope binder bypass: ✖ member Save dispatch scope must occur once and match native report; ✖ member Save Source certificate requires real saved row, UI readback and exact cleanup; ℹ pass 2; ℹ fail 2; VERDICT: RED (rc=1, expected RED)."
+    ],
+    "mutation_restore_actual_stdout": "Each plant printed RESTORED ... sha=68906a6eda32 original_sha=68906a6eda32 IDENTICAL after Biome formatting; these outputs are retained in the task tool transcript, not in a separately captured artifact.",
+    "other_checks": "Biome formatted both source files; node --check on the helper and git diff --check on both files passed."
+  },
+  "limits": [
+    "No native hosted job, paid dispatch, fixture, credential staging, browser execution, release, build, commit, or product pass occurred in this lane.",
+    "The guarded source checks certify only the normal route and certificate helper behavior. D217 guest, reload, retry, and recovered-member product behavior remains unverified until a current eligible artifact passes one normally admitted native run.",
+    "All raw guarded output logs and full terminal resource journals are linked with SHA-256 above; mutation logs are plant.py captured tails of the guarded child output plus full resource journal events."
+  ],
+  "peer_finding_resolution": "The scope and sibling destination binders count every exact hosted preflight field line, including unknown, empty and multiword values, before allowing one supported value; focused negative assertions cover each class.",
+  "registered_command": [
+    "node",
+    "--test",
+    "scripts/hosted-member-scrape-save-admission.test.mjs"
+  ],
+  "registered_policy_change": "Added exactly the registered_command argv to allowedCommands; no other resource policy bytes changed.",
+  "guarded_runs": [
+    {
+      "run_id": "d280-red-original-20261021",
+      "command": [
+        "node",
+        "--test",
+        "scripts/hosted-member-scrape-save-admission.test.mjs"
+      ],
+      "log": "docs/stabilization/evidence/d280/d280-red-original-20261021.log",
+      "log_sha256": "0c6024c04e23dd9cf4396c19a2a48e92a9a9e2cfde0c06daba6448ce4f9fe238",
+      "journal": "docs/stabilization/resource-journals/d280-red-original-20261021.jsonl",
+      "journal_sha256": "06ea486e0585c63637b5ced8a13f6cf058ded0f5e5666a775a497744c45d6959",
+      "child_exit_code": 1,
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "final_exit_code": 1
+    },
+    {
+      "run_id": "d280-red-d217-proof-20261021",
+      "command": [
+        "node",
+        "--test",
+        "scripts/hosted-member-scrape-save-admission.test.mjs"
+      ],
+      "log": "docs/stabilization/evidence/d280/d280-red-d217-proof-20261021.log",
+      "log_sha256": "a01c0dc402f6ca1c92bbac01e1e46b33a2d58778c01be70cec33d531486f1fe9",
+      "journal": "docs/stabilization/resource-journals/d280-red-d217-proof-20261021.jsonl",
+      "journal_sha256": "3d2503b09e5c85237d40efb28107fab49df541141a53eca52701ee02783b475a",
+      "child_exit_code": 1,
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "final_exit_code": 1
+    },
+    {
+      "run_id": "d280-red-constant-20261021",
+      "command": [
+        "node",
+        "--test",
+        "scripts/hosted-member-scrape-save-admission.test.mjs"
+      ],
+      "log": "docs/stabilization/evidence/d280/d280-red-constant-20261021.log",
+      "log_sha256": "1bc6221450f15ab75edf32b64189ed7980ca403dac2528d0bfad65fd5c9f55f3",
+      "journal": "docs/stabilization/resource-journals/d280-red-constant-20261021.jsonl",
+      "journal_sha256": "6b76198a61bb2b7dc7850db239588ce6aca9efe91cff49d794b5e7eccc2d14b3",
+      "child_exit_code": 1,
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "final_exit_code": 1
+    },
+    {
+      "run_id": "d280-red-scope-20261021",
+      "command": [
+        "node",
+        "--test",
+        "scripts/hosted-member-scrape-save-admission.test.mjs"
+      ],
+      "log": "docs/stabilization/evidence/d280/d280-red-scope-20261021.log",
+      "log_sha256": "8595a49939f774eff708ec1e1a8b0e651e07245949b61dfad23e614d7aa5650f",
+      "journal": "docs/stabilization/resource-journals/d280-red-scope-20261021.jsonl",
+      "journal_sha256": "088bd9f9a5a98aab9f307e70316849c3cb516f7d3036952eb646cf4c2b0ea381",
+      "child_exit_code": 1,
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "final_exit_code": 1
+    },
+    {
+      "run_id": "d280-install-20261021",
+      "command": [
+        "pnpm",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ],
+      "log": "docs/stabilization/evidence/d280/d280-install-20261021.log",
+      "log_sha256": "485730fd3d450733f2a2b3a5de3aa264d7ff1fa45ed10a6c50a48b21c974b0ea",
+      "journal": "docs/stabilization/resource-journals/d280-install-20261021.jsonl",
+      "journal_sha256": "921ef8e5c84a6954bff8666260d5c5420bb485c2171bb8b866332207bd39aa7b",
+      "child_exit_code": 0,
+      "decision": "valid",
+      "resource_invalid": false,
+      "final_exit_code": 0
+    },
+    {
+      "run_id": "d280-green-20261021",
+      "command": [
+        "node",
+        "--test",
+        "scripts/hosted-member-scrape-save-admission.test.mjs"
+      ],
+      "log": "docs/stabilization/evidence/d280/d280-green-20261021.log",
+      "log_sha256": "4837740e54172003c557259d385e0721f67df6d4b0c49edfd7138ce66956d654",
+      "journal": "docs/stabilization/resource-journals/d280-green-20261021.jsonl",
+      "journal_sha256": "7cd24aee2fe0ce7bbd6a10aa51a1e6a187a9ef5a21316922489f098c9ac77c30",
+      "child_exit_code": 0,
+      "decision": "valid",
+      "resource_invalid": false,
+      "final_exit_code": 0
+    },
+    {
+      "run_id": "d280-compile-20261021",
+      "command": [
+        "pnpm",
+        "compile"
+      ],
+      "log": "docs/stabilization/evidence/d280/d280-compile-20261021.log",
+      "log_sha256": "361ffc4377e1c27b6d3a37567a30fa0593c210b2c53ef06bfd03d25b70eb7450",
+      "journal": "docs/stabilization/resource-journals/d280-compile-20261021.jsonl",
+      "journal_sha256": "9623ad85522ac0cf90a862fb8978f241013bcb145a14bcc3d02296b848b8da9d",
+      "child_exit_code": 0,
+      "decision": "valid",
+      "resource_invalid": false,
+      "final_exit_code": 0
+    },
+    {
+      "run_id": "d280-focused-batch-20261021",
+      "command": [
+        "pnpm",
+        "test:focused-acceptance"
+      ],
+      "log": "docs/stabilization/evidence/d280/d280-focused-batch-20261021.log",
+      "log_sha256": "46370a111fade36609f2df7c72116ff9b2fff209d25fe34f197dac9e4e2559ba",
+      "journal": "docs/stabilization/resource-journals/d280-focused-batch-20261021.jsonl",
+      "journal_sha256": "85b0ee695a9edd73cb369a4fdc44dad9e9da9f67397f10b2dd309c06c74e8ca8",
+      "child_exit_code": 0,
+      "decision": "valid",
+      "resource_invalid": false,
+      "final_exit_code": 0
+    },
+    {
+      "run_id": "d280-lint-20261021",
+      "command": [
+        "pnpm",
+        "lint"
+      ],
+      "log": "docs/stabilization/evidence/d280/d280-lint-20261021.log",
+      "log_sha256": "6dfca85facee214ea808b45c886d6d32bfd549d6e598dfbfc1784bf1171bbd46",
+      "journal": "docs/stabilization/resource-journals/d280-lint-20261021.jsonl",
+      "journal_sha256": "eaaee18aae8ea543c17193a550d9fa567c2932905bb4cdcf0a003c6f48294817",
+      "child_exit_code": 1,
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "final_exit_code": 1
+    },
+    {
+      "run_id": "d280-lint-corrected-20261021",
+      "command": [
+        "pnpm",
+        "lint"
+      ],
+      "log": "docs/stabilization/evidence/d280/d280-lint-corrected-20261021.log",
+      "log_sha256": "b24a699408d354f3978662ebe10cc470445195aefbcb6cbfa9fe7f57b1b81d60",
+      "journal": "docs/stabilization/resource-journals/d280-lint-corrected-20261021.jsonl",
+      "journal_sha256": "015c2f50611d1c2ab2166d3f0c7d3064189eb194eeb0dc7fa51bb3fa86cc4f84",
+      "child_exit_code": 0,
+      "decision": "valid",
+      "resource_invalid": false,
+      "final_exit_code": 0
+    }
+  ],
+  "guarded_result": {
+    "four_mutations": "Original D217 planner refusal, D217 evidence bypass, return-true verifier, and dispatch-scope bypass each produced the expected test RED. Their guarded journals end child_failed/exit 1 with resourceInvalid=false; plant.py reports identical restoration after each.",
+    "restored_helper_sha256": "ddad09efdedfbf3aa900b640b806caf312c54edc835ebf96d495a1956405b868",
+    "final_test_sha256": "b82bdf13cd4b7b93657ec8d8de88775179fbf4b7614d79979de8d43fdb749160",
+    "focused_green": "5 tests passed, 0 failed; guarded valid/exit 0.",
+    "compile": "tsc --noEmit passed; guarded valid/exit 0.",
+    "full_focused_batch": "810 tests, 800 passed, 10 skipped, 0 failed; guarded valid/exit 0.",
+    "first_lint": "Guarded child_failed/exit 1 due one organizeImports error in the focused test file. Complete failure log retained.",
+    "corrected_lint": "Only focused test import order changed after the batch; 3192 files checked, 935 warnings, 0 errors; guarded valid/exit 0.",
+    "previous_unguarded_runs": "Earlier raw node --test and plant results remain debug-only and are separate from guarded evidence.",
+    "brief_typo_refusal": "Owner reported a prior broad verifier launch refused because its argv had a trailing dot. No test ran; it is not counted as D280 acceptance."
+  },
+  "merged_dependency_validation": {
+    "head_at_start": "1ff03a1d9c2d1d8f647508057fb13fc295051909",
+    "lock_sha256": "3e46f3d6c8ac2062a7a8bd8e93864ba6ac07265933c6c21320fef774be9e385e",
+    "helper_sha256": "ddad09efdedfbf3aa900b640b806caf312c54edc835ebf96d495a1956405b868",
+    "test_sha256": "b82bdf13cd4b7b93657ec8d8de88775179fbf4b7614d79979de8d43fdb749160",
+    "policy_sha256": "8ab675504bc46198109169ccc4cfc4970a30a0db11a069ec4f44d6e22a772afe",
+    "runs": [
+      {
+        "run_id": "d280-merged-install-20261021",
+        "command": [
+          "pnpm",
+          "install",
+          "--frozen-lockfile",
+          "--ignore-scripts"
+        ],
+        "log": "docs/stabilization/evidence/d280/d280-merged-install-20261021.log",
+        "log_sha256": "d20e0cae773dd2a459fb61174cc534a14e4aec242ff337eefa787d26232f0a06",
+        "journal": "docs/stabilization/resource-journals/d280-merged-install-20261021.jsonl",
+        "journal_sha256": "3989e9a877992dee5b0b8af440e90e24a4d8960979cdf4c49281952b916355f8",
+        "child_exit_code": 0,
+        "decision": "valid",
+        "resource_invalid": false,
+        "final_exit_code": 0
+      },
+      {
+        "run_id": "d280-merged-compile-20261021",
+        "command": [
+          "pnpm",
+          "compile"
+        ],
+        "log": "docs/stabilization/evidence/d280/d280-merged-compile-20261021.log",
+        "log_sha256": "e4de3d26e0a0ce8450db0a7745fa9a2c1b81e2383fe65bd3050ce8e1f3f1a62f",
+        "journal": "docs/stabilization/resource-journals/d280-merged-compile-20261021.jsonl",
+        "journal_sha256": "3a448c135e8f2c35bcbc3436e9a5e9d537f2e774ae82862b600d68dfe5cc2f4b",
+        "child_exit_code": 0,
+        "decision": "valid",
+        "resource_invalid": false,
+        "final_exit_code": 0
+      },
+      {
+        "run_id": "d280-merged-batch-20261021",
+        "command": [
+          "pnpm",
+          "test:focused-acceptance"
+        ],
+        "log": "docs/stabilization/evidence/d280/d280-merged-batch-20261021.log",
+        "log_sha256": "fcf3abd19dd32ceae3cbf4b167071eb82f445348901531246d170610dc1febac",
+        "journal": "docs/stabilization/resource-journals/d280-merged-batch-20261021.jsonl",
+        "journal_sha256": "bfdf60433dd2c422b4bbec9b2331b42a8838974be538f35c418996ec49573b0e",
+        "child_exit_code": 0,
+        "decision": "valid",
+        "resource_invalid": false,
+        "final_exit_code": 0
+      },
+      {
+        "run_id": "d280-merged-lint-20261021",
+        "command": [
+          "pnpm",
+          "lint"
+        ],
+        "log": "docs/stabilization/evidence/d280/d280-merged-lint-20261021.log",
+        "log_sha256": "517cfc6d525119af5ceafe6f3a1d10a0934ae3ed6ced55727b025065259796f6",
+        "journal": "docs/stabilization/resource-journals/d280-merged-lint-20261021.jsonl",
+        "journal_sha256": "46c51a1cd1de6216e458653d7d0f7a0898d629caa9ed5d86eb3cc1a6ea1b2ff1",
+        "child_exit_code": 0,
+        "decision": "valid",
+        "resource_invalid": false,
+        "final_exit_code": 0
+      }
+    ],
+    "results": "Guarded frozen-lock install, compile, full focused acceptance batch, and lint all terminal valid with child exit 0 and resourceInvalid=false. Focused batch: 800 pass, 10 skipped, 0 failed. Lint: 3192 files checked, 935 warnings, 0 errors.",
+    "workflow_log_ruling": "Owner checked actual gh run 39524463666 step logs and observed both SCRAPE_SAVE_DESTINATION and SCRAPE_SAVE_SCOPE lines under the exact verified preflight step; no workflow or certificate source change was required."
+  }
+}

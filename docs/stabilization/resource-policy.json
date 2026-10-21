@@ -56,6 +56,7 @@
     ["pnpm", "exec", "wxt"],
     ["pnpm", "compile"],
     ["pnpm", "test:focused-acceptance"],
+    ["node", "--test", "scripts/hosted-member-scrape-save-admission.test.mjs"],
     ["pnpm", "check:matrx-packages"],
     ["pnpm", "sync:matrx-packages"],
     ["pnpm", "lint"],

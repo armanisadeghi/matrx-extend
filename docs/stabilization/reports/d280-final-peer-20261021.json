@@ -1,0 +1,50 @@
+{
+  "task_id": "EXT-D-0280-final-peer-20261021",
+  "scope": "Fresh independent source and retained-evidence review of the D280 hosted admission route and D217 native driver contract. No source edits, test execution, UI session, hosted dispatch, or product execution.",
+  "verdict_A": {
+    "status": "PARTIAL",
+    "finding": {
+      "severity": "Important",
+      "file": ".github/workflows/hosted-guest-acceptance.yml:258",
+      "issue": "The normal admission step reads SCRAPE_SAVE_DESTINATION and SCRAPE_SAVE_SCOPE and validates them at lines 276-282, but never prints either value. The new certificate requires both exact SCRAPE_SAVE_DESTINATION and SCRAPE_SAVE_SCOPE preflight log lines (scripts/hosted-remote-admission.mjs:901-920), then refuses if either is absent. Therefore a legitimately admitted native D217 run cannot pass the normal certificate against this workflow's actual output.",
+      "why_it_matters": "D217 becomes dispatchable through the planner, but cannot complete normal post-run verification. The requested retestable outcome is not reached until the workflow emits these fields through the reviewed workflow path and its digest/provenance contract is updated as required.",
+      "evidence": [
+        ".github/workflows/hosted-guest-acceptance.yml:258-282 contains env declarations and predicates but no output statement for either field; repository search found no such output statement in that workflow.",
+        "scripts/hosted-member-scrape-save-admission.test.mjs:427 fabricates both field lines in the mocked runLog, so it does not model current hosted output.",
+        "docs/stabilization/reports/d280-stale-retry-route-fix-20261021.json correctly states that no hosted job or native product result occurred."
+      ]
+    },
+    "native_D217": "UNVERIFIED. No guest Save, warm Retry, extension reload, post-reload Retry, member recovery, persisted edit, or cleanup product result is established by this review."
+  },
+  "verdict_B": {
+    "status": "PARTIAL",
+    "assessment": "Planner admits only lane A/member/no-destination stale-profile-retry and forwards the selected scope. The report verifier enforces D217 identity/cases and guest refusal, reload, member landing, persisted edit, artifact identity, associations, and cleanup fields; the final CLI path binds report destination and scope to the run log before returning its certificate. Existing source/artifact/provenance, fixture, host/resource and cleanup gates remain in the inspected path. However, the new integration binding is unsatisfiable against the actual workflow output described in Verdict A.",
+    "guarded_evidence": {
+      "green": "Inspected docs/stabilization/evidence/d280/d280-green-20261021.log and docs/stabilization/resource-journals/d280-green-20261021.jsonl. Their SHA-256 values match the builder report; log shows 5 tests passed and journal closes valid, resourceInvalid=false, exit 0.",
+      "red": "Builder-retained guarded red logs/journals are named in docs/stabilization/reports/d280-stale-retry-route-fix-20261021.json. The original planner refusal and D217/scope verifier bypasses reportedly exited 1 under valid resource journals. No mutation was rerun in this review.",
+      "limits": "Evidence validates local source checks and synthetic CLI archive-verifier fixtures; it does not prove a normal GitHub workflow log can satisfy the new preflight binders or demonstrate native D217 behavior. No tests were run in this reviewer lane."
+    }
+  },
+  "prior_peer_findings": [
+    {
+      "finding": "d280-route-contract-peer-20261021.json: count every scope preflight field line before validating exactly one supported value, with duplicate/unknown-value refusal coverage.",
+      "status": "ADDRESSED",
+      "evidence": "scripts/hosted-remote-admission.mjs:911-919 captures arbitrary field values before allowing only single or stale-profile-retry; scripts/hosted-member-scrape-save-admission.test.mjs:54-92 covers duplicate, unknown, empty, and multiword values. The sibling destination parser has equivalent count-then-validate behavior at lines 899-908, with negative cases at test lines 95-111."
+    }
+  ],
+  "remaining_gaps": [
+    "Emit and retain exact destination and scope values in the normal hosted workflow preflight log, then ensure reviewed-workflow hash admission recognizes that intentional workflow change.",
+    "After route correction and current normal artifact/resource/cost/fixture/secret admission, execute exactly one guarded native D217 run and inspect its certificate, raw evidence, journals, and owned cleanup."
+  ],
+  "reviewed_files": [
+    "scripts/hosted-remote-admission.mjs",
+    "scripts/hosted-member-scrape-save-admission.test.mjs",
+    "tests/browser/scrape-save-native-acceptance.mjs",
+    "tests/browser/scrape-save-stale-profile.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "docs/stabilization/reports/d280-stale-retry-route-fix-20261021.json",
+    "docs/stabilization/reports/d280-route-contract-peer-20261021.json",
+    "docs/stabilization/evidence/d280/d280-green-20261021.log",
+    "docs/stabilization/resource-journals/d280-green-20261021.jsonl"
+  ]
+}
