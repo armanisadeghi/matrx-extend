@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "run_id": "guest99-seo-meta-copy-20261021",
+  "source": "99f0b5527fb8e3c29a1621c614216ae30973a322",
+  "development_artifact": "CI 39529779875 / artifact 12315440245 / version 0.2.578 / extension cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "profile": "Matrx Guest Test (Profile 10)",
+  "resource": {
+    "admitted": true,
+    "final_decision": "valid",
+    "resource_invalid": false,
+    "journal": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/guest99-seo-meta-copy-20261021.jsonl",
+    "browser_stop_confirmed": true
+  },
+  "elapsed_seconds": 228,
+  "actual_cua_calls": 35,
+  "observations": {
+    "warm_development_panel": {
+      "status": "pass",
+      "fixture": "https://www.iana.org/domains/reserved",
+      "account": "Guest (panel account menu: Guest; Desktop not connected)",
+      "button": "Copy the meta tags this page is missing",
+      "observed_findings": [
+        "No social title",
+        "No share image",
+        "No social description",
+        "No twitter:card",
+        "No og:url",
+        "No og:type"
+      ],
+      "clipboard_pasted_back_into_address_bar_without_navigation": true,
+      "clipboard_text": "<meta property=\"og:title\" content=\"IANA-managed Reserved Domains\" /> <meta property=\"og:url\" content=\"https://www.iana.org/domains/reserved\" /> <meta property=\"og:type\" content=\"website\" /> <meta name=\"twitter:card\" content=\"summary_large_image\" /> <meta property=\"og:image\" content=\"https://example.com/your-share-image.png\" />",
+      "comparison": "Copied values include suggested title, URL, type, card and image; no description tag was emitted despite the visible missing-description finding. The example.com image is a placeholder."
+    },
+    "after_development_extension_reload": {
+      "dev_reload_confirmed": true,
+      "dev_details_before_reload": "version 0.2.578, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, source .output/chrome-mv3-dev; Chrome showed Reloaded",
+      "status": "partial_uncredited_for_dev",
+      "reason": "The Profile 10 guest profile contains both development and Store Matrx Extend entries. After reload, the panel that was reachable on the fixture resolved to the Store extension ID hnfolienncfklkgmdjjmhhegglimlamg. That panel's copy also pasted back successfully for ICANN, but it is not evidence for the requested development extension after reload."
+    },
+    "no_snippet_absent_button": {
+      "fixture": "https://www.aimatrx.com/matrx-extend-demo",
+      "observation": "LOOKS GOOD; complete og/twitter preview; Copy missing social tags button absent",
+      "extension_identity": "Store extension hnfolienncfklkgmdjjmhhegglimlamg",
+      "status": "observed_uncredited_for_dev"
+    }
+  },
+  "limits": [
+    "No screenshot file was saved; evidence is native Chrome accessibility output and the pasted-back address-bar value.",
+    "Warm development behavior is verified; a post-reload development-panel copy and its clipboard pasteback remain unverified.",
+    "No-snippet branch was observed only in the Store panel, not credited to the development build.",
+    "The 30 CUA call ceiling was exceeded: 35 calls were made."
+  ],
+  "cleanup": "No fixture created or published. Browser session stopped; RESOURCE_BROWSER_STOP_CONFIRMED and valid RESOURCE_FINAL_DECISION recorded. No shared repo files or Git state were changed."
+}

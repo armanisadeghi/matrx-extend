@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T02:26:13.338831+00:00",
+  "updated_at": "2026-10-21T03:32:48.806525+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -33959,53 +33959,40 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
+              "status": "pass",
+              "source_sha": "99f0b5527fb8e3c29a1621c614216ae30973a322",
+              "build_version": "0.2.578",
+              "development_ci_run_id": 39529779875,
+              "development_artifact_id": 12315440245,
+              "tree_sha256": "8a58ad9ed10933eaf459520493ff6de57e3d64fabc961408494adb4d939fb5d5",
+              "receipt_kind": "CI_development_unpacked_native",
+              "actual_store_installed": false,
+              "resource_valid": true,
+              "run_id": "guest99-seo-meta-page-reload-sol-20261021",
               "passed_subtargets": [
-                "guest_social_missing_tags_clipboard_before_reaudit",
-                "guest_social_missing_tags_clipboard_after_reaudit"
+                "Warm guest IANA missing-tags actual clipboard contains page title/URL and eligible suggested tags.",
+                "Independent full development extension Reload retains correct dev panel identity and clipboard contents.",
+                "Explicit Chrome target-page Reload on IANA repeated actual clipboard; audit reported Navigation reload.",
+                "Complete-meta demo after dev extension and explicit target-page Reload has no missing-tags copy button."
               ],
-              "unverified_dimensions": [
-                "button absent when no snippet applies",
-                "other social page states",
-                "reload",
-                "member/admin"
-              ],
-              "run_id": "38016503649",
-              "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
-              "driver_source_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
-              "build_version": "0.2.457",
               "evidence": [
-                ".research/seo-controlled-followon-38016503649.json",
-                ".research/seo-controlled-followon-38016503649-peer.json",
-                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json",
-                "docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json",
-                "docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json"
+                "docs/stabilization/reports/guest99-seo-meta-copy-20261021.json",
+                "docs/stabilization/reports/guest99-seo-meta-reload-sol-20261021.json",
+                "docs/stabilization/reports/guest99-seo-meta-page-reload-sol-20261021.json",
+                "docs/stabilization/reports/seo-meta-native-fresh-peer-20261021.json",
+                "docs/stabilization/reports/seo-meta-final-retest-peer-20261021.json",
+                "docs/stabilization/resource-journals/guest99-seo-meta-copy-20261021.jsonl",
+                "docs/stabilization/resource-journals/guest99-seo-meta-reload-sol-20261021.jsonl",
+                "docs/stabilization/resource-journals/guest99-seo-meta-page-reload-sol-20261021.jsonl"
               ],
-              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T14 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041517954,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11666476880,
-                  "status": "partial",
-                  "resource_valid": true,
-                  "passed_subtargets": [
-                    "guest_social_missing_tags_clipboard_before_reaudit",
-                    "guest_social_missing_tags_clipboard_after_reaudit"
-                  ],
-                  "evidence": [
-                    "docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json",
-                    "docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed controlled guest subtargets only; existing deferred dimensions remain open. No full SEO/current-main/Store/member/admin claim."
-                }
+              "content_limits": [
+                "Five eligible tags for six missing findings; no source description exists to copy. Suggested image is an example.com placeholder, not a working share image.",
+                "No all-findings remediation claim; no post-Re-audit T02 or member/admin/current-main/Store/full-SEO claim.",
+                "First operator post-reload Store panel excluded; separate Sol run supplies correct development evidence.",
+                "Native accessibility/pasteback evidence; no saved screenshot."
               ],
-              "detail": " Reviewed frozen guest controlled run38041517954 adds 2 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass."
+              "independent_review": "A registered guest case criteria PASS after factual scope clarification; B bounded provenance/content PASS. Raw initial partial and reviewer correction both preserved.",
+              "verified_at": "2026-10-21T03:32:48.806525+00:00"
             }
           },
           "result_history": [
@@ -34112,6 +34099,60 @@
                 "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
               },
               "superseded_at": "2026-10-10T02:25:54.623Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "guest_social_missing_tags_clipboard_before_reaudit",
+                  "guest_social_missing_tags_clipboard_after_reaudit"
+                ],
+                "unverified_dimensions": [
+                  "button absent when no snippet applies",
+                  "other social page states",
+                  "reload",
+                  "member/admin"
+                ],
+                "run_id": "38016503649",
+                "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+                "driver_source_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+                "build_version": "0.2.457",
+                "evidence": [
+                  ".research/seo-controlled-followon-38016503649.json",
+                  ".research/seo-controlled-followon-38016503649-peer.json",
+                  ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json",
+                  "docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json",
+                  "docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json"
+                ],
+                "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T14 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred.",
+                "bounded_subtarget_evidence": [
+                  {
+                    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+                    "build_version": "0.2.459",
+                    "development_ci_run_id": 38036029832,
+                    "development_artifact_id": 11664077690,
+                    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+                    "run_id": 38041517954,
+                    "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
+                    "hosted_result_artifact_id": 11666476880,
+                    "status": "partial",
+                    "resource_valid": true,
+                    "passed_subtargets": [
+                      "guest_social_missing_tags_clipboard_before_reaudit",
+                      "guest_social_missing_tags_clipboard_after_reaudit"
+                    ],
+                    "evidence": [
+                      "docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json",
+                      "docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json"
+                    ],
+                    "scope": "Reviewed controlled guest subtargets only; existing deferred dimensions remain open. No full SEO/current-main/Store/member/admin claim."
+                  }
+                ],
+                "detail": " Reviewed frozen guest controlled run38041517954 adds 2 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass."
+              },
+              "superseded_at": "2026-10-21T03:32:48.806525+00:00",
+              "reason": "Current frozen guest native warm, extension Reload and explicit target-page Reload clipboard/absence branches independently verified; reviewer corrected an overbroad unregistered post-Re-audit requirement."
             }
           ],
           "revalidation_history": [

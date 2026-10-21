@@ -1,0 +1,26 @@
+{
+  "case_id": "EXT-F-1008-T14",
+  "review": "independent offline A/B evidence adjudication",
+  "inventory": {
+    "modes": ["guest", "member", "admin"],
+    "dimensions": ["warm", "reload"],
+    "expected": "Clipboard contains suggested missing tags for current page; button absent when no snippet applies."
+  },
+  "A_behavior": {
+    "warm_dev": "pass: Profile 10 extension guest panel on IANA displayed six social findings and the button; native pasteback from clipboard showed five suggested tags with current-page title and URL.",
+    "after_extension_manager_reload_dev": "pass for observed reload subtargets: independent Sol run clicked Reload on v0.2.578 development ID cihdmkcdjjckfhjpgoedmgfpoljebaml, confirmed that exact sidepanel origin, observed absent button on complete-meta demo, then button and IANA clipboard pasteback on the same development panel.",
+    "first_run_reload_store": "uncredited: the first run's reachable post-reload panel and no-snippet branch resolved to Store ID hnfolienncfklkgmdjjmhhegglimlamg; independent second run supplies development evidence.",
+    "actual_auth": "Guest was observed in the extension account menu; the aimatrx.com demo was a page fixture, not evidence of website authentication.",
+    "full_guest_case_verdict": "partial if reload dimension requires an actual browser page hard/full reload: records show extension-manager Reload followed by fixture navigation, not a documented browser page reload. The warm and extension-reload behavior branches are supported; complete ready-to-publish SEO remediation is outside the case evidence."
+  },
+  "B_quality_provenance": {
+    "verdict": "bounded: copy action and five eligible suggested tags are proven, but six audit findings were visible. Page source description had zero chars, so snippet code correctly did not invent og:description; og:image uses an example.com placeholder that requires a real image before publishing. Neither observation alone proves a product defect or all findings fixed.",
+    "frozen_artifact": "Source 99f0b5527fb8e3c29a1621c614216ae30973a322; CI run 39529779875 attempt 1 artifact 12315440245; v0.2.578; import local-dev and CI receipts plus normal promotion receipt agree on tree 8a58ad9ed10933eaf459520493ff6de57e3d64fabc961408494adb4d939fb5d5. Current hashReleaseTree of imported source and .output/chrome-mv3-dev both match.",
+    "current_source": "HEAD and origin/main currently c8909c1109bfb1bff7263e633f0ade4969fc3875. Runtime changed since frozen source99; that does not invalidate the frozen run but cannot establish latest-main behavior.",
+    "resource_journals": "Both full journals have RESOURCE_ADMITTED, healthy watch records, RESOURCE_BROWSER_STOP_CONFIRMED, RESOURCE_FINAL_DECISION valid, resourceInvalid false, exitCode 0. First run exceeded its 30 CUA call ceiling (35), second used 11/25.",
+    "limits": [
+      "Native accessibility and pasteback reports; no screenshots saved.",
+      "No member/admin conclusion, Store publication conclusion, current-main conclusion, or full SEO outcome conclusion."
+    ]
+  }
+}
