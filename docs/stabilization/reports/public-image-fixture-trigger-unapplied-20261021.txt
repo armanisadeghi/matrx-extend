@@ -1,0 +1,48 @@
+diff --git a/.github/ci-cost.json b/.github/ci-cost.json
+index 8f1c890bfc..0a355ef255 100644
+--- a/.github/ci-cost.json
++++ b/.github/ci-cost.json
+@@ -10,25 +10,25 @@
+     "macos": 0.062
+   },
+   "prices_source": "GitHub billing API pricePerUnit (Actions Linux / Windows / macOS 3-core), read 2026-10-11",
+-  "total_usd_per_week": 126.95,
++  "total_usd_per_week": 127.19,
+   "workflows": {
+     "hosted-release.yml": {
+       "triggers": [
+         "push"
+       ],
+       "crons": [],
+-      "benefit": "Release the extension privacy policy and hosted release-path fixes from GitHub, then verify the Vercel rollout with the existing release script.",
++      "benefit": "Release the extension privacy policy, Matrx Extend public image fixture, and hosted release-path fixes from GitHub, then verify the Vercel rollout with the existing release script.",
+       "owner_reason": "The frontend release policy is committed but has no eligible local owner; production is still serving the previous release.",
+-      "basis": "Path-filtered extension policy and release-path changes only, estimated two eligible runs/week at 40 minutes including rollout watch. Public standard Ubuntu minutes are unbilled.",
+-      "usd_per_week": 0.48,
++      "basis": "Path-filtered extension policy, public image fixture, and release-path changes only. Forecast three eligible runs/week (the existing two plus one fixture update) at the existing 40 minutes including rollout watch; $0.24/week incremental list-price forecast, not measured spend. Public standard Ubuntu minutes are unbilled.",
++      "usd_per_week": 0.72,
+       "legs": {
+         "linux": {
+           "jobs": [
+             "release"
+           ],
+-          "runs_per_week": 2,
++          "runs_per_week": 3,
+           "minutes_per_run": 40,
+-          "usd_per_week": 0.48
++          "usd_per_week": 0.72
+         }
+       }
+     },
+diff --git a/.github/workflows/hosted-release.yml b/.github/workflows/hosted-release.yml
+index dc8cdb0093..41335bac57 100644
+--- a/.github/workflows/hosted-release.yml
++++ b/.github/workflows/hosted-release.yml
+@@ -5,6 +5,7 @@ on:
+     branches: [main]
+     paths:
+       - 'app/(public)/privacy-policy/extension/page.tsx'
++      - 'public/matrx-extend-fixtures/**'
+       - '.github/workflows/hosted-release.yml'
+       - 'scripts/hosted-release-guard.sh'
+       - 'scripts/hosted-release-guard.test.py'
