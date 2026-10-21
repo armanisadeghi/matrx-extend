@@ -413,8 +413,12 @@ Every entry follows this shape:
   context chip for the same account. A mismatch (chip amber) files
   `context_truth_mismatch`. A server-added Organization value counts its
   attached catalog block in the Chars column.
+  On the FIRST send of a new chat the receipt lists the page values too (a slow page read sends
+  what the chip showed). A value switched off keeps its row so it can be turned back on.
 - **Covered by:** `src/lib/chat/context/request-context.test.ts`,
-  `tests/unit/context-rules-chip.test.tsx`; the live receipt needs a real turn.
+  `tests/unit/context-rules-chip.test.tsx`, `src/features/package-chat/context-source.test.ts`;
+  live end to end: `tests/browser/context-chip-live-walk.mjs` (real server, admin@admin.com, two
+  cheap turns; reads the persisted receipt).
 
 ### A browser tool's row settles when its answer is delivered
 - **What it does:** The row of a tool the extension ran turns Done (or Error)
