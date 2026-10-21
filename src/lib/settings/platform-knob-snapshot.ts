@@ -12,7 +12,7 @@ import { getCurrentUser } from '@/lib/auth/flow';
 import { appConfig, recordKnobRead } from '@/lib/config';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { getSupabase } from '@/lib/supabase/client';
-import { createKnobReader, type KnobReader } from '@ai-matrx/data/knobs';
+import { type KnobReader, createKnobReader } from '@ai-matrx/data/knobs';
 
 let cached: { key: string; resolved: Record<string, unknown>; at: number } | null = null;
 let inFlight: { key: string; promise: Promise<Record<string, unknown> | null> } | null = null;

@@ -581,7 +581,10 @@ export function blockedRequestDiagnostic(request, initiator = 'unavailable') {
 }
 const rpcSourceClassifications = {
   // Sent by @ai-matrx/data/knobs (not a literal .rpc in src), so the callsite is named here.
-  knob_snapshot_delta: { semantics: 'read', callsites: ['src/lib/settings/platform-knob-snapshot.ts'] },
+  knob_snapshot_delta: {
+    semantics: 'read',
+    callsites: ['src/lib/settings/platform-knob-snapshot.ts'],
+  },
   knob_defaults: { semantics: 'read', callsites: ['src/lib/settings/platform-knob-snapshot.ts'] },
   knob_resolve: {
     semantics: 'read',
