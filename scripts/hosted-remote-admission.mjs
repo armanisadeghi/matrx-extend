@@ -715,7 +715,7 @@ export function requireScrapeDispatchAdmission({ localSha, remoteSha, sourceSha,
   return true;
 }
 
-/** D187 original member Save, with one owned Project fixture or no destination. */
+/** Member Save: D187 single or D217 stale-profile retry without a destination. */
 export function planHostedMemberScrapeSave({
   lane,
   acceptanceCase,
@@ -727,8 +727,10 @@ export function planHostedMemberScrapeSave({
   if (lane !== 'A') refuse('HOSTED_MEMBER_SCRAPE_LANE_REFUSED');
   if (
     acceptanceCase !== 'scrape-save-member' ||
-    !['none', 'project'].includes(destination) ||
-    scope !== 'single'
+    !(
+      (scope === 'single' && ['none', 'project'].includes(destination)) ||
+      (scope === 'stale-profile-retry' && destination === 'none')
+    )
   )
     refuse('HOSTED_MEMBER_SCRAPE_SCOPE_REFUSED');
   if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_MEMBER_SCRAPE_RUNNER_REFUSED');
@@ -747,7 +749,7 @@ export function planHostedMemberScrapeSave({
         `requested_by=${DISPATCH_REQUESTER}`,
         'scrape_auth_mode=member',
         `scrape_save_destination=${destination}`,
-        'scrape_save_scope=single',
+        `scrape_save_scope=${scope}`,
         'runner_label=macos-15-intel',
         `development_run_id=${input.developmentRunId}`,
         `development_artifact_id=${input.developmentArtifactId}`,
@@ -774,18 +776,60 @@ export function requireMemberScrapeSaveDispatchAdmission(input) {
   return true;
 }
 
+function verifyD217StaleProfileEvidence(evidence) {
+  const guestAttempt = (attempt) =>
+    attempt?.sign_in_required === true &&
+    attempt.no_organization_error === false &&
+    attempt.queued === true &&
+    attempt.edited_text_retained === true &&
+    attempt.memberships === 0 &&
+    attempt.landings === 0;
+  const fixture = evidence?.fixture;
+  const reload = evidence?.reload;
+  const member = evidence?.member_retry;
+  const persisted = evidence?.persisted_source_content;
+  return (
+    fixture?.credentials_removed === true &&
+    fixture.restore_via_full_extension_reload === true &&
+    fixture.guest_restore_observed === true &&
+    guestAttempt(evidence.warm_save) &&
+    guestAttempt(evidence.warm_retry) &&
+    evidence.warm_retry.revision > evidence.warm_save.revision &&
+    reload?.management_reload_clicked === true &&
+    reload.old_targets_retired === true &&
+    reload.worker_replaced === true &&
+    reload.panel_replaced === true &&
+    guestAttempt(evidence.postreload_retry) &&
+    evidence.postreload_retry.revision > evidence.warm_retry.revision &&
+    evidence.guest_zero_source_rows_verified_after_real_signin === true &&
+    member?.landings === 1 &&
+    member.landing_status === 200 &&
+    member.organization_matches === true &&
+    member.edited_portions_sent === true &&
+    evidence.member_retry_queue_cleared === true &&
+    persisted?.source_matches === true &&
+    persisted.organization_matches === true &&
+    persisted.edited_marker_persisted === true
+  );
+}
+
 export function verifyHostedMemberScrapeSaveReport(report, identity) {
   const o = report?.observations;
   const auth = report?.authentication;
   const artifact = report?.artifact;
+  const staleRetry = report?.save_scope === 'stale-profile-retry';
   if (
     report?.schema_version !== 1 ||
     report.feature_id !== 'EXT-F-1007' ||
-    report.defect_id !== 'EXT-D-0187' ||
-    JSON.stringify(report.case_ids) !== '["EXT-F-1007-T04","EXT-F-1007-T29"]' ||
+    report.defect_id !== (staleRetry ? 'EXT-D-0217' : 'EXT-D-0187') ||
+    JSON.stringify(report.case_ids) !==
+      (staleRetry
+        ? '["EXT-F-1007-T05","EXT-F-1007-T22"]'
+        : '["EXT-F-1007-T04","EXT-F-1007-T29"]') ||
     report.auth_mode !== 'member' ||
-    !['none', 'project'].includes(report.destination_mode) ||
-    report.save_scope !== 'single' ||
+    !(staleRetry
+      ? report.destination_mode === 'none'
+      : report.save_scope === 'single' && ['none', 'project'].includes(report.destination_mode)) ||
     report.status !== 'pass' ||
     report.stage !== 'complete' ||
     report.native_stage !== 'exercise_panel' ||
@@ -811,7 +855,6 @@ export function verifyHostedMemberScrapeSaveReport(report, identity) {
       'dialog_opened_from_captured_article',
       'prefilled_name_visible',
       'custom_name_entered_by_trusted_keyboard',
-      'saved_confirmation_visible',
       'source_row_read_from_service',
       'custom_name_persisted',
       'organization_scope_persisted',
@@ -820,6 +863,9 @@ export function verifyHostedMemberScrapeSaveReport(report, identity) {
       'saved_source_reopened_in_ui',
       'cleanup_verified',
     ].some((key) => o?.[key] !== true) ||
+    (staleRetry
+      ? o?.saved_confirmation_visible !== false || !verifyD217StaleProfileEvidence(o?.d217)
+      : o?.saved_confirmation_visible !== true) ||
     ['detail_open', 'name_matches', 'url_matches'].some((key) => o.reopen_header?.[key] !== true) ||
     ['article_title_matches', 'heading_matches', 'marker_matches'].some(
       (key) => o.capture?.[key] !== true || o.saved_original?.[key] !== true,
@@ -852,11 +898,26 @@ export function verifyHostedMemberScrapeSaveReport(report, identity) {
 export function verifyHostedMemberScrapeSaveDispatchDestination(log, destination) {
   const observed = [
     ...log.matchAll(
-      /^guest\tRequire bounded lane and isolate shared credentials\t\S+ {3}SCRAPE_SAVE_DESTINATION: (none|project)\r?$/gm,
+      /^guest\tRequire bounded lane and isolate shared credentials\t\S+ {3}SCRAPE_SAVE_DESTINATION: ([^\r\n]*)\r?$/gm,
     ),
   ];
   if (observed.length !== 1) refuse('HOSTED_MEMBER_SCRAPE_DESTINATION_UNVERIFIED');
+  if (!['none', 'project'].includes(observed[0][1]))
+    refuse('HOSTED_MEMBER_SCRAPE_DESTINATION_UNVERIFIED');
   if (observed[0][1] !== destination) refuse('HOSTED_MEMBER_SCRAPE_DESTINATION_MISMATCH');
+  return observed[0][1];
+}
+
+export function verifyHostedMemberScrapeSaveDispatchScope(log, scope) {
+  const observed = [
+    ...log.matchAll(
+      /^guest\tRequire bounded lane and isolate shared credentials\t\S+ {3}SCRAPE_SAVE_SCOPE: ([^\r\n]*)\r?$/gm,
+    ),
+  ];
+  if (observed.length !== 1) refuse('HOSTED_MEMBER_SCRAPE_SCOPE_UNVERIFIED');
+  if (!['single', 'stale-profile-retry'].includes(observed[0][1]))
+    refuse('HOSTED_MEMBER_SCRAPE_SCOPE_UNVERIFIED');
+  if (observed[0][1] !== scope) refuse('HOSTED_MEMBER_SCRAPE_SCOPE_MISMATCH');
   return observed[0][1];
 }
 
@@ -2365,6 +2426,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         });
       }
       let certifiedDestination;
+      let certifiedScope;
       if (memberScrape) {
         if (run.head_sha !== sourceSha) refuse('HOSTED_MEMBER_SCRAPE_SOURCE_DRIFT');
         verifyHostedMemberScrapeSaveReport(report, {
@@ -2384,6 +2446,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         certifiedDestination = verifyHostedMemberScrapeSaveDispatchDestination(
           logResult.stdout,
           report.destination_mode,
+        );
+        certifiedScope = verifyHostedMemberScrapeSaveDispatchScope(
+          logResult.stdout,
+          report.save_scope,
         );
         const secrets = ghJson(`repos/${OWNER}/actions/secrets?per_page=100`);
         if (secrets.total_count !== secrets.secrets?.length)
@@ -2415,7 +2481,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       }
       const verdict = verifyHostedResourceJournals({ runId, attempt, files });
       process.stdout.write(
-        `${JSON.stringify({ runId, attempt, ...workflowSource, archiveDigest, artifact, ...(certifiedDestination && { certifiedDestination }), ...(settings && { settingsProvenance }), ...(memberDataLifecycleProof && { memberDataLifecycleProof }), ...verdict })}\n`,
+        `${JSON.stringify({ runId, attempt, ...workflowSource, archiveDigest, artifact, ...(certifiedDestination && { certifiedDestination }), ...(certifiedScope && { certifiedScope }), ...(settings && { settingsProvenance }), ...(memberDataLifecycleProof && { memberDataLifecycleProof }), ...verdict })}\n`,
       );
     } else refuse('HOSTED_MODE_INVALID');
   } catch (error) {

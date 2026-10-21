@@ -3,6 +3,8 @@ import test from 'node:test';
 import {
   planHostedMemberScrapeSave,
   requireMemberScrapeSaveDispatchAdmission,
+  verifyHostedMemberScrapeSaveDispatchDestination,
+  verifyHostedMemberScrapeSaveDispatchScope,
   verifyHostedMemberScrapeSaveReport,
 } from './hosted-remote-admission.mjs';
 
@@ -23,7 +25,7 @@ const input = {
   ...identity,
 };
 
-test('member Save Source plans only single owned-Project or no-destination lane A runs', () => {
+test('member Save Source plans only single or no-destination D217 lane A runs', () => {
   const plan = planHostedMemberScrapeSave(input);
   assert.ok(plan.args.includes('acceptance_case=scrape-save-member'));
   assert.ok(plan.args.includes('scrape_save_destination=none'));
@@ -31,14 +33,83 @@ test('member Save Source plans only single owned-Project or no-destination lane 
   const project = planHostedMemberScrapeSave({ ...input, destination: 'project' });
   assert.ok(project.args.includes('scrape_save_destination=project'));
   assert.ok(project.args.includes('scrape_save_scope=single'));
+  const staleRetry = planHostedMemberScrapeSave({
+    ...input,
+    destination: 'none',
+    scope: 'stale-profile-retry',
+  });
+  assert.ok(staleRetry.args.includes('scrape_save_scope=stale-profile-retry'));
+  assert.ok(staleRetry.args.includes('scrape_save_destination=none'));
+  assert.ok(!staleRetry.args.includes('scrape_save_scope=single'));
   for (const change of [
     { lane: 'B' },
     { destination: 'library' },
     { destination: 'project', scope: 'duplicate-rename' },
     { scope: 'duplicate-rename' },
+    { destination: 'project', scope: 'stale-profile-retry' },
+    { destination: 'none', scope: 'duplicate-rename-retry' },
     { acceptanceCase: 'guest-scrape-development' },
   ])
     assert.throws(() => planHostedMemberScrapeSave({ ...input, ...change }));
+});
+
+test('member Save dispatch scope must occur once and match native report', () => {
+  const prefix =
+    'guest\tRequire bounded lane and isolate shared credentials\t2026-10-20T05:01:00.0000000Z   ';
+  const log = `${prefix}SCRAPE_SAVE_SCOPE: stale-profile-retry\n`;
+  assert.equal(
+    verifyHostedMemberScrapeSaveDispatchScope(log, 'stale-profile-retry'),
+    'stale-profile-retry',
+  );
+  assert.throws(
+    () => verifyHostedMemberScrapeSaveDispatchScope(log, 'single'),
+    /HOSTED_MEMBER_SCRAPE_SCOPE_MISMATCH/,
+  );
+  assert.throws(
+    () => verifyHostedMemberScrapeSaveDispatchScope('', 'stale-profile-retry'),
+    /HOSTED_MEMBER_SCRAPE_SCOPE_UNVERIFIED/,
+  );
+  assert.throws(
+    () => verifyHostedMemberScrapeSaveDispatchScope(log + log, 'stale-profile-retry'),
+    /HOSTED_MEMBER_SCRAPE_SCOPE_UNVERIFIED/,
+  );
+  assert.throws(
+    () =>
+      verifyHostedMemberScrapeSaveDispatchScope(
+        log + `${prefix}SCRAPE_SAVE_SCOPE: duplicate-rename\n`,
+        'stale-profile-retry',
+      ),
+    /HOSTED_MEMBER_SCRAPE_SCOPE_UNVERIFIED/,
+  );
+  for (const value of ['', 'stale profile retry'])
+    assert.throws(
+      () =>
+        verifyHostedMemberScrapeSaveDispatchScope(
+          log + `${prefix}SCRAPE_SAVE_SCOPE: ${value}\n`,
+          'stale-profile-retry',
+        ),
+      /HOSTED_MEMBER_SCRAPE_SCOPE_UNVERIFIED/,
+    );
+});
+
+test('member Save destination counts every preflight field before certification', () => {
+  const prefix =
+    'guest\tRequire bounded lane and isolate shared credentials\t2026-10-20T05:01:00.0000000Z   ';
+  const log = `${prefix}SCRAPE_SAVE_DESTINATION: none\n`;
+  assert.equal(verifyHostedMemberScrapeSaveDispatchDestination(log, 'none'), 'none');
+  assert.throws(
+    () => verifyHostedMemberScrapeSaveDispatchDestination(log, 'project'),
+    /HOSTED_MEMBER_SCRAPE_DESTINATION_MISMATCH/,
+  );
+  for (const value of ['library', '', 'owned project'])
+    assert.throws(
+      () =>
+        verifyHostedMemberScrapeSaveDispatchDestination(
+          log + `${prefix}SCRAPE_SAVE_DESTINATION: ${value}\n`,
+          'none',
+        ),
+      /HOSTED_MEMBER_SCRAPE_DESTINATION_UNVERIFIED/,
+    );
 });
 
 test('member Save Source dispatch refuses occupied lane, missing login and source drift', () => {
@@ -132,6 +203,104 @@ test('member Save Source certificate requires real saved row, UI readback and ex
     project_cleanup: { verified: true, owned_project_absent: true },
   };
   assert.equal(verifyHostedMemberScrapeSaveReport(projectReport, identity), true);
+  const guestAttempt = (revision) => ({
+    revision,
+    sign_in_required: true,
+    no_organization_error: false,
+    queued: true,
+    edited_text_retained: true,
+    memberships: 0,
+    landings: 0,
+  });
+  const staleReport = {
+    ...report,
+    defect_id: 'EXT-D-0217',
+    case_ids: ['EXT-F-1007-T05', 'EXT-F-1007-T22'],
+    save_scope: 'stale-profile-retry',
+    observations: {
+      ...report.observations,
+      saved_confirmation_visible: false,
+      d217: {
+        fixture: {
+          credentials_removed: true,
+          restore_via_full_extension_reload: true,
+          guest_restore_observed: true,
+        },
+        warm_save: guestAttempt(1),
+        warm_retry: guestAttempt(2),
+        reload: {
+          management_reload_clicked: true,
+          old_targets_retired: true,
+          worker_replaced: true,
+          panel_replaced: true,
+        },
+        postreload_retry: guestAttempt(3),
+        guest_zero_source_rows_verified_after_real_signin: true,
+        member_retry: {
+          landings: 1,
+          landing_status: 200,
+          organization_matches: true,
+          edited_portions_sent: true,
+        },
+        member_retry_queue_cleared: true,
+        persisted_source_content: {
+          source_matches: true,
+          organization_matches: true,
+          edited_marker_persisted: true,
+        },
+      },
+    },
+  };
+  assert.equal(verifyHostedMemberScrapeSaveReport(staleReport, identity), true);
+  for (const changed of [
+    { defect_id: 'EXT-D-0187' },
+    { case_ids: report.case_ids },
+    { destination_mode: 'project' },
+    { observations: { ...staleReport.observations, saved_confirmation_visible: true } },
+    {
+      observations: {
+        ...staleReport.observations,
+        d217: { ...staleReport.observations.d217, warm_retry: guestAttempt(1) },
+      },
+    },
+    {
+      observations: {
+        ...staleReport.observations,
+        d217: {
+          ...staleReport.observations.d217,
+          postreload_retry: { ...guestAttempt(3), landings: 1 },
+        },
+      },
+    },
+    {
+      observations: {
+        ...staleReport.observations,
+        d217: {
+          ...staleReport.observations.d217,
+          member_retry: {
+            ...staleReport.observations.d217.member_retry,
+            edited_portions_sent: false,
+          },
+        },
+      },
+    },
+    {
+      observations: {
+        ...staleReport.observations,
+        d217: {
+          ...staleReport.observations.d217,
+          persisted_source_content: {
+            ...staleReport.observations.d217.persisted_source_content,
+            edited_marker_persisted: false,
+          },
+        },
+      },
+    },
+  ])
+    assert.throws(
+      () => verifyHostedMemberScrapeSaveReport({ ...staleReport, ...changed }, identity),
+      /HOSTED_MEMBER_SCRAPE_REPORT_INVALID/,
+    );
   for (const changed of [
     { observations: { ...projectReport.observations, owned_project_fixture_created: false } },
     { observations: { ...projectReport.observations, project_id: null } },
@@ -216,6 +385,7 @@ else process.exit(98); process.stdout.write(JSON.stringify(r));
     payload,
     reportName = 'scrape-save-native-acceptance.json',
     requestedDestination = 'none',
+    requestedScope = 'single',
   ) => {
     writeFileSync(join(dir, reportName), JSON.stringify(payload));
     rmSync(zip, { force: true });
@@ -254,7 +424,7 @@ else process.exit(98); process.stdout.write(JSON.stringify(r));
             archiveDigest,
             developmentDigest: identity.githubArtifactDigest,
             workflow,
-            runLog: `guest\tRequire bounded lane and isolate shared credentials\t2026-10-20T05:01:00.0000000Z   SCRAPE_SAVE_DESTINATION: ${requestedDestination}\n`,
+            runLog: `guest\tRequire bounded lane and isolate shared credentials\t2026-10-20T05:01:00.0000000Z   SCRAPE_SAVE_DESTINATION: ${requestedDestination}\nguest\tRequire bounded lane and isolate shared credentials\t2026-10-20T05:01:00.0000000Z   SCRAPE_SAVE_SCOPE: ${requestedScope}\n`,
           }),
         },
       },
@@ -264,6 +434,38 @@ else process.exit(98); process.stdout.write(JSON.stringify(r));
     const good = execute(report);
     assert.equal(good.status, 0, good.stderr);
     assert.equal(JSON.parse(good.stdout).valid, true);
+    assert.equal(JSON.parse(good.stdout).certifiedScope, 'single');
+    const stale = execute(
+      staleReport,
+      'scrape-save-native-acceptance.json',
+      'none',
+      'stale-profile-retry',
+    );
+    assert.equal(stale.status, 0, stale.stderr);
+    assert.equal(JSON.parse(stale.stdout).certifiedScope, 'stale-profile-retry');
+    const wrongScope = execute(staleReport);
+    assert.notEqual(wrongScope.status, 0);
+    assert.match(wrongScope.stderr, /HOSTED_MEMBER_SCRAPE_SCOPE_MISMATCH/);
+    const missingScope = execute(staleReport, 'scrape-save-native-acceptance.json', 'none', '');
+    assert.notEqual(missingScope.status, 0);
+    assert.match(missingScope.stderr, /HOSTED_MEMBER_SCRAPE_SCOPE_UNVERIFIED/);
+    const badD217 = execute(
+      {
+        ...staleReport,
+        observations: {
+          ...staleReport.observations,
+          d217: {
+            ...staleReport.observations.d217,
+            reload: { ...staleReport.observations.d217.reload, worker_replaced: false },
+          },
+        },
+      },
+      'scrape-save-native-acceptance.json',
+      'none',
+      'stale-profile-retry',
+    );
+    assert.notEqual(badD217.status, 0);
+    assert.match(badD217.stderr, /HOSTED_MEMBER_SCRAPE_REPORT_INVALID/);
     const project = execute(projectReport, 'scrape-save-native-acceptance.json', 'project');
     assert.equal(project.status, 0, project.stderr);
     assert.equal(JSON.parse(project.stdout).valid, true);

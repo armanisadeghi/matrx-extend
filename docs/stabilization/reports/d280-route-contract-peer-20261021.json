@@ -1,0 +1,21 @@
+{
+  "task_id": "EXT-D-0280-route-contract-peer-20261021",
+  "scope": "Independent source and contract review of the uncommitted D280 planner, verifier, focused test, D217 native driver, and exact one-file resource command proposal; no test, native job, or product execution.",
+  "verdict_A": "Source contract sound for the registered stale-profile-retry lane; original D217 behavior remains unverified. Planner allows only lane A, scrape-save-member, none destination, stale-profile-retry on macos-15-intel, and forwards that scope. Dispatch retains exact source, eligible artifact, reviewed workflow, capacity and secret gates. Native driver emits the newly required D217 fields. Certificate binds the report scope to the hosted preflight log and retains existing source, artifact, association, readback, resource journal, and cleanup checks.",
+  "verdict_B": "Focused tests exercise both planner and real CLI archive-verifier path with synthetic local evidence and a process-local gh stub. Builder's four green tests and four plants were raw, unguarded and had no saved stdout artifact, so they are debug evidence only. No independent guarded acceptance or native behavior claim follows from them.",
+  "findings": [
+    {
+      "severity": "Minor",
+      "file": "scripts/hosted-remote-admission.mjs",
+      "line": 910,
+      "issue": "verifyHostedMemberScrapeSaveDispatchScope counts only lines with one of its two recognized values. A second SCRAPE_SAVE_SCOPE line carrying another workflow-registered value such as duplicate-rename is ignored, so the advertised exactly-one-scope condition can pass on a log with two scope lines.",
+      "action": "Count all preflight SCRAPE_SAVE_SCOPE lines first, then require exactly one and validate its value. Add a focused duplicate/unknown-value refusal assertion. The current reviewed workflow emits one line, so this is a certificate strictness gap, not evidence of a product failure."
+    }
+  ],
+  "exact_resource_command_ruling": {
+    "command": ["node", "--test", "scripts/hosted-member-scrape-save-admission.test.mjs"],
+    "decision": "Legitimate narrow guarded test target; exact allowedCommands registration is appropriate with no other policy change.",
+    "basis": "The path is already in the registered pnpm test:focused-acceptance batch. This file invokes planner/verifier functions and local zip/node child processes, substitutes a temporary gh executable for GitHub API reads, and removes its temporary directory in finally. It contains no real workflow dispatch, browser launch, credential staging, or remote mutation. The resource policy compares complete argv exactly, so this entry does not admit arbitrary node scripts or flags.",
+    "boundary": "Registering the command authorizes only a future guarded test run; it does not accept the builder's prior raw runs, prove native behavior, or waive source, resource, cost, fixture, credential, and cleanup admission for a hosted job."
+  }
+}
