@@ -69,7 +69,7 @@ async function githubJson(path) {
         signal: AbortSignal.timeout(10000),
       },
     );
-    return response.ok ? response.json() : null;
+    return response.ok ? await response.json() : null;
   } catch {
     return null;
   }

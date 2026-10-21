@@ -1,0 +1,44 @@
+{
+  "task_id": "EXT-D-0278",
+  "lane": "source defect repair",
+  "status": "source_fixed_pending_independent_review_and_integration",
+  "reproduction": {
+    "symptom": "A successful GitHub response with malformed JSON rejects from response.json() after githubJson has returned, escaping its fail-closed catch boundary.",
+    "test_seam": "The existing latestSuccessfulDevelopmentArtifactSource fetch fixture now supplies malformed HTTP 200 JSON for both the artifact listing and its associated run details.",
+    "expected": "Artifact source resolves null so the classifier chooses full verification.",
+    "red": {
+      "command": "node scripts/stabilization-resource.mjs run --run-id ci-malformed-json-red-20261021-1646 -- node --test scripts/ci-change-scope.test.mjs",
+      "journal": "docs/stabilization/resource-journals/ci-malformed-json-red-20261021-1646.jsonl",
+      "observed": "15 passed, 1 failed; malformed HTTP 200 JSON raised SyntaxError; resource final decision child_failed, resourceInvalid false, exitCode 1"
+    }
+  },
+  "repair": "Await response.json() inside githubJson's try/catch so a malformed successful response resolves null at the source boundary.",
+  "changed_files": [
+    "scripts/ci-change-scope.mjs",
+    "scripts/ci-change-scope.test.mjs",
+    "docs/stabilization/reports/ci-malformed-proof-repair-20261021.json"
+  ],
+  "verification": [
+    {
+      "command": "node scripts/stabilization-resource.mjs run --run-id ci-malformed-json-green-20261021-1647 -- node --test scripts/ci-change-scope.test.mjs",
+      "journal": "docs/stabilization/resource-journals/ci-malformed-json-green-20261021-1647.jsonl",
+      "observed": "16 passed, 0 failed; resource final decision valid, resourceInvalid false, exitCode 0"
+    },
+    {
+      "command": "node scripts/stabilization-resource.mjs run --run-id ci-malformed-json-final-20261021-1648 -- node --test scripts/ci-change-scope.test.mjs",
+      "journal": "docs/stabilization/resource-journals/ci-malformed-json-final-20261021-1648.jsonl",
+      "observed": "16 passed, 0 failed after adding malformed run-details sibling; resource final decision valid, resourceInvalid false, exitCode 0"
+    },
+    {
+      "command": "node scripts/stabilization-resource.mjs run --run-id ci-malformed-json-lint-20261021-1650 -- pnpm lint",
+      "journal": "docs/stabilization/resource-journals/ci-malformed-json-lint-20261021-1650.jsonl",
+      "observed": "Exit 0; 3184 files checked, 929 warnings, no errors; resource final decision valid, resourceInvalid false, exitCode 0"
+    }
+  ],
+  "limits": [
+    "The fixture proves the source boundary for malformed artifact-listing and run-details JSON; it does not establish a hosted CI routing result or product behavior.",
+    "The existing valid-artifact fixture asserts the source SHA and rejects a constant-null implementation, but an executed constant-null mutation check was not completed in this lane.",
+    "No commit, push, build, release, or workflow dispatch was performed in this lane."
+  ],
+  "next_action": "Root obtains fresh independent review, integrates the exact source/test/report/journal paths, and decides hosted CI follow-through."
+}

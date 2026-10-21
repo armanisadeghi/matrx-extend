@@ -128,6 +128,29 @@ test('cancelled or unavailable CI artifact proof fails closed', async () => {
     }
     globalThis.fetch = async () => new Response('', { status: 403 });
     assert.equal(await latestSuccessfulDevelopmentArtifactSource(), null);
+    globalThis.fetch = async () =>
+      new Response('{invalid JSON', {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    assert.equal(await latestSuccessfulDevelopmentArtifactSource(), null);
+    globalThis.fetch = async (url) =>
+      String(url).includes('/actions/artifacts?')
+        ? Response.json({
+            artifacts: [
+              {
+                name: `matrx-extend-development-test-${sha}-123-1`,
+                expired: false,
+                size_in_bytes: 42,
+                workflow_run: { id: 123, head_sha: sha },
+              },
+            ],
+          })
+        : new Response('{invalid JSON', {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+          });
+    assert.equal(await latestSuccessfulDevelopmentArtifactSource(), null);
   } finally {
     globalThis.fetch = originalFetch;
     if (originalToken === undefined) delete process.env.GITHUB_TOKEN;
