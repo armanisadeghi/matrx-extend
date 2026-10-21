@@ -40,6 +40,10 @@ plan — then challenge his assumptions too, still never ask facts.
 
 - **Frontier** = surviving nodes whose prerequisites are settled. A question whose answer depends on
   another question open this round waits for a later round.
+- **Each round goes out through the question tool** (`AskUserQuestion`): one call per round, up to
+  four quick questions or one complex one, recommendation as the first option marked "(Recommended)",
+  background and what the best do in the question and option descriptions. The `Q<n>` shape below is
+  what goes into those fields. No question tool, or the owner is not in the chat → the Question Desk.
 - **Round size:** per [talk to Arman like a person](/policies/talk-to-arman-like-a-person.md); the
   rest wait on the Question Desk ([ask-arman](/skills/ask-arman/SKILL.md)), ordered by how much of
   the tree each answer unblocks.
