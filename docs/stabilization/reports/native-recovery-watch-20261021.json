@@ -1,0 +1,26 @@
+{
+  "runId": "native-recovery-20261021-1906",
+  "observedAt": "2026-10-21T19:11:38Z",
+  "journal": "docs/stabilization/resource-journals/native-recovery-20261021-1906.jsonl",
+  "journalStatus": "completed",
+  "recordCount": 21,
+  "validJsonl": true,
+  "admissionAt": "2026-10-21T19:07:29.085Z",
+  "healthyWatchSamples": 15,
+  "healthyWatchFrom": "2026-10-21T19:07:45.104Z",
+  "healthyWatchThrough": "2026-10-21T19:11:29.481Z",
+  "stopRequestedAt": "2026-10-21T19:11:31.288Z",
+  "browserStopConfirmedAt": "2026-10-21T19:11:31.292Z",
+  "finalDecision": "valid",
+  "finalDecisionAt": "2026-10-21T19:11:31.324Z",
+  "finalDecisionEvidence": {
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0
+  },
+  "unsafeOrMalformedEventsObserved": 0,
+  "watchCoverageSeconds": 242,
+  "scopeLimit": "Resource-policy evidence only; not a product or UI pass.",
+  "journalSha256": "756be59dcdde96bd4464194f1f4fd947d82b6c456dfda409a645de5949f55c80",
+  "completedPath": "docs/stabilization/resource-journals/native-recovery-20261021-1906.jsonl"
+}
