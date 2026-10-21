@@ -1,0 +1,86 @@
+{
+  "run_id": "guest99-article-cancel-reload-peer-20261021",
+  "case_id": "EXT-F-1007-T06",
+  "verdict_A_behavior": {
+    "status": "pass",
+    "scope": "guest Article Cancel warm and after full extension-manager Reload plus fixture recapture",
+    "fixture": "https://www.aimatrx.com/matrx-extend-demo",
+    "warm": {
+      "draft_marker": "GUEST99-CANCEL-PEER-20261021",
+      "after_cancel": "Original Article remained visible; heading 'A clear three-stage browser workflow', original intro text, and 179 words; temporary marker absent.",
+      "native_before_cancel_editor_text": "## A clear three-stage browser workflow\n\nThis stable sample page lets anyone try Matrx Extend without signing in. The page contains a real article, useful links, a structured table, and JSON-LD metadata so the extension's page-aware features have predictable material to work with.\n\n## The three workflow stages\n\n| Stage | Purpose | Expected result |\n| --- | --- | --- |\n| Capture | Turn the open page into readable content. | Article text, links, media, metadata, and schema. |\n| Understand | Ask questions about what is actually on the page. | Answers grounded in the current page. |\n| Use | Extract the details needed for the next task. | Structured rows that can be copied or reused. |\n\n## Why page-aware assistance matters\n\nA browser assistant is most useful when its answer is grounded in the page the user chose. Matrx Extend can capture readable content on demand, inspect page structure, and use that context to answer a direct question. Automatic capture is optional and is off on a fresh installation.\n\nThe user remains in control: read-only tools can inspect the active page, while the default interaction mode asks before an action changes a page. Privileged actions always require confirmation.\n\nGUEST99-CANCEL-PEER-20261021",
+      "native_after_cancel_excerpt": {
+        "title": "Matrx Extend Demo Page",
+        "original_article_heading": "A clear three-stage browser workflow",
+        "original_intro": "A stable public page for trying Matrx Extend page capture, structured-data extraction, SEO auditing, and page-aware chat.",
+        "article_markdown_body_restored": true,
+        "word_count": 179,
+        "temporary_marker_visible": false
+      }
+    },
+    "extension_reload": "Used chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml; clicked its Reload button and Chrome displayed 'Reloaded'. Reopened fixture in a fresh tab, reopened the development extension side panel, selected Scrape, and clicked Capture. Actual capture returned Article, Links 17, and the original 179-word Article.",
+    "post_reload": {
+      "draft_marker": "GUEST99-AFTER-RELOAD-CANCEL-20261021",
+      "after_cancel": "Original Article remained visible; heading 'A clear three-stage browser workflow', original intro text, and 179 words; temporary marker absent.",
+      "native_before_cancel_editor_text": "## A clear three-stage browser workflow\n\nThis stable sample page lets anyone try Matrx Extend without signing in. The page contains a real article, useful links, a structured table, and JSON-LD metadata so the extension's page-aware features have predictable material to work with.\n\n## The three workflow stages\n\n| Stage | Purpose | Expected result |\n| --- | --- | --- |\n| Capture | Turn the open page into readable content. | Article text, links, media, metadata, and schema. |\n| Understand | Ask questions about what is actually on the page. | Answers grounded in the current page. |\n| Use | Extract the details needed for the next task. | Structured rows that can be copied or reused. |\n\n## Why page-aware assistance matters\n\nA browser assistant is most useful when its answer is grounded in the page the user chose. Matrx Extend can capture readable content on demand, inspect page structure, and use that context to answer a direct question. Automatic capture is optional and is off on a fresh installation.\n\nThe user remains in control: read-only tools can inspect the active page, while the default interaction mode asks before an action changes a page. Privileged actions always require confirmation.\n\nGUEST99-AFTER-RELOAD-CANCEL-20261021",
+      "native_after_cancel_excerpt": {
+        "title": "Matrx Extend Demo Page",
+        "original_article_heading": "A clear three-stage browser workflow",
+        "original_intro": "A stable public page for trying Matrx Extend page capture, structured-data extraction, SEO auditing, and page-aware chat.",
+        "article_markdown_body_restored": true,
+        "word_count": 179,
+        "temporary_marker_visible": false
+      }
+    },
+    "writes": "No Apply, Save, or source/page-content write was used; both drafts were canceled.",
+    "extension_reload_semantics": {
+      "manager_url": "chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "manager_page_identity": {
+        "version": "0.2.578",
+        "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev"
+      },
+      "action": "Clicked Reload on the details page for that exact ID; Chrome displayed Reloaded.",
+      "post_reload_sequence": "Opened a fresh tab at the controlled demo URL. The first toolbar Matrx button opened Store ID hnfolienncfklkgmdjjmhhegglimlamg; the second Matrx button opened development ID cihdmkcdjjckfhjpgoedmgfpoljebaml, verified by sidepanel URI. Selected Scrape, observed the empty post-reload state, then clicked Capture and saw the original Article with 179 words and Links 17 before opening the editor.",
+      "post_reload_case_complete": true,
+      "missing_post_reload_steps": []
+    }
+  },
+  "verdict_B_provenance_quality": {
+    "status": "partial_provenance",
+    "profile_observed": "Chrome window title: Matrx Guest Test (operator supplied mapping: Profile10). Fixture displayed a Sign in control; no sign-in flow was performed.",
+    "extension_manager": {
+      "version": "0.2.578",
+      "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "reload_observed": true,
+      "development_sidepanel_uri_after_reload": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html"
+    },
+    "operator_supplied_artifact_binding": {
+      "source_sha": "99f0b5527fb8e3c29a1621c614216ae30973a322",
+      "ci_run_id": 39529779875,
+      "artifact_id": 12315440245,
+      "tree_sha": "8a58ad9ed10933eaf459520493ff6de57e3d64fabc961408494adb4d939fb5d5",
+      "assessment": "These values were supplied for this retest; extension-manager UI independently confirms only version, ID, and loaded directory. It does not bind the displayed extension to the supplied source/run/artifact/tree identifiers."
+    },
+    "sanitized_ax_excerpt": [
+      "Window: Matrx Extend Demo Page — AI Matrx - Google Chrome - Matrx Guest Test",
+      "Manager: Version 0.2.578; ID cihdmkcdjjckfhjpgoedmgfpoljebaml; Unpacked extension Loaded from /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "Manager Reload action resulted in visible 'Reloaded' label",
+      "Post-reload side panel URI chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html",
+      "Post-reload capture: Article selected; 179 words; original heading and intro visible",
+      "After each Cancel: Edit article markdown button returned; original heading and 179-word count visible; no temporary marker",
+      "Before Cancel editor contained the original Markdown and appended marker GUEST99-CANCEL-PEER-20261021; after Cancel visible title, original intro, heading, 179 words, and marker absent.",
+      "Post-reload empty Scrape state was followed by Capture; only after original Article and Links 17 were visible was the editor opened and marker GUEST99-AFTER-RELOAD-CANCEL-20261021 added; after Cancel original title/intro/heading/179 words returned and marker was absent.",
+      "Two Matrx toolbar buttons were distinguished by sidepanel URI: the first opened Store ID hnfolienncfklkgmdjjmhhegglimlamg; the second opened the verified development ID cihdmkcdjjckfhjpgoedmgfpoljebaml."
+    ],
+    "resource_guard": {
+      "journal": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/guest99-article-cancel-reload-peer-20261021.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal_verified_full": true
+    }
+  }
+}

@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-21 02:12 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-21T02:12:46.084421+00:00. 207 features · 831 cases · 1422 controls · 275 linked defect records.
+Generated 2026-10-21 02:26 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-21T02:26:13.338831+00:00. 207 features · 831 cases · 1422 controls · 275 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1338** — Pass: 105 · Partial: 102 · Fail: 1 · Unverified: 1119 · N/A: 11.
+Applicable case-by-role slots: **1338** — Pass: 106 · Partial: 101 · Fail: 1 · Unverified: 1119 · N/A: 11.
 Unverified splits into **180 explicitly marked unverified** and **939 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -25,7 +25,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 7 pass · 7 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 37 unverified · 0 deferred; 0/1 full | pass 7, partial 20, fail 0, unverified 83, n/a 0 | 12 |
+| [Scrape](#scrape) | 1 | 8 pass · 6 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 37 unverified · 0 deferred; 0/1 full | pass 8, partial 19, fail 0, unverified 83, n/a 0 | 12 |
 | [SEO](#seo) | 1 | 0 pass · 7 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 8, fail 0, unverified 40, n/a 0 | 3 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 6 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -917,7 +917,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1007-T03 Recapture unsaved edits guard | Pass | Unverified | Unverified | EXT-F-1007-C03 |
 | EXT-F-1007-T04 Save capture as a Source | N/A | Partial | Unverified | EXT-F-1007-C04, EXT-F-1007-C21 |
 | EXT-F-1007-T05 Article markdown edit/apply | Partial | Unverified | Unverified | EXT-F-1007-C05 |
-| EXT-F-1007-T06 Article markdown cancel | Partial | Unverified | Partial | EXT-F-1007-C06 |
+| EXT-F-1007-T06 Article markdown cancel | Pass | Unverified | Partial | EXT-F-1007-C06 |
 | EXT-F-1007-T07 Article scroll sync | Partial | Unverified | Unverified | EXT-F-1007-C07 |
 | EXT-F-1007-T08 Scrape result tabs | Partial | Partial | Partial | EXT-F-1007-C08 |
 | EXT-F-1007-T09 Copy capture and section data | Pass | Unverified | Partial | EXT-F-1007-C09 |
@@ -974,9 +974,8 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1007-T05 · guest: Partial. Bounded current-artifact guest Save failure reproduced warm and after extension reload; no Source landed. Overall case remains partial because the editor and required auth lifecycle were not re-exercised after reload.
   Evidence quality: Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.
   Evidence / build / date recorded: guest-scrape-controls-https-20261012, docs/stabilization/runs/guest-scrape-controls-https-20261012.json
-- EXT-F-1007-T06 · guest: Partial. Warm behavior confirmed on the exact frozen development artifact; no post-reload editor state was available.
-  Evidence quality: Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.
-  Evidence / build / date recorded: guest-scrape-controls-https-20261012, docs/stabilization/runs/guest-scrape-controls-https-20261012.json
+- EXT-F-1007-T06 · guest: Pass.
+  Evidence / build / date recorded: guest99-article-cancel-reload-peer-20261021, 2026-10-21T02:26:13.338831+00:00, ['docs/stabilization/reports/guest99-scrape-controls-20261021.json', 'docs/stabilization/reports/guest99-article-cancel-reload-peer-20261021.json', 'docs/stabilization/reports/scrape99-native-provenance-peer-20261021.json', 'docs/stabilization/resource-journals/guest99-scrape-controls-20261021.jsonl', 'docs/stabilization/resource-journals/guest99-article-cancel-reload-peer-20261021.jsonl']
 - EXT-F-1007-T06 · admin: Partial. Warm Edit temporary CANCEL-SMOKE then Cancel restored original179-word article; no Save/write. Full-reload editor and independent inspectable image remain unverified.
   Evidence quality: Tester actual native UI/clipboard pasteback; inline screenshots only, no saved independently reopenable image. Case stays partial.
   Evidence / build / date recorded: scrape577-copy-dismiss-retry-20261020-02, ['docs/stabilization/reports/scrape577-copy-dismiss-retry-20261020.json']

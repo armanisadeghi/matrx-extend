@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "review": "offline_independent_supplement",
+  "case": "EXT-F-1007-T06",
+  "verdict_A_behavior": {
+    "status": "pass_bounded",
+    "scope": "guest Article Cancel on warm capture and on a fresh capture after full Chrome extension-manager Reload",
+    "basis": "Native operator recorded draft markers GUEST99-CANCEL-PEER-20261021 and GUEST99-AFTER-RELOAD-CANCEL-20261021 in the editor; each Cancel restored the original article heading and 179-word count with marker absent. Manager Reloaded the exact dev ID, then a fresh fixture tab and dev sidepanel captured original Article and 17 Links before the second edit.",
+    "resource_journals": "Both full journals end admitted=true, resourceInvalid=false, exitCode=0, decision=valid."
+  },
+  "verdict_B_provenance": {
+    "status": "resolved_by_supplementary_disk_and_receipt_evidence",
+    "raw_operator_verdict_preserved": "partial_provenance: manager UI itself proved version, ID, loaded directory and Reload, but not source SHA",
+    "native_binding": "Chrome manager showed dev ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.578, loaded from /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev; post-Reload sidepanel URI had that same ID.",
+    "source_binding": "Existing normal CI import provenance and import-status name source 99f0b5527fb8e3c29a1621c614216ae30973a322, push main run 39529779875 attempt 1, artifact 12315440245. CI and local-dev receipts and the promotion receipt agree on version 0.2.578 and tree SHA. Independently recomputed hashReleaseTree of imported chrome-mv3 and actual .output/chrome-mv3-dev: both 8a58ad9ed10933eaf459520493ff6de57e3d64fabc961408494adb4d939fb5d5. ci-receipt.json and provenance.json SHA256 also match import-status declarations.",
+    "auth_binding": "First operator's native Chrome Profile 10 path and extension Account G / Guest, with same isolated profile and extension ID in peer run; peer window title Matrx Guest Test and fixture Sign in. Guest scope is supported jointly, while the peer title alone is insufficient.",
+    "remaining_limit": "The source binding is a chain of native loaded-directory observation plus current on-disk hash and ordinary import/promotion receipts, not a SHA displayed by Chrome. It assumes the loaded directory was not modified between observed Reload and offline hash; no evidence of such modification was found."
+  },
+  "scope_exclusions": [
+    "No blanket full Scrape or Save pass",
+    "No non-guest behavior",
+    "No claim that manager UI independently displayed source SHA",
+    "No repromotion or UI retest during this review"
+  ]
+}

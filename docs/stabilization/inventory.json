@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T02:12:46.084421+00:00",
+  "updated_at": "2026-10-21T02:26:13.338831+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -25179,6 +25179,31 @@
                 "docs/stabilization/reports/scrape-source-save-fresh-peer-20261020.json"
               ],
               "new_full_role_case_pass": false
+            },
+            {
+              "source_sha": "99f0b5527fb8e3c29a1621c614216ae30973a322",
+              "build_version": "0.2.578",
+              "development_ci_run_id": 39529779875,
+              "development_artifact_id": 12315440245,
+              "tree_sha256": "8a58ad9ed10933eaf459520493ff6de57e3d64fabc961408494adb4d939fb5d5",
+              "auth_mode": "guest",
+              "profile": "Matrx Guest Test/Profile10",
+              "receipt_kind": "CI_development_unpacked_native",
+              "actual_store_installed": false,
+              "resource_valid": true,
+              "status": "partial",
+              "run_id": "guest99-scrape-controls-20261021",
+              "evidence": [
+                "docs/stabilization/reports/guest99-scrape-controls-20261021.json",
+                "docs/stabilization/resource-journals/guest99-scrape-controls-20261021.jsonl"
+              ],
+              "verified_subtargets": [
+                "Warm Apply changed Article in memory and showed EDITED; recapture restored original179words."
+              ],
+              "unverified": [
+                "Save/persisted original",
+                "No full current-build case pass from this batch."
+              ]
             }
           ],
           "attempt_history": [
@@ -25224,23 +25249,36 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "guest-scrape-controls-https-20261012",
-              "source_sha": "cd6c4381520dcdaf037eb64c47e41059330ea6bf",
-              "development_ci_run_id": 38298993769,
-              "development_artifact_id": 11769703557,
-              "build_version": "0.2.509",
+              "source_sha": "99f0b5527fb8e3c29a1621c614216ae30973a322",
+              "build_version": "0.2.578",
+              "development_ci_run_id": 39529779875,
+              "development_artifact_id": 12315440245,
+              "tree_sha256": "8a58ad9ed10933eaf459520493ff6de57e3d64fabc961408494adb4d939fb5d5",
+              "auth_mode": "guest",
+              "profile": "Matrx Guest Test/Profile10",
+              "receipt_kind": "CI_development_unpacked_native",
+              "actual_store_installed": false,
               "resource_valid": true,
-              "evidence": "docs/stabilization/runs/guest-scrape-controls-https-20261012.json",
+              "status": "pass",
+              "run_id": "guest99-article-cancel-reload-peer-20261021",
+              "evidence": [
+                "docs/stabilization/reports/guest99-scrape-controls-20261021.json",
+                "docs/stabilization/reports/guest99-article-cancel-reload-peer-20261021.json",
+                "docs/stabilization/reports/scrape99-native-provenance-peer-20261021.json",
+                "docs/stabilization/resource-journals/guest99-scrape-controls-20261021.jsonl",
+                "docs/stabilization/resource-journals/guest99-article-cancel-reload-peer-20261021.jsonl"
+              ],
               "verified_substeps": [
-                "Warm Cancel discarded the draft and left the original Article sentence visible."
+                "Guest warm Article editor canceled unique draft marker; original heading/intro/179words retained and marker absent.",
+                "Exact dev extension-manager Reload displayed Reloaded; actual dev panel reopened, fresh public fixture captured.",
+                "After full reload, independent Cancel discarded a second unique marker and retained original179word Article."
               ],
-              "unverified": [
-                "Cancel after full extension reload."
+              "provenance": "Native manager verifies ID/version/path and actual Reload; fresh offline peer independently hashes loaded and imported trees and joins normal CI/import/promotion receipts. Original native operator partial source-binding verdict preserved, not rewritten.",
+              "limits": [
+                "Native accessibility operator records; no saved screenshot or raw network trace.",
+                "No Apply/Save, other role, Store or whole Scrape claim."
               ],
-              "detail": "Warm behavior confirmed on the exact frozen development artifact; no post-reload editor state was available.",
-              "evidence_quality": "Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.",
-              "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
+              "verified_at": "2026-10-21T02:26:13.338831+00:00"
             },
             "admin": {
               "status": "partial",
@@ -25267,6 +25305,30 @@
                 "evidence": "docs/stabilization/runs/render-retest-001.json"
               },
               "superseded_at": "2026-10-12T20:22:00Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "guest-scrape-controls-https-20261012",
+                "source_sha": "cd6c4381520dcdaf037eb64c47e41059330ea6bf",
+                "development_ci_run_id": 38298993769,
+                "development_artifact_id": 11769703557,
+                "build_version": "0.2.509",
+                "resource_valid": true,
+                "evidence": "docs/stabilization/runs/guest-scrape-controls-https-20261012.json",
+                "verified_substeps": [
+                  "Warm Cancel discarded the draft and left the original Article sentence visible."
+                ],
+                "unverified": [
+                  "Cancel after full extension reload."
+                ],
+                "detail": "Warm behavior confirmed on the exact frozen development artifact; no post-reload editor state was available.",
+                "evidence_quality": "Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.",
+                "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
+              },
+              "superseded_at": "2026-10-21T02:26:13.338831+00:00",
+              "reason": "Independent native warm and full extension-manager reload/recapture Cancel proof; supplementary disk/import provenance verified separately."
             }
           ],
           "attempt_history": [
@@ -27743,6 +27805,33 @@
               ],
               "detail": "Owner and fresh peer observed local Article Cancel/Apply and Links validation/add/remove/recapture; entire shared journal invalid exit3 due OS pressureLevel2. ZERO acceptance credit; prior valid results unchanged. No blind local repeat."
             }
+          ],
+          "bounded_candidate_observations": [
+            {
+              "source_sha": "99f0b5527fb8e3c29a1621c614216ae30973a322",
+              "build_version": "0.2.578",
+              "development_ci_run_id": 39529779875,
+              "development_artifact_id": 12315440245,
+              "tree_sha256": "8a58ad9ed10933eaf459520493ff6de57e3d64fabc961408494adb4d939fb5d5",
+              "auth_mode": "guest",
+              "profile": "Matrx Guest Test/Profile10",
+              "receipt_kind": "CI_development_unpacked_native",
+              "actual_store_installed": false,
+              "resource_valid": true,
+              "status": "partial",
+              "run_id": "guest99-scrape-controls-20261021",
+              "evidence": [
+                "docs/stabilization/reports/guest99-scrape-controls-20261021.json",
+                "docs/stabilization/resource-journals/guest99-scrape-controls-20261021.jsonl"
+              ],
+              "verified_subtargets": [
+                "Warm copied URL matched native pasteback; blank href added nothing; disposable valid link count17to18 then removal17; recapture restored fixture."
+              ],
+              "unverified": [
+                "Open link, post-reload controls and other roles",
+                "No full current-build case pass from this batch."
+              ]
+            }
           ]
         },
         {
@@ -30032,6 +30121,15 @@
           "evidence": "docs/stabilization/reports/isolated-store-guest-native-20261021.json",
           "proven": "Public demo capture Article137words/Images1/Links17/Schema available; SEO report HTTP200/headings/social/schema/0missingalt rendered.",
           "limits": "No Save, copy/edit, all-controls, reload-persistence, complete case or whole-surface pass; primary observations not independently rerun for Scrape/SEO."
+        },
+        {
+          "run_id": "guest99-article-cancel-reload-peer-20261021",
+          "auth_mode": "guest",
+          "source_sha": "99f0b5527fb8e3c29a1621c614216ae30973a322",
+          "result": "T06 guest warm/fullreload Cancel PASS; T05Apply andT13copyblankaddremove warmboundedonly",
+          "evidence": [
+            "docs/stabilization/reports/scrape99-native-provenance-peer-20261021.json"
+          ]
         }
       ],
       "bounded_observations": [
