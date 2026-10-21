@@ -1,0 +1,10 @@
+{
+  "status": "done",
+  "owned_source": "scripts/hosted-remote-admission.mjs",
+  "exact_diff": "-      /^guest\\tRequire bounded lane and isolate shared credentials\\t\\S+   SCRAPE_SAVE_DESTINATION: (none|project)\\r?$/gm,\n+      /^guest\\tRequire bounded lane and isolate shared credentials\\t\\S+ {3}SCRAPE_SAVE_DESTINATION: (none|project)\\r?$/gm,",
+  "evidence": {
+    "biome_check": "exit 0; Checked 1 file; No fixes applied",
+    "node_test": "exit 0; 3 tests passed; 0 failed"
+  },
+  "commit": "none"
+}

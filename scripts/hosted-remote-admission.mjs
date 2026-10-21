@@ -715,7 +715,7 @@ export function requireScrapeDispatchAdmission({ localSha, remoteSha, sourceSha,
   return true;
 }
 
-/** D187 original member Save, with the shared lane A account and no mutable Project fixture. */
+/** D187 original member Save, with one owned Project fixture or no destination. */
 export function planHostedMemberScrapeSave({
   lane,
   acceptanceCase,
@@ -725,7 +725,11 @@ export function planHostedMemberScrapeSave({
   ...input
 }) {
   if (lane !== 'A') refuse('HOSTED_MEMBER_SCRAPE_LANE_REFUSED');
-  if (acceptanceCase !== 'scrape-save-member' || destination !== 'none' || scope !== 'single')
+  if (
+    acceptanceCase !== 'scrape-save-member' ||
+    !['none', 'project'].includes(destination) ||
+    scope !== 'single'
+  )
     refuse('HOSTED_MEMBER_SCRAPE_SCOPE_REFUSED');
   if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_MEMBER_SCRAPE_RUNNER_REFUSED');
   planHostedMemberData({ ...input, lane });
@@ -742,7 +746,7 @@ export function planHostedMemberScrapeSave({
         'acceptance_case=scrape-save-member',
         `requested_by=${DISPATCH_REQUESTER}`,
         'scrape_auth_mode=member',
-        'scrape_save_destination=none',
+        `scrape_save_destination=${destination}`,
         'scrape_save_scope=single',
         'runner_label=macos-15-intel',
         `development_run_id=${input.developmentRunId}`,
@@ -780,7 +784,7 @@ export function verifyHostedMemberScrapeSaveReport(report, identity) {
     report.defect_id !== 'EXT-D-0187' ||
     JSON.stringify(report.case_ids) !== '["EXT-F-1007-T04","EXT-F-1007-T29"]' ||
     report.auth_mode !== 'member' ||
-    report.destination_mode !== 'none' ||
+    !['none', 'project'].includes(report.destination_mode) ||
     report.save_scope !== 'single' ||
     report.status !== 'pass' ||
     report.stage !== 'complete' ||
@@ -812,7 +816,6 @@ export function verifyHostedMemberScrapeSaveReport(report, identity) {
       'custom_name_persisted',
       'organization_scope_persisted',
       'original_file_id_present',
-      'no_destination_associations_persisted',
       'saved_original_read_ready',
       'saved_source_reopened_in_ui',
       'cleanup_verified',
@@ -822,12 +825,39 @@ export function verifyHostedMemberScrapeSaveReport(report, identity) {
       (key) => o.capture?.[key] !== true || o.saved_original?.[key] !== true,
     ) ||
     ['heading_matches', 'marker_matches'].some((key) => o.reopen_ui?.[key] !== true) ||
+    (report.destination_mode === 'project'
+      ? o.owned_project_fixture_created !== true ||
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+          o.project_id ?? '',
+        ) ||
+        o.project_selected_in_save_dialog !== true ||
+        o.project_matches_selected_organization !== true ||
+        o.selected_project_edge_persisted !== true ||
+        o.no_destination_associations_persisted === true ||
+        report.project_cleanup?.verified !== true ||
+        report.project_cleanup.owned_project_absent !== true
+      : o.owned_project_fixture_created !== false ||
+        o.project_id !== null ||
+        o.no_destination_associations_persisted !== true ||
+        o.selected_project_edge_persisted === true ||
+        report.project_cleanup !== undefined) ||
     report.cleanup?.verified !== true ||
     report.cleanup.run_owned_source_soft_deleted !== true ||
     report.cleanup.source_associations_removed !== true
   )
     refuse('HOSTED_MEMBER_SCRAPE_REPORT_INVALID');
   return true;
+}
+
+export function verifyHostedMemberScrapeSaveDispatchDestination(log, destination) {
+  const observed = [
+    ...log.matchAll(
+      /^guest\tRequire bounded lane and isolate shared credentials\t\S+ {3}SCRAPE_SAVE_DESTINATION: (none|project)\r?$/gm,
+    ),
+  ];
+  if (observed.length !== 1) refuse('HOSTED_MEMBER_SCRAPE_DESTINATION_UNVERIFIED');
+  if (observed[0][1] !== destination) refuse('HOSTED_MEMBER_SCRAPE_DESTINATION_MISMATCH');
+  return observed[0][1];
 }
 
 export function verifyHostedScrapeReport(report, identity) {
@@ -2334,6 +2364,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           developmentArtifactId: artifact.artifactId,
         });
       }
+      let certifiedDestination;
       if (memberScrape) {
         if (run.head_sha !== sourceSha) refuse('HOSTED_MEMBER_SCRAPE_SOURCE_DRIFT');
         verifyHostedMemberScrapeSaveReport(report, {
@@ -2343,6 +2374,17 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           githubArtifactDigest: artifact.githubArtifactDigest,
           developmentRunAttempt: artifact.developmentRunAttempt,
         });
+        const logResult = spawnSync(
+          'gh',
+          ['run', 'view', runId, '--attempt', attempt, '--log', '-R', OWNER],
+          { encoding: 'utf8', maxBuffer: 8_000_000 },
+        );
+        if (logResult.error || logResult.status !== 0)
+          refuse('HOSTED_MEMBER_SCRAPE_DESTINATION_UNVERIFIED');
+        certifiedDestination = verifyHostedMemberScrapeSaveDispatchDestination(
+          logResult.stdout,
+          report.destination_mode,
+        );
         const secrets = ghJson(`repos/${OWNER}/actions/secrets?per_page=100`);
         if (secrets.total_count !== secrets.secrets?.length)
           refuse('HOSTED_MEMBER_SCRAPE_SECRET_CLEANUP_UNVERIFIED');
@@ -2373,7 +2415,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       }
       const verdict = verifyHostedResourceJournals({ runId, attempt, files });
       process.stdout.write(
-        `${JSON.stringify({ runId, attempt, ...workflowSource, archiveDigest, artifact, ...(settings && { settingsProvenance }), ...(memberDataLifecycleProof && { memberDataLifecycleProof }), ...verdict })}\n`,
+        `${JSON.stringify({ runId, attempt, ...workflowSource, archiveDigest, artifact, ...(certifiedDestination && { certifiedDestination }), ...(settings && { settingsProvenance }), ...(memberDataLifecycleProof && { memberDataLifecycleProof }), ...verdict })}\n`,
       );
     } else refuse('HOSTED_MODE_INVALID');
   } catch (error) {

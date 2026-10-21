@@ -23,14 +23,18 @@ const input = {
   ...identity,
 };
 
-test('member Save Source plans only a single no-destination guarded lane A run', () => {
+test('member Save Source plans only single owned-Project or no-destination lane A runs', () => {
   const plan = planHostedMemberScrapeSave(input);
   assert.ok(plan.args.includes('acceptance_case=scrape-save-member'));
   assert.ok(plan.args.includes('scrape_save_destination=none'));
   assert.ok(plan.args.includes('scrape_save_scope=single'));
+  const project = planHostedMemberScrapeSave({ ...input, destination: 'project' });
+  assert.ok(project.args.includes('scrape_save_destination=project'));
+  assert.ok(project.args.includes('scrape_save_scope=single'));
   for (const change of [
     { lane: 'B' },
-    { destination: 'project' },
+    { destination: 'library' },
+    { destination: 'project', scope: 'duplicate-rename' },
     { scope: 'duplicate-rename' },
     { acceptanceCase: 'guest-scrape-development' },
   ])
@@ -95,6 +99,8 @@ test('member Save Source certificate requires real saved row, UI readback and ex
       custom_name_persisted: true,
       organization_scope_persisted: true,
       original_file_id_present: true,
+      owned_project_fixture_created: false,
+      project_id: null,
       no_destination_associations_persisted: true,
       saved_original_read_ready: true,
       saved_source_reopened_in_ui: true,
@@ -111,9 +117,39 @@ test('member Save Source certificate requires real saved row, UI readback and ex
     },
   };
   assert.equal(verifyHostedMemberScrapeSaveReport(report, identity), true);
+  const projectReport = {
+    ...report,
+    destination_mode: 'project',
+    observations: {
+      ...report.observations,
+      owned_project_fixture_created: true,
+      project_id: '123e4567-e89b-42d3-a456-426614174000',
+      project_selected_in_save_dialog: true,
+      project_matches_selected_organization: true,
+      selected_project_edge_persisted: true,
+      no_destination_associations_persisted: undefined,
+    },
+    project_cleanup: { verified: true, owned_project_absent: true },
+  };
+  assert.equal(verifyHostedMemberScrapeSaveReport(projectReport, identity), true);
+  for (const changed of [
+    { observations: { ...projectReport.observations, owned_project_fixture_created: false } },
+    { observations: { ...projectReport.observations, project_id: null } },
+    { observations: { ...projectReport.observations, project_selected_in_save_dialog: false } },
+    {
+      observations: { ...projectReport.observations, project_matches_selected_organization: false },
+    },
+    { observations: { ...projectReport.observations, selected_project_edge_persisted: false } },
+    { project_cleanup: { verified: true, owned_project_absent: false } },
+    { project_cleanup: { verified: false, owned_project_absent: true } },
+  ])
+    assert.throws(() =>
+      verifyHostedMemberScrapeSaveReport({ ...projectReport, ...changed }, identity),
+    );
   for (const changed of [
     { auth_mode: 'guest' },
-    { destination_mode: 'project' },
+    { observations: { ...report.observations, owned_project_fixture_created: true } },
+    { observations: { ...report.observations, project_id: projectReport.observations.project_id } },
     { observations: { ...report.observations, source_row_read_from_service: false } },
     {
       observations: {
@@ -167,6 +203,7 @@ test('member Save Source certificate requires real saved row, UI readback and ex
     `#!/usr/bin/env node
 const c=JSON.parse(process.env.MEMBER_SCRAPE_VERIFY_STUB); const e=process.argv[3]; let r;
 if(e.includes('/contents/')) r={path:'.github/workflows/hosted-guest-acceptance.yml',type:'file',encoding:'base64',content:Buffer.from(c.workflow).toString('base64')};
+else if(process.argv[2]==='run' && process.argv[3]==='view') { process.stdout.write(c.runLog); process.exit(0); }
 else if(e.includes('/actions/secrets')) r={total_count:0,secrets:[]};
 else if(e.includes('/artifacts?')) r=e.includes('/'+c.runId+'/')?{artifacts:[{name:'hosted-guest-'+c.runId+'-1',expired:false,digest:c.archiveDigest}]}:{artifacts:[{id:456,expired:false,name:'matrx-extend-development-test-'+c.sourceSha+'-123-1',digest:c.developmentDigest}]};
 else if(e.endsWith('/'+c.runId)) r={name:'Native A · scrape-save-member',path:'.github/workflows/hosted-guest-acceptance.yml',event:'workflow_dispatch',head_branch:'main',head_sha:c.sourceSha,conclusion:'success',run_attempt:1};
@@ -175,7 +212,11 @@ else process.exit(98); process.stdout.write(JSON.stringify(r));
 `,
   );
   chmodSync(join(dir, 'gh'), 0o700);
-  const execute = (payload, reportName = 'scrape-save-native-acceptance.json') => {
+  const execute = (
+    payload,
+    reportName = 'scrape-save-native-acceptance.json',
+    requestedDestination = 'none',
+  ) => {
     writeFileSync(join(dir, reportName), JSON.stringify(payload));
     rmSync(zip, { force: true });
     const packed = spawnSync('zip', ['-q', '-r', zip, reportName, 'docs'], {
@@ -213,6 +254,7 @@ else process.exit(98); process.stdout.write(JSON.stringify(r));
             archiveDigest,
             developmentDigest: identity.githubArtifactDigest,
             workflow,
+            runLog: `guest\tRequire bounded lane and isolate shared credentials\t2026-10-20T05:01:00.0000000Z   SCRAPE_SAVE_DESTINATION: ${requestedDestination}\n`,
           }),
         },
       },
@@ -222,6 +264,32 @@ else process.exit(98); process.stdout.write(JSON.stringify(r));
     const good = execute(report);
     assert.equal(good.status, 0, good.stderr);
     assert.equal(JSON.parse(good.stdout).valid, true);
+    const project = execute(projectReport, 'scrape-save-native-acceptance.json', 'project');
+    assert.equal(project.status, 0, project.stderr);
+    assert.equal(JSON.parse(project.stdout).valid, true);
+    assert.equal(JSON.parse(project.stdout).certifiedDestination, 'project');
+    const wrongProject = execute(projectReport);
+    assert.notEqual(wrongProject.status, 0);
+    assert.match(wrongProject.stderr, /HOSTED_MEMBER_SCRAPE_DESTINATION_MISMATCH/);
+    const wrongNone = execute(report, 'scrape-save-native-acceptance.json', 'project');
+    assert.notEqual(wrongNone.status, 0);
+    assert.match(wrongNone.stderr, /HOSTED_MEMBER_SCRAPE_DESTINATION_MISMATCH/);
+    const missingMode = execute(report, 'scrape-save-native-acceptance.json', '');
+    assert.notEqual(missingMode.status, 0);
+    assert.match(missingMode.stderr, /HOSTED_MEMBER_SCRAPE_DESTINATION_UNVERIFIED/);
+    const duplicateMode = execute(
+      report,
+      'scrape-save-native-acceptance.json',
+      'none\nguest\tRequire bounded lane and isolate shared credentials\t2026-10-20T05:01:01.0000000Z   SCRAPE_SAVE_DESTINATION: project',
+    );
+    assert.notEqual(duplicateMode.status, 0);
+    assert.match(duplicateMode.stderr, /HOSTED_MEMBER_SCRAPE_DESTINATION_UNVERIFIED/);
+    const badProjectCleanup = execute({
+      ...projectReport,
+      project_cleanup: { verified: false, owned_project_absent: false },
+    });
+    assert.notEqual(badProjectCleanup.status, 0);
+    assert.match(badProjectCleanup.stderr, /HOSTED_MEMBER_SCRAPE_REPORT_INVALID/);
     const badCleanup = execute({ ...report, cleanup: { ...report.cleanup, verified: false } });
     assert.notEqual(badCleanup.status, 0);
     assert.match(badCleanup.stderr, /HOSTED_MEMBER_SCRAPE_REPORT_INVALID/);

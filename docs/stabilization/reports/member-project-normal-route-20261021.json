@@ -1,0 +1,53 @@
+{
+  "task_id": "D187-member-project-normal-route",
+  "lane": "bounded normal admission/verifier implementation",
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Normal plan/dispatch now admits only destination none or project with member scrape-save single scope on lane A. The existing native driver owns the Project fixture, independently reads the selected Project association in the selected organization, and verifies fixture cleanup. The certificate now requires those Project proofs and preserves the no-destination zero-association proof.",
+  "changed_files": [
+    "/Volumes/Samsung2TB/code/matrx-extend/scripts/hosted-remote-admission.mjs",
+    "/Volumes/Samsung2TB/code/matrx-extend/scripts/hosted-member-scrape-save-admission.test.mjs"
+  ],
+  "red": "node --test scripts/hosted-member-scrape-save-admission.test.mjs failed the new Project planner and certificate assertions on old behavior with HOSTED_MEMBER_SCRAPE_SCOPE_REFUSED and HOSTED_MEMBER_SCRAPE_REPORT_INVALID.",
+  "green": "node --test scripts/hosted-member-scrape-save-admission.test.mjs: 3/3 pass, including real CLI cross-mode rejection in both directions, missing/duplicate preflight proof refusal, project and none success, and project cleanup refusal. Biome formatted both files; git diff --check clean.",
+  "limits": "No hosted dispatch or native product behavior observed. Full focused/compile/lint, fresh re-review, exact-path commit and push remain with root. No product PASS or T04/T29 closure.",
+  "concerns": "Verifier consumes the native driver's attested booleans; it does not independently query Supabase, which is the existing certificate model. Driver emits these booleans only after its independent service reads and cleanup checks.",
+  "next_action": "Push reviewed source, await exact-source CI success/artifact, then normal admitted member Project/single native case and independent evidence review; do not count native Project acceptance before run.",
+  "review_repair": "Bound native report destination_mode to exactly one GitHub hosted preflight log line from the reviewed guest job/Require bounded lane and isolate shared credentials step. Missing, duplicate, or mismatched requested destination refuses certification. Successful certificate includes certifiedDestination. Raw provider logs are neither printed nor persisted.",
+  "red_followup": "Focused real CLI archive regression initially failed because project output lacked certifiedDestination; pre-fix CLI also accepted cross-mode reports against the same stub run.",
+  "owner_verification": {
+    "fresh_peer": "docs/stabilization/reports/member-project-binding-final-peer-20261021.json",
+    "finding": "Wrong-destination certification found before push; fixed by authoritative unique hosted preflight log proof and certifiedDestination, not caller assumption.",
+    "focused": {
+      "passed": 798,
+      "failed": 0,
+      "linux_skipped": 10,
+      "journal": "docs/stabilization/resource-journals/member-project-bound-recovered-focused-20261021.jsonl"
+    },
+    "compile": {
+      "exit": 0,
+      "resource_valid": true,
+      "journal": "docs/stabilization/resource-journals/member-project-bound-final-compile-20261021.jsonl"
+    },
+    "lint": {
+      "exit": 0,
+      "resource_valid": true,
+      "files": 3176,
+      "errors": 0,
+      "existing_warnings": 927,
+      "journal": "docs/stabilization/resource-journals/member-project-bound-style-final-lint-20261021.jsonl"
+    },
+    "native_project": "unverified; normal exact-source dispatch after CI only",
+    "prior_gates": [
+      {
+        "run": "member-project-route-focused-20261021",
+        "result": "owner stopped superseded preflight after reviewfinding; no childlaunched"
+      },
+      {
+        "run": "member-project-bound-final-focused-20261021",
+        "result": "refused preflight due OSpressure2 and swapgrowth; no childlaunched; unowned otherrepoTS processobserved laterpressure4; naturalexit and pressure1 observed before new normaladmission."
+      }
+    ],
+    "style_followthrough": "Full focused and compile passed before semantically equivalent 3-space quantifier spelling; final exact CLI regression3/3, fresh style peer and full lint pass. Exact-source full CI still required before native.",
+    "style_peer": "docs/stabilization/reports/project-regex-style-peer-20261021.json"
+  }
+}
