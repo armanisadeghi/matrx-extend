@@ -1626,6 +1626,11 @@
    "application/json"
   ]
  },
+ "/browser-manager/account-setup/start": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/browser-manager/cloud-computer": {
   "get": []
  },
@@ -1685,6 +1690,11 @@
   ]
  },
  "/browser-manager/runs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/browser-manager/runs/{run_id}/account-setup/save": {
   "post": [
    "application/json"
   ]
