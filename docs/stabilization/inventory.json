@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T00:17:00.847614Z",
+  "updated_at": "2026-10-21T01:08:16.082985+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -24947,9 +24947,32 @@
                     "Source name/URL/captured heading/marker reopened by actual UI checks; run-owned soft-delete/zero-active-row and association cleanup."
                   ],
                   "limits": "Normal verifier and fresh raw A accept only this bounded subtarget. Peer B partial: screenshots show initial loading/fixture, not saved Source UI; native driver/report supplies UI assertions. No independent UI rerun, full T04/T29, other destinations/roles/refusal/latency or Store claim."
+                },
+                {
+                  "run_id": "39524463666",
+                  "source_sha": "252bde8bc7f2fba22c6063869638d5df71590a3d",
+                  "development_ci_run_id": 39523293146,
+                  "development_artifact_id": 12311454209,
+                  "version": "0.2.578",
+                  "status": "bounded-pass",
+                  "auth_mode": "member",
+                  "destination_mode": "project",
+                  "resource_valid": true,
+                  "evidence": [
+                    "docs/stabilization/reports/member-project-native-20261021.json",
+                    "docs/stabilization/reports/member-project-native-fresh-peer-20261021.json",
+                    "docs/stabilization/reports/member-project-native-39524463666-certificate.json",
+                    "docs/stabilization/evidence/member-project-native/run39524463666/native-report.sanitized.json"
+                  ],
+                  "verified_substeps": [
+                    "Real non-admin member and approved organization; owned Project created and selected in matching organization.",
+                    "Custom Source name entered with trusted keyboard; contained focus; Saved confirmation; Source name/org/original-file and selected Project association persisted.",
+                    "Source UI name/URL/captured heading/marker reopened; owned Source/edge/Project cleanup and temporary secret/link absence verified."
+                  ],
+                  "limits": "Fresh raw A accepts bounded behavior; B accepts provenance with image limitation. Images show initial loading/fixture, not saved Source; peer did not independently repeat remote preflight or secret inventory. No Project display/reopened association UI, late-result/search, other destinations/roles, full T04/T29 or D187 closure."
                 }
               ],
-              "latest_bounded_retest_run": "39519174392"
+              "latest_bounded_retest_run": "39524463666"
             },
             "admin": {
               "status": "unverified",
@@ -28918,9 +28941,32 @@
                     "Source name/URL/captured heading/marker reopened by actual UI checks; run-owned soft-delete/zero-active-row and association cleanup."
                   ],
                   "limits": "Normal verifier and fresh raw A accept only this bounded subtarget. Peer B partial: screenshots show initial loading/fixture, not saved Source UI; native driver/report supplies UI assertions. No independent UI rerun, full T04/T29, other destinations/roles/refusal/latency or Store claim."
+                },
+                {
+                  "run_id": "39524463666",
+                  "source_sha": "252bde8bc7f2fba22c6063869638d5df71590a3d",
+                  "development_ci_run_id": 39523293146,
+                  "development_artifact_id": 12311454209,
+                  "version": "0.2.578",
+                  "status": "bounded-pass",
+                  "auth_mode": "member",
+                  "destination_mode": "project",
+                  "resource_valid": true,
+                  "evidence": [
+                    "docs/stabilization/reports/member-project-native-20261021.json",
+                    "docs/stabilization/reports/member-project-native-fresh-peer-20261021.json",
+                    "docs/stabilization/reports/member-project-native-39524463666-certificate.json",
+                    "docs/stabilization/evidence/member-project-native/run39524463666/native-report.sanitized.json"
+                  ],
+                  "verified_substeps": [
+                    "Real non-admin member and approved organization; owned Project created and selected in matching organization.",
+                    "Custom Source name entered with trusted keyboard; contained focus; Saved confirmation; Source name/org/original-file and selected Project association persisted.",
+                    "Source UI name/URL/captured heading/marker reopened; owned Source/edge/Project cleanup and temporary secret/link absence verified."
+                  ],
+                  "limits": "Fresh raw A accepts bounded behavior; B accepts provenance with image limitation. Images show initial loading/fixture, not saved Source; peer did not independently repeat remote preflight or secret inventory. No Project display/reopened association UI, late-result/search, other destinations/roles, full T04/T29 or D187 closure."
                 }
               ],
-              "latest_bounded_retest_run": "39519174392"
+              "latest_bounded_retest_run": "39524463666"
             },
             "admin": {
               "status": "unverified",

@@ -1,0 +1,17 @@
+{
+  "review_type": "fresh_independent_raw_peer",
+  "source_sha": "252bde8bc7f2fba22c6063869638d5df71590a3d",
+  "hosted_run_id": 39524463666,
+  "verdict_A_actual_behavior": "BOUNDED_ACCEPTANCE",
+  "verdict_B_provenance_quality": "PASS_WITH_IMAGE_LIMITATION",
+  "basis": [
+    "Raw archive SHA-256 matches the normal certificate; its unique report exactly matches the extracted sanitized report.",
+    "All three archive journals exactly match the extracted journals and certificate hashes; each has admission, zero-exit job, and valid final decision with no invalid or pending state.",
+    "The source driver at the certified checkout SHA asserts real member sign-in and non-admin role, selected organization, owned Project creation and readback, trusted custom-name entry, Project picker selection, Save confirmation, independent Source and association reads, reopened UI name/URL/content, and Source/edge/Project cleanup.",
+    "The raw report records every required bounded Project/single observation as passed, with unique run-owned Source and Project IDs and verified cleanup.",
+    "The normal certificate reports unique project dispatch certification and exact development artifact provenance; its external GitHub preflight and secret-list queries were not independently repeated in this offline review."
+  ],
+  "image_limitations": "The side-panel PNG is an initial loading skeleton and the target PNG is the fixture page. Neither shows the saved Source dialog, Project selection, reopened Source, or cleanup. Those conclusions rest on driver assertions and the raw report, not image corroboration.",
+  "scope_limitations": "One real-member Project/single original Save only. Project display in reopened UI, other destinations and modes, full T04/T29, D187 closure, Store install and release remain unproven here.",
+  "credential_handling": "No authentication values inspected or reproduced. Secret absence relies on normal verifier certificate and coordinator report; no current remote secret inventory was repeated."
+}

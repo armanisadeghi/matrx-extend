@@ -1,0 +1,48 @@
+{
+  "task_id": "member-project-native-20261021",
+  "lane": "A",
+  "status": "BOUNDED_PROJECT_NATIVE_PASS_FRESH_RAW_PEER_ACCEPTED",
+  "source_sha": "252bde8bc7f2fba22c6063869638d5df71590a3d",
+  "development": {
+    "ci_run_id": 39523293146,
+    "ci_conclusion": "success",
+    "artifact_id": 12311454209,
+    "artifact_digest": "sha256:a8b3f3db0db35c97a3f24a2ee304cebef616911991e969ed5edc6208209282ee"
+  },
+  "hosted": {
+    "run_id": 39524463666,
+    "attempt": 1,
+    "conclusion": "success",
+    "artifact_id": 12313120389,
+    "archive_sha256": "3349d7c7c0c19e5bb3db8e4734dc840f640ab11e17c5d6da0888f21bd78bfdf7",
+    "certified_destination": "project"
+  },
+  "verification": {
+    "normal_verifier": "PASS",
+    "certificate": "docs/stabilization/reports/member-project-native-39524463666-certificate.json",
+    "native_report": "docs/stabilization/evidence/member-project-native/run39524463666/native-report.sanitized.json",
+    "resource_journals": [
+      "docs/stabilization/resource-journals/hosted-package-39524463666-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-39524463666-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-39524463666-1.jsonl"
+    ],
+    "resource_final": "3 valid / 0 invalid",
+    "archive": "/tmp/member-project-native-20261021/raw-hosted-artifact.zip"
+  },
+  "A_behavior": "PASS bounded member Project/single Source Save: non-admin approved organization, run-owned Project fixture in selected organization, trusted custom Source name, Project selected, Saved confirmation, persisted Source and Project association, Source UI reopened with URL/content marker, native Source/association/Project cleanup verified.",
+  "B_provenance": "Fresh peer accepts provenance with image limitation; remote preflight/secret inventory not independently repeated by peer. Images show initial panel and fixture, not saved Source. Driver and report assert reopen.",
+  "cleanup": {
+    "temporary_github_secret_name_count": 0,
+    "local_one_use_link_absent": true,
+    "run_owned_source_id": "5d6d17f0-362d-4f8b-a9c4-73ce6d4debb1",
+    "run_owned_project_id": "b5149a11-6981-4bcf-a3e4-8364aa7aef23",
+    "native_association_removed": true,
+    "native_project_absent": true,
+    "independent_backend_source_soft_deleted": true,
+    "independent_backend_project_deleted_or_absent": true,
+    "checkout_clean": true
+  },
+  "limitations": "Only member Project/single original Save subtarget. Other destinations, modes, late-result/search/duplicate/refusal, full T04/T29, D187 closure, Store installation and release remain open; saved Source UI lacks screenshot corroboration.",
+  "next_action": "Remaining Project late-result/search, multiple/Library/File elsewhere, responsive and role cases; saved Source visual corroboration; full T04/T29 and D187 remain open.",
+  "independent_review": "docs/stabilization/reports/member-project-native-fresh-peer-20261021.json"
+}

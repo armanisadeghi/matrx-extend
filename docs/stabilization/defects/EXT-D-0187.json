@@ -80,7 +80,11 @@
     "docs/stabilization/reports/member-scrape-9ed-native-20261020.json",
     "docs/stabilization/reports/member9ed-auth-boundary-repair-20261020.json",
     "docs/stabilization/reports/member-auth-diagnostic-second-peer-20261020.json",
-    "Current fec/CI39516230572 native39519174392: actual member/nonadmin approved-org, custom-named single Source/no destination, keyboard focus, persisted readback, UI reopen and owned cleanup pass normal verifier; all3journals valid. Fresh raw peer A accepts bounded behavior, B partial because screenshots only show initial skeleton/fixture. Evidence docs/stabilization/reports/member-fec-native-fresh-peer-20261021.json; full T04/T29 and closure remain unverified."
+    "Current fec/CI39516230572 native39519174392: actual member/nonadmin approved-org, custom-named single Source/no destination, keyboard focus, persisted readback, UI reopen and owned cleanup pass normal verifier; all3journals valid. Fresh raw peer A accepts bounded behavior, B partial because screenshots only show initial skeleton/fixture. Evidence docs/stabilization/reports/member-fec-native-fresh-peer-20261021.json; full T04/T29 and closure remain unverified.",
+    "docs/stabilization/reports/member-project-native-20261021.json",
+    "docs/stabilization/reports/member-project-native-fresh-peer-20261021.json",
+    "docs/stabilization/reports/member-project-native-39524463666-certificate.json",
+    "docs/stabilization/evidence/member-project-native/run39524463666/native-report.sanitized.json"
   ],
   "cause": "Original client path omitted name/attach_to and awaited ancillary SEO audit. Subsequent native retest exposed modal focus escape and incomplete one-type browsing. A separate initial-organization hydration race remounted/dismissed the Save form and caused cumulative 10-second test waits; the builder repaired hydration/switch handling and the focused suite now passes. Remaining source sibling: pending destination creation was local to PlaceResults, so the parent Save action could land before the returned destination was staged.",
   "fix_commits": [
@@ -168,7 +172,7 @@
     }
   ],
   "closure_requirement": "Fresh peer checks product/source behavior; guarded development build is reloaded in installed Chrome; member/admin real-page save proves custom name, no destination, one and multiple destinations, optional Library, refusal/retry, duplicate rename, responsive confirmation, and scrolling/searching to select a project beyond the first visible rows; surrounding Scrape cases remain green. Guest sign-in flow is rechecked.",
-  "next_action": "Continue remaining Project late-result/search, multi-target/Library/File-elsewhere, responsive and role cases on a successful synchronized-main CI artifact. Original single/no-destination member run39519174392 now passes. Retain missing saved-Source screenshot corroboration as an explicit evidence limit; capture it during next native Save subtarget. Do not close D187 or full T04/T29 from this bounded result. Local controls run was resource-invalid; no blind Mac repeat without pressure diagnosis.",
+  "next_action": "Remaining Project late-result/search, multiple/Library/File elsewhere, responsive and role cases; saved Source visual corroboration; full T04/T29 and D187 remain open. Current Project/single run39524463666 and no-destination39519174392 are bounded passes, not full closure. Screenshots still do not corroborate saved Source UI.",
   "release": {
     "version": "0.2.458",
     "source_sha": "991a70bee4f06c3e9f93254b9c1679e4f4259a08",

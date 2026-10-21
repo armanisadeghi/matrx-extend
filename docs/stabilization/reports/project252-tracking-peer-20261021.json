@@ -1,0 +1,21 @@
+{
+  "review": "project252 tracking/evidence integration",
+  "reviewed_at": "2026-10-21",
+  "verdict_A_tracking_claims_vs_evidence": "ACCEPT_BOUNDED_AND_ACCURATE",
+  "verdict_B_provenance_and_doc_quality": "ACCEPT_WITH_EXPLICIT_LIMITS",
+  "findings": [
+    "Hosted Project run 39524463666 certificate is valid, binds source 252b / dev CI 39523293146 / artifact 12311454209 / tree digest, and certifies destination=project. Certificate SHA-256 values match the package, browser, and guest journals; each journal is admitted and ends valid, resourceInvalid=false, exitCode=0.",
+    "Sanitized native report records real non-admin member and selected organization, trusted custom name, Project selection, Saved confirmation, persisted Source and Project edge, reopened Source name/URL/content, and cleanup. Fresh raw peer accepts only this bounded member Project/single Save; it explicitly says screenshots show initial skeleton/fixture only and remote preflight/secret inventory were not independently repeated.",
+    "Inventory records run 39524463666 as latest bounded member retest for both T04 and T29 while retaining partial status and remaining criteria. T04/T29 summary status stays Partial for member, Unverified for admin; D187 remains in-fix. No full-case, guest, admin, or closure credit is claimed.",
+    "Coordinator and common STATE describe current dev578 as exact 252b/CI 39523293146 artifact promoted and reloaded; their UI observations remain operator-reported. Guest chat is explicitly unverified because the visible account was signed in. Store 0.2.205 enabled/pinned is preserved; Store577 pending remains preserved.",
+    "Generated STATUS.md/STATUS.html and CHECKLIST remain consistent with partial case status and inventory source; their timestamps/source freshness are refreshed. Existing Mac-controls resource-invalid run still earns zero acceptance credit and remains clearly separate.",
+    "All evidence paths referenced by the new member Project receipt, certificate, peer, coordinator, dev refresh report/peer, and common STATE paragraph exist in the workspace; raw archive at /tmp/member-project-native-20261021/raw-hosted-artifact.zip exists."
+  ],
+  "limitations": [
+    "No saved Source screenshot corroboration or independent UI rerun.",
+    "No guest chat/product pass; no full T04/T29 or D187 closure.",
+    "Peer did not repeat remote preflight or secret inventory; those remain certificate/coordinator-derived."
+  ],
+  "actionable_contradictions": [],
+  "scope": "Evidence/tracker audit only; no UI/jobs/product edits; no commits."
+}
