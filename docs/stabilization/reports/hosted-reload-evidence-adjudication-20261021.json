@@ -1,0 +1,69 @@
+{
+  "task_id": "hosted-reload-evidence-adjudication-20261021",
+  "status": "incomplete_no_new_full_case_or_defect_closure",
+  "reviewer": "/root",
+  "review_limit": "Independent of both native operators; evidence/source review only, no fresh browser replay. New worker start and old worker resume both failed OS error28.",
+  "settings": {
+    "run_id": 39672454379,
+    "source_sha": "1048e371adf3620d32cba07d94d9c5499e97b377",
+    "raw_counts": {
+      "fail": 15,
+      "unverified": 4,
+      "pass": 0
+    },
+    "adjudication": "One failed replacement Settings prerequisite cascaded. Preserve raw statuses, but downstream zero-step cases are blocked/unverified, not 14 additional reproduced product defects.",
+    "confirmed_substeps": "T04 dark/light/system selected, storage and visible appearance matched; all three survived panel-document reload (six passing assertions). Full extension-reload recheck and original preference restoration did not complete.",
+    "readiness": "matched0/visible0, readyState complete, rootCount1, loadingIndicatorCount4, renderErrorPresentfalse; five tab triggers but Settings title selector0. Guest screenshot shows selected Chat, visible Settings gear and loading skeleton.",
+    "source_lead": "settings-panel-driver.mjs:120/218 require title=Settings. Installed design-system dist/index.cjs lift moves title to data-matrx-title and removes title; other driver paths already accept both. This proves a locator incompatibility exists; occurrence at this exact failure is not yet proved without DOM attribute receipt.",
+    "next_action": "Fresh implementation worker should diagnose and repair shared semantic tab/control lookup to accept canonical tooltip labels; guard real resolver before/after tooltip lifting with meaningful red/green. Apply to Settings readiness, active check and stale-profile sibling. Capture exact safe substep/label attributes, then independent native retest on new exact-source artifact. Do not merely lengthen timeout or change product UI.",
+    "evidence": [
+      "docs/stabilization/evidence/settings-guest-39672454379/native-report.json",
+      "docs/stabilization/evidence/settings-guest-39672454379/native-side-panel.png",
+      "docs/stabilization/reports/settings-guest-lane-b-20261021.json"
+    ]
+  },
+  "d217": {
+    "run_id": 39670665256,
+    "status": "original_guest_save_retry_unverified",
+    "detail": "Member/org authentication and full reload fixture succeeded; member_auth native_acceptance_error before guest_restore_observed lacks exact failing substep. No Save/Retry or Source created. Normal verifier refused failed hosted run; credentials removed and zero active run-owned Sources independently checked.",
+    "evidence": [
+      "docs/stabilization/reports/d217-current-normal-20261021.json",
+      "docs/stabilization/reports/d217-post-reload-diagnosis-20261021.json"
+    ]
+  },
+  "artifact": {
+    "ci_run_id": 39670695687,
+    "artifact_id": 12379892571,
+    "sha": "1048e371adf3620d32cba07d94d9c5499e97b377",
+    "version": "0.2.586",
+    "tree_sha256": "987db48b983c7c553f448e21afe26cdc65b31533bbf8fff9b198498c92752cd9",
+    "disk_promoted": true,
+    "owner_chrome_reloaded": false,
+    "owner_last_verified": "0.2.584/source5a; new bundle on disk does not prove loaded Chrome current."
+  },
+  "resource_blocker": {
+    "system_free_mib": 115,
+    "external_free_tib": 1.6,
+    "cause": "Active Apple CloudKit/FileProvider sync temporary files dominate; no personal data or active sync files deleted.",
+    "guard": "Owner reload refused RESOURCE_DISK_LOW, actual exit2 before UI. Both new/resumed worker creation now refused by OS ENOSPC.",
+    "safe_cleanup": "Documented dry-run found no sufficient safe reclaim; only owned completed artifact ZIP relocated to external scratch with identical hash. No threshold, CI runner, profile, credentials or release bypass.",
+    "next_action": "Recheck system free space and documented recovery admission. Resume workers only when OS can create locks; native UI requires normal unchanged resource admission."
+  },
+  "store": {
+    "daily_window": "2026-10-21 already completed",
+    "published": "0.2.205",
+    "pending": "0.2.577",
+    "action": "preserved; no second submission"
+  },
+  "remaining": "D282 fixed, original bot release-to-CI retest pending; D217 original behavior unverified; product campaign incomplete. No new paid job or package publication.",
+  "at": "2026-10-21T20:59:11.113616+00:00",
+  "prepared_candidate": {
+    "path": "docs/stabilization/pending/settings-tooltip-locator-20261021.patch",
+    "status": "unapplied_unexecuted_unreviewed",
+    "production_files_modified": false,
+    "scope": "Three title-only Settings readiness/active/diagnostic queries accept tooltip-held label only when title is absent; existing matching/native-input/timeout/resource rules retained. Added real driver expression against Happy DOM for native and lifted labels.",
+    "limits": "Cannot run red/green, lint, independent worker review or native acceptance while system disk refuses normal guard and worker locks. This patch is preparation, not a fix commit or behavior pass. Original hosted causal link remains unproved.",
+    "required_next": "Resource recovery and fresh implementation owner: inspect patch; prove added lifted-label case red on baseline then green on candidate through normal guarded focused suite; add native active-Settings and duplicate-label negative checks as warranted; independent review; synchronized exact-source CI and normal native rerun.",
+    "checked_at": "2026-10-21T21:01:35.343726+00:00"
+  }
+}

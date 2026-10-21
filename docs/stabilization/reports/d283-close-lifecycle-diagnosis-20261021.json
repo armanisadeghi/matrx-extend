@@ -1,0 +1,41 @@
+{
+  "id": "EXT-D-0283",
+  "status": "DIAGNOSED_READ_ONLY_WITH_UNVERIFIED_MECHANISM",
+  "source_sha_of_failure": "5724259ef50641e38d16a114b8d80e0a36d2eed9",
+  "first_failed_boundary": "The synthetic child-error event settled the guard's job promise while its real child was still running. After RESOURCE_JOB_EXIT, the wrapper exited 1 without RESOURCE_GROUP_STOP_REQUESTED or RESOURCE_FINAL_DECISION; the descendant kept inherited stdout/stderr open, so the test parent observed exitCode=1 but never close.",
+  "ranked_causal_diagnosis": [
+    {
+      "rank": 1,
+      "hypothesis": "Overlapping callbacks of the fixture's setInterval(async ... readFile ...) each see 'error'. clearInterval runs only after await and does not cancel callbacks already in flight. The first child.emit('error') consumes the guard's once('error') listener and resolves settled; a second emission has no error listener and raises an uncaught EventEmitter error, ending the wrapper before its cleanup/finally path.",
+      "support": "The fixture permits overlapping 20 ms async polls; the guard uses child.once('error'); CI has RESOURCE_JOB_EXIT(childExitCode=null), then wrapper exitCode=1, no group-stop/final-decision event, and a live orphan node. A caught guard exception would run its outer final-decision block and a normal error result would exit 3 while CPU is pending.",
+      "prediction": "Count synthetic emissions with a monotonic fixture-only counter and capture wrapper stderr on exit (without waiting for close). The failing run should have at least two emissions and an unhandled synthetic child error. Make the probe single-flight/one-shot before its first await: then the duplicate disappears, the guard reaches descendant stop and final invalid verdict, and close arrives."
+    },
+    {
+      "rank": 2,
+      "hypothesis": "A non-fixture uncaught exception after RESOURCE_JOB_EXIT aborts the guard before stopOwnedGroup; e.g. process census command failure.",
+      "prediction": "With a one-shot probe, the failure persists; wrapper stderr identifies a different uncaught exception. Unlike a caught exception in main(), there is still no RESOURCE_FINAL_DECISION."
+    },
+    {
+      "rank": 3,
+      "hypothesis": "Guard completes cleanup but a descendant retains inherited pipes, so the parent waits for close after the wrapper's exit.",
+      "prediction": "The same run records RESOURCE_GROUP_STOP_REQUESTED and RESOURCE_FINAL_DECISION with invalid exitCode=3 before hanging. Those events were absent in the captured run, so this is downstream or a separate defect, not the first observed failure."
+    }
+  ],
+  "minimal_repair_proposal": "First make the fixture's synthetic error probe single-flight and arm its one-shot latch before awaiting readFile, so it cannot emit twice. In the real guard, keep an error listener for the child lifecycle (an idempotent first-error latch may settle once) until close, and ensure an error result stops the owned process group and token-owned descendants before releasing the lease or issuing the final invalid verdict. Keep the CPU refusal and recovery rules unchanged. Give the scenario a bounded close/cleanup deadline: on failure, terminate the owned group/descendants, preserve a red verdict and evidence, and finish the test instead of awaiting close indefinitely. Do not treat wrapper 'exit' alone as cleanup success or shorten the resource gate.",
+  "red_green_target": {
+    "red": "Under the unchanged authorized resource guard, run only the named pending-child-failure test with a deterministic double synthetic error injection and assert that the current wrapper exits 1 before RESOURCE_FINAL_DECISION while the group remains; also retain the single-error scenario that currently hangs in CI. Run only after disk >=20 GiB and permit admission; do not bypass either guard.",
+    "green": "The same named scenario completes within its 30 s group budget with wrapper close, final decision invalid/resourceInvalid=true/exitCode=3, no native action, no surviving token-owned descendant or open inherited pipe, and an explicit cleanup receipt. A second error must not crash the wrapper. Confirm refusal and recovered sibling scenarios still keep their prior decisions."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/ci39675476145-resource.rawlog:375-392 (failing scenario transition)",
+    "docs/stabilization/evidence/ci39675476145-resource.rawlog:410-415 (30 second timeout)",
+    "docs/stabilization/evidence/ci39675476145-resource.rawlog:675-677 (still waiting after 260 seconds)",
+    "docs/stabilization/evidence/ci39675476145-resource.rawlog:694-695 (runner orphan cleanup)",
+    "scripts/test-stabilization-resource-cpu-integration.mjs:92-107 (async error probe)",
+    "scripts/test-stabilization-resource-cpu-integration.mjs:461-463,510-517 (unbounded close waits)",
+    "scripts/stabilization-resource.mjs:683-705 (inherited streams and once listeners)",
+    "scripts/stabilization-resource.mjs:726-750,851-869,872-920 (exit, descendant cleanup, final decision)"
+  ],
+  "unverified": "No local reproduction or emitted-error count was run: source volume remains below the 20 GiB resource admission threshold. The duplicate-emission mechanism is the strongest source-supported explanation, not a measured fact; wrapper stderr was buffered by the hung test and is absent from CI diagnostics.",
+  "files_changed": [".output/stabilization-checkpoints/d283-close-lifecycle-diagnosis.json"]
+}

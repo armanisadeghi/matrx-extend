@@ -1,0 +1,61 @@
+{
+  "id": "EXT-D-0283",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T03", "EXT-F-0002-T04"],
+  "title": "Resource CPU child-error scenario hangs after wrapper exit while awaiting close",
+  "surface": "Resource guard CI integration",
+  "auth_mode": "all; infrastructure before authentication",
+  "severity": "S2: required CI cannot certify source; product regression not established",
+  "priority": "P1: restore reliable gate without weakening resource refusals",
+  "state": "open",
+  "owner": "extend-stabilization",
+  "reproduction": [
+    "Inspect automatic CI39675476145 at source5724259ef50641e38d16a114b8d80e0a36d2eed9, resource-guard-integration job119485398298, CPU confirmation and native action boundary.",
+    "The pending-child-error scenario enters RESOURCE_CPU_PENDING, then RESOURCE_JOB_EXIT with childExitCode null. Its wrapper pid1698 later has exitCode1 but closedfalse; stage remains awaiting_child_close for more than260seconds.",
+    "The30second pending-child-error group reports ERR_TEST_FAILURE; subsequent group is also cancelled. The job remains alive until cancellation at21:10:29UTC; runner cleanup terminates orphan node1712.",
+    "After capacity recovery, reproduce through the unchanged authorized resource guard with node --test --test-name-pattern='pending child failure' scripts/test-stabilization-resource-cpu-integration.mjs. Do not rerun unguarded or widen timeout; failure may be intermittent."
+  ],
+  "expected": "Injected child error produces an invalid resource verdict and terminates all owned descendants/pipes, allowing wrapper close and test cleanup within the bounded scenario budget.",
+  "actual": "Wrapper exit was recorded but close never arrived; no final cleanup receipt; required CI job cancelled.",
+  "cause": "Unresolved: inherited descendant pipes or error-path cleanup/lifecycle settlement are hypotheses, not proven. Exact failing boundary is wrapper close after exit, not initial CPU admission.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39675476145",
+    "docs/stabilization/evidence/ci39675476145-resource.rawlog",
+    "docs/stabilization/reports/d283-close-lifecycle-diagnosis-20261021.json",
+    "docs/stabilization/reports/d283-diagnosis-peer-20261021.json"
+  ],
+  "evidence_sha256": "de22818a9ab53094fdc3e4f2287af0d70f3172a17e56790aafdd040cf13605bc",
+  "related_defects": ["EXT-D-0182", "EXT-D-0136"],
+  "related_limits": "D182 historical aggregate timing and D136 owner-file race had bounded independent closures; this newly identified close/descendant hang is not proof those exact causes returned.",
+  "next_action": "Require capacity recovery and unchanged resource admission, then the peer's instrumented bounded original-scenario replay. Keep D283 open: no mechanism reproduction or code fix yet; proposed guard expansion is not approved on source speculation.",
+  "transition_history": [
+    {
+      "at": "2026-10-21T21:12:58.619734+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Completed resource job raw log identifies named pending-child-error boundary and orphan cleanup; overall workflow checks remain live."
+    }
+  ],
+  "workflow_terminal_result": {
+    "run_id": 39675476145,
+    "source_sha": "5724259ef50641e38d16a114b8d80e0a36d2eed9",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "jobs": {
+      "scope": "success",
+      "checks": "success",
+      "resource-guard-integration": "cancelled",
+      "docs": "skipped"
+    },
+    "interpretation": "Formatting repair and main checks passed; mandatory resource gate did not. Overall source is not green and artifact adoption/release is ineligible.",
+    "observed_at": "2026-10-21T21:16:11.202563+00:00"
+  },
+  "source_diagnosis_review": {
+    "status": "source_supported_hypothesis_not_reproduced",
+    "worker": "/root/d283_close_lifecycle_diagnosis",
+    "peer": "/root/d283_diagnosis_peer",
+    "finding": "Overlapping async fixture polls may emit synthetic error twice against once(error), causing wrapper abort before finalization. Not observed emission count/stderr; root accepts peer concern that production guard already attempts stopOwnedGroup, so production behavior changes are premature.",
+    "next_measure": "After unchanged20GiB resource admission: bounded original-scenario replay; count synthetic emissions, capture safe stderr category at wrapper exit, event order, exit/close timestamps and token-owned descendant census. No blanket timeout increase, early exit-as-cleanup pass, guard weakening or production change before cause proof.",
+    "product_credit": false
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "task_id": "closed-owned-artifact-offload-20261021",
+  "at": "2026-10-21T21:20:00.076543+00:00",
+  "status": "all_copies_hash_verified_original_paths_preserved",
+  "scope": "Completed Matrx temporary release/test ZIPs only; no browser profiles, active files, Apple sync files, personal data or credentials changed.",
+  "files": [
+    {
+      "original": "/private/tmp/matrx-store-v0561/.output/matrx-extend-0.2.561-store.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-store-v0561/.output/matrx-extend-0.2.561-store.zip",
+      "bytes": 41024779,
+      "sha256": "e2f55c87303206fcabba6ca76f95edbbbcfe1645fb40f003a434f3e47fde56c6",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/matrx-store-v0561/.output/matrx-extend-0.2.561-local.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-store-v0561/.output/matrx-extend-0.2.561-local.zip",
+      "bytes": 42160246,
+      "sha256": "0aa93edc2ab0cad030879da4532031e0addb8c82a06ac7b4574d7995a5c5c5cf",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/store559-peer-redownload/.output/matrx-extend-0.2.559-store.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/store559-peer-redownload/.output/matrx-extend-0.2.559-store.zip",
+      "bytes": 40881167,
+      "sha256": "97cce8f9bc851fc08ba2a389dd2c001eeae36070f6310b5440e5b841c99d83ea",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/store559-peer-redownload/.output/matrx-extend-0.2.559-local.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/store559-peer-redownload/.output/matrx-extend-0.2.559-local.zip",
+      "bytes": 42016637,
+      "sha256": "9090ad0a58c641025e5391c7038fadfc20a2079fddf7018b8db2252908ef4847",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/settings568-peer-development.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/settings568-peer-development.zip",
+      "bytes": 42664440,
+      "sha256": "01f7395724bd0e90851efc797a85cf3e335dfde71762441a181ee619a8449f3c",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/matrx-extend-store558-artifact-12210871757.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-extend-store558-artifact-12210871757.zip",
+      "bytes": 82711451,
+      "sha256": "0b80695c5c9d6e3ab4bf34c50242f9f5dfee49a512cc9e334b6e67d7eb6a745d",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/guest577-native-b-release/.output/matrx-extend-0.2.577-local.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/guest577-native-b-release/.output/matrx-extend-0.2.577-local.zip",
+      "bytes": 42216274,
+      "sha256": "c95d85988bf4cdbd3a489788f63708f8800bd512832d94a2ce845ff36f7fe8f5",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/guest577-native-b-release/.output/matrx-extend-0.2.577-store.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/guest577-native-b-release/.output/matrx-extend-0.2.577-store.zip",
+      "bytes": 41080803,
+      "sha256": "9aa436f9e4f3571769be7f7afd154e066ce4756408e288f45660f01f75f0f1b8",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/matrx-extend-release-39382974979/.output/matrx-extend-0.2.570-local.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-extend-release-39382974979/.output/matrx-extend-0.2.570-local.zip",
+      "bytes": 42201253,
+      "sha256": "a7506b11217839c2ad32a2a68745f6a8782db07ad01dda1b855e733e36a1fc13",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/matrx-extend-release-39382974979/.output/matrx-extend-0.2.570-store.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-extend-release-39382974979/.output/matrx-extend-0.2.570-store.zip",
+      "bytes": 41065777,
+      "sha256": "9829e0bf9a05383e425be487a6c317a4bdc44863b9068ff4c79c50a97362af7f",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/store560-peer-download/matrx-extend-v0.2.560/.output/matrx-extend-0.2.560-store.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/store560-peer-download/matrx-extend-v0.2.560/.output/matrx-extend-0.2.560-store.zip",
+      "bytes": 40884460,
+      "sha256": "ea9775897c6268bb25cc603fdcef73a8f9c0594621a39c56d3ed18503c9748ef",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/store560-peer-download/matrx-extend-v0.2.560/.output/matrx-extend-0.2.560-local.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/store560-peer-download/matrx-extend-v0.2.560/.output/matrx-extend-0.2.560-local.zip",
+      "bytes": 42019932,
+      "sha256": "11c271310f8a2d3652462fd9368345e1e16c235ee88d19e24e8ff049b432603b",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/store560-peer-download/.output/matrx-extend-0.2.560-store.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/store560-peer-download/.output/matrx-extend-0.2.560-store.zip",
+      "bytes": 40884460,
+      "sha256": "ea9775897c6268bb25cc603fdcef73a8f9c0594621a39c56d3ed18503c9748ef",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/store560-peer-download/.output/matrx-extend-0.2.560-local.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/store560-peer-download/.output/matrx-extend-0.2.560-local.zip",
+      "bytes": 42019932,
+      "sha256": "11c271310f8a2d3652462fd9368345e1e16c235ee88d19e24e8ff049b432603b",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/matrx-guestdata-568-check-39356737665/.output/matrx-extend-0.2.568-local.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-guestdata-568-check-39356737665/.output/matrx-extend-0.2.568-local.zip",
+      "bytes": 42172314,
+      "sha256": "50f245d1367208c5d3d457941b351f2b04b127e10b073039bf32c6f17d7adcd2",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/matrx-guestdata-568-check-39356737665/.output/matrx-extend-0.2.568-store.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-guestdata-568-check-39356737665/.output/matrx-extend-0.2.568-store.zip",
+      "bytes": 41036841,
+      "sha256": "16dd16b2c1bfb4b63ba0d95c59b1e2c4213928b7b292fbc2761fdfc685ea8a3d",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/matrx-store-v0562/.output/matrx-extend-0.2.562-local.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-store-v0562/.output/matrx-extend-0.2.562-local.zip",
+      "bytes": 42170332,
+      "sha256": "0bb909b58e429a088bfc849c6de17da027afab8aeb0f1824f560e571240c7348",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/matrx-store-v0562/.output/matrx-extend-0.2.562-store.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-store-v0562/.output/matrx-extend-0.2.562-store.zip",
+      "bytes": 41034864,
+      "sha256": "c7f32a9fc07b5bdb490752d16f3e2787588a4a25aac804712851202ad6041cfb",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/matrx-extend-store560-39306988896/.output/matrx-extend-0.2.560-store.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-extend-store560-39306988896/.output/matrx-extend-0.2.560-store.zip",
+      "bytes": 40884460,
+      "sha256": "ea9775897c6268bb25cc603fdcef73a8f9c0594621a39c56d3ed18503c9748ef",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/matrx-extend-store560-39306988896/.output/matrx-extend-0.2.560-local.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-extend-store560-39306988896/.output/matrx-extend-0.2.560-local.zip",
+      "bytes": 42019932,
+      "sha256": "11c271310f8a2d3652462fd9368345e1e16c235ee88d19e24e8ff049b432603b",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/matrx-store-daily-20261019/.output/matrx-extend-0.2.551-local.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-store-daily-20261019/.output/matrx-extend-0.2.551-local.zip",
+      "bytes": 41961274,
+      "sha256": "2ed823e84449f6b3c50707d5e048603e3bbf2a404d44b1140d0ef9860042dd7e",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    },
+    {
+      "original": "/private/tmp/matrx-store-daily-20261019/.output/matrx-extend-0.2.551-store.zip",
+      "external": "/Volumes/Samsung2TB/code/.stabilization-scratch/closed-artifacts-20261021/matrx-store-daily-20261019/.output/matrx-extend-0.2.551-store.zip",
+      "bytes": 40825521,
+      "sha256": "7cb0dc98268ca460307d38b968eec4e75c47ba71161743ddafe7051f12eede4d",
+      "closed_before_copy_and_replacement": true,
+      "original_path_symlink_verified": true
+    }
+  ],
+  "logical_bytes_offloaded": 955937149,
+  "system_available_before": 120995840,
+  "system_available_after": 1076199424,
+  "browser_test_threshold_gib": 20,
+  "limitations": "No product/test admission credit. Preserve external targets while original symlinks remain."
+}

@@ -1,0 +1,54 @@
+{
+  "task_id": "EXT-D-0217-post-reload-diagnosis-20261021",
+  "status": "first_boundary_localized_exact_substep_unresolved",
+  "source_sha_tested": "7d92195705c2a3f7997594814d0ffe125b7c81cf",
+  "hosted_run_id": 39670665256,
+  "artifact_id": 12378764856,
+  "artifact_zip_sha256_verified": "b230d415c7f046a0b48b629a89562bfc867bcf7ee83d782136f117a4a750b7a8",
+  "facts": [
+    "The normally admitted resource journal is valid, resourceInvalid=false, child_failed/exitCode=1; product acceptance is unverified.",
+    "The raw report records real ordinary-member web and extension sign-in, non-admin role, approved organization, credential removal and manager reload with replaced worker and retired old targets.",
+    "The raw report has guest_restore_observed absent, no guest Save or Retry assertion, failure_stage=member_auth and error_code=native_acceptance_error; no exact failing substep is serialized.",
+    "The captured side-panel screenshot was taken before exercisePanel, so its loading skeleton cannot identify the post-reload failure.",
+    "No Source was created before the failure; an independent read found zero active run-named Sources. Owned temporary credentials were removed."
+  ],
+  "exact_boundary": {
+    "caller": "tests/browser/scrape-save-native-acceptance.mjs:704-709",
+    "fixture": "tests/browser/scrape-save-stale-profile.mjs:26-35",
+    "unresolved_steps": [
+      "Settings tab click at stale-profile.mjs:39",
+      "Account section expansion at :40",
+      "rendered guest wait at :41-45",
+      "stored profile and credential check at :46-60",
+      "Scrape tab click at :61"
+    ],
+    "generic_projection": "tests/browser/scrape-save-auth-report.mjs:8-17"
+  },
+  "ranked_hypotheses": [
+    {
+      "cause": "The replacement panel target exists before its Settings tab is ready; the immediate click sees zero or unstable visible targets.",
+      "prediction": "A safe substep receipt will stop at Settings click, with pointer_target_not_unique or pointer_stable_hit_not_observed, while a waitForReplacementSettingsTab observation first reports absent or invisible then ready.",
+      "basis": "The shared Settings opener waits for replacement tab readiness before the trusted click (settings-panel-driver.mjs:204-223), while D217's assertStaleGuest immediately clicks (stale-profile.mjs:38-39). The reload fixture attaches a replacement target but does not wait for tab readiness (native-sidepanel-qa-harness.mjs:980-992).",
+      "state": "unproved"
+    },
+    {
+      "cause": "The guest state does not render after credential removal and reload.",
+      "prediction": "Settings click and Account expansion complete, then d217_rendered_guest_required times out with signInEnabled=false or signOutVisible=true.",
+      "state": "unproved"
+    },
+    {
+      "cause": "Credential/profile state differs from the intended stale-profile fixture after reload.",
+      "prediction": "Rendered guest wait completes, then the storage boolean assertion d217_guest_has_credentials_or_profile_lost fails.",
+      "state": "unproved"
+    }
+  ],
+  "minimal_next_patch_after_lane_b_checkpoint": {
+    "exclusive_paths": [
+      "tests/browser/scrape-save-stale-profile.mjs",
+      "tests/browser/scrape-save-stale-profile-diagnostic.test.mjs"
+    ],
+    "change": "Record a bounded enum for each first guest-observation substep in evidence.fixture before the action and a safe classified category on failure, using existing panel pointer/reload classifiers. Preserve the original assertion and rethrow. Add a focused guard that exercises the real helper under failed Settings-click and later guest/storage failures, proving the serialized report identifies different boundaries without raw error text or credential values. Only after a receipt identifies Settings readiness as the cause, reuse waitForReplacementSettingsTab before the click and prove a red/green guard; avoid a blanket timeout.",
+    "admission": "No tracked source edit until the parent confirms Settings guest B has been dispatched/checkpointed. Any future hosted native run needs fresh exact-source artifact and normal gates."
+  },
+  "product_verdict": "EXT-D-0217 remains fixed pending original guest and surrounding native acceptance; this harness failure does not establish a product regression."
+}
