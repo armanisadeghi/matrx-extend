@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-21 05:34 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-21T05:34:58.291937+00:00. 207 features · 831 cases · 1422 controls · 276 linked defect records.
+Generated 2026-10-21 05:53 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-21T05:34:58.291937+00:00. 207 features · 831 cases · 1422 controls · 276 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1338** — Pass: 108 · Partial: 99 · Fail: 1 · Unverified: 1119 · N/A: 11.
-Unverified splits into **180 explicitly marked unverified** and **939 with no result record**.
+Applicable case-by-role slots: **1338** — Pass: 109 · Partial: 99 · Fail: 1 · Unverified: 1118 · N/A: 11.
+Unverified splits into **179 explicitly marked unverified** and **939 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -21,7 +21,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 22, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 19 pass · 6 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 14 pass · 8 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | pass 35, partial 17, fail 0, unverified 48, n/a 1 | 6 |
+| [Settings](#settings) | 1 | 20 pass · 6 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 14 pass · 8 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | pass 36, partial 17, fail 0, unverified 47, n/a 1 | 6 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -488,7 +488,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T49 guest: Clear local data | Pass | N/A | N/A | EXT-F-1003-C17 |
 | EXT-F-1003-T50 member: Clear local data | N/A | Pass | N/A | EXT-F-1003-C17 |
 | EXT-F-1003-T51 admin: Clear local data | N/A | N/A | Pass | EXT-F-1003-C17 |
-| EXT-F-1003-T52 guest: Settings sign-in/sign-out | Unverified | N/A | N/A | EXT-F-1003-C18 |
+| EXT-F-1003-T52 guest: Settings sign-in/sign-out | Pass | N/A | N/A | EXT-F-1003-C18 |
 | EXT-F-1003-T53 member: Settings sign-in/sign-out | N/A | Unverified | N/A | EXT-F-1003-C18 |
 | EXT-F-1003-T54 admin: Settings sign-in/sign-out | N/A | N/A | Unverified | EXT-F-1003-C18 |
 | EXT-F-1003-T55 Required capability: DevTools Protocol | N/A | N/A | Unverified | EXT-F-1003-C19 |
@@ -597,6 +597,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: desktop-settings-member-20261003-independent01, ['.research/desktop-settings-independent-native.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
 - EXT-F-1003-T51 · admin: Pass.
   Evidence / build / date recorded: desktop-settings-admin-final-20261003-01, ['.research/desktop-settings-admin-final.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
+- EXT-F-1003-T52 · guest: Pass. Actual Profile10 guest Settings Sign in/Email—; warm and actual extension-manager Reload/reopen Sign in opens aimatrx.com/login account form. Closing only test-owned popup restores guest Settings with cancellation feedback. Owner confirmed RESOURCE_ADMITTED before UI dispatch; full valid journal and terminal holder0. Fresh evidence-only peer supports this entrypoint scope, no independent UI replay. Device organization unrecorded; no organization behavior, credentials, completed login/callback/token/account transition, authenticated sign-out, other roles or Store acceptance.
+  Evidence / build / date recorded: guest-signin-entry579-20261021, ['docs/stabilization/reports/guest-signin-entry579-20261021.json', 'docs/stabilization/reports/guest-signin-entry-evidence-peer-20261021.json', 'docs/stabilization/resource-journals/guest-signin-entry579-20261021.jsonl', 'docs/stabilization/reports/theme579-owner-binding-20261021.json']
 - EXT-F-1003-T55 · admin: Unverified.
   Evidence / build / date recorded: permissions-auth-native-sol, docs/stabilization/runs/permissions-auth-native-sol.json
 - EXT-F-1003-T56 · admin: Unverified. All three initialoff restored; on/off and reload verified. Chrome offeredno Cookiesdenialdialog; denialcriterion unverified.
