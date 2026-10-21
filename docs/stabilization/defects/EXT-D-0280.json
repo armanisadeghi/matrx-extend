@@ -60,5 +60,6 @@
     "at": "2026-10-21T18:52:17.706784+00:00",
     "state": "Fresh adjudication A PASS/B PASS_WITH_NATIVE_LIMIT; missing-output finding REFUTED by actual GitHub log. Prior partial retained.",
     "finding": "Reviewer alleged missing step env log fields. Owner retrieved actual run39524463666 log showing both exact fields automatically emitted by runner; fresh independent adjudication requested. No workflow edit warranted from source search alone."
-  }
+  },
+  "fix_commits": ["2cd691a29"]
 }
