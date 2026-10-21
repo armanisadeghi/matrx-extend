@@ -62,3 +62,13 @@ describe('the extension organization refusals', () => {
     expect(mod.isOrganizationNotSelectedError(new Error('x'))).toBe(false);
   });
 });
+
+describe('the refusals are @ai-matrx/auth refusals', () => {
+  it('OrganizationNoMembershipsError is a NoActiveOrganizationError with reason no-memberships', async () => {
+    const { NoActiveOrganizationError } = await import('@ai-matrx/auth/organizations');
+    const mod = await import('./active-org');
+    const err = new mod.OrganizationNoMembershipsError();
+    expect(err).toBeInstanceOf(NoActiveOrganizationError);
+    expect(err.reason).toBe('no-memberships');
+  });
+});

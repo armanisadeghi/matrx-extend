@@ -11,6 +11,7 @@
 
 import { ENV } from '@/config/env';
 import { getStoredAccessToken } from '@/lib/auth/flow';
+import { MATRX_HEADERS } from '@ai-matrx/auth/credentials';
 import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 import { organizationFetch } from './organization-fetch';
 
@@ -103,7 +104,7 @@ export function getOrganizationBootstrapClient(): SupabaseClient {
     const request = new Request(input, init);
     const resolver = await import('@/lib/org/active-org');
     const organizationId = await resolver.getResolvedActiveOrganizationId();
-    if (organizationId) request.headers.set('X-Organization-Id', organizationId);
+    if (organizationId) request.headers.set(MATRX_HEADERS.organization, organizationId);
     return globalThis.fetch(request);
   });
   return organizationBootstrapClient;

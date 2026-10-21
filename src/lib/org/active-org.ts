@@ -42,6 +42,7 @@ import { withOAuthSession } from '@ai-matrx/auth';
 import {
   type ActiveOrganization,
   type HeldOrganizationStore,
+  NoActiveOrganizationError,
   createActiveOrganization,
   readMemberships,
   writeLastActiveOrganization,
@@ -122,14 +123,17 @@ export function isOrganizationNotSelectedError(err: unknown): err is Organizatio
  * honest "none". Distinct from {@link OrganizationNotSelectedError} (the ladder
  * could not settle although memberships exist): this one names the actual
  * remedy — create or join an organization — with the link the app already has.
+ * It IS @ai-matrx/auth's `NoActiveOrganizationError` (reason `no-memberships`),
+ * so shared code recognises it, and keeps this app's words, code and remedy.
  */
-export class OrganizationNoMembershipsError extends Error {
+export class OrganizationNoMembershipsError extends NoActiveOrganizationError {
   readonly code = 'organization_no_memberships';
   readonly remedy =
     `You do not belong to any organization yet. Create or join one at ${ENV.FRONTEND_URL}/organizations, then try again.`;
 
   constructor(message = 'You do not belong to any organization yet.') {
-    super(message);
+    super('no-memberships');
+    this.message = message;
     this.name = 'OrganizationNoMembershipsError';
   }
 }

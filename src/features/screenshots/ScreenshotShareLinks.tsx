@@ -1,6 +1,7 @@
 import { ENV } from '@/config/env';
 import { requireActiveOrganizationId } from '@/lib/org/active-org';
 import { getSupabase } from '@/lib/supabase/client';
+import { MATRX_HEADERS } from '@ai-matrx/auth/credentials';
 import {
   Button,
   Dialog,
@@ -136,7 +137,7 @@ export function ScreenshotShareLinks({
           p_max_uses: uses,
           p_label: label.trim() || null,
         })
-        .setHeader('X-Organization-Id', organizationId);
+        .setHeader(MATRX_HEADERS.organization, organizationId);
       if (writeError) throw writeError;
       const result = requireSuccess(data);
       if (typeof result.token !== 'string') throw new Error('Sharing returned no link.');
@@ -152,7 +153,7 @@ export function ScreenshotShareLinks({
       const organizationId = await requireActiveOrganizationId();
       const { data, error: writeError } = await getSupabase()
         .rpc('revoke_share_link', { p_link_id: id })
-        .setHeader('X-Organization-Id', organizationId);
+        .setHeader(MATRX_HEADERS.organization, organizationId);
       if (writeError) throw writeError;
       requireSuccess(data);
       setCreatedUrl(null);

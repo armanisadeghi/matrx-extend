@@ -1,4 +1,5 @@
 import { ENV } from '@/config/env';
+import { MATRX_HEADERS } from '@ai-matrx/auth/credentials';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -48,7 +49,7 @@ export const organizationFetch: typeof fetch = async (input, init) => {
   const resolver = await import('@/lib/org/active-org');
   const organizationId =
     explicitWriteOrganization(body) ?? (await resolver.requireActiveOrganizationId());
-  if (organizationId) request.headers.set('X-Organization-Id', organizationId);
-  else request.headers.delete('X-Organization-Id');
+  if (organizationId) request.headers.set(MATRX_HEADERS.organization, organizationId);
+  else request.headers.delete(MATRX_HEADERS.organization);
   return globalThis.fetch(request);
 };

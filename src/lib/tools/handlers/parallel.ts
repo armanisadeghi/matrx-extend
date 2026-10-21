@@ -50,6 +50,7 @@ import {
 } from '@/state/parallel-runs';
 import { getPilotSessionSnapshotAsync } from '@/state/pilot';
 import { useSettingsStore } from '@/state/settings';
+import { MATRX_HEADERS } from '@ai-matrx/auth/credentials';
 import { z } from 'zod';
 
 const MAX_TABS = 8;
@@ -236,7 +237,7 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
     // startStream (it dispatches STREAM_RUN itself), so it must attach the
     // header the server requires on every authenticated request — the org in
     // the body alone is refused at the top of the stack.
-    'X-Organization-Id': args.organizationId,
+    [MATRX_HEADERS.organization]: args.organizationId,
   };
   if (args.authHeader) headers.Authorization = args.authHeader;
 
