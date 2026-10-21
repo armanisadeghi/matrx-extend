@@ -101,6 +101,8 @@
     "last_current_ci_run": 39666115123,
     "last_current_ci_result": "failed scope test, no artifact",
     "status": "Reviewed stale-assertion repair ready for normal push/fullCI. No D217 plan/dispatch or secret/fixture staging. Current artifact/owner reload and normal acceptance still required.",
-    "native_dispatch_or_secret_fixture_started": false
+    "native_dispatch_or_secret_fixture_started": false,
+    "merged_source": "64f1a07e3b5dc13caf60f337cc799b77b8b264d3",
+    "merged_checks": "New lock frozen install/compile valid0/actual process0; current fullCI artifact still pending."
   }
 }
