@@ -29828,32 +29828,34 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "store-daily-20261021-native",
-              "source_sha": "11ff2cfb2ddecba67e7d06dba763b24325ccbe1b",
-              "build_version": "0.2.579",
-              "development_ci_run_id": 39546376658,
-              "development_artifact_id": 12322875129,
+              "run_id": "guest-image-tiers-reload-20261021",
+              "source_sha": "5a1b9e108431cb7071f374e3d4778bc7d393504b",
+              "build_version": "0.2.584",
+              "development_ci_run_id": 39649558400,
+              "development_artifact_id": 12369911241,
+              "tree_sha256": "93ac42aa5702a6c52352542f0643a487125e2b782d3e599808865df1d54d7a3a",
+              "profile": "Matrx Guest Test / Profile10",
               "resource_valid": true,
-              "passed_subtargets": [
-                "Warm image/smaller-image/icon each opened selected host/path; returned to Images46 unchanged",
-                "Fresh independent operator repeated large image after prior manager/page Reload and recapture; selected host/path and capture retention observed",
-                "Observed configured UTM source/medium replacement matches canonical referral policy; authored src remained displayed unchanged",
-                "All five test-owned tabs independently closed; three pre-existing tabs preserved"
-              ],
-              "remaining_criteria": [
-                "Post-reload smaller image and icon opens",
-                "Full non-referral query byte/encoding preservation and signed/credential/internal exceptions",
-                "Clipboard original-src copy T42 not exercised",
-                "Other roles/Store/latest-main remain unverified"
-              ],
+              "actual_holder_exit_code": 0,
+              "resource_run_id": "native-recovery-20261021-1906",
               "evidence": [
-                "docs/stabilization/reports/guest-images579-20261021.json",
-                "docs/stabilization/reports/guest-image-url-independent-20261021.json",
-                "docs/stabilization/reports/image-url-diagnosis0727.json",
-                "docs/stabilization/resource-journals/store-daily-20261021-native.jsonl",
-                "docs/stabilization/reports/image-policy-evidence0732.json"
+                "docs/stabilization/reports/guest-image-tiers-reload-20261021.json",
+                "docs/stabilization/reports/guest-image-tiers-evidence-peer-20261021.json",
+                "docs/stabilization/reports/native-recovery-watch-20261021.json",
+                "docs/stabilization/resource-journals/native-recovery-20261021-1906.jsonl"
               ],
-              "detail": "Primary operator34/32 calls, over cap by2; no full-case credit. Fresh independent narrow replay13/18 calls and complete owned-tab cleanup. Frozen production-compiled DEV only; root rehashed d782 before independent replay. Policy correction is not a product fix."
+              "verified_substeps": [
+                "Actual guest Settings Sign in/Email—, manager ID/version/path and literal Reloaded, Wikipedia page reload/recapture.",
+                "Displayed smaller image and icon opened expected literal URLs under canonical referral replacement/append behavior; non-referral fields retained for observed icon URL.",
+                "Return after each open retained selected Images9 and capture/Re-capture."
+              ],
+              "unverified": [
+                "No large image in this capture (0large/1small/8icons); no all-tier same-build warm/reload case.",
+                "No signed/credential/internal/encoding URL exceptions, member/admin, Store or current-main acceptance.",
+                "No independent native replay or saved image corroboration; operator literal URL observations only."
+              ],
+              "detail": "Fresh independent evidence review accepts bounded post-reload subtargets on frozen older5a; T41 stayspartial, prior different-build observations preserved separately.",
+              "verified_at": "2026-10-21T19:14:05.075866+00:00"
             },
             "member": {
               "status": "unverified",
@@ -29879,6 +29881,38 @@
                 "detail": "No native product run recorded for opening images."
               },
               "reason": "First native image tier navigation recorded with canonical referral expectation correction."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "store-daily-20261021-native",
+                "source_sha": "11ff2cfb2ddecba67e7d06dba763b24325ccbe1b",
+                "build_version": "0.2.579",
+                "development_ci_run_id": 39546376658,
+                "development_artifact_id": 12322875129,
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Warm image/smaller-image/icon each opened selected host/path; returned to Images46 unchanged",
+                  "Fresh independent operator repeated large image after prior manager/page Reload and recapture; selected host/path and capture retention observed",
+                  "Observed configured UTM source/medium replacement matches canonical referral policy; authored src remained displayed unchanged",
+                  "All five test-owned tabs independently closed; three pre-existing tabs preserved"
+                ],
+                "remaining_criteria": [
+                  "Post-reload smaller image and icon opens",
+                  "Full non-referral query byte/encoding preservation and signed/credential/internal exceptions",
+                  "Clipboard original-src copy T42 not exercised",
+                  "Other roles/Store/latest-main remain unverified"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/guest-images579-20261021.json",
+                  "docs/stabilization/reports/guest-image-url-independent-20261021.json",
+                  "docs/stabilization/reports/image-url-diagnosis0727.json",
+                  "docs/stabilization/resource-journals/store-daily-20261021-native.jsonl",
+                  "docs/stabilization/reports/image-policy-evidence0732.json"
+                ],
+                "detail": "Primary operator34/32 calls, over cap by2; no full-case credit. Fresh independent narrow replay13/18 calls and complete owned-tab cleanup. Frozen production-compiled DEV only; root rehashed d782 before independent replay. Policy correction is not a product fix."
+              }
             }
           ]
         },

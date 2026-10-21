@@ -1,0 +1,32 @@
+{
+  "case": "EXT-F-1007-T41",
+  "reviewer": "guest-image-tiers-evidence-peer-20261021",
+  "verdictA_actualCaseCoverage": {
+    "status": "partial",
+    "claim": "Guest post-extension-reload and page-reload behavior is observed for one smaller-image tile and one icon tile on frozen DEV 0.2.584. Both opened the displayed authored resource with canonical referral tagging, then returned to the original captured Images pane.",
+    "evidence": [
+      "Operator receipt records the guest identity, extension reload feedback, page reload, fresh capture (1 smaller image and 8 icons), literal displayed/opened URLs, and return state for both clicks.",
+      "Smaller SVG host/path is preserved and referral source/medium are added. Icon PNG host/path is preserved; utm_source is replaced, utm_medium added, and utm_campaign/utm_content remain in order. These changes match the canonical outbound-referral contract.",
+      "Prior 0.2.579 evidence covers warm opens in all three tiers and a post-reload large-image open, but it is a different artifact and cannot fill the missing 0.2.584 large-tier substep."
+    ],
+    "limits": [
+      "The 0.2.584 capture had zero large images; T41's large, smaller, and icon tiers were not all exercised after reload on this build.",
+      "Guest only. Member/admin, Store, and other builds are unverified.",
+      "Signed or credential URLs, internal-domain exceptions, encoding edge cases, and copied authored URLs were not exercised. T42 clipboard behavior is outside this result."
+    ]
+  },
+  "verdictB_evidenceAndProvenanceQuality": {
+    "status": "artifact binding strong; UI evidence operator-recorded and bounded",
+    "claim": "The build provenance is coherently bound to source 5a1b9e1, CI run 39649558400/artifact 12369911241, promotion receipt, tree hash 93ac42aa…, loaded DEV path, version 0.2.584, and observed Chrome reload. The UI outcomes are detailed literal observations, not independently replayed UI evidence.",
+    "evidence": [
+      "CI/adoption and promotion receipts agree on exact source, successful full CI run, artifact ID/digest, promoted tree hash, version, extension ID, and output path.",
+      "The operator receipt reports the same tree hash rehashed before UI work. Chrome exposed the expected ID, version, path, and literal Reloaded feedback; Chrome itself did not expose the source or artifact digest.",
+      "The independent watcher reports 21 valid JSONL records, 15 healthy samples over 242 seconds, zero unsafe/malformed events, and a valid final decision. Local SHA-256 of the completed journal matches the watch report. This validates resource-policy completion only, not the UI sequence or product behavior."
+    ],
+    "limits": [
+      "No retained screenshots or independent UI replay were supplied in this evidence set; the literal URL comparisons substantiate the claimed bounded outcome if the operator transcription is accurate, but are not independent corroboration.",
+      "Actual holder exit 0 and watcher success establish clean process/resource completion, not full-case acceptance."
+    ]
+  },
+  "promotion": "Keep EXT-F-1007-T41 guest Partial. Credit the two new post-reload tier subtargets on frozen 0.2.584 only; do not infer full T41 completion or cross-role coverage."
+}
