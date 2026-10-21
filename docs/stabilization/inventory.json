@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T04:36:58.905780+00:00",
+  "updated_at": "2026-10-21T04:44:42.767860+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -31709,9 +31709,28 @@
                     "docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json"
                   ],
                   "scope": "Reviewed controlled guest subtargets only; existing deferred dimensions remain open. No full SEO/current-main/Store/member/admin claim."
+                },
+                {
+                  "source_sha": "10994390c13f3bba0e1e0c35ec4125db784410af",
+                  "build_version": "0.2.579",
+                  "development_ci_run_id": 39541831001,
+                  "development_artifact_id": 12319479444,
+                  "run_id": "guest-seo-restricted579-20261021",
+                  "status": "partial",
+                  "resource_valid": true,
+                  "passed_subtargets": [
+                    "after_dev_manager_reload_chrome_internal_url_clears_public_audit_and_shows_restricted_page_error",
+                    "after_dev_manager_reload_public_demo_recovers_after_restricted_url"
+                  ],
+                  "evidence": [
+                    "docs/stabilization/reports/guest-seo-restricted579-20261021.json",
+                    "docs/stabilization/reports/guest-seo-restricted579-evidence-peer-20261021.json",
+                    "docs/stabilization/resource-journals/guest-seo-restricted579-20261021.jsonl"
+                  ],
+                  "scope": "Only actual postmanagerReload579/Profile10 guestUI evidence; oldwarm578sourceunboundexcluded. Freshpeer validated provenance/journal, no independentUIreplay. 27/25calls overbudget, one oldExtensions tabclosed; no auth/fixturewrites. Other schemes/unreachableHTTP, fullwarm/reload/currentmain/Store/otherroles remainunverified."
                 }
               ],
-              "detail": " Reviewed frozen guest controlled run38041517954 adds 2 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass."
+              "detail": " Reviewed frozen guest controlled run38041517954 adds 2 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Current frozen579 adds only two independently evidence-reviewed postmanagerReload internal-error/recovery subtargets; oldwarm578notcredited. FullT03 stayspartial."
             }
           },
           "result_history": [
