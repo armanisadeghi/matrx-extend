@@ -63,7 +63,7 @@ describe('external dispatcher effective permission tier', () => {
   const asked = () =>
     deps.broadcast.mock.calls.some(([channel]) => channel === CHANNELS.TOOL_CONFIRM_REQUEST);
 
-  describe.each(['privileged', 'ask-user'] as const)(
+  describe.each(['privileged'] as const)(
     'a desktop app calls an argument-selected %s action',
     (action) => {
       it.each(['ask', 'act'] as const)(
@@ -152,6 +152,42 @@ describe('external dispatcher effective permission tier', () => {
       );
     },
   );
+
+  describe('a desktop app calls an argument-selected ask-user action', () => {
+    // The tool's own prompt (its question, its review card) is the person's one ask: the dispatcher
+    // raises no approval card on top of it (tests/unit/desktop-prompts-wait-and-ask-once.test.ts).
+    it.each([
+      ['ask', undefined],
+      ['act', undefined],
+      ['ask', 'follow_act_without_asking'],
+      ['act', 'follow_act_without_asking'],
+    ] as const)('runs with no approval card in %s mode, knob %s', async (mode, knob) => {
+      deps.knob.mockResolvedValue(knob);
+      const result = await handleWebmcpCall(
+        {
+          callId: `desktop-ask-user-${mode}`,
+          toolName: 'test_dynamic_tier',
+          args: { action: 'ask-user' },
+        },
+        { permissionMode: mode, initiator: 'desktop' },
+      );
+      expect(result).toEqual({ ok: true, result: { status: 'executed' } });
+      expect(asked()).toBe(false);
+    });
+
+    it.each(['page', 'frontend'] as const)('refuses a %s caller', async (initiator) => {
+      const result = await handleWebmcpCall(
+        {
+          callId: `${initiator}-ask-user`,
+          toolName: 'test_dynamic_tier',
+          args: { action: 'ask-user' },
+        },
+        { permissionMode: 'act', initiator },
+      );
+      expect(result.ok).toBe(false);
+      expect(deps.run).not.toHaveBeenCalled();
+    });
+  });
 
   it('executes a parsed read action once and returns its result', async () => {
     const result = await handleWebmcpCall(

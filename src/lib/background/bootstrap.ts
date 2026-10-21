@@ -60,6 +60,7 @@ import {
 } from '@/lib/frontend-bridge/handler';
 import { stopRealtimeHost } from '@/lib/realtime/host';
 import { startSchedulerHost, stopSchedulerHost } from '@/lib/scheduler-host';
+import { installLivePrompts } from '@/lib/tools/live-prompts';
 // Side-effect import: registers the example 'ping' task handler at SW boot.
 // Subsequent phases add more handlers via the same pattern.
 import '@/lib/scheduler-host/handlers/ping';
@@ -257,6 +258,8 @@ export function bootstrapBackground(): void {
   startLocalBrowserController();
   registerWsReverseInvocationHandler();
   wireMatrx2();
+  // A side panel opened later asks which approvals / questions are still waiting.
+  installLivePrompts();
   on<unknown, ReturnType<typeof getMatrx2State>>(CHANNELS.MATRX2_GET_STATE, () => getMatrx2State());
   on<unknown, ReturnType<typeof getMatrx2State>>(CHANNELS.MATRX2_RECONNECT, async () => {
     resetMatrx2DiscoveryBackoff();

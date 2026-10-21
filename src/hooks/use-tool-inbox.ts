@@ -11,7 +11,7 @@
  * TOOL_ASK_USER_RESPONSE — see respondToConfirm / respondToAsk below.
  */
 
-import { broadcast, on } from '@/lib/messaging/native';
+import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type {
   CaptureCredentialRequest,
@@ -193,6 +193,27 @@ export function useToolInbox$Subscribe(): void {
         useToolInbox.getState().addConfirm(payload, conversationId);
         return { ack: true };
       },
+    );
+    // Cards raised while no side panel was open (a desktop app or a page asked while it was closed):
+    // the SW holds every prompt still waiting (live-prompts.ts) — show them now. addConfirm/addAsk
+    // skip a callId already shown, so a broadcast racing this read never doubles a card.
+    void send<
+      Record<string, never>,
+      { confirms: PendingConfirmRequest[]; asks: PendingAskUserRequest[] }
+    >(CHANNELS.TOOL_INBOX_PENDING, {}, { absenceIsAnAnswer: true }).then(
+      (pending) => {
+        const selected = useChatStore.getState().selectedConversationId;
+        for (const req of pending?.confirms ?? []) {
+          if (req.initiator === 'extension') continue;
+          useToolInbox.getState().addConfirm(req, req.conversationId ?? selected);
+        }
+        for (const req of pending?.asks ?? [])
+          useToolInbox.getState().addAsk(req, req.conversationId ?? selected);
+      },
+      (err: unknown) =>
+        console.error(
+          `[tool-inbox] could not read the approvals still waiting (${String(err)}) — a card raised while the side panel was closed will not show until it is raised again.`,
+        ),
     );
     // The SW failed the call closed (timeout, or it expired across an SW
     // restart) — drop the card so the user isn't left clicking into the void.

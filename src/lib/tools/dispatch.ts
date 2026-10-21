@@ -1,4 +1,5 @@
 import { readDesktopPrivilegedPolicy } from '@/lib/tools/desktop-caller-policy';
+import { markExternalCall, trackConfirm } from '@/lib/tools/live-prompts';
 import { externalCallDecision, needsApproval, resolveToolTier } from '@/lib/tools/tier-policy';
 import {
   type PreparedOperation,
@@ -1227,9 +1228,11 @@ async function requestConfirmation(
   }
   return new Promise<ConfirmResult>((resolve) => {
     let resolved = false;
+    let untrack = () => {};
     const finish = (out: ConfirmResult) => {
       if (resolved) return;
       resolved = true;
+      untrack();
       off();
       clearTimeout(timer);
       opts.signal?.removeEventListener('abort', abort);
@@ -1286,6 +1289,8 @@ async function requestConfirmation(
       tier: opts.effectiveTier,
       initiator: opts.initiator,
     };
+    // Held while it waits: a side panel opened later shows it again (live-prompts.ts).
+    untrack = trackConfirm(req);
     broadcast(CHANNELS.TOOL_CONFIRM_REQUEST, req);
   });
 }
@@ -1613,7 +1618,7 @@ export async function handleWebmcpCall(
     effectiveTier,
     opts.permissionMode,
     initiator,
-    initiator === 'desktop' && (effectiveTier === 'privileged' || effectiveTier === 'ask-user')
+    initiator === 'desktop' && effectiveTier === 'privileged'
       ? await readDesktopPrivilegedPolicy()
       : undefined,
   );
@@ -1669,6 +1674,7 @@ export async function handleWebmcpCall(
   const startedAt = Date.now();
   void emitPartialReceipt(handler.name, parsed.data, ctx, startedAt, 'webmcp');
 
+  const unmark = markExternalCall(callId, initiator);
   try {
     const result = await handler.run(parsed.data as never, ctx);
     broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
@@ -1692,6 +1698,8 @@ export async function handleWebmcpCall(
     });
     void emitCompletedReceipt(handler.name, parsed.data, null, false, ctx, startedAt, 'webmcp');
     return { ok: false, error: message };
+  } finally {
+    unmark();
   }
 }
 

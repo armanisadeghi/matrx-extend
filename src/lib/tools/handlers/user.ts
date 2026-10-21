@@ -25,6 +25,7 @@ import { savePlan, setPlanStatus } from '@/lib/lists/storage';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { resolveTabIdArg } from '@/lib/tools/handlers/_active-tab';
+import { trackAsk } from '@/lib/tools/live-prompts';
 import type {
   AskUserResponse,
   PendingAskUserRequest,
@@ -519,9 +520,12 @@ export function awaitUserResponse(
 ): Promise<AskUserResponse | 'timed_out'> {
   return new Promise((resolve) => {
     let resolved = false;
+    // Held while it waits: a side panel opened later shows it again (live-prompts.ts).
+    const untrack = trackAsk(request);
     const finish = (out: AskUserResponse | 'timed_out') => {
       if (resolved) return;
       resolved = true;
+      untrack();
       off();
       if (timer != null) clearTimeout(timer);
       resolve(out);

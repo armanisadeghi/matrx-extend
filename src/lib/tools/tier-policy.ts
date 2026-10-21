@@ -53,9 +53,10 @@ export type ExternalCallDecision = 'run' | 'ask' | 'refuse';
  * THE rule for a call that does not come from the person's own agent (`handleWebmcpCall`).
  * - read: runs.
  * - action: runs when "Act without asking" applies to this caller, otherwise asks.
- * - privileged / ask-user: a desktop app's call asks the person first (or, when the organization
- *   chose `follow_act_without_asking` and the person's Act mode is on, runs); a web page's or the
- *   web app's call is refused.
+ * - privileged: a desktop app's call asks the person first (or, when the organization chose
+ *   `follow_act_without_asking` and the person's Act mode is on, runs);
+ * - ask-user: a desktop app's call runs, and the tool's own prompt is the person's one ask;
+ * - a web page's or the web app's privileged / ask-user call is refused.
  */
 export function externalCallDecision(
   tier: ToolTier,
@@ -66,5 +67,8 @@ export function externalCallDecision(
   if (tier === 'read') return 'run';
   if (tier === 'action') return mayActWithoutAsking(mode, initiator) ? 'run' : 'ask';
   if (initiator !== 'desktop') return 'refuse';
+  // An ask-user tool's own prompt (its question, its review card) IS the one ask: no approval card on
+  // top of it, so the person is asked once, never twice.
+  if (tier === 'ask-user') return 'run';
   return desktopPolicy === 'follow_act_without_asking' && mode === 'act' ? 'run' : 'ask';
 }
