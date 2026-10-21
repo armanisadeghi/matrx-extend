@@ -1,6 +1,6 @@
 {
-  "status": "implemented_with_local_verification_limits",
-  "root_cause": "The single CI workflow ran full Linux checks and macOS resource integration for stabilization tracking-only commits. Ref-scoped ci-main concurrency serialized a newer runtime push behind that work, delaying current development artifact evidence.",
+  "status": "in_fix_pending_fresh_peer_hosted_ci_and_owner_reload",
+  "root_cause": "The single CI workflow ran full Linux checks and macOS resource integration for stabilization tracking-only commits. Ref-scoped ci-main concurrency serialized a newer runtime push behind that work, delaying current development artifact evidence. Initial fast-path attempt 9ebbb76bd classified only the immediate event diff, so a docs tip after cancelled runtime CI could bypass the build; the corrective change requires successful artifact ancestry.",
   "source_provenance": {
     "tracking_commit": "a77b52f77c6b171e0f28185e1201128a9afc51a1",
     "tracking_job": "39624272190",
@@ -9,28 +9,33 @@
     "prior_successful_full_ci_job": "39622658209",
     "observation": "Tracking job was still in full CI while the newer runtime job queued; later runtime job terminal state was cancelled. No jobs were dispatched or cancelled by this change."
   },
-  "change": "A fetched exact comparison range is classified against the existing development artifact runtime-equivalent stabilization path list. Commit history is inspected as well as endpoint diff, so an intermediate runtime edit cannot disappear through a revert. Only proven stabilization records enter the docs validation job. Unknown, missing, unrelated, tag, runtime, configuration, workflow, lockfile, and toolchain changes enter full CI. Docs validation checks diff whitespace, JSON and JSONL syntax, full tracked-file lint, inventory truth, and workflow cost. Full CI still owns native integration and development artifact production; docs CI creates no artifact.",
+  "change": "A fetched exact comparison range is classified against the existing development artifact runtime-equivalent stabilization path list. A docs-only tip also requires a non-expired development artifact from a successful full main CI run, and every committed path from that artifact source through the tip must be runtime-equivalent. A cancelled or queued runtime ancestor therefore forces full CI and a fresh artifact. Missing API, token, artifact, base, or Git history proof also forces full CI. Docs validation checks diff whitespace, JSON and JSONL syntax, full tracked-file lint, inventory truth, and workflow cost. Full CI still owns native integration and development artifact production; docs CI creates no artifact.",
   "gates": {
     "green": [
-      "13 focused fixture tests passed, including docs-only, runtime, lockfile, workflow, unknown, missing base, reverted runtime history, malformed JSON/JSONL, and workflow artifact wiring",
+      "16 focused fixture tests passed, including cancelled runtime CI then docs-only tip, successful artifact-backed docs chain, cancelled/API-unavailable proof, runtime/lock/workflow/unknown, missing base, malformed JSON/JSONL, and workflow wiring",
       "Independent mutated-classifier copy failed 8 fixtures as expected; original classifier passed",
       "Stabilization inventory truth test passed",
       "git diff --check passed",
       "Resource preflight admitted the host",
       "Repository-wide pnpm lint passed under the stabilization resource guard after a new test import-order error was fixed; 927 existing warnings remain",
-      "Targeted Biome check on new helper and test files passed after the final JSONL addition"
+      "Targeted Biome check on new helper and test files passed after the final JSONL addition",
+      "Read-only GitHub API confirmed latest available development artifact is from successful CI run 39622658209 at 04b1b68863d0c025f0c98fab6a1312041e3710c5; the later runtime f0bdbdfe cannot inherit its proof",
+      "Corrective source passed repository-wide pnpm lint under stabilization resource guard (929 existing warnings, zero errors)",
+      "Immediate-diff-only mutation failed the cancelled-runtime fixture; corrected classifier passed"
     ],
     "limited": [
       "Initial lint command with a noncanonical argument was refused by the resource guard; the supported pnpm lint command was subsequently admitted and passed",
       "Local workflow cost guard reported pre-existing unmeasured-spend and sibling twin-drift failures; its CI gate remains in both full and docs paths",
-      "No hosted CI or native acceptance result exists for this commit yet"
+      "No hosted CI or native acceptance result exists for this commit yet",
+      "Independent peer review of first commit 9ebbb76bd failed on cancelled-runtime artifact gap; corrective commit needs a fresh independent review",
+      "Docs validation still installs dependencies and runs full lint; speed improvement is forecast, pending hosted CI timing"
     ]
   },
   "cost": {
     "manifest": ".github/ci-cost.json",
     "projected_weekly_list_usd_upper_bound_before": 401.36,
-    "projected_weekly_list_usd_upper_bound_after": 405.86,
-    "reason": "Conservative all-full-run upper bound adds 0.3 Linux minute per run for classification. At a hypothetical 10% eligible docs share, roughly $28/week of old full-run list cost is avoided before classifier cost; actual public-repo billed increment is $0."
+    "projected_weekly_list_usd_upper_bound_after": 408.86,
+    "reason": "Conservative all-full-run list-price upper bound adds 0.5 Linux minute per run for classification, provenance API read, and validation. At a hypothetical 10% eligible docs share, roughly $28/week of old full-run list cost is avoided before classifier cost. This is a forecast, not a measured speedup; actual public-repo billed increment is $0."
   },
   "files": [
     ".github/ci-cost.json",
@@ -41,6 +46,7 @@
     "docs/stabilization/reports/ci-tracking-backlog-fix-20261021.json"
   ],
   "commit": "this commit (exact SHA in git log and handoff)",
-  "limits": "The new workflow has not been observed in hosted CI; its first run is necessarily full because it changes the workflow and helper.",
-  "next_action": "Observe the pushed full CI run and the next proven docs-only push; independently review the gate and artifact behavior."
+  "limits": "EXT-D-0278 remains in fix. Fresh peer review, hosted CI showing runtime artifact survival and the docs route, and owner reload are pending; no product pass counts are claimed.",
+  "next_action": "Run fresh independent review and observe corrective full CI, then a proven docs-only push and owner reload before defect closure.",
+  "defect": "EXT-D-0278"
 }

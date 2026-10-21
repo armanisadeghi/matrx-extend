@@ -4,7 +4,12 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
-import { changedPaths, classifyChangedPaths } from './ci-change-scope.mjs';
+import {
+  changedPaths,
+  classifyChangedPaths,
+  classifyProvenChange,
+  latestSuccessfulDevelopmentArtifactSource,
+} from './ci-change-scope.mjs';
 
 function git(root, ...args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
@@ -69,12 +74,77 @@ test('runtime changed and reverted within comparison history still requires full
     assert.equal(classifyChangedPaths(changedPaths(root, base, head)), 'full');
   }));
 
+test('cancelled runtime CI followed by docs-only tip still requires full verification', () =>
+  fixture((root, artifactSource) => {
+    const unverifiedRuntime = commit(root, 'src/panel.ts', 'runtime');
+    const docsTip = commit(root, 'docs/stabilization/reports/run.json', '{}');
+    assert.equal(classifyChangedPaths(changedPaths(root, unverifiedRuntime, docsTip)), 'docs');
+    assert.equal(classifyProvenChange(root, unverifiedRuntime, docsTip, artifactSource), 'full');
+    assert.equal(classifyProvenChange(root, unverifiedRuntime, docsTip, null), 'full');
+  }));
+
+test('successfully built ancestor covers a chain of documentation commits', () =>
+  fixture((root, artifactSource) => {
+    const firstDocs = commit(root, 'docs/stabilization/reports/first.json', '{}');
+    const docsTip = commit(root, 'docs/stabilization/reports/second.json', '{}');
+    assert.equal(classifyProvenChange(root, firstDocs, docsTip, artifactSource), 'docs');
+  }));
+
+test('cancelled or unavailable CI artifact proof fails closed', async () => {
+  const originalFetch = globalThis.fetch;
+  const originalToken = process.env.GITHUB_TOKEN;
+  const originalRepository = process.env.GITHUB_REPOSITORY;
+  const sha = 'a'.repeat(40);
+  process.env.GITHUB_TOKEN = 'fixture';
+  process.env.GITHUB_REPOSITORY = 'example/extension';
+  try {
+    for (const conclusion of ['cancelled', 'success']) {
+      globalThis.fetch = async (url) =>
+        Response.json(
+          String(url).includes('/actions/artifacts?')
+            ? {
+                artifacts: [
+                  {
+                    name: `matrx-extend-development-test-${sha}-123-1`,
+                    expired: false,
+                    size_in_bytes: 42,
+                    workflow_run: { id: 123, head_sha: sha },
+                  },
+                ],
+              }
+            : {
+                conclusion,
+                name: 'CI',
+                event: 'push',
+                head_branch: 'main',
+                head_sha: sha,
+                run_attempt: 1,
+              },
+        );
+      assert.equal(
+        await latestSuccessfulDevelopmentArtifactSource(),
+        conclusion === 'success' ? sha : null,
+      );
+    }
+    globalThis.fetch = async () => new Response('', { status: 403 });
+    assert.equal(await latestSuccessfulDevelopmentArtifactSource(), null);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalToken === undefined) delete process.env.GITHUB_TOKEN;
+    else process.env.GITHUB_TOKEN = originalToken;
+    if (originalRepository === undefined) delete process.env.GITHUB_REPOSITORY;
+    else process.env.GITHUB_REPOSITORY = originalRepository;
+  }
+});
+
 test('workflow gates full jobs and development artifact behind the scope decision', () => {
   const workflow = readFileSync(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
   const docs = workflow.split('  docs:\n')[1]?.split('  resource-guard-integration:\n')[0];
   const mac = workflow.split('  resource-guard-integration:\n')[1]?.split('  checks:\n')[0];
   const checks = workflow.split('  checks:\n')[1];
   assert.match(workflow, /CI_EVENT_REF: \$\{\{ github\.ref \}\}/);
+  assert.match(workflow, /actions: read/);
+  assert.match(workflow, /GITHUB_TOKEN: \$\{\{ github\.token \}\}/);
   assert.match(docs, /if: needs\.scope\.outputs\.kind == 'docs'/);
   assert.match(docs, /pnpm lint --diagnostic-level=error/);
   assert.match(docs, /ci-docs-validation\.mjs/);

@@ -37,6 +37,9 @@ jobs:
   scope:
     runs-on: ubuntu-latest
     timeout-minutes: 3
+    permissions:
+      actions: read
+      contents: read
     outputs:
       kind: ${{ steps.classify.outputs.scope }}
     steps:
@@ -53,6 +56,7 @@ jobs:
           CI_HEAD_SHA: ${{ github.sha }}
           CI_EVENT_NAME: ${{ github.event_name }}
           CI_EVENT_REF: ${{ github.ref }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/ci-change-scope.mjs
 
   docs:

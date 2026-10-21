@@ -46,12 +46,80 @@ export function changedPaths(root, base, head) {
   }
 }
 
+export function classifyProvenChange(root, base, head, artifactSha) {
+  const eventPaths = changedPaths(root, base, head);
+  if (classifyChangedPaths(eventPaths, eventPaths !== null) !== 'docs') return 'full';
+  const sinceArtifact = changedPaths(root, artifactSha, head);
+  return classifyChangedPaths(sinceArtifact, sinceArtifact !== null);
+}
+
+async function githubJson(path) {
+  const token = process.env.GITHUB_TOKEN;
+  const repository = process.env.GITHUB_REPOSITORY;
+  if (!token || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository ?? '')) return null;
+  try {
+    const response = await fetch(
+      `${process.env.GITHUB_API_URL ?? 'https://api.github.com'}/repos/${repository}${path}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+        signal: AbortSignal.timeout(10000),
+      },
+    );
+    return response.ok ? response.json() : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function latestSuccessfulDevelopmentArtifactSource() {
+  const listing = await githubJson('/actions/artifacts?per_page=100');
+  if (!Array.isArray(listing?.artifacts)) return null;
+  for (const artifact of listing.artifacts) {
+    const match = /^matrx-extend-development-test-([a-f0-9]{40})-(\d+)-(\d+)$/.exec(
+      artifact.name ?? '',
+    );
+    if (!match || artifact.expired || artifact.size_in_bytes <= 0) continue;
+    const [, sha, runId, attempt] = match;
+    if (String(artifact.workflow_run?.id) !== runId || artifact.workflow_run?.head_sha !== sha)
+      continue;
+    const run = await githubJson(`/actions/runs/${runId}`);
+    if (!run) return null;
+    if (
+      run.conclusion === 'success' &&
+      run.name === 'CI' &&
+      run.event === 'push' &&
+      run.head_branch === 'main' &&
+      run.head_sha === sha &&
+      String(run.run_attempt) === attempt
+    )
+      return sha;
+  }
+  return null;
+}
+
 if (process.argv[1]?.endsWith('/ci-change-scope.mjs')) {
   const paths = changedPaths(process.cwd(), process.env.CI_BASE_SHA, process.env.CI_HEAD_SHA);
   const allowedEvent =
     process.env.CI_EVENT_NAME === 'pull_request' ||
     (process.env.CI_EVENT_NAME === 'push' && process.env.CI_EVENT_REF === 'refs/heads/main');
-  const scope = classifyChangedPaths(paths, allowedEvent && paths !== null);
-  console.log(JSON.stringify({ scope, paths: paths ?? [], baseAvailable: paths !== null }));
+  const source =
+    allowedEvent && classifyChangedPaths(paths, paths !== null) === 'docs'
+      ? await latestSuccessfulDevelopmentArtifactSource()
+      : null;
+  const scope = source
+    ? classifyProvenChange(process.cwd(), process.env.CI_BASE_SHA, process.env.CI_HEAD_SHA, source)
+    : 'full';
+  console.log(
+    JSON.stringify({
+      scope,
+      paths: paths ?? [],
+      baseAvailable: paths !== null,
+      provenArtifactSource: source,
+    }),
+  );
   if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `scope=${scope}\n`);
 }
