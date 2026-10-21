@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-21 19:57 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-21T19:51:51.447465+00:00. 207 features · 831 cases · 1422 controls · 281 linked defect records.
+Generated 2026-10-21 20:11 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-21T20:11:37.575594+00:00. 207 features · 831 cases · 1422 controls · 281 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1338** — Pass: 111 · Partial: 102 · Fail: 1 · Unverified: 1113 · N/A: 11.
-Unverified splits into **176 explicitly marked unverified** and **937 with no result record**.
+Applicable case-by-role slots: **1338** — Pass: 111 · Partial: 103 · Fail: 1 · Unverified: 1112 · N/A: 11.
+Unverified splits into **176 explicitly marked unverified** and **936 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -19,7 +19,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 8, partial 3, fail 0, unverified 23, n/a 0 | 10 |
 | [Release infrastructure](#release-infrastructure) | 1 | 10 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 28, partial 0, fail 0, unverified 13, n/a 0 | 3 |
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
-| [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 22, n/a 0 | 0 |
+| [Navigation / shell](#navigation--shell) | 1 | 4 pass · 4 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 7, fail 0, unverified 21, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 20 pass · 8 partial · 0 fail · 0 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 14 pass · 8 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | pass 36, partial 19, fail 0, unverified 45, n/a 1 | 6 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
@@ -328,7 +328,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1001-T07 guest: Open Vault assistance shortcut | Unverified | N/A | N/A | EXT-F-1001-C03 |
 | EXT-F-1001-T08 member: Open Vault assistance shortcut | N/A | Unverified | N/A | EXT-F-1001-C03 |
 | EXT-F-1001-T09 admin: Open Vault assistance shortcut | N/A | N/A | Unverified | EXT-F-1001-C03 |
-| EXT-F-1001-T10 guest: User avatar | Unverified | N/A | N/A | EXT-F-1001-C04 |
+| EXT-F-1001-T10 guest: User avatar | Partial | N/A | N/A | EXT-F-1001-C04 |
 | EXT-F-1001-T11 member: User avatar | N/A | Unverified | N/A | EXT-F-1001-C04 |
 | EXT-F-1001-T12 admin: User avatar | N/A | N/A | Unverified | EXT-F-1001-C04 |
 | EXT-F-1001-T13 guest: Lazy view load | Pass | N/A | N/A | EXT-F-1001-C05 |
@@ -352,6 +352,8 @@ These historical checks retain their original artifact boundary; they do not est
 
 - EXT-F-1001-T03 · admin: Unverified. D26 is repaired, independently retested and closed. Scoped warm navigation passes; persisted selection across role transitions and reload remains unverified, so the full T03 case is not promoted.
   Evidence / build / date recorded: d26-d29-native092, ['docs/stabilization/runs/contained-navigation-dev089-001.json', 'docs/stabilization/runs/contained-navigation-dev089-002.json', 'test-results/contained-navigation-dev089-002.evidence.json', 'docs/stabilization/reports/contained-navigation-dev089-002-peer.json', 'docs/stabilization/defects/EXT-D-0026.json', 'docs/stabilization/runs/d26-d29-native092.json', 'docs/stabilization/reports/auth-integration-peer.json']
+- EXT-F-1001-T10 · guest: Partial. Guest avatar showed Guest and Desktop: Not connected warm, after close/reopen and after actual manager fullReload/panel reopen. Actual Profile10 ID/path/version and Settings Sign in/Email— verified; guard valid0 and actual holder exit0, owned tabs closed. Fresh A reviewers accept bounded observed behavior; B remains partial because original complete AX outputs were not retained (only phase/call-labeled transcribed excerpts). Keep full case partial pending independently replayable decisive raw UI evidence. No connected desktop, other role, Store/current-main or T42 claim.
+  Evidence / build / date recorded: guest-large-copy-20261021-2000, Frozen DEV584/source5a1b9e108431cb7071f374e3d4778bc7d393504b, CI39649558400/artifact12369911241, ['docs/stabilization/reports/guest-avatar-native-20261021.json', 'docs/stabilization/reports/guest-avatar-resource-watch-20261021.json', 'docs/stabilization/reports/guest-avatar-final-peer-20261021.json']
 - EXT-F-1001-T13 · guest: Pass. pass_original_render_repro_twice
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-1001-T16 · guest: Partial. Fresh guest verified exact-origin Deny/Allow, separate reload and populated IANA SEO; Escape, tab switch, cross-origin navigation, panel reopen and non-HTTP target were exercised. Temporary contains=false access, navigation during permission sheet, stale SEO completion and unsupported permissions API remain unverified.

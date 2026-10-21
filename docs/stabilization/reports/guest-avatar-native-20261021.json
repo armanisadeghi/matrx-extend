@@ -1,0 +1,102 @@
+{
+  "case": "EXT-F-1001-T10",
+  "status": "bounded_native_guest_pass",
+  "scope_change": "Root redirected before any image Copy action because T42 large/smaller warm/reload copy was already boundedly covered; T42 earned no new evidence here.",
+  "run_id": "guest-large-copy-20261021-2000",
+  "at_utc": "2026-10-21T20:04:19.777352+00:00",
+  "runtime": {
+    "browser": "Google Chrome native macOS",
+    "profile": "Matrx Guest Test (Profile 10)",
+    "extension_name": "Matrx Extend DEV",
+    "version_ui": "0.2.584",
+    "extension_id_ui": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "source_path_ui": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "frozen_receipt_from_root": {
+      "source": "5a1b9e108431cb7071f374e3d4778bc7d393504b",
+      "ci": "39649558400",
+      "artifact": "12369911241",
+      "tree": "93ac42aa5702a6c52352542f0643a487125e2b782d3e599808865df1d54d7a3a"
+    }
+  },
+  "page": "https://en.wikipedia.org/wiki/Golden_Gate_Bridge",
+  "identity": {
+    "settings_email_ui": "—",
+    "settings_action_ui": "Sign in",
+    "avatar_label_ui": "G",
+    "guest_role": "Guest"
+  },
+  "steps": [
+    {
+      "phase": "warm",
+      "action": "Opened DEV side panel on owned Wikipedia tab, selected Settings, clicked G avatar",
+      "observed": "Popover text Guest; Desktop: Not connected; Preferences and Sign out buttons visible."
+    },
+    {
+      "phase": "warm_reopen",
+      "action": "Clicked avatar to close and again to reopen",
+      "observed": "Guest; Desktop: Not connected again."
+    },
+    {
+      "phase": "full_extension_reload",
+      "action": "Selected owned guest chrome://extensions manager tab, clicked extension-specific Reload; UI continued to show DEV 0.2.584, expected ID and unpacked path",
+      "observed": "Side panel closed after reload."
+    },
+    {
+      "phase": "post_reload",
+      "action": "Returned to owned Wikipedia tab, opened DEV panel, clicked G avatar",
+      "observed": "Popover text Guest; Desktop: Not connected. Selected tab reset to Chat."
+    }
+  ],
+  "cleanup": "Closed owned Wikipedia and guest manager tabs with Chrome Command-W; Chrome returned to pre-existing Profile 8 owner manager tab, untouched.",
+  "not_verified": [
+    "T42 image Copy URL (none performed in this run)",
+    "member/admin roles",
+    "Store build/current main",
+    "desktop connected state",
+    "organization/permissions beyond visible signed-out account state",
+    "independent UI replay"
+  ],
+  "resource": "Admitted journal docs/stabilization/resource-journals/guest-large-copy-20261021-2000.pending.jsonl was checked before input and at most four CUA calls apart; watcher reported healthy; terminal decision belongs to root holder.",
+  "cua_calls": 27,
+  "raw_ax_excerpts": [
+    {
+      "phase": "guest manager initial, before page open",
+      "cua_call": 10,
+      "ax_line_content": "+\t\t\t\t\t\t\t125 text 0.2.584\n+\t\t\t\t\t\t\t131 text cihdmkcdjjckfhjpgoedmgfpoljebaml\n+\t\t\t\t\t\t\t184 link /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev\n+\t\t\t\t\t\t\t\t185 text /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev"
+    },
+    {
+      "phase": "guest Settings warm",
+      "cua_call": 14,
+      "ax_line_content": "4085 tab (selected) Settings, Value: 1\n4087 pop up button G, Help: Account\n4092 text Email\n4093 text —\n4125 button DESKTOP BRIDGE\n4126 text Matrx 2\n4127 text Matrx 2 is not running on this computer\n4128 text Matrx Local\n4129 text Not connected\n4139 button Sign in"
+    },
+    {
+      "phase": "guest avatar warm open",
+      "cua_call": 16,
+      "ax_line_content": "4140 container\n\t4141 text G\n\t4142 text Guest\n\t4143 text Desktop: \n\t4144 text Not connected\n\t4145 button Preferences\n\t4146 button Sign out"
+    },
+    {
+      "phase": "guest avatar warm reopened",
+      "cua_call": 18,
+      "ax_line_content": "+\t\t\t\t\t\t\t4237 text Guest\n+\t\t\t\t\t\t\t4238 text Desktop: \n+\t\t\t\t\t\t\t4239 text Not connected"
+    },
+    {
+      "phase": "manager after extension reload",
+      "cua_call": 22,
+      "ax_line_content": "0 standard window Extensions - Matrx Extend DEV - Google Chrome - Matrx Guest Test, URL: chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml, Secondary Actions: Raise\n\t\t\t\t\t47 button Reload\n\t\t\t\t\t55 text 0.2.584\n\t\t\t\t\t61 text cihdmkcdjjckfhjpgoedmgfpoljebaml\n\t\t\t\t\t114 link /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev"
+    },
+    {
+      "phase": "guest avatar post reload",
+      "cua_call": 25,
+      "ax_line_content": "+\t\t\t\t\t\t\t4366 text Guest\n+\t\t\t\t\t\t\t4367 text Desktop: \n+\t\t\t\t\t\t\t4368 text Not connected"
+    }
+  ],
+  "raw_ax_note": "AX line content was transcribed from literal CUA outputs retained in this conversation; surrounding tree lines were omitted and leading indentation was normalized in some excerpts. No new UI action or screenshot was taken for this follow-up.",
+  "resource_terminal": {
+    "journal": "docs/stabilization/resource-journals/guest-large-copy-20261021-2000.jsonl",
+    "sha256": "a9ed50e2795ffe3e28b40f9f676fdf1cb90dd69980219c289dbe7d5a333d7133",
+    "holder_session": 12231,
+    "actual_process_exit_code": 0,
+    "decision": "valid",
+    "resource_invalid": false
+  }
+}

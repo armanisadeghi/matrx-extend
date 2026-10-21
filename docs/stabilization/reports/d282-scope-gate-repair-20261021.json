@@ -1,0 +1,53 @@
+{
+  "task_id": "EXT-D-0282",
+  "lane": "integration regression repair",
+  "status": "SOURCE_REPAIR_VERIFIED_PENDING_PARENT_INTEGRATION",
+  "baseline": "f904f364c",
+  "summary": "Updated stale workflow gate assertions to require successful scope and added scope classifier regression to the focused acceptance command.",
+  "changed_files": ["scripts/ci-change-scope.test.mjs", "package.json"],
+  "source_sha256": {
+    "scripts/ci-change-scope.test.mjs": "fc286b874d6d9fac30e3cd6bbc8bb91d01f9fc917d78e212e7903a9f2c88a47a",
+    "package.json": "150f2ae1b36e2c1dca81f16cb448a44603fc1c9a974a43a275cd10bf7a9d1680",
+    ".github/workflows/ci.yml": "66da53594812713d416c3425d5339fcc06931f03cee0b01950d0f0585fc07571"
+  },
+  "checks": [
+    {
+      "name": "focused",
+      "run_id": "d282-scope-focused-20261021-1",
+      "command": "pnpm test:focused-acceptance",
+      "verdict": "GREEN",
+      "observed": "872 tests; 862 passed; 10 skipped; 0 failed",
+      "process_exit_code": 0,
+      "resource_final_decision": "valid",
+      "resource_invalid": false,
+      "rawlog": "/Volumes/Samsung2TB/code/matrx-extend/tmp/d282-scope-focused-20261021-1.rawlog",
+      "journal": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d282-scope-focused-20261021-1.jsonl"
+    },
+    {
+      "name": "compile",
+      "run_id": "d282-scope-compile-20261021-1",
+      "command": "pnpm compile",
+      "verdict": "GREEN",
+      "observed": "tsc --noEmit passed",
+      "process_exit_code": 0,
+      "resource_final_decision": "valid",
+      "resource_invalid": false,
+      "rawlog": "/Volumes/Samsung2TB/code/matrx-extend/tmp/d282-scope-compile-20261021-1.rawlog",
+      "journal": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d282-scope-compile-20261021-1.jsonl"
+    },
+    {
+      "name": "lint",
+      "run_id": "d282-scope-lint-20261021-1",
+      "command": "pnpm exec biome check --diagnostic-level=error .",
+      "verdict": "GREEN",
+      "observed": "3196 files checked; process exit 0",
+      "process_exit_code": 0,
+      "resource_final_decision": "valid",
+      "resource_invalid": false,
+      "rawlog": "/Volumes/Samsung2TB/code/matrx-extend/tmp/d282-scope-lint-20261021-1.rawlog",
+      "journal": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d282-scope-lint-20261021-1.jsonl"
+    }
+  ],
+  "independent_review": "/tmp/d282-scope-gate-peer-20261021.json",
+  "limitations": "No new CI dispatch, native UI activity, commit, push, or release in this bounded lane; parent owns integration."
+}
