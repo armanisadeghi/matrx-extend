@@ -38,7 +38,14 @@
     ],
     "appearance_evidence": "Native CUA screenshots observed before and after manager reload and after restoring System; screenshots were not exported to files.",
     "other_preferences_changed": false,
-    "backend_or_ai_activity": "none; no login, AI call, Save action, fixture, or backend write"
+    "backend_or_ai_activity": "none; no login, AI call, Save action, fixture, or backend write",
+    "resource_timing": {
+      "lease_opened_at_utc": "2026-10-21T05:28:43.547Z",
+      "admitted_at_utc": "2026-10-21T05:29:50.755Z",
+      "valid_replay_ui_window": "After admission at 05:29:50.755Z and before stop request at 05:30:16.874Z; exact per-action timestamps are unavailable.",
+      "system_before_retry": "System was restored and visibly verified after the first attempt, before the retry lease opened at 05:28:43.547Z.",
+      "system_after_retry": "System was restored and visibly verified after the admitted replay, before stop confirmation at 05:30:16.882Z."
+    }
   },
   "prior_operator_report_assessment": {
     "source": "docs/stabilization/reports/current-owner-guest-theme-20261021.json",
@@ -49,13 +56,24 @@
   "initial_resource_attempt": {
     "journal": "docs/stabilization/resource-journals/guest-theme579-native-peer-20261021.jsonl",
     "final_decision": "refused",
-    "reason": "UI work began before preflight admission completed; that attempt receives no resource-valid credit. The UI replay was repeated under the admitted retry journal above."
+    "reason": "UI work began before preflight admission completed; that attempt receives no resource-valid credit. The UI replay was repeated under the admitted retry journal above.",
+    "ui_window": "The first UI attempt started after lease journal open at 05:27:17.434Z but before admission; no admission event exists. Stop was requested at 05:28:06.766Z; final decision was refused at 05:28:24.617Z. All product observations from this attempt receive zero credit."
   },
   "scope_limits": [
     "No independent Dark replay.",
     "No backend behavior asserted.",
     "No owner profile preference changes."
   ],
-  "native_cua_calls": 20,
-  "screenshots_exported": false
+  "screenshots_exported": false,
+  "resource_holder_termination": {
+    "initial_attempt": "Terminal after refused final decision at 2026-10-21T05:28:24.617Z.",
+    "admitted_retry": "Ctrl-C stop confirmed at 2026-10-21T05:30:16.882Z; valid final decision at 2026-10-21T05:30:16.890Z, exit code 0.",
+    "final_state": "Both holders terminal; no active holder remained at final process check."
+  },
+  "native_cua_call_count": {
+    "total": 20,
+    "initial_pre_admission_attempt": 10,
+    "admitted_retry": 10,
+    "counting": "Counts CUA tool invocations, including accessibility observations and one failed stale-element action on the admitted retry. Only the admitted retry receives product credit."
+  }
 }
