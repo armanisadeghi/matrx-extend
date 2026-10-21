@@ -10,8 +10,8 @@
  *      browser, the extension version and the person's AI Matrx access token. Matrx 2 drives this
  *      browser only when that account is the one Matrx 2 is signed in to;
  *   4. each `browser.invoke` runs through the same permission-gated executor as every other
- *      outside caller (`handleWebmcpCall`, initiator 'desktop': action tools always ask the person,
- *      privileged tools are refused). While the person is being asked, `browser.progress`
+ *      outside caller (`handleWebmcpCall`, initiator 'desktop'; the rule is `externalCallDecision`
+ *      in tier-policy.ts: privileged and ask-user tools ask the person first). While the person is being asked, `browser.progress`
  *      (awaiting_confirmation) tells Matrx 2 to keep waiting; the answer goes back as
  *      `browser.result`.
  *

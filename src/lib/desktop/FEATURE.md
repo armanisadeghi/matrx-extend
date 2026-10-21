@@ -90,8 +90,11 @@ or 22240-22259 for a development copy), never Matrx Local's `/health`.
   subprotocols `matrx.v1` + `bearer.<pair token>`, hello as clientType `extension`, then
   `browser.register` with this profile's instance id, the browser and the person's access token.
   Matrx 2 drives this browser only when that account is the one Matrx 2 is signed in to.
-- Each `browser.invoke` runs through `handleWebmcpCall` with initiator `desktop` (action tools
-  always ask the person; privileged tools are refused). While the person is asked,
+- Each `browser.invoke` runs through `handleWebmcpCall` with initiator `desktop` (rule:
+  `externalCallDecision` in `src/lib/tools/tier-policy.ts`): action tools ask unless Act without
+  asking is on; privileged and ask-user tools ask the person first in every mode, unless the
+  organization knob `extension.desktop_callers.privileged_tools` is `follow_act_without_asking`
+  and Act is on. Matrx Local's general channel (`ws-invoke.ts`) gets the identical decision. While the person is asked,
   `browser.progress` (awaiting_confirmation) keeps Matrx 2 waiting; the answer is `browser.result`.
 - Disconnect in Matrx 2 holds until the person presses Reconnect (Debug › Bridges) or the browser
   restarts; Browser connection turned off resumes by itself when it is on again.

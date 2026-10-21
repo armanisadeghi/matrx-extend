@@ -1,4 +1,5 @@
-import { mayActWithoutAsking, needsApproval, resolveToolTier } from '@/lib/tools/tier-policy';
+import { readDesktopPrivilegedPolicy } from '@/lib/tools/desktop-caller-policy';
+import { externalCallDecision, needsApproval, resolveToolTier } from '@/lib/tools/tier-policy';
 import {
   type PreparedOperation,
   type RecoveredApproval,
@@ -1453,16 +1454,17 @@ interface WebmcpCallResponse {
  *
  * Restrictions vs. the streaming dispatcher (this path is STRICTER — the
  * caller is not the user's own agent):
- *   - Only `read` and `action` tier tools are callable. `ask-user` /
- *     `privileged` are refused with a structured error, since the external
- *     caller has no UX surface for the inline approval cards.
+ *   - The rule is `externalCallDecision` (tier-policy.ts). A page or the web app reaches only
+ *     `read` and `action` tools. A desktop app (Matrx 2, Matrx Local — initiator 'desktop') also
+ *     reaches `privileged` / `ask-user` tools: the person is asked first in every mode, unless the
+ *     organization's `extension.desktop_callers.privileged_tools` knob is
+ *     `follow_act_without_asking` and the person has "Act without asking" on.
  *   - `admin_only` tools require the cached admin flag — the page can't
  *     bypass advertisement filtering by posting the tool name directly.
- *   - Action-tier calls ALWAYS require user confirmation, regardless of the
- *     user's ask/act permission mode. Act-mode is the user's grant to their
- *     OWN agent, not to arbitrary external callers — without this, any
- *     allow-listed page could silently drive navigate/click/type/download
- *     the moment the user prefers Act mode. The card labels the initiator.
+ *   - A page's action-tier calls ALWAYS require user confirmation, regardless of the
+ *     user's ask/act permission mode — without this, any allow-listed page could
+ *     silently drive navigate/click/type/download the moment the user prefers Act
+ *     mode. The card labels the initiator.
  *     If no sidepanel is open, the confirmation times out (fail-closed)
  *     after 5 minutes, matching the dispatcher behaviour.
  */
@@ -1564,7 +1566,9 @@ export async function handleWebmcpCall(
     return { ok: false, error: `webmcp: tool '${toolName}' not registered` };
   }
 
-  if (handler.tier === 'ask-user' || handler.tier === 'privileged') {
+  // A web page / the web app never reaches a privileged or ask-user tool; a desktop app does, after
+  // the person is asked (externalCallDecision). Router tools are re-checked on their parsed action.
+  if (initiator !== 'desktop' && (handler.tier === 'ask-user' || handler.tier === 'privileged')) {
     return {
       ok: false,
       error: `webmcp: tool '${toolName}' is ${handler.tier}-tier and not callable from a page`,
@@ -1603,9 +1607,17 @@ export async function handleWebmcpCall(
   }
 
   // Router tools can raise their tier for a particular action. Apply the
-  // external-caller restriction to that parsed action before any execution.
+  // external-caller rule to that parsed action before any execution.
   const effectiveTier = resolveToolTier(handler, parsed.data);
-  if (effectiveTier === 'ask-user' || effectiveTier === 'privileged') {
+  const decision = externalCallDecision(
+    effectiveTier,
+    opts.permissionMode,
+    initiator,
+    initiator === 'desktop' && (effectiveTier === 'privileged' || effectiveTier === 'ask-user')
+      ? await readDesktopPrivilegedPolicy()
+      : undefined,
+  );
+  if (decision === 'refuse') {
     return {
       ok: false,
       error: `webmcp: tool '${toolName}' is ${effectiveTier}-tier and not callable externally`,
@@ -1633,9 +1645,10 @@ export async function handleWebmcpCall(
     assignedTabId: opts.assignedTabId ?? null,
   };
 
-  // External action calls ALWAYS confirm — the user's act-mode preference
-  // applies to their own agent, never to a page/frontend/desktop caller.
-  if (effectiveTier === 'action' && !mayActWithoutAsking(opts.permissionMode, initiator)) {
+  // The person is asked first whenever the rule says so (externalCallDecision): a page's action
+  // call always; a desktop app's privileged / ask-user call unless its organization lets
+  // "Act without asking" cover it. Refusal is only the person's decline or the approval timing out.
+  if (decision === 'ask') {
     opts.onAwaitingConfirmation?.();
     const allowed = await requestConfirmation(handler, parsed.data, ctx, undefined, {
       effectiveTier,
