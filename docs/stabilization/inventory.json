@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T01:28:19.564408+00:00",
+  "updated_at": "2026-10-21T02:12:46.084421+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -53313,6 +53313,24 @@
               "new_unique_case_pass": false,
               "scope": "Three protocol-terminal grounded guest replies with same-conversation second/new-conversation postreload third; independent evidence peer supports frozen scope only; post-D260 current main and actual Store205 not certified.",
               "evidence": "docs/stabilization/reports/store-release-v0564-acceptance-20261019.json"
+            }
+          ],
+          "bounded_defect_retests": [
+            {
+              "defect_id": "EXT-D-0276",
+              "status": "pass",
+              "auth_mode": "guest",
+              "source_sha": "99f0b5527fb8e3c29a1621c614216ae30973a322",
+              "version": "0.2.578",
+              "receipt_kind": "CI_development_unpacked_native",
+              "actual_store_installed": false,
+              "evidence": [
+                "docs/stabilization/reports/d276-guest-native-only-20261021.json",
+                "docs/stabilization/reports/d276-native-gate-owner-20261021.json",
+                "docs/stabilization/reports/d276-native-evidence-peer-20261021.json",
+                "docs/stabilization/resource-journals/d276-guest-native-20261021.jsonl"
+              ],
+              "detail": "Actual original query_elements row1, sibling get_page_text862 characters and zero-match row0 match raw results; all replies terminal. D276 closed narrowly; no full T10/D273 or Store fix claim."
             }
           ]
         },

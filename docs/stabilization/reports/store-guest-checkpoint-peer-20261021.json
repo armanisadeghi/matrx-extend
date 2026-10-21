@@ -1,0 +1,23 @@
+{
+  "verdict_A_facts_vs_evidence": {
+    "result": "supported_with_scope_limits",
+    "findings": [
+      "Actual Chrome Web Store 0.2.205 was observed in the designated signed-out Matrx Guest Test Profile10; owner Profile8 was preserved.",
+      "Initial guest conversation showed READY and same-conversation follow-up. Independent peer observed manager Off-to-On restart, a new guest conversation, exact visible demo H1 response, Capture/expected-result response, and idle composer.",
+      "Backend before/after the acceptance turns matched ef66370086d853b4c3b10a373a8e71f977313fff. Evidence explicitly says it had changed from 955d514 before acceptance; existing wording does not claim an unchanged setup before acceptance.",
+      "The H1 backend trace returned total=1 and the exact visible heading. The UI row's zero is the confirmed D276 renderer-field defect. Capture follow-up used successful get_page_text and matched the visible workflow table."
+    ],
+    "concrete_incorrect_claims_found": [],
+    "wording_note": "A/B separation may improve readability, but the current canonical fact entry is not materially inaccurate."
+  },
+  "verdict_B_provenance_limits": {
+    "result": "bounded_and_supported",
+    "findings": [
+      "The independent native report has no screenshot file path and did not expose the model in UI; backend trace independently records Sonnet 5.5 for four request/snapshot rows. Haiku is expected fallback configuration only.",
+      "No wire is_new/fingerprint proof, unpredictable marker proof, whole T10/Chat health, or D273 closure. Initial transport's final button state was unverified; the independent retest did observe idle composer controls.",
+      "The source fix for D276 is pushed and source checks passed, but fixed-build native retest awaits an eligible exact-main CI artifact. CI 39528337735 remains pending.",
+      "Store 0.2.577 remains pending Google review; no new dashboard status observation was made."
+    ],
+    "scope": "Fresh narrow source/document/evidence audit only; no UI rerun and no repository edits."
+  }
+}
