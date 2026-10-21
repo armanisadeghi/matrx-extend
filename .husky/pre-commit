@@ -1,0 +1,13 @@
+# OUTBOUND REFERRAL (Arman, 2026-10-12: "make sure it never happens again"): a staged src file may not
+# add a raw link to a third-party site (<a target="_blank">, literal https:// anchor, window.open,
+# chrome.tabs.create without withReferral, literal location.href) outside @ai-matrx/kit/outbound. ~1 s.
+OUTBOUND="node_modules/@ai-matrx/kit/scripts/check-outbound-referral.mjs"
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR -- 'src/*.ts' 'src/*.tsx' || true)
+if [ -f "$OUTBOUND" ] && [ -n "$STAGED" ]; then
+    # shellcheck disable=SC2086
+    node "$OUTBOUND" $STAGED || {
+        echo "COMMIT REFUSED: a raw outbound link (above) skips our referral data." >&2
+        echo "  Fix: node $OUTBOUND --fix <file>, then stage and commit again." >&2
+        exit 1
+    }
+fi
