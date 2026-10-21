@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "run_id": "guest-theme579-native-peer-20261021",
+  "case_id": "EXT-F-1003-T04",
+  "outcome": "bounded native peer PASS for one fresh non-default replay (Light) across an actual DEV manager reload; prior operator three-state report assessed separately and not independently repeated",
+  "product": {
+    "ci_run_id": 39546376658,
+    "artifact_id": 12322875129,
+    "artifact_zip_sha256": "2725c2712d71ab26733c7fecf02f7e16d374e4d351d06fba58b62c9cf49c1ea7",
+    "artifact_tree_sha256": "d782f017d88b7e90b7481b59c98767f71c76ffc7a8532adb7a419ac9bd22b1cb",
+    "source_sha": "11ff2cfb2ddecba67e7d06dba763b24325ccbe1b",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version_after_actual_manager_reload": "0.2.579",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "channel": "development",
+    "build_mode": "production compiled WXT build per CI run 39546376658 build log; development is the distribution channel, not an HMR/dev-server session"
+  },
+  "profile": {
+    "name": "Matrx Guest Test",
+    "chrome_profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10",
+    "identity": "Settings showed Email — and a Sign in button; guest remained signed out",
+    "owner_profile_8": "untouched"
+  },
+  "environment": {
+    "chrome": "155.0.8059.85 (Official Build) (arm64)",
+    "macos": "27.0.1",
+    "system_appearance": "Dark, based on parent independent read at 2026-10-21T05:23:17Z"
+  },
+  "fresh_native_replay": {
+    "resource_admission": "valid",
+    "journal": "docs/stabilization/resource-journals/guest-theme579-native-peer-retry-20261021.jsonl",
+    "observations": [
+      "Before the replay, Settings showed System and the actual extension panel rendered charcoal, consistent with the independently recorded OS Dark appearance.",
+      "Selected Light in guest Settings; the selected value became Light and the extension panel visibly rendered white while Chrome remained in Dark appearance.",
+      "Clicked Reload on the verified DEV extension manager entry. Chrome showed Reloaded; the panel closed.",
+      "Reopened chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html through the DEV extension entry. Settings showed Light and the panel visibly remained white.",
+      "Restored System. Settings showed System and the actual panel returned to charcoal."
+    ],
+    "appearance_evidence": "Native CUA screenshots observed before and after manager reload and after restoring System; screenshots were not exported to files.",
+    "other_preferences_changed": false,
+    "backend_or_ai_activity": "none; no login, AI call, Save action, fixture, or backend write"
+  },
+  "prior_operator_report_assessment": {
+    "source": "docs/stabilization/reports/current-owner-guest-theme-20261021.json",
+    "reported_coverage": "Light, Dark, and System each had warm appearance and actual manager-reload/reopen observations; original System was restored.",
+    "independent_peer_replay": "Only Light was independently repeated across a fresh actual manager reload; System was independently observed before and restored after the replay. Dark was not independently repeated.",
+    "assessment": "Prior three-state report remains operator-reported coverage. This peer report does not elevate all three states to independent replay."
+  },
+  "initial_resource_attempt": {
+    "journal": "docs/stabilization/resource-journals/guest-theme579-native-peer-20261021.jsonl",
+    "final_decision": "refused",
+    "reason": "UI work began before preflight admission completed; that attempt receives no resource-valid credit. The UI replay was repeated under the admitted retry journal above."
+  },
+  "scope_limits": [
+    "No independent Dark replay.",
+    "No backend behavior asserted.",
+    "No owner profile preference changes."
+  ],
+  "native_cua_calls": 17,
+  "screenshots_exported": false
+}

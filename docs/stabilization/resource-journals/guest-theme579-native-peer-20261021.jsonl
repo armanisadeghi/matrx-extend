@@ -1,0 +1,4 @@
+{"schema":1,"at":"2026-10-21T05:27:17.434Z","runId":"guest-theme579-native-peer-20261021","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-21T05:28:06.766Z","runId":"guest-theme579-native-peer-20261021","signal":"SIGINT","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-21T05:28:24.607Z","runId":"guest-theme579-native-peer-20261021","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-21T05:28:24.617Z","runId":"guest-theme579-native-peer-20261021","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}
