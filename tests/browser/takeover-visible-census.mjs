@@ -566,7 +566,7 @@ export function blockedRequestDiagnostic(request, initiator = 'unavailable') {
   const rpc = /^\/rest\/v1\/rpc\/([a-z][a-z0-9_]{0,95})$/.exec(url.pathname)?.[1];
   // RPC names are source contracts; refuse arbitrary paths and unknown names.
   const source = rpcSourceClassifications[rpc];
-  const callsites = rpcSourceCallsites.get(rpc);
+  const callsites = rpcSourceCallsites.get(rpc) ?? source?.callsites;
   return {
     method: ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method?.toUpperCase())
       ? request.method.toUpperCase()
@@ -580,7 +580,9 @@ export function blockedRequestDiagnostic(request, initiator = 'unavailable') {
   };
 }
 const rpcSourceClassifications = {
-  knob_snapshot: { semantics: 'read', callsites: ['src/lib/settings/platform-knobs.ts:snapshot'] },
+  // Sent by @ai-matrx/data/knobs (not a literal .rpc in src), so the callsite is named here.
+  knob_snapshot_delta: { semantics: 'read', callsites: ['src/lib/settings/platform-knob-snapshot.ts'] },
+  knob_defaults: { semantics: 'read', callsites: ['src/lib/settings/platform-knob-snapshot.ts'] },
   knob_resolve: {
     semantics: 'read',
     callsites: ['src/lib/credentials/generation-limits.ts', 'src/lib/api/routes/vault.ts'],

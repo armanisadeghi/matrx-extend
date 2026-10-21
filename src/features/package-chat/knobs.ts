@@ -1,6 +1,6 @@
 /**
  * The extension's settings register for `@ai-matrx/chat` (`prefs.knobs`): the SAME
- * `platform.knob_snapshot` ladder the web reads (organization → user), through the extension's one
+ * platform knob ladder the web reads (organization → user), through the extension's one
  * platform-settings reader (`lib/settings/platform-knobs`).
  *
  * Without this port every knob is "not answered" and the composer's quick-start chips stay

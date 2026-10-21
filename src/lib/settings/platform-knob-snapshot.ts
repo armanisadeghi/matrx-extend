@@ -1,5 +1,5 @@
 /**
- * The ONE read of `platform.knob_snapshot` (organization → user, nearest wins), cached briefly per
+ * The ONE read of the platform settings (organization → user, nearest wins) through `@ai-matrx/data/knobs`, cached briefly per
  * organization+person and shared by every caller in this execution context.
  *
  * Context-free on purpose: the side panel names its identity from its own stores
@@ -12,10 +12,18 @@ import { getCurrentUser } from '@/lib/auth/flow';
 import { appConfig, recordKnobRead } from '@/lib/config';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { getSupabase } from '@/lib/supabase/client';
+import { createKnobReader, type KnobReader } from '@ai-matrx/data/knobs';
 
 let cached: { key: string; resolved: Record<string, unknown>; at: number } | null = null;
 let inFlight: { key: string; promise: Promise<Record<string, unknown> | null> } | null = null;
 const landed = new Set<() => void>();
+
+/** THE door for the read: `@ai-matrx/data/knobs` (defaults + this person's delta, etag-cached). */
+let reader: KnobReader | null = null;
+function knobReader(): KnobReader {
+  reader ??= createKnobReader(getSupabase());
+  return reader;
+}
 
 /** Called whenever a fresh snapshot lands (the side panel's settings register re-renders on it). */
 export function onKnobSnapshotLanded(listener: () => void): () => void {
@@ -45,20 +53,15 @@ export async function knobSnapshotFor(
   if (inFlight?.key === key) return inFlight.promise;
 
   const promise = (async () => {
-    const { data, error } = await getSupabase()
-      .schema('platform')
-      .rpc('knob_snapshot', {
-        p_organization_id: organizationId,
-        p_user_id: userId ?? undefined,
-        p_scopes: undefined,
-      });
-    if (error) {
+    let resolved: Record<string, unknown>;
+    try {
+      ({ resolved } = await knobReader().snapshot({ organizationId, userId }));
+    } catch (error) {
       console.error(
-        `[matrx-settings] platform settings could not be read (${error.message}) — each setting falls back to its default.`,
+        `[matrx-settings] platform settings could not be read (${error instanceof Error ? error.message : String(error)}) — each setting falls back to its default.`,
       );
       return null;
     }
-    const resolved = (data as { resolved?: Record<string, unknown> } | null)?.resolved ?? {};
     cached = { key, resolved, at: Date.now() };
     for (const l of landed) l();
     return resolved;
