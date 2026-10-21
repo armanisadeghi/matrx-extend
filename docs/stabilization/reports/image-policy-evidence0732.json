@@ -1,0 +1,8 @@
+{
+  "reviewer": "image-policy-evidence0732",
+  "A_product_verdict": "partial",
+  "A_findings": "Native guest observations show large, smaller, and icon image opens on the frozen DEV 0.2.579 build, with selected host/path preserved, canonical referral parameters applied, and the capture retained on return. Independent post-reload replay repeated only the large image. This supports the warm behavior and one reload tier, not full T41 closure.",
+  "B_criteria_verdict": "correction sound; claims appropriately bounded",
+  "B_findings": "Canonical outbound-referral policy applies to person-clicked eligible third-party URLs, replaces utm_source/utm_medium, and preserves other query data; T41 exact-src was incompatible and its correction is right. Policy does not call for exact whole-URL equality; observed reordered query fields are not evidence of a product defect. Inventory retains partial status and explicitly lists unresolved checks.",
+  "limits": "Primary run exceeded stated 32-call cap (34); independent replay used 13/18 calls and cleaned five owned tabs. Resource journal records admitted/valid final state. Build is frozen 11ff/tree d782, not latest; no independent UI run by this reviewer. T42 clipboard, remaining query-byte/encoding and exception cases, smaller/icon post-reload, other roles, Store/latest main, and other states remain unverified; no full-case or cross-role inference."
+}

@@ -29758,12 +29758,12 @@
           ],
           "steps": [
             "Open the Scrape tab, capture the controlled page, and select Images.",
-            "Click one image in each displayed size tier, recording the opened tab URL and confirming it matches that image’s captured src.",
+            "Click one image in each displayed size tier; record captured src and opened tab URL. Compare with a literal expected navigation URL under the canonical outbound-referral contract: only configured referral fields change for eligible third-party links; other URL bytes/encoding and exceptions are preserved. The authored src used for display/copy remains unchanged.",
             "Return to the original page and side panel after each open; confirm Scrape remains on the same capture and Images remains selected.",
             "Repeat after a full extension reload and controlled page reload. If a tier is absent from the controlled capture, record that substep unavailable and do not count it as passed."
           ],
           "expected": [
-            "Each available image opens its own captured src in a browser tab.",
+            "Each image opens its captured resource using canonical outbound referral rules; only permitted referral changes occur, while signed/credential/internal URLs pass through unchanged. Displayed/copied authored src is unchanged.",
             "Returning to the original tab preserves the same capture and selected Images pane; opening an image does not remove or alter the captured entry."
           ],
           "dimensions": [
@@ -29774,8 +29774,33 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "detail": "No native product run recorded for opening images."
+              "status": "partial",
+              "run_id": "store-daily-20261021-native",
+              "source_sha": "11ff2cfb2ddecba67e7d06dba763b24325ccbe1b",
+              "build_version": "0.2.579",
+              "development_ci_run_id": 39546376658,
+              "development_artifact_id": 12322875129,
+              "resource_valid": true,
+              "passed_subtargets": [
+                "Warm image/smaller-image/icon each opened selected host/path; returned to Images46 unchanged",
+                "Fresh independent operator repeated large image after prior manager/page Reload and recapture; selected host/path and capture retention observed",
+                "Observed configured UTM source/medium replacement matches canonical referral policy; authored src remained displayed unchanged",
+                "All five test-owned tabs independently closed; three pre-existing tabs preserved"
+              ],
+              "remaining_criteria": [
+                "Post-reload smaller image and icon opens",
+                "Full non-referral query byte/encoding preservation and signed/credential/internal exceptions",
+                "Clipboard original-src copy T42 not exercised",
+                "Other roles/Store/latest-main remain unverified"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/guest-images579-20261021.json",
+                "docs/stabilization/reports/guest-image-url-independent-20261021.json",
+                "docs/stabilization/reports/image-url-diagnosis0727.json",
+                "docs/stabilization/resource-journals/store-daily-20261021-native.jsonl",
+                "docs/stabilization/reports/image-policy-evidence0732.json"
+              ],
+              "detail": "Primary operator34/32 calls, over cap by2; no full-case credit. Fresh independent narrow replay13/18 calls and complete owned-tab cleanup. Frozen production-compiled DEV only; root rehashed d782 before independent replay. Policy correction is not a product fix."
             },
             "member": {
               "status": "unverified",
@@ -29785,7 +29810,24 @@
               "status": "unverified",
               "detail": "No native product run recorded for opening images."
             }
-          }
+          },
+          "criteria_corrections": [
+            {
+              "at": "2026-10-21T07:30Z",
+              "previous": "Opened tab URL matches captured src exactly.",
+              "reason": "Canonical platform/outbound-referral FEATURE requires click-time referral tagging; exact-src expectation contradicted it. No product code change or retroactive full-case pass."
+            }
+          ],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "detail": "No native product run recorded for opening images."
+              },
+              "reason": "First native image tier navigation recorded with canonical referral expectation correction."
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T42",
