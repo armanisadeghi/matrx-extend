@@ -1,0 +1,60 @@
+{
+  "task_id": "EXT-D-0217-hosted-original-retest-20261021",
+  "lane": "hosted acceptance A",
+  "status": "deferred_before_dispatch",
+  "action": "No native test launched. Preserve the original guest stale-profile Save/Retry and ordinary-member recovery acceptance as unverified.",
+  "source_artifact_provenance": {
+    "local_head": "f9cbc1170402aaff052b3bf25d6eeb7fb0977383",
+    "remote_main_at_initial_check": "f9cbc1170402aaff052b3bf25d6eeb7fb0977383",
+    "ci_run_id": 39631079179,
+    "ci_run_attempt": 1,
+    "ci_head_sha": "f9cbc1170402aaff052b3bf25d6eeb7fb0977383",
+    "ci_status_at_checkpoint": "in_progress",
+    "ci_conclusion_at_checkpoint": null,
+    "ci_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39631079179",
+    "development_artifact_id": null,
+    "imported_artifact": false,
+    "eligible_for_dispatch": false
+  },
+  "run_ids": {
+    "existing_ci": 39631079179,
+    "owned_hosted_acceptance": null
+  },
+  "normal_verification": {
+    "admission_script": "scripts/hosted-remote-admission.mjs",
+    "route": "plan-member-scrape-save / dispatch-member-scrape-save / verify-member-scrape-save",
+    "target_case": "scrape-save-member",
+    "target_destination": "none",
+    "target_scope": "stale-profile-retry",
+    "ci_job_observation": "The exact-main CI checks job had passed hosted remote admission routes, typecheck, lint and unit tests; guest transport observer regression remained in progress and artifact upload pending.",
+    "cli_block": "GitHub REST core rate limit for CLI identity user 132974515 returned HTTP 403 with remaining 0 at 2026-10-21T16:13:11Z.",
+    "cli_rate_limit_reset_utc": "2026-10-21T16:50:25Z",
+    "dispatch_attempted": false,
+    "verify_attempted": false
+  },
+  "behavior_evidence": {
+    "original_stale_profile_condition": "unverified",
+    "guest_save_refusal_and_sign_in_remedy": "unverified",
+    "guest_organization_and_landing_call_absence": "unverified",
+    "guest_retry_before_and_after_full_reload": "unverified",
+    "edited_draft_retention": "unverified",
+    "ordinary_nonadmin_member_recovery_and_edited_source_landing": "unverified",
+    "d217_closed": false
+  },
+  "resource_cleanup": {
+    "owned_hosted_jobs": 0,
+    "owned_hosted_resources": 0,
+    "fixture_created": false,
+    "credential_staged": false,
+    "ephemeral_credentials_to_remove": false,
+    "source_or_edges_created": false,
+    "owned_source_or_edge_cleanup_required": false
+  },
+  "limits": [
+    "CI 39631079179 had not completed and no eligible exact-main development artifact existed at the checkpoint.",
+    "The normal CLI-based admission, import and dispatch path is rate limited until 16:50:25 UTC. No alternate identity, direct workflow dispatch or guard bypass was used.",
+    "The D217 original native reproduction and surrounding member recovery remain pending; prior signed-in Source observations do not close the defect."
+  ],
+  "next_action": "After CLI quota resets, inspect the same CI handle to terminal. If successful, obtain its exact development artifact ID and import it through the normal path; recheck current main, source eligibility, lane capacity, fixture and secret admission, then run one guarded hosted A stale-profile-retry job and normal verification. If source or CI eligibility changes, select the current eligible CI artifact instead. Retain sanitized raw native, resource, screenshot and verifier evidence and perform owned fixture and credential cleanup.",
+  "files": ["docs/stabilization/reports/d217-hosted-original-retest-20261021.json"]
+}

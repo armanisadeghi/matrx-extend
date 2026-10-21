@@ -8,18 +8,17 @@
  */
 
 import { ensureRequestOrganizationId } from '@/hooks/use-request-organization';
-import { appConfig, recordKnobRead } from '@/lib/config';
-import { getSupabase } from '@/lib/supabase/client';
+import { recordKnobRead } from '@/lib/config';
 import { useAuthStore } from '@/state/auth';
+import { knobSnapshotFor, onKnobSnapshotLanded, peekKnobSnapshot } from './platform-knob-snapshot';
 
-let cached: { key: string; resolved: Record<string, unknown>; at: number } | null = null;
 const listeners = new Set<() => void>();
 let version = 0;
 
-function notify(): void {
+onKnobSnapshotLanded(() => {
   version += 1;
   for (const l of listeners) l();
-}
+});
 
 /** Subscribe to "a snapshot landed" (the package chat's settings register re-renders on it). */
 export function subscribePlatformKnobs(listener: () => void): () => void {
@@ -33,9 +32,7 @@ export function platformKnobsVersion(): number {
 
 /** The cached value for this session, or `undefined` when no snapshot has landed (or none has this key). */
 export function peekPlatformKnob(fullKey: string): unknown {
-  const value = cached?.resolved[fullKey];
-  if (value !== undefined) recordKnobRead(fullKey, 'db');
-  return value;
+  return peekKnobSnapshot(fullKey);
 }
 
 /** Ask for the snapshot (once, shared); resolves when it landed or failed. Never throws. */
@@ -45,44 +42,10 @@ export function warmPlatformKnobs(): Promise<void> {
     () => undefined,
   );
 }
-let inFlight: { key: string; promise: Promise<Record<string, unknown> | null> } | null = null;
 
 async function snapshot(): Promise<Record<string, unknown> | null> {
   const userId = useAuthStore.getState().user?.id ?? null;
-  const organizationId = await ensureRequestOrganizationId();
-  if (!organizationId) return null;
-  const key = `${organizationId}:${userId ?? ''}`;
-  if (
-    cached &&
-    cached.key === key &&
-    Date.now() - cached.at < appConfig<number>('platform_knobs_cache_ms')
-  )
-    return cached.resolved;
-  if (inFlight?.key === key) return inFlight.promise;
-
-  const promise = (async () => {
-    const { data, error } = await getSupabase()
-      .schema('platform')
-      .rpc('knob_snapshot', {
-        p_organization_id: organizationId,
-        p_user_id: userId ?? undefined,
-        p_scopes: undefined,
-      });
-    if (error) {
-      console.error(
-        `[matrx-settings] platform settings could not be read (${error.message}) — each setting falls back to its default.`,
-      );
-      return null;
-    }
-    const resolved = (data as { resolved?: Record<string, unknown> } | null)?.resolved ?? {};
-    cached = { key, resolved, at: Date.now() };
-    notify();
-    return resolved;
-  })().finally(() => {
-    if (inFlight?.promise === promise) inFlight = null;
-  });
-  inFlight = { key, promise };
-  return promise;
+  return knobSnapshotFor(await ensureRequestOrganizationId(), userId);
 }
 
 /** One platform setting's resolved value, or `undefined` when it cannot be read. */

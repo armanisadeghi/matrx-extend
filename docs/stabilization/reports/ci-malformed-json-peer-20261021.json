@@ -1,0 +1,20 @@
+{
+  "review": "D278 malformed GitHub proof response, fresh independent source review",
+  "date": "2026-10-21",
+  "scope": [
+    "scripts/ci-change-scope.mjs",
+    "scripts/ci-change-scope.test.mjs",
+    ".github/workflows/ci.yml"
+  ],
+  "verdictA_behavior_acceptance": {
+    "status": "source_pass_pending_execution_evidence",
+    "finding": "githubJson awaits response.json() inside its try block. A rejected parse from a 200 artifact listing or run response is caught and returns null. latestSuccessfulDevelopmentArtifactSource returns null for either unavailable proof path; the CLI maps a null source to scope full. The CI workflow routes kind other than docs to its full checks and resource-guard jobs.",
+    "limits": "This is an infra source review. I did not observe a hosted run, live product, or execution of the full CLI under malformed proof."
+  },
+  "verdictB_doctrine_test_strength": {
+    "status": "gap",
+    "finding": "The added malformed-200 fixture exercises the artifact-listing request through latestSuccessfulDevelopmentArtifactSource and asserts null. It does not exercise malformed run JSON after a valid listing, or assert the CLI's scope=full output when either proof response is malformed. Existing success and cancelled cases provide contrasting outputs for the source function, but the malformed case stops before the workflow-facing decision.",
+    "required_evidence": "Builder's report and journals were absent at this checkpoint, so red-first, return-expected gut check, scratch mutation result, and normal guarded test/lint evidence remain unverified by this peer."
+  },
+  "files_changed": ["docs/stabilization/reports/ci-malformed-json-peer-20261021.json"]
+}

@@ -1,0 +1,34 @@
+{
+  "status": "verified_merge_lint_repair_pending_current_ci",
+  "at": "2026-10-21T17:04Z",
+  "source_fix_commit": "719cf667d",
+  "source_fix_remote": "Already present on origin/main through concurrent shared-checkout push; preserved.",
+  "merge_baseline": "ffd41bf10",
+  "later_remote": "8cd93099f; onlylock consumerupdates after localcompile/lint, requires freshCI/currentartifact acceptance.",
+  "checks": [
+    {
+      "run_id": "ci-json-merge-compile-20261021-1657",
+      "result": "compileexit0,fulljournalvalid0,actualprocessexit0"
+    },
+    {
+      "run_id": "ci-json-merge-lint-20261021-1659",
+      "result": "actual lintfailure2errors in newlymerged context-chip-live-walk.mjs; resourcevalid,child_failed1"
+    },
+    {
+      "run_id": "ci-json-merge-errors-20261021-1700",
+      "result": "normalregistered error-only lint identified useConst and format; child_failed1, no resource reasons"
+    },
+    {
+      "run_id": "ci-json-merge-lint-fixed-20261021-1702",
+      "result": "mandatorypnpm lint passed3188files,932warnings,noerrors; fulljournalvalid0/actualprocess0"
+    }
+  ],
+  "repair": "Biome safe formatting and let rows→const rows in tests/browser/context-chip-live-walk.mjs only; fresh independent diff peer confirms unchanged calls/assertions/gates/control flow. Not productbehaviorproof.",
+  "peer": "reports/context-chip-merge-format-peer-20261021-1702.json",
+  "limits": [
+    "CLI malformedproof routing remains source-only; sourcehelper fixtures/gut do not prove livehostedrouting.",
+    "No native/currentmain/latestDEV acceptance from infrastructure green. OwnerChrome584 remains source81bc.",
+    "No ownedhostedacceptancejob, fixturewrites, stagedcredentials or activeMacguard remain."
+  ],
+  "next": "Push exactpath checkpoint and safeformatrepair; observe currentautomaticCI then normalartifactadoption/ownerChrome reload. PreserveStorepending577."
+}

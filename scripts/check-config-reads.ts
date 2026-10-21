@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * check:config-reads — config attestation drift guard. Every knob / app-config read must go through the
- * counted door in src/lib/config/. Refused outside src/lib/config/, src/lib/settings/platform-knobs.ts
+ * counted door in src/lib/config/. Refused outside src/lib/config/, src/lib/settings/platform-knob-snapshot.ts
  * (the one knob_snapshot reader, which records each key it serves), tests and generated code:
  *   rpc('knob_resolve' | 'knob_snapshot'), from('app_config'), from('feature_knob').
  * Exit 0 clean · 1 offender.     pnpm check:config-reads [--self-test]
@@ -25,7 +25,7 @@ const RAW =
   /rpc\(\s*['"`](knob_resolve|knob_snapshot)['"`]|from\(\s*['"`](app_config|feature_knob)['"`]/;
 const ALLOWED = (rel: string) =>
   rel.startsWith('src/lib/config/') ||
-  rel === 'src/lib/settings/platform-knobs.ts' ||
+  rel === 'src/lib/settings/platform-knob-snapshot.ts' ||
   rel.includes('/generated/');
 
 function* walk(dir: string): Generator<string> {

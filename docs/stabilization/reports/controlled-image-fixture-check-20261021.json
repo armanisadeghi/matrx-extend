@@ -1,0 +1,119 @@
+{
+  "report_id": "controlled-image-fixture-check-20261021",
+  "test": "EXT-F-1007-T42",
+  "status": "unverified",
+  "checked_at": "2026-10-21",
+  "finding": "A controlled publicly deployed HTTPS page does exist: https://www.aimatrx.com/matrx-extend-demo, with authoritative source and feature documentation in the sibling ai-matrx repo. Inspection confirms it has no authored large or medium content-image fixture. The server-rendered page contains only the shared 20x20 site-header icon as an <img>; the 1024x1024 JPEG is only an Open Graph/Twitter metadata URL, not an image element in page content, so it cannot satisfy the captured large-image tile requirement.",
+  "fixture": {
+    "exact_url": "https://www.aimatrx.com/matrx-extend-demo",
+    "manifest_exists": false,
+    "deployment_exists": true,
+    "page_source": "/Users/armanisadeghi/code/ai-matrx/app/(public)/matrx-extend-demo/page.tsx",
+    "feature_source": "/Users/armanisadeghi/code/ai-matrx/app/(public)/matrx-extend-demo/FEATURE.md",
+    "authored_images": [
+      {
+        "src": "/matrx/matrx-icon.svg?dpl=dpl_3iygGom2wFvY7rMhAZ6LmhsAGwnb",
+        "context": "Shared public-site header <img>, outside demo article",
+        "authored_dimensions_px": {
+          "width": 20,
+          "height": 20
+        },
+        "expected_tier": "icon",
+        "classifier_basis": "min dimension 20; <48px"
+      },
+      {
+        "src": "/matrx/logo-option-4.jpeg",
+        "context": "Open Graph/Twitter metadata only; not rendered as a page <img>",
+        "asset_dimensions_px": {
+          "width": 1024,
+          "height": 1024
+        },
+        "expected_tier_if_rendered": "large",
+        "classifier_basis": "min dimension 1024; >=160px",
+        "eligible_for_current_capture": false
+      }
+    ],
+    "actual_public_response_evidence": {
+      "page": {
+        "url": "https://www.aimatrx.com/matrx-extend-demo",
+        "status": "HTTP/2 200",
+        "content_type": "text/html; charset=utf-8",
+        "server": "Vercel",
+        "matched_path": "/matrx-extend-demo",
+        "title": "Matrx Extend Demo Page — AI Matrx",
+        "html_bytes": 89857,
+        "rendered_img_tags": [
+          "<img alt=\"AI Matrx Logo\" width=\"20\" height=\"20\" src=\"/matrx/matrx-icon.svg?dpl=dpl_3iygGom2wFvY7rMhAZ6LmhsAGwnb\"/>"
+        ],
+        "rendered_main_or_article_image_tags": []
+      },
+      "header_icon": {
+        "url": "https://www.aimatrx.com/matrx/matrx-icon.svg?dpl=dpl_3iygGom2wFvY7rMhAZ6LmhsAGwnb",
+        "status": "HTTP/2 200",
+        "content_type": "image/svg+xml",
+        "content_length": 1163
+      },
+      "social_metadata_jpeg": {
+        "url": "https://www.aimatrx.com/matrx/logo-option-4.jpeg",
+        "status": "HTTP/2 200",
+        "content_type": "image/jpeg",
+        "content_length": 17496,
+        "decoded_dimensions_px": {
+          "width": 1024,
+          "height": 1024
+        },
+        "note": "Not present as an <img> in the rendered demo page."
+      }
+    },
+    "prior_limited_search_correction": "The earlier repo search did not find this route because it searched unrelated sibling paths and generic fixture terms. Its blanket statement that no controlled public HTTPS page exists was too broad. The demo page is a valid controlled destination, but it does not currently meet T42 image preconditions."
+  },
+  "source_anchors": [
+    {
+      "path": "/Users/armanisadeghi/code/ai-matrx/app/(public)/matrx-extend-demo/page.tsx",
+      "anchor": "metadata declares social image /matrx/logo-option-4.jpeg",
+      "line": 13
+    },
+    {
+      "path": "/Users/armanisadeghi/code/ai-matrx/app/(public)/matrx-extend-demo/page.tsx",
+      "anchor": "demo JSX article and authored body; no body image elements",
+      "line": 55
+    },
+    {
+      "path": "/Users/armanisadeghi/code/ai-matrx/app/(public)/matrx-extend-demo/FEATURE.md",
+      "anchor": "purpose and invariant: stable public account-free predictable page",
+      "line": 1
+    },
+    {
+      "path": "src/lib/scrape/classify-images.ts",
+      "anchor": "48px icon and 160px large thresholds",
+      "line": 21
+    },
+    {
+      "path": "docs/stabilization/inventory.json",
+      "anchor": "EXT-F-1007-T42 controlled manifest precondition",
+      "line": 29838
+    },
+    {
+      "path": "tests/browser/scrape-guest-native-acceptance.mjs",
+      "anchor": "existing synthetic dimensions 640x480 and 96x96",
+      "line": 97
+    }
+  ],
+  "smallest_in_scope_fixture_change": {
+    "change": "In the existing /matrx-extend-demo source, add a clearly labeled synthetic media-fixture section to the article and three static SVG assets under its existing public site. Render distinct <img> elements with authored dimensions 640x480 and 96x96, using same-origin absolute captured src URLs; optionally render the existing 32x32 icon case. Add a compact authored manifest with exact page URL, absolute src values, dimensions, and expected tiers derived from classify-images.ts.",
+    "why_this_is_smallest": "The exact owned HTTPS route already exists, is publicly deployed, and is documented for stable extension testing. Only contained page content, static assets, and a manifest are missing.",
+    "implementation_scope": "Recommended follow-up in ai-matrx source; this inspection lane did not edit or deploy that repo."
+  },
+  "reuse_instructions": [
+    "Once the source change is deployed, fetch the exact page and each image over HTTPS; record status, final URL, content type, and decoded dimensions in the fixture manifest.",
+    "Capture https://www.aimatrx.com/matrx-extend-demo in Scrape and verify the exact two non-icon manifest src values appear in the Images pane as large and medium before using Copy image URL.",
+    "Compare clipboard output byte-for-byte with each tile captured src; assert selection and tile state are preserved, then repeat after extension reload per inventory steps.",
+    "This inspection establishes an owned controlled page and a bounded suitability result; it is not product UI execution and earns no T42 product-pass credit."
+  ],
+  "product_test_credit": "none",
+  "limitations": [
+    "No browser UI, extension dispatch, build, or saved product data was used in this lane.",
+    "The deployed demo page is controlled and public, but currently lacks a rendered large or medium image. Its header icon and metadata-only JPEG do not meet the T42 fixture precondition.",
+    "T42 guest/member/admin case status remains governed by the stabilization inventory; this report does not promote any role."
+  ]
+}

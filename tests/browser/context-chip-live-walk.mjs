@@ -162,7 +162,11 @@ try {
       return active?.url ?? null;
     }, ARTICLE);
   const activeUrl = await focusArticle();
-  check('the article is the active tab beside the panel', activeUrl?.startsWith(ARTICLE), activeUrl);
+  check(
+    'the article is the active tab beside the panel',
+    activeUrl?.startsWith(ARTICLE),
+    activeUrl,
+  );
 
   await panel
     .locator('[data-package-chat]')
@@ -177,21 +181,48 @@ try {
   );
   if (STEP === 'look') {
     const chip = panel.locator('button[aria-label$=" included"]');
-    console.log('  chip candidates', await chip.count(), await chip.first().getAttribute('aria-label'));
+    console.log(
+      '  chip candidates',
+      await chip.count(),
+      await chip.first().getAttribute('aria-label'),
+    );
     await chip.first().click();
     await panel.waitForTimeout(2500);
     await shot(panel, '02-chip-open');
-    console.log('  [chip text]', (await panel.locator('[role=dialog],[data-radix-popper-content-wrapper]').first().innerText().catch(() => '?')).replace(/\n+/g, ' | ').slice(0, 2500));
+    console.log(
+      '  [chip text]',
+      (
+        await panel
+          .locator('[role=dialog],[data-radix-popper-content-wrapper]')
+          .first()
+          .innerText()
+          .catch(() => '?')
+      )
+        .replace(/\n+/g, ' | ')
+        .slice(0, 2500),
+    );
     console.log('  [rows]', JSON.stringify(await dumpRows(panel), null, 0).slice(0, 6000));
     await panel.keyboard.press('Escape');
-    await panel.getByText(/Matrx Browser Agent/).first().click();
+    await panel
+      .getByText(/Matrx Browser Agent/)
+      .first()
+      .click();
     await panel.waitForTimeout(2500);
     await shot(panel, '03-agent-picker');
-    await panel.getByText(/^Model: /).first().click();
+    await panel
+      .getByText(/^Model: /)
+      .first()
+      .click();
     await panel.waitForTimeout(2500);
     await shot(panel, '04-model-picker');
-    console.log('  [models]', (await panel.locator('body').innerText()).replace(/\n+/g, ' | ').slice(0, 4000));
-    console.log('  [picker]', (await panel.locator('body').innerText()).replace(/\n+/g, ' | ').slice(0, 2500));
+    console.log(
+      '  [models]',
+      (await panel.locator('body').innerText()).replace(/\n+/g, ' | ').slice(0, 4000),
+    );
+    console.log(
+      '  [picker]',
+      (await panel.locator('body').innerText()).replace(/\n+/g, ' | ').slice(0, 2500),
+    );
     process.exit(0);
   }
 
@@ -231,7 +262,8 @@ try {
       );
       const m = Array.isArray(msgs) ? msgs[0] : null;
       const receipt = m?.model_context?.delivery?.receipt;
-      if (receipt) return { id: m.id, conversationId: m.conversation_id, position: m.position, receipt };
+      if (receipt)
+        return { id: m.id, conversationId: m.conversation_id, position: m.position, receipt };
       await new Promise((r) => setTimeout(r, 2000));
     }
     return null;
@@ -242,7 +274,10 @@ try {
       const faces = [...document.querySelectorAll('button[aria-label$=" included"]')].filter(
         (el) => el.offsetParent !== null,
       );
-      const out = { amber: faces.some((f) => f.getAttribute('data-mismatch') === 'true'), mismatches: null };
+      const out = {
+        amber: faces.some((f) => f.getAttribute('data-mismatch') === 'true'),
+        mismatches: null,
+      };
       for (const el of faces) {
         const fk = Object.keys(el).find((k) => k.startsWith('__reactFiber'));
         let f = fk ? el[fk] : null;
@@ -252,25 +287,46 @@ try {
       return out;
     });
   const pickModel = async () => {
-    await panel.getByText(/Matrx Browser Agent ·/).first().click();
-    await panel.getByText(/^Model: /).first().click();
+    await panel
+      .getByText(/Matrx Browser Agent ·/)
+      .first()
+      .click();
+    await panel
+      .getByText(/^Model: /)
+      .first()
+      .click();
     await panel.waitForTimeout(1200);
     // One message only: the conversation's own model is left as it was.
     const only = panel.getByRole('switch', { name: /This message only/i }).first();
     if ((await only.count()) && (await only.getAttribute('aria-checked')) !== 'true')
       await only.click();
-    await panel.getByPlaceholder(/Search models/i).first().fill(MODEL);
+    await panel
+      .getByPlaceholder(/Search models/i)
+      .first()
+      .fill(MODEL);
     await panel.waitForTimeout(800);
     if (STEP === 'model') await shot(panel, '05a-model-search');
     const option = panel.getByRole('row', { name: new RegExp(MODEL) }).first();
-    await ((await option.count()) ? option : panel.locator(`text="${MODEL}" >> visible=true`).first()).click();
+    await ((await option.count())
+      ? option
+      : panel.locator(`text="${MODEL}" >> visible=true`).first()
+    ).click();
     await panel.waitForTimeout(1200);
     if (STEP === 'model') await shot(panel, '05b-model-clicked');
-    await panel.getByRole('button', { name: /^Select model$/ }).first().click();
+    await panel
+      .getByRole('button', { name: /^Select model$/ })
+      .first()
+      .click();
     await panel.waitForTimeout(1200);
     await panel.keyboard.press('Escape').catch(() => {});
     await panel.waitForTimeout(500);
-    return (await panel.getByText(/Matrx Browser Agent ·/).first().innerText().catch(() => '')) || '';
+    return (
+      (await panel
+        .getByText(/Matrx Browser Agent ·/)
+        .first()
+        .innerText()
+        .catch(() => '')) || ''
+    );
   };
   if (STEP === 'model') {
     console.log('  picked:', await pickModel());
@@ -293,35 +349,47 @@ try {
     }
     await panel.waitForTimeout(2000);
   };
-  const conversationIdNow = () =>
-    panel.evaluate(() => {
-      const m = (location.hash + location.pathname + document.body.innerHTML).match(
-        /\/chat\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/,
-      );
-      return m?.[1] ?? null;
-    });
-
   // 1. The chip lists the page's values with switches, plus identity.
   await openChip();
-  let rows = await dumpRows(panel);
+  const rows = await dumpRows(panel);
   await shot(panel, '10-chip-before');
   const pageRows = rows.filter((r) => r.origin === 'page');
   check('chip lists the page values', pageRows.length >= 3, pageRows.map((r) => r.key).join(','));
   const switches = await panel.getByRole('switch', { name: /^Include / }).count();
-  check('every value has a switch', switches >= rows.length, `${switches} switches / ${rows.length} rows`);
+  check(
+    'every value has a switch',
+    switches >= rows.length,
+    `${switches} switches / ${rows.length} rows`,
+  );
   for (const key of ['user', 'client', 'organization'])
-    check(`identity row ${key} shown`, rows.some((r) => r.key === key));
+    check(
+      `identity row ${key} shown`,
+      rows.some((r) => r.key === key),
+    );
   const target = rows.find((r) => r.key === TARGET);
-  check(`target value ${TARGET} is on before the walk`, target?.include === true, JSON.stringify(target?.decided_by));
+  check(
+    `target value ${TARGET} is on before the walk`,
+    target?.include === true,
+    JSON.stringify(target?.decided_by),
+  );
   if (process.env.WALK_DEBUG) console.log('  [rows before]', JSON.stringify(rows));
 
   // 2. Turn it off; the rule is saved where the server reads it.
-  const label = (await panel.locator(`[role=row][data-key="${TARGET}"]`).first().innerText()).split('\n')[0];
-  await panel.getByRole('switch', { name: `Include ${label}` }).first().click();
+  const label = (await panel.locator(`[role=row][data-key="${TARGET}"]`).first().innerText()).split(
+    '\n',
+  )[0];
+  await panel
+    .getByRole('switch', { name: `Include ${label}` })
+    .first()
+    .click();
   await panel.waitForTimeout(2500);
   check(`${TARGET} shows off at once`, (await rowOf(TARGET))?.include === false);
   const ruleOff = await savedRule();
-  check('the off rule is saved for the server', Object.values(ruleOff).some((r) => r?.include === false), JSON.stringify(ruleOff));
+  check(
+    'the off rule is saved for the server',
+    Object.values(ruleOff).some((r) => r?.include === false),
+    JSON.stringify(ruleOff),
+  );
   await shot(panel, '11-chip-off');
   await closeChip();
 
@@ -334,14 +402,25 @@ try {
   console.log(`  conversation ${conversationId}`);
   const r1 = first?.receipt?.rows?.find((r) => r.key === TARGET);
   console.log(`  receipt 1 message ${first?.id} ${TARGET}:`, JSON.stringify(r1));
-  check(`receipt 1: ${TARGET} was off`, r1?.include === false && r1?.delivery === 'off', JSON.stringify(r1 && { include: r1.include, delivery: r1.delivery, decided_by: r1.decided_by }));
+  check(
+    `receipt 1: ${TARGET} was off`,
+    r1?.include === false && r1?.delivery === 'off',
+    JSON.stringify(r1 && { include: r1.include, delivery: r1.delivery, decided_by: r1.decided_by }),
+  );
   const amber1 = await amber();
   check('chip 1 not amber', !amber1.amber, JSON.stringify(amber1.mismatches));
-  check('turn 1 carried the page', (first?.receipt?.rows ?? []).some((r) => r.key === 'page_brief' && r.include), 'page_brief on receipt 1');
+  check(
+    'turn 1 carried the page',
+    (first?.receipt?.rows ?? []).some((r) => r.key === 'page_brief' && r.include),
+    'page_brief on receipt 1',
+  );
 
   // 4. Back on; send; the receipt says sent.
   await openChip();
-  await panel.getByRole('switch', { name: `Include ${label}` }).first().click();
+  await panel
+    .getByRole('switch', { name: `Include ${label}` })
+    .first()
+    .click();
   await panel.waitForTimeout(2500);
   check(`${TARGET} shows on at once`, (await rowOf(TARGET))?.include === true);
   await closeChip();
@@ -351,7 +430,11 @@ try {
   const second = await persistedReceipt(TEXT2);
   const r2 = second?.receipt?.rows?.find((r) => r.key === TARGET);
   console.log(`  receipt 2 message ${second?.id} ${TARGET}:`, JSON.stringify(r2));
-  check(`receipt 2: ${TARGET} was sent`, r2?.include === true && ['inline', 'on_request'].includes(r2?.delivery), JSON.stringify(r2 && { include: r2.include, delivery: r2.delivery }));
+  check(
+    `receipt 2: ${TARGET} was sent`,
+    r2?.include === true && ['inline', 'on_request'].includes(r2?.delivery),
+    JSON.stringify(r2 && { include: r2.include, delivery: r2.delivery }),
+  );
   const amber2 = await amber();
   check('chip 2 not amber', !amber2.amber, JSON.stringify(amber2.mismatches));
 
@@ -362,14 +445,22 @@ try {
   await panel.waitForTimeout(1500);
   await shot(panel, '14-sent-values');
   const pageBriefRow = panel.locator('[role=row][data-key="page_brief"] button').last();
-  await pageBriefRow.click().catch((e) => console.log('  no page_brief row on the sent message', String(e).slice(0, 120)));
+  await pageBriefRow
+    .click()
+    .catch((e) => console.log('  no page_brief row on the sent message', String(e).slice(0, 120)));
   await panel.waitForTimeout(5000);
   await shot(panel, '15-value-opened');
   const viewerText = (await panel.locator('body').innerText()).replace(/\n+/g, ' | ');
   const at = viewerText.search(/Lighthouse/i);
   console.log('  [viewer]', viewerText.slice(Math.max(0, at - 300), at + 500));
-  check('opening a value shows the delivered text', at >= 0 && /wikipedia|lighthouse/i.test(viewerText.slice(at, at + 2000)));
-  writeFileSync(join(SHOTS, 'receipts.json'), JSON.stringify({ conversationId, first, second }, null, 2));
+  check(
+    'opening a value shows the delivered text',
+    at >= 0 && /wikipedia|lighthouse/i.test(viewerText.slice(at, at + 2000)),
+  );
+  writeFileSync(
+    join(SHOTS, 'receipts.json'),
+    JSON.stringify({ conversationId, first, second }, null, 2),
+  );
 } finally {
   writeFileSync(join(SHOTS, 'network.txt'), net.join('\n'));
   await context.close();

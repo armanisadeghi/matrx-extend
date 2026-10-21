@@ -3404,10 +3404,10 @@ Every entry follows this shape:
 
 ### External calls respect action-specific permission tiers
 
-- **What it does:** page, frontend, and desktop callers cannot run an action that a router tool classifies as privileged or ask-user, even when its default tier is read or action.
-- **Where to test:** external tool bridge; regression command `pnpm exec vitest run tests/unit/external-dispatch-tier.test.ts`.
-- **Steps:** request a router tool's privileged action through the external bridge in Act mode, then request its read action.
-- **Expected:** the privileged action is refused before handler execution or receipt/timeline emission; the valid read action still executes. This does not grant a desktop agent a delegated browser session.
+- **What it does:** a web page or the web app cannot run a privileged or ask-user tool (including a router tool's privileged or ask-user action). A desktop app (Matrx 2, or Matrx Local's general channel) can: the person is asked first with the approval card, in every mode, and the tool runs only on Allow. An organization may set `extension.desktop_callers.privileged_tools` to `follow_act_without_asking`, and then these calls run without asking when the person has Act without asking on (and still ask when it is off). No setting means ask.
+- **Where to test:** external tool bridge and a connected Matrx 2; regression commands `pnpm exec vitest run tests/unit/external-dispatch-tier.test.ts tests/unit/desktop-channels-identical-decisions.test.ts`; end to end in matrx-desktop `test/live/extension-matrx2-only-live.mjs`.
+- **Steps:** from Matrx 2, call `cdp_full_page_screenshot` with the side panel open, in Act mode. Press Allow on the card. Call it again and press Deny. From a web page, request a router tool's privileged action.
+- **Expected:** the card appears before the screenshot is taken; Allow returns the picture; Deny returns "User denied this action"; no answer in 5 minutes returns "Approval timed out". The web page's privileged request is refused before the handler runs or any receipt/timeline entry is emitted. Matrx 2 and Matrx Local decide every tool the same way.
 
 ## Template (copy when adding a new entry)
 

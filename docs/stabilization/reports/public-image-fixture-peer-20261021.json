@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "status": "pass",
+  "verdict_A": {
+    "status": "PASS",
+    "detail": "Fixture satisfies EXT-F-1007-T42's controlled HTTPS large and medium non-icon precondition. The optional icon target is present, so its absent-copy-control assertion can also be made. The same stable page URL supports warm and extension-reload recapture and per-tier copy checks. This enables native assertions; it does not claim those UI actions have run."
+  },
+  "verdict_B": {
+    "status": "PASS",
+    "detail": "The fixture is a small source-only static asset set. HTML has no script, API call, authentication flow, secret, or data write. All three HTML URLs are exact absolute HTTPS URLs, and the manifest hashes match the authored SVG bytes. No existing tracked file is overwritten."
+  },
+  "findings": [],
+  "evidence": {
+    "inventory": "docs/stabilization/inventory.json: EXT-F-1007-T42 requires one guaranteed large and one medium non-icon image with distinct src values; permits an optional icon; requires exact src copy checks warm and after extension reload.",
+    "classifier": "src/lib/scrape/classify-images.ts: min dimension >=160 is large, 48-159 is medium, and <48 is icon; all three fixture images have intrinsic dimensions, so URL hints do not affect their bucket.",
+    "fixture_version": "2026-10-21-v1",
+    "images": [
+      {
+        "src": "https://www.aimatrx.com/matrx-extend-fixtures/harbor-scene.svg",
+        "html_dimensions": [640, 480],
+        "svg_dimensions": [640, 480],
+        "bytes": 840,
+        "sha256": "529d30e4fb98f8b321b379f5b9f3907ab92cee9129d166465e1d85d99cc5e743",
+        "expected_tier": "large",
+        "verified": true
+      },
+      {
+        "src": "https://www.aimatrx.com/matrx-extend-fixtures/parcel-card.svg",
+        "html_dimensions": [96, 96],
+        "svg_dimensions": [96, 96],
+        "bytes": 600,
+        "sha256": "f24ddda075422d0617f74c8310fe2ff9e436b9f1b29ed5d1f013cc5ac416acee",
+        "expected_tier": "medium",
+        "verified": true
+      },
+      {
+        "src": "https://www.aimatrx.com/matrx-extend-fixtures/green-marker.svg",
+        "html_dimensions": [32, 32],
+        "svg_dimensions": [32, 32],
+        "bytes": 318,
+        "sha256": "d0b862c39bf5ccd9a64f321ef51e340d55d8752444e95f90936022ec9653a040",
+        "expected_tier": "icon",
+        "verified": true
+      }
+    ],
+    "serving": "The files are under the Next.js public/ directory and use the standard root-relative public asset path expected by the app's normal deployment. Source/config review only; no live HTTP request was made.",
+    "git_state": "All five fixture files are new untracked files under public/matrx-extend-fixtures; git diff --name-status shows no existing-file edits."
+  },
+  "files_touched": ["docs/stabilization/reports/public-image-fixture-peer-20261021.json"],
+  "limits": [
+    "No live deployment or public HTTP response was inspected.",
+    "No native browser copy/reload actions were run; this review establishes fixture suitability only.",
+    "The manifest records SHA-256 values; byte lengths above were measured from the files during review.",
+    "Member and admin identity modes still require their own native runs per the inventory."
+  ],
+  "nextaction": "Root may include the fixture and this review in the normal synchronized-main push. After the normal deployment, run the receipt-bound native T42 checks warm and after extension reload, recording large, medium, optional icon, and clipboard outcomes separately."
+}

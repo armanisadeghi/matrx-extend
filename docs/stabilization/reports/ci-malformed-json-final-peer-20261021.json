@@ -1,0 +1,54 @@
+{
+  "review": "EXT-D-0278 malformed GitHub proof JSON, final independent verification",
+  "date": "2026-10-21",
+  "verdictA_behavior_scope": {
+    "status": "source_boundary_pass",
+    "finding": "githubJson awaits response.json() inside its try/catch. Malformed HTTP 200 JSON from either the artifact listing or the associated run-details response resolves null through latestSuccessfulDevelopmentArtifactSource. The CLI source maps null proof to scope full, and ci.yml gates full verification on a non-docs scope.",
+    "limit": "The malformed-proof CLI invocation and hosted workflow routing were reviewed in source only. No hosted CI result or live product behavior is claimed."
+  },
+  "verdictB_test_quality": {
+    "status": "forcing_gut_pass_with_routing_limit",
+    "finding": "The fixture covers malformed artifact-listing and run-details JSON. The existing successful-artifact input asserts the positive source SHA; a syntactically valid constant-null replacement fails exactly that assertion, so the source-level test is not satisfiable by constant null. The added malformed fixture does not itself execute the CLI and assert scope full."
+  },
+  "builder_journals_reviewed_in_full": [
+    {
+      "journal": "docs/stabilization/resource-journals/ci-malformed-json-red-20261021-1646.jsonl",
+      "observed": "admitted; child exit 1; resourceInvalid false; final child_failed. Builder's captured test output reports 15 passed and 1 SyntaxError failure before repair."
+    },
+    {
+      "journal": "docs/stabilization/resource-journals/ci-malformed-json-green-20261021-1647.jsonl",
+      "observed": "admitted; child exit 0; resourceInvalid false; final valid. Builder reports 16 passed."
+    },
+    {
+      "journal": "docs/stabilization/resource-journals/ci-malformed-json-final-20261021-1648.jsonl",
+      "observed": "admitted; child exit 0; resourceInvalid false; final valid. Builder reports 16 passed with malformed run-details case."
+    },
+    {
+      "journal": "docs/stabilization/resource-journals/ci-malformed-json-lint-20261021-1650.jsonl",
+      "observed": "admitted; child exit 0; resourceInvalid false; final valid. Builder reports lint exit 0."
+    }
+  ],
+  "independent_gut_attempts": [
+    {
+      "journal": "docs/stabilization/resource-journals/ci-malformed-json-final-gut-peer-20261021-1710.jsonl",
+      "credit": "none",
+      "observed": "First plant supplied a literal backslash-n, causing JavaScript SyntaxError before tests loaded. Normal resource guard admitted; child exit 1; resourceInvalid false; final child_failed. plant.py returned RED-BUT-UNNAMED and process exit 1. The attempt is invalid as a behavior gut check. plant.py restored the exact original bytes."
+    },
+    {
+      "journal": "docs/stabilization/resource-journals/ci-malformed-json-final-gut-peer-20261021-1711.jsonl",
+      "credit": "valid",
+      "command": "python3 .claude/skills/forcing-function-tests/plant.py --file scripts/ci-change-scope.mjs --old <artifact-listing statement> --new <return null; followed by same statement> --expect red --must-mention <artifact proof test name> -- node scripts/stabilization-resource.mjs run --run-id ci-malformed-json-final-gut-peer-20261021-1711 -- node --test scripts/ci-change-scope.test.mjs",
+      "observed": "Normal resource guard admitted; 16 tests, 15 passed, 1 failed. The successful-artifact fixture expected aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa but received null at ci-change-scope.test.mjs:124. Child exit 1; resourceInvalid false; final child_failed. plant.py VERDICT RED and process exit 0."
+    }
+  ],
+  "restore": {
+    "status": "identical",
+    "source_sha256_before_and_after": "d1330be573a3f073a6c951304b01c07c52737d59bd9cd7c2bd22f5452a443298",
+    "git_diff_check_exit": 0
+  },
+  "first_peer_findings": {
+    "malformed_run_json_missing": "addressed by second malformed run-details fixture and final 16-of-16 builder run",
+    "executed_return_expected_gut_missing": "addressed by valid constant-null mutant that failed the positive SHA assertion",
+    "CLI_routing_source_only": "still open as an execution-evidence limit"
+  }
+}

@@ -29921,7 +29921,13 @@
               "detail": "Frozen584 source81bc normal artifact; role/build bound, warm and post-reload main/smaller exact full URL matches; fixture gaps remain. Owned tabs closed, guard valid0/process0.",
               "evidence": "docs/stabilization/reports/guest584-image-copy-20261021.json"
             }
-          ]
+          ],
+          "fixture_readiness": {
+            "source_commit": "ai-matrx@069d6f3790",
+            "manifest_url": "https://www.aimatrx.com/matrx-extend-fixtures/images-manifest.json",
+            "status": "source_and_manifest_peer_pass; public_delivery_unverified_HTTP404; release_trigger_proposal_held_by_existing_cost_guard",
+            "evidence": "docs/stabilization/reports/continuation-checkpoint-20261021-1638.json"
+          }
         },
         {
           "id": "EXT-F-1007-T43",
@@ -29981,6 +29987,15 @@
               "evidence": [
                 "docs/stabilization/reports/scrape-dialog-current-native-20261020.json"
               ]
+            },
+            {
+              "at": "2026-10-21T16:28:21.277Z",
+              "run_id": "guest584-save-dismiss-20261021-1620",
+              "mode": "guest intended; product identity not entered",
+              "status": "unverified_access_prerequisite",
+              "new_acceptance_credit": false,
+              "detail": "Readonly DB no-write baseline could not authenticate through configured operator keys. Vault metadata-only lookup did not recover scoped operator credential; no secret/DB change. Native Save dismissal actions never started; existing server-side SQL UI remains a possible operator path. Root guard valid0/process0 only.",
+              "evidence": "docs/stabilization/reports/continuation-checkpoint-20261021-1638.json"
             }
           ]
         },
@@ -31957,9 +31972,31 @@
                     "docs/stabilization/resource-journals/guest-seo-restricted579-20261021.jsonl"
                   ],
                   "scope": "Only actual postmanagerReload579/Profile10 guestUI evidence; oldwarm578sourceunboundexcluded. Freshpeer validated provenance/journal, no independentUIreplay. 27/25calls overbudget, one oldExtensions tabclosed; no auth/fixturewrites. Other schemes/unreachableHTTP, fullwarm/reload/currentmain/Store/otherroles remainunverified."
+                },
+                {
+                  "source_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
+                  "build_version": "0.2.584",
+                  "development_ci_run_id": 39627131118,
+                  "development_artifact_id": 12358153358,
+                  "tree_sha256": "44d70281e1b832731c8a2fceb3edced8a905ecfecf45ac5d1bc3c8f6644a130c",
+                  "run_id": "guest584-seo-unreachable-20261021-1632",
+                  "status": "partial",
+                  "resource_valid": true,
+                  "observed_subtargets": [
+                    "warm_and_post_manager_reload_reserved_https_nxdomain_clear_failure_no_stale_audit",
+                    "warm_and_post_manager_reload_data_scheme_clear_failure_no_stale_audit",
+                    "warm_and_post_manager_reload_chrome_internal_clear_error_no_stale_audit",
+                    "public_demo_real_audit_recovers_after_failure_matrix"
+                  ],
+                  "evidence": [
+                    "docs/stabilization/reports/guest584-seo-failure-matrix-20261021.json",
+                    "docs/stabilization/reports/seo584-evidence-peer-20261021.json",
+                    "docs/stabilization/resource-journals/guest584-seo-unreachable-20261021-1632.jsonl"
+                  ],
+                  "scope": "Native operator observations only fresh evidence-only peer reviewed;58/48calls overbudget,465seconds<480. No independent native replay, wholecase/otherroles/currentmain/Store/defectclosure. Fulljournalvalid0 and actualguardprocessexit0."
                 }
               ],
-              "detail": " Reviewed frozen guest controlled run38041517954 adds 2 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Current frozen579 adds only two independently evidence-reviewed postmanagerReload internal-error/recovery subtargets; oldwarm578notcredited. FullT03 stayspartial."
+              "detail": " Reviewed frozen guest controlled run38041517954 adds 2 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Current frozen579 adds only two independently evidence-reviewed postmanagerReload internal-error/recovery subtargets; oldwarm578notcredited. FullT03 stayspartial. Frozen584 adds warm/reload DNS failure, data scheme and internal-page observations with public recovery; overcallbudget and independent native retest remain explicit. No fullcasepromotion."
             }
           },
           "result_history": [
