@@ -1,0 +1,18 @@
+{
+  "case_id": "EXT-F-1003-T04",
+  "decision": "PASS on frozen 11ff2cf/0.2.579, qualified to the reported native UI evidence; no independent Dark or System reload replay claim",
+  "product": "Initial operator reports guest Sign in/Email \u2014, System/Light/Dark warm selected value plus matching rendered appearance, each surviving a separate actual DEV manager Reload/reopen; original System restored. Admitted peer retry independently confirms signed-out guest, System baseline/restore, Light warm appearance and Light persistence after actual manager Reload/reopen.",
+  "frozen_artifact": "Both reports agree CI run 39546376658 artifact 12322875129, zip 2725c271, tree d782f017, source 11ff2cf, DEV ID cihdmkcdjjckfhjpgoedmgfpoljebaml version 0.2.579. Current report corrects WXT mode to production with history; DEV is channel. On-disk manifest shows Matrx Extend DEV 0.2.579. Full CI/promotion receipt was not independently located in this bounded review; provenance beyond report concordance remains reported.",
+  "resources": "Operator journal RESOURCE_ADMITTED 05:22:56 and valid terminal 05:25:21. Peer first journal had no ADMITTED, ended refused at 05:28:24; all its product observations get zero credit. Peer retry journal admitted 05:29:50, healthy, valid terminal 05:30:16. All three owned holders terminal.",
+  "peer_timing": "Peer report states retry UI was after admission and before stop, but exact per-action timestamps are unavailable. Journal establishes lease boundaries only. First attempt UI began before admission; disclosure is necessary and present in peer report.",
+  "limits": "No independently replayed Dark/System manager reload; those remain initial-operator observations. Screenshots were observed in native CUA but not exported. No backend assertion. Guest signed-out proof and final original System restoration are in both reports; no other preferences reported changed.",
+  "quality": "Peer call count is 20 total (10 inadmissible first attempt plus 10 admitted retry); earlier 17 figure conflicts and should be corrected, but does not by itself invalidate the independently reported admitted retry. Current owner report's resource chronology is valid; peer's first attempt is a procedure breach and must remain disclosed.",
+  "recommendation": "Record T04 PASS with explicit operator three-state coverage plus independent Light confirmation and provenance/resource caveats; avoid wording that says every state was independently replayed or that the first peer attempt was valid. Require literal RESOURCE_ADMITTED before future UI input.",
+  "owner_evidence_supplement": {
+    "at_utc": "2026-10-21T05:34:58.291937+00:00",
+    "ci_independent_observation": "Root gh run view39546376658 completed/success/source11ff; GitHub artifact12322875129 digest2725c2712d71ab26733c7fecf02f7e16d374e4d351d06fba58b62c9cf49c1ea7",
+    "actual_trees": "Root canonical hashReleaseTree of immutable import and promotedfolder both d782f017d88b7e90b7481b59c98767f71c76ffc7a8532adb7a419ac9bd22b1cb, match normalpromotionreceipt",
+    "source_compatibility": "Normal sourceCompatibility verified source11ff->main d4343a164cc4dea79756f5d1154510d59ead203e docs-only runtime-equivalent",
+    "call_count_correction": "Current committed peerreport d4343a164 has total20=10initialinvalid+10validretry, superseding earlier17. No independent per-action timestamps; retain operator chronology limits."
+  }
+}

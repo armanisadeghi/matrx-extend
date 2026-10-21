@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T04:51:09.801388+00:00",
+  "updated_at": "2026-10-21T05:34:58.291937+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -7174,30 +7174,35 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": 39070057081,
-              "resource_valid": true,
-              "source_sha": "741d7771e2c45d020f63ef3b9f2a6ef8ab3ff86c",
-              "development_ci_run_id": 39069298115,
-              "development_artifact_id": 12114317599,
-              "build_version": "0.2.524",
-              "tree_sha256": "46ba41cabedb32eb1cd0df741b951546d1d9dd437fd953b3a7fc311bed0af584",
+              "status": "pass",
+              "run_id": "current-owner-guest-theme-20261021",
+              "peer_run_id": "guest-theme579-native-peer-retry-20261021",
+              "source_sha": "11ff2cfb2ddecba67e7d06dba763b24325ccbe1b",
+              "development_ci_run_id": 39546376658,
+              "development_artifact_id": 12322875129,
+              "build_version": "0.2.579",
+              "tree_sha256": "d782f017d88b7e90b7481b59c98767f71c76ffc7a8532adb7a419ac9bd22b1cb",
               "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
-              "runner_id": 1000110200,
-              "passed_criteria_count": 1,
-              "unverified_criteria_count": 3,
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "pass"
+              },
+              "resource_valid": true,
               "passed_subtargets": [
-                "Dark selection, stored value dark, document dark class, and rendered background matched during the warm Settings observation."
-              ],
-              "unverified": [
-                "Nondefault theme persistence after panel reload; full extension reload; other 18 scheduled controls."
+                "Light selected and visibly white warm and after actual manager Reload/reopen",
+                "Dark selected and visibly charcoal warm and after actual manager Reload/reopen",
+                "System selected and charcoal matching independently measured OS Dark warm and after actual manager Reload/reopen",
+                "Original System preference restored; independent Light persistence replay and System restoration"
               ],
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-controls-39070057081.json",
-                "docs/stabilization/evidence/settings-controls-b-39070057081/native-report.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-b-39070057081/native-side-panel.png"
+                "docs/stabilization/reports/current-owner-guest-theme-20261021.json",
+                "docs/stabilization/reports/guest-theme-native-peer-20261021.json",
+                "docs/stabilization/reports/theme579-final-evidence-review-20261021.json",
+                "docs/stabilization/reports/theme579-owner-binding-20261021.json",
+                "docs/stabilization/resource-journals/current-owner-guest-theme-20261021.jsonl",
+                "docs/stabilization/resource-journals/guest-theme579-native-peer-retry-20261021.jsonl"
               ],
-              "detail": "Latest current-source guest attempt is partial: the warm Dark selection/render/storage criteria were observed, but the panel reload readiness check failed and persistence was not proved. The guest acceptance job failed after one recovery observation; this is not attributed to the theme product without a separate reproduction. No other scheduled control receives pass credit."
+              "detail": "Actual guest Profile10 Settings Sign in/Email— and correctDEV origin/path/Reload bind frozen579/11ff. First operator32/40CUAcalls all3states; independent native peer repeated Light/fullReload and restored System, not Dark/System reload. Peer initial premature preADMITTED attempt refused/zero credit; only separate admitted retry counts. Peer20calls=10invalid+10valid, bothholders terminal. Fullvalidjournals, no mocks/interception, visual screenshots observed not exported. WXT production compilation/keyeddevelopmentchannel corrected withhistory. Backend/otherroles/Store/fullSettings/linkeddefectclosure not inferred."
             }
           },
           "linked_defects": [
@@ -7666,6 +7671,37 @@
               },
               "superseded_at": "2026-10-17T21:25:49Z",
               "reason": "Retained earlier exact-artifact bounded pass. Newer current-source run 39070057081 observes the Dark choice and rendered appearance but fails during panel reload, so persistence on the current source remains partial."
+            },
+            {
+              "at": "2026-10-21T05:34:58.291937+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 39070057081,
+                "resource_valid": true,
+                "source_sha": "741d7771e2c45d020f63ef3b9f2a6ef8ab3ff86c",
+                "development_ci_run_id": 39069298115,
+                "development_artifact_id": 12114317599,
+                "build_version": "0.2.524",
+                "tree_sha256": "46ba41cabedb32eb1cd0df741b951546d1d9dd437fd953b3a7fc311bed0af584",
+                "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+                "runner_id": 1000110200,
+                "passed_criteria_count": 1,
+                "unverified_criteria_count": 3,
+                "passed_subtargets": [
+                  "Dark selection, stored value dark, document dark class, and rendered background matched during the warm Settings observation."
+                ],
+                "unverified": [
+                  "Nondefault theme persistence after panel reload; full extension reload; other 18 scheduled controls."
+                ],
+                "evidence": [
+                  "docs/stabilization/runs/hosted-settings-controls-39070057081.json",
+                  "docs/stabilization/evidence/settings-controls-b-39070057081/native-report.sanitized.json",
+                  "docs/stabilization/evidence/settings-controls-b-39070057081/native-side-panel.png"
+                ],
+                "detail": "Latest current-source guest attempt is partial: the warm Dark selection/render/storage criteria were observed, but the panel reload readiness check failed and persistence was not proved. The guest acceptance job failed after one recovery observation; this is not attributed to the theme product without a separate reproduction. No other scheduled control receives pass credit."
+              },
+              "reason": "Preserve earlier partial warm-only result; new frozen579 actual three-theme full-manager-Reload evidence plus independent admitted nondefault replay."
             }
           ],
           "attempt_history": [
