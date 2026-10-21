@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "test_id": "EXT-F-1007-T43",
+  "run_id": "b8-source-dismiss-warm-20261021-1733",
+  "review_type": "independent evidence-only peer review",
+  "verdict_a_behavior_evidence": {
+    "result": "BOUNDED_UI_OBSERVATIONS_ONLY",
+    "accepted_observations": [
+      "Warm Close Save Source returned to the captured Scrape Article; the fixture heading and Re-capture remained visible.",
+      "Warm Escape returned to the captured Scrape Article; the fixture heading and Re-capture remained visible."
+    ],
+    "basis": "Primary report records both actions on the guest profile after a manager reload, and identifies the captured fixture. These are bounded UI observations only; no independent native replay occurred.",
+    "full_case_pass": false,
+    "postreload_dismissal": "NOT_RUN",
+    "database_no_write": "UNVERIFIED",
+    "member_admin_store": "UNVERIFIED"
+  },
+  "verdict_b_binding_resource_budget_cleanup": {
+    "result": "PARTIAL_VALID_RUN_WITH_CLEANUP_OPEN",
+    "binding": "Reported DEV 0.2.584 extension ID, output path, CI run 39640552208 and artifact 12365851226; root confirmed artifact tree hash fcf63381e73def118ca91ee94eed5bed48323206f964ef5067e57dacbaacdc6f and runtime-equivalent main tree 5fec before UI.",
+    "resource_journal": "All 16 entries reviewed. Admission and recurring samples have empty reasons; final decision at 2026-10-21T17:36:35.422Z is valid, resourceInvalid false, exitCode 0. Root confirms actual exec process exit 0.",
+    "budget": "32 of 32 CUA calls used; run stopped at cap.",
+    "cleanup": "Three owned tabs remain open by explicit handoff: guest extensions manager, guest fixture, and owner SQL UI. Cleanup is outstanding.",
+    "separate_from_invalid_prior_batch": true
+  },
+  "contradictions_and_limits": [
+    "The report's UI observations support only warm Close and Escape; the inventory requires both warm and reload dismissal paths and a no-write result.",
+    "The SQL UI returned only a generic success message, with no observed timestamp, row count, or digest; no after-read occurred.",
+    "The current inventory still records T43 as unverified, consistent with this bounded evidence and the earlier invalid run remaining excluded."
+  ],
+  "recommendation": "Retain the two warm UI observations as bounded evidence. Keep T43 partial/unverified with no no-write credit until a fresh aggregate read and remaining required dimensions are evidenced; complete owned-tab cleanup under a valid resource guard."
+}

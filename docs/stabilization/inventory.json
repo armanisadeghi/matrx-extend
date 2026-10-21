@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T17:24:00Z",
+  "updated_at": "2026-10-21T17:53:00Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -426,7 +426,8 @@
           ],
           "linked_defects": [
             "EXT-D-0256",
-            "EXT-D-0278"
+            "EXT-D-0278",
+            "EXT-D-0279"
           ],
           "latest_candidate_checkpoint": {
             "version": "0.2.562",
@@ -30016,28 +30017,77 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "guest584-source-dismiss-20261021-1710",
+              "status": "pass",
+              "run_id": "t43-sql-fresh-20261021-1748",
               "build_version": "0.2.584",
-              "source_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
-              "new_acceptance_credit": false,
-              "resource_valid": false,
-              "detail": "No canonical productPASS: sharedprimary+peer lease invalid3 at17:13:50 afterpressure2; raw4dismissal observations retained but excluded. DBfreshafter-read unverified; independentpeer stoppedbeforeoriginalreplay. Separatecleanupvalid0 closedownedSQL, ownerrefreshvalid0 laterclosed2ownedGuesttabs. AllUIstopped; ownerDEVnownewb8artifact, so nextT43run mustrecordnewtuple.",
-              "unverified_dimensions": [
-                "resource-valid warm Close and Escape",
-                "resource-valid postReload Close and Escape",
-                "fresh authoritative aggregate no-write",
-                "independent original-reproduction retest"
-              ],
+              "source_sha": "b8e31fbb2207b2318a4d1cb2972578c94b56710c",
+              "artifact_id": 12365851226,
+              "tree_sha256": "fcf63381e73def118ca91ee94eed5bed48323206f964ef5067e57dacbaacdc6f",
+              "resource_valid": true,
               "evidence": [
-                "docs/stabilization/reports/guest584-source-dismiss-native-20261021.json",
-                "docs/stabilization/reports/source-dismiss-fresh-native-peer-20261021.json",
-                "docs/stabilization/reports/source-dismiss-owned-tab-cleanup-20261021.json",
-                "docs/stabilization/reports/owner-b8-native-reload-20261021.json",
-                "docs/stabilization/resource-journals/guest584-source-dismiss-20261021-1710.jsonl"
-              ]
+                "docs/stabilization/reports/t43-fresh-sql-native-20261021.json",
+                "docs/stabilization/reports/t43-final-evidence-peer-20261021.json",
+                "docs/stabilization/reports/b8-source-dismiss-warm-native-20261021.json",
+                "docs/stabilization/resource-journals/t43-sql-fresh-20261021-1748.jsonl"
+              ],
+              "detail": "Fresh independent native operator repeated CloseX/Escape warm and after actual manager+page Reload/recapture, retained capture. Cache-off SQL two distinct fresh before timestamps and later after timestamp: matching processed_documents count1 and fullrowdigest unchanged. Complete resource journal valid0/actualprocess0;3ownedtabsclosed/cache restored. Separate evidencepeer A/B accepts guestcase onfrozenb8. No blanket alltable/nointermediatewrite claim, member/admin/currentmain/Store unverified."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "guest584-source-dismiss-20261021-1710",
+                "build_version": "0.2.584",
+                "source_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
+                "new_acceptance_credit": false,
+                "resource_valid": false,
+                "detail": "No canonical productPASS: sharedprimary+peer lease invalid3 at17:13:50 afterpressure2; raw4dismissal observations retained but excluded. DBfreshafter-read unverified; independentpeer stoppedbeforeoriginalreplay. Separatecleanupvalid0 closedownedSQL, ownerrefreshvalid0 laterclosed2ownedGuesttabs. AllUIstopped; ownerDEVnownewb8artifact, so nextT43run mustrecordnewtuple.",
+                "unverified_dimensions": [
+                  "resource-valid warm Close and Escape",
+                  "resource-valid postReload Close and Escape",
+                  "fresh authoritative aggregate no-write",
+                  "independent original-reproduction retest"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/guest584-source-dismiss-native-20261021.json",
+                  "docs/stabilization/reports/source-dismiss-fresh-native-peer-20261021.json",
+                  "docs/stabilization/reports/source-dismiss-owned-tab-cleanup-20261021.json",
+                  "docs/stabilization/reports/owner-b8-native-reload-20261021.json",
+                  "docs/stabilization/resource-journals/guest584-source-dismiss-20261021-1710.jsonl"
+                ]
+              },
+              "superseded_at": "2026-10-21T17:44Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "b8-source-dismiss-warm-20261021-1733",
+                "build_version": "0.2.584",
+                "source_sha": "b8e31fbb2207b2318a4d1cb2972578c94b56710c",
+                "artifact_id": 12365851226,
+                "tree_sha256": "fcf63381e73def118ca91ee94eed5bed48323206f964ef5067e57dacbaacdc6f",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "warm_close_x_dismisses_and_retains_capture",
+                  "warm_escape_dismisses_and_retains_capture"
+                ],
+                "unverified_dimensions": [
+                  "fresh_authoritative_before_after_no_write",
+                  "postreload_close_and_escape_on_b8",
+                  "independent_native_original_replay"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/b8-source-dismiss-warm-native-20261021.json",
+                  "docs/stabilization/reports/b8-warm-dismiss-evidence-peer-20261021.json",
+                  "docs/stabilization/resource-journals/b8-source-dismiss-warm-20261021-1733.jsonl"
+                ],
+                "detail": "Only2warm nativeUIobservations onactualGuestProfile10/newb8DEVReload/SignInEmail— with16entryvalid0/process0 guard. Sourceandreceiptmatching; evidence-onlyfreshpeer, no nativepeer. SQLUIgenericmessagegave no freshaggregate; no-writeunknown, entirecasepartial. Previoussource81sharedinvalidbatch retainszerocredit."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T44",

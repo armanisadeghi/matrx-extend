@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "test_id": "EXT-F-1007-T43",
+  "run_id": "b8-source-dismiss-warm-20261021-1733",
+  "status": "PARTIAL_DB_NO_WRITE_UNVERIFIED",
+  "ui_status": "STOPPED_AT_CUA_CAP",
+  "cua_calls": 32,
+  "cua_call_limit": 32,
+  "environment": {
+    "browser": "Google Chrome native on macOS",
+    "guest_profile": "Matrx Guest Test",
+    "guest_profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_version": "0.2.584",
+    "extension_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "manager_reload_before_warm_test": true,
+    "manager_reload_ui_feedback": "Reloaded",
+    "artifact_commit": "b8e31fbb2207b2318a4d1cb2972578c94b56710c",
+    "artifact_run_id": "39640552208",
+    "artifact_id": "12365851226",
+    "artifact_tree": "fcf63381e73def118ca91ee94eed5bed48323206f964ef5067e57dacbaacdc6f",
+    "guest_settings_email": "—",
+    "guest_settings_sign_in_button": true,
+    "fixture_url": "https://www.aimatrx.com/matrx-extend-demo",
+    "fixture_heading": "A clear three-stage browser workflow"
+  },
+  "cases": [
+    {
+      "name": "warm Close Save Source",
+      "result": "PASS_UI_OBSERVATION",
+      "evidence": "Captured the public demo fixture; Save opened Save Source; Close Save Source returned to the Scrape Article with the fixture heading and Re-capture still visible."
+    },
+    {
+      "name": "warm Escape",
+      "result": "PASS_UI_OBSERVATION",
+      "evidence": "Reopened Save Source and pressed Escape; the captured Scrape Article, fixture heading, and Re-capture remained visible."
+    }
+  ],
+  "database_check": {
+    "method": "Existing authenticated owner Chrome profile, legacy Admin Dashboard SQL Query UI; read-only aggregate SELECT",
+    "read_only_query": "select clock_timestamp() as observed_at, count(*) as matching_rows, md5(coalesce(string_agg(md5(to_jsonb(p)::text), '' order by p.id), '')) as row_state_digest from docproc.processed_documents p where canonical_identity like '%www.aimatrx.com/matrx-extend-demo%';\n",
+    "before_query_nonce": "b8-before-1735",
+    "before_execute_result": {
+      "result": {
+        "message": "Query executed successfully"
+      }
+    },
+    "before_observed_at": null,
+    "before_matching_rows": null,
+    "before_row_state_digest": null,
+    "after_observed_at": null,
+    "after_matching_rows": null,
+    "after_row_state_digest": null,
+    "no_write_verified": false,
+    "reason": "The SQL UI returned only a success message, without the SELECT result. The CUA cap was reached after opening the dedicated SQL Editor; no second execution or post-action read was performed."
+  },
+  "scope_and_handoff": {
+    "product_save_clicked": false,
+    "add_to_library_clicked": false,
+    "signin_attempted": false,
+    "postreload_phase_attempted": false,
+    "guest_owned_tabs_left_open": [
+      "Profile 10 chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "Profile 10 https://www.aimatrx.com/matrx-extend-demo"
+    ],
+    "owner_owned_sql_tab_left_open": "Arman (armansadeghi.com) https://manage.aimatrx.com/administration/database/sql-queries",
+    "last_observed_resource_journal_health": "2026-10-21T17:35:47.791Z RESOURCE_WATCH_HEALTHY",
+    "stop_reason": "32 CUA calls; root notified before report write"
+  },
+  "owner_final_resource": {
+    "journal": "docs/stabilization/resource-journals/b8-source-dismiss-warm-20261021-1733.jsonl",
+    "entries": 16,
+    "final_at": "2026-10-21T17:36:35.422Z",
+    "decision": "valid",
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "actual_exec_exit": 0,
+    "native_acceptance_limit": "Only two warmUIobservations; no independentnative replay and no DBno-write proof."
+  },
+  "owner_readback_diagnosis": {
+    "source_anchors": [
+      "ai-matrx/features/administration/hooks/use-database-admin.ts:65",
+      "ai-matrx/features/administration/database-admin/DatabaseAdminDashboard.tsx:186",
+      "ai-matrx/app/(admin)/administration/database/components/enhanced-sql-editor.tsx:106"
+    ],
+    "source_finding": "LegacyDashboard executeQuery(query) defaults useCache=true; exactquerykey cachedresult returns before server call. DedicatedSQLEditor passes its Usecache checkbox value to samehook. This source path explains unchangedtimestamp; livefresh-read recovery remains unverified.",
+    "next_smoke": "In existingowner SQLtab /administration/database/sql-queries, disable page-localUsecache and execute original unchangedreadonlyaggregate twice; require two distinct freshserverclock timestamps/count/digest before any new productactions. NoSQLcomments/nonces or globalClearCache. Restore localcheckbox beforecleanup ifneeded.",
+    "generic_message_cause": "Unknown. Do not call server error/root cause proved from genericmessage; use originalquery with cacheoff first."
+  }
+}

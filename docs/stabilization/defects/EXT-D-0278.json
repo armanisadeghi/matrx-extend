@@ -38,14 +38,18 @@
     "docs/stabilization/reports/ci-malformed-json-peer-20261021.json",
     "docs/stabilization/reports/ci-malformed-json-final-peer-20261021.json",
     "docs/stabilization/reports/owner-b8-native-reload-20261021.json",
-    "docs/stabilization/reports/b8-refresh-final-evidence-peer-20261021.json"
+    "docs/stabilization/reports/b8-refresh-final-evidence-peer-20261021.json",
+    "docs/stabilization/reports/ci-scope-cli-forcing-guard-20261021.json",
+    "docs/stabilization/reports/ci-cli-fresh-peer-20261021.json",
+    "docs/stabilization/reports/ci-cli-final-fresh-peer-20261021.json",
+    "docs/stabilization/reports/ci-cli-hash-final-peer-20261021.json"
   ],
   "reproducibility": "Original live queue cancellation and failed first source review retained. Corrective fixtures and fresh peer establish source repair; original hosted queue/artifact and owner-reload retest pending.",
   "attempted_source_sha": "9ebbb76bdb4be1a9dcc823954d9934f4c81baf69",
   "fix_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
-  "reviewer": "/root/ci_proof_fresh_review: source A pass with hosted confirmation pending; B pass with minor conservative extra-run concern",
-  "verification_limits": "Correctedsource719 is now in successfulmainb8 fullCI39640552208 andFocused39640552226. Normalartifact12365851226 import/promotion, rootbefore/aftertreehash and actualownerProfile8DEV584Reload/path/ID/pins/panelverified under valid0/process0 guard, with freshevidencepeer. Malformedproof CLI direct invocation and actualcancelled-runtime ancestor sequencing remain source/fixture-only; keepfixed, notclosed. No productcasePASS.",
-  "next_action": "Fresh independent closure review should assess originalcancelled-runtime ancestor guard against remaining limitations; preservefixed state until gate is proven. Continue newb8 nativeT43 with short separate primary/peer leases and freshaggregate timestamps. PreservependingStore577.",
+  "reviewer": "/root/ci_cli_hash_final_peer: final local CLI A/B PASS; original hosted cancelled-runtime queue scenario remains unverified",
+  "verification_limits": "Corrected source719 passed hosted fullCI39640552208 and normalb8 import/ownerReload. New actualCLI process matrix covers malformed listing/run JSON, HTTP503, validemptylisting, provenancestor docs and unverifiedruntimeancestor full; 22guardedtests green and two meaningful routingmutants red withcapturedstdout/exactrestore. Fresh finalpeer A/B PASS after emptylisting and exactcapture-hash remedies. Actual cancelled-runtime hosted queue reproduction remains unverified; keepfixed, notclosed. No productcasePASS.",
+  "next_action": "Integrate22caseCLIguard; verify currentmain fullCI/artifact then ownerChrome refresh. Keepfixed until originalhosted cancelled-runtime scenario is independently verified; preservependingStore577.",
   "transition_history": [
     {
       "at": "2026-10-21T15:20Z",

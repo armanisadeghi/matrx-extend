@@ -1,0 +1,26 @@
+{
+  "task_id": "EXT-D-0278",
+  "reviewer": "fresh independent peer",
+  "reviewed_paths": [
+    "scripts/ci-change-scope.test.mjs",
+    "scripts/ci-change-scope.mjs",
+    "docs/stabilization/reports/ci-scope-cli-forcing-guard-20261021.json",
+    "docs/stabilization/resource-journals/ci-scope-cli-green-20261021-1738.jsonl",
+    "docs/stabilization/resource-journals/ci-scope-cli-bad-route-red-20261021-1739.jsonl",
+    "docs/stabilization/resource-journals/ci-scope-cli-constant-full-red-20261021-1740.jsonl"
+  ],
+  "verdict_a": "PARTIAL for the full requested behavior matrix; PASS for exercised cases. The new CLI-process cases assert full scope for malformed artifact-listing JSON, malformed workflow-run JSON, and HTTP 503; docs scope when a successful artifact proves the docs commit's ancestor; and full scope when the event range is docs-only but an unverified runtime commit follows the proven artifact. Each checks the JSON result and exact GITHUB_OUTPUT value. There is no CLI-process case for a valid empty artifact listing / absent matching artifact, so absent proof is not independently demonstrated by this addition.",
+  "verdict_b": "PARTIAL. The test crosses the real CLI process, Git histories, and local HTTP boundary, and the two reported mutations target opposite routing failures (bad proof routed to docs; unconditional full). However, the supplied resource journals contain admission and child exit records only; they do not include commands, test output, planted diff, or restoration events. Thus the reported mutation red results and sequence are not independently established from these journals. Current production script SHA-256 matches the report's before/after hash d1330be573a3f073a6c951304b01c07c52737d59bd9cd7c2bd22f5452a443298, and it has no diff, which supports current restoration but not the mutation trail.",
+  "evidence": [
+    "scripts/ci-change-scope.test.mjs:161-312 shows five CLI-process cases, temporary commit histories, a local HTTP server, child-process environment, and assertions on stdout/result paths/GITHUB_OUTPUT.",
+    "scripts/ci-change-scope.mjs returns full when no successful artifact source is found and checks artifact-source-to-head ancestry before docs scope.",
+    "The green, bad-route-red, and constant-full-red JSONL journals each end with a resource decision and child exit code; they do not record test case output or mutation details.",
+    "Independently computed SHA-256 for scripts/ci-change-scope.mjs equals the report's stated before/after hash; git diff has no production-script change.",
+    "git diff --check passes. No tests were launched during this review."
+  ],
+  "actionable_finding": "Add a process-level case where the API returns a valid empty artifacts array (and, if intended as a distinct condition, a nonmatching/expired artifact list), asserting full scope and the exact output line. Preserve the actual command output and plant/restore evidence with the mutation record so the RED claims can be independently checked.",
+  "limits": [
+    "Local fixture evidence only; no hosted CI run was launched or reviewed.",
+    "The test file's claimed 21/21 green result and mutation outcomes are reported by the builder but cannot be confirmed from the supplied resource journals."
+  ]
+}
