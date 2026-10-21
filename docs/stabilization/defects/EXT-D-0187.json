@@ -84,9 +84,10 @@
     "docs/stabilization/reports/member-project-native-20261021.json",
     "docs/stabilization/reports/member-project-native-fresh-peer-20261021.json",
     "docs/stabilization/reports/member-project-native-39524463666-certificate.json",
-    "docs/stabilization/evidence/member-project-native/run39524463666/native-report.sanitized.json"
+    "docs/stabilization/evidence/member-project-native/run39524463666/native-report.sanitized.json",
+    "docs/stabilization/reports/d187-pending-creation-diagnosis-20261021.json"
   ],
-  "cause": "Original client path omitted name/attach_to and awaited ancillary SEO audit. Subsequent native retest exposed modal focus escape and incomplete one-type browsing. A separate initial-organization hydration race remounted/dismissed the Save form and caused cumulative 10-second test waits; the builder repaired hydration/switch handling and the focused suite now passes. Remaining source sibling: pending destination creation was local to PlaceResults, so the parent Save action could land before the returned destination was staged.",
+  "cause": "Original client path omitted name/attach_to and awaited ancillary SEO audit. Subsequent native retest exposed modal focus escape and incomplete one-type browsing. A separate initial-organization hydration race remounted/dismissed the Save form and caused cumulative 10-second test waits; the builder repaired hydration/switch handling and the focused suite now passes. The pending-destination source sibling was repaired in d610d3937668707526223195e79019981069201d: parent busy state blocks Save/Close/type changes until returned entity is staged. Existing integration tests including 6fa0ceffbeab3b2596332f8f66907937ef6ff248 cover pending/cancel/throw/refusal. Current read-only diagnosis confirms source/test wiring; real pending-create timing and persisted association still need native acceptance, not another source rewrite.",
   "fix_commits": [
     "146a7fc38",
     "2951e87c3",
@@ -172,7 +173,7 @@
     }
   ],
   "closure_requirement": "Fresh peer checks product/source behavior; guarded development build is reloaded in installed Chrome; member/admin real-page save proves custom name, no destination, one and multiple destinations, optional Library, refusal/retry, duplicate rename, responsive confirmation, and scrolling/searching to select a project beyond the first visible rows; surrounding Scrape cases remain green. Guest sign-in flow is rechecked.",
-  "next_action": "Remaining Project late-result/search, multiple/Library/File elsewhere, responsive and role cases; saved Source visual corroboration; full T04/T29 and D187 remain open. Current Project/single run39524463666 and no-destination39519174392 are bounded passes, not full closure. Screenshots still do not corroborate saved Source UI.",
+  "next_action": "Remaining Project late-result/search, multiple/Library/File elsewhere, responsive and role cases; saved Source visual corroboration; full T04/T29 and D187 remain open. Current Project/single run39524463666 and no-destination39519174392 are bounded passes, not full closure. Screenshots still do not corroborate saved Source UI. Pending-create source race is already repaired/test-covered; native pending-window/association/refusal checks remain, do not reopen implementation without a fresh failure.",
   "release": {
     "version": "0.2.458",
     "source_sha": "991a70bee4f06c3e9f93254b9c1679e4f4259a08",
