@@ -23,3 +23,14 @@ describe('parseBlocks — self-closing registered tags', () => {
     expect(open[1]).toMatchObject({ kind: 'xml', inner: 'half', complete: false });
   });
 });
+
+describe('parseBlocks — unquoted attribute ending in a slash (documented current behavior)', () => {
+  it('`<reflection a=b/>`: the unquoted value regex eats the slash, so it is NOT self-closing (an open streaming block)', () => {
+    const blocks = parseBlocks('x <reflection a=b/> tail', known);
+    expect(blocks[1]).toMatchObject({ kind: 'xml', tag: 'reflection', complete: false });
+  });
+  it('quoted values with a slash are still self-closing', () => {
+    const blocks = parseBlocks('<reflection a="b/c"/> tail', known);
+    expect(blocks[0]).toMatchObject({ kind: 'xml', complete: true, raw: '<reflection a="b/c"/>' });
+  });
+});
