@@ -7,7 +7,7 @@
   "auth_mode": "Infrastructure, independent of product role",
   "severity": "S2: current main cannot emit verified development artifact; no public product outage demonstrated",
   "priority": "P1: restore green synchronized main",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root",
   "preconditions": ["origin/main f2bf5eb4b contains latest platform-knob reader update."],
   "reproduction": [
@@ -20,7 +20,8 @@
   "evidence": [
     "GitHub Actions run39652849650 failed Lint log2026-10-21T18:30:11Z",
     "docs/stabilization/reports/d281-format-peer-20261021.json",
-    "docs/stabilization/resource-journals/d280-lint-corrected-20261021.jsonl"
+    "docs/stabilization/resource-journals/d280-lint-corrected-20261021.jsonl",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39656338779"
   ],
   "reproducibility": "Original hosted lint failure identified; merged contributor changes preserved and both exact formatter errors repaired.",
   "transition_history": [
@@ -47,7 +48,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Formatting-only repair independently reviewed; guarded compile, focused batch and corrected full lint pass. Hosted original CI retest remains pending."
+    },
+    {
+      "at": "2026-10-21T19:03:01.496749+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original full hosted CI39656338779 on pushed2941 completed success, including Lint, with the independently reviewed formatter-only repair."
+    },
+    {
+      "at": "2026-10-21T19:03:01.496749+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original formatter CI failure no longer reproduces; fresh peer verified no contributor behavior change, merged guarded compile/focused/lint and full hosted checks pass."
     }
   ],
-  "next_action": "Push verified repair, require successful original full hosted CI before retest-pass/closed and normal current-main development artifact refresh."
+  "next_action": "No further D281 repair; normal eligible current-main artifact promotion/actual owner Reload remains separate and is not established by CI success.",
+  "fix_commits": ["5b5f4cf6f"]
 }

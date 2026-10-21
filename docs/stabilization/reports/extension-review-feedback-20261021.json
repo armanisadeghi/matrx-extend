@@ -1,0 +1,49 @@
+{
+  "checked_at_utc": "2026-10-21T19:00:20Z",
+  "scope": {
+    "repo_slug": "matrx-extend",
+    "statuses": [
+      "agent_changes_requested",
+      "human_changes_requested",
+      "approved"
+    ],
+    "limit": 20
+  },
+  "method": "Existing authenticated Google Chrome native accessibility on manage.aimatrx.com SQL Query Editor; read-only SELECT.",
+  "query": "select id, title, url, status, feedback, feedback_at, metadata->'origin'->>'agent_label' as lane from agent.review_queue where repo_slug='matrx-extend' and status in ('agent_changes_requested','human_changes_requested','approved') order by feedback_at desc limit 20;",
+  "observed_result": {
+    "rows": [],
+    "ui_result_text": "{\"result\": []}",
+    "ui_elapsed_ms": 840,
+    "cache_toggle_during_execution": false,
+    "editor_badge": "Cached"
+  },
+  "interpretation": "RESOURCE_WATCH_UNSAFE invalidated the entire browser lease. Earlier empty result and first timestamped result are unaccepted; no current feedback conclusion is established.",
+  "native_ui_calls": 14,
+  "cleanup": {
+    "opened_tab_closed": true,
+    "use_cache_restored_to_initial_on": true,
+    "initial_chrome_tab_restored": true,
+    "credentials_accessed": false,
+    "queue_mutations": false
+  },
+  "resource_guard": "Parent-owned browser guard review-feedback-20261021-1857; no local heavy run.",
+  "freshness_followup": {
+    "status": "stopped_on_parent_resource_warning",
+    "resource_warning": "RESOURCE_WATCH_UNSAFE since 2026-10-21T18:59:00Z; pressure 2 and swap growth. Entire lease invalidated; all observations have zero acceptance.",
+    "query": "select clock_timestamp() as observed_at, coalesce(jsonb_agg(q),'[]'::jsonb) as feedback_rows from (select id,title,url,status,feedback,feedback_at,metadata->'origin'->>'agent_label' as lane from agent.review_queue where repo_slug='matrx-extend' and status in ('agent_changes_requested','human_changes_requested','approved') order by feedback_at desc limit 20) q;",
+    "submitted_before_stop_message": true,
+    "first_result_seen_during_cleanup": {
+      "observed_at": "2026-10-21T19:01:05.971686+00:00",
+      "feedback_rows": []
+    },
+    "second_run_performed": false,
+    "accepted_feedback_conclusion": null,
+    "cleanup": {
+      "use_cache_restored_to_initial_on": true,
+      "owned_sql_tab_closed": true,
+      "initial_chrome_tab_restored": true
+    },
+    "additional_native_ui_calls": 7
+  }
+}
