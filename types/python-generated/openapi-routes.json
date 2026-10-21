@@ -3772,6 +3772,24 @@
    "application/json"
   ]
  },
+ "/google-integrations/service-account": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/shares": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/shares/remove": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/shares/with-me": {
+  "get": []
+ },
  "/google-integrations/tag-manager/inventory": {
   "post": [
    "application/json"
@@ -10013,28 +10031,12 @@
    "application/json"
   ]
  },
- "/web-credentials/gsc/oauth/complete": {
-  "post": []
- },
- "/web-credentials/gsc/oauth/start": {
-  "post": [
-   "application/json"
-  ]
- },
- "/web-credentials/oauth-defaults": {
-  "get": []
- },
  "/web-credentials/sites/{site_id}/credential": {
   "post": [
    "application/json"
   ]
  },
  "/web-credentials/sites/{site_id}/pagespeed": {
-  "post": [
-   "application/json"
-  ]
- },
- "/web-credentials/sites/{site_id}/search-performance": {
   "post": [
    "application/json"
   ]
