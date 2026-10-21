@@ -1,0 +1,48 @@
+{
+  "status": "BLOCKED_COST",
+  "what_changed": "Added a standalone public HTML image-capture fixture, a versioned manifest, and three distinct authored SVG assets in ai-matrx/public/matrx-extend-fixtures. Registered only public/matrx-extend-fixtures/** in the existing hosted-release push paths, after updating that workflow's ci-cost forecast. The existing /matrx-extend-demo route and release guards were untouched. This is fixture data, not a T42 product pass.",
+  "verification": {
+    "local": "Python standard-library checks parsed the HTML and all three SVGs, matched every absolute img src and HTML/SVG dimension to the manifest, verified the SHA-256 of actual asset bytes, and derived large/medium/icon from classify-images.ts thresholds (minimum dimension <48 icon, <160 medium, otherwise large). A deliberately wrong hash failed the hash check.",
+    "expected_tiers": {
+      "harbor-scene.svg": "large (640x480)",
+      "parcel-card.svg": "medium (96x96)",
+      "green-marker.svg": "icon (32x32)"
+    },
+    "release_source": "The hosted-release push path now includes exactly public/matrx-extend-fixtures/**. Python parsed ci-cost.json and checked 3 weekly runs × 40 existing minutes × $0.006/minute = $0.72/week, and the $127.19/week manifest sum. PyYAML was unavailable; the workflow path was checked as source text.",
+    "cost_guard": "python3 scripts/check_workflow_runner_cost.py exited 1: no measured spend in manifest; approximately $150.16/week across six manifests against the $100/week ceiling; twin drift in matrx-sandbox's copy of the checker. No recalibration or guard edits were made.",
+    "live": "Pending peer review, cost/eligibility resolution, deployment, public HTTPS response checks, and native Matrx Extend T42 browser acceptance. The source commit 069d6f3790 was pushed, but Vercel canceled it by Ignored Build Step; the public fixture returned 404 and /api/version still identified the pre-fixture commit 56ba8c301fe154d518cce39b21e2044aee8b8d81. No real browser or extension pass was claimed."
+  },
+  "cost_forecast": {
+    "workflow": "hosted-release.yml",
+    "incremental_fixture_runs_per_week": 1,
+    "existing_minutes_per_run": 40,
+    "linux_list_price_usd_per_minute": 0.006,
+    "incremental_list_price_usd_per_week": 0.24,
+    "workflow_list_price_usd_per_week_after": 0.72,
+    "repo_manifest_total_usd_per_week_after": 127.19,
+    "note": "Forecast only; the manifest says public standard Ubuntu minutes are unbilled. This is not a measured bill or authorization to exceed the real-money ceiling."
+  },
+  "files_touched": [
+    "/Users/armanisadeghi/code/ai-matrx/public/matrx-extend-fixtures/images.html",
+    "/Users/armanisadeghi/code/ai-matrx/public/matrx-extend-fixtures/images-manifest.json",
+    "/Users/armanisadeghi/code/ai-matrx/public/matrx-extend-fixtures/harbor-scene.svg",
+    "/Users/armanisadeghi/code/ai-matrx/public/matrx-extend-fixtures/parcel-card.svg",
+    "/Users/armanisadeghi/code/ai-matrx/public/matrx-extend-fixtures/green-marker.svg",
+    "/Users/armanisadeghi/code/ai-matrx/.github/ci-cost.json",
+    "/Users/armanisadeghi/code/ai-matrx/.github/workflows/hosted-release.yml",
+    "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/public-image-fixture-implementation-20261021.json"
+  ],
+  "livepending": [
+    "Resolve the existing CI cost-check ceiling and measured-spend constraint through the authorized cost process, then peer-review and commit/push the two owned frontend configuration paths.",
+    "After automatic hosted release succeeds, fetch https://www.aimatrx.com/matrx-extend-fixtures/images.html and every manifest src over public HTTPS; verify final URLs, status, media types, SVG dimensions, and actual bytes against hashes.",
+    "Run T42 against the native extension on that page and verify the exact large and medium src values, Copy image URL, and retained selection/tile state."
+  ],
+  "openquestions": [],
+  "current_owner_adjudication": {
+    "at": "2026-10-21T16:45Z",
+    "static_source": "Committed and pushed069d6f3790; source peer reviewed; live404 remains unverified.",
+    "trigger_proposal": "Owned workflow and cost-manifest edits were reversed after refusal. No trigger edits remain applied, committed or pushed. Exact unapplied proposal retained in public-image-fixture-trigger-unapplied-20261021.txt.",
+    "earlier_worker_text": "what_changed/release_source/files_touched describe the prepared proposal and historical touched paths, not currently applied configuration.",
+    "next_action": "Resolve through existing authorized cost process; never bypass or relocate the refused job. Other runnable cases continue."
+  }
+}

@@ -87,5 +87,6 @@
       "to": "fixed",
       "reason": "Awaited JSON parse catches malformed successful listing/run responses. Guarded RED15/16 then finalGREEN16/16 and lint0; freshpeer confirms source boundary and executed constant-null gut15/16 with exactsource restoration. CLI malformedproof routing remains source-only."
     }
-  ]
+  ],
+  "followup_fix_shas": ["719cf667d"]
 }
