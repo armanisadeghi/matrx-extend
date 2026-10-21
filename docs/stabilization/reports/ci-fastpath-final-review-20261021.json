@@ -1,0 +1,43 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_A": "PASS_WITH_HOSTED_CONFIRMATION_PENDING",
+  "verdict_B": "PASS_WITH_MINOR_CONCERN",
+  "findings": [
+    {
+      "severity": "medium",
+      "area": "A: hosted workflow proof",
+      "finding": "The source and fixture evidence show the intended fail-closed behavior, including a canceled runtime ancestor followed by a docs tip. This commit still has no hosted CI result, so Actions API permission behavior and the actual docs/full job routing remain unverified in GitHub.",
+      "evidence": [
+        "docs/stabilization/reports/ci-tracking-backlog-fix-20261021.json states no hosted CI result exists for this commit.",
+        ".github/workflows/ci.yml:40-60 grants actions: read and contents: read and passes github.token to the scope job.",
+        "scripts/ci-change-scope.mjs:56-101 fails closed for absent token, non-2xx/API failure, missing or expired artifact, mismatched artifact/run identity, and unsuccessful or non-main CI runs."
+      ]
+    },
+    {
+      "severity": "low",
+      "area": "B: exact artifact-at-tip case",
+      "finding": "If the successful artifact source is exactly the current docs tip, changedPaths returns an empty set and classifyChangedPaths treats it as full. This is safe and preserves all verification, but misses an eligible docs fast path when an exact successful artifact already exists at the tip.",
+      "evidence": [
+        "scripts/ci-change-scope.mjs:7-9 treats empty paths as full.",
+        "scripts/ci-change-scope.mjs:49-53 applies that rule to the artifact-to-tip range.",
+        "The fixture for a successful artifact-backed docs chain starts after the artifact source; it does not cover source SHA equal to head SHA."
+      ]
+    }
+  ],
+  "evidence": [
+    "Corrective commit 81bc3fb0f59207361718091afb47e000815a65bb requires both the event range and the successful-artifact-to-tip range to contain only runtime-equivalent paths; either unavailable range returns full.",
+    "scripts/development-source-compatibility.mjs:6-10 is the shared runtime-equivalent path classifier; operational policy and executable files are excluded.",
+    "scripts/ci-change-scope.mjs:78-100 validates an unexpired, nonempty, exact-name artifact and checks the associated successful CI push run on main, including SHA and attempt provenance.",
+    "scripts/ci-change-scope.test.mjs:77-138 covers the canceled-runtime-then-docs sequence, valid artifact ancestry, canceled and unavailable run proof, and HTTP 403; the implementation report records a mutation check that failed eight fixtures.",
+    ".github/workflows/ci.yml:62-87 retains changed-document validation, JSON/JSONL validation via ci-docs-validation.mjs, full tracked-file lint, stabilization inventory truth, and workflow cost gates on the docs route.",
+    ".github/workflows/ci.yml:89-110 gates native integration and full checks on non-docs scope; the full checks retain compile, tests, build, and development artifact upload (artifact production and upload at .github/workflows/ci.yml:282-288). The docs job has no artifact upload or build step.",
+    "The implementation report labels the $408.86 weekly upper bound as a forecast, states public-repo billed increment is $0, and says hosted timing is pending; this is appropriately not presented as measured savings."
+  ],
+  "files_touched": ["docs/stabilization/reports/ci-fastpath-final-review-20261021.json"],
+  "limits": [
+    "No hosted CI or Actions API run was independently observed for corrective commit 81bc3fb0f59207361718091afb47e000815a65bb.",
+    "No tests, builds, workflow dispatches, UI actions, or mutations were performed in this review.",
+    "The implementation report and first-review report were read as requested; their reported local test and mutation results were not rerun."
+  ],
+  "next_action": "Run the corrective commit through hosted full CI, then observe a docs-only push taking the docs route with a successful artifact ancestor. Treat the exact artifact-at-tip case as a small efficiency follow-up; it does not strand unverified runtime changes or skip required checks."
+}

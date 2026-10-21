@@ -1,0 +1,39 @@
+{
+  "verdict_A": "fail",
+  "verdict_B": "mixed: fail on queue-preservation semantics; otherwise mostly conservative and well-covered, with hosted proof pending",
+  "findings": [
+    {
+      "severity": "blocker",
+      "area": "A: queued runtime verification/artifact preservation",
+      "finding": "Workflow-level concurrency is still one group per ref, with cancel-in-progress false on main. GitHub retains at most one pending run per group and newer runs replace pending ones. A docs-only push arriving after a runtime push can replace the runtime run; the docs run compares only its event.before..head range, classifies docs, and skips artifact creation. The runtime commit therefore receives neither full verification nor a development artifact. This is the exact requested scenario the change must preserve.",
+      "evidence": [
+        ".github/workflows/ci.yml:31-34",
+        "scripts/ci-change-scope.mjs:49-54",
+        "scripts/ci-change-scope.mjs:12-43",
+        "Current CI: 9ebbb76 run 39626386726 pending while prior 989d49c run 39624999244 was in progress; no hosted result for this commit yet."
+      ]
+    },
+    {
+      "severity": "medium",
+      "area": "B: cost estimate evidence",
+      "finding": "The reported 0.3 Linux minutes per run is not yet measured for the docs path, which installs dependencies and runs full-repository lint plus two Python validators. The manifest calls it conservative while the report acknowledges no hosted run; keep this as an estimate until the first docs run is measured. This does not invalidate the fail-closed classification itself.",
+      "evidence": [
+        ".github/workflows/ci.yml:58-83",
+        " .github/ci-cost.json:20-27",
+        "docs/stabilization/reports/ci-tracking-backlog-fix-20261021.json gates.limited"
+      ]
+    }
+  ],
+  "evidence": [
+    "Classifier uses the same runtime-equivalent allowlist as development artifact promotion; unknown, tags, missing base, runtime paths, and history with reverted runtime edits fall back to full.",
+    "Docs path creates no artifact; full main checks retain compile, test, build, provenance, and upload steps.",
+    "Fixture suite covers malformed JSON/JSONL, path classes, missing base, reverted runtime history, and textual workflow/artifact wiring. Tests were reviewed but not rerun, per review scope.",
+    "git diff --check passed; report JSON parsed successfully."
+  ],
+  "limits": [
+    "No CI dispatch/cancel or UI actions performed.",
+    "No tests rerun; no hosted result yet for commit 9ebbb76.",
+    "Workflow tests assert textual markers and do not exercise GitHub concurrency behavior or a runtime-push-then-docs-push queue sequence."
+  ],
+  "next_action": "Fix main-push queue semantics so a later docs-only push cannot supersede any unverified runtime run or its artifact; add a red/green fixture for that sequence. Then observe the current full run and a docs-only run before calling the fast path verified."
+}

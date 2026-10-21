@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-21 15:08 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-21T05:34:58.291937+00:00.
+Generated 2026-10-21 15:40 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-21T05:34:58.291937+00:00.
 
 ## Current truth
 
@@ -8,7 +8,7 @@ Generated 2026-10-21 15:08 UTC from inventory.json, defect records, daily Store 
 - Case results: pass 109, partial 102, fail 1, unverified 1115, n/a 11; 177 explicitly unverified and 938 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/402 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 0 missing steps; 0 missing expected outcomes; 0 missing control links; 1 explicitly control-less procedures.
-- Defect states: closed 153, retest-pass 10, fixed 83, in-fix 23, open 2. A fixed or closed defect is not a feature-level UI pass.
+- Defect states: closed 153, retest-pass 10, fixed 84, in-fix 23, open 2. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current Store release observations
 
@@ -26,7 +26,7 @@ These observations are bounded to their recorded times; submission does not esta
 
 ## Inventory freshness review
 
-Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **17 `src/` paths changed** through `69c6f8fdd0520d876a63f36df75b056b11ccdd2e`. A direct path-anchor comparison matched 6 and left 11 without an exact inventory anchor.
+Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **17 `src/` paths changed** through `81bc3fb0f59207361718091afb47e000815a65bb`. A direct path-anchor comparison matched 6 and left 11 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities

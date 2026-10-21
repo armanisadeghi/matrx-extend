@@ -1,0 +1,68 @@
+{
+  "id": "EXT-D-0278",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T06"],
+  "title": "Tracking-only CI runs block or cancel verification of newer runtime artifacts",
+  "surface": "Development build CI and unpacked artifact availability",
+  "auth_mode": "Infrastructure independent of guest/member/admin; GitHub operator permissions apply",
+  "severity": "S2: latest development runtime cannot be verified/adopted promptly; no demonstrated public product outage",
+  "priority": "P1: remove stabilization throughput and current-unpacked blocker",
+  "state": "fixed",
+  "owner": "/root",
+  "implementation_lane": "/root/ci_tracking_backlog_fix",
+  "preconditions": [
+    "Main has a completed runtime CI, then tracking-only stabilization commits and a later runtime/dependency change.",
+    "CI uses per-ref singleton concurrency and runs the full pipeline for every push."
+  ],
+  "reproduction": [
+    "Observe tracking-only commit a77b52f77c6b171e0f28185e1201128a9afc51a1 fullCI39624272190 active while newer runtimef0bdbdfe04b0b6dacc873917251ba0ae7408bdd3 CI39624402251 is pending.",
+    "A later push replaces the sole pending run; observe39624402251 terminalcancelled before execution.",
+    "With first repair9ebbb76, compare only push.before..HEAD for a later docs-only tip: it routes fast without checking whether its runtime ancestor ever produced a verified artifact."
+  ],
+  "expected": "Tracking-only changes receive appropriate lint/JSON/inventory validation without redundant full builds; runtime, lock, workflow, unknown, missing-history and tag changes retain full verification. A later docs push must never strand the latest runtime without a verified development artifact. No artifact claim from skipped builds.",
+  "actual": "Tracking-only full builds occupy ci-main. Pending runtime run was cancelled; first fast-path implementation could then falsely skip the required runtime build for a docs tip. OwnerChrome remains lastverified579 while source advanced584.",
+  "cause": "Unconditional full verification and per-ref pending-job replacement; naive event-range-only docs classification lacks successful artifact proof for the complete unchanged runtime lineage.",
+  "sibling_census": [
+    "Main pushes with queued or cancelled runtime ancestors",
+    "Dependency/lock/workflow changes and missing Git history",
+    "Tag/release validation must remain full",
+    "JSON/JSONL tracking evidence and inventory validation must remain enforced"
+  ],
+  "evidence": [
+    "docs/stabilization/reports/ci-tracking-backlog-fix-20261021.json",
+    "docs/stabilization/reports/ci-fastpath-first-review-20261021.json",
+    "docs/stabilization/reports/ci-fastpath-final-review-20261021.json"
+  ],
+  "reproducibility": "Original live queue cancellation and failed first source review retained. Corrective fixtures and fresh peer establish source repair; original hosted queue/artifact and owner-reload retest pending.",
+  "attempted_source_sha": "9ebbb76bdb4be1a9dcc823954d9934f4c81baf69",
+  "fix_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
+  "reviewer": "/root/ci_proof_fresh_review: source A pass with hosted confirmation pending; B pass with minor conservative extra-run concern",
+  "verification_limits": "Source fixtures/lint are not product behavior passes. Actual final CI queue/artifact and native ownerReload still required. Cost timing is forecast until measured; no new paid dispatch/cancellation performed.",
+  "next_action": "Observe full CI39627131118 and exact artifact; then observe a real docs-only push on the proven artifact lineage. Normally import/promote eligible artifact and verify owner Chrome Reload/path/ID/version/pins. No closure before independent live retest. Preserve Store577 pending.",
+  "transition_history": [
+    {
+      "at": "2026-10-21T15:20Z",
+      "from": null,
+      "to": "open",
+      "reason": "Observed full tracking CI blocking newer runtime pending job."
+    },
+    {
+      "at": "2026-10-21T15:21Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "CI source confirms unconditional full checks and same main concurrency group."
+    },
+    {
+      "at": "2026-10-21T15:21Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Delegated conservative tracking fastpath repair; first9eb attempt failed fresh review; correction underway."
+    },
+    {
+      "at": "2026-10-21T15:40Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Corrective source81bc fixtures/mutation and guarded full lint reported green; fresh independent source A/B passes with explicit hosted/live limits."
+    }
+  ]
+}

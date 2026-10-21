@@ -1,5 +1,5 @@
 {
-  "status": "in_fix_pending_fresh_peer_hosted_ci_and_owner_reload",
+  "status": "source_fixed_fresh_peer_pass_hosted_ci_and_owner_reload_pending",
   "root_cause": "The single CI workflow ran full Linux checks and macOS resource integration for stabilization tracking-only commits. Ref-scoped ci-main concurrency serialized a newer runtime push behind that work, delaying current development artifact evidence. Initial fast-path attempt 9ebbb76bd classified only the immediate event diff, so a docs tip after cancelled runtime CI could bypass the build; the corrective change requires successful artifact ancestry.",
   "source_provenance": {
     "tracking_commit": "a77b52f77c6b171e0f28185e1201128a9afc51a1",
@@ -21,14 +21,17 @@
       "Targeted Biome check on new helper and test files passed after the final JSONL addition",
       "Read-only GitHub API confirmed latest available development artifact is from successful CI run 39622658209 at 04b1b68863d0c025f0c98fab6a1312041e3710c5; the later runtime f0bdbdfe cannot inherit its proof",
       "Corrective source passed repository-wide pnpm lint under stabilization resource guard (929 existing warnings, zero errors)",
-      "Immediate-diff-only mutation failed the cancelled-runtime fixture; corrected classifier passed"
+      "Immediate-diff-only mutation failed the cancelled-runtime fixture; corrected classifier passed",
+      "Retained 2026-10-21 guarded lint journal records admitted, childExitCode=0, and final decision valid/exitCode=0"
     ],
     "limited": [
       "Initial lint command with a noncanonical argument was refused by the resource guard; the supported pnpm lint command was subsequently admitted and passed",
       "Local workflow cost guard reported pre-existing unmeasured-spend and sibling twin-drift failures; its CI gate remains in both full and docs paths",
       "No hosted CI or native acceptance result exists for this commit yet",
       "Independent peer review of first commit 9ebbb76bd failed on cancelled-runtime artifact gap; corrective commit needs a fresh independent review",
-      "Docs validation still installs dependencies and runs full lint; speed improvement is forecast, pending hosted CI timing"
+      "Docs validation still installs dependencies and runs full lint; speed improvement is forecast, pending hosted CI timing",
+      "The corrective full-lint resource journal was deleted during generated-file cleanup; terminal valid/exit 0 is from the observed tool output, with no durable journal file. Fixture and mutation tests were lightweight direct runs and created no resource journals.",
+      "Earlier corrective lint journal remains missing after prior cleanup; the new retained journal supplies durable guarded lint evidence, while fixture and mutation runs remain direct."
     ]
   },
   "cost": {
@@ -46,7 +49,36 @@
     "docs/stabilization/reports/ci-tracking-backlog-fix-20261021.json"
   ],
   "commit": "this commit (exact SHA in git log and handoff)",
-  "limits": "EXT-D-0278 remains in fix. Fresh peer review, hosted CI showing runtime artifact survival and the docs route, and owner reload are pending; no product pass counts are claimed.",
-  "next_action": "Run fresh independent review and observe corrective full CI, then a proven docs-only push and owner reload before defect closure.",
-  "defect": "EXT-D-0278"
+  "limits": "Fresh independent source A/B review passes with hosted confirmation pending. Full automatic CI39627131118 is running; real docs route and owner reload remain unverified. No product pass counts claimed.",
+  "next_action": "Observe full CI39627131118, then a real tracking-only push on its proven artifact lineage; normal import/promotion and owner Chrome reload before closure.",
+  "defect": "EXT-D-0278",
+  "verification_journals": {
+    "corrective_fixture_tests": {
+      "command": "node --test scripts/ci-change-scope.test.mjs",
+      "resource_journal": null,
+      "reason": "Lightweight direct fixture run; no stabilization-resource journal was created.",
+      "terminal": "16 passed, 0 failed; process exit 0"
+    },
+    "corrective_mutation": {
+      "command": "temporary immediate-diff-only classifier copy; node --test",
+      "resource_journal": null,
+      "reason": "Lightweight direct mutation run; no stabilization-resource journal was created.",
+      "terminal": "Expected red: cancelled-runtime fixture failed, suite process exit 1"
+    },
+    "corrective_full_lint": {
+      "command": "node scripts/stabilization-resource.mjs run --run-id ci-tracking-provenance-lint-20261021 -- pnpm lint",
+      "historical_journal_path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/ci-tracking-provenance-lint-20261021.jsonl",
+      "journal_exists": false,
+      "reason": "I deleted this generated journal during exact-path cleanup after the guard completed; no copy was retained.",
+      "terminal": "RESOURCE_JOB_EXIT childExitCode=0; RESOURCE_FINAL_DECISION decision=valid exitCode=0; pnpm lint checked 3184 files with 929 warnings and zero errors"
+    },
+    "corrective_full_lint_retained": {
+      "command": "node scripts/stabilization-resource.mjs run --run-id ci-provenance-lint-retained-20261021 -- pnpm lint",
+      "journal_path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/ci-provenance-lint-retained-20261021.jsonl",
+      "journal_exists": true,
+      "terminal": "RESOURCE_ADMITTED; RESOURCE_JOB_EXIT childExitCode=0; RESOURCE_FINAL_DECISION decision=valid exitCode=0",
+      "lint": "Checked 3184 files; 929 warnings; zero errors; process exit 0"
+    }
+  },
+  "fresh_review": "docs/stabilization/reports/ci-fastpath-final-review-20261021.json"
 }

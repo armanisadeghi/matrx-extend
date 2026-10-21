@@ -425,7 +425,8 @@
             "EXT-D-0259"
           ],
           "linked_defects": [
-            "EXT-D-0256"
+            "EXT-D-0256",
+            "EXT-D-0278"
           ],
           "latest_candidate_checkpoint": {
             "version": "0.2.562",
@@ -539,7 +540,8 @@
             "EXT-D-0251",
             "EXT-D-0252",
             "EXT-D-0254",
-            "EXT-D-0255"
+            "EXT-D-0255",
+            "EXT-D-0278"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -566,7 +568,8 @@
             "EXT-D-0248",
             "EXT-D-0251",
             "EXT-D-0254",
-            "EXT-D-0255"
+            "EXT-D-0255",
+            "EXT-D-0278"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -592,7 +595,8 @@
             "EXT-D-0190",
             "EXT-D-0245",
             "EXT-D-0246",
-            "EXT-D-0248"
+            "EXT-D-0248",
+            "EXT-D-0278"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -621,7 +625,8 @@
         }
       ],
       "defect_ids": [
-        "EXT-D-0245"
+        "EXT-D-0245",
+        "EXT-D-0278"
       ],
       "source_change_observations": [
         {
