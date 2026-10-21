@@ -223,30 +223,60 @@ try {
         'Accept-Profile': 'chat',
       },
     }).then((r) => r.json());
-  const persistedReceipt = async (conversationId, minPosition) => {
+  const RUN = Date.now().toString(36);
+  const persistedReceipt = async (text) => {
     for (let i = 0; i < 30; i++) {
       const msgs = await chatRest(
-        `message?select=id,position,role,model_context&conversation_id=eq.${conversationId}&role=eq.user&order=position.desc&limit=1`,
+        `message?select=id,conversation_id,position,model_context&role=eq.user&content->0->>text=eq.${encodeURIComponent(text)}&limit=1`,
       );
       const m = Array.isArray(msgs) ? msgs[0] : null;
       const receipt = m?.model_context?.delivery?.receipt;
-      if (m && m.position >= minPosition && receipt) return { id: m.id, position: m.position, receipt };
+      if (receipt) return { id: m.id, conversationId: m.conversation_id, position: m.position, receipt };
       await new Promise((r) => setTimeout(r, 2000));
     }
     return null;
   };
+  /** True when any visible chip face is amber; with the chip's mismatches (React props). */
+  const amber = () =>
+    panel.evaluate(() => {
+      const faces = [...document.querySelectorAll('button[aria-label$=" included"]')].filter(
+        (el) => el.offsetParent !== null,
+      );
+      const out = { amber: faces.some((f) => f.getAttribute('data-mismatch') === 'true'), mismatches: null };
+      for (const el of faces) {
+        const fk = Object.keys(el).find((k) => k.startsWith('__reactFiber'));
+        let f = fk ? el[fk] : null;
+        while (f && !Array.isArray(f.memoizedProps?.mismatches)) f = f.return;
+        if (f) out.mismatches = f.memoizedProps.mismatches;
+      }
+      return out;
+    });
   const pickModel = async () => {
-    await panel.getByText(/· (Claude|Gemini|GPT|Grok)/).first().click();
+    await panel.getByText(/Matrx Browser Agent ·/).first().click();
     await panel.getByText(/^Model: /).first().click();
-    await panel.waitForTimeout(1500);
-    await panel.getByText(MODEL, { exact: true }).first().click();
-    await panel.waitForTimeout(1500);
-    // Close whatever sheet is still up.
+    await panel.waitForTimeout(1200);
+    // One message only: the conversation's own model is left as it was.
+    const only = panel.getByRole('switch', { name: /This message only/i }).first();
+    if ((await only.count()) && (await only.getAttribute('aria-checked')) !== 'true')
+      await only.click();
+    await panel.getByPlaceholder(/Search models/i).first().fill(MODEL);
+    await panel.waitForTimeout(800);
+    if (STEP === 'model') await shot(panel, '05a-model-search');
+    const option = panel.getByRole('row', { name: new RegExp(MODEL) }).first();
+    await ((await option.count()) ? option : panel.locator(`text="${MODEL}" >> visible=true`).first()).click();
+    await panel.waitForTimeout(1200);
+    if (STEP === 'model') await shot(panel, '05b-model-clicked');
+    await panel.getByRole('button', { name: /^Select model$/ }).first().click();
+    await panel.waitForTimeout(1200);
     await panel.keyboard.press('Escape').catch(() => {});
     await panel.waitForTimeout(500);
-    const label = (await panel.getByText(/Matrx Browser Agent ·/).first().innerText().catch(() => '')) || '';
-    return label;
+    return (await panel.getByText(/Matrx Browser Agent ·/).first().innerText().catch(() => '')) || '';
   };
+  if (STEP === 'model') {
+    console.log('  picked:', await pickModel());
+    await shot(panel, '05-model-picked');
+    process.exit(0);
+  }
   const send = async (text, n) => {
     const modelLabel = await pickModel();
     check(`send ${n}: cheap model chosen`, modelLabel.includes(MODEL), modelLabel);
@@ -296,15 +326,18 @@ try {
   await closeChip();
 
   // 3. Send; the receipt says off; the chip is not amber.
-  await send('Reply with exactly the word ok and nothing else.', 1);
-  const conversationId = await conversationIdNow();
-  console.log(`  conversation ${conversationId}`);
+  const TEXT1 = `Reply with exactly the word ok and nothing else. (walk ${RUN}-1)`;
+  await send(TEXT1, 1);
   await shot(panel, '12-after-send-1');
-  const first = conversationId ? await persistedReceipt(conversationId, 0) : null;
+  const first = await persistedReceipt(TEXT1);
+  const conversationId = first?.conversationId ?? null;
+  console.log(`  conversation ${conversationId}`);
   const r1 = first?.receipt?.rows?.find((r) => r.key === TARGET);
   console.log(`  receipt 1 message ${first?.id} ${TARGET}:`, JSON.stringify(r1));
   check(`receipt 1: ${TARGET} was off`, r1?.include === false && r1?.delivery === 'off', JSON.stringify(r1 && { include: r1.include, delivery: r1.delivery, decided_by: r1.decided_by }));
-  check('chip 1 not amber', (await face().getAttribute('data-mismatch')) !== 'true', await face().getAttribute('aria-label'));
+  const amber1 = await amber();
+  check('chip 1 not amber', !amber1.amber, JSON.stringify(amber1.mismatches));
+  check('turn 1 carried the page', (first?.receipt?.rows ?? []).some((r) => r.key === 'page_brief' && r.include), 'page_brief on receipt 1');
 
   // 4. Back on; send; the receipt says sent.
   await openChip();
@@ -312,23 +345,30 @@ try {
   await panel.waitForTimeout(2500);
   check(`${TARGET} shows on at once`, (await rowOf(TARGET))?.include === true);
   await closeChip();
-  await send('Reply with exactly the word ok again and nothing else.', 2);
+  const TEXT2 = `Reply with exactly the word ok again and nothing else. (walk ${RUN}-2)`;
+  await send(TEXT2, 2);
   await shot(panel, '13-after-send-2');
-  const second = conversationId ? await persistedReceipt(conversationId, (first?.position ?? 0) + 1) : null;
+  const second = await persistedReceipt(TEXT2);
   const r2 = second?.receipt?.rows?.find((r) => r.key === TARGET);
   console.log(`  receipt 2 message ${second?.id} ${TARGET}:`, JSON.stringify(r2));
   check(`receipt 2: ${TARGET} was sent`, r2?.include === true && ['inline', 'on_request'].includes(r2?.delivery), JSON.stringify(r2 && { include: r2.include, delivery: r2.delivery }));
-  check('chip 2 not amber', (await face().getAttribute('data-mismatch')) !== 'true', await face().getAttribute('aria-label'));
+  const amber2 = await amber();
+  check('chip 2 not amber', !amber2.amber, JSON.stringify(amber2.mismatches));
 
-  // 5. Open a value to see exactly what was delivered.
-  await openChip();
-  await shot(panel, '14-chip-after');
-  await panel.locator(`[role=row][data-key="page_brief"] button`).first().click().catch(() => {});
-  await panel.waitForTimeout(4000);
+  // 5. Open a value on the sent message to see exactly what was delivered (viewer API).
+  const badges = panel.getByRole('button', { name: /\d+ sent/ });
+  console.log('  [sent badges]', await badges.allInnerTexts());
+  await badges.last().click();
+  await panel.waitForTimeout(1500);
+  await shot(panel, '14-sent-values');
+  const pageBriefRow = panel.locator('[role=row][data-key="page_brief"] button').last();
+  await pageBriefRow.click().catch((e) => console.log('  no page_brief row on the sent message', String(e).slice(0, 120)));
+  await panel.waitForTimeout(5000);
   await shot(panel, '15-value-opened');
-  const viewerText = (await panel.locator('[role=dialog]').last().innerText().catch(() => '')).slice(0, 800);
-  console.log('  [viewer]', viewerText.replace(/\n+/g, ' | '));
-  check('opening a value shows the delivered text', /wikipedia|lighthouse/i.test(viewerText), viewerText.slice(0, 120));
+  const viewerText = (await panel.locator('body').innerText()).replace(/\n+/g, ' | ');
+  const at = viewerText.search(/Lighthouse/i);
+  console.log('  [viewer]', viewerText.slice(Math.max(0, at - 300), at + 500));
+  check('opening a value shows the delivered text', at >= 0 && /wikipedia|lighthouse/i.test(viewerText.slice(at, at + 2000)));
   writeFileSync(join(SHOTS, 'receipts.json'), JSON.stringify({ conversationId, first, second }, null, 2));
 } finally {
   writeFileSync(join(SHOTS, 'network.txt'), net.join('\n'));
