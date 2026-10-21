@@ -21,13 +21,15 @@
     "docs/stabilization/reports/query-result-count-fix-20261021.json",
     "docs/stabilization/reports/query-count-source-peer-20261021.json",
     "docs/stabilization/reports/query-count-final-peer-20261021.json",
-    "docs/stabilization/reports/query-count-procedure-final-20261021.json"
+    "docs/stabilization/reports/query-count-procedure-final-20261021.json",
+    "docs/stabilization/reports/d276-snapshot-repair-20261021.json",
+    "docs/stabilization/reports/d276-snapshot-peer-20261021.json"
   ],
   "cause": "Display registry reads output.count, but canonical query_elements handler returns total, returned, items.",
   "sibling_census": "get_page_text also read absent word_count and said words, but actual handler returns char_count; fixed to characters. find_text_on_page actually returns count and stays unchanged.",
-  "fix_sha": null,
+  "fix_sha": "afb2b4981494308fa2f6da07bfb4cd46b843346f",
   "retest_status": "not_started",
-  "next_action": "Push reviewed source fix with green rendering/compile/full-lint gates, observe successful exact-main CI; import/promote and independently retest guest actualChat total/char_count original+surrounding cases. Source-fixed is not native-pass or Store publication; preserve pending577.",
+  "next_action": "Push narrow snapshot correction, require fresh successful exact-current-main CI artifact; normal import/promote and independently guest-native retest total/char_count original and surroundings. No artifact was created by failed afbCI. Keep source-fixed/native-unverified explicit and preserve Store577pending.",
   "transitions": [
     {
       "state": "open",
@@ -56,6 +58,8 @@
       "docs/stabilization/reports/query-count-procedure-final-20261021.json"
     ],
     "full_lint": "ext-d-0276-full-lint-admitted valid0: 3178files/0errors/927existingwarnings. Initial pnpm -s lint refused unsupportedargv; normal allowed pnpm lint succeeded, no policychange.",
-    "procedure_review": "Final fresh Sol A procedurePASS/nativepending and B boundedPASS; prior guestTools and manualToolsrawJSON mismatches corrected to actualChat delegation."
+    "procedure_review": "Final fresh Sol A procedurePASS/nativepending and B boundedPASS; prior guestTools and manualToolsrawJSON mismatches corrected to actualChat delegation.",
+    "ci39528337735": "2520pass/6skip/1intentional snapshot mismatch: old get_page_text words expected vscharacters actual; artifact steps skipped, no native fix claim.",
+    "snapshot_repair": "Only affected golden label corrected after red target1fail/7pass; package all-config smoke + real ToolTimelineRow regressions now2files/8pass, freshpeerA/BboundedPASS. Include central package-row smoke whenever registry labels change."
   }
 }

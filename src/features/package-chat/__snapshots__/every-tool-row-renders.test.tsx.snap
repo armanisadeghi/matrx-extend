@@ -498,7 +498,7 @@ exports[`every browser-tool row config draws through the package's row > draws v
     "started": "Reading selection",
   },
   "get_page_text": {
-    "completed": "Extracted article text words",
+    "completed": "Extracted article text characters",
     "error": "Text extraction failed",
     "started": "Extracting article text",
   },

@@ -1,0 +1,23 @@
+{
+  "task": "EXT-D-0276 independent snapshot gate peer",
+  "result": "PASS with verification provenance caveat",
+  "A_expected_snapshot_and_source_gate": {
+    "status": "PASS",
+    "evidence": [
+      "Only dirty tracked file is src/features/package-chat/__snapshots__/every-tool-row-renders.test.tsx.snap.",
+      "Its sole diff changes get_page_text completed text from 'Extracted article text words' to 'Extracted article text characters'.",
+      "src/features/chat/tool-display/registry.tsx defines info path output.char_count and completed suffix characters.",
+      "src/lib/tools/handlers/page-refs.ts returns char_count: text.length, so the expected rendered label is characters.",
+      "git diff --check is clean; no test source or assertions were changed."
+    ]
+  },
+  "B_quality_and_provenance": {
+    "quality": "PASS",
+    "provenance": "Reported builder record is internally plausible and scope is consistent: targeted package rendering plus real tool timeline row tests, 2 files/8 tests green after the stale snapshot correction. I did not rerun tests within the independent peer budget, so this is source/diff confirmation rather than independent execution proof.",
+    "risk": "No signal of blanket golden weakening; change is a single expected value update matching the registry and handler contract.",
+    "limitations": [
+      "No full suite, UI, build, or CI rerun was performed in this peer check.",
+      "No independent native/pending CI state was queried."
+    ]
+  }
+}

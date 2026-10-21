@@ -1,0 +1,12 @@
+{
+  "task": "EXT-D-0276 sourcegate snapshot repair",
+  "redCI": "CI 39528337735 failed Unit tests due to one stale package-chat snapshot label",
+  "redLocal": "Targeted Vitest: 1 failed, 7 passed; get_page_text expected words, received characters",
+  "diff": "src/features/package-chat/__snapshots__/every-tool-row-renders.test.tsx.snap:501 changes only completed label words to characters",
+  "contract": "get_page_text renders output.char_count with characters suffix; real row regression passes",
+  "sibling": "query_elements snapshot unchanged; targeted run showed no mismatch for it",
+  "greenCommand": "pnpm exec vitest run src/features/package-chat/every-tool-row-renders.test.tsx tests/unit/tool-display-registry.test.ts --reporter=dot",
+  "greenResult": "2 test files passed, 8 tests passed; git diff --check passed",
+  "files": ["src/features/package-chat/__snapshots__/every-tool-row-renders.test.tsx.snap"],
+  "gaps": "No full suite, UI, build, CI dispatch, or commit per bounded assignment"
+}
