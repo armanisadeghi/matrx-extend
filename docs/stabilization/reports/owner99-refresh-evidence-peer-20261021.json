@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "runId": "owner99-refresh-20261021",
+  "reviewedInputs": [
+    "/tmp/owner99-refresh-20261021.json",
+    "docs/stabilization/resource-journals/owner99-refresh-20261021.jsonl",
+    "test-results/ci-dev-promotion-receipt.json"
+  ],
+  "A_native_ui_evidence": {
+    "verdict": "SUPPORTED_WITH_ATTESTATION_LIMIT",
+    "profile": "The bundle reports chrome://version Profile 8 and profile settings showing arman@armansadeghi.com.",
+    "dev_reload": "The bundle reports a native chrome://extensions Reload of the development extension with result Reloaded.",
+    "development_extension": {
+      "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "version": "0.2.578",
+      "loadedFrom": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "enabled": true,
+      "pinned": true
+    },
+    "store_extension": {
+      "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+      "version": "0.2.205",
+      "enabled": true,
+      "pinned": true
+    },
+    "pin_evidence": "Bundle reports two adjacent Matrx Extend entries with Unpin controls and separately verified IDs on details pages.",
+    "limitation": "These are operator-reported native UI observations; no screenshots or per-action CUA timestamps are in the reviewed inputs. The stated UI window brackets the resource guard admission and stop request."
+  },
+  "B_development_artifact_adoption": {
+    "verdict": "SUPPORTED_BY_RECEIPT",
+    "sourceSha": "99f0b5527fb8e3c29a1621c614216ae30973a322",
+    "mainSha": "99f0b5527fb8e3c29a1621c614216ae30973a322",
+    "compatibility": "exact-source",
+    "version": "0.2.578",
+    "ciRun": 39529779875,
+    "artifactId": 12315440245,
+    "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/99f0b5527fb8e3c29a1621c614216ae30973a322/39529779875-1/chrome-mv3",
+    "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "treeSha256": "8a58ad9ed10933eaf459520493ff6de57e3d64fabc961408494adb4d939fb5d5",
+    "binding_check": "All listed adoption fields match the UI bundle's development build metadata and loaded path.",
+    "store_claim": "No Store eligibility or publication claim: receipt says eligibleStore=false and publish_state=not_published."
+  },
+  "resource_guard": {
+    "verdict": "VALID",
+    "journal_crosscheck": "All 9 JSONL records parse, carry the expected runId, and match the bundle event sequence; final event is RESOURCE_FINAL_DECISION valid, admitted=true, resourceInvalid=false, exitCode=0.",
+    "finalAt": "2026-10-21T02:14:10.385Z"
+  },
+  "scope": "Evidence review only; no product behavior or Store publication conclusion."
+}

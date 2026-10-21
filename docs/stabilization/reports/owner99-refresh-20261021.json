@@ -1,0 +1,182 @@
+{
+  "schema": 1,
+  "runId": "owner99-refresh-20261021",
+  "completedAt": "2026-10-21T02:14:10.385Z",
+  "owner": {
+    "email": "arman@armansadeghi.com",
+    "profilePath": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "observedVia": "chrome://version in native Chrome; profile settings showed the same email"
+  },
+  "developmentExtension": {
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.578",
+    "enabled": true,
+    "pinned": true,
+    "loadedFrom": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "reload": {
+      "action": "Clicked Reload in chrome://extensions",
+      "result": "Reloaded"
+    },
+    "build": {
+      "sourceCommit": "99f0b5527fb8e3c29a1621c614216ae30973a322",
+      "ciRun": 39529779875,
+      "artifact": 12315440245,
+      "tree": "8a58ad9ed10933eaf459520493ff6de57e3d64fabc961408494adb4d939fb5d5"
+    }
+  },
+  "storeExtension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.205",
+    "enabled": true,
+    "pinned": true
+  },
+  "toolbar": {
+    "evidence": "Chrome Extensions popup lists two adjacent Matrx Extend entries, both with Unpin controls; each ID separately verified in the details page."
+  },
+  "resourceGuard": {
+    "admitted": true,
+    "stopped": true,
+    "valid": true,
+    "exitCode": 0,
+    "events": [
+      {
+        "at": "2026-10-21T02:11:52.789Z",
+        "code": "RESOURCE_JOURNAL_OPENED"
+      },
+      {
+        "at": "2026-10-21T02:13:00.027Z",
+        "code": "RESOURCE_ADMITTED",
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 9.12,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 4.21,
+          "logicalCpus": 10,
+          "cpuBusyFraction": 0.19,
+          "swapUsedMiB": 5080.81,
+          "repoFreeGiB": 1617.2649230957031,
+          "profileFreeGiB": 35.93904113769531,
+          "safetyFreeGiB": 35.93904113769531,
+          "systemFreeGiB": 35.93904113769531
+        }
+      },
+      {
+        "at": "2026-10-21T02:13:16.056Z",
+        "code": "RESOURCE_WATCH_HEALTHY",
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 8.96,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 3.38,
+          "logicalCpus": 10,
+          "cpuBusyFraction": 0.22,
+          "swapUsedMiB": 5080.81,
+          "repoFreeGiB": 1617.2649993896484,
+          "profileFreeGiB": 35.925575256347656,
+          "safetyFreeGiB": 35.925575256347656,
+          "systemFreeGiB": 35.925575256347656
+        }
+      },
+      {
+        "at": "2026-10-21T02:13:32.069Z",
+        "code": "RESOURCE_WATCH_HEALTHY",
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 9.6,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 3.79,
+          "logicalCpus": 10,
+          "cpuBusyFraction": 0.22,
+          "swapUsedMiB": 5080.81,
+          "repoFreeGiB": 1617.2647819519043,
+          "profileFreeGiB": 35.90591049194336,
+          "safetyFreeGiB": 35.90591049194336,
+          "systemFreeGiB": 35.90591049194336
+        }
+      },
+      {
+        "at": "2026-10-21T02:13:48.083Z",
+        "code": "RESOURCE_WATCH_HEALTHY",
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 9.44,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 3.23,
+          "logicalCpus": 10,
+          "cpuBusyFraction": 0.2,
+          "swapUsedMiB": 5080.81,
+          "repoFreeGiB": 1617.2644271850586,
+          "profileFreeGiB": 35.89295959472656,
+          "safetyFreeGiB": 35.89295959472656,
+          "systemFreeGiB": 35.89295959472656
+        }
+      },
+      {
+        "at": "2026-10-21T02:14:04.106Z",
+        "code": "RESOURCE_WATCH_HEALTHY",
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 9.6,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 3.17,
+          "logicalCpus": 10,
+          "cpuBusyFraction": 0.15,
+          "swapUsedMiB": 5080.81,
+          "repoFreeGiB": 1617.2637481689453,
+          "profileFreeGiB": 35.925899505615234,
+          "safetyFreeGiB": 35.925899505615234,
+          "systemFreeGiB": 35.925899505615234
+        }
+      },
+      {
+        "at": "2026-10-21T02:14:10.375Z",
+        "code": "RESOURCE_STOP_REQUESTED",
+        "signal": "SIGINT"
+      },
+      {
+        "at": "2026-10-21T02:14:10.379Z",
+        "code": "RESOURCE_BROWSER_STOP_CONFIRMED",
+        "resourceInvalid": false
+      },
+      {
+        "at": "2026-10-21T02:14:10.385Z",
+        "code": "RESOURCE_FINAL_DECISION",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    ],
+    "journalPath": "docs/stabilization/resource-journals/owner99-refresh-20261021.jsonl",
+    "journalState": "finalized JSONL; last event RESOURCE_FINAL_DECISION valid at 2026-10-21T02:14:10.385Z"
+  },
+  "limits": {
+    "minimumFreeDiskGiB": 20,
+    "minimumAvailableMemoryGiB": 4,
+    "maximumSustainedCpuBusyFraction": 0.75,
+    "maximumBusyFractionAtHighLoad": 0.6,
+    "maximumOneMinuteLoadPerLogicalCpu": 0.75,
+    "maximumSwapGrowthMiB": 256,
+    "watchIntervalSeconds": 15,
+    "observedDuringRun": {
+      "minimumAvailableMemoryGiB": 8.96,
+      "minimumProfileFreeGiB": 35.89,
+      "maximumObservedCpuBusyFraction": 0.35,
+      "maximumObservedOneMinuteLoadPerLogicalCpu": 0.421,
+      "swapGrowthMiB": 0,
+      "pressureLevel": 1
+    }
+  },
+  "scope": {
+    "nativeUiOnly": true,
+    "sourceEdits": 0,
+    "installActions": 0,
+    "storeActions": 0,
+    "accountChanges": 0
+  },
+  "uiEvidenceWindowUtc": {
+    "start": "2026-10-21T02:13:00.027Z",
+    "end": "2026-10-21T02:14:10.375Z",
+    "meaning": "Between guard admission and UI-work stop request; individual native UI action timestamps are not recorded by CUA."
+  }
+}
