@@ -1,0 +1,46 @@
+{
+  "status": "implemented_with_local_verification_limits",
+  "root_cause": "The single CI workflow ran full Linux checks and macOS resource integration for stabilization tracking-only commits. Ref-scoped ci-main concurrency serialized a newer runtime push behind that work, delaying current development artifact evidence.",
+  "source_provenance": {
+    "tracking_commit": "a77b52f77c6b171e0f28185e1201128a9afc51a1",
+    "tracking_job": "39624272190",
+    "newer_runtime_commit": "f0bdbdfe04b0b6dacc873917251ba0ae7408bdd3",
+    "newer_runtime_job": "39624402251",
+    "prior_successful_full_ci_job": "39622658209",
+    "observation": "Tracking job was still in full CI while the newer runtime job queued; later runtime job terminal state was cancelled. No jobs were dispatched or cancelled by this change."
+  },
+  "change": "A fetched exact comparison range is classified against the existing development artifact runtime-equivalent stabilization path list. Commit history is inspected as well as endpoint diff, so an intermediate runtime edit cannot disappear through a revert. Only proven stabilization records enter the docs validation job. Unknown, missing, unrelated, tag, runtime, configuration, workflow, lockfile, and toolchain changes enter full CI. Docs validation checks diff whitespace, JSON and JSONL syntax, full tracked-file lint, inventory truth, and workflow cost. Full CI still owns native integration and development artifact production; docs CI creates no artifact.",
+  "gates": {
+    "green": [
+      "13 focused fixture tests passed, including docs-only, runtime, lockfile, workflow, unknown, missing base, reverted runtime history, malformed JSON/JSONL, and workflow artifact wiring",
+      "Independent mutated-classifier copy failed 8 fixtures as expected; original classifier passed",
+      "Stabilization inventory truth test passed",
+      "git diff --check passed",
+      "Resource preflight admitted the host",
+      "Repository-wide pnpm lint passed under the stabilization resource guard after a new test import-order error was fixed; 927 existing warnings remain",
+      "Targeted Biome check on new helper and test files passed after the final JSONL addition"
+    ],
+    "limited": [
+      "Initial lint command with a noncanonical argument was refused by the resource guard; the supported pnpm lint command was subsequently admitted and passed",
+      "Local workflow cost guard reported pre-existing unmeasured-spend and sibling twin-drift failures; its CI gate remains in both full and docs paths",
+      "No hosted CI or native acceptance result exists for this commit yet"
+    ]
+  },
+  "cost": {
+    "manifest": ".github/ci-cost.json",
+    "projected_weekly_list_usd_upper_bound_before": 401.36,
+    "projected_weekly_list_usd_upper_bound_after": 405.86,
+    "reason": "Conservative all-full-run upper bound adds 0.3 Linux minute per run for classification. At a hypothetical 10% eligible docs share, roughly $28/week of old full-run list cost is avoided before classifier cost; actual public-repo billed increment is $0."
+  },
+  "files": [
+    ".github/ci-cost.json",
+    ".github/workflows/ci.yml",
+    "scripts/ci-change-scope.mjs",
+    "scripts/ci-change-scope.test.mjs",
+    "scripts/ci-docs-validation.mjs",
+    "docs/stabilization/reports/ci-tracking-backlog-fix-20261021.json"
+  ],
+  "commit": "this commit (exact SHA in git log and handoff)",
+  "limits": "The new workflow has not been observed in hosted CI; its first run is necessarily full because it changes the workflow and helper.",
+  "next_action": "Observe the pushed full CI run and the next proven docs-only push; independently review the gate and artifact behavior."
+}

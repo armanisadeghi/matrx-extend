@@ -10,21 +10,21 @@
     "macos": 0.062
   },
   "prices_source": "GitHub billing API pricePerUnit (Actions Linux / Windows / macOS 3-core), read 2026-10-11",
-  "total_usd_per_week": 401.36,
+  "total_usd_per_week": 405.86,
   "workflows": {
     "ci.yml": {
       "triggers": ["pull_request", "push"],
       "crons": [],
-      "benefit": "Extension build/lint/tests on every push and PR, including pre-auth resource admission regression; macOS resource-guard integration.",
+      "benefit": "Full extension build/lint/tests and development artifact for runtime changes; fast tracked-document validation for docs-only pushes and PRs, freeing the main CI queue without claiming a new artifact.",
       "owner_reason": "Before it, nothing was enforced on PRs (AUDIT P0-8).",
-      "basis": "observed 2026-10-02..09 (runs list + sampled jobs' billed minutes): ~2500 runs/week; sampled Linux 3.2 min, macOS 1.5 min. Adding one Node test to the existing public Ubuntu job adds no job and $0 actual billed spend. D244 adds the seven-test DOM Escape observer guard and three-test CDP identity guard to that same Linux regression command (focused local run under 0.4 seconds; estimate <1 second incremental). The Tailwind source-boundary Node test runs in the same Linux regression step, measured locally at 0.8 seconds including Node startup, with no new runner, job, trigger, or dispatch; the existing rounded runtime estimate and $0 actual billed increment remain unchanged.",
-      "usd_per_week": 280.5,
+      "basis": "Conservative upper bound from observed 2026-10-02..09: ~2500 runs/week; sampled Linux 3.2 min and macOS 1.5 min. The docs-only path adds a short Linux classification/validation job but skips Linux full checks and macOS integration for eligible runs. At a hypothetical 10% eligible share, projected variable runner use falls by about $28/week at list price, before the small classifier cost; actual public-repo billed increment is $0. The manifest retains the higher all-full-run forecast until the eligible share and classifier duration are measured. Conservative all-full-run ceiling includes 0.3 Linux minute per run for the new classifier and validation lane; no additional macOS time.",
+      "usd_per_week": 285.0,
       "legs": {
         "linux": {
-          "jobs": ["checks"],
+          "jobs": ["scope", "docs", "checks"],
           "runs_per_week": 2500,
-          "minutes_per_run": 3.2,
-          "usd_per_week": 48.0
+          "minutes_per_run": 3.5,
+          "usd_per_week": 52.5
         },
         "macos": {
           "jobs": ["resource-guard-integration"],
