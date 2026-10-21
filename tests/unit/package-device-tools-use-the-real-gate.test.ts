@@ -164,7 +164,8 @@ describe('package device tools run through the real gate', () => {
     for (const action of ['privileged', 'ask-user']) {
       const result = await handleWebmcpCall(
         { callId: `page-${action}`, toolName: 'test_dynamic_tier', args: { action } },
-        { permissionMode: 'act', initiator: 'desktop' },
+        // A desktop app is asked-then-run (external-dispatch-tier.test.ts); a page stays refused.
+        { permissionMode: 'act', initiator: 'page' },
       );
       expect(result.ok).toBe(false);
     }
