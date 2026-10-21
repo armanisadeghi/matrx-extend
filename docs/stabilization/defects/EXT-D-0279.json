@@ -52,5 +52,6 @@
     "docs/stabilization/reports/credential-executable-verification-20261021.json",
     "docs/stabilization/reports/credential-join-gate-repair-20261021.json"
   ],
-  "verification_limits": "Lightweightsettingsgate clean104/0new; independentstaticcontractpeer accepted; guardedfocusedtests5/5,compile,catalog and full lint pass. Currentmain hostedCI and next exactCIartifact remain pending; no nativecredentiallogin/product/regression claim."
+  "verification_limits": "Lightweightsettingsgate clean104/0new; independentstaticcontractpeer accepted; guardedfocusedtests5/5,compile,catalog and full lint pass. Currentmain hostedCI and next exactCIartifact remain pending; no nativecredentiallogin/product/regression claim.",
+  "fix_sha": "1c237ea2b"
 }

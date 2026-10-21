@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "test_id": "EXT-F-1007-T43",
+  "run_id": "t43-sql-fresh-20261021-1748",
+  "status": "PASS_GUEST_FROZEN_B8",
+  "resource": {
+    "admission": "2026-10-21T17:48:02.741Z RESOURCE_ADMITTED",
+    "journal": "docs/stabilization/resource-journals/t43-sql-fresh-20261021-1748.jsonl",
+    "last_observed_health": "2026-10-21T17:50:42.971Z RESOURCE_WATCH_HEALTHY",
+    "ui_fully_stopped_reported_to_owner": true,
+    "terminal_decision": "2026-10-21T17:50:55.241Z RESOURCE_FINAL_DECISION valid, resourceInvalid=false, exitCode=0; preceding RESOURCE_BROWSER_STOP_CONFIRMED at 17:50:55.223Z",
+    "terminal_decision_at_report_write": "owner appended final valid0 at17:50:55.241Z",
+    "entries": 15,
+    "actual_exec_exit": 0
+  },
+  "runtime": {
+    "native_browser": "Google Chrome on macOS",
+    "guest_profile": "Matrx Guest Test (Profile 10)",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_version": "0.2.584",
+    "extension_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "frozen_artifact_commit": "b8e31fbb2207b2318a4d1cb2972578c94b56710c",
+    "frozen_artifact_tree": "fcf63381e73def118ca91ee94eed5bed48323206f964ef5067e57dacbaacdc6f",
+    "guest_settings": "Email \u2014; Sign in button",
+    "fixture_url": "https://www.aimatrx.com/matrx-extend-demo",
+    "fixture_heading": "A clear three-stage browser workflow"
+  },
+  "database": {
+    "editor": "Existing owner Profile 8 SQL Query Editor tab at https://manage.aimatrx.com/administration/database/sql-queries",
+    "query": "select clock_timestamp() as observed_at, count(*) as matching_rows, md5(coalesce(string_agg(md5(to_jsonb(p)::text), '' order by p.id), '')) as row_state_digest from docproc.processed_documents p where canonical_identity like '%www.aimatrx.com/matrx-extend-demo%';\n",
+    "use_cache_checkbox_during_reads": false,
+    "freshness_smoke": [
+      {
+        "observed_at": "2026-10-21T17:48:45.89907+00:00",
+        "matching_rows": 1,
+        "row_state_digest": "294de7adeb19b13032c9712f0e595c20"
+      },
+      {
+        "observed_at": "2026-10-21T17:48:50.8351+00:00",
+        "matching_rows": 1,
+        "row_state_digest": "294de7adeb19b13032c9712f0e595c20"
+      }
+    ],
+    "after_ui": {
+      "observed_at": "2026-10-21T17:50:12.642335+00:00",
+      "matching_rows": 1,
+      "row_state_digest": "294de7adeb19b13032c9712f0e595c20"
+    },
+    "conclusion": "Distinct SQL server timestamps proved fresh readback; the matching row count and complete-row digest were unchanged after all four dismissal actions.",
+    "cache_checkbox_restored_checked": true,
+    "global_cache_cleared": false,
+    "raw_rows_read": false
+  },
+  "native_cases": [
+    {
+      "phase": "warm",
+      "close_button": "Save Source opened from guest Scrape Article; Close Save Source returned to the captured article with fixture heading and Re-capture visible.",
+      "escape": "Reopened Save Source; Escape returned to the same captured article with fixture heading and Re-capture visible."
+    },
+    {
+      "phase": "reload",
+      "reload": "Actual chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml manager Reload showed Reloaded; DEV side panel reopened; demo page Reload and Capture produced the fixture article again.",
+      "close_button": "Save Source opened after reload and capture; Close Save Source returned to the captured article with fixture heading and Re-capture visible.",
+      "escape": "Reopened Save Source; Escape returned to the same captured article with fixture heading and Re-capture visible."
+    }
+  ],
+  "scope": {
+    "save_source_clicked": false,
+    "add_to_library_clicked": false,
+    "authentication_attempted": false,
+    "database_write_performed": false,
+    "three_assigned_tabs_closed": true,
+    "unrelated_tabs_preserved": true,
+    "cua_calls": 42,
+    "cua_call_limit": 42,
+    "limits": "One guest role and the frozen DEV 584 artifact only; the aggregate proves no changed or added matching processed_documents row under the fixture canonical_identity filter, not the absence of every possible write in every table. No independent native peer or Store-build acceptance is claimed."
+  },
+  "owner_binding": {
+    "before_after_tree_sha256": "fcf63381e73def118ca91ee94eed5bed48323206f964ef5067e57dacbaacdc6f",
+    "rehash_at": "2026-10-21T17:50:00Z",
+    "loaded_artifact": "frozenb8; latermain3e6 is not testedcurrent source",
+    "prior_independent_native": "b8-source-dismiss-warm-native-20261021.json independently observes2warmdismissals; currentoperator separatelyreplayedwarm+reload withfreshreadback"
+  },
+  "independent_evidence_peer": "docs/stabilization/reports/t43-final-evidence-peer-20261021.json"
+}
