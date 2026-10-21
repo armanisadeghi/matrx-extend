@@ -1,0 +1,17 @@
+{
+  "task_id": "EXT-D-0277",
+  "scope": "Read-only receipt/provenance review; no UI replay, source edits, tests, credentials, or heavy jobs.",
+  "verdict_a": {
+    "result": "bounded_native_acceptance_pass; full_defect_acceptance_partial",
+    "evidence": "The refreshed report records actual owner Profile 8 reload, DEV toolbar AX title Matrx Extend DEV after reload and panel boot, separate pinned Store/DEV entries, and DEV sidepanel origin/account. These are owner-native observations as reported; this peer did not independently replay UI.",
+    "limits": "No direct hover-tooltip rendering. Saved-login, pending-save, and clear assistance states were not exercised. Do not close the defect or claim those title states verified."
+  },
+  "verdict_b": {
+    "result": "pass for reported normal CI import/promotion provenance; disk receipt/title cross-check passes",
+    "evidence": "Promotion receipt present: run 39545041578 attempt 1, artifact 12321482236, source 93ff86718c82dbc96e217a0614bf2684a7053c3c, destination .output/chrome-mv3-dev, tree e7ddaf910d85bf6246f402a485e66bbb19084f97dc635ada99c6b271be0b491a, 2471 files, version 0.2.579; both receipt sourceDir immutable manifest and promoted manifest contain name and action.default_title Matrx Extend DEV. Refresh report gives artifact digest sha256:71c685df27d5971f6c608e3097d038c4a3ed92929f3584b5a2e587b1183c4248 and normal current-test-artifact import/promote method.",
+    "compatibility": "Source 93ff867 is a documentation-only descendant of ee37d92 at import/promotion per recorded allowedDiffPaths; current HEAD 3deada61 adds only evidence after that. This supports runtime-equivalent compatibility at promotion.",
+    "limits": "Artifact digest/name and import execution are supported by the submitted fresh report/receipt, not independently fetched from CI in this scoped review."
+  },
+  "resource": "Full resource journal ends RESOURCE_FINAL_DECISION valid, admitted=true, resourceInvalid=false, exitCode=0; no separate RESOURCE_JOB_EXIT row was present in that journal.",
+  "overall": "No overall pass. Preserve full hover/status/clear gaps; Store 0.2.205 and pending Store 0.2.577 unchanged."
+}

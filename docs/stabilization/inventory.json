@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T04:44:42.767860+00:00",
+  "updated_at": "2026-10-21T04:51:09.801388+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -627,13 +627,14 @@
         {
           "defect_id": "EXT-D-0277",
           "scope": "Development installed name/default toolbar and runtime assistance tooltip identity; Store metadata/status strings preserved",
-          "status": "fixed_followup_emitted_title_CI_native_pending",
+          "status": "fixed_bounded_native_original_idle_boot_pass_other_variants_pending",
           "evidence": [
             "docs/stabilization/defects/EXT-D-0277.json",
             "docs/stabilization/reports/dev-label-final-guarded-verification-20261021.json",
-            "docs/stabilization/reports/d277-ci-native-acceptance-20261021.json"
+            "docs/stabilization/reports/d277-ci-native-acceptance-20261021.json",
+            "docs/stabilization/reports/d277-followup-native-refresh-20261021.json"
           ],
-          "native": "Actual owner Profile8 development579/source10994390 native manager Reload: distinct cards/menu,bothpinned,each opens its intendedpanel. Original mixed-copy boundedPASS; hover/status/clear tooltips unverified; fullcases unchanged. Actual emitted default_title Matrx contradicts DEV callback expectation; source-to-artifact gate fails, D277 reopened in-fix. Follow-up91704b0a6 final-hook plus CI/release emitted-title gate source passes; actual new emitted artifact and native tooltip not yetverified.",
+          "native": "FreshCI39545041578/source93/artifact12321482236 normalruntime-equivalentmainEE37/treee7dd...; actualownerProfile8Reload579/pins/correctpanel; actualAXidletoolbarDEVafterbootPASS. Fullguardvalid0,10/18calls,freshevidencepeer/rootactualtree+GitHubchecks. Directhover/assistancevariants unverified; no fullcase/defectclosure.",
           "fix_sha": "91704b0a60dc884d90b9e98539aaf1ce053e33c9"
         }
       ]

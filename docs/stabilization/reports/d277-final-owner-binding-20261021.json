@@ -1,0 +1,13 @@
+{
+  "observed_at_utc": "2026-10-21T04:51:09.801388+00:00",
+  "method": "Root independent read-only GitHub CLI and canonical hashReleaseTree; no UI replay or test/build",
+  "ci_run": 39545041578,
+  "ci_status": "completed",
+  "ci_conclusion": "success",
+  "source_sha": "93ff86718c82dbc96e217a0614bf2684a7053c3c",
+  "artifact_id": 12321482236,
+  "github_digest": "sha256:71c685df27d5971f6c608e3097d038c4a3ed92929f3584b5a2e587b1183c4248",
+  "imported_and_promoted_tree_sha256": "e7ddaf910d85bf6246f402a485e66bbb19084f97dc635ada99c6b271be0b491a",
+  "both_actual_trees_match_normal_receipt": true,
+  "limits": "Native owner observations are fresh operator evidence with independent receipt review; no root UI replay, direct hover or assistance-state proof."
+}
