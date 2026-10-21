@@ -29872,7 +29872,35 @@
               "status": "unverified",
               "detail": "New source-to-case coverage; no native run."
             }
-          }
+          },
+          "attempt_history": [
+            {
+              "at": "2026-10-21T14:57:47.411Z",
+              "mode": "guest-intended; frozen579/11ff",
+              "status": "unverified_resource_invalid",
+              "run_id": "guest-image-copy-recovered-20261021-0825",
+              "new_acceptance_credit": false,
+              "detail": "Turn interrupted before finalization; holder later ended invalid3. Large-group copy observations only. Second large photo misclassified medium, corrected; zero medium evidence.",
+              "evidence": [
+                "docs/stabilization/reports/guest-image-copy579-warm-20261021.json",
+                "docs/stabilization/reports/guest-image-copy579-reload-peer-20261021.json",
+                "docs/stabilization/resource-journals/guest-image-copy-recovered-20261021-0825.jsonl"
+              ]
+            },
+            {
+              "at": "2026-10-21T15:05:30.193Z",
+              "mode": "role/build unconfirmed; native DEV label observed",
+              "status": "unverified",
+              "run_id": "image-cleanup-20261021-1501",
+              "new_acceptance_credit": false,
+              "detail": "Fresh valid0 normal guard: actual9SMALLERIMAGES tile copied exact public enwiki-25.svg URL; owned tab closed. ManagerID/version/path and signed-out role not independently verified, no role-cell promotion. Fresh A/B evidence review supports bounded observation only.",
+              "evidence": [
+                "docs/stabilization/reports/image-cleanup-medium-20261021.json",
+                "docs/stabilization/reports/copy-recovery-evidence1506.json",
+                "docs/stabilization/resource-journals/image-cleanup-20261021-1501.jsonl"
+              ]
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T43",
