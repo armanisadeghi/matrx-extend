@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "runId": "owner584-b8-refresh-20261021-1720",
+  "outcome": "owner_dev_reloaded_and_guest_test_tabs_closed",
+  "cuaCalls": 25,
+  "reloadObservedAtUtcApprox": "2026-10-21T17:22:07Z",
+  "ownerProfile": {
+    "windowName": "Arman (armansadeghi.com)",
+    "chromeVersionProfilePath": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "sidePanelAccount": "arman@armansadeghi.com"
+  },
+  "devExtension": {
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "name": "Matrx Extend DEV",
+    "version": "0.2.584",
+    "enabled": true,
+    "pinned": true,
+    "loadedFrom": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "reloadAction": "Clicked the extension details Reload button in the verified owner Profile 8 window; Chrome displayed Reloaded.",
+    "postReloadPanel": "Opened via the DEV toolbar button; chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html appeared under arman@armansadeghi.com and remained open at the final owner-window observation."
+  },
+  "storeExtension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "name": "Matrx Extend",
+    "version": "0.2.205",
+    "enabled": true,
+    "pinned": true,
+    "source": "Chrome Web Store"
+  },
+  "guestCleanup": {
+    "profileName": "Matrx Guest Test",
+    "chromeVersionProfilePath": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10",
+    "closedOnlyTheseExistingTabs": [
+      "https://www.aimatrx.com/matrx-extend-demo",
+      "chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml"
+    ],
+    "temporaryProfileVersionTabClosed": true,
+    "finalObservation": "Closing the last guest test tab returned Chrome to the owner Profile 8 DEV details tab, with its side panel still open."
+  },
+  "scopeLimit": "This report establishes UI reload, identity, source path, enabled and pin states, panel opening, and test-tab cleanup. It does not claim full product health, Store 577 approval, or native feature functionality.",
+  "ownerBinding": {
+    "sourceSha": "b8e31fbb2207b2318a4d1cb2972578c94b56710c",
+    "version": "0.2.584",
+    "ciRunId": 39640552208,
+    "ciRunAttempt": 1,
+    "ciTerminal": "success at2026-10-21T17:17:03Z",
+    "focusedAcceptanceRunId": 39640552226,
+    "focusedAcceptanceTerminal": "success",
+    "artifactId": 12365851226,
+    "githubArtifactDigest": "sha256:7666fa80172f74756e02bcec1173db2bf441283f73397e0ef099cd6a57a16e84",
+    "treeSha256": "fcf63381e73def118ca91ee94eed5bed48323206f964ef5067e57dacbaacdc6f",
+    "normalImportStatus": "test-results/ci-artifacts/b8e31fbb2207b2318a4d1cb2972578c94b56710c/39640552208-1/import-status.json",
+    "normalPromotion": "scripts/promote-ci-dev-artifact.mjs succeeded into stable .output/chrome-mv3-dev before native Reload; root postpromotionrehash matched newtree.",
+    "sourceFreshnessAtImport": "sourceState exact_pushed_commit_only, HEAD andorigin/main b8; dirtytrackingonly,untrackedRunnerInputs empty.",
+    "guardJournal": "docs/stabilization/resource-journals/owner584-b8-refresh-20261021-1720.jsonl",
+    "guardFinal": "valid0 at17:23:17.055Z, all16entries/no reasons",
+    "actualGuardProcessExit": 0,
+    "nativePeerLimit": "Fresh evidence review only; no independent native reload replay.",
+    "postReloadTreeRehash": {
+      "at": "2026-10-21T17:27:21.688319+00:00",
+      "treeSha256": "fcf63381e73def118ca91ee94eed5bed48323206f964ef5067e57dacbaacdc6f",
+      "freshOriginMain": "b8e31fbb2207b2318a4d1cb2972578c94b56710c",
+      "normalSourceCompatibility": "exact-source; pendingchanges are allowlisted tracking records only"
+    }
+  },
+  "ownerAdjudicationOfPeerLimits": {
+    "actualExecExit": "Confirmed exec90674 actualexit0, full16entryjournalvalid0; no ownedguardprocess remains. This supersedes pendingexit context supplied before finalpoll.",
+    "cleanupChronology": "Earliercleanupworker closedSQL and left2Guesttabs at17:17; laterownerworker verifiedProfile10 and closedthose2 by17:23. Differentobservedtimes, no contradiction. Earlierreport remainshistorical; latestevidence establishescleanupcomplete.",
+    "trackedDirty": "True atimport reflects only stabilizationtrackingpaths; normalimport refuseduntrackedruntimeinputs and recordedemptylist. Current normal sourceCompatibility exact-source; no runtimependingchange or guardwaiver.",
+    "loadedPathBinding": "Normal verifiedimport→atomicpromotestablepath→rootrehash→actualsameProfile8DEVReloaded→postReloadrootrehash samefulltree. No cryptographicreadbackfromChromeprocessorindependentUIreplay is claimed; this ordinaryexternalbindingchain is retained as evidence limit."
+  }
+}

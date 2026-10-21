@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-21 17:04 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-21T05:34:58.291937+00:00. 207 features · 831 cases · 1422 controls · 277 linked defect records.
+Generated 2026-10-21 17:29 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-21T17:24:00Z. 207 features · 831 cases · 1422 controls · 277 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
 Applicable case-by-role slots: **1338** — Pass: 109 · Partial: 103 · Fail: 1 · Unverified: 1114 · N/A: 11.
-Unverified splits into **176 explicitly marked unverified** and **938 with no result record**.
+Unverified splits into **177 explicitly marked unverified** and **937 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -1029,6 +1029,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: store-daily-20261021-native, ['docs/stabilization/reports/guest-images579-20261021.json', 'docs/stabilization/reports/guest-image-url-independent-20261021.json', 'docs/stabilization/reports/image-url-diagnosis0727.json', 'docs/stabilization/resource-journals/store-daily-20261021-native.jsonl', 'docs/stabilization/reports/image-policy-evidence0732.json']
 - EXT-F-1007-T42 · guest: Partial. Actual Profile10 DEV manager Reload/path/ID/584 and Settings Sign in/Email— verified. Wikipedia portal main logo and smaller donation-badge Copy image URL each matched full captured src warm and after extension+page Reload/recapture (four actions), clipboard reseeded each time, Images7/selection retained. Root full journal terminal valid0/process0. No controlled non-icon manifest or icon target; no full T42 PASS, member/admin, Store or overall Scrape health. Fresh evidence-only A/B review accepts bounded observations and full journal; no independent UI replay. Full guest case remains unverified beyond these substeps.
   Evidence / build / date recorded: owner584-refresh-images-20261021-1547, Frozen keyed DEV0.2.584/source81bc3fb0f/CI39627131118/artifact12358153358; production compilation, development identity, ['docs/stabilization/reports/guest584-image-copy-20261021.json', 'docs/stabilization/resource-journals/owner584-refresh-images-20261021-1547.jsonl', 'docs/stabilization/reports/guard-native584-fresh-review-20261021.json']
+- EXT-F-1007-T43 · guest: Unverified. No canonical productPASS: sharedprimary+peer lease invalid3 at17:13:50 afterpressure2; raw4dismissal observations retained but excluded. DBfreshafter-read unverified; independentpeer stoppedbeforeoriginalreplay. Separatecleanupvalid0 closedownedSQL, ownerrefreshvalid0 laterclosed2ownedGuesttabs. AllUIstopped; ownerDEVnownewb8artifact, so nextT43run mustrecordnewtuple.
+  Evidence / build / date recorded: guest584-source-dismiss-20261021-1710, ['docs/stabilization/reports/guest584-source-dismiss-native-20261021.json', 'docs/stabilization/reports/source-dismiss-fresh-native-peer-20261021.json', 'docs/stabilization/reports/source-dismiss-owned-tab-cleanup-20261021.json', 'docs/stabilization/reports/owner-b8-native-reload-20261021.json', 'docs/stabilization/resource-journals/guest584-source-dismiss-20261021-1710.jsonl']
 
 **Other remaining work:** D59 document identity: candidate a021ae82 remains partial; guarded peer a702ba6c passes narrow capture tests/compile but finds mixed-document Diagnose bundle and refresh status race. Native guest/member/admin retest pending; reports/scrape-document-peer.json.; Source landing and organization-scoped persistence require live member/admin evidence. Guest Save is a sign-in refusal with device-local retry. The independent File elsewhere and recognized-Source open controls have source cases but remain unverified in native warm/reload runs.
 
