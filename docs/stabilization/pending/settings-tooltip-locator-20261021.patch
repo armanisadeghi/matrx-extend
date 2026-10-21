@@ -1,0 +1,75 @@
+--- a/tests/browser/settings-panel-driver.mjs
++++ b/tests/browser/settings-panel-driver.mjs
+@@ -117,7 +117,7 @@
+     const tab = await evaluate(
+       panel,
+       `(() => {
+-    const tabs = [...document.querySelectorAll('button[role="tab"][title=${JSON.stringify(title)}]')];
++    const tabs = [...document.querySelectorAll('button[role="tab"][title=${JSON.stringify(title)}], button[role="tab"]:not([title])[data-matrx-title=${JSON.stringify(title)}]')];
+     const visible = tabs.filter((tab) => {
+       const style = getComputedStyle(tab), rect = tab.getBoundingClientRect();
+       return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
+@@ -215,7 +215,7 @@
+         panel,
+         `(() => {
+     const text = document.body?.innerText ?? '';
+-    return { active: !!document.querySelector('button[title="Settings"][data-state="active"]'),
++    return { active: !!document.querySelector('button[role="tab"][title="Settings"][data-state="active"], button[role="tab"]:not([title])[data-matrx-title="Settings"][data-state="active"]'),
+       guest: text.includes("You're using Matrx as a guest.") || text.includes('Sign in to choose') };
+   })()`,
+       ),
+--- a/tests/browser/settings-reload-boundary.mjs
++++ b/tests/browser/settings-reload-boundary.mjs
+@@ -186,7 +186,7 @@
+           visible: document.visibilityState === 'visible',
+           runtimeIdMatches: runtime?.id === expectedId,
+           rootCount: bounded(roots.length),
+-          settingsTabCount: bounded(document.querySelectorAll('button[role="tab"][title="Settings"]').length),
++          settingsTabCount: bounded(document.querySelectorAll('button[role="tab"][title="Settings"], button[role="tab"]:not([title])[data-matrx-title="Settings"]').length),
+           contextQueryAvailable: typeof runtime?.getContexts === 'function',
+           contextQueryFailed,
+           exactSidePanelContextCount: contexts === null ? null : bounded(contexts.filter((entry) =>
+--- a/tests/browser/settings-replacement-tab.test.mjs
++++ b/tests/browser/settings-replacement-tab.test.mjs
+@@ -2,6 +2,7 @@
+ import { readFile } from 'node:fs/promises';
+ import test from 'node:test';
+ import { runInNewContext } from 'node:vm';
++import { Window } from 'happy-dom';
+ import { waitForReplacementSettingsTab } from './settings-panel-driver.mjs';
+ 
+ function panelWithTabStates(states) {
+@@ -107,3 +108,33 @@
+     'guest_observed',
+   ]);
+ });
++
++
++// Removing tooltip-label fallback must make the lifted-label case fail:
++// run the real driver expression against actual DOM selector matching.
++for (const lifted of [false, true]) {
++  test(`replacement Settings readiness resolves ${lifted ? 'lifted' : 'native'} tooltip label`, async () => {
++    const window = new Window();
++    try {
++      window.document.body.innerHTML =
++        '<div id="app"><button role="tab" title="Settings"></button></div>';
++      const tab = window.document.querySelector('button');
++      if (lifted) {
++        tab.setAttribute('data-matrx-title', tab.getAttribute('title'));
++        tab.removeAttribute('title');
++      }
++      tab.getBoundingClientRect = () => ({ width: 28, height: 28 });
++      const panel = {
++        async send(method, args) {
++          assert.equal(method, 'Runtime.evaluate');
++          return { result: { value: window.eval(args.expression) } };
++        },
++      };
++      const receipt = await waitForReplacementSettingsTab(panel, 120);
++      assert.equal(receipt.last.matched, 1);
++      assert.equal(receipt.last.visible, 1);
++    } finally {
++      await window.happyDOM.abort();
++    }
++  });
++}

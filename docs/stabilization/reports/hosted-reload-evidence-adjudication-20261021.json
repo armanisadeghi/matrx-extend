@@ -56,5 +56,14 @@
     "action": "preserved; no second submission"
   },
   "remaining": "D282 fixed, original bot release-to-CI retest pending; D217 original behavior unverified; product campaign incomplete. No new paid job or package publication.",
-  "at": "2026-10-21T20:59:11.113616+00:00"
+  "at": "2026-10-21T20:59:11.113616+00:00",
+  "prepared_candidate": {
+    "path": "docs/stabilization/pending/settings-tooltip-locator-20261021.patch",
+    "status": "unapplied_unexecuted_unreviewed",
+    "production_files_modified": false,
+    "scope": "Three title-only Settings readiness/active/diagnostic queries accept tooltip-held label only when title is absent; existing matching/native-input/timeout/resource rules retained. Added real driver expression against Happy DOM for native and lifted labels.",
+    "limits": "Cannot run red/green, lint, independent worker review or native acceptance while system disk refuses normal guard and worker locks. This patch is preparation, not a fix commit or behavior pass. Original hosted causal link remains unproved.",
+    "required_next": "Resource recovery and fresh implementation owner: inspect patch; prove added lifted-label case red on baseline then green on candidate through normal guarded focused suite; add native active-Settings and duplicate-label negative checks as warranted; independent review; synchronized exact-source CI and normal native rerun.",
+    "checked_at": "2026-10-21T21:01:35.343726+00:00"
+  }
 }
