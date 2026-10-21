@@ -1,0 +1,66 @@
+{
+  "task_id": "EXT-D-0277",
+  "lane": "bounded native Chrome mixed-copy acceptance and CI development artifact promotion",
+  "status": "partial_native_acceptance",
+  "observed_at": "2026-10-21T04:16:07Z",
+  "source_fix_sha": "e4ba9651f715a1755ef987ee4244eb43c01967f9",
+  "ci": {
+    "run_id": 39541831001,
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "source_sha": "10994390c13f3bba0e1e0c35ec4125db784410af",
+    "artifact_id": 12319479444,
+    "artifact_digest": "sha256:4042632f39733d7e4ca4d956bb3e5c207b7156b374a8962e96972ef9b7d627b7"
+  },
+  "promotion": {
+    "method": "scripts/current-test-artifact.mjs import, then scripts/promote-ci-dev-artifact.mjs",
+    "compatibility": "exact-source",
+    "version": "0.2.579",
+    "tree_sha256": "03629c029ee5a8786782fb89fe0e9ecdffa4f778be20f2b2be834eed3db447eb",
+    "file_count": 2471,
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "receipt": "test-results/ci-dev-promotion-receipt.json"
+  },
+  "native_context": {
+    "chrome_profile_name": "Arman (armansadeghi.com)",
+    "chrome_profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "account_visible": "arman@armansadeghi.com",
+    "chrome_version": "155.0.8059.85",
+    "page": "https://www.aimatrx.com/matrx-extend-demo"
+  },
+  "observations": [
+    "Before reload, the development Chrome details card displayed Matrx Extend, version 0.2.578, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, loaded from the stable chrome-mv3-dev folder, and Pin to toolbar on.",
+    "After using that card's Reload button, Chrome displayed Matrx Extend DEV, version 0.2.579, the same development ID and loaded-from folder, and Pin to toolbar on.",
+    "The installed Store details card displayed Matrx Extend, version 0.2.205, ID hnfolienncfklkgmdjjmhhegglimlamg, Source Chrome Web Store, and Pin to toolbar on.",
+    "Chrome's Extensions menu in the same profile listed separate pinned Matrx Extend and Matrx Extend DEV entries.",
+    "Selecting the Matrx Extend DEV menu entry after full extension reload opened chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html with the signed-in owner account visible.",
+    "Selecting the neighboring first Matrx toolbar icon opened chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html. Selecting the second icon restored the development side panel ID. This reproduces the prior mixed-copy selection hazard as two distinct live channels and shows the intended channel can now be selected by name."
+  ],
+  "verdict_a_native": {
+    "bounded_original_mixed_copy": "pass",
+    "full_defect_acceptance": "partial",
+    "reason": "The real cards and Extensions menu distinguish the two channels, both remain pinned, and a post-reload DEV selection opens the DEV ID. Chrome accessibility exposed both toolbar buttons only as Matrx; no readable hover tooltip was produced in this bounded native pass. No existing safe Vault assistance fixture was presented, so saved-login, pending-save, and clear tooltip states were not observed."
+  },
+  "verdict_b_provenance_and_source": {
+    "verdict": "pass_for_artifact_identity_only",
+    "reason": "Successful main-push CI artifact was imported and promoted through the normal verification scripts at exact source SHA, then Chrome showed the promoted folder, version, development ID, and changed card label after Reload. This lane did not rerun source tests or perform an independent code review; earlier 17-test source proof remains separate."
+  },
+  "remaining_gaps": [
+    "Actual Chrome hover tooltip title before and after assistance status changes was not directly visible to this UI automation surface.",
+    "Saved-login, pending-save, and clear runtime assistance states had no safe existing fixture in the bounded session.",
+    "Store 0.2.205 remains published and unchanged; this run made no new Store release or current-Store acceptance claim."
+  ],
+  "resource": {
+    "run_id": "d277-native-ci-20261021-01",
+    "journal": "docs/stabilization/resource-journals/d277-native-ci-20261021-01.jsonl",
+    "admitted": true,
+    "resource_invalid": false,
+    "final_decision": "valid",
+    "exit_code": 0,
+    "holder_terminal": true,
+    "owned_heavy_or_browser_processes_remaining": 0
+  },
+  "cua_calls": 21,
+  "next_action": "Root may integrate this bounded native result into the defect record; retain tooltip assistance variants as pending until a genuine safe UI fixture and readable tooltip observation are available."
+}
