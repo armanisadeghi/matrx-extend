@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "run_id": "guest-seo-restricted579-20261021",
+  "case_id": "EXT-F-1008-T03",
+  "mode": "guest",
+  "outcome": "bounded pass for the named post-DEV-Reload subtargets; pre-Reload observations are unbound; T03 remains partial",
+  "product": {
+    "development_ci_run_id": 39541831001,
+    "development_artifact_id": 12319479444,
+    "source_sha": "10994390c13f3bba0e1e0c35ec4125db784410af",
+    "tree_sha256": "03629c029ee5a8786782fb89fe0e9ecdffa4f778be20f2b2be834eed3db447eb",
+    "development_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_version_after_actual_manager_reload": "0.2.579",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "browser_version": "155.0.8059.85"
+  },
+  "profile": {
+    "name": "Matrx Guest Test",
+    "chrome_profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10",
+    "guest_evidence": "Public demo showed Sign in; extension account control showed G. No account login, credentials, AI call, audit Save, or backend write was performed."
+  },
+  "resource": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id guest-seo-restricted579-20261021 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "admitted": true,
+    "final_decision": "valid",
+    "resource_invalid": false,
+    "browser_stop_confirmed": true,
+    "journal": "docs/stabilization/resource-journals/guest-seo-restricted579-20261021.jsonl"
+  },
+  "observations": {
+    "warm_before_actual_dev_reload_unbound": {
+      "provenance": "Observed before the manager check/reload. The subsequently opened manager showed version 0.2.578; the source of that warm panel is unknown and receives no credit for the frozen 0.2.579 artifact.",
+      "public_fixture": "https://www.aimatrx.com/matrx-extend-demo",
+      "initial_public_audit": "LOOKS GOOD; public title, headings and metadata were visible.",
+      "restricted_url": "chrome://version/",
+      "chrome_version_page_reported_profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10",
+      "restricted_panel": "This page cannot be audited (browser-internal or restricted URL). The panel showed Run an audit to see metadata, headings, images, and AI recommendations, plus Audit this page. No public audit content or Copy audit control remained.",
+      "public_recovery": "Returning to the demo restored LOOKS GOOD, title 'Matrx Extend Demo Page — AI Matrx', and its headings/metadata; audit error was absent."
+    },
+    "after_actual_dev_manager_reload": {
+      "manager_identity_before_reload": "Matrx Extend DEV, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.578, unpacked source at .output/chrome-mv3-dev.",
+      "reload": "Clicked that DEV entry's Reload button; Chrome displayed Reloaded and the version became 0.2.579.",
+      "panel_identity": "Opened Matrx Extend DEV from Chrome's Extensions menu; panel origin was chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html.",
+      "public_fixture": "https://www.aimatrx.com/matrx-extend-demo",
+      "public_audit": "LOOKS GOOD; expected title, headings and metadata were visible.",
+      "restricted_url": "chrome://version/",
+      "restricted_panel": "This page cannot be audited (browser-internal or restricted URL). The panel showed Run an audit to see metadata, headings, images, and AI recommendations, plus Audit this page. The previous public audit text and Copy audit control were absent.",
+      "public_recovery": "Returning to the demo restored LOOKS GOOD, title 'Matrx Extend Demo Page — AI Matrx', and its headings/metadata; audit error was absent."
+    }
+  },
+  "passed_subtargets_bound_to_frozen_artifact": [
+    "after_dev_manager_reload_chrome_internal_url_clears_public_audit_and_shows_restricted_page_error",
+    "after_dev_manager_reload_public_demo_recovers_after_restricted_url"
+  ],
+  "unbound_observations": [
+    "The same restricted-URL error/no-stale-audit and public-recovery sequence was seen before manager Reload, but its extension version/source was not established."
+  ],
+  "backend_visibility": "No backend activity was inspected, so no backend behavior is claimed. No AI, Save, credential, fixture, or other backend-writing action was performed.",
+  "procedure_deviation": {
+    "actual_cua_calls": 27,
+    "call_limit": 25,
+    "detail": "The call count includes two failed keyboard-action attempts while using the native App API and a tab-list click that targeted a Close control and closed one pre-existing Extensions tab in Profile 10. It had no profile, authentication, or product-content effect; no more UI actions followed the final recovery observation. This is a disclosed limit breach, not a 25-call run."
+  },
+  "remaining_gaps": [
+    "Unreachable HTTP(S) behavior remains unverified.",
+    "Other browser-internal or restricted schemes remain unverified.",
+    "Member/admin, Store, current-main, full T03, and full SEO behavior are not inferred.",
+    "Backend requests and logs were not inspected."
+  ],
+  "side_effects": "The existing Profile 10 was selected from Chrome's Profiles menu; no new profile was created and Profile 8 was not changed or signed out. One pre-existing Extensions tab was closed by the disclosed tab-list misclick. Chrome was left on the public demo page with the DEV SEO panel and signed-out guest state; the browser lease was stopped with Ctrl-C and its final decision is valid. No source or shared inventory files were changed."
+}
