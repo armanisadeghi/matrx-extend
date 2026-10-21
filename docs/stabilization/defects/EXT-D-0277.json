@@ -7,7 +7,7 @@
   "auth_mode": "guest; extension identity is independent of account and organization",
   "severity": "S2: native tests can open the Store panel after reloading development and misattribute results",
   "priority": "P1: distinguish channels before further mixed-profile acceptance",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root",
   "preconditions": [
     "Chrome profile contains both keyed unpacked development and published Store extensions.",
@@ -33,7 +33,10 @@
     "docs/stabilization/reports/dev-label-final-guarded-verification-20261021.json",
     "docs/stabilization/reports/d277-ci-native-acceptance-20261021.json",
     "docs/stabilization/reports/d277-native-receipt-peer-20261021.json",
-    "docs/stabilization/reports/d277-emitted-title-diagnosis-20261021.json"
+    "docs/stabilization/reports/d277-emitted-title-diagnosis-20261021.json",
+    "docs/stabilization/reports/d277-emitted-title-fix-20261021.json",
+    "docs/stabilization/reports/d277-final-guarded-checks-20261021.json",
+    "docs/stabilization/reports/d277-final-manifest-reverify-20261021.json"
   ],
   "acceptance_criteria": [
     "Actual WXT manifest callback emits development name and toolbar title Matrx Extend DEV when keyed Chrome build is selected.",
@@ -41,10 +44,10 @@
     "Credential assistance boot, status and clear titles preserve the development label while Store status text stays unchanged.",
     "Native mixed-profile check confirms both labels and correct post-reload development panel ID; source test and Store invariants do not substitute for native acceptance."
   ],
-  "source_verification": "Manifest and original boot failures reproduced under valid guards. First runtime repair misclassified published Store key; reviewer rejected it. Canonical runtime-ID channel repair passed source peer A and B. Worker unguarded RED/GREEN/compile/catalog claims were explicitly invalidated; root normal guarded mutation rejects badStorekey classification (16pass1fail), exactsource restored and17/17GREEN, final typecheck valid0, fullLint valid0 plus scoped5files0warnings after envcleanup. Final normal catalog valid0,169tools unchanged except restored timestamp; native exactbuild pending.",
+  "source_verification": "Manifest and original boot failures reproduced under valid guards. First runtime repair misclassified published Store key; reviewer rejected it. Canonical runtime-ID channel repair passed source peer A and B. Worker unguarded RED/GREEN/compile/catalog claims were explicitly invalidated; root normal guarded mutation rejects badStorekey classification (16pass1fail), exactsource restored and17/17GREEN, final typecheck valid0, fullLint valid0 plus scoped5files0warnings after envcleanup. Final normal catalog valid0,169tools unchanged except restored timestamp; native exactbuild pending. Follow-up91704b0a6 fixes final WXT manifestGenerated hook after popup merge and enforces canonical emitted title at CIproduce/release boundaries. Fresh source peer A/B passes,12hooktests/compile/catalog normalvalid0, release-harnessvalid0, fullLint3180files927warnings0errors. Immutableoldartifact guardRED and correctedcopyGREEN are lightweight assertion/simulated only, not a fresh built artifact. Pressure refusal and parent malformed lint-command refusal preserved; no bypass.",
   "native_retest": "Bounded original mixed-copy PASS on actual owner Profile8: CI39541831001/artifact12319479444/source10994390 development579 normally imported/promoted, native manager Reload distinguishes DEV and Store cards/menu, both pinned, each opens its intended panel ID. Full native acceptance PARTIAL: hover and saved-login/pending-save/clear tooltip states not observed; no safe existing fixture. Full valid resource journal, independent operator,21/25CUAcalls. Independent artifact review finds emitted action.default_title Matrx despite source callback DEV; runtime prefers that field, so source-to-artifact sibling fails.",
-  "fix_sha": "e4ba9651f715a1755ef987ee4244eb43c01967f9",
-  "next_action": "Repair final emitted DEV manifest title after WXT popup merge; add forcing emitted-artifact guard, normal guarded RED/GREEN and source gates, fresh review, push and adopt successful eligible CI; independent native tooltip retest. Preserve bounded name/menu/panel-ID pass and pending Store577.",
+  "fix_sha": "91704b0a60dc884d90b9e98539aaf1ce053e33c9",
+  "next_action": "Push source/evidence then observe successful eligible CI including new emitted-title producer guard; normal import/promote/reload owner Profile8 and independently verify actual tooltip/status/clear with safe fixture. Preserve pending Store577; retain original mixed-copy native PASS on old579artifact separately.",
   "transition_history": [
     {
       "at": "2026-10-21T03:30:00Z",
@@ -81,7 +84,17 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Diagnosis confirms popup HTML title overrides config callback after merge; implementation owns final-manifest hook and emitted-artifact gate."
+    },
+    {
+      "at": "2026-10-21T04:36:58.905780+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Follow-up 91704b0a60dc884d90b9e98539aaf1ce053e33c9 source reviewed; final-hook12tests, compile/catalog, releaseharness and fullLint valid. Actual new CI artifact/native tooltip pending."
     }
   ],
-  "retest_status": "retest_fail_emitted_toolbar_title"
+  "retest_status": "pending_followup_CI_artifact_and_native_toolbar",
+  "fix_commits": [
+    "e4ba9651f715a1755ef987ee4244eb43c01967f9",
+    "91704b0a60dc884d90b9e98539aaf1ce053e33c9"
+  ]
 }

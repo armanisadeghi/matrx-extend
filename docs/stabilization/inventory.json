@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T04:20:18.700804+00:00",
+  "updated_at": "2026-10-21T04:36:58.905780+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -627,14 +627,14 @@
         {
           "defect_id": "EXT-D-0277",
           "scope": "Development installed name/default toolbar and runtime assistance tooltip identity; Store metadata/status strings preserved",
-          "status": "in_fix_emitted_title_retest_fail",
+          "status": "fixed_followup_emitted_title_CI_native_pending",
           "evidence": [
             "docs/stabilization/defects/EXT-D-0277.json",
             "docs/stabilization/reports/dev-label-final-guarded-verification-20261021.json",
             "docs/stabilization/reports/d277-ci-native-acceptance-20261021.json"
           ],
-          "native": "Actual owner Profile8 development579/source10994390 native manager Reload: distinct cards/menu,bothpinned,each opens its intendedpanel. Original mixed-copy boundedPASS; hover/status/clear tooltips unverified; fullcases unchanged. Actual emitted default_title Matrx contradicts DEV callback expectation; source-to-artifact gate fails, D277 reopened in-fix.",
-          "fix_sha": "e4ba9651f715a1755ef987ee4244eb43c01967f9"
+          "native": "Actual owner Profile8 development579/source10994390 native manager Reload: distinct cards/menu,bothpinned,each opens its intendedpanel. Original mixed-copy boundedPASS; hover/status/clear tooltips unverified; fullcases unchanged. Actual emitted default_title Matrx contradicts DEV callback expectation; source-to-artifact gate fails, D277 reopened in-fix. Follow-up91704b0a6 final-hook plus CI/release emitted-title gate source passes; actual new emitted artifact and native tooltip not yetverified.",
+          "fix_sha": "91704b0a60dc884d90b9e98539aaf1ce053e33c9"
         }
       ]
     },

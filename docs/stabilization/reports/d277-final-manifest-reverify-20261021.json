@@ -27,5 +27,22 @@
     "remaining_gates": "Builder should supply red on original artifact, green on fresh emitted output, good fixture success and malformed-title refusal, compile/lint/path checks, a commit and CI artifact tied to that commit. This review did not run tests by brief."
   },
   "new_regressions": "None found in inspected title/CI/release-path diff. No source finding that independently blocks proceeding to execution gates.",
-  "builder_report": "/tmp/d277-emitted-title-fix-20261021.json absent at review time; parent must inspect when written."
+  "builder_report": "/tmp/d277-emitted-title-fix-20261021.json absent at review time; parent must inspect when written.",
+  "frozen_commit": "91704b0a60dc884d90b9e98539aaf1ce053e33c9",
+  "evidence_followup": {
+    "scope": "Exact commit inspected; full resource journals parsed for terminal events. No new commands run against source.",
+    "prior_findings": "All three remain ADDRESSED_IN_SOURCE at frozen commit 91704b0a6; no new regression in committed diff.",
+    "verdict_a": "PASS for source contract and guarded path. ACTUAL NEW CI EMITTED ARTIFACT AND NATIVE TOOLBAR TITLE STILL PENDING.",
+    "verdict_b": "PASS for committed source/quality and available guarded checks: final release-path harness, corrected lint, 12-unit test run, corrected compile, and catalog resource journals all have childExitCode=0 and RESOURCE_FINAL_DECISION valid/exitCode=0. Exact commit contains code and reports; tree is clean. Initial pnpm lint . resource refusal was command-policy refusal, followed by successful pnpm lint.",
+    "limits": "Resource journals establish admission, child exit and final decision; they do not contain raw test stdout. 12/12, 3180 files and 927 warnings are builder-reported counts, while successful exits were independently confirmed from journals. Release harness is isolated/fake, not publication; no fresh CI or native observation.",
+    "evidence": [
+      "docs/stabilization/reports/d277-emitted-title-fix-20261021.json",
+      "docs/stabilization/reports/d277-final-guarded-checks-20261021.json",
+      "docs/stabilization/resource-journals/d277-title-vitest-20261021a.jsonl",
+      "docs/stabilization/resource-journals/d277-title-compile-20261021b.jsonl",
+      "docs/stabilization/resource-journals/d277-title-catalog-20261021a.jsonl",
+      "docs/stabilization/resource-journals/d277-title-release-path-final-20261021.jsonl",
+      "docs/stabilization/resource-journals/d277-title-lint-corrected-20261021.jsonl"
+    ]
+  }
 }
