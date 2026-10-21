@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "status": "DONE",
+  "observed_at_utc": "2026-10-21T18:22:17Z",
+  "resource_guard": {
+    "run_id": "owner-main5a-refresh-20261021-1817",
+    "journal": "docs/stabilization/resource-journals/owner-main5a-refresh-20261021-1817.jsonl",
+    "admitted_at_utc": "2026-10-21T18:19:25.550Z",
+    "admission_code": "RESOURCE_ADMITTED",
+    "latest_checked_watch_at_utc": "2026-10-21T18:22:05.803Z",
+    "latest_checked_code": "RESOURCE_WATCH_HEALTHY",
+    "latest_checked_reasons": []
+  },
+  "native_chrome": {
+    "browser": "Google Chrome native macOS app",
+    "profile_label": "Arman (armansadeghi.com)",
+    "profile_path_from_chrome_version": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "profile_evidence": "The active Chrome window's chrome://version accessibility tree displayed Profile Path; the temporary version tab was closed."
+  },
+  "dev_extension": {
+    "name": "Matrx Extend DEV",
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version_before_and_after_reload": "0.2.584",
+    "enabled_after_reload": true,
+    "pinned_to_toolbar_after_reload": true,
+    "source": "Unpacked extension",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "reload_observation": "Clicked the DEV details page Reload button once; Chrome displayed literal Reloaded feedback. The after state still showed version 0.2.584, On, the expected ID and unpacked path, and Pin to toolbar on.",
+    "panel_observation": "After reload, clicked the DEV toolbar button; the native side panel reopened at chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html. The details page listed sidepanel.html under Inspect views."
+  },
+  "store_extension": {
+    "name": "Matrx Extend",
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.205",
+    "enabled": true,
+    "pinned_to_toolbar": true,
+    "source": "Chrome Web Store",
+    "observation": "The pre-existing Store details tab showed version 0.2.205, On, Pin to toolbar on, and Chrome Web Store source. No Store setting was changed."
+  },
+  "artifact_binding": {
+    "report": "docs/stabilization/reports/current-ci-dev-adoption-20261021.json",
+    "source_sha": "5a1b9e108431cb7071f374e3d4778bc7d393504b",
+    "source_compatibility": "exact-source",
+    "ci_run_id": 39649558400,
+    "artifact_id": 12369911241,
+    "artifact_digest": "sha256:ef8ef58ee7c04c7c2edd1e2d70112162457687a862365bb8d50c1e669e227013",
+    "promoted_tree_sha256": "93ac42aa5702a6c52352542f0643a487125e2b782d3e599808865df1d54d7a3a",
+    "note": "The digest and source binding are from the normal importer/promoter report. Native Chrome exposed the loaded path, version, ID, and reload feedback; it did not expose an artifact digest."
+  },
+  "cua_calls": 11,
+  "owner_left_on": "DEV extension details tab with DEV side panel open; temporary chrome://version tab closed",
+  "limits": [
+    "This verifies native profile identity, actual DEV reload, source path, version, enabled and pin states, and coexistence with the Store entry. Product workflows were not exercised.",
+    "The current CI artifact attribution depends on the separately verified normal promotion report and stable output tree. The native UI does not display source commit or tree digest.",
+    "The resource guard owner finalizes the journal and terminal verdict."
+  ],
+  "files_touched": ["docs/stabilization/reports/owner-main5a-native-reload-20261021.json"],
+  "owner_final_binding": {
+    "journal": "docs/stabilization/resource-journals/owner-main5a-refresh-20261021-1817.jsonl",
+    "entries": 15,
+    "final": {
+      "schema": 1,
+      "at": "2026-10-21T18:22:19.787Z",
+      "runId": "owner-main5a-refresh-20261021-1817",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "actual_exec_exit": 0,
+    "before_after_tree_sha256": "93ac42aa5702a6c52352542f0643a487125e2b782d3e599808865df1d54d7a3a",
+    "normal_current_source_check_before_UI": {
+      "mainSha": "5a1b9e108431cb7071f374e3d4778bc7d393504b",
+      "compatibility": "exact-source",
+      "diffPaths": []
+    },
+    "source_hold": "D280candidatehelperpatch preservedoutsidegit andownededitreversed duringnormalcheck/Reload; rootreleasedrestoreonlyafterUIterminal. No unreviewedhelperbytesinCIartifact.",
+    "attribution_limit": "External normalimport\u2192promotion\u2192treehash\u2192ChromeReload samepath\u2192treehash chain; no cryptographic loadedprocesshash or independent UI replay."
+  }
+}

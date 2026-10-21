@@ -1,0 +1,66 @@
+{
+  "lane": "EXT-F-1007-T08 guest result tabs",
+  "run": "guest-result-tabs-b8-20261021-1804",
+  "status": "PARTIAL: six panes render matching capture data before and after reload; Video has no explicit empty-state message",
+  "fixture": "https://www.aimatrx.com/matrx-extend-demo",
+  "build_binding": {
+    "source_sha": "b8e31fbb2207b2318a4d1cb2972578c94b56710c",
+    "source_freeze": "DEV 0.2.584",
+    "ci_run": "39640552208",
+    "artifact": "12365851226",
+    "profile_ax": "Window: Matrx Guest Test; chrome://version Profile Path: /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10",
+    "manager_ax": "Extensions - Matrx Extend DEV; On, extension enabled: on; Version 0.2.584; ID cihdmkcdjjckfhjpgoedmgfpoljebaml; Source: Unpacked extension Loaded from /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "guest_ax": "Settings > ACCOUNT: Email \u2014; button Sign in; account control G",
+    "reload": "Clicked Reload on chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml; AX again showed enabled on, 0.2.584, same ID. Then clicked Chrome Reload on the public demo tab. Reopened DEV side panel; Scrape showed 'Capture this page to extract content' before a new Capture click.",
+    "source_page_ax": [
+      "heading A clear three-stage browser workflow",
+      "table Stage / Purpose / Expected result; Capture: Turn the open page into readable content; Understand: Ask questions about what is actually on the page; Use: Extract the details needed for the next task",
+      "link Matrx Extend privacy policy; link Contact AI Matrx support; link How AI Matrx works"
+    ],
+    "ax_evidence": {
+      "warm": {
+        "Article": "tab (selected) Article; defuddle \u00b7 179 words \u00b7 1 min read; heading Matrx Extend Demo Page; heading A clear three-stage browser workflow; table Capture/Understand/Use with page-matching cells",
+        "Images": "tab (selected) Images 1; container Images 1; text 1 IMAGE; container AI Matrx Logo; link AI Matrx Logo, Value: aimatrx.com/matrx/matrx-icon.svg?dpl=dpl_3iygGom2wFvY7rMhAZ6LmhsAGwnb",
+        "Video": "tab (selected) Video; container Video; button Add video URL; no video entry or explicit empty-state text",
+        "Links": "tab (selected) Links 17; text 17 LINKS; link Matrx Extend privacy policy https://www.aimatrx.com/privacy-policy/extension; link Contact AI Matrx support https://www.aimatrx.com/contact; link How AI Matrx works https://www.aimatrx.com/how-it-works; link ALL GREEN ELECTRONICS RECYCLING, LLC https://allgreenrecycling.com/",
+        "SEO": "tab (selected) SEO within container Scrape; text SEO AUDIT; Title 33 chars Matrx Extend Demo Page \u2014 AI Matrx; Description 121 chars; Canonical https://www.aimatrx.com/matrx-extend-demo; Page language en; STRUCTURED DATA 2; IMAGES 1",
+        "Schema": "tab (selected) Schema; text SCHEMA & METADATA; metadata.title Matrx Extend Demo Page \u2014 AI Matrx; metadata.description A stable public page for trying Matrx Extend page capture...; metadata.canonical https://www.aimatrx.com/matrx-extend-demo; metadata.lang en; og:title Matrx Extend Demo Page"
+      },
+      "after_manager_reload_page_reload_recapture": {
+        "Article": "tab (selected) Article; defuddle \u00b7 179 words \u00b7 1 min read; heading Matrx Extend Demo Page; heading A clear three-stage browser workflow; table Capture/Understand/Use with page-matching cells",
+        "Images": "tab (selected) Images 1; text 1 IMAGE; container AI Matrx Logo; link AI Matrx Logo, Value: aimatrx.com/matrx/matrx-icon.svg?dpl=dpl_3iygGom2wFvY7rMhAZ6LmhsAGwnb",
+        "Video": "tab (selected) Video; container Video; button Add video URL; no video entry or explicit empty-state text",
+        "Links": "tab (selected) Links 17; text 17 LINKS; link Matrx Extend privacy policy https://www.aimatrx.com/privacy-policy/extension; link Contact AI Matrx support https://www.aimatrx.com/contact; link How AI Matrx works https://www.aimatrx.com/how-it-works; link ALL GREEN ELECTRONICS RECYCLING, LLC https://allgreenrecycling.com/",
+        "SEO": "tab (selected) SEO within container Scrape; text SEO AUDIT; Title 33 chars Matrx Extend Demo Page \u2014 AI Matrx; Canonical https://www.aimatrx.com/matrx-extend-demo; STRUCTURED DATA 2; HEADINGS 4; LINKS 18; IMAGES 1; Navigation reload",
+        "Schema": "tab (selected) Schema; text SCHEMA & METADATA; metadata.title Matrx Extend Demo Page \u2014 AI Matrx; metadata.canonical https://www.aimatrx.com/matrx-extend-demo; metadata.lang en; og:title Matrx Extend Demo Page"
+      }
+    },
+    "cua_calls": "35/42",
+    "observations": [
+      "All six selected panes were captured through native Chrome accessibility state on Profile 10, both before and after the manager reload, page reload, and recapture.",
+      "Article, Images, Links, SEO, and Schema retained page-matching content; no stale pane content was observed when changing tabs.",
+      "Video has zero entries on this fixture and only an Add video URL button; this proves empty rendering, not video extraction on a page with video. No textual empty-state was visible; this is an observation, not a confirmed product defect without a requirement or evidence that the UI is confusing."
+    ],
+    "cleanup": "Closed only the owned public demo tab and owned DEV extension-manager tab. Chrome returned to the pre-existing Arman profile window; no other profile tab was touched.",
+    "journal_health": "Root owned and monitored the full resource journal. This lane did not independently check it. Root reported terminalvalid=0 and process=0 at 18:07:01.664 UTC.",
+    "prohibited_actions": "No Save, edit, sign-in, permission, AI, or Vault action."
+  },
+  "owner_final_resource": {
+    "journal": "docs/stabilization/resource-journals/guest-result-tabs-b8-20261021-1804.jsonl",
+    "entries": 14,
+    "final": {
+      "schema": 1,
+      "at": "2026-10-21T18:07:01.664Z",
+      "runId": "guest-result-tabs-b8-20261021-1804",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "actual_exec_exit": 0,
+    "owner_monitored": "Root observed healthy samples throughout; operator did not independentlyread journal.",
+    "before_after_artifact_tree": "fcf63381e73def118ca91ee94eed5bed48323206f964ef5067e57dacbaacdc6f",
+    "classification": "frozenb8, not currentmain/Store"
+  }
+}

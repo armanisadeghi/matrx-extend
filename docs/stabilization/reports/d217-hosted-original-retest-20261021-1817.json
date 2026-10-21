@@ -1,0 +1,59 @@
+{
+  "task_id": "EXT-D-0217-hosted-original-retest-20261021-1817",
+  "recorded_at_utc": "2026-10-21T18:17:33Z",
+  "lane": "hosted acceptance A",
+  "status": "normal_admission_refused_before_dispatch",
+  "source_artifact_provenance": {
+    "local_head": "5a1b9e108431cb7071f374e3d4778bc7d393504b",
+    "remote_main": "5a1b9e108431cb7071f374e3d4778bc7d393504b",
+    "ci_run_id": 39649558400,
+    "ci_run_attempt": 1,
+    "ci_head_sha": "5a1b9e108431cb7071f374e3d4778bc7d393504b",
+    "ci_status": "completed",
+    "ci_conclusion": "success",
+    "ci_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39649558400",
+    "development_artifact_id": 12369911241,
+    "development_artifact_name": "matrx-extend-development-test-5a1b9e108431cb7071f374e3d4778bc7d393504b-39649558400-1",
+    "development_artifact_digest": "sha256:ef8ef58ee7c04c7c2edd1e2d70112162457687a862365bb8d50c1e669e227013",
+    "artifact_expired": false
+  },
+  "normal_route": {
+    "script": "scripts/hosted-remote-admission.mjs",
+    "mode": "plan-member-scrape-save",
+    "target_case": "scrape-save-member",
+    "target_destination": "none",
+    "target_scope": "stale-profile-retry",
+    "runner_label": "macos-15-intel",
+    "plan_exit_code": 1,
+    "plan_output": "HOSTED_REMOTE_REFUSED HOSTED_MEMBER_SCRAPE_SCOPE_REFUSED",
+    "cause": "The workflow and native driver register stale-profile-retry, but planHostedMemberScrapeSave in the normal admission helper accepts only scope single and emits scrape_save_scope=single. The requested original reproduction has no admitted dispatch plan.",
+    "dispatch_attempted": false,
+    "verify_attempted": false,
+    "cost_gate_reached": false,
+    "cost_note": "Earlier actual CI spend reading of 84.60/100 was not treated as a permanent block; scope admission refused before a dispatch or current cost gate could be reached."
+  },
+  "behavior_evidence": {
+    "original_stale_profile_condition": "unverified",
+    "guest_save_refusal_and_sign_in_remedy": "unverified",
+    "guest_organization_and_landing_call_absence": "unverified",
+    "guest_retry_before_and_after_full_reload": "unverified",
+    "edited_draft_retention": "unverified",
+    "ordinary_nonadmin_member_recovery_and_edited_source_landing": "unverified",
+    "d217_closed": false
+  },
+  "resource_cleanup": {
+    "owned_hosted_jobs": 0,
+    "owned_hosted_resources": 0,
+    "fixture_created": false,
+    "credential_staged": false,
+    "ephemeral_credentials_to_remove": false,
+    "source_or_edges_created": false,
+    "owned_source_or_edge_cleanup_required": false
+  },
+  "limits": [
+    "No hosted run, native report, resource journal or product failure exists from this attempt.",
+    "The normal admission refusal is a hard stop; no direct workflow dispatch, alternate runner, scope substitution or helper edit was attempted.",
+    "Source 5a1b9e108 may advance; recheck current main and exact eligible CI artifact after the reviewed normal route is repaired."
+  ],
+  "next_action": "Have the normal admission route for the already registered stale-profile-retry scope corrected and independently reviewed, then recheck current main, exact eligible artifact, current spend and fixture/secret/host gates before one normal A dispatch. Retain original guest and surrounding non-admin cases as unverified until a valid native result and normal verification exist."
+}

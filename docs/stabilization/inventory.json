@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T17:53:00Z",
+  "updated_at": "2026-10-21T18:33:44.848349+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -427,7 +427,8 @@
           "linked_defects": [
             "EXT-D-0256",
             "EXT-D-0278",
-            "EXT-D-0279"
+            "EXT-D-0279",
+            "EXT-D-0281"
           ],
           "latest_candidate_checkpoint": {
             "version": "0.2.562",
@@ -25523,7 +25524,7 @@
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
           "steps": [
-            "Toggle Sync scroll with live page while article pane scrolls."
+            "Toggle Sync scroll with the live page on; scroll the live page and confirm the captured article follows. Toggle off, scroll the live page again and confirm the article stays put. Independently scrolling the article does not promise movement of the live page."
           ],
           "expected": [
             "On state follows live page scroll; toggle off stops synchronization."
@@ -25537,23 +25538,18 @@
           ],
           "results": {
             "guest": {
-              "run_id": "guest-scrape-controls-https-20261012",
-              "source_sha": "cd6c4381520dcdaf037eb64c47e41059330ea6bf",
-              "development_ci_run_id": 38298993769,
-              "development_artifact_id": 11769703557,
-              "build_version": "0.2.509",
+              "status": "pass",
+              "run_id": "guest-scroll-sync-b8-20261021-1810",
+              "source_sha": "b8e31fbb2207b2318a4d1cb2972578c94b56710c",
+              "build_version": "0.2.584",
+              "artifact_id": 12365851226,
               "resource_valid": true,
-              "evidence": "docs/stabilization/runs/guest-scrape-controls-https-20261012.json",
-              "status": "partial",
-              "passed_subtargets": [
-                "On an in-memory long Article, Sync ON followed live-page movement from top to bottom; after Stop, page movement left Article at its established position."
+              "evidence": [
+                "docs/stabilization/reports/guest-scroll-sync-b8-20261021.json",
+                "docs/stabilization/reports/scroll-sync-evidence-peer-20261021.json",
+                "docs/stabilization/resource-journals/guest-scroll-sync-b8-20261021-1810.jsonl"
               ],
-              "unverified": [
-                "Post-reload scroll controls; Article result view did not restore automatically."
-              ],
-              "detail": "Warm guest scroll behavior confirmed on frozen development 0.2.509. The long Article was an unsaved in-memory test edit; no Source was written.",
-              "evidence_quality": "Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.",
-              "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
+              "detail": "Visible Wikipedia sectionmarkers: ON livepage→article alignment, OFF articleisolation bothwarm and afteractualmanager/pageReload/recapture. One-waycontrolwording Stopfollowingpagescroll; article→page movementnotpromised. OriginalOFFrestored,2ownedtabsclosed,37/38calls,full16entryjournalvalid0/actualprocess0. Fresh evidence-onlypeer acceptsregisteredguestcase; no savedimages/pixeloffsets/nativepeer/member/admin/currentmain/Storeclaim. Procedureclarified to existingexpectedlive-page trigger, not weakened."
             }
           },
           "result_history": [
@@ -25712,6 +25708,28 @@
                 "detail": "Guest scroll-sync behavior passed warm and after full extension reload."
               },
               "superseded_at": "2026-10-12T20:22:00Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "run_id": "guest-scrape-controls-https-20261012",
+                "source_sha": "cd6c4381520dcdaf037eb64c47e41059330ea6bf",
+                "development_ci_run_id": 38298993769,
+                "development_artifact_id": 11769703557,
+                "build_version": "0.2.509",
+                "resource_valid": true,
+                "evidence": "docs/stabilization/runs/guest-scrape-controls-https-20261012.json",
+                "status": "partial",
+                "passed_subtargets": [
+                  "On an in-memory long Article, Sync ON followed live-page movement from top to bottom; after Stop, page movement left Article at its established position."
+                ],
+                "unverified": [
+                  "Post-reload scroll controls; Article result view did not restore automatically."
+                ],
+                "detail": "Warm guest scroll behavior confirmed on frozen development 0.2.509. The long Article was an unsaved in-memory test edit; no Source was written.",
+                "evidence_quality": "Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.",
+                "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
+              }
             }
           ],
           "defect_ids": [
@@ -25806,25 +25824,29 @@
           ],
           "results": {
             "guest": {
-              "run_id": "guest-scrape-controls-https-20261012",
-              "source_sha": "cd6c4381520dcdaf037eb64c47e41059330ea6bf",
-              "development_ci_run_id": 38298993769,
-              "development_artifact_id": 11769703557,
-              "build_version": "0.2.509",
-              "resource_valid": true,
-              "evidence": "docs/stabilization/runs/guest-scrape-controls-https-20261012.json",
               "status": "partial",
+              "run_id": "guest-result-tabs-b8-20261021-1804",
+              "source_sha": "b8e31fbb2207b2318a4d1cb2972578c94b56710c",
+              "build_version": "0.2.584",
+              "artifact_id": 12365851226,
+              "resource_valid": true,
               "passed_subtargets": [
-                "Warm selection of Article, Images, Video, Links, SEO, and Schema showed each tab selected and its pane rendered.",
-                "Article, one image, 17 links, SEO audit, and Schema metadata were visible."
+                "six_selected_result_panes_render_matching_demo_data_warm",
+                "six_selected_result_panes_render_matching_demo_data_after_manager_page_reload_recapture",
+                "video_zero_entries_with_add_url_control_empty_rendering"
               ],
               "unverified": [
-                "Post-reload result tabs; the capture pane required a fresh capture.",
-                "Video content and image tiers beyond the fixture's single image."
+                "populated_video_extraction",
+                "capture_invariance_across_complete_tab_cycle",
+                "independent_native_replay",
+                "member_admin_currentmain_Store"
               ],
-              "detail": "Warm guest result-tab behavior confirmed on frozen development 0.2.509; media absence and post-reload panes remain unverified.",
-              "evidence_quality": "Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.",
-              "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
+              "evidence": [
+                "docs/stabilization/reports/guest-scrape-result-tabs-b8-20261021.json",
+                "docs/stabilization/reports/result-tabs-evidence-peer-20261021.json",
+                "docs/stabilization/resource-journals/guest-result-tabs-b8-20261021-1804.jsonl"
+              ],
+              "detail": "GuestProfile10 actualDEVpath/ID/584/SignInEmail—,6panes warm+reload; retained sanitizedAXexcerpts;35/42calls,14entryfulljournalvalid0/actualprocess0,2ownedtabsclosed. Fresh evidencepeer acceptsboundedobservations, fullcasepartial. NoexplicitVideoemptytext is observation, notconfirmeddefect."
             },
             "member": {
               "status": "partial",
@@ -26190,6 +26212,30 @@
               },
               "superseded_at": "2026-10-20T17:58:00Z",
               "reason": "New bounded081 warm native slice; prior frozen evidence retained."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "run_id": "guest-scrape-controls-https-20261012",
+                "source_sha": "cd6c4381520dcdaf037eb64c47e41059330ea6bf",
+                "development_ci_run_id": 38298993769,
+                "development_artifact_id": 11769703557,
+                "build_version": "0.2.509",
+                "resource_valid": true,
+                "evidence": "docs/stabilization/runs/guest-scrape-controls-https-20261012.json",
+                "status": "partial",
+                "passed_subtargets": [
+                  "Warm selection of Article, Images, Video, Links, SEO, and Schema showed each tab selected and its pane rendered.",
+                  "Article, one image, 17 links, SEO audit, and Schema metadata were visible."
+                ],
+                "unverified": [
+                  "Post-reload result tabs; the capture pane required a fresh capture.",
+                  "Video content and image tiers beyond the fixture's single image."
+                ],
+                "detail": "Warm guest result-tab behavior confirmed on frozen development 0.2.509; media absence and post-reload panes remain unverified.",
+                "evidence_quality": "Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.",
+                "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
+              }
             }
           ],
           "attempt_history": [
@@ -28779,7 +28825,8 @@
           ],
           "verification_status": "unverified",
           "linked_defects": [
-            "EXT-D-0217"
+            "EXT-D-0217",
+            "EXT-D-0280"
           ],
           "source_changes": [
             {
