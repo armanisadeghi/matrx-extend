@@ -7,7 +7,7 @@
   "auth_mode": "guest; extension identity is independent of account and organization",
   "severity": "S2: native tests can open the Store panel after reloading development and misattribute results",
   "priority": "P1: distinguish channels before further mixed-profile acceptance",
-  "state": "fixed",
+  "state": "in-fix",
   "owner": "/root",
   "preconditions": [
     "Chrome profile contains both keyed unpacked development and published Store extensions.",
@@ -30,7 +30,10 @@
     "docs/stabilization/reports/dev-label-verification-peer-20261021.json",
     "docs/stabilization/reports/dev-label-store-key-repair-20261021.json",
     "docs/stabilization/reports/dev-label-final-source-peer-20261021.json",
-    "docs/stabilization/reports/dev-label-final-guarded-verification-20261021.json"
+    "docs/stabilization/reports/dev-label-final-guarded-verification-20261021.json",
+    "docs/stabilization/reports/d277-ci-native-acceptance-20261021.json",
+    "docs/stabilization/reports/d277-native-receipt-peer-20261021.json",
+    "docs/stabilization/reports/d277-emitted-title-diagnosis-20261021.json"
   ],
   "acceptance_criteria": [
     "Actual WXT manifest callback emits development name and toolbar title Matrx Extend DEV when keyed Chrome build is selected.",
@@ -39,9 +42,9 @@
     "Native mixed-profile check confirms both labels and correct post-reload development panel ID; source test and Store invariants do not substitute for native acceptance."
   ],
   "source_verification": "Manifest and original boot failures reproduced under valid guards. First runtime repair misclassified published Store key; reviewer rejected it. Canonical runtime-ID channel repair passed source peer A and B. Worker unguarded RED/GREEN/compile/catalog claims were explicitly invalidated; root normal guarded mutation rejects badStorekey classification (16pass1fail), exactsource restored and17/17GREEN, final typecheck valid0, fullLint valid0 plus scoped5files0warnings after envcleanup. Final normal catalog valid0,169tools unchanged except restored timestamp; native exactbuild pending.",
-  "native_retest": "Pending exact-source development artifact and mixed-profile Chrome test.",
+  "native_retest": "Bounded original mixed-copy PASS on actual owner Profile8: CI39541831001/artifact12319479444/source10994390 development579 normally imported/promoted, native manager Reload distinguishes DEV and Store cards/menu, both pinned, each opens its intended panel ID. Full native acceptance PARTIAL: hover and saved-login/pending-save/clear tooltip states not observed; no safe existing fixture. Full valid resource journal, independent operator,21/25CUAcalls. Independent artifact review finds emitted action.default_title Matrx despite source callback DEV; runtime prefers that field, so source-to-artifact sibling fails.",
   "fix_sha": "e4ba9651f715a1755ef987ee4244eb43c01967f9",
-  "next_action": "Push verified source/evidence checkpoint; require successful eligible current-main CI artifact, normal import/promotion, owner-profile pinned refresh and fresh independent mixed-copy native name/boot/status/panel-origin retest. Preserve pending Store577; no manual build/release or stale artifact adoption.",
+  "next_action": "Repair final emitted DEV manifest title after WXT popup merge; add forcing emitted-artifact guard, normal guarded RED/GREEN and source gates, fresh review, push and adopt successful eligible CI; independent native tooltip retest. Preserve bounded name/menu/panel-ID pass and pending Store577.",
   "transition_history": [
     {
       "at": "2026-10-21T03:30:00Z",
@@ -66,7 +69,19 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source e4ba9651f committed after independent corrected source A/B review; normal guarded Store-key mutation RED/restored17GREEN, final compile/catalog and fullLint pass. Native/installed gate remains pending."
+    },
+    {
+      "at": "2026-10-21T04:20:18.700804+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Exact immutable CI artifact and promoted manifest action.default_title are Matrx, not DEV; callback-only regression missed WXT popup entrypoint merge."
+    },
+    {
+      "at": "2026-10-21T04:20:18.700804+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Diagnosis confirms popup HTML title overrides config callback after merge; implementation owns final-manifest hook and emitted-artifact gate."
     }
   ],
-  "retest_status": "pending exact-current-source CI artifact and independent native Chrome mixed-copy test"
+  "retest_status": "retest_fail_emitted_toolbar_title"
 }
