@@ -1,0 +1,37 @@
+{
+  "id": "EXT-D-0283",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T03", "EXT-F-0002-T04"],
+  "title": "Resource CPU child-error scenario hangs after wrapper exit while awaiting close",
+  "surface": "Resource guard CI integration",
+  "auth_mode": "all; infrastructure before authentication",
+  "severity": "S2: required CI cannot certify source; product regression not established",
+  "priority": "P1: restore reliable gate without weakening resource refusals",
+  "state": "open",
+  "owner": "extend-stabilization",
+  "reproduction": [
+    "Inspect automatic CI39675476145 at source5724259ef50641e38d16a114b8d80e0a36d2eed9, resource-guard-integration job119485398298, CPU confirmation and native action boundary.",
+    "The pending-child-error scenario enters RESOURCE_CPU_PENDING, then RESOURCE_JOB_EXIT with childExitCode null. Its wrapper pid1698 later has exitCode1 but closedfalse; stage remains awaiting_child_close for more than260seconds.",
+    "The30second pending-child-error group reports ERR_TEST_FAILURE; subsequent group is also cancelled. The job remains alive until cancellation at21:10:29UTC; runner cleanup terminates orphan node1712.",
+    "After capacity recovery, reproduce through the unchanged authorized resource guard with node --test --test-name-pattern='pending child failure' scripts/test-stabilization-resource-cpu-integration.mjs. Do not rerun unguarded or widen timeout; failure may be intermittent."
+  ],
+  "expected": "Injected child error produces an invalid resource verdict and terminates all owned descendants/pipes, allowing wrapper close and test cleanup within the bounded scenario budget.",
+  "actual": "Wrapper exit was recorded but close never arrived; no final cleanup receipt; required CI job cancelled.",
+  "cause": "Unresolved: inherited descendant pipes or error-path cleanup/lifecycle settlement are hypotheses, not proven. Exact failing boundary is wrapper close after exit, not initial CPU admission.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39675476145",
+    "docs/stabilization/evidence/ci39675476145-resource.rawlog"
+  ],
+  "evidence_sha256": "de22818a9ab53094fdc3e4f2287af0d70f3172a17e56790aafdd040cf13605bc",
+  "related_defects": ["EXT-D-0182", "EXT-D-0136"],
+  "related_limits": "D182 historical aggregate timing and D136 owner-file race had bounded independent closures; this newly identified close/descendant hang is not proof those exact causes returned.",
+  "next_action": "Fresh implementation worker after Mac capacity/worker-lock recovery: reproduce exact child-error lifecycle, inspect child exit/error/close and descendant ownership, fix class with failure-preserving RED/GREEN and bounded cleanup, fresh peer and automatic CI. No threshold or timeout bypass; no product case pass.",
+  "transition_history": [
+    {
+      "at": "2026-10-21T21:12:58.619734+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Completed resource job raw log identifies named pending-child-error boundary and orphan cleanup; overall workflow checks remain live."
+    }
+  ]
+}

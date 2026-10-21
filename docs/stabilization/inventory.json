@@ -1606,6 +1606,7 @@
         "EXT-D-0136 closed: startup owner metadata race repaired; independent actual-wrapper retest and hostedCI37245762934 pass. No product coverage promoted."
       ],
       "defect_ids": [
+        "EXT-D-0283",
         "EXT-D-0218"
       ]
     },
