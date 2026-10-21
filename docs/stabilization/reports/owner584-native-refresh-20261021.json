@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "status": "DONE",
+  "observed_at_utc": "2026-10-21T15:50:53Z",
+  "resource_guard": {
+    "run_id": "owner584-refresh-images-20261021-1547",
+    "journal": "docs/stabilization/resource-journals/owner584-refresh-images-20261021-1547.jsonl",
+    "admitted_at_utc": "2026-10-21T15:48:07.136Z",
+    "latest_checked_watch_at_utc": "2026-10-21T15:50:47.343Z",
+    "latest_checked_code": "RESOURCE_WATCH_HEALTHY",
+    "latest_checked_reasons": [],
+    "terminal_verdict": "valid",
+    "terminal_exit_code": 0,
+    "terminal_at_utc": "2026-10-21T15:55:29.997Z"
+  },
+  "owner_profile": {
+    "browser": "Google Chrome native macOS app",
+    "chrome_version_page_profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "evidence": "chrome://version accessibility tree displayed Profile Path for the active Chrome window"
+  },
+  "dev_extension": {
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "name": "Matrx Extend DEV",
+    "version_before_reload": "0.2.579",
+    "version_after_reload": "0.2.584",
+    "enabled": true,
+    "pinned_to_toolbar": true,
+    "source": "Unpacked extension",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "reload_observation": "After clicking the existing extension's Reload button, Chrome showed 0.2.584 and a visible Reloaded notice.",
+    "panel_observation": "Clicking the DEV toolbar button opened native sidepanel.html at chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html, showing the Matrx Extend Chat and navigation tabs. The manager also listed sidepanel.html under Inspect views."
+  },
+  "store_extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "name": "Matrx Extend",
+    "version": "0.2.205",
+    "enabled": true,
+    "source": "Chrome Web Store",
+    "pinned_to_toolbar_before_action": false,
+    "pinned_to_toolbar": true,
+    "pin_action_observed_at_utc": "2026-10-21T15:50:31Z",
+    "observation": "The existing Store entry remained installed and enabled. Its Pin to toolbar switch changed from off to on through Chrome's extension details page. Chrome then displayed both Matrx Extend DEV and Matrx toolbar buttons. A final revisit showed DEV 0.2.584 with Pin to toolbar on; Store showed 0.2.205 with Pin to toolbar on."
+  },
+  "limits": [
+    "This is a native owner-profile identity, reload, and panel-open observation only; no product workflow or Store acceptance was tested.",
+    "The DEV panel's visible shell was observed; its behavior beyond opening was not exercised.",
+    "The latest resource-watch sample was healthy when checked; the guard owner is responsible for stopping and finalizing the journal."
+  ],
+  "files_touched": ["docs/stabilization/reports/owner584-native-refresh-20261021.json"],
+  "open_questions": [],
+  "owner_verification_limits": "Root parsed full journal and observed actual guard process exit0. Native evidence remains operator accessibility observations, not an independent native rerun. Frozen source81bc584; later CI-only source edits do not change the tested bytes.",
+  "root_artifact_binding": {
+    "source_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
+    "ci_run_id": 39627131118,
+    "artifact_id": 12358153358,
+    "artifact_digest": "sha256:8ddcef9d908db4d5b0abcab92d2de81413d0f3e74c354b983f4c7e73e29338d6",
+    "promoted_tree_sha256": "44d70281e1b832731c8a2fceb3edced8a905ecfecf45ac5d1bc3c8f6644a130c",
+    "root_rehash_at_utc": "2026-10-21T15:58:34Z",
+    "root_rehash_matches": true,
+    "method": "Normal current-test-artifact import and promote-ci-dev-artifact succeeded; native operator verified loaded path/ID/version and actual Reload. Root independently rehashed stable output after native run. Later CI wiring edits require fresh successful CI before next latest-main claim."
+  },
+  "fresh_evidence_review": "docs/stabilization/reports/guard-native584-fresh-review-20261021.json"
+}

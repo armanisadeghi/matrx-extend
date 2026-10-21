@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-21 15:40 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-21T05:34:58.291937+00:00. 207 features · 831 cases · 1422 controls · 277 linked defect records.
+Generated 2026-10-21 16:01 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-21T05:34:58.291937+00:00. 207 features · 831 cases · 1422 controls · 277 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1338** — Pass: 109 · Partial: 102 · Fail: 1 · Unverified: 1115 · N/A: 11.
-Unverified splits into **177 explicitly marked unverified** and **938 with no result record**.
+Applicable case-by-role slots: **1338** — Pass: 109 · Partial: 103 · Fail: 1 · Unverified: 1114 · N/A: 11.
+Unverified splits into **176 explicitly marked unverified** and **938 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -25,7 +25,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 8 pass · 7 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 37 unverified · 0 deferred; 0/1 full | pass 8, partial 20, fail 0, unverified 82, n/a 0 | 12 |
+| [Scrape](#scrape) | 1 | 8 pass · 8 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 37 unverified · 0 deferred; 0/1 full | pass 8, partial 21, fail 0, unverified 81, n/a 0 | 12 |
 | [SEO](#seo) | 1 | 1 pass · 6 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 1, partial 7, fail 0, unverified 40, n/a 0 | 3 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 6 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -959,7 +959,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1007-T39 admin: Retry or dismiss a failed Diagnose picker launch | N/A | N/A | Unverified | EXT-F-1007-C16, EXT-F-1007-C37 |
 | EXT-F-1007-T40 Open a Source recognized across accessible organizations | N/A | Unverified | Unverified | EXT-F-1007-C39 |
 | EXT-F-1007-T41 Open captured images from every displayed size tier | Partial | Unverified | Unverified | EXT-F-1007-C40 |
-| EXT-F-1007-T42 Copy captured image URL from large and medium tiles | Unverified | Unverified | Unverified | EXT-F-1007-C41 |
+| EXT-F-1007-T42 Copy captured image URL from large and medium tiles | Partial | Unverified | Unverified | EXT-F-1007-C41 |
 | EXT-F-1007-T43 Close Save Source without saving | Unverified | Unverified | Unverified | EXT-F-1007-C29 |
 | EXT-F-1007-T44 Close File elsewhere without filing | N/A | Unverified | Unverified | EXT-F-1007-C42 |
 
@@ -1027,6 +1027,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: scrape-save-native-5-browser, development 0.2.457; extension cihdmkcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded, 2026-10-10T01:27:29Z, docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl; docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json; docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json
 - EXT-F-1007-T41 · guest: Partial. Primary operator34/32 calls, over cap by2; no full-case credit. Fresh independent narrow replay13/18 calls and complete owned-tab cleanup. Frozen production-compiled DEV only; root rehashed d782 before independent replay. Policy correction is not a product fix.
   Evidence / build / date recorded: store-daily-20261021-native, ['docs/stabilization/reports/guest-images579-20261021.json', 'docs/stabilization/reports/guest-image-url-independent-20261021.json', 'docs/stabilization/reports/image-url-diagnosis0727.json', 'docs/stabilization/resource-journals/store-daily-20261021-native.jsonl', 'docs/stabilization/reports/image-policy-evidence0732.json']
+- EXT-F-1007-T42 · guest: Partial. Actual Profile10 DEV manager Reload/path/ID/584 and Settings Sign in/Email— verified. Wikipedia portal main logo and smaller donation-badge Copy image URL each matched full captured src warm and after extension+page Reload/recapture (four actions), clipboard reseeded each time, Images7/selection retained. Root full journal terminal valid0/process0. No controlled non-icon manifest or icon target; no full T42 PASS, member/admin, Store or overall Scrape health. Fresh evidence-only A/B review accepts bounded observations and full journal; no independent UI replay. Full guest case remains unverified beyond these substeps.
+  Evidence / build / date recorded: owner584-refresh-images-20261021-1547, Frozen keyed DEV0.2.584/source81bc3fb0f/CI39627131118/artifact12358153358; production compilation, development identity, ['docs/stabilization/reports/guest584-image-copy-20261021.json', 'docs/stabilization/resource-journals/owner584-refresh-images-20261021-1547.jsonl', 'docs/stabilization/reports/guard-native584-fresh-review-20261021.json']
 
 **Other remaining work:** D59 document identity: candidate a021ae82 remains partial; guarded peer a702ba6c passes narrow capture tests/compile but finds mixed-document Diagnose bundle and refresh status race. Native guest/member/admin retest pending; reports/scrape-document-peer.json.; Source landing and organization-scoped persistence require live member/admin evidence. Guest Save is a sign-in refusal with device-local retry. The independent File elsewhere and recognized-Source open controls have source cases but remain unverified in native warm/reload runs.
 

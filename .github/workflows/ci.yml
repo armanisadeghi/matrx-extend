@@ -49,6 +49,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Scope classifier regression
+        run: node --test scripts/ci-change-scope.test.mjs
       - name: Classify exact changed paths (unknown means full)
         id: classify
         env:

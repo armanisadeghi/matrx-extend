@@ -1,5 +1,5 @@
 {
-  "status": "source_fixed_fresh_peer_pass_hosted_ci_and_owner_reload_pending",
+  "status": "source_fixed_local_and_peer_wiring_verified_hosted_followup_pending",
   "root_cause": "The single CI workflow ran full Linux checks and macOS resource integration for stabilization tracking-only commits. Ref-scoped ci-main concurrency serialized a newer runtime push behind that work, delaying current development artifact evidence. Initial fast-path attempt 9ebbb76bd classified only the immediate event diff, so a docs tip after cancelled runtime CI could bypass the build; the corrective change requires successful artifact ancestry.",
   "source_provenance": {
     "tracking_commit": "a77b52f77c6b171e0f28185e1201128a9afc51a1",
@@ -9,7 +9,7 @@
     "prior_successful_full_ci_job": "39622658209",
     "observation": "Tracking job was still in full CI while the newer runtime job queued; later runtime job terminal state was cancelled. No jobs were dispatched or cancelled by this change."
   },
-  "change": "A fetched exact comparison range is classified against the existing development artifact runtime-equivalent stabilization path list. A docs-only tip also requires a non-expired development artifact from a successful full main CI run, and every committed path from that artifact source through the tip must be runtime-equivalent. A cancelled or queued runtime ancestor therefore forces full CI and a fresh artifact. Missing API, token, artifact, base, or Git history proof also forces full CI. Docs validation checks diff whitespace, JSON and JSONL syntax, full tracked-file lint, inventory truth, and workflow cost. Full CI still owns native integration and development artifact production; docs CI creates no artifact.",
+  "change": "A fetched exact comparison range is classified against the existing development artifact runtime-equivalent stabilization path list. A docs-only tip also requires a non-expired development artifact from a successful full main CI run, and every committed path from that artifact source through the tip must be runtime-equivalent. A cancelled or queued runtime ancestor therefore forces full CI and a fresh artifact. Missing API, token, artifact, base, or Git history proof also forces full CI. Docs validation checks diff whitespace, JSON and JSONL syntax, full tracked-file lint, inventory truth, and workflow cost. Full CI still owns native integration and development artifact production; docs CI creates no artifact. The scope job now invokes its 16-case classifier regression before routing either docs or full CI.",
   "gates": {
     "green": [
       "16 focused fixture tests passed, including cancelled runtime CI then docs-only tip, successful artifact-backed docs chain, cancelled/API-unavailable proof, runtime/lock/workflow/unknown, missing base, malformed JSON/JSONL, and workflow wiring",
@@ -22,7 +22,9 @@
       "Read-only GitHub API confirmed latest available development artifact is from successful CI run 39622658209 at 04b1b68863d0c025f0c98fab6a1312041e3710c5; the later runtime f0bdbdfe cannot inherit its proof",
       "Corrective source passed repository-wide pnpm lint under stabilization resource guard (929 existing warnings, zero errors)",
       "Immediate-diff-only mutation failed the cancelled-runtime fixture; corrected classifier passed",
-      "Retained 2026-10-21 guarded lint journal records admitted, childExitCode=0, and final decision valid/exitCode=0"
+      "Retained 2026-10-21 guarded lint journal records admitted, childExitCode=0, and final decision valid/exitCode=0",
+      "Scope wiring fixtures: 16 passed under normal resource guard; retained journal records valid/exit 0",
+      "Scope wiring repository-wide pnpm lint passed under normal resource guard; retained journal records valid/exit 0"
     ],
     "limited": [
       "Initial lint command with a noncanonical argument was refused by the resource guard; the supported pnpm lint command was subsequently admitted and passed",
@@ -31,14 +33,15 @@
       "Independent peer review of first commit 9ebbb76bd failed on cancelled-runtime artifact gap; corrective commit needs a fresh independent review",
       "Docs validation still installs dependencies and runs full lint; speed improvement is forecast, pending hosted CI timing",
       "The corrective full-lint resource journal was deleted during generated-file cleanup; terminal valid/exit 0 is from the observed tool output, with no durable journal file. Fixture and mutation tests were lightweight direct runs and created no resource journals.",
-      "Earlier corrective lint journal remains missing after prior cleanup; the new retained journal supplies durable guarded lint evidence, while fixture and mutation runs remain direct."
+      "Earlier corrective lint journal remains missing after prior cleanup; the new retained journal supplies durable guarded lint evidence, while fixture and mutation runs remain direct.",
+      "Scope-job regression wiring was edited source-only while a separate native UI run was active; no local check or hosted result has verified this latest edit yet."
     ]
   },
   "cost": {
     "manifest": ".github/ci-cost.json",
     "projected_weekly_list_usd_upper_bound_before": 401.36,
-    "projected_weekly_list_usd_upper_bound_after": 408.86,
-    "reason": "Conservative all-full-run list-price upper bound adds 0.5 Linux minute per run for classification, provenance API read, and validation. At a hypothetical 10% eligible docs share, roughly $28/week of old full-run list cost is avoided before classifier cost. This is a forecast, not a measured speedup; actual public-repo billed increment is $0."
+    "projected_weekly_list_usd_upper_bound_after": 410.36,
+    "reason": "Conservative all-full-run list-price upper bound includes 0.6 Linux minute per run for classification, provenance API read, validation, and mandatory 16-case Node regression; this adds 0.1 minute/run ($1.50/week list-price forecast) over the prior manifest. Eligible-docs share and latency remain unmeasured; actual public-repo billed increment is $0."
   },
   "files": [
     ".github/ci-cost.json",
@@ -49,8 +52,8 @@
     "docs/stabilization/reports/ci-tracking-backlog-fix-20261021.json"
   ],
   "commit": "this commit (exact SHA in git log and handoff)",
-  "limits": "Fresh independent source A/B review passes with hosted confirmation pending. Full automatic CI39627131118 is running; real docs route and owner reload remain unverified. No product pass counts claimed.",
-  "next_action": "Observe full CI39627131118, then a real tracking-only push on its proven artifact lineage; normal import/promotion and owner Chrome reload before closure.",
+  "limits": "Cancelled-runtime ancestor safety is source/fixture-proven, not a deliberate live cancellation test. Hosted ordinary full/docs routing passes independent retest. Owner584 reload observed; resource journal finalization and fresh native evidence review pending. No product case passes claimed.",
+  "next_action": "Observe exact next synchronized-main automatic full CI, including newly enforced Scope classifier regression step; normal artifact adoption/owner reload after success. No manual Mac build or release. Continue controlled-fixture T42 and non-Chat/Pilot product cases.",
   "defect": "EXT-D-0278",
   "verification_journals": {
     "corrective_fixture_tests": {
@@ -78,7 +81,34 @@
       "journal_exists": true,
       "terminal": "RESOURCE_ADMITTED; RESOURCE_JOB_EXIT childExitCode=0; RESOURCE_FINAL_DECISION decision=valid exitCode=0",
       "lint": "Checked 3184 files; 929 warnings; zero errors; process exit 0"
+    },
+    "scope_wiring_fixtures": {
+      "journal_path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/ci-scope-wiring-fixtures-20261021.jsonl",
+      "journal_exists": true,
+      "events": 4,
+      "terminal": "RESOURCE_ADMITTED; RESOURCE_JOB_EXIT childExitCode=0; RESOURCE_FINAL_DECISION decision=valid exitCode=0",
+      "result": "16 tests passed"
+    },
+    "scope_wiring_lint": {
+      "journal_path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/ci-scope-wiring-lint-20261021.jsonl",
+      "journal_exists": true,
+      "events": 4,
+      "terminal": "RESOURCE_ADMITTED; RESOURCE_JOB_EXIT childExitCode=0; RESOURCE_FINAL_DECISION decision=valid exitCode=0",
+      "result": "pnpm lint passed; 3184 files, 929 warnings, zero errors"
     }
   },
-  "fresh_review": "docs/stabilization/reports/ci-fastpath-final-review-20261021.json"
+  "fresh_review": "docs/stabilization/reports/ci-fastpath-final-review-20261021.json",
+  "hosted_retest": {
+    "full_run": 39627131118,
+    "source_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
+    "artifact_id": 12358153358,
+    "full_checks_seconds": 589,
+    "docs_run": 39628282944,
+    "docs_sha": "3191c15e98fc2ac2ba255545d8b0f515a40c90e0",
+    "docs_job_seconds": 41,
+    "scope_job_seconds": 22,
+    "verdict": "Both runs green. Docs scope independently logged exact successful artifact source; no artifact emitted by docs job. Single observed pair, not a fleet performance or billing estimate.",
+    "evidence": "docs/stabilization/reports/ci-fastpath-live-retest-20261021.json"
+  },
+  "wiring_fresh_peer": "docs/stabilization/reports/guard-native584-fresh-review-20261021.json"
 }

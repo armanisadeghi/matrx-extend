@@ -31,14 +31,16 @@
   "evidence": [
     "docs/stabilization/reports/ci-tracking-backlog-fix-20261021.json",
     "docs/stabilization/reports/ci-fastpath-first-review-20261021.json",
-    "docs/stabilization/reports/ci-fastpath-final-review-20261021.json"
+    "docs/stabilization/reports/ci-fastpath-final-review-20261021.json",
+    "docs/stabilization/reports/ci-fastpath-live-retest-20261021.json",
+    "docs/stabilization/reports/guard-native584-fresh-review-20261021.json"
   ],
   "reproducibility": "Original live queue cancellation and failed first source review retained. Corrective fixtures and fresh peer establish source repair; original hosted queue/artifact and owner-reload retest pending.",
   "attempted_source_sha": "9ebbb76bdb4be1a9dcc823954d9934f4c81baf69",
   "fix_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
   "reviewer": "/root/ci_proof_fresh_review: source A pass with hosted confirmation pending; B pass with minor conservative extra-run concern",
-  "verification_limits": "Source fixtures/lint are not product behavior passes. Actual final CI queue/artifact and native ownerReload still required. Cost timing is forecast until measured; no new paid dispatch/cancellation performed.",
-  "next_action": "Observe full CI39627131118 and exact artifact; then observe a real docs-only push on the proven artifact lineage. Normally import/promote eligible artifact and verify owner Chrome Reload/path/ID/version/pins. No closure before independent live retest. Preserve Store577 pending.",
+  "verification_limits": "Fresh independent source and ordinary hosted full/docs retest pass. Cancelled-runtime ancestor remains fixture/source-proven, not live-cancelled. Native owner584 reload has valid0 guard and fresh evidence review, no independent UI replay. Subsequent exact regression-step wiring now passes16 guarded fixtures and full lint plus fresh source review; its new hosted full CI and next normal artifact adoption/reload remain pending. This infrastructure repair adds no product case PASS.",
+  "next_action": "After this follow-up commit reaches synchronized main, observe its automatic full CI by exact main SHA, require the Scope classifier regression step green and eligible artifact, then normal import/promote and verify owner reload. Keep D278 fixed, not closed, while that gate remains. Preserve pending Store577. Continue partial Scrape T42 controlled fixture and other non-Chat/Pilot cases.",
   "transition_history": [
     {
       "at": "2026-10-21T15:20Z",
