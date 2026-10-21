@@ -52,5 +52,15 @@
       "to": "fixed",
       "reason": "Three guarded behavior mutations red then restored; final focused suite 850/840 pass/10 skip, synchronized-lock install and compile, and tracked-file lint passed. Independent final timeout review passed. Hosted bot-release-to-CI evidence remains pending."
     }
-  ]
+  ],
+  "fix_commits": ["af238f095b5477db9f126dec5aa85a8fceee23d6"],
+  "reviewer": {
+    "metadata": "/root/d282_metadata_reverify",
+    "timeout_mapping": "/root/d282_timeout_final_peer",
+    "reports": [
+      "docs/stabilization/reports/d282-metadata-reverify-20261021.json",
+      "docs/stabilization/reports/d282-timeout-final-peer-20261021.json"
+    ]
+  },
+  "original_repro_retest": "Pending natural hosted release→exact-source full CI artifact; source/CLI tests alone do not close this defect."
 }

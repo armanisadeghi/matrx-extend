@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T18:33:44.848349+00:00",
+  "updated_at": "2026-10-21T19:51:51.447465+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -69,7 +69,7 @@
         {
           "id": "EXT-F-0001-C06",
           "label": "Import exact automatic CI development test artifact",
-          "action": "Verify successful main-push GitHub provenance and archive/tree hashes, import to a unique owned path, bind native runner receipt."
+          "action": "Verify successful exact-source main CI provenance (push or authorized workflow dispatch), archive/tree hashes, import into a unique owned path and bind the native runner receipt."
         },
         {
           "id": "EXT-F-0001-C07",
@@ -382,10 +382,10 @@
             "EXT-F-0001-C06"
           ],
           "preconditions": [
-            "Normal main push completed CI with development artifact; no local build or new release credentials."
+            "Exact-source main CI completed with a development artifact through a push or authorized workflow dispatch; no local build or new release credentials."
           ],
           "steps": [
-            "Authenticate read-only GitHub run and artifact metadata; verify workflow/repository/main-push/success/source/run attempt/archive digest.",
+            "Authenticate read-only GitHub run and artifact metadata; verify workflow/repository, eligible event, main/success/source/run attempt/archive digest.",
             "Verify keyed dev manifest, public runtime config, source version and tree digest; import into unused run-qualified owned directory, preserving original CI evidence outside hashed tree.",
             "Record exact-source status against current remote and dirty checkout; load/reload that exact unpacked path with valid resource admission, refresh public page and verify correct role/runtime before tests.",
             "Exercise altered digest/source/run, collision and symlink refusals in isolated helper guards; verify existing frozen .output is untouched."
@@ -428,7 +428,8 @@
             "EXT-D-0256",
             "EXT-D-0278",
             "EXT-D-0279",
-            "EXT-D-0281"
+            "EXT-D-0281",
+            "EXT-D-0282"
           ],
           "latest_candidate_checkpoint": {
             "version": "0.2.562",
@@ -543,7 +544,8 @@
             "EXT-D-0252",
             "EXT-D-0254",
             "EXT-D-0255",
-            "EXT-D-0278"
+            "EXT-D-0278",
+            "EXT-D-0282"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -571,7 +573,8 @@
             "EXT-D-0251",
             "EXT-D-0254",
             "EXT-D-0255",
-            "EXT-D-0278"
+            "EXT-D-0278",
+            "EXT-D-0282"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -598,7 +601,8 @@
             "EXT-D-0245",
             "EXT-D-0246",
             "EXT-D-0248",
-            "EXT-D-0278"
+            "EXT-D-0278",
+            "EXT-D-0282"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -628,7 +632,8 @@
       ],
       "defect_ids": [
         "EXT-D-0245",
-        "EXT-D-0278"
+        "EXT-D-0278",
+        "EXT-D-0282"
       ],
       "source_change_observations": [
         {
@@ -643,6 +648,17 @@
           ],
           "native": "FreshCI39545041578/source93/artifact12321482236 normalruntime-equivalentmainEE37/treee7dd...; actualownerProfile8Reload579/pins/correctpanel; actualAXidletoolbarDEVafterbootPASS. Fullguardvalid0,10/18calls,freshevidencepeer/rootactualtree+GitHubchecks. Directhover/assistancevariants unverified; no fullcase/defectclosure.",
           "fix_sha": "91704b0a60dc884d90b9e98539aaf1ce053e33c9"
+        },
+        {
+          "defect_id": "EXT-D-0282",
+          "scope": "Release-token recursion gap and exact-source development CI handoff",
+          "status": "source repair verified; natural hosted release-to-CI and native acceptance pending",
+          "evidence": [
+            "docs/stabilization/defects/EXT-D-0282.json",
+            "docs/stabilization/reports/release-dev-ci-gap-20261021.json",
+            "docs/stabilization/reports/d282-timeout-final-peer-20261021.json"
+          ],
+          "remaining": "Natural hosted release-to-CI artifact, normal import/promotion, owner Chrome reload and D217 original native acceptance remain unverified; no product behavior pass."
         }
       ]
     },
