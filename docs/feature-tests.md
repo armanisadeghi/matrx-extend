@@ -28,6 +28,25 @@ extension ID or intended-folder hash alone does not establish the running build.
   the registered server tool test door under the signed-in person and selected
   organization.
 
+### Development and Store extension labels (EXT-D-0277)
+
+- **What it does:** the keyed unpacked Chrome extension identifies itself as
+  **Matrx Extend DEV** in `chrome://extensions` and its toolbar tooltip; the
+  installed Store extension remains **Matrx Extend**.
+- **Where to test:** a Chrome profile containing both extensions.
+- **Steps:** inspect each card's name and ID in `chrome://extensions`; hover each
+  toolbar icon and read its title. Reload the keyed development extension, then
+  reopen the panel using that extension's toolbar icon. Check the tooltip again
+  after worker startup, when Vault has saved-login or pending-save assistance,
+  and after clearing that assistance. Confirm the running
+  panel's extension ID is `cihdmkcdjjckfhjpgoedmgfpoljebaml`; the Store ID is
+  `hnfolienncfklkgmdjjmhhegglimlamg`.
+- **Expected:** the development card and toolbar show **Matrx Extend DEV** before
+  and after reload; assistance tooltip messages keep that marker. The Store card
+  says **Matrx Extend** and its existing assistance tooltip text remains. The opened
+  panel belongs to the intended ID. A label alone does not prove the loaded
+  source or build receipt; apply the native acceptance identity check above.
+
 ### Native on-device task APIs (EXT-D-0147)
 
 - **What it does:** discovers Summarizer, Translator, LanguageDetector, and Proofreader independently of LanguageModel and calls each API's dedicated operation.

@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "task_id": "EXT-D-0277",
+  "status": "verified_source_native_pending",
+  "owned_source_files": [
+    "wxt.config.ts",
+    "src/config/identity.ts",
+    "src/lib/credentials/assistance-status.ts",
+    "tests/unit/extension-identity.test.ts",
+    "tests/unit/credential-assistance-status.test.ts",
+    "docs/feature-tests.md"
+  ],
+  "owned_file_set_sha256": "34be340d3720b11b06b4df62ae4999d715e4a356ba29bdead393ab2075d460f2",
+  "base_head": "e9d0ee973b013b56b525a0dd8563d93f02e1969d",
+  "behavioral_authorship": "Sol implementers; root only temporary mutation/restoration with exact hash, independent final source peer zero authorship. Final test env helper cleanup by Luna; root checked scoped formatter and guarded17GREEN.",
+  "worker_resource_credit_correction": "Store-key repair worker admitted its RED/GREEN/compile/catalog were unguarded; these receive NO resource-valid credit. Previous final source peer referenced reported checks; root recovered independently through normal guard below. Raw self-correction retained.",
+  "valid_checks": {
+    "initial_manifest_red": "ext-d-0277-red-20261021 child_failed1 resourceInvalidfalse",
+    "initial_runtime_red": "ext-d-0277-runtime-red-20261021 child_failed1 resourceInvalidfalse",
+    "final_env_cleanup_green": "ext-d-0277-env-cleanup-green-20261021 valid0,2files17pass",
+    "final_compile": "ext-d-0277-final-compile-20261021 valid0 tsc--noEmit on final canonicalIDchannel and envhelpercleanup",
+    "store_key_mutation_red": "ext-d-0277-store-key-mutation-red-20261021 resourceInvalidfalse child_failed1;16pass1fail preciselyStoreboot expectedMatrx gotMatrxExtend",
+    "restored_green": "ext-d-0277-store-key-restored-green-20261021 valid0,2files17pass; exactsourcehashrestored",
+    "full_lint": "ext-d-0277-final-lint-20261021 valid0,3179files928warnings included1newtestenvnoDelete; laterenvhelpercleanupremovedthatwarning andscoped5filescheck0warnings0errors",
+    "catalog": "ext-d-0277-final-catalog-20261021 valid0;169tools,assistant74,pilot143,full169; generatedcontentidentical except timestamp, restored only exact timestamp after full equivalence checks"
+  },
+  "safety": "All source changes remain local until final catalog and integration. No manual build/release/Store submission/browser update. Last actually loaded dev99/578; source main579 not labeled current Chrome.",
+  "native_gate": "Require successful eligible exact-main CI artifact, normal import/promote then real mixed-copy Chrome labels/default/runtime boot/navigation and panel-origin retest; preserve pendingStore577 until fresh authorized daily observation.",
+  "temporary_mutation_restored": true,
+  "mutation_receipt": "test-results/d277-runtime-mutation-20261021/receipt.json",
+  "observed_at": "2026-10-21T03:54:59.298991+00:00",
+  "completed_at": "2026-10-21T03:55:49.237140+00:00"
+}

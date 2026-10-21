@@ -47,8 +47,10 @@ export default defineConfig({
     const isFirefox = browser === 'firefox';
     const isSafari = browser === 'safari';
     const isChrome = !isFirefox && !isSafari;
+    const isKeyedChromeDevelopment = isChrome && !isChromeWebStoreBuild;
+    const extensionTitle = isKeyedChromeDevelopment ? 'Matrx Extend DEV' : 'Matrx Extend';
     return {
-      name: 'Matrx Extend',
+      name: extensionTitle,
       short_name: 'Matrx',
       description: 'AI assistant for understanding and working with the page open in your browser.',
       // Credential writes require documentIds (106+), and the user-facing
@@ -74,7 +76,7 @@ export default defineConfig({
       //
       // The Chrome IDs and their exact callbacks live in src/config/identity.ts.
       // Full incident: .research/v0.1.4-auth-incident.md.
-      ...(isChrome && !isChromeWebStoreBuild ? { key: devExtensionKey } : {}),
+      ...(isKeyedChromeDevelopment ? { key: devExtensionKey } : {}),
       permissions: [
         'storage',
         'sidePanel',
@@ -170,7 +172,7 @@ export default defineConfig({
       ],
       ...(isChrome ? { side_panel: { default_path: 'sidepanel.html' } } : {}),
       action: {
-        default_title: 'Matrx Extend',
+        default_title: extensionTitle,
         default_icon: {
           16: 'icon/16.png',
           32: 'icon/32.png',

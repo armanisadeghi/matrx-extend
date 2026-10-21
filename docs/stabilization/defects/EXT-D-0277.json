@@ -1,0 +1,65 @@
+{
+  "id": "EXT-D-0277",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01", "EXT-F-0001-T02"],
+  "title": "Keyed development and Store installations have identical Chrome labels",
+  "surface": "Chrome extension card and runtime toolbar tooltip with both channels installed",
+  "auth_mode": "guest; extension identity is independent of account and organization",
+  "severity": "S2: native tests can open the Store panel after reloading development and misattribute results",
+  "priority": "P1: distinguish channels before further mixed-profile acceptance",
+  "state": "in-fix",
+  "owner": "/root",
+  "preconditions": [
+    "Chrome profile contains both keyed unpacked development and published Store extensions.",
+    "Development extension ID is cihdmkcdjjckfhjpgoedmgfpoljebaml; Store ID is hnfolienncfklkgmdjjmhhegglimlamg."
+  ],
+  "reproduction": [
+    "Inspect both extension cards and toolbar tooltips: both currently say Matrx Extend.",
+    "Reload the development extension and reopen a panel from the toolbar.",
+    "The observed panel can belong to Store ID hnfolienncfklkgmdjjmhhegglimlamg while the operator intended the development ID."
+  ],
+  "expected": "Keyed Chrome development card and default toolbar visibly say Matrx Extend DEV. Store card/default manifest title remain Matrx Extend, and its existing runtime assistance/clear tooltip strings (including Matrx at idle) remain unchanged. Testers can choose and verify the intended channel.",
+  "actual": "WXT manifest callback emits Matrx Extend for both name and action.default_title on both Chrome channels; guest99 native copy test reopened the Store panel after development reload.",
+  "cause": "Manifest name and action.default_title were unconditional literals even though the build callback distinguishes development from Store. Credential assistance independently overrides each tab's action title on worker boot and every status change. Its first repair used manifest.key as a runtime development signal, but the installed published Store manifest also has a key. Runtime channel now comes from the canonical extension ID registry.",
+  "sibling_census": "Both Chrome manifest label fields and the runtime credential-assistance action title share the visible-identity failure and are repaired together. Firefox and Safari do not use the keyed Chrome development identity; Store identity, IDs, key, permissions, entrypoints, and existing status text remain unchanged.",
+  "evidence": [
+    "docs/stabilization/reports/guest99-seo-meta-copy-20261021.json",
+    "docs/stabilization/resource-journals/ext-d-0277-red-20261021.jsonl",
+    "docs/stabilization/resource-journals/ext-d-0277-runtime-red-20261021.jsonl",
+    "docs/stabilization/resource-journals/ext-d-0277-both-green-20261021.jsonl",
+    "docs/stabilization/reports/dev-label-verification-peer-20261021.json",
+    "docs/stabilization/reports/dev-label-store-key-repair-20261021.json",
+    "docs/stabilization/reports/dev-label-final-source-peer-20261021.json",
+    "docs/stabilization/reports/dev-label-final-guarded-verification-20261021.json"
+  ],
+  "acceptance_criteria": [
+    "Actual WXT manifest callback emits development name and toolbar title Matrx Extend DEV when keyed Chrome build is selected.",
+    "Actual WXT Store build callback emits unchanged name and toolbar title Matrx Extend; the installed published Store manifest can contain a key.",
+    "Credential assistance boot, status and clear titles preserve the development label while Store status text stays unchanged.",
+    "Native mixed-profile check confirms both labels and correct post-reload development panel ID; source test and Store invariants do not substitute for native acceptance."
+  ],
+  "source_verification": "Manifest and original boot failures reproduced under valid guards. First runtime repair misclassified published Store key; reviewer rejected it. Canonical runtime-ID channel repair passed source peer A and B. Worker unguarded RED/GREEN/compile/catalog claims were explicitly invalidated; root normal guarded mutation rejects badStorekey classification (16pass1fail), exactsource restored and17/17GREEN, final typecheck valid0, fullLint valid0 plus scoped5files0warnings after envcleanup. Final normal catalog valid0,169tools unchanged except restored timestamp; native exactbuild pending.",
+  "native_retest": "Pending exact-source development artifact and mixed-profile Chrome test.",
+  "fix_sha": null,
+  "next_action": "Commit/push exact verified source unit and record its fix SHA, then require successful eligible current-main CI artifact; normal import/promotion, owner-profile pinned refresh and fresh independent mixed-copy native name/boot/status/panel-origin retest. Preserve pending Store577; no manual build/release or stale artifact adoption.",
+  "transition_history": [
+    {
+      "at": "2026-10-21T03:30:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Mixed-profile native run reopened Store after development reload and could not credit the result to development."
+    },
+    {
+      "at": "2026-10-21T03:30:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "WXT manifest callback uses the same name and action title on keyed and Store Chrome channels."
+    },
+    {
+      "at": "2026-10-21T03:31:46Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Focused actual manifest callback test failed on old keyed development label while preserving Store assertions."
+    }
+  ]
+}

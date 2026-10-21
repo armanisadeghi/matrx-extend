@@ -32,6 +32,21 @@ const FIREFOX_REDIRECT_URI =
 const UNKNOWN_FIREFOX_REDIRECT_URI =
   'https://0f0e0d0c0b0a09080706050403020100ffeeddcc.extensions.allizom.org/';
 
+type ChromeManifestIdentity = {
+  key?: string;
+  name: string;
+  action: { default_title: string };
+};
+
+function chromeManifestIdentity(manifest: unknown): ChromeManifestIdentity {
+  return (
+    manifest as (options: { mode: 'production'; browser: 'chrome' }) => ChromeManifestIdentity
+  )({
+    mode: 'production',
+    browser: 'chrome',
+  });
+}
+
 function setExtensionRuntime(runtimeId: string, redirectUri: string) {
   vi.stubGlobal('chrome', {
     runtime: {
@@ -143,5 +158,29 @@ describe('extension identity diagnostics', () => {
       buildManifest({ mode: 'production', browser: 'firefox' }).browser_specific_settings?.gecko
         ?.id,
     ).toBe(OBSERVED_FIREFOX_ID);
+  }, 30_000);
+
+  it('distinguishes keyed Chrome development from the unchanged Store listing and toolbar', async () => {
+    try {
+      vi.stubEnv('MATRX_CWS_BUILD', '0');
+      vi.resetModules();
+      const { default: developmentConfig } = await import('../../wxt.config');
+      const developmentManifest = chromeManifestIdentity(developmentConfig.manifest);
+
+      vi.stubEnv('MATRX_CWS_BUILD', '1');
+      vi.resetModules();
+      const { default: storeConfig } = await import('../../wxt.config');
+      const storeManifest = chromeManifestIdentity(storeConfig.manifest);
+
+      expect(developmentManifest.key).toBeTruthy();
+      expect(developmentManifest.name).toBe('Matrx Extend DEV');
+      expect(developmentManifest.action.default_title).toBe('Matrx Extend DEV');
+      expect(storeManifest.key).toBeUndefined();
+      expect(storeManifest.name).toBe('Matrx Extend');
+      expect(storeManifest.action.default_title).toBe('Matrx Extend');
+    } finally {
+      vi.unstubAllEnvs();
+      vi.resetModules();
+    }
   }, 30_000);
 });

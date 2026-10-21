@@ -30,6 +30,7 @@ beforeEach(() => {
   Object.assign(chrome, {
     runtime: {
       id: 'test-extension',
+      getManifest: () => ({ name: 'Matrx Extend', action: { default_title: 'Matrx Extend' } }),
       getURL: (path: string) => `moz-extension://a2f6b807-9e91-4c73-8d30-5cf4fae9158d/${path}`,
       onMessage: {
         addListener: (fn: typeof listener) => {
@@ -137,5 +138,83 @@ describe('credential assistance status', () => {
       { tabId: 7, title: 'Matrx' },
       { tabId: 8, title: 'Matrx' },
     ]);
+  });
+
+  it('keeps the keyed development label in boot, clear, and every assistance tooltip', async () => {
+    Object.assign(chrome.runtime, {
+      id: 'cihdmkcdjjckfhjpgoedmgfpoljebaml',
+      getManifest: () => ({
+        key: 'development-key',
+        name: 'Matrx Extend DEV',
+        action: { default_title: 'Matrx Extend DEV' },
+      }),
+    });
+    const status = await import('@/lib/credentials/assistance-status');
+    await status.reconcileCredentialAssistanceActionOnBoot();
+    expect(titleWrites).toEqual([
+      { tabId: 7, title: 'Matrx Extend DEV' },
+      { tabId: 8, title: 'Matrx Extend DEV' },
+    ]);
+
+    status.setSavedLoginAssistance(7, true);
+    await vi.waitFor(() =>
+      expect(titleWrites.at(-1)).toEqual({
+        tabId: 7,
+        title: 'Matrx Extend DEV: Matrx has saved-login assistance',
+      }),
+    );
+    status.setCaptureAssistance(7, 'save_pending');
+    await vi.waitFor(() =>
+      expect(titleWrites.at(-1)).toEqual({
+        tabId: 7,
+        title: 'Matrx Extend DEV: Matrx has a pending Vault save',
+      }),
+    );
+    status.setCaptureAssistance(7, 'capture_unavailable');
+    await vi.waitFor(() =>
+      expect(titleWrites.at(-1)).toEqual({
+        tabId: 7,
+        title: 'Matrx Extend DEV: Matrx Vault needs attention',
+      }),
+    );
+    status.clearCredentialAssistance(7);
+    await vi.waitFor(() =>
+      expect(titleWrites.at(-1)).toEqual({ tabId: 7, title: 'Matrx Extend DEV' }),
+    );
+  });
+
+  it('keeps published Store titles across boot and assistance even when Chrome supplies a manifest key', async () => {
+    Object.assign(chrome.runtime, {
+      id: 'hnfolienncfklkgmdjjmhhegglimlamg',
+      getManifest: () => ({
+        key: 'published-store-key',
+        name: 'Matrx Extend',
+        action: { default_title: 'Matrx Extend' },
+      }),
+    });
+    const status = await import('@/lib/credentials/assistance-status');
+    await status.reconcileCredentialAssistanceActionOnBoot();
+    expect(titleWrites).toEqual([
+      { tabId: 7, title: 'Matrx' },
+      { tabId: 8, title: 'Matrx' },
+    ]);
+
+    status.setSavedLoginAssistance(7, true);
+    await vi.waitFor(() =>
+      expect(titleWrites.at(-1)).toEqual({
+        tabId: 7,
+        title: 'Matrx has saved-login assistance',
+      }),
+    );
+    status.setCaptureAssistance(7, 'save_pending');
+    await vi.waitFor(() =>
+      expect(titleWrites.at(-1)).toEqual({ tabId: 7, title: 'Matrx has a pending Vault save' }),
+    );
+    status.setCaptureAssistance(7, 'capture_unavailable');
+    await vi.waitFor(() =>
+      expect(titleWrites.at(-1)).toEqual({ tabId: 7, title: 'Matrx Vault needs attention' }),
+    );
+    status.clearCredentialAssistance(7);
+    await vi.waitFor(() => expect(titleWrites.at(-1)).toEqual({ tabId: 7, title: 'Matrx' }));
   });
 });

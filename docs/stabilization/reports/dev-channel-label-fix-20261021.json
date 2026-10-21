@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "task_id": "EXT-D-0277",
+  "status": "source_fix_green_pending_independent_review",
+  "source_base": "486c63a2cfc8216c536603500bfe973ced8f63b4",
+  "current_main_note": "Root integrated concurrent evidence as e9d0ee973; no owned source conflict reported.",
+  "cause": "WXT manifest emitted identical installed name and default toolbar title for development and Store; credential assistance then overwrote tab tooltips on boot and status changes. The first runtime repair assumed manifest.key implied development, but the installed published Store manifest also contains a key. Runtime channel now comes from the canonical ID registry.",
+  "changed_files": [
+    "wxt.config.ts",
+    "src/config/identity.ts",
+    "src/lib/credentials/assistance-status.ts",
+    "tests/unit/extension-identity.test.ts",
+    "tests/unit/credential-assistance-status.test.ts",
+    "docs/feature-tests.md",
+    "docs/stabilization/defects/EXT-D-0277.json"
+  ],
+  "checks": [
+    {
+      "run_id": "ext-d-0277-red-20261021",
+      "verdict": "valid red: old keyed manifest name Matrx Extend",
+      "journal": "docs/stabilization/resource-journals/ext-d-0277-red-20261021.jsonl"
+    },
+    {
+      "run_id": "ext-d-0277-green-20261021",
+      "verdict": "valid green: manifest identity 11/11",
+      "journal": "docs/stabilization/resource-journals/ext-d-0277-green-20261021.jsonl"
+    },
+    {
+      "run_id": "ext-d-0277-runtime-red-20261021",
+      "verdict": "valid red: boot title Matrx instead of Matrx Extend DEV",
+      "journal": "docs/stabilization/resource-journals/ext-d-0277-runtime-red-20261021.jsonl"
+    },
+    {
+      "run_id": "ext-d-0277-both-green-20261021",
+      "verdict": "valid green: manifest and action title tests 16/16",
+      "journal": "docs/stabilization/resource-journals/ext-d-0277-both-green-20261021.jsonl"
+    },
+    {
+      "run_id": "ext-d-0277-store-key-repair-20261021",
+      "verdict": "valid red then green: installed Store manifest key=true; Store-shaped runtime boot title was Matrx Extend before fix and Matrx after fix; 17/17 focused tests passed"
+    }
+  ],
+  "remaining": [
+    "fresh independent source review",
+    "exact-path commit and push",
+    "exact-build native mixed-profile acceptance and release gate"
+  ],
+  "fix_sha": null,
+  "native_verdict": "pending",
+  "owned_heavy_jobs": "pnpm compile passed after channel repair; pnpm catalog:tools:md passed and generated only timestamps, which were restored; no browser job launched",
+  "resource_credit": "UNVERIFIED: this repair\u2019s focused red/green tests, compile, and catalog checks ran as unguarded local shell commands with no run IDs or resource journal paths. Earlier EXT-D-0277 journals predate the ID-channel repair and do not cover it.",
+  "repair_commands": [
+    "pnpm exec vitest run tests/unit/credential-assistance-status.test.ts (red, exit 1)",
+    "pnpm exec vitest run tests/unit/credential-assistance-status.test.ts tests/unit/extension-identity.test.ts (green 17/17, exit 0)",
+    "pnpm compile (exit 0)",
+    "pnpm catalog:tools:md (exit 0)"
+  ]
+}

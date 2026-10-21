@@ -1,3 +1,4 @@
+import { getExpectedExtensionIdentity } from '@/config/identity';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 
@@ -20,7 +21,7 @@ function stateFor(tabId: number): CredentialAssistanceState {
 async function project(tabId: number, state = stateFor(tabId)): Promise<void> {
   const badge =
     state === 'none' ? '' : state === 'saved_login' ? '•' : state === 'save_pending' ? '+' : '!';
-  const title =
+  const statusTitle =
     state === 'none'
       ? 'Matrx'
       : state === 'saved_login'
@@ -28,6 +29,14 @@ async function project(tabId: number, state = stateFor(tabId)): Promise<void> {
         : state === 'save_pending'
           ? 'Matrx has a pending Vault save'
           : 'Matrx Vault needs attention';
+  const isDevelopment = getExpectedExtensionIdentity(chrome.runtime.id)?.channel === 'development';
+  const manifest = isDevelopment ? chrome.runtime.getManifest() : null;
+  const developmentTitle = manifest?.action?.default_title ?? manifest?.name;
+  const title = developmentTitle
+    ? state === 'none'
+      ? developmentTitle
+      : `${developmentTitle}: ${statusTitle}`
+    : statusTitle;
   try {
     await chrome.action.setBadgeText({ tabId, text: badge });
     await chrome.action.setTitle({ tabId, title });
