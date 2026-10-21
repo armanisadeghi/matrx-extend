@@ -917,6 +917,45 @@ async function classifyExplicitAttempt(
   };
 }
 
+/** Longest run of adjacent tokens re-joined into one segment ("one-time-code"). */
+const MAX_JOINED_URL_TOKENS = 3;
+
+/**
+ * Split a url into alphanumeric segments for vocabulary membership — mirrors
+ * the server's `url_segments` (aidream login/verifier.py) exactly.
+ *
+ * Every single token is a segment, and so is every run of up to
+ * MAX_JOINED_URL_TOKENS ADJACENT tokens joined without the separator. Sites
+ * spell one word with `_` or `-` inside it (`/users/sign_in`, `/log-in`,
+ * `/two-factor`) and a vocabulary of whole words must still recognise them.
+ * Membership stays exact-match, so "designing" never contains "signin".
+ */
+export function urlSegments(url: string | null | undefined): Set<string> {
+  if (!url) return new Set();
+  const tokens = url
+    .toLowerCase()
+    .split(/[^\p{L}\p{N}]+/u)
+    .filter(Boolean);
+  const out = new Set(tokens);
+  for (let size = 2; size <= MAX_JOINED_URL_TOKENS; size++) {
+    for (let i = 0; i + size <= tokens.length; i++) {
+      out.add(tokens.slice(i, i + size).join(''));
+    }
+  }
+  return out;
+}
+
+export function classifyUrlFlow(
+  href: string | null,
+  vocabulary: { challenge: readonly string[]; sign_in: readonly string[] },
+): 'challenge' | 'sign_in' | 'other' | 'unknown' {
+  if (!href) return 'unknown';
+  const segments = urlSegments(href);
+  if (vocabulary.challenge.some((part) => segments.has(part))) return 'challenge';
+  if (vocabulary.sign_in.some((part) => segments.has(part))) return 'sign_in';
+  return 'other';
+}
+
 function recordAdmittedObservation(
   execution: AdmittedExecutionBinding | undefined,
   before: PageStateProbe,
@@ -924,20 +963,8 @@ function recordAdmittedObservation(
 ): void {
   if (!execution?.recordObservation || !execution.verificationSpec) return;
   const verificationSpec = execution.verificationSpec;
-  const classifyUrl = (href: string | null): 'challenge' | 'sign_in' | 'other' | 'unknown' => {
-    if (!href) return 'unknown';
-    const segments = new Set(
-      href
-        .toLowerCase()
-        .split(/[^\p{L}\p{N}]+/u)
-        .filter(Boolean),
-    );
-    if (verificationSpec.url_vocabulary.challenge.some((part) => segments.has(part)))
-      return 'challenge';
-    if (verificationSpec.url_vocabulary.sign_in.some((part) => segments.has(part)))
-      return 'sign_in';
-    return 'other';
-  };
+  const classifyUrl = (href: string | null) =>
+    classifyUrlFlow(href, verificationSpec.url_vocabulary);
   const expected = verificationSpec.expect;
   const afterHref = after?.href ?? null;
   const selectorMatch = (selector: string | null | undefined): boolean | null =>
