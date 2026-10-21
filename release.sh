@@ -936,6 +936,8 @@ build_zips() (
     unzip -p "$LOCAL_CANDIDATE" manifest.json 2>/dev/null | grep -q '"key"' || return 1
     phase="local-manifest-present"
     [[ -f .output/chrome-mv3/manifest.json ]] || return 1
+    phase="local-emitted-title-check"
+    node scripts/check-dev-emitted-title.mjs .output/chrome-mv3/manifest.json || return $?
 )
 
 

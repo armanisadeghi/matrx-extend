@@ -1,0 +1,31 @@
+{
+  "task_id": "EXT-D-0277 final emitted-title re-verification",
+  "scope": "Independent source-only review of current dirty diff, 2026-10-21; no edits, tests, build, browser, credentials, or heavy commands.",
+  "findings_reverify": [
+    {
+      "prior": "CI development artifact producer lacks emitted title guard",
+      "status": "ADDRESSED_IN_SOURCE",
+      "evidence": "scripts/current-test-artifact.mjs:11,146 imports assertDevEmittedTitle and calls it inside produce after assertManifest, before recordLocalDevBuild/provenance; .github/workflows/ci.yml:226 invokes produce before upload."
+    },
+    {
+      "prior": "release-path sandbox omits new guard and valid manifest fields",
+      "status": "ADDRESSED_IN_SOURCE",
+      "evidence": "scripts/test-release-ship-path.sh:43 copies the guard; line 215 emits both DEV name and action.default_title. release.sh:940-942 invokes the guard before candidate publication."
+    },
+    {
+      "prior": "unit hook test alone cannot prove WXT emission",
+      "status": "ADDRESSED_BY_BOUNDARY_GUARD",
+      "evidence": "tests/unit/extension-identity.test.ts:187-211 remains a hook-level test; scripts/check-dev-emitted-title.mjs:6-13 tests an emitted JSON manifest and is invoked by CI produce and release.sh. The new CI artifact still needs execution evidence."
+    }
+  ],
+  "verdict_a": {
+    "contract_source_boundary": "PASS_IN_SOURCE: wxt.config.ts:351-357 restores keyed Chrome development action.default_title after popup merge; callback keeps name DEV; Store branch is excluded. src/lib/credentials/assistance-status.ts:34 prefers action.default_title, so corrected manifest reaches runtime title.",
+    "actual_emitted_and_native": "PENDING: original immutable CI artifact10994390 remains a failing pre-fix specimen. No new CI artifact or native tooltip/assistance proof was available in this review."
+  },
+  "verdict_b": {
+    "quality_provenance": "PASS_IN_SOURCE, PENDING_EVIDENCE: one shared emitted-title assertion checks key, name, and action.default_title; CI runs it before provenance/upload; release gate runs it before publication; fixture carries the script and valid manifest. git diff --check clean.",
+    "remaining_gates": "Builder should supply red on original artifact, green on fresh emitted output, good fixture success and malformed-title refusal, compile/lint/path checks, a commit and CI artifact tied to that commit. This review did not run tests by brief."
+  },
+  "new_regressions": "None found in inspected title/CI/release-path diff. No source finding that independently blocks proceeding to execution gates.",
+  "builder_report": "/tmp/d277-emitted-title-fix-20261021.json absent at review time; parent must inspect when written."
+}

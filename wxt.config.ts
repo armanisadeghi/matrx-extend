@@ -349,6 +349,12 @@ export default defineConfig({
   }),
   hooks: {
     'build:manifestGenerated': (wxt, manifest) => {
+      // WXT copies the popup HTML <title> into action.default_title after
+      // merging the manifest callback. Restore the keyed development title at
+      // this final manifest boundary so the toolbar keeps its DEV marker.
+      if (!isChromeWebStoreBuild && wxt.config.browser === 'chrome' && manifest.action) {
+        manifest.action.default_title = 'Matrx Extend DEV';
+      }
       // The published Chrome Web Store item uses a module service worker. WXT's
       // standalone worker bundle is compatible with that runtime, but newer
       // WXT output omits the explicit field unless we preserve it here. Keep

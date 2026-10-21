@@ -40,6 +40,7 @@ mkdir -p scripts
 mv scripts-release-lock-conflict.mjs scripts/release-lock-conflict.mjs
 cp "$HARNESS_ROOT/scripts/release-snapshot-dependencies.sh" "$HARNESS_ROOT/scripts/release-owner-lock.sh" scripts/
 cp "$HARNESS_ROOT/scripts/release-package-diagnostics.mjs" scripts/
+cp "$HARNESS_ROOT/scripts/check-dev-emitted-title.mjs" scripts/
 mkdir -p types; echo "old catalog" > types/tool-catalog.md
 echo "shared" > shared.txt
 git_q add -A; git_q commit -m "seed"; git_q push origin main
@@ -211,7 +212,7 @@ case " \$* " in
     if [ "\${MATRX_CWS_BUILD:-}" = 1 ]; then
       printf '{"version":"%s"}\\n' "\$version" > .output/chrome-mv3/manifest.json
     else
-      printf '{"version":"%s","key":"fixture-dev-key"}\\n' "\$version" > .output/chrome-mv3/manifest.json
+      printf '{"version":"%s","key":"fixture-dev-key","name":"Matrx Extend DEV","action":{"default_title":"Matrx Extend DEV"}}\\n' "\$version" > .output/chrome-mv3/manifest.json
     fi
     ( cd .output/chrome-mv3 && zip -q ../matrx-extend-\$version-chrome.zip manifest.json )
     ;;

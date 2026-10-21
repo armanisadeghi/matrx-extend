@@ -183,4 +183,35 @@ describe('extension identity diagnostics', () => {
       vi.resetModules();
     }
   }, 30_000);
+
+  it('restores the development action title after WXT adds the popup entrypoint', async () => {
+    try {
+      vi.stubEnv('MATRX_CWS_BUILD', '0');
+      vi.resetModules();
+      const { default: developmentConfig } = await import('../../wxt.config');
+      const developmentManifest = chromeManifestIdentity(developmentConfig.manifest);
+      developmentManifest.action.default_title = 'Matrx'; // Popup HTML title overrides the callback.
+      const finalHook = Reflect.get(developmentConfig.hooks ?? {}, 'build:manifestGenerated') as (
+        wxt: { config: { browser: string } },
+        manifest: ChromeManifestIdentity,
+      ) => void;
+
+      finalHook({ config: { browser: 'chrome' } }, developmentManifest);
+      expect(developmentManifest.action.default_title).toBe('Matrx Extend DEV');
+
+      vi.stubEnv('MATRX_CWS_BUILD', '1');
+      vi.resetModules();
+      const { default: storeConfig } = await import('../../wxt.config');
+      const storeManifest = chromeManifestIdentity(storeConfig.manifest);
+      const storeHook = Reflect.get(
+        storeConfig.hooks ?? {},
+        'build:manifestGenerated',
+      ) as typeof finalHook;
+      storeHook({ config: { browser: 'chrome' } }, storeManifest);
+      expect(storeManifest.action.default_title).toBe('Matrx Extend');
+    } finally {
+      vi.unstubAllEnvs();
+      vi.resetModules();
+    }
+  }, 30_000);
 });

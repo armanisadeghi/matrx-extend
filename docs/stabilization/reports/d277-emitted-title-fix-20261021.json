@@ -1,0 +1,34 @@
+{
+  "status": "implementation uncommitted; handoff at call budget",
+  "files": [
+    "wxt.config.ts",
+    "scripts/check-dev-emitted-title.mjs",
+    "scripts/current-test-artifact.mjs",
+    "release.sh",
+    "scripts/test-release-ship-path.sh",
+    "tests/unit/extension-identity.test.ts"
+  ],
+  "rootCause": "WXT popup HTML title overrides action.default_title after config callback; final manifest hook now restores keyed Chrome DEV title only.",
+  "guard": "Shared assertDevEmittedTitle checks emitted keyed manifest name and action title; invoked in CI producer produce() only and local release build candidate. Historical import validation remains unchanged.",
+  "proof": {
+    "red": "node scripts/check-dev-emitted-title.mjs test-results/ci-artifacts/10994390c13f3bba0e1e0c35ec4125db784410af/39541831001-1/chrome-mv3/manifest.json => exit 1 exact assertion actual Matrx expected Matrx Extend DEV; lightweight direct command, no resource journal",
+    "green_simulated": "Original artifact copied to /tmp/d277-simulated-corrected-manifest.json with title changed only; guard exits 0. Simulated guard proof, not fresh WXT/CI artifact.",
+    "hook_unit": "Resource run d277-title-vitest-20261021a valid; 12/12 passed; test invokes actual final hook after simulated WXT popup merge, checks development correction and unchanged Store callback title.",
+    "compile": "First resource run d277-title-compile-20261021a admitted child failed TS7053 in new test hook indexing; changed test to Reflect.get; second d277-title-compile-20261021b valid and passed.",
+    "catalog": "d277-title-catalog-20261021a valid and passed; generated outputs differed only in timestamp (proved full JSON equality excluding generated_at and MD equality excluding Generated line); restored original timestamps.",
+    "release_path": "d277-title-release-path-20261021a refused preflight RESOURCE_PRESSURE_UNSAFE, child did not run; valid refusal journal exists.",
+    "lightweight": "bash -n release.sh scripts/test-release-ship-path.sh; git diff --check; targeted biome check changed files passed."
+  },
+  "remaining": [
+    "When resource permits, guarded bash scripts/test-release-ship-path.sh to verify fixture copy/new release guard integration.",
+    "Fresh CI WXT output still required to prove emitted artifact green; manual builds disallowed.",
+    "Parent fresh review, exact-path commit and push after fetch/reconcile."
+  ],
+  "journals": [
+    "docs/stabilization/resource-journals/d277-title-vitest-20261021a.jsonl",
+    "docs/stabilization/resource-journals/d277-title-compile-20261021a.jsonl",
+    "docs/stabilization/resource-journals/d277-title-compile-20261021b.jsonl",
+    "docs/stabilization/resource-journals/d277-title-catalog-20261021a.jsonl",
+    "docs/stabilization/resource-journals/d277-title-release-path-20261021a.jsonl"
+  ]
+}

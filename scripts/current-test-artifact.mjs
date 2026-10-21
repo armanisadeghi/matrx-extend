@@ -8,6 +8,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
+import { assertDevEmittedTitle } from './check-dev-emitted-title.mjs';
 import {
   recordLocalDevBuild,
   requireLocalDevReceipt,
@@ -142,6 +143,7 @@ async function produce() {
     fail('test_artifact_ci_context_refused');
   const version = (await json(join(REPO, 'package.json'))).version;
   await assertManifest(OUTPUT, version);
+  assertDevEmittedTitle(await json(join(OUTPUT, 'manifest.json')));
   for (const value of Object.values(config)) {
     if (!(await containsInBuiltJs(OUTPUT, value))) fail('test_artifact_bundled_config_refused');
   }
