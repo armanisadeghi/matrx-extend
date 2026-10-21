@@ -68,6 +68,7 @@ test('standalone hosted CLI reaches admission refusals without installed package
       'copy-hosted-resource-journal.mjs',
       'stabilization-resource-journal.mjs',
       'development-source-compatibility.mjs',
+      'development-ci-event.mjs',
       'published-store-crx-target.mjs',
     ])
       copyFileSync(new URL(name, import.meta.url), join(scratch, 'scripts', name));
@@ -1394,6 +1395,31 @@ test('docs-only main accepts previous successful CI bytes and preserves original
     assert.throws(
       () => f.admit(main, { expectedDigest: `sha256:${'c'.repeat(64)}` }),
       /HOSTED_DEVELOPMENT_ARTIFACT_DIGEST_MISMATCH/,
+    );
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+test('hosted route accepts exact authorized development CI dispatch regardless of actor', () => {
+  const f = fixture();
+  try {
+    f.run.event = 'workflow_dispatch';
+    f.run.actor = { login: 'github-actions[bot]' };
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', f.artifactSha);
+    assert.equal(
+      f.admit(f.artifactSha, { allowRuntimeEquivalent: false }).sourceSha,
+      f.artifactSha,
+    );
+    f.run.actor = { login: 'authorized-human' };
+    assert.equal(
+      f.admit(f.artifactSha, { allowRuntimeEquivalent: false }).sourceSha,
+      f.artifactSha,
+    );
+    f.run.head_sha = 'b'.repeat(40);
+    assert.throws(
+      () => f.admit(f.artifactSha, { allowRuntimeEquivalent: false }),
+      /HOSTED_DEVELOPMENT_RUN_INVALID/,
     );
   } finally {
     rmSync(f.root, { recursive: true, force: true });

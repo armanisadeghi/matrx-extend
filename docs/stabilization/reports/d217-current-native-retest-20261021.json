@@ -1,25 +1,18 @@
 {
   "task_id": "EXT-D-0217-current-native-retest-20261021",
-  "recorded_at_utc": "2026-10-21T19:03:55Z",
+  "recorded_at_utc": "2026-10-21T19:18:11Z",
   "lane": "hosted native acceptance A",
-  "status": "current_exact_main_ci_pending_before_dispatch",
+  "status": "current_exact_main_development_ci_artifact_absent_before_dispatch",
   "feature_id": "EXT-F-1007",
   "defect_id": "EXT-D-0217",
   "case_ids": ["EXT-F-1007-T05", "EXT-F-1007-T22"],
   "current_source": {
-    "local_head": "14cbbd14f4633893c6e23f1d9de2c304751ea986",
-    "origin_main": "14cbbd14f4633893c6e23f1d9de2c304751ea986",
+    "local_head": "e39cedba10360c57135dd937b19a3ad5509504e3",
+    "origin_main": "e39cedba10360c57135dd937b19a3ad5509504e3",
     "checkout_clean_at_observation": true,
-    "ci_run_id": 39658232622,
-    "ci_status_last_observed": "pending",
-    "ci_created_at_utc": "2026-10-21T19:03:17Z",
-    "ci_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39658232622",
+    "source_note": "Current main is a release-created v0.2.586 package/catalog commit. No CI development run for this exact SHA appeared in the workflow listing by 19:18 UTC.",
+    "exact_source_ci_run_id": null,
     "eligible_development_artifact": null
-  },
-  "superseded_candidate": {
-    "source_sha": "2cd691a29c459815b73db807daf68b67e21ab579",
-    "ci_run_id": 39657367663,
-    "reason": "Origin/main advanced to 14cbbd14; no earlier-source artifact is eligible for this exact-main member route."
   },
   "normal_route": {
     "script": "scripts/hosted-remote-admission.mjs",
@@ -35,10 +28,11 @@
     "runner_label": "macos-15-intel",
     "dispatch_attempted": false,
     "verification_attempted": false,
-    "admission_checkpoint": "Await successful exact-current-main development artifact, then recheck actual origin/main, clean source, current spend, host capacity, fixture and temporary-secret gates before one normal plan and dispatch."
+    "admission_checkpoint": "No successful keyed development artifact exists for exact current main e39cedba. Normal plan, dispatch, fixture and credential staging did not begin.",
+    "plan_attempted": false
   },
   "current_ci_spend": {
-    "read_at_utc": "2026-10-21T19:02:30Z",
+    "read_at_utc": "2026-10-21T19:02Z",
     "source": "Authenticated canonical GET /ci-spend/status",
     "week_total_usd": 91.79,
     "week_cap_usd": 100,
@@ -70,8 +64,42 @@
   },
   "limits": [
     "The D280 route source and independent adjudication are source-only evidence; no D217 browser result or normal certificate exists.",
-    "A separate owner Mac resource journal was invalidated before UI and cannot provide D217 acceptance; the hosted runner has its own normal admission gates.",
-    "No human decision or approval blocks the next eligible artifact check."
+    "The current exact-source development artifact is absent. Release-created main commits may be involved in missing CI events, but that cause is not established in this lane.",
+    "No human decision or approval is blocking D217. A separate diagnostic owns the current-main CI event gap."
   ],
-  "next_action": "When CI 39658232622 finishes, first confirm its success, current origin/main equality, and one unexpired keyed development artifact at that exact SHA. If source advances, wait for a new exact-main successful artifact. Recheck current CI spend and normal host/fixture/secret admission, mint the existing approved nonadmin reviewer's one-use link privately at point of use, and run one normal plan-member-scrape-save then dispatch-member-scrape-save for stale-profile-retry/none. After terminal run, remove the owned temporary secret, verify owned fixture/source cleanup and resource journals, and use verify-member-scrape-save on the downloaded artifact. Preserve D217 as unverified unless the original and surrounding native evidence passes."
+  "next_action": "Resolve the missing exact-main development CI event through the separately owned normal CI path, then wait for a successful unexpired keyed development artifact at the actual current origin/main SHA. Recheck clean synchronized source and fresh weekly spend; run only normal plan-member-scrape-save then dispatch-member-scrape-save for lane A, scrape-save-member, stale-profile-retry/none on macos-15-intel after host/fixture/secret admission. Mint the existing approved nonadmin reviewer one-use link privately only at point of use. On terminal run, remove owned temporary secret, verify source/fixture cleanup and valid resource journals, then use verify-member-scrape-save. D217 remains unverified until original guest refusal/reload/retry/member recovery and surrounding cases pass natively.",
+  "recent_ci_handles": [
+    {
+      "run_id": 39657367663,
+      "source_sha": "2cd691a29c459815b73db807daf68b67e21ab579",
+      "last_observed": "success; superseded"
+    },
+    {
+      "run_id": 39658232622,
+      "source_sha": "14cbbd14f4633893c6e23f1d9de2c304751ea986",
+      "last_observed": "cancelled before jobs; superseded"
+    },
+    {
+      "run_id": 39658438738,
+      "source_sha": "4b2268c3e6c2ba91de73d758f0767adcdd1d20fe",
+      "last_observed": "cancelled before jobs; superseded"
+    },
+    {
+      "run_id": 39658730890,
+      "source_sha": "7a4c1e50d25a25016c94afa26915a82adac90c63",
+      "last_observed": "in_progress at 19:17 UTC; superseded"
+    },
+    {
+      "run_id": 39659840121,
+      "source_sha": "5eb78e8aa559450cd92475989f349c3705843059",
+      "last_observed": "pending at 19:17 UTC; superseded"
+    }
+  ],
+  "resume_checkpoint": {
+    "at_utc": "2026-10-21T19:58:00Z",
+    "source_repair_commit": "af238f095b5477db9f126dec5aa85a8fceee23d6",
+    "dependency_base": "7c1d512f66dfb30464136e733dd9918294fccefa",
+    "status": "D282 source repair and independent reviews passed; wait for successful exact-main CI artifact after synchronized push, then normal D217 route.",
+    "native_dispatch_or_secret_fixture_started": false
+  }
 }

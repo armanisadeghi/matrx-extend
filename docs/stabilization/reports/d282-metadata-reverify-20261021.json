@@ -1,0 +1,67 @@
+{
+  "review": "independent_zero_authorship_pinned_source_reverification",
+  "source_snapshot": "/tmp/d282-reverify-source-20261021.json",
+  "pinned_head": "092cfe195b9bf33e417e74d0b900da390f5a632c",
+  "scope": "Eleven snapshot file hashes verified. Read-only review of pinned source, normal consumer paths, and completed guarded journals. No live dispatch, native UI, heavy test, code edit, or commit by this reviewer.",
+  "verdict_A_outcome": "SOURCE_CONNECTED_LIVE_UNVERIFIED",
+  "verdict_A_reason": "The release receipt leads to an exact-main CI dispatch with full checks, a source-bound artifact, and existing promotion and hosted acceptance consumers. No hosted bot release of this pinned repair has completed, so artifact production, import, owner promotion, and D217 native acceptance remain unobserved. An in-progress matching CI run is explicitly reported as already-running, a pending state rather than artifact success.",
+  "verdict_B_quality": "IMPORTANT_OPERATIONAL_GAP",
+  "findings": [
+    {
+      "severity": "Important",
+      "claim": "The configurable GitHub API deadline cannot be adjusted through the authorized hosted release workflow.",
+      "evidence": "Pinned scripts/release-development-ci.mjs:11-15 and :55 read MATRX_RELEASE_CI_API_TIMEOUT_MS from process.env, but pinned .github/workflows/release.yml:233-237 passes only GITHUB_TOKEN to the dispatch step and neither the job nor workflow maps vars.MATRX_RELEASE_CI_API_TIMEOUT_MS or an input into env. A repository variable is not automatically a process environment variable in GitHub Actions. The hosted workflow therefore always uses the 10000 ms default and an operator cannot apply the documented override to recover a slow API without changing workflow source.",
+      "impact": "The new deadline knob is unit-tested but unavailable in the normal release path; a slow GitHub response still fails the release step after publication."
+    }
+  ],
+  "prior_findings": [
+    {
+      "claim": "Completed-success dedup can report artifact-exists for metadata that the importer rejects",
+      "status": "ADDRESSED",
+      "evidence": "Pinned scripts/release-development-ci.mjs:74-90 obtains the workflow and artifact list and calls the normal importer verifier verifyGitHubMetadata before marking hasDevelopmentArtifact. Pinned scripts/current-test-artifact.mjs:297-323 requires exact run/workflow/repository/source/attempt/name, artifact run ID and source, and sha256 digest. The real CLI HTTP fixture at scripts/release-development-ci.test.mjs:177-254 verifies no POST for valid metadata and POST for missing digest or wrong artifact run ID."
+    },
+    {
+      "claim": "A successful CI run without an artifact covers the release",
+      "status": "ADDRESSED",
+      "evidence": "Pinned scripts/release-development-ci.mjs:30-38 treats completed success as artifact-exists only after hasDevelopmentArtifact is true; otherwise it dispatches."
+    },
+    {
+      "claim": "In-progress CI is falsely reported as artifact-ready",
+      "status": "REFUTED",
+      "evidence": "Pinned scripts/release-development-ci.mjs:36-38 returns already-running separately from artifact-exists; the focused test checks the pending label at scripts/release-development-ci.test.mjs:46-56."
+    },
+    {
+      "claim": "Human workflow_dispatch runs are excluded from normal artifact use",
+      "status": "REFUTED",
+      "evidence": "Pinned scripts/development-ci-event.mjs:2-4 accepts push and workflow_dispatch regardless of actor. The importer, scope helper, hosted admission, and dedup share that predicate, with exact source/ref/run checks at their own boundaries."
+    }
+  ],
+  "claim_evidence": [
+    {
+      "claim": "The release-to-CI chain rejects a moved or wrong source",
+      "evidence": "Pinned release.yml:161-189 checks the pushed receipt against HEAD and the remote immutable tag. Dispatcher :62-111 requires pushed receipt, current main SHA match, and dispatches ref main with expected_source_sha. CI scope runs assert-source before classification; current-test-artifact.mjs:130-146 also checks event, main ref, checkout HEAD and expected dispatch SHA. Main movement between API check and dispatch can cause the new CI run to fail closed rather than silently produce a wrong-source artifact."
+    },
+    {
+      "claim": "Full CI and normal downstream use are wired",
+      "evidence": "Pinned ci.yml dispatches run the full classification path and guarded checks, keyed build, provenance, upload, and cost guard. current-test-artifact.mjs:427-500 rechecks GitHub metadata, downloaded digest, provenance, manifest and tree. Existing promotion and hosted guest scripts call verifyImportedNativeEvidence; hosted-remote-admission.mjs:1725-1780 accepts the same event primitive while checking source and digest. No run.head_sha is replaced with a payload source."
+    },
+    {
+      "claim": "Focused tests exercise the CLI boundary rather than only source strings",
+      "evidence": "Pinned release-development-ci.test.mjs:117-175 starts a local HTTP server, invokes the actual dispatch CLI, and checks its POST body. :177-254 exercises API metadata dedup; :79-115 checks wrong source rejection and importer metadata directly. The test is in the focused acceptance script in pinned package.json."
+    },
+    {
+      "claim": "Guard RED evidence has a limited scope",
+      "evidence": "Three completed guarded journals d282-red-dispatch, d282-red-metadata and d282-red-source each show admitted=true, resourceInvalid=false, childExitCode=1. Metadata and source child details may exist in separate output, but the dispatch journal retains no child stdout. These journals establish failed mutation runs, not the exact assertion text or restoration; restoration is supported independently by all eleven pinned snapshot hashes matching their stored sha256 values."
+    }
+  ],
+  "verification": {
+    "snapshot_hashes": "All eleven stored text sha256 values recomputed and matched.",
+    "completed_guarded": "d282-final-install-20261021.jsonl valid exit 0; d282-compile-20261021.jsonl valid exit 0; d282-focused-final-20261021.jsonl valid exit 0.",
+    "pending_at_review": "Merged final compile, focused and lint checks were not yet complete when this report was drafted; earlier lint journal ended child_failed and is not a green final gate."
+  },
+  "remaining_real_gaps": [
+    "Expose the API deadline through an authorized workflow variable or input, then exercise that path.",
+    "Observe a bot release on source containing this repair, full exact-source CI completion, import, normal promotion, and hosted D217 acceptance.",
+    "Confirm final merged compile, focused, and lint journals before calling the pinned source locally green."
+  ]
+}

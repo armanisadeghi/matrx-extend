@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mjs';
+import { isEligibleDevelopmentCiEvent } from './development-ci-event.mjs';
 import {
   isRuntimeEquivalentDocumentationPath,
   sourceCompatibility,
@@ -1738,7 +1739,7 @@ export function requireDevelopmentArtifact(
   if (
     run.name !== 'CI' ||
     run.path !== '.github/workflows/ci.yml' ||
-    run.event !== 'push' ||
+    !isEligibleDevelopmentCiEvent(run) ||
     run.head_branch !== 'main' ||
     run.conclusion !== 'success' ||
     !SHA.test(run.head_sha ?? '') ||
