@@ -20,12 +20,14 @@
   "cause": "Unresolved: inherited descendant pipes or error-path cleanup/lifecycle settlement are hypotheses, not proven. Exact failing boundary is wrapper close after exit, not initial CPU admission.",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/39675476145",
-    "docs/stabilization/evidence/ci39675476145-resource.rawlog"
+    "docs/stabilization/evidence/ci39675476145-resource.rawlog",
+    "docs/stabilization/reports/d283-close-lifecycle-diagnosis-20261021.json",
+    "docs/stabilization/reports/d283-diagnosis-peer-20261021.json"
   ],
   "evidence_sha256": "de22818a9ab53094fdc3e4f2287af0d70f3172a17e56790aafdd040cf13605bc",
   "related_defects": ["EXT-D-0182", "EXT-D-0136"],
   "related_limits": "D182 historical aggregate timing and D136 owner-file race had bounded independent closures; this newly identified close/descendant hang is not proof those exact causes returned.",
-  "next_action": "Fresh implementation worker after Mac capacity/worker-lock recovery: reproduce exact child-error lifecycle, inspect child exit/error/close and descendant ownership, fix class with failure-preserving RED/GREEN and bounded cleanup, fresh peer and automatic CI. No threshold or timeout bypass; no product case pass.",
+  "next_action": "Require capacity recovery and unchanged resource admission, then the peer's instrumented bounded original-scenario replay. Keep D283 open: no mechanism reproduction or code fix yet; proposed guard expansion is not approved on source speculation.",
   "transition_history": [
     {
       "at": "2026-10-21T21:12:58.619734+00:00",
@@ -47,5 +49,13 @@
     },
     "interpretation": "Formatting repair and main checks passed; mandatory resource gate did not. Overall source is not green and artifact adoption/release is ineligible.",
     "observed_at": "2026-10-21T21:16:11.202563+00:00"
+  },
+  "source_diagnosis_review": {
+    "status": "source_supported_hypothesis_not_reproduced",
+    "worker": "/root/d283_close_lifecycle_diagnosis",
+    "peer": "/root/d283_diagnosis_peer",
+    "finding": "Overlapping async fixture polls may emit synthetic error twice against once(error), causing wrapper abort before finalization. Not observed emission count/stderr; root accepts peer concern that production guard already attempts stopOwnedGroup, so production behavior changes are premature.",
+    "next_measure": "After unchanged20GiB resource admission: bounded original-scenario replay; count synthetic emissions, capture safe stderr category at wrapper exit, event order, exit/close timestamps and token-owned descendant census. No blanket timeout increase, early exit-as-cleanup pass, guard weakening or production change before cause proof.",
+    "product_credit": false
   }
 }
