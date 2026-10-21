@@ -139,9 +139,14 @@ test('cancelled or unavailable CI artifact proof fails closed', async () => {
 
 test('workflow gates full jobs and development artifact behind the scope decision', () => {
   const workflow = readFileSync(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
+  const scope = workflow.split('  scope:\n')[1]?.split('  docs:\n')[0];
   const docs = workflow.split('  docs:\n')[1]?.split('  resource-guard-integration:\n')[0];
   const mac = workflow.split('  resource-guard-integration:\n')[1]?.split('  checks:\n')[0];
   const checks = workflow.split('  checks:\n')[1];
+  assert.match(
+    scope,
+    /Scope classifier regression[\s\S]*run: node --test scripts\/ci-change-scope\.test\.mjs[\s\S]*name: Classify exact changed paths/,
+  );
   assert.match(workflow, /CI_EVENT_REF: \$\{\{ github\.ref \}\}/);
   assert.match(workflow, /actions: read/);
   assert.match(workflow, /GITHUB_TOKEN: \$\{\{ github\.token \}\}/);

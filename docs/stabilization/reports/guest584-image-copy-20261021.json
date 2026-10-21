@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "test": "EXT-F-1007-T42",
+  "status": "partial",
+  "observed_at_utc": "2026-10-21T15:54:27Z",
+  "summary": "Native guest UI showed exact warm and post-reload clipboard matches for one main Images tile and one Smaller Images tile. Full-case PASS is withheld because the designated Wikipedia portal fixture has no icon section and its main/smaller tiles are a logo and donation badge rather than a controlled manifest of guaranteed non-icon images.",
+  "resource_guard": {
+    "run_id": "owner584-refresh-images-20261021-1547",
+    "journal": "docs/stabilization/resource-journals/owner584-refresh-images-20261021-1547.jsonl",
+    "admitted_at_utc": "2026-10-21T15:48:07.136Z",
+    "latest_checked_at_utc": "2026-10-21T15:54:15.656Z",
+    "latest_checked_code": "RESOURCE_WATCH_HEALTHY",
+    "terminal_verdict": "valid",
+    "terminal_exit_code": 0,
+    "terminal_at_utc": "2026-10-21T15:55:29.997Z"
+  },
+  "prerequisites": {
+    "browser": "Native Google Chrome accessibility, macOS",
+    "profile_name": "Matrx Guest Test",
+    "chrome_version_profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10",
+    "extension_name": "Matrx Extend DEV",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_version": "0.2.584",
+    "extension_enabled": true,
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "actual_manager_reload": "Clicked DEV details Reload in Profile 10 and observed Chrome's Reloaded notice before product actions; repeated details Reload after warm checks and observed Reloaded again.",
+    "identity": "DEV Settings showed Email — and Sign in, with G Account indicator. No sign-in or sign-out action taken.",
+    "clipboard_permission": "DEV details listed Modify data you copy and paste; the product copy controls executed without a visible permission refusal."
+  },
+  "fixture": {
+    "url": "https://www.wikipedia.org/",
+    "tab": "New tab created in Profile 10, then loaded Wikipedia portal; owned fixture tab closed after checks.",
+    "capture_method": "Scrape > Capture on portal page",
+    "warm_groups": "Images 7: 1 IMAGE · 6 SMALL; one main tile followed by 6 SMALLER IMAGES; no icon group",
+    "reload_groups": "After actual DEV manager Reload, Wikipedia page Reload, side panel reopen and fresh Capture: Images 7, 1 IMAGE · 6 SMALL, no icon group"
+  },
+  "checks": [
+    {
+      "phase": "warm",
+      "tier": "main Images group",
+      "tile": "Wikipedia logo",
+      "expected_captured_src": "https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png",
+      "actual_address_bar_paste": "https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png",
+      "full_literal_match": true,
+      "clipboard_seed": "Copied current public Wikipedia fixture URL from Chrome address bar before clicking this tile's Copy image URL",
+      "navigation": "No Enter; pasted URL was inspected in Chrome address bar only"
+    },
+    {
+      "phase": "warm",
+      "tier": "SMALLER IMAGES group",
+      "tile": "One-time donation badge",
+      "expected_captured_src": "https://upload.wikimedia.org/wikipedia/donate/4/43/Badge-one-time.png",
+      "actual_address_bar_paste": "https://upload.wikimedia.org/wikipedia/donate/4/43/Badge-one-time.png",
+      "full_literal_match": true,
+      "clipboard_seed": "Copied current public Wikipedia fixture URL from Chrome address bar again before this tile's Copy image URL",
+      "navigation": "No Enter; pasted URL was inspected in Chrome address bar only"
+    },
+    {
+      "phase": "post_extension_and_page_reload",
+      "tier": "main Images group",
+      "tile": "Wikipedia logo",
+      "expected_captured_src": "https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png",
+      "actual_address_bar_paste": "https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png",
+      "full_literal_match": true,
+      "clipboard_seed": "Copied current public Wikipedia fixture URL from Chrome address bar before clicking this tile's Copy image URL",
+      "navigation": "No Enter; pasted URL was inspected in Chrome address bar only"
+    },
+    {
+      "phase": "post_extension_and_page_reload",
+      "tier": "SMALLER IMAGES group",
+      "tile": "One-time donation badge",
+      "expected_captured_src": "https://upload.wikimedia.org/wikipedia/donate/4/43/Badge-one-time.png",
+      "actual_address_bar_paste": "https://upload.wikimedia.org/wikipedia/donate/4/43/Badge-one-time.png",
+      "full_literal_match": true,
+      "clipboard_seed": "Selected and copied https://www.wikipedia.org/ in Chrome address bar before this tile's Copy image URL",
+      "navigation": "No Enter; pasted URL was inspected in Chrome address bar only"
+    }
+  ],
+  "controls_and_selection": {
+    "main_copy_control": "Visible on the main Images tile in warm and fresh captures",
+    "smaller_copy_control": "Visible on the first SMALLER IMAGES tile in warm and fresh captures",
+    "icon_copy_absence": "unverified: no icon tile or icon group present in this fixture",
+    "selection_and_tile_state": "Images 7 remained selected and showed 1 IMAGE · 6 SMALL after each warm and post-reload copy; no Remove image, Save, Add image URL, or other tile action was used."
+  },
+  "cua_calls_used": 39,
+  "cua_call_cap": 40,
+  "cleanup": "Closed the owned Wikipedia fixture tab and the guest profile setup tab created on profile switch. The preexisting owner Profile 8 Chrome window became active. No preexisting tab was closed; no URL copied from the address bar was navigated.",
+  "limits": [
+    "The fixture is a live Wikipedia portal page rather than a controlled capture manifest, and its image content may vary; its tile URLs were read from the fresh native UI for this run.",
+    "The main tile is a logo and the smaller tile is a donation badge. UI grouping proves main versus smaller controls, but not the inventory's guaranteed non-icon image precondition.",
+    "No icon fixture existed, so icon Copy control absence cannot be asserted."
+  ],
+  "open_questions": [],
+  "owner_verification_limits": "Root parsed full journal and observed actual guard process exit0. Native evidence remains operator accessibility observations, not an independent native rerun. Frozen source81bc584; later CI-only source edits do not change the tested bytes.",
+  "next_action": "Agent-owned: select or host a controlled HTTPS image fixture with guaranteed main/smaller non-icon and optional icon targets; independently replay remaining T42 criteria. Do not ask owner to supply a fixture.",
+  "root_artifact_binding": {
+    "source_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
+    "ci_run_id": 39627131118,
+    "artifact_id": 12358153358,
+    "artifact_digest": "sha256:8ddcef9d908db4d5b0abcab92d2de81413d0f3e74c354b983f4c7e73e29338d6",
+    "promoted_tree_sha256": "44d70281e1b832731c8a2fceb3edced8a905ecfecf45ac5d1bc3c8f6644a130c",
+    "root_rehash_at_utc": "2026-10-21T15:58:34Z",
+    "root_rehash_matches": true,
+    "method": "Normal current-test-artifact import and promote-ci-dev-artifact succeeded; native operator verified loaded path/ID/version and actual Reload. Root independently rehashed stable output after native run. Later CI wiring edits require fresh successful CI before next latest-main claim."
+  },
+  "fresh_evidence_review": "docs/stabilization/reports/guard-native584-fresh-review-20261021.json"
+}

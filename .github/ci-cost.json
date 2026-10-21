@@ -10,21 +10,21 @@
     "macos": 0.062
   },
   "prices_source": "GitHub billing API pricePerUnit (Actions Linux / Windows / macOS 3-core), read 2026-10-11",
-  "total_usd_per_week": 408.86,
+  "total_usd_per_week": 410.36,
   "workflows": {
     "ci.yml": {
       "triggers": ["pull_request", "push"],
       "crons": [],
-      "benefit": "Full extension build/lint/tests and development artifact for runtime changes; fast tracked-document validation for docs-only pushes and PRs, freeing the main CI queue without claiming a new artifact.",
+      "benefit": "Full extension build/lint/tests and development artifact for runtime changes; the scope job first exercises its own fail-closed classification fixtures on every push and PR, then routes proven artifact-backed stabilization documentation to tracked-document validation.",
       "owner_reason": "Before it, nothing was enforced on PRs (AUDIT P0-8).",
-      "basis": "Conservative upper bound from observed 2026-10-02..09: ~2500 runs/week; sampled Linux 3.2 min and macOS 1.5 min. The docs-only path adds a short Linux classification/validation job but skips Linux full checks and macOS integration for eligible runs. At a hypothetical 10% eligible share, projected variable runner use falls by about $28/week at list price, before the small classifier cost; actual public-repo billed increment is $0. The manifest retains the higher all-full-run forecast until the eligible share and classifier duration are measured. Conservative all-full-run ceiling includes 0.5 Linux minute per run for the new classifier, artifact-provenance API read, and validation lane; no additional macOS time.",
-      "usd_per_week": 288.0,
+      "basis": "Conservative upper bound from observed 2026-10-02..09: ~2500 runs/week; sampled Linux 3.2 min and macOS 1.5 min. The docs-only path adds a short Linux classification/validation job but skips Linux full checks and macOS integration for eligible runs. At a hypothetical 10% eligible share, projected variable runner use falls by about $28/week at list price, before the small classifier cost; actual public-repo billed increment is $0. The manifest retains the higher all-full-run forecast until the eligible share and classifier duration are measured. Conservative all-full-run ceiling includes 0.6 Linux minute per run for the classifier, artifact-provenance API read, validation lane, and mandatory 16-case Node regression (~1.5 seconds locally; 0.1 minute conservative increment); no additional macOS time.",
+      "usd_per_week": 289.5,
       "legs": {
         "linux": {
           "jobs": ["scope", "docs", "checks"],
           "runs_per_week": 2500,
-          "minutes_per_run": 3.7,
-          "usd_per_week": 55.5
+          "minutes_per_run": 3.8,
+          "usd_per_week": 57.0
         },
         "macos": {
           "jobs": ["resource-guard-integration"],

@@ -29866,8 +29866,15 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "detail": "New source-to-case coverage; no native run."
+              "status": "partial",
+              "run_id": "owner584-refresh-images-20261021-1547",
+              "build_variant": "Frozen keyed DEV0.2.584/source81bc3fb0f/CI39627131118/artifact12358153358; production compilation, development identity",
+              "detail": "Actual Profile10 DEV manager Reload/path/ID/584 and Settings Sign in/Email— verified. Wikipedia portal main logo and smaller donation-badge Copy image URL each matched full captured src warm and after extension+page Reload/recapture (four actions), clipboard reseeded each time, Images7/selection retained. Root full journal terminal valid0/process0. No controlled non-icon manifest or icon target; no full T42 PASS, member/admin, Store or overall Scrape health. Fresh evidence-only A/B review accepts bounded observations and full journal; no independent UI replay. Full guest case remains unverified beyond these substeps.",
+              "evidence": [
+                "docs/stabilization/reports/guest584-image-copy-20261021.json",
+                "docs/stabilization/resource-journals/owner584-refresh-images-20261021-1547.jsonl",
+                "docs/stabilization/reports/guard-native584-fresh-review-20261021.json"
+              ]
             },
             "member": {
               "status": "unverified",
@@ -29904,6 +29911,15 @@
                 "docs/stabilization/reports/copy-recovery-evidence1506.json",
                 "docs/stabilization/resource-journals/image-cleanup-20261021-1501.jsonl"
               ]
+            },
+            {
+              "at": "2026-10-21T15:55:29.997Z",
+              "mode": "guest; actual Profile10 Sign in/Email—",
+              "status": "partial",
+              "run_id": "owner584-refresh-images-20261021-1547",
+              "new_acceptance_credit": "Four bounded native clipboard actions only; no complete case PASS",
+              "detail": "Frozen584 source81bc normal artifact; role/build bound, warm and post-reload main/smaller exact full URL matches; fixture gaps remain. Owned tabs closed, guard valid0/process0.",
+              "evidence": "docs/stabilization/reports/guest584-image-copy-20261021.json"
             }
           ]
         },
