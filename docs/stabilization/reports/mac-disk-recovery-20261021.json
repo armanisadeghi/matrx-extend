@@ -31,5 +31,15 @@
   "reason": "canonical groom dry run identifies no meaningful safe reclaim; large allocations are open by Apple sync services and outside documented development cleanup",
   "next_safe_action": "Allow Apple CloudKit/File Provider operations to finish, then rerun statfs and canonical daily dry run. If space remains below 20 GiB, resolve the active Apple sync/storage operation through macOS rather than manually deleting its open files. Repair malformed groom registry in a separate scoped maintenance task before relying on unattended daily grooming.",
   "product_ui_started": false,
-  "repo_changes": false
+  "repo_changes": false,
+  "latest_observation": {
+    "at": "2026-10-21T23:20:13.523157+00:00",
+    "system_free_df_mib": 113,
+    "main": "31ba9d4dfcc3abef62767ce8de6d9d816f6f3a76",
+    "git_ahead": 0,
+    "git_behind": 0,
+    "recovery_receipt": "docs/stabilization/reports/closed-owned-artifact-offload-20261021.json",
+    "finding": "Verified955937149byte archive offload recovered ~1GiB earlier; free space has returned to113MiB. Recovery not durable; current writer attribution not measured. No new tests/UI/jobs launched and existing blocked goal remains blocked.",
+    "daily_store_observation": "October21 completed observation reused: public205/pending577; no repeated dashboard or guest test below resource admission."
+  }
 }
