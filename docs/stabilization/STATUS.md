@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-21 05:53 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-21T05:34:58.291937+00:00. 207 features · 831 cases · 1422 controls · 276 linked defect records.
+Generated 2026-10-21 06:25 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-21T05:34:58.291937+00:00. 207 features · 831 cases · 1422 controls · 276 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1338** — Pass: 109 · Partial: 99 · Fail: 1 · Unverified: 1118 · N/A: 11.
-Unverified splits into **179 explicitly marked unverified** and **939 with no result record**.
+Applicable case-by-role slots: **1338** — Pass: 109 · Partial: 101 · Fail: 1 · Unverified: 1116 · N/A: 11.
+Unverified splits into **178 explicitly marked unverified** and **938 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -21,7 +21,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 22, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 20 pass · 6 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 14 pass · 8 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | pass 36, partial 17, fail 0, unverified 47, n/a 1 | 6 |
+| [Settings](#settings) | 1 | 20 pass · 8 partial · 0 fail · 0 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 14 pass · 8 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | pass 36, partial 19, fail 0, unverified 45, n/a 1 | 6 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -515,7 +515,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T76 guest: Organization archive filter visibility | Pass | N/A | N/A | EXT-F-1003-C33 |
 | EXT-F-1003-T77 member: Organization archive filter | N/A | Unverified | N/A | EXT-F-1003-C33 |
 | EXT-F-1003-T78 admin: Organization archive filter | N/A | N/A | Unverified | EXT-F-1003-C33 |
-| EXT-F-1003-T79 guest: Desktop bridge status and health | Unverified | N/A | N/A | EXT-F-1003-C34 |
+| EXT-F-1003-T79 guest: Desktop bridge status and health | Partial | N/A | N/A | EXT-F-1003-C34 |
 | EXT-F-1003-T80 member: Desktop bridge status and health | N/A | Unverified | N/A | EXT-F-1003-C34 |
 | EXT-F-1003-T81 admin: Desktop bridge status and health | N/A | N/A | Partial | EXT-F-1003-C34 |
 | EXT-F-1003-T85 admin: Retry permission status read | N/A | N/A | Unverified | EXT-F-1003-C35 |
@@ -532,7 +532,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T93 guest: Chat version selector persistence | Pass | N/A | N/A | EXT-F-1003-C40 |
 | EXT-F-1003-T94 member: Chat version selector persistence | N/A | Unverified | N/A | EXT-F-1003-C40 |
 | EXT-F-1003-T95 admin: Chat version selector persistence | N/A | N/A | Unverified | EXT-F-1003-C40 |
-| EXT-F-1003-T96 Matrx 2 connection status and settled account state | Unverified | Unverified | Unverified | EXT-F-1003-C41 |
+| EXT-F-1003-T96 Matrx 2 connection status and settled account state | Partial | Unverified | Unverified | EXT-F-1003-C41 |
 
 **Recorded case details and evidence:**
 
@@ -631,6 +631,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: settings-native-identity-20261020-b, ['docs/stabilization/reports/settings-actual-native-20261020.json', 'docs/stabilization/reports/member577-native-fresh-peer-20261020.json']
 - EXT-F-1003-T76 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 2 passed criteria; native case pass.
   Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
+- EXT-F-1003-T79 · guest: Partial. {'warm': 'Matrx Local: Not connected. No Engine health, version, degraded, or failed service row was exposed.', 'after_extension_reload': 'Matrx Local: Not connected. No Engine health, version, degraded, or failed service row was exposed.', 'transport_comparison': 'Underlying bridge transport and health response were not independently observed, so the displayed status cannot be fully matched to transport.'}
+  Evidence / build / date recorded: guest-settings-batch-20261021-0620, ['docs/stabilization/reports/guest-connections579-20261021.json', 'docs/stabilization/reports/connections-evidence0625.json', 'docs/stabilization/resource-journals/guest-settings-batch-20261021-0620.jsonl']
 - EXT-F-1003-T81 · admin: Partial. Native Matrx2 not running / Local not connected shown warm and afterreload; no health response or pairing/backend behavior proof.
   Evidence / build / date recorded: settings-native-identity-20261020-b, ['docs/stabilization/reports/settings-actual-native-20261020.json', 'docs/stabilization/reports/member577-native-fresh-peer-20261020.json']
 - EXT-F-1003-T82 · guest: Pass. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.
@@ -655,6 +657,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
 - EXT-F-1003-T93 · guest: Pass. Fresh isolated native guest run verified New and Current persisted through actual panel close/reopen and restored the original Current value. Full Settings and Store remain unverified.
   Evidence / build / date recorded: local-settings-guest-20261012-1441, ['docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json', 'docs/stabilization/reports/local-settings-guest-peer-20261012.json', 'docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl']
+- EXT-F-1003-T96 · guest: Partial. {'warm': 'Matrx 2: Matrx 2 is not running on this computer; separate Matrx Local row: Not connected.', 'after_extension_reload': 'Matrx 2: Matrx 2 is not running on this computer; separate Matrx Local row: Not connected.', 'initial_checking': 'Not observed; the row was already settled when first read and when Settings was inspected after reload.', 'session_comparison': 'Underlying Matrx 2 connection and account/session detail were not independently observed.'}
+  Evidence / build / date recorded: guest-settings-batch-20261021-0620, ['docs/stabilization/reports/guest-connections579-20261021.json', 'docs/stabilization/reports/connections-evidence0625.json', 'docs/stabilization/resource-journals/guest-settings-batch-20261021-0620.jsonl']
 
 
 ## Profile

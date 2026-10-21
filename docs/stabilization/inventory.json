@@ -15152,7 +15152,40 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "run_id": "guest-settings-batch-20261021-0620",
+              "source_sha": "11ff2cfb2ddecba67e7d06dba763b24325ccbe1b",
+              "development_ci_run_id": 39546376658,
+              "development_artifact_id": 12322875129,
+              "build_version": "0.2.579",
+              "tree_sha256": "d782f017d88b7e90b7481b59c98767f71c76ffc7a8532adb7a419ac9bd22b1cb",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "warm UI",
+                "extension-manager Reload and reopened Settings UI"
+              ],
+              "remaining_criteria": [
+                "actual bridge transport",
+                "engine health/version/service response",
+                "connected and degraded states",
+                "backend behavior"
+              ],
+              "detail": {
+                "warm": "Matrx Local: Not connected. No Engine health, version, degraded, or failed service row was exposed.",
+                "after_extension_reload": "Matrx Local: Not connected. No Engine health, version, degraded, or failed service row was exposed.",
+                "transport_comparison": "Underlying bridge transport and health response were not independently observed, so the displayed status cannot be fully matched to transport."
+              },
+              "evidence": [
+                "docs/stabilization/reports/guest-connections579-20261021.json",
+                "docs/stabilization/reports/connections-evidence0625.json",
+                "docs/stabilization/resource-journals/guest-settings-batch-20261021-0620.jsonl"
+              ],
+              "scope": "Guest frozen development artifact only; newer main has package changes. No backend transport/session or full-case pass inferred."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T80",
@@ -16206,10 +16239,38 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
+              "status": "partial",
+              "run_id": "guest-settings-batch-20261021-0620",
+              "source_sha": "11ff2cfb2ddecba67e7d06dba763b24325ccbe1b",
+              "development_ci_run_id": 39546376658,
+              "development_artifact_id": 12322875129,
+              "build_version": "0.2.579",
+              "tree_sha256": "d782f017d88b7e90b7481b59c98767f71c76ffc7a8532adb7a419ac9bd22b1cb",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "guest row visibility",
+                "separate displayed Matrx 2 and Matrx Local labels",
+                "same displayed state after extension-manager Reload"
+              ],
               "remaining_criteria": [
-                "No actual Settings UI observation of the Matrx 2 status row or settled states."
-              ]
+                "initial checking text",
+                "actual settled connection/session correspondence",
+                "other connection/session states",
+                "member visibility",
+                "admin visibility"
+              ],
+              "detail": {
+                "warm": "Matrx 2: Matrx 2 is not running on this computer; separate Matrx Local row: Not connected.",
+                "after_extension_reload": "Matrx 2: Matrx 2 is not running on this computer; separate Matrx Local row: Not connected.",
+                "initial_checking": "Not observed; the row was already settled when first read and when Settings was inspected after reload.",
+                "session_comparison": "Underlying Matrx 2 connection and account/session detail were not independently observed."
+              },
+              "evidence": [
+                "docs/stabilization/reports/guest-connections579-20261021.json",
+                "docs/stabilization/reports/connections-evidence0625.json",
+                "docs/stabilization/resource-journals/guest-settings-batch-20261021-0620.jsonl"
+              ],
+              "scope": "Guest frozen development artifact only; newer main has package changes. No backend transport/session or full-case pass inferred."
             },
             "member": {
               "status": "unverified",
@@ -16223,7 +16284,19 @@
                 "No actual signed-in admin observation of the Matrx 2 status row or settled states."
               ]
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "remaining_criteria": [
+                  "No actual Settings UI observation of the Matrx 2 status row or settled states."
+                ]
+              },
+              "reason": "Bounded native guest observations now recorded; underlying transport/session still unverified."
+            }
+          ]
         }
       ],
       "cells": {
