@@ -307,8 +307,8 @@ packages:
       react:
         optional: true
 
-  '@ai-matrx/browser-audio@0.5.4':
-    resolution: {integrity: sha512-uQHJ6QyiX2rcl7o08BN6lMLyd/DjoLB4zgjTYJeaSID7OyU09PxewRkLKfz6bMKMBFerWfAMWHPdP+j7l9OsBg==}
+  '@ai-matrx/browser-audio@0.5.5':
+    resolution: {integrity: sha512-YwaLDo75N1kGKP7UvIEXXWD9JWlLi/z7QEYy6VmAK+44q6OFZ/5AaqpXjFJEVI+hVHIm1vyN8yubGiPYWq1brw==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -6698,7 +6698,7 @@ snapshots:
   '@ai-matrx/api@0.1.53(@supabase/supabase-js@2.117.2)(@typescript/typescript6@6.0.2)(react@19.3.0)':
     dependencies:
       '@ai-matrx/auth': 0.3.9(@supabase/supabase-js@2.117.2)(@typescript/typescript6@6.0.2)(react@19.3.0)
-      '@ai-matrx/browser-audio': 0.5.4(react@19.3.0)
+      '@ai-matrx/browser-audio': 0.5.5(react@19.3.0)
       '@ai-matrx/kit': 0.45.21(@typescript/typescript6@6.0.2)(react@19.3.0)
     transitivePeerDependencies:
       - '@supabase/supabase-js'
@@ -6740,7 +6740,7 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@ai-matrx/browser-audio@0.5.4(react@19.3.0)':
+  '@ai-matrx/browser-audio@0.5.5(react@19.3.0)':
     optionalDependencies:
       react: 19.3.0
 
@@ -6760,7 +6760,7 @@ snapshots:
 
   '@ai-matrx/capture@0.6.75(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@typescript/typescript6@6.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))':
     dependencies:
-      '@ai-matrx/browser-audio': 0.5.4(react@19.3.0)
+      '@ai-matrx/browser-audio': 0.5.5(react@19.3.0)
       '@ai-matrx/design-system': 0.86.247(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@typescript/typescript6@6.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/kit': 0.45.21(@typescript/typescript6@6.0.2)(react@19.3.0)
       jsqr: 1.4.0
@@ -6781,7 +6781,7 @@ snapshots:
       '@ai-matrx/api': 0.1.53(@supabase/supabase-js@2.117.2)(@typescript/typescript6@6.0.2)(react@19.3.0)
       '@ai-matrx/associations': 0.14.84(@supabase/supabase-js@2.117.2)(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@typescript/typescript6@6.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/auth': 0.3.9(@supabase/supabase-js@2.117.2)(@typescript/typescript6@6.0.2)(react@19.3.0)
-      '@ai-matrx/browser-audio': 0.5.4(react@19.3.0)
+      '@ai-matrx/browser-audio': 0.5.5(react@19.3.0)
       '@ai-matrx/canvas': 0.10.81(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@typescript/typescript6@6.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/content-ir': 0.24.35(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@typescript/typescript6@6.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/data': 0.29.90(@supabase/supabase-js@2.117.2)(@typescript/typescript6@6.0.2)(react@19.3.0)
