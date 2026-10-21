@@ -543,6 +543,14 @@
  "/agent-battles/{set_id}/cancel": {
   "post": []
  },
+ "/agent-battles/{set_id}/queue-cancel": {
+  "post": []
+ },
+ "/agent-battles/{set_id}/queue-run": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/agent-battles/{set_id}/run": {
   "post": [
    "application/json"
@@ -701,6 +709,11 @@
   ]
  },
  "/agent-tests/runs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-tests/runs/live": {
   "post": [
    "application/json"
   ]
@@ -1528,6 +1541,9 @@
   "post": [
    "application/json"
   ]
+ },
+ "/brand-guide/assets/{asset_id}/rehost": {
+  "post": []
  },
  "/brand-guide/{brand_id}/read-site": {
   "post": []
@@ -8129,6 +8145,16 @@
  },
  "/sharefile/public/status": {
   "get": []
+ },
+ "/sharing/email-link": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sharing/notify": {
+  "post": [
+   "application/json"
+  ]
  },
  "/shortcut/public/status": {
   "get": []

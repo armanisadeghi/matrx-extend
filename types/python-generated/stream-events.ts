@@ -413,6 +413,35 @@ export interface AgentStudioFromChatResultData {
   says: string;
 }
 
+export interface AgentTestProgressEvent {
+  type?: "agent_test_progress";
+  run_id: string;
+  counts?: Record<string, unknown>;
+}
+
+export interface AgentTestResultEvent {
+  type?: "agent_test_result";
+  run_id: string;
+  result_id: string;
+  verdict?: string | null;
+  door?: string | null;
+  setup_key?: string | null;
+}
+
+export interface AgentTestRunStartedEvent {
+  type?: "agent_test_run_started";
+  run_id: string;
+  execution_id: string;
+  result_count?: number;
+  status?: string;
+}
+
+export interface AgentTestRunStatusEvent {
+  type?: "agent_test_run_status";
+  run_id: string;
+  status: string;
+}
+
 export interface AssignmentProgressData {
   type?: "assignment_progress";
   session_id: string;
@@ -2607,6 +2636,10 @@ export interface YouTubeTranscriptSourceData {
 export type TypedDataPayload =
   | AgentStudioFromChatProgressData
   | AgentStudioFromChatResultData
+  | AgentTestProgressEvent
+  | AgentTestResultEvent
+  | AgentTestRunStartedEvent
+  | AgentTestRunStatusEvent
   | AssignmentProgressData
   | AudioOutputData
   | AudioStreamChunkData
