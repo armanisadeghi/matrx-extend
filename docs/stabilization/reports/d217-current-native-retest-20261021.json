@@ -1,0 +1,77 @@
+{
+  "task_id": "EXT-D-0217-current-native-retest-20261021",
+  "recorded_at_utc": "2026-10-21T19:03:55Z",
+  "lane": "hosted native acceptance A",
+  "status": "current_exact_main_ci_pending_before_dispatch",
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0217",
+  "case_ids": ["EXT-F-1007-T05", "EXT-F-1007-T22"],
+  "current_source": {
+    "local_head": "14cbbd14f4633893c6e23f1d9de2c304751ea986",
+    "origin_main": "14cbbd14f4633893c6e23f1d9de2c304751ea986",
+    "checkout_clean_at_observation": true,
+    "ci_run_id": 39658232622,
+    "ci_status_last_observed": "pending",
+    "ci_created_at_utc": "2026-10-21T19:03:17Z",
+    "ci_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39658232622",
+    "eligible_development_artifact": null
+  },
+  "superseded_candidate": {
+    "source_sha": "2cd691a29c459815b73db807daf68b67e21ab579",
+    "ci_run_id": 39657367663,
+    "reason": "Origin/main advanced to 14cbbd14; no earlier-source artifact is eligible for this exact-main member route."
+  },
+  "normal_route": {
+    "script": "scripts/hosted-remote-admission.mjs",
+    "modes": [
+      "plan-member-scrape-save",
+      "dispatch-member-scrape-save",
+      "verify-member-scrape-save"
+    ],
+    "lane": "A",
+    "case": "scrape-save-member",
+    "destination": "none",
+    "scope": "stale-profile-retry",
+    "runner_label": "macos-15-intel",
+    "dispatch_attempted": false,
+    "verification_attempted": false,
+    "admission_checkpoint": "Await successful exact-current-main development artifact, then recheck actual origin/main, clean source, current spend, host capacity, fixture and temporary-secret gates before one normal plan and dispatch."
+  },
+  "current_ci_spend": {
+    "read_at_utc": "2026-10-21T19:02:30Z",
+    "source": "Authenticated canonical GET /ci-spend/status",
+    "week_total_usd": 91.79,
+    "week_cap_usd": 100,
+    "components_usd_week": {
+      "github_actions_billed": 0,
+      "runs_on_aws": 66.64,
+      "github_enterprise": 24.23,
+      "github_pro": 0.92,
+      "runs_on_license": 0
+    },
+    "note": "A fresh read is required at dispatch; this reading is a timestamped checkpoint, not a permanent allowance."
+  },
+  "native_evidence": {
+    "original_guest_save_refusal": "unverified",
+    "warm_guest_retry_refusal": "unverified",
+    "full_reload_guest_retry_refusal": "unverified",
+    "edited_draft_retention": "unverified",
+    "ordinary_member_recovery_and_edited_source_persistence": "unverified",
+    "surrounding_cases": "unverified",
+    "product_pass": false
+  },
+  "owned_external_actions_and_cleanup": {
+    "hosted_jobs": 0,
+    "fixture_created": false,
+    "credential_staged": false,
+    "temporary_github_secret_created": false,
+    "source_or_edges_created": false,
+    "cleanup_required": false
+  },
+  "limits": [
+    "The D280 route source and independent adjudication are source-only evidence; no D217 browser result or normal certificate exists.",
+    "A separate owner Mac resource journal was invalidated before UI and cannot provide D217 acceptance; the hosted runner has its own normal admission gates.",
+    "No human decision or approval blocks the next eligible artifact check."
+  ],
+  "next_action": "When CI 39658232622 finishes, first confirm its success, current origin/main equality, and one unexpired keyed development artifact at that exact SHA. If source advances, wait for a new exact-main successful artifact. Recheck current CI spend and normal host/fixture/secret admission, mint the existing approved nonadmin reviewer's one-use link privately at point of use, and run one normal plan-member-scrape-save then dispatch-member-scrape-save for stale-profile-retry/none. After terminal run, remove the owned temporary secret, verify owned fixture/source cleanup and resource journals, and use verify-member-scrape-save on the downloaded artifact. Preserve D217 as unverified unless the original and surrounding native evidence passes."
+}
