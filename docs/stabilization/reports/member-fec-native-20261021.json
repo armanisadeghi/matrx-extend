@@ -1,0 +1,45 @@
+{
+  "task_id": "member-fec-native-20261021",
+  "lane": "A",
+  "status": "NATIVE_ORIGINAL_SUBTARGET_PASS_INDEPENDENT_RAW_REVIEW_PENDING",
+  "source_sha": "fec65a33ed9af26fb2c8d726375e3d20428e999a",
+  "development": {
+    "ci_run_id": 39516230572,
+    "ci_conclusion": "success",
+    "artifact_id": 12308238876,
+    "artifact_digest": "sha256:3c215a1440a676077d0cb17c2b8f6b4bf9cee92b0a989d2e602589c6b5976bec"
+  },
+  "hosted": {
+    "run_id": 39519174392,
+    "attempt": 1,
+    "conclusion": "success",
+    "artifact_id": 12310967022,
+    "archive_sha256": "bb2e20a11f292796b0afa1999ecdee1266160a81325d429a7a01cfe71e6533da"
+  },
+  "verification": {
+    "normal_verifier": "PASS",
+    "certificate": "/tmp/member-fec-native-20261021/normal-certificate.json",
+    "native_report": "/tmp/member-fec-native-20261021/native-report.sanitized.json",
+    "resource_journals": [
+      "/tmp/member-fec-native-20261021/hosted-package-39519174392-1.jsonl",
+      "/tmp/member-fec-native-20261021/hosted-browser-39519174392-1.jsonl",
+      "/tmp/member-fec-native-20261021/hosted-guest-39519174392-1.jsonl"
+    ],
+    "resource_final": "3 valid / 0 invalid",
+    "archive": "/tmp/member-fec-native-39519174392.zip"
+  },
+  "A_behavior": "PASS original bounded member Scrape Save: non-admin approved organization selected, captured article, custom name typed, single Source saved with no destination, persisted row/original file/readback, reopened Source and original content, owned cleanup verified.",
+  "B_quality": "Prior fresh independent source/cleanup review PASS (docs/stabilization/reports/member-org-final-executable-peer-20261020.json); independent raw native A/B review of this run remains pending and belongs to root.",
+  "cleanup": {
+    "temporary_github_secret_name_count": 0,
+    "local_one_use_link_absent": true,
+    "run_owned_source_id": "c44c0ccb-fe5e-44a1-90f3-970ae074fe7e",
+    "source_soft_deleted_in_native_report": true,
+    "source_soft_deleted_independent_readback": true,
+    "source_associations_removed_in_native_report": true,
+    "active_row_absent_in_native_report": true,
+    "checkout_clean": true
+  },
+  "limitations": "This is the original single Source/no-destination member subtarget only. Independent raw native review is pending. Other role, destination, duplicate/refusal, full T04/T29, Store-installed and release verdicts are not inferred.",
+  "next_action": "Root assigns fresh independent raw native A/B review, then reconciles shared stabilization metadata and exact-path commits/pushes. Preserve frozen HEAD until review completes."
+}
