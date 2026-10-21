@@ -57,7 +57,7 @@ plan — then challenge his assumptions too, still never ask facts.
 emojis. Then the question, in one sentence.
 - **Closed:** options only where they differ in approach, never just in magnitude; the best practice in
   one sentence; **Rec:** one recommendation + the companion work that makes it true + why.
-- **Open (vision):** ask open, no rec; capture his words verbatim.
+- **Open (vision):** ask open in plain chat (not the question tool), no rec; capture his words verbatim.
 - **About a flow, surface, or behavior:** attach the clickable URL + where to look, OR a mermaid
   diagram of what actually happens, OR a throwaway prototype (Artifact or demo route) labeled
   PROTOTYPE. A question he cannot answer from what you gave him is a defect in the question — and often

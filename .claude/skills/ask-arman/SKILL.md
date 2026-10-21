@@ -116,4 +116,4 @@ read it verbatim, apply it, reverse the default where it differs.
 
 - "Let me check with Arman before I…" before grepping `DECISIONS.md`.
 - "Blocked" in your status with no one-way door.
-- A question containing a path, a code, or "see".
+- A question containing a file path, a code, or "see" (a page it is about carries its full link instead).
