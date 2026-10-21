@@ -7,7 +7,7 @@
   "auth_mode": "Infrastructure independent of guest/member/admin; GitHub operator permissions apply",
   "severity": "S2: latest development runtime cannot be verified/adopted promptly; no demonstrated public product outage",
   "priority": "P1: remove stabilization throughput and current-unpacked blocker",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root",
   "implementation_lane": "/root/ci_tracking_backlog_fix",
   "preconditions": [
@@ -42,14 +42,18 @@
     "docs/stabilization/reports/ci-scope-cli-forcing-guard-20261021.json",
     "docs/stabilization/reports/ci-cli-fresh-peer-20261021.json",
     "docs/stabilization/reports/ci-cli-final-fresh-peer-20261021.json",
-    "docs/stabilization/reports/ci-cli-hash-final-peer-20261021.json"
+    "docs/stabilization/reports/ci-cli-hash-final-peer-20261021.json",
+    "docs/stabilization/reports/ci-cancelled-runtime-live-20261021.json",
+    "docs/stabilization/reports/current-ci-dev-adoption-20261021.json",
+    "docs/stabilization/reports/owner-main5a-native-reload-20261021.json",
+    "docs/stabilization/reports/ci-fixes-closure-peer-20261021.json"
   ],
-  "reproducibility": "Original live queue cancellation and failed first source review retained. Corrective fixtures and fresh peer establish source repair; original hosted queue/artifact and owner-reload retest pending.",
+  "reproducibility": "Original live queue cancellation retained. On5a, cancelledruntime1c plus immediate docs-only tip selected full checks, produced successful artifact and reached actual ownerReload; fresh independent closure peer accepts.",
   "attempted_source_sha": "9ebbb76bdb4be1a9dcc823954d9934f4c81baf69",
   "fix_sha": "81bc3fb0f59207361718091afb47e000815a65bb",
-  "reviewer": "/root/ci_cli_hash_final_peer: final local CLI A/B PASS; original hosted cancelled-runtime queue scenario remains unverified",
-  "verification_limits": "Corrected source719 passed hosted fullCI39640552208 and normalb8 import/ownerReload. New actualCLI process matrix covers malformed listing/run JSON, HTTP503, validemptylisting, provenancestor docs and unverifiedruntimeancestor full; 22guardedtests green and two meaningful routingmutants red withcapturedstdout/exactrestore. Fresh finalpeer A/B PASS after emptylisting and exactcapture-hash remedies. Actual cancelled-runtime hosted queue reproduction remains unverified; keepfixed, notclosed. No productcasePASS.",
-  "next_action": "Integrate22caseCLIguard; verify currentmain fullCI/artifact then ownerChrome refresh. Keepfixed until originalhosted cancelled-runtime scenario is independently verified; preservependingStore577.",
+  "reviewer": "/root/ci_fixes_closure_peer: defect-specific A/B PASS",
+  "verification_limits": "Defect-specific CIbehavior only: current5a fullCI39649558400 success/artifact12369911241, normaladoption and actualownerProfile8Reload underfullvalid0/process0guard. No credentiallogin productacceptance or Store/fullsurface claim. D280unfinishedcandidateexcludedfrom5aartifact.",
+  "next_action": "Closed verified CIdefect; monitor regressions. Continue D280normalroute repair then originalD217 native retest.",
   "transition_history": [
     {
       "at": "2026-10-21T15:20Z",
@@ -92,6 +96,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Awaited JSON parse catches malformed successful listing/run responses. Guarded RED15/16 then finalGREEN16/16 and lint0; freshpeer confirms source boundary and executed constant-null gut15/16 with exactsource restoration. CLI malformedproof routing remains source-only."
+    },
+    {
+      "at": "2026-10-21T18:24:00Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Actualhosted reproduction/adjacentchecks and successful5aartifactory normalimport/promotion/ownerReload independently reviewed A/BPASS."
+    },
+    {
+      "at": "2026-10-21T18:24:01Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Freshzeroauthorclosurepeer accepts originaldefect-specific andsurroundingbehavior gates. No overallproductclaim."
     }
   ],
   "followup_fix_shas": ["719cf667d"]

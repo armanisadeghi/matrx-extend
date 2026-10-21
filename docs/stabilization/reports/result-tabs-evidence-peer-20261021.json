@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "review": "independent_evidence_only",
+  "reviewed_at_utc": "2026-10-21",
+  "evidence": [
+    "docs/stabilization/reports/guest-scrape-result-tabs-b8-20261021.json",
+    "docs/stabilization/resource-journals/guest-result-tabs-b8-20261021-1804.jsonl",
+    "docs/stabilization/inventory.json:EXT-F-1007-T08",
+    "docs/stabilization/reports/owner-b8-native-reload-20261021.json",
+    "docs/stabilization/reports/b8-refresh-final-evidence-peer-20261021.json"
+  ],
+  "verdict_a_behavior": {
+    "result": "BOUNDED_GUEST_OBSERVATIONS; FULL_CASE_PARTIAL",
+    "supported": [
+      "Native AX excerpts show all six tabs selected with fixture-matching content warm and after extension-manager reload, page reload, and fresh capture.",
+      "Video had zero entries and an Add video URL control in both states: this supports empty rendering for this fixture; absence of explicit empty-state text is only an observation, not a defect or prose requirement."
+    ],
+    "not_established": [
+      "Capture identity/export invariance across selections is not recorded in the retained AX excerpts.",
+      "This fixture had no video entry, so populated video rendering/extraction is untested; no actual video extraction claim.",
+      "This run did not exercise empty states for Article, Images, or Links; T08 remains partial overall."
+    ],
+    "full_case_pass": false
+  },
+  "verdict_b_provenance_resource_budget_cleanup": {
+    "result": "PASS_WITH_LIMITS",
+    "binding": "Git contains source commit b8e31fbb2207b2318a4d1cb2972578c94b56710c; reports bind DEV 0.2.584, CI 39640552208/artifact 12365851226, tree fcf63381e73def118ca91ee94eed5bed48323206f964ef5067e57dacbaacdc6f. Owner reload report records root postpromotion rehash to that tree; prior fresh peer corroborates artifact digest/import chain. Scope is frozen b8, not Store/current-main.",
+    "resource": "All 14 journal entries reviewed: admitted, recurring samples healthy, stop confirmed, resourceInvalid=false, exitCode=0, final valid; actual exec exit 0 reported.",
+    "budget_cleanup_quality": "35/42 CUA calls; report says only owned fixture/manager tabs closed and root confirmed terminal/process zero. AX excerpts are retained and inspectable, but there is no screenshot or independent UI replay in this review."
+  },
+  "limits": [
+    "No product defect is inferred from missing Video empty-state prose.",
+    "Member/admin, Store/current-main, and full T08 acceptance remain outside this evidence."
+  ]
+}

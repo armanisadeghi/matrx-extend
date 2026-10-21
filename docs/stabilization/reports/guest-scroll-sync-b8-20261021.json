@@ -1,0 +1,62 @@
+{
+  "runId": "guest-scroll-sync-b8-20261021-1810",
+  "testId": "EXT-F-1007-T07",
+  "result": "pass_with_direction_limit",
+  "cuaCalls": 37,
+  "binding": {
+    "surface": "native macOS Google Chrome accessibility and screenshots",
+    "profile": "Matrx Guest Test (Profile 10)",
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extensionVersion": "0.2.584",
+    "extensionEnabled": true,
+    "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "settingsEmail": "\u2014",
+    "fixture": "https://en.wikipedia.org/wiki/Web_scraping",
+    "ownedTabs": [
+      "chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "https://en.wikipedia.org/wiki/Web_scraping"
+    ]
+  },
+  "behavior": {
+    "initialPreference": "off; control read Sync scroll with the live page",
+    "onBeforeReload": "After Capture and enabling sync, the control read Stop following the page scroll. Scrolling the live page about two pages moved the visible page and captured article together to Techniques. Scrolling the captured article independently to DOM parsing left the live page at Techniques.",
+    "offBeforeReload": "Disabling sync changed the control to Sync scroll with the live page. With the captured article at its introductory market-research text, scrolling the live page from Techniques to Vertical aggregation and Semantic annotation recognizing left the captured article at that text.",
+    "reload": "Used the extension manager's Reload button; confirmed extension still On at version 0.2.584. Reloaded the Wikipedia tab, reopened the side panel, and used Capture again. The recaptured article control began in the off state.",
+    "onAfterReload": "Enabling sync and scrolling the live page aligned both panes at the legal-issues passage about FareChase, Yahoo, and Outtask.",
+    "offAfterReload": "Disabling sync and moving the captured article to its market-research paragraph, then scrolling the live page to the QVC/Cvent passage, left the captured article unchanged.",
+    "directionLimit": "Observed control language says 'following the page scroll'. Article-to-page scrolling did not move the live page; the tested behavior is one-way page-to-article sync, not bidirectional coupling.",
+    "defect": null
+  },
+  "cleanup": {
+    "preferenceRestored": "off",
+    "ownedTabsClosed": true,
+    "saveEditAuthAiVaultPermissionsUsed": false
+  },
+  "limitations": [
+    "Screenshots and accessibility markers support visible section-level alignment; no pixel scroll offsets were read.",
+    "The browser extension inventory exposed another profile, so the test used the native Chrome window explicitly labeled Matrx Guest Test."
+  ],
+  "owner_final_resource": {
+    "journal": "docs/stabilization/resource-journals/guest-scroll-sync-b8-20261021-1810.jsonl",
+    "entries": 16,
+    "final": {
+      "schema": 1,
+      "at": "2026-10-21T18:13:49.987Z",
+      "runId": "guest-scroll-sync-b8-20261021-1810",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "actual_exec_exit": 0,
+    "cua_call_limit": 38
+  },
+  "owner_artifact_binding": {
+    "source_sha": "b8e31fbb2207b2318a4d1cb2972578c94b56710c",
+    "ci_run": 39640552208,
+    "artifact_id": 12365851226,
+    "before_after_tree_sha256": "fcf63381e73def118ca91ee94eed5bed48323206f964ef5067e57dacbaacdc6f",
+    "scope": "frozenb8; currentmain5aCI remains pending, member/admin/Store nottested"
+  }
+}

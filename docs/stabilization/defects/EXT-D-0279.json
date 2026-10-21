@@ -7,7 +7,7 @@
   "auth_mode": "Infrastructure; no product role result established",
   "severity": "S2: current development artifact cannot be produced; no demonstrated live outage",
   "priority": "P1: restore green synchronized trunk",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root",
   "implementation_lane": "/root/credential_join_gate_repair",
   "preconditions": ["Synchronized main 3e6a01690 includes new MAX_JOINED_URL_TOKENS parser limit."],
@@ -17,8 +17,14 @@
   ],
   "expected": "Credential navigation parser changes satisfy the existing settings gate without weakening it or altering intended URL vocabulary matching.",
   "actual": "Gate exits1 on src/lib/tools/handlers/credential-login.ts:921 MAX_JOINED_URL_TOKENS. No development artifact is emitted.",
-  "evidence": ["GitHub Actions run39646006515 failed-step log 2026-10-21T17:47:41Z"],
-  "reproducibility": "Automatic hosted gate failure observed; narrow repair/self-verification pending.",
+  "evidence": [
+    "GitHub Actions run39646006515 failed-step log 2026-10-21T17:47:41Z",
+    "docs/stabilization/reports/ci-cancelled-runtime-live-20261021.json",
+    "docs/stabilization/reports/current-ci-dev-adoption-20261021.json",
+    "docs/stabilization/reports/owner-main5a-native-reload-20261021.json",
+    "docs/stabilization/reports/ci-fixes-closure-peer-20261021.json"
+  ],
+  "reproducibility": "Original3e6 hosted settings gate failure retained. Unchanged gate/self-test and fullCI5a pass after narrow grammar representation; guarded5/5 and fresh independent closure peer accept.",
   "cause": "Blocking regex treated a finite URL receipt grammar width as a configurable settings cap. Pair/triple tuple expresses canonical server grammar without changing matching semantics or the gate.",
   "transition_history": [
     {
@@ -44,14 +50,27 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Staticgrammarpeer accepts canonicalparity; freshguarded focusedtests5/5,typecheck,catalog allvalid0; blockingstaticgate nowclean withoutpolicy/ratchetchange."
+    },
+    {
+      "at": "2026-10-21T18:24:00Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Actualhosted reproduction/adjacentchecks and successful5aartifactory normalimport/promotion/ownerReload independently reviewed A/BPASS."
+    },
+    {
+      "at": "2026-10-21T18:24:01Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Freshzeroauthorclosurepeer accepts originaldefect-specific andsurroundingbehavior gates. No overallproductclaim."
     }
   ],
-  "next_action": "Pushverifiedunit; require synchronizedmain fullCI artifact before retestpass/closure and normalownerDEV refresh.",
+  "next_action": "Closed verified CIdefect; monitor regressions. Continue D280normalroute repair then originalD217 native retest.",
   "fix_review": "docs/stabilization/reports/credential-grammar-fresh-peer-20261021.json",
   "verification": [
     "docs/stabilization/reports/credential-executable-verification-20261021.json",
     "docs/stabilization/reports/credential-join-gate-repair-20261021.json"
   ],
-  "verification_limits": "Lightweightsettingsgate clean104/0new; independentstaticcontractpeer accepted; guardedfocusedtests5/5,compile,catalog and full lint pass. Currentmain hostedCI and next exactCIartifact remain pending; no nativecredentiallogin/product/regression claim.",
-  "fix_sha": "1c237ea2b"
+  "verification_limits": "Defect-specific CIbehavior only: current5a fullCI39649558400 success/artifact12369911241, normaladoption and actualownerProfile8Reload underfullvalid0/process0guard. No credentiallogin productacceptance or Store/fullsurface claim. D280unfinishedcandidateexcludedfrom5aartifact.",
+  "fix_sha": "1c237ea2b",
+  "reviewer": "/root/ci_fixes_closure_peer: defect-specific A/B PASS"
 }

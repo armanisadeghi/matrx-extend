@@ -1,0 +1,53 @@
+{
+  "id": "EXT-D-0281",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T06"],
+  "title": "Concurrent platform-knob update blocks main CI on deterministic formatting",
+  "surface": "Main CI / development artifact availability",
+  "auth_mode": "Infrastructure, independent of product role",
+  "severity": "S2: current main cannot emit verified development artifact; no public product outage demonstrated",
+  "priority": "P1: restore green synchronized main",
+  "state": "fixed",
+  "owner": "/root",
+  "preconditions": ["origin/main f2bf5eb4b contains latest platform-knob reader update."],
+  "reproduction": [
+    "Inspect automatic fullCI39652849650 for f2bf5eb4b.",
+    "Lint fails at src/lib/settings/platform-knob-snapshot.ts import order and tests/browser/takeover-visible-census.mjs object formatting."
+  ],
+  "expected": "The contributor knob-reader change retains intended behavior and passes unchanged formatter/import rules.",
+  "actual": "Lint exits1 on two deterministic formatting errors before artifact publication.",
+  "cause": "New import specifier ordering and a single-line object do not match the repository formatter.",
+  "evidence": [
+    "GitHub Actions run39652849650 failed Lint log2026-10-21T18:30:11Z",
+    "docs/stabilization/reports/d281-format-peer-20261021.json",
+    "docs/stabilization/resource-journals/d280-lint-corrected-20261021.jsonl"
+  ],
+  "reproducibility": "Original hosted lint failure identified; merged contributor changes preserved and both exact formatter errors repaired.",
+  "transition_history": [
+    {
+      "at": "2026-10-21T18:33:44.848349+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Newremote CI failure observed."
+    },
+    {
+      "at": "2026-10-21T18:33:44.848349+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Failedlog identifies two formatter-only changes."
+    },
+    {
+      "at": "2026-10-21T18:33:44.848349+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Root will perform narrow deterministic formatting after preserving concurrent D280 mutation state."
+    },
+    {
+      "at": "2026-10-21T18:49:41.609489+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Formatting-only repair independently reviewed; guarded compile, focused batch and corrected full lint pass. Hosted original CI retest remains pending."
+    }
+  ],
+  "next_action": "Push verified repair, require successful original full hosted CI before retest-pass/closed and normal current-main development artifact refresh."
+}
