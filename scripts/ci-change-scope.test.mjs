@@ -334,8 +334,14 @@ test('workflow gates full jobs and development artifact behind the scope decisio
   assert.match(docs, /ci-docs-validation\.mjs/);
   assert.match(docs, /test_stabilization_release_truth\.py/);
   assert.doesNotMatch(docs, /upload-artifact|wxt build|current-test-artifact\.mjs produce/);
-  assert.match(mac, /if: always\(\) && needs\.scope\.outputs\.kind != 'docs'/);
-  assert.match(checks, /if: always\(\) && needs\.scope\.outputs\.kind != 'docs'/);
+  assert.match(
+    mac,
+    /if: needs\.scope\.result == 'success' && needs\.scope\.outputs\.kind != 'docs'/,
+  );
+  assert.match(
+    checks,
+    /if: needs\.scope\.result == 'success' && needs\.scope\.outputs\.kind != 'docs'/,
+  );
   assert.match(checks, /pnpm compile/);
   assert.match(checks, /pnpm test/);
   assert.match(checks, /pnpm wxt build/);

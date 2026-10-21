@@ -23,10 +23,14 @@
     "docs/stabilization/reports/release-dev-ci-gap-20261021.json",
     "docs/stabilization/reports/d282-prototype-peer-20261021.json",
     "docs/stabilization/reports/d282-final-source-peer-20261021.json",
-    "docs/stabilization/reports/d282-timeout-final-peer-20261021.json"
+    "docs/stabilization/reports/d282-timeout-final-peer-20261021.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39666115123",
+    "tmp/d282-first-main-ci-failure-20261021.log",
+    "docs/stabilization/reports/d282-scope-gate-repair-20261021.json",
+    "docs/stabilization/reports/d282-scope-gate-peer-20261021.json"
   ],
   "reproducibility": "Exact GitHub Actions API and release workflow/source inspection confirm both observed release commits lack a CI run.",
-  "next_action": "Integrate on main; observe a later successful hosted release dispatching exact-main full CI with an importer-valid development artifact. Only then retest and close; D217 native acceptance is separate.",
+  "next_action": "Push reviewed scope-gate repair, observe successful exact-main fullCI development artifact, normal import/promotion and owner Chrome Reload; then normal D217 acceptance. Keep D282 fixed until original bot-release→CI path independently passes.",
   "transition_history": [
     {
       "at": "2026-10-21T19:15:00Z",
@@ -51,6 +55,24 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Three guarded behavior mutations red then restored; final focused suite 850/840 pass/10 skip, synchronized-lock install and compile, and tracked-file lint passed. Independent final timeout review passed. Hosted bot-release-to-CI evidence remains pending."
+    },
+    {
+      "at": "2026-10-21T20:03:22.203239+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Full main CI39666115123 failed scope regression21/22: two stale workflow assertions still require always(), while repaired CI correctly requires successful scope. No artifact was produced."
+    },
+    {
+      "at": "2026-10-21T20:03:22.203239+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Fresh Sol worker /root/d282_scope_gate_repair owns sibling assertion alignment and inclusion of classifier test in normal focused preflight; no weakened CI gates."
+    },
+    {
+      "at": "2026-10-21T20:11:02.598162+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh peer verified stronger scope gates preserved and missed classifier suite added to normal preflight. Guarded872tests/862pass/10skip, compile and full-repository Biome check pass with actual exit0 and valid journals. New fullCI artifact and natural bot-release path still unverified."
     }
   ],
   "fix_commits": ["af238f095b5477db9f126dec5aa85a8fceee23d6"],
