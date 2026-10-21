@@ -1,0 +1,56 @@
+{
+  "id": "EXT-D-0282",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T06"],
+  "title": "Hosted release commits do not start exact-source development CI",
+  "surface": "Hosted release and current-source development artifact",
+  "auth_mode": "Infrastructure, independent of product role",
+  "severity": "S2: released main can lack its own verified development artifact",
+  "priority": "P1: make release-triggered CI produce exact-source evidence",
+  "state": "fixed",
+  "owner": "/root/release_dev_ci_gap",
+  "preconditions": ["Hosted release pushes main and immutable tag using its checkout token."],
+  "reproduction": [
+    "GitHub Actions API returns zero CI workflow runs for release commits e39cedba10360c57135dd937b19a3ad5509504e3 and 6adb65d53f1b8047545c1361fb0fdfd9455a1016; 6adb65d53 has hosted release run 39659073385.",
+    "Nearby human main pushes 5eb78e8aa559450cd92475989f349c3705843059 and 7a4c1e50d25a25016c94afa26915a82adac90c63 have push CI runs."
+  ],
+  "expected": "A successful hosted release creates an exact-source CI development artifact through the full public CI checks when its commit remains main.",
+  "actual": "The GitHub-token release push does not trigger ci.yml, leaving no CI run at the release SHA.",
+  "cause": "release.yml persists its GITHUB_TOKEN checkout credentials; release.sh pushes with them, and GitHub suppresses downstream push workflow runs from GITHUB_TOKEN events.",
+  "evidence": [
+    "https://docs.github.com/en/actions/concepts/security/github_token#when-github_token-triggers-workflow-runs",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39659073385",
+    "docs/stabilization/reports/release-dev-ci-gap-20261021.json",
+    "docs/stabilization/reports/d282-prototype-peer-20261021.json",
+    "docs/stabilization/reports/d282-final-source-peer-20261021.json",
+    "docs/stabilization/reports/d282-timeout-final-peer-20261021.json"
+  ],
+  "reproducibility": "Exact GitHub Actions API and release workflow/source inspection confirm both observed release commits lack a CI run.",
+  "next_action": "Integrate on main; observe a later successful hosted release dispatching exact-main full CI with an importer-valid development artifact. Only then retest and close; D217 native acceptance is separate.",
+  "transition_history": [
+    {
+      "at": "2026-10-21T19:15:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Exact release commits lacked CI runs while adjacent main pushes had them."
+    },
+    {
+      "at": "2026-10-21T19:18:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Release GITHUB_TOKEN push suppression matched official GitHub event rule and checkout credentials."
+    },
+    {
+      "at": "2026-10-21T19:20:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Build exact-source workflow_dispatch through the existing full CI path."
+    },
+    {
+      "at": "2026-10-21T19:56:00Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Three guarded behavior mutations red then restored; final focused suite 850/840 pass/10 skip, synchronized-lock install and compile, and tracked-file lint passed. Independent final timeout review passed. Hosted bot-release-to-CI evidence remains pending."
+    }
+  ]
+}

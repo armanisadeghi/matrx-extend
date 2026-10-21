@@ -9,6 +9,7 @@ import { dirname, join, resolve } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
 import { assertDevEmittedTitle } from './check-dev-emitted-title.mjs';
+import { isEligibleDevelopmentCiEvent } from './development-ci-event.mjs';
 import {
   recordLocalDevBuild,
   requireLocalDevReceipt,
@@ -131,14 +132,16 @@ async function produce() {
   const sha = process.env.GITHUB_SHA;
   const runId = process.env.GITHUB_RUN_ID;
   const attempt = process.env.GITHUB_RUN_ATTEMPT;
+  const releaseDispatch = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
   if (
-    process.env.GITHUB_EVENT_NAME !== 'push' ||
+    !['push', 'workflow_dispatch'].includes(process.env.GITHUB_EVENT_NAME) ||
     process.env.GITHUB_REF !== 'refs/heads/main' ||
     process.env.GITHUB_REPOSITORY !== OWNER ||
     !SHA.test(sha ?? '') ||
     !DECIMAL.test(runId ?? '') ||
     !DECIMAL.test(attempt ?? '') ||
-    git('rev-parse', 'HEAD') !== sha
+    git('rev-parse', 'HEAD') !== sha ||
+    (releaseDispatch && process.env.EXPECTED_SOURCE_SHA !== sha)
   )
     fail('test_artifact_ci_context_refused');
   const version = (await json(join(REPO, 'package.json'))).version;
@@ -157,7 +160,7 @@ async function produce() {
     publish_state: 'not_published',
     repository: OWNER,
     workflow: '.github/workflows/ci.yml',
-    event: 'push',
+    event: process.env.GITHUB_EVENT_NAME,
     ref: 'refs/heads/main',
     sourceSha: sha,
     runId: Number(runId),
@@ -298,7 +301,7 @@ export function verifyGitHubMetadata(run, workflow, artifact, runId, artifactId)
     run.head_repository?.full_name !== OWNER ||
     run.workflow_id !== workflow.id ||
     run.path !== '.github/workflows/ci.yml' ||
-    run.event !== 'push' ||
+    !isEligibleDevelopmentCiEvent(run) ||
     run.head_branch !== 'main' ||
     run.status !== 'completed' ||
     run.conclusion !== 'success' ||
@@ -331,7 +334,7 @@ export async function verifyDownloadedTree(build, receipt, provenance, run, vers
     provenance.publish_state !== 'not_published' ||
     provenance.repository !== OWNER ||
     provenance.workflow !== '.github/workflows/ci.yml' ||
-    provenance.event !== 'push' ||
+    provenance.event !== run.event ||
     provenance.ref !== 'refs/heads/main' ||
     provenance.sourceSha !== run.head_sha ||
     provenance.runId !== run.id ||
@@ -394,7 +397,12 @@ export async function verifyImportedNativeEvidence(extensionDir, localReceiptPat
     build,
     ciReceipt,
     provenance,
-    { head_sha: sourceSha, id: status.runId, run_attempt: status.runAttempt },
+    {
+      head_sha: sourceSha,
+      id: status.runId,
+      run_attempt: status.runAttempt,
+      event: provenance.event,
+    },
     version,
   );
   const source = await sourceState(sourceSha);

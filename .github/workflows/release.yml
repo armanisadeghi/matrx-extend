@@ -23,6 +23,7 @@ on:
 # separate human action using the uploaded, validated Store ZIP.
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: matrx-extend-hosted-release
@@ -36,6 +37,7 @@ jobs:
     env:
       AIDREAM_SHA: ${{ inputs.aidream_sha }}
       RELEASE_MESSAGE: ${{ inputs.message }}
+      MATRX_RELEASE_CI_API_TIMEOUT_MS: ${{ vars.MATRX_RELEASE_CI_API_TIMEOUT_MS || '10000' }}
       # Every value is required by the existing release gates.  Empty/missing
       # secrets stop before installation, generation, checks, or publication;
       # this workflow never substitutes a weaker check or a public fallback.
@@ -228,6 +230,12 @@ jobs:
             matrx-extend/.output/matrx-extend-*-local.zip
             matrx-extend/.output/release-receipt.json
             matrx-extend/tmp/release-logs/latest.log
+
+      - name: Request exact-source development CI
+        working-directory: matrx-extend
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/release-development-ci.mjs dispatch .output/release-receipt.json
 
       - name: Upload sanitized failure diagnosis
         if: failure()

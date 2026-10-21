@@ -1,0 +1,71 @@
+{
+  "review": "independent_zero_authorship_pinned_source",
+  "source_snapshot": "/tmp/d282-final-source-20261021.json",
+  "pinned_head": "e39cedba10360c57135dd937b19a3ad5509504e3",
+  "scope": "Read-only review of the pinned eleven-file source snapshot plus existing downstream consumer source, live GitHub metadata, and guarded test journals. No external dispatch, build, source edit, commit, or test run by this peer.",
+  "verdict_A_outcome_source": "PARTIAL_LIVE_UNVERIFIED",
+  "verdict_A_reason": "The source connects the pushed release receipt to a one-time exact-main CI dispatch, full non-doc checks, an exact-source development artifact, and both promotion and hosted-test consumers. A native hosted release using this change has not run, so no exact-source development artifact, import, or hosted acceptance is observed. In-flight dedup reports already-running, not artifact success.",
+  "verdict_B_doctrine_quality": "IMPORTANT_DEDUP_METADATA_GAP",
+  "findings": [
+    {
+      "severity": "Important",
+      "claim": "Completed-success dedup can report artifact-exists for an artifact the importer rejects.",
+      "evidence": "Pinned scripts/release-development-ci.mjs:65-76 checks name, expiry, byte size, and artifact.workflow_run.head_sha, then :22-28 reports artifact-exists. Pinned scripts/current-test-artifact.mjs:297-323 also requires artifact.workflow_run.id == run.id and a sha256 digest; hosted-remote-admission.mjs:1758-1768 requires a sha256 digest. An API artifact lacking either field passes the dedup predicate yet cannot be imported or admitted. The focused test at scripts/release-development-ci.test.mjs:35-66 injects hasDevelopmentArtifact=true, bypassing the actual API predicate. Align dedup with consumer metadata before treating completed CI as coverage.",
+      "limit": "No malformed real GitHub artifact was observed. This is a predicate counterexample in the pinned source, not a claim that GitHub currently emits malformed artifacts."
+    }
+  ],
+  "prior_findings": [
+    {
+      "claim": "Human workflow_dispatch actor cannot supply the artifact",
+      "status": "REFUTED",
+      "evidence": "Pinned scripts/development-ci-event.mjs:2-4 accepts push or workflow_dispatch without an actor restriction; importer, hosted admission, and scope reuse this predicate. GitHub itself authorizes dispatch callers."
+    },
+    {
+      "claim": "An in-progress run is incorrectly reported as completed artifact coverage",
+      "status": "REFUTED_AS_WORDED",
+      "evidence": "Pinned scripts/release-development-ci.mjs:22-30 returns already-running separately from artifact-exists. It is pending work and remains live-unverified until CI completes."
+    },
+    {
+      "claim": "A completed successful CI run without any development artifact covers the release",
+      "status": "ADDRESSED",
+      "evidence": "Pinned scripts/release-development-ci.mjs:63-78 lists artifacts and requires hasDevelopmentArtifact before artifact-exists; otherwise :30 dispatches. The remaining metadata mismatch is reported above."
+    }
+  ],
+  "claim_evidence": [
+    {
+      "claim": "The original release-to-CI gap is live",
+      "evidence": "GitHub API queried 2026-10-21: e39cedba10360c57135dd937b19a3ad5509504e3 has zero Actions runs; 6adb65d53f1b8047545c1361fb0fdfd9455a1016 has one completed successful Hosted release run 39659073385 and no CI run. Its release artifact is matrx-extend-v0.2.586, id 12373376881, 83,523,874 bytes. This release run predates the pinned repair.",
+      "references": [
+        "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs?head_sha=e39cedba10360c57135dd937b19a3ad5509504e3&per_page=100",
+        "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs?head_sha=6adb65d53f1b8047545c1361fb0fdfd9455a1016&per_page=100",
+        "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs/39659073385"
+      ]
+    },
+    {
+      "claim": "The receipt carries source identity needed by dispatcher",
+      "evidence": "Existing scripts/sync-unpacked-release.mjs:193-213 writes sourceSha, publishState, both ZIP hashes, and treeSha256. Pinned release.yml:161-187 checks pushed receipt sourceSha against checkout HEAD and tag before dispatch at :233-237. Actual zipped receipt bytes were not downloaded."
+    },
+    {
+      "claim": "Dispatch binds the new CI run to the pushed exact source",
+      "evidence": "Pinned scripts/release-development-ci.mjs:54-99 requires pushed receipt, checks main, lists same-SHA CI, and posts ref main with expected_source_sha and requested_by. Pinned ci.yml:63-77 calls assert-source before classification; script :102-109 rejects changed ref or SHA. Scope classification forces full for workflow_dispatch (ci-change-scope.mjs:105-116); CI checks and resource-guard-integration require scope success, while build/produce/upload run on main dispatch. CI uses the existing resource and cost gates."
+    },
+    {
+      "claim": "Artifact remains exact and rechecked through consumers",
+      "evidence": "Pinned current-test-artifact.mjs:130-177 binds producer to GITHUB_SHA, checked-out HEAD, and expected_source_sha, with event in provenance. Import at :297-356 validates run, artifact, digest, provenance, and tree. Cached import at :359-424 rechecks tree and source state. Existing promote-ci-dev-artifact.mjs:25-108 and verify-ci-dev-promotion.mjs:25-100 require exact source and checked tree; hosted-guest-acceptance.mjs:68-103 uses the same importer and verifier. Hosted remote admission accepts the shared event predicate at :1725-1780."
+    },
+    {
+      "claim": "Cost and permission scope are accounted for",
+      "evidence": "Pinned release.yml adds actions:write alongside contents:write for the dispatch and no schedule or new runner. Pinned ci-cost.json estimates at most 13 extra full runs/week, about $1.51/week list price and $0 billed increment for this public repository. Historical actual CI spend $91.79/$100 is not authorization for a future paid action. The aidream-wide ~$150 forecast and sandbox checker drift are pre-existing separate validator issues; this report does not claim whole-validator green."
+    },
+    {
+      "claim": "Local guarded checks observed",
+      "evidence": "Guarded journals d282-focused-final-20261021.jsonl and d282-compile-20261021.jsonl both end resourceInvalid=false, childExitCode=0, decision=valid. Parent reports focused suite 805 pass/10 skip and compile pass. Lint retry and guarded RED mutation proof were pending at review time. Earlier unguarded plant output is debug-only and not acceptance evidence."
+    }
+  ],
+  "cannot_verify": [
+    "No hosted run on a source containing the repair; the bot/human dispatch event shape, exact-source full CI completion, uploaded artifact, import, promotion, and hosted native acceptance remain unobserved.",
+    "A previous release artifact exists, but its actual release-receipt.json bytes were not downloaded; receipt-field claim is source-backed only.",
+    "No peer-run tests or guarded RED mutation proof; these are owner-lane evidence gates."
+  ],
+  "overall": "REOPEN before source commit on the dedup metadata mismatch; after correction, live exact-source hosted proof is still required before closing EXT-D-0282."
+}

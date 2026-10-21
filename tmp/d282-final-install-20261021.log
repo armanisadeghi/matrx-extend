@@ -1,0 +1,23 @@
+{"schema":1,"at":"2026-10-21T19:45:49.076Z","runId":"d282-final-install-20261021","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d282-final-install-20261021.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-21T19:46:56.315Z","runId":"d282-final-install-20261021","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":11.2,"requiredMemoryGiB":4,"oneMinuteLoad":2.68,"logicalCpus":10,"cpuBusyFraction":0.14142857142857143,"swapUsedMiB":2765.75,"repoFreeGiB":1611.8421440124512,"profileFreeGiB":1611.8421440124512,"safetyFreeGiB":32.863487243652344,"systemFreeGiB":32.863487243652344},"cpuBusySamples":[0.09,0.15,0.14,0.15,0.17,0.14,0.15],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +8 -5
+++++++++-----
+Progress: resolved 8, reused 3, downloaded 3, added 3
+Progress: resolved 8, reused 3, downloaded 5, added 4
+Progress: resolved 8, reused 3, downloaded 5, added 5, done
+
+dependencies:
+- @ai-matrx/agents 0.59.192
++ @ai-matrx/agents 0.59.193
+- @ai-matrx/chat 0.8.288
++ @ai-matrx/chat 0.8.289
+- @ai-matrx/desktop-protocol 0.21.73
++ @ai-matrx/desktop-protocol 0.21.75
+- @ai-matrx/records 0.99.116
++ @ai-matrx/records 0.99.117
+
+Done in 2.6s using pnpm v10.30.3
+{"schema":1,"at":"2026-10-21T19:46:59.257Z","runId":"d282-final-install-20261021","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-21T19:46:59.304Z","runId":"d282-final-install-20261021","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}

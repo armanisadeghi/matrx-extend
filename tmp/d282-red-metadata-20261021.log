@@ -1,0 +1,65 @@
+PLANTED in /Volumes/Samsung2TB/code/matrx-extend/scripts/release-development-ci.mjs
+RESTORED /Volumes/Samsung2TB/code/matrx-extend/scripts/release-development-ci.mjs sha=dfb3e0f489ad original_sha=dfb3e0f489ad IDENTICAL
+----- command output (tail) -----
+✔ real checkpoint retains safe organization_observer_response failure and releases registered listeners (0.168417ms)
+✔ real checkpoint retains safe organization_observer_finished failure and releases registered listeners (0.732417ms)
+✔ real checkpoint retains safe organization_observer_failed failure and releases registered listeners (0.14875ms)
+✔ real checkpoint retains safe organization_observer_enable failure and releases registered listeners (0.198584ms)
+✔ real checkpoint retains safe organization_tools_gate failure and releases registered listeners (0.143208ms)
+✔ real checkpoint retains safe organization_tools_click failure and releases registered listeners (0.6495ms)
+✔ real checkpoint retains safe organization_tools_click failure and releases registered listeners (0.155584ms)
+✔ real checkpoint retains safe organization_records_gate failure and releases registered listeners (155.567375ms)
+✔ real checkpoint retains safe organization_records_click failure and releases registered listeners (155.991875ms)
+✔ real checkpoint retains safe organization_records_click failure and releases registered listeners (154.300166ms)
+✔ real checkpoint retains safe organization_records_click failure and releases registered listeners (156.296583ms)
+✔ real checkpoint retains safe organization_request_wait failure and releases registered listeners (412.328459ms)
+✔ real checkpoint retains safe organization_request_wait failure and releases registered listeners (414.32625ms)
+✔ real checkpoint retains safe organization_observer_cleanup failure and releases registered listeners (311.943375ms)
+✔ successful real checkpoint remains accepted without device-choice injection (308.028167ms)
+✔ reinjection detection window separates current producer, relay duplication, and late prior events (1.170083ms)
+✔ each held A channel stays outside Chrome until its exact envelope is released (3.526833ms)
+✔ deferred installation replays the exact Chrome operation before replacement (0.569875ms)
+✔ refuses default or foreign extension picker worlds (4147.013292ms)
+✔ listener observer forwards every option form and counts only capture listeners (0.685958ms)
+✔ native observer counts stamped deliveries without treating the raw producer copy as a duplicate (0.543208ms)
+✔ reviewer screenshot clips the actual labeled Capture and counted Links controls (14.541416ms)
+✔ offscreen reviewer switch reports bounded geometry and never captures an empty crop (3.232084ms)
+✔ reviewer screenshot scrolls the real offscreen switch into view before a strict crop (3.434542ms)
+✔ reviewer Data check selects a fixture field before requiring guest explanation and Cancel (8.774167ms)
+✔ exported runner projects successful source, article, SEO and selector observations (11.591792ms)
+✔ exported runner retains first failing control and safe source when aggregate fails (4.599917ms)
+✔ exported runner refuses invalid source before any control observation (2.17725ms)
+✔ raw-field egress mutation is caught at real runner serialization (3.948791ms)
+✔ projection rejects unknown fields, wrong primitive types and screenshot callback paths (2.875041ms)
+ℹ tests 849
+ℹ suites 0
+ℹ pass 838
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 10
+ℹ todo 0
+ℹ duration_ms 63858.024625
+
+✖ failing tests:
+
+test at scripts/release-development-ci.test.mjs:166:1
+✖ release CLI dedup requires the importer-accepted artifact digest and run identity (331.216875ms)
+  AssertionError [ERR_ASSERTION]: missing-digest
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/scripts/release-development-ci.test.mjs:233:14)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+ ELIFECYCLE  Command failed with exit code 1.
+{"schema":1,"at":"2026-10-21T19:42:14.708Z","runId":"d282-red-metadata-20261021","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-21T19:42:14.752Z","runId":"d282-red-metadata-20261021","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}
+---------------------------------
+VERDICT: RED (rc=1, expected RED)
