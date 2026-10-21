@@ -1,0 +1,29 @@
+{
+  "case": "EXT-F-1001-T10",
+  "run_id": "guest-large-copy-20261021-2000",
+  "overall": "bounded native guest evidence accepted with evidence limits",
+  "verdict_A": {
+    "status": "PASS, bounded to the reported guest development build observations",
+    "acceptance": "Inventory requires opening the account menu and inspecting identity and desktop state across warm and reload dimensions. The native report records Guest / Desktop: Not connected on warm open, close/reopen, and after full extension manager Reload. The profile was labeled Matrx Guest Test (Profile 10), and the report records visible Guest role and signed-out Settings identity/action.",
+    "limits": [
+      "Evidence is the operator's structured observation report; no raw accessibility transcript or retained UI capture corroborates the rendered strings.",
+      "No independent UI replay was performed.",
+      "Only guest role on DEV v0.2.584 is covered. Member/admin, Store-installed/current-main, and connected desktop state are not covered.",
+      "The report says selected tab changed from Settings to Chat after reload. The acceptance row does not state a selected-tab persistence expectation, so this is an unverified adjacent observation, not an established defect."
+    ]
+  },
+  "verdict_B": {
+    "status": "PARTIAL",
+    "evidence_quality": "The finalized journal SHA-256 is a9ed50e2795ffe3e28b40f9f676fdf1cb90dd69980219c289dbe7d5a333d7133, matching the watcher's sourceJournalSha256. Its 17 events join the run ID, include admission plus 12 healthy samples, and end valid/resourceInvalid=false/exitCode=0. The watcher records wrapper exit and holder session 12231 exit code 0; root separately observed the holder exit 0. This supports resource validity, not product behavior.",
+    "limits": "Native report supplies frozen source 5a1b9e108431cb7071f374e3d4778bc7d393504b, CI 39649558400, artifact 12369911241, and tree 93ac42aa5702a6c52352542f0643a487125e2b782d3e599808865df1d54d7a3a; these remain report-provided provenance in this review. No raw AX transcript or image evidence is retained. No source diff or independent workflow/artifact promotion replay was in scope."
+  },
+  "resource_journal_sha256": "a9ed50e2795ffe3e28b40f9f676fdf1cb90dd69980219c289dbe7d5a333d7133",
+  "scope_exclusions": [
+    "image Copy URL / T42",
+    "member/admin",
+    "Store/current main",
+    "connected desktop",
+    "independent UI replay"
+  ],
+  "acceptance_source": "docs/stabilization/inventory.json EXT-F-1001-T10; docs/stabilization/STATUS.md still lists T10 Unverified pending owner integration of this evidence"
+}

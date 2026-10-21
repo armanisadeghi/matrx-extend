@@ -75,7 +75,10 @@
       "reason": "Fresh peer verified stronger scope gates preserved and missed classifier suite added to normal preflight. Guarded872tests/862pass/10skip, compile and full-repository Biome check pass with actual exit0 and valid journals. New fullCI artifact and natural bot-release path still unverified."
     }
   ],
-  "fix_commits": ["af238f095b5477db9f126dec5aa85a8fceee23d6"],
+  "fix_commits": [
+    "af238f095b5477db9f126dec5aa85a8fceee23d6",
+    "aa186d0cf1532a4af5eddf03a391a2145549f29d"
+  ],
   "reviewer": {
     "metadata": "/root/d282_metadata_reverify",
     "timeout_mapping": "/root/d282_timeout_final_peer",

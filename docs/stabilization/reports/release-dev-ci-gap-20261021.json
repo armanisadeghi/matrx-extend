@@ -50,5 +50,12 @@
     "d282-lock2-install-20261021",
     "d282-lock2-compile-20261021",
     "d282-final-lint-20261021"
-  ]
+  ],
+  "integration_retest": {
+    "failed_main_ci": 39666115123,
+    "failure": "Stale scope assertions expected always() instead of successful scope; no artifact/build produced.",
+    "repair_commit": "aa186d0cf1532a4af5eddf03a391a2145549f29d",
+    "source_peer": "docs/stabilization/reports/d282-scope-gate-peer-20261021.json",
+    "guarded_checks": "872tests/862pass/10skip, compile and full-repo Biome check valid0; original natural bot-release path remains unverified."
+  }
 }

@@ -96,10 +96,11 @@
     }
   ],
   "resume_checkpoint": {
-    "at_utc": "2026-10-21T19:58:00Z",
-    "source_repair_commit": "af238f095b5477db9f126dec5aa85a8fceee23d6",
-    "dependency_base": "7c1d512f66dfb30464136e733dd9918294fccefa",
-    "status": "D282 source repair and independent reviews passed; wait for successful exact-main CI artifact after synchronized push, then normal D217 route.",
+    "at_utc": "2026-10-21T20:11:37.179713+00:00",
+    "source_repair_commits": ["af238f095", "aa186d0cf1532a4af5eddf03a391a2145549f29d"],
+    "last_current_ci_run": 39666115123,
+    "last_current_ci_result": "failed scope test, no artifact",
+    "status": "Reviewed stale-assertion repair ready for normal push/fullCI. No D217 plan/dispatch or secret/fixture staging. Current artifact/owner reload and normal acceptance still required.",
     "native_dispatch_or_secret_fixture_started": false
   }
 }

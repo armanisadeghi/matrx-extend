@@ -1,0 +1,20 @@
+{
+  "case": "EXT-F-1001-T10",
+  "evidence_gap": "NOT ADDRESSED as raw-evidence retention; partially mitigated by six phase/call-labeled excerpts transcribed from original CUA outputs. Original full AX outputs/screenshots remain unavailable, and no replay occurred.",
+  "verdict_A": {
+    "status": "PASS, bounded to reported guest DEV observations",
+    "basis": "Inventory acceptance is account menu identity + desktop state across warm/reload. Excerpts support signed-out Settings identity/action, Guest + Desktop: Not connected on warm open/reopen/post-reload, and expected DEV identity/path at manager reload. The selected-tab reset to Chat is adjacent and not an established defect; inventory does not require persistence.",
+    "limits": "No independent native replay; guest only, DEV 0.2.584 only. No Store/current-main, member/admin, or desktop-connected claim. Excerpts are operator-transcribed snippets, not retained raw AX/captures."
+  },
+  "verdict_B": {
+    "status": "PARTIAL",
+    "basis": "Excerpts materially improve traceability with phase/call labels and directly support the stated visible strings. Journal hash independently matches watcher; 17 joined events include admission, 12 healthy samples, and valid final decision/resourceInvalid=false/exitCode=0; holder exit 0 is reported. Resource validity does not establish product behavior.",
+    "limits": "Excerpt fidelity/context cannot be independently checked without original raw outputs. Frozen tree hash was independently rehashed by root; source/CI/artifact provenance otherwise remains bounded to supplied receipt. No workflow/artifact promotion replay."
+  },
+  "excluded": [
+    "independent native replay",
+    "Store/current main",
+    "desktop connected",
+    "T42 image copy"
+  ]
+}

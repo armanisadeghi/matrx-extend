@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "runId": "guest-large-copy-20261021-2000",
+  "observedAt": "2026-10-21T20:04:54.602Z",
+  "sourceJournal": "docs/stabilization/resource-journals/guest-large-copy-20261021-2000.jsonl",
+  "sourceJournalSha256": "a9ed50e2795ffe3e28b40f9f676fdf1cb90dd69980219c289dbe7d5a333d7133",
+  "eventCount": 17,
+  "runIdJoinValid": true,
+  "admittedAt": "2026-10-21T20:01:02.055Z",
+  "healthyWatchSampleCount": 12,
+  "adverseOrStopRequiredEventCount": 0,
+  "stopConfirmedAt": "2026-10-21T20:04:17.581Z",
+  "stopResourceInvalid": false,
+  "finalDecision": "valid",
+  "finalExitCode": 0,
+  "finalAdmitted": true,
+  "finalResourceInvalid": false,
+  "wrapperPidObservedExited": true,
+  "holderSessionTerminalConfirmedByRoot": true,
+  "policyLimits": {
+    "watchIntervalSeconds": 15,
+    "admissionCpuWindowSeconds": 60,
+    "minimumAvailableMemoryGiB": 4,
+    "minimumAvailableMemoryFraction": 0.2,
+    "maximumOneMinuteLoadPerLogicalCpu": 0.75,
+    "maximumSustainedCpuBusyFraction": 0.75,
+    "maximumBusyFractionAtHighLoad": 0.6,
+    "minimumFreeDiskGiB": 20,
+    "maximumSwapGrowthMiB": 256,
+    "swapWindowSeconds": 60,
+    "normalMacPressureLevel": 1,
+    "unsafeSamplesToStop": 2,
+    "healthySamplesToResume": 3
+  },
+  "limits": [
+    "Resource-journal/holder observation only; no product behavior pass is claimed.",
+    "Wrapper PID 61455 and holder session 12231 both exited after UI stop; root observed holder session exit code 0.",
+    "The source journal records 12 healthy watch samples and no refusal, unsafe, operator-stop-required, or safety-state failure events."
+  ],
+  "holderSession": 12231,
+  "holderSessionExitCode": 0,
+  "holderExitObservedAfterUiStop": true
+}

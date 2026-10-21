@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T19:51:51.447465+00:00",
+  "updated_at": "2026-10-21T20:11:37.575594+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -652,11 +652,12 @@
         {
           "defect_id": "EXT-D-0282",
           "scope": "Release-token recursion gap and exact-source development CI handoff",
-          "status": "source repair verified; natural hosted release-to-CI and native acceptance pending",
+          "status": "source repair verified including real main-CI stale-assertion regression; next fullCI and natural bot release path pending",
           "evidence": [
             "docs/stabilization/defects/EXT-D-0282.json",
             "docs/stabilization/reports/release-dev-ci-gap-20261021.json",
-            "docs/stabilization/reports/d282-timeout-final-peer-20261021.json"
+            "docs/stabilization/reports/d282-timeout-final-peer-20261021.json",
+            "docs/stabilization/reports/d282-scope-gate-repair-20261021.json"
           ],
           "remaining": "Natural hosted release-to-CI artifact, normal import/promotion, owner Chrome reload and D217 original native acceptance remain unverified; no product behavior pass."
         }
@@ -3398,7 +3399,20 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "run_id": "guest-large-copy-20261021-2000",
+              "build_variant": "Frozen DEV584/source5a1b9e108431cb7071f374e3d4778bc7d393504b, CI39649558400/artifact12369911241",
+              "detail": "Guest avatar showed Guest and Desktop: Not connected warm, after close/reopen and after actual manager fullReload/panel reopen. Actual Profile10 ID/path/version and Settings Sign in/Email— verified; guard valid0 and actual holder exit0, owned tabs closed. Fresh A reviewers accept bounded observed behavior; B remains partial because original complete AX outputs were not retained (only phase/call-labeled transcribed excerpts). Keep full case partial pending independently replayable decisive raw UI evidence. No connected desktop, other role, Store/current-main or T42 claim.",
+              "evidence": [
+                "docs/stabilization/reports/guest-avatar-native-20261021.json",
+                "docs/stabilization/reports/guest-avatar-resource-watch-20261021.json",
+                "docs/stabilization/reports/guest-avatar-final-peer-20261021.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1001-T11",
