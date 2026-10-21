@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-20T23:33:50.705111Z",
+  "updated_at": "2026-10-21T00:17:00.847614Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -24924,8 +24924,32 @@
                   "credential_cleanup_verified": "The exact temporary GitHub secret name is absent; the known local one-time link file is absent from temp/workspace locations; no credential values were persisted.",
                   "verified": "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified.",
                   "limits": "Member and destination-none duplicate rename/refusal-retry only. T04/T29 remain partial and EXT-D-0187 remains in-fix. No overall feature pass or closure; other refusal paths, destinations/Library/File elsewhere, Project display, latency, guest/admin, current-main and Store behavior remain open."
+                },
+                {
+                  "run_id": "39519174392",
+                  "source_sha": "fec65a33ed9af26fb2c8d726375e3d20428e999a",
+                  "development_ci_run_id": 39516230572,
+                  "development_artifact_id": 12308238876,
+                  "version": "0.2.578",
+                  "status": "bounded-pass",
+                  "auth_mode": "member",
+                  "destination_mode": "none",
+                  "resource_valid": true,
+                  "evidence": [
+                    "docs/stabilization/reports/member-fec-native-20261021.json",
+                    "docs/stabilization/reports/member-fec-native-fresh-peer-20261021.json",
+                    "docs/stabilization/reports/member-fec-native-39519174392-certificate.json",
+                    "docs/stabilization/evidence/member-fec-native/run39519174392/native-report.sanitized.json"
+                  ],
+                  "verified_substeps": [
+                    "Real member/non-admin sign-in and approved organization selected; logical organization request observed authenticated200.",
+                    "Custom name and no destination; keyboard focus contained; Save confirmation; persisted name/org/original file and zero destination associations.",
+                    "Source name/URL/captured heading/marker reopened by actual UI checks; run-owned soft-delete/zero-active-row and association cleanup."
+                  ],
+                  "limits": "Normal verifier and fresh raw A accept only this bounded subtarget. Peer B partial: screenshots show initial loading/fixture, not saved Source UI; native driver/report supplies UI assertions. No independent UI rerun, full T04/T29, other destinations/roles/refusal/latency or Store claim."
                 }
-              ]
+              ],
+              "latest_bounded_retest_run": "39519174392"
             },
             "admin": {
               "status": "unverified",
@@ -25133,6 +25157,22 @@
               ],
               "new_full_role_case_pass": false
             }
+          ],
+          "attempt_history": [
+            {
+              "run_id": "dev-fec-scrape-controls-20261021",
+              "source_sha": "fec65a33ed9af26fb2c8d726375e3d20428e999a",
+              "status": "resource-invalid-zero-credit",
+              "resource_valid": false,
+              "new_unique_case_pass": false,
+              "first_unsafe_at": "2026-10-21T00:11:18.066Z",
+              "evidence": [
+                "docs/stabilization/reports/dev-fec-native-controls-20261021.json",
+                "docs/stabilization/reports/dev-fec-controls-fresh-peer-20261021.json",
+                "docs/stabilization/resource-journals/dev-fec-scrape-controls-20261021.jsonl"
+              ],
+              "detail": "Owner and fresh peer observed local Article Cancel/Apply and Links validation/add/remove/recapture; entire shared journal invalid exit3 due OS pressureLevel2. ZERO acceptance credit; prior valid results unchanged. No blind local repeat."
+            }
           ]
         },
         {
@@ -25204,6 +25244,22 @@
                 "evidence": "docs/stabilization/runs/render-retest-001.json"
               },
               "superseded_at": "2026-10-12T20:22:00Z"
+            }
+          ],
+          "attempt_history": [
+            {
+              "run_id": "dev-fec-scrape-controls-20261021",
+              "source_sha": "fec65a33ed9af26fb2c8d726375e3d20428e999a",
+              "status": "resource-invalid-zero-credit",
+              "resource_valid": false,
+              "new_unique_case_pass": false,
+              "first_unsafe_at": "2026-10-21T00:11:18.066Z",
+              "evidence": [
+                "docs/stabilization/reports/dev-fec-native-controls-20261021.json",
+                "docs/stabilization/reports/dev-fec-controls-fresh-peer-20261021.json",
+                "docs/stabilization/resource-journals/dev-fec-scrape-controls-20261021.jsonl"
+              ],
+              "detail": "Owner and fresh peer observed local Article Cancel/Apply and Links validation/add/remove/recapture; entire shared journal invalid exit3 due OS pressureLevel2. ZERO acceptance credit; prior valid results unchanged. No blind local repeat."
             }
           ]
         },
@@ -27649,6 +27705,20 @@
                 ".research/scrape-live-peer-20261008-1544.json"
               ],
               "detail": "Guest link open/copy/remove, blank rejection, valid add, and cancel remain covered warm and after reload."
+            },
+            {
+              "run_id": "dev-fec-scrape-controls-20261021",
+              "source_sha": "fec65a33ed9af26fb2c8d726375e3d20428e999a",
+              "status": "resource-invalid-zero-credit",
+              "resource_valid": false,
+              "new_unique_case_pass": false,
+              "first_unsafe_at": "2026-10-21T00:11:18.066Z",
+              "evidence": [
+                "docs/stabilization/reports/dev-fec-native-controls-20261021.json",
+                "docs/stabilization/reports/dev-fec-controls-fresh-peer-20261021.json",
+                "docs/stabilization/resource-journals/dev-fec-scrape-controls-20261021.jsonl"
+              ],
+              "detail": "Owner and fresh peer observed local Article Cancel/Apply and Links validation/add/remove/recapture; entire shared journal invalid exit3 due OS pressureLevel2. ZERO acceptance credit; prior valid results unchanged. No blind local repeat."
             }
           ]
         },
@@ -28825,8 +28895,32 @@
                   "credential_cleanup_verified": "The exact temporary GitHub secret name is absent; the known local one-time link file is absent from temp/workspace locations; no credential values were persisted.",
                   "verified": "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified.",
                   "limits": "Member and destination-none duplicate rename/refusal-retry only. T04/T29 remain partial and EXT-D-0187 remains in-fix. No overall feature pass or closure; other refusal paths, destinations/Library/File elsewhere, Project display, latency, guest/admin, current-main and Store behavior remain open."
+                },
+                {
+                  "run_id": "39519174392",
+                  "source_sha": "fec65a33ed9af26fb2c8d726375e3d20428e999a",
+                  "development_ci_run_id": 39516230572,
+                  "development_artifact_id": 12308238876,
+                  "version": "0.2.578",
+                  "status": "bounded-pass",
+                  "auth_mode": "member",
+                  "destination_mode": "none",
+                  "resource_valid": true,
+                  "evidence": [
+                    "docs/stabilization/reports/member-fec-native-20261021.json",
+                    "docs/stabilization/reports/member-fec-native-fresh-peer-20261021.json",
+                    "docs/stabilization/reports/member-fec-native-39519174392-certificate.json",
+                    "docs/stabilization/evidence/member-fec-native/run39519174392/native-report.sanitized.json"
+                  ],
+                  "verified_substeps": [
+                    "Real member/non-admin sign-in and approved organization selected; logical organization request observed authenticated200.",
+                    "Custom name and no destination; keyboard focus contained; Save confirmation; persisted name/org/original file and zero destination associations.",
+                    "Source name/URL/captured heading/marker reopened by actual UI checks; run-owned soft-delete/zero-active-row and association cleanup."
+                  ],
+                  "limits": "Normal verifier and fresh raw A accept only this bounded subtarget. Peer B partial: screenshots show initial loading/fixture, not saved Source UI; native driver/report supplies UI assertions. No independent UI rerun, full T04/T29, other destinations/roles/refusal/latency or Store claim."
                 }
-              ]
+              ],
+              "latest_bounded_retest_run": "39519174392"
             },
             "admin": {
               "status": "unverified",

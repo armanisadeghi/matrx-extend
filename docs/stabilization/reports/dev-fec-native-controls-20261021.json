@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "run_id": "dev-fec-scrape-controls-20261021",
+  "lane": "Mac native Chrome, armansadeghi.com profile (task-designated Profile8)",
+  "status": "resource_unverified_zero_acceptance_credit",
+  "product": {
+    "source_sha": "fec65a33ed9af26fb2c8d726375e3d20428e999a",
+    "ci_run": "39516230572",
+    "artifact_id": "12308238876",
+    "artifact_digest": "3c215a1440a676077d0cb17c2b8f6b4bf9cee92b0a989d2e602589c6b5976bec",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "dev_extension": {
+      "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "version": "0.2.578",
+      "enabled": true,
+      "pinned": true,
+      "reload_observed": true,
+      "reload_run_id": "dev-fec-refresh-scrape-20261021",
+      "evidence_scope": "Separate earlier reload-only run dev-fec-refresh-scrape-20261021; valid resource journal; supports dev ID/version/path/enabled/pin and reload observation only."
+    },
+    "store_extension": {
+      "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+      "version": "0.2.205",
+      "enabled": true,
+      "pinned": true,
+      "evidence_scope": "Observed during resource-invalid dev-fec-scrape-controls-20261021 run; retain as observation only, no acceptance credit."
+    }
+  },
+  "auth_context": {
+    "role": "ADMIN",
+    "evidence": "Dev panel Settings \u2192 Account visibly displayed Role ADMIN; admin-only navigation tabs were also present.",
+    "organization_selection_visible": true,
+    "organization_label": "withheld",
+    "values_redacted": true
+  },
+  "fixture": {
+    "url": "https://www.iana.org/domains/reserved",
+    "page_title": "IANA-managed Reserved Domains",
+    "captured": true
+  },
+  "observations": [
+    {
+      "inventory_case_ids": ["EXT-F-1007-T06", "EXT-F-1007-T05"],
+      "control_ids": ["EXT-F-1007-C06", "EXT-F-1007-C05"],
+      "steps": [
+        "Article editor opened",
+        "unique FEC_NATIVE_CANCEL_20261021 marker staged",
+        "Cancel returned to original article text",
+        "second edit applied with FEC_NATIVE_APPLY_20261021",
+        "EDITED badge and unique marker visible"
+      ],
+      "verdict": "observed_steps_only; zero acceptance credit because the native batch resource run ended invalid"
+    },
+    {
+      "inventory_case_ids": ["EXT-F-1007-T13"],
+      "control_ids": ["EXT-F-1007-C13"],
+      "steps": [
+        "Links list opened (57 entries)",
+        "blank Add left draft open and count unchanged",
+        "Cancel closed blank draft",
+        "valid https://example.com/FEC_NATIVE_LINK_20261021 with unique anchor appeared and count became 58",
+        "Remove deleted the unique entry and count returned to 57",
+        "remaining blank draft canceled"
+      ],
+      "verdict": "observed_steps_only; zero acceptance credit because the native batch resource run ended invalid"
+    }
+  ],
+  "cleanup": {
+    "action": "Re-capture confirmed after the editor warned that it would discard unsaved edits",
+    "result": "original article returned; Links count 57; no edited badge or temporary link; top-level Save was never clicked"
+  },
+  "resource": {
+    "admitted_at": "2026-10-21T00:07:01.662Z",
+    "last_observed_at": "2026-10-21T00:11:50Z",
+    "unsafe_warning_observed": "original operator stopped before first unsafe; peer run overlapped unsafe; final invalid",
+    "journal": "test-results/completed-journals/dev-fec-scrape-controls-20261021.jsonl",
+    "status_at_stop": "RESOURCE_PRESSURE_UNSAFE first00:11:18.066Z; peer stopped00:11:38Z; final invalid3. All local product observations zero acceptance credit.",
+    "terminal_at": "2026-10-21T00:11:50.185Z",
+    "terminal_exit_code": 3,
+    "acceptance_credit": false,
+    "final_disposition": "resource-unverified; entire product-controls batch receives zero acceptance credit under PLAN",
+    "first_unsafe_at": "2026-10-21T00:11:18.066Z",
+    "first_unsafe_sample": {
+      "pressureLevel": 2,
+      "availableMemoryGiB": 6.72,
+      "requiredMemoryGiB": 4,
+      "oneMinuteLoad": 2.81,
+      "logicalCpus": 10,
+      "cpuBusyFraction": 0.3,
+      "swapUsedMiB": 3257.88,
+      "repoFreeGiB": 1617.9984016418457,
+      "profileFreeGiB": 38.48161697387695,
+      "safetyFreeGiB": 38.48161697387695,
+      "systemFreeGiB": 38.48161697387695
+    },
+    "peer_stop_at": "2026-10-21T00:11:38Z"
+  },
+  "screenshots": {
+    "before_path": null,
+    "after_path": null,
+    "evidence_note": "CUA emitted a pre-capture IANA page screenshot and a post-cleanup IANA+Scrape screenshot inline in the native UI observation records. The CUA screenshot API exposed no local file path/export, so no filesystem screenshot path is claimed."
+  },
+  "limitations": [
+    "No full EXT-F-1007 case/mode pass; only the named admin local subtargets are covered.",
+    "No copy, image, video, scroll-sync, error-recovery, guest/member, warm/full-reload Scrape repeat, or Source save/readback coverage.",
+    "Organization value withheld; only visibility of an active selection is recorded.",
+    "No claim of backend role/org request tracing or persistent write; no Save clicked.",
+    "The first reload-only run was archived separately as valid; its native receipt should be linked by the root-owned evidence handoff.",
+    "All Article and Links UI results are observations only because the owned guard later latched RESOURCE_PRESSURE_UNSAFE and exited 3; they do not pass EXT-F-1007 subtargets.",
+    "Store pin observation belongs to the resource-invalid controls run and receives no acceptance credit; only dev reload/path/version/pin is covered by the separate valid reload-only receipt."
+  ],
+  "resource_warnings": [
+    {
+      "at": "2026-10-21T00:11:34.112Z",
+      "code": "RESOURCE_PRESSURE_UNSAFE",
+      "pressure_level": 2,
+      "available_memory_gib": 7.2,
+      "chronology": "first unsafe event; occurred after UI stop at00:09:46Z and before peer stop at00:11:38Z"
+    },
+    {
+      "at": "2026-10-21T00:11:50.152Z",
+      "code": "RESOURCE_PRESSURE_UNSAFE",
+      "chronology": "second unsafe event on SIGINT; run ended invalid with exit3"
+    }
+  ],
+  "ui_stop_time": "2026-10-21T00:09:46Z",
+  "source_sha_correction": {
+    "previous_report_value": "fec65a33ed9af26fb2c8d726375e3d20428e999c",
+    "corrected_value": "fec65a33ed9af26fb2c8d726375e3d20428e999a",
+    "evidence": {
+      "import_status": "test-results/ci-artifacts/fec65a33ed9af26fb2c8d726375e3d20428e999a/39516230572-1/import-status.json",
+      "provenance": "test-results/ci-artifacts/fec65a33ed9af26fb2c8d726375e3d20428e999a/39516230572-1/provenance.json",
+      "promotion_receipt": "test-results/ci-dev-promotion-receipt.json",
+      "local_dev_receipt": "test-results/ci-artifacts/fec65a33ed9af26fb2c8d726375e3d20428e999a/39516230572-1/local-dev-receipt.json"
+    },
+    "cross_checks": "Source SHA, CI run, artifact ID and digest, version, extension ID, and promoted tree hash agree across import status, provenance, promotion, and local dev receipts."
+  },
+  "acceptance_credit": false,
+  "reload_only_receipt": {
+    "run_id": "dev-fec-refresh-scrape-20261021",
+    "resource_valid": true,
+    "scope": "dev extension reload, identity/version/path, enabled and pinned",
+    "acceptance_scope": "reload-only receipt; separate from the invalid Scrape controls batch"
+  },
+  "owner_curation": "First unsafe and terminal timestamps derived from complete guard JSONL, replacing earlier tail-only chronology."
+}
