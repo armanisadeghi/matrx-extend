@@ -33,5 +33,19 @@
       "to": "open",
       "reason": "Completed resource job raw log identifies named pending-child-error boundary and orphan cleanup; overall workflow checks remain live."
     }
-  ]
+  ],
+  "workflow_terminal_result": {
+    "run_id": 39675476145,
+    "source_sha": "5724259ef50641e38d16a114b8d80e0a36d2eed9",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "jobs": {
+      "scope": "success",
+      "checks": "success",
+      "resource-guard-integration": "cancelled",
+      "docs": "skipped"
+    },
+    "interpretation": "Formatting repair and main checks passed; mandatory resource gate did not. Overall source is not green and artifact adoption/release is ineligible.",
+    "observed_at": "2026-10-21T21:16:11.202563+00:00"
+  }
 }
