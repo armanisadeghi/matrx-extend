@@ -1,0 +1,94 @@
+{
+  "status": "partial",
+  "run_at_utc": "2026-10-21T06:23:34Z",
+  "resource": {
+    "permit": "guest-settings-batch-20261021-0620",
+    "session": "32670",
+    "admitted_at_utc": "2026-10-21T06:22:02.577Z",
+    "owner_reported_health": "healthy",
+    "terminal": "2026-10-21T06:24:12.398Z valid0; owner independently polled holder32670 actual process exit0",
+    "journal": "docs/stabilization/resource-journals/guest-settings-batch-20261021-0620.jsonl"
+  },
+  "runtime": {
+    "browser": "Google Chrome 155.0.8059.85",
+    "profile": "Matrx Guest Test (existing Profile 10)",
+    "extension_name": "Matrx Extend DEV",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_version": "0.2.579",
+    "wxt_mode": "production",
+    "loaded_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "frozen_source_sha": "11ff2cfb2ddecba67e7d06dba763b24325ccbe1b",
+    "frozen_ci_run": "39546376658",
+    "frozen_artifact": "12322875129",
+    "frozen_output_tree_hash": "d782f017d88b7e90b7481b59c98767f71c76ffc7a8532adb7a419ac9bd22b1cb",
+    "identity_basis": "Chrome extension details showed name, ID, version, and unpacked loaded path before and after extension-manager Reload. Frozen source/CI/tree identity came from the owner's admission brief; this UI run did not independently hash the loaded output. Current main and current lockfile are not asserted to match the frozen build.",
+    "reported_wxt_mode_correction": {
+      "original_operator_value": "development",
+      "reason": "DEV identifies keyed build channel, not compilation mode. Actual immutable CI39546376658 log independently read by owner shows production compilation; see theme579-owner-binding."
+    },
+    "build_channel": "keyed development test"
+  },
+  "principal": {
+    "role": "guest",
+    "evidence": "Actual Settings showed Sign in and Email — before and after extension-manager Reload.",
+    "organization": "unobserved"
+  },
+  "cases": [
+    {
+      "id": "EXT-F-1003-T79",
+      "status": "partial",
+      "steps": [
+        "Read the already-open guest Settings > Desktop bridge section.",
+        "Use Chrome's Matrx Extend DEV details-page Reload control, reopen the actual side panel, select Settings, and reread Desktop bridge."
+      ],
+      "expected": "Status matches observed bridge transport; when available, settled engine health, version, and service detail match the bridge response. An unavailable transport is shown truthfully.",
+      "actual": {
+        "warm": "Matrx Local: Not connected. No Engine health, version, degraded, or failed service row was exposed.",
+        "after_extension_reload": "Matrx Local: Not connected. No Engine health, version, degraded, or failed service row was exposed.",
+        "transport_comparison": "Underlying bridge transport and health response were not independently observed, so the displayed status cannot be fully matched to transport."
+      },
+      "verified_dimensions": ["warm UI", "extension-manager Reload and reopened Settings UI"],
+      "unverified_dimensions": [
+        "actual bridge transport",
+        "engine health/version/service response",
+        "connected and degraded states",
+        "backend behavior"
+      ]
+    },
+    {
+      "id": "EXT-F-1003-T96",
+      "status": "partial",
+      "steps": [
+        "Read the Matrx 2 row in the already-open guest Desktop bridge section.",
+        "After full extension Reload and side-panel reopen, select Settings and reread the separate Matrx 2 row."
+      ],
+      "expected": "The Matrx 2 row distinguishes connection and account/session states independently of Matrx Local, based on actual settled connection state.",
+      "actual": {
+        "warm": "Matrx 2: Matrx 2 is not running on this computer; separate Matrx Local row: Not connected.",
+        "after_extension_reload": "Matrx 2: Matrx 2 is not running on this computer; separate Matrx Local row: Not connected.",
+        "initial_checking": "Not observed; the row was already settled when first read and when Settings was inspected after reload.",
+        "session_comparison": "Underlying Matrx 2 connection and account/session detail were not independently observed."
+      },
+      "verified_dimensions": [
+        "guest row visibility",
+        "separate displayed Matrx 2 and Matrx Local labels",
+        "same displayed state after extension-manager Reload"
+      ],
+      "unverified_dimensions": [
+        "initial checking text",
+        "actual settled connection/session correspondence",
+        "other connection/session states",
+        "member visibility",
+        "admin visibility"
+      ]
+    }
+  ],
+  "limits": [
+    "Read-only UI observations cannot prove actual desktop transport or Matrx 2 session state in this fixture.",
+    "No initial checking interval was captured.",
+    "This run covers only the frozen DEV 0.2.579 guest profile, not newer main, Store, member, or admin."
+  ],
+  "cleanup": "No preference, pairing, reconnect, sign-in, permission, process, or account mutation. The preexisting extension details tab and reopened side panel remain open; no preexisting tab was closed.",
+  "cua_call_count": 8,
+  "independent_review": "docs/stabilization/reports/connections-evidence0625.json"
+}
