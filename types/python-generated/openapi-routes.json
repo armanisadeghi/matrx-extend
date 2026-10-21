@@ -6426,6 +6426,9 @@
  "/pubchem/public/compound": {
   "get": []
  },
+ "/public/kind-components/preview/{token}": {
+  "get": []
+ },
  "/public/workflows/{definition_id}": {
   "get": []
  },
