@@ -1,0 +1,29 @@
+{
+  "defect": "EXT-D-0276",
+  "source_commit": "152c5d21b",
+  "verdict_A_acceptance": {
+    "status": "FAIL_PENDING_NATIVE",
+    "prior_finding_addressed": true,
+    "evidence": [
+      "docs/feature-tests.md guest procedure now uses Chat delegation for query_elements and verifies the completed Chat row against output.total.",
+      "The Tools-tab limit control case is explicitly signed-in, matching tools: signed-in in src/config/sidepanel-visibility.ts.",
+      "The previous Store 0.2.205 guest run observed Found h1 matches 0 while backend trace had total=1/returned=1; it predates this local fix and cannot establish fixed-row behavior.",
+      "No native run on an artifact built from 152c5d21b was performed, so the corrected procedure has not executed the fixed Chat row under either stated role/scope."
+    ],
+    "limitation": "Docs/procedure correction accepted; actual native acceptance and Store release claim remain unverified."
+  },
+  "verdict_B_quality": {
+    "status": "PASS_BOUNDED",
+    "evidence": [
+      "query_elements handler returns {total, returned, items}; total is computed before the limit and returned is out.length.",
+      "get_page_text returns char_count: text.length.",
+      "Registry now reads output.total and output.char_count directly; find_text_on_page remains on output.count.",
+      "Focused real ToolTimelineRow rendered tests cover positive and truncated totals plus two char_count values; supplied prior run reports six tests passing with red-green evidence.",
+      "Compile journal records valid exit 0."
+    ],
+    "gaps": [
+      "No rendered zero-total case; no explicit absent-field case. Current absence is left unclaimed (no fabricated zero), but these edges are not directly tested.",
+      "This peer did not rerun tests, compile, lint, native UI, or full release gates."
+    ]
+  }
+}

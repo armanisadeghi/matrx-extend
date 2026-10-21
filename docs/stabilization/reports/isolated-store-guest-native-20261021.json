@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "ui_stopped_utc": "2026-10-21 01:21:26 UTC",
+  "profile": "Matrx Guest Test; Chrome Profile 10; signed out; Email —; Sign in button visible",
+  "chrome": "155.0.8059.85 (Official Build) (arm64)",
+  "profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10",
+  "store_provenance": "Public Chrome Web Store listing, Add to Chrome; ID hnfolienncfklkgmdjjmhhegglimlamg; listed/installed version 0.2.205",
+  "guest_chat": {
+    "first": {
+      "prompt": "Reply with READY.",
+      "visible_reply": "READY."
+    },
+    "followup": {
+      "prompt": "What word did you just reply with?",
+      "visible_reply": "I replied with \"READY.\""
+    },
+    "terminal_controls": "Send visible before submissions; Stop visible while each request was Working; final post-response button state unverified."
+  },
+  "eligibility": "Root read-only catalog/code: public default MatrxBrowserAgent / Claude Sonnet 5.5 rating 3; expected guest fallback Claude Haiku 5.5 rating 2; restricted floor 6. UI showed guest and Sign in to choose an agent; run-level model not observed.",
+  "scrape": "Public demo capture: Article 137 words, Images 1, Links 17, Schema/metadata present. Save not clicked.",
+  "seo": "Public demo audit: HTTP 200, 236 words, headings/social metadata/schema, 0 missing image alt.",
+  "backend": "Root observed deployed backend ef66370086d853b4c3b10a373a8e71f977313fff, built 2026-10-21 01:06:13 UTC; changed from 955d514 during setup.",
+  "limits": "No profile auth or sign-in; run-level model not visible. Warm/cold status not instrumented. No source artifact claim.",
+  "next_action": "Root rechecks backend health/version after the guest turns."
+}

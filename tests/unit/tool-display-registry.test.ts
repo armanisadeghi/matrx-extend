@@ -20,10 +20,25 @@
  *      its image inline (Base64Image / Image component, or a CustomComponent).
  */
 
+import { type ToolTimelineEntry, ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
 import { toolDisplayRegistry } from '@/features/chat/tool-display/registry';
 import { CANONICAL_SURFACE } from '@/lib/tools/categories';
 import type { ToolDisplayEntry } from '@ai-matrx/chat/tool-call-visualization/configured-rows/types';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
+
+function completedRow(toolName: string, args: unknown, output: unknown): string {
+  const entry: ToolTimelineEntry = {
+    callId: `${toolName}-display`,
+    toolName,
+    startedAt: 1,
+    phase: 'completed',
+    args,
+    output,
+  };
+  return renderToStaticMarkup(createElement(ToolTimelineRow, { entry }));
+}
 
 /**
  * Registry keys that are intentionally NOT in CANONICAL_SURFACE. Two kinds:
@@ -78,6 +93,54 @@ function rendersImage(entry: ToolDisplayEntry | undefined): boolean {
 }
 
 describe('tool-display registry drift guard', () => {
+  it('shows the actual query result total even when a result limit truncates the items', () => {
+    const one = completedRow(
+      'query_elements',
+      { selector: 'h1' },
+      {
+        total: 1,
+        returned: 1,
+        items: [{ tag: 'h1', text: 'A clear three-stage browser workflow', visible: true }],
+      },
+    );
+    const truncated = completedRow(
+      'query_elements',
+      { selector: 'article' },
+      {
+        total: 7,
+        returned: 2,
+        items: [
+          { tag: 'article', text: 'First' },
+          { tag: 'article', text: 'Second' },
+        ],
+      },
+    );
+    expect(new DOMParser().parseFromString(one, 'text/html').body.textContent).toContain(
+      'Found h1 matches1',
+    );
+    expect(new DOMParser().parseFromString(truncated, 'text/html').body.textContent).toContain(
+      'Found article matches7',
+    );
+  });
+
+  it('shows the page-text character count supplied by the handler', () => {
+    const short = completedRow(
+      'get_page_text',
+      {},
+      { ok: true, text: 'A concise report.', char_count: 17 },
+    );
+    const long = completedRow(
+      'get_page_text',
+      {},
+      { ok: true, text: 'A longer report.', char_count: 240 },
+    );
+    expect(new DOMParser().parseFromString(short, 'text/html').body.textContent).toContain(
+      'Extracted article text characters17',
+    );
+    expect(new DOMParser().parseFromString(long, 'text/html').body.textContent).toContain(
+      'Extracted article text characters240',
+    );
+  });
   it('every registry key is a current tool name or an acknowledged legacy/internal key', () => {
     const unknown = Object.keys(toolDisplayRegistry).filter(
       (name) => !CANONICAL_SURFACE.has(name) && !ALLOWED_NON_CANONICAL.has(name),

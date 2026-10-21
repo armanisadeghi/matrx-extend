@@ -1,0 +1,61 @@
+{
+  "id": "EXT-D-0276",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "surface": "Chat tool result row",
+  "auth_mode": "actual Store205 guest; source renderer shared across roles",
+  "severity": "minor",
+  "priority": "P2",
+  "state": "in-fix",
+  "owner": "/root/query_result_count_fix",
+  "reproduction_steps": [
+    "Open the installed Store205 extension in signed-out Matrx Guest Test profile10 on the public extension demo page.",
+    "Ask: What is the exact visible page H1?",
+    "Observe successful query_elements tool row while the authoritative tool result contains total1,returned1 and one visible H1 item."
+  ],
+  "expected": "Tool row reports one match from the actual tool result count.",
+  "actual": "Tool row says Found h1 matches 0 although tool result total=1 and returned=1; assistant answer is correct.",
+  "evidence": [
+    "docs/stabilization/reports/store205-h1-trace-diagnosis-20261021.json",
+    "docs/stabilization/reports/store205-guest-independent-native-20261021.json",
+    "docs/stabilization/reports/query-result-count-fix-20261021.json",
+    "docs/stabilization/reports/query-count-source-peer-20261021.json",
+    "docs/stabilization/reports/query-count-final-peer-20261021.json",
+    "docs/stabilization/reports/query-count-procedure-final-20261021.json"
+  ],
+  "cause": "Display registry reads output.count, but canonical query_elements handler returns total, returned, items.",
+  "sibling_census": "get_page_text also read absent word_count and said words, but actual handler returns char_count; fixed to characters. find_text_on_page actually returns count and stays unchanged.",
+  "fix_sha": null,
+  "retest_status": "not_started",
+  "next_action": "Push reviewed source fix with green rendering/compile/full-lint gates, observe successful exact-main CI; import/promote and independently retest guest actualChat total/char_count original+surrounding cases. Source-fixed is not native-pass or Store publication; preserve pending577.",
+  "transitions": [
+    {
+      "state": "open",
+      "at": "2026-10-21T01:26:49.734277+00:00",
+      "reason": "Actual native Store205 guest UI count contradicts exact authoritative successful tool receipt."
+    },
+    {
+      "state": "triaged",
+      "at": "2026-10-21T01:26:49.734277+00:00",
+      "reason": "Scoped live DB tool output and source registry establish count-contract mismatch."
+    },
+    {
+      "state": "in-fix",
+      "at": "2026-10-21T01:26:49.734277+00:00",
+      "reason": "Bounded implementation lane assigned; no DOM-query or model behavior change authorized."
+    }
+  ],
+  "source_verification": {
+    "rendering_regression": "Observed red before / six actual ToolTimelineRow tests green after, including total1/returned1,total7/returned2 and char_count.",
+    "compile": "ext-d-0276-compile-retry valid0; prior missingprofile refusal launched no compiler",
+    "source_peer": "B boundedPASS; A priorguestToolsprocedure fixed; native exact-main acceptance explicitly pending",
+    "evidence": [
+      "docs/stabilization/reports/query-result-count-fix-20261021.json",
+      "docs/stabilization/reports/query-count-source-peer-20261021.json",
+      "docs/stabilization/reports/query-count-final-peer-20261021.json",
+      "docs/stabilization/reports/query-count-procedure-final-20261021.json"
+    ],
+    "full_lint": "ext-d-0276-full-lint-admitted valid0: 3178files/0errors/927existingwarnings. Initial pnpm -s lint refused unsupportedargv; normal allowed pnpm lint succeeded, no policychange.",
+    "procedure_review": "Final fresh Sol A procedurePASS/nativepending and B boundedPASS; prior guestTools and manualToolsrawJSON mismatches corrected to actualChat delegation."
+  }
+}

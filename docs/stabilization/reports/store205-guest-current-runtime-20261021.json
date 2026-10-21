@@ -1,0 +1,66 @@
+{
+  "status": "bounded_actual_store_guest_native_pass",
+  "extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.205",
+    "channel": "actual Chrome Web Store installation; standard public Add to Chrome; no CRX adaptation",
+    "runtime_tree_hash": "not independently read"
+  },
+  "profile": {
+    "name": "Matrx Guest Test",
+    "path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10",
+    "chrome_version": "155.0.8059.85",
+    "google_account": "none; created through Stay signed out",
+    "extension_auth": "Settings email unavailable and Sign in visible; guest banner",
+    "preserve": "Retain as designated actual Store guest test fixture; never sign out Arman Profile8."
+  },
+  "behavior": {
+    "initial_transport": "READY first reply and same-conversation follow-up content observed; primary final button state unverified.",
+    "independent_retest": "Manager Off→On restart, new guest conversation, correct exact visible H1 and same-conversation Capture/expected-result answers; native panel returned to idle composer controls.",
+    "raw_sources": [
+      "docs/stabilization/reports/isolated-store-guest-native-20261021.json",
+      "docs/stabilization/reports/store205-guest-independent-native-20261021.json"
+    ],
+    "bounds": "No whole T10/Chat pass or D273 closure. Wire is_new/fingerprints, unpredictable markers and all lifecycle variants were not independently asserted."
+  },
+  "backend": {
+    "before_independent_utc": "2026-10-21T01:21:20Z",
+    "after_independent_utc": "2026-10-21T01:24:05Z",
+    "before_sha": "ef66370086d853b4c3b10a373a8e71f977313fff",
+    "after_sha": "ef66370086d853b4c3b10a373a8e71f977313fff",
+    "built_at": "2026-10-21T01:06:13Z",
+    "setup_drift": "955d514 changed to ef663 before the guest acceptance turns; no stable-setup revision claim"
+  },
+  "actual_model": "Independent DB trace for exact H1/Capture conversation records Sonnet5.5 in four request/snapshot rows. Catalogued Haiku guest fallback is expected configuration only, not actual dispatched model here. Both catalog ratings below restricted threshold6.",
+  "trace": {
+    "h1_result": "Authoritative query_elements successful total1/returned1 and correct visible heading; displayed0 is confirmed separate EXT-D-0276 renderer contract bug.",
+    "evidence": "docs/stabilization/reports/store205-h1-trace-diagnosis-20261021.json"
+  },
+  "resource": {
+    "run": "isolated-store-guest-20261021",
+    "admission_utc": "2026-10-21T01:17:39.582Z",
+    "operator_stops_utc": ["2026-10-21T01:21:26Z", "2026-10-21T01:23:41Z"],
+    "final": {
+      "schema": 1,
+      "at": "2026-10-21T01:24:12.749Z",
+      "runId": "isolated-store-guest-20261021",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "journal_sha256": "f2db4472766494637f3ad247c61e23c912c3db28f7cb39cdf38262fc22182243",
+    "profile_scope": "Guard used Chrome userdata parent directory and one physical-host browser lease; isolated Profile10 created within that directory."
+  },
+  "cleanup": {
+    "no_source_save": true,
+    "no_signin_or_user_signout": true,
+    "no_model_default_change": true,
+    "temporary_secrets_created": false,
+    "guest_profile": "preserved owned designated fixture",
+    "owned_ui_stopped": true,
+    "holder_released": true
+  },
+  "next_action": "Fix EXT-D-0276 summary count contract and sibling fields; independently retest on eligible exact-main artifact. Preserve Store577 pending and D273 triaged."
+}

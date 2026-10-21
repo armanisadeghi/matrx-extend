@@ -38,10 +38,13 @@
     "docs/stabilization/reports/guest273-contained-review-binding-repair-20261020.json",
     "docs/stabilization/reports/guest273-binding-repair-fresh-peer-20261020.json",
     "docs/stabilization/defects/EXT-D-0275.json",
-    "docs/stabilization/reports/store205-native-focus-escalation-20261020.json"
+    "docs/stabilization/reports/store205-native-focus-escalation-20261020.json",
+    "docs/stabilization/reports/store205-guest-current-runtime-20261021.json",
+    "docs/stabilization/reports/store205-guest-independent-native-20261021.json",
+    "docs/stabilization/reports/store205-h1-trace-diagnosis-20261021.json"
   ],
   "verification": "Fresh independent native evidence peer confirms heading FAIL despite terminal reply and correct Capture cell; inline-only screenshot cannot be reopened. Existing focused context tests32pass establish intended mechanics, not guest answer-quality success. No fix or live retest claimed.",
-  "next_action": "Keep D273 triaged. A valid Store205 warm same-conversation run now answered the visible H1 and Capture result correctly, but this is one bounded two-turn observation, not a unique case pass or closure. Continue the browser-capable proof-set work; after an authorized quality change, independently retest exact guest H1 and Capture plus first/follow-up/reopen surroundings.",
+  "next_action": "Keep triaged: new actual Store205/Profile10 guest after manager Off→On answered exactH1 and same-conversation Capture with idle controls on stable ef663, but original intermittent guest/cache behavior is not fixed or closed. Underlying H1 tool returned1; row0 is distinct renderer D276. Continue broader cold/reopen/context cases without changing Browser Agent from unsupported extractor inference.",
   "transition_history": [
     {
       "at": "2026-10-20T17:28:02Z",

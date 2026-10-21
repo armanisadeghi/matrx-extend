@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T01:08:16.082985+00:00",
+  "updated_at": "2026-10-21T01:28:19.564408+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -30022,6 +30022,16 @@
           "report": "docs/stabilization/evidence/scrape-error-recovery-guest/run38041013005/receipt.sanitized.json",
           "proven": "CDP transport failed before recovery assertions; original host access restored.",
           "limits": "No denial/retry/dismiss acceptance credit, no product-cause verdict."
+        },
+        {
+          "run_id": "isolated-store-guest-20261021",
+          "mode": "guest",
+          "status": "partial-bounded-observation",
+          "actual_store_installed": true,
+          "resource_valid": true,
+          "evidence": "docs/stabilization/reports/isolated-store-guest-native-20261021.json",
+          "proven": "Public demo capture Article137words/Images1/Links17/Schema available; SEO report HTTP200/headings/social/schema/0missingalt rendered.",
+          "limits": "No Save, copy/edit, all-controls, reload-persistence, complete case or whole-surface pass; primary observations not independently rerun for Scrape/SEO."
         }
       ],
       "bounded_observations": [
@@ -35058,6 +35068,16 @@
           "independent_review": "docs/stabilization/reports/hosted9ed-native-evidence-peer-20261020.json",
           "proven": "At native width 360, two distinct notices included a 199-character notice; Re-audit was still disabled/spinning during observation; 9 target hit points and 0 notice hit points; two independent dismissals cleared notices 2→1→0. Normal certificate valid; all package/browser/guest resource finals valid; both owned notices cleared.",
           "limits": "Only this T02 subtarget passed. Broader stale-advice replacement and failure-report assertions, full T02, full SEO, reload/role/state coverage and D247 closure remain unverified."
+        },
+        {
+          "run_id": "isolated-store-guest-20261021",
+          "mode": "guest",
+          "status": "partial-bounded-observation",
+          "actual_store_installed": true,
+          "resource_valid": true,
+          "evidence": "docs/stabilization/reports/isolated-store-guest-native-20261021.json",
+          "proven": "Public demo SEO report HTTP200/236words/headings/socialmetadata/schema/0missingalt rendered.",
+          "limits": "No Save, copy/edit, all-controls, reload-persistence, complete case or whole-surface pass; primary observations not independently rerun for Scrape/SEO."
         }
       ]
     },
@@ -52715,7 +52735,8 @@
             "EXT-D-0243",
             "EXT-D-0263",
             "EXT-D-0264",
-            "EXT-D-0273"
+            "EXT-D-0273",
+            "EXT-D-0276"
           ],
           "results": {
             "guest": {
@@ -53220,6 +53241,22 @@
                 "docs/stabilization/reports/published205-daily-guest-20261020.json",
                 "docs/stabilization/reports/published205-daily-fresh-peer-20261020.json"
               ]
+            },
+            {
+              "run_id": "isolated-store-guest-20261021",
+              "auth_mode": "guest",
+              "version": "0.2.205",
+              "actual_store_installed": true,
+              "status": "bounded-pass",
+              "server_sha": "ef66370086d853b4c3b10a373a8e71f977313fff",
+              "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/reports/store205-guest-current-runtime-20261021.json",
+                "docs/stabilization/reports/store205-guest-independent-native-20261021.json",
+                "docs/stabilization/reports/store205-h1-trace-diagnosis-20261021.json"
+              ],
+              "verified": "Fresh installed guest transport two replies; independent manager Off→On/new conversation exactH1+Capture two replies and idle controls; guest no-login preserved.",
+              "limits": "Not full T10 or D273 closure. Primary final button state unknown; no wire is_new/fingerprint/unpredictable marker proof. Query result row0 is separate confirmed renderer D276, actualtooltotal1."
             }
           ],
           "native_store_observations": [
@@ -53895,7 +53932,8 @@
         "EXT-D-0267",
         "EXT-D-0269",
         "EXT-D-0273",
-        "EXT-D-0275"
+        "EXT-D-0275",
+        "EXT-D-0276"
       ],
       "internal_dependency_note": "EXT-D-0275 is a closed internal Hindsight Reviewer evidence-binding prerequisite for D273 quality review, not a Chat product defect or native case result. Repaired reviewer route received the offered bundle; D273 remains triaged and uncorrected. See reports/guest273-contained-review-binding-repair-20261020.json and fresh peer. No feature-role cell or case PASS derives from this dependency."
     },

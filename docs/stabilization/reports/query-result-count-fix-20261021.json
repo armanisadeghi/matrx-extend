@@ -1,0 +1,22 @@
+{
+  "status": "self_verified_source_fix_pending_peer_native_release",
+  "defect": "EXT-D-0276",
+  "change": "query_elements completed row now reads output.total; get_page_text completed row reads output.char_count and labels it characters. find_text_on_page retained output.count because that handler returns count.",
+  "redgreen_evidence": "tests/unit/tool-display-registry.test.ts rendered real ToolTimelineRow: before fix two assertions failed with Found article matches0 and Extracted article text words; after fix all 6 focused tests passed. Cases cover total=1/returned=1, total=7/returned=2, and two char_count values.",
+  "files": [
+    "src/features/chat/tool-display/registry.tsx",
+    "tests/unit/tool-display-registry.test.ts",
+    "docs/feature-tests.md"
+  ],
+  "verification": {
+    "focused_test": "pnpm exec vitest run tests/unit/tool-display-registry.test.ts --maxWorkers=1: 6 passed",
+    "compile": "resource wrapper run ext-d-0276-compile-retry: valid exit 0",
+    "lint": "pnpm exec biome check registry.tsx tool-display-registry.test.ts: exit 0"
+  },
+  "test_session_ids": ["ext-d-0276-compile-retry"],
+  "open_questions": [
+    "Fresh peer/native verification and release are owned by root; this lane makes no Store claim."
+  ],
+  "commit_owner": "root",
+  "procedure_peer_correction": "Both guest h1 and controlled truncated-result checks use actual Chat query_elements delegation and compare the completed Chat row with total/returned; the Tools tab JSON result is excluded."
+}
