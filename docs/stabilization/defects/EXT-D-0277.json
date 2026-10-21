@@ -7,7 +7,7 @@
   "auth_mode": "guest; extension identity is independent of account and organization",
   "severity": "S2: native tests can open the Store panel after reloading development and misattribute results",
   "priority": "P1: distinguish channels before further mixed-profile acceptance",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root",
   "preconditions": [
     "Chrome profile contains both keyed unpacked development and published Store extensions.",
@@ -40,8 +40,8 @@
   ],
   "source_verification": "Manifest and original boot failures reproduced under valid guards. First runtime repair misclassified published Store key; reviewer rejected it. Canonical runtime-ID channel repair passed source peer A and B. Worker unguarded RED/GREEN/compile/catalog claims were explicitly invalidated; root normal guarded mutation rejects badStorekey classification (16pass1fail), exactsource restored and17/17GREEN, final typecheck valid0, fullLint valid0 plus scoped5files0warnings after envcleanup. Final normal catalog valid0,169tools unchanged except restored timestamp; native exactbuild pending.",
   "native_retest": "Pending exact-source development artifact and mixed-profile Chrome test.",
-  "fix_sha": null,
-  "next_action": "Commit/push exact verified source unit and record its fix SHA, then require successful eligible current-main CI artifact; normal import/promotion, owner-profile pinned refresh and fresh independent mixed-copy native name/boot/status/panel-origin retest. Preserve pending Store577; no manual build/release or stale artifact adoption.",
+  "fix_sha": "e4ba9651f715a1755ef987ee4244eb43c01967f9",
+  "next_action": "Push verified source/evidence checkpoint; require successful eligible current-main CI artifact, normal import/promotion, owner-profile pinned refresh and fresh independent mixed-copy native name/boot/status/panel-origin retest. Preserve pending Store577; no manual build/release or stale artifact adoption.",
   "transition_history": [
     {
       "at": "2026-10-21T03:30:00Z",
@@ -60,6 +60,13 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Focused actual manifest callback test failed on old keyed development label while preserving Store assertions."
+    },
+    {
+      "at": "2026-10-21T03:57:22.986806+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source e4ba9651f committed after independent corrected source A/B review; normal guarded Store-key mutation RED/restored17GREEN, final compile/catalog and fullLint pass. Native/installed gate remains pending."
     }
-  ]
+  ],
+  "retest_status": "pending exact-current-source CI artifact and independent native Chrome mixed-copy test"
 }
