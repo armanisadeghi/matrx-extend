@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
@@ -159,6 +160,161 @@ test('cancelled or unavailable CI artifact proof fails closed', async () => {
     else process.env.GITHUB_REPOSITORY = originalRepository;
   }
 });
+
+async function withCliFixture(run) {
+  const root = mkdtempSync(join(tmpdir(), 'ci-scope-cli-'));
+  let responseMode = 'valid';
+  let artifactSource;
+  const server = createServer((request, response) => {
+    if (responseMode === 'unavailable') {
+      response.writeHead(503).end('unavailable');
+      return;
+    }
+    if (
+      (responseMode === 'malformed-listing' && request.url?.includes('/actions/artifacts?')) ||
+      (responseMode === 'malformed-run' && request.url?.includes('/actions/runs/'))
+    ) {
+      response.writeHead(200, { 'content-type': 'application/json' }).end('{invalid JSON');
+      return;
+    }
+    const body = request.url?.includes('/actions/artifacts?')
+      ? responseMode === 'empty-listing'
+        ? { artifacts: [] }
+        : {
+            artifacts: [
+              {
+                name: `matrx-extend-development-test-${artifactSource}-123-1`,
+                expired: false,
+                size_in_bytes: 42,
+                workflow_run: { id: 123, head_sha: artifactSource },
+              },
+            ],
+          }
+      : {
+          conclusion: 'success',
+          name: 'CI',
+          event: 'push',
+          head_branch: 'main',
+          head_sha: artifactSource,
+          run_attempt: 1,
+        };
+    response.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(body));
+  });
+  try {
+    git(root, 'init', '-q');
+    git(root, 'config', 'user.email', 'ci@example.invalid');
+    git(root, 'config', 'user.name', 'CI fixture');
+    artifactSource = commit(root, 'docs/stabilization/README.md', 'base');
+    const docsHead = commit(root, 'docs/stabilization/reports/route.json', '{}');
+    const unverifiedRuntime = commit(root, 'src/panel.ts', 'runtime change');
+    const runtimeDocsHead = commit(root, 'docs/stabilization/reports/next.json', '{}');
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    await run({
+      root,
+      artifactSource,
+      docsHead,
+      unverifiedRuntime,
+      runtimeDocsHead,
+      setResponseMode: (mode) => {
+        responseMode = mode;
+      },
+      apiUrl: `http://127.0.0.1:${server.address().port}`,
+    });
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+    rmSync(root, { recursive: true, force: true });
+  }
+}
+
+async function cliScope({ root, base, head, apiUrl }) {
+  const outputFile = join(root, 'github-output');
+  writeFileSync(outputFile, '');
+  const child = spawn(
+    process.execPath,
+    [new URL('./ci-change-scope.mjs', import.meta.url).pathname],
+    {
+      cwd: root,
+      env: {
+        ...process.env,
+        CI_BASE_SHA: base,
+        CI_HEAD_SHA: head,
+        CI_EVENT_NAME: 'push',
+        CI_EVENT_REF: 'refs/heads/main',
+        GITHUB_TOKEN: 'local-fixture-token',
+        GITHUB_REPOSITORY: 'matrx/extend',
+        GITHUB_API_URL: apiUrl,
+        GITHUB_OUTPUT: outputFile,
+      },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    },
+  );
+  let stdout = '';
+  let stderr = '';
+  child.stdout.setEncoding('utf8').on('data', (chunk) => {
+    stdout += chunk;
+  });
+  child.stderr.setEncoding('utf8').on('data', (chunk) => {
+    stderr += chunk;
+  });
+  const timer = setTimeout(() => child.kill(), 10000);
+  try {
+    const status = await new Promise((resolve, reject) => {
+      child.once('error', reject);
+      child.once('close', resolve);
+    });
+    assert.equal(status, 0, stderr);
+    assert.equal(stderr, '');
+    return { result: JSON.parse(stdout), output: readFileSync(outputFile, 'utf8') };
+  } finally {
+    clearTimeout(timer);
+    if (child.exitCode === null) child.kill();
+  }
+}
+
+for (const mode of ['malformed-listing', 'malformed-run', 'unavailable', 'empty-listing']) {
+  test(`CLI routes documentation change to full when artifact proof is ${mode}`, async () =>
+    withCliFixture(async (fixture) => {
+      fixture.setResponseMode(mode);
+      const { result, output } = await cliScope({
+        ...fixture,
+        base: fixture.artifactSource,
+        head: fixture.docsHead,
+      });
+      assert.equal(result.scope, 'full');
+      assert.deepEqual(result.paths, ['docs/stabilization/reports/route.json']);
+      assert.equal(result.baseAvailable, true);
+      assert.equal(result.provenArtifactSource, null);
+      assert.equal(output, 'scope=full\n');
+    }));
+}
+
+test('CLI routes documentation change to docs when a successful artifact proves its ancestor', async () =>
+  withCliFixture(async (fixture) => {
+    const { result, output } = await cliScope({
+      ...fixture,
+      base: fixture.artifactSource,
+      head: fixture.docsHead,
+    });
+    assert.equal(result.scope, 'docs');
+    assert.deepEqual(result.paths, ['docs/stabilization/reports/route.json']);
+    assert.equal(result.baseAvailable, true);
+    assert.equal(result.provenArtifactSource, fixture.artifactSource);
+    assert.equal(output, 'scope=docs\n');
+  }));
+
+test('CLI routes docs after unverified runtime ancestor to full despite docs-only event diff', async () =>
+  withCliFixture(async (fixture) => {
+    const { result, output } = await cliScope({
+      ...fixture,
+      base: fixture.unverifiedRuntime,
+      head: fixture.runtimeDocsHead,
+    });
+    assert.equal(result.scope, 'full');
+    assert.deepEqual(result.paths, ['docs/stabilization/reports/next.json']);
+    assert.equal(result.baseAvailable, true);
+    assert.equal(result.provenArtifactSource, fixture.artifactSource);
+    assert.equal(output, 'scope=full\n');
+  }));
 
 test('workflow gates full jobs and development artifact behind the scope decision', () => {
   const workflow = readFileSync(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');

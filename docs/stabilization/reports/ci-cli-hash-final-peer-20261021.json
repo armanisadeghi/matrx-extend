@@ -1,0 +1,32 @@
+{
+  "task_id": "EXT-D-0278",
+  "reviewer": "independent fresh peer",
+  "reviewed_evidence": "docs/stabilization/reports/ci-scope-cli-forcing-guard-20261021.json and its four referenced resource journals",
+  "prior_findings": [
+    {
+      "finding": "No CLI-process test for valid empty artifact listing / absent proof.",
+      "status": "ADDRESSED",
+      "verdict": "A PASS",
+      "evidence": "Captured green output reports 22 passed, 0 failed and includes the empty-listing CLI case; bad-route RED output includes empty-listing failure; constant-full RED fails the proven-docs case."
+    },
+    {
+      "finding": "Journals lacked output, mutation, and restoration evidence; embedded output hashes failed recomputation.",
+      "status": "ADDRESSED",
+      "verdict": "B PASS",
+      "evidence": "All four captured_output_sha256 values match exact retained UTF-8 fields. Each of three embedded Base64 captures decodes and matches its raw_subprocess_capture_sha256. GREEN is 22/22; both RED captures show the targeted failing behavior and RESTORED ... IDENTICAL; lint tail is explicit. All four journals parse and end in their declared terminal decisions."
+    }
+  ],
+  "journal_terminals": {
+    "green": "valid, exit 0, resourceInvalid false",
+    "bad_route_red": "child_failed, exit 1, resourceInvalid false",
+    "constant_full_red": "child_failed, exit 1, resourceInvalid false",
+    "lint": "valid, exit 0, resourceInvalid false"
+  },
+  "source_restoration": {
+    "current_sha256": "d1330be573a3f073a6c951304b01c07c52737d59bd9cd7c2bd22f5452a443298",
+    "matches_reported_before_after": true,
+    "production_file_diff_reported": "none"
+  },
+  "capture_note": "Decoded raw captures differ from retained captured_output at same-length Unicode test-runner markers. Both sets of hashes independently verify; the cause of the text difference is not established here. Lint retains an explicitly labeled final-eight-line excerpt; its full raw capture is not embedded.",
+  "scope": "Local CLI process and fixture evidence only. No conclusion about hosted CI queue/cancellation behavior or native extension product behavior."
+}
