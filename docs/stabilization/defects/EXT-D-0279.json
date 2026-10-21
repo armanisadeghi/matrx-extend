@@ -1,0 +1,56 @@
+{
+  "id": "EXT-D-0279",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T06"],
+  "title": "Merged credential URL parser change blocks main CI settings gate",
+  "surface": "Development build / credential navigation parser",
+  "auth_mode": "Infrastructure; no product role result established",
+  "severity": "S2: current development artifact cannot be produced; no demonstrated live outage",
+  "priority": "P1: restore green synchronized trunk",
+  "state": "fixed",
+  "owner": "/root",
+  "implementation_lane": "/root/credential_join_gate_repair",
+  "preconditions": ["Synchronized main 3e6a01690 includes new MAX_JOINED_URL_TOKENS parser limit."],
+  "reproduction": [
+    "Open automatic CI39646006515 for source3e6a01690.",
+    "Inspect failed No new hard-coded settings (ratchet) step."
+  ],
+  "expected": "Credential navigation parser changes satisfy the existing settings gate without weakening it or altering intended URL vocabulary matching.",
+  "actual": "Gate exits1 on src/lib/tools/handlers/credential-login.ts:921 MAX_JOINED_URL_TOKENS. No development artifact is emitted.",
+  "evidence": ["GitHub Actions run39646006515 failed-step log 2026-10-21T17:47:41Z"],
+  "reproducibility": "Automatic hosted gate failure observed; narrow repair/self-verification pending.",
+  "cause": "Blocking regex treated a finite URL receipt grammar width as a configurable settings cap. Pair/triple tuple expresses canonical server grammar without changing matching semantics or the gate.",
+  "transition_history": [
+    {
+      "at": "2026-10-21T17:50:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Observed currentmain hosted gate failure."
+    },
+    {
+      "at": "2026-10-21T17:50:01Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Exact failed gate and source declaration identified."
+    },
+    {
+      "at": "2026-10-21T17:50:02Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Narrow implementation lane assigned; heavy checks serialized behind native run."
+    },
+    {
+      "at": "2026-10-21T18:03:00Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Staticgrammarpeer accepts canonicalparity; freshguarded focusedtests5/5,typecheck,catalog allvalid0; blockingstaticgate nowclean withoutpolicy/ratchetchange."
+    }
+  ],
+  "next_action": "Pushverifiedunit; require synchronizedmain fullCI artifact before retestpass/closure and normalownerDEV refresh.",
+  "fix_review": "docs/stabilization/reports/credential-grammar-fresh-peer-20261021.json",
+  "verification": [
+    "docs/stabilization/reports/credential-executable-verification-20261021.json",
+    "docs/stabilization/reports/credential-join-gate-repair-20261021.json"
+  ],
+  "verification_limits": "Lightweightsettingsgate clean104/0new; independentstaticcontractpeer accepted; guardedfocusedtests5/5,compile,catalog and full lint pass. Currentmain hostedCI and next exactCIartifact remain pending; no nativecredentiallogin/product/regression claim."
+}

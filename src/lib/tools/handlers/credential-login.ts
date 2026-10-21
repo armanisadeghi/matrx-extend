@@ -917,16 +917,15 @@ async function classifyExplicitAttempt(
   };
 }
 
-/** Longest run of adjacent tokens re-joined into one segment ("one-time-code"). */
-const MAX_JOINED_URL_TOKENS = 3;
+/** URL segment grammar: adjacent pairs and triples cover split vocabulary words. */
+const JOINED_URL_TOKEN_LENGTHS = [2, 3] as const;
 
 /**
  * Split a url into alphanumeric segments for vocabulary membership — mirrors
  * the server's `url_segments` (aidream login/verifier.py) exactly.
  *
- * Every single token is a segment, and so is every run of up to
- * MAX_JOINED_URL_TOKENS ADJACENT tokens joined without the separator. Sites
- * spell one word with `_` or `-` inside it (`/users/sign_in`, `/log-in`,
+ * Every single token is a segment, as are adjacent pairs and triples joined
+ * without the separator. Sites spell one word with `_` or `-` inside it (`/users/sign_in`, `/log-in`,
  * `/two-factor`) and a vocabulary of whole words must still recognise them.
  * Membership stays exact-match, so "designing" never contains "signin".
  */
@@ -937,7 +936,7 @@ export function urlSegments(url: string | null | undefined): Set<string> {
     .split(/[^\p{L}\p{N}]+/u)
     .filter(Boolean);
   const out = new Set(tokens);
-  for (let size = 2; size <= MAX_JOINED_URL_TOKENS; size++) {
+  for (const size of JOINED_URL_TOKEN_LENGTHS) {
     for (let i = 0; i + size <= tokens.length; i++) {
       out.add(tokens.slice(i, i + size).join(''));
     }
