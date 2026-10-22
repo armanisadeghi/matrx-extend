@@ -12,7 +12,7 @@
  *
  * Per turn: the rows a request was built from are kept by run id; when the
  * server's `context_receipt` arrives, `compareReceipt` checks them and any
- * difference turns the chip amber and is filed as `context_truth_mismatch`.
+ * difference is filed silently as `context_truth_mismatch` (the screen never shows it).
  */
 
 import { log } from '@/lib/debug/log';
