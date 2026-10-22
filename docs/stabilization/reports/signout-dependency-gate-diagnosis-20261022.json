@@ -1,0 +1,55 @@
+{
+  "task": "signout-dependency-gate-diagnosis-20261022",
+  "status": "DONE_SOURCE_DIAGNOSIS",
+  "checkout": "2577e7ad22d60d8bf11397bf0e751db86b76341c",
+  "classification": "Approval fingerprint drift from a published dependency update; no sign-out behavior regression observed in the reviewed source or focused published-artifact probe. Current CI remains red until the existing gate is renewed and rerun.",
+  "dependency": {
+    "declaration": "@ai-matrx/auth: latest",
+    "lockfile_version": "0.4.2",
+    "local_node_modules_version": "0.3.10 (stale relative to lockfile; its OAuth artifact still has the approved 0.3.5 SHA-256)",
+    "approved_version": "0.3.5",
+    "approved_oauth_sha256": "b66094b64bb503c5c89164355f790fc09a721cc95fcaacdd21bf557410c67b50",
+    "published_0_4_2_oauth_sha256": "076f29ffd5db44aa7acf795f7dfa5c03642d67d617299ab4d5031d1b5d14eb0d",
+    "published_0_4_2_integrity": "sha512-a85rwVMeoJQe/DOHymo6IKT9/uXCB2YFhwDUONAjNH90uNrHK+j9AvWebrx/aNyEPXj9ZJGAMBpo0Ef19NJjhg==",
+    "published_source_git_head": "77dc9ac9971e02c1dcd327b31dbf8e6eeba66185",
+    "source_repository": "https://github.com/AI-Matrix-Engine/aidream/tree/77dc9ac9971e02c1dcd327b31dbf8e6eeba66185/apps/shared/auth",
+    "provenance_check": "npm metadata and tarball package.json agree on version, repository and gitHead; tarball SHA-512 matches both npm dist.integrity and pnpm-lock.yaml. The sibling aidream Git object exists locally at that gitHead. Its matrx-oauth.ts signOut method matches the published artifact's clear-first and scope=local path. GitHub contents API returned 404, so remote source browsing was not independently available."
+  },
+  "failure": {
+    "ci_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39709386689",
+    "checks_job": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39709386689/job/119596954582",
+    "observed_step": "A SIGN-OUT ENDS ONLY THE DEVICE THAT ASKED",
+    "observed_message": "Installed OAuth implementation changed: review its local sign-out behavior and renew the approval fingerprint.",
+    "boundary": "scripts/check-signout-scope.mjs scan() compares the entire installed matrx-oauth.js SHA-256 with the approved 0.3.5 SHA before invoking packageProof(); the gate stops at that comparison. The current CI did not execute packageProof() or the sign-out self-test, and subsequent checks were skipped.",
+    "flow_sha256": "a3918502f40c9b7c34a753d2c4a696b9a1613ec2a0804870e0cf9fb64f423e90 (still approved)"
+  },
+  "source_comparison": {
+    "published_artifacts": "The full 0.3.5-to-0.4.2 compiled matrx-oauth.js diff is 43 unified-diff lines: add shared src/jwt.ts base64UrlToBytes/base64UrlToText, remove the inline base64UrlDecodeToString helper, and route personIdFromAccessToken through base64UrlToText. The signOut block is unchanged.",
+    "sibling_source": "git diff 6bf5dc0d5ee5a5071f767405726c136bf7f5ab69..77dc9ac9971e02c1dcd327b31dbf8e6eeba66185 -- apps/shared/auth/src/matrx-oauth.ts changes the decoder import/call and comments only; signOut is unchanged.",
+    "signout_contract": "Both versions lock(clearLocal) before emitting signed_out; return {revoked:null} with no bearer; otherwise POST /auth/v1/logout?scope=local with the captured pre-clear bearer; return revoked true for OK/401/403/404 and false on fetch error.",
+    "focused_probe": "Diagnostic direct in-memory import of each verified npm tarball's real compiled OAuth artifact. Both 0.3.5 and 0.4.2 passed: stored session existed, signOut cleared it before one POST with scope=local and captured bearer, returned {revoked:true} for 204, then a second signOut returned {revoked:null} with no second request. No package install, suite, build, source mutation, network revoke, or UI run. This unguarded diagnostic execution earns no accepted package-behavior or release proof under the current disk refusal.",
+    "focused_probe_exact_command": "node --input-type=module <<'JS'\nimport assert from 'node:assert/strict';\nimport { execFileSync } from 'node:child_process';\nfor (const version of ['0.3.5','0.4.2']) {\n  const source=execFileSync('tar',['-xOf',`.output/stabilization-checkpoints/auth-${version}.tgz`,'package/dist/matrx-oauth.js'],{encoding:'utf8'});\n  const {createMatrxOAuth}=await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);\n  const store=new Map(), requests=[];\n  const client=createMatrxOAuth({authUrl:'https://auth.invalid',clientId:'extension-guard',redirectUri:'https://extension.invalid/callback'},{storage:{getItem:async k=>store.get(k)??null,setItem:async(k,v)=>{store.set(k,v)},removeItem:async k=>{store.delete(k)}},openAuthorization:async()=>{throw Error('unexpected sign in')},fetch:async(url,options)=>{requests.push({url,method:options.method,authorization:options.headers.authorization,cleared:store.size===0});return new Response(null,{status:204})}});\n  const token=`header.${Buffer.from(JSON.stringify({sub:'guard-person',exp:4102444800})).toString('base64url')}.signature`;\n  await client.adoptTokens({accessToken:token,refreshToken:'guard-refresh',expiresAtMs:4102444800000});\n  assert.notEqual(await client.getSession(),null);\n  assert.deepEqual(await client.signOut(),{revoked:true});\n  assert.equal(await client.getSession(),null);\n  assert.deepEqual(requests,[{url:'https://auth.invalid/auth/v1/logout?scope=local',method:'POST',authorization:`Bearer ${token}`,cleared:true}]);\n  assert.deepEqual(await client.signOut(),{revoked:null});\n  assert.equal(requests.length,1);\n  console.log(`auth ${version}: focused published-artifact local signOut probe PASS; one local POST after clearing; no-session no POST`);\n}\nJS",
+    "focused_probe_exact_output": "auth 0.3.5: focused published-artifact local signOut probe PASS; one local POST after clearing; no-session no POST\nauth 0.4.2: focused published-artifact local signOut probe PASS; one local POST after clearing; no-session no POST",
+    "focused_probe_resource_admission": "No resource permit or watchdog covered this manually invoked in-memory diagnostic. It was not an admitted acceptance run. No further execution was performed after owner instruction."
+  },
+  "d285_zero_author_review": {
+    "original_red_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39703171662 at d24b989032b3bb2420492f473409fac415d5e4cc",
+    "green_retest": "https://github.com/armanisadeghi/matrx-extend/actions/runs/39706107276 at 244259934f8ebd88b8bcd5ae1edc8b9d8c06f7f5",
+    "observed": "The normal full CI retest concluded success; scope, checks, and resource-guard-integration jobs all succeeded. Checks Lint ran unchanged pnpm lint --diagnostic-level=error, reported Checked 3207 files in 4s; No fixes applied, and succeeded. Typecheck, sign-out gate/self-test, unit tests, resource regression, keyed development build and artifact upload also succeeded. The docs job was skipped by workflow scope.",
+    "bounded_conclusion": "Original deterministic Biome lint repro is closed at 244259934; this is source/CI eligibility only. It does not prove import evaluation-order equivalence, Chrome reload, current 2577e7ad2 CI, or product behavior. The later auth lockfile refresh caused the separate gate failure."
+  },
+  "acceptance_target": "For the exact current lockfile artifact, retain @ai-matrx/auth: latest and the unchanged gate semantics. After an admitted renewed package-behavior proof, renew only the OAUTH_SHA approval fingerprint and run the existing check:signout-scope and check:signout-scope:self-test against a frozen-lockfile install on an admitted/hosted runner; preserve its local-scope positive proof and three behavior mutations. Require normal full CI green at the integrated SHA before treating source as eligible. Reassess if a newer latest version is locked before renewal. D286 is not resolved by this diagnostic report.",
+  "limits": [
+    "This is a read-only dependency diagnosis; no guard/source/lockfile edits or commits were made.",
+    "The focused probe covers local clear, URL, bearer, success response and no-session path. It does not exercise browser storage, real GoTrue revocation, network failure, all source scanner cases, or the gate's mutation self-test against 0.4.2.",
+    "A direct GitHub contents API lookup of the private sibling source returned 404; provenance uses npm metadata/tarball integrity plus the local sibling Git object at the npm gitHead.",
+    "Current checkout's node_modules is 0.3.10; its matching old fingerprint is not evidence that frozen-lockfile CI should pass."
+  ],
+  "files_changed": [
+    ".output/stabilization-checkpoints/signout-dependency-gate-diagnosis-20261022.json"
+  ],
+  "downloaded_evidence": [
+    ".output/stabilization-checkpoints/auth-0.3.5.tgz",
+    ".output/stabilization-checkpoints/auth-0.4.2.tgz"
+  ]
+}
