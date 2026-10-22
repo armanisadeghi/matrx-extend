@@ -19,6 +19,7 @@ import { ChatProvider, usePathname, useRouter } from '@ai-matrx/chat/host/react'
 import { Button } from '@ai-matrx/design-system';
 import { History, SquarePen } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { ExtensionTabLayer } from './canvas-tabs';
 import { createExtensionChatHost } from './host';
 
 /** Approval / ask / capture cards for the OPEN conversation only (each card names its conversation). */
@@ -56,7 +57,8 @@ function Screens() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const conversationId = pathname.match(/^\/chat\/([0-9a-f-]{36})/)?.[1] ?? null;
   return (
-    <div data-package-chat="" className="flex h-full min-h-0 flex-col">
+    <div data-package-chat="" className="relative flex h-full min-h-0 flex-col">
+      <ExtensionTabLayer />
       <div className="flex shrink-0 items-center gap-1 px-2 py-1">
         <Button
           variant="ghost"

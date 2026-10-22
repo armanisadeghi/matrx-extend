@@ -39,6 +39,7 @@ import { createAiWatchWindowOpener } from './ai-watch-opener';
 import { browserDomContextSource, isBrowserDeviceRef } from './browser-dom-source';
 import { registerExtensionComposerExtensions } from './composer-extensions';
 import { extensionPageContextSource } from './context-source';
+import { createExtensionCanvas } from './canvas-tabs';
 import { createExtensionChatIdentity } from './identity';
 import { extensionKnobs } from './knobs';
 import { registerExtensionToolRenderers } from './tool-renderers';
@@ -183,6 +184,8 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
     },
   };
   const resolved = resolveChatHost(host);
+  // The package's canvas tabs (a value's details, a sent message's receipt) open as a layer in the panel.
+  host.canvas = createExtensionCanvas(() => resolved.diagnostics);
   host.identity = await createExtensionChatIdentity(resolved.identity, (error) =>
     resolved.diagnostics.capture(error, { area: 'identity', code: 'extension-session-unreadable' }),
   );
