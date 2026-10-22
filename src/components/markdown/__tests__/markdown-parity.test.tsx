@@ -57,6 +57,9 @@ describe('Markdown door keeps the old renderer’s output', () => {
   });
 });
 
+const stripToolbar = (text: string) =>
+  text.replace(/Window|Data|Chartthis|Fullscreen|Moretableactions|Filter|Sort/g, '');
+
 describe('after the chat package registers its rich-content host (Chat tab visited)', () => {
   test(
     'tables, code, links and reasoning tags still draw outside the chat store',
@@ -77,10 +80,12 @@ describe('after the chat package registers its rich-content host (Chat tab visit
         );
         const before = LEGACY[name];
         if (name === 'gfm table' && before) {
-          // The package table adds "Window" and "Data" action buttons: same cells, extra text only.
+          // The package table adds toolbar buttons (Window, Data, Chart this, ...) whose set and
+          // arrival time depend on lazy chunks: assert the cells, and that the text is the old text once
+          // the toolbar labels are taken out - whenever the lazy buttons land.
           expect(after.cells).toEqual(before.cells);
-          expect(after.text.replace('WindowData', '')).toEqual(before.text);
           expect({ ...after, text: '' }).toEqual({ ...before, text: '' });
+          expect(stripToolbar(after.text)).toEqual(before.text);
         } else {
           expect(after).toEqual(before);
         }

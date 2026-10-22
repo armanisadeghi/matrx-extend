@@ -1,12 +1,17 @@
 /**
- * The extension's ONE door onto @ai-matrx/rich-content. `Markdown` and `MarkdownView` both render
- * through it, with the side-panel look the hand-rolled renderers had: compact density, github code
+ * The extension's ONE door onto @ai-matrx/rich-content. `Markdown` renders through it (`MarkdownView`
+ * is a separate, not-yet-migrated renderer), with the side-panel look the hand-rolled renderers had: compact density, github code
  * colours, one-line code header, plain GFM (no math, HTML shown as text), images load at once, and
  * the theme from the extension's own settings store.
  *
  * The `registry.xml` renderers (thinking / reasoning / reflection) become rich-content `customTags`.
  * `registry.code` / `registry.json` have no rich-content hook; no caller registers any today, and a
  * non-empty one announces itself in dev instead of being dropped silently.
+ *
+ * With NO registry the old renderer showed `<thinking>` / `<reasoning>` as written; rich-content
+ * strips them unconditionally, so the door escapes those tags to literal text first
+ * (`showChainOfThoughtTagsAsText`) — the user's own bubble, a structured string and an AI
+ * recommendation never lose a passage silently. A registry that handles a tag keeps it.
  */
 
 import { cn } from '@/lib/utils';
@@ -46,6 +51,41 @@ function asCustomTag(
   return CustomTag;
 }
 
+const COT_TAG = /<(\/?)(thinking|reasoning|consolidated_reasoning)\b/gi;
+
+/**
+ * Escape chain-of-thought tags to literal text (`&lt;thinking>` draws as `<thinking>`), leaving
+ * fenced code and inline code spans untouched (they already render as written).
+ */
+export function showChainOfThoughtTagsAsText(
+  source: string,
+  handled: ReadonlySet<string> = new Set(),
+): string {
+  if (!COT_TAG.test(source)) return source;
+  COT_TAG.lastIndex = 0;
+  const toLiteral = (whole: string, slash: string, name: string) =>
+    handled.has(name.toLowerCase()) ? whole : `&lt;${slash}${name}`;
+  let fence: string | null = null;
+  return source
+    .split('\n')
+    .map((line) => {
+      const mark = /^ {0,3}(`{3,}|~{3,})/.exec(line)?.[1] ?? null;
+      if (fence) {
+        if (mark && mark[0] === fence[0] && mark.length >= fence.length) fence = null;
+        return line;
+      }
+      if (mark) {
+        fence = mark;
+        return line;
+      }
+      return line
+        .split(/(`+[^`]*`+)/)
+        .map((part, i) => (i % 2 === 1 ? part : part.replace(COT_TAG, toLiteral)))
+        .join('');
+    })
+    .join('\n');
+}
+
 let warnedUnsupported = false;
 
 export function RichMarkdownDoor({
@@ -63,6 +103,15 @@ export function RichMarkdownDoor({
     return out;
   }, [registry?.xml]);
 
+  const source = useMemo(
+    () =>
+      showChainOfThoughtTagsAsText(
+        content,
+        new Set(Object.keys(registry?.xml ?? {}).map((n) => n.toLowerCase())),
+      ),
+    [content, registry?.xml],
+  );
+
   if (
     !warnedUnsupported &&
     process.env.NODE_ENV !== 'production' &&
@@ -77,7 +126,7 @@ export function RichMarkdownDoor({
   return (
     <RichContent
       level="standard"
-      source={content}
+      source={source}
       {...(isStreaming !== undefined && { isStreaming })}
       className={cn('min-w-0 text-foreground [overflow-wrap:anywhere]', className)}
       density="compact"

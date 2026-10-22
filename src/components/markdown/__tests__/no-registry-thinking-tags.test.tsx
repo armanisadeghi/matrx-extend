@@ -1,0 +1,59 @@
+/**
+ * With NO registry the old renderer showed `<thinking>` / `<reasoning>` as written; rich-content
+ * strips them, which silently deleted a passage from the user's own bubble, a structured string and
+ * an AI recommendation. The door escapes them to literal text when no registry handles them.
+ * Callers: PilotView user bubble (`<Markdown content density="compact" />`), StructuredValue string
+ * (same props), AiRecommendations (`className="text-xs"`).
+ */
+import { chatMarkdownRegistry } from '@/features/chat/markdown-registry';
+import { describe, expect, test } from 'vitest';
+import { Markdown } from '../Markdown';
+import { showChainOfThoughtTagsAsText } from '../rich-door';
+import { renderShape } from './parity-shape';
+
+(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+
+const SRC = '<thinking>secret plan</thinking>\nVisible answer';
+const LITERAL = '<thinking>secretplan</thinking>Visibleanswer';
+
+describe('chain-of-thought tags with no registry stay as written', () => {
+  test('user bubble shape (PilotView)', { timeout: 120_000 }, async () => {
+    expect((await renderShape(<Markdown content={SRC} density="compact" />)).text).toBe(LITERAL);
+  });
+  test('structured string shape (StructuredValue)', { timeout: 120_000 }, async () => {
+    const s = await renderShape(
+      <Markdown content={'<reasoning>why</reasoning> then the result'} density="compact" />,
+    );
+    expect(s.text).toBe('<reasoning>why</reasoning>thentheresult');
+  });
+  test('recommendations shape (AiRecommendations)', { timeout: 120_000 }, async () => {
+    const s = await renderShape(<Markdown content={SRC} density="compact" className="text-xs" />);
+    expect(s.text).toBe(LITERAL);
+  });
+  test(
+    'a registry that handles the tag still draws it (not literal)',
+    { timeout: 120_000 },
+    async () => {
+      const s = await renderShape(<Markdown content={SRC} registry={chatMarkdownRegistry} />);
+      expect(s.text).not.toContain('<thinking>');
+      expect(s.text).toContain('Visibleanswer');
+    },
+  );
+});
+
+describe('showChainOfThoughtTagsAsText', () => {
+  test('escapes outside code, leaves fences and inline code alone', () => {
+    const src = 'a <thinking>x</thinking>\n```\n<thinking>y</thinking>\n```\n`<reasoning>` b';
+    expect(showChainOfThoughtTagsAsText(src)).toBe(
+      'a &lt;thinking>x&lt;/thinking>\n```\n<thinking>y</thinking>\n```\n`<reasoning>` b',
+    );
+  });
+  test('leaves a tag the registry handles', () => {
+    expect(showChainOfThoughtTagsAsText('<thinking>x</thinking>', new Set(['thinking']))).toBe(
+      '<thinking>x</thinking>',
+    );
+  });
+  test('plain text is returned untouched', () => {
+    expect(showChainOfThoughtTagsAsText('hello <b>x</b>')).toBe('hello <b>x</b>');
+  });
+});

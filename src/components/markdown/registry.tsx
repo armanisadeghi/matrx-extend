@@ -42,14 +42,6 @@ export interface MarkdownRegistry {
   json?: Record<string, ComponentType<JsonBlockRendererProps>>;
 }
 
-export function lookupXml(
-  registry: MarkdownRegistry | undefined,
-  tag: string,
-): ComponentType<XmlBlockRendererProps> | null {
-  if (!registry?.xml) return null;
-  return registry.xml[tag] ?? registry.xml[tag.toLowerCase()] ?? null;
-}
-
 export function lookupCode(
   registry: MarkdownRegistry | undefined,
   lang: string,
