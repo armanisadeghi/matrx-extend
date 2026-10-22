@@ -31,10 +31,10 @@ const SKIP = /(^|\/)(node_modules|dist|target|build|\.next|\.venv|__pycache__|\.
 const LOGOUT_URL = /(?:\/auth\/v1\/logout|["'`]\/logout)(?<rest>[^"'`\n]*)/g;
 const COMMENT = /^\s*(?:\/\/|\*|\/\*|#)/;
 const FLOW = 'src/lib/auth/flow.ts';
-// Reviewed against @ai-matrx/auth 0.3.5. Approval fingerprints, not dependency pins.
-// Since the prior artifact, only the token-error helper was renamed; signOut is unchanged.
+// Reviewed against @ai-matrx/auth 0.4.6. Approval fingerprints, not dependency pins.
+// Since 0.3.5 signOut is unchanged: local clear first, then POST logout?scope=local.
 const FLOW_SHA = 'a3918502f40c9b7c34a753d2c4a696b9a1613ec2a0804870e0cf9fb64f423e90';
-const OAUTH_SHA = 'b66094b64bb503c5c89164355f790fc09a721cc95fcaacdd21bf557410c67b50';
+const OAUTH_SHA = '076f29ffd5db44aa7acf795f7dfa5c03642d67d617299ab4d5031d1b5d14eb0d';
 const hash = (text) => createHash('sha256').update(text).digest('hex');
 const approvedImplementation = (source) => hash(source) === OAUTH_SHA;
 const logout = (name) => name === 'signOut' || name === 'sign_out';
