@@ -1,0 +1,19 @@
+{
+  "task_id": "ci-formatter-batch-20261022",
+  "status": "source-format-fixed; bounded-static-verified; uncommitted-for-root",
+  "changed_files": [
+    "src/features/package-chat/canvas-tabs.tsx",
+    "src/features/package-chat/host.ts",
+    "tests/browser/context-chip-live-walk.mjs"
+  ],
+  "verification": {
+    "trigger": "CI39703171662 lint log identifies only four Biome diagnostics across these three files",
+    "formatter": "pnpm exec biome check --write on exact files: Fixed 3 files",
+    "recheck": "pnpm exec biome check on exact files: exit 0, no fixes applied",
+    "structure": "TypeScript syntax trees compared against HEAD per file: same import module and binding multisets, same non-import AST hash, zero parse diagnostics before and after",
+    "diff": "git diff --check on exact files: exit 0",
+    "independent_D284_review": "CI39699393868 at 7f2ac62051e86e34ad78f881687c9e5cf81dcb38 completed success; checks/Lint, Typecheck, Unit tests, and development artifact steps succeeded. This resolves D284's original formatter CI repro at that SHA only. Source and CI review only; no browser or installed-extension acceptance claim. https://github.com/armanisadeghi/matrx-extend/actions/runs/39699393868"
+  },
+  "limits": "No test suite, compile, build, UI, CI dispatch, commit, or push here due to disk below 20 GiB and delegated ownership. Current HEAD's CI39703171662 is still red until these edits are integrated and hosted checks rerun. D284 success does not validate current HEAD or product behavior.",
+  "next_action": "Root: inspect and commit only the three formatter edits as its own defect unit, push, then observe normal hosted CI; keep product/browser acceptance pending."
+}

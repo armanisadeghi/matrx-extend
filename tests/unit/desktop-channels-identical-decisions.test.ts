@@ -82,6 +82,8 @@ function tierOf(handler: AnyToolHandler): ToolTier {
 function expected(tier: ToolTier, mode: 'ask' | 'act', knob: unknown): Decision {
   if (tier === 'read') return 'run';
   if (tier === 'action') return mode === 'act' ? 'run' : 'ask';
+  // An ask-user tool's own prompt is the one ask: no approval card on top of it.
+  if (tier === 'ask-user') return 'run';
   return knob === 'follow_act_without_asking' && mode === 'act' ? 'run' : 'ask';
 }
 

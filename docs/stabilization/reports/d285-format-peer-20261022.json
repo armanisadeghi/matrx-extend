@@ -1,0 +1,20 @@
+{
+  "task_id": "ci-format-peer-20261022",
+  "status": "DONE_WITH_CONCERNS",
+  "files_changed": [],
+  "reviewed_files": [
+    "src/features/package-chat/canvas-tabs.tsx",
+    "src/features/package-chat/host.ts",
+    "tests/browser/context-chip-live-walk.mjs"
+  ],
+  "evidence": {
+    "format_observation": "pnpm exec biome check src/features/package-chat/canvas-tabs.tsx src/features/package-chat/host.ts tests/browser/context-chip-live-walk.mjs exited 0: Checked 3 files; No fixes applied.",
+    "static_parse": "TypeScript compiler API parsed each HEAD and worktree version with zero parse diagnostics.",
+    "non_import_syntax_and_literals": "For each file, a SHA-256 over the recursive TypeScript AST with import declarations removed (retaining syntax node kinds, identifiers, and literal text) matched between HEAD and worktree. Equality: true for all three.",
+    "import_sets": "Sorted multisets of module specifier, import kind, and imported/local binding pairs match HEAD for every file. Equality: true for all three.",
+    "whitespace_diff": "git diff --check on the three reviewed files exited 0.",
+    "observed_edits": "Formatting only: import declaration ordering in the two TSX files and line wrapping in the TSX and MJS files."
+  },
+  "limits": "This is static source evidence only; no tests, build, compile, UI, or CI were run. Import declarations were reordered in canvas-tabs.tsx and host.ts. Matching module/binding multisets does not establish runtime equivalence: module evaluation order and top-level side effects can depend on import order, and this review did not establish those modules are order-insensitive.",
+  "next_action": "Root may integrate the three edits as formatter repairs, retaining the import evaluation-order caveat and using hosted CI for the authorized follow-up."
+}

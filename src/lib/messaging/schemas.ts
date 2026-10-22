@@ -70,6 +70,9 @@ export const CHANNELS = {
   LOCAL_BROWSER_APPROVAL_RESPONSE: 'local-browser:approval-response',
   LOCAL_BROWSER_APPROVAL_CANCEL: 'local-browser:approval-cancel',
   LOCAL_BROWSER_APPROVAL_VIEW_CLOSED: 'local-browser:approval-view-closed',
+  // sidepanel → SW: every approval / question still waiting for the person (the side panel was
+  // closed when it was raised). Answer: { confirms: PendingConfirmRequest[], asks: PendingAskUserRequest[] }.
+  TOOL_INBOX_PENDING: 'tool:inbox-pending',
   TOOL_ASK_USER_REQUEST: 'tool:ask-user-request', // SW → sidepanel: agent asked the user a question
   TOOL_ASK_USER_RESPONSE: 'tool:ask-user-response', // sidepanel → SW: user's answer
   // On-the-fly credential CAPTURE (D-11): the agent hit a login with no stored
