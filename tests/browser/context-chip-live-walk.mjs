@@ -501,6 +501,11 @@ try {
     'a chip value row opens its details in the panel',
     (await panel.locator('[data-extension-tab-layer="conversation-context"]').count()) === 1 && /page brief/i.test(layerText),
   );
+  check(
+    'a value that was sent is never called empty in the values panel',
+    !/No value set for this conversation/i.test(layerText),
+    layerText.slice(0, 200),
+  );
   await panel.getByRole('button', { name: 'Close' }).first().click();
   await panel.waitForTimeout(500);
 
@@ -517,6 +522,11 @@ try {
   const viewerText = (await panel.locator('[data-extension-tab-layer]').first().innerText().catch(() => '')).replace(/\n+/g, ' | ');
   const at = viewerText.search(/Lighthouse/i);
   console.log('  [viewer]', viewerText.slice(Math.max(0, at - 300), at + 500));
+  check(
+    'an inline value the model received is viewable (Agent received shows its text)',
+    !/not retained|not_retained/i.test(viewerText) && /<object key="page_brief"|key=&quot;page_brief|page_brief/i.test(viewerText.slice(viewerText.search(/Agent received/i))),
+    viewerText.slice(Math.max(0, viewerText.search(/Agent received/i)), viewerText.search(/Agent received/i) + 300),
+  );
   check(
     'opening a value shows the delivered text',
     at >= 0 && /wikipedia|lighthouse/i.test(viewerText.slice(at, at + 2000)),
