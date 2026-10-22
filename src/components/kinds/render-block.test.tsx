@@ -137,7 +137,7 @@ describe('server-built render blocks reach real components', () => {
     expect(screen.queryByText(/"__kind"/)).toBeNull();
   });
 
-  it('sends a KNOWN kind with no component here to the honest floor', () => {
+  it('sends a KNOWN kind with no component here to the honest floor', async () => {
     // Same real envelope, relabelled to a kind this client maps no component
     // for — the R6 disposition: readable data plus a muted "no custom view"
     // note, never an error and never a blank block.
@@ -154,7 +154,10 @@ describe('server-built render blocks reach real components', () => {
     if (!block) throw new Error('the relabelled fixture did not survive the wire gate');
     render(<RenderBlockView block={block} />);
     expect(screen.getByText(/no custom view/i)).toBeTruthy();
-    // The data is still there — nothing vanished.
-    expect(screen.getByText(/What pigment absorbs light\?/)).toBeTruthy();
+    // The data is still there — nothing vanished. Its markdown text draws through rich-content,
+    // whose standard level loads on first use, so the text arrives a beat after the frame.
+    expect(
+      await screen.findByText(/What pigment absorbs light\?/, undefined, { timeout: 30_000 }),
+    ).toBeTruthy();
   });
 });

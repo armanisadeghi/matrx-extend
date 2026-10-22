@@ -1,0 +1,173 @@
+{
+  "plain answer with headings and emphasis": {
+    "text": "SummaryThepageloadsthreescriptsandonedeferredstylesheet.NextstepsChecktherobots.txtfilefirst.",
+    "headings": ["h1:Summary", "h2:Nextsteps"],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": []
+  },
+  "bulleted and numbered lists with nesting": {
+    "text": "FirstitemSeconditemnestedanestedbThirdOpenthetabClickRunReadtheresult",
+    "headings": [],
+    "listItems": 8,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": []
+  },
+  "task list and strikethrough": {
+    "text": "ScrapedthepageSavedthecaptureoldpricenewprice",
+    "headings": [],
+    "listItems": 2,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": []
+  },
+  "python code block": {
+    "text": "Hereisthescript:pythonimportrequestsresp=requests.get(\"https://example.com\")print(resp.status_code)Runitlocally.",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": ["importrequestsresp=requests.get(\"https://example.com\")print(resp.status_code)"]
+  },
+  "typescript and bash code blocks": {
+    "text": "tsexportfunctionadd(a:number,b:number):number{returna+b;}bashpnpminstallpnpmdev",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": ["exportfunctionadd(a:number,b:number):number{returna+b;}", "pnpminstallpnpmdev"]
+  },
+  "json code block": {
+    "text": "json{\"title\":\"ExampleDomain\",\"links\":1,\"ok\":true}",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": ["{\"title\":\"ExampleDomain\",\"links\":1,\"ok\":true}"]
+  },
+  "short one-line fence": {
+    "text": "Usethisselector:css.main>h1",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": [".main>h1"]
+  },
+  "gfm table": {
+    "text": "MetricValueLCP2.1sCLS0.02TBT140ms",
+    "headings": [],
+    "listItems": 0,
+    "cells": ["Metric", "Value", "LCP", "2.1s", "CLS", "0.02", "TBT", "140ms"],
+    "hrefs": [],
+    "images": [],
+    "code": []
+  },
+  "links inline and autolink": {
+    "text": "Seethedocsandhttps://example.orgformore.",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": ["https://example.com/docs", "https://example.org"],
+    "images": [],
+    "code": []
+  },
+  "remote image": {
+    "text": "Screenshot:",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": ["https://example.com/hero.png"],
+    "code": []
+  },
+  "scrape capture with an inline svg data image": {
+    "text": "Logo:",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": []
+  },
+  "blockquote and horizontal rule": {
+    "text": "Quotedfromthepageheader.Aftertherule.",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": []
+  },
+  "inline html and dollar amounts stay text": {
+    "text": "Priceis$5and$10today.Thetag<b>bold</b>isshownaswritten.",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": []
+  },
+  "thinking then answer": {
+    "text": "ThinkingThetitleisExampleDomain.",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": []
+  },
+  "reasoning and reflection blocks": {
+    "text": "ReasoningBothpagesmatch.Thinking",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": []
+  },
+  "self-closing reflection tag": {
+    "text": "Before.ThinkingAfterthetag.",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": []
+  },
+  "streaming partial: open thinking tag at the tail": {
+    "text": "Starting.Thinking…",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": []
+  },
+  "streaming partial: unclosed code fence": {
+    "text": "Here:jsconstx=1;consty=",
+    "headings": [],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": ["constx=1;consty="]
+  },
+  "note with headings h3-h6": {
+    "text": "SectionBodytext.SubSmallcapsTiny",
+    "headings": ["h3:Section", "h4:Sub", "h5:Smallcaps", "h6:Tiny"],
+    "listItems": 0,
+    "cells": [],
+    "hrefs": [],
+    "images": [],
+    "code": []
+  }
+}
