@@ -7,7 +7,7 @@
   "auth_mode": "Infrastructure independent of product role",
   "severity": "S2: current source cannot produce eligible CI artifact; no new public behavior failure established",
   "priority": "P1: restore unchanged CI gates",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/ci_formatter_batch_20261022",
   "preconditions": [
     "Main d24b989032b3bb2420492f473409fac415d5e4cc includes contributor context canvas/detail layer changes."
@@ -22,10 +22,12 @@
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/39703171662",
     "docs/stabilization/reports/d285-formatter-batch-20261022.json",
-    "docs/stabilization/reports/d285-format-peer-20261022.json"
+    "docs/stabilization/reports/d285-format-peer-20261022.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39706107276",
+    "docs/stabilization/reports/signout-dependency-gate-diagnosis-20261022.json"
   ],
   "acceptance": "Exact three files satisfy unchanged formatter/import organizer; import module/binding sets and non-import syntax/literal values preserved; independent review; normal automatic fullCI passes before source eligibility. No browser/product health credit.",
-  "next_action": "Observe normal fullCI for integrated fix. Keep fixed until original hosted Lint and surrounding required jobs pass; do not infer Chrome reload/current artifact or product acceptance. Import-order runtime limitation stays explicit.",
+  "next_action": "Bounded CI hygiene defect closed. Current dependency catch-up refusal is D286; product acceptance and Chrome Reload remain unverified.",
   "transition_history": [
     {
       "at": "2026-10-22T01:28:42.832064+00:00",
@@ -50,6 +52,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Mechanical formatter/import organizer repair passes independent static peer; original fullCI retest and runtime remain unverified."
+    },
+    {
+      "at": "2026-10-22T02:32:40.259242+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Normal fullCI39706107276 at integrated fix244 passes original repository Lint and all required surrounding jobs; fresh zero-author reviewer confirms."
+    },
+    {
+      "at": "2026-10-22T02:32:40.259242+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Bounded deterministic CI hygiene defect independently verified. New auth adoption gate is separate D286; no product health claim."
     }
   ],
   "verification": {
@@ -57,5 +71,13 @@
     "peer": "/root/ci_format_peer_20261022 independently repeated exact-file Biome and structural checks; no parse diagnostics.",
     "limit": "Import declaration order changed in canvas-tabs.tsx and host.ts. Static equivalence does not prove absence of top-level evaluation/cycle effects. No new fullCI, compile/test suite or native acceptance. No product-pass claim.",
     "ci_next": "Normal automatic fullCI at integrated fix SHA; preserve unchanged source, guard and artifact gates."
+  },
+  "retest": {
+    "run_id": 39706107276,
+    "source_sha": "244259934f8ebd88b8bcd5ae1edc8b9d8c06f7f5",
+    "conclusion": "success; scope/checks/resource integration all success",
+    "observed": "Unchanged repository Lint checked3207files with no fixes; typecheck/unit/source gates/keyed dev build/artifact also succeed.",
+    "independent_reviewer": "/root/signout_dependency_gate_diagnosis (zero authorship of formatter repair)",
+    "limits": "Only original CI lint repro and surrounding source checks; not import evaluation-order equivalence, current2577, native/Store/product acceptance or D283 closure."
   }
 }
