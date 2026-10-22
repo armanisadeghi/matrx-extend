@@ -134,7 +134,7 @@ Guard: `pnpm check:org-default-ban`. Register row EX-T05: `../common-docs/system
   build catches a wrong schema (it 404s at runtime with PGRST205). Never hand-write
   `.schema('x')` — use the accessors in
   [src/lib/supabase/schemas.ts](./src/lib/supabase/schemas.ts) (`extendDb()`,
-  `schedulerDb()`, `workbenchDb()`, `chatDb()`, `usersDb()`, `adminDb()`, `toolDb()`,
+  `schedulerDb()`, `workbenchDb()`, `chatDb()`, `usersDb()`, `toolDb()`,
   `aiDb()`). RPCs did NOT move — call `.rpc()` on the plain client. Gate:
   `pnpm check:schema-routing` (strict in CI + `release.sh`).
 - Ownership columns differ per table (some `created_by`, some kept `user_id`, two have

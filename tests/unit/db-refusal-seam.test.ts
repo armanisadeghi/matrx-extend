@@ -28,7 +28,6 @@ const mocks = vi.hoisted(() => ({
   getSupabase: vi.fn(),
   workbenchDb: vi.fn(),
   extendDb: vi.fn(),
-  adminDb: vi.fn(),
   aiDb: vi.fn(),
   getActiveOrganizationId: vi.fn(),
   rpc: vi.fn(),
@@ -55,7 +54,6 @@ vi.mock('@/lib/telemetry/external-reporting', () => ({
 vi.mock('@/lib/supabase/schemas', () => ({
   workbenchDb: mocks.workbenchDb,
   extendDb: mocks.extendDb,
-  adminDb: mocks.adminDb,
   aiDb: mocks.aiDb,
   docprocDb: () => mocks.getSupabase(),
 }));
