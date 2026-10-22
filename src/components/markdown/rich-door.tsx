@@ -64,18 +64,8 @@ export const CHAIN_OF_THOUGHT_TAGS = [
 ] as const;
 const COT_TAG = new RegExp(`<(/?)(${CHAIN_OF_THOUGHT_TAGS.join('|')})\\b`, 'gi');
 
-/**
- * Escape chain-of-thought tags to literal text (`&lt;thinking>` draws as `<thinking>`), leaving
- * fenced code and inline code spans untouched (they already render as written).
- */
-export function showChainOfThoughtTagsAsText(
-  source: string,
-  handled: ReadonlySet<string> = new Set(),
-): string {
-  if (!COT_TAG.test(source)) return source;
-  COT_TAG.lastIndex = 0;
-  const toLiteral = (whole: string, slash: string, name: string) =>
-    handled.has(name.toLowerCase()) ? whole : `&lt;${slash}${name}`;
+/** Apply `fn` to every stretch of text outside fenced code and inline code spans. */
+function mapOutsideCode(source: string, fn: (piece: string) => string): string {
   let fence: string | null = null;
   return source
     .split('\n')
@@ -91,10 +81,57 @@ export function showChainOfThoughtTagsAsText(
       }
       return line
         .split(/(`+[^`]*`+)/)
-        .map((part, i) => (i % 2 === 1 ? part : part.replace(COT_TAG, toLiteral)))
+        .map((part, i) => (i % 2 === 1 ? part : fn(part)))
         .join('');
     })
     .join('\n');
+}
+
+/**
+ * Escape chain-of-thought tags to literal text (`&lt;thinking>` draws as `<thinking>`), leaving
+ * fenced code and inline code spans untouched (they already render as written).
+ */
+export function showChainOfThoughtTagsAsText(
+  source: string,
+  handled: ReadonlySet<string> = new Set(),
+): string {
+  COT_TAG.lastIndex = 0;
+  if (!COT_TAG.test(source)) return source;
+  COT_TAG.lastIndex = 0;
+  const toLiteral = (whole: string, slash: string, name: string) =>
+    handled.has(name.toLowerCase()) ? whole : `&lt;${slash}${name}`;
+  return mapOutsideCode(source, (piece) => piece.replace(COT_TAG, toLiteral));
+}
+
+const ATTR_TAG = /<(decision|artifact)\b([^<>]*?)(\/?)>/gi;
+const ATTR_VALUE = /\b(prompt|title)\s*=\s*(?:"([^"]*)"|'([^']*)')/i;
+const AUDIOCITE = /<audiocite\b[^<>]*>.*?<\/audiocite\s*>/gi;
+
+/**
+ * rich-content draws `<decision prompt="...">` / `<artifact title="...">` with the attributes
+ * dropped and `<audiocite>` as a block that splits its sentence. The old renderer showed both as
+ * written, so nothing it showed is lost here:
+ *   - the `prompt` / `title` value becomes the first line inside the tag;
+ *   - an `<audiocite>` in the middle of a line is escaped to literal text (one standing alone on
+ *     its line keeps the package rendering).
+ */
+export function keepPackageTagTextVisible(source: string): string {
+  if (!/<(decision|artifact|audiocite)\b/i.test(source)) return source;
+  return mapOutsideCode(source, (piece) =>
+    piece
+      .replace(ATTR_TAG, (whole, _name: string, attrs: string, selfClose: string) => {
+        const m = ATTR_VALUE.exec(attrs);
+        const value = m?.[2] ?? m?.[3];
+        if (!value || selfClose) return whole;
+        return `${whole}\n${value}\n`;
+      })
+      .replace(AUDIOCITE, (whole, offset: number, full: string) => {
+        const before = full.slice(0, offset);
+        const after = full.slice(offset + whole.length);
+        if (before.trim() === '' && after.trim() === '') return whole;
+        return whole.replace(/<(\/?)audiocite/gi, '&lt;$1audiocite');
+      }),
+  );
 }
 
 let warnedUnsupported = false;
@@ -116,9 +153,11 @@ export function RichMarkdownDoor({
 
   const source = useMemo(
     () =>
-      showChainOfThoughtTagsAsText(
-        content,
-        new Set(Object.keys(registry?.xml ?? {}).map((n) => n.toLowerCase())),
+      keepPackageTagTextVisible(
+        showChainOfThoughtTagsAsText(
+          content,
+          new Set(Object.keys(registry?.xml ?? {}).map((n) => n.toLowerCase())),
+        ),
       ),
     [content, registry?.xml],
   );

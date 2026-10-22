@@ -9,7 +9,11 @@ import { chatMarkdownRegistry } from '@/features/chat/markdown-registry';
 import * as contentIr from '@ai-matrx/content-ir/source';
 import { describe, expect, test } from 'vitest';
 import { Markdown } from '../Markdown';
-import { CHAIN_OF_THOUGHT_TAGS, showChainOfThoughtTagsAsText } from '../rich-door';
+import {
+  CHAIN_OF_THOUGHT_TAGS,
+  keepPackageTagTextVisible,
+  showChainOfThoughtTagsAsText,
+} from '../rich-door';
 import { renderShape } from './parity-shape';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -67,5 +71,42 @@ describe('the escape list cannot drift from content-ir', () => {
       expect(CHAIN_OF_THOUGHT_TAGS as readonly string[]).toContain(tag);
       expect(showChainOfThoughtTagsAsText(`<${tag}>x</${tag}>`)).toBe(`&lt;${tag}>x&lt;/${tag}>`);
     }
+  });
+});
+
+describe('package tags keep what the old renderer showed', () => {
+  test('decision prompt and artifact title stay visible', { timeout: 120_000 }, async () => {
+    const d = await renderShape(
+      <Markdown content={'<decision id="d1" prompt="Pick a plan">\nA or B\n</decision>'} />,
+    );
+    expect(d.text).toContain('Pickaplan');
+    expect(d.text).toContain('AorB');
+    const a = await renderShape(
+      <Markdown content={'<artifact title="Launch Doc" type="doc">\nbody text\n</artifact>'} />,
+    );
+    expect(a.text).toContain('LaunchDoc');
+    expect(a.text).toContain('bodytext');
+  });
+  test(
+    'a mid-sentence audiocite reads as one sentence, as written',
+    { timeout: 120_000 },
+    async () => {
+      const s = await renderShape(
+        <Markdown content={'See <audiocite start="1" end="2">this moment</audiocite> now'} />,
+      );
+      expect(s.text).toBe('See<audiocitestart="1"end="2">thismoment</audiocite>now');
+      expect(s.code).toEqual([]);
+    },
+  );
+  test('unit: transforms', () => {
+    expect(keepPackageTagTextVisible('<decision prompt="P">\nx\n</decision>')).toBe(
+      '<decision prompt="P">\nP\n\nx\n</decision>',
+    );
+    const alone = '<audiocite start="1">hi</audiocite>';
+    expect(keepPackageTagTextVisible(alone)).toBe(alone);
+    expect(keepPackageTagTextVisible('a <audiocite>hi</audiocite> b')).toBe(
+      'a &lt;audiocite>hi&lt;/audiocite> b',
+    );
+    expect(keepPackageTagTextVisible('`<decision prompt="P">`')).toBe('`<decision prompt="P">`');
   });
 });
