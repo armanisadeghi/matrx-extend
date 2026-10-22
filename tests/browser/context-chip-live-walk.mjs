@@ -438,19 +438,32 @@ try {
   const amber2 = await amber();
   check('chip 2 not amber', !amber2.amber, JSON.stringify(amber2.mismatches));
 
-  // 5. Open a value on the sent message to see exactly what was delivered (viewer API).
+  // 5a. A value row in the composer's chip opens that value's details inside the panel.
+  await openChip();
+  await panel.locator('[role=row][data-key="page_brief"] button').last().click();
+  await panel.locator('[data-extension-tab-layer="conversation-context"]').waitFor({ timeout: 10_000 }).catch(() => {});
+  await panel.waitForTimeout(1500);
+  await shot(panel, '14a-chip-row-opened');
+  const layerText = (await panel.locator('[data-extension-tab-layer]').first().innerText().catch(() => '')).replace(/\n+/g, ' | ');
+  console.log('  [chip row layer]', layerText.slice(0, 400));
+  check(
+    'a chip value row opens its details in the panel',
+    (await panel.locator('[data-extension-tab-layer="conversation-context"]').count()) === 1 && /page brief/i.test(layerText),
+  );
+  await panel.getByRole('button', { name: 'Close' }).first().click();
+  await panel.waitForTimeout(500);
+
+  // 5b. The sent message's "N sent" badge opens the receipt; a value opens its delivered text.
   const badges = panel.getByRole('button', { name: /\d+ sent/ });
   console.log('  [sent badges]', await badges.allInnerTexts());
   await badges.last().click();
+  await panel.locator('[data-extension-tab-layer="message-context-receipt"]').waitFor({ timeout: 10_000 }).catch(() => {});
   await panel.waitForTimeout(1500);
   await shot(panel, '14-sent-values');
-  const pageBriefRow = panel.locator('[role=row][data-key="page_brief"] button').last();
-  await pageBriefRow
-    .click()
-    .catch((e) => console.log('  no page_brief row on the sent message', String(e).slice(0, 120)));
+  await panel.locator('[role=row][data-key="page_brief"] button').last().click();
   await panel.waitForTimeout(5000);
   await shot(panel, '15-value-opened');
-  const viewerText = (await panel.locator('body').innerText()).replace(/\n+/g, ' | ');
+  const viewerText = (await panel.locator('[data-extension-tab-layer]').first().innerText().catch(() => '')).replace(/\n+/g, ' | ');
   const at = viewerText.search(/Lighthouse/i);
   console.log('  [viewer]', viewerText.slice(Math.max(0, at - 300), at + 500));
   check(
