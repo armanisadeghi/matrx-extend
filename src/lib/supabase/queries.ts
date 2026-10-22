@@ -47,9 +47,10 @@ import {
   supabaseForActor,
 } from '@/lib/supabase/client';
 import { type DbCallSite, failDbCall, isDbFailureError } from '@/lib/supabase/db-failure';
-import { adminDb, aiDb, docprocDb, extendDb, usersDb } from '@/lib/supabase/schemas';
+import { aiDb, docprocDb, extendDb, usersDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { requireOrganizationContext } from '@ai-matrx/api';
+import { readAdminStatus } from '@ai-matrx/auth/admin';
 import { z } from 'zod';
 
 /**
@@ -97,29 +98,23 @@ function parseRowsSafe<T>(
 
 // ─── Admin gate ─────────────────────────────────────────────────────────────
 /**
- * Checks whether the user has a row in `public.admins`. The table:
- *   create table public.admins (
- *     user_id uuid primary key references auth.users(id) on delete cascade,
- *     created_at timestamptz default now()
- *   );
+ * Checks whether the user has a row in `admin.admins` (primary key `user_id`).
  * Anything debug-related (Debug tab, cross-context relay, advanced toggles)
  * is gated on this check.
  * `null` means the role read failed; it is not a confirmed non-admin result.
  */
 export async function checkIsAdmin(userId: string): Promise<boolean | null> {
-  // `admins` lives in the `admin` schema now, not `public`. It kept its
-  // `user_id` column (unlike the extend/* tables, which renamed it to
-  // `created_by`) — so only the routing changes here.
-  const { data, error } = await adminDb()
-    .from('admins')
-    .select('user_id')
-    .eq('user_id', userId)
-    .limit(1);
-  if (error) {
-    console.warn('[matrx-extend] checkIsAdmin error', error.message);
+  // THE one admin read (@ai-matrx/auth/admin): the person's own `admin.admins` row.
+  // This host's policy for a failed read stays tri-state: null, never cached as "not admin".
+  const status = await readAdminStatus(getSupabase(), userId);
+  if (status.state === 'unknown') {
+    console.warn(
+      '[matrx-extend] checkIsAdmin error',
+      (status.error as { message?: string }).message,
+    );
     return null;
   }
-  return Array.isArray(data) && data.length > 0;
+  return status.state === 'admin';
 }
 
 // ─── Agents ─────────────────────────────────────────────────────────────────
