@@ -7,7 +7,7 @@
   "auth_mode": "Infrastructure independent of product role",
   "severity": "S2: current source cannot emit eligible development artifact; no public behavior outage established",
   "priority": "P1: restore unchanged CI gate",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root",
   "preconditions": [
     "Contributor test changes through3a859673a are integrated; current main8a3148bb5 also includes package lock catch-up."
@@ -21,7 +21,9 @@
   "cause": "Three assertion objects do not match deterministic Biome layout.",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/39698318609",
-    "src/components/markdown/__tests__/block-parser.self-closing.test.ts"
+    "src/components/markdown/__tests__/block-parser.self-closing.test.ts",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/39699393868",
+    "docs/stabilization/reports/d285-formatter-batch-20261022.json"
   ],
   "verification": {
     "format_write": "pnpm exec biome format --write exact-file: fixed1",
@@ -30,7 +32,7 @@
     "diff_check": "git diff --check exit0",
     "limits": "Formatting-only; no unit execution, compile, browser acceptance or whole-repository lint run on this disk-constrained Mac. Fresh normal hosted CI and independent verification pending. D283 separate lifecycle flake remains open."
   },
-  "next_action": "Observe normal automatic CI at this fix commit; inspect all required jobs and exact artifact before eligibility. Preserve pending Store577 and record owner Chrome reload unverified until normal resource admission.",
+  "next_action": "Bounded infrastructure defect closed. Current separate lint failure is D285; product cases and Chrome reload remain unverified.",
   "transition_history": [
     {
       "at": "2026-10-22T00:23:15.969736+00:00",
@@ -55,6 +57,26 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Single-file formatter recheck and TypeScript structural/literal equality pass; normal fullCI and independent retest pending."
+    },
+    {
+      "at": "2026-10-22T01:30:20.628809+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Actual fullCI39699393868 at fix SHA7f2 passes all required jobs including original Lint; zero-author fresh reviewer confirms original formatter repro resolved."
+    },
+    {
+      "at": "2026-10-22T01:30:20.628809+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Bounded deterministic formatting defect has actual hosted original/surrounding checks and independent evidence review; no product health or current-main claim."
     }
-  ]
+  ],
+  "retest": {
+    "run_id": 39699393868,
+    "source_sha": "7f2ac62051e86e34ad78f881687c9e5cf81dcb38",
+    "scope": "Original deterministic formatter CI repro and surrounding required source checks only",
+    "conclusion": "success; scope/resource-guard-integration/checks all success",
+    "independent_reviewer": "/root/ci_formatter_batch_20261022",
+    "limit": "Not current d24b main, browser, installation, Store acceptance or D283 race closure."
+  }
 }
