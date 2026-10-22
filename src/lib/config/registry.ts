@@ -39,8 +39,7 @@ export const KNOB_FEATURES = [
   }),
   // Shared features the @ai-matrx/chat package reads through the extension's knobs port
   // (src/features/package-chat/knobs.ts). Census: grep of the package's literal {feature, key} refs.
-  // NOT declared: `history.nest_child_sessions` — its feature has no dot, which the register vocabulary
-  // (defineKnobFeature) refuses; it stays a counted `missing` until the package renames it.
+  defineKnobFeature('chat.history', { nest_child_sessions: knob('nest_child_sessions', any) }),
   defineKnobFeature('surfaces.conversations', { all_page_size: knob('all_page_size', any) }),
   defineKnobFeature('agents.tool_cards', {
     inline_visibility: knob('inline_visibility', any),
