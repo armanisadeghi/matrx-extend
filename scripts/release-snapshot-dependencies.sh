@@ -41,8 +41,10 @@ prepare_snapshot_dependencies() { # snapshot directory; bounded/log supplied by 
         return 0
     fi
     # A normal frozen install runs dependency build scripts and the duplicate
-    # guard. Copy imports prevent any shared-store mutation from changing it.
-    ( cd "$dir" && bounded 900 pnpm install --frozen-lockfile --package-import-method=copy ) || return 1
+    # guard. Copy-on-write clones (copy where the volume cannot clone) are private
+    # files, so no shared-store mutation can change it; a plain copy of ~1,170
+    # packages ran past the 900 s bound on a loaded machine (2026-10-22).
+    ( cd "$dir" && bounded 900 pnpm install --frozen-lockfile --package-import-method=clone-or-copy ) || return 1
     [[ -d "$dir/node_modules" && ! -L "$dir/node_modules" ]] || return 1
     SNAP_DEPENDENCY_KEY="$identity"
     SNAP_DEPENDENCY_DIR="$dir/node_modules"
