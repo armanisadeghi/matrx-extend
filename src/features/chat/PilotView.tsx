@@ -18,7 +18,6 @@
  *   - Defaults to 'act' permission mode (Pilot is meant to be more autonomous)
  */
 
-import { useActMode } from '@/lib/settings/act-without-asking';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { RenderBlockView } from '@/components/kinds/RenderBlockView';
 import { Markdown } from '@/components/markdown';
@@ -42,6 +41,7 @@ import { useAgentRow } from '@/lib/agents/use-agent-row';
 import { wrapForAgent } from '@/lib/clipboard/copy';
 import { warmContentIr } from '@/lib/content-ir/route-env';
 import { DEFAULT_CHAT_MANDATE_KEY, DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
+import { useActMode } from '@/lib/settings/act-without-asking';
 import { cn } from '@/lib/utils';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { useListsSubscriber } from '@/state/lists';

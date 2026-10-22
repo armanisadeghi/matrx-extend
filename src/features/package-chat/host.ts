@@ -17,6 +17,7 @@ import {
   listMemberOrganizations,
   requireActiveOrganizationId,
 } from '@/lib/org/active-org';
+import { carryOverExplicitAsk } from '@/lib/settings/act-without-asking';
 import { getSupabase } from '@/lib/supabase/client';
 import type { DeviceToolCallRef } from '@/lib/tools/device-handoff';
 import { useChatStore } from '@/state/chat';
@@ -42,7 +43,6 @@ import { registerExtensionComposerExtensions } from './composer-extensions';
 import { extensionPageContextSource } from './context-source';
 import { createExtensionChatIdentity } from './identity';
 import { extensionKnobs } from './knobs';
-import { carryOverExplicitAsk } from '@/lib/settings/act-without-asking';
 import { registerExtensionToolRenderers } from './tool-renderers';
 
 /** The panel's last chat address survives a reopen (session storage); a side panel's own URL never moves. */

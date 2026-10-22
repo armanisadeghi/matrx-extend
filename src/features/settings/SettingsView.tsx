@@ -9,7 +9,6 @@
  * extension at staging / dev / localhost from here.
  */
 
-import { useActMode, writeActMode } from '@/lib/settings/act-without-asking';
 import { OpenUrl } from '@/components/OpenUrl';
 import { Collapsible } from '@/components/ui/collapsible';
 import { ENV } from '@/config/env';
@@ -29,6 +28,7 @@ import { confirmDestructive } from '@/lib/destructive/confirm';
 import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { useActMode, writeActMode } from '@/lib/settings/act-without-asking';
 import { retrySettingsSave, useSettingsSaveState } from '@/lib/settings/persistence';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';

@@ -7,13 +7,13 @@
  * skeletons forever. Writes are refused honestly: settings are edited on the web, never here.
  */
 
+import { ACT_WITHOUT_ASKING_KNOB, writeActMode } from '@/lib/settings/act-without-asking';
 import {
   peekPlatformKnob,
   resolvePlatformKnob,
   subscribePlatformKnobs,
   warmPlatformKnobs,
 } from '@/lib/settings/platform-knobs';
-import { ACT_WITHOUT_ASKING_KNOB, writeActMode } from '@/lib/settings/act-without-asking';
 import type { ChatKnobRef, ChatKnobsPort } from '@ai-matrx/chat/host';
 import { useEffect, useSyncExternalStore } from 'react';
 
@@ -48,9 +48,14 @@ export const extensionKnobs: ChatKnobsPort = {
   async setOverride(input) {
     // The one setting this panel edits: the person's own "Act without asking" (the composer's
     // Ask / Act switch) — the same knob, written through the same door as the extension's chips.
-    if (`${input.feature}.${input.key}` === ACT_WITHOUT_ASKING_KNOB && typeof input.value === 'boolean') {
+    if (
+      `${input.feature}.${input.key}` === ACT_WITHOUT_ASKING_KNOB &&
+      typeof input.value === 'boolean'
+    ) {
       const saved = await writeActMode(input.value ? 'act' : 'ask');
-      return saved.ok ? { ok: true } : { ok: false, reason: 'not saved', detail: saved.detail ?? null };
+      return saved.ok
+        ? { ok: true }
+        : { ok: false, reason: 'not saved', detail: saved.detail ?? null };
     }
     return {
       ok: false,

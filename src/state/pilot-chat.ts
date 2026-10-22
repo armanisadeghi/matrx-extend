@@ -21,8 +21,8 @@
  * to 'ask' if they want approval-per-step.
  */
 
-import { readActMode, writeActMode } from '@/lib/settings/act-without-asking';
 import type { InboundRenderBlock } from '@/lib/content-ir/inbound';
+import { readActMode, writeActMode } from '@/lib/settings/act-without-asking';
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import type {
   ChatMessage,

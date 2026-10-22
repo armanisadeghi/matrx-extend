@@ -17,8 +17,8 @@
  * to `'ask'`. This is the single source of truth so that can't drift again.
  */
 
-import { readActModeInWorker } from './act-without-asking';
 import type { CredentialAssistancePresentation, PermissionMode } from '@/state/settings';
+import { readActModeInWorker } from './act-without-asking';
 
 /** Must match `name:` in the settings store's persist config. */
 const SETTINGS_PERSIST_KEY = 'matrx.settings.v1';
@@ -92,7 +92,10 @@ export function watchDefaultPermissionMode(): () => PermissionMode {
   // The platform default is Act; the person's setting refreshes on every read (the snapshot is
   // cached briefly, so this is one fetch per cache window, never per call).
   let current: PermissionMode = 'act';
-  const refresh = () => void readDefaultPermissionMode().then((m) => (current = m));
+  const refresh = () =>
+    void readDefaultPermissionMode().then((m) => {
+      current = m;
+    });
   refresh();
   return () => {
     refresh();

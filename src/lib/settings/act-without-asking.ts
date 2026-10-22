@@ -14,11 +14,7 @@ import { platformDb } from '@/lib/supabase/schemas';
 import { useAuthStore } from '@/state/auth';
 import { useSyncExternalStore } from 'react';
 import { invalidateKnobSnapshot, resolvePlatformKnobInWorker } from './platform-knob-snapshot';
-import {
-  peekPlatformKnob,
-  subscribePlatformKnobs,
-  warmPlatformKnobs,
-} from './platform-knobs';
+import { peekPlatformKnob, subscribePlatformKnobs, warmPlatformKnobs } from './platform-knobs';
 
 export const ACT_WITHOUT_ASKING_KNOB = 'chat.act_without_asking';
 export type ActMode = 'ask' | 'act';
@@ -70,17 +66,19 @@ export async function writeActMode(mode: ActMode): Promise<{ ok: boolean; detail
   const userId = useAuthStore.getState().user?.id ?? null;
   const organizationId = await ensureRequestOrganizationId();
   if (!userId || !organizationId) {
-    console.error('[act-without-asking] no signed-in person or organization — the choice was not saved.');
+    console.error(
+      '[act-without-asking] no signed-in person or organization — the choice was not saved.',
+    );
     return { ok: false, detail: 'not signed in' };
   }
   const { data, error } = await platformDb().rpc('knob_override_set', {
-      p_feature: 'chat',
-      p_key: 'act_without_asking',
-      p_scope_kind: 'user',
-      p_scope_id: userId,
-      p_organization_id: organizationId,
-      p_value: mode === 'act',
-    });
+    p_feature: 'chat',
+    p_key: 'act_without_asking',
+    p_scope_kind: 'user',
+    p_scope_id: userId,
+    p_organization_id: organizationId,
+    p_value: mode === 'act',
+  });
   const refused =
     error?.message ??
     (data && typeof data === 'object' && (data as { ok?: boolean }).ok === false
