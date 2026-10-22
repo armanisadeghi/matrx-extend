@@ -226,6 +226,33 @@ try {
     process.exit(0);
   }
 
+  // A value the walk (or another lane) left switched off would fail the 'turn 1 carried the page' check for
+  // a reason that is not under test: clear the saved rule for the page values before starting.
+  {
+    const rows = await rest(
+      `user_surface_state?select=surface_key,state&feature=eq.context_rules&deleted_at=is.null&user_id=eq.${session.user.id}&surface_key=eq._default`,
+    );
+    const state = rows?.[0]?.state ?? {};
+    const stale = ['page_brief', 'page_meta'].filter((k) => state[k]);
+    if (stale.length) {
+      for (const k of stale) delete state[k];
+      const res = await fetch(
+        `${supabaseUrl}/rest/v1/user_surface_state?feature=eq.context_rules&surface_key=eq._default&user_id=eq.${session.user.id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            apikey: publishableKey,
+            Authorization: `Bearer ${session.access_token}`,
+            'Content-Profile': 'users',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ state }),
+        },
+      );
+      console.log(`  cleared stale rules ${stale.join(',')} (${res.status})`);
+    }
+  }
+
   // ── The walk ────────────────────────────────────────────────────────────────────────────
   const TARGET = process.env.WALK_VALUE || 'page_meta';
   const MODEL = process.env.WALK_MODEL || 'Gemini 3.8 Flash';
@@ -440,29 +467,15 @@ try {
 
   // 5a. A value row in the composer's chip opens that value's details inside the panel.
   await openChip();
-  await panel
-    .locator('[role=row][data-key="page_brief"]')
-    .getByText('Page Brief', { exact: true })
-    .first()
-    .click();
-  await panel
-    .locator('[data-extension-tab-layer="conversation-context"]')
-    .waitFor({ timeout: 10_000 })
-    .catch(() => {});
+  await panel.locator('[role=row][data-key="page_brief"]').getByText('Page Brief', { exact: true }).first().click();
+  await panel.locator('[data-extension-tab-layer="conversation-context"]').waitFor({ timeout: 10_000 }).catch(() => {});
   await panel.waitForTimeout(1500);
   await shot(panel, '14a-chip-row-opened');
-  const layerText = (
-    await panel
-      .locator('[data-extension-tab-layer]')
-      .first()
-      .innerText()
-      .catch(() => '')
-  ).replace(/\n+/g, ' | ');
+  const layerText = (await panel.locator('[data-extension-tab-layer]').first().innerText().catch(() => '')).replace(/\n+/g, ' | ');
   console.log('  [chip row layer]', layerText.slice(0, 400));
   check(
     'a chip value row opens its details in the panel',
-    (await panel.locator('[data-extension-tab-layer="conversation-context"]').count()) === 1 &&
-      /page brief/i.test(layerText),
+    (await panel.locator('[data-extension-tab-layer="conversation-context"]').count()) === 1 && /page brief/i.test(layerText),
   );
   await panel.getByRole('button', { name: 'Close' }).first().click();
   await panel.waitForTimeout(500);
@@ -471,26 +484,13 @@ try {
   const badges = panel.getByRole('button', { name: /\d+ sent/ });
   console.log('  [sent badges]', await badges.allInnerTexts());
   await badges.last().click();
-  await panel
-    .locator('[data-extension-tab-layer="message-context-receipt"]')
-    .waitFor({ timeout: 10_000 })
-    .catch(() => {});
+  await panel.locator('[data-extension-tab-layer="message-context-receipt"]').waitFor({ timeout: 10_000 }).catch(() => {});
   await panel.waitForTimeout(1500);
   await shot(panel, '14-sent-values');
-  await panel
-    .locator('[role=row][data-key="page_brief"]')
-    .getByText('Page Brief', { exact: true })
-    .first()
-    .click();
+  await panel.locator('[role=row][data-key="page_brief"]').getByText('Page Brief', { exact: true }).first().click();
   await panel.waitForTimeout(5000);
   await shot(panel, '15-value-opened');
-  const viewerText = (
-    await panel
-      .locator('[data-extension-tab-layer]')
-      .first()
-      .innerText()
-      .catch(() => '')
-  ).replace(/\n+/g, ' | ');
+  const viewerText = (await panel.locator('[data-extension-tab-layer]').first().innerText().catch(() => '')).replace(/\n+/g, ' | ');
   const at = viewerText.search(/Lighthouse/i);
   console.log('  [viewer]', viewerText.slice(Math.max(0, at - 300), at + 500));
   check(

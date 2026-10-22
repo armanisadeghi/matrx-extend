@@ -13,17 +13,17 @@
 import { ContextRulesPanel } from '@ai-matrx/chat/agents/components/context-policies-display/ContextRulesPanel';
 import { MessageContextReceiptView } from '@ai-matrx/chat/agents/components/context-policies-display/MessageContextReceipt';
 import {
+  CONVERSATION_CONTEXT_KIND,
+  MESSAGE_CONTEXT_RECEIPT_KIND,
+} from '@ai-matrx/chat/host/canvas-tabs';
+import {
+  createUnhostedCanvas,
   type ChatCanvasPort,
   type ChatCanvasTab,
   type ChatCanvasTabOpen,
   type ChatCanvasTabRef,
   type ChatDiagnosticsPort,
-  createUnhostedCanvas,
 } from '@ai-matrx/chat/host';
-import {
-  CONVERSATION_CONTEXT_KIND,
-  MESSAGE_CONTEXT_RECEIPT_KIND,
-} from '@ai-matrx/chat/host/canvas-tabs';
 import { Button } from '@ai-matrx/design-system';
 import { X } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
@@ -73,6 +73,14 @@ export function toggleTab(ref: ChatCanvasTabRef, open: ChatCanvasTabOpen): void 
     data: here && open.replaceData !== true ? { ...here.data, ...open.data } : open.data,
     selected,
   });
+  // The press came from a transient layer (the chip's value popover or sheet): dismiss it so the
+  // details are not left under its dim. Escape is how every popover in the package closes.
+  if (typeof document !== 'undefined') {
+    setTimeout(
+      () => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })),
+      0,
+    );
+  }
 }
 
 /** Test seam: the layer's state. */
@@ -123,8 +131,7 @@ export function ExtensionTabLayer() {
     );
   } else if (conversationId && tab.kind === MESSAGE_CONTEXT_RECEIPT_KIND) {
     const messageId = text(tab.data, 'messageId');
-    if (messageId)
-      body = <MessageContextReceiptView conversationId={conversationId} messageId={messageId} />;
+    if (messageId) body = <MessageContextReceiptView conversationId={conversationId} messageId={messageId} />;
   }
   // Portaled to the page body above the composer's value popover (itself a portal) so a press
   // on a popover row shows its details over it; `pointer-events-auto` because a modal popover
