@@ -60,6 +60,7 @@ function ReasoningBlock({ tag, inner, complete }: XmlBlockRendererProps) {
 export const chatMarkdownRegistry: MarkdownRegistry = {
   xml: {
     thinking: ReasoningBlock,
+    think: ReasoningBlock,
     reasoning: ReasoningBlock,
     reflection: ReasoningBlock,
   },

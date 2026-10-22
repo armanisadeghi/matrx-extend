@@ -157,7 +157,7 @@ describe('server-built render blocks reach real components', () => {
     // The data is still there — nothing vanished. Its markdown text draws through rich-content,
     // whose standard level loads on first use, so the text arrives a beat after the frame.
     expect(
-      await screen.findByText(/What pigment absorbs light\?/, undefined, { timeout: 30_000 }),
+      await screen.findByText(/What pigment absorbs light\?/, undefined, { timeout: 20_000 }),
     ).toBeTruthy();
   });
 });

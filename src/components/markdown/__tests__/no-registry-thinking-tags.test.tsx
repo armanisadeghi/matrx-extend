@@ -6,9 +6,10 @@
  * (same props), AiRecommendations (`className="text-xs"`).
  */
 import { chatMarkdownRegistry } from '@/features/chat/markdown-registry';
+import * as contentIr from '@ai-matrx/content-ir/source';
 import { describe, expect, test } from 'vitest';
 import { Markdown } from '../Markdown';
-import { showChainOfThoughtTagsAsText } from '../rich-door';
+import { CHAIN_OF_THOUGHT_TAGS, showChainOfThoughtTagsAsText } from '../rich-door';
 import { renderShape } from './parity-shape';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -55,5 +56,16 @@ describe('showChainOfThoughtTagsAsText', () => {
   });
   test('plain text is returned untouched', () => {
     expect(showChainOfThoughtTagsAsText('hello <b>x</b>')).toBe('hello <b>x</b>');
+  });
+});
+
+describe('the escape list cannot drift from content-ir', () => {
+  test("every tag in content-ir's thinking family is escaped here", () => {
+    const family = (contentIr as { THINKING_FAMILY?: readonly string[] }).THINKING_FAMILY;
+    // Exported since the content-ir release after 0.24.38; until installed, the list below is the floor.
+    for (const tag of family ?? ['thinking', 'think', 'reasoning']) {
+      expect(CHAIN_OF_THOUGHT_TAGS as readonly string[]).toContain(tag);
+      expect(showChainOfThoughtTagsAsText(`<${tag}>x</${tag}>`)).toBe(`&lt;${tag}>x&lt;/${tag}>`);
+    }
   });
 });

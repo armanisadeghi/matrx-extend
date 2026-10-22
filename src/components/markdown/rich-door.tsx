@@ -8,7 +8,7 @@
  * `registry.code` / `registry.json` have no rich-content hook; no caller registers any today, and a
  * non-empty one announces itself in dev instead of being dropped silently.
  *
- * With NO registry the old renderer showed `<thinking>` / `<reasoning>` as written; rich-content
+ * With NO registry the old renderer showed `<thinking>` / `<think>` / `<reasoning>` as written; rich-content
  * strips them unconditionally, so the door escapes those tags to literal text first
  * (`showChainOfThoughtTagsAsText`) — the user's own bubble, a structured string and an AI
  * recommendation never lose a passage silently. A registry that handles a tag keeps it.
@@ -51,7 +51,18 @@ function asCustomTag(
   return CustomTag;
 }
 
-const COT_TAG = /<(\/?)(thinking|reasoning|consolidated_reasoning)\b/gi;
+/**
+ * The tags rich-content strips as chain-of-thought: content-ir's thinking family plus the package's
+ * `consolidated_reasoning`. `chain-of-thought-tags.test.tsx` fails if content-ir's own list
+ * (`THINKING_FAMILY`, exported from `@ai-matrx/content-ir/source`) names a tag missing here.
+ */
+export const CHAIN_OF_THOUGHT_TAGS = [
+  'thinking',
+  'think',
+  'reasoning',
+  'consolidated_reasoning',
+] as const;
+const COT_TAG = new RegExp(`<(/?)(${CHAIN_OF_THOUGHT_TAGS.join('|')})\\b`, 'gi');
 
 /**
  * Escape chain-of-thought tags to literal text (`&lt;thinking>` draws as `<thinking>`), leaving
