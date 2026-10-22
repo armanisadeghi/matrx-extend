@@ -1335,6 +1335,10 @@
  "/auth/file-session/status": {
   "get": []
  },
+ "/auth/guest/challenge": {
+  "get": [],
+  "post": []
+ },
  "/auth/guest/session": {
   "post": [
    "application/json"
@@ -2696,6 +2700,9 @@
   "get": []
  },
  "/data-sources/jobs/{job_id}/changes": {
+  "get": []
+ },
+ "/data-sources/jobs/{job_id}/row-keys": {
   "get": []
  },
  "/data-sources/tables/{table_id}/refresh": {
