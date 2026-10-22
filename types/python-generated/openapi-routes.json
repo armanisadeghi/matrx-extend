@@ -685,6 +685,9 @@
    "application/json"
   ]
  },
+ "/agent-tests/agreement": {
+  "get": []
+ },
  "/agent-tests/checks/evaluate": {
   "post": [
    "application/json"
@@ -696,6 +699,11 @@
   ]
  },
  "/agent-tests/checks/parse": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-tests/results/{result_id}/agreement": {
   "post": [
    "application/json"
   ]
@@ -2177,6 +2185,12 @@
  },
  "/comparison/runs/{run_id}": {
   "get": []
+ },
+ "/comparison/runs/{run_id}/items/{item}/facets/{facet}/confirm": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
  },
  "/comparison/runs/{run_id}/share": {
   "post": [],
