@@ -16,7 +16,7 @@
  *   - admin.admins            (Admin allowlist — was public.admins)
  *
  * Table -> schema routing is centralized in `@/lib/supabase/schemas`. Use those
- * accessors (adminDb(), aiDb(), …) rather than hand-writing `.schema('x')`:
+ * accessors (aiDb(), toolDb(), …) rather than hand-writing `.schema('x')`:
  * an unqualified `.from()` silently resolves against `public` and 404s at
  * RUNTIME (PGRST205) — tsc and the build will not catch it.
  *

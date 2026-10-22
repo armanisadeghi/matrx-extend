@@ -70,7 +70,7 @@ const REMOVED_TABLES: Record<string, string> = {
 };
 
 const ACCESSOR =
-  /(?:extendDb|schedulerDb|workbenchDb|chatDb|usersDb|adminDb|toolDb|aiDb|mediaDb|agentChatDb|docprocDb)\(\)/;
+  /(?:extendDb|schedulerDb|workbenchDb|chatDb|usersDb|toolDb|aiDb|mediaDb|agentChatDb|docprocDb)\(\)/;
 
 /**
  * A `.from()` is qualified if the thing it is called ON is schema-scoped. That

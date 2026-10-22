@@ -177,9 +177,6 @@ export const mediaDb = () => getSupabase().schema('media');
  */
 export const docprocDb = () => getSupabase().schema('docproc');
 
-/** `admin` — admins. Ownership: `user_id` (kept). */
-export const adminDb = () => getSupabase().schema('admin');
-
 /** `tool` — tool `definition` rows (tool descriptions, read live). */
 export const toolDb = () => getSupabase().schema('tool');
 

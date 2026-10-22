@@ -51,7 +51,7 @@ const { data } = await extendDb().from('wbx_pattern').select('*');
 | `notes` · `udt_datasets` · `udt_dataset_fields` | `workbench` | `workbenchDb()` |
 | `conversation` · `message` · `tool_call` | `chat` | `chatDb()` |
 | `user_form_profile` | `users` | `usersDb()` |
-| `admins` | `admin` | `adminDb()` |
+| `admins` | `admin` | `readAdminStatus` (`@ai-matrx/auth/admin`) — no accessor |
 | `definition` (tool defs) | `tool` | `toolDb()` |
 | `model_definition` | `ai` | `aiDb()` |
 
