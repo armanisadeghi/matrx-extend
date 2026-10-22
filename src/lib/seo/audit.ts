@@ -213,14 +213,21 @@ export function runAudit(doc: Document = document, baseUrl?: string): SeoAudit {
     else external++;
   });
 
-  const imgs = Array.from(doc.querySelectorAll<HTMLImageElement>('img'));
+  // Mirror of the Python `_inside_noscript` filter: an <img> in <noscript>
+  // exists only with JavaScript off, and a DOMParser document (scripting off)
+  // parses those children as real elements.
+  const imgs = Array.from(doc.querySelectorAll<HTMLImageElement>('img')).filter(
+    (i) => !i.closest('noscript'),
+  );
   const missing_alt = imgs.filter((i) => !i.alt || i.alt.trim().length === 0).length;
 
   // `innerText` is layout-dependent and returns '' on a non-rendered
   // DOMParser Document (the fetch-and-parse path), which zeroed word_count
   // and nulled the Flesch score for every fetched URL. textContent is the
-  // fallback — it is also what the server's parser sees.
-  const rawText = doc.body?.innerText || doc.body?.textContent || '';
+  // fallback — read with <script>/<style>/<template> removed first, exactly as
+  // the server strips `app_shell.NON_VISIBLE_TAGS` before counting (raw
+  // textContent counted a Next.js `__NEXT_DATA__` blob as prose).
+  const rawText = doc.body?.innerText || visibleTextContent(doc.body);
   const text = rawText.replace(/\s+/g, ' ').trim();
   const word_count = text ? text.split(/\s+/).length : 0;
   // Mirror of `sentences = re.split(r"[.!?]+\s+", text)` → count of non-empty
@@ -262,6 +269,17 @@ export function runAudit(doc: Document = document, baseUrl?: string): SeoAudit {
       redirect_count: typeof nav?.redirectCount === 'number' ? nav.redirectCount : null,
     },
   };
+}
+
+/** Mirror of the Python `NON_VISIBLE_TAGS` (`app_shell.py`): never shown to a reader. */
+const NON_VISIBLE_SELECTOR = 'script, style, template';
+
+/** `textContent` of `body` with the non-visible elements removed (on a clone). */
+function visibleTextContent(body: HTMLElement | null | undefined): string {
+  if (!body) return '';
+  const clone = body.cloneNode(true) as HTMLElement;
+  for (const el of Array.from(clone.querySelectorAll(NON_VISIBLE_SELECTOR))) el.remove();
+  return clone.textContent ?? '';
 }
 
 /**
