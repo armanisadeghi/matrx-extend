@@ -9,6 +9,7 @@
  * non-empty one announces itself in dev instead of being dropped silently.
  */
 
+import { cn } from '@/lib/utils';
 import { RichContent } from '@ai-matrx/rich-content/levels/RichContent';
 import type {
   CustomTagRendererProps,
@@ -26,10 +27,15 @@ export interface RichMarkdownDoorProps {
   isStreaming?: boolean | undefined;
 }
 
-const adapterCache = new WeakMap<ComponentType<XmlBlockRendererProps>, ComponentType<CustomTagRendererProps>>();
+const adapterCache = new WeakMap<
+  ComponentType<XmlBlockRendererProps>,
+  ComponentType<CustomTagRendererProps>
+>();
 
 /** A registry xml renderer as a rich-content custom-tag renderer (same component, same props). */
-function asCustomTag(Renderer: ComponentType<XmlBlockRendererProps>): ComponentType<CustomTagRendererProps> {
+function asCustomTag(
+  Renderer: ComponentType<XmlBlockRendererProps>,
+): ComponentType<CustomTagRendererProps> {
   const cached = adapterCache.get(Renderer);
   if (cached) return cached;
   function CustomTag({ tag, attrs, content, complete }: CustomTagRendererProps) {
@@ -42,7 +48,12 @@ function asCustomTag(Renderer: ComponentType<XmlBlockRendererProps>): ComponentT
 
 let warnedUnsupported = false;
 
-export function RichMarkdownDoor({ content, registry, className, isStreaming }: RichMarkdownDoorProps) {
+export function RichMarkdownDoor({
+  content,
+  registry,
+  className,
+  isStreaming,
+}: RichMarkdownDoorProps) {
   const themeMode = useResolvedTheme();
   const customTags = useMemo<CustomTagRenderers | undefined>(() => {
     const xml = registry?.xml;
@@ -54,19 +65,21 @@ export function RichMarkdownDoor({ content, registry, className, isStreaming }: 
 
   if (
     !warnedUnsupported &&
-    import.meta.env?.DEV &&
+    process.env.NODE_ENV !== 'production' &&
     (Object.keys(registry?.code ?? {}).length > 0 || Object.keys(registry?.json ?? {}).length > 0)
   ) {
     warnedUnsupported = true;
-    console.warn('[markdown] registry.code / registry.json renderers are not supported by rich-content; those blocks render as code.');
+    console.warn(
+      '[markdown] registry.code / registry.json renderers are not supported by rich-content; those blocks render as code.',
+    );
   }
 
   return (
     <RichContent
       level="standard"
       source={content}
-      isStreaming={isStreaming}
-      className={className}
+      {...(isStreaming !== undefined && { isStreaming })}
+      className={cn('min-w-0 text-foreground [overflow-wrap:anywhere]', className)}
       density="compact"
       codeTheme="github"
       codeHeader="compact"
@@ -76,7 +89,7 @@ export function RichMarkdownDoor({ content, registry, className, isStreaming }: 
       rawHtml={false}
       themeMode={themeMode}
       headingAnchors={false}
-      customTags={customTags}
+      {...(customTags && { customTags })}
     />
   );
 }
