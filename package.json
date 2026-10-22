@@ -91,6 +91,7 @@
     "@ai-matrx/kit": "latest",
     "@ai-matrx/media": "latest",
     "@ai-matrx/records": "latest",
+    "@ai-matrx/rich-content": "latest",
     "@ai-matrx/summon": "latest",
     "@ai-matrx/vault": "latest",
     "@hookform/resolvers": "^3.10.0",
