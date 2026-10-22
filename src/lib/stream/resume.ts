@@ -1,4 +1,7 @@
 /**
+ * MOVED to @ai-matrx/api (`decideStallResume`, `attemptStallResume`). The
+ * chrome.storage kill switch and logging stay here and are injected.
+ *
  * Stall recovery — resume via the LIVE durable-continuation endpoint.
  *
  * ────────────────────────────────────────────────────────────────────────────
@@ -43,6 +46,7 @@
  * implementation of "how to open a /resume stream" per surface.
  */
 
+import { attemptStallResume, decideStallResume } from '@ai-matrx/api';
 import { log } from '@/lib/debug/log';
 
 const RESUME_ENABLED_KEY = 'matrx.stream.resume.enabled';
@@ -75,21 +79,15 @@ export interface ResumeDecision {
 
 /**
  * Pure decision: do we have enough information to attempt a resume at all?
- * Exported separately from `attemptResume` so it's trivially unit-testable
- * without touching chrome.storage or the network.
+ * Delegates to @ai-matrx/api `decideStallResume`.
  */
 export function decideResume(target: ResumeTarget): ResumeDecision {
-  if (!target.conversationId) return { attempt: false, reason: 'no-conversation-id' };
-  // requestId is intentionally NOT required — the server resumes by
-  // conversation id alone (see ResumeTarget.requestId docblock).
-  return { attempt: true, reason: 'ok' };
+  return decideStallResume(target);
 }
 
 /**
  * Kill-switch flag. Defaults ON — a missing/unset flag must not silently
- * disable a working recovery path (that's exactly how the old scaffold went
- * unnoticed: it defaulted off and nobody flipped it because the backend
- * dependency never shipped). Set `matrx.stream.resume.enabled: false` in
+ * disable a working recovery path. Set `matrx.stream.resume.enabled: false` in
  * chrome.storage.local to force the old replay-on-stall behavior.
  */
 export async function isResumeEnabled(): Promise<boolean> {
@@ -102,47 +100,36 @@ export async function isResumeEnabled(): Promise<boolean> {
 }
 
 /**
- * Attempt to resume a stalled run via the live `/resume` endpoint. The caller
- * must have already reset its own run bookkeeping (runIdRef/targetIdRef/etc.)
- * to "idle" BEFORE calling this — `resumeRun` refuses to open a new stream
- * while it still thinks a run is active, exactly like it does for a real
- * STREAM_CONTINUE. See `onStallRef` in `use-chat-stream.ts` for the reset
- * sequence.
- *
- * Returns `{ resumed: true }` only when `resumeRun` actually opened a new
- * stream (returned a runId). Any other outcome — decision said no, the flag
- * is off, `resumeRun` declined (conversation not selected, claim lost), or it
- * threw — returns `{ resumed: false, reason }` and the caller falls back to
- * today's give-up-and-show-Retry behavior.
+ * Attempt to resume a stalled run via the live `/resume` endpoint (see the
+ * header). The caller must have already reset its own run bookkeeping to
+ * "idle" BEFORE calling. Never throws. Result reasons are unchanged from the
+ * pre-move implementation: a `409 resume_conflict` still reports
+ * `resume-run-error` (the package's finer `resume-conflict` is folded back so
+ * callers see exactly what they always did).
  */
 export async function attemptResume(
   target: ResumeTarget,
   resumeRun: (conversationId: string, userRequestId: string | null) => Promise<string | null>,
 ): Promise<ResumeResult> {
-  const decision = decideResume(target);
-  if (!decision.attempt) {
-    log.info('stream', `stall resume skipped: ${decision.reason}`, target);
-    return { resumed: false, reason: decision.reason };
-  }
-  if (!(await isResumeEnabled())) {
-    log.info('stream', 'stall resume skipped: disabled via matrx.stream.resume.enabled', target);
-    return { resumed: false, reason: 'resume-disabled' };
-  }
-  try {
-    // Non-null per `decideResume` above; requestId may legitimately be null.
-    const conversationId = target.conversationId as string;
-    const runId = await resumeRun(conversationId, target.requestId);
-    if (!runId) {
+  const result = await attemptStallResume(target, resumeRun, { enabled: isResumeEnabled });
+  switch (result.reason) {
+    case 'no-conversation-id':
+      log.info('stream', `stall resume skipped: ${result.reason}`, target);
+      break;
+    case 'resume-disabled':
+      log.info('stream', 'stall resume skipped: disabled via matrx.stream.resume.enabled', target);
+      break;
+    case 'resume-run-declined':
       log.warn(
         'stream',
         'stall resume declined by resumeRun (not idle / claim lost / no selection)',
         target,
       );
-      return { resumed: false, reason: 'resume-run-declined' };
-    }
-    return { resumed: true, reason: 'ok' };
-  } catch (err) {
-    log.warn('stream', 'stall resume: resumeRun threw', err);
-    return { resumed: false, reason: 'resume-run-error' };
+      break;
+    case 'resume-conflict':
+    case 'resume-run-error':
+      log.warn('stream', 'stall resume: resumeRun threw', result.error);
+      return { resumed: false, reason: 'resume-run-error' };
   }
+  return { resumed: result.resumed, reason: result.reason };
 }

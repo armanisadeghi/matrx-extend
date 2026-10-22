@@ -21,9 +21,13 @@
  *   cancelled     — the retry was abandoned
  *   suspended     — retrying is paused (e.g. awaiting user action)
  *
+ * MOVED to @ai-matrx/api: the deadline logic (`providerRetryDeadline`). The wire
+ * parsing and UI projection below stay here.
+ *
  * This module is pure so it can be unit-tested without a stream.
  */
 
+import { providerRetryDeadline } from '@ai-matrx/api';
 import type { ProviderRetryPayload } from '@gen/stream-events';
 
 /** A retry the UI should surface. `null` means "nothing to show". */
@@ -40,12 +44,6 @@ export interface ProviderRetryState {
   canCancel: boolean;
   canRetryNow: boolean;
 }
-
-/** States where the stream is expected to be SILENT but is still alive. */
-const QUIET_STATES: ReadonlySet<ProviderRetryPayload['state']> = new Set([
-  'scheduled',
-  'suspended',
-]);
 
 /** States that mean the retry episode is over — clear any banner. */
 const TERMINAL_STATES: ReadonlySet<ProviderRetryPayload['state']> = new Set([
@@ -80,30 +78,10 @@ export function isTerminal(p: ProviderRetryPayload): boolean {
 
 /**
  * When should the watchdog next expect a sign of life, in epoch ms?
- *
- * `null` means "no special hold — treat this event as an ordinary heartbeat".
- * We only hold for states where silence is EXPECTED; `retrying_now` means the
- * request is already in flight, so normal stall rules should resume.
- *
- * The server may express the deadline either as an absolute `retry_at` or a
- * relative `retry_delay` (seconds). Prefer the absolute one; fall back to the
- * delay. Both are optional, so a scheduled retry with neither gets no hold —
- * better to risk an early stall than to hang forever on a missing field.
+ * `null` = no special hold. Logic MOVED to @ai-matrx/api (`providerRetryDeadline`).
  */
 export function deadlineFor(p: ProviderRetryPayload, nowMs: number = Date.now()): number | null {
-  if (!QUIET_STATES.has(p.state)) return null;
-
-  // `retry_at` is a unix timestamp. Backends differ on seconds vs ms; disambiguate
-  // by magnitude rather than trusting a convention (a seconds value read as ms
-  // lands in 1970 and would silently produce no hold at all).
-  if (typeof p.retry_at === 'number' && p.retry_at > 0) {
-    const ms = p.retry_at < 1e12 ? p.retry_at * 1000 : p.retry_at;
-    if (ms > nowMs) return ms;
-  }
-  if (typeof p.retry_delay === 'number' && p.retry_delay > 0) {
-    return nowMs + p.retry_delay * 1000;
-  }
-  return null;
+  return providerRetryDeadline(p, nowMs);
 }
 
 /** Project the wire payload into the shape the UI renders. */
