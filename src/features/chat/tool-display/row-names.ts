@@ -1,5 +1,6 @@
 /**
- * The tools whose rows the package chat draws from this registry (every entry without a CustomComponent).
+ * The tools whose rows the package chat draws from this registry (every entry without a CustomComponent,
+ * except the plan tools tasks/update_plan/user_todos, which the package's plan block draws).
  * A cheap list so the configs themselves stay out of the first screen; a test keeps it equal to the registry.
  */
 export const CONFIGURED_ROW_NAMES: readonly string[] = [
@@ -57,7 +58,6 @@ export const CONFIGURED_ROW_NAMES: readonly string[] = [
   'list_guidance',
   'get_guidance_item',
   'delete_guidance_item',
-  'update_plan',
   'request_user_takeover',
   'resize_window',
   'read_active_page',
@@ -77,8 +77,6 @@ export const CONFIGURED_ROW_NAMES: readonly string[] = [
   'list_highlights',
   'mutation_watch',
   'data_patterns',
-  'tasks',
-  'user_todos',
   'desktop_run_command',
   'chrome_save_page_as_mhtml',
   'chrome_tab_audio_inspect',

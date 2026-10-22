@@ -842,26 +842,6 @@ exports[`every browser-tool row config draws through the package's row > draws v
     "error": "Screenshot failed",
     "started": "Taking screenshot",
   },
-  "tasks:get": {
-    "completed": "Task listget",
-    "error": "Tasks failedget",
-    "started": "Updating task listget",
-  },
-  "tasks:list": {
-    "completed": "Task listlist",
-    "error": "Tasks failedlist",
-    "started": "Updating task listlist",
-  },
-  "tasks:search": {
-    "completed": "Task listsearch",
-    "error": "Tasks failedsearch",
-    "started": "Updating task listsearch",
-  },
-  "update_plan": {
-    "completed": "Plan updated steps",
-    "error": "Plan failed steps",
-    "started": "Proposing plan steps3",
-  },
   "upload_file": {
     "completed": "Uploaded file to ref_12 file(s)",
     "error": "Upload failed for ref_12 file(s)",
@@ -871,21 +851,6 @@ exports[`every browser-tool row config draws through the package's row > draws v
     "completed": "Askedquarterly revenue report",
     "error": "User prompt failedquarterly revenue report",
     "started": "Askingquarterly revenue report",
-  },
-  "user_todos:get": {
-    "completed": "Your to-dosget",
-    "error": "To-dos failedget",
-    "started": "Updating your to-dosget",
-  },
-  "user_todos:list": {
-    "completed": "Your to-doslist",
-    "error": "To-dos failedlist",
-    "started": "Updating your to-doslist",
-  },
-  "user_todos:search": {
-    "completed": "Your to-dossearch",
-    "error": "To-dos failedsearch",
-    "started": "Updating your to-dossearch",
   },
   "wait_for": {
     "completed": "Waitedsample target",

@@ -5,6 +5,7 @@
  */
 import { toolDisplayRegistry } from '@/features/chat/tool-display/registry';
 import { CONFIGURED_ROW_NAMES } from '@/features/chat/tool-display/row-names';
+import { PLAN_TOOLS } from '@ai-matrx/chat/tool-call-visualization/registry/inlineVisibility';
 import {
   getToolChrome,
   hasCustomRenderer,
@@ -19,8 +20,10 @@ describe("the extension's browser-tool rows in the package chat", () => {
   registerExtensionToolRenderers();
 
   it('registers a row for every configured tool, bare and executor-prefixed', () => {
+    // Plan tools (tasks, update_plan, user_todos) are drawn by the package's plan block in the
+    // package chat; their configs stay only for the extension's own timeline (PilotView).
     const plain = Object.keys(toolDisplayRegistry).filter(
-      (k) => !toolDisplayRegistry[k]?.CustomComponent,
+      (k) => !toolDisplayRegistry[k]?.CustomComponent && !PLAN_TOOLS.has(k),
     );
     expect([...CONFIGURED_ROW_NAMES].sort()).toEqual(plain.sort());
     for (const name of CONFIGURED_ROW_NAMES) {
@@ -28,5 +31,6 @@ describe("the extension's browser-tool rows in the package chat", () => {
       expect(hasCustomRenderer(`matrx-extend:${name}`)).toBe(true);
       expect(getToolChrome(name)).toBe('row');
     }
+    for (const name of PLAN_TOOLS) expect(CONFIGURED_ROW_NAMES).not.toContain(name);
   });
 });
