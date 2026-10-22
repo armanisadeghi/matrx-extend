@@ -11,11 +11,13 @@ import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
 import { captureSpec, dismissCapture, saveCapture } from '@/lib/credentials/capture-card-host';
 import { useToolInbox } from '@/state/tool-inbox';
 import { ChatConversationRoom } from '@ai-matrx/chat/agents/components/chat/ChatConversationRoom';
-import { ChatHistorySidebar } from '@ai-matrx/chat/agents/components/chat/ChatHistorySidebar';
 import { ChatNewClient } from '@ai-matrx/chat/agents/components/chat/ChatNewClient';
+import { ConversationSidebar } from '@ai-matrx/chat/sidebar/ConversationSidebar';
+import type { SidebarEntry } from '@ai-matrx/chat/sidebar/sidebar-buckets';
 import { CredentialCaptureCard } from '@ai-matrx/chat/agents/ui-first-tools/ui/CredentialCaptureCard';
 import type { ChatHost } from '@ai-matrx/chat/host';
 import { ChatProvider, usePathname, useRouter } from '@ai-matrx/chat/host/react';
+import { withReferral } from '@ai-matrx/kit/outbound';
 import { Button } from '@ai-matrx/design-system';
 import { History, SquarePen } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -51,6 +53,26 @@ export function BrowserToolPrompts({ conversationId }: { conversationId: string 
   );
 }
 
+/** The sidebar's entries have no page in the panel: they open on the web, in a browser tab. */
+const WEB_ENTRY_PATH: Partial<Record<SidebarEntry, string>> = {
+  agents: '/agents',
+  'search-agents': '/agents',
+  'pinned-agents': '/agents',
+  workflows: '/workflows',
+  scheduled: '/schedules',
+  templates: '/chat/message-templates',
+  voice: '/chat/voice',
+  confidential: '/chat/new?confidential=1',
+  archived: '/trash',
+};
+
+function openEntryOnWeb(entry: SidebarEntry): boolean {
+  const path = WEB_ENTRY_PATH[entry];
+  if (!path) return false; // Favorites: the sidebar answers it itself (its Pinned section).
+  void chrome.tabs.create({ url: withReferral(`https://www.aimatrx.com${path}`) });
+  return true;
+}
+
 function Screens() {
   const pathname = usePathname();
   const router = useRouter();
@@ -82,14 +104,17 @@ function Screens() {
         </Button>
       </div>
       {historyOpen ? (
-        <ChatHistorySidebar
-          scopeId="matrx-extend-side-panel"
-          openInPlace
+        <ConversationSidebar
           activeConversationId={conversationId}
           onOpenConversation={(conversation) => {
             setHistoryOpen(false);
-            router.push(`/chat/${conversation.conversationId}`);
+            router.push(`/chat/${conversation.id}`);
           }}
+          onNew={() => {
+            setHistoryOpen(false);
+            router.push('/chat');
+          }}
+          onEntry={openEntryOnWeb}
           className="min-h-0 flex-1"
         />
       ) : (
