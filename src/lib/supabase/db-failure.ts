@@ -52,6 +52,7 @@
  * notice and recording the error.
  */
 
+import { PG_CODES } from '@ai-matrx/kit/db-codes';
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
 import { mayReportExternalTelemetry } from '@/lib/telemetry/external-reporting';
@@ -141,21 +142,21 @@ export function classifyDbFailure(error: DbErrorLike | null | undefined): DbFail
 
   if (code === 'NO_ORGANIZATION') return 'no_workspace';
 
-  if (code === '42501' || /permission denied|row-level security|violates row-level/.test(msg)) {
+  if (code === PG_CODES.insufficientPrivilege || /permission denied|row-level security|violates row-level/.test(msg)) {
     return 'refused';
   }
   // PGRST116 = "JSON object requested, multiple (or no) rows returned" — on a
   // write with `.single()` that is RLS filtering the RETURNING row away.
-  if (code === 'PGRST116') return 'refused';
+  if (code === PG_CODES.pgrstNoRows) return 'refused';
   if (
     code === '42P01' ||
-    code === 'PGRST205' ||
+    code === PG_CODES.pgrstUnknownRelation ||
     code === 'PGRST202' ||
     /relation .* does not exist|could not find the (table|function)|schema cache/.test(msg)
   ) {
     return 'missing_relation';
   }
-  if (code === 'PGRST301' || code === '42704' || /jwt|not authenticated|invalid token/.test(msg)) {
+  if (code === PG_CODES.pgrstJwtInvalid || code === '42704' || /jwt|not authenticated|invalid token/.test(msg)) {
     return 'not_authenticated';
   }
   if (/failed to fetch|networkerror|network request failed|load failed/.test(msg)) {

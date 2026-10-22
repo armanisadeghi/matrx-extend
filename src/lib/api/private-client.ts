@@ -9,6 +9,7 @@ import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
 import { getAccessToken, getVerifiedCurrentUser } from '@/lib/auth/flow';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { sendMatrxRequest } from '@ai-matrx/api';
+import { base64UrlToBytes } from '@ai-matrx/auth/jwt';
 import type { z } from 'zod';
 
 export type PrivateRequestError =
@@ -108,8 +109,8 @@ function sessionIdFromBearer(token: string): string | null {
   const payload = token.split('.')[1];
   if (!payload) return null;
   try {
-    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const decoded = atob(normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '='));
+    // One character per byte (Latin-1), exactly as the old `atob` read did — never UTF-8.
+    const decoded = Array.from(base64UrlToBytes(payload), (byte) => String.fromCharCode(byte)).join('');
     const parsed: unknown = JSON.parse(decoded);
     const sessionId =
       parsed && typeof parsed === 'object' && !Array.isArray(parsed)

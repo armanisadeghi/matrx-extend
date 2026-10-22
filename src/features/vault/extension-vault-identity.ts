@@ -21,6 +21,7 @@ import {
 } from '@/lib/auth/flow';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { base64UrlToBytes } from '@ai-matrx/auth/jwt';
 import type { IdentityAccount, VaultIdentity } from '@ai-matrx/vault';
 
 interface TokenClaims {
@@ -34,8 +35,9 @@ function claimsOf(token: string | null): TokenClaims {
   const payload = token?.split('.')[1];
   if (!payload) return {};
   try {
-    const b64 = payload.replace(/-/g, '+').replace(/_/g, '/');
-    return JSON.parse(atob(b64 + '='.repeat((4 - (b64.length % 4)) % 4))) as TokenClaims;
+    // One character per byte (Latin-1), exactly as the old `atob` read did — never UTF-8.
+    const text = Array.from(base64UrlToBytes(payload), (byte) => String.fromCharCode(byte)).join('');
+    return JSON.parse(text) as TokenClaims;
   } catch {
     return {};
   }

@@ -1,4 +1,5 @@
 import { isDeepStrictEqual } from 'node:util';
+import { MATRX_HEADERS } from '@ai-matrx/auth/credentials';
 import type { DbToolRow } from './_tool-db-row-validation';
 
 function object(value: unknown): value is Record<string, unknown> {
@@ -83,7 +84,7 @@ export async function fetchServerToolContract(name: string): Promise<unknown> {
     {
       headers: {
         Authorization: `Bearer ${token}`,
-        'X-Organization-Id': organization,
+        [MATRX_HEADERS.organization]: organization,
         // Source of truth for this header: aidream matrx_ai/agent_traffic.py (MATRX_AGENT_TRAFFIC).
         'X-Matrx-Agent-Traffic': 'server-tool-contract',
       },
