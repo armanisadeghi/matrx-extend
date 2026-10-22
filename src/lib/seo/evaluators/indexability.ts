@@ -125,7 +125,8 @@ export function selfCanonicalUrls(
     .map((hop) => hop?.url)
     .filter((url): url is string => typeof url === 'string' && url !== '');
   const known: string[] = finalUrl ? [finalUrl] : [];
-  if (hops.length > 0) known.push(hops[hops.length - 1]);
+  const lastHop = hops[hops.length - 1];
+  if (lastHop !== undefined) known.push(lastHop);
   if (requestedUrl && hops.length <= 1) known.push(requestedUrl);
   return known;
 }
