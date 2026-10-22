@@ -440,7 +440,7 @@ try {
 
   // 5a. A value row in the composer's chip opens that value's details inside the panel.
   await openChip();
-  await panel.locator('[role=row][data-key="page_brief"] button').last().click();
+  await panel.locator('[role=row][data-key="page_brief"]').getByText('Page Brief', { exact: true }).first().click();
   await panel.locator('[data-extension-tab-layer="conversation-context"]').waitFor({ timeout: 10_000 }).catch(() => {});
   await panel.waitForTimeout(1500);
   await shot(panel, '14a-chip-row-opened');
@@ -460,7 +460,7 @@ try {
   await panel.locator('[data-extension-tab-layer="message-context-receipt"]').waitFor({ timeout: 10_000 }).catch(() => {});
   await panel.waitForTimeout(1500);
   await shot(panel, '14-sent-values');
-  await panel.locator('[role=row][data-key="page_brief"] button').last().click();
+  await panel.locator('[role=row][data-key="page_brief"]').getByText('Page Brief', { exact: true }).first().click();
   await panel.waitForTimeout(5000);
   await shot(panel, '15-value-opened');
   const viewerText = (await panel.locator('[data-extension-tab-layer]').first().innerText().catch(() => '')).replace(/\n+/g, ' | ');

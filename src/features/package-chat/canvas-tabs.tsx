@@ -27,6 +27,7 @@ import {
 import { Button } from '@ai-matrx/design-system';
 import { X } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 
 /** The tab kinds the panel can show. */
 const HOSTED_KINDS: ReadonlySet<string> = new Set([
@@ -124,10 +125,13 @@ export function ExtensionTabLayer() {
     const messageId = text(tab.data, 'messageId');
     if (messageId) body = <MessageContextReceiptView conversationId={conversationId} messageId={messageId} />;
   }
-  return (
+  // Portaled to the page body above the composer's value popover (itself a portal) so a press
+  // on a popover row shows its details over it; `pointer-events-auto` because a modal popover
+  // switches the rest of the body off.
+  return createPortal(
     <div
       data-extension-tab-layer={tab.kind}
-      className="absolute inset-0 z-20 flex min-h-0 flex-col bg-background"
+      className="pointer-events-auto fixed inset-0 z-[100] flex min-h-0 flex-col bg-background"
     >
       <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border px-3 py-1">
         <span className="truncate text-sm font-medium">{tab.title}</span>
@@ -136,6 +140,7 @@ export function ExtensionTabLayer() {
         </Button>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">{body}</div>
-    </div>
+    </div>,
+    document.body,
   );
 }

@@ -23,22 +23,22 @@ describe('the side panel tab layer', () => {
 
   it('a press with no value opens, a second closes', async () => {
     const { ExtensionTabLayer } = await import('./canvas-tabs');
-    const view = render(<ExtensionTabLayer />);
-    expect(view.container.querySelector('[data-extension-tab-layer]')).toBeNull();
+    render(<ExtensionTabLayer />);
+    expect(document.querySelector('[data-extension-tab-layer]')).toBeNull();
     act(() => toggleTab(ref, open()));
-    expect(view.container.querySelector('[data-extension-tab-layer]')).not.toBeNull();
+    expect(document.querySelector('[data-extension-tab-layer]')).not.toBeNull();
     act(() => toggleTab(ref, open()));
-    expect(view.container.querySelector('[data-extension-tab-layer]')).toBeNull();
+    expect(document.querySelector('[data-extension-tab-layer]')).toBeNull();
   });
 
   it('a value row opens the layer on that value; the same row again closes it; another row moves it', async () => {
     const { ExtensionTabLayer } = await import('./canvas-tabs');
-    const view = render(<ExtensionTabLayer />);
+    render(<ExtensionTabLayer />);
     act(() => toggleTab(ref, open('page_brief')));
-    expect(view.container.querySelector('[data-extension-tab-layer]')).not.toBeNull();
+    expect(document.querySelector('[data-extension-tab-layer]')).not.toBeNull();
     act(() => toggleTab(ref, open('page_meta')));
-    expect(view.container.querySelector('[data-extension-tab-layer]')).not.toBeNull();
+    expect(document.querySelector('[data-extension-tab-layer]')).not.toBeNull();
     act(() => toggleTab(ref, open('page_meta')));
-    expect(view.container.querySelector('[data-extension-tab-layer]')).toBeNull();
+    expect(document.querySelector('[data-extension-tab-layer]')).toBeNull();
   });
 });
