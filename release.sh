@@ -633,8 +633,8 @@ start_build() {  # packages the candidate beside the checks; publication still w
     BUILD_STARTED=true
 }
 
-# Checks before PARALLEL_FROM run one at a time, cheapest first, so a stale
-# package, type or lint failure stops before the unit tests or a build start.
+# Checks before PARALLEL_FROM run one at a time, cheapest first (a failure is reported, never a
+# stop, except matrx-packages' one catch-up attempt, which restarts the candidate before the build).
 # From PARALLEL_FROM on, every check runs at once beside the package build; the
 # verdicts are read in declared order, so the failure reported is the one a
 # serial run would have reported first.
@@ -648,10 +648,13 @@ case "${RELEASE_SERIAL_CHECKS:-0}" in
     1) PARALLEL_FROM="__serial_checks_never_match__" ;;
     *) hard_stop "RELEASE_SERIAL_CHECKS must be 0 or 1" ;;
 esac
-FAILED_CHECK=""
+FAILED_CHECK=""; FAILED_CHECK_RC=""; FAILED_CHECK_CMD=""
 run_checks() {
-    local row name secs cmd parallel=false waiting=() rows=()
+    local row name secs cmd parallel=false waiting=() rows=() kept=() f
     FAILED_CHECK=""
+    # A previous (abandoned) candidate's check findings do not describe this one.
+    for f in ${FINDINGS[@]+"${FINDINGS[@]}"}; do [[ "$f" == "ERROR|Checks|"* ]] || kept+=("$f"); done
+    FINDINGS=(${kept[@]+"${kept[@]}"})
     BUILD_STARTED=false
     for row in "${CHECKS[@]}"; do
         IFS='|' read -r name secs _ _ _ cmd <<< "$row"
@@ -678,11 +681,30 @@ run_checks() {
         check_verdict "${row%%|*}" "${row#*|}" || return 1
     done
 }
-check_verdict() {  # name cmd → 0 on pass; on failure report it and return 1
+# NOTHING BLOCKS A RELEASE (Arman 2026-09-24 / 10-02 / 10-21): a failing check is an ERROR finding
+# plus a scream to the ship-all lanes, and the release goes on. Only a failing BUILD stops it —
+# there is nothing to ship. matrx-packages alone gets one catch-up attempt first (returns 1 so the
+# main loop can run it); once that has failed, later attempts only report.
+MATRX_CATCHUP_FAILED=false
+scream_release() {  # check detail — always returns 0; mail is deduped per repo+check+detail by the helper
+    [[ -f "$HOME/code/matrx-ship/scripts/release-scream.py" ]] || return 0
+    python3 "$HOME/code/matrx-ship/scripts/release-scream.py" --repo matrx-extend --where "release.sh checks" \
+        --check "$1" --detail "$2" --ref "${RELEASE_SHA:-}" >&2 || true
+}
+check_verdict() {  # name cmd → 0 on pass or reported failure; 1 only for matrx-packages while its catch-up is still to try
     local name="$1" cmd="$2" rc
     rc="$(cat "$JOBS/check-$name.rc")"
     { echo "--- check $name (exit $rc) ---"; cat "$JOBS/check-$name.out"; } >> "$RELEASE_LOG_FILE"
-    if [[ "$rc" != 0 ]]; then
+    [[ "$rc" == 0 ]] && return 0
+    if [[ "$name" == matrx-packages ]] && ! $MATRX_CATCHUP_FAILED; then
+        FAILED_CHECK="$name"; FAILED_CHECK_RC="$rc"; FAILED_CHECK_CMD="$cmd"
+        return 1
+    fi
+    report_check_failure "$name" "$cmd" "$rc"
+    return 0
+}
+report_check_failure() {  # name cmd rc → ERROR finding + scream; never stops the release
+    local name="$1" cmd="$2" rc="$3"
             if [[ "$name" == unit-tests && "${GITHUB_ACTIONS:-}" == true ]]; then
                 # Keep ordinary Vitest failure context in the hosted job log.
                 # Credentials are read from this process environment, never
@@ -781,10 +803,8 @@ NODE
                 fi
             } > "$RELEASE_LOG_DIR/diagnostics.log"
             cat "$RELEASE_LOG_DIR/diagnostics.log"
-            finding "ERROR" "Checks" "$name failed (exit $rc); candidate $NEW_TAG was not published" "$cmd"
-            FAILED_CHECK="$name"
-            return 1
-        fi
+            finding "ERROR" "Checks" "$name failed (exit $rc) — reported, not blocking; $NEW_TAG goes ahead unless its build fails" "$cmd"
+            scream_release "$name" "$name failed (exit $rc) on candidate $NEW_TAG; the release goes ahead. Fix: $cmd"
 }
 
 # ── @ai-matrx catch-up: a package published mid-release is not a stopped release ─
@@ -794,7 +814,8 @@ NODE
 # install, update, read every new CHANGELOG entry, commit the lockfile and build
 # a fresh candidate — the gate itself is unchanged and re-runs on that candidate.
 # PIN / DUPLICATE / AHEAD / upstream pin / unverifiable, a declared Consumer
-# action, or an update that breaks an @ai-matrx import: the release stops.
+# action, or an update that breaks an @ai-matrx import: the catch-up gives up, the next attempt only
+# REPORTS the stale packages (ERROR + scream), and the release goes on.
 #
 # CORRECTNESS BY CONSTRUCTION, NOT A RACE (2026-10-07). This used to stop after
 # three catch-ups ("@ai-matrx moved again after 3 catch-ups"): each catch-up read
@@ -886,8 +907,7 @@ catch_up_matrx_packages() {
             return 1
         fi
         log "catch-up: committed lockfile was already current; the install lagged it and now matches — rechecking the candidate"
-        unset 'FINDINGS[${#FINDINGS[@]}-1]'   # the gate's ERROR for the install this replaces
-        return 0
+                return 0
     fi
     if ! quiet git commit --only -m "chore(deps): catch up @ai-matrx packages to npm latest during release
 
@@ -896,7 +916,6 @@ $review" -- "${paths[@]}"; then
         return 1
     fi
     LOCAL_HEAD="$(git rev-parse HEAD)"
-    unset 'FINDINGS[${#FINDINGS[@]}-1]'   # the gate's ERROR for the candidate this replaces
     while IFS= read -r p; do
         [[ -n "$p" ]] && finding "WARNING" "Packages" "caught up during release: $p" ""
     done <<< "$review"
@@ -988,8 +1007,15 @@ while :; do
         # Origin moved while this candidate was checked: it can no longer be pushed.
         [[ "$FAILED_CHECK" == "$ORIGIN_MOVED" ]] && { note_race validation; continue; }
         # A fresh candidate on the caught-up lockfile; every check runs again on it.
-        [[ "$FAILED_CHECK" == matrx-packages ]] && catch_up_matrx_packages && continue
-        hard_stop "mandatory checks failed for $NEW_TAG — nothing was pushed"
+        # When the catch-up fails the next attempt only REPORTS the stale packages and the release goes on.
+        if [[ "$FAILED_CHECK" == matrx-packages ]]; then
+            catch_up_matrx_packages && continue
+            MATRX_CATCHUP_FAILED=true
+            scream_release "matrx-packages catch-up" "$(for f in ${FINDINGS[@]+"${FINDINGS[@]}"}; do [[ "$f" == "ERROR|Packages|"* ]] && { f="${f#ERROR|Packages|}"; echo "${f%%|*}"; }; done | head -5)
+The @ai-matrx catch-up could not finish; the release goes ahead on the current packages."
+            log "matrx-packages catch-up failed — the next attempt reports it and releases"
+            continue
+        fi
     fi
     mandate_scan_step
     # The package build started beside the parallel checks (start_build).

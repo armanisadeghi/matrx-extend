@@ -18,6 +18,8 @@ set -euo pipefail
 unset AIDREAM_API_TOKEN AIDREAM_ORGANIZATION_ID AIDREAM_API_URL \
     RELEASE_LOG_CAPTURED RELEASE_LOG_DIR RELEASE_LOG_FILE RELEASE_TEST_BEFORE_PUSH RELEASE_RACE_POLL_SECS
 
+# Screams print their banner but never mail the real ship-all lanes from a sandbox.
+export MATRX_RELEASE_SCREAM_NO_MAIL=1
 SCRIPT_UNDER_TEST="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/release.sh}"
 SCRIPT_UNDER_TEST="$(cd "$(dirname "$SCRIPT_UNDER_TEST")" && pwd)/$(basename "$SCRIPT_UNDER_TEST")"
 HARNESS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -259,52 +261,7 @@ echo "installed prior release" > .output/chrome-mv3-dev/sentinel.txt
 printf 'prior Store zip\n' > .output/matrx-extend-0.1.0-store.zip
 printf 'prior local zip\n' > .output/matrx-extend-0.1.0-local.zip
 REMOTE_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
-touch "$SANDBOX/fail-matrx-packages"
-set +e
-PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/stale-packages-out" 2>&1
-STALE_PACKAGES_STATUS=$?
-set -e
-rm "$SANDBOX/fail-matrx-packages"
-if [[ $STALE_PACKAGES_STATUS -ne 0 ]] \
-    && grep -q 'matrx-packages failed' "$SANDBOX/stale-packages-out" \
-    && ! grep -q 'exec vitest run' "$SANDBOX/pnpm-calls" \
-    && [[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] \
-    && ! git ls-remote --tags origin | grep -q 'refs/tags/v0.1.2$'; then
-  [[ $(grep -c '^install --frozen-lockfile --package-import-method=copy$' "$SANDBOX/pnpm-calls") -eq 1 ]] || { echo "FAIL: candidate graph not installed once" >&2; exit 1; }
-  echo '  ok    candidate regen/check/build reuse one private frozen install'
-  echo '  ok    stale packages stop before unit tests and publication'
-else
-  echo '  FAIL  stale packages stop before unit tests and publication'
-  exit 1
-fi
-# CI runs `pnpm lint`; a released candidate with Biome errors must stop here.
-mkdir -p node_modules/.bin
-cat > node_modules/.bin/biome <<'STUB'
-#!/usr/bin/env bash
-printf '%s\n' '{"diagnostics":[{"severity":"error","category":"format","location":{"path":{"file":"src/fixture.ts"},"sourceCode":"SYNTHETIC_SOURCE_MUST_NOT_LEAK"}}]}'
-exit 1
-STUB
-chmod +x node_modules/.bin/biome
-touch "$SANDBOX/fail-lint"
-set +e
-PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/lint-out" 2>&1
-LINT_STATUS=$?
-set -e
-rm "$SANDBOX/fail-lint"
-if [[ $LINT_STATUS -ne 0 ]] \
-    && grep -q 'lint failed' "$SANDBOX/lint-out" \
-    && grep -q ' lint' "$SANDBOX/pnpm-calls" \
-    && grep -q 'src/fixture.ts format format differs' "$SANDBOX/lint-out" \
-    && ! grep -q 'SYNTHETIC_SOURCE_MUST_NOT_LEAK' "$SANDBOX/lint-out" \
-    && ! grep -q 'exec vitest run' "$SANDBOX/pnpm-calls" \
-    && [[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] \
-    && ! git ls-remote --tags origin | grep -q 'refs/tags/v0.1.2$'; then
-  echo '  ok    CI lint failure stops before unit tests and publication'
-else
-  echo '  FAIL  CI lint failure stops before unit tests and publication'
-  exit 1
-fi
-touch "$SANDBOX/fail-tests"
+touch "$SANDBOX/fail-build"
 rm -f "$SANDBOX/pgrep-calls"
 set +e
 PATH="$SANDBOX/bin:$PATH" bash release.sh --message "guard run" > "$SANDBOX/failed-out" 2>&1
@@ -360,7 +317,7 @@ check "candidate was checked before any publication"  '[[ -s "$SANDBOX/checked-s
 check "local uncommitted work remains"                 'grep -q "uncommitted work" shared.txt'
 
 # Failed generation and failed package build are equally publication-blocking.
-rm "$SANDBOX/fail-tests"
+rm "$SANDBOX/fail-build"
 touch "$SANDBOX/fail-generation"
 set +e
 PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/generation-out" 2>&1
@@ -414,7 +371,7 @@ check "release --no-push only previews"                  '[[ $NO_PUSH_STATUS -eq
 
 # A foreign branch push invalidates the checked first candidate. If the new
 # candidate fails, its tag and main update must both be refused.
-RACE_FAIL_CMD="[ -f '$SANDBOX/race-failed' ] || { touch '$SANDBOX/race-failed'; cd '$SANDBOX/other' && git pull -q origin main && echo race-failed > race-failed.txt && git add -A && git -c user.name=t -c user.email=t@t commit -qm race-failed && git push -q origin main && touch '$SANDBOX/fail-tests'; }"
+RACE_FAIL_CMD="[ -f '$SANDBOX/race-failed' ] || { touch '$SANDBOX/race-failed'; cd '$SANDBOX/other' && git pull -q origin main && echo race-failed > race-failed.txt && git add -A && git -c user.name=t -c user.email=t@t commit -qm race-failed && git push -q origin main && touch '$SANDBOX/fail-build'; }"
 set +e
 PATH="$SANDBOX/bin:$PATH" RELEASE_TEST_BEFORE_PUSH="$RACE_FAIL_CMD" bash release.sh > "$SANDBOX/race-failed-out" 2>&1
 RACE_FAIL_STATUS=$?
@@ -424,9 +381,9 @@ check "failed second candidate exits nonzero"         '[[ -f "$SANDBOX/race-fail
 check "foreign branch commit survived"                'git cat-file -e origin/main:race-failed.txt'
 check "failed second candidate did not publish a tag" '! git ls-remote --tags origin | grep -q "refs/tags/v0.1.2$"'
 check "failed second candidate kept remote version"   'git show origin/main:package.json | grep -q "\"version\": \"0.1.0\""'
-# The hook creates fail-tests only if it ran; a release that stopped before the
+# The hook creates fail-build only if it ran; a release that stopped before the
 # hook must still reach the diagnostic dump below instead of dying here (set -e).
-rm -f "$SANDBOX/fail-tests"
+rm -f "$SANDBOX/fail-build"
 
 # Pass: remote race forces a new candidate and a second complete validation.
 PKG_CALLS_BEFORE_RACE="$(grep -c 'check:matrx-packages' "$SANDBOX/pnpm-calls" || true)"
@@ -566,12 +523,12 @@ cp "$HARNESS_ROOT/scripts/sync-main.py" "$HARNESS_ROOT/scripts/check-conflict-ma
   "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" "$HARNESS_ROOT/scripts/await-matrx-latest.mjs" scripts/
 git_q reset -q --hard origin/main~1 2>/dev/null || true
 echo "agent work nobody committed" > uncommitted-agent-work.txt
-# The release only needs to be refused; fail its first check so this scenario stays cheap.
-touch "$SANDBOX/fail-matrx-packages"
+# The release only needs to stop; fail its build (the one thing that stops a release) so this scenario stays cheap.
+touch "$SANDBOX/fail-build"
 set +e
 PATH="$SANDBOX/bin:$PATH" bash ship.sh "ship guard" > "$SANDBOX/ship-out" 2>&1
 set -e
-rm -f "$SANDBOX/fail-matrx-packages"
+rm -f "$SANDBOX/fail-build"
 git fetch -q origin 2>/dev/null || true
 echo "ship.sh — commit all, pull all, push all, even when the release is refused"
 check "uncommitted work was committed and pushed"     'git show origin/main:uncommitted-agent-work.txt | grep -q "agent work nobody committed"'
@@ -582,7 +539,8 @@ cd "$SANDBOX/checkout"
 
 # A sibling @ai-matrx package published between the sync and the gate is STALE
 # only: the release updates, reads the new CHANGELOG entries, commits the
-# lockfile and re-runs every gate on a fresh candidate. Anything else stops.
+# lockfile and re-runs every gate on a fresh candidate. Anything else makes the catch-up give up:
+# the failure is reported (ERROR + scream) and the release is PUSHED anyway (Arman 2026-10-21).
 git_q clone "$SANDBOX/origin.git" "$SANDBOX/catchup"
 cd "$SANDBOX/catchup"
 git config user.name test; git config user.email test@test; git config core.hooksPath /dev/null
@@ -608,18 +566,22 @@ CATCHUP_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
 touch "$SANDBOX/pin-packages"; UPDATES_BEFORE="$(updates)"
 PIN_STATUS=0; run_release catchup-pin-out || PIN_STATUS=$?
 rm -f "$SANDBOX/pin-packages"
-check "PIN is never caught up"                         '[[ $PIN_STATUS -ne 0 && "$(updates)" == "$UPDATES_BEFORE" && "$CATCHUP_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "PIN is never caught up, reported and released"  '[[ $PIN_STATUS -eq 0 && "$(updates)" == "$UPDATES_BEFORE" && "$CATCHUP_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "  pushed" "$SANDBOX/catchup-pin-out" && grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/catchup-pin-out" && grep -q "RELEASE WARNING" "$SANDBOX/catchup-pin-out"'
+git fetch -q --tags origin 2>/dev/null || true; git_q reset -q --hard origin/main
+CATCHUP_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
 touch "$SANDBOX/stale-packages" "$SANDBOX/changelog-action"
 ACTION_STATUS=0; run_release catchup-action-out || ACTION_STATUS=$?
 rm -f "$SANDBOX/changelog-action"
-check "a declared Consumer action stops the release"   '[[ $ACTION_STATUS -ne 0 && "$CATCHUP_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "a declared Consumer action is reported and the release goes on" '[[ $ACTION_STATUS -eq 0 && "$CATCHUP_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "  pushed" "$SANDBOX/catchup-action-out" && grep -q "check: matrx-packages catch-up" "$SANDBOX/catchup-action-out"'
 check "the Consumer action is named"                   'grep -q "@ai-matrx/fixture@1.0.1 Consumer action: delete your local copy" "$SANDBOX/catchup-action-out"'
 git checkout -q -- pnpm-lock.yaml
-# An update that drops an export this repo imports is never adopted: rolled back, named, stopped.
+git fetch -q --tags origin 2>/dev/null || true; git_q reset -q --hard origin/main
+CATCHUP_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+# An update that drops an export this repo imports is never adopted: rolled back, named, reported; the release goes on.
 touch "$SANDBOX/stale-packages" "$SANDBOX/break-imports"
 BREAK_STATUS=0; run_release catchup-break-out || BREAK_STATUS=$?
 rm -f "$SANDBOX/break-imports" "$SANDBOX/stale-packages"
-check "a breaking update stops the release"            '[[ $BREAK_STATUS -ne 0 && "$CATCHUP_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "a breaking update is reported and the release goes on" '[[ $BREAK_STATUS -eq 0 && "$CATCHUP_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "  pushed" "$SANDBOX/catchup-break-out"'
 check "a breaking update is rolled back and named"     'git diff --quiet HEAD -- pnpm-lock.yaml && grep -q "rolled back" "$SANDBOX/catchup-break-out" && grep -q "helperGone" "$SANDBOX/catchup-break-out" && grep -q "install --frozen-lockfile" "$SANDBOX/pnpm-calls"'
 # aidream keeps publishing: four catch-ups in a row each adopt a newer version. That is progress,
 # never a stop (the release used to stop after three). Each one waits for the publish runs in flight.
@@ -659,10 +621,10 @@ ENDLESS_TIMEOUT_LIMIT_MATCH=0
 # The wall-clock budget may expire after any of the repeated successful
 # catch-ups on a busy host. The separate four-update case above proves that
 # active publication itself never stops a candidate prematurely.
-if [[ $FOREVER_STATUS -ne 0 && $ENDLESS_UPDATE_COUNT -ge 1 && ( $ENDLESS_STILL_PUBLISHING -eq 1 || $ENDLESS_BUDGET_BEFORE_UPDATE -eq 1 || ( $ENDLESS_UPDATE_TIMED_OUT -eq 1 && $ENDLESS_TIMEOUT_LIMIT_MATCH -eq 1 ) ) ]]; then
-  echo "  ok    endless churn stops at the race budget"
+if [[ $FOREVER_STATUS -eq 0 && $ENDLESS_UPDATE_COUNT -ge 1 && ( $ENDLESS_STILL_PUBLISHING -eq 1 || $ENDLESS_BUDGET_BEFORE_UPDATE -eq 1 || ( $ENDLESS_UPDATE_TIMED_OUT -eq 1 && $ENDLESS_TIMEOUT_LIMIT_MATCH -eq 1 ) ) ]]; then
+  echo "  ok    endless churn gives up at the race budget, reports it and releases"
 else
-  printf '  FAIL  endless churn stops at the race budget (status=%s updates=%s still_publishing=%s budget_before_update=%s update_timed_out=%s timeout_limit_match=%s)\n' \
+  printf '  FAIL  endless churn gives up at the race budget and releases (status=%s updates=%s still_publishing=%s budget_before_update=%s update_timed_out=%s timeout_limit_match=%s)\n' \
     "$FOREVER_STATUS" "$ENDLESS_UPDATE_COUNT" "$ENDLESS_STILL_PUBLISHING" "$ENDLESS_BUDGET_BEFORE_UPDATE" "$ENDLESS_UPDATE_TIMED_OUT" "$ENDLESS_TIMEOUT_LIMIT_MATCH"
   FAILED=1
 fi
@@ -680,13 +642,14 @@ check "the catch-up commit is in main"                 '[[ -n "$(git log --forma
 check "the package gate ran again on the new candidate" '[[ $(( $(grep -c "check:matrx-packages" "$SANDBOX/pnpm-calls") - PKG_CHECKS_BEFORE )) -eq 2 ]]'
 check "the replaced candidate leaves no ERROR"         '! grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/catchup-out"'
 # The resolver can time out even after every package tarball is ready. That
-# failure must name its direct-update phase and never publish the candidate.
+# failure must name its direct-update phase, be reported, and the release goes on.
 touch "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update"
 rm -f "$SANDBOX/update-timeout-limit" "$SANDBOX/update-timeout-args"
 TIMEOUT_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
 TIMEOUT_STATUS=0; run_release catchup-timeout-out || TIMEOUT_STATUS=$?
 rm -f "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update"
-check "catch-up timeout is explicit and blocks publication" '[[ $TIMEOUT_STATUS -ne 0 && "$TIMEOUT_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" && "$(cat "$SANDBOX/update-timeout-limit")" == 1200 ]] && grep -q "^1200 pnpm update -r @ai-matrx/\\* --latest$" "$SANDBOX/update-timeout-args" && grep -q "direct @ai-matrx update timed out after 1200s" "$SANDBOX/catchup-timeout-out"'
+check "catch-up timeout is explicit, reported, and the release goes on" '[[ $TIMEOUT_STATUS -eq 0 && "$TIMEOUT_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" && "$(cat "$SANDBOX/update-timeout-limit")" == 1200 ]] && grep -q "^1200 pnpm update -r @ai-matrx/\\* --latest$" "$SANDBOX/update-timeout-args" && grep -q "direct @ai-matrx update timed out after 1200s" "$SANDBOX/catchup-timeout-out"'
+git fetch -q --tags origin 2>/dev/null || true; git_q reset -q --hard origin/main
 # Each update is capped by the remaining release-wide race budget, not merely
 # its nominal maximum. A test-only delay marker proves the catch-up crossed at
 # least one Bash SECONDS tick before the intercepted update.
@@ -698,17 +661,18 @@ BUDGET_TIMEOUT_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
 BUDGET_TIMEOUT_STATUS=0; run_release catchup-budget-timeout-out || BUDGET_TIMEOUT_STATUS=$?
 rm -f "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update" "$SANDBOX/budget-timeout-elapsed"
 git checkout -q -- release.sh
+git fetch -q --tags origin 2>/dev/null || true; git_q reset -q --hard origin/main
 BUDGET_TIMEOUT_LIMIT="$(cat "$SANDBOX/update-timeout-limit" 2>/dev/null || true)"
 BUDGET_TIMEOUT_ARGS_MATCH=0
 grep -q "^${BUDGET_TIMEOUT_LIMIT} pnpm update -r @ai-matrx/\\* --latest$" "$SANDBOX/update-timeout-args" && BUDGET_TIMEOUT_ARGS_MATCH=1 || true
 BUDGET_TIMEOUT_MESSAGE_MATCH=0
 grep -q "direct @ai-matrx update timed out after ${BUDGET_TIMEOUT_LIMIT}s" "$SANDBOX/catchup-budget-timeout-out" && BUDGET_TIMEOUT_MESSAGE_MATCH=1 || true
-BUDGET_TIMEOUT_BASE_UNCHANGED=0
-[[ "$BUDGET_TIMEOUT_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && BUDGET_TIMEOUT_BASE_UNCHANGED=1 || true
+BUDGET_TIMEOUT_BASE_UNCHANGED=0   # (name kept) 1 = the release was PUSHED anyway
+[[ "$BUDGET_TIMEOUT_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && BUDGET_TIMEOUT_BASE_UNCHANGED=1 || true
 BUDGET_TIMEOUT_DELAY_ENTERED=0
 [[ -f "$SANDBOX/budget-timeout-elapsed-entered" ]] && BUDGET_TIMEOUT_DELAY_ENTERED=1 || true
 BUDGET_TIMEOUT_NONZERO=0
-[[ $BUDGET_TIMEOUT_STATUS -ne 0 ]] && BUDGET_TIMEOUT_NONZERO=1 || true
+[[ $BUDGET_TIMEOUT_STATUS -eq 0 ]] && BUDGET_TIMEOUT_NONZERO=1 || true
 BUDGET_TIMEOUT_LIMIT_POSITIVE=0
 [[ "$BUDGET_TIMEOUT_LIMIT" =~ ^[0-9]+$ ]] && (( BUDGET_TIMEOUT_LIMIT > 0 )) && BUDGET_TIMEOUT_LIMIT_POSITIVE=1 || true
 BUDGET_TIMEOUT_LIMIT_BELOW_NOMINAL=0
@@ -792,15 +756,15 @@ check "published gate tree is the checked gate tree"   '[[ "$(gate_tree origin/m
 echo "release — serial gates preserve publication contract"
 SERIAL_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
 SERIAL_CALLS_BEFORE="$(wc -l < "$SANDBOX/pnpm-calls")"
-touch "$SANDBOX/fail-tests"
+touch "$SANDBOX/fail-build"
 set +e
 RELEASE_SERIAL_CHECKS=1 PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/serial-failed-out" 2>&1
 SERIAL_FAILED_STATUS=$?
 set -e
-rm "$SANDBOX/fail-tests"
+rm "$SANDBOX/fail-build"
 tail -n "+$((SERIAL_CALLS_BEFORE + 1))" "$SANDBOX/pnpm-calls" > "$SANDBOX/serial-failed-calls"
 check "serial test failure blocks publication" '[[ $SERIAL_FAILED_STATUS -ne 0 && "$SERIAL_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "nothing was pushed" "$SANDBOX/serial-failed-out"'
-check "serial failure never starts the build" '! grep -q "exec wxt zip" "$SANDBOX/serial-failed-calls"'
+check "serial failure still builds only after the last check" 'unit_line=$(grep -n "exec vitest run --maxWorkers=4" "$SANDBOX/serial-failed-calls" | tail -1 | cut -d: -f1); build_line=$(grep -n "exec wxt zip" "$SANDBOX/serial-failed-calls" | head -1 | cut -d: -f1); [[ -n "$unit_line" && -n "$build_line" && $build_line -gt $unit_line ]]'
 
 SERIAL_CALLS_BEFORE="$(wc -l < "$SANDBOX/pnpm-calls")"
 set +e
@@ -999,6 +963,49 @@ cp "$SCRIPT_UNDER_TEST" release.sh
 git fetch -q --tags origin 2>/dev/null || true
 check "running release survives in-place script rewrite" '[[ -f "$SANDBOX/script-rewritten" && $SCRIPT_REWRITE_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/script-rewrite-out"'
 check "script rewrite still promotes the published candidate" '"$REAL_NODE" -e '\''const fs = require("fs"); const cp = require("child_process"); const receipt = JSON.parse(fs.readFileSync(".output/release-receipt.json", "utf8")); const sha = cp.execFileSync("git", ["rev-parse", "origin/main"], {encoding:"utf8"}).trim(); if (receipt.sourceSha !== sha) process.exit(1);'\'''
+
+# Reported, never a stop (Arman 2026-10-21): stale packages and a lint failure are ERROR findings
+# that scream, and the release is pushed. They run LAST so the v0.1.2 tag checks above are untouched.
+# (--no-push cannot observe this: it behaves like --dry-run and builds nothing.)
+cd "$SANDBOX/checkout"
+git fetch -q origin 2>/dev/null || true
+echo "release — a failing check is reported and the release goes on"
+touch "$SANDBOX/fail-matrx-packages"
+PKG_INSTALLS_BEFORE="$(grep -c '^install --frozen-lockfile --package-import-method=copy$' "$SANDBOX/pnpm-calls" || true)"
+UNIT_RUNS_BEFORE="$(grep -c 'exec vitest run' "$SANDBOX/pnpm-calls" || true)"
+set +e
+PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/stale-packages-out" 2>&1
+STALE_PACKAGES_STATUS=$?
+set -e
+rm -f "$SANDBOX/fail-matrx-packages"
+git fetch -q --tags origin 2>/dev/null || true
+STALE_TAG="$(sed -n 's/^\(v[0-9.]*\)  pushed.*/\1/p' "$SANDBOX/stale-packages-out")"
+check "stale packages are reported and the release is pushed" '[[ $STALE_PACKAGES_STATUS -eq 0 && -n "$STALE_TAG" ]] && git ls-remote --tags origin | grep -q "refs/tags/$STALE_TAG$" && grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/stale-packages-out"'
+check "stale packages scream"                           'grep -q "RELEASE WARNING" "$SANDBOX/stale-packages-out" && grep -q "check: matrx-packages" "$SANDBOX/stale-packages-out"'
+check "the unit tests still ran after stale packages"   '[[ $(( $(grep -c "exec vitest run" "$SANDBOX/pnpm-calls") - UNIT_RUNS_BEFORE )) -ge 1 ]]'
+PKG_INSTALLS_RUN=$(( $(grep -c '^install --frozen-lockfile --package-import-method=copy$' "$SANDBOX/pnpm-calls") - PKG_INSTALLS_BEFORE ))
+check "candidate regen/check/build reuse one private frozen install" '[[ $PKG_INSTALLS_RUN -eq 1 ]]'
+# CI runs `pnpm lint`; a candidate with Biome errors is reported with safe diagnostics and released.
+mkdir -p node_modules/.bin
+cat > node_modules/.bin/biome <<'STUB'
+#!/usr/bin/env bash
+printf '%s\n' '{"diagnostics":[{"severity":"error","category":"format","location":{"path":{"file":"src/fixture.ts"},"sourceCode":"SYNTHETIC_SOURCE_MUST_NOT_LEAK"}}]}'
+exit 1
+STUB
+chmod +x node_modules/.bin/biome
+touch "$SANDBOX/fail-lint"
+UNIT_RUNS_BEFORE="$(grep -c 'exec vitest run' "$SANDBOX/pnpm-calls" || true)"
+set +e
+PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/lint-out" 2>&1
+LINT_STATUS=$?
+set -e
+rm -f "$SANDBOX/fail-lint"
+git fetch -q --tags origin 2>/dev/null || true
+LINT_TAG="$(sed -n 's/^\(v[0-9.]*\)  pushed.*/\1/p' "$SANDBOX/lint-out")"
+check "a lint failure is reported and the release is pushed" '[[ $LINT_STATUS -eq 0 && -n "$LINT_TAG" ]] && git ls-remote --tags origin | grep -q "refs/tags/$LINT_TAG$" && grep -q "^ERROR .*lint failed" "$SANDBOX/lint-out"'
+check "a lint failure screams"                          'grep -q "RELEASE WARNING" "$SANDBOX/lint-out" && grep -q "check: lint" "$SANDBOX/lint-out"'
+check "lint diagnostics stay safe"                      'grep -q "src/fixture.ts format format differs" "$SANDBOX/lint-out" && ! grep -q "SYNTHETIC_SOURCE_MUST_NOT_LEAK" "$SANDBOX/lint-out"'
+check "the unit tests still ran after a lint failure"   '[[ $(( $(grep -c "exec vitest run" "$SANDBOX/pnpm-calls") - UNIT_RUNS_BEFORE )) -ge 1 ]]'
 
 if [[ $FAILED -ne 0 ]]; then
   echo "--- in-place script rewrite output ---"; tail -30 "$SANDBOX/script-rewrite-out" 2>/dev/null
