@@ -62,7 +62,12 @@ export function registerExtensionToolRenderers(): void {
     {
       names: CONFIGURED_ROW_NAMES,
       // results.alwaysShow in the row configs => pinned (the result is the point).
-      pinnedNames: ['extract_table', 'take_screenshot', 'screenshot_region', 'cdp_full_page_screenshot'],
+      pinnedNames: [
+        'extract_table',
+        'take_screenshot',
+        'screenshot_region',
+        'cdp_full_page_screenshot',
+      ],
       load: async () => (await import('@/features/chat/tool-display/registry')).toolDisplayRegistry,
     },
     { namePrefixes: ['matrx-extend:'], stripPrefix: /^matrx-extend:/ },

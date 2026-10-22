@@ -144,11 +144,7 @@ export function evaluateIndexability(input: IndexabilityInput): IndexabilityEval
       ? Boolean(
           canonicalIsSelf(
             input.canonicalUrl,
-            ...selfCanonicalUrls(
-              input.finalUrl,
-              input.redirectChain,
-              input.requestedUrl ?? null,
-            ),
+            ...selfCanonicalUrls(input.finalUrl, input.redirectChain, input.requestedUrl ?? null),
           ),
         )
       : null;

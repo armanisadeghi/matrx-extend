@@ -28,9 +28,9 @@
  * `--prune-stale` removes ONLY stale entries from the register, never adds.
  * A finding not in the census fails under --strict.
  */
-import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 export const MIN_LINES = 20;
 export const THRESHOLD = 0.8;
@@ -45,25 +45,25 @@ const SKIP_PATH =
 export function normalize(source) {
   let s = source;
   // block + line comments (string-aware enough: skip quoted runs)
-  let out = "";
+  let out = '';
   for (let i = 0; i < s.length; ) {
     const c = s[i];
     const n = s[i + 1];
-    if (c === "/" && n === "/") {
-      const e = s.indexOf("\n", i);
+    if (c === '/' && n === '/') {
+      const e = s.indexOf('\n', i);
       i = e === -1 ? s.length : e;
       continue;
     }
-    if (c === "/" && n === "*") {
-      const e = s.indexOf("*/", i + 2);
+    if (c === '/' && n === '*') {
+      const e = s.indexOf('*/', i + 2);
       i = e === -1 ? s.length : e + 2;
       continue;
     }
-    if (c === '"' || c === "'" || c === "`") {
+    if (c === '"' || c === "'" || c === '`') {
       let j = i + 1;
       while (j < s.length && s[j] !== c) {
-        if (s[j] === "\\") j++;
-        else if (c !== "`" && s[j] === "\n") break;
+        if (s[j] === '\\') j++;
+        else if (c !== '`' && s[j] === '\n') break;
         j++;
       }
       out += s.slice(i, j + 1);
@@ -74,12 +74,15 @@ export function normalize(source) {
     i++;
   }
   s = out;
-  s = s.replace(/^\s*import\s[^;]*?from\s*["'][^"']+["'];?[ \t]*$/gms, "");
-  s = s.replace(/^\s*import\s*["'][^"']+["'];?[ \t]*$/gm, "");
-  s = s.replace(/^\s*export\s+(type\s+)?(\*|\{[^}]*\})(\s+as\s+\w+)?\s*from\s*["'][^"']+["'];?[ \t]*$/gms, "");
+  s = s.replace(/^\s*import\s[^;]*?from\s*["'][^"']+["'];?[ \t]*$/gms, '');
+  s = s.replace(/^\s*import\s*["'][^"']+["'];?[ \t]*$/gm, '');
+  s = s.replace(
+    /^\s*export\s+(type\s+)?(\*|\{[^}]*\})(\s+as\s+\w+)?\s*from\s*["'][^"']+["'];?[ \t]*$/gms,
+    '',
+  );
   return s
-    .split("\n")
-    .map((l) => l.replace(/\s+/g, " ").trim())
+    .split('\n')
+    .map((l) => l.replace(/\s+/g, ' ').trim())
     .filter(Boolean);
 }
 
@@ -99,10 +102,10 @@ function hash32(str) {
 }
 
 function shingles(lines) {
-  const toks = lines.join("\n").match(/[A-Za-z_$][\w$]*|\d+|\S/g) ?? [];
+  const toks = lines.join('\n').match(/[A-Za-z_$][\w$]*|\d+|\S/g) ?? [];
   const set = new Set();
   for (let i = 0; i + SHINGLE <= toks.length; i++) {
-    set.add(hash32(toks.slice(i, i + SHINGLE).join(" ")));
+    set.add(hash32(toks.slice(i, i + SHINGLE).join(' ')));
   }
   return set;
 }
@@ -197,35 +200,37 @@ function crossKey(a, b) {
 function trackedSources(dir, keep, { foreign = false } = {}) {
   // A sibling checkout must not inherit THIS repo's GIT_INDEX_FILE / GIT_DIR (set by hooks and plumbing commits).
   const env = { ...process.env };
-  if (foreign) for (const k of ["GIT_INDEX_FILE", "GIT_DIR", "GIT_WORK_TREE", "GIT_PREFIX"]) delete env[k];
-  const rows = execFileSync("git", ["ls-files", "-s", "-z", "--", "*.ts", "*.tsx"], {
+  if (foreign)
+    for (const k of ['GIT_INDEX_FILE', 'GIT_DIR', 'GIT_WORK_TREE', 'GIT_PREFIX']) delete env[k];
+  const rows = execFileSync('git', ['ls-files', '-s', '-z', '--', '*.ts', '*.tsx'], {
     cwd: dir,
     env,
-    encoding: "utf8",
+    encoding: 'utf8',
     maxBuffer: 256 * 1024 * 1024,
   })
-    .split("\0")
+    .split('\0')
     .filter(Boolean)
     .map((r) => {
-      const tab = r.indexOf("\t");
-      return { hash: r.slice(0, tab).split(" ")[1], path: r.slice(tab + 1) };
+      const tab = r.indexOf('\t');
+      return { hash: r.slice(0, tab).split(' ')[1], path: r.slice(tab + 1) };
     })
     .filter((r) => keep(r.path));
   if (rows.length === 0) return [];
-  const buf = execFileSync("git", ["cat-file", "--batch"], {
+  const buf = execFileSync('git', ['cat-file', '--batch'], {
     cwd: dir,
     env,
-    input: rows.map((r) => r.hash).join("\n") + "\n",
+    input: rows.map((r) => r.hash).join('\n') + '\n',
     maxBuffer: 1024 * 1024 * 1024,
   });
   const out = [];
   let pos = 0;
   for (const r of rows) {
     const nl = buf.indexOf(10, pos);
-    const [, type, size] = buf.toString("latin1", pos, nl).split(" ");
+    const [, type, size] = buf.toString('latin1', pos, nl).split(' ');
     const len = Number(size);
     pos = nl + 1;
-    if (type === "blob" && len >= 400) out.push({ path: r.path, src: buf.toString("utf8", pos, pos + len) });
+    if (type === 'blob' && len >= 400)
+      out.push({ path: r.path, src: buf.toString('utf8', pos, pos + len) });
     pos += len + 1;
   }
   return out.sort((x, y) => (x.path < y.path ? -1 : 1));
@@ -238,44 +243,63 @@ export function staleContentCensus(census, foundKeys) {
 
 /** Remove only stale entry lines from the register text. Returns {text, removed}. */
 export function pruneStaleText(text, stalePairs) {
-  const lines = text.split("\n");
+  const lines = text.split('\n');
   let removed = 0;
   const kept = lines.filter((l) => {
     const hit = stalePairs.some((p) => l.includes(`"pair": ${JSON.stringify(p)}`));
     if (hit) removed++;
     return !hit;
   });
-  return { text: kept.join("\n"), removed };
+  return { text: kept.join('\n'), removed };
 }
 
 /**
  * Run the lane for a root. Returns { skipped, found, uncensused, stale, ms }.
  * `excludePrefixes` = vendored prefixes + register `contentLane.exclude`.
  */
-export async function runContentLane({ root, register, registerPath, excludePrefixes, prune, log, error }) {
+export async function runContentLane({
+  root,
+  register,
+  registerPath,
+  excludePrefixes,
+  prune,
+  log,
+  error,
+}) {
   const cfg = register.contentLane;
   if (!cfg) return { skipped: true, silent: true, ok: true };
   const t0 = Date.now();
   const ex = [...(excludePrefixes ?? []), ...(cfg.exclude ?? [])];
   let found;
   let scope;
-  if (cfg.mode === "app-vs-packages") {
+  if (cfg.mode === 'app-vs-packages') {
     const pkgRoot = resolve(root, cfg.packagesRoot);
     if (!existsSync(pkgRoot)) {
       error(`check:package-twins content lane SKIPPED: no package source at ${pkgRoot}`);
       return { skipped: true, ok: true };
     }
-    const pkgSrc = trackedSources(pkgRoot, (p) => /^[^/]+\/src\//.test(p) && isCandidatePath(p, ex), { foreign: true }).map((f) => ({ ...f, pkg: f.path.split("/")[0] }));
-    const appSrc = trackedSources(root, (p) => isCandidatePath(p, ex)).map((f) => ({ ...f, pkg: "app" }));
+    const pkgSrc = trackedSources(
+      pkgRoot,
+      (p) => /^[^/]+\/src\//.test(p) && isCandidatePath(p, ex),
+      { foreign: true },
+    ).map((f) => ({ ...f, pkg: f.path.split('/')[0] }));
+    const appSrc = trackedSources(root, (p) => isCandidatePath(p, ex)).map((f) => ({
+      ...f,
+      pkg: 'app',
+    }));
     found = findContentPairs({ left: appSrc, right: pkgSrc });
     scope = `${appSrc.length} app file(s) vs ${pkgSrc.length} package source file(s)`;
-  } else if (cfg.mode === "cross-package") {
-    const src = trackedSources(root, (p) => /^[^/]+\/src\//.test(p) && isCandidatePath(p, ex)).map((f) => ({ ...f, pkg: f.path.split("/")[0] }));
+  } else if (cfg.mode === 'cross-package') {
+    const src = trackedSources(root, (p) => /^[^/]+\/src\//.test(p) && isCandidatePath(p, ex)).map(
+      (f) => ({ ...f, pkg: f.path.split('/')[0] }),
+    );
     found = findContentPairs({ left: src, crossPackage: true });
     found = found.map((f) => (f.a <= f.b ? f : { ...f, a: f.b, b: f.a }));
     scope = `${src.length} package source file(s), across different packages`;
   } else {
-    error(`check:package-twins: contentLane.mode "${cfg.mode}" is not app-vs-packages or cross-package`);
+    error(
+      `check:package-twins: contentLane.mode "${cfg.mode}" is not app-vs-packages or cross-package`,
+    );
     return { ok: false };
   }
   const census = register.contentCensus ?? [];
@@ -290,10 +314,12 @@ export async function runContentLane({ root, register, registerPath, excludePref
       `(${censused.length} censused DEBT, ${uncensused.length} new) in ${ms}ms.`,
   );
   if (stale.length > 0 && prune) {
-    const text = readFileSync(registerPath, "utf8");
+    const text = readFileSync(registerPath, 'utf8');
     const r = pruneStaleText(text, stale);
     writeFileSync(registerPath, r.text);
-    log(`check:package-twins --prune-stale: removed ${r.removed} stale contentCensus line(s) from ${registerPath}.`);
+    log(
+      `check:package-twins --prune-stale: removed ${r.removed} stale contentCensus line(s) from ${registerPath}.`,
+    );
     return { found, uncensused, stale: [], ms, ok: uncensused.length === 0 };
   }
   for (const f of uncensused) {
@@ -315,9 +341,11 @@ export async function runContentLane({ root, register, registerPath, excludePref
 }
 
 // ── self-test ───────────────────────────────────────────────────────────────
-const SYNTH = Array.from({ length: 30 }, (_, i) =>
-  `export function planted${i}(value: number, scale: number): number { const r = value * ${i + 3} + scale; return r > ${i * 7} ? r : ${i}; }`,
-).join("\n");
+const SYNTH = Array.from(
+  { length: 30 },
+  (_, i) =>
+    `export function planted${i}(value: number, scale: number): number { const r = value * ${i + 3} + scale; return r > ${i * 7} ? r : ${i}; }`,
+).join('\n');
 
 export function selfTestContentLane({ sampleSource = null } = {}) {
   const fail = (msg) => {
@@ -326,37 +354,88 @@ export function selfTestContentLane({ sampleSource = null } = {}) {
   };
   const body = sampleSource && normalize(sampleSource).length >= MIN_LINES ? sampleSource : SYNTH;
   const pkg = [
-    { path: "sharing/src/real.ts", pkg: "sharing", src: body },
-    { path: "kit/src/other.ts", pkg: "kit", src: SYNTH.replace(/planted/g, "different").replace(/\* (\d+)/g, "+ $1") + "\nconst z = 1;\n".repeat(0) },
+    { path: 'sharing/src/real.ts', pkg: 'sharing', src: body },
+    {
+      path: 'kit/src/other.ts',
+      pkg: 'kit',
+      src:
+        SYNTH.replace(/planted/g, 'different').replace(/\* (\d+)/g, '+ $1') +
+        '\nconst z = 1;\n'.repeat(0),
+    },
   ];
   // 1. a copy under an app path (imports and comments differ) IS reported
   const copy = `import { x } from "@/somewhere";\n// my copy\n${body}\n/* trailing */\n`;
-  let r = findContentPairs({ left: [{ path: "features/x/copy.ts", pkg: "app", src: copy }], right: pkg });
-  if (!r.some((f) => f.a === "features/x/copy.ts" && f.b === "sharing/src/real.ts")) fail("a planted copy was NOT reported");
+  let r = findContentPairs({
+    left: [{ path: 'features/x/copy.ts', pkg: 'app', src: copy }],
+    right: pkg,
+  });
+  if (!r.some((f) => f.a === 'features/x/copy.ts' && f.b === 'sharing/src/real.ts'))
+    fail('a planted copy was NOT reported');
   // 2. an unrelated file is not
-  const unrelated = Array.from({ length: 30 }, (_, i) => `const unrelated${i} = fetch("/api/thing/${i}").then((res) => res.json()).catch(() => null);`).join("\n");
-  r = findContentPairs({ left: [{ path: "features/x/unrelated.ts", pkg: "app", src: unrelated }], right: pkg });
-  if (r.length) fail("an unrelated file was reported");
+  const unrelated = Array.from(
+    { length: 30 },
+    (_, i) =>
+      `const unrelated${i} = fetch("/api/thing/${i}").then((res) => res.json()).catch(() => null);`,
+  ).join('\n');
+  r = findContentPairs({
+    left: [{ path: 'features/x/unrelated.ts', pkg: 'app', src: unrelated }],
+    right: pkg,
+  });
+  if (r.length) fail('an unrelated file was reported');
   // 3. a pure re-export door (25 export-from lines) is not
-  const door = Array.from({ length: 25 }, (_, i) => `export { planted${i} } from "@ai-matrx/sharing";`).join("\n");
-  r = findContentPairs({ left: [{ path: "features/x/door.ts", pkg: "app", src: door }], right: [{ path: "sharing/src/door.ts", pkg: "sharing", src: door }] });
-  if (r.length) fail("a pure re-export door was reported");
+  const door = Array.from(
+    { length: 25 },
+    (_, i) => `export { planted${i} } from "@ai-matrx/sharing";`,
+  ).join('\n');
+  r = findContentPairs({
+    left: [{ path: 'features/x/door.ts', pkg: 'app', src: door }],
+    right: [{ path: 'sharing/src/door.ts', pkg: 'sharing', src: door }],
+  });
+  if (r.length) fail('a pure re-export door was reported');
   // 4. a two-line option-binding wrapper is not
   const wrap = `import { f } from "@ai-matrx/kit";\nexport const g = (v: number) => f(v, { style: "coarse" });\n`;
-  r = findContentPairs({ left: [{ path: "a/wrap.ts", pkg: "app", src: wrap }], right: [{ path: "kit/src/wrap.ts", pkg: "kit", src: wrap }] });
-  if (r.length) fail("an option-binding wrapper was reported");
+  r = findContentPairs({
+    left: [{ path: 'a/wrap.ts', pkg: 'app', src: wrap }],
+    right: [{ path: 'kit/src/wrap.ts', pkg: 'kit', src: wrap }],
+  });
+  if (r.length) fail('an option-binding wrapper was reported');
   // 5. cross-package: same package twice is not, different packages is
-  r = findContentPairs({ crossPackage: true, left: [{ path: "a/src/1.ts", pkg: "a", src: body }, { path: "a/src/2.ts", pkg: "a", src: copy }] });
-  if (r.length) fail("a same-package pair was reported");
-  r = findContentPairs({ crossPackage: true, left: [{ path: "a/src/1.ts", pkg: "a", src: body }, { path: "b/src/2.ts", pkg: "b", src: copy }] });
-  if (r.length !== 1) fail("a cross-package copy was not reported");
+  r = findContentPairs({
+    crossPackage: true,
+    left: [
+      { path: 'a/src/1.ts', pkg: 'a', src: body },
+      { path: 'a/src/2.ts', pkg: 'a', src: copy },
+    ],
+  });
+  if (r.length) fail('a same-package pair was reported');
+  r = findContentPairs({
+    crossPackage: true,
+    left: [
+      { path: 'a/src/1.ts', pkg: 'a', src: body },
+      { path: 'b/src/2.ts', pkg: 'b', src: copy },
+    ],
+  });
+  if (r.length !== 1) fail('a cross-package copy was not reported');
   // 6. the census ratchet: stale entries are named, live ones are not
-  const stale = staleContentCensus([{ pair: "gone|gone2" }, { pair: "x|y" }], new Set(["x|y"]));
-  if (stale.length !== 1 || stale[0] !== "gone|gone2") fail("the stale-census ratchet did not name the stale entry");
-  const pruned = pruneStaleText('  { "pair": "gone|gone2", "reason": "r" },\n  { "pair": "x|y", "reason": "r" }\n', ["gone|gone2"]);
-  if (pruned.removed !== 1 || pruned.text.includes("gone")) fail("--prune-stale did not remove exactly the stale line");
+  const stale = staleContentCensus([{ pair: 'gone|gone2' }, { pair: 'x|y' }], new Set(['x|y']));
+  if (stale.length !== 1 || stale[0] !== 'gone|gone2')
+    fail('the stale-census ratchet did not name the stale entry');
+  const pruned = pruneStaleText(
+    '  { "pair": "gone|gone2", "reason": "r" },\n  { "pair": "x|y", "reason": "r" }\n',
+    ['gone|gone2'],
+  );
+  if (pruned.removed !== 1 || pruned.text.includes('gone'))
+    fail('--prune-stale did not remove exactly the stale line');
   // 7. skip rules
-  if (isCandidatePath("a/b.test.ts") || isCandidatePath("demo/a.ts") || isCandidatePath("x/dist/a.ts") || isCandidatePath("a/b.generated.ts")) fail("a skipped path was a candidate");
-  if (!isCandidatePath("a/b.tsx")) fail("a normal path was skipped");
-  console.log("check:package-twins content lane self-test PASSED (copy reported; unrelated, door, wrapper, same-package not; stale census named and prunable).");
+  if (
+    isCandidatePath('a/b.test.ts') ||
+    isCandidatePath('demo/a.ts') ||
+    isCandidatePath('x/dist/a.ts') ||
+    isCandidatePath('a/b.generated.ts')
+  )
+    fail('a skipped path was a candidate');
+  if (!isCandidatePath('a/b.tsx')) fail('a normal path was skipped');
+  console.log(
+    'check:package-twins content lane self-test PASSED (copy reported; unrelated, door, wrapper, same-package not; stale census named and prunable).',
+  );
 }

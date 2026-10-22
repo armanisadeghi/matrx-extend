@@ -37,9 +37,9 @@ import {
 import { withReferral } from '@ai-matrx/kit/outbound';
 import { createAiWatchWindowOpener } from './ai-watch-opener';
 import { browserDomContextSource, isBrowserDeviceRef } from './browser-dom-source';
+import { createExtensionCanvas } from './canvas-tabs';
 import { registerExtensionComposerExtensions } from './composer-extensions';
 import { extensionPageContextSource } from './context-source';
-import { createExtensionCanvas } from './canvas-tabs';
 import { createExtensionChatIdentity } from './identity';
 import { extensionKnobs } from './knobs';
 import { registerExtensionToolRenderers } from './tool-renderers';

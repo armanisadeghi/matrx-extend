@@ -110,7 +110,9 @@ function sessionIdFromBearer(token: string): string | null {
   if (!payload) return null;
   try {
     // One character per byte (Latin-1), exactly as the old `atob` read did — never UTF-8.
-    const decoded = Array.from(base64UrlToBytes(payload), (byte) => String.fromCharCode(byte)).join('');
+    const decoded = Array.from(base64UrlToBytes(payload), (byte) => String.fromCharCode(byte)).join(
+      '',
+    );
     const parsed: unknown = JSON.parse(decoded);
     const sessionId =
       parsed && typeof parsed === 'object' && !Array.isArray(parsed)

@@ -69,9 +69,13 @@ describe('deadlineFor door', () => {
     expect(deadlineFor(mk({ state: 'recovered', retry_delay: 5 }), now)).toBeNull();
     expect(deadlineFor(mk({ state: 'scheduled', retry_delay: 5 }), now)).toBe(now + 5000);
     expect(deadlineFor(mk({ state: 'suspended', retry_delay: 2 }), now)).toBe(now + 2000);
-    expect(deadlineFor(mk({ state: 'scheduled', retry_at: now / 1000 + 10 }), now)).toBe(now + 10_000);
+    expect(deadlineFor(mk({ state: 'scheduled', retry_at: now / 1000 + 10 }), now)).toBe(
+      now + 10_000,
+    );
     expect(deadlineFor(mk({ state: 'scheduled', retry_at: now + 7000 }), now)).toBe(now + 7000);
-    expect(deadlineFor(mk({ state: 'scheduled', retry_at: now - 1000, retry_delay: 3 }), now)).toBe(now + 3000);
+    expect(deadlineFor(mk({ state: 'scheduled', retry_at: now - 1000, retry_delay: 3 }), now)).toBe(
+      now + 3000,
+    );
     expect(deadlineFor(mk({ state: 'scheduled' }), now)).toBeNull();
   });
 });
@@ -99,7 +103,10 @@ describe('attemptResume door — extension-specific behavior preserved', () => {
 
   it('result has exactly {resumed, reason} on success / decline / no-conversation', async () => {
     expect(await attemptResume(t, async () => 'run')).toEqual({ resumed: true, reason: 'ok' });
-    expect(await attemptResume(t, async () => null)).toEqual({ resumed: false, reason: 'resume-run-declined' });
+    expect(await attemptResume(t, async () => null)).toEqual({
+      resumed: false,
+      reason: 'resume-run-declined',
+    });
     expect(await attemptResume({ ...t, conversationId: null }, async () => 'x')).toEqual({
       resumed: false,
       reason: 'no-conversation-id',

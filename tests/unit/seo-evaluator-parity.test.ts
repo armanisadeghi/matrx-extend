@@ -18,6 +18,9 @@
  * replays the aidream home and fails if the vendored copy differs.
  */
 
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { evaluateHeadingStructure, headingInputsFromRaw } from '@/lib/seo/evaluators/headings';
 import { evaluateIndexability } from '@/lib/seo/evaluators/indexability';
 import { evaluateSocialCard } from '@/lib/seo/evaluators/social';
@@ -29,9 +32,6 @@ import {
   urlQualityToStored,
 } from '@/lib/seo/evaluators/stored';
 import { evaluateUrlQuality } from '@/lib/seo/evaluators/url-quality';
-import { existsSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import vendored from './__fixtures__/audit-parity.json';
 

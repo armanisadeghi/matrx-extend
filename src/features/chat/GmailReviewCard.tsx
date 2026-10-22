@@ -18,11 +18,11 @@ import { respondToAsk } from '@/hooks/use-tool-inbox';
 import { sendReviewedGmail } from '@/lib/api/routes/google-workspace';
 import type { PendingAskUserRequest } from '@/lib/tools/types';
 import { useToolInbox } from '@/state/tool-inbox';
-import {
-  GmailReviewCardView,
-  type GmailReview,
-} from '@ai-matrx/chat/agents/ui-first-tools/ui/GmailReviewCardView';
 import type { GmailReviewResolution } from '@ai-matrx/chat/agents/ui-first-tools/tools/gmail-review-resolution';
+import {
+  type GmailReview,
+  GmailReviewCardView,
+} from '@ai-matrx/chat/agents/ui-first-tools/ui/GmailReviewCardView';
 
 type ExtensionReply = Parameters<typeof respondToAsk>[1];
 

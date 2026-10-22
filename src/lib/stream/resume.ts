@@ -46,8 +46,8 @@
  * implementation of "how to open a /resume stream" per surface.
  */
 
-import { attemptStallResume, decideStallResume } from '@ai-matrx/api';
 import { log } from '@/lib/debug/log';
+import { attemptStallResume, decideStallResume } from '@ai-matrx/api';
 
 const RESUME_ENABLED_KEY = 'matrx.stream.resume.enabled';
 

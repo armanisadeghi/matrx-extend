@@ -7,7 +7,6 @@ import { dirname, join } from 'node:path';
 import { test } from 'node:test';
 import {
   admitReleaseMember,
-  proveSource,
   releaseMemberPlan,
   requireReleaseMemberSource,
   verifyReleaseMemberBytes,

@@ -52,11 +52,11 @@
  * notice and recording the error.
  */
 
-import { PG_CODES } from '@ai-matrx/kit/db-codes';
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
 import { mayReportExternalTelemetry } from '@/lib/telemetry/external-reporting';
 import { pushNotice } from '@/state/notices';
+import { PG_CODES } from '@ai-matrx/kit/db-codes';
 
 /** What kind of failure the database actually reported. */
 export type DbFailureKind =
@@ -142,7 +142,10 @@ export function classifyDbFailure(error: DbErrorLike | null | undefined): DbFail
 
   if (code === 'NO_ORGANIZATION') return 'no_workspace';
 
-  if (code === PG_CODES.insufficientPrivilege || /permission denied|row-level security|violates row-level/.test(msg)) {
+  if (
+    code === PG_CODES.insufficientPrivilege ||
+    /permission denied|row-level security|violates row-level/.test(msg)
+  ) {
     return 'refused';
   }
   // PGRST116 = "JSON object requested, multiple (or no) rows returned" — on a
@@ -156,7 +159,11 @@ export function classifyDbFailure(error: DbErrorLike | null | undefined): DbFail
   ) {
     return 'missing_relation';
   }
-  if (code === PG_CODES.pgrstJwtInvalid || code === '42704' || /jwt|not authenticated|invalid token/.test(msg)) {
+  if (
+    code === PG_CODES.pgrstJwtInvalid ||
+    code === '42704' ||
+    /jwt|not authenticated|invalid token/.test(msg)
+  ) {
     return 'not_authenticated';
   }
   if (/failed to fetch|networkerror|network request failed|load failed/.test(msg)) {

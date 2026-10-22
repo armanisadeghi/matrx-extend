@@ -5,7 +5,9 @@ const respondToAsk = vi.fn();
 const sendReviewedGmail = vi.fn();
 const removeAsk = vi.fn();
 
-vi.mock('@/hooks/use-tool-inbox', () => ({ respondToAsk: (...a: unknown[]) => respondToAsk(...a) }));
+vi.mock('@/hooks/use-tool-inbox', () => ({
+  respondToAsk: (...a: unknown[]) => respondToAsk(...a),
+}));
 vi.mock('@/lib/api/routes/google-workspace', () => ({
   sendReviewedGmail: (...a: unknown[]) => sendReviewedGmail(...a),
 }));
@@ -83,13 +85,17 @@ describe('GmailReviewCard (door to @ai-matrx/chat)', () => {
     render(<GmailReviewCard req={req()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     await waitFor(() => expect(respondToAsk).toHaveBeenCalledTimes(1));
-    expect((respondToAsk.mock.calls[0]![1] as { sent_email: { edited: boolean } }).sent_email.edited).toBe(false);
+    expect(
+      (respondToAsk.mock.calls[0]![1] as { sent_email: { edited: boolean } }).sent_email.edited,
+    ).toBe(false);
   });
 
   it("Don't send resolves exactly { confirmed: false } and never sends", () => {
     render(<GmailReviewCard req={req()} />);
     fireEvent.click(screen.getByRole('button', { name: "Don't send" }));
-    expect(JSON.stringify(respondToAsk.mock.calls[0]![1])).toBe(JSON.stringify({ confirmed: false }));
+    expect(JSON.stringify(respondToAsk.mock.calls[0]![1])).toBe(
+      JSON.stringify({ confirmed: false }),
+    );
     expect(respondToAsk).toHaveBeenCalledTimes(1);
     expect(sendReviewedGmail).not.toHaveBeenCalled();
   });
@@ -97,7 +103,9 @@ describe('GmailReviewCard (door to @ai-matrx/chat)', () => {
   it('Dismiss resolves exactly { cancelled: true } and never sends', () => {
     render(<GmailReviewCard req={req()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
-    expect(JSON.stringify(respondToAsk.mock.calls[0]![1])).toBe(JSON.stringify({ cancelled: true }));
+    expect(JSON.stringify(respondToAsk.mock.calls[0]![1])).toBe(
+      JSON.stringify({ cancelled: true }),
+    );
     expect(respondToAsk).toHaveBeenCalledTimes(1);
     expect(sendReviewedGmail).not.toHaveBeenCalled();
   });

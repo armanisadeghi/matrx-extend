@@ -36,7 +36,9 @@ function claimsOf(token: string | null): TokenClaims {
   if (!payload) return {};
   try {
     // One character per byte (Latin-1), exactly as the old `atob` read did — never UTF-8.
-    const text = Array.from(base64UrlToBytes(payload), (byte) => String.fromCharCode(byte)).join('');
+    const text = Array.from(base64UrlToBytes(payload), (byte) => String.fromCharCode(byte)).join(
+      '',
+    );
     return JSON.parse(text) as TokenClaims;
   } catch {
     return {};
