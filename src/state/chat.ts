@@ -1,10 +1,10 @@
 import type { InboundRenderBlock } from '@/lib/content-ir/inbound';
+import { readActMode, writeActMode } from '@/lib/settings/act-without-asking';
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import type { ProviderRetryState } from '@/lib/stream/provider-retry';
 import type { ToolProgressUpdate } from '@/lib/tools/types';
 import { useGoogleFilesStore } from '@/state/google-files';
 import { useHighlightStore } from '@/state/highlights';
-import { useSettingsStore } from '@/state/settings';
 import { useToolInbox } from '@/state/tool-inbox';
 import type { ComputeTargetRef } from '@/types/compute-target';
 import { create } from 'zustand';
@@ -548,21 +548,18 @@ export const useChatStore = create<ChatState>()(
           }
           return { variableValues: next };
         }),
-      setPermissionMode: (agentId, mode) =>
-        set((s) => ({
-          permissionMode: { ...s.permissionMode, [agentId]: mode },
-        })),
+      // ONE setting (`chat.act_without_asking`, Arman 2026-10-22): the chip writes the person's
+      // own rung of the platform knob, the same one the web, desktop and Matrx Local read.
+      setPermissionMode: (_agentId, mode) => {
+        void writeActMode(mode);
+      },
       // The ONE resolver for the mode a run latches — it must match what the
       // header chip shows (ChatView: per-agent choice ?? Settings default).
       // Resume / rejoin / cold-resume runs carry no agent id; they belong to the
       // selected agent's conversation, so they resolve through it. Returning a
       // hard 'ask' for them forced approval cards on every tool call after the
       // first round even with "Act without asking" selected.
-      getPermissionMode: (agentId) => {
-        const id = agentId ?? get().selectedAgentId;
-        const explicit = id ? get().permissionMode[id] : undefined;
-        return explicit ?? useSettingsStore.getState().defaultPermissionMode;
-      },
+      getPermissionMode: (_agentId) => readActMode(),
       setBoundComputeTarget: (boundComputeTarget) => set({ boundComputeTarget }),
       reset: () => set({ messages: [], draft: '', isStreaming: false, streamInterruption: null }),
       clearForIdentityChange: (nextActorId) => {

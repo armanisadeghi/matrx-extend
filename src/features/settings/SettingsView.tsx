@@ -28,6 +28,7 @@ import { confirmDestructive } from '@/lib/destructive/confirm';
 import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { useActMode, writeActMode } from '@/lib/settings/act-without-asking';
 import { retrySettingsSave, useSettingsSaveState } from '@/lib/settings/persistence';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';
@@ -114,6 +115,7 @@ export function SettingsView() {
   const desktop = useDesktopBridge();
   const matrx2 = useMatrx2();
   const settings = useSettingsStore();
+  const actMode = useActMode();
   const settingsSaveState = useSettingsSaveState();
   const [pairTokenInput, setPairTokenInput] = useState('');
   const [pairTokenError, setPairTokenError] = useState<string | null>(null);
@@ -393,10 +395,8 @@ export function SettingsView() {
                 label="Default mode"
                 control={
                   <PillSelect
-                    value={settings.defaultPermissionMode}
-                    onChange={(v) =>
-                      settings.setDefaultPermissionMode(v as typeof settings.defaultPermissionMode)
-                    }
+                    value={actMode}
+                    onChange={(v) => void writeActMode(v as typeof actMode)}
                     options={[
                       { value: 'ask', label: 'Ask before acting' },
                       { value: 'act', label: 'Act without asking' },

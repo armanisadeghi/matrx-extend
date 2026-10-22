@@ -17,6 +17,7 @@ import {
   listMemberOrganizations,
   requireActiveOrganizationId,
 } from '@/lib/org/active-org';
+import { carryOverExplicitAsk } from '@/lib/settings/act-without-asking';
 import { getSupabase } from '@/lib/supabase/client';
 import type { DeviceToolCallRef } from '@/lib/tools/device-handoff';
 import { useChatStore } from '@/state/chat';
@@ -163,9 +164,12 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
     deviceTools: {
       invoke: invokeDeviceTool,
       handOff: handOffDeviceTools,
-      // The person's "Act without asking" lives in the extension (Settings default + the chat
-      // chip's per-agent choice); the package would otherwise default every run to "ask".
-      permissionMode: (agentId) => useChatStore.getState().getPermissionMode(agentId),
+      // The ONE "Act without asking" setting (`chat.act_without_asking`), the same knob the
+      // package reads through `prefs.knobs`; carried over once from the old per-agent chips.
+      permissionMode: (agentId) => {
+        void carryOverExplicitAsk();
+        return useChatStore.getState().getPermissionMode(agentId);
+      },
     },
     registry: { contextSources: [browserDomContextSource, extensionPageContextSource] },
     // Chrome cannot prompt inside a side panel: the grant is asked in the mic-grant popup.

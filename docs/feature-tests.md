@@ -3892,3 +3892,10 @@ Save an Instagram carousel to Swipe file. The card reads "N of M slides saved" (
 - **What it does:** When the server sends a slim `tool_completed` frame (`result_omitted`, env `MATRX_LAZY_TOOL_RESULTS` on the server), a Pilot (or legacy Assistant stream) server-tool row shows the result preview and reads the full result from `chat.tool_call` by id when opened, then draws its normal row.
 - **Where to test:** Pilot tab against a server with the flag on; run a turn whose tool returns more than 4 KB (a web search).
 - **Expected:** The row is never blank: preview first, "Loading the full result…", then the full result. A failed read names itself.
+
+## Act without asking — one setting everywhere (2026-10-22)
+
+- **What it does:** the Ask / Act chips (chat header, Pilot header, Settings › Default mode, the package chat's Tools switch) read and write ONE platform setting, `chat.act_without_asking` (default Act), the same one the web, desktop and Matrx Local chats use. Act: nothing waits except a question the agent asks. Ask: exactly what was gated before.
+- **Where to test:** side panel chat header chip; Settings › Default mode; then the web chat composer's Tools menu ("Ask before acting").
+- **Steps:** flip to Ask in the extension, reload the web chat — its switch shows Ask; flip it back on the web — the extension chip shows Act after its next settings read.
+- **Expected:** both show the same value; a browser action tool in Act runs with no approval card; in Ask the card appears as before.

@@ -41,6 +41,7 @@ import { useAgentRow } from '@/lib/agents/use-agent-row';
 import { wrapForAgent } from '@/lib/clipboard/copy';
 import { warmContentIr } from '@/lib/content-ir/route-env';
 import { DEFAULT_CHAT_MANDATE_KEY, DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
+import { useActMode } from '@/lib/settings/act-without-asking';
 import { cn } from '@/lib/utils';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { useListsSubscriber } from '@/state/lists';
@@ -95,10 +96,7 @@ export function PilotView() {
 
   // Pilot defaults to 'act' (more autonomous than the assistant). The user
   // can flip to 'ask' via the chip — same affordance as the chat header.
-  const explicitPermissionMode = usePilotChatStore((s) =>
-    selectedAgentId ? s.permissionMode[selectedAgentId] : undefined,
-  );
-  const permissionMode = explicitPermissionMode ?? 'act';
+  const permissionMode = useActMode();
   const setPermissionMode = usePilotChatStore((s) => s.setPermissionMode);
 
   const session = usePilotStore((s) => s.session);

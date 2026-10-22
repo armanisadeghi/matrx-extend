@@ -22,6 +22,7 @@
  */
 
 import type { InboundRenderBlock } from '@/lib/content-ir/inbound';
+import { readActMode, writeActMode } from '@/lib/settings/act-without-asking';
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import type {
   ChatMessage,
@@ -273,16 +274,13 @@ export const usePilotChatStore = create<PilotChatState>()(
         }
         return out;
       },
-      setPermissionMode: (agentId, mode) =>
-        set((s) => ({
-          permissionMode: { ...s.permissionMode, [agentId]: mode },
-        })),
+      // ONE setting (`chat.act_without_asking`): the same knob every chat reads.
+      setPermissionMode: (_agentId, mode) => {
+        void writeActMode(mode);
+      },
       // Resume / rejoin runs carry no agent id — resolve through the selected
       // agent so a per-agent 'ask' the chip shows is honored on continuations.
-      getPermissionMode: (agentId) => {
-        const id = agentId ?? get().selectedAgentId;
-        return (id ? get().permissionMode[id] : undefined) ?? 'act';
-      },
+      getPermissionMode: (_agentId) => readActMode(),
       reset: () => set({ messages: [], draft: '', isStreaming: false, streamInterruption: null }),
     }),
     {
