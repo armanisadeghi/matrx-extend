@@ -215,11 +215,13 @@ describe('there is exactly one door, and a human opens it', () => {
   });
 
   it('sends the fields on screen, not the agent\u2019s draft', () => {
-    // `draft` is the proposal; only `connectionId` may be read from it.
-    expect(card).toContain('connectionId: draft.connectionId');
-    for (const field of ['to: draft.to,', 'subject: draft.subject,', 'body: draft.body,']) {
-      expect(card).not.toContain(field);
-    }
+    // The door only forwards what the package card hands it (the fields on screen, edited);
+    // the agent's proposal seeds the card's `review` and is never passed to the send route.
+    // (The behavioural proof of the exact edited bytes is src/features/chat/GmailReviewCard.test.tsx.)
+    expect(card).toContain('sendReviewedGmail(draft)');
+    expect(card).toContain('async function sendFromCard(');
+    expect(card).not.toMatch(/sendReviewedGmail\(\s*\{/);
+    expect(card).not.toMatch(/sendReviewedGmail\([^)]*\breq\b/);
   });
 
   it('offers no remembered consent — approval covers one message', () => {
