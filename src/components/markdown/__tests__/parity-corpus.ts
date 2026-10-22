@@ -21,7 +21,8 @@ export const PARITY_CORPUS: ParityCase[] = [
   },
   {
     name: 'bulleted and numbered lists with nesting',
-    content: '- First item\n- Second item\n  - nested a\n  - nested b\n- Third\n\n1. Open the tab\n2. Click **Run**\n3. Read the result',
+    content:
+      '- First item\n- Second item\n  - nested a\n  - nested b\n- Third\n\n1. Open the tab\n2. Click **Run**\n3. Read the result',
   },
   {
     name: 'task list and strikethrough',
@@ -29,7 +30,8 @@ export const PARITY_CORPUS: ParityCase[] = [
   },
   {
     name: 'python code block',
-    content: 'Here is the script:\n\n```python\nimport requests\n\nresp = requests.get("https://example.com")\nprint(resp.status_code)\n```\n\nRun it locally.',
+    content:
+      'Here is the script:\n\n```python\nimport requests\n\nresp = requests.get("https://example.com")\nprint(resp.status_code)\n```\n\nRun it locally.',
   },
   {
     name: 'typescript and bash code blocks',
@@ -71,7 +73,8 @@ export const PARITY_CORPUS: ParityCase[] = [
   {
     name: 'thinking then answer',
     chat: true,
-    content: '<thinking>I should check the title first.</thinking>\n\nThe title is **Example Domain**.',
+    content:
+      '<thinking>I should check the title first.</thinking>\n\nThe title is **Example Domain**.',
   },
   {
     name: 'reasoning and reflection blocks',
