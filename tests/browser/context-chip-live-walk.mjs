@@ -471,6 +471,30 @@ try {
   await panel.locator('[data-extension-tab-layer="conversation-context"]').waitFor({ timeout: 10_000 }).catch(() => {});
   await panel.waitForTimeout(1500);
   await shot(panel, '14a-chip-row-opened');
+  if (process.env.WALK_DEBUG_ROW) {
+    console.log(
+      '  [debug row]',
+      JSON.stringify(
+        await panel.evaluate(() => {
+          const layer = document.querySelector('[data-extension-tab-layer]');
+          const seen = new Set();
+          for (const el of layer ? layer.querySelectorAll('*') : []) {
+            const fk = Object.keys(el).find((k) => k.startsWith('__reactFiber'));
+            let f = fk ? el[fk] : null;
+            while (f) {
+              const r = f.memoizedProps?.row;
+              if (r && r.key === 'page_brief' && !seen.has(r)) {
+                seen.add(r);
+                return { ...r, value: typeof r.value === 'string' ? r.value.slice(0, 80) : r.value };
+              }
+              f = f.return;
+            }
+          }
+          return null;
+        }),
+      ).slice(0, 1500),
+    );
+  }
   const layerText = (await panel.locator('[data-extension-tab-layer]').first().innerText().catch(() => '')).replace(/\n+/g, ' | ');
   console.log('  [chip row layer]', layerText.slice(0, 400));
   check(
