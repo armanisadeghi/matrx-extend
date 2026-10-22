@@ -33,6 +33,7 @@ import {
   type VaultUserStateDoor,
   createApiVaultPort,
   createVaultKnobs,
+  useDisposable,
 } from '@ai-matrx/vault';
 import { Loader2, LogIn, ShieldCheck } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -84,6 +85,21 @@ export function VaultView() {
   return <VaultWorkspace key={`${actor.userId}:${actor.organizationId}`} actor={actor} />;
 }
 
+/**
+ * The generator's "Fill page" host, made and disposed in the same effect:
+ * StrictMode's mount → cleanup → mount (and a tab change) leaves a live port,
+ * never the disposed first one. null until the first effect.
+ */
+export function useNewPasswordFieldsHost(
+  tabId: number | null,
+  admission: Parameters<typeof createNewPasswordFieldsHost>[1],
+) {
+  return useDisposable(
+    () => createNewPasswordFieldsHost(tabId, admission),
+    [tabId, admission],
+  );
+}
+
 function VaultWorkspace({ actor }: { actor: Actor }) {
   const tab = useActiveTab();
   const { admission } = usePanelAdmission(tab.id, tab.url, actor);
@@ -105,11 +121,7 @@ function VaultWorkspace({ actor }: { actor: Actor }) {
   const knobs = useMemo(() => createVaultKnobs(getSupabase(), actor), [actor]);
   const fillSetup = useMemo(() => createFillSetupHost(openUrl), []);
   const capture = useMemo(() => createCaptureHost(tab.id), [tab.id]);
-  const newPasswordFields = useMemo(
-    () => createNewPasswordFieldsHost(tab.id, admission),
-    [tab.id, admission],
-  );
-  useEffect(() => () => newPasswordFields.dispose(), [newPasswordFields]);
+  const newPasswordFields = useNewPasswordFieldsHost(tab.id, admission);
 
   const host = useMemo<VaultHostCapabilities>(
     () => ({
@@ -119,7 +131,7 @@ function VaultWorkspace({ actor }: { actor: Actor }) {
       identity: extensionVaultIdentity,
       fillSetup,
       capture,
-      newPasswordFields,
+      ...(newPasswordFields ? { newPasswordFields } : {}),
       ...(page ? { page } : {}),
       ...(fill ? { fill } : {}),
     }),

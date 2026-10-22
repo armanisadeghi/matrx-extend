@@ -14,7 +14,8 @@
  * - A change is saved at once to the person's one home for rules
  *   (`users.user_surface_state`), which the server reads every turn.
  * - After a turn, the server's receipt is compared with the rows that turn
- *   was built from; any difference turns the chip amber.
+ *   was built from; any difference is filed silently for the team — the chip
+ *   never changes for it (Arman, 2026-10-22).
  */
 
 import { useActiveTab } from '@/hooks/use-active-tab';
@@ -150,7 +151,6 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
       }),
     ];
   }, [rows, lastSentRows, receiptEntry]);
-  const mismatches = receiptEntry?.mismatches ?? [];
 
   // The face counts what the next turn carries, so the page is read as soon as the panel shows
   // and again whenever the person lands on another page; not only when the chip is opened
@@ -198,8 +198,6 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
         onResetAll={() => void resetContextRules(DEFAULT_SURFACE_KEY)}
         onOpenFullView={() => setFullView(true)}
         onOpenRow={() => setFullView(true)}
-        mismatchCount={mismatches.length}
-        mismatches={mismatches}
         onOpenChange={onOpenChange}
       />
       <Dialog open={fullView} onOpenChange={setFullView}>
@@ -210,7 +208,6 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
           <ContextRulesPanelBody
             rows={shownRows}
             cap={cap}
-            mismatches={mismatches}
             {...(receiptEntry?.receipt.blocks !== undefined && {
               blocks: receiptEntry.receipt.blocks,
             })}
