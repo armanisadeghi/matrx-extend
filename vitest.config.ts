@@ -17,6 +17,8 @@ export default defineConfig({
     testTimeout: 30_000,
     hookTimeout: 30_000,
     setupFiles: ['./tests/setup.ts'],
+    // @ai-matrx/rich-content imports its own CSS (KaTeX); Node cannot load .css, so Vite transforms it.
+    server: { deps: { inline: [/@ai-matrx\/rich-content/] } },
     include: [
       'tests/unit/**/*.test.ts',
       'tests/unit/**/*.test.tsx',
