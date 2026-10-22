@@ -19,9 +19,15 @@ import { ToolProgressView } from '@ai-matrx/chat/tool-call-visualization/configu
 import { AlertTriangle, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import type { ToolTimelineEntry } from './ToolTimelineRow';
+import { type LazyToolResult, useLazyToolResult } from './lazy-tool-result';
 import { toolDisplayRegistry } from './tool-display/registry';
 
-export function ServerToolRow({ tool }: { tool: ServerToolCall }) {
+export function ServerToolRow({ tool: wireTool }: { tool: ServerToolCall }) {
+  // A result the server left off the stream: the plain row shows the preview
+  // and loads the full result by id on click; then the configured row takes over.
+  const lazy = useLazyToolResult(wireTool);
+  const tool = lazy.tool;
+  if (lazy.pending) return <DefaultServerToolRow tool={tool} lazy={lazy} />;
   const cfg = toolDisplayRegistry[tool.toolName];
   if (cfg) {
     const entry: ToolTimelineEntry = {
@@ -53,7 +59,7 @@ export function ServerToolRow({ tool }: { tool: ServerToolCall }) {
   return <DefaultServerToolRow tool={tool} />;
 }
 
-function DefaultServerToolRow({ tool }: { tool: ServerToolCall }) {
+function DefaultServerToolRow({ tool, lazy }: { tool: ServerToolCall; lazy?: LazyToolResult }) {
   const [open, setOpen] = useState(false);
 
   const label = humanLabel(tool);
@@ -65,7 +71,10 @@ function DefaultServerToolRow({ tool }: { tool: ServerToolCall }) {
       <div className="flex w-full items-center gap-1.5">
         <button
           type="button"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => {
+            if (!open) lazy?.open();
+            setOpen((v) => !v);
+          }}
           className="flex flex-1 items-center gap-1.5 text-left"
           aria-expanded={open}
         >
@@ -110,6 +119,14 @@ function DefaultServerToolRow({ tool }: { tool: ServerToolCall }) {
           {tool.args != null && <DetailBlock label="args" value={tool.args} />}
           {tool.phase === 'completed' && tool.result != null && (
             <DetailBlock label="result" value={tool.result} />
+          )}
+          {lazy?.pending && (
+            <>
+              <DetailBlock label="result" value={tool.resultOmitted?.preview} />
+              <div className="text-[11px] text-muted-foreground">
+                {lazy.error ?? (lazy.loading ? 'Loading the full result…' : null)}
+              </div>
+            </>
           )}
           {tool.phase === 'error' && (
             <DetailBlock label="error" value={tool.result ?? tool.message} />

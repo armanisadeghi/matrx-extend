@@ -47,7 +47,7 @@ import {
   supabaseForActor,
 } from '@/lib/supabase/client';
 import { type DbCallSite, failDbCall, isDbFailureError } from '@/lib/supabase/db-failure';
-import { aiDb, docprocDb, extendDb, usersDb } from '@/lib/supabase/schemas';
+import { aiDb, chatDb, docprocDb, extendDb, usersDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { requireOrganizationContext } from '@ai-matrx/api';
 import { readAdminStatus } from '@ai-matrx/auth/admin';
@@ -306,6 +306,34 @@ export const ToolCallRowSchema = z.object({
   created_at: z.string(),
 });
 export type ToolCallRow = z.infer<typeof ToolCallRowSchema>;
+
+/**
+ * One tool call's full output by its `chat.tool_call` id — the by-id read behind
+ * lazy tool calls: a slim stream frame (`result_omitted`) carries only a preview,
+ * and the row loads the rest when the person opens it. Returns the parsed JSON
+ * when the stored output is JSON, else the raw string; null when the row is gone.
+ */
+export async function fetchToolCallOutput(toolCallId: string): Promise<unknown> {
+  const { data, error } = await chatDb()
+    .from('tool_call')
+    .select('output')
+    .eq('id', toolCallId)
+    .maybeSingle();
+  if (error) {
+    log.error('supabase', 'fetchToolCallOutput: supabase error', {
+      tool_call_id: toolCallId,
+      message: error.message,
+    });
+    throw new Error(`Could not load this tool result: ${error.message}`);
+  }
+  const output = (data as { output?: unknown } | null)?.output ?? null;
+  if (typeof output !== 'string') return output;
+  try {
+    return JSON.parse(output);
+  } catch {
+    return output;
+  }
+}
 
 export async function fetchConversationToolCalls(
   conversationId: string,

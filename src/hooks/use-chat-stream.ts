@@ -1,3 +1,4 @@
+import { omittedFromWire } from '@/features/chat/lazy-tool-result';
 import {
   type AgentStartRequest,
   type RequestInitiation,
@@ -245,11 +246,15 @@ export function handleToolEvent(
       ...(args !== undefined ? { args } : {}),
     });
   } else if (subEvent === 'tool_completed') {
-    const result = inner.result;
+    // A big result may ride off the stream (`result_omitted`): keep the
+    // preview + id and let the row read the rest when opened.
+    const omitted = omittedFromWire(inner);
+    const result = omitted ? undefined : inner.result;
     upsert(messageId, callId, {
       ...base,
       phase: 'completed',
       ...(result !== undefined ? { result } : {}),
+      ...(omitted ? { resultOmitted: omitted } : {}),
     });
   } else if (subEvent === 'tool_error' || subEvent === 'tool_failed') {
     const errResult = inner.error ?? inner.result;

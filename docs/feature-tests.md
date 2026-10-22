@@ -3887,3 +3887,8 @@ Save an Instagram carousel to Swipe file. The card reads "N of M slides saved" (
 - **What it does:** Delete pattern (Patterns tab) soft-deletes the saved pattern (sets `deleted_at`) and it disappears from the list; it no longer fails with "Delete failed". A saved table with no stored identity (saved before table matching) replays by position and says so. A saved table whose headers overlap less than half with every table on the page returns no rows plus "not found" instead of an unrelated table. Link/image fields (`href`, `src`, …) are returned as absolute URLs against the page.
 - **Steps:** Save any pattern, open Patterns, click Delete pattern. Replay a table pattern on a page where its headers are gone. Extract a list field set to `href` on a page with relative links.
 - **Expected:** Row removed with no error; "not found" notice with no rows; legacy notice "saved before table matching…" on old index-only table recipes; link values start with `https://`.
+
+### Pilot tool rows — a big result left off the stream loads on click
+- **What it does:** When the server sends a slim `tool_completed` frame (`result_omitted`, env `MATRX_LAZY_TOOL_RESULTS` on the server), a Pilot (or legacy Assistant stream) server-tool row shows the result preview and reads the full result from `chat.tool_call` by id when opened, then draws its normal row.
+- **Where to test:** Pilot tab against a server with the flag on; run a turn whose tool returns more than 4 KB (a web search).
+- **Expected:** The row is never blank: preview first, "Loading the full result…", then the full result. A failed read names itself.

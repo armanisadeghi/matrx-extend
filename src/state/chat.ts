@@ -35,6 +35,11 @@ export interface ToolPartCall {
   args?: unknown;
   /** Output payload. Only present once `phase === 'completed'`. */
   result?: unknown;
+  /**
+   * Set when the server left a big result off the stream (`result_omitted`):
+   * the row shows `preview` and reads the rest by `toolCallId` when opened.
+   */
+  resultOmitted?: { toolCallId: string | null; preview: string | null; outputChars: number | null };
   phase: 'started' | 'completed' | 'error';
   startedAt: number;
   endedAt?: number;
