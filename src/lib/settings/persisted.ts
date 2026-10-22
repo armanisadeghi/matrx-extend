@@ -17,6 +17,7 @@
  * to `'ask'`. This is the single source of truth so that can't drift again.
  */
 
+import { readActModeInWorker } from './act-without-asking';
 import type { CredentialAssistancePresentation, PermissionMode } from '@/state/settings';
 
 /** Must match `name:` in the settings store's persist config. */
@@ -56,8 +57,8 @@ async function readPersistedSettingsState(): Promise<PersistedSettingsBlob['stat
  * back to `'ask'` (the safe default) when the setting is absent or unreadable.
  */
 export async function readDefaultPermissionMode(): Promise<PermissionMode> {
-  const state = await readPersistedSettingsState();
-  return state?.defaultPermissionMode === 'act' ? 'act' : 'ask';
+  // ONE setting (`chat.act_without_asking`, platform default Act — Arman 2026-10-22).
+  return readActModeInWorker();
 }
 
 /**
@@ -88,11 +89,13 @@ export async function readCredentialAssistancePresentation(): Promise<Credential
  * from the persisted blob (read once, then on every settings change).
  */
 export function watchDefaultPermissionMode(): () => PermissionMode {
-  let current: PermissionMode = 'ask';
+  // The platform default is Act; the person's setting refreshes on every read (the snapshot is
+  // cached briefly, so this is one fetch per cache window, never per call).
+  let current: PermissionMode = 'act';
   const refresh = () => void readDefaultPermissionMode().then((m) => (current = m));
   refresh();
-  chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && SETTINGS_PERSIST_KEY in changes) refresh();
-  });
-  return () => current;
+  return () => {
+    refresh();
+    return current;
+  };
 }

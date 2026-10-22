@@ -42,6 +42,7 @@ import { registerExtensionComposerExtensions } from './composer-extensions';
 import { extensionPageContextSource } from './context-source';
 import { createExtensionChatIdentity } from './identity';
 import { extensionKnobs } from './knobs';
+import { carryOverExplicitAsk } from '@/lib/settings/act-without-asking';
 import { registerExtensionToolRenderers } from './tool-renderers';
 
 /** The panel's last chat address survives a reopen (session storage); a side panel's own URL never moves. */
@@ -163,9 +164,12 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
     deviceTools: {
       invoke: invokeDeviceTool,
       handOff: handOffDeviceTools,
-      // The person's "Act without asking" lives in the extension (Settings default + the chat
-      // chip's per-agent choice); the package would otherwise default every run to "ask".
-      permissionMode: (agentId) => useChatStore.getState().getPermissionMode(agentId),
+      // The ONE "Act without asking" setting (`chat.act_without_asking`), the same knob the
+      // package reads through `prefs.knobs`; carried over once from the old per-agent chips.
+      permissionMode: (agentId) => {
+        void carryOverExplicitAsk();
+        return useChatStore.getState().getPermissionMode(agentId);
+      },
     },
     registry: { contextSources: [browserDomContextSource, extensionPageContextSource] },
     // Chrome cannot prompt inside a side panel: the grant is asked in the mic-grant popup.

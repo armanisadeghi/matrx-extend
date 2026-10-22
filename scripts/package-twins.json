@@ -13,7 +13,7 @@
     "Register: common-docs /projects/npm-package-extraction/DUPLICATION-CENSUS.md (common-docs).",
     "A SHAPE rule (`shapeWhy` + `shapeAllow` + `shapeCensus` on a row) catches the same capability under an UNREGISTERED name, or with no name at all. `shapeAllow` = provably NOT this capability, silent. `shapeCensus` = pre-existing bodies that ARE it and are not collapsed yet: loud every run, shrink-only, and a stale entry fails the guard."
   ],
-  "$catalogFloor": 189,
+  "$catalogFloor": 190,
   "twins": [
     {
       "name": "isUuidShape",
@@ -1251,6 +1251,12 @@
       "name": "fieldsFromRow",
       "package": "@ai-matrx/detail",
       "why": "frontend audit 2026-09-29 detail-001: lib/detail/** was a maintained 15-module MIRROR of @ai-matrx/detail held even by a byte-parity test; the mirror and the parity mechanism were deleted 2026-09-30 when the frontend adopted the package (0.1.3). A local body of the Detail primitive is a re-grown mirror.",
+      "allow": []
+    },
+    {
+      "name": "LucideIcon",
+      "package": "@ai-matrx/design-system/icons",
+      "why": "The lucide glyph wrapper (an inline <svg> that carries the `lucide lucide-<name>` class the optical glyph trim reads). Every glyph is now drawn once, in @ai-matrx/design-system/icons (lucideProps + one function per glyph); the packages that held their own copies (media, diff, meet, capture, associations, detail, canvas, coding-sessions, content-ir-core, agents, summon, office, vault, messaging, records-ui, design-system's table/peek/contact files) are aliases of it.",
       "allow": []
     }
   ]

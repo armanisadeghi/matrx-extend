@@ -18,6 +18,7 @@
  *   - Defaults to 'act' permission mode (Pilot is meant to be more autonomous)
  */
 
+import { useActMode } from '@/lib/settings/act-without-asking';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { RenderBlockView } from '@/components/kinds/RenderBlockView';
 import { Markdown } from '@/components/markdown';
@@ -95,10 +96,7 @@ export function PilotView() {
 
   // Pilot defaults to 'act' (more autonomous than the assistant). The user
   // can flip to 'ask' via the chip — same affordance as the chat header.
-  const explicitPermissionMode = usePilotChatStore((s) =>
-    selectedAgentId ? s.permissionMode[selectedAgentId] : undefined,
-  );
-  const permissionMode = explicitPermissionMode ?? 'act';
+  const permissionMode = useActMode();
   const setPermissionMode = usePilotChatStore((s) => s.setPermissionMode);
 
   const session = usePilotStore((s) => s.session);

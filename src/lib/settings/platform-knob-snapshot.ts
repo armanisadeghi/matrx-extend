@@ -92,3 +92,9 @@ export async function resolvePlatformKnobInWorker(fullKey: string): Promise<unkn
     return undefined;
   }
 }
+
+/** Drop the cached snapshot so the next read fetches fresh (after this context wrote an override). */
+export function invalidateKnobSnapshot(): void {
+  cached = null;
+  inFlight = null;
+}
