@@ -8,7 +8,14 @@
  * regenerate it here — the extension is a consumer of the contract, not its
  * author. If this fails, one of the three copies changed without the others;
  * fix ALL of them in the same unit of work and regenerate the fixture from the
- * Python.
+ * Python (writes all three copies):
+ *
+ *   .venv/bin/python packages/matrx-scraper/scripts/generate_audit_metrics_parity_fixture.py
+ *
+ * ONE HOME: aidream `packages/matrx-scraper/tests/__fixtures__/audit-parity.json`
+ * (drift-tested there by `test_audit_metrics_parity_fixture.py`). When the
+ * sibling aidream checkout exists (or `MATRX_AIDREAM_ROOT` names one), this test
+ * replays the aidream home and fails if the vendored copy differs.
  */
 
 import { evaluateHeadingStructure, headingInputsFromRaw } from '@/lib/seo/evaluators/headings';
@@ -22,8 +29,22 @@ import {
   urlQualityToStored,
 } from '@/lib/seo/evaluators/stored';
 import { evaluateUrlQuality } from '@/lib/seo/evaluators/url-quality';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import parity from './__fixtures__/audit-parity.json';
+import vendored from './__fixtures__/audit-parity.json';
+
+/** The one home of the expected answers, when an aidream checkout is present. */
+const AIDREAM_HOME = join(
+  process.env.MATRX_AIDREAM_ROOT ??
+    join(dirname(fileURLToPath(import.meta.url)), '../../../aidream'),
+  'packages/matrx-scraper/tests/__fixtures__/audit-parity.json',
+);
+const aidreamHome: unknown = existsSync(AIDREAM_HOME)
+  ? JSON.parse(readFileSync(AIDREAM_HOME, 'utf-8'))
+  : null;
+const parity = aidreamHome ?? vendored;
 
 interface SocialCase {
   input: { og: Record<string, unknown>; twitter: Record<string, unknown> };
@@ -40,6 +61,7 @@ interface IndexabilityCase {
     canonical_url: string | null;
     redirect_chain: { url: string; status: number | null }[];
     final_url: string | null;
+    requested_url?: string | null;
   };
   output: Record<string, unknown>;
 }
@@ -56,6 +78,10 @@ const fixture = parity as unknown as {
 };
 
 describe('page-audit TS ↔ Python parity', () => {
+  it.skipIf(!aidreamHome)('the vendored fixture is the aidream home (regenerate if not)', () => {
+    expect(vendored).toEqual(aidreamHome);
+  });
+
   it('fixtures are non-trivial', () => {
     expect(fixture.social.length).toBeGreaterThanOrEqual(5);
     expect(fixture.headings.length).toBeGreaterThanOrEqual(5);
@@ -99,6 +125,7 @@ describe('page-audit TS ↔ Python parity', () => {
           canonicalUrl: testCase.input.canonical_url,
           redirectChain: testCase.input.redirect_chain,
           finalUrl: testCase.input.final_url,
+          requestedUrl: testCase.input.requested_url ?? null,
         }),
       );
       expect(ts).toEqual(testCase.output);
