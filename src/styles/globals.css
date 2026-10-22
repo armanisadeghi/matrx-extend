@@ -36,6 +36,9 @@
    unstyled — silently. */
 @import "@ai-matrx/agents/catalog/styles.css";
 @import "@ai-matrx/summon/styles.css";
+/* @ai-matrx/rich-content structural sheet: list markers (matrx-md-ul/ol), tables, code blocks.
+   Without it Tailwind's reset strips bullets and numbers from every rendered message. */
+@import "@ai-matrx/rich-content/styles.css";
 
 /* Tailwind must scan the packages' BUILT output — the semantic utility classes
    their components wear exist only if these are sources: the two directories holding every
