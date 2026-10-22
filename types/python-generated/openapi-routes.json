@@ -665,6 +665,11 @@
  "/agent-service/versions/{version_id}": {
   "get": []
  },
+ "/agent-studio/agents/{agent_id}/version-note": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/agent-studio/from-chat": {
   "post": [
    "application/json"
@@ -936,6 +941,9 @@
   ]
  },
  "/ai/context/delivered": {
+  "get": []
+ },
+ "/ai/context/delivered/send-loop-blocks": {
   "get": []
  },
  "/ai/context/preview": {
@@ -1591,6 +1599,14 @@
  "/brand-offerings/{brand_id}/refresh/quote": {
   "get": []
  },
+ "/brand-research/{brand_id}/readiness": {
+  "get": []
+ },
+ "/brand-research/{brand_id}/start": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/brand-voice/extract": {
   "post": [
    "application/json"
@@ -2222,6 +2238,21 @@
  },
  "/connected-sources/microsoft/scope-gaps": {
   "get": []
+ },
+ "/connection-sync/import": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/connection-sync/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/connection-sync/sync": {
+  "post": [
+   "application/json"
+  ]
  },
  "/connections/attachable": {
   "get": []
@@ -7496,6 +7527,11 @@
    "application/json"
   ]
  },
+ "/scraper/browser-probe": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/scraper/config/domains": {
   "get": [],
   "post": [
@@ -9494,6 +9530,11 @@
   "delete": []
  },
  "/v1/tables/{table}/aggregate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/tables/{table}/ai-columns/{field_id}/estimate": {
   "post": [
    "application/json"
   ]
