@@ -540,18 +540,10 @@
  "/affinity/public/status": {
   "get": []
  },
- "/agent-battles/{set_id}/cancel": {
-  "post": []
- },
  "/agent-battles/{set_id}/queue-cancel": {
   "post": []
  },
  "/agent-battles/{set_id}/queue-run": {
-  "post": [
-   "application/json"
-  ]
- },
- "/agent-battles/{set_id}/run": {
   "post": [
    "application/json"
   ]
@@ -693,11 +685,6 @@
    "application/json"
   ]
  },
- "/agent-testing/agents/{agent_id}/tests": {
-  "post": [
-   "application/json"
-  ]
- },
  "/agent-tests/checks/evaluate": {
   "post": [
    "application/json"
@@ -731,9 +718,6 @@
  },
  "/agent-tests/runs/{run_id}/resume": {
   "post": []
- },
- "/agent-tests/runs/{run_id}/stream": {
-  "get": []
  },
  "/agent-usage/registry": {
   "get": []
