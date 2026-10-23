@@ -11,7 +11,10 @@ printf 'shared-old' > "$TEST_ROOT/shared/node_modules/@ai-matrx/fixture/version"
 cat > "$TEST_ROOT/bin/pnpm" <<'PNPM'
 #!/usr/bin/env bash
 set -euo pipefail
-[[ "$*" == 'install --frozen-lockfile --package-import-method=copy' ]]
+if [[ "$*" != 'install --frozen-lockfile --package-import-method=clone-or-copy' ]]; then
+  printf 'unexpected pnpm install arguments: %s\n' "$*" >&2
+  exit 1
+fi
 printf '%s\n' "$PWD" >> "$TEST_ROOT/installs"
 [[ ! -f "$TEST_ROOT/fail-install" ]] || exit 1
 mkdir -p node_modules/@ai-matrx/fixture
