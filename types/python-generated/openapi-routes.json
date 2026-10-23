@@ -1119,6 +1119,11 @@
  "/ai/realtime-models": {
   "get": []
  },
+ "/ai/realtime-turns": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/ai/retry-now/{request_id}": {
   "post": []
  },
