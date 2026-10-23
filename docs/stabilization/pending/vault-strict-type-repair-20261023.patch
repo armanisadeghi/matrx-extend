@@ -1,0 +1,29 @@
+diff --git a/src/features/vault/VaultView.strict-mode.test.tsx b/src/features/vault/VaultView.strict-mode.test.tsx
+index 51036e8ec..ca86d3f57 100644
+--- a/src/features/vault/VaultView.strict-mode.test.tsx
++++ b/src/features/vault/VaultView.strict-mode.test.tsx
+@@ -30,8 +30,11 @@ describe('useNewPasswordFieldsHost', () => {
+         sendMessage: vi.fn(async () => undefined),
+       },
+     });
+-    const admission = { run: async <T,>(f: () => Promise<T>) => f() } as unknown as PanelActionAdmission;
++    const admission = {
++      run: async <T,>(f: () => Promise<T>) => f(),
++    } as unknown as PanelActionAdmission;
+     let held: ReturnType<typeof useNewPasswordFieldsHost> = null;
++    const getHeld = () => held;
+     function Probe() {
+       held = useNewPasswordFieldsHost(7, admission);
+       return null;
+@@ -41,8 +44,9 @@ describe('useNewPasswordFieldsHost', () => {
+         <Probe />
+       </StrictMode>,
+     );
+-    expect(held).not.toBeNull();
+-    void held?.find();
++    const liveHost = getHeld();
++    expect(liveHost).not.toBeNull();
++    void liveHost?.find();
+     expect(connect).toHaveBeenCalledTimes(1);
+   });
+ });
