@@ -31,9 +31,9 @@ describe('useNewPasswordFieldsHost', () => {
       },
     });
     const admission = { run: async <T,>(f: () => Promise<T>) => f() } as unknown as PanelActionAdmission;
-    let held: ReturnType<typeof useNewPasswordFieldsHost> = null;
+    const held: { current: ReturnType<typeof useNewPasswordFieldsHost> } = { current: null };
     function Probe() {
-      held = useNewPasswordFieldsHost(7, admission);
+      held.current = useNewPasswordFieldsHost(7, admission);
       return null;
     }
     render(
@@ -41,8 +41,8 @@ describe('useNewPasswordFieldsHost', () => {
         <Probe />
       </StrictMode>,
     );
-    expect(held).not.toBeNull();
-    void held?.find();
+    expect(held.current).not.toBeNull();
+    void held.current?.find();
     expect(connect).toHaveBeenCalledTimes(1);
   });
 });
