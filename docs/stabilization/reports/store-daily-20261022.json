@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "date": "2026-10-22",
+  "timezone": "America/Los_Angeles",
+  "recorded_at_utc": "2026-10-23T04:04:22Z",
+  "status": "resource-refused-before-native-ui",
+  "scope": "Primary Chrome Web Store daily review and actual Store-installed guest Chat acceptance",
+  "run_id": "store-daily-20261022-0404",
+  "resource_journal": "docs/stabilization/resource-journals/store-daily-20261022-0404.jsonl",
+  "resource": {
+    "preflight_at_utc": "2026-10-23T04:03:36.599Z",
+    "code": "RESOURCE_PREFLIGHT_REFUSED",
+    "reasons": [
+      "RESOURCE_PRESSURE_UNSAFE",
+      "RESOURCE_SWAP_GROWTH",
+      "RESOURCE_CPU_BUSY",
+      "RESOURCE_CPU_HIGH_LOAD_BUSY"
+    ],
+    "pressure_level": 2,
+    "available_memory_gib": 5.92,
+    "one_minute_load": 10.05,
+    "cpu_busy_fraction": 0.7785714285714286,
+    "swap_used_mib": 3996,
+    "final_at_utc": "2026-10-23T04:03:36.638Z",
+    "admitted": false,
+    "resource_invalid": false,
+    "decision": "refused",
+    "exit_code": 2
+  },
+  "native_ui_calls": 0,
+  "native_browser_input": false,
+  "tabs_or_profiles_changed": false,
+  "fixtures_changed": false,
+  "credentials_or_secrets_changed": false,
+  "owned_processes_started": 0,
+  "store_status_today": "unverified",
+  "official_review_mail_today": "unverified",
+  "actual_store_installed_guest_chat_today": "unverified",
+  "deployed_server_sha_today": "unverified",
+  "last_verified_store_status": {
+    "observed_at_utc": "2026-10-21T07:17:56Z",
+    "public_version": "0.2.205",
+    "pending_version": "0.2.577",
+    "source": "docs/stabilization/reports/store-daily-20261021.json"
+  },
+  "interpretation": "The prior status is historical only. No publication, rejection, or current runtime result is inferred from it.",
+  "next_action": "After a newly admitted resource window, check the exact primary publisher item and official review mail, preserve any pending draft, then run the actual Store-installed no-login guest Chat first grounded turn and same-conversation follow-up with deployed server SHA probes before and after. Record decisive raw UI evidence at assertion time. No upload or new submission until separate source/release and guest/member gates pass."
+}

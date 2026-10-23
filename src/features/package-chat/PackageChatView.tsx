@@ -13,7 +13,7 @@ import { useToolInbox } from '@/state/tool-inbox';
 import { ChatConversationRoom } from '@ai-matrx/chat/agents/components/chat/ChatConversationRoom';
 import { ChatNewClient } from '@ai-matrx/chat/agents/components/chat/ChatNewClient';
 import { ConversationSidebar } from '@ai-matrx/chat/sidebar/ConversationSidebar';
-import { entryWebUrl, type SidebarEntry } from '@ai-matrx/chat/sidebar/sidebar-buckets';
+import { openSidebarEntryOnWeb, type SidebarEntry } from '@ai-matrx/chat/sidebar/sidebar-buckets';
 import { CredentialCaptureCard } from '@ai-matrx/chat/agents/ui-first-tools/ui/CredentialCaptureCard';
 import type { ChatHost } from '@ai-matrx/chat/host';
 import { ChatProvider, usePathname, useRouter } from '@ai-matrx/chat/host/react';
@@ -53,12 +53,11 @@ export function BrowserToolPrompts({ conversationId }: { conversationId: string 
   );
 }
 
-/** The sidebar's entries have no page in the panel: they open on the web (the package's one entry map), in a browser tab. */
-function openEntryOnWeb(entry: SidebarEntry): boolean {
-  const url = entryWebUrl(entry, 'https://www.aimatrx.com');
-  if (!url) return false; // Favorites: the sidebar answers it itself (its Pinned section).
-  void chrome.tabs.create({ url: withReferral(url) });
-  return true;
+/** The sidebar's entries have no page in the panel: they open on the web (the package's one entry map), in a browser tab. A tab that cannot open is the sidebar's one status line. */
+function openEntryOnWeb(entry: SidebarEntry) {
+  return openSidebarEntryOnWeb(entry, 'https://www.aimatrx.com', async (url) => {
+    await chrome.tabs.create({ url: withReferral(url) });
+  });
 }
 
 function Screens() {
