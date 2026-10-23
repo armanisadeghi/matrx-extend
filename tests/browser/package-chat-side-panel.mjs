@@ -118,12 +118,10 @@ try {
   await page.screenshot({ path: join(SHOTS, '1-new-chat.png') });
 
   await page.getByRole('button', { name: 'Conversations' }).click();
-  const row = page
-    .locator(
-      // A history row is design-system's ItemRow (`.item-row`); its first child is the open control.
-      '[data-package-chat] .item-row > :first-child, [data-package-chat] [data-conversation-id], [data-package-chat] [role="option"]',
-    )
-    .first();
+  // A history row is the shared ConversationSidebar's `[data-sidebar-row]` (an ItemRow inside);
+  // the list paints skeletons first, so wait for a real row, not any ItemRow in the panel chrome.
+  const SIDEBAR_ROW = '[data-package-chat] nav[aria-label="Conversations"] [data-sidebar-row]';
+  const row = page.locator(SIDEBAR_ROW).first();
   await row.waitFor({ timeout: 45_000 }).catch(() => undefined);
   const rows = await row.count();
   check('history loads', rows > 0);
@@ -138,7 +136,7 @@ try {
     const messageNodes = page.locator(
       '[data-package-chat] [data-message-id], [data-package-chat] [data-role="user"], [data-package-chat] [data-role="assistant"]',
     );
-    const rowControls = page.locator('[data-package-chat] .item-row > :first-child');
+    const rowControls = page.locator(`${SIDEBAR_ROW} .item-row > :first-child`);
     for (let n = 0; n < 6; n += 1) {
       if (n > 0) await page.getByRole('button', { name: 'Conversations' }).click();
       await rowControls.nth(n).click();
