@@ -4,15 +4,21 @@ import { usePilotChatStore } from '@/state/pilot-chat';
 import { useSettingsStore } from '@/state/settings';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+const knob = vi.hoisted(() => ({ mode: 'ask' as 'ask' | 'act' }));
+vi.mock('@/lib/settings/act-without-asking', () => ({
+  readActMode: () => knob.mode,
+  writeActMode: async () => ({ ok: true }),
+}));
+
 vi.mock('@/lib/auth/flow', () => ({ getAccessToken: async () => null }));
 vi.mock('@/lib/permissions/optional', () => ({
   ALL_OPTIONAL: [],
   hasOptionalPermissions: async () => false,
 }));
 
-// A property manager can keep Assistant in Ask while Pilot acts on maintenance
-// requests. The backend discovery payload must honor each surface's own chip.
-describe('browser DOM permission mode by surface', () => {
+// The two surfaces share the person's platform setting; old per-agent values
+// must not make the backend advertise a different permission mode.
+describe('browser DOM shared permission mode', () => {
   beforeEach(() => {
     Object.assign(chrome, {
       tabs: { query: async () => [] },
@@ -21,14 +27,16 @@ describe('browser DOM permission mode by surface', () => {
     });
   });
   afterEach(() => {
+    knob.mode = 'ask';
     useChatStore.setState({ selectedAgentId: null, permissionMode: {} });
     usePilotChatStore.setState({ selectedAgentId: null, permissionMode: {} });
     useSettingsStore.setState({ defaultPermissionMode: 'ask' });
   });
 
   it.each(['ask', 'act'] as const)(
-    'Pilot advertises its %s mode when Assistant disagrees',
+    'both surfaces advertise the shared %s mode despite stale per-agent values',
     async (mode) => {
+      knob.mode = mode;
       useChatStore.setState({
         selectedAgentId: 'maintenance-agent',
         permissionMode: { 'maintenance-agent': mode === 'ask' ? 'act' : 'ask' },
@@ -37,19 +45,25 @@ describe('browser DOM permission mode by surface', () => {
         selectedAgentId: 'maintenance-agent',
         permissionMode: { 'maintenance-agent': mode },
       });
-      for (const agentId of ['maintenance-agent', undefined]) {
-        const state = await buildBrowserDomState({
-          surface: 'pilot',
-          activeTab: null,
-          pageLang: null,
-          ...(agentId !== undefined && { agentId }),
-        });
-        expect(state.permission_mode).toBe(mode);
-      }
+      const assistant = await buildBrowserDomState({
+        surface: 'assistant',
+        activeTab: null,
+        pageLang: null,
+        agentId: 'maintenance-agent',
+      });
+      const pilot = await buildBrowserDomState({
+        surface: 'pilot',
+        activeTab: null,
+        pageLang: null,
+        agentId: 'maintenance-agent',
+      });
+      expect(assistant.permission_mode).toBe(mode);
+      expect(pilot.permission_mode).toBe(mode);
     },
   );
 
-  it('Assistant advertises its default while Pilot keeps its independent default', async () => {
+  it('ignores the old Settings default when advertising the platform setting', async () => {
+    knob.mode = 'act';
     useSettingsStore.setState({ defaultPermissionMode: 'ask' });
     const assistant = await buildBrowserDomState({
       surface: 'assistant',
@@ -57,7 +71,7 @@ describe('browser DOM permission mode by surface', () => {
       pageLang: null,
     });
     const pilot = await buildBrowserDomState({ surface: 'pilot', activeTab: null, pageLang: null });
-    expect(assistant.permission_mode).toBe('ask');
+    expect(assistant.permission_mode).toBe('act');
     expect(pilot.permission_mode).toBe('act');
   });
 });

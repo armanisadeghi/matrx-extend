@@ -12,6 +12,7 @@
 import { ensureRequestOrganizationId } from '@/hooks/use-request-organization';
 import { platformDb } from '@/lib/supabase/schemas';
 import { useAuthStore } from '@/state/auth';
+import { writeFeatureKnob } from '@ai-matrx/data/knobs';
 import { useSyncExternalStore } from 'react';
 import { invalidateKnobSnapshot, resolvePlatformKnobInWorker } from './platform-knob-snapshot';
 import { peekPlatformKnob, subscribePlatformKnobs, warmPlatformKnobs } from './platform-knobs';
@@ -71,24 +72,18 @@ export async function writeActMode(mode: ActMode): Promise<{ ok: boolean; detail
     );
     return { ok: false, detail: 'not signed in' };
   }
-  const { data, error } = await platformDb().rpc('knob_override_set', {
-    p_feature: 'chat',
-    p_key: 'act_without_asking',
-    p_scope_kind: 'user',
-    p_scope_id: userId,
-    p_organization_id: organizationId,
-    p_value: mode === 'act',
+  const result = await writeFeatureKnob(platformDb(), {
+    feature: 'chat',
+    key: 'act_without_asking',
+    target: { scopeKind: 'user', scopeId: userId, organizationId },
+    value: mode === 'act',
+    note: 'Person changed the Act without asking setting in the extension.',
   });
-  const refused =
-    error?.message ??
-    (data && typeof data === 'object' && (data as { ok?: boolean }).ok === false
-      ? String((data as { reason?: string }).reason ?? 'refused')
-      : null);
-  if (refused) {
-    console.error(`[act-without-asking] the choice was not saved: ${refused}`);
+  if (!result.ok) {
+    console.error(`[act-without-asking] the choice was not saved: ${result.message}`);
     pending = null;
     notify();
-    return { ok: false, detail: refused };
+    return { ok: false, detail: result.message };
   }
   invalidateKnobSnapshot();
   void warmPlatformKnobs();

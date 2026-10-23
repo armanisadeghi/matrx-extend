@@ -23,7 +23,7 @@ vi.mock('@/lib/settings/platform-knob-snapshot', () => ({
   resolvePlatformKnobInWorker: async (k: string) =>
     k === 'chat.act_without_asking' ? knob.value : undefined,
 }));
-vi.mock('@/lib/supabase/schemas', () => ({ platformDb: () => ({ rpc }) }));
+vi.mock('@/lib/supabase/schemas', () => ({ platformDb: () => ({ schema: () => ({ rpc }) }) }));
 vi.mock('@/hooks/use-request-organization', () => ({
   ensureRequestOrganizationId: async () => 'org-1',
 }));
@@ -47,14 +47,18 @@ describe('act without asking — one setting', () => {
 
   it("the extension's chip writes the person's rung of chat.act_without_asking", async () => {
     await writeActMode('ask');
-    expect(rpc).toHaveBeenCalledWith('knob_override_set', {
-      p_feature: 'chat',
-      p_key: 'act_without_asking',
-      p_scope_kind: 'user',
-      p_scope_id: 'person-1',
-      p_organization_id: 'org-1',
-      p_value: false,
-    });
+    expect(rpc).toHaveBeenCalledWith(
+      'knob_override_set',
+      expect.objectContaining({
+        p_feature: 'chat',
+        p_key: 'act_without_asking',
+        p_scope_kind: 'user',
+        p_scope_id: 'person-1',
+        p_organization_id: 'org-1',
+        p_value: false,
+        p_note: expect.any(String),
+      }),
+    );
     expect(await readActModeInWorker()).toBe('ask');
   });
 

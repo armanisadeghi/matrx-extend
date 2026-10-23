@@ -20,6 +20,9 @@ const squash = (s: string | null | undefined) => (s ?? '').replace(/\s+/g, '');
 function shapeOf(el: HTMLElement): ParityShape {
   const c = el.cloneNode(true) as HTMLElement;
   for (const st of c.querySelectorAll('style')) st.remove();
+  // Canonical rich-content tables add an interactive toolbar beside the cells.
+  // It is not markdown output and should not count as parity text.
+  for (const toolbar of c.querySelectorAll('[role="toolbar"]')) toolbar.remove();
   return {
     text: squash(c.textContent),
     headings: [...c.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(

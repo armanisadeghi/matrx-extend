@@ -94,10 +94,7 @@ export function useNewPasswordFieldsHost(
   tabId: number | null,
   admission: Parameters<typeof createNewPasswordFieldsHost>[1],
 ) {
-  return useDisposable(
-    () => createNewPasswordFieldsHost(tabId, admission),
-    [tabId, admission],
-  );
+  return useDisposable(() => createNewPasswordFieldsHost(tabId, admission), [tabId, admission]);
 }
 
 function VaultWorkspace({ actor }: { actor: Actor }) {

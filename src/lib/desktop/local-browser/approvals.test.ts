@@ -1,6 +1,6 @@
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   type LocalBrowserApprovalProposal,
   localBrowserApprovalWaiterCount,
@@ -46,6 +46,10 @@ afterEach(() => {
   setLocalBrowserApprovalPermissionReaderForTest(null);
   // Each test explicitly settles its waiter; this assertion catches a secret-bearing waiter leak.
   expect(localBrowserApprovalWaiterCount()).toBe(0);
+});
+
+beforeEach(() => {
+  setLocalBrowserApprovalPermissionReaderForTest(async () => 'ask');
 });
 
 describe('local browser private approvals', () => {

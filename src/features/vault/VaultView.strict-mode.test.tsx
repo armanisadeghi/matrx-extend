@@ -1,8 +1,8 @@
 import { cleanup, render } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { PanelActionAdmission } from './usePanelAdmission';
 import { useNewPasswordFieldsHost } from './VaultView';
+import type { PanelActionAdmission } from './usePanelAdmission';
 
 /**
  * The generator's "Fill page" host survives StrictMode (review E4, 2026-10-22):
@@ -30,7 +30,9 @@ describe('useNewPasswordFieldsHost', () => {
         sendMessage: vi.fn(async () => undefined),
       },
     });
-    const admission = { run: async <T,>(f: () => Promise<T>) => f() } as unknown as PanelActionAdmission;
+    const admission = {
+      run: async <T,>(f: () => Promise<T>) => f(),
+    } as unknown as PanelActionAdmission;
     const held: { current: ReturnType<typeof useNewPasswordFieldsHost> } = { current: null };
     function Probe() {
       held.current = useNewPasswordFieldsHost(7, admission);

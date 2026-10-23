@@ -12,13 +12,13 @@ import { captureSpec, dismissCapture, saveCapture } from '@/lib/credentials/capt
 import { useToolInbox } from '@/state/tool-inbox';
 import { ChatConversationRoom } from '@ai-matrx/chat/agents/components/chat/ChatConversationRoom';
 import { ChatNewClient } from '@ai-matrx/chat/agents/components/chat/ChatNewClient';
-import { ConversationSidebar } from '@ai-matrx/chat/sidebar/ConversationSidebar';
-import { openSidebarEntryOnWeb, type SidebarEntry } from '@ai-matrx/chat/sidebar/sidebar-buckets';
 import { CredentialCaptureCard } from '@ai-matrx/chat/agents/ui-first-tools/ui/CredentialCaptureCard';
 import type { ChatHost } from '@ai-matrx/chat/host';
 import { ChatProvider, usePathname, useRouter } from '@ai-matrx/chat/host/react';
-import { withReferral } from '@ai-matrx/kit/outbound';
+import { ConversationSidebar } from '@ai-matrx/chat/sidebar/ConversationSidebar';
+import { type SidebarEntry, openSidebarEntryOnWeb } from '@ai-matrx/chat/sidebar/sidebar-buckets';
 import { Button } from '@ai-matrx/design-system';
+import { withReferral } from '@ai-matrx/kit/outbound';
 import { History, SquarePen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ExtensionTabLayer } from './canvas-tabs';

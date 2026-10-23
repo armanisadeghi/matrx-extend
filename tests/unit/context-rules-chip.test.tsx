@@ -1,9 +1,10 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { upsert, select, requireActiveOrganizationId } = vi.hoisted(() => ({
+const { upsert, select, rpcMock, requireActiveOrganizationId } = vi.hoisted(() => ({
   upsert: vi.fn(),
   select: vi.fn(),
+  rpcMock: vi.fn(),
   requireActiveOrganizationId: vi.fn(),
 }));
 
@@ -23,6 +24,10 @@ vi.mock('@/lib/org/active-org', () => ({
   isOrganizationNotSelectedError: () => false,
   isOrganizationNoMembershipsError: () => false,
   getActiveOrganizationId: vi.fn(),
+}));
+vi.mock('@/lib/supabase/client', () => ({ getSupabase: () => ({ rpc: rpcMock }) }));
+vi.mock('@/lib/telemetry/external-reporting', () => ({
+  mayReportExternalTelemetry: async () => true,
 }));
 vi.mock('@/hooks/use-chat-stream', () => ({
   resolveAttachedHighlights: vi.fn(async () => null),
@@ -48,6 +53,8 @@ import { useAuthStore } from '@/state/auth';
 import { useChatStore } from '@/state/chat';
 import {
   ensureContextRulesReady,
+  recordContextReceipt,
+  rememberRunContextRows,
   saveContextRule,
   useContextRulesStore,
 } from '@/state/context-rules';
@@ -70,6 +77,7 @@ describe('context rules: the person’s one home', () => {
   beforeEach(() => {
     upsert.mockReset().mockResolvedValue({ error: null });
     select.mockReset().mockResolvedValue({ data: [], error: null });
+    rpcMock.mockReset().mockResolvedValue({ data: 'client-error-1', error: null });
     requireActiveOrganizationId.mockReset().mockResolvedValue('org-1');
     useAuthStore.setState({ user: { id: 'user-1' } } as never);
     useContextRulesStore.setState({ rows: {}, loaded: true, loadFailed: false });
@@ -119,6 +127,7 @@ describe('ContextRulesComposerChip', () => {
     useChatStore.setState({ selectedConversationId: 'conv-1' } as never);
     usePilotChatStore.setState({ selectedConversationId: 'pilot-1' } as never);
     useContextRulesStore.setState({
+      expectedByRun: {},
       rows: {},
       previewSourcesByComposer: {},
       lastSentRowsByComposer: { chat: [PAGE_ROW] },
@@ -150,69 +159,61 @@ describe('ContextRulesComposerChip', () => {
     expect(await screen.findByRole('button', { name: '2 included' })).toBeTruthy();
   });
 
-  it('turns amber when the receipt disagrees with what was sent', () => {
-    useContextRulesStore.setState({
-      receiptByConversation: {
-        'conv-1': {
-          receipt: {
-            version: 1,
-            surface: null,
-            cap: 50000,
-            model_reads_context: true,
-            rules_error: null,
-            rows: [],
-          },
-          mismatches: [
-            { key: 'page_full_content', field: 'missing', expected: true, actual: null },
-          ],
-          receivedAt: 1,
-        },
-      },
+  it('records a receipt disagreement without changing the chip', async () => {
+    rememberRunContextRows('chat', 'run-1', [PAGE_ROW]);
+    recordContextReceipt('run-1', 'conv-1', {
+      type: 'context_receipt',
+      cap: 50000,
+      rows: [],
     });
     render(<ContextRulesComposerChip composer="chat" />);
     expect(screen.getByRole('button', { name: '1 included' }).getAttribute('data-mismatch')).toBe(
-      'true',
+      null,
     );
+    const mismatches = useContextRulesStore.getState().receiptByConversation['conv-1']?.mismatches;
+    expect(mismatches).toHaveLength(1);
+    expect(mismatches?.[0]).toMatchObject({ key: 'page_full_content', field: 'missing' });
+    await vi.waitFor(() => {
+      expect(rpcMock).toHaveBeenCalledWith(
+        'log_client_error',
+        expect.objectContaining({ p_code: 'context_truth_mismatch' }),
+      );
+    });
   });
 
-  it("Pilot shows its own last send and its own receipt, never the Assistant chat's", () => {
+  it("Pilot shows its own last send and its own receipt, never the Assistant chat's", async () => {
     useContextRulesStore.setState({
       lastSentRowsByComposer: {
         chat: [PAGE_ROW],
         pilot: [PAGE_ROW, { ...PAGE_ROW, key: 'page_brief' }],
       },
-      receiptByConversation: {
-        'conv-1': {
-          receipt: {
-            version: 1,
-            surface: null,
-            cap: 50000,
-            model_reads_context: true,
-            rules_error: null,
-            rows: [],
-          },
-          mismatches: [
-            { key: 'page_full_content', field: 'missing', expected: true, actual: null },
-          ],
-          receivedAt: 1,
-        },
-      },
+      receiptByConversation: {},
+    });
+    rememberRunContextRows('chat', 'chat-run', [PAGE_ROW]);
+    recordContextReceipt('chat-run', 'conv-1', {
+      type: 'context_receipt',
+      cap: 50000,
+      rows: [],
     });
     render(<ContextRulesComposerChip composer="pilot" />);
     const face = screen.getByRole('button', { name: '2 included' });
     expect(face.textContent).toBe('2');
     expect(face.getAttribute('data-mismatch')).toBeNull();
     cleanup();
-    useContextRulesStore.setState((st) => ({
-      receiptByConversation: {
-        ...st.receiptByConversation,
-        'pilot-1': st.receiptByConversation['conv-1']!,
-      },
-    }));
+    rememberRunContextRows('pilot', 'pilot-run', [PAGE_ROW, { ...PAGE_ROW, key: 'page_brief' }]);
+    recordContextReceipt('pilot-run', 'pilot-1', {
+      type: 'context_receipt',
+      cap: 50000,
+      rows: [],
+    });
     render(<ContextRulesComposerChip composer="pilot" />);
     expect(screen.getByRole('button', { name: '2 included' }).getAttribute('data-mismatch')).toBe(
-      'true',
+      null,
     );
+    expect(
+      useContextRulesStore.getState().receiptByConversation['pilot-1']?.mismatches,
+    ).toHaveLength(2);
+    await vi.waitFor(() => expect(rpcMock).toHaveBeenCalledTimes(2));
   });
 
   it('shows the values the server added (attachments, scope seeds) as their own rows', () => {

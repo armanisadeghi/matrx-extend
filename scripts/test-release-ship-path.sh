@@ -135,7 +135,7 @@ case " \$* " in
       sed -i.bak "s/0\\.86\\.[0-9]*/0.86.\$latest/g" pnpm-lock.yaml
       rm -f pnpm-lock.yaml.bak
     fi ;;
-  *" install --frozen-lockfile --package-import-method=copy "*)
+  *" install --frozen-lockfile --package-import-method=clone-or-copy "*)
     mkdir -p node_modules/.bin
     # The fake installer supplies its diagnostic tool in the private install.
     if [ -f "$SANDBOX/checkout/node_modules/.bin/biome" ]; then
@@ -971,7 +971,7 @@ cd "$SANDBOX/checkout"
 git fetch -q origin 2>/dev/null || true
 echo "release — a failing check is reported and the release goes on"
 touch "$SANDBOX/fail-matrx-packages"
-PKG_INSTALLS_BEFORE="$(grep -c '^install --frozen-lockfile --package-import-method=copy$' "$SANDBOX/pnpm-calls" || true)"
+PKG_INSTALLS_BEFORE="$(grep -c '^install --frozen-lockfile --package-import-method=clone-or-copy$' "$SANDBOX/pnpm-calls" || true)"
 UNIT_RUNS_BEFORE="$(grep -c 'exec vitest run' "$SANDBOX/pnpm-calls" || true)"
 set +e
 PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/stale-packages-out" 2>&1
@@ -983,7 +983,7 @@ STALE_TAG="$(sed -n 's/^\(v[0-9.]*\)  pushed.*/\1/p' "$SANDBOX/stale-packages-ou
 check "stale packages are reported and the release is pushed" '[[ $STALE_PACKAGES_STATUS -eq 0 && -n "$STALE_TAG" ]] && git ls-remote --tags origin | grep -q "refs/tags/$STALE_TAG$" && grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/stale-packages-out"'
 check "stale packages scream"                           'grep -q "RELEASE WARNING" "$SANDBOX/stale-packages-out" && grep -q "check: matrx-packages" "$SANDBOX/stale-packages-out"'
 check "the unit tests still ran after stale packages"   '[[ $(( $(grep -c "exec vitest run" "$SANDBOX/pnpm-calls") - UNIT_RUNS_BEFORE )) -ge 1 ]]'
-PKG_INSTALLS_RUN=$(( $(grep -c '^install --frozen-lockfile --package-import-method=copy$' "$SANDBOX/pnpm-calls") - PKG_INSTALLS_BEFORE ))
+PKG_INSTALLS_RUN=$(( $(grep -c '^install --frozen-lockfile --package-import-method=clone-or-copy$' "$SANDBOX/pnpm-calls") - PKG_INSTALLS_BEFORE ))
 check "candidate regen/check/build reuse one private frozen install" '[[ $PKG_INSTALLS_RUN -eq 1 ]]'
 # CI runs `pnpm lint`; a candidate with Biome errors is reported with safe diagnostics and released.
 mkdir -p node_modules/.bin
