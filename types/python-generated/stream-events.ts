@@ -462,6 +462,7 @@ export interface AudioOutputData {
 export interface AudioStreamChunkData {
   type?: "audio_stream_chunk";
   stream_id: string;
+  take?: number;
   seq: number;
   audio_base64: string;
   mime_type?: string;
@@ -474,6 +475,7 @@ export interface AudioStreamChunkData {
 export interface AudioStreamEndData {
   type?: "audio_stream_end";
   stream_id: string;
+  take?: number;
   total_chunks: number;
   url?: string;
   mime_type?: string;

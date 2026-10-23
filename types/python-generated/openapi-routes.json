@@ -353,6 +353,15 @@
  "/admin/persistence/watchdog/{table}": {
   "get": []
  },
+ "/admin/platform-repair/box": {
+  "get": []
+ },
+ "/admin/platform-repair/runs": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
  "/admin/producer-yield": {
   "get": []
  },
@@ -442,6 +451,11 @@
  },
  "/admin/stats": {
   "get": []
+ },
+ "/admin/surface-evidence/receives": {
+  "post": [
+   "application/json"
+  ]
  },
  "/admin/surface-evidence/review": {
   "post": [
@@ -780,6 +794,9 @@
   ]
  },
  "/ai-models": {
+  "get": []
+ },
+ "/ai-models/own-key": {
   "get": []
  },
  "/ai-test-mode/status": {
@@ -1643,6 +1660,9 @@
   "post": [
    "application/json"
   ]
+ },
+ "/broker/run-credentials/hosted-bridge": {
+  "post": []
  },
  "/broker/tokens": {
   "post": [
@@ -2686,6 +2706,11 @@
  "/data-sources": {
   "get": []
  },
+ "/data-sources/ask/read": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/data-sources/fetch": {
   "post": [
    "application/json"
@@ -2703,6 +2728,9 @@
   "get": []
  },
  "/data-sources/jobs/{job_id}/row-keys": {
+  "get": []
+ },
+ "/data-sources/routed": {
   "get": []
  },
  "/data-sources/tables/{table_id}/refresh": {
@@ -3136,6 +3164,11 @@
  },
  "/excalidraw/public/release": {
   "get": []
+ },
+ "/external-databases/connections": {
+  "post": [
+   "application/json"
+  ]
  },
  "/external-databases/inspect": {
   "post": [
@@ -5889,6 +5922,11 @@
    "application/json"
   ],
   "get": []
+ },
+ "/notion-import/workspace/start": {
+  "post": [
+   "application/json"
+  ]
  },
  "/notion-import/zip": {
   "post": [
@@ -10011,6 +10049,11 @@
   ]
  },
  "/video-variants/{project_id}/batch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/video-variants/{project_id}/estimate": {
   "post": [
    "application/json"
   ]
