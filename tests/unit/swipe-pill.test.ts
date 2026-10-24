@@ -351,3 +351,29 @@ it('a failure says where it stopped, offers Try again, and shows copyable detail
   });
   expect(root.querySelector<HTMLElement>('#failrow')!.hidden).toBe(true);
 });
+
+it('Try again after a new collection was already created adds to it instead of creating a second', () => {
+  mountSwipePill();
+  const root = document.querySelector('#matrx-swipe-pill')!.shadowRoot!;
+  receive({ t: 'collections', collections: [], lastId: null });
+  root.querySelector<HTMLInputElement>('#newname')!.value = 'Hooks';
+  root.querySelector<HTMLButtonElement>('#save')!.click();
+  expect(posted).toHaveBeenLastCalledWith(
+    expect.objectContaining({ collectionId: null, newCollectionName: 'Hooks' }),
+  );
+  receive({
+    t: 'result',
+    outcome: {
+      status: 'failed',
+      reason: 'The post was fetched but could not be added: boom',
+      detail: { step: 'Adding to the collection', status: 500, collectionId: 'new1' },
+    },
+  });
+  posted.mockClear();
+  root.querySelector<HTMLButtonElement>('#again')!.click();
+  expect(posted).toHaveBeenLastCalledWith({
+    t: 'save',
+    url: 'https://www.instagram.com/p/captured-post/',
+    collectionId: 'new1',
+  });
+});

@@ -144,6 +144,43 @@ describe('saveToSwipeFile', () => {
     expect(m.ingestPost).not.toHaveBeenCalled();
   });
 
+  it('a failed add after creating a collection hands back that collection for the retry', async () => {
+    m.ingestPost.mockResolvedValue(post());
+    m.createCollection.mockResolvedValue({
+      ok: true,
+      data: { collection_id: 'new1', name: 'Hooks' },
+    });
+    m.addPostToCollection.mockResolvedValue({ ok: false, status: 500, error: 'boom' });
+    const o = await saveToSwipeFile(
+      { url: URL_OK, collectionId: null, newCollectionName: 'Hooks' },
+      () => {},
+    );
+    expect(o.status === 'failed' && o.detail?.collectionId).toBe('new1');
+  });
+
+  it('a slow error log never holds up the failure the person is waiting on', async () => {
+    vi.useFakeTimers();
+    try {
+      m.ingestPost.mockResolvedValue({ ok: false, reason: 'Busy.', status: 503 });
+      m.record.mockReturnValue(new Promise(() => {}));
+      const pending = saveToSwipeFile({ url: URL_OK, collectionId: 'c1' }, () => {});
+      await vi.advanceTimersByTimeAsync(3000);
+      const o = await pending;
+      expect(o.status === 'failed' && o.detail?.referenceMissing).toBe(
+        'The error log could not be reached',
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('an expired sign-in is the person to fix, so it is not recorded as our error', async () => {
+    m.ingestPost.mockResolvedValue({ ok: false, reason: 'Sign in again.', status: 401 });
+    const o = await saveToSwipeFile({ url: URL_OK, collectionId: 'c1' }, () => {});
+    expect(o.status).toBe('failed');
+    expect(m.record).not.toHaveBeenCalled();
+  });
+
   it('reports a failed add honestly', async () => {
     m.ingestPost.mockResolvedValue(post());
     m.addPostToCollection.mockResolvedValue({ ok: false, status: 403, error: 'forbidden' });

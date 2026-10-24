@@ -100,7 +100,9 @@ export interface IngestFailure {
   technical?: string;
 }
 
-export type IngestOutcome = { ok: true; result: SocialPostResult } | ({ ok: false } & IngestFailure);
+export type IngestOutcome =
+  | { ok: true; result: SocialPostResult }
+  | ({ ok: false } & IngestFailure);
 
 /** Which fields broke and why, e.g. `post_id: Required`. Never values: they can carry page content. */
 export function describeSchemaIssues(error: z.ZodError): string {
@@ -128,8 +130,11 @@ export async function ingestPost(
   if (!headers.Authorization || !headers[ORGANIZATION_CONTEXT_HEADER])
     return { ok: false, reason: 'Sign in to Matrx to save to your swipe file.' };
 
-  const box: { result: SocialPostResult | null; failure: IngestFailure | null; requestId?: string } =
-    { result: null, failure: null };
+  const box: {
+    result: SocialPostResult | null;
+    failure: IngestFailure | null;
+    requestId?: string;
+  } = { result: null, failure: null };
   await streamFetch({
     url: `${base}/social/ingest/post`,
     body: { url, land_media: true, transcript: true, comments: false, force: false },
@@ -141,9 +146,11 @@ export async function ingestPost(
     onEvent: (e) => {
       if (e.type === 'error') {
         box.failure ??= {
-          reason: e.message,
+          // A refusal at the door (status set) gets swipe words; the generic stream copy says "chat".
+          reason: e.status !== undefined ? swipeRefusalSentence(e.status) : e.message,
           ...(e.status !== undefined ? { status: e.status } : {}),
           ...(e.serverCode !== undefined ? { serverCode: e.serverCode } : {}),
+          ...(e.requestId !== undefined ? { requestId: e.requestId } : {}),
         };
         return;
       }
@@ -161,7 +168,7 @@ export async function ingestPost(
         if (parsed.success) box.result = parsed.data;
         else
           box.failure ??= {
-            reason: 'Matrx read the post but its answer had no post id.',
+            reason: 'Matrx read the post but its answer had no usable post id.',
             technical: describeSchemaIssues(parsed.error),
           };
       }
@@ -172,7 +179,17 @@ export async function ingestPost(
     reason: 'The server stopped before answering.',
     technical: 'stream ended with no social_result and no error event',
   };
-  return { ok: false, ...f, ...(box.requestId ? { requestId: box.requestId } : {}) };
+  return { ok: false, ...(box.requestId ? { requestId: box.requestId } : {}), ...f };
+}
+
+/** The person's sentence for a refused ingest request, by HTTP status (0 = never reached). */
+export function swipeRefusalSentence(status: number): string {
+  if (status === 0) return "Couldn't reach Matrx. Check your connection.";
+  if (status === 401) return 'Your sign-in expired. Open Matrx and sign in again.';
+  if (status === 403) return "This account can't save into that organization.";
+  if (status === 429) return 'Matrx is busy right now. Try again in a minute.';
+  if (status >= 500) return 'Matrx had a problem on its side while reading this post.';
+  return "Matrx couldn't start reading this post.";
 }
 
 export async function createCollection(

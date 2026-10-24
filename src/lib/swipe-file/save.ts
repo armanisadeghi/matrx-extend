@@ -52,42 +52,61 @@ export interface SwipeFailureDetail {
   reference?: string;
   /** Why no reference could be written, when it could not. */
   referenceMissing?: string;
+  /** A collection this attempt already created: a retry must reuse it, never make a second. */
+  collectionId?: string;
 }
+
+/** Longest the person waits on the error log before the failure is shown anyway. */
+const RECORD_WAIT_MS = 3000;
 
 /**
  * A save that stopped after the person did everything right is OUR failure:
  * record it (with the server's request id, so both rows join) and hand the
- * reference back for the card to show.
+ * reference back for the card to show. A sign-in that expired is the person's
+ * to fix, so it is not recorded.
  */
 async function failed(
   reason: string,
-  step: string,
+  at: { step: string; route: string; url: string; organizationId: string; collectionId?: string },
   f: Partial<IngestFailure>,
-  url: string,
-  organizationId: string,
 ): Promise<SwipeOutcome> {
   const detail: SwipeFailureDetail = {
-    step,
+    step: at.step,
     ...(f.status !== undefined && { status: f.status }),
     ...(f.serverCode !== undefined && { serverCode: f.serverCode }),
     ...(f.requestId !== undefined && { requestId: f.requestId }),
     ...(f.technical !== undefined && { technical: f.technical }),
+    ...(at.collectionId !== undefined && { collectionId: at.collectionId }),
   };
+  if (f.status === 401) return { status: 'failed', reason, detail };
+  let timer: ReturnType<typeof setTimeout> | undefined;
   try {
-    const reference = await recordClientError({
-      feature: 'social',
-      message: `swipe save stopped at "${step}": ${reason}`,
-      code: f.serverCode ?? (f.status !== undefined ? `http_${f.status}` : 'swipe_save_failed'),
-      route: '/social/ingest/post',
-      ...(f.requestId !== undefined && { requestId: f.requestId }),
-      context: { step, url, status: f.status ?? null, technical: f.technical ?? null },
-      organizationId,
-    });
+    const reference = await Promise.race([
+      recordClientError({
+        feature: 'social',
+        message: `swipe save stopped at "${at.step}": ${reason}`,
+        code: f.serverCode ?? (f.status !== undefined ? `http_${f.status}` : 'swipe_save_failed'),
+        route: at.route,
+        ...(f.requestId !== undefined && { requestId: f.requestId }),
+        context: {
+          step: at.step,
+          url: at.url,
+          status: f.status ?? null,
+          technical: f.technical ?? null,
+        },
+        organizationId: at.organizationId,
+      }),
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error('error log timed out')), RECORD_WAIT_MS);
+      }),
+    ]);
     if (reference) detail.reference = reference;
     else detail.referenceMissing = 'Diagnostics are off in this browser';
   } catch (err) {
     log.error('sw', 'swipe failure was NOT recorded in the platform error store', { detail, err });
     detail.referenceMissing = 'The error log could not be reached';
+  } finally {
+    clearTimeout(timer);
   }
   return { status: 'failed', reason, detail };
 }
@@ -127,7 +146,16 @@ export async function saveToSwipeFile(
     organizationId,
   );
   if (!ingest.ok)
-    return failed(ingest.reason, `Reading this ${target.label}`, ingest, target.url, organizationId);
+    return failed(
+      ingest.reason,
+      {
+        step: `Reading this ${target.label}`,
+        route: '/social/ingest/post',
+        url: target.url,
+        organizationId,
+      },
+      ingest,
+    );
   const post = ingest.result;
 
   if (!collectionId) {
@@ -136,10 +164,13 @@ export async function saveToSwipeFile(
     if (!made.ok)
       return failed(
         `The post was fetched but the collection could not be created: ${made.error}`,
-        'Creating the collection',
+        {
+          step: 'Creating the collection',
+          route: '/social/collections',
+          url: target.url,
+          organizationId,
+        },
         { status: made.status },
-        target.url,
-        organizationId,
       );
     collectionId = made.data.collection_id;
   }
@@ -156,10 +187,14 @@ export async function saveToSwipeFile(
     if (!added.ok)
       return failed(
         `The post was fetched but could not be added: ${added.error}`,
-        'Adding to the collection',
+        {
+          step: 'Adding to the collection',
+          route: '/social/collections/{collection_id}/items',
+          url: target.url,
+          organizationId,
+          collectionId,
+        },
         { status: added.status },
-        target.url,
-        organizationId,
       );
   }
   const receipt: SwipeCaptureReceipt = {

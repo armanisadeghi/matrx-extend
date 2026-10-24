@@ -205,8 +205,14 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
       if (savingUrl !== currentUrl) return;
       savingUrl = null;
       const outcome = message.outcome;
-      if (outcome.status === 'failed') showFailure(outcome.reason, outcome.detail);
-      else {
+      if (outcome.status === 'failed') {
+        // The collection exists now: retrying must add to it, never create a second one.
+        if (outcome.detail?.collectionId && lastSave) {
+          lastSave = { t: 'save', url: lastSave.url, collectionId: outcome.detail.collectionId };
+          send({ t: 'list' });
+        }
+        showFailure(outcome.reason, outcome.detail);
+      } else {
         saved = outcome;
         say(
           outcome.status === 'saved' ? 'Saved to collection' : 'Already in collection',

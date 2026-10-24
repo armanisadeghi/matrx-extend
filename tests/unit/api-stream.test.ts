@@ -540,3 +540,28 @@ describe('streamFetch server error events and live runs', () => {
     expect(events[0]).not.toHaveProperty('rejoin');
   });
 });
+
+it('a refused request carries its server request id and the body code, never the body text', async () => {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue(
+      new Response('{"detail":{"code":"social_unsupported","message":"private detail"}}', {
+        status: 422,
+        headers: { 'X-Request-ID': 'req-refused' },
+      }),
+    ),
+  );
+  const events: StreamEvent[] = [];
+  await streamFetch({
+    url: 'https://example.test/stream',
+    headers: {},
+    onEvent: (e) => events.push(e),
+  });
+  const err = events.find((e) => e.type === 'error');
+  expect(err).toMatchObject({
+    status: 422,
+    requestId: 'req-refused',
+    serverCode: 'social_unsupported',
+  });
+  expect(JSON.stringify(err)).not.toContain('private detail');
+});

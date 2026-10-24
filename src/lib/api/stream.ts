@@ -67,8 +67,10 @@ export type StreamEvent =
       rejoin?: StreamRejoinTarget;
       /** Workflow `run_id` a `live_stream_unavailable` answer names (null when none). */
       unavailableRunId?: string | null;
-      /** The server's own `code` on an in-stream `error` event: a diagnostic, never user text. */
+      /** The server's own error `code` (event data or refusal body): a diagnostic, never user text. */
       serverCode?: string;
+      /** `X-Request-ID` of a refused request: the server's own error record carries it. */
+      requestId?: string;
     }
   | { type: 'done' };
 
@@ -162,6 +164,10 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
         },
       }),
       ...(unavailable && { unavailableRunId: unavailable.runId }),
+      ...(res.headers.get('X-Request-ID') && { requestId: res.headers.get('X-Request-ID')! }),
+      // Unclassified refusals only: a known `code` above already names it.
+      ...(code === undefined &&
+        refusalCode(refusal.serverDetail) && { serverCode: refusalCode(refusal.serverDetail)! }),
     });
     opts.onEvent({ type: 'done' });
     return;
@@ -292,6 +298,14 @@ export function streamErrorMessage(status?: number): string {
         ? 'The chat service is temporarily unavailable. Try again.'
         : 'The chat service could not complete this request. Try again.';
   }
+}
+
+/** `code` from a refusal body (`{code}`, `{detail: {code}}` or `{error: {code}}`), never its text. */
+function refusalCode(body: unknown): string | undefined {
+  const at = (v: unknown, k: string) =>
+    v !== null && typeof v === 'object' ? (v as Record<string, unknown>)[k] : undefined;
+  const code = at(body, 'code') ?? at(at(body, 'detail'), 'code') ?? at(at(body, 'error'), 'code');
+  return typeof code === 'string' ? code : undefined;
 }
 
 function parseJsonBody(text: string): unknown {
