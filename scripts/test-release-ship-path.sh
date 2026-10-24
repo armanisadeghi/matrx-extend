@@ -275,7 +275,29 @@ FINISHED_JOBS_SIGNALLED=0
 # the sandbox is deleted on exit, so keep a copy for the failure dump below.
 cp tmp/release-logs/latest.log "$SANDBOX/failed-release.log" 2>/dev/null || true
 FAILED=0
-check() { if eval "$2"; then echo "  ok    $1"; else echo "  FAIL  $1"; FAILED=1; fi; }
+check() {
+  if eval "$2"; then
+    echo "  ok    $1"
+  else
+    echo "  FAIL  $1"
+    FAILED=1
+    if [[ $# -ge 3 ]]; then eval "$3" || true; fi
+  fi
+}
+catchup_failure_diagnostics() {
+  local scenario="$1" status="$2" updates_before="$3" updates_after="$4" base="$5" output="$6"
+  local current origin_advanced=no pushed=no error=no warning=no catchup=no action=no
+  current="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+  [[ "$base" != "$current" ]] && origin_advanced=yes
+  grep -q "  pushed" "$output" && pushed=yes
+  grep -q "^ERROR .*matrx-packages failed" "$output" && error=yes
+  grep -q "RELEASE WARNING" "$output" && warning=yes
+  grep -q "check: matrx-packages catch-up" "$output" && catchup=yes
+  grep -q "@ai-matrx/fixture@1.0.1 Consumer action: delete your local copy" "$output" && action=yes
+  printf '    diagnostic %s: status=%s updates=%s/%s origin_advanced=%s pushed=%s error=%s warning=%s catchup=%s consumer_action=%s\n' \
+    "$scenario" "$status" "$updates_before" "$updates_after" "$origin_advanced" "$pushed" "$error" "$warning" "$catchup" "$action"
+  grep -E '^(ERROR|!!! RELEASE WARNING|!!! check:|.*  pushed|.*Consumer action:)' "$output" | tail -n 12 || true
+}
 check "a stop after finished checks signals no recycled PID" '[[ "${FINISHED_JOBS_SIGNALLED// /}" == 0 ]]'
 # Contention uses a real live owner; fake only sleeping so the old 60s steal
 # fails this guard quickly. Neither missing PID nor stale metadata grants ownership.
@@ -566,13 +588,14 @@ CATCHUP_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
 touch "$SANDBOX/pin-packages"; UPDATES_BEFORE="$(updates)"
 PIN_STATUS=0; run_release catchup-pin-out || PIN_STATUS=$?
 rm -f "$SANDBOX/pin-packages"
-check "PIN is never caught up, reported and released"  '[[ $PIN_STATUS -eq 0 && "$(updates)" == "$UPDATES_BEFORE" && "$CATCHUP_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "  pushed" "$SANDBOX/catchup-pin-out" && grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/catchup-pin-out" && grep -q "RELEASE WARNING" "$SANDBOX/catchup-pin-out"'
+check "PIN is never caught up, reported and released"  '[[ $PIN_STATUS -eq 0 && "$(updates)" == "$UPDATES_BEFORE" && "$CATCHUP_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "  pushed" "$SANDBOX/catchup-pin-out" && grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/catchup-pin-out" && grep -q "RELEASE WARNING" "$SANDBOX/catchup-pin-out"' 'catchup_failure_diagnostics PIN "$PIN_STATUS" "$UPDATES_BEFORE" "$(updates)" "$CATCHUP_BASE" "$SANDBOX/catchup-pin-out"'
 git fetch -q --tags origin 2>/dev/null || true; git_q reset -q --hard origin/main
 CATCHUP_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
 touch "$SANDBOX/stale-packages" "$SANDBOX/changelog-action"
+ACTION_UPDATES_BEFORE="$(updates)"
 ACTION_STATUS=0; run_release catchup-action-out || ACTION_STATUS=$?
 rm -f "$SANDBOX/changelog-action"
-check "a declared Consumer action is reported and the release goes on" '[[ $ACTION_STATUS -eq 0 && "$CATCHUP_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "  pushed" "$SANDBOX/catchup-action-out" && grep -q "check: matrx-packages catch-up" "$SANDBOX/catchup-action-out"'
+check "a declared Consumer action is reported and the release goes on" '[[ $ACTION_STATUS -eq 0 && "$CATCHUP_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "  pushed" "$SANDBOX/catchup-action-out" && grep -q "check: matrx-packages catch-up" "$SANDBOX/catchup-action-out"' 'catchup_failure_diagnostics ACTION "$ACTION_STATUS" "$ACTION_UPDATES_BEFORE" "$(updates)" "$CATCHUP_BASE" "$SANDBOX/catchup-action-out"'
 check "the Consumer action is named"                   'grep -q "@ai-matrx/fixture@1.0.1 Consumer action: delete your local copy" "$SANDBOX/catchup-action-out"'
 git checkout -q -- pnpm-lock.yaml
 git fetch -q --tags origin 2>/dev/null || true; git_q reset -q --hard origin/main
