@@ -16,7 +16,9 @@
  *      anything is written. A menu item that wrote straight to the CRM would
  *      be a capture with no preview, which is the one thing the contract says
  *      a capture must never be.
- *   3. "Open Matrx side panel" — page-context fallback for users who
+ *   3. "Screenshot and mark up" — captures the visible page and opens the
+ *      screenshot editor in a new tab (src/lib/screenshot/shortcuts.ts).
+ *   4. "Open Matrx side panel" — page-context fallback for users who
  *      haven't pinned the action button.
  *
  * Why we ship a context menu at all: the `contextMenus` permission lives
@@ -34,6 +36,7 @@ import {
   openPanel,
   panelOpenRemedy,
 } from '@/lib/panel/adapter';
+import { captureAndEdit } from '@/lib/screenshot/shortcuts';
 import { saveFromMenu } from '@/lib/swipe-file/host';
 import { swipeTargetFromUrl } from '@/lib/swipe-file/urls';
 
@@ -42,6 +45,7 @@ const MENU_ID_OPEN_PANEL = 'matrx.menu.open-panel';
 const MENU_ID_CAPTURE_PROSPECT = 'matrx.menu.capture-prospect';
 const MENU_ID_CAPTURE_STUDY_SET = 'matrx.menu.capture-study-set';
 const MENU_ID_SWIPE_SAVE = 'matrx.menu.swipe-save';
+const MENU_ID_SCREENSHOT_EDIT = 'matrx.menu.screenshot-edit';
 
 /**
  * The drafted instruction behind "Save this site as a prospect". Deliberately
@@ -76,6 +80,10 @@ export function setupContextMenus(): void {
   }
 
   chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+    if (info.menuItemId === MENU_ID_SCREENSHOT_EDIT) {
+      await captureAndEdit(tab, 'visible');
+      return;
+    }
     if (info.menuItemId === MENU_ID_SWIPE_SAVE) {
       // A right-clicked link wins over the page: "save that post" from a feed.
       const url = swipeTargetFromUrl(info.linkUrl)?.url ?? swipeTargetFromUrl(tab?.url)?.url;
@@ -83,7 +91,7 @@ export function setupContextMenus(): void {
       else
         await chrome.notifications?.create(`matrx-swipe-${Date.now()}`, {
           type: 'basic',
-          iconUrl: chrome.runtime.getURL('icon-128.png'),
+          iconUrl: chrome.runtime.getURL('icon/128.png'),
           title: 'Swipe file',
           message: 'Not saved: this is not a post or ad Matrx can save.',
         });
@@ -154,6 +162,11 @@ function registerMenus(): void {
       contexts: ['page', 'link'],
     });
     chrome.contextMenus.create({
+      id: MENU_ID_SCREENSHOT_EDIT,
+      title: 'Screenshot and mark up',
+      contexts: ['page'],
+    });
+    chrome.contextMenus.create({
       id: MENU_ID_OPEN_PANEL,
       title: 'Open Matrx side panel',
       contexts: ['page'],
@@ -194,7 +207,7 @@ async function showPanelOpenRemedy(message: string): Promise<void> {
   try {
     await chrome.notifications?.create('matrx-panel-open-remedy', {
       type: 'basic',
-      iconUrl: chrome.runtime.getURL('icon-128.png'),
+      iconUrl: chrome.runtime.getURL('icon/128.png'),
       title: 'Open Matrx from the toolbar',
       message,
       priority: 1,

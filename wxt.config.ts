@@ -180,6 +180,18 @@ export default defineConfig({
           128: 'icon/128.png',
         },
       },
+      // One-keystroke screenshots (src/lib/screenshot/shortcuts.ts). People can
+      // rebind them at chrome://extensions/shortcuts.
+      commands: {
+        'screenshot-area': {
+          suggested_key: { default: 'Alt+Shift+S' },
+          description: 'Screenshot an area and mark it up',
+        },
+        'screenshot-full-page': {
+          suggested_key: { default: 'Alt+Shift+F' },
+          description: 'Screenshot the full page and mark it up',
+        },
+      },
       icons: {
         16: 'icon/16.png',
         32: 'icon/32.png',

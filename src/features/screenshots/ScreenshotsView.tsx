@@ -25,7 +25,12 @@
  */
 
 import { useBackendConfig } from '@/config/backend';
-import { ENV } from '@/config/env';
+import {
+  fileWebUrl,
+  openOnWebsite,
+  openScreenshotEditor,
+  webImageEditorUrl,
+} from '@/features/screenshots/links';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { downloadFileBytes } from '@/lib/api/routes/files';
 import { confirmDestructive } from '@/lib/destructive/confirm';
@@ -56,19 +61,25 @@ import {
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
+import { copyImage } from '@ai-matrx/kit/clipboard';
+import { downloadUrl } from '@ai-matrx/kit/download';
 import { formatRelativeTime } from '@ai-matrx/kit/format';
-import { withReferral } from '@ai-matrx/kit/outbound';
 import type { MediaClient } from '@ai-matrx/media';
 import { MediaProvider } from '@ai-matrx/media/core';
 import { MediaSharePopover } from '@ai-matrx/media/share';
 import {
   AlertTriangle,
   Camera,
+  Check,
+  Copy,
+  Crop,
+  Download,
   ExternalLink,
   FileImage,
   Globe2,
   ImageOff,
   Loader2,
+  Pencil,
   RefreshCw,
   Share2,
   Trash2,
@@ -78,7 +89,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScreenshotShareLinks } from './ScreenshotShareLinks';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
-type CaptureMode = 'visible' | 'full_page';
+/** `area` captures the viewport and opens the editor on the crop tool. */
+type CaptureMode = 'area' | 'visible' | 'full_page';
+
+interface LastCapture {
+  fileId: string;
+  screenshotId: string;
+}
 
 export function ScreenshotsView() {
   const tab = useActiveTab();
@@ -93,6 +110,8 @@ export function ScreenshotsView() {
   const [captureNotice, setCaptureNotice] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [lastCapture, setLastCapture] = useState<LastCapture | null>(null);
+  const [quickNotice, setQuickNotice] = useState<string | null>(null);
   // Track the URL we last fetched for, so the "tab url change" effect
   // doesn't fire a redundant load while a refresh from the timeline
   // event is still in flight.
@@ -173,13 +192,16 @@ export function ScreenshotsView() {
       setCaptureError(null);
       setPersistWarning(null);
       setCaptureNotice(null);
+      setLastCapture(null);
+      setQuickNotice(null);
       setCapturingMode(mode);
+      const toolMode = mode === 'full_page' ? 'full_page' : 'visible';
       const callId = newId('user-screenshot');
       broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
         callId,
         toolName: 'take_screenshot',
         phase: 'started',
-        args: { capture_source: 'user', mode },
+        args: { capture_source: 'user', mode: toolMode },
       });
       try {
         const initiatingDocument = await readScreenshotDocument(tab.id);
@@ -190,7 +212,7 @@ export function ScreenshotsView() {
             max_dimension: 0,
             persist: true,
             capture_source: 'user',
-            mode,
+            mode: toolMode,
           } as never,
           {
             conversationId: null,
@@ -225,8 +247,17 @@ export function ScreenshotsView() {
           // the gallery didn't refresh with a new card.
           if (!r.screenshot_id || !r.file_id) {
             setPersistWarning('Captured, but could not save. Try again.');
-          } else if (mode === 'full_page' && (r.truncated || r.capture?.truncated)) {
-            setPersistWarning('Page exceeded the 30-screen tile cap; the bottom is cropped.');
+          } else {
+            setLastCapture({ fileId: r.file_id, screenshotId: r.screenshot_id });
+            if (mode === 'area') {
+              openScreenshotEditor({
+                fileId: r.file_id,
+                screenshotId: r.screenshot_id,
+                tool: 'crop',
+              });
+            } else if (mode === 'full_page' && (r.truncated || r.capture?.truncated)) {
+              setPersistWarning('Page exceeded the 30-screen tile cap; the bottom is cropped.');
+            }
           }
           try {
             await assertScreenshotDocument(initiatingDocument);
@@ -388,38 +419,123 @@ export function ScreenshotsView() {
             <span>{deleteError}</span>
           </div>
         )}
+        {lastCapture && !captureError && (
+          <div
+            className="flex items-center gap-1 rounded-md bg-muted/60 px-2 py-1 text-xs"
+            role="status"
+          >
+            <Check className="size-3.5 text-muted-foreground" />
+            <span className="mr-auto">{quickNotice ?? 'Saved'}</span>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 px-2"
+              onClick={() => openScreenshotEditor(lastCapture)}
+            >
+              <Pencil className="size-3" />
+              Edit
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 px-2"
+              onClick={() =>
+                void copyFileImage(lastCapture.fileId).then((ok) =>
+                  setQuickNotice(ok ? 'Copied' : 'Copy was blocked'),
+                )
+              }
+            >
+              <Copy className="size-3" />
+              Copy
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 px-2"
+              onClick={() => openOnWebsite(fileWebUrl(lastCapture.fileId))}
+            >
+              <ExternalLink className="size-3" />
+              Open
+            </Button>
+          </div>
+        )}
         <div className="flex gap-1.5">
-          <Button
-            onClick={() => void captureNow('visible')}
-            disabled={!!capturingMode || !tab.id || !tab.url}
-            className="flex-1 rounded-full"
-            title="Capture the current viewport only"
-          >
-            {capturingMode === 'visible' ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              <Camera className="size-3.5" />
-            )}
-            {capturingMode === 'visible' ? 'Capturing…' : 'Visible'}
-          </Button>
-          <Button
-            onClick={() => void captureNow('full_page')}
-            disabled={!!capturingMode || !tab.id || !tab.url}
-            variant="secondary"
-            className="flex-1 rounded-full"
-            title="Scroll the page top → bottom and stitch every viewport into one tall image"
-          >
-            {capturingMode === 'full_page' ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              <FileImage className="size-3.5" />
-            )}
-            {capturingMode === 'full_page' ? 'Capturing…' : 'Full page'}
-          </Button>
+          <CaptureButton
+            mode="area"
+            capturingMode={capturingMode}
+            disabled={!tab.id || !tab.url}
+            onCapture={captureNow}
+            icon={<Crop className="size-3.5" />}
+            label="Area"
+            title="Capture the screen, then crop and mark it up"
+          />
+          <CaptureButton
+            mode="visible"
+            capturingMode={capturingMode}
+            disabled={!tab.id || !tab.url}
+            onCapture={captureNow}
+            icon={<Camera className="size-3.5" />}
+            label="Visible"
+            title="Capture the current viewport"
+            primary
+          />
+          <CaptureButton
+            mode="full_page"
+            capturingMode={capturingMode}
+            disabled={!tab.id || !tab.url}
+            onCapture={captureNow}
+            icon={<FileImage className="size-3.5" />}
+            label="Full page"
+            title="Scroll the page top to bottom and stitch it into one tall image"
+          />
         </div>
       </div>
     </div>
   );
+}
+
+function CaptureButton({
+  mode,
+  capturingMode,
+  disabled,
+  onCapture,
+  icon,
+  label,
+  title,
+  primary = false,
+}: {
+  mode: CaptureMode;
+  capturingMode: CaptureMode | null;
+  disabled: boolean;
+  onCapture: (mode: CaptureMode) => void | Promise<void>;
+  icon: React.ReactNode;
+  label: string;
+  title: string;
+  primary?: boolean;
+}) {
+  const busy = capturingMode === mode;
+  return (
+    <Button
+      onClick={() => void onCapture(mode)}
+      disabled={!!capturingMode || disabled}
+      variant={primary ? 'default' : 'secondary'}
+      className="flex-1 rounded-full px-2"
+      title={title}
+    >
+      {busy ? <Loader2 className="size-3.5 animate-spin" /> : icon}
+      {busy ? 'Capturing…' : label}
+    </Button>
+  );
+}
+
+/** Copy a stored image to the clipboard (PNG); false when the browser refuses. */
+async function copyFileImage(fileId: string): Promise<boolean> {
+  try {
+    const { blob } = await downloadFileBytes(fileId);
+    return await copyImage(blob);
+  } catch {
+    return false;
+  }
 }
 
 function ScreenshotCard({
@@ -455,11 +571,30 @@ function ScreenshotCard({
       <Camera className="size-3" />
     );
   const sourceLabel = row.source === 'agent' ? 'Agent' : row.source === 'user' ? 'You' : 'Unknown';
-  const canonicalFileUrl = `${ENV.FRONTEND_URL}/files/f/${encodeURIComponent(row.file_id)}`;
-
-  const openFullSize = useCallback(() => {
-    void chrome.tabs.create({ url: withReferral(canonicalFileUrl) });
-  }, [canonicalFileUrl]);
+  const openFullSize = useCallback(() => openOnWebsite(fileWebUrl(row.file_id)), [row.file_id]);
+  const openEditor = useCallback(
+    () => openScreenshotEditor({ fileId: row.file_id, screenshotId: row.id }),
+    [row.file_id, row.id],
+  );
+  const copy = useCallback(async () => {
+    const ok = previewUrl ? await copyImage(previewUrl) : await copyFileImage(row.file_id);
+    setShareNotice(ok ? 'Copied' : 'Copy was blocked. Use Download.');
+  }, [previewUrl, row.file_id]);
+  const download = useCallback(async () => {
+    const name = `screenshot-${row.captured_at.slice(0, 19).replace(/[:T]/g, '-')}.png`;
+    if (previewUrl) {
+      downloadUrl(previewUrl, name);
+      return;
+    }
+    try {
+      const { blob } = await downloadFileBytes(row.file_id);
+      const url = URL.createObjectURL(blob);
+      downloadUrl(url, name);
+      setTimeout(() => URL.revokeObjectURL(url), 1_000);
+    } catch {
+      setShareNotice('Could not download. Try again.');
+    }
+  }, [previewUrl, row.captured_at, row.file_id]);
 
   useEffect(() => {
     let active = true;
@@ -553,21 +688,52 @@ function ScreenshotCard({
           {sourceIcon}
           {sourceLabel}
         </span>
-        <span className="ml-auto truncate text-[10px] text-muted-foreground" title={captured.full}>
+        <span
+          className="ml-auto truncate text-[10px] text-muted-foreground"
+          title={dim ? `${captured.full} · ${dim}` : captured.full}
+        >
           {captured.short}
         </span>
       </div>
-      <div className="flex items-center justify-between gap-1 border-t border-border/50 px-1 py-1">
-        <span className="px-1 text-[10px] text-muted-foreground" title={`${dim ?? ''}`.trim()}>
-          {dim ?? ''}
-        </span>
+      <div className="flex items-center justify-between gap-0.5 border-t border-border/50 px-1 py-1">
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-6 gap-1 px-1.5 text-[11px]"
+          onClick={openEditor}
+          title="Crop and mark up"
+        >
+          <Pencil className="size-3" />
+          Edit
+        </Button>
         <div className="flex items-center gap-0.5">
           <Button
             size="sm"
             variant="ghost"
             className="size-6 p-0 text-muted-foreground"
+            onClick={() => void copy()}
+            title="Copy image"
+            aria-label="Copy image"
+          >
+            <Copy className="size-3" />
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="size-6 p-0 text-muted-foreground"
+            onClick={() => void download()}
+            title="Download"
+            aria-label="Download screenshot"
+          >
+            <Download className="size-3" />
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="size-6 p-0 text-muted-foreground"
             onClick={openFullSize}
-            title="Open in Files"
+            title="Open on website"
+            aria-label="Open on website"
           >
             <ExternalLink className="size-3" />
           </Button>
@@ -642,15 +808,56 @@ function ScreenshotCard({
               <p role="status">{previewFailed ? 'Could not load image.' : 'Loading image…'}</p>
             )}
           </div>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setViewerOpen(false);
-              setManageOpen(true);
-            }}
-          >
-            Share
-          </Button>
+          <div className="flex flex-wrap gap-1.5">
+            <Button
+              className="flex-1"
+              onClick={() => {
+                setViewerOpen(false);
+                openEditor();
+              }}
+            >
+              <Pencil className="size-3.5" />
+              Edit
+            </Button>
+            <Button variant="secondary" className="flex-1" onClick={() => void copy()}>
+              <Copy className="size-3.5" />
+              Copy
+            </Button>
+            <Button variant="secondary" className="flex-1" onClick={() => void download()}>
+              <Download className="size-3.5" />
+              Download
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            <Button variant="secondary" className="flex-1" onClick={openFullSize}>
+              <ExternalLink className="size-3.5" />
+              Open in Files
+            </Button>
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={() => openOnWebsite(webImageEditorUrl(row.file_id))}
+            >
+              <Globe2 className="size-3.5" />
+              Full editor
+            </Button>
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={() => {
+                setViewerOpen(false);
+                setManageOpen(true);
+              }}
+            >
+              <Share2 className="size-3.5" />
+              Share
+            </Button>
+          </div>
+          {shareNotice && (
+            <p role="status" className="text-xs text-muted-foreground">
+              {shareNotice}
+            </p>
+          )}
         </DialogContent>
       </Dialog>
       <ScreenshotShareLinks fileId={row.file_id} open={manageOpen} onOpenChange={setManageOpen} />

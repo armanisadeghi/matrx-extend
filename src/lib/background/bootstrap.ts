@@ -68,6 +68,7 @@ import type { MicRequestPayload, MicRunPayload } from '@/lib/audio/mic-types';
 import type { UserProfile } from '@/lib/auth/types';
 import { clearBrokerCacheOnSignOut, registerBrokerHandlers } from '@/lib/broker/sw-host';
 import { setupContextMenus } from '@/lib/context-menus/setup';
+import { setupScreenshotShortcuts } from '@/lib/screenshot/shortcuts';
 import {
   reconcileCredentialAssistanceActionOnBoot,
   registerCredentialAssistanceStatus,
@@ -270,6 +271,7 @@ export function bootstrapBackground(): void {
   //        the chat draft with the page selection; "Open Matrx side panel"
   //        is a fallback for users who haven't pinned the action button.
   setupContextMenus();
+  setupScreenshotShortcuts();
 
   // ── 8. Pilot session lifecycle (CLAUDE.md roadmap item #9).
   //       Watch for tab / group removal so we can reset the persisted pilot

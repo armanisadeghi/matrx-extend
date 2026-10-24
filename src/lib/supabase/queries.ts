@@ -1306,6 +1306,24 @@ export async function saveScreenshot(p: SaveScreenshotPayload): Promise<{ id: st
   return data as { id: string };
 }
 
+/** One gallery row by id — the editor uses it to save an edit beside the original. */
+export async function fetchScreenshotById(id: string): Promise<ScreenshotRow | null> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_screenshot')
+    .select(
+      'id, page_url_canonical, page_url_full, page_title, file_id, file_url, width, height, mime_type, byte_length, source, captured_at',
+    )
+    .eq('id', id)
+    .maybeSingle();
+  if (error) throw new Error(`fetchScreenshotById: ${error.message}`);
+  if (!data) return null;
+  return (
+    parseRowsSafe(ScreenshotRowSchema, [data] as unknown[], 'fetchScreenshotById').rows[0] ?? null
+  );
+}
+
 export async function fetchScreenshotsForUrl(
   pageUrlCanonical: string,
   limit = 100,

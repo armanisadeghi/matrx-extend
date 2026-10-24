@@ -523,6 +523,29 @@ Every entry follows this shape:
     `table_kind: "aria-grid"`.
   - No table on page → `{ ok: false, reason: "No table found on the page" }`.
 
+### Screenshots tab: capture, edit, share
+- **What it does:** Area / Visible / Full page capture from the Screenshots
+  tab. Area opens the editor on the crop tool. Every card has Edit, Copy,
+  Download and Open on website; the viewer adds Full editor (website) and
+  Share. After any capture a bar offers Edit / Copy / Open. Alt+Shift+S
+  (area) and Alt+Shift+F (full page) capture from any page; right-click →
+  "Screenshot and mark up" captures the visible page.
+- **Where to test:** Screenshots tab; any web page for the shortcuts and the
+  right-click entry; `chrome://extensions/shortcuts` to rebind.
+- **Steps:**
+  1. Click Area. A new tab opens on the crop tool; drag a crop.
+  2. Press O and circle something, A for an arrow, B to blur text, N twice
+     for numbered steps, T to type a label; ⌘Z / ⇧⌘Z undo and redo.
+  3. Press V, drag a mark to move it; pick another color with it selected.
+  4. Click Save (⌘S). Back in the side panel the edited copy appears beside
+     the original.
+  5. Click Copy, paste into a doc; click Download.
+  6. Website → Full image editor opens the saved copy at
+     `/images/edit/<file_id>`; Open in Files opens `/files/f/<file_id>`.
+- **Expected:** saved image is exactly what the canvas showed, at full
+  resolution and cropped size; the original screenshot is unchanged; blur is
+  baked into the saved pixels; unsaved marks make Website save first.
+
 ### screenshot_region
 - **What it does:** Captures a bounded portion of the active viewport;
   same envelope as `take_screenshot` but cropped.
