@@ -74,7 +74,14 @@ export function SaveAsPattern({
   const [savedSummary, setSavedSummary] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
-  const { active: activeOrganization, organizations } = useActiveOrganization();
+  const {
+    active: activeOrganization,
+    organizations,
+    loading: organizationLoading,
+    error: organizationError,
+    mustChoose,
+    reload: reloadOrganizations,
+  } = useActiveOrganization();
   // The picker lists tables across ALL of the person's organizations (active-org law
   // 2026-09-30); the active organization is only where a NEW table is created.
   const { tables, createTable, appendRows } = useUserTables();
@@ -107,18 +114,32 @@ export function SaveAsPattern({
       return;
     }
 
-    // Capture the operation organization at the initiating click. A NEW table is created in the
-    // active organization; an EXISTING table is written in ITS OWN organization. A later
-    // Settings change must not redirect this in-flight dataset create.
+    // Freeze the selected mode, table, and organization at the initiating click. New tables
+    // and patterns without a table require the validated active organization. Existing tables
+    // always use their own listed organization; an absent/stale selection never falls back.
+    const operationTarget = target;
     const chosenTable =
-      target !== NEW_TABLE && target !== NO_TABLE
-        ? tables?.find((t) => t.id === target)
+      operationTarget !== NEW_TABLE && operationTarget !== NO_TABLE
+        ? tables?.find((t) => t.id === operationTarget)
         : undefined;
     let operationOrganizationId: string;
     try {
-      operationOrganizationId = requireOrganizationContext(
-        chosenTable?.organization_id ?? activeOrganization?.id,
-      );
+      if (operationTarget === NEW_TABLE || operationTarget === NO_TABLE) {
+        if (organizationLoading || organizationError) {
+          throw new Error(organizationError ?? 'Waiting for your organization to finish loading.');
+        }
+        operationOrganizationId = requireOrganizationContext(activeOrganization?.id);
+      } else {
+        if (!chosenTable) {
+          throw new Error('The selected dataset is no longer available. Choose it again.');
+        }
+        if (!chosenTable.organization_id) {
+          throw new Error(
+            'The selected dataset has no verified organization. Choose another dataset.',
+          );
+        }
+        operationOrganizationId = requireOrganizationContext(chosenTable.organization_id);
+      }
     } catch (error) {
       setErr(error instanceof Error ? error.message : String(error));
       return;
@@ -141,7 +162,7 @@ export function SaveAsPattern({
 
       if (!isCurrentPageIdentity(resultPageKey.current))
         throw new Error('The page changed before Save. Capture it again.');
-      if (target === NEW_TABLE) {
+      if (operationTarget === NEW_TABLE) {
         // Throws on refusal (the user already saw the reason as a notice);
         // the catch at the bottom of this function renders the same sentence
         // in the popover.
@@ -152,8 +173,8 @@ export function SaveAsPattern({
           fields: inferredFields,
         });
         targetTableId = created.id;
-      } else if (target !== NO_TABLE) {
-        targetTableId = target;
+      } else if (operationTarget !== NO_TABLE) {
+        targetTableId = operationTarget;
         // Load the persisted parent before any linked write. The selected
         // value is only a UI choice; its organization is authoritative here.
         // From whichever store holds it (lane INTEG-CLIENTS): a moved table is a record-store Table.
@@ -202,7 +223,7 @@ export function SaveAsPattern({
         // matching column. Diff against the live schema so dropped columns
         // are reported, not invisible.
         let unmatchedNote = '';
-        if (target !== NEW_TABLE) {
+        if (operationTarget !== NEW_TABLE) {
           const columnKeys = await tableColumnKeys(targetTableId, operationOrganizationId);
           if (columnKeys.length > 0) {
             const declared = new Set(columnKeys);
@@ -246,7 +267,22 @@ export function SaveAsPattern({
     }
   };
 
-  const canSave = host && resultIsCurrent && !saving && (rows.length > 0 || kind === 'manual_css');
+  const selectedExistingTable =
+    target !== NEW_TABLE && target !== NO_TABLE
+      ? tables?.find((table) => table.id === target)
+      : undefined;
+  const activeOrganizationReady =
+    !organizationLoading && !organizationError && Boolean(activeOrganization?.id);
+  const targetOrganizationReady =
+    target === NEW_TABLE || target === NO_TABLE
+      ? activeOrganizationReady
+      : Boolean(selectedExistingTable?.organization_id);
+  const canSave =
+    host &&
+    resultIsCurrent &&
+    !saving &&
+    targetOrganizationReady &&
+    (rows.length > 0 || kind === 'manual_css');
 
   return (
     <>
@@ -351,6 +387,62 @@ export function SaveAsPattern({
               </div>
             </div>
           )}
+
+          {(target === NEW_TABLE || target === NO_TABLE) && organizationLoading && (
+            <output className="text-[11px] text-muted-foreground">
+              Loading your organization…
+            </output>
+          )}
+
+          {(target === NEW_TABLE || target === NO_TABLE) && organizationError && (
+            <div
+              role="alert"
+              className="rounded-lg bg-destructive/10 px-2 py-1 text-[11px] text-destructive"
+            >
+              Could not load your organization: {organizationError}{' '}
+              <button type="button" className="underline" onClick={reloadOrganizations}>
+                Retry
+              </button>
+            </div>
+          )}
+
+          {target !== NEW_TABLE && target !== NO_TABLE && !selectedExistingTable && (
+            <div role="alert" className="text-[11px] text-destructive">
+              The selected dataset is no longer available. Choose it again.
+            </div>
+          )}
+
+          {target !== NEW_TABLE &&
+            target !== NO_TABLE &&
+            selectedExistingTable &&
+            !selectedExistingTable.organization_id && (
+              <div role="alert" className="text-[11px] text-destructive">
+                The selected dataset has no verified organization. Choose another dataset.
+              </div>
+            )}
+
+          {(target === NEW_TABLE || target === NO_TABLE) &&
+            !organizationLoading &&
+            !organizationError &&
+            mustChoose &&
+            organizations.length === 0 && (
+              <div role="alert" className="text-[11px] text-destructive">
+                You do not belong to an organization yet. Create or join one before saving.
+              </div>
+            )}
+
+          {(target === NEW_TABLE || target === NO_TABLE) &&
+            !organizationLoading &&
+            !organizationError &&
+            organizations.length > 0 &&
+            !activeOrganization?.id && (
+              <div role="alert" className="text-[11px] text-destructive">
+                No active organization has been validated yet.{' '}
+                <button type="button" className="underline" onClick={reloadOrganizations}>
+                  Retry
+                </button>
+              </div>
+            )}
 
           {err && (
             <div className="rounded-lg bg-destructive/10 px-2 py-1 text-[11px] text-destructive">

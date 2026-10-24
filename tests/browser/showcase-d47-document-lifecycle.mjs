@@ -500,7 +500,10 @@ try {
               saveObservation.before_click = await readSaveObservation(panel, recipe);
               return saveObservation.before_click;
             },
-            (state) => state?.name_matches === true,
+            (state) =>
+              state?.name_matches === true &&
+              state?.save_button_present === true &&
+              state?.save_button_disabled === false,
           );
           assert.equal(saveObservation.before_click.name_matches, true, 'save_name_not_entered');
           assert.equal(

@@ -142,7 +142,13 @@ describe('SaveAsPattern organization operation boundary', () => {
   });
 
   it('refuses an existing dataset from another organization before any linked write', async () => {
-    mocks.tables = [{ id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', table_name: 'Other org table' }];
+    mocks.tables = [
+      {
+        id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',
+        table_name: 'Other org table',
+        organization_id: ORG_A,
+      },
+    ];
     mocks.tableOrganization.mockResolvedValue(ORG_B);
     const user = userEvent.setup();
     render(<SaveAsPattern kind="manual_css" config={{}} rows={[{ title: 'One' }]} />);
@@ -246,7 +252,11 @@ describe('Showcase preview provenance', () => {
     async ({ previewIndex, editedIndex, expectedDay }) => {
       const user = userEvent.setup();
       mocks.tables = [
-        { id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', table_name: 'Harbor Recovery pickups' },
+        {
+          id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',
+          table_name: 'Harbor Recovery pickups',
+          organization_id: ORG_A,
+        },
       ];
       mocks.tableOrganization.mockResolvedValue(ORG_A);
       render(<TablesTab />);
