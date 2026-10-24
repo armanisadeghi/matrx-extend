@@ -43,7 +43,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 import fixture from './__fixtures__/agx-get-list-full.json';
 
-type Row = (typeof fixture.rows)[number];
+type Row = Omit<(typeof fixture.rows)[number], 'tags'> & { tags: string[] };
 const ROWS: Row[] = fixture.rows;
 const pickerPageRequests: Record<string, unknown>[] = [];
 
@@ -89,14 +89,14 @@ function fixtureClient(): AgentCatalogClient {
     };
     const inArchive = (row: Row) =>
       archive === 'both' || (archive === 'archived' ? row.is_archived : !row.is_archived);
-    const sortKey = (row: Row) => {
+    const sortKey = (row: Row): [number, number, string, string] => {
       const lastUsedAt = (row as Row & { last_used_at?: string }).last_used_at;
       return [
         row.is_favorite ? 0 : 1,
         lastUsedAt ? -Date.parse(lastUsedAt) / 1000 : 1e12,
         row.name.toLowerCase(),
         row.id,
-      ] as const;
+      ];
     };
     const compareKey = (left: ReturnType<typeof sortKey>, right: ReturnType<typeof sortKey>) => {
       for (let index = 0; index < left.length; index += 1) {

@@ -19,8 +19,8 @@ import { confirmDestructive } from '@/lib/destructive/confirm';
 import { type RecordingEntry, useRecordingsStore } from '@/lib/video/recordings-store';
 import { type RecorderStatus, useTabVideoRecorder } from '@/lib/video/useTabVideoRecorder';
 import { Badge, Button, BasicInput as Input } from '@ai-matrx/design-system';
-import { StatusBadge, type StatusBadgeProps } from '@ai-matrx/design-system/controls';
 import { Switch } from '@ai-matrx/design-system';
+import { StatusBadge, type StatusBadgeProps } from '@ai-matrx/design-system/controls';
 import { copyText } from '@ai-matrx/kit/clipboard';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
