@@ -9,7 +9,7 @@
     "macos": 0.062
   },
   "prices_source": "GitHub billing API pricePerUnit (Actions Linux / Windows / macOS 3-core), read 2026-10-11",
-  "total_usd_per_week": 411.87,
+  "total_usd_per_week": 412.80,
   "workflows": {
     "ci.yml": {
       "triggers": ["pull_request", "push", "workflow_dispatch"],
@@ -62,6 +62,22 @@
           "runs_per_week": 289,
           "minutes_per_run": 6.56,
           "usd_per_week": 117.54
+        }
+      }
+    },
+    "auth-navigation-park-macos.yml": {
+      "triggers": ["workflow_dispatch"],
+      "crons": [],
+      "benefit": "One bounded hosted diagnostic isolates post-login web identity parking before extension Settings authentication for frozen development artifact 605.",
+      "owner_reason": "Resolve the known admin web identity parking failure without entering extension auth.",
+      "basis": "one authorized diagnostic at the existing public macos-15-intel rate, hard-bounded to one 15-minute job; maximum 0.93 USD at list price, public runner billed $0.",
+      "usd_per_week": 0.93,
+      "legs": {
+        "macos": {
+          "jobs": ["auth-navigation"],
+          "runs_per_week": 1,
+          "minutes_per_run": 15,
+          "usd_per_week": 0.93
         }
       }
     },

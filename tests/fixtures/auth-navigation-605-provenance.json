@@ -1,0 +1,103 @@
+{
+  "task": "READONLY provenance receipt for Extend development artifact 605",
+  "run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "run_id": 40077251065,
+    "head_sha": "4f8416948fe41fd95fb99cca39085f8ba8edeaba",
+    "event": "workflow_dispatch",
+    "conclusion": "success",
+    "api_capture": {
+      "path": "/tmp/a0e3-extend605-readonly-run.json",
+      "sha256": "a08260c7f330e42ead18642aebc9ece43307fe78c168cd3d22dcb186cff7024c"
+    },
+    "artifact_list_capture": {
+      "path": "/tmp/a0e3-extend605-readonly-artifacts.json",
+      "sha256": "9e6ac1bd95921a387af5c2f4442461851ae0f5b991102fb6e939921017436ec4"
+    }
+  },
+  "artifact": {
+    "id": 12553484865,
+    "name": "matrx-extend-development-test-4f8416948fe41fd95fb99cca39085f8ba8edeaba-40077251065-1",
+    "api_run_id": 40077251065,
+    "api_head_sha": "4f8416948fe41fd95fb99cca39085f8ba8edeaba",
+    "api_branch": "main",
+    "api_created_at": "2026-10-24T08:25:38Z",
+    "api_size_bytes": 49317823,
+    "api_digest": "sha256:e8b78f53c0a9210d5ac5b38d881e3e9d4a74c6cad1918c839fcbbae1830704ff",
+    "download_path": "/tmp/a0e3-extend605-artifact-envelope.zip",
+    "download_sha256": "e8b78f53c0a9210d5ac5b38d881e3e9d4a74c6cad1918c839fcbbae1830704ff",
+    "extracted_path": "/tmp/a0e3-extend605-dev-artifact/",
+    "tree_algorithm": "hashReleaseTree from scripts/sync-unpacked-release.mjs: sorted relative paths, SHA256 over path NUL bytes NUL",
+    "tree_file_count": 2721,
+    "tree_symlinks": 0,
+    "tree_sha256": "b61496f051a09f3f1852ae1dcb58768ac846ac90576160520af3d90cca7d66cc"
+  },
+  "build_receipts": {
+    "ci_build_receipt": {
+      "path": "/tmp/a0e3-extend605-dev-artifact/test-results/ci-build-receipt.json",
+      "sha256": "043af9acbda78fafaecce8db95484cd8d8105ca7b3455812f17a9c63630bc0bb",
+      "kind": "local_dev_unpacked",
+      "publish_state": "not_published",
+      "version": "0.2.605",
+      "tree_sha256": "b61496f051a09f3f1852ae1dcb58768ac846ac90576160520af3d90cca7d66cc"
+    },
+    "ci_build_provenance": {
+      "path": "/tmp/a0e3-extend605-dev-artifact/test-results/ci-build-provenance.json",
+      "sha256": "cd09a59466a9c77c7c8e2f057f6a29b615b858aec948bf1782e47bc382888585",
+      "kind": "ci_development_test",
+      "eligible_store": false,
+      "publish_state": "not_published",
+      "repository": "armanisadeghi/matrx-extend",
+      "workflow": ".github/workflows/ci.yml",
+      "event": "workflow_dispatch",
+      "ref": "refs/heads/main",
+      "source_sha": "4f8416948fe41fd95fb99cca39085f8ba8edeaba",
+      "run_id": 40077251065,
+      "run_attempt": 1,
+      "version": "0.2.605",
+      "expected_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "tree_sha256": "b61496f051a09f3f1852ae1dcb58768ac846ac90576160520af3d90cca7d66cc"
+    },
+    "manifest": {
+      "version": "0.2.605",
+      "name": "Matrx Extend DEV",
+      "key_present": true,
+      "extension_id_derived_from_manifest_key": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "matches_provenance": true
+    }
+  },
+  "save_as_pattern_source_binding": {
+    "artifact_map": "chunks/ShowcaseView-BJgoHjro.js.map",
+    "source_entry": "../../../src/features/showcase/components/SaveAsPattern.tsx",
+    "git_blob": "de1542487ab2e014b51efc497e30d6c3720f644a",
+    "source_sha256": "b11b08399ffb3e437819b9810b5822616383a759575f153dd1b772d1b1e6c07a",
+    "source_bytes": 20476,
+    "separate_git_proof": {
+      "path": "/tmp/a0e3-extend-auth-park/manifest.json",
+      "sha256": "ea8c62734e3c0846486211ff296635d81e68922008313bb64c568d72609dd1ce",
+      "finding": "SaveAsPattern blob de1542487ab2e014b51efc497e30d6c3720f644a is identical across Save V2, accepted 600, and accepted 605 source; organization bootstrap/race tests and use-active-organization source are also identical."
+    }
+  },
+  "workflow_checks_observed": [
+    "scope: success",
+    "checks: success",
+    "resource-guard-integration: success",
+    "source validation: success",
+    "focused acceptance guards: success",
+    "remote admission: success",
+    "typecheck: success",
+    "lint: success",
+    "unit: success",
+    "guest transport observer regression: success",
+    "resource safety regression: success",
+    "development artifact build: success",
+    "provenance record: success",
+    "artifact upload: success",
+    "workflow cost guard: success"
+  ],
+  "limits": [
+    "This proves exact CI artifact identity and source-map inclusion of the reviewed SaveAsPattern source blob.",
+    "No native/browser/UI test was performed in this task.",
+    "This artifact is a development unpacked build, not Store-eligible and not a publication proof."
+  ]
+}

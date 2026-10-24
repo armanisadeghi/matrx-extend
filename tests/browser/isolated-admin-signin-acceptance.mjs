@@ -12,6 +12,11 @@ import { join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
+if (process.env.MATRX_AUTH_NAVIGATION_ONLY === '1') {
+  await import('./auth-navigation-park-only.mjs');
+  process.exit(process.exitCode ?? 0);
+}
+
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'isolated-admin-signin-acceptance.json');
 const RUN_ID = `isolated-admin-signin-${new Date().toISOString().replace(/[:.]/g, '-')}`;

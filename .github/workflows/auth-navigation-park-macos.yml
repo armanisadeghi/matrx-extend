@@ -1,0 +1,132 @@
+name: Frozen 605 auth navigation diagnostic
+run-name: "Auth navigation 605 · ${{ inputs.expected_source_sha }}${{ inputs.requested_by && format(' (by {0})', inputs.requested_by) || '' }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_source_sha:
+        description: Immutable main commit SHA containing this workflow and adapter
+        required: true
+        type: string
+      requested_by:
+        description: "Agent session or lane that asked for this run (ci-spend attribution)"
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  auth-navigation:
+    runs-on: macos-15-intel
+    timeout-minutes: 15
+    concurrency:
+      group: hosted-auth-navigation-park
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Require immutable source and unchanged resource contract
+        shell: bash
+        env:
+          EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          REQUESTED_BY: ${{ inputs.requested_by }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]
+          [[ -n "${REQUESTED_BY//[[:space:]]/}" ]]
+          [[ "$GITHUB_REF" == refs/heads/main ]]
+          [[ "$EXPECTED_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$EXPECTED_SOURCE_SHA" == "$GITHUB_SHA" ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          printf '%s  %s\n' \
+            163c10328fe23994c168a791b51cf98676a613b4a70800253a98f3aafff4a4da scripts/stabilization-resource.mjs \
+            8ab675504bc46198109169ccc4cfc4970a30a0db11a069ec4f44d6e22a772afe docs/stabilization/resource-policy.json \
+            | shasum -a 256 -c -
+          [[ "$(node -p "JSON.parse(require('fs').readFileSync('package.json','utf8')).version")" == 0.2.608 ]]
+
+      - name: Disable indexing on the disposable hosted VM
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RUNNER_ENVIRONMENT" == github-hosted && "$RUNNER_OS" == macOS ]]
+          sudo /usr/bin/mdutil -i off /
+          sudo /usr/bin/mdutil -i off /System/Volumes/Data
+          root_status="$(/usr/bin/mdutil -s /)"
+          data_status="$(/usr/bin/mdutil -s /System/Volumes/Data)"
+          [[ "$root_status" == *"Indexing disabled."* ]]
+          [[ "$data_status" == *"Indexing disabled."* ]]
+
+      - name: Wait for measured package readiness
+        run: node scripts/hosted-resource-readiness.mjs
+
+      - name: Prepare pinned browser driver under the unchanged guard
+        env:
+          MATRX_HOSTED_PHASE: package
+          MATRX_HOSTED_ACCEPTANCE_CASE: guest-chat
+          MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/auth-navigation-profile"
+          node scripts/stabilization-resource.mjs run --run-id "auth-navigation-package-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/auth-navigation-profile" -- node scripts/hosted-guest-acceptance.mjs
+
+      - name: Wait for measured browser readiness
+        run: node scripts/hosted-resource-readiness.mjs
+
+      - name: Prepare pinned Chromium under the unchanged guard
+        env:
+          MATRX_HOSTED_PHASE: browser
+          MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
+        run: |
+          set -euo pipefail
+          node scripts/stabilization-resource.mjs run --run-id "auth-navigation-browser-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/auth-navigation-profile" -- node scripts/hosted-guest-acceptance.mjs
+
+      - name: Wait for measured authentication readiness
+        run: node scripts/hosted-resource-readiness.mjs
+
+      - name: Authenticate and stop before extension settings
+        shell: bash
+        env:
+          MATRX_AUTH_NAVIGATION_ONLY: '1'
+          MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: ${{ secrets.MATRX_PREPARE_ADMIN_CREDENTIALS_JSON }}
+          MATRX_PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-runtime/node_modules/playwright-core/index.mjs
+          MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
+        run: |
+          set -euo pipefail
+          [[ -n "$MATRX_HOSTED_ADMIN_CREDENTIALS_JSON" ]]
+          credentials="$RUNNER_TEMP/auth-navigation-admin-credentials.json"
+          umask 077
+          printf '%s' "$MATRX_HOSTED_ADMIN_CREDENTIALS_JSON" > "$credentials"
+          chmod 600 "$credentials"
+          unset MATRX_HOSTED_ADMIN_CREDENTIALS_JSON
+          export MATRX_AUTH_NAV_CREDENTIALS_FILE="$credentials"
+          trap 'rm -f "$credentials"' EXIT
+          node scripts/stabilization-resource.mjs run --run-id "auth-navigation-park-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/auth-navigation-profile" -- node tests/browser/isolated-admin-signin-acceptance.mjs
+
+      - name: Upload bounded auth navigation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auth-navigation-park-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: ignore
+          path: |
+            test-results/auth-navigation-park-only.json
+            docs/stabilization/resource-journals/auth-navigation-package-${{ github.run_id }}-${{ github.run_attempt }}.jsonl
+            docs/stabilization/resource-journals/auth-navigation-package-${{ github.run_id }}-${{ github.run_attempt }}.pending.jsonl
+            docs/stabilization/resource-journals/auth-navigation-browser-${{ github.run_id }}-${{ github.run_attempt }}.jsonl
+            docs/stabilization/resource-journals/auth-navigation-browser-${{ github.run_id }}-${{ github.run_attempt }}.pending.jsonl
+            docs/stabilization/resource-journals/auth-navigation-park-${{ github.run_id }}-${{ github.run_attempt }}.jsonl
+            docs/stabilization/resource-journals/auth-navigation-park-${{ github.run_id }}-${{ github.run_attempt }}.pending.jsonl
