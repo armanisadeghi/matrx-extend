@@ -13,7 +13,10 @@ const scrape = await readFile(
 );
 function helper(text, installOwnedPanelOpener = () => assert.fail('unexpected injected opener')) {
   const constantsStart = text.indexOf('const WAIT_MS = 100;');
-  const constantsEnd = text.indexOf('export async function nativeCdpStartupDeadlineMs', constantsStart);
+  const constantsEnd = text.indexOf(
+    'export async function nativeCdpStartupDeadlineMs',
+    constantsStart,
+  );
   const waitStart = text.indexOf('const wait = (ms) =>', constantsEnd);
   const waitEnd = text.indexOf('function panelOpenReplyCategory(', waitStart);
   const helperStart = text.indexOf('async function observePanelVisibility(');

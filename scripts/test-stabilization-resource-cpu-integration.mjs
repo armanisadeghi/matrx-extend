@@ -400,7 +400,7 @@ async function runScenario(
       kind === 'noncpu-attribution' ? /unsafe_sample|stop_requested|unsafe_hold/ : /cpu_pending/,
     );
     assert.equal(actions, 0);
-    if (kind === 'attribution-episodes') {
+    if (kind === 'attribution-episodes' || kind === 'attribution-alternation') {
       const nextCpuWatch = async (expectedCode, expectedReasons) => {
         const watch = await stream.next((event) => watchCodes.has(event.code));
         assert.equal(watch.code, expectedCode);
@@ -408,32 +408,45 @@ async function runScenario(
         return watch;
       };
 
-      // A healthy/bad alternation within one pending episode must not start
-      // another snapshot; only full recovery followed by a new spike does.
-      await writeFile(item.cpuPhase, '0.1\n');
-      await nextCpuWatch('RESOURCE_CPU_PENDING', []);
-      await writeFile(item.cpuPhase, '0.88\n');
-      await nextCpuWatch('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY']);
-      await writeFile(item.cpuPhase, '0.1\n');
-      await nextCpuWatch('RESOURCE_CPU_PENDING', []);
-      await nextCpuWatch('RESOURCE_CPU_PENDING', []);
-      await nextCpuWatch('RESOURCE_CPU_RECOVERED', []);
-      assert.equal(await runNativeResourceAction(check, () => ++actions), 1);
+      if (kind === 'attribution-alternation') {
+        // Keep bad/good alternation inside the first pending episode.
+        await writeFile(item.cpuPhase, '0.1\n');
+        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+        await writeFile(item.cpuPhase, '0.88\n');
+        await nextCpuWatch('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY']);
+        await writeFile(item.cpuPhase, '0.1\n');
+        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+        const expired = await stream.next((event) => watchCodes.has(event.code));
+        assert.equal(expired.code, 'RESOURCE_WATCH_UNSAFE');
+        assert.deepEqual(expired.reasons, ['RESOURCE_CPU_CONFIRMATION_EXPIRED']);
+        await assert.rejects(
+          runNativeResourceAction(check, () => ++actions),
+          /unsafe_sample|stop_requested|unsafe_hold/,
+        );
+      } else {
+        // Full recovery before the deadline permits a new CPU episode.
+        await writeFile(item.cpuPhase, '0.1\n');
+        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+        await nextCpuWatch('RESOURCE_CPU_RECOVERED', []);
+        assert.equal(await runNativeResourceAction(check, () => ++actions), 1);
 
-      await writeFile(item.cpuPhase, '0.88\n');
-      await nextCpuWatch('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY']);
-      await assert.rejects(
-        runNativeResourceAction(check, () => ++actions),
-        /cpu_pending/,
-      );
-      await writeFile(item.cpuPhase, '0.1\n');
-      await nextCpuWatch('RESOURCE_CPU_PENDING', []);
-      await nextCpuWatch('RESOURCE_CPU_PENDING', []);
-      await nextCpuWatch('RESOURCE_CPU_RECOVERED', []);
-      assert.equal(await runNativeResourceAction(check, () => ++actions), 2);
-      await writeFile(item.childPhase, 'exit0\n');
-      const job = await stream.next((event) => event.code === 'RESOURCE_JOB_EXIT');
-      assert.equal(job.childExitCode, 0);
+        await writeFile(item.cpuPhase, '0.88\n');
+        await nextCpuWatch('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY']);
+        await assert.rejects(
+          runNativeResourceAction(check, () => ++actions),
+          /cpu_pending/,
+        );
+        await writeFile(item.cpuPhase, '0.1\n');
+        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+        await nextCpuWatch('RESOURCE_CPU_RECOVERED', []);
+        assert.equal(await runNativeResourceAction(check, () => ++actions), 2);
+        await writeFile(item.childPhase, 'exit0\n');
+        const job = await stream.next((event) => event.code === 'RESOURCE_JOB_EXIT');
+        assert.equal(job.childExitCode, 0);
+      }
     } else if (
       [
         'recovered',
@@ -545,6 +558,7 @@ async function runScenario(
         'completion-expired',
         'completion-memory-unsafe',
         'noncpu-attribution',
+        'attribution-alternation',
       ].includes(kind)
     ) {
       assert(journal.some((event) => event.code === 'RESOURCE_STOP_AT_SAFE_BOUNDARY'));
@@ -570,6 +584,18 @@ async function runScenario(
       const attribution = journal.filter((event) => event.code === 'RESOURCE_PROCESS_ATTRIBUTION');
       assert.equal(attribution.length, 2);
       assert(attribution.every((event) => event.processes?.[0]?.executable === 'fixture-worker'));
+    }
+    if (kind === 'attribution-alternation') {
+      const attribution = journal.filter((event) => event.code === 'RESOURCE_PROCESS_ATTRIBUTION');
+      assert.equal(attribution.length, 1);
+      assert.equal(attribution[0]?.processes?.[0]?.executable, 'fixture-worker');
+      assert(
+        journal.some(
+          (event) =>
+            event.code === 'RESOURCE_WATCH_UNSAFE' &&
+            event.reasons?.includes('RESOURCE_CPU_CONFIRMATION_EXPIRED'),
+        ),
+      );
     }
     if (kind === 'noncpu-attribution') {
       const attribution = journal.filter((event) => event.code === 'RESOURCE_PROCESS_ATTRIBUTION');
@@ -746,10 +772,18 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
 registerWatchScenarioTests();
 
 test(
-  'process attribution runs once per new CPU episode and not for pending-watch alternation',
+  'process attribution runs once per recovered CPU episode',
   { timeout: 30_000 },
   async () => {
     await runScenarioGroup(['attribution-episodes']);
+  },
+);
+
+test(
+  'pending-watch alternation stays within one bounded CPU episode',
+  { timeout: 30_000 },
+  async () => {
+    await runScenarioGroup(['attribution-alternation']);
   },
 );
 
