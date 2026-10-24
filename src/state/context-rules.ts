@@ -368,7 +368,7 @@ export function isContextReceiptData(data: unknown): data is ContextReceiptData 
   );
 }
 
-/** Store a run's receipt and run the expected-vs-actual check; mismatches are loud. */
+/** Store a run's receipt and run the expected-vs-actual check; mismatches are silent: they go to the error queue only, never to the person. */
 export function recordContextReceipt(
   runId: string,
   conversationId: string | null,
