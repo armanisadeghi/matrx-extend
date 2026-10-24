@@ -235,11 +235,7 @@ test('in-memory omitted work and constant preservation fail the actual setup sea
   const to = source.indexOf('async function sidePanelContexts(', from);
   const constant = `${source.slice(0, from)}async function activateOwnedSidePanel() {}\n${source.slice(to)}`;
   await assert.rejects(() => exercise(constant, 'hidden'), /exact panel became hidden/);
-  const unconditional = replaceOnce(
-    source,
-    "if (visibility.visibility === 'visible') return;",
-    '',
-  );
+  const unconditional = replaceOnce(source, "if (visibility.visibility === 'visible') return;", '');
   await assert.rejects(() => exercise(unconditional, 'visible'), /exact panel became hidden/);
 });
 
