@@ -53,7 +53,7 @@ jobs:
             163c10328fe23994c168a791b51cf98676a613b4a70800253a98f3aafff4a4da scripts/stabilization-resource.mjs \
             8ab675504bc46198109169ccc4cfc4970a30a0db11a069ec4f44d6e22a772afe docs/stabilization/resource-policy.json \
             | shasum -a 256 -c -
-          [[ "$(node -p "JSON.parse(require('fs').readFileSync('package.json','utf8')).version")" == 0.2.608 ]]
+          [[ "$(node -p "JSON.parse(require('fs').readFileSync('package.json','utf8')).version")" == 0.2.609 ]]
 
       - name: Disable indexing on the disposable hosted VM
         shell: bash
