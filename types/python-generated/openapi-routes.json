@@ -732,6 +732,9 @@
    "application/json"
   ]
  },
+ "/agent-tests/runs/{run_id}": {
+  "delete": []
+ },
  "/agent-tests/runs/{run_id}/cancel": {
   "post": []
  },
@@ -1443,6 +1446,29 @@
  },
  "/axiom/public/status": {
   "get": []
+ },
+ "/background-work/conversations/{conversation_id}": {
+  "get": []
+ },
+ "/background-work/conversations/{conversation_id}/cancel": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/background-work/conversations/{conversation_id}/pause": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/background-work/conversations/{conversation_id}/resume": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/background-work/conversations/{conversation_id}/stop": {
+  "post": [
+   "application/json"
+  ]
  },
  "/ballpark/public/status": {
   "get": []
@@ -5928,6 +5954,9 @@
   ],
   "get": []
  },
+ "/notion-import/workspace/current": {
+  "get": []
+ },
  "/notion-import/workspace/start": {
   "post": [
    "application/json"
@@ -7281,7 +7310,8 @@
   "get": []
  },
  "/runs/{run_id}": {
-  "get": []
+  "get": [],
+  "delete": []
  },
  "/runs/{run_id}/cancel": {
   "post": []
@@ -9952,6 +9982,9 @@
   "post": [
    "application/json"
   ]
+ },
+ "/vault/organization-items": {
+  "get": []
  },
  "/vault/organizations/{organization_id}/member-access": {
   "get": []

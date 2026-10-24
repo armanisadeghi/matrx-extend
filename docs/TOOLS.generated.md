@@ -7,7 +7,7 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-10-23T10:16:55.833Z
+Generated: 2026-10-24T00:07:15.940Z
 Total tools: 83
 
 ## ai
@@ -722,7 +722,7 @@ Actions:
 - guide: arguments and examples for any action
 record_write cells from Notion: file {"url"}, person {"email", "name"}, link {"match", "keys"}.
 One call per intent, never one per field or row: {"action": "table_propose", "args": {"name": "Field Crews", "fields": [{"name": "region", "type": "text"}, {"name": "day rate", "type": "currency"}]}}; {"action": "record_write", "args": {"table_id": "<id>", "records": [{"region": "North", "day_rate": 1200}, {...}]}}; {"action": "record_read", "args": {"table_id": "<id>"}}.
-Reads span every organization the person belongs to. Tell the person `where.say` exactly. If an answer says `awaiting_approval`, name the change in ONE sentence ("The caption for <post> is waiting for your approval.") and stop; you are told when they decide.
+Reads span every organization the person belongs to. Say the `where.say` sentence, never its field name. If an answer says `awaiting_approval`, name the change in ONE sentence ("The caption for <post> is waiting for your approval.") and stop.
 
 **Parameters:** `args` (object); `action` (string, required) = ["table_list","metadata_search","record_read","record_aggregate","record_write","record_delete","record_history","record_restore_version","field_propose","table_propose","form_propose","booking_propose","import_propose","dashboard_propose","pipeline_propose","document_propose","checklist_propose","capture_propose","enrich_propose","notion_sync","data_sync","portal_propose","signature_request","subscription_propose","entity_read","entity_write","page_write","view_propose","template_propose","field_convert","guide"]
 
