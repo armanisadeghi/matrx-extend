@@ -31,12 +31,119 @@ const safeReasonCodes = new Set([
   'RESOURCE_SWAP_GROWTH',
   'RESOURCE_CPU_CONFIRMATION_EXPIRED',
 ]);
+const safeEventCodes = new Set([
+  ...watchCodes,
+  ...safeReasonCodes,
+  'RESOURCE_ADMITTED',
+  'RESOURCE_BROWSER_LEASE_RETIRED',
+  'RESOURCE_BROWSER_OPERATOR_STOP_REQUIRED',
+  'RESOURCE_BROWSER_STOP_CONFIRMED',
+  'RESOURCE_COMPLETION_RECOVERY_PENDING',
+  'RESOURCE_FINAL_DECISION',
+  'RESOURCE_GROUP_ESCALATED',
+  'RESOURCE_GROUP_STILL_RUNNING',
+  'RESOURCE_GROUP_STOP_REQUESTED',
+  'RESOURCE_GROUP_UNCONFIRMED',
+  'RESOURCE_JOB_EXIT',
+  'RESOURCE_JOURNAL_OPENED',
+  'RESOURCE_MEASUREMENT_FAILED',
+  'RESOURCE_MEASUREMENT_INVALID',
+  'RESOURCE_OWNED_PROCESS_STILL_RUNNING',
+  'RESOURCE_OWNER_CHANGED',
+  'RESOURCE_PROCESS_ATTRIBUTION',
+  'RESOURCE_RECOVERY_SAMPLES_READY',
+  'RESOURCE_SAFETY_STATE_WRITE_FAILED',
+  'RESOURCE_STARTUP_INTERVAL_BRACKET',
+  'RESOURCE_STOP_AT_SAFE_BOUNDARY',
+  'RESOURCE_STOP_REQUESTED',
+  'RESOURCE_UNSAFE_HOLD',
+]);
 
 function diagnosticReasonCode(reason) {
   if (safeReasonCodes.has(reason)) return reason;
   if (typeof reason === 'string' && reason.startsWith('RESOURCE_MEASUREMENT_FAILED:'))
     return 'RESOURCE_MEASUREMENT_FAILED';
   return 'RESOURCE_REASON_OTHER';
+}
+
+const safeDiagnosticStages = new Set([
+  'watchdog_group_stop',
+  'owned_process_census',
+  'final_group_check',
+  'attribution_settle',
+  'lease_release',
+]);
+const safeDiagnosticResourceCodes = new Set([
+  'RESOURCE_GROUP_UNCONFIRMED',
+  'RESOURCE_GROUP_STILL_RUNNING',
+  'RESOURCE_MEASUREMENT_FAILED',
+  'RESOURCE_MEASUREMENT_INVALID',
+  'RESOURCE_OWNER_CHANGED',
+  'RESOURCE_OWNED_PROCESS_STILL_RUNNING',
+]);
+const safeDiagnosticOsCodes = new Set([
+  'EACCES',
+  'EBUSY',
+  'EIO',
+  'EINVAL',
+  'EPIPE',
+  'ETIMEDOUT',
+  'ENOENT',
+  'ENOTEMPTY',
+  'EPERM',
+  'ESRCH',
+]);
+const safeDiagnosticErrorNames = new Set(['Error', 'TypeError', 'RangeError', 'SystemError']);
+const safeDiagnosticStderrCodes = new Set([
+  'RESOURCE_GROUP_STOP_REQUESTED',
+  'RESOURCE_GROUP_ESCALATED',
+  'RESOURCE_JOURNAL_WRITE_FAILED',
+  'RESOURCE_SAFETY_STATE_WRITE_FAILED',
+]);
+
+function safeStderrSummary(stderr) {
+  const codes = stderr.match(/RESOURCE_[A-Z0-9_]+/g) ?? [];
+  return [...new Set(codes.filter((code) => safeDiagnosticStderrCodes.has(code)))];
+}
+
+function safeFailureSummary(event) {
+  if (!event || event.code !== 'RESOURCE_MEASUREMENT_FAILED') return null;
+  const summary = event.syntheticDiagnostic;
+  if (!summary || typeof summary !== 'object') return { stage: 'unknown', errorClass: 'unknown' };
+  return {
+    stage: safeDiagnosticStages.has(summary.stage) ? summary.stage : 'unknown',
+    errorClass: safeDiagnosticErrorNames.has(summary.errorClass) ? summary.errorClass : 'Other',
+    ...(safeDiagnosticResourceCodes.has(summary.resourceCode) && {
+      resourceCode: summary.resourceCode,
+    }),
+    ...(safeDiagnosticOsCodes.has(summary.osCode) && { osCode: summary.osCode }),
+    ...(Number.isInteger(summary.commandExitCode) &&
+      summary.commandExitCode >= 0 &&
+      summary.commandExitCode <= 255 && {
+        commandExitCode: summary.commandExitCode,
+      }),
+    ...(summary.commandKind === 'ps' || summary.commandKind === 'sysctl'
+      ? { commandKind: summary.commandKind }
+      : {}),
+  };
+}
+
+function safeEventSummary(event) {
+  return {
+    code: safeEventCodes.has(event?.code) ? event.code : 'OTHER_EVENT',
+    ...(Array.isArray(event?.reasons) && {
+      reasons: [...new Set(event.reasons.slice(0, 10).map(diagnosticReasonCode))],
+    }),
+    ...((event?.childExitCode === null ||
+      (Number.isInteger(event?.childExitCode) &&
+        event.childExitCode >= 0 &&
+        event.childExitCode <= 255)) && {
+      childExitCode: event.childExitCode,
+    }),
+    ...(safeFailureSummary(event) && {
+      failure: safeFailureSummary(event),
+    }),
+  };
 }
 
 async function fixture({
@@ -58,6 +165,85 @@ async function fixture({
   await setHealthyHostMeasurements(scripts);
   const guardPath = join(scripts, 'stabilization-resource.mjs');
   let guardSource = await readFile(guardPath, 'utf8');
+  const diagnosticDeclaration = 'let startupBracket;';
+  assert.equal(guardSource.split(diagnosticDeclaration).length, 2);
+  guardSource = guardSource.replace(
+    diagnosticDeclaration,
+    `${diagnosticDeclaration}
+let syntheticFinalizationStage = 'watch';
+let syntheticFailureStage = null;
+const syntheticAtStage = async (stage, operation) => {
+  syntheticFinalizationStage = stage;
+  try {
+    return await operation();
+  } catch (error) {
+    syntheticFailureStage = stage;
+    throw error;
+  }
+};
+const syntheticFailureSummary = (error) => {
+  const message = typeof error?.message === 'string' ? error.message : '';
+  const resourceMatch = message.match(/^(RESOURCE_[A-Z0-9_]+)/);
+  const resourceCodes = new Set(${JSON.stringify([...safeDiagnosticResourceCodes])});
+  const osCodes = new Set(${JSON.stringify([...safeDiagnosticOsCodes])});
+  const errorNames = new Set(['Error', 'TypeError', 'RangeError', 'SystemError']);
+  const errorName = error && typeof error.name === 'string' ? error.name : '';
+  const commandKind = message.startsWith('Command failed: /bin/ps ')
+    ? 'ps'
+    : message.startsWith('Command failed: /usr/sbin/sysctl ')
+      ? 'sysctl'
+      : null;
+  return {
+    stage: syntheticFailureStage ?? syntheticFinalizationStage,
+    errorClass: errorNames.has(errorName) ? errorName : 'Other',
+    ...(resourceMatch && resourceCodes.has(resourceMatch[1]) && { resourceCode: resourceMatch[1] }),
+    ...(osCodes.has(error?.code) && { osCode: error.code }),
+    ...(Number.isInteger(error?.code) && error.code >= 0 && error.code <= 255 && {
+      commandExitCode: error.code,
+    }),
+    ...(commandKind && { commandKind }),
+  };
+};
+`,
+  );
+  const instrumentFinalization = (before, after) => {
+    assert.equal(guardSource.split(before).length, 2);
+    guardSource = guardSource.replace(before, after);
+  };
+  instrumentFinalization(
+    "if (groupId && !(await stopOwnedGroup(groupId, runId, 'watchdog')))",
+    "if (groupId && !(await syntheticAtStage('watchdog_group_stop', () => " +
+      "stopOwnedGroup(groupId, runId, 'watchdog'))))",
+  );
+  instrumentFinalization(
+    'if (owner.ownership && !(await stopOwnedProcesses(owner))) {',
+    [
+      "if (owner.ownership && !(await syntheticAtStage('owned_process_census', async () => {",
+      '    const stopped = await stopOwnedProcesses(owner);',
+      "    if (runId.includes('noncpu-attribution-cleanup-error'))",
+      "      throw Object.assign(new Error('synthetic cleanup diagnostic'), { code: 'EIO' });",
+      '    return stopped;',
+      '  }))) {',
+    ].join('\n'),
+  );
+  instrumentFinalization(
+    '} else if (groupId && !(await groupGone(groupId))) {',
+    "} else if (groupId && !(await syntheticAtStage('final_group_check', () => " +
+      'groupGone(groupId)))) {',
+  );
+  instrumentFinalization(
+    'if (attributionPending.size) await Promise.allSettled([...attributionPending]);',
+    "if (attributionPending.size) await syntheticAtStage('attribution_settle', () => " +
+      'Promise.allSettled([...attributionPending]));',
+  );
+  instrumentFinalization(
+    '      await release(owner);',
+    "      await syntheticAtStage('lease_release', () => release(owner));",
+  );
+  instrumentFinalization(
+    '        detail: error.message,',
+    '        syntheticDiagnostic: syntheticFailureSummary(error),\n        detail: error.message,',
+  );
   const healthyMemory = "Promise.resolve('System-wide memory free percentage: 80%'),";
   assert.equal(guardSource.split(healthyMemory).length, 2);
   guardSource = guardSource.replace(
@@ -226,16 +412,21 @@ function observe(child, onEvent) {
           const event = events[consumed++];
           if (predicate(event)) return event;
         }
-        if (child.exitCode !== null)
+        if (child.exitCode !== null) {
+          const eventSummary = JSON.stringify(events.map(safeEventSummary));
+          const stderrCodes = JSON.stringify(safeStderrSummary(stderr));
           throw new Error(
-            `guard exited before expected event: ${stderr} ${JSON.stringify(events)}`,
+            `guard exited before expected event: ${eventSummary}; stderrCodes=${stderrCodes}`,
           );
+        }
         await new Promise((done) => setTimeout(done, 10));
       }
-      throw new Error(`guard event timeout: ${stderr}`);
+      throw new Error(
+        `guard event timeout; stderrCodes=${JSON.stringify(safeStderrSummary(stderr))}`,
+      );
     },
     get stderr() {
-      return stderr;
+      return JSON.stringify(safeStderrSummary(stderr));
     },
   };
 }
@@ -248,6 +439,7 @@ function scenarioDiagnostic(kind, groupStartedAt) {
   let child = null;
   let childClosed = false;
   let cleanup = 'not_started';
+  let failure = null;
   const report = (point) => {
     console.error(
       `resource-cpu-scenario ${JSON.stringify({
@@ -257,6 +449,7 @@ function scenarioDiagnostic(kind, groupStartedAt) {
         groupElapsedMs: elapsedMs(groupStartedAt),
         stage,
         lastGuardEvent,
+        failure,
         child: child
           ? {
               pid: child.pid ?? null,
@@ -290,13 +483,8 @@ function scenarioDiagnostic(kind, groupStartedAt) {
       cleanup = value;
     },
     onEvent: (event) => {
-      lastGuardEvent = {
-        code: event.code,
-        ...(Array.isArray(event.reasons) && {
-          reasons: [...new Set(event.reasons.slice(0, 10).map(diagnosticReasonCode))],
-        }),
-        ...(event.childExitCode !== undefined && { childExitCode: event.childExitCode }),
-      };
+      failure = safeFailureSummary(event) ?? failure;
+      lastGuardEvent = safeEventSummary(event);
       report('guard_event');
     },
   };
@@ -380,7 +568,7 @@ async function runScenario(
     const check = () =>
       requireNativeResourceHealth({ repo: item.scratch, leaseRoot: item.leaseRoot, env });
     let actions = 0;
-    if (kind === 'noncpu-attribution') {
+    if (kind.startsWith('noncpu-attribution')) {
       await writeFile(item.memoryPhase, '10\n');
     } else {
       await writeFile(item.cpuPhase, '0.88\n');
@@ -388,16 +576,18 @@ async function runScenario(
     const first = await stream.next((event) => watchCodes.has(event.code));
     assert.equal(
       first.code,
-      kind === 'noncpu-attribution' ? 'RESOURCE_WATCH_UNSAFE' : 'RESOURCE_CPU_PENDING',
+      kind.startsWith('noncpu-attribution') ? 'RESOURCE_WATCH_UNSAFE' : 'RESOURCE_CPU_PENDING',
       `first watch must block: ${JSON.stringify(first)}`,
     );
     assert.deepEqual(
       first.reasons,
-      kind === 'noncpu-attribution' ? ['RESOURCE_MEMORY_LOW'] : ['RESOURCE_CPU_BUSY'],
+      kind.startsWith('noncpu-attribution') ? ['RESOURCE_MEMORY_LOW'] : ['RESOURCE_CPU_BUSY'],
     );
     await assert.rejects(
       runNativeResourceAction(check, () => ++actions),
-      kind === 'noncpu-attribution' ? /unsafe_sample|stop_requested|unsafe_hold/ : /cpu_pending/,
+      kind.startsWith('noncpu-attribution')
+        ? /unsafe_sample|stop_requested|unsafe_hold/
+        : /cpu_pending/,
     );
     assert.equal(actions, 0);
     if (kind === 'attribution-episodes' || kind === 'attribution-alternation') {
@@ -522,6 +712,19 @@ async function runScenario(
         runNativeResourceAction(check, () => ++actions),
         /unsafe_sample|stop_requested|unsafe_hold/,
       );
+    } else if (kind.startsWith('noncpu-attribution')) {
+      if (kind === 'noncpu-attribution-cleanup-error') {
+        const stop = await stream.next((event) => event.code === 'RESOURCE_STOP_AT_SAFE_BOUNDARY');
+        assert.deepEqual(stop.reasons, ['RESOURCE_MEMORY_LOW']);
+        const failure = await stream.next((event) => event.code === 'RESOURCE_MEASUREMENT_FAILED');
+        assert.deepEqual(failure.syntheticDiagnostic, {
+          stage: 'owned_process_census',
+          errorClass: 'Error',
+          osCode: 'EIO',
+        });
+      } else {
+        await writeFile(item.childPhase, 'exit0\n');
+      }
     } else {
       await writeFile(
         item.childPhase,
@@ -558,6 +761,7 @@ async function runScenario(
         'completion-expired',
         'completion-memory-unsafe',
         'noncpu-attribution',
+        'noncpu-attribution-cleanup-error',
         'attribution-alternation',
       ].includes(kind)
     ) {
@@ -597,10 +801,26 @@ async function runScenario(
         ),
       );
     }
-    if (kind === 'noncpu-attribution') {
+    if (kind.startsWith('noncpu-attribution')) {
       const attribution = journal.filter((event) => event.code === 'RESOURCE_PROCESS_ATTRIBUTION');
       assert.equal(attribution.length, 1);
       assert.equal(attribution[0]?.processes?.[0]?.executable, 'fixture-worker');
+      if (kind === 'noncpu-attribution-cleanup-error') {
+        const failure = journal.find((event) => event.code === 'RESOURCE_MEASUREMENT_FAILED');
+        assert.equal(failure?.code, 'RESOURCE_MEASUREMENT_FAILED');
+        assert.equal(failure?.runId, runId);
+        assert.equal(Object.hasOwn(failure ?? {}, 'syntheticDiagnostic'), false);
+        const retainedOwner = JSON.parse(
+          await readFile(join(item.leaseRoot, 'heavy/owner.json'), 'utf8'),
+        );
+        assert.equal(retainedOwner.nonce, owner.nonce);
+        assert.equal(retainedOwner.runId, runId);
+      } else {
+        assert.equal(
+          journal.some((event) => event.code === 'RESOURCE_MEASUREMENT_FAILED'),
+          false,
+        );
+      }
     }
     if (item.simulateAttributionError) {
       const attribution = journal.filter((event) => event.code === 'RESOURCE_PROCESS_ATTRIBUTION');
@@ -646,6 +866,7 @@ const watchScenarioKinds = [
   'completion-expired',
   'completion-memory-unsafe',
   'noncpu-attribution',
+  'noncpu-attribution-cleanup-error',
 ];
 
 function registerWatchScenarioTests(register = test, run = runScenario) {
@@ -680,6 +901,7 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
         'actual guard watch journal: completion-expired',
         'actual guard watch journal: completion-memory-unsafe',
         'actual guard watch journal: noncpu-attribution',
+        'actual guard watch journal: noncpu-attribution-cleanup-error',
       ],
     );
     assert(cases.values().every(({ options }) => options.timeout === 30_000));
@@ -714,7 +936,16 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
       second.stop();
       const third = scenarioDiagnostic('measurement-error', groupStartedAt);
       third.onEvent({
-        code: 'RESOURCE_WATCH_UNSAFE',
+        code: 'RESOURCE_MEASUREMENT_FAILED',
+        syntheticDiagnostic: {
+          stage: '/private/tmp/fixture/path-with-token',
+          errorClass: 'SecretErrorName',
+          resourceCode: 'RESOURCE_PRIVATE_TOKEN',
+          osCode: 'PRIVATE_OS_CODE',
+          commandKind: '/private/tmp/ps --token=fixture-secret',
+          commandExitCode: 'PRIVATE_COMMAND_CODE',
+          detail: 'pid=99123 private token /private/tmp/fixture/path',
+        },
         reasons: [
           "RESOURCE_MEASUREMENT_FAILED:ENOENT: open '/private/tmp/resource-cpu-wrapper-secret/cpu-phase'",
           'RESOURCE_FUTURE:--secret-token=fixture-private',
@@ -723,15 +954,24 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
       third.setCleanup('failed');
       third.report('end');
       third.stop();
+      const fourth = scenarioDiagnostic('hostile-child-event', groupStartedAt);
+      fourth.onEvent({
+        code: 'RESOURCE_PRIVATE_TOKEN',
+        childExitCode: 'pid=99123 token=private',
+        reasons: ['RESOURCE_PRIVATE_TOKEN'],
+      });
+      fourth.report('end');
+      fourth.stop();
     } finally {
       console.error = originalError;
     }
     const entries = lines.map((line) => JSON.parse(line.slice('resource-cpu-scenario '.length)));
     const ends = entries.filter((entry) => entry.point === 'end');
     assert.deepEqual(
-      ends.map(({ kind, lastGuardEvent, child, cleanup }) => ({
+      ends.map(({ kind, lastGuardEvent, failure, child, cleanup }) => ({
         kind,
         lastGuardEvent,
+        failure,
         child,
         cleanup,
       })),
@@ -739,6 +979,7 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
         {
           kind: 'recovered',
           lastGuardEvent: { code: 'RESOURCE_CPU_RECOVERED', reasons: [] },
+          failure: null,
           child: { pid: 123, exitCode: null, signalCode: null, closed: true },
           cleanup: 'done',
         },
@@ -748,36 +989,48 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
             code: 'RESOURCE_WATCH_UNSAFE',
             reasons: ['RESOURCE_CPU_CONFIRMATION_EXPIRED'],
           },
+          failure: null,
           child: null,
           cleanup: 'unavailable',
         },
         {
           kind: 'measurement-error',
           lastGuardEvent: {
-            code: 'RESOURCE_WATCH_UNSAFE',
+            code: 'RESOURCE_MEASUREMENT_FAILED',
             reasons: ['RESOURCE_MEASUREMENT_FAILED', 'RESOURCE_REASON_OTHER'],
+            failure: { stage: 'unknown', errorClass: 'Other' },
           },
+          failure: { stage: 'unknown', errorClass: 'Other' },
           child: null,
           cleanup: 'failed',
+        },
+        {
+          kind: 'hostile-child-event',
+          lastGuardEvent: { code: 'OTHER_EVENT', reasons: ['RESOURCE_REASON_OTHER'] },
+          failure: null,
+          child: null,
+          cleanup: 'not_started',
         },
       ],
     );
     assert(!lines.join('\n').includes('/private/tmp/resource-cpu-wrapper-secret/cpu-phase'));
     assert(!lines.join('\n').includes('--secret-token=fixture-private'));
+    assert(!lines.join('\n').includes('PRIVATE_OS_CODE'));
+    assert(!lines.join('\n').includes('fixture-secret'));
+    assert(!lines.join('\n').includes('99123'));
+    assert(!lines.join('\n').includes('SecretErrorName'));
+    assert(!lines.join('\n').includes('PRIVATE_TOKEN'));
+    assert(!lines.join('\n').includes('pid=99123'));
     assert(entries.every(({ elapsedMs, groupElapsedMs }) => elapsedMs >= 0 && groupElapsedMs >= 0));
-    assert.equal(entries.filter(({ point }) => point === 'guard_event').length, 3);
+    assert.equal(entries.filter(({ point }) => point === 'guard_event').length, 4);
   });
 }
 
 registerWatchScenarioTests();
 
-test(
-  'process attribution runs once per recovered CPU episode',
-  { timeout: 30_000 },
-  async () => {
-    await runScenarioGroup(['attribution-episodes']);
-  },
-);
+test('process attribution runs once per recovered CPU episode', { timeout: 30_000 }, async () => {
+  await runScenarioGroup(['attribution-episodes']);
+});
 
 test(
   'pending-watch alternation stays within one bounded CPU episode',

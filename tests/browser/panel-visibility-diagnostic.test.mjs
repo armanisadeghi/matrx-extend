@@ -34,9 +34,20 @@ ${between(source, 'async function observePanelVisibility(', 'async function side
   )();
 }
 
+function replaceOnce(source, statement, replacement) {
+  const occurrences = source.split(statement).length - 1;
+  assert.equal(occurrences, 1, `mutation target must occur exactly once: ${statement}`);
+  return source.replace(statement, replacement);
+}
+
 function omitOnce(source, statement) {
-  assert.ok(source.includes(statement), `mutation target missing: ${statement}`);
-  return source.replace(statement, '');
+  return replaceOnce(source, statement, '');
+}
+
+function replaceExpectedCount(source, statement, replacement, expectedCount) {
+  const occurrences = source.split(statement).length - 1;
+  assert.equal(occurrences, expectedCount, `mutation target count changed: ${statement}`);
+  return source.replaceAll(statement, replacement);
 }
 
 // SUT owns measurement expression, failure reduction and checkpoint orchestration.
@@ -280,17 +291,20 @@ test('in-memory mutations cannot omit checkpoints or manufacture successful meas
       scrapeSource,
     ],
     [
-      omitOnce(harnessSource, "await observeVisibility('after_initial_screenshots');"),
+      omitOnce(
+        harnessSource,
+        "await (resourceAction ?? ((action) => action()))(() =>\n      observeVisibility('after_initial_screenshots'),\n    );",
+      ),
       scrapeSource,
     ],
     ...['before_reopen', 'after_trusted_open', 'after_target_activation'].map((phase) => [
-      omitOnce(harnessSource, `await observe('${phase}');`),
+      omitOnce(harnessSource, `await run(() => observe('${phase}'));`),
       scrapeSource,
     ]),
     [
       omitOnce(
         harnessSource,
-        "await observe(triggerPage === page ? 'after_root_foreground' : 'after_demo_foreground');",
+        "await run(() =>\n    observe(triggerPage === page ? 'after_root_foreground' : 'after_demo_foreground'),\n  );",
       ),
       scrapeSource,
     ],
@@ -306,14 +320,20 @@ test('in-memory mutations cannot omit checkpoints or manufacture successful meas
   await assert.rejects(
     () =>
       checkMeasurements(
-        harnessSource.replaceAll('return { measured: false };', 'return { measured: true };'),
+        replaceExpectedCount(
+          harnessSource,
+          'return { measured: false };',
+          'return { measured: true };',
+          2,
+        ),
       ),
     assert.AssertionError,
   );
   await assert.rejects(
     () =>
       checkMeasurements(
-        harnessSource.replace(
+        replaceOnce(
+          harnessSource,
           'hasFocus: document.hasFocus(),',
           'hasFocus: document.hasFocus(), privateUrl: document.URL,',
         ),
@@ -323,7 +343,8 @@ test('in-memory mutations cannot omit checkpoints or manufacture successful meas
   await assert.rejects(
     () =>
       checkMeasurements(
-        harnessSource.replace(
+        replaceOnce(
+          harnessSource,
           'async function observePanelVisibility(panel) {',
           "async function observePanelVisibility(panel) { return { measured: true, visibility: 'hidden', hasFocus: true, ready: true, width: 600, height: 800 };",
         ),

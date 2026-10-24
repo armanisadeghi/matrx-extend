@@ -51,6 +51,27 @@ const localReceipt = {
   extensionDir: productionBuildDir,
 };
 
+// The production visibility helper uses the real 30-second deadline. Advance
+// only this contract fixture's timer clock so the absent-reply branch stays
+// faithful without adding a wall-clock delay to the unit suite.
+async function withFastForwardedTimers(action) {
+  const realNow = Date.now;
+  const realSetTimeout = globalThis.setTimeout;
+  const start = realNow();
+  let elapsed = 0;
+  Date.now = () => start + elapsed;
+  globalThis.setTimeout = (callback, delay = 0, ...args) => {
+    elapsed += Number(delay) || 0;
+    return realSetTimeout(callback, 0, ...args);
+  };
+  try {
+    return await action();
+  } finally {
+    Date.now = realNow;
+    globalThis.setTimeout = realSetTimeout;
+  }
+}
+
 // Captured D133: target activation focused an existing hidden SIDE_PANEL;
 // only the trusted open RPC can request reopening it. Browser visibility is
 // still checked by the native acceptance driver, not supplied by this guard.
@@ -62,6 +83,7 @@ for (const reply of [
 ]) {
   let result = '{"ok":true,"result":{"opened":true}}'; // stale prior reply
   const events = [];
+  let visibilityChecks = 0;
   const accepted = reply?.ok === true && reply?.result?.opened === true;
   const page = {
     bringToFront: async () => events.push('foreground'),
@@ -87,6 +109,13 @@ for (const reply of [
           assert.equal(hasText.test('   '), false);
           return locator;
         },
+        isVisible: async () => {
+          assert.equal(selector, '#result');
+          visibilityChecks += 1;
+          const visible = Boolean(result.trim());
+          if (visible && visibilityChecks === 1) events.push('fresh-reply-visible');
+          return visible;
+        },
         waitFor: async () => {
           assert.equal(selector, '#result');
           events.push('fresh-reply');
@@ -97,30 +126,33 @@ for (const reply of [
       return locator;
     },
   };
-  const activation = activateOwnedSidePanel({
-    panel: { send: async () => ({ result: { value: { visibility: 'hidden' } } }) },
-    page,
-    cdp: {
-      send: async (method, args) => {
-        assert.equal(method, 'Target.activateTarget');
-        assert.deepEqual(args, { targetId: 'owned-panel' });
-        assert.equal(accepted, true, 'refused or absent reply cannot activate the panel');
-        events.push('activate');
+  const activate = () =>
+    activateOwnedSidePanel({
+      panel: { send: async () => ({ result: { value: { visibility: 'hidden' } } }) },
+      page,
+      cdp: {
+        send: async (method, args) => {
+          assert.equal(method, 'Target.activateTarget');
+          assert.deepEqual(args, { targetId: 'owned-panel' });
+          assert.equal(accepted, true, 'refused or absent reply cannot activate the panel');
+          events.push('activate');
+        },
       },
-    },
-    panelTargetId: 'owned-panel',
-  });
-  if (accepted) await activation;
-  else
+      panelTargetId: 'owned-panel',
+    });
+  if (accepted) await activate();
+  else if (reply === null)
     await assert.rejects(
-      activation,
-      reply === null ? /native_open_reply_not_observed/ : /native_sidepanel_open_refused/,
+      withFastForwardedTimers(activate),
+      /native_sidepanel_owned_element_not_visible/,
     );
+  else await assert.rejects(activate(), /native_sidepanel_open_refused/);
+  assert.ok(visibilityChecks > 0, 'reopen must query the actual reply locator visibility');
   assert.deepEqual(events, [
     'foreground',
     'clear',
     'trusted-open',
-    'fresh-reply',
+    ...(reply === null ? [] : ['fresh-reply-visible']),
     ...(accepted ? ['activate'] : []),
   ]);
 }

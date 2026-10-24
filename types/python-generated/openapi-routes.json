@@ -7807,6 +7807,9 @@
    "application/json"
   ]
  },
+ "/seo/brands/{brand_id}/map/inputs": {
+  "get": []
+ },
  "/seo/brands/{brand_id}/map/readiness": {
   "get": []
  },
