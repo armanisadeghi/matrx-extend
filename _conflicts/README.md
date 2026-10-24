@@ -23,7 +23,6 @@ agent -> Needs Arman) with ` — <question> — <what was checked> — <who>` ad
 Its files stay as they are.
 
 ## Held files
-- _conflicts/2026-10-23-221445/pnpm-lock.yaml.held — LOCAL latest 2026-10-23 21:40; GITHUB latest 2026-10-23 22:07; LOCAL lacks 16 of GITHUB's 58 new lines; GITHUB lacks 15 of LOCAL's 53 new lines; recover: git show c202e0a71e:'pnpm-lock.yaml' / 9942889f5f:'pnpm-lock.yaml'
 
 ## Needs a manager
 
@@ -37,3 +36,5 @@ Its files stay as they are.
 
 - 2026-10-20 — Kept the live lockfile for the 00:51 held copy: all six LOCAL @ai-matrx package upgrades are present, and GITHUB's newer caniuse-lite 1.0.30001817 is the only remaining difference. Frozen install and package checks verified the combined lock.
 - 2026-10-15 — Restored LOCAL BroadcastChannel read/missing telemetry forwarding; retained GITHUB lazy required-credential getters (superseding LOCAL eager bootstrap fallback), live boot refresh, and current config helpers. Focused forwarding/bootstrap tests: 3 passed.
+
+- 2026-10-23 — Resolved the 22:14 held pnpm lock: its exact 8da5d407 payload was already reconciled by hosted graph 40063741216. Kept canonical 4a6def320 lock 0b1b9917, retaining all five held Matrx upgrades and newer Alchemy/Rich Content versions, plus subsequent Agents 270, Records 145, Records UI 109 and Rich Content 310. The canonical lock retains mdast-util-to-markdown 2.0.1 instead of the held 2.0.0 downgrade. Independent comparison verified only those four version/integrity advances after the accepted hosted graph; consumer compatibility and release checks are recorded separately. No edited-session owner was found in the prior exact-lock ownership audit.
