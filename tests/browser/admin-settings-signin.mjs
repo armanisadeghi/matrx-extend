@@ -115,6 +115,19 @@ export async function signInAdminSettings({
       throw new Error('admin_web_submit_unverified');
     }
     report.signin_observations.web_dashboard_reached = true;
+    stage('admin_web_identity_park');
+    const identityParkResponse = await runResourceAction(() =>
+      web.goto(`${WEB_ORIGIN}/api/whoami`, {
+        waitUntil: 'domcontentloaded',
+        timeout: 60_000,
+      }),
+    );
+    assert.ok(identityParkResponse, 'admin_web_identity_park_response');
+    assert.equal(identityParkResponse.status(), 200, 'admin_web_identity_park_status');
+    const identityParkUrl = new URL(await runResourceAction(() => web.url()));
+    assert.equal(identityParkUrl.origin, WEB_ORIGIN, 'admin_web_identity_park_origin');
+    assert.equal(identityParkUrl.pathname, '/api/whoami', 'admin_web_identity_park_path');
+    report.signin_observations.web_identity_parked = true;
     stage('admin_extension_settings_click');
     await click(panel, 'title', 'Settings');
     stage('admin_extension_account_open');

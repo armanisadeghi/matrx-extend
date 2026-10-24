@@ -921,3 +921,190 @@ test('Data acceptance aggregates organization diagnostics across real auth bound
       assert.equal(serialized.includes(forbidden), false);
   }
 });
+
+test(
+  'admin sign-in parks the owned web tab on whoami through extension auth and closes after identity proof',
+  async () => {
+    const source = await readFile(new URL('./admin-settings-signin.mjs', import.meta.url), 'utf8');
+    const implementation = source
+      .replace(/^import[\s\S]*?from '[^']+';\n/gm, '')
+      .replace(/^export /gm, '');
+    const order = [];
+    let currentUrl = 'about:blank';
+    let signedIntoExtension = false;
+    let resourceDepth = 0;
+    let identityCandidateIndex = 0;
+    const identityCandidates = [
+      { email: 'other@admin.com', userId: '123e4567-e89b-42d3-a456-426614174002' },
+      { email: 'admin@admin.com', userId: 'not-a-uuid' },
+      { email: 'admin@admin.com', userId: '123e4567-e89b-42d3-a456-426614174002' },
+    ];
+    const identityPredicateResults = [];
+    const guarded = (operation) => assert.ok(resourceDepth > 0, `${operation}_must_be_guarded`);
+    const web = {
+      async goto(url, options) {
+        guarded('web_goto');
+        assert.equal(options.waitUntil, 'domcontentloaded');
+        currentUrl = url;
+        order.push(`goto:${new URL(url).pathname}`);
+        return { status: () => 200 };
+      },
+      async url() {
+        guarded('web_url');
+        return currentUrl;
+      },
+      locator(selector) {
+        return {
+          async fill() {
+            guarded(`fill:${selector}`);
+            order.push(`fill:${selector}`);
+          },
+        };
+      },
+      getByRole(_role, options) {
+        return {
+          async click() {
+            guarded('web_submit');
+            assert.equal(options.name, 'Sign in');
+            currentUrl = 'https://www.aimatrx.com/dashboard';
+            order.push('web-dashboard-submit');
+          },
+        };
+      },
+      async evaluate(callback) {
+        guarded('web_identity_evaluate');
+        assert.equal(new URL(currentUrl).pathname, '/api/whoami');
+        assert.match(String(callback), /fetch\('\/api\/whoami'/);
+        assert.match(String(callback), /credentials:\s*'include'/);
+        assert.match(String(callback), /cache:\s*'no-store'/);
+        assert.equal(signedIntoExtension, true, 'identity is read after extension sign-in');
+        order.push('post-auth-web-identity-fetch');
+        return identityCandidates[identityCandidateIndex++];
+      },
+      async close() {
+        guarded('web_close');
+        order.push('web-close');
+      },
+    };
+    const context = {
+      async newPage() {
+        guarded('new_web_page');
+        order.push('web-page-created');
+        return web;
+      },
+    };
+    const page = {
+      context: () => context,
+      async bringToFront() {
+        guarded('panel_foreground');
+        order.push('panel-foreground');
+      },
+    };
+    const panel = {};
+    const report = {
+      stage: '',
+      signin_observations: new Proxy(
+        {},
+        {
+          set(target, key, value) {
+            if (key === 'web_dashboard_reached' && value === true) order.push('dashboard-proof');
+            return Reflect.set(target, key, value);
+          },
+        },
+      ),
+    };
+    const signInAdminSettings = new Function(
+      'assert',
+      'activeTabPanelExpression',
+      'click',
+      'evaluate',
+      'markBrowserAgentTraffic',
+      'openSection',
+      'waitFor',
+      `${implementation}; return signInAdminSettings;`,
+    )(
+      assert,
+      () => 'null',
+      async (_target, selector, label) => {
+        order.push(`panel-click:${selector}:${label}`);
+        if (label === 'Sign in') {
+          signedIntoExtension = true;
+          order.push('extension-sign-in');
+        }
+      },
+      async (target) => {
+        assert.equal(target, panel);
+        return signedIntoExtension
+          ? { expected_admin_email: true, admin_role: true, sign_in_count: 0, sign_in_enabled: false }
+          : { expected_admin_email: false, admin_role: false, sign_in_count: 1, sign_in_enabled: true };
+      },
+      async () => order.push('traffic-marked'),
+      async () => order.push('account-opened'),
+      async (label, read, accept) => {
+        if (label === 'd87_admin_web_identity') {
+          assert.match(String(accept), /value\?\.email\?\.toLowerCase\(\) === 'admin@admin\.com'/);
+          assert.match(String(accept), /value\?\.userId/);
+          assert.match(String(accept), /\[0-9a-f\]\{8\}/);
+          assert.match(String(accept), /\[0-9a-f\]\{12\}/);
+        }
+        for (let attempt = 0; attempt < 20; attempt += 1) {
+          const value = await read();
+          const accepted = accept(value);
+          if (label === 'd87_admin_web_identity') identityPredicateResults.push(accepted);
+          if (accepted) return value;
+          await Promise.resolve();
+        }
+        throw new Error(`${label}_not_observed`);
+      },
+    );
+    const stage = (value) => {
+      report.stage = value;
+      order.push(`stage:${value}`);
+    };
+    const resourceAction = async (action) => {
+      resourceDepth += 1;
+      try {
+        return await action();
+      } finally {
+        resourceDepth -= 1;
+      }
+    };
+    const identity = await signInAdminSettings({
+      page,
+      panel,
+      report,
+      stage,
+      resourceAction,
+      captureIdentity: true,
+      readCredentials: async () => ({ email: 'admin@admin.com', password: 'synthetic-only' }),
+    });
+
+    assert.deepEqual(identity, {
+      email: 'admin@admin.com',
+      userId: '123e4567-e89b-42d3-a456-426614174002',
+    });
+    assert.equal(report.signin_observations.web_dashboard_reached, true);
+    assert.equal(report.signin_observations.web_identity_parked, true);
+    const once = (event) => {
+      const matches = order.flatMap((item, index) => (item === event ? [index] : []));
+      assert.equal(matches.length, 1, `${event}_must_happen_once`);
+      return matches[0];
+    };
+    const dashboard = once('dashboard-proof');
+    const park = once('goto:/api/whoami');
+    const extensionSignIn = once('extension-sign-in');
+    const identityReads = order.flatMap((item, index) =>
+      item === 'post-auth-web-identity-fetch' ? [index] : [],
+    );
+    const close = once('web-close');
+    assert.deepEqual(identityPredicateResults, [false, false, true]);
+    assert.equal(identityCandidateIndex, identityCandidates.length);
+    assert.ok(dashboard < park, 'dashboard proof precedes parking');
+    assert.ok(park < extensionSignIn, 'park precedes extension auth');
+    assert.equal(identityReads.length, 3);
+    assert.ok(extensionSignIn < identityReads[0], 'identity reads follow extension auth');
+    assert.ok(identityReads[2] < close, 'tab closes only after identity proof');
+    assert.equal(order.filter((item) => item === 'web-page-created').length, 1);
+    assert.ok(once('panel-foreground') > close);
+  },
+);
