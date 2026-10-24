@@ -81,6 +81,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       'prepare-stale-results',
       'settings-persistence-admin',
       'settings-account-popover-admin',
+      'debug-mode-admin',
       'desktop-settings-admin',
       'audit-key-admin',
       'showcase-picker-admin',
@@ -100,6 +101,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       acceptanceCase.startsWith('showcase-') ||
       acceptanceCase === 'records-readonly-admin' ||
       acceptanceCase === 'settings-account-popover-admin' ||
+      acceptanceCase === 'debug-mode-admin' ||
       acceptanceCase === 'screenshots-capture-admin'
     )
       requireSettingsCredential('admin', env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);

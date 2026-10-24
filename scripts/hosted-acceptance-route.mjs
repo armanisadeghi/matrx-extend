@@ -24,6 +24,7 @@ const HOSTED_ACCEPTANCE_CASES = new Set([
   'settings-account-popover-guest',
   'settings-account-popover-member',
   'settings-account-popover-admin',
+  'debug-mode-admin',
   'desktop-settings-guest',
   'desktop-settings-member',
   'desktop-settings-admin',

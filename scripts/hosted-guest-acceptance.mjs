@@ -546,6 +546,7 @@ async function run(prepared, artifactMode) {
     (scrapeRoute && scrapeSelection.mode === 'admin') ||
     acceptanceCase === 'settings-persistence-admin' ||
     acceptanceCase === 'settings-account-popover-admin' ||
+    acceptanceCase === 'debug-mode-admin' ||
     acceptanceCase === 'audit-key-admin' ||
     acceptanceCase === 'desktop-settings-admin' ||
     acceptanceCase === 'visibility-census-admin' ||
@@ -627,6 +628,16 @@ async function run(prepared, artifactMode) {
           MATRX_ACCOUNT_POPOVER_ROLE: acceptanceCase.slice('settings-account-popover-'.length),
         }
       : {}),
+    ...(acceptanceCase === 'debug-mode-admin'
+      ? {
+          MATRX_DEBUG_MODE_EXTENSION_DIR: extensionDir,
+          MATRX_DEBUG_MODE_RECEIPT: relocatedReceipt,
+          MATRX_DEBUG_MODE_OUTPUT_DIR: outputDir,
+          MATRX_DEBUG_MODE_EXPECTED_SOURCE_SHA: process.env.MATRX_HOSTED_RELEASE_SHA,
+          MATRX_DEBUG_MODE_EXPECTED_VERSION: process.env.MATRX_HOSTED_RELEASE_VERSION,
+          MATRX_DEBUG_MODE_RELEASE_RUN_ID: process.env.MATRX_HOSTED_RELEASE_RUN_ID,
+        }
+      : {}),
     ...(acceptanceCase.startsWith('desktop-settings-')
       ? {
           MATRX_DESKTOP_SETTINGS_EXTENSION_DIR: extensionDir,
@@ -665,6 +676,7 @@ async function run(prepared, artifactMode) {
     (scrapeRoute && scrapeSelection.mode === 'admin') ||
     acceptanceCase === 'settings-persistence-admin' ||
     acceptanceCase === 'settings-account-popover-admin' ||
+    acceptanceCase === 'debug-mode-admin' ||
     acceptanceCase === 'audit-key-admin' ||
     acceptanceCase === 'desktop-settings-admin' ||
     acceptanceCase === 'visibility-census-admin' ||
@@ -754,6 +766,9 @@ async function run(prepared, artifactMode) {
     const driver =
       notesFindRoute?.driver ??
       screenshotRoute?.driver ??
+      (acceptanceCase === 'debug-mode-admin'
+        ? 'tests/browser/debug-mode-native-acceptance.mjs'
+        : null) ??
       ([
         'settings-controls',
         'settings-theme-rendering',
