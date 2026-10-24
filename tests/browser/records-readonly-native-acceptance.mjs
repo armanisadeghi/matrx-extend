@@ -2,7 +2,7 @@
 /** Real admin Tools-card Records reads, with independent table and search oracles. */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
@@ -21,11 +21,16 @@ import {
   signInRecordsAdmin,
 } from './records-readonly-native-proof.mjs';
 import {
+  recorderIdleBadgeAccepted,
+  recorderIdleBadgeState,
+} from './records-recorder-idle-proof.mjs';
+import {
   accountIdentity,
   approvedShowcaseOrganization,
   panelIdentity,
 } from './settings-native-auth-driver.mjs';
 import {
+  activeTabPanelExpression,
   click,
   evaluate,
   openSection,
@@ -50,6 +55,7 @@ const report = {
   stage: 'inputs',
   native_stage: null,
   artifact: null,
+  recorder_idle_badge: null,
   action: 'table_list',
   organization_diagnostic: null,
   request: null,
@@ -144,6 +150,79 @@ try {
         }),
       );
       assert.equal(auth.admin_role, true, 'records_admin_role_unverified');
+      stage('recorder_idle_badge');
+      await resourceAction(async () => {
+        await click(panel, 'title', 'Tools');
+        await waitFor(
+          'recorder_tools_catalog_ready',
+          () => toolsCatalogState(panel),
+          (value) => value === 'catalog',
+        );
+      });
+      let observed;
+      await resourceAction(async () => {
+        await click(panel, 'button-text', 'Recorder');
+        observed = await waitFor(
+          'recorder_visible_idle_badge',
+          () => recorderIdleBadgeState(panel),
+          recorderIdleBadgeAccepted,
+        );
+      });
+      const artifactRoot = join(process.env.RUNNER_TEMP ?? tmpdir(), 'guest-acceptance');
+      const nativeArtifactDirs = (await readdir(artifactRoot, { withFileTypes: true })).filter(
+        (entry) => entry.isDirectory() && entry.name.startsWith('native-sidepanel-qa-'),
+      );
+      assert.equal(nativeArtifactDirs.length, 1, 'records_native_artifact_directory_ambiguous');
+      await resourceAction(async () => {
+        const screenshot = await panel.send('Page.captureScreenshot', { format: 'png' });
+        assert.ok(
+          typeof screenshot.data === 'string' && screenshot.data.length > 100,
+          'records_recorder_screenshot_missing',
+        );
+        await writeFile(
+          join(artifactRoot, nativeArtifactDirs[0].name, 'records-recorder-idle-status-badge.png'),
+          Buffer.from(screenshot.data, 'base64'),
+          { mode: 0o600 },
+        );
+      });
+      report.recorder_idle_badge = {
+        route: ['Tools', 'Recorder'],
+        route_steps: {
+          outer_tools: 'observed',
+          recorder: 'observed',
+          catalog: 'pending',
+          settings: 'pending',
+        },
+        recorder_start_clicked: false,
+        selected_outer_tab: 'Tools',
+        selected_inner_tab: 'Recorder',
+        returned_inner_tab: null,
+        restored_outer_tab: null,
+        observed,
+        screenshot: 'records-recorder-idle-status-badge.png',
+      };
+      await resourceAction(async () => {
+        await click(panel, 'button-text', 'Catalog');
+        await waitFor(
+          'recorder_returned_to_catalog',
+          () => toolsCatalogState(panel),
+          (value) => value === 'catalog',
+        );
+      });
+      report.recorder_idle_badge.route.push('Catalog');
+      report.recorder_idle_badge.route_steps.catalog = 'observed';
+      report.recorder_idle_badge.returned_inner_tab = 'Catalog';
+      await resourceAction(async () => {
+        await click(panel, 'title', 'Settings');
+        await waitFor(
+          'recorder_restored_outer_settings',
+          () => evaluate(panel, `Boolean(${activeTabPanelExpression('Settings')})`),
+          (active) => active === true,
+        );
+      });
+      report.recorder_idle_badge.route.push('Settings');
+      report.recorder_idle_badge.route_steps.settings = 'observed';
+      report.recorder_idle_badge.restored_outer_tab = 'Settings';
       stage('approved_organization');
       await runShowcaseOrganizationCheckpoint({
         panel,
