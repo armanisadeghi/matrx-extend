@@ -2,20 +2,20 @@
 import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { runNativeSidepanelQa, attachTargetSession } from './native-sidepanel-qa-harness.mjs';
-import {
-  awaitNativeResourceHealth,
-  guardNativeResourceSessionSend,
-  runNativeResourceAction,
-} from './native-resource-boundary.mjs';
-import { panelIdentity, signInSettings } from './settings-native-auth-driver.mjs';
-import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import {
   ADMIN_TAB_TITLES,
   DEBUG_MODE_STORAGE_KEY,
   parseDebugModePreference,
   requireAdminTabProjection,
 } from './debug-mode-native-contract.mjs';
+import {
+  awaitNativeResourceHealth,
+  guardNativeResourceSessionSend,
+  runNativeResourceAction,
+} from './native-resource-boundary.mjs';
+import { attachTargetSession, runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { panelIdentity, signInSettings } from './settings-native-auth-driver.mjs';
+import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
 const extensionDir = process.env.MATRX_DEBUG_MODE_EXTENSION_DIR;
@@ -42,7 +42,11 @@ assert.equal(
   'release_receipt_local_zip',
   'debug_mode_release_local_zip_required',
 );
-assert.equal(receipt.artifactSelection?.adaptation, 'none', 'debug_mode_release_adaptation_refused');
+assert.equal(
+  receipt.artifactSelection?.adaptation,
+  'none',
+  'debug_mode_release_adaptation_refused',
+);
 assert.equal(receipt.artifactSelection?.runtimeExtensionDir, extensionDir);
 
 const outputPrefix = join(outputDir, `debug-mode-native-${runId}-${runAttempt}`);
@@ -195,7 +199,9 @@ async function waitForSnapshot(panel, label, accept) {
 }
 
 async function captureStage(panel, name) {
-  const { data } = await resourceAction(() => panel.send('Page.captureScreenshot', { format: 'png' }));
+  const { data } = await resourceAction(() =>
+    panel.send('Page.captureScreenshot', { format: 'png' }),
+  );
   assert.ok(typeof data === 'string' && data.length > 100, 'debug_mode_screenshot_missing');
   const path = `${outputPrefix}-${name}.png`;
   await writeFile(path, Buffer.from(data, 'base64'), { mode: 0o600, flag: 'wx' });
@@ -227,7 +233,9 @@ async function sendSyntheticNotice(browserSession, expectedExtensionId) {
       item.type === 'service_worker' &&
       item.url.startsWith(`chrome-extension://${expectedExtensionId}/`),
   );
-  const workerSession = await resourceAction(() => attachTargetSession(browserSession, workerTarget.targetId));
+  const workerSession = await resourceAction(() =>
+    attachTargetSession(browserSession, workerTarget.targetId),
+  );
   const guardedWorker = guardNativeResourceSessionSend(workerSession, resourceAction);
   try {
     const sent = await guardedWorker.send('Runtime.evaluate', {
@@ -359,7 +367,10 @@ try {
       await clickAction(panel, 'account-avatar', 'Account');
       await resourceAction(() => panel.send('Emulation.clearDeviceMetricsOverride'));
 
-      await sendSyntheticNotice(browserSession, receipt.extensionId ?? 'cihdmkcdjjckfhjpgoedmgfpoljebaml');
+      await sendSyntheticNotice(
+        browserSession,
+        receipt.extensionId ?? 'cihdmkcdjjckfhjpgoedmgfpoljebaml',
+      );
       await waitFor(
         'debug_mode_notice_detail_visible',
         () => noticeSnapshot(panel),

@@ -22,11 +22,7 @@ export function parseDebugModePreference(storageValue) {
   return persisted.state.on;
 }
 
-export function requireAdminTabProjection({
-  isVerifiedAdmin,
-  debugModeOn,
-  visibleAdminTabTitles,
-}) {
+export function requireAdminTabProjection({ isVerifiedAdmin, debugModeOn, visibleAdminTabTitles }) {
   assert.equal(typeof isVerifiedAdmin, 'boolean', 'verified_admin_state_required');
   assert.equal(typeof debugModeOn, 'boolean', 'debug_preference_state_required');
   const expected = isVerifiedAdmin && debugModeOn ? ADMIN_TAB_TITLES : [];

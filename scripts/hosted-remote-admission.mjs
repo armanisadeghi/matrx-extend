@@ -21,12 +21,13 @@ const OWNER = 'armanisadeghi/matrx-extend';
 const PHASES = ['hosted-package', 'hosted-browser', 'hosted-guest'];
 const DISPATCH_REQUESTER = 'extend-stabilization';
 // Reviewed bytes of this narrow lane's active hosted workflow. Any workflow edit needs review.
+// Debug-mode-admin workflow/source review cb16aa7f approved this exact workflow fingerprint.
 // Notes CDP opt-in uses startup_display_mode; SEO diagnostics share one input, leaving 25.
 // D221 adds only the reviewed lane A admin Screenshots case on an exact CI development artifact.
 // EXT-D-0243 enables existing startup observers for guest/member Chat after independent review.
 // EXT-D-0262 adds one guest Settings admin-absence route on the existing guarded lane.
 // The existing phase, fixture, and credential guards remain mandatory.
-const REVIEWED_WORKFLOW_SHA256 = 'c001f41ae6e982998b923bf25e7470e4e84006055eba883358fae9ecb696bb8b';
+const REVIEWED_WORKFLOW_SHA256 = '97e219498f67148ea51d2dab0a4c7b7480629232d877c6f060de9ded1f731fb3';
 const RESOURCE_POLICY = JSON.parse(
   readFileSync(new URL('../docs/stabilization/resource-policy.json', import.meta.url), 'utf8'),
 );

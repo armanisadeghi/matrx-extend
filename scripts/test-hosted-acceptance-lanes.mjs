@@ -95,7 +95,7 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
         DEVELOPMENT_RUN_ID: acceptanceCase === 'screenshots-capture-admin' ? '38320662877' : '',
         DEVELOPMENT_ARTIFACT_ID:
           acceptanceCase === 'screenshots-capture-admin' ? '11778284430' : '',
-        RELEASE_RUN_ID: '',
+        RELEASE_RUN_ID: acceptanceCase === 'debug-mode-admin' ? '40000000000' : '',
         PUBLISHED_STORE_CRX: 'false',
         SCRAPE_AUTH_MODE: scrapeAuth,
         SCRAPE_SAVE_DESTINATION: scrapeSaveDestination,

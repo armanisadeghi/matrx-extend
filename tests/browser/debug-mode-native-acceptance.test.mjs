@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { hostedAcceptanceRoute } from '../../scripts/hosted-acceptance-route.mjs';
 import { requireHostedAcceptanceCredential } from '../../scripts/hosted-profile-route.mjs';
@@ -29,14 +29,14 @@ test('Debug Mode is a registered native case and requires the verified admin ide
   assert.throws(
     () =>
       requireHostedAcceptanceCredential('debug-mode-admin', {
-        MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: '{"email":"someone-else@example.test","password":"opaque"}',
+        MATRX_HOSTED_ADMIN_CREDENTIALS_JSON:
+          '{"email":"someone-else@example.test","password":"opaque"}',
       }),
     /d87_admin_identity_required/,
   );
   assert.doesNotThrow(() =>
     requireHostedAcceptanceCredential('debug-mode-admin', {
-      MATRX_HOSTED_ADMIN_CREDENTIALS_JSON:
-        '{"email":"admin@admin.com","password":"opaque"}',
+      MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: '{"email":"admin@admin.com","password":"opaque"}',
     }),
   );
 });
@@ -46,17 +46,31 @@ test('Debug Mode accepts only one lane-A release artifact, never a dev or Store 
     new URL('../../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
     'utf8',
   );
-  const gateName = 'Require bounded lane and isolate shared credentials';
-  const gate = workflow.split(`      - name: ${gateName}\n`)[1]?.split('\n      - name:')[0];
-  assert.ok(gate, 'hosted lane admission step missing');
-  const script = gate
-    .split('        run: |\n')[1]
+  const startMarker = '# BEGIN hosted lane admission';
+  const endMarker = '# END hosted lane admission';
+  assert.equal(
+    workflow.split(startMarker).length - 1,
+    1,
+    'hosted lane admission start must be unique',
+  );
+  assert.equal(workflow.split(endMarker).length - 1, 1, 'hosted lane admission end must be unique');
+  const start = workflow.indexOf(startMarker);
+  const end = workflow.indexOf(endMarker);
+  assert.ok(start >= 0 && end > start, 'hosted lane admission markers missing or reversed');
+  const script = workflow
+    .slice(start, end + endMarker.length)
     .split('\n')
     .map((line) => (line.startsWith('          ') ? line.slice(10) : line))
     .join('\n');
   assert.match(script, /debug-mode-admin/);
 
-  const run = ({ lane = 'A', release = '40000000000', devRun = '', devArtifact = '', store = 'false' }) =>
+  const run = ({
+    lane = 'A',
+    release = '40000000000',
+    devRun = '',
+    devArtifact = '',
+    store = 'false',
+  }) =>
     spawnSync('bash', ['-euo', 'pipefail', '-c', script], {
       encoding: 'utf8',
       env: {
