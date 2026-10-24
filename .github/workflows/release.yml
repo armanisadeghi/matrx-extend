@@ -212,7 +212,8 @@ jobs:
             if (r.sourceSha !== process.argv[1]) { console.error('receipt sourceSha != candidate sha'); process.exit(1); }
           " "$sha" \
             && pnpm -s config:manifest --sha "$sha" --out .output/config-manifest.json \
-            && python3 ../aidream/scripts/attest_config_manifest.py --app matrx-extend --manifest .output/config-manifest.json; then
+            && uv run --no-project --with python-dotenv==1.2.3 --with httpx==0.28.1 \
+              python ../aidream/scripts/attest_config_manifest.py --app matrx-extend --manifest .output/config-manifest.json; then
             echo "### Config attestation: attested matrx-extend ${sha}" >> "$GITHUB_STEP_SUMMARY"
           else
             echo "::warning title=NOT ATTESTED::matrx-extend ${sha} config manifest was not attested (see log)"
