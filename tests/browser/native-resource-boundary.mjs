@@ -192,31 +192,76 @@ export async function runNativeResourceAction(requireHealth, action) {
   return action();
 }
 
+const guardedNativeSessions = new WeakMap();
+
 // CDP session.send is the narrow transport boundary for a native panel action
-// or observation. The original receiver is retained because session methods
-// may use `this` internally; restore the exact own-property shape afterward.
+// or observation. Return a separate immutable facade because attached CDP
+// sessions are frozen; every forwarded method keeps the original receiver.
 export function guardNativeResourceSessionSend(session, resourceAction) {
   if (!session || typeof session.send !== 'function' || typeof resourceAction !== 'function')
     throw new Error('native_resource_session_invalid');
-  const ownDescriptor = Object.getOwnPropertyDescriptor(session, 'send');
+  const existing = guardedNativeSessions.get(session);
+  if (existing) {
+    if (existing.resourceAction !== resourceAction)
+      throw new Error('native_resource_session_guard_conflict');
+    return existing.facade;
+  }
   const originalSend = session.send;
-  const guardedSend = function (...args) {
-    return resourceAction(() => originalSend.apply(session, args));
-  };
-  Object.defineProperty(session, 'send', {
-    configurable: true,
-    enumerable: ownDescriptor?.enumerable ?? false,
-    writable: true,
-    value: guardedSend,
-  });
-  let restored = false;
-  return () => {
-    if (restored) return;
-    restored = true;
-    if (session.send !== guardedSend) return;
-    if (ownDescriptor) Object.defineProperty(session, 'send', ownDescriptor);
-    else delete session.send;
-  };
+  const facade = Object.create(Object.getPrototypeOf(session));
+  const descriptors = new Map();
+  for (let cursor = session; cursor && cursor !== Object.prototype; cursor = Object.getPrototypeOf(cursor)) {
+    for (const key of Reflect.ownKeys(cursor)) {
+      if (key === 'constructor' || descriptors.has(key)) continue;
+      descriptors.set(key, Object.getOwnPropertyDescriptor(cursor, key));
+    }
+  }
+  for (const [key, descriptor] of descriptors) {
+    if (key === 'send') {
+      Object.defineProperty(facade, key, {
+        configurable: true,
+        enumerable: descriptor.enumerable,
+        writable: false,
+        value: function (...args) {
+          return resourceAction(() => Reflect.apply(originalSend, session, args));
+        },
+      });
+      continue;
+    }
+    if ('value' in descriptor) {
+      const value = descriptor.value;
+      Object.defineProperty(facade, key, {
+        ...descriptor,
+        configurable: true,
+        ...(typeof value === 'function'
+          ? {
+              value: function (...args) {
+                return Reflect.apply(value, session, args);
+              },
+            }
+          : {}),
+      });
+    } else {
+      Object.defineProperty(facade, key, {
+        configurable: true,
+        enumerable: descriptor.enumerable,
+        ...(descriptor.get && {
+          get: function () {
+            return Reflect.apply(descriptor.get, session, []);
+          },
+        }),
+        ...(descriptor.set && {
+          set: function (...args) {
+            return Reflect.apply(descriptor.set, session, args);
+          },
+        }),
+      });
+    }
+  }
+  Object.freeze(facade);
+  const guarded = { resourceAction, facade };
+  guardedNativeSessions.set(session, guarded);
+  guardedNativeSessions.set(facade, guarded);
+  return facade;
 }
 
 // The watcher sleeps for one policy interval before sampling, so a healthy

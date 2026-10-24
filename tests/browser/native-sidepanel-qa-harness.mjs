@@ -1286,9 +1286,9 @@ async function waitForSettledGuestPanel(cdp, targetId, resourceAction) {
   const panel = await (resourceAction ?? ((action) => action()))(() =>
     attachTargetSession(cdp, targetId),
   );
-  const restoreSend = resourceAction
+  const guardedPanel = resourceAction
     ? guardNativeResourceSessionSend(panel, resourceAction)
-    : () => {};
+    : panel;
   const expression = `(() => {
     const visible = (element) => {
       const style = getComputedStyle(element); const rect = element.getBoundingClientRect();
@@ -1309,20 +1309,18 @@ async function waitForSettledGuestPanel(cdp, targetId, resourceAction) {
   let previousFingerprint;
   try {
     for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
-      const result = await panel.send('Runtime.evaluate', { expression, returnByValue: true });
+      const result = await guardedPanel.send('Runtime.evaluate', { expression, returnByValue: true });
       const state = result.result?.value;
       const fingerprint = JSON.stringify(state);
-      if (isSettledGuestPanel(state) && previousFingerprint === fingerprint) return panel;
+      if (isSettledGuestPanel(state) && previousFingerprint === fingerprint) return guardedPanel;
       previousFingerprint = fingerprint;
       await wait(WAIT_MS * 2);
     }
   } catch (error) {
-    restoreSend();
-    await panel.detach();
+    await guardedPanel.detach();
     throw error;
   }
-  restoreSend();
-  await panel.detach();
+  await guardedPanel.detach();
   throw new Error(`native_sidepanel_render_not_settled:${previousFingerprint ?? 'no_state'}`);
 }
 
@@ -1330,18 +1328,17 @@ export async function captureTarget(cdp, targetId, output, resourceAction) {
   const panel = await (resourceAction ?? ((action) => action()))(() =>
     attachTargetSession(cdp, targetId),
   );
-  const restoreSend = resourceAction
+  const guardedPanel = resourceAction
     ? guardNativeResourceSessionSend(panel, resourceAction)
-    : () => {};
+    : panel;
   try {
-    await panel.send('Page.enable');
-    const { data } = await panel.send('Page.captureScreenshot', { format: 'png' });
+    await guardedPanel.send('Page.enable');
+    const { data } = await guardedPanel.send('Page.captureScreenshot', { format: 'png' });
     if (typeof data !== 'string' || data.length < 100)
       throw new Error('native_sidepanel_png_missing');
     await writeFile(output, Buffer.from(data, 'base64'), { mode: 0o600 });
   } finally {
-    restoreSend();
-    await panel.detach();
+    await guardedPanel.detach();
   }
 }
 
@@ -1950,6 +1947,9 @@ export async function runNativeSidepanelQa({
       const panel = await (resourceAction ?? ((action) => action()))(() =>
         attachTargetSession(cdp, panelTarget.targetId),
       );
+      const guardedPanel = resourceAction
+        ? guardNativeResourceSessionSend(panel, resourceAction)
+        : panel;
       const reloadController = createOwnedExtensionReloadController(
         panelTarget.targetId,
         (oldPanelId) =>
@@ -1968,20 +1968,20 @@ export async function runNativeSidepanelQa({
         await exercisePanel(
           Object.freeze({
             page,
-            panel,
+            panel: guardedPanel,
             browserSession: cdp,
             activatePanel: () =>
               cdp.send('Target.activateTarget', { targetId: panelTarget.targetId }),
             reopenPanel: ({ page: triggerPage } = {}) =>
               activateOwnedSidePanel({
                 cdp,
-                panel,
+                panel: guardedPanel,
                 panelTargetId: panelTarget.targetId,
                 page,
                 ...(triggerPage && { triggerPage }),
                 extensionId: expectedExtensionId,
                 resourceAction,
-                observe: (phase) => observeVisibility(phase, panel),
+                observe: (phase) => observeVisibility(phase, guardedPanel),
               }),
             cycleOwnedPanel: async (currentPanel) => {
               const currentWorker = await waitForExpectedExtension(cdp, expectedExtensionId);
@@ -2072,15 +2072,15 @@ export async function runNativeSidepanelQa({
                 await worker.detach();
               }
             },
-            observePanelVisibility: (phase) => observeVisibility(phase, panel),
+            observePanelVisibility: (phase) => observeVisibility(phase, guardedPanel),
             observeAuthenticatedPanel: async (phase) => {
               if (onPanelVisibilityObservation)
                 onPanelVisibilityObservation({
                   phase,
-                  ...(await observePanelVisibility(panel)),
+                  ...(await observePanelVisibility(guardedPanel)),
                   host: await observeAuthenticatedPanelHost({
                     cdp,
-                    panel,
+                    panel: guardedPanel,
                     rootTargetId: normalTarget.targetId,
                     panelUrl,
                     rootUrl: page.url(),
@@ -2121,7 +2121,7 @@ export async function runNativeSidepanelQa({
           }),
         );
       } finally {
-        await panel.detach();
+        await guardedPanel.detach();
       }
     }
     return Object.freeze({

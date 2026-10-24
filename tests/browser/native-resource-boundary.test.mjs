@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { EventEmitter } from 'node:events';
 import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
@@ -13,6 +14,7 @@ import {
 } from './native-resource-boundary.mjs';
 import { createNativeStageReceipt } from './native-stage-receipt.mjs';
 import { waitFor } from './settings-panel-driver.mjs';
+import { attachTargetSession } from './native-sidepanel-qa-harness.mjs';
 
 const completeSample = {
   pressureLevel: 1,
@@ -343,30 +345,135 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
   await assert.rejects(check(), /evidence_missing/);
 });
 
-test('native CDP send checks health per transport command and restores its receiver', async () => {
-  let calls = 0;
+test('native CDP factory session remains frozen behind a guarded receiver-safe facade', async () => {
+  class FakeCdp extends EventEmitter {
+    #commands = [];
+
+    get commands() {
+      return this.#commands;
+    }
+
+    async send(method, params, sessionId) {
+      this.#commands.push({ method, params, sessionId });
+      if (method === 'Target.attachToTarget') return { sessionId: 'owned-session' };
+      return { method, sessionId };
+    }
+  }
+  const cdp = new FakeCdp();
   let healthCalls = 0;
-  const session = {
-    prefix: 'owned',
-    send(command) {
-      calls++;
-      return `${this.prefix}:${command}`;
-    },
-  };
-  const original = session.send;
-  const restore = guardNativeResourceSessionSend(session, async (action) => {
+  const raw = await attachTargetSession(cdp, 'panel-target');
+  const originalSend = raw.send;
+  assert.equal(Object.isFrozen(raw), true);
+  const session = guardNativeResourceSessionSend(raw, async (action) => {
     healthCalls++;
     if (healthCalls === 2) throw new Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample');
     return action();
   });
-  assert.equal(await session.send('Runtime.evaluate'), 'owned:Runtime.evaluate');
+  assert.notEqual(session, raw, 'the guard returns a separate facade');
+  assert.equal(raw.send, originalSend, 'the frozen factory session is not modified');
+  assert.equal(session.targetId, 'panel-target');
+  assert.deepEqual(await session.send('Runtime.evaluate', { expression: '1' }), {
+    method: 'Runtime.evaluate',
+    sessionId: 'owned-session',
+  });
   await assert.rejects(session.send('Input.dispatchMouseEvent'), /unsafe_sample/);
   assert.equal(healthCalls, 2, 'each CDP send gets a fresh health decision');
-  assert.equal(calls, 1, 'a refused CDP command never reaches the original session');
-  restore();
-  assert.equal(session.send, original, 'restoration preserves the original method');
-  assert.equal(session.send('Target.detach'), 'owned:Target.detach');
-  assert.equal(calls, 2);
+  assert.deepEqual(
+    cdp.commands.map(({ method }) => method),
+    ['Target.attachToTarget', 'Runtime.evaluate'],
+    'a refused command does not reach the CDP transport',
+  );
+  let received = 0;
+  const unsubscribe = session.on('Runtime.consoleAPICalled', () => received++);
+  cdp.emit('Runtime.consoleAPICalled', {}, 'other-session');
+  cdp.emit('Runtime.consoleAPICalled', {}, 'owned-session');
+  assert.equal(received, 1, 'event forwarding remains scoped to the attached session');
+  unsubscribe();
+  cdp.emit('Runtime.consoleAPICalled', {}, 'owned-session');
+  assert.equal(received, 1, 'unsubscribe still removes the scoped listener');
+  await session.detachVerified();
+  await session.detachVerified();
+  assert.deepEqual(
+    cdp.commands.slice(-1).map(({ method, params }) => [method, params.sessionId]),
+    [['Target.detachFromTarget', 'owned-session']],
+    'verified detach retains idempotent factory behavior',
+  );
+  await assert.rejects(session.send('Runtime.evaluate'), /native_target_session_retired/);
+});
+
+test('native guarded facade preserves frozen getters, symbols, and private-brand receivers', async () => {
+  const marker = Symbol('session-marker');
+  class BrandedSession {
+    #identity = 'original-session';
+
+    get targetId() {
+      return this.#identity;
+    }
+
+    [marker]() {
+      return this.#identity;
+    }
+
+    send(method) {
+      return `${this.#identity}:${method}`;
+    }
+
+    on() {
+      return this.#identity;
+    }
+
+    detach() {
+      return this.#identity;
+    }
+
+    detachVerified() {
+      return this.#identity;
+    }
+  }
+  const original = Object.freeze(new BrandedSession());
+  let checks = 0;
+  const resourceAction = async (action) => {
+    checks++;
+    return action();
+  };
+  const guarded = guardNativeResourceSessionSend(original, resourceAction);
+  assert.equal(guardNativeResourceSessionSend(original, resourceAction), guarded);
+  assert.equal(guardNativeResourceSessionSend(guarded, resourceAction), guarded);
+  assert.throws(
+    () => guardNativeResourceSessionSend(original, async (action) => action()),
+    /native_resource_session_guard_conflict/,
+  );
+  assert.equal(guarded.targetId, 'original-session');
+  assert.equal(guarded[marker](), 'original-session');
+  assert.equal(await guarded.send('Runtime.enable'), 'original-session:Runtime.enable');
+  assert.equal(guarded.on(), 'original-session');
+  assert.equal(guarded.detach(), 'original-session');
+  assert.equal(guarded.detachVerified(), 'original-session');
+  assert.equal(checks, 1, 'only transport sends invoke the health gate');
+  assert.equal(original.send('Runtime.enable'), 'original-session:Runtime.enable');
+});
+
+test('native guarded facade wraps accessor-defined send and refuses before transport', async () => {
+  let transportCalls = 0;
+  const session = Object.freeze({
+    targetId: 'accessor-target',
+    get send() {
+      return () => {
+        transportCalls++;
+      };
+    },
+    on() {},
+    detach() {},
+    detachVerified() {},
+  });
+  let checks = 0;
+  const guarded = guardNativeResourceSessionSend(session, async () => {
+    checks++;
+    throw new Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample');
+  });
+  await assert.rejects(guarded.send('Runtime.enable'), /unsafe_sample/);
+  assert.equal(checks, 1, 'accessor send is guarded exactly once');
+  assert.equal(transportCalls, 0, 'refusal blocks the accessor-provided transport');
 });
 
 

@@ -93,7 +93,6 @@ report.stage_observations = [];
 let stageReceipt;
 let requireD47ResourceHealth;
 let d47ResourceBoundaryStopped = false;
-const workerSendRestores = [];
 const waitFor = (label, read, accept, timeoutMs = 10000, diagnostic = (value) => value) =>
   waitForPanel(label, read, accept, timeoutMs, diagnostic, async () => {
     if (requireD47ResourceHealth) await requireD47ResourceHealth();
@@ -253,8 +252,7 @@ async function removeOwnedRecipe(panel, recipe, host) {
   );
   return 'removed';
 }
-async function withD47Cleanup(panel, exercise, resourceAction, requireResourceHealth) {
-  const restorePanelSend = guardNativeResourceSessionSend(panel, resourceAction);
+async function withD47Cleanup(panel, exercise, requireResourceHealth) {
   requireD47ResourceHealth = requireResourceHealth;
   let primaryFailure = null;
   try {
@@ -291,8 +289,6 @@ async function withD47Cleanup(panel, exercise, resourceAction, requireResourceHe
       }
     } finally {
       requireD47ResourceHealth = undefined;
-      for (const restore of workerSendRestores.splice(0)) restore();
-      restorePanelSend();
     }
   }
   if (primaryFailure) throw primaryFailure;
@@ -735,9 +731,9 @@ try {
             frame_id: oldPageContext.frame_id,
           };
           await resourceAction(() => pageCdp.detach());
-          const worker = await resourceAction(() => attachWorker());
+          const attachedWorker = await resourceAction(() => attachWorker());
+          const worker = guardNativeResourceSessionSend(attachedWorker, resourceAction);
           probeWorker = worker;
-          workerSendRestores.push(guardNativeResourceSessionSend(worker, resourceAction));
           stage('worker_observer');
           await installPassiveWorkerProbe(worker, origin, () => {
             probeInstallAttempted = true;
@@ -1327,7 +1323,6 @@ try {
                 : 'unverified_canceled_before_release';
           }
         }),
-        resourceAction,
         requireResourceHealth,
       );
     },
