@@ -1643,6 +1643,12 @@
  "/brand-offerings/{brand_id}/refresh/quote": {
   "get": []
  },
+ "/brand-research/{brand_id}/catchup": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
  "/brand-research/{brand_id}/readiness": {
   "get": []
  },
