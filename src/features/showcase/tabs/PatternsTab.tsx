@@ -14,8 +14,8 @@ import {
   fetchPatternsForDomain,
   renamePattern,
 } from '@/lib/supabase/queries';
-import { cn } from '@/lib/utils';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
+import { StatusBadge, type StatusBadgeProps } from '@ai-matrx/design-system/controls';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
@@ -450,7 +450,13 @@ function PatternRow({
             <div className="flex items-center gap-1.5">
               <span className="truncate text-sm font-medium">{p.name}</span>
               <KindBadge kind={p.kind} />
-              <StatusBadge status={p.last_status} />
+              {p.last_status && (
+                <StatusBadge
+                  {...PATTERN_STATUS_PRESENTATION[p.last_status]}
+                  size="sm"
+                  className="px-1.5 py-px text-[9px] uppercase tracking-wider"
+                />
+              )}
             </div>
           )}
           <div className="text-[11px] text-muted-foreground">
@@ -528,20 +534,13 @@ function KindBadge({ kind }: { kind: ExtractionPattern['kind'] }) {
   );
 }
 
-function StatusBadge({ status }: { status: ExtractionPattern['last_status'] }) {
-  if (!status) return null;
-  return (
-    <span
-      className={cn(
-        'flex items-center gap-0.5 rounded-full px-1.5 py-px text-[9px] font-medium uppercase tracking-wider',
-        status === 'ok' && 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-        status === 'broken' && 'bg-red-500/15 text-red-600 dark:text-red-400',
-        status === 'never_run' && 'bg-secondary text-muted-foreground',
-      )}
-    >
-      {status === 'ok' && <CheckCircle2 className="size-2.5" />}
-      {status === 'broken' && <XCircle className="size-2.5" />}
-      {status === 'ok' ? 'ok' : status === 'broken' ? 'broken' : 'idle'}
-    </span>
-  );
-}
+type PatternLastStatus = Exclude<ExtractionPattern['last_status'], null>;
+
+const PATTERN_STATUS_PRESENTATION: Record<
+  PatternLastStatus,
+  Pick<StatusBadgeProps, 'label' | 'tone' | 'icon'>
+> = {
+  ok: { label: 'ok', tone: 'success', icon: CheckCircle2 },
+  broken: { label: 'broken', tone: 'danger', icon: XCircle },
+  never_run: { label: 'idle', tone: 'neutral' },
+};

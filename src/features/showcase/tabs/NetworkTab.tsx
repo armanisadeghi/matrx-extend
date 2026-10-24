@@ -12,6 +12,7 @@ import type { CapturedNetEvent } from '@/lib/data-pattern/network-tap';
 import { matchesUrlFilter, rowsFromBody } from '@/lib/data-pattern/run-interactive';
 import { cn } from '@/lib/utils';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
+import { StatusBadge } from '@ai-matrx/design-system/controls';
 import { formatFileSize } from '@ai-matrx/kit/format';
 import { Circle, RefreshCw, Square, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -229,7 +230,12 @@ export function NetworkTab() {
                   selected === e && 'bg-primary/10 ring-1 ring-primary/40',
                 )}
               >
-                <StatusBadge status={e.status} />
+                <StatusBadge
+                  label={String(e.status || '—')}
+                  tone={networkStatusTone(e.status)}
+                  size="sm"
+                  className="px-1 py-px text-[9px]"
+                />
                 <span className="w-8 shrink-0 text-muted-foreground">{e.method}</span>
                 <span className="flex-1 truncate">
                   {shortenUrl(sanitizeNetworkUrl(e.url, selected === e ? extraCredentialKeys : []))}
@@ -413,19 +419,8 @@ function shortenUrl(url: string, maxLen = 80): string {
   }
 }
 
-function StatusBadge({ status }: { status: number }) {
-  const ok = status >= 200 && status < 300;
-  const redir = status >= 300 && status < 400;
-  return (
-    <span
-      className={cn(
-        'inline-block rounded px-1 py-px text-[9px] font-medium',
-        ok && 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-        redir && 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
-        !ok && !redir && 'bg-red-500/15 text-red-600 dark:text-red-400',
-      )}
-    >
-      {status || '—'}
-    </span>
-  );
+function networkStatusTone(status: number): 'success' | 'warning' | 'danger' {
+  if (status >= 200 && status < 300) return 'success';
+  if (status >= 300 && status < 400) return 'warning';
+  return 'danger';
 }

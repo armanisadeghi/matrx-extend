@@ -31,6 +31,7 @@ import { DEFAULT_CHAT_MANDATE_KEY, DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandat
 type Row = (typeof fixture.rows)[number];
 const ROWS: Row[] = fixture.rows;
 const RESOLUTIONS: Record<string, unknown> = fixture.resolutions;
+const pickerPageRequests: Record<string, unknown>[] = [];
 
 /**
  * A structural stand-in for supabase-js that answers exactly what the package
@@ -56,6 +57,87 @@ function fixtureClient(): AgentCatalogClient {
   };
   const rpc = (fn: string, args?: Record<string, unknown>) => {
     if (fn === 'agx_get_list_full') return answer(ROWS);
+    if (fn === 'agx_picker_page') {
+      const request = args ?? {};
+      pickerPageRequests.push(request);
+      const tab = request.p_tab;
+      const archive = request.p_archive;
+      const includeQuick = request.p_include_quick;
+      const inTab = (row: Row) => {
+        if (tab === 'mine') return row.agent_type === 'user' && row.is_owner;
+        if (tab === 'shared') return row.agent_type === 'user' && !row.is_owner;
+        if (tab === 'all') return row.agent_type === 'user';
+        if (tab === 'system') return row.agent_type === 'builtin';
+        return true; // all_system includes both user and builtin rows.
+      };
+      const inArchive = (row: Row) =>
+        archive === 'both' || (archive === 'archived' ? row.is_archived : !row.is_archived);
+      const sortKey = (row: Row) => {
+        const lastUsedAt = (row as Row & { last_used_at?: string }).last_used_at;
+        return [
+          row.is_favorite ? 0 : 1,
+          lastUsedAt ? -Date.parse(lastUsedAt) / 1000 : 1e12,
+          row.name.toLowerCase(),
+          row.id,
+        ] as const;
+      };
+      const compareKey = (left: ReturnType<typeof sortKey>, right: ReturnType<typeof sortKey>) => {
+        for (let index = 0; index < left.length; index += 1) {
+          const a = left[index];
+          const b = right[index];
+          if (a === b) continue;
+          return index < 2 ? Number(a) - Number(b) : String(a).localeCompare(String(b));
+        }
+        return 0;
+      };
+      const visible = ROWS.filter(
+        (row) =>
+          inTab(row) &&
+          inArchive(row) &&
+          (includeQuick !== false || !row.tags.includes('kind:quick')),
+      ).sort((left, right) => compareKey(sortKey(left), sortKey(right)));
+      const limit = Number(request.p_limit ?? 50);
+      const cursor = request.p_cursor as {
+        k1?: number;
+        k2?: number;
+        k3?: string;
+        k4?: string;
+      } | null;
+      const afterCursor = cursor
+        ? visible.filter(
+            (row) => compareKey(sortKey(row), [cursor.k1!, cursor.k2!, cursor.k3!, cursor.k4!]) > 0,
+          )
+        : visible;
+      const pageRows = afterCursor.slice(0, limit);
+      const next = afterCursor.length > limit ? sortKey(pageRows[pageRows.length - 1]!) : null;
+      const countsFor = (row: Row) =>
+        inArchive(row) && (includeQuick !== false || !row.tags.includes('kind:quick'));
+      return {
+        data: {
+          rows: pageRows,
+          next_cursor: next ? { k1: next[0], k2: next[1], k3: next[2], k4: next[3] } : null,
+          counts: {
+            mine: ROWS.filter((row) => countsFor(row) && row.agent_type === 'user' && row.is_owner)
+              .length,
+            shared: ROWS.filter(
+              (row) => countsFor(row) && row.agent_type === 'user' && !row.is_owner,
+            ).length,
+            all: ROWS.filter((row) => countsFor(row) && row.agent_type === 'user').length,
+            system: ROWS.filter((row) => countsFor(row) && row.agent_type === 'builtin').length,
+            archived_hidden:
+              archive === 'active'
+                ? ROWS.filter(
+                    (row) =>
+                      inTab(row) &&
+                      row.is_archived &&
+                      (includeQuick !== false || !row.tags.includes('kind:quick')),
+                  ).length
+                : 0,
+          },
+        },
+        error: null,
+      };
+    }
     if (fn === 'agx_resolve_agent_address') {
       // The address resolver's own shape (`p_ids` in, `agent_id`/`agent_name`
       // out) — the door the package uses to name a Mandate Holder that is not
@@ -133,6 +215,9 @@ describe('the package picker, wired the way this extension wires it', () => {
   it('renders the live agent roster through the injected client', async () => {
     mountPicker({ onSelect: () => undefined });
     await waitFor(() => expect(screen.getByText('Workflow Conductor')).toBeTruthy());
+    expect(pickerPageRequests).toContainEqual(
+      expect.objectContaining({ p_tab: 'system', p_archive: 'active', p_include_quick: true }),
+    );
     expect(screen.getByText('Agent Goal Writer')).toBeTruthy();
     expect(screen.getByText('Meet In-Meeting Analyst')).toBeTruthy();
   });

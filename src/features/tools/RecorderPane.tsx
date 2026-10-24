@@ -16,10 +16,10 @@
 
 import { TabCaptureDialog } from '@/features/tools/TabCaptureDialog';
 import { confirmDestructive } from '@/lib/destructive/confirm';
-import { cn } from '@/lib/utils';
 import { type RecordingEntry, useRecordingsStore } from '@/lib/video/recordings-store';
 import { type RecorderStatus, useTabVideoRecorder } from '@/lib/video/useTabVideoRecorder';
 import { Badge, Button, BasicInput as Input } from '@ai-matrx/design-system';
+import { StatusBadge, type StatusBadgeProps } from '@ai-matrx/design-system/controls';
 import { Switch } from '@ai-matrx/design-system';
 import { copyText } from '@ai-matrx/kit/clipboard';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
@@ -33,54 +33,18 @@ import { useEffect, useMemo, useState } from 'react';
 const MIN_DURATION_S = 1;
 const MAX_DURATION_S = 60;
 
-function StatusBadge({ status }: { status: RecorderStatus }) {
-  const config: Record<RecorderStatus, { label: string; className: string }> = {
-    idle: {
-      label: 'Idle',
-      className:
-        'border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700/60 dark:bg-slate-900/40 dark:text-slate-300',
-    },
-    permission: {
-      label: 'Checking permission',
-      className:
-        'border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-300',
-    },
-    starting: {
-      label: 'Starting',
-      className:
-        'border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-300',
-    },
-    recording: {
-      label: 'Recording',
-      className:
-        'border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-700/60 dark:bg-rose-950/30 dark:text-rose-300',
-    },
-    stopping: {
-      label: 'Finalizing',
-      className:
-        'border-sky-300 bg-sky-50 text-sky-800 dark:border-sky-700/60 dark:bg-sky-950/30 dark:text-sky-300',
-    },
-    uploading: {
-      label: 'Uploading',
-      className:
-        'border-sky-300 bg-sky-50 text-sky-800 dark:border-sky-700/60 dark:bg-sky-950/30 dark:text-sky-300',
-    },
-    error: {
-      label: 'Error',
-      className:
-        'border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-700/60 dark:bg-rose-950/30 dark:text-rose-300',
-    },
-  };
-  const c = config[status];
-  return (
-    <Badge
-      variant="outline"
-      className={cn('h-5 px-2 text-[10px] uppercase tracking-wide', c.className)}
-    >
-      {c.label}
-    </Badge>
-  );
-}
+const RECORDER_STATUS_PRESENTATION: Record<
+  RecorderStatus,
+  Pick<StatusBadgeProps, 'label' | 'tone'>
+> = {
+  idle: { label: 'Idle', tone: 'neutral' },
+  permission: { label: 'Checking permission', tone: 'warning' },
+  starting: { label: 'Starting', tone: 'warning' },
+  recording: { label: 'Recording', tone: 'danger' },
+  stopping: { label: 'Finalizing', tone: 'info' },
+  uploading: { label: 'Uploading', tone: 'info' },
+  error: { label: 'Error', tone: 'danger' },
+};
 
 export function RecorderPane() {
   const {
@@ -160,7 +124,7 @@ export function RecorderPane() {
             <div className="flex items-center gap-2">
               <Video className="size-3.5 text-muted-foreground" />
               <span className="text-sm font-medium">Tab recorder</span>
-              <StatusBadge status={status} />
+              <StatusBadge {...RECORDER_STATUS_PRESENTATION[status]} size="sm" />
             </div>
             <span className="text-[11px] text-muted-foreground">{entries.length} saved</span>
           </div>
