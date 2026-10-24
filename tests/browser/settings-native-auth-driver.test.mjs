@@ -1034,7 +1034,12 @@ test('admin sign-in parks the owned web tab on whoami through extension auth and
       assert.equal(target, panel);
       return signedIntoExtension
         ? { expected_admin_email: true, admin_role: true, sign_in_count: 0, sign_in_enabled: false }
-        : { expected_admin_email: false, admin_role: false, sign_in_count: 1, sign_in_enabled: true };
+        : {
+            expected_admin_email: false,
+            admin_role: false,
+            sign_in_count: 1,
+            sign_in_enabled: true,
+          };
     },
     async () => order.push('traffic-marked'),
     async () => order.push('account-opened'),
@@ -1091,6 +1096,13 @@ test('admin sign-in parks the owned web tab on whoami through extension auth and
   const dashboard = once('dashboard-proof');
   const park = once('goto:/api/whoami');
   const extensionSignIn = once('extension-sign-in');
+  const parkNavigation = once('stage:admin_web_identity_park_navigation');
+  const parkResponse = once('stage:admin_web_identity_park_response');
+  const parkStatus = once('stage:admin_web_identity_park_status');
+  const parkRoute = once('stage:admin_web_identity_park_route');
+  assert.ok(parkNavigation < park && park < parkResponse);
+  assert.ok(parkResponse < parkStatus && parkStatus < parkRoute);
+  assert.ok(parkRoute < extensionSignIn);
   const identityReads = order.flatMap((item, index) =>
     item === 'post-auth-web-identity-fetch' ? [index] : [],
   );

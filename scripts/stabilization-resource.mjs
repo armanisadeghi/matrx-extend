@@ -55,6 +55,7 @@ let admitted = false;
 let childFinished = false;
 let operatorStopped = false;
 let cpuPending = false;
+let unconfirmedGroupSignal = false;
 let startupBracket;
 const flags = new Map();
 let command = [];
@@ -165,15 +166,82 @@ async function processIdentity(pid) {
   }
 }
 
-async function groupMembers(groupId) {
+async function groupMembers(groupId, strict = false) {
   const raw = await output('/bin/ps', ['-axo', 'pid=,pgid=,stat=']);
-  return raw
-    .split('\n')
-    .map((line) => line.trim().split(/\s+/))
-    .filter(
-      (parts) => parts.length >= 3 && Number(parts[1]) === groupId && !parts[2].startsWith('Z'),
+  const rows = raw.split('\n').filter((line) => line.trim());
+  if (strict && !rows.length) throw new Error('RESOURCE_GROUP_CENSUS_INVALID');
+  const members = [];
+  for (const line of rows) {
+    const parts = line.trim().split(/\s+/);
+    const pid = Number(parts[0]);
+    const pgid = Number(parts[1]);
+    if (
+      strict &&
+      (parts.length !== 3 ||
+        !/^[1-9][0-9]*$/.test(parts[0]) ||
+        !/^[1-9][0-9]*$/.test(parts[1]) ||
+        !Number.isSafeInteger(pid) ||
+        !Number.isSafeInteger(pgid) ||
+        !parts[2])
     )
-    .map((parts) => Number(parts[0]));
+      throw new Error('RESOURCE_GROUP_CENSUS_INVALID');
+    if (parts.length >= 3 && pgid === groupId && !parts[2].startsWith('Z')) members.push(pid);
+  }
+  return members;
+}
+
+function groupSignalErrorClass(error) {
+  return ['Error', 'TypeError', 'RangeError', 'SystemError'].includes(error?.name)
+    ? error.name
+    : 'Other';
+}
+
+const groupCensusOsCodes = new Set([
+  'EACCES',
+  'EBUSY',
+  'EIO',
+  'EINVAL',
+  'EPIPE',
+  'ETIMEDOUT',
+  'ENOENT',
+  'EPERM',
+  'ESRCH',
+]);
+
+async function confirmGroupGoneAfterEperm(groupId, runId, signal, error) {
+  const diagnostic = {
+    runId,
+    ...(['SIGTERM', 'SIGKILL'].includes(signal) && { signal }),
+    errorClass: groupSignalErrorClass(error),
+    osCode: 'EPERM',
+  };
+  let members;
+  try {
+    members = await groupMembers(groupId, true);
+  } catch (censusError) {
+    unconfirmedGroupSignal = true;
+    resourceInvalid = true;
+    process.exitCode = 3;
+    emit('RESOURCE_GROUP_SIGNAL_UNCONFIRMED', {
+      ...diagnostic,
+      freshZeroProof: false,
+      censusErrorClass: groupSignalErrorClass(censusError),
+      ...(groupCensusOsCodes.has(censusError?.code) && { censusOsCode: censusError.code }),
+      ...(censusError?.message === 'RESOURCE_GROUP_CENSUS_INVALID' && {
+        censusResourceCode: 'RESOURCE_GROUP_CENSUS_INVALID',
+      }),
+    });
+    throw censusError;
+  }
+  if (!members.length) {
+    emit('RESOURCE_GROUP_SIGNAL_EPERM_CENSUS', { ...diagnostic, freshZeroProof: true });
+    return true;
+  }
+  unconfirmedGroupSignal = true;
+  resourceInvalid = true;
+  process.exitCode = 3;
+  emit('RESOURCE_GROUP_SIGNAL_UNCONFIRMED', { ...diagnostic, freshZeroProof: false });
+  throw error;
 }
 
 async function groupGone(groupId) {
@@ -195,14 +263,18 @@ async function stopOwnedGroup(groupId, runId, reason) {
   try {
     process.kill(-groupId, 'SIGTERM');
   } catch (error) {
-    if (error.code !== 'ESRCH') throw error;
+    if (error.code === 'EPERM') {
+      if (await confirmGroupGoneAfterEperm(groupId, runId, 'SIGTERM', error)) return true;
+    } else if (error.code !== 'ESRCH') throw error;
   }
   if (await waitGroupGone(groupId, policy.ownedGroupGraceSeconds)) return true;
   emit('RESOURCE_GROUP_ESCALATED', { runId, groupId, signal: 'SIGKILL' });
   try {
     process.kill(-groupId, 'SIGKILL');
   } catch (error) {
-    if (error.code !== 'ESRCH') throw error;
+    if (error.code === 'EPERM') {
+      if (await confirmGroupGoneAfterEperm(groupId, runId, 'SIGKILL', error)) return true;
+    } else if (error.code !== 'ESRCH') throw error;
   }
   return waitGroupGone(groupId, policy.ownedGroupKillWaitSeconds);
 }
@@ -872,7 +944,13 @@ async function main() {
       canRelease = false;
     }
     if (attributionPending.size) await Promise.allSettled([...attributionPending]);
-    if (canRelease && !journalBroken && !safetyStateBroken && !attributionFailure)
+    if (
+      canRelease &&
+      !journalBroken &&
+      !safetyStateBroken &&
+      !attributionFailure &&
+      !unconfirmedGroupSignal
+    )
       await release(owner);
   }
   if (attributionFailure) throw attributionFailure;

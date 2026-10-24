@@ -5,6 +5,7 @@ import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
+import { runInNewContext } from 'node:vm';
 import {
   requireNativeResourceHealth,
   runNativeResourceAction,
@@ -44,6 +45,9 @@ const safeEventCodes = new Set([
   'RESOURCE_GROUP_STILL_RUNNING',
   'RESOURCE_GROUP_STOP_REQUESTED',
   'RESOURCE_GROUP_UNCONFIRMED',
+  'RESOURCE_GROUP_CENSUS_INVALID',
+  'RESOURCE_GROUP_SIGNAL_EPERM_CENSUS',
+  'RESOURCE_GROUP_SIGNAL_UNCONFIRMED',
   'RESOURCE_JOB_EXIT',
   'RESOURCE_JOURNAL_OPENED',
   'RESOURCE_MEASUREMENT_FAILED',
@@ -74,6 +78,7 @@ const safeDiagnosticStages = new Set([
   'lease_release',
 ]);
 const safeDiagnosticResourceCodes = new Set([
+  'RESOURCE_GROUP_CENSUS_INVALID',
   'RESOURCE_GROUP_UNCONFIRMED',
   'RESOURCE_GROUP_STILL_RUNNING',
   'RESOURCE_MEASUREMENT_FAILED',
@@ -94,6 +99,11 @@ const safeDiagnosticOsCodes = new Set([
   'ESRCH',
 ]);
 const safeDiagnosticErrorNames = new Set(['Error', 'TypeError', 'RangeError', 'SystemError']);
+const groupSignalEventCodes = new Set([
+  'RESOURCE_GROUP_SIGNAL_EPERM_CENSUS',
+  'RESOURCE_GROUP_SIGNAL_UNCONFIRMED',
+]);
+const groupSignalErrorClasses = new Set([...safeDiagnosticErrorNames, 'Other']);
 const safeDiagnosticStderrCodes = new Set([
   'RESOURCE_GROUP_STOP_REQUESTED',
   'RESOURCE_GROUP_ESCALATED',
@@ -129,6 +139,7 @@ function safeFailureSummary(event) {
 }
 
 function safeEventSummary(event) {
+  const groupSignalEvent = groupSignalEventCodes.has(event?.code);
   return {
     code: safeEventCodes.has(event?.code) ? event.code : 'OTHER_EVENT',
     ...(Array.isArray(event?.reasons) && {
@@ -140,6 +151,25 @@ function safeEventSummary(event) {
         event.childExitCode <= 255)) && {
       childExitCode: event.childExitCode,
     }),
+    ...(groupSignalEvent && ['SIGTERM', 'SIGKILL'].includes(event?.signal) && {
+      signal: event.signal,
+    }),
+    ...(groupSignalEvent && groupSignalErrorClasses.has(event?.errorClass) && {
+      errorClass: event.errorClass,
+    }),
+    ...(groupSignalEvent && safeDiagnosticOsCodes.has(event?.osCode) && { osCode: event.osCode }),
+    ...(groupSignalEvent && typeof event?.freshZeroProof === 'boolean' && {
+      freshZeroProof: event.freshZeroProof,
+    }),
+    ...(groupSignalEvent && groupSignalErrorClasses.has(event?.censusErrorClass) && {
+      censusErrorClass: event.censusErrorClass,
+    }),
+    ...(groupSignalEvent && safeDiagnosticOsCodes.has(event?.censusOsCode) && {
+      censusOsCode: event.censusOsCode,
+    }),
+    ...(groupSignalEvent && event?.censusResourceCode === 'RESOURCE_GROUP_CENSUS_INVALID' && {
+      censusResourceCode: event.censusResourceCode,
+    }),
     ...(safeFailureSummary(event) && {
       failure: safeFailureSummary(event),
     }),
@@ -150,6 +180,7 @@ async function fixture({
   pauseOwnerRewrite = false,
   simulateChildError = false,
   simulateAttributionError = false,
+  groupSignalMode = null,
 } = {}) {
   const scratch = await mkdtemp(join(tmpdir(), 'resource-cpu-wrapper-'));
   const scripts = join(scratch, 'scripts');
@@ -165,6 +196,53 @@ async function fixture({
   await setHealthyHostMeasurements(scripts);
   const guardPath = join(scripts, 'stabilization-resource.mjs');
   let guardSource = await readFile(guardPath, 'utf8');
+  const groupMembersRead = "const raw = await output('/bin/ps', ['-axo', 'pid=,pgid=,stat=']);";
+  assert.equal(guardSource.split(groupMembersRead).length, 2);
+  guardSource = guardSource.replace(
+    groupMembersRead,
+    `${groupMembersRead.replace('const raw', 'let raw')}
+  if (strict && ${JSON.stringify(groupSignalMode)} === 'term-census-error')
+    throw Object.assign(new Error('synthetic census error'), { code: 'EIO' });
+  if (strict && ${JSON.stringify(groupSignalMode)} === 'term-malformed')
+    raw += '\\nmalformed census row';`,
+  );
+  const stopGroupDeclaration = 'async function stopOwnedGroup(groupId, runId, reason) {';
+  assert.equal(guardSource.split(stopGroupDeclaration).length, 2);
+  guardSource = guardSource.replace(
+    stopGroupDeclaration,
+    `const originalGroupKill = process.kill.bind(process);
+const groupSignalMode = ${JSON.stringify(groupSignalMode)};
+async function syntheticGroupSignal(groupId, signal) {
+  if (!groupSignalMode) return originalGroupKill(-groupId, signal);
+  if (groupSignalMode === 'kill-gone' && signal === 'SIGTERM') return;
+  if (groupSignalMode === 'kill-live' && signal === 'SIGTERM') return;
+  if (
+    (groupSignalMode === 'term-gone' && signal === 'SIGTERM') ||
+    (groupSignalMode === 'kill-gone' && signal === 'SIGKILL')
+  ) {
+    originalGroupKill(-groupId, signal);
+    const gone = await waitGroupGone(groupId, policy.ownedGroupKillWaitSeconds);
+    if (!gone) throw new Error('TEST_SIGNAL_GROUP_DID_NOT_EXIT');
+  } else if (
+    (['term-live', 'term-census-error', 'term-malformed'].includes(groupSignalMode) &&
+      signal === 'SIGTERM') ||
+    (groupSignalMode === 'kill-live' && signal === 'SIGKILL')
+  ) {
+    // Leave the real group alive so production must reject the EPERM census.
+  } else {
+    return originalGroupKill(-groupId, signal);
+  }
+  throw Object.assign(new Error('synthetic EPERM'), { code: 'EPERM' });
+}
+${stopGroupDeclaration}`,
+  );
+  for (const [call, signal] of [
+    ["process.kill(-groupId, 'SIGTERM');", 'SIGTERM'],
+    ["process.kill(-groupId, 'SIGKILL');", 'SIGKILL'],
+  ]) {
+    assert.equal(guardSource.split(call).length, 2);
+    guardSource = guardSource.replace(call, `await syntheticGroupSignal(groupId, '${signal}');`);
+  }
   const diagnosticDeclaration = 'let startupBracket;';
   assert.equal(guardSource.split(diagnosticDeclaration).length, 2);
   guardSource = guardSource.replace(
@@ -514,6 +592,7 @@ async function runScenario(
       pauseOwnerRewrite,
       simulateChildError: kind === 'pending-child-error',
       simulateAttributionError,
+      groupSignalMode: kind.startsWith('eperm-') ? kind.slice('eperm-'.length) : null,
     });
     const runId = `cpu-${kind}-${randomUUID()}`;
     diagnostic.setStage('guard_spawn');
@@ -705,6 +784,14 @@ async function runScenario(
           }
         }
       }
+    } else if (kind.startsWith('eperm-')) {
+      const second = await stream.next((event) => watchCodes.has(event.code));
+      assert.equal(second.code, 'RESOURCE_WATCH_UNSAFE');
+      assert.deepEqual(second.reasons, ['RESOURCE_CPU_BUSY']);
+      await assert.rejects(
+        runNativeResourceAction(check, () => ++actions),
+        /unsafe_sample|stop_requested|unsafe_hold/,
+      );
     } else if (kind === 'confirmed') {
       const second = await stream.next((event) => watchCodes.has(event.code));
       assert.equal(second.code, 'RESOURCE_WATCH_UNSAFE');
@@ -762,6 +849,7 @@ async function runScenario(
         'completion-memory-unsafe',
         'noncpu-attribution',
         'noncpu-attribution-cleanup-error',
+        ...watchScenarioKinds.filter((scenario) => scenario.startsWith('eperm-')),
         'attribution-alternation',
       ].includes(kind)
     ) {
@@ -783,6 +871,60 @@ async function runScenario(
       );
     if (kind === 'completion-stop')
       assert(journal.some((event) => event.code === 'RESOURCE_STOP_REQUESTED'));
+    if (kind.startsWith('eperm-')) {
+      const gone = kind.endsWith('-gone');
+      const expectedSignal = kind.includes('-kill-') ? 'SIGKILL' : 'SIGTERM';
+      const expectedCode = gone
+        ? 'RESOURCE_GROUP_SIGNAL_EPERM_CENSUS'
+        : 'RESOURCE_GROUP_SIGNAL_UNCONFIRMED';
+      const event = journal.find((entry) => entry.code === expectedCode);
+      assert(event, `missing ${expectedCode}`);
+      assert.equal(event.signal, expectedSignal);
+      assert.equal(event.osCode, 'EPERM');
+      assert.equal(event.freshZeroProof, gone);
+      assert.equal(journal.at(-1).decision, 'invalid');
+      assert.equal(journal.at(-1).resourceInvalid, true);
+      assert.equal(journal.some((entry) => entry.code === 'RESOURCE_GROUP_STILL_RUNNING'), false);
+      assert.equal(
+        journal.some((entry) => entry.code === 'RESOURCE_OWNED_PROCESS_STILL_RUNNING'),
+        false,
+      );
+      if (kind.endsWith('-census-error')) {
+        assert.equal(event.censusOsCode, 'EIO');
+        assert.equal(event.censusErrorClass, 'Error');
+        const failure = journal.find((entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED');
+        assert.equal(failure?.syntheticDiagnostic?.stage, 'watchdog_group_stop');
+        assert.equal(failure?.syntheticDiagnostic?.osCode, 'EIO');
+      }
+      if (kind.endsWith('-malformed')) {
+        assert.equal(event.censusResourceCode, 'RESOURCE_GROUP_CENSUS_INVALID');
+        assert(
+          journal.some((entry) => entry.code === 'RESOURCE_GROUP_CENSUS_INVALID'),
+          'malformed strict census must remain an explicit resource failure',
+        );
+        assert.equal(journal.some((entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED'), false);
+      }
+      if (kind.endsWith('-live')) {
+        const failure = journal.find((entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED');
+        assert.equal(failure?.syntheticDiagnostic?.stage, 'watchdog_group_stop');
+        assert.equal(failure?.syntheticDiagnostic?.osCode, 'EPERM');
+      }
+      if (gone)
+        assert.equal(journal.some((entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED'), false);
+      const ownerPath = join(item.leaseRoot, 'heavy/owner.json');
+      assert.equal((await stat(join(item.leaseRoot, `unsafe-hold.json`))).isFile(), true);
+      assert.equal(
+        (await stat(join(item.leaseRoot, `stop-${owner.nonce}.json`))).isFile(),
+        true,
+      );
+      if (gone) {
+        await assert.rejects(stat(ownerPath), { code: 'ENOENT' });
+      } else {
+        const retained = JSON.parse(await readFile(ownerPath, 'utf8'));
+        assert.equal(retained.nonce, owner.nonce);
+        assert.equal(retained.runId, runId);
+      }
+    }
     assert.equal(actions, kind === 'recovered' ? 1 : kind === 'attribution-episodes' ? 2 : 0);
     if (kind === 'attribution-episodes') {
       const attribution = journal.filter((event) => event.code === 'RESOURCE_PROCESS_ATTRIBUTION');
@@ -858,6 +1000,12 @@ async function runScenarioGroup(kinds, options) {
 }
 
 const watchScenarioKinds = [
+  'eperm-term-gone',
+  'eperm-term-live',
+  'eperm-term-census-error',
+  'eperm-term-malformed',
+  'eperm-kill-gone',
+  'eperm-kill-live',
   'recovered',
   'confirmed',
   'pending-exit',
@@ -893,6 +1041,12 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
     assert.deepEqual(
       [...cases.keys()],
       [
+        'actual guard watch journal: eperm-term-gone',
+        'actual guard watch journal: eperm-term-live',
+        'actual guard watch journal: eperm-term-census-error',
+        'actual guard watch journal: eperm-term-malformed',
+        'actual guard watch journal: eperm-kill-gone',
+        'actual guard watch journal: eperm-kill-live',
         'actual guard watch journal: recovered',
         'actual guard watch journal: confirmed',
         'actual guard watch journal: pending-exit',
@@ -1027,6 +1181,140 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
 }
 
 registerWatchScenarioTests();
+
+test('strict process-group census validates the production parser against malformed ps rows', async () => {
+  const guardSource = await readFile(join(source, 'scripts/stabilization-resource.mjs'), 'utf8');
+  const start = guardSource.indexOf('async function groupMembers(groupId, strict = false) {');
+  const endMarker = '\n}\n\nfunction groupSignalErrorClass';
+  const end = guardSource.indexOf(endMarker, start);
+  assert(start >= 0 && end > start, 'production groupMembers source must be extractable');
+  let census = '1 1 S';
+  const context = {
+    output: async (command, args) => {
+      assert.equal(command, '/bin/ps');
+      assert.equal(JSON.stringify(args), JSON.stringify(['-axo', 'pid=,pgid=,stat=']));
+      return census;
+    },
+  };
+  runInNewContext(
+    `${guardSource.slice(start, end + 2)}\nglobalThis.extractedGroupMembers = groupMembers;`,
+    context,
+  );
+  assert.deepEqual([...(await context.extractedGroupMembers(50, true))], []);
+  census = '50 50 S\n51 50 Z';
+  assert.deepEqual([...(await context.extractedGroupMembers(50, true))], [50]);
+
+  for (const invalidCensus of [
+    '',
+    ' \t\n  ',
+    '54 54',
+    'malformed census row',
+    '1e3 54 S',
+    '+1 54 S',
+    '0x10 54 S',
+    '54 1e3 S',
+    '54 +1 S',
+    '54 0x10 S',
+    '9007199254740992 54 S',
+    '54 9007199254740992 S',
+    '54 54 S extra',
+  ]) {
+    census = invalidCensus;
+    await assert.rejects(context.extractedGroupMembers(54, true), {
+      message: 'RESOURCE_GROUP_CENSUS_INVALID',
+    });
+  }
+});
+
+test('group-signal event projection exposes only closed safe fields', () => {
+  const zeroProof = safeEventSummary({
+    code: 'RESOURCE_GROUP_SIGNAL_EPERM_CENSUS',
+    signal: 'SIGTERM',
+    errorClass: 'Other',
+    osCode: 'EPERM',
+    freshZeroProof: true,
+    groupId: 999999,
+    runId: 'private-run-id',
+    env: { MATRX_RESOURCE_OWNER: 'private-nonce' },
+    payload: 'private-payload',
+  });
+  assert.deepEqual(zeroProof, {
+    code: 'RESOURCE_GROUP_SIGNAL_EPERM_CENSUS',
+    signal: 'SIGTERM',
+    errorClass: 'Other',
+    osCode: 'EPERM',
+    freshZeroProof: true,
+  });
+
+  const unconfirmed = safeEventSummary({
+    code: 'RESOURCE_GROUP_SIGNAL_UNCONFIRMED',
+    signal: 'SIGKILL',
+    errorClass: 'Error',
+    osCode: 'EPERM',
+    freshZeroProof: false,
+    censusErrorClass: 'SystemError',
+    censusOsCode: 'EIO',
+    censusResourceCode: 'RESOURCE_GROUP_CENSUS_INVALID',
+    groupId: 999999,
+    runId: 'private-run-id',
+    env: { MATRX_RESOURCE_OWNER: 'private-nonce' },
+    payload: 'private-payload',
+  });
+  assert.deepEqual(unconfirmed, {
+    code: 'RESOURCE_GROUP_SIGNAL_UNCONFIRMED',
+    signal: 'SIGKILL',
+    errorClass: 'Error',
+    osCode: 'EPERM',
+    freshZeroProof: false,
+    censusErrorClass: 'SystemError',
+    censusOsCode: 'EIO',
+    censusResourceCode: 'RESOURCE_GROUP_CENSUS_INVALID',
+  });
+
+  const hostileSignal = safeEventSummary({
+    code: 'RESOURCE_GROUP_SIGNAL_UNCONFIRMED',
+    signal: 'SIGSECRET',
+    errorClass: 'PrivateError',
+    osCode: 'PRIVATE_OS_CODE',
+    freshZeroProof: 'private-proof',
+    censusErrorClass: 'PrivateError',
+    censusOsCode: 'PRIVATE_CENSUS_CODE',
+    censusResourceCode: 'RESOURCE_PRIVATE_TOKEN',
+    groupId: 999999,
+    runId: 'private-run-id',
+    env: { MATRX_RESOURCE_OWNER: 'private-nonce' },
+    payload: 'private-payload',
+  });
+  const hostileUnrelated = safeEventSummary({
+    code: 'RESOURCE_ADMITTED',
+    signal: 'SIGTERM',
+    errorClass: 'Error',
+    osCode: 'EPERM',
+    freshZeroProof: true,
+    censusErrorClass: 'Error',
+    censusOsCode: 'EIO',
+    censusResourceCode: 'RESOURCE_GROUP_CENSUS_INVALID',
+    groupId: 999999,
+    runId: 'private-run-id',
+    env: { MATRX_RESOURCE_OWNER: 'private-nonce' },
+    payload: 'private-payload',
+  });
+  assert.deepEqual(hostileSignal, { code: 'RESOURCE_GROUP_SIGNAL_UNCONFIRMED' });
+  assert.deepEqual(hostileUnrelated, { code: 'RESOURCE_ADMITTED' });
+  const rendered = JSON.stringify([zeroProof, unconfirmed, hostileSignal, hostileUnrelated]);
+  for (const secret of [
+    'private-run-id',
+    'private-nonce',
+    'private-payload',
+    'PRIVATE_OS_CODE',
+    'PRIVATE_CENSUS_CODE',
+    'RESOURCE_PRIVATE_TOKEN',
+    'SIGSECRET',
+    'PrivateError',
+    '999999',
+  ])
+    assert.equal(rendered.includes(secret), false, `projector leaked ${secret}`);
+});
 
 test('process attribution runs once per recovered CPU episode', { timeout: 30_000 }, async () => {
   await runScenarioGroup(['attribution-episodes']);
