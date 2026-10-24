@@ -87,6 +87,12 @@ vi.mock('@/hooks/use-active-tab', () => ({
 vi.mock('@/hooks/use-active-organization', () => ({
   useActiveOrganization: () => ({
     active: { id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', name: 'Events organization' },
+    organizations: [{ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', name: 'Events organization' }],
+    loading: false,
+    error: null,
+    mustChoose: false,
+    choose: vi.fn(async () => {}),
+    reload: vi.fn(),
   }),
 }));
 vi.mock('@/hooks/use-user-tables', () => ({
