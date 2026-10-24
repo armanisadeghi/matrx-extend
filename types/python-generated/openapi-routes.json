@@ -5952,6 +5952,11 @@
    "application/json"
   ]
  },
+ "/notifications/self/text": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/notion-import/connected": {
   "post": [
    "application/json"

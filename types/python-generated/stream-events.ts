@@ -383,6 +383,7 @@ export interface AgentStudioFromChatProgressData {
   proof_cases?: number | null;
   run_conversation_id?: string | null;
   brief?: Record<string, unknown> | null;
+  scope?: Record<string, unknown> | null;
 }
 
 export interface AgentStudioBriefVariable {
