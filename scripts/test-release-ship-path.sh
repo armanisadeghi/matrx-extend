@@ -24,6 +24,7 @@ SCRIPT_UNDER_TEST="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/release
 SCRIPT_UNDER_TEST="$(cd "$(dirname "$SCRIPT_UNDER_TEST")" && pwd)/$(basename "$SCRIPT_UNDER_TEST")"
 HARNESS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SANDBOX="$(mktemp -d)"
+export MATRX_RELEASE_SCREAM_HELPER="$SANDBOX/no-release-scream-helper.py"
 trap '[[ -n "${REGISTRY_PID:-}" ]] && { kill "$REGISTRY_PID" 2>/dev/null || true; wait "$REGISTRY_PID" 2>/dev/null || true; }; [[ -n "${KEEP_SANDBOX:-}" ]] && echo "sandbox kept: $SANDBOX" || rm -rf "$SANDBOX"' EXIT
 
 git_q() { git -c user.name=test -c user.email=test@test -c core.hooksPath=/dev/null "$@" >/dev/null 2>&1; }
@@ -588,6 +589,7 @@ CATCHUP_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
 touch "$SANDBOX/pin-packages"; UPDATES_BEFORE="$(updates)"
 PIN_STATUS=0; run_release catchup-pin-out || PIN_STATUS=$?
 rm -f "$SANDBOX/pin-packages"
+check "PIN helper fallback truthfully reports unavailable mail" 'grep -q "Agent mail helper unavailable; no agent mail was sent." "$SANDBOX/catchup-pin-out" && ! grep -Eiq "agent mail (was )?delivered|ship-all lanes were mailed" "$SANDBOX/catchup-pin-out"'
 check "PIN is never caught up, reported and released"  '[[ $PIN_STATUS -eq 0 && "$(updates)" == "$UPDATES_BEFORE" && "$CATCHUP_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "  pushed" "$SANDBOX/catchup-pin-out" && grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/catchup-pin-out" && grep -q "RELEASE WARNING" "$SANDBOX/catchup-pin-out"' 'catchup_failure_diagnostics PIN "$PIN_STATUS" "$UPDATES_BEFORE" "$(updates)" "$CATCHUP_BASE" "$SANDBOX/catchup-pin-out"'
 git fetch -q --tags origin 2>/dev/null || true; git_q reset -q --hard origin/main
 CATCHUP_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
@@ -595,6 +597,7 @@ touch "$SANDBOX/stale-packages" "$SANDBOX/changelog-action"
 ACTION_UPDATES_BEFORE="$(updates)"
 ACTION_STATUS=0; run_release catchup-action-out || ACTION_STATUS=$?
 rm -f "$SANDBOX/changelog-action"
+check "Consumer action helper fallback truthfully reports unavailable mail" 'grep -q "Agent mail helper unavailable; no agent mail was sent." "$SANDBOX/catchup-action-out" && ! grep -Eiq "agent mail (was )?delivered|ship-all lanes were mailed" "$SANDBOX/catchup-action-out"'
 check "a declared Consumer action is reported and the release goes on" '[[ $ACTION_STATUS -eq 0 && "$CATCHUP_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "  pushed" "$SANDBOX/catchup-action-out" && grep -q "check: matrx-packages catch-up" "$SANDBOX/catchup-action-out"' 'catchup_failure_diagnostics ACTION "$ACTION_STATUS" "$ACTION_UPDATES_BEFORE" "$(updates)" "$CATCHUP_BASE" "$SANDBOX/catchup-action-out"'
 check "the Consumer action is named"                   'grep -q "@ai-matrx/fixture@1.0.1 Consumer action: delete your local copy" "$SANDBOX/catchup-action-out"'
 git checkout -q -- pnpm-lock.yaml
@@ -1005,6 +1008,7 @@ git fetch -q --tags origin 2>/dev/null || true
 STALE_TAG="$(sed -n 's/^\(v[0-9.]*\)  pushed.*/\1/p' "$SANDBOX/stale-packages-out")"
 check "stale packages are reported and the release is pushed" '[[ $STALE_PACKAGES_STATUS -eq 0 && -n "$STALE_TAG" ]] && git ls-remote --tags origin | grep -q "refs/tags/$STALE_TAG$" && grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/stale-packages-out"'
 check "stale packages scream"                           'grep -q "RELEASE WARNING" "$SANDBOX/stale-packages-out" && grep -q "check: matrx-packages" "$SANDBOX/stale-packages-out"'
+check "stale packages helper fallback truthfully reports unavailable mail" 'grep -q "Agent mail helper unavailable; no agent mail was sent." "$SANDBOX/stale-packages-out" && ! grep -Eiq "agent mail (was )?delivered|ship-all lanes were mailed" "$SANDBOX/stale-packages-out"'
 check "the unit tests still ran after stale packages"   '[[ $(( $(grep -c "exec vitest run" "$SANDBOX/pnpm-calls") - UNIT_RUNS_BEFORE )) -ge 1 ]]'
 PKG_INSTALLS_RUN=$(( $(grep -c '^install --frozen-lockfile --package-import-method=clone-or-copy$' "$SANDBOX/pnpm-calls") - PKG_INSTALLS_BEFORE ))
 check "candidate regen/check/build reuse one private frozen install" '[[ $PKG_INSTALLS_RUN -eq 1 ]]'
@@ -1027,8 +1031,43 @@ git fetch -q --tags origin 2>/dev/null || true
 LINT_TAG="$(sed -n 's/^\(v[0-9.]*\)  pushed.*/\1/p' "$SANDBOX/lint-out")"
 check "a lint failure is reported and the release is pushed" '[[ $LINT_STATUS -eq 0 && -n "$LINT_TAG" ]] && git ls-remote --tags origin | grep -q "refs/tags/$LINT_TAG$" && grep -q "^ERROR .*lint failed" "$SANDBOX/lint-out"'
 check "a lint failure screams"                          'grep -q "RELEASE WARNING" "$SANDBOX/lint-out" && grep -q "check: lint" "$SANDBOX/lint-out"'
+check "lint helper fallback truthfully reports unavailable mail" 'grep -q "Agent mail helper unavailable; no agent mail was sent." "$SANDBOX/lint-out" && ! grep -Eiq "agent mail (was )?delivered|ship-all lanes were mailed" "$SANDBOX/lint-out"'
 check "lint diagnostics stay safe"                      'grep -q "src/fixture.ts format format differs" "$SANDBOX/lint-out" && ! grep -q "SYNTHETIC_SOURCE_MUST_NOT_LEAK" "$SANDBOX/lint-out"'
 check "the unit tests still ran after a lint failure"   '[[ $(( $(grep -c "exec vitest run" "$SANDBOX/pnpm-calls") - UNIT_RUNS_BEFORE )) -ge 1 ]]'
+
+# Exercise the exact candidate helper functions without another release build.
+python3 - "$SCRIPT_UNDER_TEST" "$SANDBOX/scream-functions.sh" <<'PYEXTRACT'
+from pathlib import Path
+import sys
+s = Path(sys.argv[1]).read_text()
+start = s.index("scream_release_fallback() {")
+end = s.index("check_verdict() {", start)
+Path(sys.argv[2]).write_text(s[start:end])
+PYEXTRACT
+cat > "$SANDBOX/scream-helper-success.py" <<'PYHELPER'
+import os, sys
+with open(os.environ['MATRX_RELEASE_SCREAM_TEST_CAPTURE'], 'a') as f:
+    f.write('success|' + '|'.join(sys.argv[1:]) + '|no_mail=' + os.environ.get('MATRX_RELEASE_SCREAM_NO_MAIL', '') + '\n')
+print('fixture helper success')
+PYHELPER
+cat > "$SANDBOX/scream-helper-failure.py" <<'PYHELPER'
+import os, sys
+with open(os.environ['MATRX_RELEASE_SCREAM_TEST_CAPTURE'], 'a') as f:
+    f.write('failure|' + '|'.join(sys.argv[1:]) + '|no_mail=' + os.environ.get('MATRX_RELEASE_SCREAM_NO_MAIL', '') + '\n')
+print('fixture helper failed')
+sys.exit(23)
+PYHELPER
+set +e
+RELEASE_SHA=probe-ref MATRX_RELEASE_SCREAM_HELPER="$SANDBOX/scream-helper-success.py" MATRX_RELEASE_SCREAM_TEST_CAPTURE="$SANDBOX/helper-control-calls" bash -c 'set -euo pipefail; source "$1"; scream_release probe-success synthetic-detail' _ "$SANDBOX/scream-functions.sh" > "$SANDBOX/helper-success-out" 2>&1
+HELPER_SUCCESS_STATUS=$?
+RELEASE_SHA=probe-ref MATRX_RELEASE_SCREAM_HELPER="$SANDBOX/scream-helper-failure.py" MATRX_RELEASE_SCREAM_TEST_CAPTURE="$SANDBOX/helper-control-calls" bash -c 'set -euo pipefail; source "$1"; scream_release probe-failure synthetic-detail' _ "$SANDBOX/scream-functions.sh" > "$SANDBOX/helper-failure-out" 2>&1
+HELPER_FAILURE_STATUS=$?
+{ MATRX_RELEASE_SCREAM_HELPER="$SANDBOX/no-release-scream-helper.py" bash -c 'set -euo pipefail; source "$1"; scream_release closed-stderr synthetic-detail' _ "$SANDBOX/scream-functions.sh" > /dev/null 2>&-; } 2>/dev/null
+CLOSED_HELPER_STATUS=$?
+set -e
+check "present helper callback and no-mail flag are preserved" '[[ $HELPER_SUCCESS_STATUS -eq 0 ]] && grep -Fqx "success|--repo|matrx-extend|--where|release.sh checks|--check|probe-success|--detail|synthetic-detail|--ref|probe-ref|no_mail=1" "$SANDBOX/helper-control-calls" && grep -q "fixture helper success" "$SANDBOX/helper-success-out" && ! grep -q "Agent mail helper unavailable" "$SANDBOX/helper-success-out"'
+check "nonzero helper falls back without claiming delivery" '[[ $HELPER_FAILURE_STATUS -eq 0 ]] && grep -Fqx "failure|--repo|matrx-extend|--where|release.sh checks|--check|probe-failure|--detail|synthetic-detail|--ref|probe-ref|no_mail=1" "$SANDBOX/helper-control-calls" && grep -q "fixture helper failed" "$SANDBOX/helper-failure-out" && grep -q "Agent mail delivery not confirmed; release continues." "$SANDBOX/helper-failure-out" && ! grep -Eiq "agent mail (was )?delivered|ship-all lanes were mailed" "$SANDBOX/helper-failure-out"'
+check "closed stderr fallback remains nonblocking" '[[ $CLOSED_HELPER_STATUS -eq 0 ]]'
 
 if [[ $FAILED -ne 0 ]]; then
   echo "--- in-place script rewrite output ---"; tail -30 "$SANDBOX/script-rewrite-out" 2>/dev/null

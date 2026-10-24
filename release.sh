@@ -686,10 +686,33 @@ run_checks() {
 # there is nothing to ship. matrx-packages alone gets one catch-up attempt first (returns 1 so the
 # main loop can run it); once that has failed, later attempts only report.
 MATRX_CATCHUP_FAILED=false
+scream_release_fallback() {  # check detail delivery status — portable warning; never blocks the release
+    local check="$1" detail="$2" delivery="$3"
+    local bar="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    [[ -n "$detail" ]] || detail="(no detail)"
+    {
+        printf '%s\n' "$bar"
+        printf '%s\n' '!!! RELEASE WARNING — PUSHED ANYWAY. The release path is never blocked (Arman 2026-10-02).'
+        printf '%s\n' '!!! repo: matrx-extend   where: release.sh checks'
+        printf '!!! check: %s\n' "$check"
+        printf '!!!   %s\n' "$detail"
+        printf '!!! %s\n' "$delivery"
+        printf '%s\n' "$bar"
+    } >&2 || true
+    return 0
+}
 scream_release() {  # check detail — always returns 0; mail is deduped per repo+check+detail by the helper
-    [[ -f "$HOME/code/matrx-ship/scripts/release-scream.py" ]] || return 0
-    python3 "$HOME/code/matrx-ship/scripts/release-scream.py" --repo matrx-extend --where "release.sh checks" \
-        --check "$1" --detail "$2" --ref "${RELEASE_SHA:-}" >&2 || true
+    local helper="${MATRX_RELEASE_SCREAM_HELPER:-$HOME/code/matrx-ship/scripts/release-scream.py}"
+    if [[ -f "$helper" ]]; then
+        if python3 "$helper" --repo matrx-extend --where "release.sh checks" \
+            --check "$1" --detail "$2" --ref "${RELEASE_SHA:-}" >&2; then
+            return 0
+        fi
+        scream_release_fallback "$1" "$2" 'Agent mail delivery not confirmed; release continues.'
+        return 0
+    fi
+    scream_release_fallback "$1" "$2" 'Agent mail helper unavailable; no agent mail was sent.'
+    return 0
 }
 check_verdict() {  # name cmd → 0 on pass or reported failure; 1 only for matrx-packages while its catch-up is still to try
     local name="$1" cmd="$2" rc
