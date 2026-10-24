@@ -96,23 +96,20 @@ describe('recordClientError through the declared data door', () => {
     expect(state.organizationReads).toBe(0);
   });
 
-  it(
-    'uses lazy active-organization resolution only when the report omits an organization',
-    async () => {
-      const { recordClientError } = await import('./client-error');
+  it('uses lazy active-organization resolution only when the report omits an organization', async () => {
+    const { recordClientError } = await import('./client-error');
 
-      await recordClientError({
-        feature: 'social',
-        message: 'save stopped',
-        code: 'save_failed',
-        route: '/social/ingest/post',
-        context: {},
-      });
+    await recordClientError({
+      feature: 'social',
+      message: 'save stopped',
+      code: 'save_failed',
+      route: '/social/ingest/post',
+      context: {},
+    });
 
-      expect(state.organizationReads).toBe(1);
-      expect(state.calls[0]?.args.p_organization_id).toBe(state.activeOrganizationId);
-    },
-  );
+    expect(state.organizationReads).toBe(1);
+    expect(state.calls[0]?.args.p_organization_id).toBe(state.activeOrganizationId);
+  });
 
   it('declined diagnostics do not construct the client or call the RPC', async () => {
     state.consent = false;
@@ -133,31 +130,28 @@ describe('recordClientError through the declared data door', () => {
     expect(state.organizationReads).toBe(0);
   });
 
-  it(
-    'preserves the database refusal message and still throws when the RPC returns no id',
-    async () => {
-      const { recordClientError } = await import('./client-error');
-      const report = {
-        feature: 'social',
-        message: 'save stopped',
-        code: 'save_failed',
-        route: '/social/ingest/post',
-        context: {},
-        organizationId: '22222222-2222-4222-8222-222222222222',
-      };
+  it('preserves the database refusal message and still throws when the RPC returns no id', async () => {
+    const { recordClientError } = await import('./client-error');
+    const report = {
+      feature: 'social',
+      message: 'save stopped',
+      code: 'save_failed',
+      route: '/social/ingest/post',
+      context: {},
+      organizationId: '22222222-2222-4222-8222-222222222222',
+    };
 
-      state.errorMessage = 'organization policy refused the report';
-      await expect(recordClientError(report)).rejects.toThrow(
-        'organization policy refused the report',
-      );
+    state.errorMessage = 'organization policy refused the report';
+    await expect(recordClientError(report)).rejects.toThrow(
+      'organization policy refused the report',
+    );
 
-      state.errorMessage = null;
-      state.result = null;
-      await expect(recordClientError(report)).rejects.toThrow(
-        'log_client_error returned no error id',
-      );
-      expect(state.clientReads).toBe(2);
-      expect(state.calls).toHaveLength(2);
-    },
-  );
+    state.errorMessage = null;
+    state.result = null;
+    await expect(recordClientError(report)).rejects.toThrow(
+      'log_client_error returned no error id',
+    );
+    expect(state.clientReads).toBe(2);
+    expect(state.calls).toHaveLength(2);
+  });
 });

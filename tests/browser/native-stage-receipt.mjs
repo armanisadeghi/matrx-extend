@@ -1,4 +1,12 @@
-import { closeSync, fsyncSync, mkdirSync, openSync, renameSync, unlinkSync, writeSync } from 'node:fs';
+import {
+  closeSync,
+  fsyncSync,
+  mkdirSync,
+  openSync,
+  renameSync,
+  unlinkSync,
+  writeSync,
+} from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 
 const STAGES = new Set([

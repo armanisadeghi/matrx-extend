@@ -8,8 +8,8 @@
  */
 
 import { getSupabase } from '@/lib/supabase/client';
-import { type FunctionDescriptor, call, createDb } from '@ai-matrx/data/db';
 import { mayReportExternalTelemetry } from '@/lib/telemetry/external-reporting';
+import { type FunctionDescriptor, call, createDb } from '@ai-matrx/data/db';
 
 export interface ClientErrorReport {
   /** Registered `source_feature` slug (`social`, `web-capture`, …). */

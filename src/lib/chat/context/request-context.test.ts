@@ -259,8 +259,7 @@ describe('context single door', () => {
   }
 
   function mayContainAiRequest(text: string): boolean {
-    const sourceAppKey =
-      String.raw`(?:^|[,{]\s*)(?:(['\"])source_app\1|source_app|\[\s*(['\"])source_app\2\s*\])`;
+    const sourceAppKey = String.raw`(?:^|[,{]\s*)(?:(['\"])source_app\1|source_app|\[\s*(['\"])source_app\2\s*\])`;
     const sourceAppValue = String.raw`\s*:\s*(['\"])matrx-extend\3`;
     const sourceAppProperty = new RegExp(`${sourceAppKey}${sourceAppValue}`, 'm');
     return sourceAppProperty.test(text) || text.includes('STREAM_START');
@@ -271,15 +270,16 @@ describe('context single door', () => {
     text.split('\n').forEach((line, i) => {
       const trimmed = line.trim();
       if (trimmed.startsWith('//') || trimmed.startsWith('*')) return;
-      const key = /(?:^|[{,]\s*)((?:context|(['\"])context\2|\[\s*(['\"])context\3\s*\])\s*)([:,}])/.exec(
-        trimmed,
-      );
+      const key =
+        /(?:^|[{,]\s*)((?:context|(['\"])context\2|\[\s*(['\"])context\3\s*\])\s*)([:,}])/.exec(
+          trimmed,
+        );
       if (!key) return;
       const keyEnd = trimmed.indexOf(key[1]!) + key[1]!.length;
-      const fromKey =
-        key[4] === ':' ? `context:${trimmed.slice(keyEnd + 1)}` : `context${key[4]}`;
+      const fromKey = key[4] === ':' ? `context:${trimmed.slice(keyEnd + 1)}` : `context${key[4]}`;
       if (key[4] === ':' && /^context:\s*undefined\s*}/.test(fromKey)) return;
-      if (key[4] === ':' && ALLOWED_VALUES.some((re) => re.test(fromKey) || re.test(trimmed))) return;
+      if (key[4] === ':' && ALLOWED_VALUES.some((re) => re.test(fromKey) || re.test(trimmed)))
+        return;
       offenders.push(`${i + 1}: ${trimmed}`);
     });
     return offenders;
@@ -293,9 +293,9 @@ describe('context single door', () => {
 
   it('flags bare, quoted, and computed request properties outside the context door', () => {
     const bare = "const body = { source_app: 'matrx-extend', context: customContext };";
-    const quoted = "const body = { \"source_app\": 'matrx-extend', \"context\": customContext };";
-    const computed =
-      "const body = { ['source_app']: 'matrx-extend', ['context']: customContext };";
+    const quoted = 'const body = { "source_app": \'matrx-extend\', "context": customContext };';
+    const computed = "const body = { ['source_app']: 'matrx-extend', ['context']: customContext };";
+
     for (const source of [bare, quoted, computed]) {
       expect(mayContainAiRequest(source)).toBe(true);
       expect(contextDoorOffenders(source)).toEqual([`${1}: ${source}`]);
@@ -328,9 +328,7 @@ describe('context single door', () => {
       // Files that build requests to our AI server; the identifier boundary
       // keeps p_source_app telemetry RPC arguments out of this census.
       if (!mayContainAiRequest(text)) continue;
-      offenders.push(
-        ...contextDoorOffenders(text).map((line) => `${relative(SRC, file)}:${line}`),
-      );
+      offenders.push(...contextDoorOffenders(text).map((line) => `${relative(SRC, file)}:${line}`));
     }
     expect(offenders).toEqual([]);
   });

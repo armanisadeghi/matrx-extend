@@ -12,6 +12,7 @@ import {
   createCollection,
   ingestPost,
 } from '@/lib/api/routes/social';
+import { appConfig } from '@/lib/config';
 import { log } from '@/lib/debug/log';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import {
@@ -56,9 +57,6 @@ export interface SwipeFailureDetail {
   collectionId?: string;
 }
 
-/** Longest the person waits on the error log before the failure is shown anyway. */
-const RECORD_WAIT_MS = 3000;
-
 /**
  * A save that stopped after the person did everything right is OUR failure:
  * record it (with the server's request id, so both rows join) and hand the
@@ -81,6 +79,16 @@ async function failed(
   if (f.status === 401) return { status: 'failed', reason, detail };
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
+    const recordWaitMs: unknown = appConfig<unknown>('swipe_error_record_wait_ms');
+    // Browser timers clamp delays above the signed 32-bit maximum, so reject rather than silently change policy.
+    if (
+      typeof recordWaitMs !== 'number' ||
+      !Number.isSafeInteger(recordWaitMs) ||
+      recordWaitMs <= 0 ||
+      recordWaitMs > 2 ** 31 - 1
+    ) {
+      throw new Error('Invalid swipe error recording wait configuration');
+    }
     const reference = await Promise.race([
       recordClientError({
         feature: 'social',
@@ -97,7 +105,7 @@ async function failed(
         organizationId: at.organizationId,
       }),
       new Promise<never>((_, reject) => {
-        timer = setTimeout(() => reject(new Error('error log timed out')), RECORD_WAIT_MS);
+        timer = setTimeout(() => reject(new Error('error log timed out')), recordWaitMs);
       }),
     ]);
     if (reference) detail.reference = reference;

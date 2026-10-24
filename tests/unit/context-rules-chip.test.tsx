@@ -123,6 +123,7 @@ describe('context rules: the person’s one home', () => {
 describe('ContextRulesComposerChip', () => {
   afterEach(cleanup);
   beforeEach(() => {
+    rpcMock.mockReset().mockResolvedValue({ data: 'client-error-1', error: null });
     useAuthStore.setState({ user: null } as never);
     useChatStore.setState({ selectedConversationId: 'conv-1' } as never);
     usePilotChatStore.setState({ selectedConversationId: 'pilot-1' } as never);
@@ -214,6 +215,10 @@ describe('ContextRulesComposerChip', () => {
       useContextRulesStore.getState().receiptByConversation['pilot-1']?.mismatches,
     ).toHaveLength(2);
     await vi.waitFor(() => expect(rpcMock).toHaveBeenCalledTimes(2));
+    expect(rpcMock.mock.calls.map(([, args]) => args.p_context.conversation_id).sort()).toEqual([
+      'conv-1',
+      'pilot-1',
+    ]);
   });
 
   it('shows the values the server added (attachments, scope seeds) as their own rows', () => {

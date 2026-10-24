@@ -10,8 +10,10 @@ const m = vi.hoisted(() => ({
   activeOrg: vi.fn(),
   setLast: vi.fn(),
   record: vi.fn(),
+  appConfig: vi.fn(),
 }));
 vi.mock('@/lib/telemetry/client-error', () => ({ recordClientError: m.record }));
+vi.mock('@/lib/config', () => ({ appConfig: m.appConfig }));
 vi.mock('@/lib/api/routes/social', () => ({
   ingestPost: m.ingestPost,
   createCollection: m.createCollection,
@@ -47,6 +49,7 @@ beforeEach(() => {
   m.isPostInCollection.mockResolvedValue(false);
   m.addPostToCollection.mockResolvedValue({ ok: true, data: { saved: true } });
   m.record.mockResolvedValue('err-row-1');
+  m.appConfig.mockReturnValue(3000);
 });
 
 describe('saveToSwipeFile', () => {
@@ -179,6 +182,68 @@ describe('saveToSwipeFile', () => {
     const o = await saveToSwipeFile({ url: URL_OK, collectionId: 'c1' }, () => {});
     expect(o.status).toBe('failed');
     expect(m.record).not.toHaveBeenCalled();
+    expect(m.appConfig).not.toHaveBeenCalled();
+  });
+
+  it('uses the counted configured wait and returns at its exact deadline', async () => {
+    vi.useFakeTimers();
+    try {
+      m.ingestPost.mockResolvedValue({ ok: false, reason: 'Busy.', status: 503 });
+      m.record.mockReturnValue(new Promise(() => {}));
+      m.appConfig.mockReturnValue(17);
+      const pending = saveToSwipeFile({ url: URL_OK, collectionId: 'c1' }, () => {});
+      let settled = false;
+      void pending.then(() => {
+        settled = true;
+      });
+
+      await vi.advanceTimersByTimeAsync(16);
+      expect(settled).toBe(false);
+      expect(m.appConfig).toHaveBeenCalledExactlyOnceWith('swipe_error_record_wait_ms');
+      expect(m.record).toHaveBeenCalledWith(
+        expect.objectContaining({ message: expect.stringContaining('Busy.') }),
+      );
+
+      await vi.advanceTimersByTimeAsync(1);
+      const outcome = await pending;
+      expect(outcome).toMatchObject({
+        status: 'failed',
+        reason: 'Busy.',
+        detail: { referenceMissing: 'The error log could not be reached' },
+      });
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it.each([0, -1, 1.5, Number.NaN, 2 ** 31])(
+    'rejects invalid configured wait %s without starting diagnostics',
+    async (waitMs) => {
+      vi.useFakeTimers();
+      try {
+        m.ingestPost.mockResolvedValue({ ok: false, reason: 'Busy.', status: 503 });
+        m.appConfig.mockReturnValue(waitMs);
+        const outcome = await saveToSwipeFile({ url: URL_OK, collectionId: 'c1' }, () => {});
+        expect(outcome).toMatchObject({
+          status: 'failed',
+          reason: 'Busy.',
+          detail: { referenceMissing: 'The error log could not be reached' },
+        });
+        expect(m.appConfig).toHaveBeenCalledExactlyOnceWith('swipe_error_record_wait_ms');
+        expect(m.record).not.toHaveBeenCalled();
+        expect(vi.getTimerCount()).toBe(0);
+      } finally {
+        vi.useRealTimers();
+      }
+    },
+  );
+
+  it('does not read recording configuration for a successful save', async () => {
+    m.ingestPost.mockResolvedValue(post());
+    const outcome = await saveToSwipeFile({ url: URL_OK, collectionId: 'c1' }, () => {});
+    expect(outcome.status).toBe('saved');
+    expect(m.appConfig).not.toHaveBeenCalled();
   });
 
   it('reports a failed add honestly', async () => {

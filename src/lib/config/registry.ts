@@ -19,6 +19,7 @@ export const APP_CONFIG_KEYS = [
   'flags',
   'notice',
   'min_supported_app_version',
+  'swipe_error_record_wait_ms',
 ] as const;
 export type AppConfigKey = (typeof APP_CONFIG_KEYS)[number];
 
