@@ -1109,6 +1109,79 @@ export interface MediaSelectionJobProgressData {
   totals?: Record<string, number>;
 }
 
+export interface KnowledgeBucketsDryRunDoneData {
+  type?: "knowledge_buckets_dry_run_done";
+  subject_user_id: string;
+  organizations: number;
+  items: number;
+  seconds: number;
+}
+
+export interface KnowledgeBucketsOrgCounts {
+  organization_id: string;
+  counts: Record<string, number>;
+}
+
+export interface KnowledgeBucketsInventoryData {
+  type?: "knowledge_buckets_inventory";
+  subject_user_id: string;
+  direct_counts: Record<string, number>;
+  gathered_counts: Record<string, number>;
+  counts_match: boolean;
+  mismatches?: Record<string, number[]>;
+  unmapped?: Record<string, number>;
+  excluded?: Record<string, number>;
+  per_org?: KnowledgeBucketsOrgCounts[];
+}
+
+export interface KnowledgeBucketCandidate {
+  key: string;
+  name: string;
+  origin: string[];
+  homes: number;
+  by_group: Record<string, number>;
+  weeks: number;
+  score: number;
+  score_all: number;
+  entity_share: number;
+  obvious: boolean;
+  own_homes?: string[];
+  outside: number;
+  entity_kinds?: Record<string, number>;
+  existing_scope?: KnowledgeBucketCandidateScope | null;
+}
+
+export interface KnowledgeBucketCandidateScope {
+  kind: "scope" | "scope_type";
+  id: string;
+  name: string;
+}
+
+export interface KnowledgeBucketsOrgSpreadData {
+  type?: "knowledge_buckets_org_spread";
+  organization_id: string;
+  homes: number;
+  items_scored: number;
+  items_with_text: number;
+  items_with_entities: number;
+  automation_skipped?: number;
+  derived_files_skipped?: number;
+  candidates: number;
+  scope_types: number;
+  scopes: number;
+  top_matching_scopes: number;
+  top: KnowledgeBucketCandidate[];
+}
+
+export interface KnowledgeBucketsProgressData {
+  type?: "knowledge_buckets_progress";
+  stage: "inventory" | "homes" | "material" | "scopes" | "spread";
+  detail: string;
+  organization_id?: string | null;
+  done?: number;
+  total?: number;
+}
+
 export interface LegalSyncEventData {
   type?: "legal_sync_event";
   phase: string;
@@ -2689,6 +2762,10 @@ export type TypedDataPayload =
   | ImageStudioCommitItemData
   | ImageStudioProcessCompleteData
   | ImageStudioVariantData
+  | KnowledgeBucketsDryRunDoneData
+  | KnowledgeBucketsInventoryData
+  | KnowledgeBucketsOrgSpreadData
+  | KnowledgeBucketsProgressData
   | LegalSyncEventData
   | LibrarySyncClassifiedData
   | LibrarySyncCompletedData
