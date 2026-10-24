@@ -41,6 +41,28 @@ const JOURNAL_FIELDS = new Set([
   'unavailable',
   'bracket',
 ]);
+const GROUP_SIGNAL_CODES = new Set([
+  'RESOURCE_GROUP_SIGNAL_EPERM_CENSUS',
+  'RESOURCE_GROUP_SIGNAL_UNCONFIRMED',
+]);
+const GROUP_SIGNAL_ERROR_CLASSES = new Set([
+  'Error',
+  'TypeError',
+  'RangeError',
+  'SystemError',
+  'Other',
+]);
+const GROUP_SIGNAL_OS_CODES = new Set([
+  'EACCES',
+  'EBUSY',
+  'EIO',
+  'EINVAL',
+  'EPIPE',
+  'ETIMEDOUT',
+  'ENOENT',
+  'EPERM',
+  'ESRCH',
+]);
 
 const BRACKET_LIMITATIONS = new Set([
   'ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time.',
@@ -164,9 +186,73 @@ export function openResourceJournal(repo, runId, { closeFd = closeSync } = {}) {
     path,
     write(event) {
       try {
-        const safe = Object.fromEntries(
+        let safe = Object.fromEntries(
           Object.entries(event).filter(([key]) => JOURNAL_FIELDS.has(key)),
         );
+        if (
+          typeof event.code === 'string' &&
+          event.code.startsWith('RESOURCE_GROUP_SIGNAL_')
+        ) {
+          if (!GROUP_SIGNAL_CODES.has(event.code)) throw new Error('unknown group signal event');
+          const isZeroProof = event.code === 'RESOURCE_GROUP_SIGNAL_EPERM_CENSUS';
+          if (
+            event.schema !== 1 ||
+            typeof event.at !== 'string' ||
+            !validTime(event.at) ||
+            event.runId !== runId ||
+            !['SIGTERM', 'SIGKILL'].includes(event.signal) ||
+            !GROUP_SIGNAL_ERROR_CLASSES.has(event.errorClass) ||
+            event.osCode !== 'EPERM' ||
+            event.freshZeroProof !== isZeroProof
+          )
+            throw new Error('invalid group signal event');
+          const safeGroupSignalEvent = {
+            schema: event.schema,
+            at: event.at,
+            code: event.code,
+            runId: event.runId,
+            signal: event.signal,
+            errorClass: event.errorClass,
+            osCode: event.osCode,
+            freshZeroProof: event.freshZeroProof,
+          };
+          if (Object.hasOwn(event, 'censusErrorClass')) {
+            if (
+              event.code !== 'RESOURCE_GROUP_SIGNAL_UNCONFIRMED' ||
+              isZeroProof ||
+              !GROUP_SIGNAL_ERROR_CLASSES.has(event.censusErrorClass)
+            )
+              throw new Error('invalid group signal census error class');
+            safeGroupSignalEvent.censusErrorClass = event.censusErrorClass;
+          }
+          if (Object.hasOwn(event, 'censusOsCode')) {
+            if (
+              event.code !== 'RESOURCE_GROUP_SIGNAL_UNCONFIRMED' ||
+              isZeroProof ||
+              !GROUP_SIGNAL_OS_CODES.has(event.censusOsCode)
+            )
+              throw new Error('invalid group signal census OS code');
+            safeGroupSignalEvent.censusOsCode = event.censusOsCode;
+          }
+          if (Object.hasOwn(event, 'censusResourceCode')) {
+            if (
+              event.code !== 'RESOURCE_GROUP_SIGNAL_UNCONFIRMED' ||
+              isZeroProof ||
+              event.censusResourceCode !== 'RESOURCE_GROUP_CENSUS_INVALID'
+            )
+              throw new Error('invalid group signal census resource code');
+            safeGroupSignalEvent.censusResourceCode = event.censusResourceCode;
+          }
+          const hasCensusErrorClass = Object.hasOwn(event, 'censusErrorClass');
+          const hasCensusOsCode = Object.hasOwn(event, 'censusOsCode');
+          const hasCensusResourceCode = Object.hasOwn(event, 'censusResourceCode');
+          if (
+            ((hasCensusOsCode || hasCensusResourceCode) && !hasCensusErrorClass) ||
+            (hasCensusOsCode && hasCensusResourceCode)
+          )
+            throw new Error('incomplete group signal census diagnostic');
+          safe = safeGroupSignalEvent;
+        }
         if (safe.code === 'RESOURCE_PROCESS_ATTRIBUTION') {
           const hasProcesses = Object.hasOwn(safe, 'processes');
           const hasUnavailable = Object.hasOwn(safe, 'unavailable');

@@ -151,25 +151,31 @@ function safeEventSummary(event) {
         event.childExitCode <= 255)) && {
       childExitCode: event.childExitCode,
     }),
-    ...(groupSignalEvent && ['SIGTERM', 'SIGKILL'].includes(event?.signal) && {
-      signal: event.signal,
-    }),
-    ...(groupSignalEvent && groupSignalErrorClasses.has(event?.errorClass) && {
-      errorClass: event.errorClass,
-    }),
+    ...(groupSignalEvent &&
+      ['SIGTERM', 'SIGKILL'].includes(event?.signal) && {
+        signal: event.signal,
+      }),
+    ...(groupSignalEvent &&
+      groupSignalErrorClasses.has(event?.errorClass) && {
+        errorClass: event.errorClass,
+      }),
     ...(groupSignalEvent && safeDiagnosticOsCodes.has(event?.osCode) && { osCode: event.osCode }),
-    ...(groupSignalEvent && typeof event?.freshZeroProof === 'boolean' && {
-      freshZeroProof: event.freshZeroProof,
-    }),
-    ...(groupSignalEvent && groupSignalErrorClasses.has(event?.censusErrorClass) && {
-      censusErrorClass: event.censusErrorClass,
-    }),
-    ...(groupSignalEvent && safeDiagnosticOsCodes.has(event?.censusOsCode) && {
-      censusOsCode: event.censusOsCode,
-    }),
-    ...(groupSignalEvent && event?.censusResourceCode === 'RESOURCE_GROUP_CENSUS_INVALID' && {
-      censusResourceCode: event.censusResourceCode,
-    }),
+    ...(groupSignalEvent &&
+      typeof event?.freshZeroProof === 'boolean' && {
+        freshZeroProof: event.freshZeroProof,
+      }),
+    ...(groupSignalEvent &&
+      groupSignalErrorClasses.has(event?.censusErrorClass) && {
+        censusErrorClass: event.censusErrorClass,
+      }),
+    ...(groupSignalEvent &&
+      safeDiagnosticOsCodes.has(event?.censusOsCode) && {
+        censusOsCode: event.censusOsCode,
+      }),
+    ...(groupSignalEvent &&
+      event?.censusResourceCode === 'RESOURCE_GROUP_CENSUS_INVALID' && {
+        censusResourceCode: event.censusResourceCode,
+      }),
     ...(safeFailureSummary(event) && {
       failure: safeFailureSummary(event),
     }),
@@ -612,7 +618,11 @@ async function runScenario(
       { cwd: item.scratch, stdio: ['ignore', 'pipe', 'pipe'] },
     );
     diagnostic.setChild(child);
-    const stream = observe(child, diagnostic.onEvent);
+    const observedEvents = [];
+    const stream = observe(child, (event) => {
+      observedEvents.push(event);
+      diagnostic.onEvent(event);
+    });
     closed = new Promise((done) =>
       child.once('close', (code, signal) => {
         diagnostic.setChildClosed();
@@ -884,7 +894,10 @@ async function runScenario(
       assert.equal(event.freshZeroProof, gone);
       assert.equal(journal.at(-1).decision, 'invalid');
       assert.equal(journal.at(-1).resourceInvalid, true);
-      assert.equal(journal.some((entry) => entry.code === 'RESOURCE_GROUP_STILL_RUNNING'), false);
+      assert.equal(
+        journal.some((entry) => entry.code === 'RESOURCE_GROUP_STILL_RUNNING'),
+        false,
+      );
       assert.equal(
         journal.some((entry) => entry.code === 'RESOURCE_OWNED_PROCESS_STILL_RUNNING'),
         false,
@@ -892,9 +905,16 @@ async function runScenario(
       if (kind.endsWith('-census-error')) {
         assert.equal(event.censusOsCode, 'EIO');
         assert.equal(event.censusErrorClass, 'Error');
-        const failure = journal.find((entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED');
-        assert.equal(failure?.syntheticDiagnostic?.stage, 'watchdog_group_stop');
-        assert.equal(failure?.syntheticDiagnostic?.osCode, 'EIO');
+        const stdoutFailure = observedEvents.find(
+          (entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED',
+        );
+        assert.equal(stdoutFailure?.syntheticDiagnostic?.stage, 'watchdog_group_stop');
+        assert.equal(stdoutFailure?.syntheticDiagnostic?.osCode, 'EIO');
+        const durableFailure = journal.find(
+          (entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED',
+        );
+        assert.equal(durableFailure?.runId, runId);
+        assert.equal(Object.hasOwn(durableFailure ?? {}, 'syntheticDiagnostic'), false);
       }
       if (kind.endsWith('-malformed')) {
         assert.equal(event.censusResourceCode, 'RESOURCE_GROUP_CENSUS_INVALID');
@@ -902,21 +922,36 @@ async function runScenario(
           journal.some((entry) => entry.code === 'RESOURCE_GROUP_CENSUS_INVALID'),
           'malformed strict census must remain an explicit resource failure',
         );
-        assert.equal(journal.some((entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED'), false);
+        const durableInvalid = journal.find(
+          (entry) => entry.code === 'RESOURCE_GROUP_CENSUS_INVALID',
+        );
+        assert.equal(durableInvalid?.runId, runId);
+        assert.equal(Object.hasOwn(durableInvalid ?? {}, 'syntheticDiagnostic'), false);
+        assert.equal(
+          journal.some((entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED'),
+          false,
+        );
       }
       if (kind.endsWith('-live')) {
-        const failure = journal.find((entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED');
-        assert.equal(failure?.syntheticDiagnostic?.stage, 'watchdog_group_stop');
-        assert.equal(failure?.syntheticDiagnostic?.osCode, 'EPERM');
+        const stdoutFailure = observedEvents.find(
+          (entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED',
+        );
+        assert.equal(stdoutFailure?.syntheticDiagnostic?.stage, 'watchdog_group_stop');
+        assert.equal(stdoutFailure?.syntheticDiagnostic?.osCode, 'EPERM');
+        const durableFailure = journal.find(
+          (entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED',
+        );
+        assert.equal(durableFailure?.runId, runId);
+        assert.equal(Object.hasOwn(durableFailure ?? {}, 'syntheticDiagnostic'), false);
       }
       if (gone)
-        assert.equal(journal.some((entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED'), false);
+        assert.equal(
+          journal.some((entry) => entry.code === 'RESOURCE_MEASUREMENT_FAILED'),
+          false,
+        );
       const ownerPath = join(item.leaseRoot, 'heavy/owner.json');
       assert.equal((await stat(join(item.leaseRoot, `unsafe-hold.json`))).isFile(), true);
-      assert.equal(
-        (await stat(join(item.leaseRoot, `stop-${owner.nonce}.json`))).isFile(),
-        true,
-      );
+      assert.equal((await stat(join(item.leaseRoot, `stop-${owner.nonce}.json`))).isFile(), true);
       if (gone) {
         await assert.rejects(stat(ownerPath), { code: 'ENOENT' });
       } else {

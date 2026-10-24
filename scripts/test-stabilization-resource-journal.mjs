@@ -125,6 +125,153 @@ test('journal writes only guard fields and refuses overwrite', async () => {
   }
 });
 
+test('group signal metadata is durably projected only for its two event codes', async () => {
+  const runId = `journal-group-signal-${randomUUID()}`;
+  const path = journalPath(runId);
+  const journal = openResourceJournal(repo, runId);
+  let closed = false;
+  try {
+    journal.write({
+      schema: 1,
+      at: '2026-10-24T00:00:00.000Z',
+      code: 'RESOURCE_GROUP_SIGNAL_EPERM_CENSUS',
+      runId,
+      signal: 'SIGTERM',
+      errorClass: 'Other',
+      osCode: 'EPERM',
+      freshZeroProof: true,
+      groupId: 999999,
+      detail: 'private detail',
+      env: { MATRX_RESOURCE_OWNER: 'private nonce' },
+      payload: 'private payload',
+    });
+    journal.write({
+      schema: 1,
+      at: '2026-10-24T00:00:00.100Z',
+      code: 'RESOURCE_GROUP_SIGNAL_UNCONFIRMED',
+      runId,
+      signal: 'SIGKILL',
+      errorClass: 'Error',
+      osCode: 'EPERM',
+      freshZeroProof: false,
+      censusErrorClass: 'SystemError',
+      censusOsCode: 'EIO',
+      groupId: 999999,
+      detail: 'private detail',
+      env: { MATRX_RESOURCE_OWNER: 'private nonce' },
+      payload: 'private payload',
+    });
+    journal.write({
+      schema: 1,
+      at: '2026-10-24T00:00:00.200Z',
+      code: 'RESOURCE_ADMITTED',
+      runId,
+      errorClass: 'Error',
+      osCode: 'EPERM',
+      freshZeroProof: true,
+      censusErrorClass: 'SystemError',
+      censusOsCode: 'EIO',
+      censusResourceCode: 'RESOURCE_GROUP_CENSUS_INVALID',
+      payload: 'private payload',
+    });
+    journal.close();
+    closed = true;
+    const events = (await readFile(path, 'utf8')).trim().split('\n').map(JSON.parse);
+    assert.deepEqual(events, [
+      {
+        schema: 1,
+        at: '2026-10-24T00:00:00.000Z',
+        code: 'RESOURCE_GROUP_SIGNAL_EPERM_CENSUS',
+        runId,
+        signal: 'SIGTERM',
+        errorClass: 'Other',
+        osCode: 'EPERM',
+        freshZeroProof: true,
+      },
+      {
+        schema: 1,
+        at: '2026-10-24T00:00:00.100Z',
+        code: 'RESOURCE_GROUP_SIGNAL_UNCONFIRMED',
+        runId,
+        signal: 'SIGKILL',
+        errorClass: 'Error',
+        osCode: 'EPERM',
+        freshZeroProof: false,
+        censusErrorClass: 'SystemError',
+        censusOsCode: 'EIO',
+      },
+      {
+        schema: 1,
+        at: '2026-10-24T00:00:00.200Z',
+        code: 'RESOURCE_ADMITTED',
+        runId,
+      },
+    ]);
+    assert.doesNotMatch(JSON.stringify(events), /private|999999|payload|env/);
+  } finally {
+    if (!closed) journal.close();
+    await rm(path, { force: true });
+    await rm(journal.path, { force: true });
+  }
+});
+
+test('group signal journal events reject invalid required and census metadata', async () => {
+  const runId = `journal-group-signal-invalid-${randomUUID()}`;
+  const path = journalPath(runId);
+  const journal = openResourceJournal(repo, runId);
+  let closed = false;
+  const valid = {
+    schema: 1,
+    at: '2026-10-24T00:00:00.000Z',
+    code: 'RESOURCE_GROUP_SIGNAL_UNCONFIRMED',
+    runId,
+    signal: 'SIGTERM',
+    errorClass: 'Error',
+    osCode: 'EPERM',
+    freshZeroProof: false,
+  };
+  try {
+    for (const invalid of [
+      { ...valid, code: 'RESOURCE_GROUP_SIGNAL_FUTURE' },
+      { ...valid, schema: 2 },
+      { ...valid, at: 'invalid timestamp' },
+      { ...valid, at: null },
+      { ...valid, at: undefined },
+      { ...valid, runId: `${runId}-different` },
+      { ...valid, signal: 'SIGSTOP' },
+      { ...valid, signal: undefined },
+      { ...valid, errorClass: 'PrivateError' },
+      { ...valid, errorClass: undefined },
+      { ...valid, osCode: 'EIO' },
+      { ...valid, osCode: undefined },
+      { ...valid, freshZeroProof: true },
+      { ...valid, freshZeroProof: undefined },
+      { ...valid, censusErrorClass: 'PrivateError', censusOsCode: 'EIO' },
+      { ...valid, censusErrorClass: 'Error', censusOsCode: 'PRIVATE_OS_CODE' },
+      { ...valid, censusErrorClass: 'Error', censusResourceCode: 'RESOURCE_PRIVATE_CODE' },
+      { ...valid, censusOsCode: 'EIO' },
+      {
+        ...valid,
+        code: 'RESOURCE_GROUP_SIGNAL_EPERM_CENSUS',
+        freshZeroProof: false,
+      },
+    ])
+      assert.throws(() => journal.write(invalid), /RESOURCE_JOURNAL_WRITE_FAILED/);
+
+    const unknownCensus = { ...valid, censusErrorClass: 'Other' };
+    journal.write(valid);
+    journal.write(unknownCensus);
+    journal.close();
+    closed = true;
+    const events = (await readFile(path, 'utf8')).trim().split('\n').map(JSON.parse);
+    assert.deepEqual(events, [valid, unknownCensus]);
+  } finally {
+    if (!closed) journal.close();
+    await rm(path, { force: true });
+    await rm(journal.path, { force: true });
+  }
+});
+
 test('startup bracket survives durable journal publication with only scoped CPU accounting', async () => {
   // EXT-D-0129: run 37230193583 printed this event but the journal dropped bracket.
   const runId = `journal-startup-bracket-${randomUUID()}`;
