@@ -421,6 +421,58 @@ export function App() {
                       <MessageSquare className="size-3.5" />
                     </TabsTrigger>
                   )}
+                  {canAccess('vault') && (
+                    <TabsTrigger value="vault" className="size-7 p-0" title="Vault">
+                      <Vault className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {/* Capture (Scrape), Patterns (Data), SEO — advertised in the
+                    Web Store listing and free to run for guests (no
+                    server-agent cost). */}
+                  {canAccess('scrape') && (
+                    <TabsTrigger value="scrape" className="size-7 p-0" title="Scrape">
+                      <ScanLine className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('screenshots') && (
+                    <TabsTrigger value="screenshots" className="size-7 p-0" title="Screenshots">
+                      <Camera className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('showcase') && (
+                    <TabsTrigger
+                      value="showcase"
+                      className="size-7 p-0 data-[state=active]:text-violet-600 dark:data-[state=active]:text-violet-400"
+                      title="Showcase (admin only)"
+                    >
+                      <Sparkles className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('swipe-file') && (
+                    <TabsTrigger value="swipe-file" className="size-7 p-0" title="Swipe file">
+                      <Bookmark className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('seo') && (
+                    <TabsTrigger value="seo" className="size-7 p-0" title="SEO">
+                      <Search className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('highlight') && (
+                    <TabsTrigger value="highlight" className="size-7 p-0" title="Highlights">
+                      <Highlighter className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('notes') && (
+                    <TabsTrigger value="notes" className="size-7 p-0" title="Notes">
+                      <NotebookPen className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('files') && (
+                    <TabsTrigger value="files" className="size-7 p-0" title="Files">
+                      <Files className="size-3.5" />
+                    </TabsTrigger>
+                  )}
                   {canAccess('pilot') && (
                     <TabsTrigger
                       value="pilot"
@@ -443,19 +495,6 @@ export function App() {
                   {canAccess('agenda') && (
                     <TabsTrigger value="agenda" className="size-7 p-0" title="Agenda">
                       <Calendar className="size-3.5" />
-                    </TabsTrigger>
-                  )}
-                  {/* Capture (Scrape), Patterns (Data), SEO — advertised in the
-                    Web Store listing and free to run for guests (no
-                    server-agent cost). */}
-                  {canAccess('scrape') && (
-                    <TabsTrigger value="scrape" className="size-7 p-0" title="Scrape">
-                      <ScanLine className="size-3.5" />
-                    </TabsTrigger>
-                  )}
-                  {canAccess('swipe-file') && (
-                    <TabsTrigger value="swipe-file" className="size-7 p-0" title="Swipe file">
-                      <Bookmark className="size-3.5" />
                     </TabsTrigger>
                   )}
                   {canAccess('saved-captures') && (
@@ -487,39 +526,9 @@ export function App() {
                       <Database className="size-3.5" />
                     </TabsTrigger>
                   )}
-                  {canAccess('seo') && (
-                    <TabsTrigger value="seo" className="size-7 p-0" title="SEO">
-                      <Search className="size-3.5" />
-                    </TabsTrigger>
-                  )}
-                  {canAccess('highlight') && (
-                    <TabsTrigger value="highlight" className="size-7 p-0" title="Highlights">
-                      <Highlighter className="size-3.5" />
-                    </TabsTrigger>
-                  )}
                   {canAccess('guidance') && (
                     <TabsTrigger value="guidance" className="size-7 p-0" title="Guidance">
                       <BookOpen className="size-3.5" />
-                    </TabsTrigger>
-                  )}
-                  {canAccess('notes') && (
-                    <TabsTrigger value="notes" className="size-7 p-0" title="Notes">
-                      <NotebookPen className="size-3.5" />
-                    </TabsTrigger>
-                  )}
-                  {canAccess('files') && (
-                    <TabsTrigger value="files" className="size-7 p-0" title="Files">
-                      <Files className="size-3.5" />
-                    </TabsTrigger>
-                  )}
-                  {canAccess('screenshots') && (
-                    <TabsTrigger value="screenshots" className="size-7 p-0" title="Screenshots">
-                      <Camera className="size-3.5" />
-                    </TabsTrigger>
-                  )}
-                  {canAccess('vault') && (
-                    <TabsTrigger value="vault" className="size-7 p-0" title="Vault">
-                      <Vault className="size-3.5" />
                     </TabsTrigger>
                   )}
                   {canAccess('tools') && (
@@ -530,15 +539,6 @@ export function App() {
                   {canAccess('settings') && (
                     <TabsTrigger value="settings" className="size-7 p-0" title="Settings">
                       <SettingsIcon className="size-3.5" />
-                    </TabsTrigger>
-                  )}
-                  {canAccess('showcase') && (
-                    <TabsTrigger
-                      value="showcase"
-                      className="size-7 p-0 data-[state=active]:text-violet-600 dark:data-[state=active]:text-violet-400"
-                      title="Showcase (admin only)"
-                    >
-                      <Sparkles className="size-3.5" />
                     </TabsTrigger>
                   )}
                   {canAccess('broker') && (

@@ -55,6 +55,7 @@ import {
   recordContextReceipt,
   rememberRunContextRows,
 } from '@/state/context-rules';
+import { showAdminNow } from '@/state/debug-mode';
 import { useDesktopStore } from '@/state/desktop';
 import { useScrapeStore } from '@/state/scrape';
 import { useSettingsStore } from '@/state/settings';
@@ -1011,7 +1012,7 @@ export function useChatStream() {
       // max_iterations, etc). Stripped if the user isn't an admin — defense
       // in depth: even a stale store from a previous admin session can't
       // bleed into a non-admin's request.
-      const isAdmin = useAuthStore.getState().isAdmin;
+      const isAdmin = showAdminNow();
       const adminOverrides = isAdmin
         ? projectAdminFlagsToRequest(useAdminFlagsStore.getState())
         : {};

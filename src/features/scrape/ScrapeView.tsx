@@ -35,6 +35,7 @@ import { captureName } from '@/lib/sources/save-capture';
 import { sourceWebAppUrl } from '@/lib/sources/web-app-link';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/state/auth';
+import { useShowAdmin } from '@/state/debug-mode';
 import { useHighlightStore } from '@/state/highlights';
 import { scrapeLinkKey, useScrapeStore } from '@/state/scrape';
 import { ConfirmDialog } from '@ai-matrx/design-system';
@@ -88,7 +89,7 @@ export function ScrapeView() {
   const addVideo = useScrapeStore((s) => s.addVideo);
   const removeLink = useScrapeStore((s) => s.removeLink);
   const addLink = useScrapeStore((s) => s.addLink);
-  const isAdmin = useAuthStore((s) => s.isAdmin);
+  const isAdmin = useShowAdmin();
   const signedIn = useAuthStore((s) => s.user !== null);
   const recognition = usePageRecognition();
   const tab = useActiveTab();

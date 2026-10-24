@@ -11,6 +11,7 @@ import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { checkIsAdmin } from '@/lib/supabase/queries';
 import { useAuthStore } from '@/state/auth';
+import { useShowAdmin } from '@/state/debug-mode';
 import { useCallback, useEffect } from 'react';
 
 /**
@@ -301,5 +302,8 @@ export function useAuth() {
     bootRan = false;
   }, [setUser, setIsAdmin]);
 
-  return { user, isAdmin, status, error, signIn, signOut, retry };
+  // `isAdmin` is what screens show: the verified role AND Debug turned on in the avatar menu.
+  // `isRealAdmin` is the verified role alone — only the menu's Debug switch reads it.
+  const showAdmin = useShowAdmin();
+  return { user, isAdmin: showAdmin, isRealAdmin: isAdmin, status, error, signIn, signOut, retry };
 }

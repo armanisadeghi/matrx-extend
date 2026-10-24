@@ -15,7 +15,7 @@
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { getActiveOrganizationId, onActiveOrganizationChange } from '@/lib/org/active-org';
-import { useAuthStore } from '@/state/auth';
+import { useShowAdmin } from '@/state/debug-mode';
 import { type Notice, useNoticeStore } from '@/state/notices';
 import { AlertTriangle, Info, X } from 'lucide-react';
 import { useEffect } from 'react';
@@ -23,7 +23,7 @@ import { useEffect } from 'react';
 export function NoticeHost() {
   const notices = useNoticeStore((s) => s.notices);
   const dismiss = useNoticeStore((s) => s.dismiss);
-  const isAdmin = useAuthStore((s) => s.isAdmin);
+  const isAdmin = useShowAdmin();
 
   // Refusals raised outside the side panel (service worker, offscreen,
   // content script) are relayed here — the side panel is the only surface the

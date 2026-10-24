@@ -143,7 +143,7 @@ describe('useAuth persisted-session boot', () => {
     await act(async () => resolveAdmin(true));
 
     expect(first.result.current.user).toBeNull();
-    expect(first.result.current.isAdmin).toBe(false);
+    expect(first.result.current.isRealAdmin).toBe(false);
     expect(
       (await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN],
     ).toBeUndefined();
@@ -162,7 +162,7 @@ describe('useAuth persisted-session boot', () => {
 
     await waitFor(() => expect(result.current.status).toBe('signed-out'));
     expect(result.current.user).toBeNull();
-    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.isRealAdmin).toBe(false);
     expect(result.current.error).toMatch(/could not restore your saved sign-in/i);
     expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
       false,
@@ -181,7 +181,7 @@ describe('useAuth persisted-session boot', () => {
 
     await waitFor(() => expect(result.current.status).toBe('signed-out'));
     expect(result.current.user).toBeNull();
-    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.isRealAdmin).toBe(false);
     expect(dependencies.checkIsAdmin).not.toHaveBeenCalled();
     expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
       false,
@@ -200,7 +200,7 @@ describe('useAuth persisted-session boot', () => {
 
     await waitFor(() => expect(result.current.status).toBe('signed-out'));
     expect(result.current.user).toBeNull();
-    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.isRealAdmin).toBe(false);
     expect(result.current.error).toMatch(/does not match your saved account/i);
     expect(dependencies.checkIsAdmin).not.toHaveBeenCalled();
     expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
@@ -219,7 +219,7 @@ describe('useAuth persisted-session boot', () => {
 
     await waitFor(() => expect(result.current.status).toBe('signed-out'));
     expect(result.current.user).toBeNull();
-    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.isRealAdmin).toBe(false);
     expect(result.current.error).toMatch(/could not verify your saved sign-in/i);
     expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
       false,
@@ -240,7 +240,7 @@ describe('useAuth persisted-session boot', () => {
 
     const { result } = renderHook(() => useAuth(), { wrapper: StrictMode });
 
-    await waitFor(() => expect(result.current.isAdmin).toBe(true));
+    await waitFor(() => expect(result.current.isRealAdmin).toBe(true));
     expect(result.current.user?.id).toBe(profile.id);
     expect(result.current.status).toBe('signed-in');
   });
@@ -265,12 +265,12 @@ describe('useAuth persisted-session boot', () => {
     expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
       false,
     );
-    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.isRealAdmin).toBe(false);
     await act(async () => releaseRole(true));
     expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
       true,
     );
-    expect(result.current.isAdmin).toBe(true);
+    expect(result.current.isRealAdmin).toBe(true);
   });
 
   it('closes the execution gate when setting false is rejected but removal works', async () => {
@@ -310,7 +310,7 @@ describe('useAuth persisted-session boot', () => {
 
       const { result } = renderHook(() => useAuth());
       await waitFor(() => expect(result.current.error).toMatch(/could not check admin access/i));
-      expect(result.current.isAdmin).toBe(false);
+      expect(result.current.isRealAdmin).toBe(false);
       expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
         false,
       );

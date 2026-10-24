@@ -80,7 +80,7 @@ describe('useAuth canonical session entry points', () => {
       dependencies.checkIsAdmin.mockResolvedValue(true);
       await chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: admin });
       const { result } = renderHook(() => useAuth());
-      await waitFor(() => expect(result.current.isAdmin).toBe(true));
+      await waitFor(() => expect(result.current.isRealAdmin).toBe(true));
       if (!stillValid) dependencies.restore.mockResolvedValue(false);
 
       await act(async () => {
@@ -91,13 +91,13 @@ describe('useAuth canonical session entry points', () => {
       if (stillValid) {
         await waitFor(() => expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(2));
         expect(result.current.status).toBe('signed-in');
-        expect(result.current.isAdmin).toBe(true);
+        expect(result.current.isRealAdmin).toBe(true);
         expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
           true,
         );
       } else {
         await waitFor(() => expect(result.current.user).toBeNull());
-        expect(result.current.isAdmin).toBe(false);
+        expect(result.current.isRealAdmin).toBe(false);
         expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
           false,
         );
@@ -129,8 +129,8 @@ describe('useAuth canonical session entry points', () => {
     await act(async () => settings.result.current.signIn());
     expect(navigation.result.current.user?.id).toBe(admin.id);
     expect(settings.result.current.user?.id).toBe(admin.id);
-    expect(navigation.result.current.isAdmin).toBe(true);
-    expect(settings.result.current.isAdmin).toBe(true);
+    expect(navigation.result.current.isRealAdmin).toBe(true);
+    expect(settings.result.current.isRealAdmin).toBe(true);
     expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(1);
     expect(resolveSecondRole).toBeUndefined();
 
@@ -138,8 +138,8 @@ describe('useAuth canonical session entry points', () => {
     await broadcastAuth({ user: admin, isAdmin: true });
     await waitFor(() => expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(2));
     await act(async () => resolveSecondRole(false));
-    expect(navigation.result.current.isAdmin).toBe(false);
-    expect(settings.result.current.isAdmin).toBe(false);
+    expect(navigation.result.current.isRealAdmin).toBe(false);
+    expect(settings.result.current.isRealAdmin).toBe(false);
   });
 
   it('keeps interactive sign-in recoverable when session installation fails', async () => {
@@ -154,7 +154,7 @@ describe('useAuth canonical session entry points', () => {
     await act(async () => result.current.signIn());
 
     expect(result.current.user).toBeNull();
-    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.isRealAdmin).toBe(false);
     expect(result.current.status).toBe('signed-out');
     expect(result.current.error).toMatch(/could not restore your saved sign-in/i);
     expect(
@@ -175,7 +175,7 @@ describe('useAuth canonical session entry points', () => {
     await broadcastAuth({ user: admin, isAdmin: true });
 
     await waitFor(() => expect(result.current.user).toBeNull());
-    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.isRealAdmin).toBe(false);
     expect(result.current.status).toBe('signed-out');
     expect(result.current.error).toMatch(/could not restore your saved sign-in/i);
   });
@@ -189,7 +189,7 @@ describe('useAuth canonical session entry points', () => {
     await broadcastAuth({ user: admin, isAdmin: true });
 
     await waitFor(() => expect(result.current.user).toBeNull());
-    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.isRealAdmin).toBe(false);
     expect(result.current.status).toBe('signed-out');
   });
 
@@ -222,7 +222,7 @@ describe('useAuth canonical session entry points', () => {
 
     await waitFor(() => expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(2));
     expect(result.current.user?.id).toBe(member.id);
-    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.isRealAdmin).toBe(false);
     expect(result.current.status).toBe('signed-in');
   });
 
@@ -239,7 +239,7 @@ describe('useAuth canonical session entry points', () => {
 
     await waitFor(() => expect(result.current.user).toBeNull());
     expect(result.current.status).toBe('signed-out');
-    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.isRealAdmin).toBe(false);
     expect(result.current.error).toBeNull();
   });
 

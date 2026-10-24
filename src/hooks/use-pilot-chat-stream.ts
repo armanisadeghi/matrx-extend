@@ -60,6 +60,7 @@ import {
   recordContextReceipt,
   rememberRunContextRows,
 } from '@/state/context-rules';
+import { showAdminNow } from '@/state/debug-mode';
 import { useDesktopStore } from '@/state/desktop';
 import { usePilotStore } from '@/state/pilot';
 import { usePilotChatStore } from '@/state/pilot-chat';
@@ -584,7 +585,7 @@ export function usePilotChatStream() {
         pageLang: briefLang,
       });
 
-      const isAdmin = useAuthStore.getState().isAdmin;
+      const isAdmin = showAdminNow();
       const adminOverrides = isAdmin
         ? projectAdminFlagsToRequest(useAdminFlagsStore.getState())
         : {};

@@ -3,9 +3,10 @@ import { useAuth } from '@/hooks/use-auth';
 import { useDesktopBridge } from '@/hooks/use-desktop';
 import { desktopStatusDotClass, formatDesktopConnectionLabel } from '@/lib/desktop/types';
 import { cn } from '@/lib/utils';
+import { useDebugModeStore } from '@/state/debug-mode';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
-import { ChevronRight, LogOut, Settings, User } from 'lucide-react';
+import { Bug, ChevronRight, LogOut, Settings, User } from 'lucide-react';
 import { useState } from 'react';
 
 /**
@@ -19,7 +20,9 @@ import { useState } from 'react';
  * itself so it stays visible whether the menu is open or closed.
  */
 export function UserMenu() {
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, isAdmin, isRealAdmin, signOut } = useAuth();
+  const debugOn = useDebugModeStore((s) => s.on);
+  const toggleDebug = useDebugModeStore((s) => s.toggle);
   const desktop = useDesktopBridge();
   const setTab = useSidepanelTabStore((s) => s.setTab);
   const [open, setOpen] = useState(false);
@@ -93,6 +96,20 @@ export function UserMenu() {
               Preferences
             </MenuItem>
           )}
+          {/* The one door to every admin tab and option (Arman, 2026-10-24). */}
+          {isRealAdmin && (
+            <MenuItem
+              icon={
+                <Bug className={cn('size-4', debugOn && 'text-amber-600 dark:text-amber-400')} />
+              }
+              trailing={
+                <span className="text-xs text-muted-foreground">{debugOn ? 'On' : 'Off'}</span>
+              }
+              onClick={toggleDebug}
+            >
+              Debug
+            </MenuItem>
+          )}
         </div>
 
         <div className="my-1 h-px bg-border/60" />
@@ -107,6 +124,10 @@ export function UserMenu() {
         >
           Sign out
         </MenuItem>
+
+        <div className="px-2.5 pb-1 pt-1.5 text-[10px] text-muted-foreground">
+          Version {chrome.runtime.getManifest().version}
+        </div>
       </PopoverContent>
     </Popover>
   );
@@ -115,11 +136,14 @@ export function UserMenu() {
 function MenuItem({
   icon,
   destructive = false,
+  trailing,
   onClick,
   children,
 }: {
   icon: React.ReactNode;
   destructive?: boolean;
+  /** Shown in place of the chevron (a switch's On/Off). */
+  trailing?: React.ReactNode;
   onClick: () => void;
   children: React.ReactNode;
 }) {
@@ -136,7 +160,7 @@ function MenuItem({
     >
       <span className="text-muted-foreground">{icon}</span>
       <span className="flex-1">{children}</span>
-      {!destructive && <ChevronRight className="size-3.5 opacity-40" />}
+      {trailing ?? (!destructive && <ChevronRight className="size-3.5 opacity-40" />)}
     </button>
   );
 }
