@@ -4305,6 +4305,11 @@
  "/hindsight/crystallization/sweep": {
   "post": []
  },
+ "/hindsight/debriefs/apply": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/hindsight/drain": {
   "post": []
  },
@@ -7431,6 +7436,14 @@
  },
  "/sandboxes/internal/default-browser-profile": {
   "get": []
+ },
+ "/sandboxes/internal/identity/mint": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sandboxes/internal/identity/renew": {
+  "post": []
  },
  "/sanity/public/status": {
   "get": []
