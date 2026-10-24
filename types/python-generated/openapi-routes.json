@@ -10019,6 +10019,11 @@
    "application/json"
   ]
  },
+ "/vault/reference-logins": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/vault/resolve": {
   "post": [
    "application/json"
