@@ -1132,14 +1132,8 @@ test('admin identity parking projects closed navigation failure categories witho
       ),
     ],
     ['aborted', new Error('page.goto: net::ERR_ABORTED at https://private.invalid/token')],
-    [
-      'target_closed',
-      new Error('Target page, context or browser has been closed private-token'),
-    ],
-    [
-      'network',
-      new Error('page.goto: net::ERR_CONNECTION_RESET at https://private.invalid/token'),
-    ],
+    ['target_closed', new Error('Target page, context or browser has been closed private-token')],
+    ['network', new Error('page.goto: net::ERR_CONNECTION_RESET at https://private.invalid/token')],
     ['other', new Error('private-token unexpected failure')],
   ];
   for (const [category, original] of cases) {
