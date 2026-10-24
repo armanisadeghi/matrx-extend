@@ -12,11 +12,20 @@ const scrape = await readFile(
   'utf8',
 );
 function helper(text, installOwnedPanelOpener = () => assert.fail('unexpected injected opener')) {
-  const start = text.indexOf('async function observePanelVisibility(');
-  const end = text.indexOf('async function sidePanelContexts(', start);
+  const constantsStart = text.indexOf('const WAIT_MS = 100;');
+  const constantsEnd = text.indexOf('export async function nativeCdpStartupDeadlineMs', constantsStart);
+  const waitStart = text.indexOf('const wait = (ms) =>', constantsEnd);
+  const waitEnd = text.indexOf('function panelOpenReplyCategory(', waitStart);
+  const helperStart = text.indexOf('async function observePanelVisibility(');
+  const helperEnd = text.indexOf('async function sidePanelContexts(', helperStart);
+  assert.ok(constantsStart >= 0 && constantsEnd > constantsStart);
+  assert.ok(waitStart >= 0 && waitEnd > waitStart);
+  assert.ok(helperStart >= 0 && helperEnd > helperStart);
   return new Function(
     'installOwnedPanelOpener',
-    `${text.slice(start, end)}; return activateOwnedSidePanel;`,
+    `${text.slice(constantsStart, text.indexOf('export async function', constantsStart))}
+${text.slice(waitStart, waitEnd)}
+${text.slice(helperStart, helperEnd)}; return activateOwnedSidePanel;`,
   )(installOwnedPanelOpener);
 }
 
@@ -54,6 +63,7 @@ test('member reopen binds the panel to the active demo tab before visibility is 
         reply = element.textContent;
       },
       filter: () => result,
+      isVisible: async () => Boolean(reply),
       waitFor: async () => assert.ok(reply),
       textContent: async () => reply,
     };
@@ -120,6 +130,7 @@ async function exercise(text, initial, reply = { ok: true, result: { opened: tru
           result = JSON.stringify(reply);
         },
         filter: () => locator,
+        isVisible: async () => Boolean(result),
         waitFor: async () => {},
         textContent: async () => result,
       };

@@ -422,7 +422,10 @@ async function runScenario(
 
       await writeFile(item.cpuPhase, '0.88\n');
       await nextCpuWatch('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY']);
-      await assert.rejects(runNativeResourceAction(check, () => ++actions), /cpu_pending/);
+      await assert.rejects(
+        runNativeResourceAction(check, () => ++actions),
+        /cpu_pending/,
+      );
       await writeFile(item.cpuPhase, '0.1\n');
       await nextCpuWatch('RESOURCE_CPU_PENDING', []);
       await nextCpuWatch('RESOURCE_CPU_PENDING', []);
@@ -542,9 +545,7 @@ async function runScenario(
         'completion-expired',
         'completion-memory-unsafe',
         'noncpu-attribution',
-      ].includes(
-        kind,
-      )
+      ].includes(kind)
     ) {
       assert(journal.some((event) => event.code === 'RESOURCE_STOP_AT_SAFE_BOUNDARY'));
       assert.equal((await stat(join(item.leaseRoot, 'unsafe-hold.json'))).isFile(), true);
@@ -568,9 +569,7 @@ async function runScenario(
     if (kind === 'attribution-episodes') {
       const attribution = journal.filter((event) => event.code === 'RESOURCE_PROCESS_ATTRIBUTION');
       assert.equal(attribution.length, 2);
-      assert(
-        attribution.every((event) => event.processes?.[0]?.executable === 'fixture-worker'),
-      );
+      assert(attribution.every((event) => event.processes?.[0]?.executable === 'fixture-worker'));
     }
     if (kind === 'noncpu-attribution') {
       const attribution = journal.filter((event) => event.code === 'RESOURCE_PROCESS_ATTRIBUTION');

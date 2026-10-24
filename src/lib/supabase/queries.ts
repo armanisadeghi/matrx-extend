@@ -51,6 +51,7 @@ import { aiDb, chatDb, docprocDb, extendDb, usersDb } from '@/lib/supabase/schem
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { requireOrganizationContext } from '@ai-matrx/api';
 import { readAdminStatus } from '@ai-matrx/auth/admin';
+import { DatabaseError, type TableDescriptor, createDb, read } from '@ai-matrx/data/db';
 import { z } from 'zod';
 
 /**
@@ -1248,6 +1249,39 @@ export const ScreenshotRowSchema = z.object({
 });
 export type ScreenshotRow = z.infer<typeof ScreenshotRowSchema>;
 
+// Read descriptor from @ai-matrx/data@0.29.115's extend description; live columns/PK verified.
+const SCREENSHOT_TABLE: TableDescriptor<ScreenshotRow> = {
+  schema: EXTEND_SCHEMA,
+  name: 'wbx_screenshot',
+  kind: 'table',
+  type: 'entity',
+  pk: ['id'],
+  org: { rule: 'binding' },
+  versioned: true,
+  softDelete: true,
+  archive: null,
+  readOnly: false,
+  deletesRefused: false,
+  readOnlyColumns: [],
+  listScope: 'organization',
+  realtime: false,
+  createdBy: true,
+};
+const SCREENSHOT_COLUMNS = [
+  'id',
+  'page_url_canonical',
+  'page_url_full',
+  'page_title',
+  'file_id',
+  'file_url',
+  'width',
+  'height',
+  'mime_type',
+  'byte_length',
+  'source',
+  'captured_at',
+] as const;
+
 export interface SaveScreenshotPayload {
   page_url_canonical: string;
   page_url_full: string;
@@ -1308,16 +1342,17 @@ export async function saveScreenshot(p: SaveScreenshotPayload): Promise<{ id: st
 
 /** One gallery row by id — the editor uses it to save an edit beside the original. */
 export async function fetchScreenshotById(id: string): Promise<ScreenshotRow | null> {
-  const c = getSupabase();
-  const { data, error } = await c
-    .schema(EXTEND_SCHEMA)
-    .from('wbx_screenshot')
-    .select(
-      'id, page_url_canonical, page_url_full, page_title, file_id, file_url, width, height, mime_type, byte_length, source, captured_at',
-    )
-    .eq('id', id)
-    .maybeSingle();
-  if (error) throw new Error(`fetchScreenshotById: ${error.message}`);
+  let data: ScreenshotRow | null;
+  try {
+    data = await read(createDb({ client: getSupabase() }), SCREENSHOT_TABLE, id, {
+      columns: SCREENSHOT_COLUMNS,
+    });
+  } catch (error) {
+    if (error instanceof DatabaseError) {
+      throw new Error(`fetchScreenshotById: ${error.cause.message}`);
+    }
+    throw error;
+  }
   if (!data) return null;
   return (
     parseRowsSafe(ScreenshotRowSchema, [data] as unknown[], 'fetchScreenshotById').rows[0] ?? null

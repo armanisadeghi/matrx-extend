@@ -207,6 +207,7 @@ async function actualInitialSetup(env) {
     'extensionWorker',
     'normalTarget',
     'waitForInitialPanelReady',
+    'resourceAction',
     'waitForSettledGuestPanel',
     'panelContextFailureDiagnostic',
     'sidePanelContexts',
@@ -221,6 +222,7 @@ async function actualInitialSetup(env) {
     { targetId: 'owned-worker' },
     { targetId: 'owned-root' },
     (args) => waitForInitialPanelReady({ ...args, ...env.timing }),
+    async (action) => action(),
     async (_cdp, targetId) => {
       events.push(['settle', targetId]);
       return {};

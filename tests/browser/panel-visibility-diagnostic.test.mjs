@@ -18,8 +18,16 @@ const between = (source, start, end) => {
   return source.slice(from, to);
 };
 function helpers(source) {
+  const constantsStart = source.indexOf('const WAIT_MS = 100;');
+  const constantsEnd = source.indexOf('export async function nativeCdpStartupDeadlineMs', constantsStart);
+  const waitStart = source.indexOf('const wait = (ms) =>', constantsEnd);
+  const waitEnd = source.indexOf('function panelOpenReplyCategory(', waitStart);
+  assert.ok(constantsStart >= 0 && constantsEnd > constantsStart);
+  assert.ok(waitStart >= 0 && waitEnd > waitStart);
   return new Function(
-    `${between(source, 'async function observePanelVisibility(', 'async function sidePanelContexts(')}; return { observePanelVisibility, activateOwnedSidePanel };`,
+    `${source.slice(constantsStart, constantsEnd)}
+${source.slice(waitStart, waitEnd)}
+${between(source, 'async function observePanelVisibility(', 'async function sidePanelContexts(')}; return { observePanelVisibility, activateOwnedSidePanel };`,
   )();
 }
 
@@ -116,6 +124,7 @@ async function checkPath(source, scrape, refused = false) {
     'join',
     'onStage',
     'captureTarget',
+    'resourceAction',
     `return (async () => { ${initial} ${captures} return observeVisibility; })();`,
   )(
     async () => panel,
@@ -128,6 +137,7 @@ async function checkPath(source, scrape, refused = false) {
     (...parts) => parts.join('/'),
     () => {},
     async () => {},
+    async (action) => action(),
   );
   let reply = '';
   const actions = [];
@@ -146,6 +156,7 @@ async function checkPath(source, scrape, refused = false) {
           reply = JSON.stringify({ ok: !refused, result: { opened: !refused } });
         },
         filter: () => locator,
+        isVisible: async () => Boolean(reply),
         waitFor: async () => {},
         textContent: async () => reply,
       };
@@ -259,7 +270,7 @@ test('in-memory mutations cannot omit checkpoints or manufacture successful meas
   const mutations = [
     [harnessSource, omitOnce(scrapeSource, 'observeBoundary: observeAuthenticatedPanel,')],
     [
-      omitOnce(harnessSource, "await observeVisibility('initial_settled_before_screenshots');"),
+      omitOnce(harnessSource, "await (resourceAction ?? ((action) => action()))(() =>\n      observeVisibility('initial_settled_before_screenshots'),\n    );"),
       scrapeSource,
     ],
     [

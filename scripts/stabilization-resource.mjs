@@ -871,10 +871,11 @@ async function main() {
       process.exitCode = 3;
       canRelease = false;
     }
-    if (attributionPending.size) await Promise.all([...attributionPending]);
-    if (attributionFailure) throw attributionFailure;
-    if (canRelease && !journalBroken && !safetyStateBroken) await release(owner);
+    if (attributionPending.size) await Promise.allSettled([...attributionPending]);
+    if (canRelease && !journalBroken && !safetyStateBroken && !attributionFailure)
+      await release(owner);
   }
+  if (attributionFailure) throw attributionFailure;
 }
 
 try {
