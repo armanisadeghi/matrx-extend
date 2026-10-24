@@ -6,7 +6,12 @@
  * honest states; a provider fallback the server reports is carried through.
  */
 
-import { addPostToCollection, createCollection, ingestPost } from '@/lib/api/routes/social';
+import {
+  type IngestFailure,
+  addPostToCollection,
+  createCollection,
+  ingestPost,
+} from '@/lib/api/routes/social';
 import { log } from '@/lib/debug/log';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import {
@@ -21,6 +26,7 @@ import {
   setLastCollectionId,
 } from '@/lib/swipe-file/store';
 import { swipeTargetFromUrl } from '@/lib/swipe-file/urls';
+import { recordClientError } from '@/lib/telemetry/client-error';
 
 export type SwipeOutcome =
   | {
@@ -31,7 +37,60 @@ export type SwipeOutcome =
       notice: string | null;
       receipt: SwipeCaptureReceipt;
     }
-  | { status: 'failed'; reason: string };
+  | { status: 'failed'; reason: string; detail?: SwipeFailureDetail };
+
+/** What the "Details" view shows under a failure: enough for anyone to find this attempt. */
+export interface SwipeFailureDetail {
+  /** The step that stopped, in the same words the progress line used. */
+  step: string;
+  status?: number;
+  serverCode?: string;
+  /** Server request id: the server's own error record carries it too. */
+  requestId?: string;
+  technical?: string;
+  /** The platform error-store row for this failure. */
+  reference?: string;
+  /** Why no reference could be written, when it could not. */
+  referenceMissing?: string;
+}
+
+/**
+ * A save that stopped after the person did everything right is OUR failure:
+ * record it (with the server's request id, so both rows join) and hand the
+ * reference back for the card to show.
+ */
+async function failed(
+  reason: string,
+  step: string,
+  f: Partial<IngestFailure>,
+  url: string,
+  organizationId: string,
+): Promise<SwipeOutcome> {
+  const detail: SwipeFailureDetail = {
+    step,
+    ...(f.status !== undefined && { status: f.status }),
+    ...(f.serverCode !== undefined && { serverCode: f.serverCode }),
+    ...(f.requestId !== undefined && { requestId: f.requestId }),
+    ...(f.technical !== undefined && { technical: f.technical }),
+  };
+  try {
+    const reference = await recordClientError({
+      feature: 'social',
+      message: `swipe save stopped at "${step}": ${reason}`,
+      code: f.serverCode ?? (f.status !== undefined ? `http_${f.status}` : 'swipe_save_failed'),
+      route: '/social/ingest/post',
+      ...(f.requestId !== undefined && { requestId: f.requestId }),
+      context: { step, url, status: f.status ?? null, technical: f.technical ?? null },
+      organizationId,
+    });
+    if (reference) detail.reference = reference;
+    else detail.referenceMissing = 'Diagnostics are off in this browser';
+  } catch (err) {
+    log.error('sw', 'swipe failure was NOT recorded in the platform error store', { detail, err });
+    detail.referenceMissing = 'The error log could not be reached';
+  }
+  return { status: 'failed', reason, detail };
+}
 
 export interface SwipeRequest {
   url: string;
@@ -67,17 +126,21 @@ export async function saveToSwipeFile(
     undefined,
     organizationId,
   );
-  if (!ingest.ok) return { status: 'failed', reason: ingest.reason };
+  if (!ingest.ok)
+    return failed(ingest.reason, `Reading this ${target.label}`, ingest, target.url, organizationId);
   const post = ingest.result;
 
   if (!collectionId) {
     onProgress('Creating the collection');
     const made = await createCollection(req.newCollectionName!.trim(), organizationId);
     if (!made.ok)
-      return {
-        status: 'failed',
-        reason: `The post was fetched but the collection could not be created: ${made.error}`,
-      };
+      return failed(
+        `The post was fetched but the collection could not be created: ${made.error}`,
+        'Creating the collection',
+        { status: made.status },
+        target.url,
+        organizationId,
+      );
     collectionId = made.data.collection_id;
   }
 
@@ -91,10 +154,13 @@ export async function saveToSwipeFile(
     onProgress('Adding to the collection');
     const added = await addPostToCollection(collectionId, post.post_id, organizationId);
     if (!added.ok)
-      return {
-        status: 'failed',
-        reason: `The post was fetched but could not be added: ${added.error}`,
-      };
+      return failed(
+        `The post was fetched but could not be added: ${added.error}`,
+        'Adding to the collection',
+        { status: added.status },
+        target.url,
+        organizationId,
+      );
   }
   const receipt: SwipeCaptureReceipt = {
     postId: post.post_id,

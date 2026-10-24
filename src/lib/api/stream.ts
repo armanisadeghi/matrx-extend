@@ -67,6 +67,8 @@ export type StreamEvent =
       rejoin?: StreamRejoinTarget;
       /** Workflow `run_id` a `live_stream_unavailable` answer names (null when none). */
       unavailableRunId?: string | null;
+      /** The server's own `code` on an in-stream `error` event: a diagnostic, never user text. */
+      serverCode?: string;
     }
   | { type: 'done' };
 
@@ -247,6 +249,7 @@ function dispatch(event: MatrxStreamEnvelope, onEvent: (e: StreamEvent) => void)
         ? GUEST_ALLOWANCE_MESSAGE
         : (streamErrorText(event) ?? streamErrorMessage()),
       ...(guestAllowanceUsed && { code: 'guest_ai_allowance_used' }),
+      ...(!guestAllowanceUsed && typeof data.code === 'string' && { serverCode: data.code }),
     });
     return;
   }

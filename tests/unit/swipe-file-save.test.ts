@@ -9,7 +9,9 @@ const m = vi.hoisted(() => ({
   getCollectionOrg: vi.fn(),
   activeOrg: vi.fn(),
   setLast: vi.fn(),
+  record: vi.fn(),
 }));
+vi.mock('@/lib/telemetry/client-error', () => ({ recordClientError: m.record }));
 vi.mock('@/lib/api/routes/social', () => ({
   ingestPost: m.ingestPost,
   createCollection: m.createCollection,
@@ -44,6 +46,7 @@ beforeEach(() => {
   m.getCollectionOrg.mockResolvedValue('org-collection');
   m.isPostInCollection.mockResolvedValue(false);
   m.addPostToCollection.mockResolvedValue({ ok: true, data: { saved: true } });
+  m.record.mockResolvedValue('err-row-1');
 });
 
 describe('saveToSwipeFile', () => {
@@ -92,11 +95,44 @@ describe('saveToSwipeFile', () => {
     expect(o).toMatchObject({ status: 'saved', collectionId: 'new1' });
   });
 
-  it('fails with the server reason, never saved', async () => {
-    m.ingestPost.mockResolvedValue({ ok: false, reason: 'That platform is not supported.' });
+  it('fails with the server reason, the step, and a recorded reference, never saved', async () => {
+    m.ingestPost.mockResolvedValue({
+      ok: false,
+      reason: 'That platform is not supported.',
+      serverCode: 'unsupported_platform',
+      requestId: 'req-42',
+    });
     const o = await saveToSwipeFile({ url: URL_OK, collectionId: 'c1' }, () => {});
-    expect(o).toEqual({ status: 'failed', reason: 'That platform is not supported.' });
+    expect(o).toEqual({
+      status: 'failed',
+      reason: 'That platform is not supported.',
+      detail: {
+        step: 'Reading this TikTok video',
+        serverCode: 'unsupported_platform',
+        requestId: 'req-42',
+        reference: 'err-row-1',
+      },
+    });
+    // The record joins the server's own row by request id, in the save's organization.
+    expect(m.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        feature: 'social',
+        code: 'unsupported_platform',
+        requestId: 'req-42',
+        organizationId: 'org-collection',
+      }),
+    );
     expect(m.addPostToCollection).not.toHaveBeenCalled();
+  });
+
+  it('still explains itself when the error log cannot be reached', async () => {
+    m.ingestPost.mockResolvedValue({ ok: false, reason: 'Busy.', status: 503 });
+    m.record.mockRejectedValue(new Error('offline'));
+    const o = await saveToSwipeFile({ url: URL_OK, collectionId: 'c1' }, () => {});
+    expect(o.status === 'failed' && o.detail).toMatchObject({
+      status: 503,
+      referenceMissing: 'The error log could not be reached',
+    });
   });
 
   it('refuses a non-post URL before any network call', async () => {
@@ -112,7 +148,11 @@ describe('saveToSwipeFile', () => {
     m.ingestPost.mockResolvedValue(post());
     m.addPostToCollection.mockResolvedValue({ ok: false, status: 403, error: 'forbidden' });
     const o = await saveToSwipeFile({ url: URL_OK, collectionId: 'c1' }, () => {});
-    expect(o.status).toBe('failed');
+    expect(o.status === 'failed' && o.detail).toMatchObject({
+      step: 'Adding to the collection',
+      status: 403,
+      reference: 'err-row-1',
+    });
     expect(m.setLast).not.toHaveBeenCalled();
   });
 });

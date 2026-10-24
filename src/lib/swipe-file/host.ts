@@ -31,7 +31,12 @@ export type SwipeHostMsg =
   | { t: 'result'; outcome: SwipeOutcome };
 
 export function describeOutcome(o: SwipeOutcome): string {
-  if (o.status === 'failed') return `Not saved: ${o.reason}`;
+  if (o.status === 'failed') {
+    // A notification has no Details view: the step and reference ride in the sentence.
+    const ref = o.detail?.reference ?? o.detail?.requestId;
+    const where = o.detail ? ` (at: ${o.detail.step}${ref ? `, ref ${ref.slice(0, 8)}` : ''})` : '';
+    return `Not saved: ${o.reason}${where}`;
+  }
   const head = o.status === 'saved' ? 'Saved to your swipe file' : 'Already in that collection';
   return o.notice ? `${head}. ${o.notice}` : `${head}: ${o.title}`;
 }

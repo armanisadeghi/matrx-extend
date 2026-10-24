@@ -7,7 +7,7 @@ import {
   onSwipePillHiddenChange,
 } from '@/lib/swipe-file/pill-dismiss';
 import { captureReceiptSummary, missingSlideNumbers } from '@/lib/swipe-file/receipt';
-import type { SwipeOutcome } from '@/lib/swipe-file/save';
+import type { SwipeFailureDetail, SwipeOutcome } from '@/lib/swipe-file/save';
 import { feedTargetFromUrl, swipeTargetFromUrl } from '@/lib/swipe-file/urls';
 
 const NEW = '__new__';
@@ -37,6 +37,7 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
 .feedback{border-top:1px solid #374151;padding-top:8px;display:flex;flex-direction:column;gap:5px;min-width:0}.status{display:flex;align-items:flex-start;gap:6px;font-weight:600}.mark{flex:none}.msg,.summary,.notice{overflow-wrap:anywhere}.summary{font-size:12px;color:#d1d5db}.notice{font-size:12px;color:#fcd34d;max-height:100px;overflow:auto}.ok{color:#86efac}.warn{color:#fcd34d}.bad{color:#fca5a5}
 .links{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding-top:3px}.links button{padding:0;background:none;color:#93c5fd}.links a{color:#93c5fd;text-decoration:none}.links a:hover,.links button:hover{text-decoration:underline}
 .close{flex:none;margin-left:auto;background:none;color:#9ca3af;padding:2px 6px;font-size:16px;line-height:1}.close:hover{color:#f9fafb;background:#374151}
+.details{font-size:12px;color:#d1d5db;background:#0b1220;border:1px solid #374151;border-radius:6px;padding:6px 8px;display:flex;flex-direction:column;gap:6px}.details dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 8px}.details dt{color:#9ca3af}.details dd{margin:0;overflow-wrap:anywhere}.details .id{font-family:ui-monospace,monospace;font-size:11px}.details button{align-self:flex-start;padding:0;background:none;color:#93c5fd}
 :focus-visible{outline:2px solid #93c5fd;outline-offset:2px}[hidden]{display:none!important}
 </style>
 <section class="card" aria-label="Matrx swipe file">
@@ -47,6 +48,8 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
   <div id="summary" class="summary" hidden></div><div id="notice" class="notice" hidden></div>
   <button id="retry-slides" hidden>Retry missing slides</button>
   <button id="capture-slides" hidden>Capture remaining slides</button>
+  <div id="failrow" class="links" hidden><button id="again">Try again</button><button id="why" aria-expanded="false" aria-controls="details">Details</button></div>
+  <div id="details" class="details" hidden><dl id="facts"></dl><button id="copy">Copy details</button></div>
   <div id="links" class="links" hidden><button id="review">View in extension</button><a id="web" target="_blank" rel="noopener noreferrer">Open in Matrx ↗</a></div>
  </div>
 </section>`;
@@ -68,6 +71,14 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
   let feedUrl: string | null = null;
   /** A feed page the guide has taken over; the card stays away until the person leaves it. */
   let feedHandedOff: string | null = null;
+  const failRow = $('failrow');
+  const why = $<HTMLButtonElement>('why');
+  const details = $('details');
+  const facts = $('facts');
+  const copy = $<HTMLButtonElement>('copy');
+  /** The last save sent, so "Try again" repeats exactly it. */
+  let lastSave: Extract<SwipeClientMsg, { t: 'save' }> | null = null;
+  let copyText = '';
   const captureSlides = $<HTMLButtonElement>('capture-slides');
   const retrySlides = $<HTMLButtonElement>('retry-slides');
   let port: chrome.runtime.Port | null = null;
@@ -90,11 +101,49 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
     summary.hidden =
       notice.hidden =
       links.hidden =
+      failRow.hidden =
+      details.hidden =
       captureSlides.hidden =
       retrySlides.hidden =
         true;
     captureSlides.disabled = false;
     web.removeAttribute('href');
+    why.textContent = 'Details';
+    why.setAttribute('aria-expanded', 'false');
+    copy.textContent = 'Copy details';
+  }
+  /** A failure always offers a way forward (Try again) and a way to see what happened (Details). */
+  function showFailure(reason: string, detail: SwipeFailureDetail | undefined) {
+    say(`Not saved: ${reason}`, 'bad', '!');
+    const rows: [string, string, boolean?][] = [
+      ['Step', detail?.step ?? 'Before sending'],
+      ['Problem', reason],
+    ];
+    if (detail?.status !== undefined || detail?.serverCode)
+      rows.push([
+        'Server',
+        [detail.status !== undefined ? `HTTP ${detail.status}` : '', detail.serverCode ?? '']
+          .filter(Boolean)
+          .join(' · '),
+      ]);
+    if (detail?.technical) rows.push(['Cause', detail.technical]);
+    if (detail?.requestId) rows.push(['Request', detail.requestId, true]);
+    if (detail?.reference) rows.push(['Reference', detail.reference, true]);
+    else if (detail?.referenceMissing) rows.push(['Reference', detail.referenceMissing]);
+    if (lastSave) rows.push(['Page', lastSave.url, true]);
+    rows.push(['Time', new Date().toLocaleString()]);
+    facts.replaceChildren(
+      ...rows.flatMap(([k, v, id]) => {
+        const dt = document.createElement('dt');
+        dt.textContent = k;
+        const dd = document.createElement('dd');
+        dd.textContent = v;
+        if (id) dd.className = 'id';
+        return [dt, dd];
+      }),
+    );
+    copyText = ['Matrx swipe file: not saved', ...rows.map(([k, v]) => `${k}: ${v}`)].join('\n');
+    failRow.hidden = false;
   }
   function send(message: SwipeClientMsg) {
     try {
@@ -156,7 +205,7 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
       if (savingUrl !== currentUrl) return;
       savingUrl = null;
       const outcome = message.outcome;
-      if (outcome.status === 'failed') say(`Not saved: ${outcome.reason}`, 'bad', '!');
+      if (outcome.status === 'failed') showFailure(outcome.reason, outcome.detail);
       else {
         saved = outcome;
         say(
@@ -214,12 +263,42 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
     save.disabled = true;
     savingUrl = currentUrl;
     say('Starting…', '', '◌');
-    send({
+    lastSave = {
       t: 'save',
       url: currentUrl,
       collectionId: isNew ? null : col.value,
       ...(isNew ? { newCollectionName: name } : {}),
-    });
+    };
+    send(lastSave);
+  });
+  $('again').addEventListener('click', () => {
+    if (!lastSave || lastSave.url !== currentUrl || save.disabled) return;
+    clearResult();
+    save.disabled = true;
+    savingUrl = currentUrl;
+    say('Trying again…', '', '◌');
+    send(lastSave);
+  });
+  why.addEventListener('click', () => {
+    details.hidden = !details.hidden;
+    why.textContent = details.hidden ? 'Details' : 'Hide details';
+    why.setAttribute('aria-expanded', String(!details.hidden));
+  });
+  copy.addEventListener('click', () => {
+    navigator.clipboard
+      .writeText(copyText)
+      .then(() => {
+        copy.textContent = 'Copied';
+      })
+      .catch(() => {
+        // The page refused clipboard access: select the facts so Cmd+C works.
+        const range = document.createRange();
+        range.selectNodeContents(facts);
+        const sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(range);
+        copy.textContent = 'Selected: copy it';
+      });
   });
   retrySlides.addEventListener('click', () => {
     // Saving again is the retry: the server only fetches what is still missing.
@@ -229,7 +308,8 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
     save.disabled = true;
     savingUrl = currentUrl;
     say('Retrying the missing slides…', '', '◌');
-    send({ t: 'save', url: currentUrl, collectionId });
+    lastSave = { t: 'save', url: currentUrl, collectionId };
+    send(lastSave);
   });
   captureSlides.addEventListener('click', () => {
     if (!saved || !currentUrl || captureSlides.disabled) return;

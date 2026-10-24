@@ -43,17 +43,20 @@ export const SocialTraceSchema = z
   })
   .passthrough();
 
+/** Every field but the post id degrades alone: an odd value is dropped, never a lost save. */
+const bonus = <T extends z.ZodTypeAny>(t: T) => t.nullish().catch(undefined);
+
 export const SocialPostResultSchema = z
   .object({
     post_id: z.string(),
-    platform: z.string().optional(),
-    url: z.string().optional(),
-    format: z.string().nullish().catch(undefined),
-    title: z.string().nullable().optional(),
-    caption: z.string().nullable().optional(),
-    handle: z.string().nullable().optional(),
-    thumbnail_url: z.string().nullable().optional(),
-    trace: SocialTraceSchema.nullable().optional(),
+    platform: bonus(z.string()),
+    url: bonus(z.string()),
+    format: bonus(z.string()),
+    title: bonus(z.string()),
+    caption: bonus(z.string()),
+    handle: bonus(z.string()),
+    thumbnail_url: bonus(z.string()),
+    trace: bonus(SocialTraceSchema),
     // Everything below the post id is a bonus. A field the server sends as null or in a
     // newer shape must never turn an already-saved post into "Not saved" (the server
     // answers `browser_capture: null` for an untouched carousel), so each degrades alone.
@@ -85,9 +88,27 @@ export interface IngestStage {
   total: number;
 }
 
-export type IngestOutcome =
-  | { ok: true; result: SocialPostResult }
-  | { ok: false; reason: string; status?: number };
+/** Why an ingest stopped, in the person's words, plus what an admin needs to find it. */
+export interface IngestFailure {
+  reason: string;
+  status?: number;
+  /** The server's error code (diagnostic, never user text). */
+  serverCode?: string;
+  /** Server `X-Request-ID`: the same id is on the server's own error record. */
+  requestId?: string;
+  /** What this extension saw go wrong (field paths and rules, never the body). */
+  technical?: string;
+}
+
+export type IngestOutcome = { ok: true; result: SocialPostResult } | ({ ok: false } & IngestFailure);
+
+/** Which fields broke and why, e.g. `post_id: Required`. Never values: they can carry page content. */
+export function describeSchemaIssues(error: z.ZodError): string {
+  return error.issues
+    .slice(0, 5)
+    .map((i) => `${i.path.join('.') || 'answer'}: ${i.message}`)
+    .join('; ');
+}
 
 /** `POST /social/ingest/post` (NDJSON). Resolves once the stream ends. */
 export async function ingestPost(
@@ -107,20 +128,22 @@ export async function ingestPost(
   if (!headers.Authorization || !headers[ORGANIZATION_CONTEXT_HEADER])
     return { ok: false, reason: 'Sign in to Matrx to save to your swipe file.' };
 
-  const box: {
-    result: SocialPostResult | null;
-    failure: { reason: string; status?: number } | null;
-  } = { result: null, failure: null };
+  const box: { result: SocialPostResult | null; failure: IngestFailure | null; requestId?: string } =
+    { result: null, failure: null };
   await streamFetch({
     url: `${base}/social/ingest/post`,
     body: { url, land_media: true, transcript: true, comments: false, force: false },
     headers,
     ...(signal ? { signal } : {}),
+    onOpened: (info) => {
+      if (info.requestId) box.requestId = info.requestId;
+    },
     onEvent: (e) => {
       if (e.type === 'error') {
         box.failure ??= {
           reason: e.message,
           ...(e.status !== undefined ? { status: e.status } : {}),
+          ...(e.serverCode !== undefined ? { serverCode: e.serverCode } : {}),
         };
         return;
       }
@@ -137,17 +160,19 @@ export async function ingestPost(
         const parsed = SocialPostResultSchema.safeParse(d.result);
         if (parsed.success) box.result = parsed.data;
         else
-          box.failure ??= { reason: 'The server answered with a post this extension cannot read.' };
+          box.failure ??= {
+            reason: 'Matrx read the post but its answer had no post id.',
+            technical: describeSchemaIssues(parsed.error),
+          };
       }
     },
   });
   if (box.result) return { ok: true, result: box.result };
-  const f = box.failure;
-  return {
-    ok: false,
-    reason: f?.reason ?? 'The server ended without a result.',
-    ...(f?.status !== undefined ? { status: f.status } : {}),
+  const f = box.failure ?? {
+    reason: 'The server stopped before answering.',
+    technical: 'stream ended with no social_result and no error event',
   };
+  return { ok: false, ...f, ...(box.requestId ? { requestId: box.requestId } : {}) };
 }
 
 export async function createCollection(

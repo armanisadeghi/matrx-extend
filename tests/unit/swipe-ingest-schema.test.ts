@@ -1,4 +1,4 @@
-import { SocialPostResultSchema } from '@/lib/api/routes/social';
+import { SocialPostResultSchema, describeSchemaIssues } from '@/lib/api/routes/social';
 import { describe, expect, it } from 'vitest';
 
 /** The exact shape the live server sent for an untouched Instagram carousel (2026-10-11). */
@@ -53,7 +53,23 @@ describe('SocialPostResultSchema', () => {
     expect(r.data?.media_coverage).toBeUndefined();
   });
 
-  it('still refuses an answer with no post id', () => {
-    expect(SocialPostResultSchema.safeParse({ platform: 'instagram' }).success).toBe(false);
+  it('a null url, platform or trace never turns a stored post into "Not saved"', () => {
+    // SocialPost.url is `str | None` on the server; `z.string().optional()` refused null.
+    const r = SocialPostResultSchema.safeParse({
+      ...LIVE_CAROUSEL,
+      url: null,
+      platform: null,
+      trace: 'not-an-object',
+      handle: 42,
+    });
+    expect(r.success).toBe(true);
+    expect(r.data?.post_id).toBe(LIVE_CAROUSEL.post_id);
+    expect(r.data?.url ?? undefined).toBeUndefined();
+  });
+
+  it('still refuses an answer with no post id, and names the field', () => {
+    const r = SocialPostResultSchema.safeParse({ platform: 'instagram' });
+    expect(r.success).toBe(false);
+    expect(describeSchemaIssues(r.error!)).toBe('post_id: Required');
   });
 });

@@ -53,8 +53,7 @@
  */
 
 import { log } from '@/lib/debug/log';
-import { getSupabase } from '@/lib/supabase/client';
-import { mayReportExternalTelemetry } from '@/lib/telemetry/external-reporting';
+import { recordClientError } from '@/lib/telemetry/client-error';
 import { pushNotice } from '@/state/notices';
 import { PG_CODES } from '@ai-matrx/kit/db-codes';
 
@@ -242,29 +241,16 @@ export async function recordDbFailure(
   if (reporting) return;
   reporting = true;
   try {
-    // Firefox errors stay in the local log and notice path. Only their export
-    // to the platform store depends on the person's current diagnostics grant.
-    if (!(await mayReportExternalTelemetry())) return;
-    let organizationId: string | undefined;
-    try {
-      const { getActiveOrganizationId } = await import('@/lib/org/active-org');
-      organizationId = (await getActiveOrganizationId()) ?? undefined;
-    } catch {
-      organizationId = undefined;
-    }
-    const { data, error: rpcError } = await getSupabase().rpc('log_client_error', {
-      // DD-115: this extension names ITSELF, so `ops.system_error.source_app`
-      // says matrx-extend instead of blaming the web app. The value is checked
-      // against a closed list inside the database — a typo comes back as a 400
-      // with a sentence, never as a quietly mislabelled row.
-      p_source_app: 'matrx-extend',
-      p_source_feature: sourceFeatureForTable(site.table),
-      p_source: 'chrome-extension',
-      p_message: `${site.operation} ${site.table} ${kind}: ${error?.message ?? 'no rows returned'}`,
-      p_code: error?.code ?? kind,
-      p_route: site.table,
-      p_context: {
-        client: 'matrx-extend',
+    // Firefox errors stay in the local log and notice path; `recordClientError`
+    // returns null when the person declined that export. It THROWS when the
+    // durable record did not land (DD-115: that used to look like success), and
+    // the catch below says so loudly.
+    await recordClientError({
+      feature: sourceFeatureForTable(site.table),
+      message: `${site.operation} ${site.table} ${kind}: ${error?.message ?? 'no rows returned'}`,
+      code: error?.code ?? kind,
+      route: site.table,
+      context: {
         kind,
         table: site.table,
         operation: site.operation,
@@ -272,19 +258,7 @@ export async function recordDbFailure(
         details: error?.details ?? null,
         hint: error?.hint ?? null,
       },
-      ...(organizationId !== undefined && { p_organization_id: organizationId }),
     });
-    // THE ERROR DOOR USED TO FAIL SILENTLY, AND THIS CHECK STAYS ANYWAY.
-    // `log_client_error` returns the new row's id. Until DD-115 it returned
-    // NULL without inserting when no organization resolved, and ended in
-    // `exception when others then return null`, so a failed insert looked
-    // exactly like a success from out here. Both are fixed in the database: the
-    // row is written either way, and a failure now comes back as `rpcError`.
-    // The check is kept because "the durable record did not land" must never
-    // again be inferred from silence — whichever way it fails, we say so.
-    if (rpcError || typeof data !== 'string' || data.length === 0) {
-      reportFailedReport(site, kind, error, rpcError ?? { message: 'RPC returned no error id' });
-    }
   } catch (err) {
     // The error channel itself is unreachable. Say so locally; do not recurse.
     reportFailedReport(site, kind, error, err);

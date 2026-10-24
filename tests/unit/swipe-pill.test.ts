@@ -304,3 +304,50 @@ it('closing the card hides it on every page until the extension is opened again'
     await showSwipePillAgain();
   }
 });
+
+it('a failure says where it stopped, offers Try again, and shows copyable details', async () => {
+  const writeText = vi.fn(async () => {});
+  vi.spyOn(navigator.clipboard, 'writeText').mockImplementation(writeText);
+  mountSwipePill();
+  const root = document.querySelector('#matrx-swipe-pill')!.shadowRoot!;
+  receive({
+    t: 'collections',
+    collections: [{ id: 'collection', name: 'Inspiration', organization_id: 'org' }],
+    lastId: 'collection',
+  });
+  root.querySelector<HTMLButtonElement>('#save')!.click();
+  receive({
+    t: 'result',
+    outcome: {
+      status: 'failed',
+      reason: 'Matrx read the post but its answer had no post id.',
+      detail: {
+        step: 'Reading this post',
+        technical: 'post_id: Required',
+        requestId: 'req-42',
+        reference: 'err-row-1',
+      },
+    },
+  });
+  expect(root.querySelector('#msg')?.textContent).toContain('Not saved');
+  expect(root.querySelector<HTMLElement>('#failrow')!.hidden).toBe(false);
+  const details = root.querySelector<HTMLElement>('#details')!;
+  expect(details.hidden).toBe(true);
+  root.querySelector<HTMLButtonElement>('#why')!.click();
+  expect(details.hidden).toBe(false);
+  const text = details.textContent ?? '';
+  for (const fact of ['Reading this post', 'post_id: Required', 'req-42', 'err-row-1'])
+    expect(text).toContain(fact);
+  root.querySelector<HTMLButtonElement>('#copy')!.click();
+  await Promise.resolve();
+  expect(writeText).toHaveBeenCalledWith(expect.stringContaining('Reference: err-row-1'));
+
+  posted.mockClear();
+  root.querySelector<HTMLButtonElement>('#again')!.click();
+  expect(posted).toHaveBeenLastCalledWith({
+    t: 'save',
+    url: 'https://www.instagram.com/p/captured-post/',
+    collectionId: 'collection',
+  });
+  expect(root.querySelector<HTMLElement>('#failrow')!.hidden).toBe(true);
+});
