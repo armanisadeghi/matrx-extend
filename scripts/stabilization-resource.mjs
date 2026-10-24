@@ -85,7 +85,7 @@ const emit = (code, extra = {}) => {
 };
 const fail = (code, extra = {}) => {
   emit(code, extra);
-  process.exitCode = 2;
+  process.exitCode = resourceInvalid ? 3 : 2;
 };
 const persistSafetyState = async (path, state) => {
   try {
