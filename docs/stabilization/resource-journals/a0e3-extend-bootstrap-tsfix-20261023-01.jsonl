@@ -1,0 +1,3 @@
+{"schema":1,"at":"2026-10-24T02:51:20.397Z","runId":"a0e3-extend-bootstrap-tsfix-20261023-01","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-24T02:51:20.406Z","runId":"a0e3-extend-bootstrap-tsfix-20261023-01","code":"RESOURCE_MEASUREMENT_FAILED"}
+{"schema":1,"at":"2026-10-24T02:51:20.411Z","runId":"a0e3-extend-bootstrap-tsfix-20261023-01","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}

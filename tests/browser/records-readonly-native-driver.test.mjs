@@ -663,6 +663,8 @@ function runDriver({
         assert.equal(principalId, profileId);
         assert.equal(expectedEmail, 'admin@admin.com');
         return {
+          readPolicy: async (_organizationId, _conversationId, tableId = null) =>
+            tableId === null ? { setting: 'ask' } : { setting: 'ask', approval_required: true },
           readApproval: async () => ({}),
           decideInUi: async () => ({ surface: '/approvals', rowMatched: true, confirmed: true }),
           close: async () => {},
@@ -1280,6 +1282,132 @@ test('C06 cannot dispatch without the observed tool-test conversation', async ()
   assert.deepEqual(scenario.report.positive_mutations, []);
 });
 
+test('C06 policy preflight refuses NEVER_ASK, unknown, and read failures before fixture writes', async () => {
+  for (const [setting, readError, expected] of [
+    ['never_ask', null, /records_c06_ask_policy_required/],
+    ['unknown', null, /records_c06_ask_policy_required/],
+    [null, new Error('records_c06_policy_read_failed'), /records_c06_policy_read_failed/],
+  ]) {
+    let closes = 0;
+    let fixtureWrites = 0;
+    let c06Dispatches = 0;
+    const scenario = runDriver({
+      approvalSession: async () => ({
+        readPolicy: async () => {
+          if (readError) throw readError;
+          return { setting };
+        },
+        readApproval: async () => ({}),
+        decideInUi: async () => ({ surface: '/approvals', rowMatched: true, confirmed: true }),
+        close: async () => {
+          closes++;
+        },
+      }),
+      fixtureHelper: async ({ exercise, onStage }) => {
+        fixtureWrites++;
+        onStage('records_fixture_table_create');
+        return exercise({
+          tableId: fixtureTableId,
+          rowId: fixtureRowId,
+          rowName: fixtureRowName,
+          rowVersion: 1,
+          cleanupOwnedTable: async () => ({ archived_verified: true }),
+        });
+      },
+      approvalLifecycle: async ({ dispatchCreate }) => {
+        c06Dispatches++;
+        return dispatchCreate({
+          tableId: fixtureTableId,
+          rowName: `${fixtureTableName}-approval-row`,
+          conversationId: testConversationId,
+        });
+      },
+    });
+    await assert.rejects(scenario.run(), expected);
+    assert.equal(fixtureWrites, 0, 'policy must be read before fixture creation');
+    assert.equal(c06Dispatches, 0, 'policy refusal must not dispatch C06');
+    assert.equal(closes, 1, 'the owned approval page must close on every preflight outcome');
+    assert.deepEqual(scenario.report.positive_mutations, [], 'refusal earns no approval credit');
+  }
+});
+
+test('C06 accepts ASK and ALWAYS_ASK, while table policy must explicitly require approval', async () => {
+  for (const setting of ['ask', 'always_ask']) {
+    const sessionReads = [];
+    const scenario = runDriver({
+      approvalSession: async () => ({
+        readPolicy: async (_organizationId, _conversationId, tableId = null) => {
+          sessionReads.push({ setting, tableId });
+          return tableId === null ? { setting } : { setting, approval_required: true };
+        },
+        readApproval: async () => ({}),
+        decideInUi: async () => ({ surface: '/approvals', rowMatched: true, confirmed: true }),
+        close: async () => {},
+      }),
+    });
+    await scenario.run();
+    assert.deepEqual(
+      sessionReads.map(({ tableId }) => tableId),
+      [null, fixtureTableId],
+    );
+    assert.equal(scenario.report.approval_policy.ask_prerequisite_met, true);
+    assert.equal(
+      scenario.report.positive_mutations.some(
+        ({ inventory_case }) => inventory_case === 'EXT-F-4130-C06',
+      ),
+      true,
+    );
+  }
+
+  let closes = 0;
+  let dispatches = 0;
+  let fixtureCleanupRuns = 0;
+  const tableScopedRefusal = runDriver({
+    approvalSession: async () => ({
+      readPolicy: async (_organizationId, _conversationId, tableId = null) =>
+        tableId === null ? { setting: 'ask' } : { setting: 'ask', approval_required: false },
+      readApproval: async () => ({}),
+      decideInUi: async () => ({ surface: '/approvals', rowMatched: true, confirmed: true }),
+      close: async () => {
+        closes++;
+      },
+    }),
+    fixtureHelper: async ({ exercise, onStage }) => {
+      onStage('records_fixture_table_create');
+      const cleanupOwnedTable = async () => {
+        fixtureCleanupRuns++;
+        return {
+          archived_verified: true,
+          same_principal: true,
+          table_invisible: true,
+        };
+      };
+      try {
+        await exercise({
+          tableId: fixtureTableId,
+          rowId: fixtureRowId,
+          rowName: fixtureRowName,
+          rowVersion: 1,
+          cleanupOwnedTable,
+        });
+        return { archived_verified: true };
+      } finally {
+        await cleanupOwnedTable(fixtureTableId);
+        onStage('records_fixture_cleanup');
+      }
+    },
+    approvalLifecycle: async () => {
+      dispatches++;
+      throw new Error('unexpected C06 dispatch');
+    },
+  });
+  await assert.rejects(tableScopedRefusal.run(), /records_c06_table_hold_required/);
+  assert.equal(dispatches, 0, 'a table without an explicit hold must not dispatch C06');
+  assert.equal(fixtureCleanupRuns, 1, 'fixture cleanup still runs after table policy refusal');
+  assert.equal(closes, 2, 'preflight and table-policy approval pages both close');
+  assert.deepEqual(tableScopedRefusal.report.positive_mutations, []);
+});
+
 test('C06 refuses a different held approval or a different returned readback row', async () => {
   for (const [index, replacement, expected] of [
     [
@@ -1325,6 +1453,8 @@ test('actual callback and real lifecycle settle a lost approve response after ow
       outputPath,
       approvalLifecycle: runOwnedApprovalCreate,
       approvalSession: async () => ({
+        readPolicy: async (_organizationId, _conversationId, tableId = null) =>
+          tableId === null ? { setting: 'ask' } : { setting: 'ask', approval_required: true },
         readApproval: async () => ({
           approval_id: c06ApprovalId,
           subject_id: fixtureTableId,
@@ -1387,6 +1517,8 @@ test('actual C06 failure callback persists only safe diagnostics in the native r
         outputPath,
         approvalLifecycle: runOwnedApprovalCreate,
         approvalSession: async () => ({
+          readPolicy: async (_organizationId, _conversationId, tableId = null) =>
+            tableId === null ? { setting: 'ask' } : { setting: 'ask', approval_required: true },
           readApproval,
           decideInUi: async () => {
             throw new Error('unexpected decision');
@@ -1452,6 +1584,8 @@ test('actual callback retains unknown create dispatch with no approval ID as unr
       completions,
       approvalLifecycle: runOwnedApprovalCreate,
       approvalSession: async () => ({
+        readPolicy: async (_organizationId, _conversationId, tableId = null) =>
+          tableId === null ? { setting: 'ask' } : { setting: 'ask', approval_required: true },
         readApproval: async () => {
           throw new Error('unowned_read');
         },

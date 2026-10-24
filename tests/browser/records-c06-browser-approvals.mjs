@@ -66,6 +66,39 @@ export async function openRecordsC06Approvals({ context, principalId, expectedEm
     }
     return {
       web,
+      async readPolicy(organizationId, conversationId, tableId = null) {
+        assert.match(organizationId, UUID, 'records_c06_org_id_invalid');
+        assert.match(conversationId, UUID, 'records_c06_conversation_invalid');
+        if (tableId !== null) assert.match(tableId, UUID, 'records_c06_table_id_invalid');
+        assert.ok(readDoor, 'records_c06_authenticated_read_door_unobserved');
+        const url = new URL(readDoor.url);
+        url.pathname = '/rest/v1/rpc/agent_change_approval';
+        const result = await web.evaluate(
+          async ({ url, headers, organizationId, conversationId, tableId }) => {
+            const response = await fetch(url, {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({
+                p_organization: organizationId,
+                p_conversation: conversationId,
+                p_table: tableId,
+              }),
+            });
+            return { status: response.status, data: response.ok ? await response.json() : null };
+          },
+          { url: url.href, headers: readDoor.headers, organizationId, conversationId, tableId },
+        );
+        assert.equal(result.status, 200, 'records_c06_policy_read_failed');
+        assert.ok(
+          result.data && typeof result.data === 'object' && !Array.isArray(result.data),
+          'records_c06_policy_read_empty',
+        );
+        assert.ok(
+          ['ask', 'always_ask', 'never_ask'].includes(result.data.setting),
+          'records_c06_policy_setting_unknown',
+        );
+        return result.data;
+      },
       async readApproval(approvalId, organizationId) {
         assert.match(approvalId, UUID, 'records_c06_approval_id_invalid');
         assert.match(organizationId, UUID, 'records_c06_org_id_invalid');

@@ -66,6 +66,7 @@ const report = {
   positive_reads: [],
   positive_mutations: [],
   c06_diagnostic: null,
+  approval_policy: null,
   approval_cleanup: null,
   fixture_cleanup: null,
   fixture_diagnostics: [],
@@ -737,6 +738,31 @@ try {
       } catch (error) {
         if (error?.code !== 'ENOENT') throw error;
       }
+      stage('records_c06_policy_preflight');
+      const policySession = await openRecordsC06Approvals({
+        context: page.context(),
+        principalId: auth.profileId,
+        expectedEmail: auth.email,
+      });
+      try {
+        const policy = await policySession.readPolicy(approved.id, toolTestConversationId);
+        const setting = ['ask', 'always_ask', 'never_ask'].includes(policy?.setting)
+          ? policy.setting
+          : null;
+        report.approval_policy = {
+          setting,
+          ask_prerequisite_met: setting === 'ask' || setting === 'always_ask',
+          checked_before_fixture: true,
+        };
+        assert.equal(
+          report.approval_policy.ask_prerequisite_met,
+          true,
+          'records_c06_ask_policy_required',
+        );
+      } finally {
+        await policySession.close();
+      }
+      stage('records_positive_fixture');
       const fixture = await withRecordsPositiveFixture({
         panel,
         evaluate,
@@ -1014,6 +1040,8 @@ try {
           });
           const approvalRowName = `${tableName}-approval-row`;
           try {
+            const policy = await approvals.readPolicy(approved.id, toolTestConversationId, tableId);
+            assert.equal(policy.approval_required, true, 'records_c06_table_hold_required');
             const completed = await runOwnedApprovalCreate({
               journalPath: c06JournalPath,
               conversationId: toolTestConversationId,

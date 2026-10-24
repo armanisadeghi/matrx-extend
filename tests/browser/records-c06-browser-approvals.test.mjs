@@ -7,8 +7,14 @@ const organizationId = '80b29f0e-1600-4837-b54d-07016fc45445';
 const tableId = '3b80fd38-4db8-4cc9-8629-f8b751d5b337';
 const approvalId = 'daef0892-4337-44b7-a793-829d12d94cab';
 
-function browser({ userId = principalId, path = '/approvals' } = {}) {
+function browser({
+  userId = principalId,
+  path = '/approvals',
+  policyResponse = { status: 200, data: { setting: 'ask', approval_required: true } },
+} = {}) {
   const calls = [];
+  const policyRequests = [];
+  const policyFetches = [];
   const listeners = new Map();
   let closed = false;
   const pageUrl = `https://www.aimatrx.com${path}`;
@@ -53,6 +59,22 @@ function browser({ userId = principalId, path = '/approvals' } = {}) {
     url: () => pageUrl,
     evaluate: async (_fn, args) => {
       if (!args) return { userId, email: 'admin@admin.com' };
+      if (!('approvalId' in args)) {
+        calls.push('scoped_policy_read');
+        assert.equal(new URL(args.url).pathname, '/rest/v1/rpc/agent_change_approval');
+        policyRequests.push(args);
+        const evaluatePolicy = new Function('fetch', `return (${_fn.toString()});`)(
+          async (url, options) => {
+            policyFetches.push({ url, ...options });
+            return {
+              status: policyResponse.status,
+              ok: policyResponse.status >= 200 && policyResponse.status < 300,
+              json: async () => policyResponse.data,
+            };
+          },
+        );
+        return evaluatePolicy(args);
+      }
       calls.push('scoped_approval_read');
       assert.equal(args.organizationId, organizationId);
       assert.equal(args.approvalId, approvalId);
@@ -92,7 +114,13 @@ function browser({ userId = principalId, path = '/approvals' } = {}) {
       closed = true;
     },
   };
-  return { context: { newPage: async () => page }, calls, isClosed: () => closed };
+  return {
+    context: { newPage: async () => page },
+    calls,
+    policyRequests,
+    policyFetches,
+    isClosed: () => closed,
+  };
 }
 
 test('signed-in first-party page scopes approval read and confirms exact UI row through its decision RPC', async () => {
@@ -119,8 +147,48 @@ test('signed-in first-party page scopes approval read and confirms exact UI row 
   });
   assert.ok(b.calls.indexOf('row_click_Approve') < b.calls.indexOf('confirm_Approve 1'));
   assert.ok(b.calls.includes('decision_rpc_observed'));
+  const policy = await approvals.readPolicy(organizationId, principalId, tableId);
+  assert.deepEqual(policy, { setting: 'ask', approval_required: true });
+  assert.deepEqual(b.policyRequests[0].organizationId, organizationId);
+  assert.deepEqual(b.policyRequests[0].conversationId, principalId);
+  assert.deepEqual(b.policyRequests[0].tableId, tableId);
+  assert.equal(b.policyRequests[0].headers.authorization, 'Bearer private');
+  assert.equal(b.policyRequests[0].headers.apikey, 'public');
+  assert.equal(b.policyRequests[0].headers['content-profile'], 'custom');
+  assert.equal(b.policyFetches[0].url, b.policyRequests[0].url);
+  assert.equal(b.policyFetches[0].method, 'POST');
+  assert.equal(b.policyFetches[0].headers['content-profile'], 'custom');
+  assert.deepEqual(JSON.parse(b.policyFetches[0].body), {
+    p_organization: organizationId,
+    p_conversation: principalId,
+    p_table: tableId,
+  });
+  assert.doesNotMatch(JSON.stringify(policy), /Bearer private|public/);
   await approvals.close();
   assert.equal(b.isClosed(), true);
+});
+
+test('policy read rejects HTTP failures and unknown settings without producing an approval receipt', async () => {
+  for (const policyResponse of [
+    { status: 403, data: null },
+    { status: 200, data: { setting: 'maybe' } },
+  ]) {
+    const b = browser({ policyResponse });
+    const approvals = await openRecordsC06Approvals({
+      context: b.context,
+      principalId,
+      expectedEmail: 'admin@admin.com',
+    });
+    try {
+      await assert.rejects(approvals.readPolicy(organizationId, principalId, tableId));
+      assert.equal(b.calls.includes('scoped_policy_read'), true);
+      assert.equal(b.calls.includes('scoped_approval_read'), false);
+      assert.equal(JSON.stringify(b.policyRequests).includes('Bearer private'), true);
+    } finally {
+      await approvals.close();
+    }
+    assert.equal(b.isClosed(), true);
+  }
 });
 
 test('wrong first-party principal refuses before any approval read or UI decision', async () => {
