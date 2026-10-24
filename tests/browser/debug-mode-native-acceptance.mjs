@@ -421,6 +421,17 @@ try {
       assert.equal(signedOut.isVerifiedAdmin, false);
       assert.deepEqual(signedOut.adminTabs, [], 'debug_mode_overrode_admin_identity_gate');
       report.observations.signed_out_admin_projection_hidden = signedOut;
+      const signedOutNotice = await waitFor(
+        'debug_mode_notice_detail_hidden_after_signout',
+        () => noticeSnapshot(panel),
+        (notice) => notice?.visible === true && notice.detailVisible === false,
+      );
+      report.observations.notice_detail_hidden_after_signout = {
+        signedOut: true,
+        debugModeOn: signedOut.debugModeOn,
+        noticeVisible: signedOutNotice.visible,
+        noticeDetailHidden: !signedOutNotice.detailVisible,
+      };
 
       const signedOutMenu = await openAccountMenu(panel);
       assert.equal(signedOutMenu.debugCount, 0, 'debug_mode_switch_visible_without_verified_admin');

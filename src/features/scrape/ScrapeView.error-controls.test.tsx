@@ -79,6 +79,7 @@ vi.mock('@/features/scrape/FileSourcePanel', () => ({
 vi.mock('@/features/seo/SeoDetails', () => ({ SeoDetails: () => null }));
 
 import { useAuthStore } from '@/state/auth';
+import { useDebugModeStore } from '@/state/debug-mode';
 import { ScrapeView } from './ScrapeView';
 
 const recoverableError = () => ({
@@ -101,8 +102,12 @@ beforeEach(() => {
   mocks.edited = false;
   useAuthStore.getState().setUser(null);
   useAuthStore.getState().setIsAdmin(false);
+  useDebugModeStore.setState({ on: false });
 });
-afterEach(() => cleanup());
+afterEach(() => {
+  cleanup();
+  useDebugModeStore.setState({ on: false });
+});
 
 describe('ScrapeView capture error recovery', () => {
   it('requires discard confirmation before deep capture after local edits', async () => {
@@ -159,16 +164,24 @@ describe('ScrapeView capture error recovery', () => {
     expect(screen.getByRole('button', { name: 'Dismiss' })).toBeTruthy();
   });
 
-  it('renders structured error details only when the client auth store marks the user admin', () => {
-    useAuthStore.getState().setIsAdmin(true);
-    const { unmount } = render(<ScrapeView />);
-    expect(screen.getByText('Diagnostics (admin)')).toBeTruthy();
-    expect(screen.getByText(/Could not establish connection/)).toBeTruthy();
-    unmount();
+  it('renders structured error details only for admins with Debug mode enabled', () => {
+    const renderFor = (isAdmin: boolean, debugOn: boolean) => {
+      useAuthStore.getState().setIsAdmin(isAdmin);
+      useDebugModeStore.setState({ on: debugOn });
+      const view = render(<ScrapeView />);
+      if (isAdmin && debugOn) {
+        expect(screen.getByText('Diagnostics (admin)')).toBeTruthy();
+        expect(screen.getByText(/Could not establish connection/)).toBeTruthy();
+      } else {
+        expect(screen.queryByText('Diagnostics (admin)')).toBeNull();
+        expect(screen.queryByText(/Could not establish connection/)).toBeNull();
+      }
+      view.unmount();
+    };
 
-    useAuthStore.getState().setIsAdmin(false);
-    render(<ScrapeView />);
-    expect(screen.queryByText('Diagnostics (admin)')).toBeNull();
-    expect(screen.queryByText(/Could not establish connection/)).toBeNull();
+    renderFor(false, false);
+    renderFor(false, true);
+    renderFor(true, false);
+    renderFor(true, true);
   });
 });
