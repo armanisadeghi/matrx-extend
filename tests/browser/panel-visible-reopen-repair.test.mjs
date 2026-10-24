@@ -7,6 +7,12 @@ const source = await readFile(
   new URL('./native-sidepanel-qa-harness.mjs', import.meta.url),
   'utf8',
 );
+
+function replaceOnce(source, statement, replacement) {
+  const occurrences = source.split(statement).length - 1;
+  assert.equal(occurrences, 1, `mutation target must occur exactly once: ${statement}`);
+  return source.replace(statement, replacement);
+}
 const scrape = await readFile(
   new URL('./scrape-guest-native-acceptance.mjs', import.meta.url),
   'utf8',
@@ -229,7 +235,11 @@ test('in-memory omitted work and constant preservation fail the actual setup sea
   const to = source.indexOf('async function sidePanelContexts(', from);
   const constant = `${source.slice(0, from)}async function activateOwnedSidePanel() {}\n${source.slice(to)}`;
   await assert.rejects(() => exercise(constant, 'hidden'), /exact panel became hidden/);
-  const unconditional = source.replace("if (visibility.visibility === 'visible') return;", '');
+  const unconditional = replaceOnce(
+    source,
+    "if (visibility.visibility === 'visible') return;",
+    '',
+  );
   await assert.rejects(() => exercise(unconditional, 'visible'), /exact panel became hidden/);
 });
 
@@ -266,10 +276,14 @@ test('unavailable exact-panel visibility refuses any native action', async () =>
 });
 
 test('hidden recovery cannot drop exact target activation or use a constant hidden decision', async () => {
-  const noActivation = source.replace(
-    "await cdp.send('Target.activateTarget', { targetId: panelTargetId });",
-    '',
+  const activationCall =
+    "await run(() => cdp.send('Target.activateTarget', { targetId: panelTargetId }));";
+  assert.equal(
+    source.split(activationCall).length - 1,
+    1,
+    'activation mutation target must occur exactly once',
   );
+  const noActivation = replaceOnce(source, activationCall, '');
   await assert.rejects(
     async () =>
       assert.deepEqual(await exercise(noActivation, 'hidden'), [
@@ -283,8 +297,9 @@ test('hidden recovery cannot drop exact target activation or use a constant hidd
       ]),
     assert.AssertionError,
   );
-  const constantHidden = source.replace(
-    'const visibility = await observePanelVisibility(panel);',
+  const constantHidden = replaceOnce(
+    source,
+    'const visibility = await run(() => observePanelVisibility(panel));',
     "const visibility = { measured: true, visibility: 'hidden' };",
   );
   await assert.rejects(() => exercise(constantHidden, 'visible'), /exact panel became hidden/);
