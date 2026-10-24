@@ -1643,6 +1643,9 @@
  "/brand-offerings/{brand_id}/refresh/quote": {
   "get": []
  },
+ "/brand-offerings/{brand_id}/roles/quote": {
+  "get": []
+ },
  "/brand-research/{brand_id}/catchup": {
   "get": [],
   "post": [

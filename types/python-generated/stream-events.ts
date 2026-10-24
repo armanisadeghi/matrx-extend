@@ -5122,7 +5122,7 @@ export interface RemarksInputPart {
 }
 
 export interface DecisionQuestion {
-  __kind?: string;
+  __kind?: "";
   name: string;
   type: "noul" | "choice" | "score";
   instructions: string;
@@ -5148,7 +5148,7 @@ export interface DecisionAnswer {
 }
 
 export interface DecisionUsage {
-  __kind?: string;
+  __kind?: "";
   input_tokens: number;
   output_tokens: number;
 }
@@ -5166,7 +5166,7 @@ export interface DecisionAnswersPart {
 }
 
 export interface SpeechTurn {
-  __kind?: string;
+  __kind?: "";
   speaker: string;
   voice?: string | null;
   text: string;
@@ -6163,8 +6163,9 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
       "description": "One question. Not a kind: it has no meaning outside its batch.",
       "properties": {
         "__kind": {
+          "const": "",
           "default": "",
-          "description": "The registered kind this payload is an instance of, when it is one.",
+          "description": "Plain sub-structure: no kind of its own. Always empty.",
           "title": "Kind",
           "type": "string"
         },
@@ -6273,8 +6274,9 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
       "description": "What the decision call consumed. Zero is a real value, never a stand-in.",
       "properties": {
         "__kind": {
+          "const": "",
           "default": "",
-          "description": "The registered kind this payload is an instance of, when it is one.",
+          "description": "Plain sub-structure: no kind of its own. Always empty.",
           "title": "Kind",
           "type": "string"
         },
@@ -7959,8 +7961,9 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
       "description": "One spoken turn. Not a kind: it has no meaning outside its script.",
       "properties": {
         "__kind": {
+          "const": "",
           "default": "",
-          "description": "The registered kind this payload is an instance of, when it is one.",
+          "description": "Plain sub-structure: no kind of its own. Always empty.",
           "title": "Kind",
           "type": "string"
         },
