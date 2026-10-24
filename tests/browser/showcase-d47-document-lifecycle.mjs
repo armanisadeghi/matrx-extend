@@ -8,15 +8,15 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
-import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { approvedShowcaseOrganization, signInSettings } from './settings-native-auth-driver.mjs';
-import { click, evaluate, waitFor as waitForPanel } from './settings-panel-driver.mjs';
 import {
   awaitNativeResourceHealth,
   guardNativeResourceSessionSend,
   runNativeResourceAction,
 } from './native-resource-boundary.mjs';
+import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { createNativeStageReceipt } from './native-stage-receipt.mjs';
+import { approvedShowcaseOrganization, signInSettings } from './settings-native-auth-driver.mjs';
+import { click, evaluate, waitFor as waitForPanel } from './settings-panel-driver.mjs';
 import {
   assessD47ManualRelease,
   assessD47PriorSavedTransition,
@@ -90,7 +90,6 @@ let ownedRecipe = null;
 let ownedHost = null;
 const observationStarted = performance.now();
 report.stage_observations = [];
-let stageReceipt;
 let requireD47ResourceHealth;
 let d47ResourceBoundaryStopped = false;
 const waitFor = (label, read, accept, timeoutMs = 10000, diagnostic = (value) => value) =>
@@ -351,7 +350,7 @@ if (process.env.MATRX_D47_IMPORT_PREFLIGHT === '1') {
 const stageReceiptPath = output.endsWith('.json')
   ? output.slice(0, -'.json'.length) + '.stages.json'
   : `${output}.stages.json`;
-stageReceipt = createNativeStageReceipt(stageReceiptPath);
+const stageReceipt = createNativeStageReceipt(stageReceiptPath);
 stage('inputs');
 
 try {
@@ -438,7 +437,7 @@ try {
           return noteResourceStop(error);
         }
       };
-      return withD47Cleanup(panel, () =>
+      const exerciseWithFailureCapture = () =>
         captureLiveFailure(async () => {
           const origin = fixture.origin;
           activePanel = panel;
@@ -1322,9 +1321,8 @@ try {
                 ? 'observed_bounded_server_finish'
                 : 'unverified_canceled_before_release';
           }
-        }),
-        requireResourceHealth,
-      );
+        });
+      return withD47Cleanup(panel, exerciseWithFailureCapture, requireResourceHealth);
     },
   });
   assert.equal(native.verified, true);

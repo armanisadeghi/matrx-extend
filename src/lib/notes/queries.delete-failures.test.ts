@@ -4,7 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const db = vi.hoisted(() => ({ workbenchDb: vi.fn(), rpc: vi.fn() }));
 vi.mock('@/lib/debug/log', () => ({ log: { error: vi.fn() } }));
-vi.mock('@/lib/supabase/client', () => ({ getSupabase: () => ({ rpc: db.rpc }) }));
+vi.mock('@/lib/supabase/client', () => ({
+  getSupabase: () => ({ schema: () => ({ rpc: db.rpc }), rpc: db.rpc }),
+}));
 vi.mock('@/lib/org/active-org', () => ({ getActiveOrganizationId: async () => 'member-org' }));
 vi.mock('@/lib/telemetry/external-reporting', () => ({
   mayReportExternalTelemetry: async () => true,

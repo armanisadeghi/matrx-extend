@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import { EventEmitter } from 'node:events';
-import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
+import { EventEmitter } from 'node:events';
 import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -12,9 +12,9 @@ import {
   requireNativeResourceHealth,
   runNativeResourceAction,
 } from './native-resource-boundary.mjs';
+import { attachTargetSession } from './native-sidepanel-qa-harness.mjs';
 import { createNativeStageReceipt } from './native-stage-receipt.mjs';
 import { waitFor } from './settings-panel-driver.mjs';
-import { attachTargetSession } from './native-sidepanel-qa-harness.mjs';
 
 const completeSample = {
   pressureLevel: 1,
@@ -476,7 +476,6 @@ test('native guarded facade wraps accessor-defined send and refuses before trans
   assert.equal(transportCalls, 0, 'refusal blocks the accessor-provided transport');
 });
 
-
 test('D47 stage snapshots are private, allowlisted, and survive child termination', async (t) => {
   const root = await mkdtemp(join(tmpdir(), 'd47-stage-receipt-'));
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -517,11 +516,16 @@ test('D47 stage snapshots are private, allowlisted, and survive child terminatio
   assert.equal(metadata.mode & 0o777, 0o600);
   const saved = JSON.parse(await readFile(receipt, 'utf8'));
   assert.equal(saved.schema_version, 1);
-  assert.deepEqual(saved.events.map(({ source: phase, stage }) => [phase, stage]), [
-    ['native', 'panel_context'],
-    ['d47', 'signin'],
-  ]);
-  assert.ok(saved.events.every((event) => Number.isInteger(event.elapsed_ms) && event.elapsed_ms >= 0));
+  assert.deepEqual(
+    saved.events.map(({ source: phase, stage }) => [phase, stage]),
+    [
+      ['native', 'panel_context'],
+      ['d47', 'signin'],
+    ],
+  );
+  assert.ok(
+    saved.events.every((event) => Number.isInteger(event.elapsed_ms) && event.elapsed_ms >= 0),
+  );
   assert.equal(JSON.stringify(saved).includes('password'), false);
   assert.equal(JSON.stringify(saved).includes('http'), false);
 });
@@ -532,7 +536,6 @@ test('D47 stage receipt refuses stage values outside its fixed vocabulary', asyn
   const receipt = createNativeStageReceipt(join(root, 'stage.json'));
   assert.throws(() => receipt.record('d47', 'secret-value'), /native_stage_receipt_value_refused/);
 });
-
 
 test('D47 readiness polling rechecks resource health before each UI observation', async () => {
   let healthChecks = 0;
@@ -549,8 +552,7 @@ test('D47 readiness polling rechecks resource health before each UI observation'
       (value) => value,
       async () => {
         healthChecks++;
-        if (healthChecks === 2)
-          throw new Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample');
+        if (healthChecks === 2) throw new Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample');
       },
     ),
     /unsafe_sample/,

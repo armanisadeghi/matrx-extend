@@ -8,6 +8,7 @@
  */
 
 import { getSupabase } from '@/lib/supabase/client';
+import { type FunctionDescriptor, call, createDb } from '@ai-matrx/data/db';
 import { mayReportExternalTelemetry } from '@/lib/telemetry/external-reporting';
 
 export interface ClientErrorReport {
@@ -21,6 +22,31 @@ export interface ClientErrorReport {
   context: Record<string, unknown>;
   /** Defaults to the active organization. */
   organizationId?: string;
+}
+
+type LogClientErrorArgs = {
+  p_source_app: 'matrx-extend';
+  p_source_feature: string;
+  p_source: 'chrome-extension';
+  p_message: string;
+  p_code: string;
+  p_route: string;
+  p_request_id?: string;
+  p_context: Record<string, unknown>;
+  p_organization_id?: string;
+};
+
+const LOG_CLIENT_ERROR = {
+  schema: 'public',
+  name: 'log_client_error',
+  roles: ['anon', 'authenticated', 'service_role'],
+  registered: true,
+} as FunctionDescriptor<LogClientErrorArgs, string>;
+
+function databaseMessage(error: unknown): string {
+  const wrapped = error as { name?: string; cause?: { message?: string }; message?: string } | null;
+  if (wrapped?.name === 'DatabaseError' && wrapped.cause?.message) return wrapped.cause.message;
+  return error instanceof Error ? error.message : String(error);
 }
 
 /**
@@ -39,7 +65,7 @@ export async function recordClientError(report: ClientErrorReport): Promise<stri
       organizationId = undefined;
     }
   }
-  const { data, error } = await getSupabase().rpc('log_client_error', {
+  const args: LogClientErrorArgs = {
     // DD-115: the value is checked against a closed list inside the database.
     p_source_app: 'matrx-extend',
     p_source_feature: report.feature,
@@ -50,8 +76,13 @@ export async function recordClientError(report: ClientErrorReport): Promise<stri
     ...(report.requestId !== undefined && { p_request_id: report.requestId }),
     p_context: { client: 'matrx-extend', ...report.context },
     ...(organizationId !== undefined && { p_organization_id: organizationId }),
-  });
-  if (error) throw new Error(error.message);
+  };
+  let data: string;
+  try {
+    data = await call(createDb({ client: getSupabase() }), LOG_CLIENT_ERROR, args);
+  } catch (error) {
+    throw new Error(databaseMessage(error));
+  }
   if (typeof data !== 'string' || data.length === 0)
     throw new Error('log_client_error returned no error id');
   return data;

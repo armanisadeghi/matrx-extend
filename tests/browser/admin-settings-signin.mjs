@@ -189,13 +189,15 @@ export async function signInAdminSettings({
         () =>
           runResourceAction(() =>
             web.evaluate(async () => {
-            const response = await fetch('/api/whoami', {
-              credentials: 'include',
-              cache: 'no-store',
-            });
-            if (!response.ok) return null;
-            const value = await response.json();
-            return value?.signed_in === true ? { email: value.email, userId: value.user_id } : null;
+              const response = await fetch('/api/whoami', {
+                credentials: 'include',
+                cache: 'no-store',
+              });
+              if (!response.ok) return null;
+              const value = await response.json();
+              return value?.signed_in === true
+                ? { email: value.email, userId: value.user_id }
+                : null;
             }),
           ),
         (value) =>
