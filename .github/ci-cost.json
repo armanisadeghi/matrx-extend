@@ -34,9 +34,9 @@
       }
     },
     "focused-acceptance.yml": {
-      "triggers": ["push"],
+      "triggers": ["push", "workflow_dispatch"],
       "crons": [],
-      "benefit": "Newest relevant main commit's focused acceptance, outside the CI queue.",
+      "benefit": "Newest relevant main commit's focused acceptance, outside the CI queue. Manual checks validate an exact owned D47 QA tag through the same focused suite when local admission is unavailable.",
       "owner_reason": "Fast acceptance signal on main.",
       "basis": "observed 2026-10-02..09 (runs list + sampled jobs' billed minutes): 466/week x 1 min",
       "usd_per_week": 2.8,
