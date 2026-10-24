@@ -39,7 +39,11 @@ function diagnosticReasonCode(reason) {
   return 'RESOURCE_REASON_OTHER';
 }
 
-async function fixture({ pauseOwnerRewrite = false, simulateChildError = false } = {}) {
+async function fixture({
+  pauseOwnerRewrite = false,
+  simulateChildError = false,
+  simulateAttributionError = false,
+} = {}) {
   const scratch = await mkdtemp(join(tmpdir(), 'resource-cpu-wrapper-'));
   const scripts = join(scratch, 'scripts');
   const docs = join(scratch, 'docs/stabilization');
@@ -106,6 +110,21 @@ async function fixture({ pauseOwnerRewrite = false, simulateChildError = false }
         ${errorListener}`,
     );
   }
+  const attributionCall = 'processCpuAttribution(output)';
+  assert.equal(guardSource.split(attributionCall).length, 2);
+  guardSource = guardSource.replace(
+    attributionCall,
+    `processCpuAttribution(async (cmd, args) => {
+      if (
+        cmd === '/bin/ps' &&
+        JSON.stringify(args) === JSON.stringify(['-A', '-o', 'pid=,ppid=,%cpu=,ucomm='])
+      ) {
+        if (${simulateAttributionError}) throw new Error('TEST_PROCESS_ATTRIBUTION_REFUSED');
+        return '42 1 1.0 fixture-worker';
+      }
+      return output(cmd, args);
+    })`,
+  );
   if (pauseOwnerRewrite) {
     // Hold the real startup writer after truncation. The parent must wait for
     // watch readiness rather than treating admission as completed child setup.
@@ -173,6 +192,7 @@ async function fixture({ pauseOwnerRewrite = false, simulateChildError = false }
     childPhase,
     guardPath,
     ownerRewriteRelease,
+    simulateAttributionError,
   };
 }
 
@@ -290,7 +310,11 @@ async function readWatchReadyOwner(stream, item) {
   return JSON.parse(await readFile(join(item.leaseRoot, 'heavy/owner.json'), 'utf8'));
 }
 
-async function runScenario(kind, groupStartedAt, { pauseOwnerRewrite = false } = {}) {
+async function runScenario(
+  kind,
+  groupStartedAt,
+  { pauseOwnerRewrite = false, simulateAttributionError = false } = {},
+) {
   const diagnostic = scenarioDiagnostic(kind, groupStartedAt);
   let item;
   let child;
@@ -301,6 +325,7 @@ async function runScenario(kind, groupStartedAt, { pauseOwnerRewrite = false } =
     item = await fixture({
       pauseOwnerRewrite,
       simulateChildError: kind === 'pending-child-error',
+      simulateAttributionError,
     });
     const runId = `cpu-${kind}-${randomUUID()}`;
     diagnostic.setStage('guard_spawn');
@@ -355,20 +380,58 @@ async function runScenario(kind, groupStartedAt, { pauseOwnerRewrite = false } =
     const check = () =>
       requireNativeResourceHealth({ repo: item.scratch, leaseRoot: item.leaseRoot, env });
     let actions = 0;
-    await writeFile(item.cpuPhase, '0.88\n');
+    if (kind === 'noncpu-attribution') {
+      await writeFile(item.memoryPhase, '10\n');
+    } else {
+      await writeFile(item.cpuPhase, '0.88\n');
+    }
     const first = await stream.next((event) => watchCodes.has(event.code));
     assert.equal(
       first.code,
-      'RESOURCE_CPU_PENDING',
-      `first CPU watch must block: ${JSON.stringify(first)}`,
+      kind === 'noncpu-attribution' ? 'RESOURCE_WATCH_UNSAFE' : 'RESOURCE_CPU_PENDING',
+      `first watch must block: ${JSON.stringify(first)}`,
     );
-    assert.deepEqual(first.reasons, ['RESOURCE_CPU_BUSY']);
+    assert.deepEqual(
+      first.reasons,
+      kind === 'noncpu-attribution' ? ['RESOURCE_MEMORY_LOW'] : ['RESOURCE_CPU_BUSY'],
+    );
     await assert.rejects(
       runNativeResourceAction(check, () => ++actions),
-      /cpu_pending/,
+      kind === 'noncpu-attribution' ? /unsafe_sample|stop_requested|unsafe_hold/ : /cpu_pending/,
     );
     assert.equal(actions, 0);
-    if (
+    if (kind === 'attribution-episodes') {
+      const nextCpuWatch = async (expectedCode, expectedReasons) => {
+        const watch = await stream.next((event) => watchCodes.has(event.code));
+        assert.equal(watch.code, expectedCode);
+        assert.deepEqual(watch.reasons, expectedReasons);
+        return watch;
+      };
+
+      // A healthy/bad alternation within one pending episode must not start
+      // another snapshot; only full recovery followed by a new spike does.
+      await writeFile(item.cpuPhase, '0.1\n');
+      await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+      await writeFile(item.cpuPhase, '0.88\n');
+      await nextCpuWatch('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY']);
+      await writeFile(item.cpuPhase, '0.1\n');
+      await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+      await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+      await nextCpuWatch('RESOURCE_CPU_RECOVERED', []);
+      assert.equal(await runNativeResourceAction(check, () => ++actions), 1);
+
+      await writeFile(item.cpuPhase, '0.88\n');
+      await nextCpuWatch('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY']);
+      await assert.rejects(runNativeResourceAction(check, () => ++actions), /cpu_pending/);
+      await writeFile(item.cpuPhase, '0.1\n');
+      await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+      await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+      await nextCpuWatch('RESOURCE_CPU_RECOVERED', []);
+      assert.equal(await runNativeResourceAction(check, () => ++actions), 2);
+      await writeFile(item.childPhase, 'exit0\n');
+      const job = await stream.next((event) => event.code === 'RESOURCE_JOB_EXIT');
+      assert.equal(job.childExitCode, 0);
+    } else if (
       [
         'recovered',
         'completion-recovered',
@@ -462,25 +525,24 @@ async function runScenario(kind, groupStartedAt, { pauseOwnerRewrite = false } =
     const exit = await closed;
     finished = true;
     diagnostic.setStage('journal_assertions');
-    assert.deepEqual(
-      exit,
-      { code: ['recovered', 'completion-recovered'].includes(kind) ? 0 : 3, signal: null },
-      stream.stderr,
+    const validRecovery = ['recovered', 'completion-recovered', 'attribution-episodes'].includes(
+      kind,
     );
+    assert.deepEqual(exit, { code: validRecovery ? 0 : 3, signal: null }, stream.stderr);
     const journal = (await readFile(join(item.docs, 'resource-journals', `${runId}.jsonl`), 'utf8'))
       .trim()
       .split('\n')
       .map(JSON.parse);
-    assert.equal(
-      journal.at(-1).decision,
-      ['recovered', 'completion-recovered'].includes(kind) ? 'valid' : 'invalid',
-    );
-    assert.equal(
-      journal.at(-1).resourceInvalid,
-      !['recovered', 'completion-recovered'].includes(kind),
-    );
+    assert.equal(journal.at(-1).decision, validRecovery ? 'valid' : 'invalid');
+    assert.equal(journal.at(-1).resourceInvalid, !validRecovery);
     if (
-      ['confirmed', 'completion-unsafe', 'completion-expired', 'completion-memory-unsafe'].includes(
+      [
+        'confirmed',
+        'completion-unsafe',
+        'completion-expired',
+        'completion-memory-unsafe',
+        'noncpu-attribution',
+      ].includes(
         kind,
       )
     ) {
@@ -502,7 +564,24 @@ async function runScenario(kind, groupStartedAt, { pauseOwnerRewrite = false } =
       );
     if (kind === 'completion-stop')
       assert(journal.some((event) => event.code === 'RESOURCE_STOP_REQUESTED'));
-    assert.equal(actions, kind === 'recovered' ? 1 : 0);
+    assert.equal(actions, kind === 'recovered' ? 1 : kind === 'attribution-episodes' ? 2 : 0);
+    if (kind === 'attribution-episodes') {
+      const attribution = journal.filter((event) => event.code === 'RESOURCE_PROCESS_ATTRIBUTION');
+      assert.equal(attribution.length, 2);
+      assert(
+        attribution.every((event) => event.processes?.[0]?.executable === 'fixture-worker'),
+      );
+    }
+    if (kind === 'noncpu-attribution') {
+      const attribution = journal.filter((event) => event.code === 'RESOURCE_PROCESS_ATTRIBUTION');
+      assert.equal(attribution.length, 1);
+      assert.equal(attribution[0]?.processes?.[0]?.executable, 'fixture-worker');
+    }
+    if (item.simulateAttributionError) {
+      const attribution = journal.filter((event) => event.code === 'RESOURCE_PROCESS_ATTRIBUTION');
+      assert.equal(attribution.length, 1);
+      assert.equal(attribution[0]?.unavailable, true);
+    }
   } catch (error) {
     diagnostic.report('failure');
     scenarioError = error;
@@ -541,6 +620,7 @@ const watchScenarioKinds = [
   'completion-unsafe',
   'completion-expired',
   'completion-memory-unsafe',
+  'noncpu-attribution',
 ];
 
 function registerWatchScenarioTests(register = test, run = runScenario) {
@@ -574,6 +654,7 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
         'actual guard watch journal: completion-unsafe',
         'actual guard watch journal: completion-expired',
         'actual guard watch journal: completion-memory-unsafe',
+        'actual guard watch journal: noncpu-attribution',
       ],
     );
     assert(cases.values().every(({ options }) => options.timeout === 30_000));
@@ -666,10 +747,20 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
 registerWatchScenarioTests();
 
 test(
+  'process attribution runs once per new CPU episode and not for pending-watch alternation',
+  { timeout: 30_000 },
+  async () => {
+    await runScenarioGroup(['attribution-episodes']);
+  },
+);
+
+test(
   'pending child failure, child error, and operator stop remain invalid',
   { timeout: 30_000 },
   async () => {
-    await runScenarioGroup(['pending-failed-child', 'pending-child-error', 'completion-stop']);
+    await runScenarioGroup(['pending-failed-child', 'pending-child-error', 'completion-stop'], {
+      simulateAttributionError: true,
+    });
   },
 );
 

@@ -642,10 +642,11 @@ async function main() {
   const stopEvent = new Promise((done) => {
     wakeStop = done;
   });
-  let unsafe = 0;
   let healthy = 0;
+  let unsafe = 0;
   const cpu = cpuEpisode(policy, () => performance.now());
-  let attributionPending;
+  const attributionPending = new Set();
+  let attributionFailure;
   let previous;
   let swapWindowAt = 0;
   const stopSignal = (signal) => {
@@ -797,21 +798,28 @@ async function main() {
           runId,
           bracket: startupBracket ?? { unavailable: true },
         });
+      const nonCpuUnsafe = bad.some((reason) => !reason.startsWith('RESOURCE_CPU_'));
       if (
-        bad.length &&
-        unsafe === 1 &&
-        unsafe < policy.unsafeSamplesToStop &&
-        !attributionPending
+        cpuState === 'pending' ||
+        (nonCpuUnsafe && unsafe === 1 && unsafe < policy.unsafeSamplesToStop)
       ) {
-        // The unsafe event is durable first. Diagnosis uses the existing
-        // bounded command runner and never delays the watch/stop loop.
-        attributionPending = processCpuAttribution(output)
+        // CPU episodes get one snapshot when they start pending. The first
+        // non-CPU unsafe sample retains the existing attribution behavior.
+        // Both stay asynchronous and never delay the watch/stop loop.
+        const task = processCpuAttribution(output)
           .then(
             (processes) => ({ processes }),
             () => ({ unavailable: true }),
           )
           .then((detail) => emit('RESOURCE_PROCESS_ATTRIBUTION', { runId, ...detail }));
-        void attributionPending.catch(() => {});
+        attributionPending.add(task);
+        void task.then(
+          () => attributionPending.delete(task),
+          (error) => {
+            attributionPending.delete(task);
+            attributionFailure ??= error;
+          },
+        );
       }
       if (cpuState === 'unsafe' || cpuState === 'expired') {
         const hold = {
@@ -827,7 +835,6 @@ async function main() {
         resourceInvalid = true;
         cpuPending = false;
         process.exitCode = 3;
-        unsafe = 0;
         if (mode === 'run') {
           if (groupId && !(await stopOwnedGroup(groupId, runId, 'watchdog')))
             throw new Error('RESOURCE_GROUP_UNCONFIRMED');
@@ -864,7 +871,8 @@ async function main() {
       process.exitCode = 3;
       canRelease = false;
     }
-    if (attributionPending) await attributionPending;
+    if (attributionPending.size) await Promise.all([...attributionPending]);
+    if (attributionFailure) throw attributionFailure;
     if (canRelease && !journalBroken && !safetyStateBroken) await release(owner);
   }
 }
