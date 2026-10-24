@@ -807,18 +807,19 @@ async function runScenario(
       assert.equal(attribution[0]?.processes?.[0]?.executable, 'fixture-worker');
       if (kind === 'noncpu-attribution-cleanup-error') {
         const failure = journal.find((event) => event.code === 'RESOURCE_MEASUREMENT_FAILED');
-        assert.deepEqual(failure?.syntheticDiagnostic, {
-          stage: 'owned_process_census',
-          errorClass: 'Error',
-          osCode: 'EIO',
-        });
+        assert.equal(failure?.code, 'RESOURCE_MEASUREMENT_FAILED');
+        assert.equal(failure?.runId, runId);
+        assert.equal(Object.hasOwn(failure ?? {}, 'syntheticDiagnostic'), false);
         const retainedOwner = JSON.parse(
           await readFile(join(item.leaseRoot, 'heavy/owner.json'), 'utf8'),
         );
         assert.equal(retainedOwner.nonce, owner.nonce);
         assert.equal(retainedOwner.runId, runId);
       } else {
-        assert.equal(journal.some((event) => event.code === 'RESOURCE_MEASUREMENT_FAILED'), false);
+        assert.equal(
+          journal.some((event) => event.code === 'RESOURCE_MEASUREMENT_FAILED'),
+          false,
+        );
       }
     }
     if (item.simulateAttributionError) {
