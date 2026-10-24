@@ -133,6 +133,9 @@ export function createExtensionVaultIdentity(deps: ExtensionIdentityDeps): Vault
       const claims = claimsOf(await deps.readToken());
       if (!claims.sub) throw new Error(SIGNED_OUT);
       await waitForFreshToken(claims.sub, authenticatedAt(claims), deps.signIn());
+      // Confirmed in place: the gate closes and reruns the refused call. Without this the
+      // dialog stayed open after a good sign-in and asked again forever.
+      return 'confirmed';
     },
     withPassword() {
       return Promise.reject(new Error(USE_BROWSER));

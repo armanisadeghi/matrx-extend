@@ -63,7 +63,9 @@ describe('extensionVaultIdentity', () => {
       pollMs: 100,
     });
     let settled = false;
-    const done = identity.withProvider('browser').then(() => {
+    let result: unknown;
+    const done = identity.withProvider('browser').then((r) => {
+      result = r;
       settled = true;
     });
     await vi.advanceTimersByTimeAsync(0);
@@ -79,6 +81,8 @@ describe('extensionVaultIdentity', () => {
     await vi.advanceTimersByTimeAsync(150);
     await done;
     expect(settled).toBe(true);
+    // 'confirmed' is what closes the dialog and reruns the call; anything else loops forever.
+    expect(result).toBe('confirmed');
     expect(onFresh).toHaveBeenCalledOnce();
   });
 
