@@ -68,7 +68,6 @@ import type { MicRequestPayload, MicRunPayload } from '@/lib/audio/mic-types';
 import type { UserProfile } from '@/lib/auth/types';
 import { clearBrokerCacheOnSignOut, registerBrokerHandlers } from '@/lib/broker/sw-host';
 import { setupContextMenus } from '@/lib/context-menus/setup';
-import { setupScreenshotShortcuts } from '@/lib/screenshot/shortcuts';
 import {
   reconcileCredentialAssistanceActionOnBoot,
   registerCredentialAssistanceStatus,
@@ -83,6 +82,7 @@ import { registerGuidedCaptureHost } from '@/lib/guided-capture/host';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
+import { setupScreenshotShortcuts } from '@/lib/screenshot/shortcuts';
 import { readDefaultPermissionMode, watchDefaultPermissionMode } from '@/lib/settings/persisted';
 import { hasRecentActiveStream } from '@/lib/stream/active-runs';
 import {
