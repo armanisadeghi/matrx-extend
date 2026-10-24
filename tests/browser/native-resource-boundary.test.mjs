@@ -1,14 +1,18 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import {
   awaitNativeResourceHealth,
+  guardNativeResourceSessionSend,
   requireNativeResourceHealth,
   runNativeResourceAction,
 } from './native-resource-boundary.mjs';
+import { createNativeStageReceipt } from './native-stage-receipt.mjs';
+import { waitFor } from './settings-panel-driver.mjs';
 
 const completeSample = {
   pressureLevel: 1,
@@ -337,4 +341,113 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
   await rm(stopFile);
   await rm(journalPath);
   await assert.rejects(check(), /evidence_missing/);
+});
+
+test('native CDP send checks health per transport command and restores its receiver', async () => {
+  let calls = 0;
+  let healthCalls = 0;
+  const session = {
+    prefix: 'owned',
+    send(command) {
+      calls++;
+      return `${this.prefix}:${command}`;
+    },
+  };
+  const original = session.send;
+  const restore = guardNativeResourceSessionSend(session, async (action) => {
+    healthCalls++;
+    if (healthCalls === 2) throw new Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample');
+    return action();
+  });
+  assert.equal(await session.send('Runtime.evaluate'), 'owned:Runtime.evaluate');
+  await assert.rejects(session.send('Input.dispatchMouseEvent'), /unsafe_sample/);
+  assert.equal(healthCalls, 2, 'each CDP send gets a fresh health decision');
+  assert.equal(calls, 1, 'a refused CDP command never reaches the original session');
+  restore();
+  assert.equal(session.send, original, 'restoration preserves the original method');
+  assert.equal(session.send('Target.detach'), 'owned:Target.detach');
+  assert.equal(calls, 2);
+});
+
+
+test('D47 stage snapshots are private, allowlisted, and survive child termination', async (t) => {
+  const root = await mkdtemp(join(tmpdir(), 'd47-stage-receipt-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const receipt = join(root, 'showcase-d47-native-owned.stages.json');
+  const modulePath = new URL('./native-stage-receipt.mjs', import.meta.url).href;
+  const source = `
+    import { createNativeStageReceipt } from ${JSON.stringify(modulePath)};
+    const receipt = createNativeStageReceipt(${JSON.stringify(receipt)});
+    receipt.record('native', 'panel_context');
+    receipt.record('d47', 'signin');
+    process.stdout.write('STAGES_SYNCED\\n');
+    setInterval(() => {}, 1000);
+  `;
+  const child = spawn(process.execPath, ['--input-type=module', '-e', source], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  t.after(() => child.kill('SIGTERM'));
+  await new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error('stage_child_not_ready')), 5000);
+    child.stdout.on('data', (chunk) => {
+      if (!String(chunk).includes('STAGES_SYNCED')) return;
+      clearTimeout(timeout);
+      resolve();
+    });
+    child.once('error', reject);
+    child.once('exit', (code) => {
+      clearTimeout(timeout);
+      reject(new Error(`stage_child_exited:${code}`));
+    });
+  });
+  const closed = new Promise((resolve, reject) => {
+    child.once('exit', resolve);
+    child.once('error', reject);
+  });
+  child.kill('SIGTERM');
+  await closed;
+  const metadata = await stat(receipt);
+  assert.equal(metadata.mode & 0o777, 0o600);
+  const saved = JSON.parse(await readFile(receipt, 'utf8'));
+  assert.equal(saved.schema_version, 1);
+  assert.deepEqual(saved.events.map(({ source: phase, stage }) => [phase, stage]), [
+    ['native', 'panel_context'],
+    ['d47', 'signin'],
+  ]);
+  assert.ok(saved.events.every((event) => Number.isInteger(event.elapsed_ms) && event.elapsed_ms >= 0));
+  assert.equal(JSON.stringify(saved).includes('password'), false);
+  assert.equal(JSON.stringify(saved).includes('http'), false);
+});
+
+test('D47 stage receipt refuses stage values outside its fixed vocabulary', async (t) => {
+  const root = await mkdtemp(join(tmpdir(), 'd47-stage-refusal-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const receipt = createNativeStageReceipt(join(root, 'stage.json'));
+  assert.throws(() => receipt.record('d47', 'secret-value'), /native_stage_receipt_value_refused/);
+});
+
+
+test('D47 readiness polling rechecks resource health before each UI observation', async () => {
+  let healthChecks = 0;
+  let uiReads = 0;
+  await assert.rejects(
+    waitFor(
+      'd47_resource_poll',
+      async () => {
+        uiReads++;
+        return false;
+      },
+      Boolean,
+      1000,
+      (value) => value,
+      async () => {
+        healthChecks++;
+        if (healthChecks === 2)
+          throw new Error('NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample');
+      },
+    ),
+    /unsafe_sample/,
+  );
+  assert.equal(healthChecks, 2);
+  assert.equal(uiReads, 1, 'a refused poll must not query the UI');
 });

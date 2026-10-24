@@ -10,7 +10,13 @@ import { promisify } from 'node:util';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { approvedShowcaseOrganization, signInSettings } from './settings-native-auth-driver.mjs';
-import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import { click, evaluate, waitFor as waitForPanel } from './settings-panel-driver.mjs';
+import {
+  awaitNativeResourceHealth,
+  guardNativeResourceSessionSend,
+  runNativeResourceAction,
+} from './native-resource-boundary.mjs';
+import { createNativeStageReceipt } from './native-stage-receipt.mjs';
 import {
   assessD47ManualRelease,
   assessD47PriorSavedTransition,
@@ -84,12 +90,21 @@ let ownedRecipe = null;
 let ownedHost = null;
 const observationStarted = performance.now();
 report.stage_observations = [];
+let stageReceipt;
+let requireD47ResourceHealth;
+let d47ResourceBoundaryStopped = false;
+const workerSendRestores = [];
+const waitFor = (label, read, accept, timeoutMs = 10000, diagnostic = (value) => value) =>
+  waitForPanel(label, read, accept, timeoutMs, diagnostic, async () => {
+    if (requireD47ResourceHealth) await requireD47ResourceHealth();
+  });
 const stage = (value) => {
   report.stage = value;
   report.stage_observations.push({
     stage: value,
     elapsed_ms: performance.now() - observationStarted,
   });
+  stageReceipt?.record('d47', value);
 };
 const control = async (origin, action) => {
   const response = await fetch(`${origin}/control/document-race/${action}`);
@@ -238,33 +253,46 @@ async function removeOwnedRecipe(panel, recipe, host) {
   );
   return 'removed';
 }
-async function withD47Cleanup(panel, exercise) {
+async function withD47Cleanup(panel, exercise, resourceAction, requireResourceHealth) {
+  const restorePanelSend = guardNativeResourceSessionSend(panel, resourceAction);
+  requireD47ResourceHealth = requireResourceHealth;
   let primaryFailure = null;
   try {
     await exercise();
   } catch (error) {
     primaryFailure = error;
   } finally {
-    report.probe_cleanup = await cleanupD47Probe(
-      probeWorker,
-      probeInstallAttempted,
-      removePassiveWorkerProbe,
-    );
-    probeInstallAttempted = false;
-    probeWorker = null;
-    if (report.probe_cleanup && !primaryFailure)
-      primaryFailure = new Error('worker_probe_cleanup_failed');
-    if (ownedRecipe && ownedHost) {
-      try {
-        report.owned_recipe.cleanup = await removeOwnedRecipe(panel, ownedRecipe, ownedHost);
-        if (report.owned_recipe.cleanup === 'absent') {
-          report.owned_recipe.cleanup = 'unverified';
-          if (!primaryFailure) primaryFailure = new Error('owned_recipe_absence_unconfirmed');
+    try {
+      if (d47ResourceBoundaryStopped) {
+        report.probe_cleanup = probeWorker ? ['not_attempted_resource_stop'] : null;
+        if (ownedRecipe && report.owned_recipe) report.owned_recipe.cleanup = 'unverified';
+      } else {
+        report.probe_cleanup = await cleanupD47Probe(
+          probeWorker,
+          probeInstallAttempted,
+          removePassiveWorkerProbe,
+        );
+        probeInstallAttempted = false;
+        probeWorker = null;
+        if (report.probe_cleanup && !primaryFailure)
+          primaryFailure = new Error('worker_probe_cleanup_failed');
+        if (ownedRecipe && ownedHost) {
+          try {
+            report.owned_recipe.cleanup = await removeOwnedRecipe(panel, ownedRecipe, ownedHost);
+            if (report.owned_recipe.cleanup === 'absent') {
+              report.owned_recipe.cleanup = 'unverified';
+              if (!primaryFailure) primaryFailure = new Error('owned_recipe_absence_unconfirmed');
+            }
+          } catch {
+            report.owned_recipe.cleanup = 'unverified';
+            if (!primaryFailure) primaryFailure = new Error('owned_recipe_cleanup_failed');
+          }
         }
-      } catch {
-        report.owned_recipe.cleanup = 'unverified';
-        if (!primaryFailure) primaryFailure = new Error('owned_recipe_cleanup_failed');
       }
+    } finally {
+      requireD47ResourceHealth = undefined;
+      for (const restore of workerSendRestores.splice(0)) restore();
+      restorePanelSend();
     }
   }
   if (primaryFailure) throw primaryFailure;
@@ -291,7 +319,9 @@ async function captureLiveFailure(exercise) {
     return await exercise();
   } catch (error) {
     report.live_failure_boundary = { stage: report.stage, probe: 'not_installed' };
-    if (probeInstallAttempted && probeWorker) {
+    if (d47ResourceBoundaryStopped) {
+      report.live_failure_boundary.probe = 'not_read_after_resource_stop';
+    } else if (probeInstallAttempted && probeWorker) {
       try {
         const observed = await readPassiveWorkerProbe(probeWorker);
         report.contexts = observed.filter((event) => event.kind !== 'binding');
@@ -321,6 +351,12 @@ if (process.env.MATRX_D47_IMPORT_PREFLIGHT === '1') {
   process.stdout.write('HOSTED_D47_DRIVER_IMPORT_READY\n');
   process.exit(0);
 }
+
+const stageReceiptPath = output.endsWith('.json')
+  ? output.slice(0, -'.json'.length) + '.stages.json'
+  : `${output}.stages.json`;
+stageReceipt = createNativeStageReceipt(stageReceiptPath);
+stage('inputs');
 
 try {
   const extensionDir = process.env.MATRX_SHOWCASE_EXTENSION_DIR;
@@ -368,32 +404,61 @@ try {
     artifactRoot: join(process.env.RUNNER_TEMP ?? tmpdir(), 'guest-acceptance'),
     onStage: (value) => {
       report.native_stage = value;
+      stageReceipt.record('native', value);
+    },
+    resourceAction: async (action) => {
+      try {
+        return await runNativeResourceAction(() => awaitNativeResourceHealth({ repo }), action);
+      } catch (error) {
+        if (String(error?.message ?? '').startsWith('NATIVE_RESOURCE_BOUNDARY_REFUSED:'))
+          d47ResourceBoundaryStopped = true;
+        throw error;
+      }
     },
     exercisePanel: async ({
       page,
       panel,
-      resourceAction,
-      requireResourceHealth,
+      resourceAction: admittedResourceAction,
+      requireResourceHealth: admittedRequireResourceHealth,
       reopenPanel,
       attachWorker,
-    }) =>
-      withD47Cleanup(panel, () =>
+    }) => {
+      const noteResourceStop = (error) => {
+        if (String(error?.message ?? '').startsWith('NATIVE_RESOURCE_BOUNDARY_REFUSED:'))
+          d47ResourceBoundaryStopped = true;
+        throw error;
+      };
+      const resourceAction = async (action) => {
+        try {
+          return await admittedResourceAction(action);
+        } catch (error) {
+          return noteResourceStop(error);
+        }
+      };
+      const requireResourceHealth = async () => {
+        try {
+          return await admittedRequireResourceHealth();
+        } catch (error) {
+          return noteResourceStop(error);
+        }
+      };
+      return withD47Cleanup(panel, () =>
         captureLiveFailure(async () => {
           const origin = fixture.origin;
           activePanel = panel;
           stage('signin');
-          const auth = await resourceAction(() =>
-            signInSettings({
-              mode: 'admin',
-              page,
-              panel,
-              repo,
-              adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
-              onStage: (value) => {
-                report.auth_stage = value;
-              },
-            }),
-          );
+          const auth = await signInSettings({
+            mode: 'admin',
+            page,
+            panel,
+            repo,
+            adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
+            onStage: (value) => {
+              report.auth_stage = value;
+              stageReceipt.record('auth', value);
+            },
+            resourceAction,
+          });
           assert.equal(auth.admin_role, true);
           stage('organization');
           await runShowcaseOrganizationCheckpoint({
@@ -404,7 +469,7 @@ try {
             requiredOrganizationName: approvedOrganization.name,
             requiredOrganizationId: approvedOrganization.id,
           });
-          await resourceAction(() => reopenPanel());
+          await reopenPanel();
           await resourceAction(() => page.goto(`${origin}/document-race/`));
           await waitFor(
             'fixture_seed',
@@ -649,7 +714,7 @@ try {
             );
           }
           stage('old_context_identity');
-          const pageCdp = await page.context().newCDPSession(page);
+          const pageCdp = await resourceAction(() => page.context().newCDPSession(page));
           const oldContexts = [];
           pageCdp.on('Runtime.executionContextCreated', ({ context }) => {
             if (context.auxData?.isDefault && context.uniqueId)
@@ -658,7 +723,7 @@ try {
                 frame_id: context.auxData.frameId ?? null,
               });
           });
-          await pageCdp.send('Runtime.enable');
+          await resourceAction(() => pageCdp.send('Runtime.enable'));
           await waitFor(
             'old_page_context',
             () => oldContexts,
@@ -669,9 +734,10 @@ try {
             unique_id: oldPageContext.unique_id,
             frame_id: oldPageContext.frame_id,
           };
-          await pageCdp.detach();
-          const worker = await attachWorker();
+          await resourceAction(() => pageCdp.detach());
+          const worker = await resourceAction(() => attachWorker());
           probeWorker = worker;
+          workerSendRestores.push(guardNativeResourceSessionSend(worker, resourceAction));
           stage('worker_observer');
           await installPassiveWorkerProbe(worker, origin, () => {
             probeInstallAttempted = true;
@@ -720,8 +786,14 @@ try {
                 report.prior_saved.first.terminal.last = value;
               },
             });
-            assert.equal(await page.locator('#phase').textContent(), 'first-saved');
-            assert.equal(await page.locator('#result').textContent(), 'Canyon Frequency');
+            assert.equal(
+              await resourceAction(() => page.locator('#phase').textContent()),
+              'first-saved',
+            );
+            assert.equal(
+              await resourceAction(() => page.locator('#result').textContent()),
+              'Canyon Frequency',
+            );
             const firstObserved = await readPassiveWorkerProbe(worker);
             const firstHash = createHash('sha256')
               .update(
@@ -856,8 +928,8 @@ try {
                   terminal.last = value;
                 },
               });
-              const pagePhase = await page.locator('#phase').textContent();
-              const pageResult = await page.locator('#result').textContent();
+              const pagePhase = await resourceAction(() => page.locator('#phase').textContent());
+              const pageResult = await resourceAction(() => page.locator('#result').textContent());
               assert.equal(pagePhase, 'current', `${label}_page_phase_missing`);
               assert.equal(pageResult, 'Silver Meridian', `${label}_page_result_missing`);
               return { ...terminal, page_phase_current: true, page_result_second: true };
@@ -1027,9 +1099,11 @@ try {
               },
             });
             report.saved_result = {
-              page_phase_current: (await page.locator('#phase').textContent()) === 'current',
+              page_phase_current:
+                (await resourceAction(() => page.locator('#phase').textContent())) === 'current',
               page_result_current:
-                (await page.locator('#result').textContent()) === 'Canyon Frequency',
+                (await resourceAction(() => page.locator('#result').textContent())) ===
+                'Canyon Frequency',
               panel_current: (await panelText(panel))?.includes('Canyon Frequency') ?? false,
               panel_old: (await panelText(panel))?.includes('Moonlit Transit') ?? false,
             };
@@ -1197,9 +1271,11 @@ try {
             },
           });
           report.saved_result = {
-            page_phase_current: (await page.locator('#phase').textContent()) === 'current',
+            page_phase_current:
+              (await resourceAction(() => page.locator('#phase').textContent())) === 'current',
             page_result_current:
-              (await page.locator('#result').textContent()) === 'Canyon Frequency',
+              (await resourceAction(() => page.locator('#result').textContent())) ===
+              'Canyon Frequency',
             panel_current: (await panelText(panel))?.includes('Canyon Frequency') ?? false,
             panel_old: (await panelText(panel))?.includes('Moonlit Transit') ?? false,
           };
@@ -1251,7 +1327,10 @@ try {
                 : 'unverified_canceled_before_release';
           }
         }),
-      ),
+        resourceAction,
+        requireResourceHealth,
+      );
+    },
   });
   assert.equal(native.verified, true);
   report.status =
@@ -1277,7 +1356,7 @@ try {
     auth_stage: report.auth_stage ?? null,
   };
   try {
-    if (probeInstallAttempted && probeWorker) {
+    if (probeInstallAttempted && probeWorker && !d47ResourceBoundaryStopped) {
       const observed = await readPassiveWorkerProbe(probeWorker);
       report.diagnostics.probe = {
         event_count: observed?.length ?? 0,
@@ -1288,7 +1367,7 @@ try {
     report.diagnostics.probe = { state: 'unavailable' };
   }
   try {
-    if (activePanel)
+    if (activePanel && !d47ResourceBoundaryStopped)
       report.diagnostics.panel = await evaluate(
         activePanel,
         `(() => ({ has_save: [...document.querySelectorAll('button')].some(x => x.textContent.trim() === 'Save pattern'), discovering: document.body.innerText.includes('● page load —'), has_recipe_result: document.body.innerText.includes('Last run:'), has_current: document.body.innerText.includes('Canyon Frequency') }))()`,
@@ -1299,12 +1378,13 @@ try {
   process.stderr.write(`UNVERIFIED showcase_d47 stage=${report.stage}\n`);
   process.exitCode = 1;
 } finally {
-  if (probeWorker)
+  if (probeWorker && !d47ResourceBoundaryStopped)
     report.probe_cleanup = await cleanupD47Probe(
       probeWorker,
       probeInstallAttempted,
       removePassiveWorkerProbe,
     );
+  else if (probeWorker) report.probe_cleanup = ['not_attempted_resource_stop'];
   await stopFixture();
   await writeFile(output, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
 }

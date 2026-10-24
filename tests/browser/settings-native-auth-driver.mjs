@@ -493,6 +493,7 @@ export async function signInSettings({
   memberApprovedOrganizationFile,
   allowLadderOrganization = false,
   onStage,
+  resourceAction = async (action) => action(),
   onAuthDiagnostic,
   onTrace,
   observeBoundary = async () => {},
@@ -511,6 +512,7 @@ export async function signInSettings({
         panel,
         report: diagnostic,
         stage,
+        resourceAction,
         captureIdentity: true,
         readCredentials: async () => {
           const secret = await privateJson(adminCredentialsFile, 'd87_admin_credentials');

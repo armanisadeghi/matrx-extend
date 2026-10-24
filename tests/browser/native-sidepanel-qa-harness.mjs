@@ -35,7 +35,11 @@ import {
 } from './native-extension-startup-diagnostic.mjs';
 import { runOwnedPanelReopen } from './native-panel-reopen-boundary.mjs';
 import { reloadOperationBoundary } from './native-reload-operation-boundary.mjs';
-import { awaitNativeResourceHealth, runNativeResourceAction } from './native-resource-boundary.mjs';
+import {
+  awaitNativeResourceHealth,
+  guardNativeResourceSessionSend,
+  runNativeResourceAction,
+} from './native-resource-boundary.mjs';
 import { serveOwnedFixture } from './owned-fixture-server.mjs';
 import { installOwnedPanelOpener, panelOpenerHtml } from './owned-panel-opener.mjs';
 import { startReloadLifetimeDiagnostic } from './reload-lifetime-diagnostic.mjs';
@@ -53,6 +57,18 @@ const EXPECTED_EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const WAIT_MS = 100;
 const ATTEMPTS = 150;
+
+// Preserve the replaced Playwright visibility wait's default 30-second deadline.
+async function waitForVisibleResource(locator, resourceAction, timeoutMs = 30_000) {
+  const run = resourceAction ?? ((action) => action());
+  const deadline = Date.now() + timeoutMs;
+  do {
+    if (await run(() => locator.isVisible())) return;
+    if (Date.now() >= deadline) break;
+    await wait(WAIT_MS);
+  } while (Date.now() < deadline);
+  throw new Error('native_sidepanel_owned_element_not_visible');
+}
 
 export async function nativeCdpStartupDeadlineMs() {
   const policy = JSON.parse(
@@ -566,6 +582,7 @@ async function waitForInitialPanelReady({
   attempts = ATTEMPTS,
   waitBetween = () => wait(WAIT_MS),
   clock = Date.now,
+  resourceAction,
 }) {
   const started = clock();
   const budgetMs = attempts * WAIT_MS;
@@ -587,19 +604,27 @@ async function waitForInitialPanelReady({
   };
   try {
     for (attempt = 1; attempt <= attempts && clock() - started < budgetMs; attempt += 1) {
-      const { targetInfos } = await cdp.send('Target.getTargets');
+      const { targetInfos } = await (resourceAction ?? ((action) => action()))(() =>
+        cdp.send('Target.getTargets'),
+      );
       if (panelTarget) requirePinnedTarget(targetInfos);
       else
         panelTarget = targetInfos.find((entry) => entry.type === 'page' && entry.url === panelUrl);
       if (panelTarget) {
         if (panelTarget.targetId === normalTargetId)
           throw new Error('native_sidepanel_target_not_distinct');
-        contexts = await sidePanelContexts(cdp, serviceWorkerTargetId);
+        contexts = await sidePanelContexts(cdp, serviceWorkerTargetId, resourceAction);
         const observation = panelContextDiagnostic(contexts, panelUrl);
         first ??= observation;
         last = observation;
         // A matching runtime context must not rescue a destroyed or replaced target.
-        requirePinnedTarget((await cdp.send('Target.getTargets')).targetInfos);
+        requirePinnedTarget(
+          (
+            await (resourceAction ?? ((action) => action()))(() =>
+              cdp.send('Target.getTargets'),
+            )
+          ).targetInfos,
+        );
         if (clock() - started < budgetMs && observation.exactContextCount > 0) {
           requireSidePanelContext(contexts, panelUrl);
           return {
@@ -633,10 +658,12 @@ async function waitForInitialPanelReady({
   }
 }
 
-async function waitForExpectedExtension(cdp, extensionId) {
+async function waitForExpectedExtension(cdp, extensionId, resourceAction) {
   let lastTargetInfos = [];
   for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
-    const { targetInfos } = await cdp.send('Target.getTargets');
+    const { targetInfos } = await (resourceAction ?? ((action) => action()))(() =>
+      cdp.send('Target.getTargets'),
+    );
     lastTargetInfos = targetInfos;
     try {
       return requireExpectedExtension(targetInfos, extensionId);
@@ -1203,46 +1230,50 @@ async function activateOwnedSidePanel({
   page,
   triggerPage = page,
   extensionId,
+  resourceAction,
   observe = async () => {},
 }) {
+  const run = resourceAction ?? ((action) => action());
   // Target activation can focus a hidden SIDE_PANEL without opening it. Use
   // the same trusted input / FRONTEND_RPC route as the initial native open.
-  await observe('before_reopen');
-  if (triggerPage !== page) await triggerPage.bringToFront();
+  await run(() => observe('before_reopen'));
+  if (triggerPage !== page) await run(() => triggerPage.bringToFront());
   // Preserve the exact owned panel when authentication left it visible. The
   // captured D133 run first became hidden during a redundant trusted open.
-  const visibility = await observePanelVisibility(panel);
+  const visibility = await run(() => observePanelVisibility(panel));
   if (!visibility.measured || !['visible', 'hidden'].includes(visibility.visibility))
     throw new Error('native_sidepanel_visibility_unavailable_before_reopen');
   if (visibility.visibility === 'visible') return;
-  if (triggerPage === page) await page.bringToFront();
-  await observe(triggerPage === page ? 'after_root_foreground' : 'after_demo_foreground');
+  if (triggerPage === page) await run(() => page.bringToFront());
+  await run(() => observe(triggerPage === page ? 'after_root_foreground' : 'after_demo_foreground'));
   const opener =
     triggerPage === page
       ? { button: page.locator('#open-panel'), result: page.locator('#result') }
       : await installOwnedPanelOpener(triggerPage, extensionId);
   const { result } = opener;
-  await result.evaluate((element) => {
+  await run(() => result.evaluate((element) => {
     element.textContent = '';
-  });
-  await opener.button.click();
-  await result.filter({ hasText: /\S/ }).waitFor({ state: 'visible' });
-  const reply = JSON.parse((await result.textContent()) || '{}');
+  }));
+  await run(() => opener.button.click());
+  await waitForVisibleResource(result.filter({ hasText: /\S/ }), resourceAction);
+  const reply = JSON.parse((await run(() => result.textContent())) || '{}');
   if (reply?.ok !== true || reply?.result?.opened !== true)
     throw new Error(`native_sidepanel_open_refused:${JSON.stringify(reply)}`);
-  await observe('after_trusted_open');
-  await cdp.send('Target.activateTarget', { targetId: panelTargetId });
-  await observe('after_target_activation');
+  await run(() => observe('after_trusted_open'));
+  await run(() => cdp.send('Target.activateTarget', { targetId: panelTargetId }));
+  await run(() => observe('after_target_activation'));
 }
 
-async function sidePanelContexts(cdp, serviceWorkerTargetId) {
-  const worker = await attachTargetSession(cdp, serviceWorkerTargetId);
+async function sidePanelContexts(cdp, serviceWorkerTargetId, resourceAction) {
+  const worker = await (resourceAction ?? ((action) => action()))(() =>
+    attachTargetSession(cdp, serviceWorkerTargetId),
+  );
   try {
-    const result = await worker.send('Runtime.evaluate', {
+    const result = await (resourceAction ?? ((action) => action()))(() => worker.send('Runtime.evaluate', {
       expression: "chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] })",
       awaitPromise: true,
       returnByValue: true,
-    });
+    }));
     if (result.exceptionDetails || !Array.isArray(result.result?.value))
       throw new Error('native_sidepanel_runtime_context_query_failed');
     return result.result.value;
@@ -1251,8 +1282,13 @@ async function sidePanelContexts(cdp, serviceWorkerTargetId) {
   }
 }
 
-async function waitForSettledGuestPanel(cdp, targetId) {
-  const panel = await attachTargetSession(cdp, targetId);
+async function waitForSettledGuestPanel(cdp, targetId, resourceAction) {
+  const panel = await (resourceAction ?? ((action) => action()))(() =>
+    attachTargetSession(cdp, targetId),
+  );
+  const restoreSend = resourceAction
+    ? guardNativeResourceSessionSend(panel, resourceAction)
+    : () => {};
   const expression = `(() => {
     const visible = (element) => {
       const style = getComputedStyle(element); const rect = element.getBoundingClientRect();
@@ -1281,15 +1317,22 @@ async function waitForSettledGuestPanel(cdp, targetId) {
       await wait(WAIT_MS * 2);
     }
   } catch (error) {
+    restoreSend();
     await panel.detach();
     throw error;
   }
+  restoreSend();
   await panel.detach();
   throw new Error(`native_sidepanel_render_not_settled:${previousFingerprint ?? 'no_state'}`);
 }
 
-export async function captureTarget(cdp, targetId, output) {
-  const panel = await attachTargetSession(cdp, targetId);
+export async function captureTarget(cdp, targetId, output, resourceAction) {
+  const panel = await (resourceAction ?? ((action) => action()))(() =>
+    attachTargetSession(cdp, targetId),
+  );
+  const restoreSend = resourceAction
+    ? guardNativeResourceSessionSend(panel, resourceAction)
+    : () => {};
   try {
     await panel.send('Page.enable');
     const { data } = await panel.send('Page.captureScreenshot', { format: 'png' });
@@ -1297,6 +1340,7 @@ export async function captureTarget(cdp, targetId, output) {
       throw new Error('native_sidepanel_png_missing');
     await writeFile(output, Buffer.from(data, 'base64'), { mode: 0o600 });
   } finally {
+    restoreSend();
     await panel.detach();
   }
 }
@@ -1579,6 +1623,7 @@ export async function runNativeSidepanelQa({
   ownedPages,
   ownedAssets,
   exercisePanel,
+  resourceAction,
   onStage = () => {},
   onStartupGpuObservation,
   onPanelVisibilityObservation,
@@ -1764,7 +1809,7 @@ export async function runNativeSidepanelQa({
     let extensionWorker;
     try {
       onStage('extension_worker');
-      extensionWorker = await waitForExpectedExtension(cdp, expectedExtensionId);
+      extensionWorker = await waitForExpectedExtension(cdp, expectedExtensionId, resourceAction);
     } catch (error) {
       try {
         const diagnostic = extensionStartupDiagnostic({
@@ -1818,24 +1863,34 @@ export async function runNativeSidepanelQa({
     onStage('page_create');
     const context = playwrightBrowser.contexts()[0];
     // Every drive of our app/server from this owned browser is ours, not a visitor's.
-    await markBrowserAgentTraffic(context, 'native-sidepanel-qa-harness', WEB_ORIGIN);
-    await markBrowserAgentTraffic(
-      context,
-      'native-sidepanel-qa-harness',
-      'https://server.app.matrxserver.com',
+    await (resourceAction ?? ((action) => action()))(() =>
+      markBrowserAgentTraffic(context, 'native-sidepanel-qa-harness', WEB_ORIGIN),
     );
-    const page = await context.newPage();
+    await (resourceAction ?? ((action) => action()))(() =>
+      markBrowserAgentTraffic(context, 'native-sidepanel-qa-harness', 'https://server.app.matrxserver.com'),
+    );
+    const page = await (resourceAction ?? ((action) => action()))(() => context.newPage());
     onStage('local_page_navigation');
-    await page.goto(`http://localhost:${serverPort}/`);
+    await (resourceAction ?? ((action) => action()))(() =>
+      page.goto(`http://localhost:${serverPort}/`),
+    );
     onStage('panel_open');
-    await page.locator('#open-panel').click(); // Real trusted Chromium input.
-    await page.locator('#result').waitFor({ state: 'visible' });
+    await (resourceAction ?? ((action) => action()))(() =>
+      page.locator('#open-panel').click(),
+    ); // Real trusted Chromium input.
+    await waitForVisibleResource(page.locator('#result'), resourceAction);
     onStage('panel_reply');
-    const reply = JSON.parse((await page.locator('#result').textContent()) || '{}');
+    const reply = JSON.parse(
+      (await (resourceAction ?? ((action) => action()))(() =>
+        page.locator('#result').textContent(),
+      )) || '{}',
+    );
     if (reply?.ok !== true || reply?.result?.opened !== true)
       throw new Error(`native_sidepanel_open_refused:${JSON.stringify(reply)}`);
 
-    const normalTarget = (await cdp.send('Target.getTargets')).targetInfos.find(
+    const normalTarget = (
+      await (resourceAction ?? ((action) => action()))(() => cdp.send('Target.getTargets'))
+    ).targetInfos.find(
       (entry) => entry.type === 'page' && entry.url === page.url(),
     );
     if (!normalTarget) throw new Error('native_sidepanel_normal_target_missing');
@@ -1849,6 +1904,7 @@ export async function runNativeSidepanelQa({
         panelUrl,
         serviceWorkerTargetId: extensionWorker.targetId,
         normalTargetId: normalTarget.targetId,
+        resourceAction,
       });
       panelTarget = readiness.panelTarget;
       process.stderr.write(
@@ -1863,31 +1919,37 @@ export async function runNativeSidepanelQa({
       throw error;
     }
     onStage('panel_settle');
-    const readyPanel = await waitForSettledGuestPanel(cdp, panelTarget.targetId);
+    const readyPanel = await waitForSettledGuestPanel(cdp, panelTarget.targetId, resourceAction);
     const observeVisibility = async (phase, session = readyPanel) => {
       if (onPanelVisibilityObservation)
         onPanelVisibilityObservation({ phase, ...(await observePanelVisibility(session)) });
     };
-    await observeVisibility('initial_settled_before_screenshots');
+    await (resourceAction ?? ((action) => action()))(() =>
+      observeVisibility('initial_settled_before_screenshots'),
+    );
 
     if (publicDemoUrl) {
       if (publicDemoUrl !== 'https://www.aimatrx.com/matrx-extend-demo')
         throw new Error('native_sidepanel_public_demo_url_refused');
       onStage('demo_navigation');
-      await page.goto(publicDemoUrl);
-      await page.locator('main article').waitFor({ state: 'visible' });
+      await (resourceAction ?? ((action) => action()))(() => page.goto(publicDemoUrl));
+      await waitForVisibleResource(page.locator('main article'), resourceAction);
     }
 
     const normalPng = join(artifacts, 'normal-target-after-open.png');
     const panelPng = join(artifacts, 'native-side-panel.png');
     onStage('screenshot');
-    await captureTarget(cdp, normalTarget.targetId, normalPng);
-    await captureTarget(cdp, panelTarget.targetId, panelPng);
-    await observeVisibility('after_initial_screenshots');
-    await readyPanel.detach();
+    await captureTarget(cdp, normalTarget.targetId, normalPng, resourceAction);
+    await captureTarget(cdp, panelTarget.targetId, panelPng, resourceAction);
+    await (resourceAction ?? ((action) => action()))(() =>
+      observeVisibility('after_initial_screenshots'),
+    );
+    await (resourceAction ?? ((action) => action()))(() => readyPanel.detach());
     onStage('exercise_panel');
     if (exercisePanel) {
-      const panel = await attachTargetSession(cdp, panelTarget.targetId);
+      const panel = await (resourceAction ?? ((action) => action()))(() =>
+        attachTargetSession(cdp, panelTarget.targetId),
+      );
       const reloadController = createOwnedExtensionReloadController(
         panelTarget.targetId,
         (oldPanelId) =>
@@ -1918,6 +1980,7 @@ export async function runNativeSidepanelQa({
                 page,
                 ...(triggerPage && { triggerPage }),
                 extensionId: expectedExtensionId,
+                resourceAction,
                 observe: (phase) => observeVisibility(phase, panel),
               }),
             cycleOwnedPanel: async (currentPanel) => {
