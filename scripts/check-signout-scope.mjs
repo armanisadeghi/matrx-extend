@@ -20,9 +20,9 @@
 import assert from 'node:assert/strict';
 import { execSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { readFileSync, realpathSync, statSync } from 'node:fs';
+import { dirname, relative, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import ts from 'typescript';
 
 const REPO_ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -31,12 +31,90 @@ const SKIP = /(^|\/)(node_modules|dist|target|build|\.next|\.venv|__pycache__|\.
 const LOGOUT_URL = /(?:\/auth\/v1\/logout|["'`]\/logout)(?<rest>[^"'`\n]*)/g;
 const COMMENT = /^\s*(?:\/\/|\*|\/\*|#)/;
 const FLOW = 'src/lib/auth/flow.ts';
-// Reviewed against @ai-matrx/auth 0.4.6. Approval fingerprints, not dependency pins.
+// Reviewed against @ai-matrx/auth 0.4.14. Approval fingerprints, not dependency pins.
 // Since 0.3.5 signOut is unchanged: local clear first, then POST logout?scope=local.
 const FLOW_SHA = 'a3918502f40c9b7c34a753d2c4a696b9a1613ec2a0804870e0cf9fb64f423e90';
-const OAUTH_SHA = '076f29ffd5db44aa7acf795f7dfa5c03642d67d617299ab4d5031d1b5d14eb0d';
+const OAUTH_SHA = 'a32106dc15c064b483e05e4d595d56455438a00e805f02c341b38bca5c567ab5';
 const hash = (text) => createHash('sha256').update(text).digest('hex');
 const approvedImplementation = (source) => hash(source) === OAUTH_SHA;
+
+// The published entry now re-exports shared chunks. Approve their actual bytes,
+// including the JWT helper, rather than approving only an unchanged facade.
+export function readReviewedOAuth(
+  entryUrl = import.meta.resolve('@ai-matrx/auth/matrx-oauth'),
+  readSource = (url) => readFileSync(fileURLToPath(url), 'utf8'),
+) {
+  const root = dirname(realpathSync(fileURLToPath(entryUrl)));
+  const modules = new Map();
+  function visit(url) {
+    const target = new URL(url);
+    assert.ok(
+      target.protocol === 'file:' && !target.search && !target.hash,
+      'OAuth approval requires plain file module URLs',
+    );
+    const realPath = realpathSync(fileURLToPath(target));
+    assert.ok(statSync(realPath).isFile(), 'OAuth approval module must be a file');
+    const canonicalUrl = pathToFileURL(realPath).href;
+    if (modules.has(canonicalUrl)) return;
+    const path = relative(root, realPath).replaceAll('\\', '/');
+    assert.ok(path && !path.startsWith('../'), 'OAuth approval module must stay in package dist');
+    const source = readSource(canonicalUrl);
+    const parsed = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true);
+    assert.equal(parsed.parseDiagnostics.length, 0, 'OAuth approval module must parse');
+    modules.set(canonicalUrl, { path, source, parsed });
+    for (const node of nodesIn(parsed)) {
+      assert.ok(
+        !ts.isImportEqualsDeclaration(node) &&
+          !(
+            ts.isCallExpression(node) &&
+            (node.expression.kind === ts.SyntaxKind.ImportKeyword ||
+              (ts.isIdentifier(node.expression) && node.expression.text === 'require'))
+          ),
+        'OAuth approval requires a static module closure',
+      );
+      if (!ts.isImportDeclaration(node) && !ts.isExportDeclaration(node)) continue;
+      const specifier = node.moduleSpecifier;
+      if (!specifier) continue;
+      assert.ok(
+        ts.isStringLiteral(specifier) && /^\.\.?\//.test(specifier.text),
+        'OAuth approval requires reviewed relative module imports',
+      );
+      visit(new URL(specifier.text, canonicalUrl).href);
+    }
+  }
+  visit(entryUrl);
+  const ordered = [...modules.entries()].sort(([, left], [, right]) =>
+    left.path < right.path ? -1 : left.path > right.path ? 1 : 0,
+  );
+  const implementations = ordered.flatMap(([url, module]) =>
+    nodesIn(module.parsed)
+      .filter(
+        (node) => ts.isMethodDeclaration(node) && node.body && nameOf(node.name) === 'signOut',
+      )
+      .map(() => [url, module]),
+  );
+  assert.equal(implementations.length, 1, 'OAuth signOut must have one reviewed implementation');
+  const [implementationUrl, implementation] = implementations[0];
+  return {
+    approvalSource: JSON.stringify(ordered.map(([, { path, source }]) => [path, source])),
+    implementation: implementation.source,
+    implementationUrl,
+    modules,
+  };
+}
+
+function importableMutation(source, moduleUrl) {
+  let mutatedSource = source;
+  const parsed = ts.createSourceFile('oauth.js', source, ts.ScriptTarget.Latest, true);
+  const replacements = nodesIn(parsed)
+    .filter((node) => ts.isImportDeclaration(node) || ts.isExportDeclaration(node))
+    .map((node) => node.moduleSpecifier)
+    .filter((node) => node && ts.isStringLiteral(node))
+    .sort((left, right) => right.getStart(parsed) - left.getStart(parsed));
+  for (const specifier of replacements)
+    mutatedSource = `${mutatedSource.slice(0, specifier.getStart(parsed))}${JSON.stringify(new URL(specifier.text, moduleUrl).href)}${mutatedSource.slice(specifier.end)}`;
+  return mutatedSource;
+}
 const logout = (name) => name === 'signOut' || name === 'sign_out';
 const member = (node) => ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node);
 function nameOf(node) {
@@ -253,11 +331,8 @@ export function findingsIn(source, file) {
 }
 function scan() {
   const findings = [];
-  const implementation = readFileSync(
-    fileURLToPath(import.meta.resolve('@ai-matrx/auth/matrx-oauth')),
-    'utf8',
-  );
-  if (!approvedImplementation(implementation))
+  const { approvalSource } = readReviewedOAuth();
+  if (!approvedImplementation(approvalSource))
     findings.push(
       'Installed OAuth implementation changed: review its local sign-out behavior and renew the approval fingerprint.',
     );
@@ -415,16 +490,62 @@ async function selfTest() {
       expected,
       `source-contract case: ${source.slice(0, 120)}`,
     );
-  const implementation = readFileSync(
-    fileURLToPath(import.meta.resolve('@ai-matrx/auth/matrx-oauth')),
-    'utf8',
-  );
-  assert.equal(approvedImplementation(implementation), true, 'installed OAuth artifact approval');
+  const { approvalSource, implementation, implementationUrl, modules } = readReviewedOAuth();
   assert.equal(
-    approvedImplementation(implementation.replace('scope=local', 'scope=global')),
+    approvedImplementation(approvalSource),
+    true,
+    'installed OAuth module closure approval',
+  );
+  assert.equal(
+    approvedImplementation(approvalSource.replace('scope=local', 'scope=global')),
     false,
     'changed OAuth artifact must lose approval',
   );
+  for (const [changedUrl] of modules) {
+    const changed = readReviewedOAuth(
+      undefined,
+      (url) =>
+        `${readFileSync(fileURLToPath(url), 'utf8')}${url === changedUrl ? '\n// changed artifact\n' : ''}`,
+    );
+    assert.equal(
+      approvedImplementation(changed.approvalSource),
+      false,
+      'any changed entry or dependency artifact must lose approval',
+    );
+  }
+  const entryUrl = import.meta.resolve('@ai-matrx/auth/matrx-oauth');
+  const helperPath = [...modules.entries()].find(
+    ([url]) => url !== entryUrl && url !== implementationUrl,
+  )?.[1].path;
+  assert.ok(helperPath, 'split OAuth artifact must include its reviewed helper');
+  assert.throws(
+    () =>
+      readReviewedOAuth(entryUrl, (url) => {
+        const source = readFileSync(fileURLToPath(url), 'utf8');
+        return url === entryUrl
+          ? source.replace(`./${modules.get(implementationUrl).path}`, `./${helperPath}`)
+          : source;
+      }),
+    'retargeting the entry away from signOut must lose approval',
+  );
+  for (const unsupported of [
+    'import("./dynamic.js");',
+    'require("./dynamic.js");',
+    'import value from "node:fs";',
+    'export * from "./missing-oauth-approval.js";',
+    'export * from "./matrx-oauth.js?unreviewed";',
+    'export * from "../../outside-approval.js";',
+    'export * from "file:///tmp/outside-approval.js";',
+  ])
+    assert.throws(
+      () =>
+        readReviewedOAuth(
+          entryUrl,
+          (url) =>
+            `${readFileSync(fileURLToPath(url), 'utf8')}${url === entryUrl ? `\n${unsupported}\n` : ''}`,
+        ),
+      'unsupported module graph must lose approval',
+    );
   await packageProof();
   // Execute mutations of the real installed artifact in memory: changing scope,
   // skipping local cleanup, or returning success without work must fail this proof.
@@ -433,6 +554,18 @@ async function selfTest() {
     (node) => ts.isMethodDeclaration(node) && nameOf(node.name) === 'signOut',
   );
   assert.ok(signOut?.body, 'installed OAuth signOut method must be measurable');
+  assert.equal(
+    nodesIn(parsed).filter(
+      (node) => ts.isMethodDeclaration(node) && nameOf(node.name) === 'signOut',
+    ).length,
+    1,
+  );
+  for (const target of ['scope=local', 'const access = await lock(clearLocal);'])
+    assert.equal(
+      implementation.split(target).length,
+      2,
+      'behavior mutation target must occur exactly once',
+    );
   const mutants = [
     implementation.replace('scope=local', 'scope=global'),
     implementation.replace(
@@ -444,7 +577,7 @@ async function selfTest() {
   for (const mutant of mutants) {
     assert.notEqual(mutant, implementation, 'behavior mutation must change the installed artifact');
     const { createMatrxOAuth } = await import(
-      `data:text/javascript;base64,${Buffer.from(mutant).toString('base64')}`
+      `data:text/javascript;base64,${Buffer.from(importableMutation(mutant, implementationUrl)).toString('base64')}`
     );
     await assert.rejects(() => packageProof(createMatrxOAuth), assert.AssertionError);
   }
