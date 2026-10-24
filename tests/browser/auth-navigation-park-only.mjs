@@ -7,8 +7,8 @@ import { copyFile, lstat, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { signInAdminSettings } from './admin-settings-signin.mjs';
+import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -27,13 +27,20 @@ const EXPECTED_ADMIN = 'admin@admin.com';
 const config = JSON.parse(await readFile(CONFIG_PATH, 'utf8'));
 const expectedConfig = {
   schema_version: 1,
-  provenance_receipt: 'test-results/ci-artifacts/4f8416948fe41fd95fb99cca39085f8ba8edeaba/40077251065-1/provenance-receipt.json',
+  provenance_receipt:
+    'test-results/ci-artifacts/4f8416948fe41fd95fb99cca39085f8ba8edeaba/40077251065-1/provenance-receipt.json',
 };
 assert.deepEqual(config, expectedConfig, 'auth_navigation_config_unexpected');
 assert.equal(process.argv.length, 2, 'auth_navigation_arguments_refused');
 assert.equal(process.cwd(), REPO, 'auth_navigation_cwd_refused');
 
-const artifactParent = join(REPO, 'test-results', 'ci-artifacts', SOURCE_SHA, `${RUN_ID}-${RUN_ATTEMPT}`);
+const artifactParent = join(
+  REPO,
+  'test-results',
+  'ci-artifacts',
+  SOURCE_SHA,
+  `${RUN_ID}-${RUN_ATTEMPT}`,
+);
 const extensionDir = join(artifactParent, 'chrome-mv3');
 const localDevReceiptPath = join(artifactParent, 'local-dev-receipt.json');
 const provenancePath = resolve(REPO, config.provenance_receipt);
@@ -117,7 +124,9 @@ const requestFailureLabel = (value) => {
   const text = String(value ?? '');
   if (/ERR_ABORTED/.test(text)) return 'aborted';
   if (/ERR_TIMED_OUT|TIMED_OUT/.test(text)) return 'timeout';
-  if (/ERR_(NAME_NOT_RESOLVED|INTERNET_DISCONNECTED|CONNECTION_RESET|CONNECTION_REFUSED)/.test(text))
+  if (
+    /ERR_(NAME_NOT_RESOLVED|INTERNET_DISCONNECTED|CONNECTION_RESET|CONNECTION_REFUSED)/.test(text)
+  )
     return 'network';
   return text ? 'other' : 'unknown';
 };
@@ -132,7 +141,11 @@ const observePage = (page) => {
   page.on('requestfailed', (request) => {
     const route = routeLabel(request.url());
     if (['login', 'dashboard', 'whoami'].includes(route))
-      event({ event: 'request_failed', route, failure: requestFailureLabel(request.failure()?.errorText) });
+      event({
+        event: 'request_failed',
+        route,
+        failure: requestFailureLabel(request.failure()?.errorText),
+      });
   });
   page.on('response', (response) => {
     const route = routeLabel(response.url());
@@ -183,7 +196,10 @@ async function readAdminCredentials() {
     const match = /^\s*(AI_ADMIN_USERNAME|AI_ADMIN_PASSWORD)\s*=\s*(.*?)\s*$/.exec(line);
     if (!match) continue;
     let value = match[2];
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")))
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    )
       value = value.slice(1, -1);
     values[match[1]] = value;
   }
@@ -250,7 +266,12 @@ try {
           report.signin_observations.web_dashboard_reached === true &&
           report.signin_observations.web_identity_parked === true &&
           !report.stage_history.some((value) =>
-            ['admin_extension_account_open', 'admin_extension_signin_ready', 'admin_extension_click', 'admin_extension_auth_completion'].includes(value),
+            [
+              'admin_extension_account_open',
+              'admin_extension_signin_ready',
+              'admin_extension_click',
+              'admin_extension_auth_completion',
+            ].includes(value),
           );
         if (!expectedStop) throw error;
         report.diagnostic.extension_auth_not_entered = true;

@@ -9,7 +9,7 @@
     "macos": 0.062
   },
   "prices_source": "GitHub billing API pricePerUnit (Actions Linux / Windows / macOS 3-core), read 2026-10-11",
-  "total_usd_per_week": 412.80,
+  "total_usd_per_week": 412.8,
   "workflows": {
     "ci.yml": {
       "triggers": ["pull_request", "push", "workflow_dispatch"],
