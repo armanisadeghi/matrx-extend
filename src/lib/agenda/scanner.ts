@@ -228,7 +228,7 @@ async function notifyDue(task: AgendaTask): Promise<void> {
   try {
     await chrome.notifications.create(id, {
       type: 'basic',
-      iconUrl: chrome.runtime.getURL('icon-128.png'),
+      iconUrl: chrome.runtime.getURL('icon/128.png'),
       title: `Agenda: ${task.title}`,
       message: task.description ?? 'Task is due. Click to open the Agenda tab.',
       priority: 1,
