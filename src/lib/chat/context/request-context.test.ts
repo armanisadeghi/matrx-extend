@@ -258,22 +258,79 @@ describe('context single door', () => {
     return out;
   }
 
+  function mayContainAiRequest(text: string): boolean {
+    const sourceAppKey =
+      String.raw`(?:^|[,{]\s*)(?:(['\"])source_app\1|source_app|\[\s*(['\"])source_app\2\s*\])`;
+    const sourceAppValue = String.raw`\s*:\s*(['\"])matrx-extend\3`;
+    const sourceAppProperty = new RegExp(`${sourceAppKey}${sourceAppValue}`, 'm');
+    return sourceAppProperty.test(text) || text.includes('STREAM_START');
+  }
+
+  function contextDoorOffenders(text: string): string[] {
+    const offenders: string[] = [];
+    text.split('\n').forEach((line, i) => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('//') || trimmed.startsWith('*')) return;
+      const key = /(?:^|[{,]\s*)((?:context|(['\"])context\2|\[\s*(['\"])context\3\s*\])\s*)([:,}])/.exec(
+        trimmed,
+      );
+      if (!key) return;
+      const keyEnd = trimmed.indexOf(key[1]!) + key[1]!.length;
+      const fromKey =
+        key[4] === ':' ? `context:${trimmed.slice(keyEnd + 1)}` : `context${key[4]}`;
+      if (key[4] === ':' && /^context:\s*undefined\s*}/.test(fromKey)) return;
+      if (key[4] === ':' && ALLOWED_VALUES.some((re) => re.test(fromKey) || re.test(trimmed))) return;
+      offenders.push(`${i + 1}: ${trimmed}`);
+    });
+    return offenders;
+  }
+
+  it('does not classify a telemetry RPC argument as an AI request source', () => {
+    expect(
+      mayContainAiRequest("p_source_app: 'matrx-extend', p_context: { context: report.context }"),
+    ).toBe(false);
+  });
+
+  it('flags bare, quoted, and computed request properties outside the context door', () => {
+    const bare = "const body = { source_app: 'matrx-extend', context: customContext };";
+    const quoted = "const body = { \"source_app\": 'matrx-extend', \"context\": customContext };";
+    const computed =
+      "const body = { ['source_app']: 'matrx-extend', ['context']: customContext };";
+    for (const source of [bare, quoted, computed]) {
+      expect(mayContainAiRequest(source)).toBe(true);
+      expect(contextDoorOffenders(source)).toEqual([`${1}: ${source}`]);
+    }
+  });
+
+  it('still flags shorthand context properties in AI requests at either object position', () => {
+    const last = "const body = { source_app: 'matrx-extend', context };";
+    const followed = "const body = { source_app: 'matrx-extend', context, extra: true };";
+    for (const source of [last, followed]) {
+      expect(mayContainAiRequest(source)).toBe(true);
+      expect(contextDoorOffenders(source)).toEqual([`${1}: ${source}`]);
+    }
+  });
+
+  it('keeps the allowed built.context assignment behind the context door', () => {
+    expect(contextDoorOffenders('const request = { context: built.context };')).toEqual([]);
+  });
+
+  it('still scans untyped stream-start request bodies', () => {
+    const source = "const body = { action: 'STREAM_START', context: customContext };";
+    expect(mayContainAiRequest(source)).toBe(true);
+    expect(contextDoorOffenders(source)).toEqual([`${1}: ${source}`]);
+  });
+
   it('no AI request body sets context outside the door', () => {
     const offenders: string[] = [];
     for (const file of walk(SRC)) {
       const text = readFileSync(file, 'utf8');
-      // Files that build requests to our AI server.
-      if (!text.includes("source_app: 'matrx-extend'") && !text.includes('STREAM_START')) continue;
-      text.split('\n').forEach((line, i) => {
-        const trimmed = line.trim();
-        if (trimmed.startsWith('//') || trimmed.startsWith('*')) return;
-        const key = /(?:^|[{,]\s*)(context\s*[:,}])/.exec(trimmed);
-        if (!key) return;
-        const fromKey = trimmed.slice(trimmed.indexOf(key[1]!));
-        if (/^context:\s*undefined\s*\}/.test(fromKey)) return;
-        if (ALLOWED_VALUES.some((re) => re.test(fromKey) || re.test(trimmed))) return;
-        offenders.push(`${relative(SRC, file)}:${i + 1}: ${trimmed}`);
-      });
+      // Files that build requests to our AI server; the identifier boundary
+      // keeps p_source_app telemetry RPC arguments out of this census.
+      if (!mayContainAiRequest(text)) continue;
+      offenders.push(
+        ...contextDoorOffenders(text).map((line) => `${relative(SRC, file)}:${line}`),
+      );
     }
     expect(offenders).toEqual([]);
   });

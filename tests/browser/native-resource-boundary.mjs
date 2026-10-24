@@ -209,7 +209,11 @@ export function guardNativeResourceSessionSend(session, resourceAction) {
   const originalSend = session.send;
   const facade = Object.create(Object.getPrototypeOf(session));
   const descriptors = new Map();
-  for (let cursor = session; cursor && cursor !== Object.prototype; cursor = Object.getPrototypeOf(cursor)) {
+  for (
+    let cursor = session;
+    cursor && cursor !== Object.prototype;
+    cursor = Object.getPrototypeOf(cursor)
+  ) {
     for (const key of Reflect.ownKeys(cursor)) {
       if (key === 'constructor' || descriptors.has(key)) continue;
       descriptors.set(key, Object.getOwnPropertyDescriptor(cursor, key));
@@ -221,9 +225,7 @@ export function guardNativeResourceSessionSend(session, resourceAction) {
         configurable: true,
         enumerable: descriptor.enumerable,
         writable: false,
-        value: function (...args) {
-          return resourceAction(() => Reflect.apply(originalSend, session, args));
-        },
+        value: (...args) => resourceAction(() => Reflect.apply(originalSend, session, args)),
       });
       continue;
     }
@@ -234,9 +236,7 @@ export function guardNativeResourceSessionSend(session, resourceAction) {
         configurable: true,
         ...(typeof value === 'function'
           ? {
-              value: function (...args) {
-                return Reflect.apply(value, session, args);
-              },
+              value: (...args) => Reflect.apply(value, session, args),
             }
           : {}),
       });
@@ -245,14 +245,10 @@ export function guardNativeResourceSessionSend(session, resourceAction) {
         configurable: true,
         enumerable: descriptor.enumerable,
         ...(descriptor.get && {
-          get: function () {
-            return Reflect.apply(descriptor.get, session, []);
-          },
+          get: () => Reflect.apply(descriptor.get, session, []),
         }),
         ...(descriptor.set && {
-          set: function (...args) {
-            return Reflect.apply(descriptor.set, session, args);
-          },
+          set: (...args) => Reflect.apply(descriptor.set, session, args),
         }),
       });
     }
