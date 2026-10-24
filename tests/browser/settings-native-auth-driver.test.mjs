@@ -1117,3 +1117,135 @@ test('admin sign-in parks the owned web tab on whoami through extension auth and
   assert.equal(order.filter((item) => item === 'web-page-created').length, 1);
   assert.ok(once('panel-foreground') > close);
 });
+
+test('admin identity parking projects closed navigation failure categories without raw details', async () => {
+  const source = await readFile(new URL('./admin-settings-signin.mjs', import.meta.url), 'utf8');
+  const implementation = source
+    .replace(/^import[\s\S]*?from '[^']+';\n/gm, '')
+    .replace(/^export /gm, '');
+  const cases = [
+    ['timeout', Object.assign(new Error('private-token timeout'), { name: 'TimeoutError' })],
+    [
+      'interrupted',
+      new Error(
+        'Navigation to "https://private.invalid/token" is interrupted by another navigation to "https://private.invalid/secret"',
+      ),
+    ],
+    ['aborted', new Error('page.goto: net::ERR_ABORTED at https://private.invalid/token')],
+    [
+      'target_closed',
+      new Error('Target page, context or browser has been closed private-token'),
+    ],
+    [
+      'network',
+      new Error('page.goto: net::ERR_CONNECTION_RESET at https://private.invalid/token'),
+    ],
+    ['other', new Error('private-token unexpected failure')],
+  ];
+  for (const [category, original] of cases) {
+    let currentUrl = 'about:blank';
+    let closed = false;
+    let foreground = false;
+    let resourceDepth = 0;
+    const guarded = () => assert.ok(resourceDepth > 0);
+    const web = {
+      async goto(url) {
+        guarded();
+        if (url.endsWith('/api/whoami')) throw original;
+        currentUrl = url;
+      },
+      url() {
+        guarded();
+        return currentUrl;
+      },
+      locator() {
+        return {
+          async fill() {
+            guarded();
+          },
+        };
+      },
+      getByRole() {
+        return {
+          async click() {
+            guarded();
+            currentUrl = 'https://www.aimatrx.com/dashboard';
+          },
+        };
+      },
+      async close() {
+        guarded();
+        closed = true;
+      },
+    };
+    const page = {
+      context: () => ({
+        async newPage() {
+          guarded();
+          return web;
+        },
+      }),
+      async bringToFront() {
+        guarded();
+        foreground = true;
+      },
+    };
+    const report = { stage: '', signin_observations: {} };
+    const signIn = new Function(
+      'assert',
+      'activeTabPanelExpression',
+      'click',
+      'evaluate',
+      'markBrowserAgentTraffic',
+      'openSection',
+      'waitFor',
+      `${implementation}; return signInAdminSettings;`,
+    )(
+      assert,
+      () => 'null',
+      () => assert.fail('extension auth must not start'),
+      () => assert.fail('panel must not be read'),
+      async () => {},
+      async () => {},
+      async (_label, read, accept) => {
+        for (let attempt = 0; attempt < 20; attempt += 1) {
+          const value = await read();
+          if (accept(value)) return value;
+          await Promise.resolve();
+        }
+        assert.fail('dashboard must be reached');
+      },
+    );
+    await assert.rejects(
+      signIn({
+        page,
+        panel: {},
+        report,
+        stage: (value) => {
+          report.stage = value;
+        },
+        readCredentials: async () => ({ email: 'admin@admin.com', password: 'synthetic-private' }),
+        resourceAction: async (action) => {
+          resourceDepth += 1;
+          try {
+            return await action();
+          } finally {
+            resourceDepth -= 1;
+          }
+        },
+      }),
+      (error) => {
+        assert.equal(error.message, `admin_web_identity_park_navigation_${category}_failed`);
+        assert.equal(error.cause, undefined);
+        assert.equal(error.message.includes('private'), false);
+        return true;
+      },
+    );
+    assert.equal(report.stage, 'admin_web_identity_park_navigation');
+    assert.equal(report.signin_observations.web_dashboard_reached, true);
+    assert.equal(report.signin_observations.web_identity_parked, undefined);
+    assert.equal(JSON.stringify(report).includes('private'), false);
+    assert.equal(closed, true);
+    assert.equal(foreground, true);
+  }
+});

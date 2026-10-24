@@ -225,7 +225,23 @@ export async function signInAdminSettings({
       );
       return identity;
     }
-  } catch {
+  } catch (error) {
+    if (report.stage === 'admin_web_identity_park_navigation') {
+      const message = String(error?.message ?? '');
+      const category =
+        error?.name === 'TimeoutError'
+          ? 'timeout'
+          : /Navigation to .* is interrupted by another navigation/.test(message)
+            ? 'interrupted'
+            : /net::ERR_ABORTED/.test(message)
+              ? 'aborted'
+              : /Target page, context or browser has been closed/.test(message)
+                ? 'target_closed'
+                : /net::ERR_[A-Z_]+/.test(message)
+                  ? 'network'
+                  : 'other';
+      throw new Error(`admin_web_identity_park_navigation_${category}_failed`);
+    }
     if (report.stage.startsWith('admin_extension_')) {
       report.signin_observations.extension_failure = await extensionAuthState(panel).catch(
         () => null,
