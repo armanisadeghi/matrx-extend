@@ -30,11 +30,13 @@ export async function waitFor(
   accept,
   timeoutMs = 10000,
   diagnostic = (value) => value,
+  beforeRead = async () => {},
 ) {
   const deadline = Date.now() + timeoutMs;
   let last;
   let lastReadFailureCategory = null;
   do {
+    await beforeRead();
     try {
       last = await read();
       lastReadFailureCategory = null;

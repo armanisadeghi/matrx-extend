@@ -1,6 +1,14 @@
 name: Focused acceptance
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('Focused acceptance (by {0})', inputs.requested_by || 'manual') || 'Focused acceptance' }}
 
 on:
+  workflow_dispatch:
+    inputs:
+      requested_by:
+        description: Agent session or lane requesting exact candidate checks
+        required: false
+        default: ""
+        type: string
   push:
     branches: [main]
     paths:
@@ -23,6 +31,23 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      - name: Verify focused checkout identity
+        shell: bash
+        env:
+          REQUESTED_BY: ${{ inputs.requested_by }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo 'Invalid focused source SHA.' >&2; exit 1; }
+          actual="$(git rev-parse HEAD)"
+          [[ "$actual" == "$GITHUB_SHA" ]] || { echo 'Focused checkout source mismatch.' >&2; exit 1; }
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+            [[ -n "$REQUESTED_BY" ]] || { echo 'Manual focused checks require requested_by attribution.' >&2; exit 1; }
+            [[ "$GITHUB_REF" == refs/heads/main || "$GITHUB_REF" =~ ^refs/tags/qa/ship-all-codex-d47-[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || {
+              echo 'Manual focused checks require main or an owned D47 QA tag.' >&2
+              exit 1
+            }
+          fi
+          printf 'FOCUSED_SOURCE_SHA=%s\nFOCUSED_SOURCE_REF=%s\n' "$actual" "$GITHUB_REF"
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:

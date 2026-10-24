@@ -51,43 +51,66 @@ export async function signInAdminSettings({
   report,
   stage,
   readCredentials,
+  resourceAction = async (action) => action(),
   captureIdentity = false,
 }) {
-  await markBrowserAgentTraffic(page.context(), 'admin-settings-signin', WEB_ORIGIN);
-  const web = await page.context().newPage();
+  const runResourceAction = (action) => resourceAction(action);
+  await runResourceAction(() =>
+    markBrowserAgentTraffic(page.context(), 'admin-settings-signin', WEB_ORIGIN),
+  );
+  const web = await runResourceAction(() => page.context().newPage());
   try {
     stage('admin_web_navigation');
-    await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    await runResourceAction(() =>
+      web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 }),
+    );
     stage('admin_web_route');
-    assert.equal(new URL(web.url()).pathname, '/login', 'prepare_web_login_path');
+    assert.equal(
+      new URL(await runResourceAction(() => web.url())).pathname,
+      '/login',
+      'prepare_web_login_path',
+    );
     stage('admin_credentials_read');
     const secret = await readCredentials();
     stage('admin_web_form_fill');
-    await web.locator('input[name="email"]').fill(secret.email);
-    await web.locator('input[name="password"]').fill(secret.password);
+    await runResourceAction(() => web.locator('input[name="email"]').fill(secret.email));
+    await runResourceAction(() => web.locator('input[name="password"]').fill(secret.password));
     stage('admin_web_submit');
     try {
       await Promise.all([
-        web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard', {
-          timeout: 90_000,
-        }),
-        web.getByRole('button', { name: 'Sign in', exact: true }).click(),
+        waitFor(
+          'admin_web_dashboard',
+          () => runResourceAction(() => web.url()),
+          (url) => {
+            try {
+              const parsed = new URL(url);
+              return parsed.origin === WEB_ORIGIN && parsed.pathname === '/dashboard';
+            } catch {
+              return false;
+            }
+          },
+          90_000,
+        ),
+        runResourceAction(() => web.getByRole('button', { name: 'Sign in', exact: true }).click()),
       ]);
     } catch {
+      const url = await runResourceAction(() => web.url());
       report.signin_observations.web_after_submit = {
         route:
-          new URL(web.url()).origin !== WEB_ORIGIN
+          new URL(url).origin !== WEB_ORIGIN
             ? 'other_origin'
-            : new URL(web.url()).pathname === '/login'
+            : new URL(url).pathname === '/login'
               ? 'login'
-              : new URL(web.url()).pathname === '/dashboard'
+              : new URL(url).pathname === '/dashboard'
                 ? 'dashboard'
                 : 'other_path',
-        alert_present: await web
-          .locator('[role="alert"]')
-          .count()
-          .then((count) => count > 0)
-          .catch(() => null),
+        alert_present: await runResourceAction(() =>
+          web
+            .locator('[role="alert"]')
+            .count()
+            .then((count) => count > 0)
+            .catch(() => null),
+        ),
       };
       throw new Error('admin_web_submit_unverified');
     }
@@ -164,7 +187,8 @@ export async function signInAdminSettings({
       const identity = await waitFor(
         'd87_admin_web_identity',
         () =>
-          web.evaluate(async () => {
+          runResourceAction(() =>
+            web.evaluate(async () => {
             const response = await fetch('/api/whoami', {
               credentials: 'include',
               cache: 'no-store',
@@ -172,7 +196,8 @@ export async function signInAdminSettings({
             if (!response.ok) return null;
             const value = await response.json();
             return value?.signed_in === true ? { email: value.email, userId: value.user_id } : null;
-          }),
+            }),
+          ),
         (value) =>
           value?.email?.toLowerCase() === 'admin@admin.com' &&
           /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -190,7 +215,7 @@ export async function signInAdminSettings({
     }
     throw new Error(`${report.stage}_failed`);
   } finally {
-    await web.close();
-    await page.bringToFront();
+    await runResourceAction(() => web.close());
+    await runResourceAction(() => page.bringToFront());
   }
 }

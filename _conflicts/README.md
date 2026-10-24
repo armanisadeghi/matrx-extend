@@ -23,6 +23,7 @@ agent -> Needs Arman) with ` — <question> — <what was checked> — <who>` ad
 Its files stay as they are.
 
 ## Held files
+- _conflicts/2026-10-23-221445/pnpm-lock.yaml.held — LOCAL latest 2026-10-23 21:40; GITHUB latest 2026-10-23 22:07; LOCAL lacks 16 of GITHUB's 58 new lines; GITHUB lacks 15 of LOCAL's 53 new lines; recover: git show c202e0a71e:'pnpm-lock.yaml' / 9942889f5f:'pnpm-lock.yaml'
 
 ## Needs a manager
 

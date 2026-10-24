@@ -192,6 +192,33 @@ export async function runNativeResourceAction(requireHealth, action) {
   return action();
 }
 
+// CDP session.send is the narrow transport boundary for a native panel action
+// or observation. The original receiver is retained because session methods
+// may use `this` internally; restore the exact own-property shape afterward.
+export function guardNativeResourceSessionSend(session, resourceAction) {
+  if (!session || typeof session.send !== 'function' || typeof resourceAction !== 'function')
+    throw new Error('native_resource_session_invalid');
+  const ownDescriptor = Object.getOwnPropertyDescriptor(session, 'send');
+  const originalSend = session.send;
+  const guardedSend = function (...args) {
+    return resourceAction(() => originalSend.apply(session, args));
+  };
+  Object.defineProperty(session, 'send', {
+    configurable: true,
+    enumerable: ownDescriptor?.enumerable ?? false,
+    writable: true,
+    value: guardedSend,
+  });
+  let restored = false;
+  return () => {
+    if (restored) return;
+    restored = true;
+    if (session.send !== guardedSend) return;
+    if (ownDescriptor) Object.defineProperty(session, 'send', ownDescriptor);
+    else delete session.send;
+  };
+}
+
 // The watcher sleeps for one policy interval before sampling, so a healthy
 // event can briefly age out while its replacement is being measured. Hold the
 // action until that replacement is published; every probe repeats all strict
