@@ -189,10 +189,7 @@ export function openResourceJournal(repo, runId, { closeFd = closeSync } = {}) {
         let safe = Object.fromEntries(
           Object.entries(event).filter(([key]) => JOURNAL_FIELDS.has(key)),
         );
-        if (
-          typeof event.code === 'string' &&
-          event.code.startsWith('RESOURCE_GROUP_SIGNAL_')
-        ) {
+        if (typeof event.code === 'string' && event.code.startsWith('RESOURCE_GROUP_SIGNAL_')) {
           if (!GROUP_SIGNAL_CODES.has(event.code)) throw new Error('unknown group signal event');
           const isZeroProof = event.code === 'RESOURCE_GROUP_SIGNAL_EPERM_CENSUS';
           if (
