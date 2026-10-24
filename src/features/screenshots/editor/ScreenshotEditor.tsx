@@ -139,9 +139,43 @@ const DRAW_KINDS = new Set<Tool>([
 
 type Drag =
   | { mode: 'draw'; shape: Shape }
-  | { mode: 'move'; id: string; start: Point; original: Shape }
-  | { mode: 'handle'; id: string; index: number; original: Shape }
-  | { mode: 'crop'; start: Point };
+  | { mode: 'move'; id: string; start: Point; original: Shape; latest?: Shape }
+  | { mode: 'handle'; id: string; index: number; original: Shape; latest?: Shape }
+  | { mode: 'crop'; start: Point; latest?: Rect };
+
+/**
+ * Chrome's canvas ceiling (32767px a side, ~268M pixels). A stitched full-page
+ * capture can exceed it; such an image is edited and saved scaled down to fit,
+ * and the editor says so, instead of drawing a blank canvas.
+ */
+const CANVAS_MAX_SIDE = 32_000;
+const CANVAS_MAX_AREA = 200_000_000;
+
+function fitToCanvasLimits(img: HTMLImageElement): {
+  src: CanvasImageSource;
+  w: number;
+  h: number;
+  scaled: number;
+} {
+  const w = img.naturalWidth;
+  const h = img.naturalHeight;
+  const f = Math.min(
+    1,
+    CANVAS_MAX_SIDE / w,
+    CANVAS_MAX_SIDE / h,
+    Math.sqrt(CANVAS_MAX_AREA / (w * h)),
+  );
+  if (f >= 1) return { src: img, w, h, scaled: 1 };
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.floor(w * f);
+  canvas.height = Math.floor(h * f);
+  canvas.getContext('2d')?.drawImage(img, 0, 0, canvas.width, canvas.height);
+  return { src: canvas, w: canvas.width, h: canvas.height, scaled: f };
+}
+
+function roundRect(r: Rect): Rect {
+  return { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.w), h: Math.round(r.h) };
+}
 
 interface TextEdit {
   at: Point;
@@ -167,9 +201,14 @@ function constrain(kind: TwoPointKind, a: Point, b: Point, shift: boolean): Poin
 }
 
 export function ScreenshotEditor({ target }: { target: EditorTarget }) {
-  const [image, setImage] = useState<HTMLImageElement | null>(null);
+  const [source, setSource] = useState<{ src: CanvasImageSource; w: number; h: number } | null>(
+    null,
+  );
+  const image = source?.src ?? null;
   const [loadError, setLoadError] = useState<string | null>(null);
   const [original, setOriginal] = useState<ScreenshotRow | null>(null);
+  // A save waits for the gallery row, or it would land in Files only.
+  const [originalSettled, setOriginalSettled] = useState(!target.screenshotId);
   const [history, dispatch] = useReducer(historyReducer, {
     past: [],
     present: EMPTY_DOC,
@@ -194,10 +233,16 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<Drag | null>(null);
   const textRef = useRef<HTMLTextAreaElement | null>(null);
+  // The text being edited, read by commit/cancel so a blur that follows Enter
+  // or Escape (the textarea unmounting) cannot commit it a second time.
+  const textEditRef = useRef<TextEdit | null>(null);
+  useEffect(() => {
+    textEditRef.current = textEdit;
+  }, [textEdit]);
 
-  const imgW = image?.naturalWidth ?? 0;
-  const imgH = image?.naturalHeight ?? 0;
-  const dirty = history.past.length > 0 && doc !== savedAt;
+  const imgW = source?.w ?? 0;
+  const imgH = source?.h ?? 0;
+  const dirty = doc !== (savedAt ?? EMPTY_DOC);
 
   // ── Load ──────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -207,7 +252,15 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
       .then(({ blob }) => {
         objectUrl = URL.createObjectURL(blob);
         const img = new Image();
-        img.onload = () => setImage(img);
+        img.onload = () => {
+          const fitted = fitToCanvasLimits(img);
+          setSource(fitted);
+          if (fitted.scaled < 1)
+            setNotice({
+              kind: 'error',
+              text: `Very tall page: editing at ${Math.round(fitted.scaled * 100)}% size`,
+            });
+        };
         img.onerror = () => setLoadError('This file is not an image the editor can open.');
         img.src = objectUrl;
       })
@@ -217,8 +270,18 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
       });
     if (target.screenshotId) {
       void fetchScreenshotById(target.screenshotId)
-        .then(setOriginal)
-        .catch(() => setOriginal(null));
+        .then((row) => {
+          setOriginal(row);
+          if (!row)
+            setNotice({ kind: 'error', text: 'Not in Screenshots anymore. Saves go to Files.' });
+        })
+        .catch((err: unknown) =>
+          setNotice({
+            kind: 'error',
+            text: `Screenshots unavailable (${err instanceof Error ? err.message : 'error'}). Saves go to Files.`,
+          }),
+        )
+        .finally(() => setOriginalSettled(true));
     }
     return () => {
       controller.abort();
@@ -328,9 +391,15 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
     [doc],
   );
 
+  const cancelText = useCallback(() => {
+    textEditRef.current = null;
+    setTextEdit(null);
+  }, []);
+
   const commitText = useCallback(() => {
-    const t = textEdit;
+    const t = textEditRef.current;
     if (!t) return;
+    textEditRef.current = null;
     setTextEdit(null);
     const value = t.value.replace(/\s+$/, '');
     if (t.id) {
@@ -351,7 +420,7 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
     };
     commitShapes([...doc.shapes, shape]);
     setSelectedId(shape.id);
-  }, [textEdit, doc.shapes, commitShapes]);
+  }, [doc.shapes, commitShapes]);
 
   const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (e.button !== 0 || !image) return;
@@ -422,15 +491,18 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
     if (!drag) return;
     const p = toImage(e);
     if (drag.mode === 'crop') {
-      setCropDraft(clampRect(normRect(drag.start, p), imgW, imgH));
+      drag.latest = roundRect(clampRect(normRect(drag.start, p), imgW, imgH));
+      setCropDraft(drag.latest);
       return;
     }
     if (drag.mode === 'move') {
-      setDraft(translateShape(drag.original, p.x - drag.start.x, p.y - drag.start.y));
+      drag.latest = translateShape(drag.original, p.x - drag.start.x, p.y - drag.start.y);
+      setDraft(drag.latest);
       return;
     }
     if (drag.mode === 'handle') {
-      setDraft(setHandle(drag.original, drag.index, p));
+      drag.latest = setHandle(drag.original, drag.index, p);
+      setDraft(drag.latest);
       return;
     }
     const s = drag.shape;
@@ -453,7 +525,7 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
     dragRef.current = null;
     if (!drag) return;
     if (drag.mode === 'crop') {
-      const c = cropDraft;
+      const c = drag.latest;
       setCropDraft(null);
       if (c && c.w >= 8 && c.h >= 8) {
         dispatch({ type: 'commit', doc: { ...doc, crop: c } });
@@ -461,7 +533,7 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
       }
       return;
     }
-    const finished = draft;
+    const finished = drag.mode === 'draw' ? drag.shape : drag.latest;
     setDraft(null);
     if (!finished) return;
     if (drag.mode === 'draw') {
@@ -513,6 +585,7 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
   const flash = (kind: 'ok' | 'error', text: string) => setNotice({ kind, text });
 
   const save = useCallback(async (): Promise<SavedEdit | null> => {
+    if (!originalSettled) return null;
     setBusy('save');
     setNotice(null);
     try {
@@ -524,7 +597,9 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
       });
       setSaved(result);
       setSavedAt(doc);
-      flash('ok', original ? 'Saved to Screenshots and Files' : 'Saved to Files');
+      if (original && !result.screenshotId)
+        flash('error', 'Saved to Files, but not added to Screenshots');
+      else flash('ok', original ? 'Saved to Screenshots and Files' : 'Saved to Files');
       return result;
     } catch (err) {
       flash('error', err instanceof Error ? err.message : 'Could not save.');
@@ -532,7 +607,7 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
     } finally {
       setBusy(null);
     }
-  }, [render, target.fileId, original, doc]);
+  }, [render, target.fileId, original, doc, originalSettled]);
 
   const copy = useCallback(async () => {
     setBusy('copy');
@@ -813,7 +888,7 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
           <Button
             size="sm"
             onClick={() => void save()}
-            disabled={!image || !!busy || !dirty}
+            disabled={!image || !!busy || !dirty || !originalSettled}
             title="Save as a new screenshot (⌘S)"
           >
             {busy === 'save' ? (
@@ -865,7 +940,7 @@ export function ScreenshotEditor({ target }: { target: EditorTarget }) {
                       e.preventDefault();
                       commitText();
                     } else if (e.key === 'Escape') {
-                      setTextEdit(null);
+                      cancelText();
                     }
                   }}
                   rows={Math.max(1, textEdit.value.split('\n').length)}
