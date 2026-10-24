@@ -5,6 +5,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
+import { Window } from 'happy-dom';
 import ts from 'typescript';
 import { runOwnedApprovalCreate } from './records-approval-lifecycle.mjs';
 import { withRecordsPositiveFixture } from './records-positive-fixture.mjs';
@@ -18,6 +19,11 @@ import {
   retainRecordsFailure,
   signInRecordsAdmin,
 } from './records-readonly-native-proof.mjs';
+import {
+  recorderIdleBadgeAccepted,
+  recorderIdleBadgeState,
+} from './records-recorder-idle-proof.mjs';
+import { activeTabPanelExpression } from './settings-panel-driver.mjs';
 
 // Evaluate the callback the native acceptance actually passes to the shared harness.
 const source = await readFile(
@@ -403,6 +409,7 @@ function runDriver({
   cardReady = true,
   schemaReady = true,
   contractObservationFails = false,
+  navigationFailureAt = null,
   transportFailureClass = () => 'none',
   fixtureHelper = async ({ exercise, onStage }) => {
     onStage('records_fixture_table_create');
@@ -426,6 +433,40 @@ function runDriver({
 } = {}) {
   const events = new EventEmitter();
   const active = new Set();
+  const window = new Window();
+  window.document.body.innerHTML = `
+    <button role="tab" title="Settings" data-state="active" aria-controls="settings">Settings</button>
+    <div id="settings" role="tabpanel" data-state="active"></div>
+    <button role="tab" title="Tools" data-state="inactive" aria-controls="tools">Tools</button>
+    <div id="tools" role="tabpanel" data-state="inactive">
+      <button role="tab" data-state="active" aria-controls="catalog">Catalog</button>
+      <div id="catalog" role="tabpanel" data-state="active"></div>
+      <button role="tab" data-state="inactive" aria-controls="recorder">Recorder</button>
+      <div id="recorder" role="tabpanel" data-state="inactive">
+        <span role="status" aria-label="Idle" data-status-tone="neutral">Idle</span>
+      </div>
+    </div>`;
+  window.Element.prototype.getBoundingClientRect = () => ({ width: 100, height: 20 });
+  const setOuterTab = (label) => {
+    for (const tab of window.document.querySelectorAll('button[role="tab"][title]')) {
+      const activeTab = tab.title === label;
+      tab.dataset.state = activeTab ? 'active' : 'inactive';
+      window.document.getElementById(tab.getAttribute('aria-controls')).dataset.state = activeTab
+        ? 'active'
+        : 'inactive';
+    }
+  };
+  const setInnerTab = (label) => {
+    for (const tab of window.document.querySelectorAll('#tools button[role="tab"]')) {
+      const activeTab = tab.textContent.trim() === label;
+      tab.dataset.state = activeTab ? 'active' : 'inactive';
+      window.document.getElementById(tab.getAttribute('aria-controls')).dataset.state = activeTab
+        ? 'active'
+        : 'inactive';
+    }
+  };
+  let settingsClicks = 0;
+  const screenshotWrites = [];
   const report = {
     stage: 'inputs',
     native_stage: null,
@@ -458,6 +499,10 @@ function runDriver({
     },
     async send(name, options = {}) {
       if (name === 'Network.enable') return {};
+      if (name === 'Runtime.evaluate')
+        return { result: { value: await window.eval(options.expression) } };
+      if (name === 'Page.captureScreenshot')
+        return { data: Buffer.alloc(128, 7).toString('base64') };
       if (name === 'Page.reload') {
         reloads++;
         editor.value = '{}';
@@ -555,8 +600,17 @@ function runDriver({
       });
       events.emit('Network.responseReceived', { requestId, response: { status: httpStatus } });
       events.emit('Network.loadingFinished', { requestId });
-    } else if (kind === 'title' && label === 'Settings')
-      assert.equal(reloads, 1, 'Settings must follow full panel reload');
+    } else if (kind === 'title' && label === 'Tools') {
+      setOuterTab('Tools');
+    } else if (kind === 'button-text' && label === 'Recorder') {
+      setInnerTab('Recorder');
+    } else if (kind === 'button-text' && label === 'Catalog') {
+      if (navigationFailureAt !== 'catalog') setInnerTab('Catalog');
+    } else if (kind === 'title' && label === 'Settings') {
+      settingsClicks++;
+      if (settingsClicks > 1) assert.equal(reloads, 1, 'Settings must follow full panel reload');
+      setOuterTab('Settings');
+    }
   };
   const bindings = {
     stage: (value) => {
@@ -567,6 +621,8 @@ function runDriver({
     approved,
     REPO: '/repo',
     process: { env: {}, platform },
+    join,
+    tmpdir,
     signInRecordsAdmin: (options) =>
       signInRecordsAdmin(options, async ({ onStage }) => {
         onStage('admin_authenticated');
@@ -577,7 +633,8 @@ function runDriver({
     evaluate,
     click,
     openSection: async () => {},
-    toolsCatalogState: async () => 'catalog',
+    toolsCatalogState: async () =>
+      window.document.querySelector('#catalog[data-state="active"]') ? 'catalog' : 'recorder',
     accountIdentity: async () => ({
       emailMatches: true,
       adminRole: true,
@@ -639,19 +696,35 @@ function runDriver({
       }),
     output: outputPath,
     readFile,
+    readdir: async (path, options) => {
+      assert.equal(path, join(tmpdir(), 'guest-acceptance'));
+      assert.deepEqual(options, { withFileTypes: true });
+      return [{ name: 'native-sidepanel-qa-fixture', isDirectory: () => true }];
+    },
+    writeFile: async (path, data, options) => {
+      screenshotWrites.push({ path, data: Buffer.from(data), options });
+    },
+    recorderIdleBadgeAccepted,
+    recorderIdleBadgeState,
+    activeTabPanelExpression,
     assert,
   };
   const driver = new Function(...Object.keys(bindings), `return ${driverSource};`)(
     ...Object.values(bindings),
   );
   return {
-    run: () =>
-      driver({
-        page: { context: () => ({}) },
-        panel,
-        resourceAction: (action) => action(),
-        transportFailureClass,
-      }),
+    run: async () => {
+      try {
+        return await driver({
+          page: { context: () => ({}) },
+          panel,
+          resourceAction: (action) => action(),
+          transportFailureClass,
+        });
+      } finally {
+        window.happyDOM.abort();
+      }
+    },
     report,
     stages,
     active,
@@ -661,6 +734,7 @@ function runDriver({
     get reloads() {
       return reloads;
     },
+    screenshotWrites,
   };
 }
 
@@ -1150,6 +1224,53 @@ test('successful callback retains all exact completion guards and safe shapes', 
   );
   assert.equal(saved.completion_diagnostics[0].completion.tables_count, 1);
   assert.equal(saved.completion_diagnostics[3].completion.matches_count, 1);
+});
+
+test('Recorder Idle evidence keeps observed state and only records successful return navigation', async () => {
+  const scenario = runDriver();
+  await scenario.run();
+  assert.deepEqual(scenario.report.recorder_idle_badge.route, [
+    'Tools',
+    'Recorder',
+    'Catalog',
+    'Settings',
+  ]);
+  assert.deepEqual(scenario.report.recorder_idle_badge.route_steps, {
+    outer_tools: 'observed',
+    recorder: 'observed',
+    catalog: 'observed',
+    settings: 'observed',
+  });
+  assert.equal(scenario.report.recorder_idle_badge.observed.label, 'Idle');
+  assert.equal(scenario.report.recorder_idle_badge.observed.text, 'Idle');
+  assert.equal(scenario.report.recorder_idle_badge.observed.tone, 'neutral');
+  assert.equal(scenario.report.recorder_idle_badge.recorder_start_clicked, false);
+  assert.equal(scenario.screenshotWrites.length, 1);
+  assert.equal(
+    scenario.screenshotWrites[0].path,
+    join(
+      tmpdir(),
+      'guest-acceptance',
+      'native-sidepanel-qa-fixture',
+      'records-recorder-idle-status-badge.png',
+    ),
+  );
+  assert.equal(scenario.screenshotWrites[0].data.length, 128);
+  assert.equal(scenario.screenshotWrites[0].options.mode, 0o600);
+
+  const failedReturn = runDriver({ navigationFailureAt: 'catalog' });
+  await assert.rejects(failedReturn.run(), /recorder_returned_to_catalog_not_accepted/);
+  assert.equal(failedReturn.report.recorder_idle_badge.observed.label, 'Idle');
+  assert.equal(failedReturn.screenshotWrites.length, 1);
+  assert.deepEqual(failedReturn.report.recorder_idle_badge.route, ['Tools', 'Recorder']);
+  assert.deepEqual(failedReturn.report.recorder_idle_badge.route_steps, {
+    outer_tools: 'observed',
+    recorder: 'observed',
+    catalog: 'pending',
+    settings: 'pending',
+  });
+  assert.equal(failedReturn.report.recorder_idle_badge.returned_inner_tab, null);
+  assert.equal(failedReturn.report.recorder_idle_badge.restored_outer_tab, null);
 });
 
 test('C06 cannot dispatch without the observed tool-test conversation', async () => {
