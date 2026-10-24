@@ -1,7 +1,7 @@
 /**
  * CONFIRM IT'S YOU — the extension's `identity` for `@ai-matrx/vault`.
  *
- * The server shows or copies a secret only after a sign-in from the last few
+ * The server shows or copies a secret only after a sign-in from the last 30
  * minutes: it reads the bearer's `amr` timestamps (aidream
  * `enforce_recent_auth_max_age`). This extension signs in through the Matrx
  * OAuth client, and every authorization-code exchange mints a NEW session whose
