@@ -49,6 +49,15 @@ export default defineConfig({
     const isChrome = !isFirefox && !isSafari;
     const isKeyedChromeDevelopment = isChrome && !isChromeWebStoreBuild;
     const extensionTitle = isKeyedChromeDevelopment ? 'Matrx Extend DEV' : 'Matrx Extend';
+    // Local builds wear the blue Matrx icon so they are never mistaken for the
+    // live (red) Store extension sitting next to them in the toolbar.
+    const iconDir = isKeyedChromeDevelopment ? 'icon-dev' : 'icon';
+    const iconSet = {
+      16: `${iconDir}/16.png`,
+      32: `${iconDir}/32.png`,
+      48: `${iconDir}/48.png`,
+      128: `${iconDir}/128.png`,
+    };
     return {
       name: extensionTitle,
       short_name: 'Matrx',
@@ -173,12 +182,7 @@ export default defineConfig({
       ...(isChrome ? { side_panel: { default_path: 'sidepanel.html' } } : {}),
       action: {
         default_title: extensionTitle,
-        default_icon: {
-          16: 'icon/16.png',
-          32: 'icon/32.png',
-          48: 'icon/48.png',
-          128: 'icon/128.png',
-        },
+        default_icon: iconSet,
       },
       // One-keystroke screenshots (src/lib/screenshot/shortcuts.ts). People can
       // rebind them at chrome://extensions/shortcuts.
@@ -192,12 +196,7 @@ export default defineConfig({
           description: 'Screenshot the full page and mark it up',
         },
       },
-      icons: {
-        16: 'icon/16.png',
-        32: 'icon/32.png',
-        48: 'icon/48.png',
-        128: 'icon/128.png',
-      },
+      icons: iconSet,
       web_accessible_resources: [
         {
           resources: ['data-picker.css', 'icon/*'],
@@ -360,6 +359,12 @@ export default defineConfig({
     },
   }),
   hooks: {
+    // The blue local-build icon never ships in the Store package.
+    'build:publicAssets': (_wxt, files) => {
+      if (!isChromeWebStoreBuild) return;
+      const kept = files.filter((file) => !file.relativeDest.startsWith('icon-dev/'));
+      files.splice(0, files.length, ...kept);
+    },
     'build:manifestGenerated': (wxt, manifest) => {
       // WXT copies the popup HTML <title> into action.default_title after
       // merging the manifest callback. Restore the keyed development title at
