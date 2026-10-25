@@ -2,8 +2,15 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
+import { Window } from 'happy-dom';
 import { captureFailure } from './profile-reload-capture.mjs';
-import { evaluate, waitFor, waitForReplacementSettingsTab } from './settings-panel-driver.mjs';
+import {
+  evaluate,
+  settingsActionSummary,
+  tabTitlePredicateExpression,
+  waitFor,
+  waitForReplacementSettingsTab,
+} from './settings-panel-driver.mjs';
 import {
   classifyReloadSettingsFailure,
   observeReloadSettingsPanel,
@@ -158,16 +165,15 @@ for (const scenario of [
     const settingsTab = {
       getBoundingClientRect: () => ({ width: 28, height: 28 }),
       closest: () => null,
+      getAttribute: (name) => (name === 'title' ? 'Settings' : null),
     };
     const document = {
       readyState: scenario.readyState,
       body: { innerText: scenario.guest ? 'Organization\nSign in to choose' : 'Organization' },
       querySelectorAll: (selector) =>
-        selector === 'button[role="tab"][title="Settings"]'
+        selector === 'button[role="tab"]' || selector === 'button[role="tab"][data-state="active"]'
           ? Array(scenario.tabCount ?? 1).fill(settingsTab)
           : [],
-      querySelector: (selector) =>
-        selector === 'button[title="Settings"][data-state="active"]' ? settingsTab : null,
     };
     const panel = {
       async send(method, params) {
@@ -197,6 +203,7 @@ for (const scenario of [
       'click',
       'waitFor',
       'evaluate',
+      'tabTitlePredicateExpression',
       'observeSettingsReacquisition',
       'EXTENSION_ID',
       `${subject}\nreturn reloadSettings;`,
@@ -207,6 +214,7 @@ for (const scenario of [
       },
       (name, read, accept) => waitFor(name, read, accept, 120),
       evaluate,
+      tabTitlePredicateExpression,
       async () => {
         diagnosticCalls++;
       },
@@ -500,8 +508,10 @@ test('reacquisition diagnostic bounds populated render and worker observations w
       childElementCount: 250,
       __reactContainer$private: { secret: 'private-value' },
     }),
-    'button[role="tab"][title="Settings"]': Array(130).fill({}),
-    'button[role="tab"]': Array(140).fill({}),
+    'button[role="tab"]': [
+      ...Array(130).fill({ getAttribute: (name) => (name === 'title' ? 'Settings' : null) }),
+      ...Array(10).fill({ getAttribute: () => null }),
+    ],
     '[role="tabpanel"][data-state="active"]': [{}],
     '#app .animate-spin, #app .animate-pulse': [{}, {}],
     '#app p': [
@@ -596,3 +606,55 @@ test('reacquisition reports unavailable worker observation separately from zero 
     assert.equal(renderer.reactRootAttached, false);
   }
 });
+
+// Current Settings observations must agree on the native and tooltip-lifted tab.
+for (const lifted of [false, true]) {
+  test(`Settings active pane and reload observation use ${lifted ? 'lifted' : 'native'} label`, async () => {
+    const window = new Window();
+    try {
+      window.document.body.innerHTML = `<div id="app">
+        <button role="tab" ${lifted ? 'data-matrx-title' : 'title'}="Settings"
+          data-state="active" aria-controls="settings-pane"></button>
+        <div id="settings-pane" role="tabpanel" data-state="active">
+          <button>Save preference</button>
+        </div></div>`;
+      const panel = {
+        async send(method, { expression }) {
+          assert.equal(method, 'Runtime.evaluate');
+          return { result: { value: await window.eval(expression) } };
+        },
+      };
+      window.chrome = { runtime: { id: 'owned-extension' } };
+      const action = await settingsActionSummary(panel, 'Save preference');
+      assert.deepEqual(
+        [action.settingsActive, action.matchedCount, action.visibleCount],
+        [true, 1, 0],
+      );
+      const observed = await observeReloadSettingsPanel(panel, 'owned-extension');
+      assert.equal(observed.sampled, true);
+      assert.deepEqual([observed.settingsTabCount, observed.settingsActiveCount], [1, 1]);
+      const tab = window.document.querySelector('button[role="tab"]');
+      const pane = window.document.getElementById('settings-pane');
+      pane.setAttribute('data-state', 'inactive');
+      assert.equal((await settingsActionSummary(panel, 'Save preference')).settingsActive, false);
+      pane.setAttribute('data-state', 'active');
+      const duplicate = tab.cloneNode();
+      window.document.getElementById('app').append(duplicate);
+      assert.equal((await settingsActionSummary(panel, 'Save preference')).settingsActive, false);
+      const duplicateSample = await observeReloadSettingsPanel(panel, 'owned-extension');
+      assert.deepEqual(
+        [duplicateSample.settingsTabCount, duplicateSample.settingsActiveCount],
+        [2, 2],
+      );
+      duplicate.remove();
+      tab.setAttribute('aria-controls', 'wrong-pane');
+      assert.equal((await settingsActionSummary(panel, 'Save preference')).settingsActive, false);
+      tab.setAttribute('aria-controls', 'settings-pane');
+      tab.setAttribute('title', 'Tools');
+      tab.setAttribute('data-matrx-title', 'Settings');
+      assert.equal((await settingsActionSummary(panel, 'Save preference')).settingsActive, false);
+    } finally {
+      await window.happyDOM.abort();
+    }
+  });
+}

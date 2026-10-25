@@ -1,14 +1,42 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
+import { Window } from 'happy-dom';
 import {
   GUEST_PREFERENCES,
+  guestChatDefaultExpression,
   guestChatDefaultMatches,
   observeGuestPreference,
   preferenceMatches,
   runGuestPreferenceCase,
   runGuestThemeRenderingProbe,
 } from './settings-guest-preference-batch.mjs';
+
+test('Chat default observation follows a lifted active tab to its controlled pane', async () => {
+  const window = new Window();
+  try {
+    window.document.body.innerHTML = `<button role="tab" data-matrx-title="Chat"
+      data-state="active" aria-controls="chat-pane"></button>
+      <div id="chat-pane" role="tabpanel" data-state="active">
+        <button title="New chat"></button>
+        <button title="Tool permission mode"><svg class="lucide-hand"></svg>Ask before acting</button>
+      </div>`;
+    const read = () => runInNewContext(guestChatDefaultExpression(), { document: window.document });
+    const lifted = await read();
+    assert.deepEqual(
+      [lifted.activeChat, lifted.newChatCount, lifted.modeControlCount, lifted.modeIcon],
+      [true, 1, 1, 'ask'],
+    );
+    const tab = window.document.querySelector('button[role="tab"]');
+    tab.setAttribute('aria-controls', 'wrong-pane');
+    assert.equal((await read()).activeChat, false);
+    tab.setAttribute('aria-controls', 'chat-pane');
+    window.document.getElementById('chat-pane').setAttribute('data-state', 'inactive');
+    assert.equal((await read()).activeChat, false);
+  } finally {
+    await window.happyDOM.abort();
+  }
+});
 
 function themeProbeFixture({
   failOptionOnce,

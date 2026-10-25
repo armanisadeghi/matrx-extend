@@ -74,7 +74,15 @@ function panelDocument({
   return {
     querySelectorAll: (selector) => {
       assert.equal(selector, 'button[role="tab"][data-state="active"]');
-      return active ? [{ title: 'Settings', getAttribute: () => 'settings-pane' }] : [];
+      return active
+        ? [
+            {
+              title: 'Settings',
+              getAttribute: (name) =>
+                name === 'title' ? 'Settings' : name === 'aria-controls' ? 'settings-pane' : null,
+            },
+          ]
+        : [];
     },
     getElementById: (id) => (id === 'settings-pane' ? pane : null),
   };

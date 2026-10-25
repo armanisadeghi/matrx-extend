@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {
+  activeTabPanelExpression,
   click,
   evaluate,
   guestSettingsChecks,
@@ -31,9 +32,7 @@ async function observe(panel) {
   const state = await evaluate(
     panel,
     `(async () => {
-    const tab = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
-      .filter((node) => node.title === 'Settings');
-    const pane = tab.length === 1 ? document.getElementById(tab[0].getAttribute('aria-controls') ?? '') : null;
+    const pane = ${activeTabPanelExpression('Settings')};
     const privacy = [...(pane?.querySelectorAll('button[aria-expanded]') ?? [])]
       .filter((node) => node.textContent.trim() === 'Privacy');
     const content = privacy.length === 1 ? document.getElementById(privacy[0].getAttribute('aria-controls') ?? '') : null;

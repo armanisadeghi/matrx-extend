@@ -4,7 +4,13 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import {
+  activeTabPanelExpression,
+  click,
+  evaluate,
+  openSection,
+  waitFor,
+} from './settings-panel-driver.mjs';
 
 // A guest changes Theme in the real native panel, cancels a reset, then confirms it.
 // Removing either storage clear or making Cancel destructive must make this go red.
@@ -80,7 +86,7 @@ async function panelState(panel) {
     const resetDialog = [...document.querySelectorAll('[role="alertdialog"]')]
       .find((el) => el.querySelector('[data-slot="alert-dialog-title"]')?.textContent.trim() === 'Clear local data?');
     return {
-      settings: !!document.querySelector('button[title="Settings"][data-state="active"]'),
+      settings: Boolean(${activeTabPanelExpression('Settings')}),
       theme: trigger?.textContent.trim() ?? null,
       guest: text.includes('Sign in to choose') || text.includes("You're using Matrx as a guest."),
       signIn: [...document.querySelectorAll('button')].some((el) => /sign in/i.test(el.textContent)),

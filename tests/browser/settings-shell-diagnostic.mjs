@@ -1,4 +1,4 @@
-import { evaluate } from './settings-panel-driver.mjs';
+import { evaluate, tabTitlePredicateExpression } from './settings-panel-driver.mjs';
 
 // Only Booleans and bounded counts cross from CDP into the acceptance report.
 // Target identity and URL stay in memory for comparison, never in evidence.
@@ -44,7 +44,8 @@ export async function captureSettingsShellDiagnostic({
     const state = await evaluate(
       panel,
       `(() => {
-        const settings=[...document.querySelectorAll('button[title="Settings"]')];
+        const settings=[...document.querySelectorAll('button[role="tab"]')]
+          .filter(${tabTitlePredicateExpression('Settings')});
         const button=settings.length===1?settings[0]:null;
         const rect=button?.getBoundingClientRect();
         const style=button?getComputedStyle(button):null;
@@ -56,7 +57,7 @@ export async function captureSettingsShellDiagnostic({
           settings_button_count:settings.length,
           settings_button_disabled:button?button.disabled:null,
           settings_button_visible:button?Boolean(rect.width>0&&rect.height>0&&
-            style.display!=='none'&&style.visibility!=='hidden'):null,
+            style.display!=='none'&&style.visibility!=='hidden'&&!button.closest('[inert]')):null,
         };
       })()`,
     );

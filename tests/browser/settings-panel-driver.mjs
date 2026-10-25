@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict';
 import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 
+// Shared tooltip labels keep title until lift moves it into data-matrx-title.
+// Keep native title authoritative if both attributes briefly coexist.
+export function tabTitlePredicateExpression(title) {
+  return `(tab) => (tab.getAttribute('title') ?? tab.getAttribute('data-matrx-title')) === ${JSON.stringify(title)}`;
+}
+
 // DOM observation/viewport preparation plus trusted CDP input in the owned panel.
 export async function evaluate(panel, expression) {
   const response = await panel.send('Runtime.evaluate', {
@@ -119,7 +125,8 @@ export async function waitForReplacementTab(
     const tab = await evaluate(
       panel,
       `(() => {
-    const tabs = [...document.querySelectorAll('button[role="tab"][title=${JSON.stringify(title)}]')];
+    const tabs = [...document.querySelectorAll('button[role="tab"]')]
+      .filter(${tabTitlePredicateExpression(title)});
     const visible = tabs.filter((tab) => {
       const style = getComputedStyle(tab), rect = tab.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
@@ -217,7 +224,9 @@ export async function openGuestSettings(panel, onStep = () => {}) {
         panel,
         `(() => {
     const text = document.body?.innerText ?? '';
-    return { active: !!document.querySelector('button[title="Settings"][data-state="active"]'),
+    const active = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
+      .filter(${tabTitlePredicateExpression('Settings')});
+    return { active: active.length === 1,
       guest: text.includes("You're using Matrx as a guest.") || text.includes('Sign in to choose') };
   })()`,
       ),
@@ -265,7 +274,7 @@ export async function guestSettingsState(panel) {
       'matrx.oauth.session', 'matrx.user.profile', 'matrx.org.active',
     ]);
     const tabs = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
-      .filter((tab) => tab.title === 'Settings');
+      .filter(${tabTitlePredicateExpression('Settings')});
     const id = tabs.length === 1 ? tabs[0].getAttribute('aria-controls') : null;
     const root = id ? document.getElementById(id) : null;
     const active = root?.matches('[role="tabpanel"][data-state="active"]') === true;
@@ -429,7 +438,7 @@ function pointerFailure(code, location) {
 export function activeTabPanelExpression(title) {
   return `(() => {
     const tabs = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
-      .filter((tab) => tab.title === ${JSON.stringify(title)});
+      .filter(${tabTitlePredicateExpression(title)});
     const id = tabs.length === 1 ? tabs[0].getAttribute('aria-controls') : null;
     const pane = id ? document.getElementById(id) : null;
     return pane?.matches('[role="tabpanel"][data-state="active"]') ? pane : null;
@@ -471,7 +480,7 @@ export function desktopPairForgetControlReady(state) {
 export function dataPanelDiagnosticExpression() {
   return `(() => {
     const tabs = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
-      .filter((tab) => tab.title === 'Data');
+      .filter(${tabTitlePredicateExpression('Data')});
     const id = tabs.length === 1 ? tabs[0].getAttribute('aria-controls') : null;
     const pane = id ? document.getElementById(id) : null;
     const active = pane?.matches('[role="tabpanel"][data-state="active"]') === true;
@@ -560,7 +569,8 @@ export async function click(panel, kind, label, onPhase = undefined, beforeDispa
       candidates = [...document.querySelectorAll('button[title], button[data-matrx-title]')]
         .filter((el) => (el.getAttribute('title') ?? el.getAttribute('data-matrx-title')) === label);
       if (label === 'Data') {
-        const dataTabs = [...document.querySelectorAll('button[role="tab"][title="Data"], button[role="tab"][data-matrx-title="Data"]')];
+        const dataTabs = [...document.querySelectorAll('button[role="tab"]')]
+          .filter(${tabTitlePredicateExpression('Data')});
         const visibleDataTabs = dataTabs.filter(visible);
         const activeDataTabs = visibleDataTabs.filter((tab) =>
           tab.getAttribute('data-state') === 'active' || tab.getAttribute('aria-selected') === 'true');
@@ -617,8 +627,9 @@ export async function click(panel, kind, label, onPhase = undefined, beforeDispa
           .filter((button) => button.querySelector('svg.lucide-arrow-up')));
     }
     else if (kind === 'context-values') {
-      const chatTab = [...document.querySelectorAll('button[role="tab"][title="Chat"]')]
-        .find((el) => el.getAttribute('aria-selected') === 'true');
+      const chatTabs = [...document.querySelectorAll('button[role="tab"][aria-selected="true"]')]
+        .filter(${tabTitlePredicateExpression('Chat')});
+      const chatTab = chatTabs.length === 1 ? chatTabs[0] : null;
       const chatPanel = chatTab ? document.getElementById(chatTab.getAttribute('aria-controls') ?? '') : null;
       candidates = [...(chatPanel?.querySelectorAll('button[aria-label]') ?? [])]
         .filter((el) => /^[0-9]+ included$/.test(el.getAttribute('aria-label') ?? ''));
@@ -634,7 +645,9 @@ export async function click(panel, kind, label, onPhase = undefined, beforeDispa
       .flatMap((row) => [...row.querySelectorAll('button')])
       .filter((button) => button.textContent.trim() === 'Ask again');
     else if (kind === 'screenshot-open') {
-      const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
+      const screenshotTabs = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
+        .filter(${tabTitlePredicateExpression('Screenshots')});
+      const tab = screenshotTabs.length === 1 ? screenshotTabs[0] : null;
       const pane=tab?document.getElementById(tab.getAttribute('aria-controls')):null;
       const cards=[...(pane?.querySelectorAll('div.group')??[])]
         .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===1 && card.querySelectorAll('button[title="View screenshot"]').length===1);
@@ -783,7 +796,8 @@ export async function click(panel, kind, label, onPhase = undefined, beforeDispa
     else if (kind === 'vault-shared-tab') {
       // Scope the changing count label to the active Vault panel. The caller
       // still uses this driver's visible, hit-tested, trusted pointer path.
-      const vaultTriggers = [...document.querySelectorAll('button[role="tab"][title="Vault"][data-state="active"]')];
+      const vaultTriggers = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
+        .filter(${tabTitlePredicateExpression('Vault')});
       const vaultTrigger = vaultTriggers.length === 1 ? vaultTriggers[0] : null;
       const panelId = vaultTrigger?.getAttribute('aria-controls') ?? '';
       const vaultPanel = panelId ? document.getElementById(panelId) : null;
@@ -895,8 +909,9 @@ export async function click(panel, kind, label, onPhase = undefined, beforeDispa
         ['broker', 'Token broker (admin only)'], ['debug', 'Debug (admin only)'],
       ];
       const owner = panelTitles.find(([, title]) => {
-        const trigger = [...document.querySelectorAll('button[role="tab"][title]')]
-          .find((button) => button.title === title);
+        const triggers = [...document.querySelectorAll('button[role="tab"]')]
+          .filter((button) => (button.getAttribute('title') ?? button.getAttribute('data-matrx-title')) === title);
+        const trigger = triggers.length === 1 ? triggers[0] : null;
         return trigger && panelAncestors.includes(document.getElementById(trigger.getAttribute('aria-controls') ?? ''));
       })?.[0] ?? (panelAncestors.length ? 'unmapped_tabpanel' : 'none');
       const owningPanel = panelAncestors[0] ?? null;

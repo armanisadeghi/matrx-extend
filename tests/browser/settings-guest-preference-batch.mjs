@@ -1,5 +1,11 @@
 import assert from 'node:assert/strict';
-import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import {
+  activeTabPanelExpression,
+  click,
+  evaluate,
+  openSection,
+  waitFor,
+} from './settings-panel-driver.mjs';
 
 const nativeDriver = { click, evaluate, openSection, waitFor };
 
@@ -67,17 +73,9 @@ export function guestChatDefaultMatches(observed, expectedMode, expectedLabel) {
   );
 }
 
-export async function observeGuestNewChatDefault(panel, expectedMode, expectedLabel) {
-  await click(panel, 'title', 'Chat');
-  const read = () =>
-    evaluate(
-      panel,
-      `(() => {
-        const tabs = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
-          .filter((node) => node.title === 'Chat');
-        const pane = tabs.length === 1
-          ? document.getElementById(tabs[0].getAttribute('aria-controls') ?? '')
-          : null;
+export function guestChatDefaultExpression() {
+  return `(() => {
+        const pane = ${activeTabPanelExpression('Chat')};
         const mode = [...(pane?.querySelectorAll('button[title="Tool permission mode"]') ?? [])];
         const newChat = [...(pane?.querySelectorAll('button[title="New chat"]') ?? [])];
         const icon = mode.length === 1 ? mode[0].querySelector('svg') : null;
@@ -86,8 +84,12 @@ export async function observeGuestNewChatDefault(panel, expectedMode, expectedLa
           modeLabel: mode.length === 1 ? mode[0].textContent.trim() : null,
           modeIcon: icon?.classList.contains('lucide-zap') ? 'act'
             : icon?.classList.contains('lucide-hand') ? 'ask' : null };
-      })()`,
-    );
+      })()`;
+}
+
+export async function observeGuestNewChatDefault(panel, expectedMode, expectedLabel) {
+  await click(panel, 'title', 'Chat');
+  const read = () => evaluate(panel, guestChatDefaultExpression());
   await waitFor('guest_chat_default_mode_ready', read, (value) => value?.activeChat === true);
   await click(panel, 'title', 'New chat');
   return waitFor('guest_new_chat_default_mode', read, (value) =>
@@ -99,9 +101,7 @@ export async function observeGuestPreference(panel, preference, driver = nativeD
   return driver.evaluate(
     panel,
     `(async () => {
-    const active = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
-      .filter((node) => node.title === 'Settings');
-    const pane = active.length === 1 ? document.getElementById(active[0].getAttribute('aria-controls') ?? '') : null;
+    const pane = ${activeTabPanelExpression('Settings')};
     const rows = [...(pane?.querySelectorAll('span') ?? [])]
       .filter((node) => node.textContent.trim() === ${JSON.stringify(preference.label)});
     const triggers = rows.flatMap((row) => [...row.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);

@@ -1,4 +1,4 @@
-import { evaluate } from './settings-panel-driver.mjs';
+import { evaluate, tabTitlePredicateExpression } from './settings-panel-driver.mjs';
 
 const POINTER_CODES = new Set([
   'pointer_target_not_unique',
@@ -109,7 +109,8 @@ export async function observeReloadSettingsPanel(panel, extensionId) {
     const sample = await evaluate(
       panel,
       `(() => {
-      const tabs = [...document.querySelectorAll('button[role="tab"][title="Settings"]')];
+      const tabs = [...document.querySelectorAll('button[role="tab"]')]
+        .filter(${tabTitlePredicateExpression('Settings')});
       const active = tabs.filter((tab) => tab.getAttribute('data-state') === 'active');
       const text = document.body?.innerText ?? '';
       return { runtimeIdMatches: chrome.runtime.id === ${JSON.stringify(extensionId)},
@@ -186,7 +187,8 @@ export async function observeSettingsReacquisition(panel, extensionId) {
           visible: document.visibilityState === 'visible',
           runtimeIdMatches: runtime?.id === expectedId,
           rootCount: bounded(roots.length),
-          settingsTabCount: bounded(document.querySelectorAll('button[role="tab"][title="Settings"]').length),
+          settingsTabCount: bounded([...document.querySelectorAll('button[role="tab"]')]
+            .filter(${tabTitlePredicateExpression('Settings')}).length),
           contextQueryAvailable: typeof runtime?.getContexts === 'function',
           contextQueryFailed,
           exactSidePanelContextCount: contexts === null ? null : bounded(contexts.filter((entry) =>

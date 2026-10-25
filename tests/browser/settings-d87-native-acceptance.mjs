@@ -26,7 +26,14 @@ import {
   signInSettings,
   verifyCurrentSettingsIdentity,
 } from './settings-native-auth-driver.mjs';
-import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import {
+  activeTabPanelExpression,
+  click,
+  evaluate,
+  openSection,
+  tabTitlePredicateExpression,
+  waitFor,
+} from './settings-panel-driver.mjs';
 import { captureSettingsShellDiagnostic } from './settings-shell-diagnostic.mjs';
 
 // EXT-D-0087: trusted Settings choices, real Chrome storage reads, and one
@@ -143,11 +150,13 @@ async function observation(panel) {
     const retry = [...document.querySelectorAll('button')]
       .some((element) => element.textContent.trim() === 'Retry save');
     const theme = control?.textContent.trim() ?? null;
-    const settingsButton = document.querySelector('button[title="Settings"]');
+    const settingsButtons = [...document.querySelectorAll('button[role="tab"]')]
+      .filter(${tabTitlePredicateExpression('Settings')});
+    const settingsButton = settingsButtons.length === 1 ? settingsButtons[0] : null;
     const settingsRect = settingsButton?.getBoundingClientRect();
     return {
       settingsAvailable: Boolean(settingsButton && !settingsButton.disabled && settingsRect.width > 0 && settingsRect.height > 0),
-      settingsActive: !!document.querySelector('button[title="Settings"][data-state="active"]'),
+      settingsActive: Boolean(${activeTabPanelExpression('Settings')}),
       theme: ['System', 'Light', 'Dark'].includes(theme) ? theme : null,
       storedTheme: ['system', 'light', 'dark'].includes(storedTheme) ? storedTheme : null,
       error,

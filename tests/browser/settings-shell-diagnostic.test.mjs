@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
+import { Window } from 'happy-dom';
 import { captureSettingsShellDiagnostic } from './settings-shell-diagnostic.mjs';
 
 const expectedPanelUrl = 'chrome-extension://private-extension/sidepanel.html';
@@ -16,12 +17,14 @@ function panelDocument({
   const button = {
     disabled,
     getBoundingClientRect: () => ({ width: 24, height: 24 }),
+    getAttribute: (name) => (name === 'title' ? 'Settings' : null),
+    closest: () => null,
   };
   const document = {
     readyState: 'complete',
     visibilityState: 'visible',
     querySelectorAll: (selector) =>
-      selector === 'button[title="Settings"]'
+      selector === 'button[role="tab"]'
         ? settings
           ? [button]
           : []
@@ -44,6 +47,37 @@ function panelDocument({
     },
   };
 }
+
+test('shell diagnostic sees a lifted Settings tab and rejects duplicate or inert tabs', async () => {
+  const window = new Window({ url: expectedPanelUrl });
+  try {
+    window.document.body.innerHTML =
+      '<div id="app"><button role="tab" data-matrx-title="Settings"></button></div>';
+    const rect = { width: 24, height: 24 };
+    window.HTMLElement.prototype.getBoundingClientRect = () => rect;
+    const read = async () =>
+      captureSettingsShellDiagnostic({
+        panel: {
+          send: async (_method, args) => ({ result: { value: window.eval(args.expression) } }),
+        },
+        browserSession: { send: async () => ({ targetInfos: [] }) },
+        expectedTargetId,
+        expectedPanelUrl,
+      });
+    const lifted = await read();
+    assert.deepEqual([lifted.settings_button_count, lifted.settings_button_visible], [1, true]);
+    const duplicate = window.document.querySelector('button').cloneNode();
+    window.document.getElementById('app').append(duplicate);
+    const doubled = await read();
+    assert.deepEqual([doubled.settings_button_count, doubled.settings_button_visible], [2, null]);
+    duplicate.remove();
+    window.document.querySelector('button').setAttribute('inert', '');
+    const inert = await read();
+    assert.deepEqual([inert.settings_button_count, inert.settings_button_visible], [1, false]);
+  } finally {
+    await window.happyDOM.abort();
+  }
+});
 
 test('shell diagnostic separates an owned live target from a replacement without exposing IDs', async () => {
   const owned = await captureSettingsShellDiagnostic({

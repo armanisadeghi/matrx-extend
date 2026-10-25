@@ -19,11 +19,13 @@ import {
   verifyCurrentSettingsIdentity,
 } from './settings-native-auth-driver.mjs';
 import {
+  activeTabPanelExpression,
   click,
   desktopPairForgetControlReady,
   evaluate,
   openSection,
   settingsActionSummary,
+  tabTitlePredicateExpression,
   waitFor,
 } from './settings-panel-driver.mjs';
 
@@ -91,10 +93,7 @@ async function state(panel) {
   const observed = await evaluate(
     panel,
     `(async () => {
-    const pane = (() => {
-      const tab = document.querySelector('button[role="tab"][title="Settings"][data-state="active"]');
-      return tab ? document.getElementById(tab.getAttribute('aria-controls')) : null;
-    })();
+    const pane = ${activeTabPanelExpression('Settings')};
     const port = pane?.querySelector('input[placeholder="auto"]');
     const pair = pane?.querySelector('input[placeholder="Pair code"]');
     const row = port?.parentElement;
@@ -106,7 +105,8 @@ async function state(panel) {
       .find((item) => item.textContent.includes('Forget the desktop pair code?'));
     const text = document.body?.textContent ?? '';
     return {
-      settingsAvailable: !!document.querySelector('button[title="Settings"]'),
+      settingsAvailable: [...document.querySelectorAll('button[role="tab"]')]
+        .filter(${tabTitlePredicateExpression('Settings')}).length === 1,
       settingsActive: !!pane,
       guest: text.includes('Sign in to choose') || text.includes("You're using Matrx as a guest."),
       portInput: port?.value ?? null,
@@ -328,8 +328,7 @@ async function seedUnsentChatDraft(panel) {
   const point = await evaluate(
     panel,
     `(() => {
-    const tab = document.querySelector('button[role="tab"][title="Chat"][data-state="active"]');
-    const pane = tab ? document.getElementById(tab.getAttribute('aria-controls')) : null;
+    const pane = ${activeTabPanelExpression('Chat')};
     const input = pane?.querySelector('textarea');
     if (!input) return null;
     input.scrollIntoView({ block: 'center', behavior: 'instant' });
@@ -358,8 +357,7 @@ async function seedUnsentChatDraft(panel) {
       evaluate(
         panel,
         `(async () => {
-    const tab = document.querySelector('button[role="tab"][title="Chat"][data-state="active"]');
-    const pane = tab ? document.getElementById(tab.getAttribute('aria-controls')) : null;
+    const pane = ${activeTabPanelExpression('Chat')};
     const input = pane?.querySelector('textarea');
     const raw = (await chrome.storage.local.get('matrx.chat.v1'))['matrx.chat.v1'];
     let persisted = false;

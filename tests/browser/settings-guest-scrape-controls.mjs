@@ -1,5 +1,11 @@
 import assert from 'node:assert/strict';
-import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import {
+  activeTabPanelExpression,
+  click,
+  evaluate,
+  openSection,
+  waitFor,
+} from './settings-panel-driver.mjs';
 
 const STORAGE_KEY = 'matrx.settings.v1';
 const nativeDriver = { click, evaluate, openSection, waitFor };
@@ -71,8 +77,7 @@ async function observeScrape(panel, driver = nativeDriver) {
 
 export function scrapeObservationExpression() {
   return `(async () => {
-    const tab = [...document.querySelectorAll('button[role="tab"][title="Settings"][data-state="active"]')];
-    const pane = tab.length === 1 ? document.getElementById(tab[0].getAttribute('aria-controls') ?? '') : null;
+    const pane = ${activeTabPanelExpression('Settings')};
     const section = [...(pane?.querySelectorAll('button[aria-expanded]') ?? [])]
       .filter((node) => node.textContent.trim() === 'Scrape');
     const content = section.length === 1 ? document.getElementById(section[0].getAttribute('aria-controls') ?? '') : null;
@@ -332,8 +337,7 @@ function autoScrapeModeFailure(stage, kind) {
 
 export function settingsSectionObservationExpression(label) {
   return `(async () => {
-    const tab = [...document.querySelectorAll('button[role="tab"][title="Settings"][data-state="active"]')];
-    const pane = tab.length === 1 ? document.getElementById(tab[0].getAttribute('aria-controls') ?? '') : null;
+    const pane = ${activeTabPanelExpression('Settings')};
     const settingsRoot = pane?.firstElementChild;
     const scrollContainers = [...(settingsRoot?.children ?? [])]
       .filter((node) => node.classList.contains('overflow-y-auto'));

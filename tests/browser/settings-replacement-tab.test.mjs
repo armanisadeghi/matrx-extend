@@ -2,7 +2,12 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
-import { waitForReplacementSettingsTab } from './settings-panel-driver.mjs';
+import { Window } from 'happy-dom';
+import {
+  click,
+  tabTitlePredicateExpression,
+  waitForReplacementSettingsTab,
+} from './settings-panel-driver.mjs';
 
 function panelWithTabStates(states) {
   let samples = 0;
@@ -17,6 +22,7 @@ function panelWithTabStates(states) {
             height: state.visible ? 28 : 0,
           }),
           closest: () => null,
+          getAttribute: (name) => (name === 'title' ? 'Settings' : null),
         }));
         return {
           result: {
@@ -81,6 +87,7 @@ test('native guest Settings opening awaits replacement readiness before trusted 
     'click',
     'waitFor',
     'evaluate',
+    'tabTitlePredicateExpression',
     `${subject}; return openGuestSettings;`,
   )(
     async () => {
@@ -95,6 +102,7 @@ test('native guest Settings opening awaits replacement readiness before trusted 
       events.push('guest_observed');
     },
     async () => ({ active: true, guest: true }),
+    tabTitlePredicateExpression,
   );
   await settings({}, (step) => events.push(step));
   assert.deepEqual(events, [
@@ -106,4 +114,93 @@ test('native guest Settings opening awaits replacement readiness before trusted 
     'guest_wait_started',
     'guest_observed',
   ]);
+});
+
+// A tooltip lift removes title from the real tab; fake selector replies cannot catch this.
+for (const scenario of [
+  { name: 'native label', attributes: 'title="Settings"', ready: true },
+  { name: 'lifted label', attributes: 'data-matrx-title="Settings"', ready: true },
+  { name: 'other label', attributes: 'data-matrx-title="Tools"', ready: false },
+  { name: 'duplicate labels', attributes: 'title="Settings"', duplicate: true, ready: false },
+  {
+    name: 'inert lifted tab',
+    attributes: 'data-matrx-title="Settings"',
+    inert: true,
+    ready: false,
+  },
+]) {
+  test(`replacement Settings readiness with actual DOM: ${scenario.name}`, async () => {
+    const window = new Window();
+    try {
+      window.document.body.innerHTML = `<div id="app"><div ${scenario.inert ? 'inert' : ''}>
+        <button role="tab" ${scenario.attributes}></button>
+        ${scenario.duplicate ? '<button role="tab" data-matrx-title="Settings"></button>' : ''}
+      </div></div>`;
+      for (const tab of window.document.querySelectorAll('button'))
+        tab.getBoundingClientRect = () => ({ width: 28, height: 28 });
+      const panel = {
+        async send(method, { expression }) {
+          assert.equal(method, 'Runtime.evaluate');
+          return { result: { value: window.eval(expression) } };
+        },
+      };
+      if (scenario.ready) {
+        const receipt = await waitForReplacementSettingsTab(panel, 120);
+        assert.deepEqual([receipt.last.matched, receipt.last.visible], [1, 1]);
+      } else {
+        await assert.rejects(waitForReplacementSettingsTab(panel, 120), (error) => {
+          assert.equal(error.readinessDiagnostic.stage, 'tab_not_ready');
+          assert.equal(
+            error.readinessDiagnostic.last.matched,
+            scenario.duplicate ? 2 : scenario.name === 'other label' ? 0 : 1,
+          );
+          return true;
+        });
+      }
+    } finally {
+      await window.happyDOM.abort();
+    }
+  });
+}
+
+// Drive the real pointer sample against DOM with a lifted Tools owner. The
+// occluder must be attributed to the page-side title variable, not a literal.
+test('lifted tab pointer occluder names its owning pane', async () => {
+  const window = new Window();
+  try {
+    window.document.body.innerHTML = `<div id="app">
+      <button role="tab" data-matrx-title="Settings" aria-controls="settings-pane"></button>
+      <div id="settings-pane" role="tabpanel"></div>
+      <button role="tab" data-matrx-title="Tools" aria-controls="tools-pane"></button>
+      <div id="tools-pane" role="tabpanel"><div id="occluder"></div></div>
+    </div>`;
+    const rect = {
+      x: 10,
+      y: 10,
+      left: 10,
+      top: 10,
+      right: 110,
+      bottom: 40,
+      width: 100,
+      height: 30,
+    };
+    window.HTMLElement.prototype.getBoundingClientRect = () => rect;
+    window.HTMLElement.prototype.scrollIntoView = () => {};
+    window.HTMLElement.prototype.getAnimations = () => [];
+    window.document.elementFromPoint = () => window.document.getElementById('occluder');
+    let sample;
+    const panel = {
+      async send(method, { expression }) {
+        assert.equal(method, 'Runtime.evaluate');
+        sample = window.eval(expression);
+        throw new Error('sample captured before any pointer dispatch');
+      },
+    };
+    await assert.rejects(click(panel, 'title', 'Settings'), /pointer_initial_evaluation_failed/);
+    assert.equal(sample.sampleFailed, undefined);
+    assert.equal(sample.matchedCount, 1);
+    assert.equal(sample.pointerDiagnostic.center_occluder.owning_panel, 'tools');
+  } finally {
+    await window.happyDOM.abort();
+  }
 });
