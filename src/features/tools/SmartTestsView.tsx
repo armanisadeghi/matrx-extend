@@ -147,9 +147,9 @@ function ScenarioCard({
         className="flex w-full items-start gap-2 px-2.5 py-2 text-left"
       >
         {open ? (
-          <ChevronDown className="matrx-line-icon-sm h-3.5 w-3.5 text-muted-foreground" />
+          <ChevronDown className="matrx-line-icon-sm h-3.5 w-3.5 mt-0.5 text-muted-foreground" />
         ) : (
-          <ChevronRight className="matrx-line-icon-sm h-3.5 w-3.5 text-muted-foreground" />
+          <ChevronRight className="matrx-line-icon-sm h-3.5 w-3.5 mt-0.5 text-muted-foreground" />
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
@@ -216,7 +216,7 @@ function ScenarioCard({
 
           {state.error && (
             <div className="flex items-start gap-1.5 rounded-md bg-red-50 p-1.5 text-[10px] text-red-800 dark:bg-red-950/40 dark:text-red-300">
-              <AlertTriangle className="matrx-line-icon-xs h-3 w-3" />
+              <AlertTriangle className="matrx-line-icon-xs h-3 w-3 mt-0.5" />
               <pre className="whitespace-pre-wrap break-words">{state.error}</pre>
             </div>
           )}

@@ -314,7 +314,7 @@ export function SaveAsPattern({
 
           {hostMismatch && (
             <div className="flex items-start gap-1.5 rounded-lg bg-amber-500/10 px-2 py-1.5 text-[11px] text-amber-700 dark:text-amber-300">
-              <TriangleAlert className="matrx-line-icon-xs h-3 w-3" />
+              <TriangleAlert className="matrx-line-icon-xs h-3 w-3 mt-px" />
               <span>
                 These rows were extracted on <span className="font-medium">{source?.host}</span>,
                 but you're now on <span className="font-medium">{liveHost}</span>. The pattern saves

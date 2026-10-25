@@ -35,7 +35,7 @@ export function AuditIssueList<T extends AuditIssue>({
           className,
         )}
       >
-        <CheckCircle className="matrx-line-icon-sm h-3.5 w-3.5" />
+        <CheckCircle className="matrx-line-icon-sm h-3.5 w-3.5 mt-0.5" />
         <span>{successText}</span>
       </div>
     );
@@ -53,9 +53,9 @@ export function AuditIssueList<T extends AuditIssue>({
           )}
         >
           {issue.severity === 'error' ? (
-            <OctagonAlert className="matrx-line-icon-sm h-3.5 w-3.5" />
+            <OctagonAlert className="matrx-line-icon-sm h-3.5 w-3.5 mt-0.5" />
           ) : (
-            <AlertTriangle className="matrx-line-icon-sm h-3.5 w-3.5" />
+            <AlertTriangle className="matrx-line-icon-sm h-3.5 w-3.5 mt-0.5" />
           )}
           <span className="min-w-0 flex-1 break-words">{issue.message}</span>
           {actionFor?.(issue)}

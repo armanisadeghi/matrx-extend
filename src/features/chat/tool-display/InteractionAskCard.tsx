@@ -92,7 +92,7 @@ export function InteractionAskCard({
   return (
     <div className="my-1 rounded-lg border border-sky-300/60 bg-sky-50/70 p-3 text-sm shadow-sm dark:border-sky-700/60 dark:bg-sky-950/30">
       <div className="flex items-start gap-2">
-        <MessageCircleQuestion className="matrx-line-icon h-4 w-4 text-sky-600 dark:text-sky-400" />
+        <MessageCircleQuestion className="matrx-line-icon h-4 w-4 mt-0.5 text-sky-600 dark:text-sky-400" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-medium uppercase tracking-wide text-sky-700 dark:text-sky-300">

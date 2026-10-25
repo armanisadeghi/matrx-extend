@@ -68,7 +68,7 @@ export function AgentApprovalCard({
     <div className="rounded-xl border border-amber-300/60 bg-amber-50/70 p-3 text-sm shadow-sm dark:border-amber-700/60 dark:bg-amber-950/30">
       {externalLabel && (
         <div className="mb-2 flex items-start gap-1.5 rounded-md border border-rose-300/70 bg-rose-50/80 px-2 py-1.5 text-[11px] font-medium text-rose-800 dark:border-rose-700/60 dark:bg-rose-950/40 dark:text-rose-300">
-          <Globe className="matrx-line-icon-sm h-3.5 w-3.5" />
+          <Globe className="matrx-line-icon-sm h-3.5 w-3.5 mt-px" />
           {req.initiator === 'extension' && req.approvalPreview
             ? req.approvalPreview.kind === 'saved-network-replay'
               ? 'Your saved recipe'
@@ -77,7 +77,7 @@ export function AgentApprovalCard({
         </div>
       )}
       <div className="flex items-start gap-2">
-        <ShieldAlert className="matrx-line-icon h-4 w-4 text-amber-600 dark:text-amber-400" />
+        <ShieldAlert className="matrx-line-icon h-4 w-4 mt-0.5 text-amber-600 dark:text-amber-400" />
         <div className="flex-1 min-w-0">
           <div className="font-medium">
             Approve <span className="font-mono text-[12px]">{req.toolName}</span>

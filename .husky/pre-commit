@@ -16,6 +16,9 @@ fi
 # shrink-0); it uses matrx-line-icon*, centered on the first text line (@ai-matrx/design-system line-icon.css).
 LINE_ICONS="node_modules/@ai-matrx/design-system/scripts/check-line-icons.mjs"
 ICON_STAGED=$(git diff --cached --name-only --diff-filter=ACMR -- 'src/*.tsx' | grep -v '\.test\.' || true)
+if [ ! -f "$LINE_ICONS" ] && [ -n "$ICON_STAGED" ]; then
+    echo "line-icons guard NOT RUN: the installed @ai-matrx/design-system predates check-line-icons.mjs (run pnpm sync:matrx-packages once it is published)." >&2
+fi
 if [ -f "$LINE_ICONS" ] && [ -n "$ICON_STAGED" ]; then
     # shellcheck disable=SC2086
     node "$LINE_ICONS" $ICON_STAGED || {

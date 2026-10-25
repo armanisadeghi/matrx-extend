@@ -109,7 +109,7 @@ export function SearchResultsKind({ value, complete }: KindComponentProps) {
                 className="group flex items-start gap-1.5 text-[12px] font-medium text-primary hover:underline"
               >
                 <span className="min-w-0 flex-1">{item.title}</span>
-                <ExternalLink className="matrx-line-icon-xs h-3 w-3 opacity-0 transition-opacity group-hover:opacity-70" />
+                <ExternalLink className="matrx-line-icon-xs h-3 w-3 mt-0.5 opacity-0 transition-opacity group-hover:opacity-70" />
               </OutboundLink>
             ) : (
               <span className="text-[12px] font-medium">{item.title}</span>
