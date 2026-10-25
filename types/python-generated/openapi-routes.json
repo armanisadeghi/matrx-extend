@@ -7713,12 +7713,22 @@
    "application/json"
   ]
  },
+ "/search-kinds/ai-mode": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/search-kinds/image": {
   "post": [
    "application/json"
   ]
  },
  "/search-kinds/place-reviews": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/search-kinds/research": {
   "post": [
    "application/json"
   ]
