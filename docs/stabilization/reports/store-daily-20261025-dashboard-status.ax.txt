@@ -65,9 +65,9 @@ Removed element IDs: 19-91
 +									176 link Contact Us, Value: support.google.com/chrome_webstore?p=contact&hl=en
 +									177 link Give Feedback, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/status/published
 +								178 text © 2026 Google
-+								179 text  - 
++								179 text  -
 +								180 link Developer Agreement, Value: developer.chrome.com/webstore/terms?hl=en
-+								181 text  - 
++								181 text  -
 +								182 link Google Privacy Policy, Value: google.com/intl/en/privacy.html
 ~					97 tab (selected, settable, boolean) Status, Value: on
 ~					101 tab (settable, boolean) About Version - Memory usage - 26.8 MB, Value: off

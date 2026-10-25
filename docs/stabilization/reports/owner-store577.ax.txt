@@ -23,11 +23,11 @@ Removed element IDs: 19-117
 +										165 text My extensions
 +									166 Keyboard shortcuts
 +										167 text Keyboard shortcuts
-+								168 text Using AI coding agents to build extensions? Install the 
++								168 text Using AI coding agents to build extensions? Install the
 +								169 link Chrome Extensions and Chrome Web Store skill, Value: developer.chrome.com/docs/extensions/ai/build-with-ai?utm_source=ext_sidebar&hl=en-US#modern_web_guidance
 +								170 text  to teach your coding agent the latest API updates and best practices.
 +								171 container
-+									172 text Discover more extensions and themes on the 
++									172 text Discover more extensions and themes on the
 +									173 link Chrome Web Store, Value: chromewebstore.google.com/category/extensions?utm_source=ext_sidebar&hl=en-US
 +							174 container
 +								175 click to navigate away from matrx extend details page. Matrx Extend details page back button
@@ -51,38 +51,38 @@ Removed element IDs: 19-117
 +									193 text Inspect views
 +								194 content list
 +									195 container
-+										196 AXListMarker • 
++										196 AXListMarker •
 +										197 link service worker
 +											198 text service worker
 +								199 heading Permissions, Value: 2
 +									200 text Permissions
 +								201 content list
 +									202 container
-+										203 AXListMarker • 
++										203 AXListMarker •
 +										204 text Access the page debugger backend
 +									205 container
-+										206 AXListMarker • 
++										206 AXListMarker •
 +										207 text Read and change all your data on all websites
 +									208 container
-+										209 AXListMarker • 
++										209 AXListMarker •
 +										210 text Read and change your browsing history on all your signed-in devices
 +									211 container
-+										212 AXListMarker • 
++										212 AXListMarker •
 +										213 text Display notifications
 +									214 container
-+										215 AXListMarker • 
++										215 AXListMarker •
 +										216 text Read and change your bookmarks
 +									217 container
-+										218 AXListMarker • 
++										218 AXListMarker •
 +										219 text Modify data you copy and paste
 +									220 container
-+										221 AXListMarker • 
++										221 AXListMarker •
 +										222 text Manage your downloads
 +									223 container
-+										224 AXListMarker • 
++										224 AXListMarker •
 +										225 text Communicate with cooperating native applications
 +									226 container
-+										227 AXListMarker • 
++										227 AXListMarker •
 +										228 text View and manage your tab groups
 +								229 heading Site access, Value: 2
 +									230 text Site access
@@ -92,7 +92,7 @@ Removed element IDs: 19-117
 +									234 (selected) On all sites
 +								235 link Site settings
 +								236 switch Pin to toolbar, Value: on
-+								237 switch Value: off, Allow in Incognito Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option. Changes to this setting will be applied once Chrome restarts. 
++								237 switch Value: off, Allow in Incognito Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option. Changes to this setting will be applied once Chrome restarts.
 +								238 switch Allow access to file URLs Changes to this setting will be applied once Chrome restarts. , Value: off
 +								239 switch Collect errors, Value: off
 +								240 link Extension options

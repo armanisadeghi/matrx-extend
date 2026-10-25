@@ -115,9 +115,9 @@ Removed element IDs: 131-132, 135-165, 168-182
 +									238 link Contact Us, Value: support.google.com/chrome_webstore?p=contact&hl=en
 +									239 link Give Feedback, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
 +								240 container
-+									241 text ©  2026  Google  - 
++									241 text ©  2026  Google  -
 +									242 link Developer Agreement, Value: developer.chrome.com/webstore/terms?hl=en
-+									243 text  - 
++									243 text  -
 +									244 link Google Privacy Policy, Value: google.com/intl/en/privacy.html
 +							245 text Package Information
 ~					97 tab (selected, settable, boolean) Package Information - Memory usage - 163 MB, Value: on
