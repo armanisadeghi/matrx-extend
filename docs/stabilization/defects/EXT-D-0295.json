@@ -78,7 +78,7 @@
       "reason": "Bounded source repair has all required local gates and fresh independent A/B review. This does not close original native/hosted acceptance or Store release gates."
     }
   ],
-  "next_action": "Push verified corrected synchronizedsource, require successful newMAINfullCI+artifact. Keepcleansource untilnormalBdispatch; thenrecordlegitfixSHA/CI metadataadvance beforefrozenrunnerimport, andnormallyrefreshownerChrome. Originalnative/historicalcertificate stillrequired forD295closure; noartifactfromfailedc791 or old75retrocredit.",
+  "next_action": "Monitor original normalB40241481628, retain resource/UI/import-source provenance, verify normal historicalcertificate from advancedoperator main and freshpeer beforeclosure. Normally import/promote new successfulCI40240416949/artifact12616888627 andownerChromeReload underfreshwatch; no oldfailedrun or stalecurrent-source claim.",
   "source_pins_scope": "Historical exact bytes from failed75 producer; final prepared/focused-verified hashes below are separate.",
   "final_source_sha256": {
     "scripts/hosted-remote-admission.test.mjs": "ed8b8afda7a36a582a58567147c6379f4973be864c3ea491ed19d0da508268db",
@@ -89,5 +89,17 @@
   "verification_report": "docs/stabilization/reports/d295-source-verification-20261025.json",
   "reviewer": "/root/d295_final_source_peer_2140",
   "fix_sha": "c79185365812522ded1196fb8241e224aa4f4554",
-  "ci_followthrough": "docs/stabilization/reports/d295-ci-fixture-correction-20261025.json"
+  "ci_followthrough": "docs/stabilization/reports/d295-ci-fixture-correction-20261025.json",
+  "full_ci": {
+    "source": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+    "run_id": 40240416949,
+    "conclusion": "success",
+    "development_artifact_id": 12616888627
+  },
+  "original_native_retest": {
+    "run_id": 40241481628,
+    "head_sha": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+    "status": "in_progress_no_case_credit",
+    "owner": "/root/seo_b_d295_native_retest_2203"
+  }
 }

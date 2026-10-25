@@ -1,0 +1,51 @@
+{
+  "at": "2026-10-25T22:44:43.363484+00:00",
+  "source": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+  "source_fix_commit": "c79185365812522ded1196fb8241e224aa4f4554",
+  "ci_fixture_fix_commit": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+  "full_ci": {
+    "run_id": 40240416949,
+    "attempt": 1,
+    "conclusion": "success",
+    "event": "push",
+    "branch": "main",
+    "completed_at": "2026-10-25T22:40:50Z",
+    "all_required_jobs": "success; docs skipped bysource scope"
+  },
+  "focused_ci": {
+    "run_id": 40240416782,
+    "conclusion": "success"
+  },
+  "development_artifact": {
+    "id": 12616888627,
+    "name": "matrx-extend-development-test-baa68adac35b09a59b1c9e6359cf6d2ea925853f-40240416949-1",
+    "digest": "sha256:37a25d553447a3e6dd9932af6d5a776c56de2683f071117124b02995405a703d",
+    "expired": false,
+    "size_bytes": 49497240,
+    "tree_sha256": null,
+    "manifest_version": null,
+    "local_adoption": "not yet imported/promoted/Reloaded; normal scripts/resourceadmissionrequired"
+  },
+  "native_b": {
+    "run_id": 40241481628,
+    "attempt": 1,
+    "head_sha": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+    "created_at": "2026-10-25T22:42:49Z",
+    "job_id": 121314016749,
+    "requested_by": "extend-stabilization",
+    "case": "guest-seo",
+    "scope": "notice-stacked",
+    "runner": "macos-15-intel originalfreepublicpath",
+    "state": "in progress; no product observation/certificate yet",
+    "owner": "/root/seo_b_d295_native_retest_2203",
+    "normal_plan_actual_exit": 0,
+    "normal_plan_actual_executor": 20443,
+    "normal_dispatch_actual_exit": 0,
+    "normal_dispatch_actual_executor": 86558,
+    "watch_actual_executor": 58314,
+    "preflight": "22:42:17 sourceHEAD=originS/Gitclean, officialsuccessfulCI/artifact/digest/workflow41bda5, activeacceptance+diagnosticlists0; normalhelperrequested_by and noresource/billingbypass."
+  },
+  "integration_boundary": "This legitimate CI/source/native ownership record advances main after normal dispatch from cleanS. FrozenrunnerheadS must stayimmutable; record actual imported source.originMain/localHead later, not assume pre-UI exactfetch fromtimingalone.",
+  "owner_chrome": "Lastactualbefb623; latestSownerartifactadoption/Reloadpending. Startowner2208guard onlyafterthismetadata push andnormalBdispatchalreadycomplete, so pendingjournalcannotdirty-vetodispatch.",
+  "limits": "No nativeT02/fullcase/productfix/Storecandidateacceptance orD295closure yet. Oldfailedc791workflow/75native are not eligible evidence. No newupload/submission; completedOct25privatewindowunchanged."
+}
