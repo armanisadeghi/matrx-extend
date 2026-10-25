@@ -198,6 +198,37 @@ describe('extension sign-in wiring', () => {
     },
   );
 
+  it.each(['getAccessToken', 'refreshAccessToken'] as const)(
+    '%s keeps its legacy null-on-transient contract, preserves the session, then recovers without new OAuth',
+    async (method) => {
+      const flow = await import('@/lib/auth/flow');
+      await flow.signIn();
+      const saved = local.get('matrx.oauth.session');
+      const callsBefore = server.tokenCalls.length;
+      server.refresh = () => {
+        throw new TypeError('connection interrupted');
+      };
+      vi.setSystemTime(NOW + 2 * 3_600_000);
+
+      await expect(flow[method]()).resolves.toBeNull();
+      expect(local.get('matrx.oauth.session')).toEqual(saved);
+      expect(local.get('profile')).toMatchObject({ id: 'person-1' });
+      expect(broadcast).not.toHaveBeenCalled();
+      expect(server.tokenCalls.length).toBeGreaterThan(callsBefore);
+
+      server.refresh = () => tokenJson(jwt('person-1', 'legacy-recovered'), 'refresh-2');
+      const result = await flow[method]();
+      expect(result).toEqual(
+        method === 'getAccessToken'
+          ? jwt('person-1', 'legacy-recovered')
+          : { access_token: jwt('person-1', 'legacy-recovered') },
+      );
+      expect(
+        server.tokenCalls.filter((call) => call.get('grant_type') === 'authorization_code'),
+      ).toHaveLength(1);
+    },
+  );
+
   it('strict readers report genuine session absence as null', async () => {
     const flow = await import('@/lib/auth/flow');
     expect(await flow.getAccessTokenStrict()).toBeNull();

@@ -141,7 +141,9 @@ describe('package session injection', () => {
         return Response.json([]);
       }),
     );
-    await listComputeTargets(api, undefined, { organizationId: '00000000-0000-4000-8000-000000000003' });
+    await listComputeTargets(api, undefined, {
+      organizationId: '00000000-0000-4000-8000-000000000003',
+    });
     expect(events).toEqual(['bearer', 'headers', 'bearer', 'wire']);
   });
 
@@ -160,7 +162,7 @@ describe('package session injection', () => {
       },
     });
     vi.stubGlobal('fetch', network);
-    await expect(listComputeTargets(api)).rejects.toThrow();
+    await expect(listComputeTargets(api)).rejects.toThrow('workspace changed');
     expect(network).not.toHaveBeenCalled();
   });
 
