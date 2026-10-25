@@ -1,0 +1,13 @@
+{
+  "task_id": "checkpoint-plan-attack-1626",
+  "verdict": "FIX-FIRST",
+  "pinned": "member-checkpoint-diagnosis-1621.json @ 5b85203347023a5697ce73e57ccf64b099f41e02",
+  "reality": "Live GitHub run40207639522 failed at selected native exercise; completed guard journal records CPU unsafe, owned-group SIGTERM, invalid exit3. Retained artifact has two native PNGs and three journals; no member report/timing. No product/auth/CPU-cause conclusion follows.",
+  "coverage": "8/10 mapped: existing helper/path/upload reuse; sync publication before native/auth actions; safe projection; ordered milestones; auth_complete after identity assertions; preSave intent only; unchanged resource/source/refusal/cleanup boundaries; subprocess real-hook RED/GREEN. Two durability/diagnostic publication gaps below.",
+  "blocking_1": "Shared-path finalization can destroy checkpoint: scrape-save-auth-report.mjs:22-28 final writer uses async writeFile on exact checkpoint path, truncating prior snapshot; SIGTERM during this write can leave empty/partial evidence. Require final publication through same atomic temp+rename primitive, preserving final authority/status semantics and cleanup ordering. Add real-final-writer interruption case, not only checkpoint replacement.",
+  "blocking_2": "Checkpoint triggers omit onAuthDiagnostic: native acceptance664 updates stage,667 merges diagnostic; auth driver827 and881/886 publishes latest safe booleans/target during same stage. SIGTERM after such observation but before next stage leaves stale checkpoint, violating PLAN47 last-safe-observable boundary requirement. Publish strict allowlisted projection synchronously from existing onAuthDiagnostic callback too; guard actual callback-update/kill boundary.",
+  "advisory": "Specify maximum retained stage entries/serialized bytes using finite existing stage/diagnostic vocabulary or deduplication; native/auth callbacks currently finite but repeated observations must not become an unbounded event log when adding diagnostic publication.",
+  "forcing_checks": "Existing member guard extracts real auth callsite and tests caught failure/final write only. Proposed IPC after real callbacks, SIGTERM with pending async IO, pre-action persistence-failure refusal, canary projection,0600 and interrupted replacement are appropriate; extend them across both missing boundaries.",
+  "owner_only": [],
+  "limitations": "Read-only source/GitHub/artifact inspection; no UI, tests, credentials, DB, dispatch, product edits or nested agents. Only requested report written. Implementation remains serialized after D289; member none/single acceptance remains unverified."
+}

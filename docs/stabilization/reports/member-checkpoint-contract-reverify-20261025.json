@@ -1,0 +1,12 @@
+{
+  "task_id": "checkpoint-contract-reverify-1638",
+  "verdict": "COMMIT: amended bounded contract only; NOT IMPLEMENTED; no member retry authorization",
+  "pinned": "EXT-D-0294.json SHA256 078321eb34791d221733f2f8b2408e8d6a649faccf9690b5572cbf83fb4250cd; diagnosis + original attack + binding owner_rulings read",
+  "reality": "Member40207639522: actual journal unsafe15:42:05.927Z, owned-group SIGTERM15:42:06.044Z, invalid3; retained artifact inventory has no native report. Startup40208560267: same development12603809037/f771 artifact, separate host, no authentication/product action, valid0; cannot explain member boundary or CPU cause.",
+  "A": "Product member none/single remains UNVERIFIED, zero new acceptance credit; original lost auth timing is unrecoverable.",
+  "B": "Supporting diagnostic contract 10/10 mapped: helper/path/upload reuse; native stages; auth_start; auth substages; auth_complete after assertions; preSave intent; safe projection; atomic stage/final publication; callback diagnostic flush; real-producer interruption/refusal guards. No new blocking findings.",
+  "finding_1": "ADDRESSED by binding ruling: same atomic temp+rename publication primitive for checkpoint AND final writer, preserving prior complete checkpoint if final replacement is interrupted; final status alone retains completion authority and cleanup ordering. Guard real final-writer interruption explicitly.",
+  "finding_2": "ADDRESSED by binding ruling: existing onAuthDiagnostic must strictly project allowlisted meaningful updates and synchronously publish before returning, including same-stage observations; guard callback-update/kill boundary. No raw merged diagnostic dump.",
+  "buildability": "Current source confirms native/auth callbacks mutate memory, final helper async writeFile truncates shared path, driver827/881/886 updates diagnostic within stages. Existing source-extracted auth guard and real writer can be extended with subprocess IPC-before-SIGTERM, pending IO, action-entry kill, real final interruption,0600, canaries, ordered prefix/latest boundary and IO-failure-before-action assertions. Finite labels/deduplicated snapshots bound retained state. No tests executed.",
+  "boundaries": "No resource/source/admission/threshold/shutdown/group-cleanup/final-verifier change; no workflow change needed because always-upload already names exact report path. No auth/CPU cause, backend cleanup proof, member pass or retry inferred. D294 implementation waits for D289 exact CI/native freeze; only this requested report written."
+}

@@ -47,7 +47,7 @@ test('missing or failed full-extension rechecks force the individual case to fai
     });
     record('new chat inherits mode after extension reload', 'pass', {
       modeLabel: 'Act without asking',
-      modeIcon: 'act',
+      permissionMode: 'act',
     });
   });
   await runFullExtensionRecheck(sections, async (record) => {
@@ -485,7 +485,7 @@ function fullRestartFixture({
           assert.equal(panel, activePanel);
           calls.chats.push({ mode, label });
           if (failNewChat && mode === 'act') throw new Error('synthetic new-chat failure');
-          return { modeLabel: label, modeIcon: mode };
+          return { modeLabel: label, permissionMode: mode };
         },
         observePreference,
         preferenceBaseline,

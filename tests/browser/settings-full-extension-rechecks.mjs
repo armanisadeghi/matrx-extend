@@ -386,7 +386,8 @@ export async function rerunGuestSettingsAfterExtensionReload({
               (name, observation, passed) => record(name, passed ? 'pass' : 'fail', observation),
               async ({ panel: target }) => {
                 const chat = await observeNewChatDefault(target, 'act', 'Act without asking');
-                const passed = chat?.modeLabel === 'Act without asking' && chat?.modeIcon === 'act';
+                const passed =
+                  chat?.modeLabel === 'Act without asking' && chat?.permissionMode === 'act';
                 record(
                   'New guest chat retains Act after extension reload',
                   passed ? 'pass' : 'fail',

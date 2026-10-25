@@ -1,0 +1,58 @@
+{
+  "id": "EXT-D-0294",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "title": "Member native runner loses safe progress when resource guard terminates it",
+  "surface": "Supporting native acceptance diagnostics, no established product fault",
+  "auth_mode": "member attempt; diagnostic probe invokes no authentication/backend",
+  "severity": "S2: failed native boundary cannot be diagnosed reliably",
+  "priority": "P1: discriminating evidence before further member attempt",
+  "state": "triaged",
+  "owner": "/root",
+  "preconditions": [
+    "Actual f771 memberA40207639522 stops under unchanged CPU resource watchdog after panel readiness."
+  ],
+  "reproduction": [
+    "Observe native/auth callback update the live report object.",
+    "Terminate the actual callback/final-writer seam with ordinary SIGTERM before outer finally completes.",
+    "Confirm IPC sees in-memory auth milestone but no on-disk report remains."
+  ],
+  "expected": "Safe fixed stage timestamps are durable before an operation begins; resource termination and final verdict remain unchanged.",
+  "actual": "Callbacks only mutate memory; existing final asynchronous writer is called from outer finally. Resource SIGTERM can leave no native report/auth-stage boundary.",
+  "cause": "Diagnostic persistence lifetime depends on orderly runner completion rather than stage publication.",
+  "evidence": [
+    "docs/stabilization/reports/member-checkpoint-diagnosis-20261025.json",
+    "docs/stabilization/reports/member-none-f771-resource-peer.json",
+    "docs/stabilization/reports/startup-f771-evidence-peer.json"
+  ],
+  "probe": "0.2s source-extracted actual callback plus real report helper subprocess; normal SIGTERM after IPC milestone yields absent report. Supporting reproduction only, not browser/CPU/product proof. Probe files removed.",
+  "plan_status": "COMMIT: fresh amended-contract reverify accepts both blocking-finding corrections. Design approved only; NOT IMPLEMENTED, member acceptance unverified.",
+  "limits": "No CPU cause, native pass, member retry authorization, threshold/runner/shutdown changes or product repair claimed.",
+  "transition_history": [
+    {
+      "at": "2026-10-25T16:26:13.511979+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual invalid run lacks native report and auth timing."
+    },
+    {
+      "at": "2026-10-25T16:26:13.511979+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Actual source callback/final-writer seam reproduces loss under ordinary SIGTERM; no code changes yet."
+    }
+  ],
+  "plan_review": "docs/stabilization/reports/member-checkpoint-plan-attack-20261025.json",
+  "owner_rulings": [
+    {
+      "finding": "Final async writeFile can truncate same-path complete checkpoint on normal SIGTERM.",
+      "ruling": "CONFIRMED: same atomic-publication primitive must serve intermediate checkpoints AND final report; final status remains sole completion authority. Guard final-write interruption with prior checkpoint remaining parseable."
+    },
+    {
+      "finding": "onAuthDiagnostic can update evidence after latest stage without durable publication.",
+      "ruling": "CONFIRMED: project through existing allowlisted safe diagnostics then synchronously publish on meaningful callback update before returning; raw unknown diagnostic fields are never dumped. Guard updates within same stage and termination after observation."
+    }
+  ],
+  "next_action": "One bounded implementer extends existing report helper/path with atomic checkpoint+final publication and safe synchronous diagnostic callback updates, meaningful live-subprocess termination/IO failure guards, then fresh independent source review and normal native diagnostic predicate. Serialize after D289 exact CI/native source freeze. No member acceptance retry before durable boundary evidence.",
+  "plan_reverify": "docs/stabilization/reports/member-checkpoint-contract-reverify-20261025.json"
+}

@@ -547,6 +547,39 @@ export async function toolsCatalogState(panel) {
   );
 }
 
+// Current package Tools doors: Run controls tab, or a Composer menu/sheet row.
+// Scope portals separately so the extension's outer Tools navigation never matches.
+export function chatToolsCandidatesExpression() {
+  return `(() => {
+    const chat = ${activeTabPanelExpression('Chat')};
+    const triggers = [...(chat?.querySelectorAll('button[title="Chat Options"], button:not([title])[data-matrx-title="Chat Options"]') ?? [])];
+    const content = triggers.length === 1 ? document.getElementById(triggers[0].getAttribute('aria-controls') ?? '') : null;
+    const sheets = [...document.querySelectorAll('[role="dialog"]')].filter((dialog) => {
+      const name = dialog.getAttribute('aria-label') ?? document.getElementById(dialog.getAttribute('aria-labelledby') ?? '')?.textContent.trim();
+      return ['Add to chat', 'Tools', 'Chat options'].includes(name);
+    });
+    const roots = [...new Set([content, ...sheets].filter(Boolean))];
+    return [...new Set(roots.flatMap((root) => [...root.querySelectorAll('button')]))]
+      .filter((button) => button.textContent.trim() === 'Tools' ||
+        [...button.querySelectorAll('span')].some((span) => span.children.length === 0 && span.textContent.trim() === 'Tools'))
+      .filter((button) => {
+        const rect = button.getBoundingClientRect(), style = getComputedStyle(button);
+        return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
+          style.display !== 'none' && !button.closest('[inert], [hidden]');
+      });
+  })()`;
+}
+
+export async function pressEscape(panel) {
+  for (const type of ['keyDown', 'keyUp'])
+    await panel.send('Input.dispatchKeyEvent', {
+      type,
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+}
+
 export async function click(panel, kind, label, onPhase = undefined, beforeDispatch = undefined) {
   const pointerSample = () =>
     evaluate(
@@ -588,6 +621,7 @@ export async function click(panel, kind, label, onPhase = undefined, beforeDispa
         };
       }
     }
+    else if (kind === 'chat-tools') candidates = label === 'Tools' ? ${chatToolsCandidatesExpression()} : [];
     else if (kind === 'account-avatar') candidates = [...document.querySelectorAll('button[aria-haspopup="dialog"]')]
       .filter((el) => el.getAttribute('title') === 'Account' ||
         (el.getAttribute('title') ?? '').includes('@'));
