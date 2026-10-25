@@ -1,0 +1,35 @@
+{
+  "task_id": "member-none-a-1428",
+  "lane": "A",
+  "status": "CHECKPOINT_NORMAL_PLAN_REFUSED_NO_DISPATCH",
+  "source_sha": "0bff3d9f37a64e57f1b9adb22873511eeee652cf",
+  "current_main": "67ccba38c5726b0c990691e7675ed36b267b8353",
+  "artifact": {
+    "development_run_id": 40198945745,
+    "artifact_id": 12601231454,
+    "digest": "sha256:9c7c3a5e3e5a7576ee3a7bc733869f5b8f7635dfaf7de208470d04c0c5647dd3"
+  },
+  "subtarget": "member Save destination=none scope=single",
+  "normal_plan": {
+    "current_main_argument": "REFUSED HOSTED_DEVELOPMENT_RUN_INVALID actual_exit1",
+    "artifact_source_argument": "PASS actual_exit0",
+    "proof": ".output/stabilization-checkpoints/member-none-a-1428-artifact-source-plan.json"
+  },
+  "cause": "Member plan/verifier require exact CI run.head_sha. Only guestSeo/memberData opt into runtime equivalence; member dispatch independently requires sourceSha==remote main. Promoter equivalence does not satisfy this unchanged route.",
+  "A_behavior": "UNVERIFIED: no native action or run",
+  "B_evidence": "Admission gap established by real plan refusal plus unchanged requireDevelopmentArtifact and exact dispatch source code; no certificate/journals exist.",
+  "cleanup": {
+    "temporary_secret_name_count": 0,
+    "fixture_mutated": false,
+    "keys_read": false,
+    "link_minted": false,
+    "private_files_created": false,
+    "source_or_edges_created": false,
+    "owned_runs": [],
+    "local_heavy_or_browser": false
+  },
+  "limitations": "No T04/T29/D187/Store or product pass; no bypass, source edits, commits, runner relocation, or blind dispatch retry.",
+  "next_action": "Root owns source-eligibility diagnosis/normal route repair or a new exact-current eligible CI artifact; release freeze may end because no verifier/job was started.",
+  "updated_at": "2026-10-25T14:36:36.408668+00:00",
+  "root_ruling": "Intentional exact frozen-source admission, not a proven harness defect. Preserve unchanged source gate; obtain successful exact new CI after observer patch/review. No D293 allocated."
+}
