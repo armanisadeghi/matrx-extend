@@ -78,7 +78,9 @@ export function scrollSentence(end: AutoScrollEnd | null, count: number, noun: s
   if (end === 'target') return `${n} · reached your number. Press Capture.`;
   if (end === 'end' && count === 0)
     return `No ${noun} showed up on this page. Log in or open the profile, then scroll again.`;
-  if (end === 'end') return `${n} · reached the end of the feed. Press Capture.`;
+  // The feed stopped growing. A sign-in wall stops it exactly like a real end does, so say both.
+  if (end === 'end')
+    return `${n} · no more loaded. If the site asks you to sign in, do that and scroll again; otherwise press Capture.`;
   if (end === 'ceiling') return `${n} · paused for now. Press Capture, or scroll again.`;
   return `${n} · stopped. Press Capture, or scroll again.`;
 }

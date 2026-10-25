@@ -81,6 +81,6 @@ describe('runAutoScroll', () => {
   it('says plainly what is happening', () => {
     expect(scrollSentence(null, 142, 'posts')).toBe('142 posts · scrolling…');
     expect(scrollSentence('end', 0, 'posts')).toMatch(/No posts showed up/);
-    expect(scrollSentence('end', 9, 'posts')).toContain('end of the feed');
+    expect(scrollSentence('end', 9, 'posts')).toContain('If the site asks you to sign in');
   });
 });
