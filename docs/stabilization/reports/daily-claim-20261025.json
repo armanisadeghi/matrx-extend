@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "window": "2026-10-25 America/Los_Angeles",
+  "claimed_at": "2026-10-25T07:55:57.745513+00:00",
+  "lane": "store-daily-20261025",
+  "canonical_local_claim_commit": "cc5eb2b02",
+  "canonical_push_limit": "Known archived/read-only repository; previous HTTP403 preserved in daily-claim-20261024.json, no duplicate push attempted.",
+  "previous_store_state": "Last resource-valid Oct21 public205/pending577; Oct24 invalid observation577published is unaccepted.",
+  "next_action": "Fresh admitted current dashboard/mail/Store guest observation; preserve pending until valid status transition."
+}
