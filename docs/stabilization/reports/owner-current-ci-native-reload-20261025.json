@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "recorded_at": "2026-10-25T09:10:47.971461+00:00",
+  "status": "normal_ci_import_promotion_and_owner_reload_verified",
+  "source_sha": "0fc85bdae10241c898191b022fc498968696e1e8",
+  "synchronized_main_at_promotion": "9aa832f2502d0e4e7ca3dda30bfa2c4e554f1196",
+  "compatibility": "runtime-equivalent",
+  "ci_run": 40177491271,
+  "artifact_id": 12592193854,
+  "version": "0.2.621",
+  "tree_sha256": "51f816a8896a08b986af5229a723acb961d508334563c7ed46022945186e835c",
+  "development_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "profile": "Arman (armansadeghi.com), previously verified Chrome Profile8 this window",
+  "native": "Actual manager Reloaded plus full version621, ID, path, On and Pin On; Store577 remains On and pinned from Chrome Web Store. Temporary owned tab closed.",
+  "resource_journal": "docs/stabilization/resource-journals/owner-current-ci-reload-20261025-0855.jsonl",
+  "resource": {
+    "decision": "valid",
+    "exit_code": 0,
+    "resource_invalid": false
+  },
+  "raw_ax": [
+    "docs/stabilization/reports/owner-current-ci-before-20261025.ax.json",
+    "docs/stabilization/reports/owner-current-ci-reloaded-20261025.ax.json",
+    "docs/stabilization/reports/owner-current-ci-full-20261025.ax.json",
+    "docs/stabilization/reports/owner-current-ci-store-preserved-20261025.ax.json"
+  ],
+  "limits": "Manager identity/reload evidence only; no independent native Settings original/adjacent verdict or candidate member acceptance claimed."
+}

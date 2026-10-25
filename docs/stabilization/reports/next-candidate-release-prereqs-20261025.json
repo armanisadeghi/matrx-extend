@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-25",
+  "scope": "Read-only handoff for the next candidate after published Store 0.2.577; no dispatch, packaging, upload, browser test, or release occurred in this checkpoint.",
+  "current_truth": {
+    "published_store": "0.2.577, dashboard and actual installed signed-out two-turn guest Chat evidenced by reports/store-daily-20261025.json; this does not prove the next candidate",
+    "source_fix_commits": ["b863582f3", "0fc85bdae10241c898191b022fc498968696e1e8"],
+    "source_gate": "The owner is observing exact CI run 40177491271 and focused run 40177491258; their final outcomes and a successful eligible development artifact were not established by this checkpoint. Do not duplicate polling or assign native acceptance credit yet.",
+    "workspace": "Shared checkout had unrelated owner edits and untracked stabilization reports at inspection; exact synchronized clean dispatch admission must be rechecked after integration."
+  },
+  "normal_next_actions": [
+    {
+      "order": 1,
+      "owner": "root coordinator",
+      "action": "Finish source and focused CI observation; require successful exact-source main CI development run and artifact ID, plus reviewed hosted workflow bytes, clean synchronized checkout, and normal host/fixture/resource admission. For guest Settings original T04 and adjacent T22 use the guarded Settings development route, not release or Store CRX bytes.",
+      "command_template": "node scripts/hosted-remote-admission.mjs plan-settings-guest --lane B --case settings-controls --development-run-id <successful_ci_run_id> --development-artifact-id <exact_artifact_id> --source-sha <exact_40_char_source_sha>",
+      "then": "Only after plan admits and a fresh all-service CI spend check, use the matching dispatch-settings-guest mode. Judge the real native T04 original theme restoration through full extension Reload and T22 rendered guest Settings/forbidden-control observation, resource journals, receipt, and independent review. The guarded settings-controls case may run more controls; report exact case verdicts and failures separately."
+    },
+    {
+      "order": 2,
+      "owner": "root coordinator",
+      "action": "After exact candidate source, native retests, source review and full release prerequisites are green, dispatch only .github/workflows/release.yml from synchronized main with an immutable aidream_sha, meaningful message, and requested_by. Its hosted path refreshes latest shared packages, runs the repository gates, and produces a receipt, tag and Store ZIP. Revalidate if that step changes the candidate source.",
+      "command_template": "gh workflow run release.yml --ref main -f aidream_sha=<verified_40_char_aidream_sha> -f message=<reviewed_release_note> -f requested_by=extend-stabilization"
+    },
+    {
+      "order": 3,
+      "owner": "root coordinator",
+      "action": "For next-candidate guest Chat use the normal release-artifact route on isolated lane B after a successful hosted release, exact artifact ID and source SHA; plan first, then admitted dispatch and native two-turn evidence. Do not use published_store_crx=true, which remains bound to 0.2.577.",
+      "command_template": "node scripts/hosted-remote-admission.mjs plan-guest-chat --lane B --case guest-chat --release-run-id <successful_release_run_id> --artifact-id <exact_release_artifact_id> --source-sha <release_tag_source_sha>"
+    },
+    {
+      "order": 4,
+      "owner": "root coordinator",
+      "action": "For non-admin signed-in Chat use the normal release-member admission on isolated lane A against the same validated release artifact. Plan first; its source, artifact digest, Store ZIP digest, tag, run, capacity, approved-org fixture and temporary member-link secret checks must all admit before dispatch. Admin evidence cannot replace member evidence.",
+      "command_template": "node scripts/hosted-release-member-admission.mjs plan <successful_release_run_id> <exact_release_artifact_id> <release_tag_source_sha> macos-15-intel"
+    },
+    {
+      "order": 5,
+      "owner": "root coordinator",
+      "action": "Only after candidate guest/member acceptance and full release gate evidence, compare release manifest and runtime policy surface to approved 0.2.577 baseline, classify Store impact, upload the exact validated Store ZIP to the primary Matrx item, submit, and verify dashboard status. Update the baseline only after actual publication."
+    }
+  ],
+  "fixture_state": {
+    "github_secret_names_read_only": "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON and MATRX_PROFILE_APPROVED_ORGANIZATION_JSON present; MATRX_REVIEWER_MAGIC_LINK_JSON absent at inspection. Values were neither read nor printed.",
+    "member_limit": "Member release admission requires the temporary member-link secret and approved-org fixture. Its absence is a current admission prerequisite, not a permanent blocker or permission to create a new credential, scope or grant. Use only the existing authorized fixture preparation path if/when the owner runs this test, serialize lane A, and remove the temporary secret after the run; verify cleanup by secret-name census.",
+    "cleanup": "Hosted wrapper stages member link and admin config in private 0600 files, unsets raw secret environment keys for the browser child and removes its temporary files. Verify run journal and GitHub secret absence after member acceptance; never commit fixture values."
+  },
+  "ci_spend": {
+    "status": "unverified",
+    "observation": "Read-only GET /ci-spend/status was attempted through the existing local release-gate identity; its membership guard refused before the GET. No token or secret value was printed, no alternate account was used, and no bypass occurred.",
+    "next_rule": "Before any paid acceptance or release dispatch, obtain a fresh server weekly actual-spend total, components, timestamp and cap through an authorized existing identity. The cap is $100/week across all CI; stop on an actual spending or billing block."
+  },
+  "limits": "No new candidate artifact, real native T04/T22 outcome, current guest/member candidate result, or Store submission is claimed. Existing 0.2.577 Store installed guest proof remains separate.",
+  "superseding_live_evidence": "reports/release-gate-membership-diagnosis-20261025.json: stale local org diagnosed; same approved existing membership yields fresh189.64/100 all-service weekly spend. Paid work paused, no job moved or dispatched. Exact source CI40177491271 and focused40177491258 now success; metadata9aa CI40178224323 success."
+}
