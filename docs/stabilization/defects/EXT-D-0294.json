@@ -63,7 +63,7 @@
       "ruling": "CONFIRMED: project through existing allowlisted safe diagnostics then synchronously publish on meaningful callback update before returning; raw unknown diagnostic fields are never dumped. Guard updates within same stage and termination after observation."
     }
   ],
-  "next_action": "Normal resource recovery first; inspect latest main/CI and contributor fix for sign-out guard. Recheck/apply preserved3file patch only on eligible source, guarded focused/compile/lint and fresh independent source reverify. Do not transfer earlier green metrics to latest transaction/predicate bytes. Native member diagnostic/guest acceptance, current artifact promotion/Chrome reload and release gates remain separate.",
+  "next_action": "Normal resource recovery; follow latest hosted-regression-75ab checkpoint. D294 latest patch stays UNAPPLIED pending current-source guarded focused/compile/lint and fresh independent source review; no earlier green transfer. D295 frozen-proof repair is separately triaged; do not rerun failed cases unchanged.",
   "plan_reverify": "docs/stabilization/reports/member-checkpoint-contract-reverify-20261025.json",
   "implementation_lane": {
     "owner": "/root/d294_durable_diagnostics",

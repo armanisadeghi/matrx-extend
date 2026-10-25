@@ -1,0 +1,182 @@
+{
+  "task_id": "hosted_seo_b_1947",
+  "lane": "B guest SEO",
+  "status": "TERMINAL_REGRESSION_SOURCE_REFUSAL_NO_ACCEPTANCE",
+  "initial_T09_readiness": {
+    "task_id": "hosted_seo_b_1947",
+    "lane": "B guest SEO",
+    "at": "2026-10-25T19:47:39.302444+00:00",
+    "observed_source": "ce6e2369add4580ea4bd3ab0f6dfed7b2f9521b3",
+    "public_repository_verified": true,
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+    "original_runner": "macos-15-intel",
+    "cost": "Existing unchanged original standard hosted runner in verified public repo; original free-route receipt read. Paid work remains paused; no job/billing action performed.",
+    "registered_unresolved_case": {
+      "case_id": "EXT-F-1008-T09",
+      "title": "SEO details and links",
+      "requested_scope": "full",
+      "reason": "Existing driver covers title/description/canonical/robots/social/schema/headings/links/images/readability/performance plus native360px reachability; this is distinct from completed stacked-notice target."
+    },
+    "normal_admission": {
+      "mode": "plan-guest-seo",
+      "result": "HOSTED_REMOTE_REFUSED HOSTED_SEO_SCOPE_REFUSED",
+      "log": ".output/stabilization-checkpoints/hosted-seo-b-1947-plan.txt",
+      "scope_check_precedes_artifact_check": true,
+      "artifact_id_not_supplied": "Current source CI was still in progress; scope criterion is refused before any artifact/source/capacity evaluation. No fake ID used.",
+      "exit_code_limit": "Combined inspection shell exited0; per-node plan exit not separately captured. Refusal text is directly retained; no rerun to manufacture exit proof."
+    },
+    "supported_route": {
+      "scope": "notice-stacked",
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+      "already_completed_run": 39508759424,
+      "certificate": "docs/stabilization/reports/guest-seo-9ed-normal-certificate-20261020.json",
+      "reason_not_dispatched": "Already bounded/proven; no unresolved new case available through this normal helper. No duplicate completed target solely for activity."
+    },
+    "last_ci_observation": {
+      "exact_current_run": 40227207831,
+      "state": "in_progress",
+      "predecessor_full_ci": 40225390085,
+      "predecessor_state": "success",
+      "limit": "Old signout failure is historical. Current artifact/source eligibility was not decided because normal scope refuses first."
+    },
+    "concurrency_observation": "Latest8 hosted-guest-acceptance runs were all terminal; no owned or newly dispatched run exists. No runner capacity inferred from this listing.",
+    "actions": {
+      "workflow_dispatched": false,
+      "local_heavy_commands": false,
+      "native_ui_or_browser": false,
+      "source_edits": false,
+      "workflow_guard_threshold_edits": false,
+      "auth_secrets_fixtures_AI": false,
+      "worker_subagents": false
+    },
+    "acceptance": {
+      "product_cases_attempted": 0,
+      "product_passes": 0,
+      "product_failures": 0,
+      "closure_credit": 0
+    },
+    "status": "NORMAL_SCOPE_REFUSED_NO_DISPATCH",
+    "cleanup": "No run or fixture created during initial T09 scope refusal."
+  },
+  "regression_T02_attempt": {
+    "scope": "notice-stacked bounded T02 regression only",
+    "status": "TERMINAL_SOURCE_GUARD_REFUSAL_BEFORE_UI",
+    "source": "75abadd4867ba642b6b4ba45bcff2736d36ff805",
+    "version": "0.2.623",
+    "main_ci": 40228213436,
+    "ineligible_tag_ci": 40228213770,
+    "normal_route": "plan/dispatch-guest-seo; original B macos-15-intel; fixture-none/diagnosticfalse/interruptnone",
+    "requested_by": "extend-stabilization",
+    "authorization": "Parent new bounded retest authorization; changed shared packages mean old39508759424 pass does not transfer. No newT09/fullsurface/Store coverage.",
+    "prepared_at": "2026-10-25T20:04:32.018857+00:00",
+    "workflow_sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+    "dispatched": true,
+    "owned_run": 40229119875,
+    "main_ci_conclusion": "success",
+    "main_ci_artifact": 12612417676,
+    "artifact_digest": "sha256:6b211da709d4e5c04355e1efe1645db11a5989125679a78ee24a438e4f3d66cb",
+    "normal_plan_exit": 0,
+    "dispatch_actual_session": 90751,
+    "dispatch_exit": 0,
+    "dispatch_at": "2026-10-25T20:05:31Z",
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40229119875",
+    "workflow_source": "75abadd4867ba642b6b4ba45bcff2736d36ff805",
+    "normal_plan": ".output/stabilization-checkpoints/hosted-seo-b-1947-regression-plan.json",
+    "normal_dispatch": ".output/stabilization-checkpoints/hosted-seo-b-1947-regression-dispatch.txt",
+    "capacity_preflight": "Complete active-status listings for original hosted acceptance and diagnostic workflows yielded0 before dispatch; ownB isolated originalhost.",
+    "no_local_heavy": true,
+    "no_native_or_case_credit_yet": true,
+    "terminal_observed_at": "2026-10-25T20:18:01.237964+00:00",
+    "conclusion": "failure",
+    "watch_actual_session": 80569,
+    "watch_exit": 1,
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "failure_code": "ci_dev_checkout_not_origin_main",
+    "failure_stack": [
+      "sourceCompatibility:20",
+      "requireHostedDevelopmentCheckout:77",
+      "prepareDevelopment:94"
+    ],
+    "artifact_import_observation": "DEVELOPMENT_TEST_IMPORTED exact_pushed_commit_only at20:14:06.596264Z; post-import hosted checkout guard then refused before case/profile execution.",
+    "result_artifact": {
+      "id": 12611998357,
+      "name": "hosted-guest-40229119875-1",
+      "sha256": "bedd4076026199c942e06852a311145a7035b44043bc1283ddc047d056df39a3",
+      "download_sha256_verified": true,
+      "bytes": 2659,
+      "contents": "Exactly three resource journals; no native case report or screenshots"
+    },
+    "resource_journals": [
+      {
+        "path": "docs/stabilization/evidence/seo-75-run40229119875/resource-journals/hosted-browser-40229119875-1.jsonl",
+        "sha256": "e2e215c37b501c9ee00e690de89b169f0be8f1b8b76dd303eca52438d2bb97f0",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-25T20:12:04.205Z",
+          "runId": "hosted-browser-40229119875-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "path": "docs/stabilization/evidence/seo-75-run40229119875/resource-journals/hosted-guest-40229119875-1.jsonl",
+        "sha256": "2fdc26a11a5dbf31e8f5e4dc7463737f68fc2750cbe885dd0440ad2a519c8a85",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-25T20:14:10.043Z",
+          "runId": "hosted-guest-40229119875-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 1,
+          "decision": "child_failed",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "path": "docs/stabilization/evidence/seo-75-run40229119875/resource-journals/hosted-package-40229119875-1.jsonl",
+        "sha256": "3c432e3589635d3f1bb8f1c6bcedf19b8d7158d69ecede7d9d87f329e0beb13c",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-25T20:08:21.680Z",
+          "runId": "hosted-package-40229119875-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      }
+    ],
+    "normal_verifier": {
+      "mode": "verify-guest-seo",
+      "actual_exit": 1,
+      "result": "HOSTED_REMOTE_REFUSED HOSTED_RUN_NOT_SUCCESSFUL",
+      "log": ".output/stabilization-checkpoints/hosted-seo-b-1947-normal-verifier.txt",
+      "limit": "Run-not-successful guard refuses before current-checkout drift/archive-case certification. No alternate helper/checkouts/bypass used."
+    },
+    "source_drift_context": {
+      "new_parent_main": "6aa9ef9669377314264ce7b31f8de149b65334e9",
+      "parent_observation": "Lock-only main advance observed after dispatch; frozen runtime remains75/v623",
+      "limit": "Host guard proves checkout != origin/main; exact host ref values are not in result artifact, so no sole cause or product regression inferred."
+    },
+    "acceptance": {
+      "hosted_attempts": 1,
+      "native_UI_cases_attempted": 0,
+      "product_passes": 0,
+      "product_failures": 0,
+      "T02_new_credit": 0,
+      "T09_credit": 0,
+      "Store_credit": 0
+    },
+    "cleanup": "Package/browser prep completed resourcevalid0. Guest command ended child_failed1 with resourceInvalidfalse; resource guard actualchild exit1 terminal. prepareDevelopment refused before runProfile/case browser/ownedpage exercise. No native fixture, sign-in, AI or DB action; no credentials staged by lane. Workflow/ownedwatch terminal, no cleanup pending.",
+    "no_redispatch": true
+  },
+  "cleanup": "No owned run/watch/process, fixtures or temporary credentials remain; completed failed attempt and all three journals retained.",
+  "next_action": "Parent reconciles current eligible source/artifact and honors source/adoption guards; do not redispatch75 after6aa or infer T02/guest/Store pass. Initial unsupportedT09 route refusal remains separately retained."
+}

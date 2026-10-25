@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "role": "member",
+  "status": "fail",
+  "failure_code": "owned_cdp_endpoint_timeout",
+  "build": {
+    "kind": "local_dev_unpacked",
+    "sourceSha": null
+  },
+  "case_outcomes": [
+    {
+      "id": "EXT-F-1001-T20",
+      "status": "unverified",
+      "observation_count": 0
+    },
+    {
+      "id": "EXT-F-1001-T23",
+      "status": "unverified",
+      "observation_count": 0
+    },
+    {
+      "id": "EXT-F-1001-T26",
+      "status": "unverified",
+      "observation_count": 0
+    }
+  ]
+}

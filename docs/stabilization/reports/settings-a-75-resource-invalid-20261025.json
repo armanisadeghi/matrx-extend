@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "at": "2026-10-25T20:28:46.600985+00:00",
+  "status": "RESOURCE_INVALID_NO_NATIVE_CASE_CREDIT_CLEANUP_COMPLETE",
+  "run_id": 40229297028,
+  "source": "75abadd4867ba642b6b4ba45bcff2736d36ff805",
+  "frozen_artifact": {
+    "ci_run": 40228213436,
+    "artifact_id": 12612417676,
+    "digest": "sha256:6b211da709d4e5c04355e1efe1645db11a5989125679a78ee24a438e4f3d66cb",
+    "manifest_version": "0.2.623",
+    "extension_UI_version_observed": false,
+    "backend_sha_observed": false,
+    "kind": "ci_development_test",
+    "eligible_Store": false
+  },
+  "lane": "A",
+  "target": "settings-account-popover-member",
+  "target_case_ids": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
+  "workflow_runner": "original public-repository free macos-15-intel, unchanged reviewed workflow",
+  "result_artifact": {
+    "id": 12612732874,
+    "zip_sha256": "68111dc291c944f698a8c9da42f8165af687ea3dda3a89a25b6b979960bd0051",
+    "worker_hash_verified": true,
+    "raw_archive_files": 4
+  },
+  "resource_and_native_result": {
+    "journals": [
+      {
+        "name": "hosted-package-40229297028-1.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-25T20:10:29.954Z",
+          "runId": "hosted-package-40229297028-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "unsafe_codes": []
+      },
+      {
+        "name": "hosted-browser-40229297028-1.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-25T20:12:34.434Z",
+          "runId": "hosted-browser-40229297028-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "unsafe_codes": []
+      },
+      {
+        "name": "hosted-guest-40229297028-1.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-25T20:14:59.443Z",
+          "runId": "hosted-guest-40229297028-1",
+          "admitted": true,
+          "resourceInvalid": true,
+          "exitCode": 3,
+          "decision": "invalid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "unsafe_codes": ["RESOURCE_CPU_PENDING"]
+      }
+    ],
+    "report": {
+      "schema_version": 1,
+      "role": "member",
+      "status": "fail",
+      "failure_code": "owned_cdp_endpoint_timeout",
+      "build": {
+        "kind": "local_dev_unpacked",
+        "sourceSha": null
+      },
+      "case_outcomes": [
+        {
+          "id": "EXT-F-1001-T20",
+          "status": "unverified",
+          "observation_count": 0
+        },
+        {
+          "id": "EXT-F-1001-T23",
+          "status": "unverified",
+          "observation_count": 0
+        },
+        {
+          "id": "EXT-F-1001-T26",
+          "status": "unverified",
+          "observation_count": 0
+        }
+      ]
+    }
+  },
+  "normal_verifier": {
+    "decision": "REFUSED",
+    "reason": "HOSTED_RUN_NOT_SUCCESSFUL",
+    "certificate_issued": false
+  },
+  "fixture_preparation_not_product_auth": {
+    "existing_reviewer_identity_verified_read_only": true,
+    "nonadmin_and_approved_fixture_membership_verified_read_only": true,
+    "existing_authority_recovered_from_supported_private_auth": true,
+    "new_identity_membership_permission_or_key_created": false,
+    "canonical_environment_credentials_changed": false,
+    "existing_approved_org_secret_unchanged": true
+  },
+  "cleanup": {
+    "owned_link_secret_deleted_readback_absent_operator": true,
+    "owned_link_secret_absent_parent_GH_metadata_read": true,
+    "approved_fixture_archive_exact_restore_readback": "operator comparison MATCH; no independent backend replay yet",
+    "owned_private_inputs_removed_operator": true,
+    "remaining_private_files_parent_count": 0,
+    "private_directory": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/settings-a-1950-private-Js70FK",
+    "all_owned_runs_watchers_processes_terminal": true
+  },
+  "actual_UI_product_attempts": 0,
+  "accepted_product_passes": 0,
+  "product_failure_proved": false,
+  "case_closure_or_Store_claim": false,
+  "evidence_manifest": "docs/stabilization/evidence/settings-75-run40229297028/manifest.json",
+  "limits": "Failure before CDP/UI/member authentication; expected-role labels/build inputs are not runtime identity observations. CPU/startup cause not attributed. Latest6aa/currentmain not tested by this frozen75 run.",
+  "next_action": "Fresh independent evidence classification; retain original failed case and startup/CPU chronology; no blind retry, resource bypass or runner relocation."
+}

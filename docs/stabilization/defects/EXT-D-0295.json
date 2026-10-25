@@ -1,0 +1,70 @@
+{
+  "id": "EXT-D-0295",
+  "feature_id": "EXT-F-1008",
+  "case_ids": ["EXT-F-1008-T02"],
+  "title": "Frozen hosted execution and historical verification incorrectly depend on moving main",
+  "surface": "Supporting hosted acceptance source proof; no SEO product fault established",
+  "auth_mode": "Guest SEO original failure; generic member-data historical-verifier sibling",
+  "severity": "S2: blocks trustworthy frozen hosted acceptance before product UI",
+  "priority": "P1: preserve independent Git integration and frozen testing",
+  "state": "triaged",
+  "owner": "/root",
+  "preconditions": [
+    "Normal B40229119875 dispatched from exact75ab/v623 with successful MAIN CI40228213436 and developmentartifact12612417676; official native run checkout is75."
+  ],
+  "reproduction": [
+    "1. Keep workflow event and actual runner HEAD pinned to the admitted immutable75 source.",
+    "2. Current test-artifact importer performs its normal git fetch of moving origin/main, while accepting exact_pushed_commit_only artifact75.",
+    "3. SEO prepareDevelopment calls requireHostedDevelopmentCheckout, which calls current-main sourceCompatibility and refuses HEAD!=origin/main before UI."
+  ],
+  "expected": "Frozen execution and historical evidence bind immutable official run/checkout/artifact/workflow and full harness provenance; moving main after valid dispatch does not invalidate execution. Current-main dispatch, local promotion and release eligibility remain strict.",
+  "actual": "Normal artifact import succeeded20:14:06.596; ci_dev_checkout_not_origin_main at20:14:09.929 stops before runProfile/UI. Native permit admitted/resourceInvalidfalse but actualchildfailed1. No case report/screenshots or product credit.",
+  "cause": "Current-main adoption proof is reused for immutable hosted execution; historical SEO/member-data verification also uses operator current checkout as the wrong trust anchor.",
+  "reproducibility": "Primary actual hosted producer chain confirmed independently; minimized real-Git red/green guard not executed.",
+  "evidence": [
+    "docs/stabilization/reports/hosted-seo-b-75-source-refusal-20261025.json",
+    "docs/stabilization/reports/checkout-freeze-diagnosis-20261025.json",
+    "docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json"
+  ],
+  "source_pins": {
+    "scripts/development-source-compatibility.mjs": {
+      "sha256": "485d985a4e33d0d44b69c9855c96d43976a068d201d2fef2d028d5561c31e8d0",
+      "same_as_failed_75": true
+    },
+    "scripts/current-test-artifact.mjs": {
+      "sha256": "cc7c56b3b95a40324cee1e448b847e27afb8ef55db41df30092d5b8e2f049437",
+      "same_as_failed_75": true
+    },
+    "scripts/hosted-guest-acceptance.mjs": {
+      "sha256": "5116b5781ee2431048be0e97a09b12acc67d70753f27d3bc4df826e500e54a8e",
+      "same_as_failed_75": true
+    },
+    "scripts/hosted-remote-admission.mjs": {
+      "sha256": "70a488dddb2d19a679c111041af271549f8e0c99abb3681cae18b06e4f161bad",
+      "same_as_failed_75": true
+    },
+    ".github/workflows/hosted-guest-acceptance.yml": {
+      "sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+      "same_as_failed_75": true
+    }
+  },
+  "plan_status": "Amended bounded contract COMMIT by fresh independent attack, design only; NOT IMPLEMENTED/FIXED.",
+  "owner_ruling": "Separate explicit immutable hosted execution/historical-evidence proof from strict current-main adoption/release proof. Keep official run/artifact/workflow/case/resource/UI validation and full driver/runtime dirty/history checks; no global allow-stale flag, origin rewind, direct-helper bypass or retro-success for failed/noUI runs.",
+  "limits": "Exact origin SHA fetched on host not retained; parent6aa timing is bounded supporting attribution. A40229297028 resource/CDP failure is separate. No product failure, source fix, executed new unit red/green, native retest, certificate or Store acceptance.",
+  "resource_gate": "Fresh Maccheck51510 final20:21:01.313 refused2/admittedfalse solelyRESOURCE_DISK_LOW19.324GiB; no local implementation/test launch permitted.",
+  "transition_history": [
+    {
+      "at": "2026-10-25T20:36:34.947400+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual normal hosted B failed before UI at source checkout predicate."
+    },
+    {
+      "at": "2026-10-25T20:36:34.947400+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Fresh independent producer-chain diagnosis and sibling audit confirmed contextual proof mismatch; owner amended contract independently attacked."
+    }
+  ],
+  "next_action": "After normal resource recovery, implement explicit frozen-checkout and historical-certification proof with shared strict primitives; reproduce real origin-only fetch drift red→green and preserved dirty/mismatch/current-promotion negatives; fresh independent review, successful new exact-main CI, then one normal SEO original/adjacent retest. Never redispatch old75 or certify its failed/noUI result."
+}

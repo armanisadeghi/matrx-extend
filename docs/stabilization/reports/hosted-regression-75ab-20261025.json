@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "at": "2026-10-25T20:36:34.947400+00:00",
+  "status": "BOTH_TERMINAL_NO_PRODUCT_OBSERVATIONS_CLEANUP_COMPLETE",
+  "frozen_source": "75abadd4867ba642b6b4ba45bcff2736d36ff805",
+  "artifact_manifest_version": "0.2.623",
+  "MAIN_CI": 40228213436,
+  "development_artifact_id": 12612417676,
+  "development_artifact_digest": "sha256:6b211da709d4e5c04355e1efe1645db11a5989125679a78ee24a438e4f3d66cb",
+  "kind": "ci_development_test",
+  "eligible_Store": false,
+  "actual_extension_UI_identity_or_backend_SHA_observed": false,
+  "lanes": {
+    "B": {
+      "run": 40229119875,
+      "case": "guest-seo / notice-stacked",
+      "case_ids": ["EXT-F-1008-T02"],
+      "result": "Normal artifact import succeeded, immutable checkout/current-origin guard failed before UI; package/browservalid0, acceptancechild_failed1/resourceInvalidfalse.",
+      "report": "docs/stabilization/reports/hosted-seo-b-75-source-refusal-20261025.json",
+      "normal_certificate": "REFUSED HOSTED_RUN_NOT_SUCCESSFUL",
+      "unsupported_scope_separate": "Earlier full/T09 normal scope refusal retained; no T09 acceptance or bypass."
+    },
+    "A": {
+      "run": 40229297028,
+      "case": "settings-account-popover-member",
+      "case_ids": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
+      "result": "CDP endpoint timeout before UI/member authentication; package/browservalid0, acceptanceinvalid3/CPU100%/load9.83 on4CPUs.",
+      "report": "docs/stabilization/reports/settings-a-75-resource-invalid-20261025.json",
+      "normal_certificate": "REFUSED HOSTED_RUN_NOT_SUCCESSFUL"
+    }
+  },
+  "throughput": {
+    "owned_hosted_attempts": 2,
+    "actual_UI_product_attempts": 0,
+    "product_observations": 0,
+    "accepted_product_passes": 0,
+    "product_failures_proved": 0,
+    "supporting_defects_reproduced": 1,
+    "supporting_defect_id": "EXT-D-0295",
+    "independently_verified_product_fixes": 0,
+    "releases": 0
+  },
+  "independent_evidence_review": "docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json",
+  "cleanup": {
+    "both_owned_runs_watchers_processes_terminal": true,
+    "B_no_secret_or_fixture_mutations": true,
+    "A_owned_link_secret_deleted_and_absence_independently_checked": true,
+    "A_private_inputs_and_directory_absent_independently_checked": true,
+    "A_exact_backend_archive_restore": "Operator snapshot/restore/readback MATCH; independent backend replay not performed.",
+    "A_existing_approved_organization_secret_unchanged": true,
+    "no_new_account_membership_key_rotation_or_permission_grant": true
+  },
+  "source_integration": {
+    "last_observed_main": "befbdf56174d0d4c548cf006415c8d27a3277a97",
+    "source_advanced_after_dispatch": true,
+    "current6aa_CI": { "run": 40229437974, "conclusion": "success" },
+    "latest_befb_CI": {
+      "run": 40229845819,
+      "status": "completed",
+      "conclusion": "success",
+      "head_branch": "main"
+    },
+    "old_signout_CI_failure": "Superseded by successful e87/ce6/75/6aa fullCI; not a current blocker.",
+    "owner_last_observed_loaded_source": "f0d7a6b7fcb97afbb2bbc2414dff90f998083fff",
+    "owner_last_observed_version": "0.2.622",
+    "owner_latest_main_current": false,
+    "current_artifact_promotion_or_Chrome_Reload": "Not attempted while Mac resource admission refused.",
+    "latest_development_artifact_metadata_only": {
+      "id": 12613021942,
+      "digest": "sha256:fc012f880ff2be74dce8914948802857c1167553cbf56cd34efa93e8793941f3",
+      "source": "befbdf56174d0d4c548cf006415c8d27a3277a97",
+      "expired": false,
+      "import_or_promotion_attempted": false,
+      "reason": "Mac normal resource admission refused; source/eligibility must be rechecked before future adoption."
+    }
+  },
+  "local_capacity": {
+    "canonical_temp_cleanup_exit": 0,
+    "temp_tool_reported_freed": "1.4GB logical tool measurement, no sole physical-space attribution",
+    "canonical_dev_caches_exit": 1,
+    "dev_caches_tool_reported_freed": "0B",
+    "dev_caches_limit": "Per-entry PermissionError on protected macOS service temp entries; no permissions bypass or unrelated process termination.",
+    "policy_protections_copied_unchanged": true,
+    "concurrency_and_budget_lowered_only": true,
+    "fresh_normal_recovery_check": {
+      "actual_session": 51510,
+      "exit_code": 2,
+      "final_at": "2026-10-25T20:21:01.313Z",
+      "decision": "refused",
+      "reason": "RESOURCE_DISK_LOW",
+      "system_free_gib": 19.32434844970703,
+      "policy_minimum_gib": 20,
+      "pressure_level": 1,
+      "available_memory_gib": 11.2,
+      "journal": "docs/stabilization/resource-journals/hourly-recovery-20261025-2020.jsonl"
+    }
+  },
+  "daily_Store": "Reuse completed October25 primary577 published/Draft577 unpublished+official mail and actual Store-installed guest577 timed two-turn reply evidence on publicservera669. No new daily claim/private check/upload/submission; no candidate623/actualStore runtime proof from these failed runs.",
+  "open_work": [
+    "D294 prepared unapplied/latest transaction/predicate source unexecuted; no earlier green transferred.",
+    "D295 triaged approved design only; frozen execution and historical evidence must be separate from current release/adoption proof.",
+    "A startup/CPU/CDP cause remains unknown; no blind retry or runner relocation.",
+    "T02/T09/T20/T23/T26 and current source behavior remain unverified."
+  ],
+  "next_action": "Normal local resource recovery; then one bounded D295 implementation/real-Git/caller guards/fresh source review and new exact-main CI before original SEO retest. Continue D294 verification and separately reviewed A startup discriminant; do not rerun failed cases unchanged or weaken any guard.",
+  "reviewer_feedback_resolution": "Addressed minor metadata concern by publishing the final-state parent A receipt, excluding historical initial no-mutation flags and stale native_run_owned phase from operator scratch. Both runs terminal, actual cleanup states and independent limits explicit."
+}
