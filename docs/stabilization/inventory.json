@@ -31539,22 +31539,28 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "40229119875",
-              "source_sha": "75abadd4867ba642b6b4ba45bcff2736d36ff805",
-              "development_ci_run_id": 40228213436,
-              "development_artifact_id": 12612417676,
+              "status": "partial",
+              "run_id": "40241481628",
+              "source_sha": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+              "development_ci_run_id": 40240416949,
+              "development_artifact_id": 12616888627,
               "artifact_manifest_version": "0.2.623",
-              "runtime_extension_identity_observed": false,
-              "resource_decision": "child_failed",
+              "runtime_extension_identity_observed": true,
+              "resource_decision": "valid",
               "resource_invalid": false,
-              "actual_UI_observations": 0,
-              "new_product_credit": false,
-              "evidence": [
-                "docs/stabilization/reports/hosted-seo-b-75-source-refusal-20261025.json",
-                "docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json"
+              "observed_subtargets": [
+                {
+                  "id": "multiple_and_long_notice_clearance_at_native_360px",
+                  "status": "pass"
+                }
               ],
-              "scope": "Target mode only, no authenticated/signed-out UI observed. Source/current-origin guard stopped B before UI; resource/CDP startup stopped A before UI/auth. Earlier accepted source-bound history is preserved; no product failure, current-main or Store acceptance."
+              "full_case_pass": false,
+              "evidence": [
+                "docs/stabilization/reports/d295-native-b-20261025.json",
+                "docs/stabilization/reports/d295-native-b-40241481628-certificate.json",
+                "docs/stabilization/reports/d295-owner-final-evidence-peer-20261025.json"
+              ],
+              "scope": "One fresh independent bounded guest native360px stacked77/199-character notice target: nine clear Re-audit hitpoints, trusted running/settled/currenttitle, independent Dismiss and cleanup2/2. Normal frozen-source/historical certificate accepted with finalHEADbaa/origin4f52; no current-main eligibility. Screenshots startup-only, assertions/trace supply target evidence. Full warm/reload/stale-advice/failure/member/admin/Store acceptance remains unverified; supporting D295 closed, no new SEO product defect fixed."
             }
           },
           "result_history": [
@@ -32280,6 +32286,27 @@
               },
               "superseded_at": "2026-10-25T20:38:33.747127+00:00",
               "reason": "Newest frozen75 regression attempt failed before UI; retain earlier source-bound observations without transferring them to newer builds."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "40229119875",
+                "source_sha": "75abadd4867ba642b6b4ba45bcff2736d36ff805",
+                "development_ci_run_id": 40228213436,
+                "development_artifact_id": 12612417676,
+                "artifact_manifest_version": "0.2.623",
+                "runtime_extension_identity_observed": false,
+                "resource_decision": "child_failed",
+                "resource_invalid": false,
+                "actual_UI_observations": 0,
+                "new_product_credit": false,
+                "evidence": [
+                  "docs/stabilization/reports/hosted-seo-b-75-source-refusal-20261025.json",
+                  "docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json"
+                ],
+                "scope": "Target mode only, no authenticated/signed-out UI observed. Source/current-origin guard stopped B before UI; resource/CDP startup stopped A before UI/auth. Earlier accepted source-bound history is preserved; no product failure, current-main or Store acceptance."
+              }
             }
           ],
           "defect_ids": [

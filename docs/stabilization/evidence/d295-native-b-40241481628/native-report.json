@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "partial",
+  "scope": "two controlled guest SEO notices and trusted Re-audit at native 360px",
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+      "status": "pass",
+      "evidence": {
+        "viewport_width": 360,
+        "viewport_source": "native",
+        "notice_count": 2,
+        "long_message_length": 199,
+        "distinct_notice_titles": 2,
+        "visible_dismiss_counts": [1, 1],
+        "target_hit_points": 9,
+        "notice_hit_points": 0,
+        "current_title_matched": true,
+        "independently_dismissed": [[0, 1], [0, 0]],
+        "cleared_count": 0
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "case": "T01",
+      "part": "one audit per URL and slow-old-result race"
+    },
+    {
+      "case": "T02",
+      "part": "stale advice replacement and failure report after re-audit"
+    },
+    {
+      "case": "T03",
+      "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+    },
+    {
+      "case": "T04,T05,T08",
+      "part": "database save, saved-row history, and diff flows"
+    },
+    {
+      "case": "T06",
+      "part": "guest/member/admin history failure and retry modes"
+    },
+    {
+      "case": "T07",
+      "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+    },
+    {
+      "case": "T09",
+      "part": "detail controls beyond the bounded next batch; optional metadata-fixture phase is excluded by controlled scope"
+    },
+    {
+      "case": "T10-T13",
+      "part": "recommendations and Chat staging"
+    },
+    {
+      "case": "T14",
+      "part": "social snippet behavior beyond the two controlled public page states"
+    },
+    {
+      "case": "all",
+      "part": "member and admin modes"
+    }
+  ],
+  "last_safe_stage": "stacked_notice_trusted_reaudit_dispatched",
+  "last_safe_observable": {
+    "trustedInput": true
+  },
+  "current_operation": "build_recheck",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.623",
+      "treeSha256": "8b00aa2cad14f511eb68ee35c27283d8d16f56cc49d18d1b2c64d6005f411c96"
+    },
+    "after": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.623",
+      "treeSha256": "8b00aa2cad14f511eb68ee35c27283d8d16f56cc49d18d1b2c64d6005f411c96"
+    }
+  },
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+    "runId": 40240416949,
+    "runAttempt": 1,
+    "artifactId": 12616888627,
+    "githubArtifactDigest": "sha256:37a25d553447a3e6dd9932af6d5a776c56de2683f071117124b02995405a703d",
+    "version": "0.2.623",
+    "treeSha256": "8b00aa2cad14f511eb68ee35c27283d8d16f56cc49d18d1b2c64d6005f411c96",
+    "source": {
+      "originMain": "4f52e643b6d433cdf5fe5b1a8d019ec893c31093",
+      "localHead": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "case_selection": {
+    "scope": "notice-stacked",
+    "selected_cases": ["T02"],
+    "selected_subtargets": ["multiple_and_long_notice_clearance_at_native_360px"],
+    "excluded_cases": ["all other SEO targets; no full T02 or D199 closure"]
+  },
+  "resource_diagnostic_enabled": false,
+  "operation_start_sample": {
+    "at": "2026-10-25T22:50:22.679Z",
+    "user": 3032252,
+    "system": 1210785
+  },
+  "boundary_sample": {
+    "at": "2026-10-25T22:50:21.553Z",
+    "user": 2929286,
+    "system": 882432
+  },
+  "reaudit_transition_diagnostic": {
+    "observer_available": true,
+    "sample_count": 9,
+    "dropped_samples": 0,
+    "samples": [
+      {
+        "stage": "before_click",
+        "elapsed_ms": 1,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "click_event",
+        "elapsed_ms": 384,
+        "click_trusted": true,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "dom_transition",
+        "elapsed_ms": 390,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": true,
+        "auditSpinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "after_release",
+        "elapsed_ms": 402,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": true,
+        "auditSpinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "running_wait",
+        "elapsed_ms": 411,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": true,
+        "auditSpinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "settle_wait",
+        "elapsed_ms": 420,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": true,
+        "auditSpinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "dom_transition",
+        "elapsed_ms": 445,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "settle_wait",
+        "elapsed_ms": 531,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "finished",
+        "elapsed_ms": 542,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      }
+    ]
+  },
+  "click_phase": "release_returned",
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "stacked_notice_fixture_diagnostic": {
+    "failure_code": null,
+    "stage": "independent_dismiss",
+    "cleanup": {
+      "status": "cleared",
+      "attempted_count": 2,
+      "cleared_count": 2,
+      "failed_count": 0,
+      "failure_code": null
+    }
+  }
+}

@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-25 22:00 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-25T20:38:33.747127+00:00. 207 features · 831 cases · 1422 controls · 294 linked defect records.
+Generated 2026-10-25 23:02 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-25T20:38:33.747127+00:00. 207 features · 831 cases · 1422 controls · 294 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1338** — Pass: 94 · Partial: 95 · Fail: 1 · Unverified: 1137 · N/A: 11.
-Unverified splits into **201 explicitly marked unverified** and **936 with no result record**.
+Applicable case-by-role slots: **1338** — Pass: 94 · Partial: 96 · Fail: 1 · Unverified: 1136 · N/A: 11.
+Unverified splits into **200 explicitly marked unverified** and **936 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -26,7 +26,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
 | [Scrape](#scrape) | 1 | 10 pass · 7 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | 0 pass · 8 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 37 unverified · 0 deferred; 0/1 full | pass 10, partial 18, fail 0, unverified 82, n/a 0 | 14 |
-| [SEO](#seo) | 1 | 1 pass · 5 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 41, n/a 0 | 4 |
+| [SEO](#seo) | 1 | 1 pass · 6 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 1, partial 7, fail 0, unverified 40, n/a 0 | 3 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 6 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 48, n/a 0 | 2 |
@@ -1041,14 +1041,14 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Partial · member: Unverified · admin: Partial. **Cases:** 16. **Controls:** 16.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0198, EXT-D-0199, EXT-D-0247, EXT-D-0295
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0198, EXT-D-0199, EXT-D-0247
 
-**Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed), [EXT-D-0076](defects/EXT-D-0076.json) (closed), [EXT-D-0169](defects/EXT-D-0169.json) (retest-pass), [EXT-D-0170](defects/EXT-D-0170.json) (closed), [EXT-D-0174](defects/EXT-D-0174.json) (closed), [EXT-D-0176](defects/EXT-D-0176.json) (closed), [EXT-D-0183](defects/EXT-D-0183.json) (closed), [EXT-D-0198](defects/EXT-D-0198.json) (fixed), [EXT-D-0199](defects/EXT-D-0199.json) (fixed), [EXT-D-0247](defects/EXT-D-0247.json) (fixed), [EXT-D-0295](defects/EXT-D-0295.json) (fixed)
+**Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed), [EXT-D-0076](defects/EXT-D-0076.json) (closed), [EXT-D-0169](defects/EXT-D-0169.json) (retest-pass), [EXT-D-0170](defects/EXT-D-0170.json) (closed), [EXT-D-0174](defects/EXT-D-0174.json) (closed), [EXT-D-0176](defects/EXT-D-0176.json) (closed), [EXT-D-0183](defects/EXT-D-0183.json) (closed), [EXT-D-0198](defects/EXT-D-0198.json) (fixed), [EXT-D-0199](defects/EXT-D-0199.json) (fixed), [EXT-D-0247](defects/EXT-D-0247.json) (fixed), [EXT-D-0295](defects/EXT-D-0295.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-1008-T01 Auto-audit on URL navigation | Partial | Unverified | Unverified | EXT-F-1008-C01 |
-| EXT-F-1008-T02 Manual audit/re-audit | Unverified | Unverified | Unverified | EXT-F-1008-C02 |
+| EXT-F-1008-T02 Manual audit/re-audit | Partial | Unverified | Unverified | EXT-F-1008-C02 |
 | EXT-F-1008-T03 Restricted/unreachable page | Partial | Unverified | Unverified | EXT-F-1008-C03 |
 | EXT-F-1008-T04 Save audit and failure recovery | Unverified | Unverified | Unverified | EXT-F-1008-C04 |
 | EXT-F-1008-T05 History open/close and saved snapshot | Unverified | Unverified | Unverified | EXT-F-1008-C05 |
@@ -1068,8 +1068,8 @@ These historical checks retain their original artifact boundary; they do not est
 
 - EXT-F-1008-T01 · guest: Partial.  Reviewed frozen guest controlled run38041517954 adds 2 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass.
   Evidence / build / date recorded: 38016503649, ['.research/seo-controlled-followon-38016503649.json', '.research/seo-controlled-followon-38016503649-peer.json', '.research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json']
-- EXT-F-1008-T02 · guest: Unverified.
-  Evidence / build / date recorded: 40229119875, ['docs/stabilization/reports/hosted-seo-b-75-source-refusal-20261025.json', 'docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json']
+- EXT-F-1008-T02 · guest: Partial.
+  Evidence / build / date recorded: 40241481628, ['docs/stabilization/reports/d295-native-b-20261025.json', 'docs/stabilization/reports/d295-native-b-40241481628-certificate.json', 'docs/stabilization/reports/d295-owner-final-evidence-peer-20261025.json']
 - EXT-F-1008-T03 · guest: Partial.  Reviewed frozen guest controlled run38041517954 adds 2 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Current frozen579 adds only two independently evidence-reviewed postmanagerReload internal-error/recovery subtargets; oldwarm578notcredited. FullT03 stayspartial. Frozen584 adds warm/reload DNS failure, data scheme and internal-page observations with public recovery; overcallbudget and independent native retest remain explicit. No fullcasepromotion.
   Evidence / build / date recorded: 38016503649, ['.research/seo-controlled-followon-38016503649.json', '.research/seo-controlled-followon-38016503649-peer.json', '.research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json']
 - EXT-F-1008-T06 · guest: Partial.

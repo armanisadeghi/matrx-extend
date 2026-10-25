@@ -1,0 +1,10 @@
+{
+  "source": "Official artifact12617113920 / run40241481628-1 ZIP3259b41852b6c0e209fb7912101210493cdba33e7856438be1eda2b4ef25dc76",
+  "source_member": "test-results/seo-guest-acceptance.json",
+  "source_member_sha256": "ee23f6a09e5b26b3ff9b5f4723d024d00025fcb0057f65e2d2f9cbede6dd1c2f",
+  "published_file": "docs/stabilization/evidence/d295-native-b-40241481628/native-report.json",
+  "published_sha256": "888f56920b0382184b80a0736c3197947bf18a455f402d5ee81db204db0e85ec",
+  "transformation": "JSON formatting only; parsed equality asserted. Guest owned fixture, no authentication/credential values in native report.",
+  "image_limit": "Official images show initial skeleton/fixture only; not target-state corroboration.",
+  "peer": "docs/stabilization/reports/d295-owner-final-evidence-peer-20261025.json"
+}

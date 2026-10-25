@@ -1,0 +1,448 @@
+{
+  "task_id": "seo-b-d295-2203",
+  "lane": "B / fresh independent original SEO retest",
+  "owner": "/root/seo_b_d295_native_retest_2203",
+  "zero_authorship": true,
+  "status": "TERMINAL_BOUNDED_SUBTARGET_PASS_NORMAL_HISTORICAL_CERTIFICATE_VALID",
+  "at": "2026-10-25T22:58:51.915152+00:00",
+  "feature_id": "EXT-F-1008",
+  "case_id": "EXT-F-1008-T02",
+  "defect_id": "EXT-D-0295",
+  "source_fix_commit": "c79185365812522ded1196fb8241e224aa4f4554",
+  "fixture_correction_candidate": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+  "native_run": {
+    "id": 40241481628,
+    "attempt": 1,
+    "head_sha": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+    "conclusion": "success",
+    "completed_at": "2026-10-25T22:51:18Z",
+    "job_id": 121314016749,
+    "runner_id": 1000116927,
+    "runner_name": "GitHub Actions 1000116927",
+    "runner_label": "macos-15-intel",
+    "logical_cpus": 4,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40241481628"
+  },
+  "development_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+    "runId": 40240416949,
+    "runAttempt": 1,
+    "artifactId": 12616888627,
+    "githubArtifactDigest": "sha256:37a25d553447a3e6dd9932af6d5a776c56de2683f071117124b02995405a703d",
+    "version": "0.2.623",
+    "treeSha256": "8b00aa2cad14f511eb68ee35c27283d8d16f56cc49d18d1b2c64d6005f411c96",
+    "source": {
+      "originMain": "4f52e643b6d433cdf5fe5b1a8d019ec893c31093",
+      "localHead": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "runtime_build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.623",
+      "treeSha256": "8b00aa2cad14f511eb68ee35c27283d8d16f56cc49d18d1b2c64d6005f411c96"
+    },
+    "after": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.623",
+      "treeSha256": "8b00aa2cad14f511eb68ee35c27283d8d16f56cc49d18d1b2c64d6005f411c96"
+    }
+  },
+  "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "evidence_class": "Fresh non-HMR CI development unpacked Chrome; not actual Store installed, not public CRX, no new Store acceptance.",
+  "auth": {
+    "mode": "guest",
+    "evidence": "Owned fresh isolated browser profile, no login/session seed/credential staging; startup PNG shows G. Declaredmode is corroborated by reviewed fresh-profile runner flow, not a member/admin claim.",
+    "account_or_organization_mutations": false,
+    "guest_authentication_values_accessed_or_logged": false
+  },
+  "browser": {
+    "installed_download_version": "Chromium141.0.7390.37 / Playwright1194",
+    "version_limit": "Setup log proves downloaded full browser version; selected native report does not retain independent Browser.getVersion runtime response.",
+    "native_viewport_width": 360,
+    "viewport_source": "native",
+    "profile": "owned ephemeral native-sidepanel-qa-FH67KW",
+    "headless": "Default headed reviewed native runner; no diagnostic/headless override."
+  },
+  "backend_after_only": {
+    "git_sha": "08c577f7b4413ce76359aa12e8ad925b2ac121ce",
+    "built_at": "2026-10-25T22:17:17Z",
+    "branch": null,
+    "observed_at": "2026-10-25T22:58:51.915007+00:00",
+    "scope": "After-only public API observation; not native case bracket or per-request provenance."
+  },
+  "scope": {
+    "normal_case_scope": "notice-stacked",
+    "selected_subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+    "case_status": "partial",
+    "full_case_pass": false,
+    "other_modes_cases_store": "unverified",
+    "deferred": [
+      {
+        "case": "T01",
+        "part": "one audit per URL and slow-old-result race"
+      },
+      {
+        "case": "T02",
+        "part": "stale advice replacement and failure report after re-audit"
+      },
+      {
+        "case": "T03",
+        "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+      },
+      {
+        "case": "T04,T05,T08",
+        "part": "database save, saved-row history, and diff flows"
+      },
+      {
+        "case": "T06",
+        "part": "guest/member/admin history failure and retry modes"
+      },
+      {
+        "case": "T07",
+        "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+      },
+      {
+        "case": "T09",
+        "part": "detail controls beyond the bounded next batch; optional metadata-fixture phase is excluded by controlled scope"
+      },
+      {
+        "case": "T10-T13",
+        "part": "recommendations and Chat staging"
+      },
+      {
+        "case": "T14",
+        "part": "social snippet behavior beyond the two controlled public page states"
+      },
+      {
+        "case": "all",
+        "part": "member and admin modes"
+      }
+    ]
+  },
+  "native_observations": [
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+      "status": "pass",
+      "evidence": {
+        "viewport_width": 360,
+        "viewport_source": "native",
+        "notice_count": 2,
+        "long_message_length": 199,
+        "distinct_notice_titles": 2,
+        "visible_dismiss_counts": [1, 1],
+        "target_hit_points": 9,
+        "notice_hit_points": 0,
+        "current_title_matched": true,
+        "independently_dismissed": [[0, 1], [0, 0]],
+        "cleared_count": 0
+      }
+    }
+  ],
+  "running_observation": {
+    "trusted_click": true,
+    "disabled_spinner_observed_ms": [390, 402, 411, 420],
+    "settled_ms": 445,
+    "samples": 9,
+    "limit": "One controlled Re-audit running/settled transition; no broad failure/stale-advice/reload coverage."
+  },
+  "source_drift": {
+    "pre_ui_import_log": "2026-10-25T22:49:58.9498250Z DEVELOPMENT_TEST_IMPORTED ... exact_pushed_commit_only",
+    "pre_ui_prepared_log": "2026-10-25T22:50:01.8468130Z PREPARED_DEVELOPMENT baa... tree8b00...",
+    "initial_full_source_state_archived": false,
+    "initial_state_limit": "Importer writes full import-status.json but result ZIP does not include it. Initial log claim does not establish exact initial origin SHA by itself.",
+    "parent_metadata_push": {
+      "sha": "4f52e643b6d433cdf5fe5b1a8d019ec893c31093",
+      "commit_at": "2026-10-25T22:44:44Z",
+      "push_executor": 75510,
+      "push_exit": 0,
+      "authority": "Parent actual testimony plus operator Git observation."
+    },
+    "final_native_source_state": {
+      "originMain": "4f52e643b6d433cdf5fe5b1a8d019ec893c31093",
+      "localHead": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    },
+    "historical_verifier_operator_head_observed": "4f52e643b6d433cdf5fe5b1a8d019ec893c31093",
+    "historical_certificate_purpose": "historical-hosted-evidence",
+    "main_eligibility_claim": false
+  },
+  "certificate": {
+    "actual_executor": 7461,
+    "actual_exit": 0,
+    "path": ".output/stabilization-checkpoints/seo-b-d295-2203-certificate.json",
+    "sha256": "73743596517f592b6ad103879e8e0ee52c1d07c4ea35c1ea4c9b5e67f2866b10",
+    "value": {
+      "runId": "40241481628",
+      "attempt": "1",
+      "workflowSha": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+      "workflowSourceSha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+      "archiveDigest": "3259b41852b6c0e209fb7912101210493cdba33e7856438be1eda2b4ef25dc76",
+      "artifact": {
+        "sourceSha": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+        "artifactId": "12616888627",
+        "developmentRunId": "40240416949",
+        "developmentRunAttempt": 1,
+        "githubArtifactDigest": "sha256:37a25d553447a3e6dd9932af6d5a776c56de2683f071117124b02995405a703d",
+        "purpose": "historical-hosted-evidence",
+        "frozenCheckoutSha": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+        "compatibility": "exact-source",
+        "allowedDiffPaths": []
+      },
+      "valid": true,
+      "receipts": {
+        "hosted-package": {
+          "runId": "hosted-package-40241481628-1",
+          "sha256": "3fb112671b7f38e9dd8d8954e17587943939f6480c79c2d48358a9860a2691ea",
+          "decision": "valid"
+        },
+        "hosted-browser": {
+          "runId": "hosted-browser-40241481628-1",
+          "sha256": "1eadf9d70280e71ebb1415b129f18b6ccfa462414ba6ba487b005c972b3b2a97",
+          "decision": "valid"
+        },
+        "hosted-guest": {
+          "runId": "hosted-guest-40241481628-1",
+          "sha256": "51b24dcfac6e2909a174ca19c4e5991469783eda4e7004be59d0a1c33f902b61",
+          "decision": "valid"
+        }
+      }
+    }
+  },
+  "result_artifact": {
+    "id": 12617113920,
+    "name": "hosted-guest-40241481628-1",
+    "size_bytes": 38936,
+    "zip_sha256": "3259b41852b6c0e209fb7912101210493cdba33e7856438be1eda2b4ef25dc76",
+    "exact_zip": ".output/stabilization-checkpoints/seo-b-d295-40241481628-evidence/native-result.zip",
+    "download_executor": 5998,
+    "download_exit": 0
+  },
+  "actual_local_executors": {
+    "preflight63018": 0,
+    "plan20443": 0,
+    "dispatch86558": 0,
+    "watch58314": 0,
+    "download5998": 0,
+    "private_log_download88416": 0,
+    "historical_verify7461": 0
+  },
+  "resource_journals": {
+    "hosted-package-40241481628-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/seo-b-d295-40241481628-evidence/extracted/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40241481628-1.jsonl",
+      "sha256": "3fb112671b7f38e9dd8d8954e17587943939f6480c79c2d48358a9860a2691ea",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T22:45:36.853Z",
+        "runId": "hosted-package-40241481628-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        {
+          "at": "2026-10-25T22:44:22.950Z",
+          "code": "RESOURCE_JOURNAL_OPENED",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-25T22:45:30.864Z",
+          "code": "RESOURCE_ADMITTED",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-25T22:45:36.404Z",
+          "code": "RESOURCE_JOB_EXIT",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-25T22:45:36.853Z",
+          "code": "RESOURCE_FINAL_DECISION",
+          "reasons": null
+        }
+      ]
+    },
+    "hosted-guest-40241481628-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/seo-b-d295-40241481628-evidence/extracted/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40241481628-1.jsonl",
+      "sha256": "51b24dcfac6e2909a174ca19c4e5991469783eda4e7004be59d0a1c33f902b61",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T22:51:14.202Z",
+        "runId": "hosted-guest-40241481628-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        {
+          "at": "2026-10-25T22:48:32.433Z",
+          "code": "RESOURCE_JOURNAL_OPENED",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-25T22:49:40.188Z",
+          "code": "RESOURCE_ADMITTED",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-25T22:49:56.317Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-25T22:50:12.581Z",
+          "code": "RESOURCE_CPU_PENDING",
+          "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+        },
+        {
+          "at": "2026-10-25T22:50:12.683Z",
+          "code": "RESOURCE_PROCESS_ATTRIBUTION",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-25T22:50:25.746Z",
+          "code": "RESOURCE_JOB_EXIT",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-25T22:50:25.793Z",
+          "code": "RESOURCE_COMPLETION_RECOVERY_PENDING",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-25T22:50:41.878Z",
+          "code": "RESOURCE_CPU_PENDING",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-25T22:50:57.932Z",
+          "code": "RESOURCE_CPU_PENDING",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-25T22:51:14.099Z",
+          "code": "RESOURCE_CPU_RECOVERED",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-25T22:51:14.202Z",
+          "code": "RESOURCE_FINAL_DECISION",
+          "reasons": null
+        }
+      ]
+    },
+    "hosted-browser-40241481628-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/seo-b-d295-40241481628-evidence/extracted/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40241481628-1.jsonl",
+      "sha256": "1eadf9d70280e71ebb1415b129f18b6ccfa462414ba6ba487b005c972b3b2a97",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T22:47:44.865Z",
+        "runId": "hosted-browser-40241481628-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        {
+          "at": "2026-10-25T22:46:19.592Z",
+          "code": "RESOURCE_JOURNAL_OPENED",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-25T22:47:27.503Z",
+          "code": "RESOURCE_ADMITTED",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-25T22:47:43.745Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-25T22:47:44.703Z",
+          "code": "RESOURCE_JOB_EXIT",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-25T22:47:44.865Z",
+          "code": "RESOURCE_FINAL_DECISION",
+          "reasons": null
+        }
+      ]
+    }
+  },
+  "resource_limit": "Transient CPU_PENDING22:50:12 CPU.99/load11.23; no UNSAFE/STOP. Child0 finished22:50:25; controller waited three healthy recovery samples before CPU_RECOVERED/finalvalid0 at22:51:14. Do not call all intervals healthy.",
+  "cleanup": {
+    "owned_notice_fixture": {
+      "status": "cleared",
+      "attempted_count": 2,
+      "cleared_count": 2,
+      "failed_count": 0,
+      "failure_code": null
+    },
+    "owned_worker_detach": "Successful driver completion entails reviewed fixture detach finally path; no extra independent worker-detach artifact.",
+    "temporary_secrets_accounts_orgs_persistent_fixtures_created": false,
+    "native_job_terminal": true,
+    "local_watch_and_download_and_certificate_processes_terminal": true,
+    "host": "GitHub ephemeral original hosted runner, all three resource contract finals valid0; no later remote OS census available."
+  },
+  "screenshots": {
+    "files": [
+      ".output/stabilization-checkpoints/seo-b-d295-40241481628-evidence/extracted/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-FH67KW/native-side-panel.png",
+      ".output/stabilization-checkpoints/seo-b-d295-40241481628-evidence/extracted/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-FH67KW/normal-target-after-open.png"
+    ],
+    "limit": "Only initial guest-G skeleton panel and controlled opener; NOT decisive stacked-notice/after-dismiss images. Case proof relies on real native assertion/geometry/transition report and normal certificate."
+  },
+  "verdict_a": {
+    "bounded_subtarget": "PASS",
+    "whole_T02": "PARTIAL",
+    "D295": "Original successful frozen-checkout native route and historical normal certification after operator main advanced are independently retested; root/fresh peer decides closure after evidence review.",
+    "new_product_defects_fixed": 0,
+    "full_case_passes": 0,
+    "bounded_product_subtargets_passed": 1
+  },
+  "verdict_b": {
+    "verdict": "PASS_BOUNDED_NATIVE_PROVENANCE_RESOURCE_AND_CERTIFICATE",
+    "limits": [
+      "No source-author code-quality review by this lane.",
+      "No exact initial runner origin SHA beyond initial log claim; exact final sourceState retained.",
+      "No per-request backend correlation, actual Store or full SEO/current-main health inference.",
+      "Normal certificate validates selected subtarget only; never whole T02."
+    ]
+  },
+  "raw_evidence_sha256": {
+    "download.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "log-download.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "native-provenance-excerpts.txt": "e9113fe092580e99861e20cf35d73bf33c6150a010d359b449faa581dee5d7f1",
+    "native-private.log": "5a5b06c06e9a8dfcc80341981f74249debb97c5f654372524ff9390cc568b9ee",
+    "native-result.zip": "3259b41852b6c0e209fb7912101210493cdba33e7856438be1eda2b4ef25dc76",
+    "extracted/matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json": "ee23f6a09e5b26b3ff9b5f4723d024d00025fcb0057f65e2d2f9cbede6dd1c2f",
+    "extracted/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-FH67KW/native-side-panel.png": "86426d0be4776150d8df5a88f6c751b20c8b26f7f31b350bcdda6849f0f5bf6c",
+    "extracted/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-FH67KW/normal-target-after-open.png": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c",
+    "extracted/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40241481628-1.jsonl": "3fb112671b7f38e9dd8d8954e17587943939f6480c79c2d48358a9860a2691ea",
+    "extracted/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40241481628-1.jsonl": "51b24dcfac6e2909a174ca19c4e5991469783eda4e7004be59d0a1c33f902b61",
+    "extracted/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40241481628-1.jsonl": "1eadf9d70280e71ebb1415b129f18b6ccfa462414ba6ba487b005c972b3b2a97"
+  },
+  "owned_jobs": [],
+  "next_action": "Parent integrates uniquely named sanitized evidence/certificate/journals, rotates fresh evidence reviewer, and updates only bounded inventory cells/defect transitions supported. No additional dispatch or source edit by this lane."
+}
