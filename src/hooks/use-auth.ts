@@ -76,7 +76,7 @@ export function resetAuthBootGuard(): void {
 
 type CanonicalSession =
   | { kind: 'authenticated'; user: UserProfile; error: string | null }
-  | { kind: 'guest'; error: string | null };
+  | { kind: 'guest'; error: string | null; savedAccountLost?: true };
 
 /** Every path into signed-in UI reads the same stored session and bearer. */
 async function readCanonicalSession(expectedUserId?: string): Promise<CanonicalSession> {
@@ -100,12 +100,13 @@ async function readCanonicalSession(expectedUserId?: string): Promise<CanonicalS
     return { kind: 'guest', error: 'Could not read your saved sign-in. Reload to retry.' };
   }
   if (!restored) {
-    return {
-      kind: 'guest',
-      error: profile
-        ? 'Could not restore your saved sign-in. Reload to retry, or sign in again.'
-        : safariFailure,
-    };
+    return profile
+      ? {
+          kind: 'guest',
+          error: 'Could not restore your saved sign-in.',
+          savedAccountLost: true,
+        }
+      : { kind: 'guest', error: safariFailure };
   }
   let verified: UserProfile | null = null;
   try {
@@ -118,7 +119,8 @@ async function readCanonicalSession(expectedUserId?: string): Promise<CanonicalS
   if (!verified) {
     return {
       kind: 'guest',
-      error: 'Could not verify your saved sign-in. Reload to retry, or sign in again.',
+      error: 'Could not verify your saved sign-in.',
+      savedAccountLost: true,
     };
   }
   if (
@@ -127,7 +129,8 @@ async function readCanonicalSession(expectedUserId?: string): Promise<CanonicalS
   ) {
     return {
       kind: 'guest',
-      error: 'This sign-in does not match your saved account. Sign in again to choose an account.',
+      error: 'This sign-in does not match your saved account.',
+      savedAccountLost: true,
     };
   }
   return { kind: 'authenticated', user: verified, error: safariFailure };
@@ -144,7 +147,18 @@ type AppliedSession =
  * SW (which holds its own Supabase realtime client) all sync.
  */
 export function useAuth() {
-  const { user, isAdmin, status, error, setUser, setIsAdmin, setStatus, setError } = useAuthStore();
+  const {
+    user,
+    isAdmin,
+    status,
+    error,
+    sessionEnded,
+    setUser,
+    setIsAdmin,
+    setStatus,
+    setError,
+    setSessionEnded,
+  } = useAuthStore();
 
   const applyCanonicalSession = useCallback(
     async (isCurrent: () => boolean, expectedUserId?: string): Promise<AppliedSession> => {
@@ -165,9 +179,11 @@ export function useAuth() {
         setUser(null);
         setIsAdmin(false);
         setError(session.error);
+        setSessionEnded(session.savedAccountLost === true);
         return { kind: 'guest' };
       }
 
+      setSessionEnded(false);
       setUser(session.user);
       setIsAdmin(false);
       setError(session.error);
@@ -191,7 +207,7 @@ export function useAuth() {
       setIsAdmin(admin);
       return { kind: 'authenticated', user: session.user, isAdmin: admin };
     },
-    [setUser, setIsAdmin, setError],
+    [setUser, setIsAdmin, setError, setSessionEnded],
   );
 
   // On mount: hydrate user state, restore Supabase session, re-check admin,
@@ -297,13 +313,28 @@ export function useAuth() {
     if (attempt !== signInGeneration) return;
     setUser(null);
     setIsAdmin(false);
+    setError(null);
+    setSessionEnded(false);
     publishAuthChange({ user: null, isAdmin: false });
     // Allow the next sign-in to re-run the one-time boot work.
     bootRan = false;
-  }, [setUser, setIsAdmin]);
+  }, [setUser, setIsAdmin, setError, setSessionEnded]);
 
   // `isAdmin` is what screens show: the verified role AND Debug turned on in the avatar menu.
   // `isRealAdmin` is the verified role alone — only the menu's Debug switch reads it.
   const showAdmin = useShowAdmin();
-  return { user, isAdmin: showAdmin, isRealAdmin: isAdmin, status, error, signIn, signOut, retry };
+  return {
+    user,
+    isAdmin: showAdmin,
+    isRealAdmin: isAdmin,
+    status,
+    error,
+    sessionEnded,
+    signIn,
+    signOut,
+    retry,
+    // Keep going as a guest: forget the saved account this device could not restore.
+    continueAsGuest: signOut,
+    dismissError: () => setError(null),
+  };
 }

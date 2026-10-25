@@ -3,7 +3,15 @@ import { STORAGE_KEYS } from '@/config/env';
 import type { UserProfile } from '@/lib/auth/types';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { useAuthStore } from '@/state/auth';
-import { act, fireEvent, render, renderHook, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const dependencies = vi.hoisted(() => ({
@@ -61,7 +69,13 @@ async function broadcastAuth(payload: { user: UserProfile | null; isAdmin?: bool
 
 beforeEach(async () => {
   resetAuthBootGuard();
-  useAuthStore.setState({ user: null, isAdmin: false, status: 'unknown', error: null });
+  useAuthStore.setState({
+    user: null,
+    isAdmin: false,
+    status: 'unknown',
+    error: null,
+    sessionEnded: false,
+  });
   dependencies.restore.mockReset().mockResolvedValue(true);
   dependencies.verifiedUser.mockReset().mockResolvedValue(null);
   dependencies.signIn.mockReset();
@@ -264,5 +278,28 @@ describe('useAuth canonical session entry points', () => {
     await waitFor(() => expect(useAuthStore.getState().isAdmin).toBe(true));
     expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(2);
     expect(dependencies.signIn).not.toHaveBeenCalled();
+  });
+
+  it('an expired saved sign-in offers Sign in or Use as guest, never a red failure bar', async () => {
+    await chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: member });
+    dependencies.restore.mockResolvedValue(false);
+    const view = within(
+      render(
+        <AuthGate>
+          <div>Chat</div>
+        </AuthGate>,
+      ).container,
+    );
+
+    await waitFor(() => expect(view.getByText("You've been signed out")).toBeTruthy());
+    expect(view.queryByText(/Sign-in failed/)).toBeNull();
+    expect(useAuthStore.getState().sessionEnded).toBe(true);
+    expect(view.getByRole('button', { name: 'Sign in' })).toBeTruthy();
+
+    fireEvent.click(view.getByRole('button', { name: 'Use as guest' }));
+    await waitFor(() => expect(useAuthStore.getState().sessionEnded).toBe(false));
+    expect(dependencies.signOut).toHaveBeenCalledTimes(1);
+    expect(useAuthStore.getState().error).toBeNull();
+    expect(view.queryByText("You've been signed out")).toBeNull();
   });
 });

@@ -1,15 +1,15 @@
 import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
 import { highlightsContextValue } from '@/lib/chat/attached-context';
-import { useGoogleFilesStore } from '@/state/google-files';
 import { useHighlightStore } from '@/state/highlights';
 /**
  * The extension's registrations on the package chat's composer extensions
- * (`@ai-matrx/chat/host/composer-extensions`): the highlight and Google-file attachment sources and
+ * (`@ai-matrx/chat/host/composer-extensions`): the highlight attachment source and
  * the task-panel companion. Real stores, real package registry — only the highlight DB read is a
  * double. The payload must be the SAME context keys the extension's own send path builds.
  */
 import {
   collectAttachmentSourceContext,
+  listComposerAttachmentSources,
   listConversationCompanions,
   resetComposerExtensionsForTests,
 } from '@ai-matrx/chat/host/composer-extensions';
@@ -35,7 +35,6 @@ describe('extension composer extensions', () => {
   beforeEach(async () => {
     resetComposerExtensionsForTests();
     useHighlightStore.setState({ attachedIds: [] });
-    useGoogleFilesStore.setState({ attachedIds: [] });
   });
 
   async function register() {
@@ -47,12 +46,10 @@ describe('extension composer extensions', () => {
     expect(await collectAttachmentSourceContext(CONV)).toBeNull();
   });
 
-  it("puts attached highlights and Google files on the turn as the extension's own context keys", async () => {
+  it("puts attached highlights on the turn as the extension's own context key", async () => {
     await register();
     useHighlightStore.setState({ attachedIds: ['h1'] });
-    useGoogleFilesStore.setState({ attachedIds: ['drive-file-7'] });
     const context = await collectAttachmentSourceContext(CONV);
-    expect(context?.__google_files).toEqual(['drive-file-7']);
     const highlights = context?.highlights as {
       count: number;
       items: Array<{ id: string; text: string }>;
@@ -64,6 +61,11 @@ describe('extension composer extensions', () => {
     });
     // The same builder the extension's send path uses.
     expect(highlights).toEqual(highlightsContextValue(highlights.items as never));
+  });
+
+  it('draws no Google "Files" chip on the composer', async () => {
+    await register();
+    expect(listComposerAttachmentSources().map((s) => s.id)).toEqual(['highlights']);
   });
 
   it('registers the task-panel companion once, even if registration runs twice', async () => {

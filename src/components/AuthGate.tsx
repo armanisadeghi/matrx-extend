@@ -1,5 +1,7 @@
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@ai-matrx/design-system';
+import { LogIn, RefreshCw, X } from 'lucide-react';
+import { useId } from 'react';
 
 /**
  * Pass-through wrapper. Kept as a named component so existing call sites
@@ -16,26 +18,102 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   // session, refresh admin flag) still runs on cold sidepanel open even if
   // no other early component subscribes. The hook is internally guarded
   // against double boot.
-  const { error, retry, status, user } = useAuth();
+  const { error, sessionEnded } = useAuth();
   return (
     <>
-      {error && (
-        <div
-          role="alert"
-          className="flex shrink-0 items-center justify-between gap-3 border-b border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive"
-        >
-          <span>{user ? error : `Sign-in failed: ${error}`}</span>
+      {sessionEnded ? <SessionEndedCard /> : error ? <AuthNotice /> : null}
+      {children}
+    </>
+  );
+}
+
+/**
+ * The saved account could not be restored (usually an expired session). The
+ * panel works as a guest, so this is a choice, not a failure: sign back in, or
+ * keep going as a guest (which forgets the stale account on this device).
+ */
+export function SessionEndedCard() {
+  const { status, signIn, retry, continueAsGuest } = useAuth();
+  const busy = status === 'signing-in';
+  const titleId = useId();
+  return (
+    <div className="shrink-0 px-3 pt-3">
+      <section
+        role="alert"
+        aria-labelledby={titleId}
+        className="rounded-xl border border-border bg-card px-3.5 py-3 shadow-sm"
+      >
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <LogIn className="size-4" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2 id={titleId} className="text-sm font-medium text-foreground">
+              You've been signed out
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Sign in to pick up where you left off, or keep going as a guest.
+            </p>
+          </div>
+          <button
+            type="button"
+            aria-label="Try restoring my sign-in again"
+            title="Try again"
+            disabled={busy}
+            onClick={() => void retry()}
+            className="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-50"
+          >
+            <RefreshCw className="size-3.5" />
+          </button>
+        </div>
+        <div className="mt-3 flex gap-2">
+          <Button size="sm" className="flex-1" disabled={busy} onClick={() => void signIn()}>
+            {busy ? 'Signing in…' : 'Sign in'}
+          </Button>
           <Button
             size="sm"
             variant="outline"
-            disabled={status === 'signing-in'}
-            onClick={() => void retry()}
+            className="flex-1"
+            disabled={busy}
+            onClick={() => void continueAsGuest()}
           >
-            Try again
+            Use as guest
           </Button>
         </div>
-      )}
-      {children}
-    </>
+      </section>
+    </div>
+  );
+}
+
+/** Any other account notice (a failed sign-in, a role check that did not answer): quiet, dismissible. */
+function AuthNotice() {
+  const { error, retry, status, user, dismissError } = useAuth();
+  if (!error) return null;
+  return (
+    <div
+      role="alert"
+      className="flex shrink-0 items-center gap-2 border-b border-border bg-muted/60 px-3 py-1.5 text-xs text-muted-foreground"
+    >
+      <span className="min-w-0 flex-1 truncate" title={error}>
+        {user ? error : `Couldn't sign you in. ${error}`}
+      </span>
+      <Button
+        size="sm"
+        variant="ghost"
+        className="h-6 px-2 text-xs"
+        disabled={status === 'signing-in'}
+        onClick={() => void retry()}
+      >
+        Try again
+      </Button>
+      <button
+        type="button"
+        aria-label="Dismiss"
+        onClick={dismissError}
+        className="flex size-6 items-center justify-center rounded-md hover:bg-accent hover:text-foreground"
+      >
+        <X className="size-3.5" />
+      </button>
+    </div>
   );
 }

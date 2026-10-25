@@ -784,48 +784,48 @@ Every entry follows this shape:
 - **Expected:** no destructive control in the side panel acts on a single click. `pnpm test -- destructive-confirm-guard` walks the source and fails on any that does.
 - **Edge cases worth poking:** "Clear done" is absent (not disabled) when nothing is done; the highlighter's overlay trash does nothing when the side panel is closed (there is no listener to confirm with — pre-existing gap, noted in `.matrx/AGENT_TASKS.md` TASK-013).
 
-### Composer — Google Files chip (`__google_files`)
-- **What it does:** Attaches a Google Doc/Sheet the user already registered
-  with AI Matrx to the chat turn. Attached ids ride as the reserved
-  `__google_files` context key; the server names the files for the agent and
-  turns on `google_workspace` for that turn.
-- **Where to test:** Side panel → **Chat** tab → composer toolbar → **Files**.
+### Composer — no Google "Files" chip
+- **What it does:** The chat composer carries no always-on Google **Files**
+  pill (Arman, 2026-10-25). Google files reach a chat through the platform's
+  connections and context.
+- **Where to test:** Side panel → **Chat** tab → composer.
+- **Steps:** Open a new chat and an existing conversation.
+- **Expected:** No **Files** chip above the text box in either. Attached page
+  highlights still show their own pill when present.
+
+### Chat — header bar
+- **What it does:** One slim bar above the chat: the Chats toggle (left), the
+  open conversation's title (or "New chat"), and New chat (right), on one
+  aligned row with a hairline under it.
+- **Where to test:** Side panel → **Chat** tab.
 - **Steps:**
-  1. Open the chat composer. Confirm a **Files** chip sits next to the
-     settings (sliders) chip — it must be there even with no Google account
-     connected.
-  2. Click it with nothing connected/picked → expect the pitch text plus a
-     **Choose files in AI Matrx** link. Click it; it opens
-     `https://aimatrx.com/user-settings/integrations/google-workspace` in a
-     new tab.
-  3. On the web app, connect Google and pick a Doc and a Sheet with the
-     Google Picker. Back in the side panel, reopen the chip (no reload) →
-     both files are listed, Docs first, with the account email under each.
-  4. Toggle one on. The trigger reads **1 file**. Send "What is in the
-     attached document?".
-  5. Open the **Debug** tab and find the built-context log line → the key
-     list includes `__google_files`, and its value is a plain array of id
-     strings (not an object, not content blocks).
-- **Expected:** The agent names the attached file and can read/edit it,
-  without the extension declaring `google_workspace` anywhere.
-- **Edge cases worth poking:**
-  - **Conversation switch must not leak the tray.** Attach a file in
-    conversation A, then start a new chat (or open a different one from
-    history) and send a message. The Files chip must read **Files** (empty),
-    and the Debug tab's context log for that send must have **no**
-    `__google_files` key. A stale attachment riding into another conversation
-    would also silently turn on `google_workspace` there.
-  - Attach a file, then un-pick it on the web app and reopen the chip — it
-    drops out of the tray rather than being sent.
-  - **Failed load is not "nothing connected."** Go offline (or block the
-    Supabase host in DevTools) and open the chip: expect the amber
-    "Couldn't load your Google files just now" message with a **Try again**
-    button — **not** the "Choose files in AI Matrx" pitch. Restore the network
-    and click Try again; the list appears. A `supabase` error is in the Debug
-    tab either way, and the attached tray is NOT emptied by the failure.
-  - **Detach all** clears the tray. The tray is sticky across sends within one
-    conversation and resets when the side panel is closed and reopened
-    (session-scoped, like highlights).
+  1. On a new chat the bar reads **New chat**. Open a conversation from Chats:
+     the bar shows its title, truncated with an ellipsis when long.
+  2. Click the left toggle: the list opens and the bar reads **Chats**; click
+     again to close.
+  3. Click the pencil: a fresh chat opens and the list closes.
+- **Expected:** The icons sit on the same baseline as the title; nothing
+  floats or wraps at the narrowest panel width.
+
+### Signed out — soft "Sign in / Use as guest" card
+- **What it does:** When the saved sign-in can't be restored (usually an
+  expired session), the panel shows one calm card — "You've been signed out"
+  with **Sign in** and **Use as guest** — instead of red error bars. Chat waits
+  for the choice instead of failing with "session is not ready".
+- **Where to test:** Side panel, any tab.
+- **Steps:**
+  1. Signed in, open DevTools on the side panel and in
+     `chrome.storage.local` corrupt the saved Supabase session (or wait for it
+     to expire), keeping the saved profile. Reload the panel.
+  2. Expect the card at the top; no red "Sign-in failed" bar and no red
+     "Chat could not start" text.
+  3. **Use as guest** → the card goes, the avatar shows the guest, and a chat
+     message sends as a guest.
+  4. Repeat step 1, then **Sign in** → normal sign-in; the card goes and chat
+     opens as you. The small circular-arrow button retries the saved sign-in.
+- **Expected:** No dead end: every state offers Sign in or Use as guest, and
+  any other account notice (e.g. a role check that did not answer) is a quiet
+  grey line with **Try again** and a dismiss **×**.
 
 ### Side panel — Tools tab
 - **What it does:** Visible catalog of every registered tool with

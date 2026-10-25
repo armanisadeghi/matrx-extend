@@ -1,21 +1,17 @@
 /**
  * What the extension adds around the package chat's composer (package mode only): the highlight
- * and Google-file attachment sources and the per-conversation task panel. Each is the extension's
+ * attachment source and the per-conversation task panel. Each is the extension's
  * own existing component — nothing is copied; the package draws nothing for a source or companion
  * the host did not register (`@ai-matrx/chat/host/composer-extensions`).
  *
- * The payloads are the SAME context keys the extension's own send path builds
- * (`lib/chat/attached-context`): `highlights` (one bundled key) and the reserved `__google_files`
- * (a plain array of Drive file ids).
+ * The payload is the SAME context key the extension's own send path builds
+ * (`lib/chat/attached-context`): `highlights` (one bundled key). There is no always-on Google
+ * "Files" chip (Arman, 2026-10-25): Google files reach a chat through the platform's own
+ * connections and context, not a pill on every composer.
  */
 
-import { GoogleFileAttachmentChip } from '@/features/chat/GoogleFileAttachmentChip';
 import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
-import {
-  highlightsContextValue,
-  resolveAttachedGoogleFileIds,
-  resolveAttachedHighlights,
-} from '@/lib/chat/attached-context';
+import { highlightsContextValue, resolveAttachedHighlights } from '@/lib/chat/attached-context';
 import { useListsStore, useListsSubscriber } from '@/state/lists';
 import {
   registerComposerAttachmentSource,
@@ -37,19 +33,6 @@ export function registerExtensionComposerExtensions(): void {
     contribute: async () => {
       const items = await resolveAttachedHighlights();
       return items ? { highlights: highlightsContextValue(items) } : null;
-    },
-  });
-
-  registerComposerAttachmentSource({
-    id: 'google-files',
-    Chip: () => (
-      <span data-rail-entry="" className="inline-flex shrink-0">
-        <GoogleFileAttachmentChip />
-      </span>
-    ),
-    contribute: () => {
-      const ids = resolveAttachedGoogleFileIds();
-      return ids ? { __google_files: ids } : null;
     },
   });
 
