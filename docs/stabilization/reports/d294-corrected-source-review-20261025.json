@@ -1,0 +1,80 @@
+{
+  "task_id": "d294_final_independent_review",
+  "at": "2026-10-25T18:01:08.125446+00:00",
+  "status": "CHANGES_REQUESTED",
+  "lane": "fresh zero-authorship corrected-source verifier",
+  "frozen_files": {
+    "tests/browser/scrape-save-auth-report.mjs": {
+      "sha256": "e4a9550a40c1d0570149a94938ad7e248cecf27ffac2b3e297d9ef2bb5261de0",
+      "matches": true
+    },
+    "tests/browser/scrape-save-native-acceptance.mjs": {
+      "sha256": "051d113c4cc9ff51237323acd976d00f486bf52a8276ee2197eddd125dbc2491",
+      "matches": true
+    },
+    "tests/browser/scrape-save-member-auth-diagnostic.test.mjs": {
+      "sha256": "e7e1423404284988f6f6569ab472710dc7384c17cc19587a04f5128737b3cbab",
+      "matches": true
+    }
+  },
+  "prior_findings": {
+    "D294-R1": "ADDRESSED: safeAuthentication projects member mode/observed booleans/resolution and null until available; actual producer completion/failure plus privatefield guards added.",
+    "D294-R2": "ADDRESSED: actual subprocess deterministic external clock, ISO/publication order/latest equality/first_at preservation assertions; scratch corrupt-timestamps and reset-first-at mutants tested by suite.",
+    "D294-R3": "ADDRESSED: actual extracted member producer auth_io_failure injects EACCES at rename; assertion requires health only and no action entry.",
+    "D294-R4": "ADDRESSED: safeArtifact explicitly rejects wrong kind or eligible_store != false; wrong-kind/Store-eligibility guards added."
+  },
+  "A": {
+    "verdict": "PARTIAL supporting diagnostic contract; native/member acceptance UNVERIFIED",
+    "supported": [
+      "Existing helper/report path reused; finite native/auth stage and within-stage safe observation projection",
+      "Same sync0600 temporary write/fsync/atomic rename serves intermediate and final publication",
+      "auth_start follows existing health check; auth_complete follows all original member assertions; pre_save before guarded action is explicitly intent",
+      "Safe artifact/authentication provenance and new timestamp/IO guard coverage address prior confirmed gaps"
+    ],
+    "missing": [
+      "Unknown native/auth stage canary is rejected by checkpoint but already assigned to raw report and survives outer final serialization. Approved callback-boundary redaction guard remains incomplete."
+    ],
+    "limits": "No browser/auth/backend/AI/test command or source edit by reviewer. No product behavior pass, CPU cause, native runtime validity, member cleanup or release readiness inferred."
+  },
+  "B": {
+    "verdict": "FAIL: failed publication state can suppress retry, plus final unknown-stage canary path lacks guard",
+    "supported": [
+      "Actual source-extracted producer seam and real synchronous writer in subprocesses; IPC barriers then default SIGTERM",
+      "Prior complete checkpoint preserved on interrupted final replacement; scratch mutation avoids shared-source sabotage",
+      "Parent sole guarded final focused run27397 now terminal: reviewer read raw aggregate955total944pass0fail11skip0cancel and final journal18:00:06.404 valid0/resourceInvalidfalse; parent actualexecutor exit0 is root testimony. Green does not cure new static findings."
+    ],
+    "test_limits": "Reviewer independently read parent raw log/journal after terminal, did not execute tests or own actual27397 session. First batch950/939 belongs earlier hashes and is retained as historical only."
+  },
+  "findings": [
+    {
+      "id": "D294-R5",
+      "severity": "Important",
+      "file": "tests/browser/scrape-save-auth-report.mjs",
+      "line": 252,
+      "issue": "recordScrapeSaveCheckpoint compares diagnostics against mutable report.auth_diagnostic, mutates that field at253 and diagnostic_progress267 before publishScrapeSaveReport278 can throw. If rename fails once, repeated identical observation matches the already-mutated in-memory diagnostic and returns at252 without attempting IO; last on-disk checkpoint still lacks that observation. Native/auth stage duplicate suppression264 has same pre-publication progress risk.",
+      "actual_caller_path": "settings-native-auth-driver.mjs waitForOrganizationOption read376 and selected-organization read826 call onAuthDiagnostic inside settings-panel-driver.mjs waitFor read47; waitFor catch49 converts any exception to transient and polls again. A one-time callback publication failure can therefore be followed by identical callback returning without durable publication. This is a source-derived counterexample, not an executed failure reproduction by this read-only reviewer.",
+      "why": "Violates approved synchronous meaningful-update durability before callback return and persistence-error stop/continuation contract; normal successful IO/SIGTERM tests do not exercise this path.",
+      "correction_guard": "Owner reproduce through real helper+actual callback/waiter seam: establish prior checkpoint, fail one publication, repeat same observation; require either durable retry before return or explicit latched refusal, never successful dedupe of unpublished state. Apply same atomic state/publication rule to progress/native stage repeats. No guard/shutdown bypass."
+    },
+    {
+      "id": "D294-R6",
+      "severity": "Important supporting redaction contract; no current credential egress demonstrated",
+      "file": "tests/browser/scrape-save-native-acceptance.mjs",
+      "line": 565,
+      "issue": "Actual native callback assigns native_stage565 and auth callback assigns auth_stage668 before validation. Invalid/unknown label throws fixed checkpoint-boundary error, but outer catch1270/final1275 invokes writeScrapeSaveReport, whose raw full-report publisher323-324 retains those assigned strings. memberAuthFailureReport fallback can also retain a regex-valid unknown auth stage.",
+      "actual_caller_limit": "Current native/auth producers are finite trusted constants and matched helper allowlists; this review does not establish a current real credential value reaching them. The approved guard contract explicitly requires unknown-stage/private canary injection at callback boundaries with none retained; the new tests cover diagnostic/provenance/private auth fields but not callback→catch→final unknown stages.",
+      "correction_guard": "Validate/project stages before mutating raw report, and guard actual native/auth callback rejection through normal failure/final writer with unknown-stage private canaries. Ensure any derived auth_failure stage remains finite/safe. Keep legitimate final completion authority and existing resource/cleanup semantics."
+    }
+  ],
+  "owner_rulings": "Parent explicitly accepted both R5/R6 as Important and notified builder, awaiting root27397 terminal before edits; changed-hypothesis correction and separate fresh reviewer required.",
+  "actions": "Read-only source/available-log review except this exact report. No source edits, tests, heavy jobs, UI, auth, backend, AI, dispatch, commit or push.",
+  "next_action": "Parent obtains final current test verdict, then real-seam red reproduction and bounded transactional-state/stage-validation correction. Fresh zero-authorship review after updated guarded checks. Native diagnostic/member case remains separately gated exact-artifact work.",
+  "current_batch_test_evidence": {
+    "run": "d294-final-focused-20261025-1758",
+    "actual_session": 27397,
+    "actual_exit_code": "0 root executor testimony",
+    "reviewer_log_read": "955total944pass0fail11skip0cancel",
+    "final_journal": "2026-10-25T18:00:06.404Z valid0/resourceInvalidfalse",
+    "reviewer_execution": false
+  }
+}

@@ -23,11 +23,15 @@
   "evidence": [
     "docs/stabilization/reports/member-checkpoint-diagnosis-20261025.json",
     "docs/stabilization/reports/member-none-f771-resource-peer.json",
-    "docs/stabilization/reports/startup-f771-evidence-peer.json"
+    "docs/stabilization/reports/startup-f771-evidence-peer.json",
+    "docs/stabilization/reports/d294-initial-source-review-20261025.json",
+    "docs/stabilization/reports/d294-corrected-source-review-20261025.json",
+    "docs/stabilization/reports/d294-transaction-source-review-20261025.json",
+    "docs/stabilization/reports/d294-prepared-resource-checkpoint-20261025.json"
   ],
   "probe": "0.2s source-extracted actual callback plus real report helper subprocess; normal SIGTERM after IPC milestone yields absent report. Supporting reproduction only, not browser/CPU/product proof. Probe files removed.",
-  "plan_status": "Approved amended contract now in implementation; no tests/native acceptance yet.",
-  "limits": "No CPU cause, native pass, member retry authorization, threshold/runner/shutdown changes or product repair claimed.",
+  "plan_status": "Implementation prepared and preserved UNAPPLIED; latest transaction/predicate batch unexecuted because normal resource preflight refused. State remains in-fix, not fixed/closed.",
+  "limits": "Earlier950/939/0/11 and955/944/0/11 source suites valid0 certify earlier bytes only. Latest batch no tests/compile/lint/native/member/product/release pass; no CPU/auth cause or resource/gate relaxation.",
   "transition_history": [
     {
       "at": "2026-10-25T16:26:13.511979+00:00",
@@ -59,12 +63,15 @@
       "ruling": "CONFIRMED: project through existing allowlisted safe diagnostics then synchronously publish on meaningful callback update before returning; raw unknown diagnostic fields are never dumped. Guard updates within same stage and termination after observation."
     }
   ],
-  "next_action": "One bounded implementer extends existing report helper/path with atomic checkpoint+final publication and safe synchronous diagnostic callback updates, meaningful live-subprocess termination/IO failure guards, then fresh independent source review and normal native diagnostic predicate. Serialize after D289 exact CI/native source freeze. No member acceptance retry before durable boundary evidence.",
+  "next_action": "Normal resource recovery first; inspect latest main/CI and contributor fix for sign-out guard. Recheck/apply preserved3file patch only on eligible source, guarded focused/compile/lint and fresh independent source reverify. Do not transfer earlier green metrics to latest transaction/predicate bytes. Native member diagnostic/guest acceptance, current artifact promotion/Chrome reload and release gates remain separate.",
   "plan_reverify": "docs/stabilization/reports/member-checkpoint-contract-reverify-20261025.json",
   "implementation_lane": {
     "owner": "/root/d294_durable_diagnostics",
     "started_at": "2026-10-25T17:44:52.367942+00:00",
     "baseline": "5f5ae7eba",
-    "scope": "Safe durable native/auth stage and final publication using existing helper/path; source-only repair until fresh independent review/normal tests and native diagnostic predicate."
-  }
+    "scope": "Safe durable native/auth stage and final publication using existing helper/path; source-only repair until fresh independent review/normal tests and native diagnostic predicate.",
+    "status": "HANDOFF terminal; latest3file source restored after exactpatch/hash preservation"
+  },
+  "verification_checkpoint": "docs/stabilization/reports/d294-prepared-resource-checkpoint-20261025.json",
+  "preserved_patch": "docs/stabilization/evidence/d294-prepared-unapplied/owned.patch.txt"
 }

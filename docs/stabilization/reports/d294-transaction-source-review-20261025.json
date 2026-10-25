@@ -1,0 +1,95 @@
+{
+  "task_id": "d294_transaction_review",
+  "at": "2026-10-25T18:09:16.507930+00:00",
+  "status": "CHANGES_REQUESTED_TEST_PREDICATE; source transaction design supported, execution unavailable",
+  "lane": "fresh zero-authorship changed-hypothesis verifier",
+  "frozen_files": {
+    "tests/browser/scrape-save-auth-report.mjs": {
+      "sha256": "7a542bcc79fda4bbe3f53e4f6e36f92e5aa3c75cbe37b6944b1751b0a20c2a2b",
+      "matches": true
+    },
+    "tests/browser/scrape-save-native-acceptance.mjs": {
+      "sha256": "9e3d0e8e4539da709371e2f55e296e3f53c5ace4d56704baafb405c03f1615ab",
+      "matches": true
+    },
+    "tests/browser/scrape-save-member-auth-diagnostic.test.mjs": {
+      "sha256": "d43d6bf46f2ffa07d6f362cd3418c8d18dfe34cd1c7f4656c76b7fda9bade659",
+      "matches": false
+    }
+  },
+  "A": {
+    "verdict": "PASS bounded source design; latest supporting execution and native/member acceptance UNVERIFIED",
+    "supported": [
+      "Existing helper/report path and original final completion authority reused; no workflow/resource/threshold/shutdown/signal/cleanup changes in own-file diff.",
+      "Synchronous0600 exclusive temporary write/fsync/close/atomic rename serves both checkpoints and final reports. Prior checkpoint is not overwritten until rename.",
+      "recordScrapeSaveCheckpoint validates finite stage first, computes candidate diagnostic/progress locally, publishes, then commits in-memory progress/diagnostic/stage. Failed publish leaves old memory eligible for retry; duplicate suppression observes committed state.",
+      "Actual native/auth callbacks no longer assign raw stages before validation; unknown callback rejection cannot poison final report or fallback auth_failure stage in current actual runner path.",
+      "auth_start remains after existing resource health/before guarded sign-in; auth_complete follows every original member/nonadmin/org assertion and safe result construction; pre_save is initial submission intent after dialog assertion and before guarded action.",
+      "Current actual native and member stage vocabularies match finite allowlists; driver diagnostic phase/target/count/bool/network projections preserve safe current producers. Artifact kind/eligibility/hash/id/version and auth result projection address prior findings.",
+      "Finite progress keys deduplicate updated same-stage evidence while retaining first_at and publication order; no raw auth payload dump introduced."
+    ],
+    "limits": "Read-only source and available execution-record review. No current real browser/auth/backend/AI, original member CPU/auth cause, native pipeline pass, fixture cleanup, release readiness or product behavior credit. This source assessment is not executed latest-source durability proof."
+  },
+  "B": {
+    "verdict": "CHANGES_REQUESTED: actual-waiter guard uses wrong accept predicate; resource refusal prevents latest test verification",
+    "supported": [
+      "Actual source-extracted native/member/save/failure-final producer seams call real writer in child subprocesses, with IPC barriers before ordinary SIGTERM; no production signal handler or shared-source sabotage.",
+      "Prior timestamp/provenance/auth result/initial auth+Save IO refusal/final atomic replacement guard coverage retained.",
+      "New unknown native/auth callback through actual catch/final route plus raw-stage scratch mutants targets prior R6 accurately.",
+      "New premature-memory-commit scratch variant targets prior R5, but positive actual waitFor predicate must be corrected before this guard represents the production retry path."
+    ],
+    "test_limit": "No reviewer test command. Third parent run65437 did NOT start a test child: raw log and final journal show preflight refusal. Prior955/944 and950/939 green aggregates belong earlier hashes and do not verify this transaction batch."
+  },
+  "prior_findings": {
+    "D294-R1": "ADDRESSED source/test design: safe authentication mode/observed booleans/resolution projected; real completion after assertions and failure/null guard.",
+    "D294-R2": "ADDRESSED source/test design: deterministic external clock, ISO/order/latest/first_at assertions and corrupt/reset scratch variants.",
+    "D294-R3": "ADDRESSED source/test design: auth_start EACCES actual caller guard requires health only/no action; Save refusal retained.",
+    "D294-R4": "ADDRESSED source/test design: input artifact kind/eligible_store checked rather than relabeled blindly.",
+    "D294-R5": "ADDRESSED source transaction: no candidate progress/diagnostic/stage assignment until publication succeeds. New repeat-identical guard needs D294-R7 predicate fix and actual execution.",
+    "D294-R6": "ADDRESSED source/test design: raw preassignment removed, actual callback/failure/final canary path and old-assignment scratch variants added. Latest execution pending."
+  },
+  "findings": [
+    {
+      "id": "D294-R7",
+      "severity": "Important guard fidelity / execution readiness; no new helper-source correctness defect",
+      "file": "tests/browser/scrape-save-member-auth-diagnostic.test.mjs",
+      "line": 273,
+      "issue": "auth_retry passes Boolean as the real waitFor accept predicate. waitFor catches first diagnostic rename EACCES and sets last={transient:...}; Boolean(last) is true, so the guard returns after reads1 instead of retrying. Its reads2 assertion would fail before proving the intended source transaction. Actual production organization accept predicates reject transient marker objects.",
+      "evidence": "Source-derived counterexample only: test auth_retry read callback returns true on success but production waitFor settings-panel-driver.mjs47-54 catches failure into a truthy object and evaluates accept(last). No executed red for this frozen batch because normal admission refused.",
+      "correction": "Use an accept predicate that only accepts the intended successful observation (for this fixture, value===true) or the matching actual production observation predicate. Preserve real waitFor, actual callback, failed first rename and identical retry; then rerun via normal admission and fresh review. No resource bypass or blind relocation."
+    }
+  ],
+  "current_batch_test_evidence": {
+    "run": "d294-transaction-focused-20261025-1805",
+    "actual_parent_session": 65437,
+    "reviewer_owns_executor": false,
+    "raw_log_read": ".output/stabilization-checkpoints/d294-transaction-focused-1805.log",
+    "final_journal_at": "2026-10-25T18:05:38.278Z",
+    "decision": "refused",
+    "admitted": false,
+    "exit_code": 2,
+    "test_child_started": false,
+    "reasons": [
+      "RESOURCE_PRESSURE_UNSAFE",
+      "RESOURCE_MEMORY_LOW",
+      "RESOURCE_DISK_LOW",
+      "RESOURCE_SWAP_GROWTH"
+    ],
+    "sample": {
+      "pressureLevel": 4,
+      "availableMemoryGiB": 2.08,
+      "requiredMemoryGiB": 4,
+      "systemFreeGiB": 14.392864227294922,
+      "swapUsedMiB": 7839.19
+    }
+  },
+  "actions": "Read-only own-file package/current caller/canonical stage/helper/waiter and available logs; wrote only this report. No tests/heavy/UI/auth/backend/AI/source mutation/subagents/dispatch/commit/push.",
+  "next_action": "Parent obtains actual65437 terminal outcome, applies exact test predicate correction after freeze release, then normal resource recovery/admission before any next validation. Fresh zero-authorship verifier considers corrected frozen source and real execution. No native/member/product closure inferred.",
+  "post_review_working_observation": {
+    "at": "2026-10-25T18:09:43.883733+00:00",
+    "predicate": "Current workingfile now has (value)=>value===true at line273; D294-R7 exact correction observed after reviewed frozen batch. No execution or fresh complete-package verdict inferred.",
+    "current_test_sha256": "d43d6bf46f2ffa07d6f362cd3418c8d18dfe34cd1c7f4656c76b7fda9bade659",
+    "initial_frozen_test_sha256": "d43d6bf46f2ffa07d6f362cd3418c8d18dfe34cd1c7f4656c76b7fda9bade659",
+    "warning": "frozen_files matches fields describe initial review read, not updated workingfile after parent released freeze. New proof needs corrected final manifest and actual admitted test."
+  }
+}

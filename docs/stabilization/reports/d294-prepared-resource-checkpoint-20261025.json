@@ -1,0 +1,124 @@
+{
+  "baseline": "5f5ae7eba",
+  "dependency_install": {
+    "actual_session": 71423,
+    "exit_code": 0,
+    "final_at": "2026-10-25T17:46:55.407Z",
+    "decision": "valid",
+    "journal": "docs/stabilization/resource-journals/d294-deps-20261025-1747.jsonl"
+  },
+  "first_focused": {
+    "actual_session": 3549,
+    "exit_code": 0,
+    "final_at": "2026-10-25T17:54:02.577Z",
+    "decision": "valid",
+    "total": 950,
+    "pass": 939,
+    "fail": 0,
+    "skip": 11,
+    "cancel": 0,
+    "cpu_pending": "17:53:06.832Z busy.78; normal recovered17:53:54.896Z",
+    "journal": "docs/stabilization/resource-journals/d294-focused-20261025-1753.jsonl",
+    "log_sha256": "72b6fe69b68609d6b9e086fc338c3bfd5e6e4074dd7413ac96473c07ee4fd334",
+    "coverage_limit": "Static review gaps remain; not final verification or native acceptance."
+  },
+  "review_1": ".output/stabilization-checkpoints/d294-independent-review.json",
+  "review_1_verdict": "CHANGES_REQUESTED; auth-result projection/timestamp guards/auth-start IO guard missing; builder correcting approved batch.",
+  "native_product_credit": 0,
+  "second_focused": {
+    "actual_session": 27397,
+    "exit_code": 0,
+    "final_at": "2026-10-25T18:00:06.404Z",
+    "decision": "valid",
+    "resource_invalid": false,
+    "total": 955,
+    "pass": 944,
+    "fail": 0,
+    "skip": 11,
+    "cancel": 0,
+    "journal": "docs/stabilization/resource-journals/d294-final-focused-20261025-1758.jsonl",
+    "log_sha256": "6800c4ed113a635d032d5464c4fe89620879910b6aca15c5b030cc4b8de14e3b",
+    "coverage_limit": "Second review still requests transactional publication/memory ordering and actual callback-final unknown-stage canary guard; not final or native verification."
+  },
+  "review_2": ".output/stabilization-checkpoints/d294-final-independent-review.json",
+  "review_2_verdict": "CHANGES_REQUESTED; priorR1-R4 fixed, new publication-state and unknown-stage/final-route findings confirmed; transactional class correction active.",
+  "schema": 1,
+  "at": "2026-10-25T18:16:38.747088+00:00",
+  "status": "PREPARED_UNAPPLIED_LATEST_BATCH_UNEXECUTED_RESOURCE_REFUSAL",
+  "latest_attempt": {
+    "actual_session": 65437,
+    "actual_exit_code": 2,
+    "journal": "docs/stabilization/resource-journals/d294-transaction-focused-20261025-1805.jsonl",
+    "final_at": "2026-10-25T18:05:38.278Z",
+    "decision": "refused",
+    "admitted": false,
+    "test_child_ran": false,
+    "pressure_level": 4,
+    "available_memory_gib": 2.08,
+    "system_free_gib": 14.392864227294922,
+    "reasons": [
+      "RESOURCE_PRESSURE_UNSAFE",
+      "RESOURCE_MEMORY_LOW",
+      "RESOURCE_DISK_LOW",
+      "RESOURCE_SWAP_GROWTH"
+    ]
+  },
+  "latest_work": {
+    "manifest": "docs/stabilization/evidence/d294-prepared-unapplied/manifest.json",
+    "patch": "docs/stabilization/evidence/d294-prepared-unapplied/owned.patch.txt",
+    "three_owned_runtime_files_restored_to_main": true,
+    "reverse_check_before_restore": true,
+    "apply_check_after_restore": true,
+    "source_design_review": "A bounded PASS; latest working predicate fix not executed or independently reverified. B frozen retry predicate CHANGES_REQUESTED, exact correction prepared.",
+    "state": "in-fix; NOT FIXED/CLOSED; no latest compile/lint or native/member/product pass"
+  },
+  "capacity_repair": {
+    "canonical_tool": "/Users/armanisadeghi/code/common-docs/meta/scripts/disk-groom/groom.py",
+    "temp_session": 3983,
+    "temp_exit": 0,
+    "temp_tool_freed": "1.4GB",
+    "dev_caches_session": 2861,
+    "dev_caches_exit": 0,
+    "dev_caches_tool_freed": "0B",
+    "state_override": ".output/stabilization-checkpoints/disk-groom-state-d294-1808",
+    "copied_policy_hashes": {
+      "registry.json": "32076f513c9a4ea12b283c6699d987ed139a23eb7d7a4cab41c852d76dffbad2",
+      "protect.txt": "6935d6ede511405a7f5e8c0891d6675d044004c86a7f4008124bb3b3044b186a"
+    },
+    "limits": "Existing protection/registry copied byte-identically; scan/deleteworkers1 and deletionbudget1min, no retention/protection/schedule change, no Chrome profile/code/credential deletion. Free-space change has no sole attribution.",
+    "after_observation": {
+      "pressure_level": 4,
+      "system_free_kib": 15106028
+    },
+    "normal_resource_admission_recovered": false
+  },
+  "source_integration": {
+    "current_source": "32838cf9cfa1764f3b776ad8470af5497c5d72da",
+    "contributor_vault_files": "Committed by contributor; preserved without edits; no longer dirty.",
+    "owner_loaded_source": "f0d7a6b7fcb97afbb2bbc2414dff90f998083fff",
+    "owner_loaded_version": "0.2.622",
+    "owner_current": false,
+    "fd_cache": "Historical verified import only; not current fcc runtime or Chrome-loaded.",
+    "last_confirmed_full_CI": {
+      "run": 40218605941,
+      "conclusion": "failure",
+      "step": "A SIGN-OUT ENDS ONLY THE DEVICE THAT ASKED",
+      "error": "src/features/vault/vault-confirmation.ts:139: auth object escape/computed access is forbidden; use a direct named method call",
+      "focused_run": 40218605738,
+      "focused_conclusion": "success",
+      "limit": "Current observed exact-source failure, not permanent blocker; no gate weakened or retry dispatched.",
+      "source": "fccbc7df35ad2270a2df47065b937cc1e4e4c1a6"
+    },
+    "current_CI": {
+      "run": 40220542827,
+      "status": "pending",
+      "focused_run": 40220542877,
+      "focused_status": "in_progress",
+      "observed_scope": "New lock-only descendant; current outcome unknown, do not carry priorfcc failure as permanent result."
+    },
+    "dependency_install_scope": "Last local frozen-lock install verified5f5; later328 lock not installed under unsafe resource state."
+  },
+  "daily_store": "Reuse completed October25 primary published577/Draft577 unpublished and official mail observation. Actual Store guest577 two grounded terminal turns belong to timed public servera6696caa57281d0c9989a5c18d7639c88e1ad339 observation; no new Store/API/browser check, upload or submission.",
+  "ownership_and_cleanup": "All own workers, test executors, cleanup processes terminal; no browser/auth/backend/fixture/AI actions this wake; no temporary credentials created. Only own3sourcefiles restored after patch/hash preservation.",
+  "next_action": "Normal resource recovery first; inspect latest main/CI and contributor fix for sign-out guard. Recheck/apply preserved3file patch only on eligible source, guarded focused/compile/lint and fresh independent source reverify. Do not transfer earlier green metrics to latest transaction/predicate bytes. Native member diagnostic/guest acceptance, current artifact promotion/Chrome reload and release gates remain separate."
+}

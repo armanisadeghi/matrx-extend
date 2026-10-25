@@ -1,0 +1,96 @@
+{
+  "task_id": "d294_independent_review",
+  "at": "2026-10-25T17:54:35.462621+00:00",
+  "lane": "fresh zero-authorship source/guard verifier",
+  "status": "CHANGES_REQUESTED",
+  "frozen_files": {
+    "tests/browser/scrape-save-auth-report.mjs": {
+      "sha256": "060c5c43eb50b538da7a3efabbde5178e9372d482bda878b2c2e73c033128c5f",
+      "matches": true
+    },
+    "tests/browser/scrape-save-native-acceptance.mjs": {
+      "sha256": "dc2b373ded3c05f911da94dc4bd51ec39d9a3b631dad28103a13cb3b428ebb26",
+      "matches": true
+    },
+    "tests/browser/scrape-save-member-auth-diagnostic.test.mjs": {
+      "sha256": "a0d2be7cbcb4b975987ac99c3b5821dae144929fad366897fa7ac4e9f58ceb30",
+      "matches": true
+    }
+  },
+  "A": {
+    "verdict": "PARTIAL supporting contract; native/member acceptance UNVERIFIED",
+    "supported": [
+      "Same existing report path and helper; no workflow change",
+      "Synchronous private0600 temp write/fsync/rename shared by intermediate and final publication",
+      "Actual native/auth callbacks, after-health auth_start, auth_complete after member/nonadmin/org assertions and initial pre-Save intent wired",
+      "Within-stage diagnostics projected then synchronously published; unchanged SIGTERM/resource/cleanup/final pass semantics"
+    ],
+    "missing": [
+      "Approved safe authentication-result projection is omitted from interruption checkpoint; only auth_complete label persists"
+    ],
+    "native_limit": "No live browser/auth/backend/test executed by reviewer; source cannot establish member pass, CPU cause, resource validity, cleanup or release readiness."
+  },
+  "B": {
+    "verdict": "FAIL important contract/forcing-function gaps",
+    "supported": [
+      "Extends existing focused-wired test and actual source-extracted callsite seam",
+      "Real subprocess IPC barrier and ordinary SIGTERM; real report writer used",
+      "Save publication failure and final-interruption behavior guarded; scratch mutants avoid shared-source sabotage",
+      "Finite stage/phase labels and safe bool/count/provenance projection; no raw credentials dumped"
+    ],
+    "test_limit": "Reviewer independently read parent raw log aggregate950total939pass0fail11skip0cancel and final journal17:54:02.577 valid0/resourceInvalidfalse with CPU_RECOVERED17:53:54.896. Parent actual3549exit0 is root executor testimony; reviewer did not own or execute it. Green does not cure identified contract gaps."
+  },
+  "findings": [
+    {
+      "id": "D294-R1",
+      "severity": "Important",
+      "file": "tests/browser/scrape-save-auth-report.mjs",
+      "line": 256,
+      "issue": "Intermediate projection includes artifact/stages/auth_diagnostic/progress but no authentication, although real caller creates safe verified authentication at native runner699-707 before auth_complete. A kill after that checkpoint loses the explicit web/extension/nonadmin/selected-org booleans required by the approved safe authentication projection.",
+      "correction": "Project only the finite safe authentication mode and verified booleans (null until actually reached), with real producer SIGTERM guard demonstrating expected safe result and private/unknown fields excluded."
+    },
+    {
+      "id": "D294-R2",
+      "severity": "Important",
+      "file": "tests/browser/scrape-save-member-auth-diagnostic.test.mjs",
+      "line": 287,
+      "issue": "requireDurableCheckpoint and same-stage tests assert kind/sequence but never validate ISO at/first_at, chronological ordering or first_at preservation. Corrupted/missing timestamp output can pass despite ordered timestamp evidence being a central diagnostic contract.",
+      "correction": "Add behavioral assertions/forcing inputs for valid ordered timestamps, repeated-boundary first_at preservation and latest at; prove a timestamp corruption/drop/reordering scratch mutant is caught."
+    },
+    {
+      "id": "D294-R3",
+      "severity": "Important",
+      "file": "tests/browser/scrape-save-member-auth-diagnostic.test.mjs",
+      "line": 350,
+      "issue": "Publication-failure guard runs only the pre-Save branch. The approved guard plan also requires persistence refusal before authentication; current auth tests all use successful IO and cannot prove a callback/auth-start failure stops signInSettings entry.",
+      "correction": "Add actual extracted auth producer IO-failure case and assert no guarded sign-in action is entered, using existing IPC/action-entry seam. No production resource or auth bypass."
+    },
+    {
+      "id": "D294-R4",
+      "severity": "Minor",
+      "file": "tests/browser/scrape-save-auth-report.mjs",
+      "line": 167,
+      "issue": "safeArtifact relabels every shape-valid input ci_development_test/eligible_store=false without checking/preserving incoming kind/eligibility. Current sole runner verifies real CI receipt and constructs those exact fields before calling, so no reachable current native source misclassification demonstrated; helper/direct-test evidence can nevertheless synthesize a development label.",
+      "correction": "Preserve or validate the explicit incoming kind/eligibility and add wrong-kind/eligible input refusal evidence if hardening this projection. Do not treat this as current artifact-admission failure."
+    }
+  ],
+  "owner_rulings": "Parent accepted R1-R3 for bounded correction, builder instructed no edit until actual first test terminal; fresh seat to reverify corrected batch. R4 was builder-raised concern independently bounded by current sole verified callsite.",
+  "evidence": [
+    "docs/stabilization/defects/EXT-D-0294.json owner_rulings",
+    "docs/stabilization/reports/member-checkpoint-contract-reverify-20261025.json",
+    ".output/stabilization-checkpoints/d294-review.diff",
+    ".output/stabilization-checkpoints/d294-review-manifest.json",
+    "Actual native runner/auth helper/role observation producer source",
+    "Parent focused log read only, not executed"
+  ],
+  "actions": "Read-only review except this report. No source/test/heavy/UI/backend/AI/dispatch/commit/push actions.",
+  "next_action": "Builder bounded correction after first parent test terminal; parent coordinates resource-safe relevant checks and a fresh zero-authorship re-verifier. Native diagnostic predicate/member case remain later exact-artifact work.",
+  "first_batch_test_evidence": {
+    "run": "d294-focused-20261025-1753",
+    "actual_session": 3549,
+    "actual_exit_code": "0 root testimony",
+    "raw_log": "950total939pass0fail11skip0cancel",
+    "final_journal": "2026-10-25T17:54:02.577Z valid0/resourceInvalidfalse",
+    "reviewer_execution": false
+  }
+}
