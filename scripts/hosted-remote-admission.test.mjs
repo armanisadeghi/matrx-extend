@@ -8,6 +8,7 @@ import {
   readFileSync,
   realpathSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -1344,8 +1345,8 @@ function commit(root, path, content) {
   git(root, 'commit', '-qm', 'Update input');
   return git(root, 'rev-parse', 'HEAD');
 }
-function fixture() {
-  const root = mkdtempSync(join(tmpdir(), 'hosted-equivalence-'));
+function fixture(tempBase = tmpdir()) {
+  const root = realpathSync(mkdtempSync(join(tempBase, 'hosted-equivalence-')));
   git(root, 'init', '-q');
   git(root, 'config', 'user.name', 'Artifact guard');
   git(root, 'config', 'user.email', 'artifact-guard@test.invalid');
@@ -2069,7 +2070,13 @@ process.stdout.write(JSON.stringify(r));
 test('D295 actual prepareDevelopment body reaches real imported-evidence refetch and refuses before browser exercise', async () => {
   const { createHash } = await import('node:crypto');
   const { pathToFileURL } = await import('node:url');
-  const f = fixture();
+  // macOS CI supplies a symlinked TMPDIR; exercise that setup on every host.
+  const tempParent = realpathSync(mkdtempSync(join(tmpdir(), 'hosted-caller-temp-')));
+  const tempTarget = join(tempParent, 'canonical');
+  const tempAlias = join(tempParent, 'alias');
+  mkdirSync(tempTarget);
+  symlinkSync(tempTarget, tempAlias, 'dir');
+  const f = fixture(tempAlias);
   const remote = mkdtempSync(join(tmpdir(), 'hosted-caller-origin-'));
   const priorCase = process.env.MATRX_HOSTED_ACCEPTANCE_CASE;
   const priorSha = process.env.GITHUB_SHA;
@@ -2232,6 +2239,7 @@ test('D295 actual prepareDevelopment body reaches real imported-evidence refetch
     else process.env.GITHUB_SHA = priorSha;
     rmSync(f.root, { recursive: true, force: true });
     rmSync(remote, { recursive: true, force: true });
+    rmSync(tempParent, { recursive: true, force: true });
   }
 });
 

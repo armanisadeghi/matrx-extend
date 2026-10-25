@@ -1,7 +1,7 @@
 {
   "defect_id": "EXT-D-0295",
   "owner": "/root",
-  "status": "SOURCE_GATES_AND_FRESH_REVIEW_PASS_HOSTED_CI_NATIVE_PENDING",
+  "status": "SOURCE_FIXED_CI_FIXTURE_CORRECTION_VERIFIED_NEW_FULL_CI_NATIVE_PENDING",
   "at": "2026-10-25T21:15:08.322657+00:00",
   "baseline_source": "39afbf4e0ad5fc244cbcce8a113cb9146ecb94ff",
   "current_source": "52fd26df9b86ef2f2c27bb97023cc11dd38b00d5",
@@ -48,7 +48,7 @@
   "source_integration": "Fetched and safely fast-forwarded contributor52fd dependency update after RED terminal; all owned dirty paths preserved. A new guarded frozen-lock sync precedes GREEN.",
   "owner_installation_limit": "Actual Chrome623 bindsbefb artifact/then-current metadata-equivalent39af; later52fd lock and D295 source edits are not loaded-source proof. New CI/adoption/reload pending.",
   "native_acceptance": "NOT_RUN; original75failed/noUI remains uncertifiable, no product behavior pass or closure",
-  "next_action": "Commit/push this reviewed source unit, then require successful exact-new-source MAIN CI and normally adopted/reloaded artifact. Original normal SEO retest and historical verifier from advanced operator main must pass independently before D295 closure; no oldfailed75retrocertification/producthealth claim.",
+  "next_action": "Push verified corrected synchronizedsource, require successful newMAINfullCI+artifact. Keepcleansource untilnormalBdispatch; thenrecordlegitfixSHA/CI metadataadvance beforefrozenrunnerimport, andnormallyrefreshownerChrome. Originalnative/historicalcertificate stillrequired forD295closure; noartifactfromfailedc791 or old75retrocredit.",
   "green": {
     "actual_executor": 70246,
     "run_id": "d295-green-20261025-2116",
@@ -149,7 +149,7 @@
   "final_source_sha256": {
     "scripts/development-source-compatibility.mjs": "9f6d2d66f7466409fd276e89a02b61c827635d050efde4f47aa4c952a0bf0b17",
     "scripts/hosted-remote-admission.mjs": "08b192f12c00c70f5602a5340c7d9c736f0aade52ebe4cded32208d0078de9e1",
-    "scripts/hosted-remote-admission.test.mjs": "d068aebad2183dbdb536e3d2c0e5b8954697c5d9bcf0d5b9bb9cc93794687985"
+    "scripts/hosted-remote-admission.test.mjs": "ed8b8afda7a36a582a58567147c6379f4973be864c3ea491ed19d0da508268db"
   },
   "strict_receipt": {
     "actual_executor": 43385,
@@ -215,5 +215,7 @@
       "changed_record_named_in_findings": false,
       "limit": "No overall aidream documentation-clean claim; existing unrelated findings do not establish a Matrx Extend release/source blocker."
     }
-  }
+  },
+  "source_fix_commit": "c79185365812522ded1196fb8241e224aa4f4554",
+  "ci_followthrough": "docs/stabilization/reports/d295-ci-fixture-correction-20261025.json"
 }
