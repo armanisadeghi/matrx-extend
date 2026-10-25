@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "observed_at": "2026-10-25T10:52:56.977826+00:00",
+  "owner": "root",
+  "artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test_promotion",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "observedAt": "2026-10-25T10:06:39.645Z",
+    "sourceSha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+    "mainSha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+    "compatibility": "exact-source",
+    "allowedDiffPaths": [],
+    "version": "0.2.621",
+    "runId": 40181800284,
+    "runAttempt": 1,
+    "artifactId": 12594596898,
+    "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c/40181800284-1/chrome-mv3",
+    "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "treeSha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+    "fileCount": 2735
+  },
+  "rehash_matches": true,
+  "native": {
+    "chrome": "156.0.8078.47 arm64",
+    "profile": "Profile 8",
+    "version": "0.2.621",
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "reloaded_toast": true,
+    "enabled_and_pinned": true,
+    "store": "0.2.577 Chrome Web Store origin enabled/pinned",
+    "own_tab_closed": true,
+    "preexisting_dev_tab_restored": true
+  },
+  "guard": {
+    "run_id": "owner-native-refresh-0bcb-20261025-1052",
+    "session": 48008,
+    "actual_exit": 0,
+    "final_decision": "valid",
+    "resourceInvalid": false,
+    "all_watch_samples_healthy": true,
+    "limit": "Owner read-holder gaps around32seconds exceeded15second target; every preserved guard sample remained healthy. No native product-case pass claimed from this manager-only observation."
+  },
+  "prior_unbound_journal": "hourly-dev-reload-0bcb-20261025-1005 ended valid0 but lacks retained decisive native evidence; retained separately without inferring that earlier Chrome reload.",
+  "evidence": [
+    "owner-refresh-0bcb-1052.ax.json",
+    "owner-refresh-0bcb-profile-1052.ax.json",
+    "owner-refresh-0bcb-store-1052.ax.json"
+  ],
+  "product_passes": 0
+}

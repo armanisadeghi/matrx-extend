@@ -1,0 +1,78 @@
+{
+  "reviewer": "settings_0b_native_evidence_review",
+  "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+  "run_id": 40186301999,
+  "artifact_id": 12596800110,
+  "verdict_a_native": "PARTIAL: exact-source development v0.2.621 T04 full-extension original-theme restoration passes and T22 guest absence passes warm/panel reload; whole batch fails and T10/T28/T40 remain open",
+  "verdict_b_evidence_quality": "PASS for bounded T04/T22 assertions and resource admission; PARTIAL for diagnostic attribution of three failures because sanitized exceptions omit decisive observations",
+  "resource_finals": {
+    "package": "valid exit 0 resourceInvalid false",
+    "browser": "valid exit 0 resourceInvalid false",
+    "guest": "child_failed exit 1 resourceInvalid false"
+  },
+  "build_binding": {
+    "development_ci_run_id": 40181800284,
+    "development_artifact_id": 12594596898,
+    "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.621",
+    "published": false
+  },
+  "case_findings": {
+    "T04": "PASS 21/21. Dark and Light each survive actual manager extension Reload with worker and panel replaced. Original System baseline restored with matrx.settings.v1 absent before and after actual full extension Reload; visible and rendered appearance match. Panel reload also passes. This is current development guest evidence, not Store or other roles.",
+    "T22": "PASS 2/2 bounded warm and panel-document reload. Actual signed-out active Settings shows Account, Organization, Appearance; advanced text false, admin controls empty, permission control count zero. No separate T22 observation after manager full extension Reload; do not credit that lifecycle.",
+    "T10": "FAIL. Initial implicit Act baseline has selected Act without asking with absent storage. Warm Act selection is not observed as persisted: selected remains Act, stored null, no key/container. Full extension replacement did occur, but choice_observation and restore_after_reload_callback fail. A product preference-save defect versus click/observer timing is not established from this report.",
+    "T28": "FAIL full-extension recheck at settings-guest-scrape-controls.mjs:413 initial section census assertion. Warm and panel-document reload open/close of all 11 sections pass 44 subchecks. Sanitized exception retains no headings/count/digest from the failing full-reload baseline, so cause is unknown.",
+    "T40": "FAIL full-extension recheck, timeout from settings-panel-driver.mjs:57. Warm on/off, panel reload, and cleanup match visible and stored values; panel-document recheck unverified; downstream background capture unverified. Timeout report omits wait label and last observation, so cause is unknown."
+  },
+  "D287": "Source tooltip-lift observer mismatch had meaningful red/green DOM guards and source review. This run supplies original T04 plus adjacent T22 native evidence; it does not prove the October21 native failure had that cause. Narrow native-retet requirement met for T04 full Reload and T22 warm/panel only; no full Settings or D217 conclusion.",
+  "existing_defect_class": "T10 absent-container/default-baseline interactions overlap D223 but this failure occurs at Act choice observation, not D223's old initial-baseline stage. T40 relates to D224's absent Scrape defaults but current timeout is later and unspecific. D186 target-chain cannot be blamed: T04 records three replaced worker/panel lifecycles. T28 has no established defect cause from current artifact. Reopen or link only after reproducing the exact first failing observation.",
+  "next_bounded_repair": "No unchanged paid retry. First preserve raw safe per-stage UI/storage observations and wait label/last sample for T10 choice, T28 full-reload section census, and T40 full-reload wait; replay each failure at one fast seam on exact source. Compare with D223/D224/D186 reproductions. Repair only a proven shared cause and show red assertion then green; rerun affected native criteria through actual manager Reload on a new exact-source artifact, with all terminal resource journals.",
+  "independent_review_of_reported_passes": {
+    "T13": {
+      "verdict": "PASS bounded",
+      "observed": "Thinking and Fast each show selected label and matching persisted setting; each survives panel document reload (4/4).",
+      "limit": "No manager extension Reload or downstream Chat execution in this case; inventory requires displayed retained choice."
+    },
+    "T37": {
+      "verdict": "PASS bounded",
+      "observed": "Deep clean switch Off\u2192On and still On after panel document reload; visible coming soon hint present (3/3).",
+      "limit": "No manager extension Reload or downstream deep-clean operation, which is advertised as coming soon."
+    },
+    "T46": {
+      "verdict": "PASS bounded",
+      "observed": "Port 65001 saved, persisted after panel reload; worker rediscovery entered and completed after Save, with GET /health observed on owned loopback 65001 returning fixture 503. Inclusive 1/65535 saved and persisted; 65536 showed inline range error without changing saved 65535; blank cleared override and error and persisted after panel reload (8/8).",
+      "limit": "The observed HTTP endpoint is a disposable intentionally dead engine fixture; this proves probe invocation, not desktop engine connection or healthy rediscovery. No manager extension Reload."
+    },
+    "T64": {
+      "verdict": "PASS bounded",
+      "observed": "Two disposable loopback origins appear in Never ask and storage; Ask again removes only selected origin, other survives panel reload; removing last hides empty list and stays hidden after panel reload (5/5).",
+      "limit": "No manager extension Reload or public website capture behavior; owned synthetic origins only."
+    },
+    "T67": {
+      "verdict": "PASS bounded",
+      "observed": "Scroll & capture and Capture both display and persist across panel reload. Full manager Reload independently replaces worker and panel for each choice and preserves chosen mode; initial absent Settings container and final exact absent-container restoration after panel reload recorded (15/15).",
+      "limit": "Settings mode selection only; downstream scrape execution, member/admin and Store unverified."
+    },
+    "T73": {
+      "verdict": "PASS guest scope",
+      "observed": "Signed-out active Account before and after manager full extension Reload: email unavailable, Name/role rows absent, Sign in present, Sign out absent; 0 organization requests (2/2).",
+      "limit": "No signed-in identity or role claim."
+    },
+    "T76": {
+      "verdict": "PASS guest scope",
+      "observed": "Signed-out Organization before and after manager full extension Reload: Sign in to choose, archive filter absent, no choice, 0 organization requests (2/2).",
+      "limit": "No member/admin archive-filter behavior or backend organization read."
+    },
+    "T92": {
+      "verdict": "PASS guest-negative scope only",
+      "observed": "Signed-out Organization before and after manager full extension Reload: no archived marker/copy or restoration action, 0 organization requests (2/2).",
+      "limit": "The inventory also has member/admin Open Organizations navigation and archive-state expectations. Those are not run; whole multi-role T92 remains unverified."
+    }
+  },
+  "reported_passes_reviewed": 10,
+  "reported_passes_accepted_bounded": 10,
+  "reported_passes_qualified_guest_only": ["T92"],
+  "other_unverified_cases": "T16 T19 T31 T34 T63 T70 remain unverified in this artifact; no new credit inferred.",
+  "failure_classification_update": "Raw batch has 3 failing case records, but T10 has a candidate same-default selection harness class and T28/T40 lack decisive diagnostics. Treat current canonical failing cases as unverified pending exact native retest; do not invent three product defects."
+}

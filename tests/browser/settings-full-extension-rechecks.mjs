@@ -9,7 +9,7 @@ import {
   restoreGuestPreferenceBaseline,
   safePreferenceBaselineRestoration,
 } from './settings-guest-preference-batch.mjs';
-import { AUTO_SCRAPE_MODE_FAILURE_STAGES } from './settings-guest-scrape-controls.mjs';
+import { AUTO_SCRAPE_MODE_FAILURE_STAGES, SECTIONS } from './settings-guest-scrape-controls.mjs';
 import {
   observeGuestAutoScrapeMode,
   scrapeModeMatches,
@@ -34,7 +34,7 @@ const SAFE_ERROR_CODES = new Set([
   'ERR_TIMED_OUT',
 ]);
 
-function safeUnexpectedError(error) {
+function safeUnexpectedError(error, caseId) {
   const name = SAFE_ERROR_NAMES.has(error?.name) ? error.name : 'OtherError';
   const code = SAFE_ERROR_CODES.has(error?.code) ? error.code : 'other';
   const stack = typeof error?.stack === 'string' ? error.stack.split('\n') : [];
@@ -45,8 +45,51 @@ function safeUnexpectedError(error) {
     source = { file: match[1], line: Number(match[2]), column: Number(match[3]) };
     break;
   }
-  return { name, code, source: source ?? { file: 'unavailable', line: null, column: null } };
+  const result = {
+    name,
+    code,
+    source: source ?? { file: 'unavailable', line: null, column: null },
+  };
+  if (caseId.endsWith('T28') && error?.safeSectionCensus) {
+    const census = error.safeSectionCensus;
+    result.sectionCensus = {
+      active: census.active === true,
+      count: Number.isInteger(census.count) ? census.count : null,
+      headings: Array.isArray(census.headings)
+        ? census.headings.filter((name) => SECTIONS.includes(name))
+        : [],
+      unrecognizedHeadingCount: Number.isInteger(census.unrecognizedHeadingCount)
+        ? census.unrecognizedHeadingCount
+        : null,
+      expandedControlCount: Number.isInteger(census.expandedControlCount)
+        ? census.expandedControlCount
+        : null,
+      nonSectionExpandedControlCount: Number.isInteger(census.nonSectionExpandedControlCount)
+        ? census.nonSectionExpandedControlCount
+        : null,
+    };
+  }
+  if (caseId.endsWith('T40') && AUTO_SCRAPE_WAIT_LABELS.has(error?.waitLabel)) {
+    const sample = error.waitDiagnostic ?? {};
+    result.wait = {
+      label: error.waitLabel,
+      sample: {
+        active: sample.active === true,
+        sectionOpen: sample.sectionOpen === true,
+        controlCount: Number.isInteger(sample.controlCount) ? sample.controlCount : null,
+        visibleMatches: sample.visibleMatches === true,
+        storedMatches: sample.storedMatches === true,
+      },
+    };
+  }
+  return result;
 }
+
+const AUTO_SCRAPE_WAIT_LABELS = new Set([
+  'auto_scrape_true_warm',
+  'auto_scrape_false_warm',
+  'auto_scrape_baseline_restored',
+]);
 
 function safeGuestFailureDiagnostics(error) {
   const safeStage = (stage) =>
@@ -164,7 +207,7 @@ export async function runFullExtensionRecheck(item, execute) {
           ? error.safeCategory
           : 'full_extension_recheck_exception';
       if (result.error === 'full_extension_recheck_exception')
-        result.exception = safeUnexpectedError(error);
+        result.exception = safeUnexpectedError(error, item.id);
       record(
         'full extension reload recheck completed',
         'fail',

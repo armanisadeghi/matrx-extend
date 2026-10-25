@@ -162,8 +162,7 @@ export async function runGuestPreferenceCase(
   onBaseline = () => {},
 ) {
   await driver.openSection(panel, preference.section);
-  const initial =
-    preference.key === 'theme' ? await observeGuestPreference(panel, preference, driver) : null;
+  const initial = await observeGuestPreference(panel, preference, driver);
   const baselineChoice =
     initial &&
     (preference.choices.find(
@@ -179,7 +178,15 @@ export async function runGuestPreferenceCase(
 
   let primaryError;
   try {
-    for (const [value, label] of preference.choices) {
+    // Selecting the already rendered implicit default does not fire a native change.
+    // Visit another option first so the default choice must perform a real write.
+    const choices =
+      preference.key !== 'theme' &&
+      initial.storedPresent === false &&
+      initial.selected === preference.choices[0][1]
+        ? [...preference.choices.slice(1), preference.choices[0]]
+        : preference.choices;
+    for (const [value, label] of choices) {
       await driver.click(panel, 'settings-select', preference.label);
       await driver.click(panel, 'option', label);
       const warm = await driver.waitFor(
@@ -254,6 +261,30 @@ export async function runGuestPreferenceCase(
       if (!restored) throw new Error('T04_original_baseline_restore_failed');
     } catch (error) {
       record('Original theme baseline restored after panel reload', { status: 'failed' }, false);
+      if (!primaryError) primaryError = error;
+    }
+  }
+
+  if (preference.key !== 'theme' && initial.storedPresent === false) {
+    try {
+      await restoreGuestPreferenceBaseline(
+        panel,
+        preference,
+        preferenceBaseline(initial, preference),
+        (name, observation, passed) => record(name, observation, passed),
+        driver,
+      );
+      await reloadSettings(panel);
+      await driver.openSection(panel, preference.section);
+      const restored = await observeGuestPreference(panel, preference, driver);
+      const passed = preferenceBaselineMatches(
+        restored,
+        preference,
+        preferenceBaseline(initial, preference),
+      );
+      record(`Original ${preference.label} baseline restored after panel reload`, restored, passed);
+      if (!passed) throw new Error(`${preference.caseId}_original_baseline_restore_failed`);
+    } catch (error) {
       if (!primaryError) primaryError = error;
     }
   }

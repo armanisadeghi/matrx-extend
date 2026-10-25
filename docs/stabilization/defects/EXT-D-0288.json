@@ -7,7 +7,7 @@
   "auth_mode": "Supporting native test prerequisites; no new mode-case pass",
   "severity": "S2: valid exact-source artifact refused before native launch",
   "priority": "P1: unblock existing Settings original and adjacent retests",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/settings_b_native_20261025",
   "preconditions": [
     "Successful CI workflow_dispatch40179903193 on main3c0a21cdffb536e118f1f4b1e0e30aa377e5ff61 with eligible artifact12593673415."
@@ -32,7 +32,7 @@
     "docs/stabilization/resource-journals/d288-ci-run-name-lint-final-20261025-0940.jsonl"
   ],
   "native_limits": "No native job started. D287 Settings original T04/full Reload and adjacent T22 remain unverified. Source/admission success is not product acceptance.",
-  "next_action": "Observe successful CI for synchronized main after this fix, hold metadata commits, then normal exact-source Settings B plan/dispatch; independently retest T04/full Reload and adjacentT22.",
+  "next_action": "Continue D289/D290 native exact-artifact retest; do not infer overall feature health.",
   "transition_history": [
     {
       "at": "2026-10-25T09:34:36.573442+00:00",
@@ -57,6 +57,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Shared predicate source and all seven fixture siblings reviewed, actual original read-only plan passed independently, final guarded913pass0fail11skip and full lint passed. Native acceptance and new-source hosted CI remain pending."
+    },
+    {
+      "at": "2026-10-25T11:24:19.317133+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Exact fix source0b passed full/focused CI and normal guarded Settings B dispatch/CI artifact admission. Independent original descriptive-run read-only plan and adjacent refusal guards passed; this closes CI-admission harness scope only."
+    },
+    {
+      "at": "2026-10-25T11:24:19.317133+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original and surrounding bounded harness reproduction independently verified; other open Settings/product cases remain unverified."
     }
   ],
   "reviewer": "/root/ci_identity_fresh_review_20261025",
@@ -69,5 +81,8 @@
     "original_repro": "Independent normal read-only plan admitted actual CI40179903193/artifact12593673415 at exact3c source and original digest. No native dispatch.",
     "limits": "New pushed source still requires hosted CI and exact-source artifact before native Settings; no product closure."
   },
-  "fix_commit_lookup": "Commit containing this D288 record; resolve with git log -1 --format=%H -- scripts/development-ci-event.mjs"
+  "fix_commit_lookup": "Commit containing this D288 record; resolve with git log -1 --format=%H -- scripts/development-ci-event.mjs",
+  "native_retest_evidence": "docs/stabilization/runs/settings-guest-0b-20261025.json",
+  "closure_scope": "Supporting harness only; zero product defects closed from this state transition.",
+  "fix_commit": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c"
 }

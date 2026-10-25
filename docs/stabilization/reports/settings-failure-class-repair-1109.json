@@ -1,0 +1,36 @@
+{
+  "task": "settings-failure-class-repair-1109",
+  "state": "candidate-awaiting-parent-fresh-review",
+  "source_head": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+  "native_run": "40186301999",
+  "native_report": ".output/stabilization-checkpoints/settings-native-b-40186301999/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+  "case_truth": {
+    "T10": "Native panel-document case failed at T10_act_warm. UI already displayed Act without asking while settings container and key were absent. Native same-value selection did not produce a persisted key. The later full-extension runner restored absence, but its pass cannot erase the earlier failure.",
+    "T28": "Native full-extension runner failed at initial section census, source line 413. The old report omitted the last safe census; cause remains unknown.",
+    "T40": "Native full-extension runner timed out in shared waitFor, source line 57. The old report omitted the stable wait label and safe sampled fields; cause remains unknown. Background capture remains unverified."
+  },
+  "candidate": {
+    "T10": "Exercise an alternate choice before selecting an already rendered implicit default in the panel-document preference driver. Restore the originally absent key and container and verify after panel reload. The same pattern covers Default speed.",
+    "T28": "Attach the already sanitized section census at its failure source and project only known headings, booleans and counts into the full-extension failure report.",
+    "T40": "Use the shared waitFor diagnostic callback to carry a per-caller safe switch sample. Full-extension reporting permits only known T40 wait labels and booleans/counts. No timeout or acceptance criteria changed."
+  },
+  "guards": {
+    "T10": "Focused guard failed before source repair with T10_act_warm_not_observed, then passed after repair.",
+    "T28_T40": "Focused diagnostic guard failed before serializer repair because sectionCensus was undefined, then passed through actual section runner and shared waitFor producer seams. Private-looking data was excluded.",
+    "focused_suite": "64 passed, 0 failed across four Settings test files",
+    "compile": "pnpm compile passed",
+    "biome": "targeted check: 0 errors, 3 existing unused-variable warnings",
+    "diff_check": "passed"
+  },
+  "changed_files": [
+    "tests/browser/settings-guest-preference-batch.mjs",
+    "tests/browser/settings-guest-preference-batch.test.mjs",
+    "tests/browser/settings-guest-scrape-controls.mjs",
+    "tests/browser/settings-full-extension-rechecks.mjs",
+    "tests/browser/settings-full-extension-rechecks.test.mjs",
+    "tests/browser/settings-panel-driver.mjs"
+  ],
+  "defect_id_census": "Current local and origin/main defect files end at EXT-D-0288. Parent owns new record allocation and integration.",
+  "remaining": "Fresh independent source review, exact artifact native retest and evidence adjudication remain. T28/T40 product causes must be diagnosed from the next report; no product fix or case PASS is claimed.",
+  "owned_heavy_jobs": 0
+}

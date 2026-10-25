@@ -1,0 +1,19 @@
+{
+  "task_id": "store577-new-chat-diagnosis",
+  "status": "read-only diagnosis; cause unproven",
+  "store_release": "v0.2.577",
+  "extension_source_sha": "91d7696626537676d0a5a1239ca29eb3fbed7331",
+  "chat_package": "@ai-matrx/chat 0.8.251, integrity sha512-7NZLPkTSdRj+FrCr1jJpHAZdFhpWEheqq6IZ5wCYW02tkv5VjBTlmvEsF1l8e0sxrF3i1K0vAoBRXnHAxIb4VQ== from Store tag pnpm-lock.yaml",
+  "package_source_provenance": "aidream git 9d0cddaf2a, mapped by apps/shared/chat/CHANGELOG.md 0.8.251 diff header; source checkout is later than this release",
+  "source_contract": [
+    "Store tag PackageChatView New chat onClick closes local history and calls router.push('/chat').",
+    "Screens derives conversationId only from /^\\/chat\\/([0-9a-f-]{36})/; /chat yields null and renders ChatNewClient.",
+    "Store tag host uses createMemoryNavigation with chrome.storage.session persistence under matrx-extend:chat-address.",
+    "Package 0.8.251 memory router push('/chat') changes address synchronously, notifies useSyncExternalStore listeners, then persists; no-op only if already at /chat."
+  ],
+  "observed_ui_from_root": "In Store 0.2.577 guest Chrome Profile 10, two native clicks on New chat left old two-turn transcript visible; a separate Chat Options control opened its sheet. Root owns and must confirm exact live behavior.",
+  "finding": "The static Store source establishes intended navigation but does not explain the live symptom. A published-product regression and root cause remain unproven without route and click-boundary evidence.",
+  "next_native_probe": "Root: capture a fresh accessibility snapshot, activate the named New chat button by keyboard focus+Enter, and observe whether the transcript changes. Then open Conversations, activate its New control, and compare. If both fail, inspect the extension's session-storage chat-address and runtime errors using native DevTools UI after the click; do not clear history or send another AI request.",
+  "diagnostic_interpretation": "If named control activation does not close an open history panel, its handler likely did not run. If history closes and stored address becomes /chat while transcript persists, investigate ChatProvider/usePathname rendering. If storage stays at /chat/<id>, inspect click routing or a later navigation back to the conversation; storage write may be async, so inspect after UI settles.",
+  "limits": "No browser control, AI call, test, source edit, or Store artifact inspection in this lane. Installed node_modules has @ai-matrx/chat 0.8.370 and is not evidence for the Store package."
+}

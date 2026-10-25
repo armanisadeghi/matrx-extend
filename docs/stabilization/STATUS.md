@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-25 09:42 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-25T08:14:43.932729+00:00. 207 features · 831 cases · 1422 controls · 287 linked defect records.
+Generated 2026-10-25 11:27 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-25T08:14:43.932729+00:00. 207 features · 831 cases · 1422 controls · 289 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1338** — Pass: 111 · Partial: 103 · Fail: 1 · Unverified: 1112 · N/A: 11.
-Unverified splits into **176 explicitly marked unverified** and **936 with no result record**.
+Applicable case-by-role slots: **1338** — Pass: 107 · Partial: 98 · Fail: 1 · Unverified: 1121 · N/A: 11.
+Unverified splits into **185 explicitly marked unverified** and **936 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -21,7 +21,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 4 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 7, fail 0, unverified 21, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 20 pass · 8 partial · 0 fail · 0 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 14 pass · 8 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | pass 36, partial 19, fail 0, unverified 45, n/a 1 | 8 |
+| [Settings](#settings) | 1 | 16 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 14 pass · 8 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | pass 32, partial 14, fail 0, unverified 54, n/a 1 | 8 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -433,9 +433,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Partial · member: Partial · admin: Partial. **Cases:** 96. **Controls:** 41.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0159, EXT-D-0167, EXT-D-0189, EXT-D-0220, EXT-D-0223, EXT-D-0232, EXT-D-0287, EXT-D-0288
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0159, EXT-D-0167, EXT-D-0189, EXT-D-0220, EXT-D-0223, EXT-D-0232, EXT-D-0289, EXT-D-0290
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed), [EXT-D-0084](defects/EXT-D-0084.json) (closed), [EXT-D-0086](defects/EXT-D-0086.json) (closed), [EXT-D-0087](defects/EXT-D-0087.json) (closed), [EXT-D-0093](defects/EXT-D-0093.json) (closed), [EXT-D-0155](defects/EXT-D-0155.json) (closed), [EXT-D-0157](defects/EXT-D-0157.json) (closed), [EXT-D-0159](defects/EXT-D-0159.json) (fixed), [EXT-D-0161](defects/EXT-D-0161.json) (closed), [EXT-D-0162](defects/EXT-D-0162.json) (closed), [EXT-D-0167](defects/EXT-D-0167.json) (in-fix), [EXT-D-0186](defects/EXT-D-0186.json) (closed), [EXT-D-0189](defects/EXT-D-0189.json) (in-fix), [EXT-D-0220](defects/EXT-D-0220.json) (in-fix), [EXT-D-0223](defects/EXT-D-0223.json) (in-fix), [EXT-D-0224](defects/EXT-D-0224.json) (closed), [EXT-D-0232](defects/EXT-D-0232.json) (fixed), [EXT-D-0287](defects/EXT-D-0287.json) (fixed), [EXT-D-0288](defects/EXT-D-0288.json) (fixed)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed), [EXT-D-0084](defects/EXT-D-0084.json) (closed), [EXT-D-0086](defects/EXT-D-0086.json) (closed), [EXT-D-0087](defects/EXT-D-0087.json) (closed), [EXT-D-0093](defects/EXT-D-0093.json) (closed), [EXT-D-0155](defects/EXT-D-0155.json) (closed), [EXT-D-0157](defects/EXT-D-0157.json) (closed), [EXT-D-0159](defects/EXT-D-0159.json) (fixed), [EXT-D-0161](defects/EXT-D-0161.json) (closed), [EXT-D-0162](defects/EXT-D-0162.json) (closed), [EXT-D-0167](defects/EXT-D-0167.json) (in-fix), [EXT-D-0186](defects/EXT-D-0186.json) (closed), [EXT-D-0189](defects/EXT-D-0189.json) (in-fix), [EXT-D-0220](defects/EXT-D-0220.json) (in-fix), [EXT-D-0223](defects/EXT-D-0223.json) (in-fix), [EXT-D-0224](defects/EXT-D-0224.json) (closed), [EXT-D-0232](defects/EXT-D-0232.json) (fixed), [EXT-D-0287](defects/EXT-D-0287.json) (closed), [EXT-D-0288](defects/EXT-D-0288.json) (closed), [EXT-D-0289](defects/EXT-D-0289.json) (fixed), [EXT-D-0290](defects/EXT-D-0290.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -448,16 +448,16 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T07 guest: Default agent | Pass | N/A | N/A | EXT-F-1003-C03 |
 | EXT-F-1003-T08 member: Default agent | N/A | Unverified | N/A | EXT-F-1003-C03 |
 | EXT-F-1003-T09 admin: Default agent | N/A | N/A | Pass | EXT-F-1003-C03 |
-| EXT-F-1003-T10 guest: Default mode | Pass | N/A | N/A | EXT-F-1003-C04 |
+| EXT-F-1003-T10 guest: Default mode | Unverified | N/A | N/A | EXT-F-1003-C04 |
 | EXT-F-1003-T11 member: Default mode | N/A | Unverified | N/A | EXT-F-1003-C04 |
 | EXT-F-1003-T12 admin: Default mode | N/A | N/A | Unverified | EXT-F-1003-C04 |
 | EXT-F-1003-T13 guest: Default speed | Pass | N/A | N/A | EXT-F-1003-C05 |
 | EXT-F-1003-T14 member: Default speed | N/A | Unverified | N/A | EXT-F-1003-C05 |
 | EXT-F-1003-T15 admin: Default speed | N/A | N/A | Pass | EXT-F-1003-C05 |
-| EXT-F-1003-T16 guest: Share page identity & email content | Partial | N/A | N/A | EXT-F-1003-C06 |
+| EXT-F-1003-T16 guest: Share page identity & email content | Unverified | N/A | N/A | EXT-F-1003-C06 |
 | EXT-F-1003-T17 member: Share page identity & email content | N/A | Unverified | N/A | EXT-F-1003-C06 |
 | EXT-F-1003-T18 admin: Share page identity & email content | N/A | N/A | Unverified | EXT-F-1003-C06 |
-| EXT-F-1003-T19 guest: Offer to save logins to Vault | Partial | N/A | N/A | EXT-F-1003-C07 |
+| EXT-F-1003-T19 guest: Offer to save logins to Vault | Unverified | N/A | N/A | EXT-F-1003-C07 |
 | EXT-F-1003-T20 member: Offer to save logins to Vault | N/A | Unverified | N/A | EXT-F-1003-C07 |
 | EXT-F-1003-T21 admin: Offer to save logins to Vault | N/A | N/A | Unverified | EXT-F-1003-C07 |
 | EXT-F-1003-T22 guest: Advanced agent capabilities | Pass | N/A | N/A | EXT-F-1003-C08 |
@@ -466,19 +466,19 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T25 guest: Audit key access denial | N/A | N/A | N/A | EXT-F-1003-C09 |
 | EXT-F-1003-T26 member: Audit key access denial | N/A | Unverified | N/A | EXT-F-1003-C09 |
 | EXT-F-1003-T27 admin: Audit key | N/A | N/A | Partial | EXT-F-1003-C09 |
-| EXT-F-1003-T28 guest: Collapsible groups | Pass | N/A | N/A | EXT-F-1003-C10 |
+| EXT-F-1003-T28 guest: Collapsible groups | Unverified | N/A | N/A | EXT-F-1003-C10 |
 | EXT-F-1003-T29 member: Collapsible groups | N/A | Unverified | N/A | EXT-F-1003-C10 |
 | EXT-F-1003-T30 admin: Collapsible groups | N/A | N/A | Pass | EXT-F-1003-C10 |
-| EXT-F-1003-T31 guest: Offer saved logins on sign-in forms | Partial | N/A | N/A | EXT-F-1003-C11 |
+| EXT-F-1003-T31 guest: Offer saved logins on sign-in forms | Unverified | N/A | N/A | EXT-F-1003-C11 |
 | EXT-F-1003-T32 member: Offer saved logins on sign-in forms | N/A | Unverified | N/A | EXT-F-1003-C11 |
 | EXT-F-1003-T33 admin: Offer saved logins on sign-in forms | N/A | N/A | Unverified | EXT-F-1003-C11 |
-| EXT-F-1003-T34 guest: Show password suggestions on websites | Partial | N/A | N/A | EXT-F-1003-C12 |
+| EXT-F-1003-T34 guest: Show password suggestions on websites | Unverified | N/A | N/A | EXT-F-1003-C12 |
 | EXT-F-1003-T35 member: Show password suggestions on websites | N/A | Unverified | N/A | EXT-F-1003-C12 |
 | EXT-F-1003-T36 admin: Show password suggestions on websites | N/A | N/A | Unverified | EXT-F-1003-C12 |
 | EXT-F-1003-T37 guest: Deep clean | Pass | N/A | N/A | EXT-F-1003-C13 |
 | EXT-F-1003-T38 member: Deep clean | N/A | Unverified | N/A | EXT-F-1003-C13 |
 | EXT-F-1003-T39 admin: Deep clean | N/A | N/A | Unverified | EXT-F-1003-C13 |
-| EXT-F-1003-T40 guest: Auto-scrape on load | Pass | N/A | N/A | EXT-F-1003-C14 |
+| EXT-F-1003-T40 guest: Auto-scrape on load | Unverified | N/A | N/A | EXT-F-1003-C14 |
 | EXT-F-1003-T41 member: Auto-scrape on load | N/A | Unverified | N/A | EXT-F-1003-C14 |
 | EXT-F-1003-T42 admin: Auto-scrape on load | N/A | N/A | Unverified | EXT-F-1003-C14 |
 | EXT-F-1003-T43 guest: Desktop bridge pairing | Partial | N/A | N/A | EXT-F-1003-C15 |
@@ -501,14 +501,14 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T60 Audit key export | N/A | N/A | Pass | EXT-F-1003-C24, EXT-F-1003-C38 |
 | EXT-F-1003-T61 Audit key re-key confirmation | N/A | N/A | Partial | EXT-F-1003-C25 |
 | EXT-F-1003-T62 Audit receipt origin filters | N/A | N/A | Unverified | EXT-F-1003-C26 |
-| EXT-F-1003-T63 Advanced capabilities member denial | Pass | Unverified | N/A | EXT-F-1003-C27 |
+| EXT-F-1003-T63 Advanced capabilities member denial | Unverified | Unverified | N/A | EXT-F-1003-C27 |
 | EXT-F-1003-T64 guest: Ask again for a never-capture site | Pass | N/A | N/A | EXT-F-1003-C28 |
 | EXT-F-1003-T65 member: Ask again for a never-capture site | N/A | Unverified | N/A | EXT-F-1003-C28 |
 | EXT-F-1003-T66 admin: Ask again for a never-capture site | N/A | N/A | Unverified | EXT-F-1003-C28 |
 | EXT-F-1003-T67 guest: choose both Auto-scrape modes | Pass | N/A | N/A | EXT-F-1003-C29 |
 | EXT-F-1003-T68 member: choose both Auto-scrape modes | N/A | Unverified | N/A | EXT-F-1003-C29 |
 | EXT-F-1003-T69 admin: choose both Auto-scrape modes | N/A | N/A | Unverified | EXT-F-1003-C29 |
-| EXT-F-1003-T70 guest: About browser readiness and extension update status | Partial | N/A | N/A | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
+| EXT-F-1003-T70 guest: About browser readiness and extension update status | Unverified | N/A | N/A | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
 | EXT-F-1003-T71 member: About browser readiness and extension update status | N/A | Unverified | N/A | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
 | EXT-F-1003-T72 admin: About browser readiness and extension update status | N/A | N/A | Partial | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
 | EXT-F-1003-T73 guest: Account identity and role | Pass | N/A | N/A | EXT-F-1003-C32 |
@@ -542,8 +542,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: guest-settings-007, docs/stabilization/runs/guest-settings-007.json
 - EXT-F-1003-T03 · admin: Pass. Initialunset did not chooseimplicitly; explicitfixture selected, Actingas and fullreload persistence verified. Nonexistent clear-step corrected from source/UI.
   Evidence / build / date recorded: admin-org-001, docs/stabilization/runs/admin-org-001.json
-- EXT-F-1003-T04 · guest: Pass. Actual guest Profile10 Settings Sign in/Email— and correctDEV origin/path/Reload bind frozen579/11ff. First operator32/40CUAcalls all3states; independent native peer repeated Light/fullReload and restored System, not Dark/System reload. Peer initial premature preADMITTED attempt refused/zero credit; only separate admitted retry counts. Peer20calls=10invalid+10valid, bothholders terminal. Fullvalidjournals, no mocks/interception, visual screenshots observed not exported. WXT production compilation/keyeddevelopmentchannel corrected withhistory. Backend/otherroles/Store/fullSettings/linkeddefectclosure not inferred.
-  Evidence / build / date recorded: current-owner-guest-theme-20261021, ['docs/stabilization/reports/current-owner-guest-theme-20261021.json', 'docs/stabilization/reports/guest-theme-native-peer-20261021.json', 'docs/stabilization/reports/theme579-final-evidence-review-20261021.json', 'docs/stabilization/reports/theme579-owner-binding-20261021.json', 'docs/stabilization/resource-journals/current-owner-guest-theme-20261021.jsonl', 'docs/stabilization/resource-journals/guest-theme579-native-peer-retry-20261021.jsonl']
+- EXT-F-1003-T04 · guest: Pass.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T05 · member: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
   Evidence / build / date recorded: settings-mounted-member-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
 - EXT-F-1003-T06 · admin: Pass.
@@ -553,42 +553,42 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: guest-settings-007, docs/stabilization/runs/guest-settings-007.json
 - EXT-F-1003-T09 · admin: Pass. FreshSol visual+AX/detail reconciled sameQuickTestAgent plus2memberbadge; actualchosenidentity persisted afterfullreload, originalMatrxBrowserAgent restored.
   Evidence / build / date recorded: admin-default-agent-002, docs/stabilization/runs/admin-default-agent-002.json
-- EXT-F-1003-T10 · guest: Pass. Bounded guest T10 pass on exact verified development artifact; run source 6f0a20f. The run is not latest-main or full Settings/Store coverage.
-  Evidence / build / date recorded: 38342265985, ['docs/stabilization/runs/hosted-settings-controls-38342265985.json']
-- EXT-F-1003-T13 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 4 passed criteria; native case pass.
-  Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
+- EXT-F-1003-T10 · guest: Unverified.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+- EXT-F-1003-T13 · guest: Pass.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T15 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
   Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
-- EXT-F-1003-T16 · guest: Partial. Independent review accepts only a qualified pass for the four guest switch UI/storage Off/On and panel-document reload criteria on current-equivalent development v0.2.490. T16 remains partial because downstream identity/email behavior is unverified. The retained native report has no explicit final baseline sample; runner source asserts cleanup restoration but the initial value and final restoration are not independently evidenced. Signed-out UI, role, organization, browser and profile context were not serialized for independent review.
-  Evidence / build / date recorded: 38105457992, ['docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json', 'docs/stabilization/reports/peer-review-run38105457992-t16.json', 'docs/stabilization/resource-journals/hosted-package-38105457992-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38105457992-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38105457992-1.jsonl']
-- EXT-F-1003-T19 · guest: Partial. Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim. Reviewed frozen guest run38041519886: 4 passed criteria; native case unverified. Unverified: preference changes its downstream browser behavior.
-  Evidence / build / date recorded: 37729701473, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T05:10:28.331547+00:00, ['.research/settings397-fresh-native-20261007.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
-- EXT-F-1003-T22 · guest: Pass. Independent raw native review passes complete GUEST-mode criteria: active signed-out Settings, Sign in/no Sign out, Account/Organization/Appearance anchors, absent advanced/permission/audit controls before and after real extension reload. Account/Organization navigation exercised. T63 member is a separate unverified axis; raw combined partial does not downgrade guest. No T04, whole Settings, member/admin or Store credit. Actual DOM/recorder assertions support Settings evidence; screenshots show only shell. Cleanup finally and terminal job verified; no expired-host post-run process/profile census.
-  Evidence / build / date recorded: 39363918633, ['docs/stabilization/reports/settings568-absence-native-retest-20261020.json', 'docs/stabilization/reports/settings568-native-independent-peer-20261020.json', 'docs/stabilization/evidence/settings568-absence-native/run39363918633/native-report.json']
+- EXT-F-1003-T16 · guest: Unverified.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+- EXT-F-1003-T19 · guest: Unverified.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+- EXT-F-1003-T22 · guest: Pass.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T25 · guest: N/A. Audit key is admin-only: source isAdmin gate and actual guest T22 evidence confirm absence. Negative access remains covered byT22/T63; this does not waive member/direct-state checks.
   Evidence / build / date recorded: ['docs/stabilization/reports/guest-settings-applicability.json', 'docs/stabilization/runs/guest-settings-local-003.json']
 - EXT-F-1003-T27 · admin: Partial. Admin identity and key-read/error recovery exercised; no assertions for creation time, receipt count, recent rows, filters, or a normal warm/reload display comparison.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
-- EXT-F-1003-T28 · guest: Pass. Independent review accepts the bounded guest collapsible-groups case. All 11 guest sections passed content and open/close checks across warm, panel reload and full-extension reload. Reviewed frozen guest run38041519886: 88 passed criteria; native case pass.
-  Evidence / build / date recorded: 38018411295, ['docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json', 'docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
+- EXT-F-1003-T28 · guest: Unverified.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T30 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
   Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
-- EXT-F-1003-T31 · guest: Partial. Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim. Reviewed frozen guest run38041519886: 4 passed criteria; native case unverified. Unverified: preference changes its downstream browser behavior.
-  Evidence / build / date recorded: 37729701473, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T05:10:28.331547+00:00, ['.research/settings397-fresh-native-20261007.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
-- EXT-F-1003-T34 · guest: Partial. On-page/quiet UI and stored values passed warm and panel-document reload. Cleanup assertions passed in source-controlled driver, though raw receipt does not separately serialize original/final baseline. Downstream password-suggestion consumer and full-extension reload of this preference remain unverified. Frozen unpublished guest build only. Reviewed frozen guest run38041519886: 4 passed criteria; native case unverified. Unverified: preference changes its downstream browser behavior.
-  Evidence / build / date recorded: settings-local397-native-20261008, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T06:30:08.992059+00:00, ['.research/settings-local397-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
-- EXT-F-1003-T37 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 3 passed criteria; native case pass.
-  Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
-- EXT-F-1003-T40 · guest: Pass. Bounded guest T40 pass combining absent-container defaults from 38342265985 and downstream ON/OFF capture from 38344083875 on identical product tree SHA. Driver cleanup comparison passed with final visible Off/stored null, but capture report omits original raw key/field presence, so exact raw-container restoration cannot be independently reconstructed. No latest-main runtime, loaded/pinned, member/admin, Store or broad Settings claim.
-  Evidence / build / date recorded: 38344083875, ['docs/stabilization/runs/hosted-settings-controls-38342265985.json', 'docs/stabilization/evidence/settings-controls-hosted/run38342265985/case-results.sanitized.json', 'docs/stabilization/runs/hosted-settings-auto-scrape-38344083875.json', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/case-results.sanitized.json', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/resource-finals.sanitized.json', 'docs/stabilization/reports/peer-review-settings-auto-scrape-38344083875.json']
+- EXT-F-1003-T31 · guest: Unverified.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+- EXT-F-1003-T34 · guest: Unverified.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+- EXT-F-1003-T37 · guest: Pass.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+- EXT-F-1003-T40 · guest: Unverified.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T43 · guest: Partial.
   Evidence / build / date recorded: 38034890248, ['docs/stabilization/evidence/desktop-settings-hosted/run38034890248/receipt.sanitized.json', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/native-report.sanitized.json', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-package-38034890248-1.jsonl', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-browser-38034890248-1.jsonl', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-guest-38034890248-1.jsonl']
 - EXT-F-1003-T44 · member: Partial.
   Evidence / build / date recorded: desktop-settings-member-20261003-independent01, ['.research/desktop-settings-independent-native.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
 - EXT-F-1003-T45 · admin: Partial.
   Evidence / build / date recorded: desktop-settings-admin-final-20261003-01, ['.research/desktop-settings-admin-final.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
-- EXT-F-1003-T46 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 8 passed criteria; native case pass.
-  Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
+- EXT-F-1003-T46 · guest: Pass.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T47 · member: Partial.
   Evidence / build / date recorded: desktop-settings-member-20261003-independent01, ['.research/desktop-settings-independent-native.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
 - EXT-F-1003-T48 · admin: Partial.
@@ -617,22 +617,22 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T62 · admin: Unverified. No receipt-origin filter selection, per-filter row/count assertion, or empty-origin assertion.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
-- EXT-F-1003-T63 · guest: Pass. Independent raw native review passes complete GUEST-mode criteria: active signed-out Settings, Sign in/no Sign out, Account/Organization/Appearance anchors, absent advanced/permission/audit controls before and after real extension reload. Account/Organization navigation exercised. T63 member is a separate unverified axis; raw combined partial does not downgrade guest. No T04, whole Settings, member/admin or Store credit. Actual DOM/recorder assertions support Settings evidence; screenshots show only shell. Cleanup finally and terminal job verified; no expired-host post-run process/profile census.
-  Evidence / build / date recorded: 39363918633, ['docs/stabilization/reports/settings568-absence-native-retest-20261020.json', 'docs/stabilization/reports/settings568-native-independent-peer-20261020.json', 'docs/stabilization/evidence/settings568-absence-native/run39363918633/native-report.json']
-- EXT-F-1003-T64 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 5 passed criteria; native case pass.
-  Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
-- EXT-F-1003-T67 · guest: Pass. Bounded guest T67 pass on exact verified development artifact, including the original absent-container reproduction; run source 6f0a20f. The run is not latest-main or full Settings/Store coverage.
-  Evidence / build / date recorded: 38342265985, ['docs/stabilization/runs/hosted-settings-controls-38342265985.json']
-- EXT-F-1003-T70 · guest: Partial. Observed identity/readiness and no-update branch pass. Password API unavailable, update available, throttled, error and update API unavailable branches remain unverified. No Store/current-main/whole-feature health claim. Reviewed frozen guest run38041519886: 5 passed criteria; native case unverified. Unverified: password-flow API unavailable branch; update available branch; throttled branch; update error branch; update API unavailable branch.
-  Evidence / build / date recorded: 37729701473, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T05:10:28.331547+00:00, ['.research/settings397-fresh-native-20261007.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
+- EXT-F-1003-T63 · guest: Unverified.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+- EXT-F-1003-T64 · guest: Pass.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+- EXT-F-1003-T67 · guest: Pass.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+- EXT-F-1003-T70 · guest: Unverified.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T72 · admin: Partial.
   Evidence / build / date recorded: personal-dev577-refresh-20261020, ['docs/stabilization/reports/personal-dev577-refresh-20261020.json']
-- EXT-F-1003-T73 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 2 passed criteria; native case pass.
-  Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
+- EXT-F-1003-T73 · guest: Pass.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T75 · admin: Pass. Known authorized admin account identity, ADMIN badge and Sign out matched warm and after exact development extension reload/reopen. Native AX and inline-only screenshots; receipt/tree/runtime binding verified. Not wholeSettings or577Store evidence.
   Evidence / build / date recorded: settings-native-identity-20261020-b, ['docs/stabilization/reports/settings-actual-native-20261020.json', 'docs/stabilization/reports/member577-native-fresh-peer-20261020.json']
-- EXT-F-1003-T76 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 2 passed criteria; native case pass.
-  Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
+- EXT-F-1003-T76 · guest: Pass.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T79 · guest: Partial. {'warm': 'Matrx Local: Not connected. No Engine health, version, degraded, or failed service row was exposed.', 'after_extension_reload': 'Matrx Local: Not connected. No Engine health, version, degraded, or failed service row was exposed.', 'transport_comparison': 'Underlying bridge transport and health response were not independently observed, so the displayed status cannot be fully matched to transport.'}
   Evidence / build / date recorded: guest-settings-batch-20261021-0620, ['docs/stabilization/reports/guest-connections579-20261021.json', 'docs/stabilization/reports/connections-evidence0625.json', 'docs/stabilization/resource-journals/guest-settings-batch-20261021-0620.jsonl']
 - EXT-F-1003-T81 · admin: Partial. Native Matrx2 not running / Local not connected shown warm and afterreload; no health response or pairing/backend behavior proof.
@@ -655,8 +655,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T91 · admin: Partial. Unavailable-lock details/export/rotation states disabled actions and preserved history; restoration/read-only retry recovered. Cold auth-shell boot and ordinary retryable failures were not tested in this case.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
-- EXT-F-1003-T92 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 2 passed criteria; native case pass. Guest negative access only; no signed-in role credit.
-  Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
+- EXT-F-1003-T92 · guest: Pass.
+  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T93 · guest: Pass. Fresh isolated native guest run verified New and Current persisted through actual panel close/reopen and restored the original Current value. Full Settings and Store remain unverified.
   Evidence / build / date recorded: local-settings-guest-20261012-1441, ['docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json', 'docs/stabilization/reports/local-settings-guest-peer-20261012.json', 'docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl']
 - EXT-F-1003-T96 · guest: Partial. {'warm': 'Matrx 2: Matrx 2 is not running on this computer; separate Matrx Local row: Not connected.', 'after_extension_reload': 'Matrx 2: Matrx 2 is not running on this computer; separate Matrx Local row: Not connected.', 'initial_checking': 'Not observed; the row was already settled when first read and when Settings was inspected after reload.', 'session_comparison': 'Underlying Matrx 2 connection and account/session detail were not independently observed.'}

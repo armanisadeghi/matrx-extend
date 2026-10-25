@@ -7,7 +7,7 @@
   "auth_mode": "Supporting guest/admin/member test observations; no native mode pass inferred",
   "severity": "S2: reload readiness and diagnostics can refuse a valid rendered tab",
   "priority": "P1: restore reliable Settings original and surrounding retests",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/settings_resolver_repair",
   "preconditions": [
     "Baseline e571e287c runtime/test drivers with new actual-DOM cases; shared tooltip moves title into data-matrx-title."
@@ -42,8 +42,8 @@
     "resource_invalid": false,
     "status": "Legacy fake DOM/source-extraction seams and remaining diagnostic siblings require repair; not green."
   },
-  "native_limits": "October21 readiness cause unconfirmed; original T04 theme restore/full Reload, T22 adjacent controls and D217 guest Save/Retry remain unverified. DOM and CI guards are not product behavior passes.",
-  "next_action": "Exact-source successful CI artifact and independent native original/adjacent T04/T22 retest; no original product cause or closure inferred from DOM harness proof.",
+  "native_limits": "October21 original runtime cause remains unconfirmed. T04 full-manager Reload and T22 warm/panel Reload now independently accepted on0b; D217 guest Save/Retry remains unverified.",
+  "next_action": "Continue D289/D290 native exact-artifact retest; do not infer overall feature health.",
   "transition_history": [
     {
       "at": "2026-10-25T08:12:55.956036+00:00",
@@ -68,6 +68,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Meaningful DOM regression guards, full focused suite/current locked dependencies, compile, full lint and fresh source review passed; source pushed. Native product acceptance remains unverified."
+    },
+    {
+      "at": "2026-10-25T11:24:19.317133+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent native operator on exact0b artifact passed originalT04 full manager Reload and adjacentT22 warm/panel Reload, with fresh peer accepting those bounded criteria; source tooltip class fixed, originalOctober21 cause remains unknown."
+    },
+    {
+      "at": "2026-10-25T11:24:19.317133+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original and surrounding bounded harness reproduction independently verified; other open Settings/product cases remain unverified."
     }
   ],
   "fix_commit": "0fc85bdae10241c898191b022fc498968696e1e8",
@@ -79,5 +91,7 @@
     "compile": "resource-valid pass after frozen dependency catch-up",
     "lint": "resource-valid pass after import organization",
     "evidence": "docs/stabilization/reports/frozen-source-integration-20261025.json"
-  }
+  },
+  "native_retest_evidence": "docs/stabilization/runs/settings-guest-0b-20261025.json",
+  "closure_scope": "Supporting harness only; zero product defects closed from this state transition."
 }

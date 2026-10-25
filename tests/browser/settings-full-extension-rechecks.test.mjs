@@ -11,6 +11,11 @@ import {
   snapshotPanelDocumentReload,
 } from './settings-full-extension-rechecks.mjs';
 import { GUEST_PREFERENCES, preferenceBaseline } from './settings-guest-preference-batch.mjs';
+import {
+  runGuestSectionsCase,
+  scrapeSwitchWaitDiagnostic,
+} from './settings-guest-scrape-controls.mjs';
+import { waitFor } from './settings-panel-driver.mjs';
 
 function cases() {
   return FULL_EXTENSION_RECHECK_IDS.map((id) => ({
@@ -126,6 +131,59 @@ test('unexpected full-extension exceptions retain distinct safe source diagnosti
   assert.equal(JSON.stringify({ first, second }).includes('private.invalid'), false);
   assert.equal(JSON.stringify({ first, second }).includes('secret'), false);
   assert.equal(JSON.stringify({ first, second }).includes('password'), false);
+});
+
+test('T28 and T40 failures retain only safe census and wait samples', async () => {
+  const sections = cases().find((item) => item.id.endsWith('T28'));
+  await runFullExtensionRecheck(sections, async () => {
+    await runGuestSectionsCase(
+      null,
+      async () => {},
+      () => {},
+      {
+        evaluate: async () => ({
+          active: true,
+          headings: ['Account'],
+          expandedControlCount: 14,
+          nonSectionExpandedControlCount: 4,
+          raw: 'private page text',
+        }),
+      },
+    );
+  });
+  assert.deepEqual(sections.fullExtensionReload.exception.sectionCensus, {
+    active: true,
+    count: 1,
+    unrecognizedHeadingCount: 0,
+    expandedControlCount: 14,
+    nonSectionExpandedControlCount: 4,
+    headings: ['Account'],
+  });
+  const scrape = cases().find((item) => item.id.endsWith('T40'));
+  await runFullExtensionRecheck(scrape, async () => {
+    await waitFor(
+      'auto_scrape_true_warm',
+      async () => ({
+        active: true,
+        sectionOpen: true,
+        toggle: { count: 1, visible: true, stored: false, raw: 'private storage' },
+      }),
+      (state) => state.toggle.stored === true,
+      1,
+      (state) => scrapeSwitchWaitDiagnostic(state, true),
+    );
+  });
+  assert.deepEqual(scrape.fullExtensionReload.exception.wait, {
+    label: 'auto_scrape_true_warm',
+    sample: {
+      active: true,
+      sectionOpen: true,
+      controlCount: 1,
+      visibleMatches: true,
+      storedMatches: false,
+    },
+  });
+  assert.equal(JSON.stringify({ sections, scrape }).includes('private'), false);
 });
 
 test('inner restoration serialization rejects unknown stages and strips arbitrary observation fields', async () => {

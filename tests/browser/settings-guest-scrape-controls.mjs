@@ -37,7 +37,7 @@ export const AUTO_SCRAPE_MODE_FAILURE_STAGES = Object.freeze([
   'restore_choice',
   'restore_extension_reload',
 ]);
-const SECTIONS = [
+export const SECTIONS = [
   'Account',
   'Organization',
   'Appearance',
@@ -59,6 +59,16 @@ export function scrapeSwitchMatches(state, expected) {
     state?.visible === expected &&
     state?.stored === expected
   );
+}
+
+export function scrapeSwitchWaitDiagnostic(state, expected) {
+  return {
+    active: state?.active === true,
+    sectionOpen: state?.sectionOpen === true,
+    controlCount: Number.isInteger(state?.toggle?.count) ? state.toggle.count : null,
+    visibleMatches: state?.toggle?.visible === expected,
+    storedMatches: state?.toggle?.stored === expected,
+  };
 }
 
 export function scrapeModeMatches(state, value, label) {
@@ -145,6 +155,8 @@ export async function runGuestAutoScrapeCase(panel, reloadSettings, record, driv
             { ...state?.toggle, active: state?.active, sectionOpen: state?.sectionOpen },
             expected,
           ),
+        undefined,
+        (state) => scrapeSwitchWaitDiagnostic(state, expected),
       );
       record('warm', `Auto-scrape ${expected ? 'on' : 'off'} appears and persists`, warm, true);
       await reloadSettings(panel);
@@ -178,6 +190,8 @@ export async function runGuestAutoScrapeCase(panel, reloadSettings, record, driv
           { ...state?.toggle, active: state?.active, sectionOpen: state?.sectionOpen },
           baseline,
         ),
+      undefined,
+      (state) => scrapeSwitchWaitDiagnostic(state, baseline),
     );
     await reloadSettings(panel);
     await driver.openSection(panel, 'Scrape');
@@ -410,14 +424,16 @@ function sectionCensusDiagnostic(state) {
 
 export async function runGuestSectionsCase(panel, reloadSettings, record, driver = nativeDriver) {
   const baseline = await observeSection(panel, 'Account', driver);
-  assert.equal(
+  const baselineValid =
     baseline.active &&
-      Array.isArray(baseline.headings) &&
-      baseline.headings.length === SECTIONS.length &&
-      SECTIONS.every((name, index) => baseline.headings[index] === name),
-    true,
-    `guest_settings_sections_missing:${sectionCensusDiagnostic(baseline)}`,
-  );
+    Array.isArray(baseline.headings) &&
+    baseline.headings.length === SECTIONS.length &&
+    SECTIONS.every((name, index) => baseline.headings[index] === name);
+  if (!baselineValid) {
+    const error = new Error(`guest_settings_sections_missing:${sectionCensusDiagnostic(baseline)}`);
+    error.safeSectionCensus = JSON.parse(sectionCensusDiagnostic(baseline));
+    throw error;
+  }
   for (const label of SECTIONS) {
     const initial = await observeSection(panel, label, driver);
     try {

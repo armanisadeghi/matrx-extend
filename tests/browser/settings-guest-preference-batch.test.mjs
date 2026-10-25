@@ -446,6 +446,57 @@ test('guest new chat exposes both selected default modes through their real mode
   );
 });
 
+test('T10 implicit Act cycles through Ask before selecting Act and restores absent storage', async () => {
+  const preference = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  const state = {
+    activeSettings: true,
+    count: 1,
+    selected: 'Act without asking',
+    stored: null,
+    storedPresent: false,
+    storagePresent: false,
+  };
+  const clicks = [];
+  const driver = {
+    openSection: async () => {},
+    click: async (_panel, kind, label) => {
+      if (kind !== 'option') return;
+      clicks.push(label);
+      if (state.selected === label) return; // Native select does not emit a change for its current value.
+      state.selected = label;
+      state.stored = label === 'Act without asking' ? 'act' : 'ask';
+      state.storedPresent = true;
+      state.storagePresent = true;
+    },
+    evaluate: async (_panel, script) => {
+      if (script.includes('const originalStoragePresent =')) {
+        state.stored = null;
+        state.storedPresent = false;
+        state.storagePresent = false;
+      }
+      return { ...state };
+    },
+    waitFor: async (label, read, accept) => {
+      const value = await read();
+      if (!accept(value)) throw new Error(`${label}_not_observed`);
+      return value;
+    },
+  };
+  await runGuestPreferenceCase(
+    null,
+    async () => {},
+    preference,
+    () => {},
+    async () => {},
+    driver,
+  );
+  assert.deepEqual(clicks.slice(0, 2), ['Ask before acting', 'Act without asking']);
+  assert.deepEqual(
+    [state.selected, state.stored, state.storedPresent, state.storagePresent],
+    ['Act without asking', null, false, false],
+  );
+});
+
 import { captureGuestPreferenceBaselines } from './settings-full-extension-rechecks.mjs';
 import { runGuestChoicesAcrossExtensionRestarts } from './settings-guest-extension-rechecks.mjs';
 import {

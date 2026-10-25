@@ -7216,34 +7216,21 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "current-owner-guest-theme-20261021",
-              "peer_run_id": "guest-theme579-native-peer-retry-20261021",
-              "source_sha": "11ff2cfb2ddecba67e7d06dba763b24325ccbe1b",
-              "development_ci_run_id": 39546376658,
-              "development_artifact_id": 12322875129,
-              "build_version": "0.2.579",
-              "tree_sha256": "d782f017d88b7e90b7481b59c98767f71c76ffc7a8532adb7a419ac9bd22b1cb",
-              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
-              "dimension_results": {
-                "warm": "pass",
-                "reload": "pass"
-              },
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
               "resource_valid": true,
-              "passed_subtargets": [
-                "Light selected and visibly white warm and after actual manager Reload/reopen",
-                "Dark selected and visibly charcoal warm and after actual manager Reload/reopen",
-                "System selected and charcoal matching independently measured OS Dark warm and after actual manager Reload/reopen",
-                "Original System preference restored; independent Light persistence replay and System restoration"
-              ],
+              "runner_reported_status": "pass",
+              "scope": "System/light/dark applied and restored original absent theme/container after actual manager full extension Reload;21/21.",
               "evidence": [
-                "docs/stabilization/reports/current-owner-guest-theme-20261021.json",
-                "docs/stabilization/reports/guest-theme-native-peer-20261021.json",
-                "docs/stabilization/reports/theme579-final-evidence-review-20261021.json",
-                "docs/stabilization/reports/theme579-owner-binding-20261021.json",
-                "docs/stabilization/resource-journals/current-owner-guest-theme-20261021.jsonl",
-                "docs/stabilization/resource-journals/guest-theme579-native-peer-retry-20261021.jsonl"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "detail": "Actual guest Profile10 Settings Sign in/Email— and correctDEV origin/path/Reload bind frozen579/11ff. First operator32/40CUAcalls all3states; independent native peer repeated Light/fullReload and restored System, not Dark/System reload. Peer initial premature preADMITTED attempt refused/zero credit; only separate admitted retry counts. Peer20calls=10invalid+10valid, bothholders terminal. Fullvalidjournals, no mocks/interception, visual screenshots observed not exported. WXT production compilation/keyeddevelopmentchannel corrected withhistory. Backend/otherroles/Store/fullSettings/linkeddefectclosure not inferred."
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "linked_defects": [
@@ -8204,26 +8191,22 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": 38342265985,
+              "status": "unverified",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
               "resource_valid": true,
-              "source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
-              "development_ci_run_id": 38341429896,
-              "development_artifact_id": 11787535752,
-              "build_version": "0.2.509",
-              "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
-              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
-              "passed_criteria_count": 18,
-              "passed_subtargets": [
-                "18/18 guest Default mode criteria passed; the full-extension recheck began with absent Settings storage and visible Ask before acting matched the effective default; changes survived worker/panel replacement and the original absent baseline was restored."
-              ],
-              "unverified": [
-                "Member/admin, Store, and broader Settings behavior."
-              ],
+              "runner_reported_status": "fail",
+              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-controls-38342265985.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "detail": "Bounded guest T10 pass on exact verified development artifact; run source 6f0a20f. The run is not latest-main or full Settings/Store coverage."
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "linked_defects": [
@@ -8725,60 +8708,22 @@
           ],
           "results": {
             "guest": {
-              "mode": "guest",
-              "run_id": "37822887930",
               "status": "pass",
-              "build_version": "0.2.414",
-              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
-              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "resource_valid": true,
+              "runner_reported_status": "pass",
+              "scope": "Default speed selection/persistence through panel-document reload only;4/4.",
               "evidence": [
-                ".research/settings-reload-native-20261008.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "independent_review": "4a5a8e98",
-              "detail": "Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 4 passed criteria; native case pass.",
-              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "resource_valid": true,
-                  "unverified": [],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "passed_criteria_count": 4
-                },
-                {
-                  "run_id": "local-settings-guest-20261012-1441",
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
-                  "build_version": "0.2.509",
-                  "development_ci_run_id": 38261957044,
-                  "development_artifact_id": 11752953286,
-                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
-                  "resource_valid": true,
-                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
-                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
-                  ],
-                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
-                }
-              ]
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "linked_defects": [
@@ -9005,70 +8950,22 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "38105457992",
-              "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
-              "build_version": "0.2.490",
+              "status": "unverified",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
               "resource_valid": true,
-              "detail": "Independent review accepts only a qualified pass for the four guest switch UI/storage Off/On and panel-document reload criteria on current-equivalent development v0.2.490. T16 remains partial because downstream identity/email behavior is unverified. The retained native report has no explicit final baseline sample; runner source asserts cleanup restoration but the initial value and final restoration are not independently evidenced. Signed-out UI, role, organization, browser and profile context were not serialized for independent review.",
+              "runner_reported_status": "unverified",
+              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
-                "docs/stabilization/reports/peer-review-run38105457992-t16.json",
-                "docs/stabilization/resource-journals/hosted-package-38105457992-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38105457992-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38105457992-1.jsonl"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "scope": "Guarded hosted lane A, signed-out guest route as asserted by runner; exact frozen CI development artifact v0.2.490, source 6ed4289da90f19cab72e2d77feb7e845f71c02b7, tree 673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633. Bounded switch/persistence only; no downstream behavior, full extension reload, Store, current-main runtime, member/admin, or full T16 claim.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "partial",
-                  "native_case_status": "unverified",
-                  "resource_valid": true,
-                  "unverified": [
-                    "preference changes its downstream browser behavior"
-                  ],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "passed_criteria_count": 4
-                },
-                {
-                  "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
-                  "build_version": "0.2.490",
-                  "development_ci_run_id": 38102137319,
-                  "development_artifact_id": 11688890496,
-                  "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
-                  "run_id": 38105457992,
-                  "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
-                  "hosted_result_artifact_id": 11690340577,
-                  "status": "pass",
-                  "native_case_status": "unverified",
-                  "resource_valid": true,
-                  "unverified": [
-                    "preference changes its downstream browser behavior"
-                  ],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
-                    "docs/stabilization/reports/peer-review-run38105457992-t16.json"
-                  ],
-                  "scope": "Qualified independent PASS for only guest T16 switch Off/On visible+stored state in warm use and after panel-document reload. Overall T16 remains partial. Explicit original-baseline restoration, signed-out UI/role/org/browser/profile serialization, downstream identity/email behavior, full extension reload, Store, member and admin remain unverified.",
-                  "passed_criteria_count": 4,
-                  "independent_review_verdict": "qualified_bounded_pass"
-                }
-              ],
-              "independent_review": "docs/stabilization/reports/peer-review-run38105457992-t16.json"
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "linked_defects": [
@@ -9445,41 +9342,22 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37729701473",
-              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "status": "unverified",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "resource_valid": true,
+              "runner_reported_status": "unverified",
+              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                ".research/settings397-fresh-native-20261007.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
-              "verified_at": "2026-10-08T05:10:28.331547+00:00",
-              "detail": "Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim. Reviewed frozen guest run38041519886: 4 passed criteria; native case unverified. Unverified: preference changes its downstream browser behavior.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "partial",
-                  "native_case_status": "unverified",
-                  "resource_valid": true,
-                  "unverified": [
-                    "preference changes its downstream browser behavior"
-                  ],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "passed_criteria_count": 4
-                }
-              ]
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "attempt_history": [
@@ -9673,26 +9551,21 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "39363918633",
-              "source_sha": "9185b3c6728df8dc0ea188b6a344848ded6954fa",
-              "workflow_source_sha": "9185b3c6728df8dc0ea188b6a344848ded6954fa",
-              "development_ci_run_id": 39362901256,
-              "development_artifact_id": 12238730842,
-              "hosted_result_artifact_id": 12238862303,
-              "build_version": "0.2.568",
-              "build_kind": "native_ci_development_artifact",
-              "tree_sha256": "243e26e6896d0abbf724c429cc1c25104fccdf3df33f36e42465855b51f57c07",
-              "development_artifact_digest": "sha256:01f7395724bd0e90851efc797a85cf3e335dfde71762441a181ee619a8449f3c",
-              "hosted_artifact_digest": "sha256:ee2456457562eefa5e05990d14946cd14073d60f44af3e8c19d4a0937e3350f0",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
               "resource_valid": true,
-              "evidence_kind": "native_product_guest",
-              "independent_review": "docs/stabilization/reports/settings568-native-independent-peer-20261020.json",
+              "runner_reported_status": "pass",
+              "scope": "Rendered signed-out guest admin/permission controls absent warm and after panel-document reload;2/2, not separately after manager Reload.",
               "evidence": [
-                "docs/stabilization/reports/settings568-absence-native-retest-20261020.json",
-                "docs/stabilization/reports/settings568-native-independent-peer-20261020.json",
-                "docs/stabilization/evidence/settings568-absence-native/run39363918633/native-report.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "detail": "Independent raw native review passes complete GUEST-mode criteria: active signed-out Settings, Sign in/no Sign out, Account/Organization/Appearance anchors, absent advanced/permission/audit controls before and after real extension reload. Account/Organization navigation exercised. T63 member is a separate unverified axis; raw combined partial does not downgrade guest. No T04, whole Settings, member/admin or Store credit. Actual DOM/recorder assertions support Settings evidence; screenshots show only shell. Cleanup finally and terminal job verified; no expired-host post-run process/profile census."
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "result_history": [
@@ -10139,79 +10012,22 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "38018411295",
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "hosted_result_artifact_id": 11657092463,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "status": "unverified",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
               "resource_valid": true,
-              "passed_subtargets": [
-                "88/88 bounded assertions passed across all 11 guest Settings sections at warm state, panel reload and full-extension reload; content and expand/collapse behavior checked."
-              ],
-              "unverified": [
-                "Member/admin and Store behavior remain outside this run."
-              ],
-              "detail": "Independent review accepts the bounded guest collapsible-groups case. All 11 guest sections passed content and open/close checks across warm, panel reload and full-extension reload. Reviewed frozen guest run38041519886: 88 passed criteria; native case pass.",
+              "runner_reported_status": "fail",
+              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                "docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
-                "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "scope": "Hosted signed-out guest on exact imported CI development artifact 11657076101 (run 38017683667), source 0735eb7a; workflow checkout 56c27f70. Does not establish later-main, member/admin, or Store behavior.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "resource_valid": true,
-                  "unverified": [],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "full_extension_reload": {
-                    "status": "pass"
-                  },
-                  "panel_document_reload": {
-                    "status": "pass"
-                  },
-                  "passed_criteria_count": 88
-                },
-                {
-                  "run_id": "local-settings-guest-20261012-1441",
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
-                  "build_version": "0.2.509",
-                  "development_ci_run_id": 38261957044,
-                  "development_artifact_id": 11752953286,
-                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
-                  "resource_valid": true,
-                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
-                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
-                  ],
-                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
-                }
-              ]
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "preparation_history": [
@@ -10445,41 +10261,22 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37729701473",
-              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "status": "unverified",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "resource_valid": true,
+              "runner_reported_status": "unverified",
+              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                ".research/settings397-fresh-native-20261007.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
-              "verified_at": "2026-10-08T05:10:28.331547+00:00",
-              "detail": "Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim. Reviewed frozen guest run38041519886: 4 passed criteria; native case unverified. Unverified: preference changes its downstream browser behavior.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "partial",
-                  "native_case_status": "unverified",
-                  "resource_valid": true,
-                  "unverified": [
-                    "preference changes its downstream browser behavior"
-                  ],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "passed_criteria_count": 4
-                }
-              ]
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "linked_defects": [
@@ -10691,42 +10488,22 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "settings-local397-native-20261008",
-              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
-              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+              "status": "unverified",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "resource_valid": true,
+              "runner_reported_status": "unverified",
+              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                ".research/settings-local397-native-20261008.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "independent_review": ".research/settings-local397-peer-20261008.json",
-              "verified_at": "2026-10-08T06:30:08.992059+00:00",
-              "detail": "On-page/quiet UI and stored values passed warm and panel-document reload. Cleanup assertions passed in source-controlled driver, though raw receipt does not separately serialize original/final baseline. Downstream password-suggestion consumer and full-extension reload of this preference remain unverified. Frozen unpublished guest build only. Reviewed frozen guest run38041519886: 4 passed criteria; native case unverified. Unverified: preference changes its downstream browser behavior.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "partial",
-                  "native_case_status": "unverified",
-                  "resource_valid": true,
-                  "unverified": [
-                    "preference changes its downstream browser behavior"
-                  ],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "passed_criteria_count": 4
-                }
-              ]
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "linked_defects": [
@@ -10953,60 +10730,22 @@
           ],
           "results": {
             "guest": {
-              "mode": "guest",
-              "run_id": "37822887930",
               "status": "pass",
-              "build_version": "0.2.414",
-              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
-              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "resource_valid": true,
+              "runner_reported_status": "pass",
+              "scope": "Deep clean switch/hint/persistence and restoration through panel reload;3/3, no actual deep-clean processing claim.",
               "evidence": [
-                ".research/settings-reload-native-20261008.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "independent_review": "4a5a8e98",
-              "detail": "Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 3 passed criteria; native case pass.",
-              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "resource_valid": true,
-                  "unverified": [],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "passed_criteria_count": 3
-                },
-                {
-                  "run_id": "local-settings-guest-20261012-1441",
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
-                  "build_version": "0.2.509",
-                  "development_ci_run_id": 38261957044,
-                  "development_artifact_id": 11752953286,
-                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
-                  "resource_valid": true,
-                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
-                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
-                  ],
-                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
-                }
-              ]
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "linked_defects": [
@@ -11293,33 +11032,22 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": 38344083875,
+              "status": "unverified",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
               "resource_valid": true,
-              "source_sha": "74287b7efff1b53778153f8a2b524b4f217c6c88",
-              "development_ci_run_id": 38343439920,
-              "development_artifact_id": 11788341081,
-              "build_version": "0.2.509",
-              "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
-              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
-              "passed_subtargets": [
-                "Run 38342265985: full-extension recheck observed absent Settings storage with effective Auto-scrape Off and Capture defaults; On/Off selection persisted through reload and cleanup comparison passed.",
-                "Run 38344083875: ON emitted exactly one successful marker-bearing capture; OFF emitted zero calls in settled 3-second windows; both settings survived worker/panel replacement.",
-                "All three resource journals from run 38344083875 pass the committed verifier; independent peer review accepts combined T40 evidence."
-              ],
-              "unverified": [
-                "Member/admin behavior, broad Settings health, Chrome Web Store behavior, and latest-main runtime/Chrome loaded or pinned identity."
-              ],
+              "runner_reported_status": "fail",
+              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-controls-38342265985.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38342265985/case-results.sanitized.json",
-                "docs/stabilization/runs/hosted-settings-auto-scrape-38344083875.json",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/case-results.sanitized.json",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38344083875/resource-finals.sanitized.json",
-                "docs/stabilization/reports/peer-review-settings-auto-scrape-38344083875.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "detail": "Bounded guest T40 pass combining absent-container defaults from 38342265985 and downstream ON/OFF capture from 38344083875 on identical product tree SHA. Driver cleanup comparison passed with final visible Off/stored null, but capture report omits original raw key/field presence, so exact raw-container restoration cannot be independently reconstructed. No latest-main runtime, loaded/pinned, member/admin, Store or broad Settings claim.",
-              "defect_id": "EXT-D-0224"
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "result_history": [
@@ -12030,60 +11758,22 @@
           ],
           "results": {
             "guest": {
-              "mode": "guest",
-              "run_id": "37822887930",
               "status": "pass",
-              "build_version": "0.2.414",
-              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
-              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "resource_valid": true,
+              "runner_reported_status": "pass",
+              "scope": "Owned loopback port persistence/validation/clear plus real worker rediscovery;8/8. Fixture intentionally returns503 at65001, no healthy desktop claim.",
               "evidence": [
-                ".research/settings-reload-native-20261008.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "independent_review": "4a5a8e98",
-              "detail": "Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 8 passed criteria; native case pass.",
-              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "resource_valid": true,
-                  "unverified": [],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "passed_criteria_count": 8
-                },
-                {
-                  "run_id": "local-settings-guest-20261012-1441",
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
-                  "build_version": "0.2.509",
-                  "development_ci_run_id": 38261957044,
-                  "development_artifact_id": 11752953286,
-                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
-                  "resource_valid": true,
-                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
-                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
-                  ],
-                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
-                }
-              ]
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "linked_defects": [
@@ -13424,27 +13114,22 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "39363918633",
-              "source_sha": "9185b3c6728df8dc0ea188b6a344848ded6954fa",
-              "workflow_source_sha": "9185b3c6728df8dc0ea188b6a344848ded6954fa",
-              "development_ci_run_id": 39362901256,
-              "development_artifact_id": 12238730842,
-              "hosted_result_artifact_id": 12238862303,
-              "build_version": "0.2.568",
-              "build_kind": "native_ci_development_artifact",
-              "tree_sha256": "243e26e6896d0abbf724c429cc1c25104fccdf3df33f36e42465855b51f57c07",
-              "development_artifact_digest": "sha256:01f7395724bd0e90851efc797a85cf3e335dfde71762441a181ee619a8449f3c",
-              "hosted_artifact_digest": "sha256:ee2456457562eefa5e05990d14946cd14073d60f44af3e8c19d4a0937e3350f0",
+              "status": "unverified",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
               "resource_valid": true,
-              "evidence_kind": "native_product_guest",
-              "independent_review": "docs/stabilization/reports/settings568-native-independent-peer-20261020.json",
+              "runner_reported_status": "unverified",
+              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                "docs/stabilization/reports/settings568-absence-native-retest-20261020.json",
-                "docs/stabilization/reports/settings568-native-independent-peer-20261020.json",
-                "docs/stabilization/evidence/settings568-absence-native/run39363918633/native-report.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "detail": "Independent raw native review passes complete GUEST-mode criteria: active signed-out Settings, Sign in/no Sign out, Account/Organization/Appearance anchors, absent advanced/permission/audit controls before and after real extension reload. Account/Organization navigation exercised. T63 member is a separate unverified axis; raw combined partial does not downgrade guest. No T04, whole Settings, member/admin or Store credit. Actual DOM/recorder assertions support Settings evidence; screenshots show only shell. Cleanup finally and terminal job verified; no expired-host post-run process/profile census."
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "result_history": [
@@ -13637,60 +13322,22 @@
           ],
           "results": {
             "guest": {
-              "mode": "guest",
-              "run_id": "37822887930",
               "status": "pass",
-              "build_version": "0.2.414",
-              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
-              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "resource_valid": true,
+              "runner_reported_status": "pass",
+              "scope": "Owned loopback allowed-origin list removal and panel reload;5/5.",
               "evidence": [
-                ".research/settings-reload-native-20261008.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "independent_review": "4a5a8e98",
-              "detail": "Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 5 passed criteria; native case pass.",
-              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "resource_valid": true,
-                  "unverified": [],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "passed_criteria_count": 5
-                },
-                {
-                  "run_id": "local-settings-guest-20261012-1441",
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
-                  "build_version": "0.2.509",
-                  "development_ci_run_id": 38261957044,
-                  "development_artifact_id": 11752953286,
-                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
-                  "resource_valid": true,
-                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
-                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
-                  ],
-                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
-                }
-              ]
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "result_history": [
@@ -13913,25 +13560,21 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 38342265985,
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
               "resource_valid": true,
-              "source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
-              "development_ci_run_id": 38341429896,
-              "development_artifact_id": 11787535752,
-              "build_version": "0.2.509",
-              "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
-              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
-              "passed_criteria_count": 15,
-              "passed_subtargets": [
-                "15/15 guest criteria passed, including explicitly observed initially absent Settings storage and effective false/Capture defaults; Scroll & capture and Capture choices survived worker/panel replacement; pre-T67 container was restored after panel reload."
-              ],
-              "unverified": [
-                "Member/admin, Store, and broader Settings behavior."
-              ],
+              "runner_reported_status": "pass",
+              "scope": "Auto-scrape mode selection including two real manager full Reload replacements and original absent container restoration;15/15.",
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-controls-38342265985.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "detail": "Bounded guest T67 pass on exact verified development artifact, including the original absent-container reproduction; run source 6f0a20f. The run is not latest-main or full Settings/Store coverage."
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "linked_defects": [
@@ -14301,45 +13944,22 @@
           },
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37729701473",
-              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "status": "unverified",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "resource_valid": true,
+              "runner_reported_status": "unverified",
+              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                ".research/settings397-fresh-native-20261007.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
-              "verified_at": "2026-10-08T05:10:28.331547+00:00",
-              "detail": "Observed identity/readiness and no-update branch pass. Password API unavailable, update available, throttled, error and update API unavailable branches remain unverified. No Store/current-main/whole-feature health claim. Reviewed frozen guest run38041519886: 5 passed criteria; native case unverified. Unverified: password-flow API unavailable branch; update available branch; throttled branch; update error branch; update API unavailable branch.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "partial",
-                  "native_case_status": "unverified",
-                  "resource_valid": true,
-                  "unverified": [
-                    "password-flow API unavailable branch",
-                    "update available branch",
-                    "throttled branch",
-                    "update error branch",
-                    "update API unavailable branch"
-                  ],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "passed_criteria_count": 5
-                }
-              ]
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "result_history": [
@@ -14658,60 +14278,22 @@
           ],
           "results": {
             "guest": {
-              "mode": "guest",
-              "run_id": "37822887930",
               "status": "pass",
-              "build_version": "0.2.414",
-              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
-              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "resource_valid": true,
+              "runner_reported_status": "pass",
+              "scope": "Signed-out account negative before/after manager full extension Reload;2/2.",
               "evidence": [
-                ".research/settings-reload-native-20261008.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "independent_review": "4a5a8e98",
-              "detail": "Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 2 passed criteria; native case pass.",
-              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "resource_valid": true,
-                  "unverified": [],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "passed_criteria_count": 2
-                },
-                {
-                  "run_id": "local-settings-guest-20261012-1441",
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
-                  "build_version": "0.2.509",
-                  "development_ci_run_id": 38261957044,
-                  "development_artifact_id": 11752953286,
-                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
-                  "resource_valid": true,
-                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
-                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
-                  ],
-                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
-                }
-              ]
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "linked_defects": [
@@ -14934,60 +14516,22 @@
           ],
           "results": {
             "guest": {
-              "mode": "guest",
-              "run_id": "37822887930",
               "status": "pass",
-              "build_version": "0.2.414",
-              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
-              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "resource_valid": true,
+              "runner_reported_status": "pass",
+              "scope": "Signed-out Organization negative before/after manager full extension Reload;2/2, zero organization requests.",
               "evidence": [
-                ".research/settings-reload-native-20261008.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "independent_review": "4a5a8e98",
-              "detail": "Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 2 passed criteria; native case pass.",
-              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "resource_valid": true,
-                  "unverified": [],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "passed_criteria_count": 2
-                },
-                {
-                  "run_id": "local-settings-guest-20261012-1441",
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
-                  "build_version": "0.2.509",
-                  "development_ci_run_id": 38261957044,
-                  "development_artifact_id": 11752953286,
-                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
-                  "resource_valid": true,
-                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
-                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
-                  ],
-                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
-                }
-              ]
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             }
           },
           "linked_defects": [
@@ -15898,61 +15442,22 @@
           ],
           "results": {
             "guest": {
-              "mode": "guest",
-              "run_id": "37822887930",
               "status": "pass",
-              "build_version": "0.2.414",
-              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
-              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "run_id": "settings-guest-0b-20261025",
+              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+              "development_ci_run_id": 40181800284,
+              "development_artifact_id": 12594596898,
+              "build_version": "0.2.621",
+              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "resource_valid": true,
+              "runner_reported_status": "pass",
+              "scope": "Guest-only negative Organization/archive-navigation slice before/after manager Reload;2/2; member/admin navigation unverified.",
               "evidence": [
-                ".research/settings-reload-native-20261008.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
               ],
-              "independent_review": "4a5a8e98",
-              "detail": "Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 2 passed criteria; native case pass. Guest negative access only; no signed-in role credit.",
-              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim.",
-              "bounded_subtarget_evidence": [
-                {
-                  "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
-                  "build_version": "0.2.459",
-                  "development_ci_run_id": 38036029832,
-                  "development_artifact_id": 11664077690,
-                  "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "run_id": 38041519886,
-                  "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
-                  "hosted_result_artifact_id": 11665862988,
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "resource_valid": true,
-                  "unverified": [],
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                    "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
-                  ],
-                  "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
-                  "native_scope": "guest-negative-access-only",
-                  "passed_criteria_count": 2
-                },
-                {
-                  "run_id": "local-settings-guest-20261012-1441",
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
-                  "build_version": "0.2.509",
-                  "development_ci_run_id": 38261957044,
-                  "development_artifact_id": 11752953286,
-                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
-                  "resource_valid": true,
-                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
-                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
-                  ],
-                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
-                }
-              ]
+              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
             },
             "member": {
               "status": "unverified",
@@ -16355,7 +15860,9 @@
             "EXT-D-0186",
             "EXT-D-0220",
             "EXT-D-0287",
-            "EXT-D-0288"
+            "EXT-D-0288",
+            "EXT-D-0289",
+            "EXT-D-0290"
           ],
           "run_ids": [
             "guest-local-001",
@@ -16387,7 +15894,8 @@
             38089377803,
             "38124123515",
             "local-settings-guest-20261012-1441",
-            "39363918633"
+            "39363918633",
+            "settings-guest-0b-20261025"
           ],
           "retest_status": "Exact development .568/source9185 native39363918633 independently passes T22 guest and T63 guest cells with real extension replacement. Other Settings cases, T04 restoration, member/admin, Store and whole feature remain unverified; no whole-health claim."
         },
@@ -16400,7 +15908,9 @@
             "EXT-D-0086",
             "EXT-D-0087",
             "EXT-D-0287",
-            "EXT-D-0288"
+            "EXT-D-0288",
+            "EXT-D-0289",
+            "EXT-D-0290"
           ],
           "run_ids": [
             "settings-mounted-member-full6-20261003-01",
@@ -16422,7 +15932,9 @@
             "EXT-D-0093",
             "EXT-D-0159",
             "EXT-D-0287",
-            "EXT-D-0288"
+            "EXT-D-0288",
+            "EXT-D-0289",
+            "EXT-D-0290"
           ],
           "run_ids": [
             "admin-org-001",

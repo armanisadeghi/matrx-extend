@@ -1,0 +1,62 @@
+{
+  "id": "EXT-D-0290",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T28", "EXT-F-1003-T40"],
+  "title": "Settings reload failures lose decisive safe observations",
+  "surface": "Supporting native acceptance harness; not a proven product defect",
+  "auth_mode": "Guest reproduction; shared driver siblings reviewed",
+  "severity": "S2: prevents trustworthy native retest or diagnosis",
+  "priority": "P1: original native failure follow-through",
+  "state": "fixed",
+  "owner": "/root/settings_failure_class_repair_1109",
+  "preconditions": [
+    "Frozen exact0b CI development artifact and resource-valid nativeB40186301999."
+  ],
+  "reproduction": [
+    "Read native40186301999 T28 section census failure and T40 wait_timeout; original report lacks decisive section census or labeled last safe wait sample."
+  ],
+  "expected": "Retain known section headings/counts/booleans and stable T40 wait labels through actual producer seams; never log raw page/auth/storage values or weaken criteria/timeouts.",
+  "actual": "Full-reload section census and shared wait failure serialization omit existing safe census or stable label/last sample, preventing attribution. Product causes remain unknown.",
+  "cause": "Full-reload section census and shared wait failure serialization omit existing safe census or stable label/last sample, preventing attribution. Product causes remain unknown.",
+  "evidence": [
+    "docs/stabilization/reports/settings-failure-class-repair-1109.json",
+    "docs/stabilization/runs/settings-guest-0b-20261025.json",
+    "docs/stabilization/reports/settings-case-repair-fresh-review.json"
+  ],
+  "reviewer": "/root/settings_case_repair_fresh_review",
+  "verification": {
+    "final_guarded_focused": { "total": 926, "pass": 915, "fail": 0, "skip": 11 },
+    "compile": "guarded valid0",
+    "lint": "guarded valid0,3251files0errors1022warnings",
+    "guarded_session": 86803,
+    "source_checks_not_native_passes": true
+  },
+  "native_retest": "pending new successful exact-main CI artifact; T10/T28/T40 remain unverified.",
+  "fix_commit_lookup": "Commit containing this record; resolve git log -1 --format=%H -- tests/browser/settings-guest-preference-batch.mjs",
+  "transition_history": [
+    {
+      "at": "2026-10-25T11:24:19.317133+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Resource-valid native receipt failure and missing diagnostic evidence observed."
+    },
+    {
+      "at": "2026-10-25T11:24:19.317133+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Exact source producer/consumer seams and native failed stage traced."
+    },
+    {
+      "at": "2026-10-25T11:24:19.317133+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Named bounded implementation lane with red/green guards and independent source review."
+    },
+    {
+      "at": "2026-10-25T11:24:19.317133+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Meaningful red/green producer tests, fresh code review, guarded full focused/compile/lint passed; native retest still pending."
+    }
+  ]
+}

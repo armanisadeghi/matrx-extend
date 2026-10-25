@@ -54,8 +54,11 @@ export async function waitFor(
     if (accept(last)) return last;
     await new Promise((resolveWait) => setTimeout(resolveWait, 100));
   } while (Date.now() < deadline);
-  const error = new Error(`${label}_not_observed:${JSON.stringify(diagnostic(last))}`);
+  const lastDiagnostic = diagnostic(last);
+  const error = new Error(`${label}_not_observed:${JSON.stringify(lastDiagnostic)}`);
   error.waitFailureCategory = lastReadFailureCategory;
+  error.waitLabel = label;
+  error.waitDiagnostic = lastDiagnostic;
   throw error;
 }
 

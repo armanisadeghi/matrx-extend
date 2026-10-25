@@ -1,0 +1,3235 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-guest-0b-20261025",
+  "status": "reviewed_partial_native",
+  "scope": {
+    "workflow": "hosted-guest-acceptance.yml",
+    "acceptance_case": "settings-controls",
+    "acceptance_lane": "B",
+    "auth_mode": "guest",
+    "frozen_product_source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+    "development_run_id": 40181800284,
+    "development_artifact_id": 12594596898,
+    "artifact_digest": "sha256:cd3530af34e0a1c45765169289b5ae184301b9198741637eb7b69a2dd402ec42",
+    "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_version": "0.2.621",
+    "runner": "macos-15-intel",
+    "browser_version": "not retained in selected uploaded receipt; do not substitute local Mac Chrome version"
+  },
+  "dispatch": {
+    "run_id": 40186301999,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40186301999",
+    "workflow_source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "result": {
+    "runner_overall_status": "fail",
+    "cases": [
+      {
+        "case_id": "EXT-F-1003-T04",
+        "runner_case_status": "pass",
+        "bounded_status": "pass",
+        "scope": "System/light/dark applied and restored original absent theme/container after actual manager full extension Reload;21/21.",
+        "criteria": [
+          {
+            "name": "Dark changes UI, persisted preference, and applied appearance",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Dark",
+              "stored": "dark",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": true,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(31, 31, 33)",
+                "body": "rgb(31, 31, 33)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "Dark survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Dark",
+              "stored": "dark",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": true,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(31, 31, 33)",
+                "body": "rgb(31, 31, 33)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "Light changes UI, persisted preference, and applied appearance",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Light",
+              "stored": "light",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "Light survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Light",
+              "stored": "light",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "System changes UI, persisted preference, and applied appearance",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "System",
+              "stored": "system",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "System survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "System",
+              "stored": "system",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "Original theme baseline restored after panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "System",
+              "stored": null,
+              "storedPresent": false,
+              "storagePresent": false,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "before first extension reload: original Theme preference restored",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "System",
+              "stored": null,
+              "storedPresent": false,
+              "storagePresent": false,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: pre-run Theme matches saved baseline",
+            "status": "pass",
+            "evidence": {
+              "before": {
+                "activeSettings": true,
+                "count": 1,
+                "selected": "System",
+                "stored": null,
+                "storedPresent": false,
+                "storagePresent": false,
+                "darkClass": false,
+                "systemDark": false,
+                "renderedBackgroundMatches": true,
+                "renderedBackgrounds": {
+                  "token": "rgb(252, 252, 253)",
+                  "body": "rgb(252, 252, 253)",
+                  "root": null,
+                  "activePanel": "rgba(0, 0, 0, 0)"
+                }
+              },
+              "expectedValue": "system",
+              "expectedLabel": "System",
+              "expectedStoredPresent": false,
+              "expectedStoragePresent": false
+            }
+          },
+          {
+            "name": "full extension reload: initial: original preference matches",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "System",
+              "stored": null,
+              "storedPresent": false,
+              "storagePresent": false,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: Dark changes visible and stored preference",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Dark",
+              "stored": "dark",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": true,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(31, 31, 33)",
+                "body": "rgb(31, 31, 33)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: Dark extension worker and panel were replaced",
+            "status": "pass",
+            "evidence": {
+              "managementReloadClicked": true,
+              "oldTargetsRetired": true,
+              "workerReplaced": true,
+              "panelReplaced": true,
+              "replacementTargetChanged": true,
+              "lifecyclePredicatePassed": true
+            }
+          },
+          {
+            "name": "full extension reload: Dark survives full extension reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Dark",
+              "stored": "dark",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": true,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(31, 31, 33)",
+                "body": "rgb(31, 31, 33)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: Light changes visible and stored preference",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Light",
+              "stored": "light",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: Light extension worker and panel were replaced",
+            "status": "pass",
+            "evidence": {
+              "managementReloadClicked": true,
+              "oldTargetsRetired": true,
+              "workerReplaced": true,
+              "panelReplaced": true,
+              "replacementTargetChanged": true,
+              "lifecyclePredicatePassed": true
+            }
+          },
+          {
+            "name": "full extension reload: Light survives full extension reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Light",
+              "stored": "light",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: original Theme preference restored",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "System",
+              "stored": null,
+              "storedPresent": false,
+              "storagePresent": false,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: original preference restored before extension reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "System",
+              "stored": null,
+              "storedPresent": false,
+              "storagePresent": false,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: System extension worker and panel were replaced",
+            "status": "pass",
+            "evidence": {
+              "managementReloadClicked": true,
+              "oldTargetsRetired": true,
+              "workerReplaced": true,
+              "panelReplaced": true,
+              "replacementTargetChanged": true,
+              "lifecyclePredicatePassed": true
+            }
+          },
+          {
+            "name": "full extension reload: System survives full extension reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "System",
+              "stored": null,
+              "storedPresent": false,
+              "storagePresent": false,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: original preference restored after extension reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "System",
+              "stored": null,
+              "storedPresent": false,
+              "storagePresent": false,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T10",
+        "runner_case_status": "fail",
+        "bounded_status": "unverified",
+        "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+        "criteria": [
+          {
+            "name": "runner completed the case",
+            "status": "fail",
+            "evidence": "T10_act_warm_not_observed:{\"activeSettings\":true,\"count\":1,\"selected\":\"Act without asking\",\"stored\":null,\"storedPresent\":false,\"storagePresent\":false,\"darkClass\":false,\"systemDark\":false,\"renderedBackgroundMatches\":true,\"renderedBackgrounds\":{\"token\":\"rgb(252, 252, 253)\",\"body\":\"rgb(252, 252, 253)\",\"root\":null,\"activePanel\":\"rgba(0, 0, 0, 0)\"}}"
+          },
+          {
+            "name": "full extension reload: pre-run Default mode matches saved baseline",
+            "status": "pass",
+            "evidence": {
+              "before": {
+                "activeSettings": true,
+                "count": 1,
+                "selected": "Act without asking",
+                "stored": null,
+                "storedPresent": false,
+                "storagePresent": false,
+                "darkClass": false,
+                "systemDark": false,
+                "renderedBackgroundMatches": true,
+                "renderedBackgrounds": {
+                  "token": "rgb(252, 252, 253)",
+                  "body": "rgb(252, 252, 253)",
+                  "root": null,
+                  "activePanel": "rgba(0, 0, 0, 0)"
+                }
+              },
+              "expectedValue": "act",
+              "expectedLabel": "Act without asking",
+              "expectedStoredPresent": false,
+              "expectedStoragePresent": false
+            }
+          },
+          {
+            "name": "full extension reload: initial: original preference matches",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Act without asking",
+              "stored": null,
+              "storedPresent": false,
+              "storagePresent": false,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: original Default mode preference restored",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Act without asking",
+              "stored": null,
+              "storedPresent": false,
+              "storagePresent": false,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: original preference restored before extension reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Act without asking",
+              "stored": null,
+              "storedPresent": false,
+              "storagePresent": false,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: Act without asking extension worker and panel were replaced",
+            "status": "pass",
+            "evidence": {
+              "managementReloadClicked": true,
+              "oldTargetsRetired": true,
+              "workerReplaced": true,
+              "panelReplaced": true,
+              "replacementTargetChanged": true,
+              "lifecyclePredicatePassed": true
+            }
+          },
+          {
+            "name": "full extension reload: Act without asking survives full extension reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Act without asking",
+              "stored": null,
+              "storedPresent": false,
+              "storagePresent": false,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: full extension reload recheck completed",
+            "status": "fail",
+            "evidence": {
+              "category": "full_extension_preference_or_restore_failed",
+              "baselineRestoration": null,
+              "firstChoiceFailureStage": "choice_observation",
+              "restorationFailureStage": "restore_after_reload_callback",
+              "firstChoiceTransportClass": "none",
+              "restorationTransportClass": "none",
+              "firstChoicePostReplacementStages": [],
+              "restorationPostReplacementStages": [
+                {
+                  "stage": "restore_detach_previous_panel",
+                  "outcome": "completed",
+                  "observation": null
+                },
+                { "stage": "restore_settings_reopen", "outcome": "completed", "observation": null },
+                { "stage": "restore_section_reopen", "outcome": "completed", "observation": null },
+                {
+                  "stage": "restore_preference_observation",
+                  "outcome": "completed",
+                  "observation": {
+                    "settingsActive": true,
+                    "sectionOpen": null,
+                    "selectedMatches": true,
+                    "storedMatches": false,
+                    "preferenceMatches": false
+                  }
+                },
+                {
+                  "stage": "restore_after_reload_callback",
+                  "outcome": "failed",
+                  "observation": null
+                }
+              ]
+            }
+          },
+          {
+            "name": "full extension reload recheck required",
+            "status": "fail",
+            "evidence": { "status": "fail", "error": "full_extension_preference_or_restore_failed" }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T13",
+        "runner_case_status": "pass",
+        "bounded_status": "pass",
+        "scope": "Default speed selection/persistence through panel-document reload only;4/4.",
+        "criteria": [
+          {
+            "name": "Thinking changes UI, persisted preference",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Thinking",
+              "stored": "thinking",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "Thinking survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Thinking",
+              "stored": "thinking",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "Fast changes UI, persisted preference",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Fast",
+              "stored": "fast",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          },
+          {
+            "name": "Fast survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "Fast",
+              "stored": "fast",
+              "storedPresent": true,
+              "storagePresent": true,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T16",
+        "runner_case_status": "unverified",
+        "bounded_status": "unverified",
+        "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+        "criteria": [
+          {
+            "name": "Switch off changes visible and stored values",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": false,
+              "stored": false,
+              "saveError": false
+            }
+          },
+          {
+            "name": "Switch off survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": false,
+              "stored": false,
+              "saveError": false
+            }
+          },
+          {
+            "name": "Switch on changes visible and stored values",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": true,
+              "stored": true,
+              "saveError": false
+            }
+          },
+          {
+            "name": "Switch on survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": true,
+              "stored": true,
+              "saveError": false
+            }
+          },
+          {
+            "name": "preference changes its downstream browser behavior",
+            "status": "unverified",
+            "evidence": "This bounded batch checks the real Settings switch and persistence; the site or agent consumer is not exercised."
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T19",
+        "runner_case_status": "unverified",
+        "bounded_status": "unverified",
+        "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+        "criteria": [
+          {
+            "name": "Switch off changes visible and stored values",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": false,
+              "stored": false,
+              "saveError": false
+            }
+          },
+          {
+            "name": "Switch off survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": false,
+              "stored": false,
+              "saveError": false
+            }
+          },
+          {
+            "name": "Switch on changes visible and stored values",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": true,
+              "stored": true,
+              "saveError": false
+            }
+          },
+          {
+            "name": "Switch on survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": true,
+              "stored": true,
+              "saveError": false
+            }
+          },
+          {
+            "name": "preference changes its downstream browser behavior",
+            "status": "unverified",
+            "evidence": "This bounded batch checks the real Settings switch and persistence; the site or agent consumer is not exercised."
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T22",
+        "runner_case_status": "pass",
+        "bounded_status": "pass",
+        "scope": "Rendered signed-out guest admin/permission controls absent warm and after panel-document reload;2/2, not separately after manager Reload.",
+        "criteria": [
+          {
+            "name": "warm admin section and controls absent",
+            "status": "pass",
+            "evidence": {
+              "signedOut": true,
+              "active": true,
+              "guest": true,
+              "sections": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "System",
+                "Chat",
+                "Act without asking",
+                "Fast",
+                "Privacy",
+                "Scrape",
+                "Capture",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "advancedText": false,
+              "adminControls": [],
+              "permissionControlCount": 0
+            }
+          },
+          {
+            "name": "reload admin section and controls absent",
+            "status": "pass",
+            "evidence": {
+              "signedOut": true,
+              "active": true,
+              "guest": true,
+              "sections": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "System",
+                "Chat",
+                "Act without asking",
+                "Fast",
+                "Privacy",
+                "Scrape",
+                "Capture",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "advancedText": false,
+              "adminControls": [],
+              "permissionControlCount": 0
+            }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T28",
+        "runner_case_status": "fail",
+        "bounded_status": "unverified",
+        "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+        "criteria": [
+          {
+            "name": "Account opens with honest content",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Account closes without changing preferences",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Organization opens with honest content",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Organization closes without changing preferences",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Appearance opens with honest content",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Appearance closes without changing preferences",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Chat opens with honest content",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Chat closes without changing preferences",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Privacy opens with honest content",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Privacy closes without changing preferences",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Scrape opens with honest content",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Scrape closes without changing preferences",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Data opens with honest content",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": true,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Data closes without changing preferences",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": true,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "SEO opens with honest content",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": true,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "SEO closes without changing preferences",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": true,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Desktop bridge opens with honest content",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Desktop bridge closes without changing preferences",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Data & reset opens with honest content",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Data & reset closes without changing preferences",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "About opens with honest content",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "About closes without changing preferences",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Account opens after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Account closes after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Organization opens after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Organization closes after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Appearance opens after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Appearance closes after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Chat opens after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Chat closes after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Privacy opens after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Privacy closes after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Scrape opens after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Scrape closes after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Data opens after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": true,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Data closes after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": true,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "SEO opens after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": true,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "SEO closes after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": true,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Desktop bridge opens after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Desktop bridge closes after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Data & reset opens after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "Data & reset closes after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "About opens after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "true",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "false",
+              "contentInert": false,
+              "contentNonempty": true,
+              "contentRendered": true,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "About closes after reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "headings": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "Chat",
+                "Privacy",
+                "Scrape",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "count": 1,
+              "expanded": "false",
+              "expandedControlCount": 15,
+              "nonSectionExpandedControlCount": 4,
+              "contentAriaHidden": "true",
+              "contentInert": true,
+              "contentNonempty": true,
+              "contentRendered": false,
+              "emptyHint": null,
+              "settingsDigest": "9358534143567b9a39686853165e7d10c5ec15b055a467645ee20cbb4be1d7bd"
+            }
+          },
+          {
+            "name": "full extension reload: full extension reload recheck completed",
+            "status": "fail",
+            "evidence": {
+              "category": "full_extension_recheck_exception",
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION",
+              "source": { "file": "settings-guest-scrape-controls.mjs", "line": 413, "column": 10 }
+            }
+          },
+          {
+            "name": "full extension reload recheck required",
+            "status": "fail",
+            "evidence": { "status": "fail", "error": "full_extension_recheck_exception" }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T31",
+        "runner_case_status": "unverified",
+        "bounded_status": "unverified",
+        "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+        "criteria": [
+          {
+            "name": "Switch off changes visible and stored values",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": false,
+              "stored": false,
+              "saveError": false
+            }
+          },
+          {
+            "name": "Switch off survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": false,
+              "stored": false,
+              "saveError": false
+            }
+          },
+          {
+            "name": "Switch on changes visible and stored values",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": true,
+              "stored": true,
+              "saveError": false
+            }
+          },
+          {
+            "name": "Switch on survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": true,
+              "stored": true,
+              "saveError": false
+            }
+          },
+          {
+            "name": "preference changes its downstream browser behavior",
+            "status": "unverified",
+            "evidence": "This bounded batch checks the real Settings switch and persistence; the site or agent consumer is not exercised."
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T34",
+        "runner_case_status": "unverified",
+        "bounded_status": "unverified",
+        "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+        "criteria": [
+          {
+            "name": "Switch on changes visible and stored values",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": true,
+              "stored": "on_page",
+              "saveError": false
+            }
+          },
+          {
+            "name": "Switch on survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": true,
+              "stored": "on_page",
+              "saveError": false
+            }
+          },
+          {
+            "name": "Switch off changes visible and stored values",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": false,
+              "stored": "quiet",
+              "saveError": false
+            }
+          },
+          {
+            "name": "Switch off survives panel reload",
+            "status": "pass",
+            "evidence": {
+              "activeSettings": true,
+              "privacyOpen": true,
+              "count": 1,
+              "checked": false,
+              "stored": "quiet",
+              "saveError": false
+            }
+          },
+          {
+            "name": "preference changes its downstream browser behavior",
+            "status": "unverified",
+            "evidence": "This bounded batch checks the real Settings switch and persistence; the site or agent consumer is not exercised."
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T37",
+        "runner_case_status": "pass",
+        "bounded_status": "pass",
+        "scope": "Deep clean switch/hint/persistence and restoration through panel reload;3/3, no actual deep-clean processing claim.",
+        "criteria": [
+          {
+            "name": "visible coming-soon hint",
+            "status": "pass",
+            "evidence": { "count": 1, "checked": "false", "hint": "Deep cleancoming soon" }
+          },
+          {
+            "name": "toggle changes state",
+            "status": "pass",
+            "evidence": { "count": 1, "checked": "true", "hint": "Deep cleancoming soon" }
+          },
+          {
+            "name": "state and coming-soon hint persist after reload",
+            "status": "pass",
+            "evidence": { "count": 1, "checked": "true", "hint": "Deep cleancoming soon" }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T40",
+        "runner_case_status": "fail",
+        "bounded_status": "unverified",
+        "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+        "criteria": [
+          {
+            "name": "Auto-scrape initial UI and storage observed",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "storagePresent": true,
+              "sectionOpen": true,
+              "toggle": { "count": 1, "visible": false, "stored": false },
+              "mode": {
+                "storedPresent": true,
+                "count": 1,
+                "visible": "Capture",
+                "stored": "capture"
+              }
+            }
+          },
+          {
+            "name": "Auto-scrape on appears and persists",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "storagePresent": true,
+              "sectionOpen": true,
+              "toggle": { "count": 1, "visible": true, "stored": true },
+              "mode": {
+                "storedPresent": true,
+                "count": 1,
+                "visible": "Capture",
+                "stored": "capture"
+              }
+            }
+          },
+          {
+            "name": "Auto-scrape on survives reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "storagePresent": true,
+              "sectionOpen": true,
+              "toggle": { "count": 1, "visible": true, "stored": true },
+              "mode": {
+                "storedPresent": true,
+                "count": 1,
+                "visible": "Capture",
+                "stored": "capture"
+              }
+            }
+          },
+          {
+            "name": "Auto-scrape off appears and persists",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "storagePresent": true,
+              "sectionOpen": true,
+              "toggle": { "count": 1, "visible": false, "stored": false },
+              "mode": {
+                "storedPresent": true,
+                "count": 1,
+                "visible": "Capture",
+                "stored": "capture"
+              }
+            }
+          },
+          {
+            "name": "Auto-scrape off survives reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "storagePresent": true,
+              "sectionOpen": true,
+              "toggle": { "count": 1, "visible": false, "stored": false },
+              "mode": {
+                "storedPresent": true,
+                "count": 1,
+                "visible": "Capture",
+                "stored": "capture"
+              }
+            }
+          },
+          {
+            "name": "Original Auto-scrape value restored in UI and storage",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "storagePresent": true,
+              "sectionOpen": true,
+              "toggle": { "count": 1, "visible": false, "stored": false },
+              "mode": {
+                "storedPresent": true,
+                "count": 1,
+                "visible": "Capture",
+                "stored": "capture"
+              }
+            }
+          },
+          {
+            "name": "background capture follows the persisted switch",
+            "status": "unverified",
+            "evidence": "This batch observes the native Settings control; a page-load capture is not exercised."
+          },
+          {
+            "name": "full extension reload: full extension reload recheck completed",
+            "status": "fail",
+            "evidence": {
+              "category": "full_extension_recheck_exception",
+              "name": "Error",
+              "code": "other",
+              "source": { "file": "settings-panel-driver.mjs", "line": 57, "column": 17 }
+            }
+          },
+          {
+            "name": "full extension reload recheck required",
+            "status": "fail",
+            "evidence": { "status": "fail", "error": "full_extension_recheck_exception" }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T46",
+        "runner_case_status": "pass",
+        "bounded_status": "pass",
+        "scope": "Owned loopback port persistence/validation/clear plus real worker rediscovery;8/8. Fixture intentionally returns503 at65001, no healthy desktop claim.",
+        "criteria": [
+          {
+            "name": "valid port saved",
+            "status": "pass",
+            "evidence": {
+              "value": "65001",
+              "saved": 65001,
+              "button": ["Save"],
+              "override": true,
+              "error": null
+            }
+          },
+          {
+            "name": "saved port triggers desktop worker rediscovery",
+            "status": "pass",
+            "evidence": {
+              "saveStartedAt": 1792925831152,
+              "pauses": [
+                {
+                  "reason": "other",
+                  "hitBreakpoints": ["4:91:180250:5"],
+                  "callFrames": [
+                    {
+                      "functionName": "",
+                      "url": "",
+                      "location": { "scriptId": "5", "lineNumber": 91, "columnNumber": 180250 }
+                    },
+                    {
+                      "functionName": "i",
+                      "url": "",
+                      "location": { "scriptId": "5", "lineNumber": 1, "columnNumber": 41906 }
+                    }
+                  ],
+                  "observedAt": 1792925831331
+                },
+                {
+                  "reason": "other",
+                  "hitBreakpoints": ["4:91:180337:5"],
+                  "callFrames": [
+                    {
+                      "functionName": "",
+                      "url": "",
+                      "location": { "scriptId": "5", "lineNumber": 91, "columnNumber": 180337 }
+                    }
+                  ],
+                  "observedAt": 1792925831351
+                }
+              ],
+              "entryBreakpoint": "4:91:180250:5",
+              "completionBreakpoint": "4:91:180337:5",
+              "resumeError": null
+            }
+          },
+          {
+            "name": "valid override persists after reload",
+            "status": "pass",
+            "evidence": {
+              "value": "65001",
+              "saved": 65001,
+              "button": ["Save"],
+              "override": true,
+              "error": null
+            }
+          },
+          {
+            "name": "boundary port 1 saves and persists after reload",
+            "status": "pass",
+            "evidence": {
+              "accepted": {
+                "value": "1",
+                "saved": 1,
+                "button": ["Save"],
+                "override": true,
+                "error": null
+              },
+              "persisted": {
+                "value": "1",
+                "saved": 1,
+                "button": ["Save"],
+                "override": true,
+                "error": null
+              }
+            }
+          },
+          {
+            "name": "boundary port 65535 saves and persists after reload",
+            "status": "pass",
+            "evidence": {
+              "accepted": {
+                "value": "65535",
+                "saved": 65535,
+                "button": ["Save"],
+                "override": true,
+                "error": null
+              },
+              "persisted": {
+                "value": "65535",
+                "saved": 65535,
+                "button": ["Save"],
+                "override": true,
+                "error": null
+              }
+            }
+          },
+          {
+            "name": "invalid range shows error and retains saved port",
+            "status": "pass",
+            "evidence": {
+              "value": "65536",
+              "saved": 65535,
+              "button": ["Save"],
+              "override": true,
+              "error": "Port must be 1\u201365535."
+            }
+          },
+          {
+            "name": "blank clears override and stale error",
+            "status": "pass",
+            "evidence": {
+              "value": "",
+              "saved": null,
+              "button": ["Set"],
+              "override": false,
+              "error": null
+            }
+          },
+          {
+            "name": "cleared override persists after reload",
+            "status": "pass",
+            "evidence": {
+              "value": "",
+              "saved": null,
+              "button": ["Set"],
+              "override": false,
+              "error": null
+            }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T63",
+        "runner_case_status": "unverified",
+        "bounded_status": "unverified",
+        "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+        "criteria": [
+          {
+            "name": "warm: guest admin section, optional controls and audit actions absent",
+            "status": "pass",
+            "evidence": {
+              "signedOut": true,
+              "active": true,
+              "guest": true,
+              "sections": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "System",
+                "Chat",
+                "Act without asking",
+                "Fast",
+                "Privacy",
+                "Scrape",
+                "Capture",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "advancedText": false,
+              "adminControls": [],
+              "permissionControlCount": 0
+            }
+          },
+          {
+            "name": "reload: guest admin section, optional controls and audit actions absent",
+            "status": "pass",
+            "evidence": {
+              "signedOut": true,
+              "active": true,
+              "guest": true,
+              "sections": [
+                "Account",
+                "Organization",
+                "Appearance",
+                "System",
+                "Chat",
+                "Act without asking",
+                "Fast",
+                "Privacy",
+                "Scrape",
+                "Capture",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "advancedText": false,
+              "adminControls": [],
+              "permissionControlCount": 0
+            }
+          },
+          {
+            "name": "ordinary member denial",
+            "status": "unverified",
+            "evidence": "This guest runner has no ordinary-member principal."
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T64",
+        "runner_case_status": "pass",
+        "bounded_status": "pass",
+        "scope": "Owned loopback allowed-origin list removal and panel reload;5/5.",
+        "criteria": [
+          {
+            "name": "Two disposable loopback origins are visible and stored",
+            "status": "pass",
+            "evidence": {
+              "privacyOpen": true,
+              "rowCount": 2,
+              "storageCount": 2,
+              "firstRow": true,
+              "secondRow": true,
+              "firstStored": true,
+              "secondStored": true,
+              "otherStored": false,
+              "headingVisible": true,
+              "guest": true
+            }
+          },
+          {
+            "name": "First Ask again removes only selected origin",
+            "status": "pass",
+            "evidence": {
+              "privacyOpen": true,
+              "rowCount": 1,
+              "storageCount": 1,
+              "firstRow": false,
+              "secondRow": true,
+              "firstStored": false,
+              "secondStored": true,
+              "otherStored": false,
+              "headingVisible": true,
+              "guest": true
+            }
+          },
+          {
+            "name": "Unrelated origin remains after panel reload",
+            "status": "pass",
+            "evidence": {
+              "privacyOpen": true,
+              "rowCount": 1,
+              "storageCount": 1,
+              "firstRow": false,
+              "secondRow": true,
+              "firstStored": false,
+              "secondStored": true,
+              "otherStored": false,
+              "headingVisible": true,
+              "guest": true
+            }
+          },
+          {
+            "name": "Last Ask again hides the empty list",
+            "status": "pass",
+            "evidence": {
+              "privacyOpen": true,
+              "rowCount": 0,
+              "storageCount": 0,
+              "firstRow": false,
+              "secondRow": false,
+              "firstStored": false,
+              "secondStored": false,
+              "otherStored": false,
+              "headingVisible": false,
+              "guest": true
+            }
+          },
+          {
+            "name": "Empty list remains hidden after panel reload",
+            "status": "pass",
+            "evidence": {
+              "privacyOpen": true,
+              "rowCount": 0,
+              "storageCount": 0,
+              "firstRow": false,
+              "secondRow": false,
+              "firstStored": false,
+              "secondStored": false,
+              "otherStored": false,
+              "headingVisible": false,
+              "guest": true
+            }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T67",
+        "runner_case_status": "pass",
+        "bounded_status": "pass",
+        "scope": "Auto-scrape mode selection including two real manager full Reload replacements and original absent container restoration;15/15.",
+        "criteria": [
+          {
+            "name": "Scroll & capture appears and persists",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "storagePresent": true,
+              "sectionOpen": true,
+              "toggle": { "count": 1, "visible": false, "stored": false },
+              "mode": {
+                "storedPresent": true,
+                "count": 1,
+                "visible": "Scroll & capture",
+                "stored": "scroll-capture"
+              }
+            }
+          },
+          {
+            "name": "Scroll & capture survives reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "storagePresent": true,
+              "sectionOpen": true,
+              "toggle": { "count": 1, "visible": false, "stored": false },
+              "mode": {
+                "storedPresent": true,
+                "count": 1,
+                "visible": "Scroll & capture",
+                "stored": "scroll-capture"
+              }
+            }
+          },
+          {
+            "name": "Capture appears and persists",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "storagePresent": true,
+              "sectionOpen": true,
+              "toggle": { "count": 1, "visible": false, "stored": false },
+              "mode": {
+                "storedPresent": true,
+                "count": 1,
+                "visible": "Capture",
+                "stored": "capture"
+              }
+            }
+          },
+          {
+            "name": "Capture survives reload",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "storagePresent": true,
+              "sectionOpen": true,
+              "toggle": { "count": 1, "visible": false, "stored": false },
+              "mode": {
+                "storedPresent": true,
+                "count": 1,
+                "visible": "Capture",
+                "stored": "capture"
+              }
+            }
+          },
+          {
+            "name": "Original Auto-scrape mode restored in UI and storage",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "storagePresent": true,
+              "sectionOpen": true,
+              "toggle": { "count": 1, "visible": false, "stored": false },
+              "mode": {
+                "storedPresent": true,
+                "count": 1,
+                "visible": "Capture",
+                "stored": "capture"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: initial absent Settings container observed",
+            "status": "pass",
+            "evidence": {
+              "active": true,
+              "storagePresent": false,
+              "sectionOpen": true,
+              "toggle": { "count": 1, "visible": false, "stored": false },
+              "mode": {
+                "storedPresent": false,
+                "count": 1,
+                "visible": "Capture",
+                "stored": "capture"
+              }
+            }
+          },
+          {
+            "name": "full extension reload: initial: original preference matches",
+            "status": "pass",
+            "evidence": {
+              "storedPresent": false,
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture",
+              "active": true,
+              "sectionOpen": true
+            }
+          },
+          {
+            "name": "full extension reload: Scroll & capture changes visible and stored preference",
+            "status": "pass",
+            "evidence": {
+              "storedPresent": true,
+              "count": 1,
+              "visible": "Scroll & capture",
+              "stored": "scroll-capture",
+              "active": true,
+              "sectionOpen": true
+            }
+          },
+          {
+            "name": "full extension reload: Scroll & capture extension worker and panel were replaced",
+            "status": "pass",
+            "evidence": {
+              "managementReloadClicked": true,
+              "oldTargetsRetired": true,
+              "workerReplaced": true,
+              "panelReplaced": true,
+              "replacementTargetChanged": true,
+              "lifecyclePredicatePassed": true
+            }
+          },
+          {
+            "name": "full extension reload: Scroll & capture survives full extension reload",
+            "status": "pass",
+            "evidence": {
+              "storedPresent": true,
+              "count": 1,
+              "visible": "Scroll & capture",
+              "stored": "scroll-capture",
+              "active": true,
+              "sectionOpen": true
+            }
+          },
+          {
+            "name": "full extension reload: original preference restored before extension reload",
+            "status": "pass",
+            "evidence": {
+              "storedPresent": true,
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture",
+              "active": true,
+              "sectionOpen": true
+            }
+          },
+          {
+            "name": "full extension reload: Capture extension worker and panel were replaced",
+            "status": "pass",
+            "evidence": {
+              "managementReloadClicked": true,
+              "oldTargetsRetired": true,
+              "workerReplaced": true,
+              "panelReplaced": true,
+              "replacementTargetChanged": true,
+              "lifecyclePredicatePassed": true
+            }
+          },
+          {
+            "name": "full extension reload: Capture survives full extension reload",
+            "status": "pass",
+            "evidence": {
+              "storedPresent": true,
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture",
+              "active": true,
+              "sectionOpen": true
+            }
+          },
+          {
+            "name": "full extension reload: original preference restored after extension reload",
+            "status": "pass",
+            "evidence": {
+              "storedPresent": true,
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture",
+              "active": true,
+              "sectionOpen": true
+            }
+          },
+          {
+            "name": "full extension reload: pre-T67 Settings container restored after panel reload",
+            "status": "pass",
+            "evidence": { "storagePresent": false, "exactBaselineRestored": true }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T70",
+        "runner_case_status": "unverified",
+        "bounded_status": "unverified",
+        "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+        "criteria": [
+          {
+            "name": "identity matches running browser, manifest, receipt and runtime ID",
+            "status": "pass",
+            "evidence": {
+              "browser": "Chrome",
+              "version": "0.2.621",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.621",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": null,
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          },
+          {
+            "name": "password-flow API readiness label and remedy",
+            "status": "pass",
+            "evidence": {
+              "browser": "Chrome",
+              "version": "0.2.621",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.621",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": null,
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          },
+          {
+            "name": "password-flow API unavailable branch",
+            "status": "unverified",
+            "evidence": "No browser API was removed or mocked."
+          },
+          {
+            "name": "observed browser update result shown accurately",
+            "status": "pass",
+            "evidence": {
+              "browser": "Chrome",
+              "version": "0.2.621",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.621",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": "Your browser did not find an update right now.",
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          },
+          {
+            "name": "no-update outcome",
+            "status": "pass",
+            "evidence": {
+              "browser": "Chrome",
+              "version": "0.2.621",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.621",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": "Your browser did not find an update right now.",
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          },
+          {
+            "name": "update available branch",
+            "status": "unverified",
+            "evidence": "No browser API or update result was fabricated."
+          },
+          {
+            "name": "throttled branch",
+            "status": "unverified",
+            "evidence": "No browser API or update result was fabricated."
+          },
+          {
+            "name": "update error branch",
+            "status": "unverified",
+            "evidence": "No browser API or update result was fabricated."
+          },
+          {
+            "name": "update API unavailable branch",
+            "status": "unverified",
+            "evidence": "No browser API or update result was fabricated."
+          },
+          {
+            "name": "identity and API readiness remain current after reload",
+            "status": "pass",
+            "evidence": {
+              "browser": "Chrome",
+              "version": "0.2.621",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.621",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": null,
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T73",
+        "runner_case_status": "pass",
+        "bounded_status": "pass",
+        "scope": "Signed-out account negative before/after manager full extension Reload;2/2.",
+        "criteria": [
+          {
+            "name": "warm: Account unavailable, no Name/role, Sign in footer",
+            "status": "pass",
+            "evidence": { "signedOut": true, "checkPassed": true, "organizationRequests": 0 }
+          },
+          {
+            "name": "reload: Account unavailable, no Name/role, Sign in footer",
+            "status": "pass",
+            "evidence": { "signedOut": true, "checkPassed": true, "organizationRequests": 0 }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T76",
+        "runner_case_status": "pass",
+        "bounded_status": "pass",
+        "scope": "Signed-out Organization negative before/after manager full extension Reload;2/2, zero organization requests.",
+        "criteria": [
+          {
+            "name": "warm: archive filter absent and no organization read or choice",
+            "status": "pass",
+            "evidence": { "signedOut": true, "checkPassed": true, "organizationRequests": 0 }
+          },
+          {
+            "name": "reload: archive filter absent and no organization read or choice",
+            "status": "pass",
+            "evidence": { "signedOut": true, "checkPassed": true, "organizationRequests": 0 }
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T92",
+        "runner_case_status": "pass",
+        "bounded_status": "pass",
+        "scope": "Guest-only negative Organization/archive-navigation slice before/after manager Reload;2/2; member/admin navigation unverified.",
+        "criteria": [
+          {
+            "name": "warm: no archived membership or restoration action",
+            "status": "pass",
+            "evidence": { "signedOut": true, "checkPassed": true, "organizationRequests": 0 }
+          },
+          {
+            "name": "reload: no archived membership or restoration action",
+            "status": "pass",
+            "evidence": { "signedOut": true, "checkPassed": true, "organizationRequests": 0 }
+          }
+        ]
+      }
+    ],
+    "reported_totals": { "attempted": 19, "pass": 10, "fail": 3, "unverified": 6 },
+    "independent_bounded_passes": 10,
+    "independently_accepted_criteria": 64,
+    "product_defects_proven": 0,
+    "whole_settings_health": "unverified"
+  },
+  "resource": "Three canonical sanitized terminal journals: package/browser valid0, guest child_failed1 with resourceInvalid=false.",
+  "evidence": "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json",
+  "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+  "limits": [
+    "Failed receipts T10/T28/T40 are not three proven product defects.",
+    "No normal overall success certificate for failed batch.",
+    "Native operator was independent from D287 builder; fresh peer reviewed evidence, not an additional native rerun.",
+    "Member/admin/Store/candidate full acceptance remain separate."
+  ]
+}

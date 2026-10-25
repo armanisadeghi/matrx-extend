@@ -1,0 +1,60 @@
+{
+  "owner": "settings_native_b_1047",
+  "status": "terminal_partial_pass_independently_reviewed",
+  "run_id": 40186301999,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40186301999",
+  "job_id": 121147708492,
+  "lane": "B",
+  "case": "settings-controls",
+  "runner": "macos-15-intel",
+  "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+  "development_run_id": 40181800284,
+  "development_artifact_id": 12594596898,
+  "development_artifact_digest": "sha256:cd3530af34e0a1c45765169289b5ae184301b9198741637eb7b69a2dd402ec42",
+  "dispatched_at": "2026-10-25T10:48:48Z",
+  "acceptance_requirement": "Original T04 theme restore after full extension reload, plus rendered T22 guest/admin absence; valid terminal resource journals and exact artifact binding required.",
+  "workflow_conclusion": "failure",
+  "resource_decisions": {
+    "package": { "decision": "valid", "exit_code": 0, "resource_invalid": false },
+    "browser": { "decision": "valid", "exit_code": 0, "resource_invalid": false },
+    "guest": { "decision": "child_failed", "exit_code": 1, "resource_invalid": false }
+  },
+  "result_artifact_id": 12596800110,
+  "result_artifact_digest": "sha256:15118ae9e902d7c755b5b73959c0d8ea7a20bec58211b69c193aaf8f81b7d005",
+  "result_artifact_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40186301999/artifacts/12596800110",
+  "exact_imported_build": {
+    "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+    "version": "0.2.621",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+    "verified": true,
+    "published": false
+  },
+  "native_report_status": "fail",
+  "case_counts": { "pass": 10, "fail": 3, "unverified": 6 },
+  "bounded_passes": {
+    "EXT-F-1003-T04": "21/21; original System selected with absent theme/settings storage keys restored after actual full extension Reload; dark/light/system rendering and storage match",
+    "EXT-F-1003-T22": "2/2; signed-out guest Settings rendered with Account/Organization/Appearance sections, no admin section/controls warm and panel document reload; no separate post-full-extension T22 criterion"
+  },
+  "open_failures": {
+    "EXT-F-1003-T10": "Act without asking warm choice not observed: selected default remains, stored key null; full-extension preference/restore fails",
+    "EXT-F-1003-T28": "full-extension section recheck assertion at settings-guest-scrape-controls.mjs:413",
+    "EXT-F-1003-T40": "full-extension auto-scrape recheck error at settings-panel-driver.mjs:57; panel document check unverified"
+  },
+  "reload_lifecycle": {
+    "managementReloadClicked": true,
+    "oldTargetsRetired": true,
+    "workerReplaced": true,
+    "panelReplaced": true,
+    "settingsReopened": true
+  },
+  "evidence_root": ".output/stabilization-checkpoints/settings-native-b-40186301999/matrx-extend/matrx-extend",
+  "cleanup": "Disposable hosted job completed and post-job cleanup ran; guest route did not create member link or owned auth fixture. Full remote process/profile census after VM teardown unavailable. Three terminal journals have no pending counterpart in uploaded artifact.",
+  "next_action": "Root fresh review of bounded T04/T22 and failure diagnosis; no retry unchanged red; no source edits by lane owner.",
+  "independent_review": {
+    "path": ".output/stabilization-checkpoints/settings-0b-native-evidence-review.json",
+    "verdict_a_native": "partial",
+    "verdict_b_evidence_quality": "bounded T04/T22 pass; failure attribution partial",
+    "notes": "T22 no separate post-manager-Reload observation; T10/T28/T40 causes remain unknown; no unchanged rerun."
+  }
+}

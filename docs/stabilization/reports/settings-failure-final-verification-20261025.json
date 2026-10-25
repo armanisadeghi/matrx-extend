@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "source_parent": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+  "source_file_sha256": {
+    "tests/browser/settings-guest-preference-batch.mjs": "a5e8b5a8dae33e508f35f583913863149684ea374b22a4c98a5c2551e16f0679",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "b4d0b736243861f2b14349a7500ad559dec5e95309c20f4fe8192adfb015ecb1",
+    "tests/browser/settings-guest-scrape-controls.mjs": "a0340a0dd756ad92d854cc421325311c1648df53aa3fb4d25504d10f3ecf3ec5",
+    "tests/browser/settings-full-extension-rechecks.mjs": "f30e4d19f9cd746dec8abd117dd0360b2640ec5c7ed8080ed859f7c5235227ff",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "217e30be588d8f992517e596faf82bb685ef07352d6161dd57f6b6c2ea331753",
+    "tests/browser/settings-panel-driver.mjs": "f97fe4d2e22eea1bb8c196797a1d897c9aa957d58144ceaf6d3d1055ea7d076c"
+  },
+  "independent_review": "settings-case-repair-fresh-review.json",
+  "verification": [
+    {
+      "run_id": "settings-failure-final-focused-20261025-1114",
+      "command": "pnpm test:focused-acceptance",
+      "total": 926,
+      "pass": 915,
+      "fail": 0,
+      "skip": 11,
+      "decision": "valid",
+      "exit": 0
+    },
+    {
+      "run_id": "settings-failure-final-compile-20261025-1114",
+      "command": "pnpm compile",
+      "decision": "valid",
+      "exit": 0
+    },
+    {
+      "run_id": "settings-failure-final-lint-20261025-1114",
+      "command": "pnpm lint",
+      "decision": "valid",
+      "exit": 0,
+      "files": 3251,
+      "errors": 0,
+      "warnings": 1022
+    }
+  ],
+  "actual_guarded_exec_session": 86803,
+  "actual_terminal_exit": 0,
+  "resourceInvalid": false,
+  "environment": "External isolated CommonJS TMPDIR; canonical host lease root remains /var/tmp and all legacy-root refusal checks remain unchanged. No guard/resource/cap relaxation.",
+  "earlier_builder_checks": "64 scoped tests and compile were supporting candidate checks without retained admission journals; final accepted source verification uses the three guarded root runs above.",
+  "native_retest": "Pending new exact-main CI artifact and original/adjacent native rerun; no new product passes from these source checks."
+}
