@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "date": "2026-10-24",
+  "timezone": "America/Los_Angeles",
+  "scope": "Primary Chrome Web Store daily review, official publisher mail, and actual Store-installed guest Chat first turn and same-conversation follow-up",
+  "status": "resource-invalid-before-completion",
+  "run_id": "store-daily-20261024-0558",
+  "resource_journal": "docs/stabilization/resource-journals/store-daily-20261024-0558.jsonl",
+  "resource": {
+    "admitted_at_utc": "2026-10-25T05:56:06.709Z",
+    "stop_required_at_utc": "2026-10-25T05:58:14.901Z",
+    "stop_confirmed_at_utc": "2026-10-25T05:58:31.566Z",
+    "final_at_utc": "2026-10-25T05:58:31.602Z",
+    "decision": "invalid",
+    "resource_invalid": true,
+    "exit_code": 3,
+    "reasons": [
+      "RESOURCE_PRESSURE_UNSAFE",
+      "RESOURCE_CPU_HIGH_LOAD_BUSY",
+      "RESOURCE_SWAP_GROWTH",
+      "RESOURCE_CPU_BUSY"
+    ]
+  },
+  "primary_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "dashboard_observation_during_invalidated_lease": {
+    "observed_at_utc": "exact UI call time unavailable; after RESOURCE_WATCH_HEALTHY at 2026-10-25T05:57:58.847Z and before RESOURCE_BROWSER_OPERATOR_STOP_REQUIRED at 2026-10-25T05:58:14.901Z",
+    "account": "arman@armansadeghi.com",
+    "publisher": "Matrx",
+    "package_url": "https://chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package",
+    "status_url": "https://chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/status/published",
+    "package_page": "Primary item showed Published - public; draft version 0.2.577; published version 0.2.577; Upload new package enabled.",
+    "draft_status_page": "This draft is unpublished.",
+    "published_status_page": "This draft is published and available to the public.",
+    "raw_evidence": "Contemporaneous native Chrome accessibility output in this task: authenticated Package Information tree showed primary ID, Published - public, Draft 0.2.577, Published 0.2.577, and enabled Upload new package; subsequent Status Draft tree showed unpublished and Published tree showed published and available to the public. No screenshots or persisted raw AX dump; this report is a sanitized transcription, and the whole browser lease was later invalidated.",
+    "acceptance_credit": false,
+    "reason": "The guard marked the entire lease invalid; repeat under a fresh valid journal before updating the canonical current state or approved baseline."
+  },
+  "official_review_mail_today": "unverified",
+  "actual_store_installed_guest_chat_today": "unverified",
+  "installed_store_version_today": "unverified",
+  "deployed_server_sha_today": "unverified",
+  "last_resource_valid_authenticated_status": {
+    "observed_at_utc": "2026-10-21T07:17:56Z",
+    "public_version": "0.2.205",
+    "pending_version": "0.2.577",
+    "source": "docs/stabilization/reports/store-daily-20261021.json",
+    "interpretation": "Historical only; the invalidated October 24 observation suggests publication but does not establish a new acceptance verdict."
+  },
+  "actions": "Read-only primary publisher navigation and normal existing-account reauthentication. Stopped all UI immediately on reading RESOURCE_BROWSER_OPERATOR_STOP_REQUIRED. No upload, submission, extension install/update, profile or fixture change, account setting change, API grant, release, or hosted dispatch.",
+  "credential_handling": "Used existing Chrome saved password and Vault authenticator through the UI. No credential or code was written to files or commands; a stale Vault password failed once before Chrome saved password succeeded. The unrelated LastPass save prompt was dismissed without saving.",
+  "cleanup": "Owner stopped the browser holder; completed journal records RESOURCE_BROWSER_STOP_CONFIRMED and RESOURCE_FINAL_DECISION invalid/resourceInvalid true/exitCode 3. No child process was started by this lane.",
+  "current_source": {
+    "checkout_sha_at_start": "cf311e068eccf9400f91a02b2004ab7abce931db",
+    "package_version_at_start": "0.2.621",
+    "submitted_candidate_version": "0.2.577",
+    "submitted_candidate_zip_sha256": "9aa436f9e4f3571769be7f7afd154e066ce4756408e288f45660f01f75f0f1b8",
+    "published_baseline_record_version": "0.2.205"
+  },
+  "next_action": "At a fresh admitted, resource-valid browser window, recheck the primary publisher package and Published status, official sender mail, and public Store listing/version. If publication is confirmed, update the approved baseline and canonical Store record through their owner. Then verify the actually installed Store version in a signed-out guest Chrome profile and run a grounded first Chat turn plus same-conversation follow-up with current backend SHA probes before/after. Preserve the now-unpublished draft; do not upload a new package without exact-current source/runtime, guest/non-admin, and release gates."
+}
