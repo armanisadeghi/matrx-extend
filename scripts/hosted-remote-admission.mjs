@@ -9,6 +9,7 @@ import { pathToFileURL } from 'node:url';
 import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mjs';
 import { isSuccessfulDevelopmentCiRun } from './development-ci-event.mjs';
 import {
+  historicalHostedSourceCompatibility,
   isRuntimeEquivalentDocumentationPath,
   sourceCompatibility,
 } from './development-source-compatibility.mjs';
@@ -1723,31 +1724,15 @@ function ghJson(endpoint) {
     execFileSync('gh', ['api', endpoint], { encoding: 'utf8', maxBuffer: 4_000_000 }),
   );
 }
-export function requireDevelopmentArtifact(
-  {
-    runId,
-    artifactId,
-    sourceSha,
-    expectedDigest,
-    allowRuntimeEquivalent = false,
-    repoRoot = process.cwd(),
-  },
-  fetchJson = ghJson,
-) {
+function developmentCiRun({ runId, artifactId, sourceSha }, fetchJson) {
   if (!DECIMAL.test(runId ?? '') || !DECIMAL.test(artifactId ?? '') || !SHA.test(sourceSha ?? ''))
     refuse('HOSTED_ARTIFACT_ID_INVALID');
   const run = fetchJson(`repos/${OWNER}/actions/runs/${runId}`);
-  if (!isSuccessfulDevelopmentCiRun(run) || (run.head_sha !== sourceSha && !allowRuntimeEquivalent))
-    refuse('HOSTED_DEVELOPMENT_RUN_INVALID');
-  let compatibility;
-  if (allowRuntimeEquivalent) {
-    try {
-      compatibility = sourceCompatibility(repoRoot, run.head_sha);
-      if (compatibility.mainSha !== sourceSha) refuse('HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT');
-    } catch {
-      refuse('HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT');
-    }
-  }
+  if (!isSuccessfulDevelopmentCiRun(run)) refuse('HOSTED_DEVELOPMENT_RUN_INVALID');
+  return run;
+}
+
+function developmentArtifactMetadata({ runId, artifactId, expectedDigest }, run, fetchJson) {
   const listing = fetchJson(`repos/${OWNER}/actions/runs/${runId}/artifacts?per_page=100`);
   const matches = listing.artifacts?.filter(
     (artifact) =>
@@ -1761,15 +1746,75 @@ export function requireDevelopmentArtifact(
     refuse('HOSTED_DEVELOPMENT_ARTIFACT_DIGEST_MISMATCH');
   return {
     sourceSha: run.head_sha,
+    artifactId,
+    developmentRunId: runId,
+    developmentRunAttempt: run.run_attempt,
+    githubArtifactDigest: matches[0].digest,
+  };
+}
+
+/** Current-source eligibility for normal dispatch; historical verification cannot opt this out. */
+export function requireDevelopmentArtifact(
+  {
+    runId,
+    artifactId,
+    sourceSha,
+    expectedDigest,
+    allowRuntimeEquivalent = false,
+    repoRoot = process.cwd(),
+  },
+  fetchJson = ghJson,
+) {
+  const run = developmentCiRun({ runId, artifactId, sourceSha }, fetchJson);
+  if (run.head_sha !== sourceSha && !allowRuntimeEquivalent)
+    refuse('HOSTED_DEVELOPMENT_RUN_INVALID');
+  let compatibility;
+  if (allowRuntimeEquivalent) {
+    try {
+      compatibility = sourceCompatibility(repoRoot, run.head_sha);
+      if (compatibility.mainSha !== sourceSha) refuse('HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT');
+    } catch {
+      refuse('HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT');
+    }
+  }
+  const artifact = developmentArtifactMetadata(
+    { runId, artifactId, expectedDigest },
+    run,
+    fetchJson,
+  );
+  return {
+    ...artifact,
     ...(compatibility && {
       mainSha: compatibility.mainSha,
       compatibility: compatibility.compatibility,
       allowedDiffPaths: compatibility.diffPaths,
     }),
-    artifactId,
-    developmentRunId: runId,
-    developmentRunAttempt: run.run_attempt,
-    githubArtifactDigest: matches[0].digest,
+  };
+}
+
+/** Frozen evidence only: the normal verifier supplies the authenticated native run checkout. */
+export function requireHistoricalHostedDevelopmentArtifact(
+  { runId, artifactId, sourceSha, expectedDigest, repoRoot = process.cwd() },
+  fetchJson = ghJson,
+) {
+  const run = developmentCiRun({ runId, artifactId, sourceSha }, fetchJson);
+  let proof;
+  try {
+    proof = historicalHostedSourceCompatibility(repoRoot, run.head_sha, sourceSha);
+  } catch {
+    refuse('HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT');
+  }
+  const artifact = developmentArtifactMetadata(
+    { runId, artifactId, expectedDigest },
+    run,
+    fetchJson,
+  );
+  return {
+    ...artifact,
+    purpose: proof.purpose,
+    frozenCheckoutSha: proof.frozenCheckoutSha,
+    compatibility: proof.compatibility,
+    allowedDiffPaths: proof.diffPaths,
   };
 }
 
@@ -2349,16 +2394,21 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           : guestSeo
             ? String(report.imported_artifact?.artifactId ?? '')
             : String(report.artifact.artifact_id);
-      const artifact = requireDevelopmentArtifact({
+      if (guestSeo && run.head_sha !== sourceSha) refuse('HOSTED_SEO_WORKFLOW_SOURCE_DRIFT');
+      if (mode === 'verify' && run.head_sha !== sourceSha)
+        refuse('HOSTED_MEMBER_DATA_SOURCE_DRIFT');
+      const artifact = (
+        guestSeo || mode === 'verify'
+          ? requireHistoricalHostedDevelopmentArtifact
+          : requireDevelopmentArtifact
+      )({
         runId: artifactRunId,
         artifactId,
-        sourceSha,
-        ...((guestSeo || mode === 'verify') && { allowRuntimeEquivalent: true }),
+        sourceSha: guestSeo || mode === 'verify' ? run.head_sha : sourceSha,
         ...((guestSeo || notes || scrape) && {
           expectedDigest: report.imported_artifact.githubArtifactDigest,
         }),
       });
-      if (guestSeo && run.head_sha !== sourceSha) refuse('HOSTED_SEO_WORKFLOW_SOURCE_DRIFT');
       if (guestSeo)
         verifyHostedGuestSeoReport(report, {
           sourceSha: artifact.sourceSha,

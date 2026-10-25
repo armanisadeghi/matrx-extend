@@ -1,0 +1,219 @@
+{
+  "defect_id": "EXT-D-0295",
+  "owner": "/root",
+  "status": "SOURCE_GATES_AND_FRESH_REVIEW_PASS_HOSTED_CI_NATIVE_PENDING",
+  "at": "2026-10-25T21:15:08.322657+00:00",
+  "baseline_source": "39afbf4e0ad5fc244cbcce8a113cb9146ecb94ff",
+  "current_source": "52fd26df9b86ef2f2c27bb97023cc11dd38b00d5",
+  "baseline": {
+    "actual_executor": 98133,
+    "command": "TMPDIR=<external-neutral-scratch> node scripts/stabilization-resource.mjs run --run-id d295-baseline-red-20261025-2111 --profile-dir <external-scratch> -- pnpm test:focused-acceptance",
+    "actual_exit": 1,
+    "final_at": "2026-10-25T21:14:04.165Z",
+    "resourceInvalid": false,
+    "resource_decision": "child_failed",
+    "tests": 949,
+    "pass": 930,
+    "fail": 8,
+    "skip": 11,
+    "unique_new_failing_cases": 4,
+    "duplicate_limit": "Each new case executes twice through existing focused-suite import wiring; eight failures represent four unique D295 cases, not eight distinct defects.",
+    "failure_evidence": [
+      "Real separate-producer bare-origin fetch leaves actual HEAD/event A fixed while origin/main advances: ci_dev_checkout_not_origin_main at sourceCompatibility→requireHostedDevelopmentCheckout.",
+      "Exact actual prepareDevelopment body with real importer receipt verification/refetch fails at the same production checkout predicate before browser sentinel.",
+      "Normal historical SEO CLI rejects frozen successful run A from operator current B with HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT.",
+      "Runtime-history negative is short-circuited by old mutable-origin refusal rather than its expected runtime-source-change predicate."
+    ],
+    "evidence_limit": "Counts and exact failure stacks retained in actual root tool-output testimony; no full stdout log file was captured. Completed resource journal independently records child1, admittedtrue/resourceInvalidfalse.",
+    "journal": "docs/stabilization/resource-journals/d295-baseline-red-20261025-2111.jsonl"
+  },
+  "dependency_sync": [
+    {
+      "actual_executor": 46817,
+      "actual_exit": 0,
+      "final_at": "2026-10-25T21:10:54.971Z",
+      "journal": "docs/stabilization/resource-journals/d295-lock-sync-20261025-2110.jsonl",
+      "lock_source": "39af",
+      "verdict": "normal admitted valid0 frozen-lock ignore-scripts"
+    },
+    {
+      "actual_executor": 27757,
+      "source": "52fd",
+      "status": "NORMAL_ADMITTED_VALID0",
+      "actual_exit": 0,
+      "final_at": "2026-10-25T21:15:56.356Z",
+      "journal": "docs/stabilization/resource-journals/d295-lock52-sync-20261025-2114.jsonl"
+    }
+  ],
+  "source_integration": "Fetched and safely fast-forwarded contributor52fd dependency update after RED terminal; all owned dirty paths preserved. A new guarded frozen-lock sync precedes GREEN.",
+  "owner_installation_limit": "Actual Chrome623 bindsbefb artifact/then-current metadata-equivalent39af; later52fd lock and D295 source edits are not loaded-source proof. New CI/adoption/reload pending.",
+  "native_acceptance": "NOT_RUN; original75failed/noUI remains uncertifiable, no product behavior pass or closure",
+  "next_action": "Commit/push this reviewed source unit, then require successful exact-new-source MAIN CI and normally adopted/reloaded artifact. Original normal SEO retest and historical verifier from advanced operator main must pass independently before D295 closure; no oldfailed75retrocertification/producthealth claim.",
+  "green": {
+    "actual_executor": 70246,
+    "run_id": "d295-green-20261025-2116",
+    "status": "CHILD_FAILED_RESOURCE_VALID",
+    "stdout_log": ".output/stabilization-checkpoints/d295-green-2116.log",
+    "actual_exit": 1,
+    "final_at": "2026-10-25T21:19:17.797Z",
+    "tests": 953,
+    "pass": 938,
+    "fail": 4,
+    "skip": 11,
+    "unique_failures": 2,
+    "failures": [
+      "Existing strict run/source mismatch now emits artifact-invalid after metadata refactor rather than original run-invalid; restore original validation order, not weaker expectation.",
+      "New SEO substituted-run negative fixture omits external GH response for run457; fixture exits98 before owned artifact validation. Complete external dependency response so refusal is attributable."
+    ],
+    "passing_new_behavior": "Real origin-only drift, dirty/intermediate driver/app history, actual importer/prepare caller and generic member-data historical CLI now pass; this is supporting test evidence only."
+  },
+  "green2": {
+    "actual_executor": 84861,
+    "actual_exit": 1,
+    "run_id": "d295-green2-20261025-2122",
+    "final_at": "2026-10-25T21:24:44.585Z",
+    "resourceInvalid": false,
+    "decision": "child_failed",
+    "tests": 977,
+    "pass": 944,
+    "fail": 22,
+    "skip": 11,
+    "interpretation": "All ordinary production behavior/negative cases pass, including original importer/caller, current dispatch validation order and historical SEO/member-data. Twenty sabotage subtests plus two parents fail unmodified child controls; zero mutant proof. Existing suite imports the same tests twice.",
+    "failure": "Nested child returned0 with empty stdout; selected-control-really-executed assertion failed before any mutant was applied.",
+    "stdout_log": ".output/stabilization-checkpoints/d295-green2-2122.log",
+    "journal": "docs/stabilization/resource-journals/d295-green2-20261025-2122.jsonl"
+  },
+  "fresh_decomposition": {
+    "reason": "Two failed repair/check rounds trigger fresh bounded fixer per bugfix skill; previous builder handed off all exact bytes/scratch and is terminal.",
+    "lane": "/root/d295_guard_fixture_repair_2125",
+    "diagnosis": "Fresh fixer inspected installed Node internal test-runner source: inherited NODE_TEST_CONTEXT makes nested --test return without executing files. Only scratch child internal test context will be removed; resource-owner environment remains unchanged. Guarded execution remains pending.",
+    "primary_reference": "https://github.com/nodejs/node/blob/main/doc/api/cli.md#node_test_contextvalue"
+  },
+  "merge_history_lead": {
+    "status": "CONFIRMED_REAL_GRAPH_RED_REPAIR_PREPARED",
+    "finding": "Default git log --name-only may omit runtime changes introduced then removed exclusively in merge-resolution commits, even though final trees match. Need executed real graph; cannot waive full-history contract.",
+    "positive_control": "A harmless documentation merge from a branch older than artifact must remain eligible; do not use all-parent merge diffs that re-report already-approved runtime.",
+    "candidate_only": "Canonical sharedlog adds explicit --diff-merges=first-parent displaymode, retaining allcommittraversal; eleventh independent mutation drops onlyflag. Final execution pending.",
+    "primary_reference": "https://git-scm.com/docs/git-log"
+  },
+  "merge_red": {
+    "actual_executor": 9969,
+    "actual_exit": 1,
+    "run_id": "d295-merge-red-20261025-2128",
+    "final_at": "2026-10-25T21:31:16.026Z",
+    "resourceInvalid": false,
+    "tests": 981,
+    "pass": 968,
+    "fail": 2,
+    "skip": 11,
+    "unique_failure": "Real two-merge runtime introduction/removal, final diff empty, defaultlog omits runtime: Missing expected exception D295_MERGE_RESOLUTION_HISTORY_REFUSAL. Duplicated through existing suite imports.",
+    "passed": "All ten per-rule/return-expected mutations each pass in both suite imports; positive controls actually execute. Harmless old-branch documentation merge remains accepted.",
+    "log": ".output/stabilization-checkpoints/d295-merge-red-2128.log",
+    "journal": "docs/stabilization/resource-journals/d295-merge-red-20261025-2128.jsonl"
+  },
+  "invalid_final_attempt": {
+    "actual_executor": 67181,
+    "actual_exit": 3,
+    "run_id": "d295-final-green-20261025-2140",
+    "final_at": "2026-10-25T21:42:08.659Z",
+    "resourceInvalid": true,
+    "reason": "Sustained RESOURCE_CPU_HIGH_LOAD_BUSY;843tests829pass0fail4cancel10skip give no final verification credit.",
+    "log": ".output/stabilization-checkpoints/d295-final-green-2140.log",
+    "journal": "docs/stabilization/resource-journals/d295-final-green-20261025-2140.jsonl"
+  },
+  "normal_recovery": {
+    "actual_executor": 79088,
+    "actual_exit": 0,
+    "run_id": "d295-capacity-recovery-20261025-2143",
+    "final_at": "2026-10-25T21:44:52.667Z",
+    "verdict": "Normal recovery samples and preflight admit; valid0. No policy/threshold/runner/concurrency bypass."
+  },
+  "final_focused": {
+    "actual_executor": 9135,
+    "actual_exit": 0,
+    "run_id": "d295-final-recovered-20261025-2145",
+    "final_at": "2026-10-25T21:49:43.395Z",
+    "resourceInvalid": false,
+    "decision": "valid",
+    "tests": 987,
+    "pass": 976,
+    "fail": 0,
+    "cancelled": 0,
+    "skip": 11,
+    "mutations": "All12 individually sabotaged controls pass, twice through existing focused imports; specific expected refusal assertions/actual controls verified. Includes constant-return checks, merge-display removal and wrong first-parent traversal.",
+    "cpu_limit": "Early CPU_PENDING recovered naturally; full completed journal valid0, distinct from excluded prior invalidrun.",
+    "log": ".output/stabilization-checkpoints/d295-final-recovered-2145.log",
+    "journal": "docs/stabilization/resource-journals/d295-final-recovered-20261025-2145.jsonl",
+    "executed_test_sha256": "2648db7a4c49aa10ea7fc83d624be2c181da6bb5e71d3fb8a22480476e35f9fd"
+  },
+  "final_source_sha256": {
+    "scripts/development-source-compatibility.mjs": "9f6d2d66f7466409fd276e89a02b61c827635d050efde4f47aa4c952a0bf0b17",
+    "scripts/hosted-remote-admission.mjs": "08b192f12c00c70f5602a5340c7d9c736f0aade52ebe4cded32208d0078de9e1",
+    "scripts/hosted-remote-admission.test.mjs": "d068aebad2183dbdb536e3d2c0e5b8954697c5d9bcf0d5b9bb9cc93794687985"
+  },
+  "strict_receipt": {
+    "actual_executor": 43385,
+    "run_id": "d295-strict-receipt-20261025-2150",
+    "status": "PASS_NORMAL_VALID0",
+    "actual_exit": 0,
+    "final_at": "2026-10-25T21:51:22.650Z",
+    "tests": 10,
+    "pass": 10,
+    "log": ".output/stabilization-checkpoints/d295-strict-receipt-2150.log",
+    "journal": "docs/stabilization/resource-journals/d295-strict-receipt-20261025-2150.jsonl"
+  },
+  "scope_limit": "Generic member-data auto-extract retains preexisting provenance/workflow/archive/resource validation strength, not a new per-UI acceptance schema; lifecycle and SEO keep their dedicated native validators. Supporting guards never earn product behavior credit.",
+  "compile": {
+    "actual_executor": 80067,
+    "actual_exit": 0,
+    "run_id": "d295-compile-20261025-2152",
+    "final_at": "2026-10-25T21:53:24.606Z",
+    "resourceInvalid": false,
+    "verdict": "tsc --noEmit pass; normal admitted valid0",
+    "log": ".output/stabilization-checkpoints/d295-compile-2152.log",
+    "journal": "docs/stabilization/resource-journals/d295-compile-20261025-2152.jsonl"
+  },
+  "style_delta": {
+    "scope": "Only six same-scope sequential const declaration splits after executed focused suite; no other bytes changed, inverse patch independently reconstructs executed2648 hash. Final wholelint binds newd068; exact-new-source CI remains required.",
+    "proof": "docs/stabilization/reports/d295-style-delta-proof-20261025.json",
+    "patch": "docs/stabilization/evidence/d295-style-delta/six-declarations.patch.txt"
+  },
+  "wholelint_initial": {
+    "actual_executor": 88729,
+    "actual_exit": 1,
+    "resourceInvalid": false,
+    "final_at": "2026-10-25T21:55:36.543Z",
+    "errors": 6,
+    "cause": "New test comma const declarations; mechanically corrected only, no blanket unsafe autofix."
+  },
+  "wholelint_final": {
+    "actual_executor": 94810,
+    "actual_exit": 0,
+    "run_id": "d295-wholelint-final-20261025-2158",
+    "final_at": "2026-10-25T21:58:47.479Z",
+    "resourceInvalid": false,
+    "files": 3280,
+    "errors": 0,
+    "warnings": 1032,
+    "log": ".output/stabilization-checkpoints/d295-wholelint-final-2158.log",
+    "journal": "docs/stabilization/resource-journals/d295-wholelint-final-20261025-2158.jsonl"
+  },
+  "fresh_review": "docs/stabilization/reports/d295-final-source-peer-20261025.json",
+  "canonical_store_record_update": {
+    "own_commit": "330485a9223",
+    "merged_pushed_head": "36521cd102d",
+    "git_home": "aidream/common-docs",
+    "scope": "Three canonical factual lines: latest timed actual577/37fa runtime, current candidate pointer, no assumed pending package. Normal merge preserved already-remote contributor changes.",
+    "doc_links_check": {
+      "actual_exit": 0,
+      "existing_broken": 92,
+      "checked": 2074
+    },
+    "global_docs_guard": {
+      "actual_exit": 1,
+      "unrelated_findings": 103,
+      "changed_record_named_in_findings": false,
+      "limit": "No overall aidream documentation-clean claim; existing unrelated findings do not establish a Matrx Extend release/source blocker."
+    }
+  }
+}

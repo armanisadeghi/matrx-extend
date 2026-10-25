@@ -1,0 +1,10 @@
+{
+  "post_style_sha256": "d068aebad2183dbdb536e3d2c0e5b8954697c5d9bcf0d5b9bb9cc93794687985",
+  "inverse_exact_six_decl_splits_sha256": "2648db7a4c49aa10ea7fc83d624be2c181da6bb5e71d3fb8a22480476e35f9fd",
+  "matches_executed_pre_style_hash": true,
+  "production_hashes": {
+    "scripts/development-source-compatibility.mjs": "9f6d2d66f7466409fd276e89a02b61c827635d050efde4f47aa4c952a0bf0b17",
+    "scripts/hosted-remote-admission.mjs": "08b192f12c00c70f5602a5340c7d9c736f0aade52ebe4cded32208d0078de9e1"
+  },
+  "semantic_delta": "Six comma-separated const declarator statements split into same-block sequential const statements; all names/initializers/order unchanged, no other byte changes."
+}

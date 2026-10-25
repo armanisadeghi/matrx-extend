@@ -7,7 +7,7 @@
   "auth_mode": "Guest SEO original failure; generic member-data historical-verifier sibling",
   "severity": "S2: blocks trustworthy frozen hosted acceptance before product UI",
   "priority": "P1: preserve independent Git integration and frozen testing",
-  "state": "triaged",
+  "state": "fixed",
   "owner": "/root",
   "preconditions": [
     "Normal B40229119875 dispatched from exact75ab/v623 with successful MAIN CI40228213436 and developmentartifact12612417676; official native run checkout is75."
@@ -20,7 +20,7 @@
   "expected": "Frozen execution and historical evidence bind immutable official run/checkout/artifact/workflow and full harness provenance; moving main after valid dispatch does not invalidate execution. Current-main dispatch, local promotion and release eligibility remain strict.",
   "actual": "Normal artifact import succeeded20:14:06.596; ci_dev_checkout_not_origin_main at20:14:09.929 stops before runProfile/UI. Native permit admitted/resourceInvalidfalse but actualchildfailed1. No case report/screenshots or product credit.",
   "cause": "Current-main adoption proof is reused for immutable hosted execution; historical SEO/member-data verification also uses operator current checkout as the wrong trust anchor.",
-  "reproducibility": "Primary actual hosted producer chain confirmed independently; minimized real-Git red/green guard not executed.",
+  "reproducibility": "Original normal hosted failure independently confirmed; real separate-producer origin fetch and actual importer/prepare seam RED executed. Additional two-merge runtime-add/remove history gap reproduced as exact missing refusal under resource-valid run9969.",
   "evidence": [
     "docs/stabilization/reports/hosted-seo-b-75-source-refusal-20261025.json",
     "docs/stabilization/reports/checkout-freeze-diagnosis-20261025.json",
@@ -48,10 +48,10 @@
       "same_as_failed_75": true
     }
   },
-  "plan_status": "Amended bounded contract COMMIT by fresh independent attack, design only; NOT IMPLEMENTED/FIXED.",
+  "plan_status": "SOURCE-FIXED: meaningful original/merge RED, focused987total976pass0fail11skip/all12mutants twice, strictreceipt10/10, compile and wholelint0 plus fresh independent A/B source PASS. Six declaration-only test style splits independently proven; exact-new-source CI/native original remain pending.",
   "owner_ruling": "Separate explicit immutable hosted execution/historical-evidence proof from strict current-main adoption/release proof. Keep official run/artifact/workflow/case/resource/UI validation and full driver/runtime dirty/history checks; no global allow-stale flag, origin rewind, direct-helper bypass or retro-success for failed/noUI runs.",
-  "limits": "Exact origin SHA fetched on host not retained; parent6aa timing is bounded supporting attribution. A40229297028 resource/CDP failure is separate. No product failure, source fix, executed new unit red/green, native retest, certificate or Store acceptance.",
-  "resource_gate": "Fresh Maccheck51510 final20:21:01.313 refused2/admittedfalse solelyRESOURCE_DISK_LOW19.324GiB; no local implementation/test launch permitted.",
+  "limits": "Source-level real-Git/caller and negative provenance guards are executed supporting evidence, not product behavior. Originalfailed75fetchedremoteSHA remains unknown; ACPU/CDPfailure separate. No new native retest/certificate, Storecandidateacceptance or closure.",
+  "resource_gate": "Store577 guest follow-up ended normalvalid0/actual72879exit0 before source testing. Initial final sourceattempt67181 CPUinvalid3 gives no credit; normalrecovery79088valid0 then exact-byte focused9135valid0, receipt43385valid0 and compile80067valid0. All terminal; no resource/policy bypass.",
   "transition_history": [
     {
       "at": "2026-10-25T20:36:34.947400+00:00",
@@ -64,7 +64,28 @@
       "from": "open",
       "to": "triaged",
       "reason": "Fresh independent producer-chain diagnosis and sibling audit confirmed contextual proof mismatch; owner amended contract independently attacked."
+    },
+    {
+      "at": "2026-10-25T21:10:35.385189+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Normal resource recovery and owner refresh terminal; named D295 implementation lane authorized. New real-Git/caller tests prepared against unchanged production; execution and fix verification pending."
+    },
+    {
+      "at": "2026-10-25T22:00:43.628178+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Bounded source repair has all required local gates and fresh independent A/B review. This does not close original native/hosted acceptance or Store release gates."
     }
   ],
-  "next_action": "After normal resource recovery, implement explicit frozen-checkout and historical-certification proof with shared strict primitives; reproduce real origin-only fetch drift red→green and preserved dirty/mismatch/current-promotion negatives; fresh independent review, successful new exact-main CI, then one normal SEO original/adjacent retest. Never redispatch old75 or certify its failed/noUI result."
+  "next_action": "Commit/push this reviewed source unit, then require successful exact-new-source MAIN CI and normally adopted/reloaded artifact. Original normal SEO retest and historical verifier from advanced operator main must pass independently before D295 closure; no oldfailed75retrocertification/producthealth claim.",
+  "source_pins_scope": "Historical exact bytes from failed75 producer; final prepared/focused-verified hashes below are separate.",
+  "final_source_sha256": {
+    "scripts/development-source-compatibility.mjs": "9f6d2d66f7466409fd276e89a02b61c827635d050efde4f47aa4c952a0bf0b17",
+    "scripts/hosted-remote-admission.mjs": "08b192f12c00c70f5602a5340c7d9c736f0aade52ebe4cded32208d0078de9e1",
+    "scripts/hosted-remote-admission.test.mjs": "d068aebad2183dbdb536e3d2c0e5b8954697c5d9bcf0d5b9bb9cc93794687985"
+  },
+  "verification_report": "docs/stabilization/reports/d295-source-verification-20261025.json",
+  "reviewer": "/root/d295_final_source_peer_2140",
+  "fix_sha": "Pending integration commit; record actual after commit"
 }

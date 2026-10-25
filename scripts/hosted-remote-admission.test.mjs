@@ -188,8 +188,8 @@ test('guest SEO dispatch refuses dirty helper/workflow or a different main commi
   );
 });
 
-test('guest SEO native report must prove the bounded target and exact frozen CI artifact', () => {
-  const report = {
+function guestSeoReport() {
+  return {
     schema_version: 1,
     feature_id: 'EXT-F-1008',
     mode: 'guest',
@@ -237,6 +237,10 @@ test('guest SEO native report must prove the bounded target and exact frozen CI 
     },
     build: { before: { treeSha256: 'c'.repeat(64) }, after: { treeSha256: 'c'.repeat(64) } },
   };
+}
+
+test('guest SEO native report must prove the bounded target and exact frozen CI artifact', () => {
+  const report = guestSeoReport();
   const identity = {
     sourceSha: 'a'.repeat(40),
     developmentRunId: '38116138170',
@@ -1785,5 +1789,992 @@ if (process.argv[1].endsWith('/git')) {
     assert.match(failure.stderr, /HOSTED_DISPATCH_FAILED/);
   } finally {
     rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// D295: the importer fetches origin after dispatch; it must not redefine the VM checkout.
+test('D295 immutable hosted runner survives a real origin-only fetch while current adoption refuses', () => {
+  for (const path of ['src/panel.js', 'docs/stabilization/reports/later.json']) {
+    const f = fixture();
+    const remote = mkdtempSync(join(tmpdir(), 'hosted-origin-'));
+    try {
+      const bare = join(remote, 'origin.git');
+      const producer = join(remote, 'producer');
+      git(f.root, 'branch', '-M', 'main');
+      git(remote, 'init', '--bare', '-q', bare);
+      git(f.root, 'remote', 'add', 'origin', bare);
+      git(f.root, 'push', '-q', '-u', 'origin', 'main');
+      git(remote, 'clone', '-q', '--branch', 'main', bare, producer);
+      git(producer, 'config', 'user.name', 'Hosted source producer');
+      git(producer, 'config', 'user.email', 'hosted-source@test.invalid');
+      const remoteSha = commit(producer, path, 'later source');
+      git(producer, 'push', '-q', 'origin', 'main');
+      // Real sourceState/import-refetch seam: separate writer moves origin, runner HEAD stays A.
+      git(f.root, 'fetch', '--quiet', 'origin', 'main');
+      assert.equal(git(f.root, 'rev-parse', 'HEAD'), f.artifactSha);
+      assert.equal(git(f.root, 'rev-parse', 'origin/main'), remoteSha);
+      const proof = requireHostedDevelopmentCheckout(f.root, f.artifactSha, f.artifactSha);
+      assert.deepEqual(proof, {
+        purpose: 'hosted-execution',
+        artifactSourceSha: f.artifactSha,
+        frozenCheckoutSha: f.artifactSha,
+        compatibility: 'exact-source',
+        diffPaths: [],
+      });
+      assert.throws(
+        () => f.admit(f.artifactSha),
+        /HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT/,
+        'D295_CURRENT_ADOPTION_REFUSAL',
+      );
+      assert.equal(
+        git(f.root, 'rev-parse', 'origin/main'),
+        remoteSha,
+        'proof never rewinds origin',
+      );
+    } finally {
+      rmSync(f.root, { recursive: true, force: true });
+      rmSync(remote, { recursive: true, force: true });
+    }
+  }
+});
+
+test('D295 frozen proof rejects event mismatch, runtime and reverted driver history, and pending drivers', () => {
+  const f = fixture();
+  try {
+    const docs = commit(f.root, 'docs/stabilization/reports/seo.json', '{}');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', docs);
+    for (const invalid of [undefined, '', 'main', 'f'.repeat(40), f.artifactSha])
+      assert.throws(
+        () => requireHostedDevelopmentCheckout(f.root, f.artifactSha, invalid),
+        /HOSTED_DEVELOPMENT_CHECKOUT_INVALID/,
+      );
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, 'f'.repeat(40), docs),
+      /ci_dev_source_not_ancestor/,
+    );
+    const driver = 'tests/browser/seo-acceptance.mjs';
+    mkdirSync(join(f.root, 'tests/browser'), { recursive: true });
+    writeFileSync(join(f.root, driver), 'untracked driver');
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, f.artifactSha, docs),
+      /ci_dev_pending_runtime_source/,
+      'D295_PENDING_DRIVER_REFUSAL',
+    );
+    rmSync(join(f.root, driver));
+    writeFileSync(join(f.root, 'src/panel.js'), 'dirty runtime');
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, f.artifactSha, docs),
+      /ci_dev_pending_runtime_source/,
+      'D295_PENDING_DRIVER_REFUSAL',
+    );
+    writeFileSync(join(f.root, 'src/panel.js'), 'runtime');
+    const changed = commit(f.root, driver, 'changed driver');
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, f.artifactSha, changed),
+      /ci_dev_runtime_source_changed/,
+    );
+    writeFileSync(join(f.root, driver), 'dirty tracked driver');
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, changed, changed),
+      /ci_dev_pending_runtime_source/,
+    );
+    writeFileSync(join(f.root, driver), 'changed driver');
+    git(f.root, 'revert', '--no-edit', changed);
+    const reverted = git(f.root, 'rev-parse', 'HEAD');
+    assert.equal(git(f.root, 'diff', '--name-only', docs, reverted), '');
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, f.artifactSha, reverted),
+      /ci_dev_runtime_source_changed/,
+      'full committed history catches the reverted driver even when final diff is empty',
+    );
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+// External GitHub records are doubled; archive, Git range, CLI decisions and all verifiers stay real.
+test('D295 normal historical SEO verifier certifies frozen evidence after operator main advances and refuses substitutions', async () => {
+  const { createHash } = await import('node:crypto');
+  const f = fixture();
+  try {
+    const frozen = commit(f.root, 'docs/stabilization/reports/native-seo.json', '{}');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', frozen);
+    const current = commit(f.root, 'src/panel.js', 'runtime after successful native run');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', current);
+    const bin = join(f.root, 'test-bin');
+    const evidence = join(f.root, 'evidence');
+    const journals = join(evidence, 'docs/stabilization/resource-journals');
+    mkdirSync(bin);
+    mkdirSync(journals, { recursive: true });
+    writeFileSync(join(f.root, '.git/info/exclude'), '/test-bin/\n/evidence/\n');
+    const zip = join(evidence, 'evidence.zip');
+    const nativeRunId = '789';
+    const workflow = readFileSync(
+      new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+      'utf8',
+    );
+    const report = guestSeoReport();
+    Object.assign(report.imported_artifact, {
+      sourceSha: f.artifactSha,
+      runId: 456,
+      runAttempt: 1,
+      artifactId: 123,
+    });
+    const base = { run: f.run, artifact: f.artifact, nativeRunId, frozen, workflow };
+    writeFileSync(
+      join(bin, 'gh'),
+      `#!/usr/bin/env node
+const c=JSON.parse(process.env.D295_VERIFY_STUB), a=process.argv.slice(2), e=a[1]; let r;
+if(e.includes('/contents/'))r={path:'.github/workflows/hosted-guest-acceptance.yml',type:'file',encoding:'base64',content:Buffer.from(c.workflow).toString('base64')};
+else if(e.includes('/artifacts?'))r={artifacts:e.includes('/'+c.nativeRunId+'/')?[{name:'hosted-guest-'+c.nativeRunId+'-1',expired:false,digest:c.archiveDigest}]:[c.artifact]};
+else if(e.endsWith('/'+c.nativeRunId))r={name:'Native B · guest-seo',path:'.github/workflows/hosted-guest-acceptance.yml',event:'workflow_dispatch',head_branch:'main',head_sha:c.frozen,conclusion:'success',run_attempt:1,...c.native};
+else if(e.endsWith('/456')||e.endsWith('/457'))r=c.run;
+else process.exit(98);
+process.stdout.write(JSON.stringify(r));
+`,
+    );
+    chmodSync(join(bin, 'gh'), 0o700);
+    const repack = (invalid = {}) => {
+      rmSync(zip, { force: true });
+      const reportPath = join(evidence, 'seo-guest-acceptance.json');
+      if (invalid.noReport) rmSync(reportPath, { force: true });
+      else writeFileSync(reportPath, JSON.stringify(invalid.report ?? report));
+      for (const prefix of ['hosted-package', 'hosted-browser', 'hosted-guest']) {
+        const id = `${prefix}-${nativeRunId}-1`;
+        for (const suffix of ['.jsonl', '.pending.jsonl'])
+          rmSync(join(journals, id + suffix), { force: true });
+        const events = [
+          { at: '2026-10-25T20:00:00Z', code: 'RESOURCE_JOURNAL_OPENED' },
+          { at: '2026-10-25T20:00:01Z', code: 'RESOURCE_ADMITTED', mode: 'run' },
+          { at: '2026-10-25T20:00:16Z', code: 'RESOURCE_WATCH_HEALTHY' },
+          { at: '2026-10-25T20:01:00Z', code: 'RESOURCE_JOB_EXIT', childExitCode: 0 },
+          {
+            at: '2026-10-25T20:01:01Z',
+            code: 'RESOURCE_FINAL_DECISION',
+            admitted: true,
+            resourceInvalid: invalid.invalidPhase === prefix,
+            exitCode: invalid.invalidPhase === prefix ? 3 : 0,
+            decision: invalid.invalidPhase === prefix ? 'invalid' : 'valid',
+          },
+        ];
+        writeFileSync(
+          join(journals, id + (invalid.pendingPhase === prefix ? '.pending.jsonl' : '.jsonl')),
+          events.map((e) => JSON.stringify({ schema: 1, runId: id, ...e })).join('\n') + '\n',
+        );
+      }
+      const packed = spawnSync(
+        'zip',
+        ['-q', '-r', zip, ...(invalid.noReport ? [] : ['seo-guest-acceptance.json']), 'docs'],
+        { cwd: evidence, encoding: 'utf8' },
+      );
+      assert.equal(packed.status, 0, packed.stderr);
+      return `sha256:${createHash('sha256').update(readFileSync(zip)).digest('hex')}`;
+    };
+    const execute = (change = {}, invalid = {}) =>
+      spawnSync(
+        process.execPath,
+        [
+          resolve('scripts/hosted-remote-admission.mjs'),
+          'verify-guest-seo',
+          '--run-id',
+          nativeRunId,
+          '--attempt',
+          '1',
+          '--artifact-zip',
+          zip,
+          '--source-sha',
+          frozen,
+        ],
+        {
+          cwd: f.root,
+          encoding: 'utf8',
+          env: {
+            ...process.env,
+            PATH: `${bin}:${process.env.PATH}`,
+            D295_VERIFY_STUB: JSON.stringify({
+              ...base,
+              archiveDigest: repack(invalid),
+              ...change,
+            }),
+          },
+        },
+      );
+    const accepted = execute();
+    assert.equal(accepted.status, 0, 'D295_HISTORICAL_FROZEN_ACCEPTANCE ' + accepted.stderr);
+    const receipt = JSON.parse(accepted.stdout);
+    assert.equal(receipt.valid, true);
+    assert.equal(receipt.workflowSha, frozen);
+    assert.equal(receipt.artifact.purpose, 'historical-hosted-evidence');
+    assert.equal(receipt.artifact.frozenCheckoutSha, frozen);
+    assert.equal(receipt.artifact.sourceSha, f.artifactSha);
+    assert.equal(receipt.artifact.compatibility, 'runtime-equivalent');
+    assert.equal(Object.hasOwn(receipt.artifact, 'mainSha'), false);
+    assert.equal(git(f.root, 'rev-parse', 'HEAD'), current);
+    assert.equal(git(f.root, 'rev-parse', 'origin/main'), current);
+    for (const [change, invalid, reason] of [
+      [{ native: { conclusion: 'failure' } }, {}, 'HOSTED_RUN_NOT_SUCCESSFUL'],
+      [{ native: { head_sha: current } }, {}, 'HOSTED_SEO_WORKFLOW_SOURCE_DRIFT'],
+      [{ native: { path: '.github/workflows/ci.yml' } }, {}, 'HOSTED_RUN_NOT_SUCCESSFUL'],
+      [{ workflow: workflow + '\n# unreviewed' }, {}, 'HOSTED_WORKFLOW_BLOB_UNREVIEWED'],
+      [
+        { artifact: { ...f.artifact, digest: `sha256:${'f'.repeat(64)}` } },
+        {},
+        'HOSTED_DEVELOPMENT_ARTIFACT_DIGEST_MISMATCH',
+      ],
+      [{ run: { ...f.run, run_attempt: 2 } }, {}, 'HOSTED_DEVELOPMENT_ARTIFACT_INVALID'],
+      [{ run: { ...f.run, conclusion: 'failure' } }, {}, 'HOSTED_DEVELOPMENT_RUN_INVALID'],
+      [{ archiveDigest: `sha256:${'f'.repeat(64)}` }, {}, 'HOSTED_ARCHIVE_DIGEST_MISMATCH'],
+      [{}, { report: { ...report, targets: [] } }, 'HOSTED_SEO_NATIVE_REPORT_PROVENANCE_INVALID'],
+      [
+        {},
+        { report: { ...report, imported_artifact: { ...report.imported_artifact, runId: 457 } } },
+        'HOSTED_DEVELOPMENT_ARTIFACT_INVALID',
+      ],
+      [
+        {},
+        {
+          report: {
+            ...report,
+            imported_artifact: { ...report.imported_artifact, artifactId: 124 },
+          },
+        },
+        'HOSTED_DEVELOPMENT_ARTIFACT_INVALID',
+      ],
+      [
+        {},
+        {
+          report: { ...report, imported_artifact: { ...report.imported_artifact, runAttempt: 2 } },
+        },
+        'HOSTED_SEO_NATIVE_REPORT_PROVENANCE_INVALID',
+      ],
+      [{}, { noReport: true }, 'HOSTED_ARCHIVE_ENTRY_MISSING_OR_DUPLICATE'],
+      ...['hosted-package', 'hosted-browser', 'hosted-guest'].flatMap((prefix) => [
+        [{}, { invalidPhase: prefix }, 'HOSTED_JOURNAL_NOT_VALID'],
+        [{}, { pendingPhase: prefix }, 'HOSTED_ARCHIVE_JOURNAL_SET_INVALID'],
+      ]),
+    ]) {
+      const result = execute(change, invalid);
+      assert.notEqual(result.status, 0, reason);
+      assert.match(result.stderr, new RegExp(reason));
+    }
+    writeFileSync(join(f.root, 'tests-driver.mjs'), 'pending verifier');
+    const dirty = execute();
+    assert.notEqual(dirty.status, 0);
+    assert.match(dirty.stderr, /HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT/);
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+test('D295 actual prepareDevelopment body reaches real imported-evidence refetch and refuses before browser exercise', async () => {
+  const { createHash } = await import('node:crypto');
+  const { pathToFileURL } = await import('node:url');
+  const f = fixture();
+  const remote = mkdtempSync(join(tmpdir(), 'hosted-caller-origin-'));
+  const priorCase = process.env.MATRX_HOSTED_ACCEPTANCE_CASE;
+  const priorSha = process.env.GITHUB_SHA;
+  try {
+    mkdirSync(join(f.root, 'scripts'));
+    for (const name of [
+      'current-test-artifact.mjs',
+      'record-local-dev-build.mjs',
+      'sync-unpacked-release.mjs',
+      'check-dev-emitted-title.mjs',
+      'development-ci-event.mjs',
+    ])
+      copyFileSync(resolve('scripts', name), join(f.root, 'scripts', name));
+    commit(f.root, 'package.json', JSON.stringify({ version: '0.2.623' }));
+    git(f.root, 'add', '--', 'scripts');
+    git(f.root, 'commit', '-qm', 'Freeze complete importer harness');
+    const source = git(f.root, 'rev-parse', 'HEAD');
+    git(f.root, 'branch', '-M', 'main');
+    const bare = join(remote, 'origin.git');
+    const producer = join(remote, 'producer');
+    git(remote, 'init', '--bare', '-q', bare);
+    git(f.root, 'remote', 'add', 'origin', bare);
+    git(f.root, 'push', '-q', '-u', 'origin', 'main');
+    git(remote, 'clone', '-q', '--branch', 'main', bare, producer);
+    git(producer, 'config', 'user.name', 'Hosted caller producer');
+    git(producer, 'config', 'user.email', 'hosted-caller@test.invalid');
+    const later = commit(producer, 'src/panel.js', 'remote runtime after dispatch');
+    git(producer, 'push', '-q', 'origin', 'main');
+    writeFileSync(join(f.root, '.git/info/exclude'), '/test-results/\n');
+    const target = join(f.root, 'test-results/ci-artifacts', source, '456-1');
+    const build = join(target, 'chrome-mv3');
+    mkdirSync(build, { recursive: true });
+    const config = readFileSync(resolve('wxt.config.ts'), 'utf8');
+    const key = /const devExtensionKey =\s*'([^']+)'/.exec(config)?.[1];
+    assert.ok(key, 'fixture uses the canonical public development key');
+    writeFileSync(
+      join(build, 'manifest.json'),
+      JSON.stringify({ manifest_version: 3, version: '0.2.623', key }),
+    );
+    const importer = await import(
+      pathToFileURL(join(f.root, 'scripts/current-test-artifact.mjs')).href
+    );
+    const { hashReleaseTree } = await import(
+      pathToFileURL(join(f.root, 'scripts/sync-unpacked-release.mjs')).href
+    );
+    const receipt = {
+      schema_version: 1,
+      kind: 'local_dev_unpacked',
+      publish_state: 'not_published',
+      observedAt: '2026-10-25T21:00:00.000Z',
+      extensionDir: build,
+      version: '0.2.623',
+      treeSha256: hashReleaseTree(build),
+    };
+    const ciReceipt = {
+      ...receipt,
+      extensionDir: '/home/runner/work/matrx-extend/matrx-extend/.output/chrome-mv3',
+    };
+    const provenance = {
+      kind: 'ci_development_test',
+      eligibleStore: false,
+      publish_state: 'not_published',
+      repository: 'armanisadeghi/matrx-extend',
+      workflow: '.github/workflows/ci.yml',
+      event: 'push',
+      ref: 'refs/heads/main',
+      sourceSha: source,
+      runId: 456,
+      runAttempt: 1,
+      expectedExtensionId: 'cihdmkcdjjckfhjpgoedmgfpoljebaml',
+      version: '0.2.623',
+      treeSha256: receipt.treeSha256,
+    };
+    const ciBytes = JSON.stringify(ciReceipt);
+    const provenanceBytes = JSON.stringify(provenance);
+    for (const [name, value] of [
+      ['local-dev-receipt.json', JSON.stringify(receipt)],
+      ['ci-receipt.json', ciBytes],
+      ['provenance.json', provenanceBytes],
+      [
+        'import-status.json',
+        JSON.stringify({
+          schema_version: 1,
+          eligibleStore: false,
+          sourceSha: source,
+          runId: 456,
+          runAttempt: 1,
+          artifactId: 123,
+          githubArtifactDigest: `sha256:${'b'.repeat(64)}`,
+          treeSha256: receipt.treeSha256,
+          ciReceiptSha256: createHash('sha256').update(ciBytes).digest('hex'),
+          provenanceSha256: createHash('sha256').update(provenanceBytes).digest('hex'),
+        }),
+      ],
+    ])
+      writeFileSync(join(target, name), value);
+    // Execute the exact production caller body, not a hand-written imitation. Only its module
+    // lexical bindings are supplied; source selection, verification, Git fetch and proof are real.
+    const caller = readFileSync(resolve('scripts/hosted-guest-acceptance.mjs'), 'utf8');
+    const match =
+      /async function prepareDevelopment\(runId, artifactId\) \{([\s\S]*?)\n\}\n\nasync function runProfile/.exec(
+        caller,
+      );
+    assert.ok(match, 'real preparation caller remains covered');
+    const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
+    const prepare = new AsyncFunction(
+      'assert',
+      'join',
+      'repo',
+      'selectOrImportNativeTarget',
+      'verifyImportedNativeEvidence',
+      'requireHostedDevelopmentCheckout',
+      'ownedProcess',
+      'process',
+      'runId',
+      'artifactId',
+      match[1],
+    );
+    let browserExercises = 0;
+    const invoke = async () => {
+      const prepared = await prepare(
+        assert,
+        join,
+        f.root,
+        importer.selectOrImportNativeTarget,
+        importer.verifyImportedNativeEvidence,
+        requireHostedDevelopmentCheckout,
+        () => {
+          throw new Error('unexpected import of existing artifact');
+        },
+        process,
+        '456',
+        '123',
+      );
+      browserExercises++;
+      return prepared;
+    };
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE = 'guest-seo';
+    process.env.GITHUB_SHA = source;
+    const prepared = await invoke();
+    assert.equal(prepared.ciEvidence.source.claim, 'exact_pushed_commit_only');
+    assert.equal(git(f.root, 'rev-parse', 'HEAD'), source);
+    assert.equal(
+      git(f.root, 'rev-parse', 'origin/main'),
+      later,
+      'real evidence verification performed its fetch',
+    );
+    assert.equal(browserExercises, 1);
+    process.env.GITHUB_SHA = later;
+    await assert.rejects(invoke, /HOSTED_DEVELOPMENT_CHECKOUT_INVALID/);
+    assert.equal(
+      browserExercises,
+      1,
+      'invalid actual checkout never reaches profile/browser exercise',
+    );
+  } finally {
+    if (priorCase === undefined) delete process.env.MATRX_HOSTED_ACCEPTANCE_CASE;
+    else process.env.MATRX_HOSTED_ACCEPTANCE_CASE = priorCase;
+    if (priorSha === undefined) delete process.env.GITHUB_SHA;
+    else process.env.GITHUB_SHA = priorSha;
+    rmSync(f.root, { recursive: true, force: true });
+    rmSync(remote, { recursive: true, force: true });
+  }
+});
+
+// D295 sibling: the ordinary member-data certificate uses the same immutable run anchor.
+test('D295 normal historical member-data verifier survives moving operator main and preserves its provenance/resource refusals', async () => {
+  const { createHash } = await import('node:crypto');
+  const f = fixture();
+  try {
+    const frozen = commit(f.root, 'docs/stabilization/reports/member-data.json', '{}');
+    const current = commit(f.root, 'src/panel.js', 'operator runtime after native success');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', current);
+    const evidence = join(f.root, 'evidence');
+    const bin = join(f.root, 'test-bin');
+    const journals = join(evidence, 'docs/stabilization/resource-journals');
+    mkdirSync(journals, { recursive: true });
+    mkdirSync(bin);
+    writeFileSync(join(f.root, '.git/info/exclude'), '/evidence/\n/test-bin/\n');
+    const zip = join(evidence, 'evidence.zip');
+    const nativeRunId = '790';
+    const report = {
+      case_id: 'EXT-F-2005-T08',
+      auth_mode: 'member',
+      artifact: { source_sha: f.artifactSha, run_id: 456, artifact_id: 123 },
+    };
+    const workflow = readFileSync(
+      new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+      'utf8',
+    );
+    writeFileSync(
+      join(bin, 'gh'),
+      `#!/usr/bin/env node
+const c=JSON.parse(process.env.D295_DATA_VERIFY_STUB),e=process.argv[3];let r;
+if(e.includes('/contents/'))r={path:'.github/workflows/hosted-guest-acceptance.yml',type:'file',encoding:'base64',content:Buffer.from(c.workflow).toString('base64')};
+else if(e.includes('/artifacts?'))r={artifacts:e.includes('/790/')?[{name:'hosted-guest-790-1',expired:false,digest:c.archiveDigest}]:[c.artifact]};
+else if(e.endsWith('/790'))r={name:'Native A · member-data',path:'.github/workflows/hosted-guest-acceptance.yml',event:'workflow_dispatch',head_branch:'main',head_sha:c.frozen,conclusion:'success',run_attempt:1,...c.native};
+else r=c.run;
+process.stdout.write(JSON.stringify(r));
+`,
+    );
+    chmodSync(join(bin, 'gh'), 0o700);
+    const execute = (change = {}, invalid = {}) => {
+      rmSync(zip, { force: true });
+      writeFileSync(
+        join(evidence, 'data-member-auto-extract-acceptance.json'),
+        JSON.stringify(invalid.report ?? report),
+      );
+      for (const prefix of ['hosted-package', 'hosted-browser', 'hosted-guest']) {
+        const id = `${prefix}-${nativeRunId}-1`;
+        const events = [
+          { at: '2026-10-25T21:00:00Z', code: 'RESOURCE_JOURNAL_OPENED' },
+          { at: '2026-10-25T21:00:01Z', code: 'RESOURCE_ADMITTED', mode: 'run' },
+          { at: '2026-10-25T21:00:16Z', code: 'RESOURCE_WATCH_HEALTHY' },
+          { at: '2026-10-25T21:01:00Z', code: 'RESOURCE_JOB_EXIT', childExitCode: 0 },
+          {
+            at: '2026-10-25T21:01:01Z',
+            code: 'RESOURCE_FINAL_DECISION',
+            admitted: true,
+            resourceInvalid: invalid.invalidPhase === prefix,
+            exitCode: invalid.invalidPhase === prefix ? 3 : 0,
+            decision: invalid.invalidPhase === prefix ? 'invalid' : 'valid',
+          },
+        ];
+        writeFileSync(
+          join(journals, id + '.jsonl'),
+          events.map((e) => JSON.stringify({ schema: 1, runId: id, ...e })).join('\n') + '\n',
+        );
+      }
+      const packed = spawnSync(
+        'zip',
+        ['-q', '-r', zip, 'data-member-auto-extract-acceptance.json', 'docs'],
+        { cwd: evidence, encoding: 'utf8' },
+      );
+      assert.equal(packed.status, 0, packed.stderr);
+      const archiveDigest = `sha256:${createHash('sha256').update(readFileSync(zip)).digest('hex')}`;
+      return spawnSync(
+        process.execPath,
+        [
+          resolve('scripts/hosted-remote-admission.mjs'),
+          'verify',
+          '--run-id',
+          nativeRunId,
+          '--attempt',
+          '1',
+          '--artifact-zip',
+          zip,
+          '--source-sha',
+          frozen,
+        ],
+        {
+          cwd: f.root,
+          encoding: 'utf8',
+          env: {
+            ...process.env,
+            PATH: `${bin}:${process.env.PATH}`,
+            D295_DATA_VERIFY_STUB: JSON.stringify({
+              run: f.run,
+              artifact: f.artifact,
+              frozen,
+              workflow,
+              archiveDigest,
+              ...change,
+            }),
+          },
+        },
+      );
+    };
+    const accepted = execute();
+    assert.equal(accepted.status, 0, accepted.stderr);
+    const receipt = JSON.parse(accepted.stdout);
+    assert.equal(receipt.valid, true);
+    assert.equal(receipt.artifact.purpose, 'historical-hosted-evidence');
+    assert.equal(receipt.artifact.frozenCheckoutSha, frozen);
+    assert.equal(receipt.artifact.sourceSha, f.artifactSha);
+    assert.equal(Object.hasOwn(receipt.artifact, 'mainSha'), false);
+    assert.equal(git(f.root, 'rev-parse', 'HEAD'), current);
+    assert.equal(git(f.root, 'rev-parse', 'origin/main'), current);
+    assert.throws(() => f.admit(frozen), /HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT/);
+    for (const [change, invalid, reason] of [
+      [{ native: { head_sha: current } }, {}, 'HOSTED_MEMBER_DATA_SOURCE_DRIFT'],
+      [{ native: { conclusion: 'failure' } }, {}, 'HOSTED_RUN_NOT_SUCCESSFUL'],
+      [{ workflow: workflow + '\n# unreviewed' }, {}, 'HOSTED_WORKFLOW_BLOB_UNREVIEWED'],
+      [
+        {},
+        { report: { ...report, auth_mode: 'admin' } },
+        'HOSTED_NATIVE_REPORT_PROVENANCE_INVALID',
+      ],
+      [
+        {},
+        { report: { ...report, artifact: { ...report.artifact, source_sha: current } } },
+        'HOSTED_NATIVE_REPORT_PROVENANCE_INVALID',
+      ],
+      [
+        {},
+        { report: { ...report, artifact: { ...report.artifact, artifact_id: 124 } } },
+        'HOSTED_DEVELOPMENT_ARTIFACT_INVALID',
+      ],
+      ...['hosted-package', 'hosted-browser', 'hosted-guest'].map((prefix) => [
+        {},
+        { invalidPhase: prefix },
+        'HOSTED_JOURNAL_NOT_VALID',
+      ]),
+    ]) {
+      const failed = execute(change, invalid);
+      assert.notEqual(failed.status, 0, reason);
+      assert.match(failed.stderr, new RegExp(reason));
+    }
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+test('D295 frozen proof refuses reverted intermediate app runtime even when final trees match', () => {
+  const f = fixture();
+  try {
+    const changed = commit(f.root, 'src/panel.js', 'intermediate runtime');
+    git(f.root, 'revert', '--no-edit', changed);
+    const reverted = git(f.root, 'rev-parse', 'HEAD');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', reverted);
+    assert.equal(git(f.root, 'diff', '--name-only', f.artifactSha, reverted), '');
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, f.artifactSha, reverted),
+      /ci_dev_runtime_source_changed/,
+      'D295_COMMITTED_HISTORY_REFUSAL',
+    );
+    assert.throws(() => f.admit(reverted), /HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT/);
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+// Two outcomes: a valid exact checkout returns a proof; a valid ancestor used as
+// the wrong event checkout must refuse, even though its artifact range is clean.
+test('D295 immutable event checkout refusal has no alternate runtime-range cause', () => {
+  const f = fixture();
+  try {
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', f.artifactSha);
+    assert.equal(
+      requireHostedDevelopmentCheckout(f.root, f.artifactSha, f.artifactSha).compatibility,
+      'exact-source',
+    );
+    const docs = commit(f.root, 'docs/stabilization/reports/dispatch.json', '{}');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', docs);
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, f.artifactSha, f.artifactSha),
+      /HOSTED_DEVELOPMENT_CHECKOUT_INVALID/,
+      'D295_EVENT_CHECKOUT_REFUSAL',
+    );
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+// Every sabotage runs only in a disposable copy. The child executes the real
+// named guard; a matching missing-refusal assertion, never merely red, is required.
+test('D295 executed sabotages each fail at their own forcing assertion', async (t) => {
+  const files = [
+    'scripts/hosted-remote-admission.test.mjs',
+    'scripts/hosted-remote-admission.mjs',
+    'scripts/development-source-compatibility.mjs',
+    'scripts/development-ci-event.mjs',
+    'scripts/copy-hosted-resource-journal.mjs',
+    'scripts/stabilization-resource-journal.mjs',
+    'scripts/published-store-crx-target.mjs',
+    'scripts/current-test-artifact.mjs',
+    'scripts/record-local-dev-build.mjs',
+    'scripts/sync-unpacked-release.mjs',
+    'scripts/check-dev-emitted-title.mjs',
+    'scripts/hosted-guest-acceptance.mjs',
+    'docs/stabilization/resource-policy.json',
+    '.github/workflows/hosted-guest-acceptance.yml',
+    'wxt.config.ts',
+  ];
+  const sourceFile = 'scripts/development-source-compatibility.mjs';
+  const remoteFile = 'scripts/hosted-remote-admission.mjs';
+  const eventCase = 'D295 immutable event checkout refusal has no alternate runtime-range cause';
+  const pendingCase =
+    'D295 frozen proof rejects event mismatch, runtime and reverted driver history, and pending drivers';
+  const historyCase =
+    'D295 frozen proof refuses reverted intermediate app runtime even when final trees match';
+  const mergeHistoryCase =
+    'D295 frozen proof refuses runtime introduced and reverted only by merge resolutions';
+  const sideBranchHistoryCase =
+    'D295 frozen proof refuses runtime changed and reverted solely on a merged side branch';
+  const currentCase =
+    'D295 immutable hosted runner survives a real origin-only fetch while current adoption refuses';
+  const historicalCase =
+    'D295 normal historical SEO verifier certifies frozen evidence after operator main advances and refuses substitutions';
+  const mutants = [
+    {
+      name: 'actual HEAD/event comparison',
+      file: sourceFile,
+      test: eventCase,
+      label: 'D295_EVENT_CHECKOUT_REFUSAL',
+      edit: (s) => s.replace(" || git(root, 'rev-parse', 'HEAD') !== checkoutSha", ''),
+    },
+    {
+      name: 'pending driver refusal',
+      file: sourceFile,
+      test: pendingCase,
+      label: 'D295_PENDING_DRIVER_REFUSAL',
+      edit: (s) =>
+        s.replace(
+          'function assertPendingRuntimeInputs(root) {',
+          'function assertPendingRuntimeInputs(root) { return;',
+        ),
+    },
+    {
+      name: 'whole committed runtime history',
+      file: sourceFile,
+      test: historyCase,
+      label: 'D295_COMMITTED_HISTORY_REFUSAL',
+      edit: (s) => s.replace('[...diffPaths, ...committedPaths]', '[...diffPaths]'),
+    },
+    {
+      name: 'merge resolution runtime history',
+      file: sourceFile,
+      test: mergeHistoryCase,
+      label: 'D295_MERGE_RESOLUTION_HISTORY_REFUSAL',
+      edit: (s) => s.replace("'--diff-merges=first-parent',", ''),
+    },
+    {
+      name: 'side-branch runtime history traversal',
+      file: sourceFile,
+      test: sideBranchHistoryCase,
+      label: 'D295_SIDE_BRANCH_HISTORY_REFUSAL',
+      edit: (s) => s.replace("'log',", "'log', '--first-parent',"),
+    },
+    {
+      name: 'strict current main eligibility',
+      file: sourceFile,
+      test: currentCase,
+      label: 'D295_CURRENT_ADOPTION_REFUSAL',
+      edit: (s) =>
+        s
+          .replace(
+            "  if (mainSha !== git(root, 'rev-parse', 'origin/main'))\n    throw new Error('ci_dev_checkout_not_origin_main');",
+            '',
+          )
+          .replace(
+            "    git(root, 'rev-parse', 'HEAD') !== mainSha ||\n    git(root, 'rev-parse', 'origin/main') !== mainSha",
+            "    git(root, 'rev-parse', 'HEAD') !== mainSha",
+          ),
+    },
+    {
+      name: 'official native success',
+      file: remoteFile,
+      test: historicalCase,
+      label: 'HOSTED_RUN_NOT_SUCCESSFUL',
+      edit: (s) => s.replaceAll("        run.conclusion !== 'success' ||\n", ''),
+    },
+    {
+      name: 'native SEO UI guard constant return',
+      file: remoteFile,
+      test: historicalCase,
+      label: 'HOSTED_SEO_NATIVE_REPORT_PROVENANCE_INVALID',
+      edit: (s) =>
+        s.replace(
+          '  const selected = report?.case_selection;',
+          '  return true;\n  const selected = report?.case_selection;',
+        ),
+    },
+    {
+      name: 'resource verdict constant return',
+      file: remoteFile,
+      test: historicalCase,
+      label: 'HOSTED_JOURNAL_NOT_VALID',
+      edit: (s) =>
+        s.replace(
+          'export function verifyHostedResourceJournals({ runId, attempt, files }) {',
+          'export function verifyHostedResourceJournals({ runId, attempt, files }) { return {valid:true,receipts:{}};',
+        ),
+    },
+    {
+      name: 'hosted proof constant return gut check',
+      file: sourceFile,
+      test: eventCase,
+      label: 'D295_EVENT_CHECKOUT_REFUSAL',
+      edit: (s) =>
+        s.replace(
+          /export function requireHostedDevelopmentCheckout\(root, artifactSha, checkoutSha\) \{[\s\S]*?\n\}/,
+          "export function requireHostedDevelopmentCheckout(root, artifactSha, checkoutSha) { return {compatibility:'exact-source'};\n}",
+        ),
+    },
+    {
+      name: 'current artifact constant return gut check',
+      file: remoteFile,
+      test: currentCase,
+      label: 'D295_CURRENT_ADOPTION_REFUSAL',
+      edit: (s) =>
+        s.replace(
+          /export function requireDevelopmentArtifact\([\s\S]*?\n\}/,
+          'export function requireDevelopmentArtifact() { return {};\n}',
+        ),
+    },
+    {
+      name: 'historical anchor wrongly follows operator HEAD',
+      file: remoteFile,
+      test: historicalCase,
+      label: 'D295_HISTORICAL_FROZEN_ACCEPTANCE',
+      missingRefusal: false,
+      edit: (s) =>
+        s.replace(
+          'historicalHostedSourceCompatibility(repoRoot, run.head_sha, sourceSha)',
+          "historicalHostedSourceCompatibility(repoRoot, run.head_sha, execFileSync('git', ['rev-parse','HEAD'], {cwd:repoRoot,encoding:'utf8'}).trim())",
+        ),
+    },
+  ];
+  const controls = new Set();
+  for (const mutant of mutants)
+    await t.test(mutant.name, () => {
+      const scratch = realpathSync(mkdtempSync(join(tmpdir(), 'd295-sabotage-')));
+      try {
+        for (const file of files) {
+          mkdirSync(join(scratch, file, '..'), { recursive: true });
+          copyFileSync(resolve(file), join(scratch, file));
+        }
+        // Node's process-isolated runner skips all files when this private
+        // parent-test marker is inherited. A fresh CLI runner must own its own
+        // reporting context; preserve resource ownership and every other env key.
+        const env = { ...process.env };
+        delete env.NODE_TEST_CONTEXT;
+        const execute = () =>
+          spawnSync(
+            process.execPath,
+            [
+              '--test',
+              '--test-reporter=tap',
+              `--test-name-pattern=^${mutant.test}$`,
+              'scripts/hosted-remote-admission.test.mjs',
+            ],
+            { cwd: scratch, encoding: 'utf8', env, maxBuffer: 8_000_000 },
+          );
+        if (!controls.has(mutant.test)) {
+          const control = execute();
+          assert.equal(
+            control.status,
+            0,
+            `Unmodified control failed: ${mutant.test}\n${control.stdout}\n${control.stderr}`,
+          );
+          assert.match(control.stdout, /# pass [1-9]/, 'selected control really executed');
+          controls.add(mutant.test);
+        }
+        const path = join(scratch, mutant.file);
+        const before = readFileSync(path, 'utf8');
+        const changed = mutant.edit(before);
+        assert.notEqual(changed, before, `Mutation seam missing: ${mutant.name}`);
+        writeFileSync(path, changed);
+        const result = execute();
+        const output = result.stdout + '\n' + result.stderr;
+        assert.notEqual(result.status, 0, `Sabotage survived: ${mutant.name}`);
+        assert.match(
+          output,
+          /ERR_ASSERTION/,
+          `Not an assertion failure: ${mutant.name}\n${output}`,
+        );
+        assert.ok(
+          output
+            .split('\n')
+            .some((line) => /not ok [0-9]+ - /.test(line) && line.trim().endsWith(mutant.test)),
+          `Wrong selected guard: ${mutant.name}\n${output}`,
+        );
+        assert.ok(
+          output.includes(mutant.label),
+          `Wrong forcing boundary: ${mutant.name}\n${output}`,
+        );
+        if (mutant.missingRefusal !== false)
+          assert.match(
+            output,
+            /Missing expected exception|operator: 'notStrictEqual'/,
+            `Not an unexpectedly accepted refusal fixture: ${mutant.name}\n${output}`,
+          );
+        assert.doesNotMatch(
+          output,
+          /SyntaxError|ERR_MODULE_NOT_FOUND|Cannot find module/,
+          `Invalid sabotage environment: ${mutant.name}`,
+        );
+      } finally {
+        rmSync(scratch, { recursive: true, force: true });
+      }
+    });
+});
+
+test('D295 frozen proof refuses runtime introduced and reverted only by merge resolutions', () => {
+  const f = fixture();
+  try {
+    git(f.root, 'branch', '-M', 'main');
+    git(f.root, 'checkout', '-qb', 'metadata-one');
+    commit(f.root, 'docs/stabilization/reports/side-one.json', '{}');
+    git(f.root, 'checkout', '-q', 'main');
+    commit(f.root, 'docs/stabilization/reports/main-one.json', '{}');
+    git(f.root, 'merge', '--no-ff', '--no-commit', 'metadata-one');
+    const introduced = commit(
+      f.root,
+      'src/panel.js',
+      'runtime introduced only in merge resolution',
+    );
+    assert.equal(git(f.root, 'show', '-s', '--format=%P', introduced).split(' ').length, 2);
+    git(f.root, 'checkout', '-qb', 'metadata-two');
+    commit(f.root, 'docs/stabilization/reports/side-two.json', '{}');
+    git(f.root, 'checkout', '-q', 'main');
+    commit(f.root, 'docs/stabilization/reports/main-two.json', '{}');
+    git(f.root, 'merge', '--no-ff', '--no-commit', 'metadata-two');
+    const removed = commit(f.root, 'src/panel.js', 'runtime');
+    assert.equal(git(f.root, 'show', '-s', '--format=%P', removed).split(' ').length, 2);
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', removed);
+    assert.equal(
+      git(f.root, 'diff', '--name-only', f.artifactSha, removed, '--', 'src/panel.js'),
+      '',
+    );
+    assert.equal(
+      git(
+        f.root,
+        'log',
+        '--no-renames',
+        '--format=',
+        '--name-only',
+        `${f.artifactSha}..${removed}`,
+      ).includes('src/panel.js'),
+      false,
+      'ordinary log omits the merge-only runtime history',
+    );
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, f.artifactSha, removed),
+      /ci_dev_runtime_source_changed/,
+      'D295_MERGE_RESOLUTION_HISTORY_REFUSAL',
+    );
+    assert.throws(() => f.admit(removed), /HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT/);
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+test('D295 first-parent merge diff permits metadata branch predating approved artifact runtime', () => {
+  const f = fixture();
+  try {
+    git(f.root, 'branch', '-M', 'main');
+    git(f.root, 'branch', 'older-metadata');
+    const approved = commit(f.root, 'src/panel.js', 'runtime already approved in artifact');
+    git(f.root, 'checkout', '-q', 'older-metadata');
+    commit(f.root, 'docs/stabilization/reports/older-branch.json', '{}');
+    git(f.root, 'checkout', '-q', 'main');
+    git(f.root, 'merge', '--no-ff', '-qm', 'Merge metadata from older source', 'older-metadata');
+    const merged = git(f.root, 'rev-parse', 'HEAD');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', merged);
+    const proof = requireHostedDevelopmentCheckout(f.root, approved, merged);
+    assert.equal(proof.compatibility, 'runtime-equivalent');
+    assert.deepEqual(proof.diffPaths, ['docs/stabilization/reports/older-branch.json']);
+    f.run.head_sha = approved;
+    f.artifact.name = `matrx-extend-development-test-${approved}-456-1`;
+    assert.equal(f.admit(merged).compatibility, 'runtime-equivalent');
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+// Restricting traversal to the merge's first parent would hide both side-branch
+// runtime commits: neither the final tree nor the merge resolution changes it.
+test('D295 frozen proof refuses runtime changed and reverted solely on a merged side branch', () => {
+  const f = fixture();
+  try {
+    git(f.root, 'branch', '-M', 'main');
+    git(f.root, 'checkout', '-qb', 'runtime-reverted-on-side');
+    const changed = commit(f.root, 'src/panel.js', 'side-branch runtime change');
+    git(f.root, 'revert', '--no-edit', changed);
+    commit(f.root, 'docs/stabilization/reports/side-metadata.json', '{}');
+    git(f.root, 'checkout', '-q', 'main');
+    commit(f.root, 'docs/stabilization/reports/main-metadata.json', '{}');
+    git(
+      f.root,
+      'merge',
+      '--no-ff',
+      '-qm',
+      'Merge reverted runtime branch metadata',
+      'runtime-reverted-on-side',
+    );
+    const merged = git(f.root, 'rev-parse', 'HEAD');
+    git(f.root, 'update-ref', 'refs/remotes/origin/main', merged);
+    assert.equal(git(f.root, 'show', '-s', '--format=%P', merged).split(' ').length, 2);
+    assert.equal(
+      git(f.root, 'diff', '--name-only', f.artifactSha, merged, '--', 'src/panel.js'),
+      '',
+    );
+    assert.equal(
+      git(
+        f.root,
+        'log',
+        '--first-parent',
+        '--diff-merges=first-parent',
+        '--no-renames',
+        '--format=',
+        '--name-only',
+        `${f.artifactSha}..${merged}`,
+      ).includes('src/panel.js'),
+      false,
+      'first-parent-only traversal omits the side-branch runtime add and revert',
+    );
+    assert.throws(
+      () => requireHostedDevelopmentCheckout(f.root, f.artifactSha, merged),
+      /ci_dev_runtime_source_changed/,
+      'D295_SIDE_BRANCH_HISTORY_REFUSAL',
+    );
+    assert.throws(() => f.admit(merged), /HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT/);
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
   }
 });

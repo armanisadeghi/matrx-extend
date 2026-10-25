@@ -1,0 +1,62 @@
+--- before
++++ after
+@@ -2088,8 +2088,8 @@
+     git(f.root, 'commit', '-qm', 'Freeze complete importer harness');
+     const source = git(f.root, 'rev-parse', 'HEAD');
+     git(f.root, 'branch', '-M', 'main');
+-    const bare = join(remote, 'origin.git'),
+-      producer = join(remote, 'producer');
++    const bare = join(remote, 'origin.git');
++    const producer = join(remote, 'producer');
+     git(remote, 'init', '--bare', '-q', bare);
+     git(f.root, 'remote', 'add', 'origin', bare);
+     git(f.root, 'push', '-q', '-u', 'origin', 'main');
+@@ -2143,8 +2143,8 @@
+       version: '0.2.623',
+       treeSha256: receipt.treeSha256,
+     };
+-    const ciBytes = JSON.stringify(ciReceipt),
+-      provenanceBytes = JSON.stringify(provenance);
++    const ciBytes = JSON.stringify(ciReceipt);
++    const provenanceBytes = JSON.stringify(provenance);
+     for (const [name, value] of [
+       ['local-dev-receipt.json', JSON.stringify(receipt)],
+       ['ci-receipt.json', ciBytes],
+@@ -2243,14 +2243,14 @@
+     const frozen = commit(f.root, 'docs/stabilization/reports/member-data.json', '{}');
+     const current = commit(f.root, 'src/panel.js', 'operator runtime after native success');
+     git(f.root, 'update-ref', 'refs/remotes/origin/main', current);
+-    const evidence = join(f.root, 'evidence'),
+-      bin = join(f.root, 'test-bin');
++    const evidence = join(f.root, 'evidence');
++    const bin = join(f.root, 'test-bin');
+     const journals = join(evidence, 'docs/stabilization/resource-journals');
+     mkdirSync(journals, { recursive: true });
+     mkdirSync(bin);
+     writeFileSync(join(f.root, '.git/info/exclude'), '/evidence/\n/test-bin/\n');
+-    const zip = join(evidence, 'evidence.zip'),
+-      nativeRunId = '790';
++    const zip = join(evidence, 'evidence.zip');
++    const nativeRunId = '790';
+     const report = {
+       case_id: 'EXT-F-2005-T08',
+       auth_mode: 'member',
+@@ -2614,13 +2614,13 @@
+           assert.match(control.stdout, /# pass [1-9]/, 'selected control really executed');
+           controls.add(mutant.test);
+         }
+-        const path = join(scratch, mutant.file),
+-          before = readFileSync(path, 'utf8'),
+-          changed = mutant.edit(before);
++        const path = join(scratch, mutant.file);
++        const before = readFileSync(path, 'utf8');
++        const changed = mutant.edit(before);
+         assert.notEqual(changed, before, `Mutation seam missing: ${mutant.name}`);
+         writeFileSync(path, changed);
+-        const result = execute(),
+-          output = result.stdout + '\n' + result.stderr;
++        const result = execute();
++        const output = result.stdout + '\n' + result.stderr;
+         assert.notEqual(result.status, 0, `Sabotage survived: ${mutant.name}`);
+         assert.match(
+           output,

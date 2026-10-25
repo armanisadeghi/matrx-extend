@@ -1,0 +1,87 @@
+{
+  "task_id": "d295-fresh-source-review-2115",
+  "reviewer": "/root/d295_fresh_source_review_2115",
+  "zero_authorship": true,
+  "status": "INITIAL_REVIEW_CHECKPOINT_NOT_FINAL_APPROVAL",
+  "at": "2026-10-25T21:17:23.408709+00:00",
+  "head": "52fd26df9b86ef2f2c27bb97023cc11dd38b00d5",
+  "reviewed_files": {
+    "scripts/development-source-compatibility.mjs": "2bf23c47b4fdebb35ddaa415c2b0a9bb41dbd4af37dc0971649dfbe3e322e89f",
+    "scripts/hosted-remote-admission.mjs": "2f93d17217ad2cf799018beda3c431514037d2414fe622aaa9ac41b940bebaec",
+    "scripts/hosted-remote-admission.test.mjs": "e67acfa888690fc6a491d46727cc6f8de60d2fa2f82e12f1fbc1c4d240e97188"
+  },
+  "verdict_a": {
+    "verdict": "PARTIAL_SOURCE_CONTRACT_ACCEPTED_LIVE_RETEST_PENDING",
+    "accepted": [
+      "Actual live hosted proof requires actual HEAD equal event checkout both before and after immutable artifact→checkout proof; moving origin is not an execution predicate.",
+      "Artifact→frozen checkout range checks ancestry, final changed paths and every committed path, including intermediate driver/runtime changes later reverted.",
+      "Shared pending-runtime primitive refuses tracked and untracked runtime/driver paths while metadata-only paths retain existing allowance.",
+      "Historical normal SEO and member-data verifiers derive frozen checkout from authenticated successful native run head, preserve workflow/run/archive/report/resource gates and return explicit historical purpose without mainSha/current eligibility.",
+      "Current-candidate sourceCompatibility, dispatch rechecks, importer and promotion/release source gates retain synchronized-main contracts."
+    ],
+    "pending": [
+      "Successful exact-final guarded checks and independent original/adjacent hosted SEO retest on new exact-main CI artifact; original failed75/noUI cannot be certified."
+    ],
+    "limits": [
+      "Source/evidence review only; reviewer ran no tests, browser, authentication, model, deployment or release actions.",
+      "Generic member-data auto-extract verifier retains preexisting limited report identity checks; this change does not establish new product UI acceptance."
+    ]
+  },
+  "verdict_b": {
+    "verdict": "FAIL_PENDING_REPAIRS_AND_EXECUTED_MUTATIONS",
+    "production_findings": [
+      {
+        "id": "D295-R1",
+        "severity": "Important",
+        "finding": "Artifact metadata extraction changed existing strict run/source validation precedence: exact source mismatch now fetches artifact listing before refusing run identity. Existing unchanged contract test expects HOSTED_DEVELOPMENT_RUN_INVALID but actual returns HOSTED_DEVELOPMENT_ARTIFACT_INVALID. Preserve strict validation order while sharing metadata primitives.",
+        "evidence": ".output/stabilization-checkpoints/d295-green-2116.log:983",
+        "status": "CONFIRMED_IN_ROOT_EXECUTED_LOG_REPAIR_PENDING"
+      }
+    ],
+    "verification_findings": [
+      {
+        "severity": "Important before final PASS",
+        "finding": "Baseline RED reproduces original mutable-origin and historical-verifier failures; executed per-rule sabotage and return-expected gut checks are required separately to prove each preserved safeguard. Parent confirmed builder is adding scratch-only mutation checks; no shared production weakening authorized.",
+        "status": "REPAIR_PREPARED_EXECUTION_PENDING"
+      },
+      {
+        "id": "D295-R2",
+        "severity": "Important",
+        "finding": "New normal historical SEO imported-run substitution uses457 but external GH stub only serves456; observed refusal is stub command failure rather than owned provenance decision. Complete the external fixture so this case reaches the intended real validator.",
+        "evidence": ".output/stabilization-checkpoints/d295-green-2116.log:1014",
+        "status": "CONFIRMED_IN_ROOT_EXECUTED_LOG_REPAIR_PENDING"
+      }
+    ],
+    "accepted_quality": [
+      "Existing Git path/history and pending-input logic extracted into private shared primitives; named strict current and frozen historical/live wrappers avoid global allow-stale flags.",
+      "Real bare-origin producer/fetch and exact prepareDevelopment body exercise unchanged importer and actual source-proof boundary, with a pre-browser sentinel.",
+      "Normal historical CLI tests retain real archive creation, Git range checks and production verifiers; only external GitHub records are doubled.",
+      "Negative corpus independently names wrong checkout/event, malformed/nonancestor source, dirty tracked/untracked drivers, reverted intermediate runtime/driver, source/workflow/artifact/run substitutions, missing native report and invalid/pending resource finals."
+    ],
+    "limits": [
+      "No final executed-mutant or final check evidence available at this source-audit timestamp.",
+      "Shared source may change after this hash snapshot; final verdict must bind final actual hashes."
+    ]
+  },
+  "next_action": "Parent routes both confirmed gaps plus scratch mutation/gut-check additions to builder, executes new exact-byte guarded GREEN/compile/lint, then a fresh zero-authorship final reviewer. New exact-main CI and original/adjacent normal hosted SEO retest remain separate required gates; no product closure or final code approval from this lane.",
+  "completed_at": "2026-10-25T21:20:21.392063+00:00",
+  "reviewed_files_final_checkpoint": {
+    "scripts/development-source-compatibility.mjs": "2bf23c47b4fdebb35ddaa415c2b0a9bb41dbd4af37dc0971649dfbe3e322e89f",
+    "scripts/hosted-remote-admission.mjs": "2f93d17217ad2cf799018beda3c431514037d2414fe622aaa9ac41b940bebaec",
+    "scripts/hosted-remote-admission.test.mjs": "e67acfa888690fc6a491d46727cc6f8de60d2fa2f82e12f1fbc1c4d240e97188"
+  },
+  "executed_checks_reviewed": {
+    "root_executor": 70246,
+    "run_id": "d295-green-20261025-2116",
+    "final_at": "2026-10-25T21:19:17.797Z",
+    "actual_exit_root_attestation": 1,
+    "resourceInvalid": false,
+    "tests": 953,
+    "pass": 938,
+    "fail": 4,
+    "skip": 11,
+    "unique_failures": 2,
+    "duplicate_limit": "Existing focused import wiring executes the same two failures twice.",
+    "reviewer_check": "Read retained actual stdout failure stacks and completed resource final; reviewer did not execute tests independently."
+  }
+}
