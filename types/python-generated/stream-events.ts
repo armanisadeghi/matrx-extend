@@ -1118,6 +1118,23 @@ export interface KnowledgeBucketsDryRunDoneData {
   seconds: number;
 }
 
+export interface KnowledgeBucketsFollowUpDoneData {
+  type?: "knowledge_buckets_follow_up_done";
+  kind: "split" | "merge";
+  outcome: "made" | "existing" | "none";
+  ids?: string[];
+  why?: string;
+}
+
+export interface KnowledgeBucketsFollowUpProgressData {
+  type?: "knowledge_buckets_follow_up_progress";
+  kind: "split" | "merge";
+  stage: "read" | "entities" | "search" | "agent" | "write";
+  detail: string;
+  done?: number;
+  total?: number;
+}
+
 export interface KnowledgeBucketsOrgCounts {
   organization_id: string;
   counts: Record<string, number>;
@@ -1167,6 +1184,7 @@ export interface KnowledgeBucketsOrgSpreadData {
   items_with_entities: number;
   automation_skipped?: number;
   derived_files_skipped?: number;
+  excluded?: Record<string, Record<string, number>>;
   candidates: number;
   scope_types: number;
   scopes: number;
@@ -1239,6 +1257,7 @@ export interface LibrarySyncCompletedData {
   retire_refused?: boolean;
   skipped_by_reason?: Record<string, number>;
   skipped_total?: number;
+  channel_link_error?: string | null;
 }
 
 export interface LibrarySyncFailedData {
@@ -2764,6 +2783,8 @@ export type TypedDataPayload =
   | ImageStudioProcessCompleteData
   | ImageStudioVariantData
   | KnowledgeBucketsDryRunDoneData
+  | KnowledgeBucketsFollowUpDoneData
+  | KnowledgeBucketsFollowUpProgressData
   | KnowledgeBucketsInventoryData
   | KnowledgeBucketsOrgSpreadData
   | KnowledgeBucketsProgressData

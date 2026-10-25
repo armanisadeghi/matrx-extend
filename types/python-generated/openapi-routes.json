@@ -4804,6 +4804,16 @@
  "/knock/public/status": {
   "get": []
  },
+ "/knowledge/buckets/merge": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/knowledge/buckets/split": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/knowledge/search": {
   "post": [
    "application/json"
@@ -7743,6 +7753,11 @@
    "application/json"
   ]
  },
+ "/search-kinds/suggest": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/secure-delivery": {
   "post": [
    "application/json"
@@ -9020,6 +9035,11 @@
  },
  "/tettra/public/status": {
   "get": []
+ },
+ "/text/spellcheck": {
+  "post": [
+   "application/json"
+  ]
  },
  "/thecatapi/random-image": {
   "get": []
