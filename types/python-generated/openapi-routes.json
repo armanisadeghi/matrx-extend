@@ -10087,6 +10087,11 @@
    "application/json"
   ]
  },
+ "/vault/step-up/primary": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/veed/public/status": {
   "get": []
  },
