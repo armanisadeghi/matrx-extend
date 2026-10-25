@@ -469,3 +469,66 @@ test('account Profile destination is the active pane, without a tab-strip trigge
   const duplicateActive = await observe(`${profile}${profile.slice(profile.indexOf('<div'))}`);
   assert.equal(profilePaneReady(duplicateActive), false);
 });
+
+test('debug fixture dismiss targets only its exact owned status notice', async () => {
+  const window = new Window();
+  const { document } = window;
+  window.innerWidth = 800;
+  window.innerHeight = 600;
+  document.body.innerHTML = `
+    <div role="status"><span class="font-medium">Debug mode display fixture</span><button aria-label="Dismiss"></button></div>
+    <div role="status"><span class="font-medium">Unrelated status</span><button aria-label="Dismiss"></button></div>
+    <div role="alert"><span class="font-medium">Debug mode display fixture</span><button aria-label="Dismiss"></button></div>`;
+  const target = document.querySelector('[role="status"] button[aria-label="Dismiss"]');
+  target.getBoundingClientRect = () => ({
+    x: 20,
+    y: 20,
+    left: 20,
+    top: 20,
+    right: 120,
+    bottom: 60,
+    width: 100,
+    height: 40,
+  });
+  target.scrollIntoView = () => {};
+  target.getAnimations = () => [];
+  document.elementFromPoint = () => target;
+  const dispatched = [];
+  const panel = {
+    async send(method, params) {
+      if (method === 'Runtime.evaluate')
+        return { result: { value: await window.eval(params.expression) } };
+      dispatched.push(params.type);
+      return {};
+    },
+  };
+  await click(panel, 'debug-owned-notice-dismiss', 'Debug mode display fixture');
+  assert.deepEqual(dispatched, ['mousePressed', 'mouseReleased']);
+
+  const before = dispatched.length;
+  const assertRefusedBeforeInput = async (markup, label) => {
+    document.body.innerHTML = markup;
+    await assert.rejects(
+      () => click(panel, 'debug-owned-notice-dismiss', label),
+      (error) => error.driverFailure?.code === 'pointer_target_not_unique',
+    );
+    assert.equal(dispatched.length, before, 'invalid notice ownership must not dispatch input');
+  };
+  const valid =
+    '<div role="status"><span class="font-medium">Debug mode display fixture</span><button aria-label="Dismiss"></button></div>';
+  await assertRefusedBeforeInput(`${valid}${valid}`, 'Debug mode display fixture');
+  await assertRefusedBeforeInput(
+    '<div role="status"><span class="font-medium">Other fixture</span><button aria-label="Dismiss"></button></div>',
+    'Debug mode display fixture',
+  );
+  await assertRefusedBeforeInput(
+    '<div role="alert"><span class="font-medium">Debug mode display fixture</span><button aria-label="Dismiss"></button></div>',
+    'Debug mode display fixture',
+  );
+  await assertRefusedBeforeInput(
+    '<div role="status"><span class="font-medium">Debug mode display fixture</span><button>Dismiss</button></div>',
+    'Debug mode display fixture',
+  );
+  await assertRefusedBeforeInput(valid, 'Unrelated status');
+  window.happyDOM.abort();
+});

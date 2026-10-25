@@ -761,6 +761,11 @@ export async function click(panel, kind, label, onPhase = undefined, beforeDispa
     else if (kind === 'seo-owned-notice-dismiss') candidates = [...document.querySelectorAll('[role="alert"]')]
       .filter((el) => el.querySelector('.font-medium')?.textContent.trim() === label)
       .flatMap((el) => [...el.querySelectorAll('button[aria-label="Dismiss"]')]);
+    else if (kind === 'debug-owned-notice-dismiss') candidates = label === 'Debug mode display fixture'
+      ? [...document.querySelectorAll('[role="status"]')]
+          .filter((el) => el.querySelector('.font-medium')?.textContent.trim() === label)
+          .flatMap((el) => [...el.querySelectorAll('button[aria-label="Dismiss"]')])
+      : [];
     else if (kind === 'capture-no-workspace-dismiss') candidates = [...document.querySelectorAll('[role="alert"]')]
       .filter((el) => el.querySelector('.font-medium')?.textContent.trim() === 'Capture list unavailable'
         && el.querySelector('p')?.textContent.includes('no workspace is selected, so the request was never sent'))

@@ -471,7 +471,18 @@ try {
 
       const signedOutMenu = await openAccountMenu(panel);
       assert.equal(signedOutMenu.debugCount, 0, 'debug_mode_switch_visible_without_verified_admin');
-      await clickAction(panel, 'button-text', 'Dismiss');
+      await clickAction(panel, 'account-avatar', 'Account');
+      await clickAction(panel, 'debug-owned-notice-dismiss', 'Debug mode display fixture');
+      const dismissedNotice = await waitFor(
+        'debug_mode_notice_dismissed_after_signout',
+        () => noticeSnapshot(panel),
+        (notice) => notice?.visible === false,
+      );
+      report.observations.notice_dismissed_after_signout = {
+        signedOut: true,
+        debugModeOn: signedOut.debugModeOn,
+        noticeDismissed: !dismissedNotice.visible,
+      };
     },
   });
   report.status = 'pass';
