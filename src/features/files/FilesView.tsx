@@ -235,7 +235,7 @@ export function FilesView() {
       )}
       {error && (
         <div className="mx-3 mt-2 flex items-start gap-1.5 rounded-md bg-destructive/10 px-2.5 py-2 text-[11px] text-destructive">
-          <AlertTriangle className="matrx-line-icon-xs" />
+          <AlertTriangle className="matrx-line-icon-xs h-3 w-3" />
           <span>{error}</span>
         </div>
       )}

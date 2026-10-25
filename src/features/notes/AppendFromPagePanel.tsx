@@ -130,9 +130,9 @@ export function AppendFromPagePanel({ getCurrentContent, onAppend }: Props) {
               className="flex w-full items-start gap-2 rounded-lg px-2.5 py-2 text-left text-sm transition-colors hover:bg-accent disabled:opacity-50"
             >
               {running ? (
-                <Loader2 className="matrx-line-icon-sm animate-spin text-muted-foreground" />
+                <Loader2 className="matrx-line-icon-sm h-3.5 w-3.5 animate-spin text-muted-foreground" />
               ) : (
-                <Icon className="matrx-line-icon-sm text-muted-foreground" />
+                <Icon className="matrx-line-icon-sm h-3.5 w-3.5 text-muted-foreground" />
               )}
               <div className="min-w-0 flex-1">
                 <div className="truncate text-xs font-medium">{a.label}</div>

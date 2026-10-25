@@ -195,7 +195,7 @@ function TaskRow({
         task.enabled ? '' : 'opacity-50',
       ].join(' ')}
     >
-      <Icon className="matrx-line-icon-sm text-muted-foreground" />
+      <Icon className="matrx-line-icon-sm h-3.5 w-3.5 text-muted-foreground" />
       <div className="min-w-0 flex-1">
         <div className="truncate text-sm font-medium">{task.title}</div>
         <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[10px] font-mono text-muted-foreground">

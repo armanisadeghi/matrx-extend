@@ -398,13 +398,13 @@ export function ScreenshotsView() {
       <div className="flex shrink-0 flex-col gap-1.5 border-t border-border/50 px-3 py-2">
         {captureError && (
           <div className="flex items-start gap-1.5 text-xs text-destructive">
-            <AlertTriangle className="matrx-line-icon-xs" />
+            <AlertTriangle className="matrx-line-icon-xs h-3 w-3" />
             <span>{captureError}</span>
           </div>
         )}
         {persistWarning && !captureError && (
           <div className="flex items-start gap-1.5 text-xs text-amber-600 dark:text-amber-400">
-            <AlertTriangle className="matrx-line-icon-xs" />
+            <AlertTriangle className="matrx-line-icon-xs h-3 w-3" />
             <span>{persistWarning}</span>
           </div>
         )}
@@ -415,7 +415,7 @@ export function ScreenshotsView() {
         )}
         {deleteError && (
           <div className="flex items-start gap-1.5 text-xs text-destructive">
-            <AlertTriangle className="matrx-line-icon-xs" />
+            <AlertTriangle className="matrx-line-icon-xs h-3 w-3" />
             <span>{deleteError}</span>
           </div>
         )}

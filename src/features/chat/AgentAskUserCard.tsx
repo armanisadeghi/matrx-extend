@@ -606,20 +606,20 @@ function Icon({
   if (kind === 'notify') {
     const l = level ?? 'info';
     if (l === 'success') {
-      return <CheckCircle2 className="matrx-line-icon text-emerald-600 dark:text-emerald-400" />;
+      return <CheckCircle2 className="matrx-line-icon h-4 w-4 text-emerald-600 dark:text-emerald-400" />;
     }
     if (l === 'warning') {
-      return <AlertTriangle className="matrx-line-icon text-amber-600 dark:text-amber-400" />;
+      return <AlertTriangle className="matrx-line-icon h-4 w-4 text-amber-600 dark:text-amber-400" />;
     }
     if (l === 'error') {
-      return <XCircle className="matrx-line-icon text-red-600 dark:text-red-400" />;
+      return <XCircle className="matrx-line-icon h-4 w-4 text-red-600 dark:text-red-400" />;
     }
-    return <Bell className="matrx-line-icon text-sky-600 dark:text-sky-400" />;
+    return <Bell className="matrx-line-icon h-4 w-4 text-sky-600 dark:text-sky-400" />;
   }
   if (kind === 'confirm') {
-    return <Info className="matrx-line-icon text-sky-600 dark:text-sky-400" />;
+    return <Info className="matrx-line-icon h-4 w-4 text-sky-600 dark:text-sky-400" />;
   }
-  return <HelpCircle className="matrx-line-icon text-sky-600 dark:text-sky-400" />;
+  return <HelpCircle className="matrx-line-icon h-4 w-4 text-sky-600 dark:text-sky-400" />;
 }
 
 function useCountdown(expiresAt: number | undefined): number | null {
