@@ -1,0 +1,599 @@
+{
+  "task_id": "store577_runtime_2133",
+  "status": "UI_STOPPED_TWO_TERMINAL_GUEST_TURNS",
+  "native_api_calls": 44,
+  "native_api_budget": 44,
+  "CUA_initialized": true,
+  "model_catalog": {
+    "purpose": "intelligence",
+    "http_status": 200,
+    "model_id": "3f1c9a52-7b4e-4d2a-9c61-5e8a0b2d7f15",
+    "model_name": "claude-sonnet-5-5",
+    "cost_rating": null,
+    "restricted_min_cost_rating": 6,
+    "restricted": null,
+    "restricted_models": [
+      "Claude Fable 5",
+      "Claude Fable 5 Max",
+      "Claude Fable 5.1",
+      "Claude Mythos 5",
+      "Claude Mythos 5.1",
+      "Claude Opus 4.8 Max",
+      "Claude Opus 5 Max",
+      "Claude Opus 5.5 Max",
+      "Claude Sonnet 5 Max",
+      "Claude Sonnet 5.5 Max",
+      "Flux 2 Max",
+      "FLUX 2 Max (Replicate)",
+      "FLUX Kontext Max",
+      "Gemini Deep Research Max",
+      "GPT-6 Astra",
+      "Qwen3.7 Max"
+    ]
+  },
+  "planned_scope": "Actual Store577 signedout Profile10 two grounded terminal Chat turns on public demo; no private dashboard or daily claim duplication.",
+  "raw_dir": ".output/stabilization-checkpoints/store577-runtime-2133-raw",
+  "next_action": "Reuse this bounded current-server observation in the completed October25 daily claim; continue guarded development verification. No new dashboard/mail claim, upload or submission.",
+  "completed_at": "2026-10-25T21:40:07.762413+00:00",
+  "run_id": "store577-runtime-20261025-2133",
+  "journal": "docs/stabilization/resource-journals/store577-runtime-20261025-2133.jsonl",
+  "root_holder_actual": 72879,
+  "watcher_actual": 1819,
+  "profile": "Profile 10 / Matrx Guest Test",
+  "chrome_version": "156.0.8078.47 arm64",
+  "extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.577",
+    "source": "actual Chrome Web Store installed",
+    "enabled": true,
+    "pinned": true,
+    "panel_url": "chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html",
+    "evidence": [
+      "08-store-installed-proof-result.json",
+      "12-guest-profile-path-result.json",
+      "19-store-panel-model-guest-result.json"
+    ]
+  },
+  "guest_proof": "Public demo Sign in + extension G; no sign-in, credential or guest authentication values accessed.",
+  "model_observed": "Matrx Browser Agent / Claude Sonnet 5.5",
+  "actual_ai_calls": 2,
+  "fresh_conversation": "New chat clicked, empty Afternoon composer verified, then first prompt; no prior messages in fresh snapshot.",
+  "turns": [
+    {
+      "prompt": "What is the exact H1 heading on this page?",
+      "answer": "The exact H1 heading on this page is: A clear three-stage browser workflow. It's the only H1 on the page.",
+      "terminal": "Send message returned (disabled empty composer), Stop the run absent",
+      "terminal_at": "2026-10-25T21:38:18.035Z",
+      "evidence": "29-first-terminal-controls-result.json",
+      "intermediate_painted_image": "28-first-terminal.png",
+      "intermediate_image_limit": "First PNG was before terminal controls; terminal claim relies on subsequent complete AX."
+    },
+    {
+      "prompt": "In the table on this same page, what are the Capture stage purpose and expected result?",
+      "answer": "The table's Capture row says: Purpose: Turn the open page into readable content. Expected result: Article text, links, media, metadata, and schema.",
+      "same_conversation": true,
+      "terminal": "Send message returned (disabled empty composer), Stop the run absent",
+      "terminal_at": "2026-10-25T21:38:56.640Z",
+      "evidence": "37-followup-terminal-controls-result.json",
+      "image": "37-second-terminal.png"
+    }
+  ],
+  "cleanup": {
+    "owned_demo_tab_closed": true,
+    "owned_store_panel_closed": true,
+    "original_guest_two_tabs_preserved": true,
+    "original_guest_templates_selected": true,
+    "original_owner_vault_tab_and_html_focus_restored": true,
+    "evidence": [
+      "40-guest-original-tabs-restored-result.json",
+      "44-owner-original-focus-restored-result.json"
+    ]
+  },
+  "per_api_gates": [
+    {
+      "file": "01-inventory-external-gate.json",
+      "before": "2026-10-25T21:36:09.705405+00:00",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:04.647Z",
+      "watch_at": "2026-10-25T21:36:08.413973Z"
+    },
+    {
+      "file": "02-select-chrome-gate.json",
+      "before": "2026-10-25T21:36:24.822Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:20.674Z",
+      "watch_at": "2026-10-25T21:36:24.451473Z"
+    },
+    {
+      "file": "03-window-menu-gate.json",
+      "before": "2026-10-25T21:36:32.190Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:20.674Z",
+      "watch_at": "2026-10-25T21:36:30.466225Z"
+    },
+    {
+      "file": "04-window-menu-ax-gate.json",
+      "before": "2026-10-25T21:36:32.215Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:20.674Z",
+      "watch_at": "2026-10-25T21:36:30.466225Z"
+    },
+    {
+      "file": "05-select-other-existing-window-gate.json",
+      "before": "2026-10-25T21:36:37.119Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:36.704Z",
+      "watch_at": "2026-10-25T21:36:36.475909Z"
+    },
+    {
+      "file": "06-existing-window-profile-gate.json",
+      "before": "2026-10-25T21:36:37.130Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:36.704Z",
+      "watch_at": "2026-10-25T21:36:36.475909Z"
+    },
+    {
+      "file": "07-select-existing-store-details-gate.json",
+      "before": "2026-10-25T21:36:42.646Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:36.704Z",
+      "watch_at": "2026-10-25T21:36:42.490664Z"
+    },
+    {
+      "file": "08-store-installed-proof-gate.json",
+      "before": "2026-10-25T21:36:42.714Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:36.704Z",
+      "watch_at": "2026-10-25T21:36:42.490664Z"
+    },
+    {
+      "file": "09-open-owned-inspection-tab-gate.json",
+      "before": "2026-10-25T21:36:53.672Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:52.728Z",
+      "watch_at": "2026-10-25T21:36:52.516639Z"
+    },
+    {
+      "file": "10-version-url-gate.json",
+      "before": "2026-10-25T21:36:53.690Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:52.728Z",
+      "watch_at": "2026-10-25T21:36:52.516639Z"
+    },
+    {
+      "file": "11-version-navigate-gate.json",
+      "before": "2026-10-25T21:36:53.972Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:52.728Z",
+      "watch_at": "2026-10-25T21:36:52.516639Z"
+    },
+    {
+      "file": "12-guest-profile-path-gate.json",
+      "before": "2026-10-25T21:36:53.983Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:52.728Z",
+      "watch_at": "2026-10-25T21:36:52.516639Z"
+    },
+    {
+      "file": "13-demo-address-focus-gate.json",
+      "before": "2026-10-25T21:36:58.464Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:52.728Z",
+      "watch_at": "2026-10-25T21:36:56.527746Z"
+    },
+    {
+      "file": "14-demo-url-gate.json",
+      "before": "2026-10-25T21:36:58.474Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:52.728Z",
+      "watch_at": "2026-10-25T21:36:56.527746Z"
+    },
+    {
+      "file": "15-demo-navigate-gate.json",
+      "before": "2026-10-25T21:36:58.678Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:52.728Z",
+      "watch_at": "2026-10-25T21:36:58.533260Z"
+    },
+    {
+      "file": "16-guest-demo-proof-gate.json",
+      "before": "2026-10-25T21:36:58.688Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:52.728Z",
+      "watch_at": "2026-10-25T21:36:58.533260Z"
+    },
+    {
+      "file": "17-demo-loaded-ax-and-image-gate.json",
+      "before": "2026-10-25T21:37:06.769Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:36:52.728Z",
+      "watch_at": "2026-10-25T21:37:06.556570Z"
+    },
+    {
+      "file": "18-open-store-toolbar-gate.json",
+      "before": "2026-10-25T21:37:09.993Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:37:08.754Z",
+      "watch_at": "2026-10-25T21:37:08.562919Z"
+    },
+    {
+      "file": "19-store-panel-model-guest-gate.json",
+      "before": "2026-10-25T21:37:10.039Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:37:08.754Z",
+      "watch_at": "2026-10-25T21:37:08.562919Z"
+    },
+    {
+      "file": "20-store-chat-rendered-model-gate.json",
+      "before": "2026-10-25T21:37:19.227Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:37:08.754Z",
+      "watch_at": "2026-10-25T21:37:18.587151Z"
+    },
+    {
+      "file": "21-fresh-new-chat-gate.json",
+      "before": "2026-10-25T21:37:40.404Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:37:24.780Z",
+      "watch_at": "2026-10-25T21:37:38.641760Z"
+    },
+    {
+      "file": "22-fresh-empty-conversation-gate.json",
+      "before": "2026-10-25T21:37:40.506Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:37:24.780Z",
+      "watch_at": "2026-10-25T21:37:38.641760Z"
+    },
+    {
+      "file": "23-first-question-focus-gate.json",
+      "before": "2026-10-25T21:37:48.702Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:37:40.808Z",
+      "watch_at": "2026-10-25T21:37:48.666188Z"
+    },
+    {
+      "file": "24-first-question-text-gate.json",
+      "before": "2026-10-25T21:37:48.806Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:37:40.808Z",
+      "watch_at": "2026-10-25T21:37:48.666188Z"
+    },
+    {
+      "file": "25-first-question-ready-gate.json",
+      "before": "2026-10-25T21:37:48.965Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:37:40.808Z",
+      "watch_at": "2026-10-25T21:37:48.666188Z"
+    },
+    {
+      "file": "26-first-question-send-gate.json",
+      "before": "2026-10-25T21:37:56.798Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:37:40.808Z",
+      "watch_at": "2026-10-25T21:37:56.684610Z"
+    },
+    {
+      "file": "27-first-response-observation-gate.json",
+      "before": "2026-10-25T21:37:56.902Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:37:56.837Z",
+      "watch_at": "2026-10-25T21:37:56.684610Z"
+    },
+    {
+      "file": "28-first-terminal-answer-gate.json",
+      "before": "2026-10-25T21:38:08.927Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:37:56.837Z",
+      "watch_at": "2026-10-25T21:38:08.712105Z"
+    },
+    {
+      "file": "29-first-terminal-controls-gate.json",
+      "before": "2026-10-25T21:38:17.947Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:38:12.860Z",
+      "watch_at": "2026-10-25T21:38:16.728410Z"
+    },
+    {
+      "file": "30-followup-focus-gate.json",
+      "before": "2026-10-25T21:38:23.721Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:38:12.860Z",
+      "watch_at": "2026-10-25T21:38:22.742627Z"
+    },
+    {
+      "file": "31-followup-text-gate.json",
+      "before": "2026-10-25T21:38:23.823Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:38:12.860Z",
+      "watch_at": "2026-10-25T21:38:22.742627Z"
+    },
+    {
+      "file": "32-followup-ready-gate.json",
+      "before": "2026-10-25T21:38:23.977Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:38:12.860Z",
+      "watch_at": "2026-10-25T21:38:22.742627Z"
+    },
+    {
+      "file": "33-followup-send-gate.json",
+      "before": "2026-10-25T21:38:27.038Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:38:12.860Z",
+      "watch_at": "2026-10-25T21:38:26.754276Z"
+    },
+    {
+      "file": "34-followup-first-observation-gate.json",
+      "before": "2026-10-25T21:38:27.133Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:38:12.860Z",
+      "watch_at": "2026-10-25T21:38:26.754276Z"
+    },
+    {
+      "file": "35-second-terminal-answer-gate.json",
+      "before": "2026-10-25T21:38:35.895Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:38:28.884Z",
+      "watch_at": "2026-10-25T21:38:34.775566Z"
+    },
+    {
+      "file": "36-followup-scroll-to-answer-gate.json",
+      "before": "2026-10-25T21:38:55.619Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:38:44.903Z",
+      "watch_at": "2026-10-25T21:38:54.814863Z"
+    },
+    {
+      "file": "37-followup-terminal-controls-gate.json",
+      "before": "2026-10-25T21:38:55.723Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:38:44.903Z",
+      "watch_at": "2026-10-25T21:38:54.814863Z"
+    },
+    {
+      "file": "38-close-owned-sidepanel-gate.json",
+      "before": "2026-10-25T21:39:14.342Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:39:00.929Z",
+      "watch_at": "2026-10-25T21:39:12.864132Z"
+    },
+    {
+      "file": "39-close-owned-demo-tab-gate.json",
+      "before": "2026-10-25T21:39:14.375Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:39:00.929Z",
+      "watch_at": "2026-10-25T21:39:12.864132Z"
+    },
+    {
+      "file": "40-guest-original-tabs-restored-gate.json",
+      "before": "2026-10-25T21:39:14.383Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:39:00.929Z",
+      "watch_at": "2026-10-25T21:39:12.864132Z"
+    },
+    {
+      "file": "41-restore-owner-window-menu-gate.json",
+      "before": "2026-10-25T21:39:18.508Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:39:16.953Z",
+      "watch_at": "2026-10-25T21:39:16.872574Z"
+    },
+    {
+      "file": "42-restore-owner-window-options-gate.json",
+      "before": "2026-10-25T21:39:18.526Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:39:16.953Z",
+      "watch_at": "2026-10-25T21:39:16.872574Z"
+    },
+    {
+      "file": "43-restore-original-owner-window-gate.json",
+      "before": "2026-10-25T21:39:22.554Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:39:16.953Z",
+      "watch_at": "2026-10-25T21:39:20.880280Z"
+    },
+    {
+      "file": "44-owner-original-focus-restored-gate.json",
+      "before": "2026-10-25T21:39:22.585Z",
+      "journal_code": "RESOURCE_WATCH_HEALTHY",
+      "journal_at": "2026-10-25T21:39:16.953Z",
+      "watch_at": "2026-10-25T21:39:20.880280Z"
+    }
+  ],
+  "raw_hashes": {
+    "01-inventory-external-gate.json": "64db1fea8301ef4a1c25adc86944b9e9d64b953470fa2352ce48bf8c183ad934",
+    "01-inventory-result.json": "228c7c30567fa4f9c14a3352f5529441634ffe654af531a43ed2cfb9e771bcda",
+    "02-select-chrome-gate.json": "7393905507d7599a836ab441f2170ede112c1e8655278f82944203d310d9a0c6",
+    "02-select-chrome-result.json": "3c30f05b33074dbb8adc41f2e26e24717f44a98eb1309ec769bdbd8bda88dd0c",
+    "03-window-menu-gate.json": "b88a0e01c6cd43d7a1e1194e6688122a1d91de1a2dfc4f40f1739c34e5d3cd30",
+    "03-window-menu-result.json": "1420531a45ce36217a03bd603217b81fb563e3972520f930bc9736de39c999f1",
+    "04-window-menu-ax-gate.json": "b6251acb9362a4e1f21dac15f4d2109e4803477afd52542348b119000d1a6ff6",
+    "04-window-menu-ax-result.json": "b7812f101fffb38f5af543920258dd8f76670f3fd62ae1f52794d2a75ebeade8",
+    "05-select-other-existing-window-gate.json": "d948b8020b7345880a161fd16876110c359286b3b11f054fcb95a5041ada29f3",
+    "05-select-other-existing-window-result.json": "026041c4c7e5186db6b5bc6f6da5f2a8eebb68cb033ba1d3ed1415e66ca1bd47",
+    "06-existing-window-profile-gate.json": "8188206596f4f4641cf62735708b03f4249a966502a0a55dc01d1bf463e6dd65",
+    "06-existing-window-profile-result.json": "4f13af1e9f09254ea350f50153cdbdc17259ff56344ed1240f0550e558c35328",
+    "07-select-existing-store-details-gate.json": "38a8e4ea613488aba638077640bd410330a589cee875238071e2ff011ba0511d",
+    "07-select-existing-store-details-result.json": "3554b21d39209a205fe16a265be97d966a63feca9d071ca5026f1199cfe2fe8b",
+    "08-store-installed-proof-gate.json": "48e25e3926923f3033ef642596b945cc41cbc42150f38fece6540ceca2448f73",
+    "08-store-installed-proof-result.json": "9fd9d754e698f03a53ec05758cf52122e50ba14b33ee7c2e84dbe4bd0ec41942",
+    "09-open-owned-inspection-tab-gate.json": "e1ee48f8a2df9c7dc4180fe471367305c9e7cbc0481a3d73e1355d28c8f14a2a",
+    "09-open-owned-inspection-tab-result.json": "8f9bd2ec3e411b996f313a33e1bc8b209ccc4ff53648c0a1fdb2c38ac142b29b",
+    "10-version-url-gate.json": "4083d512a2167ab4e3b7b15d920c79bcd5bd6cc57d58ce73169937fa828cdafb",
+    "10-version-url-result.json": "b42c4d810d03591c70556de3517c75ab619ea0334ddcd0f8d1da789abbf19fbc",
+    "11-version-navigate-gate.json": "a442c18f96af1687bafcbeb937c6b155aab68ae6186bee20c84c9b9367e08ef7",
+    "11-version-navigate-result.json": "31d622eebf08bec0e0dc5583c2bca7b2476883dde751a048a22cd35a00479a38",
+    "12-guest-profile-path-gate.json": "d9b9f1778be8fa864d0c5b9dd65537e456a949f0e686f273a7de827a24ccb636",
+    "12-guest-profile-path-result.json": "db3ad794cec750f5349dcdab4a9a068bd5464b8b3f683f97c1045c13c79901b1",
+    "13-demo-address-focus-gate.json": "e4f7ed93d77d7ec91e9417bc10eedf80019ba394a47103a7fb4a7ac1c9822acf",
+    "13-demo-address-focus-result.json": "ae99895fbcd33275760e456ded2c1e4a79252be0f8871a0401c2fc48c1837d35",
+    "14-demo-url-gate.json": "05f9eb23bccc73ecd5d34e49a7603c7bc1df914b5c3c940a4ebe4a4ff7063abc",
+    "14-demo-url-result.json": "31a3492019e5dbed52a66a7ecf5e0dc8356a5198070fac3f05199c36fa92372b",
+    "15-demo-navigate-gate.json": "6c3c54a1405a558ba3c599f58fdb569d05867005a5382aa7652bd106384bdd98",
+    "15-demo-navigate-result.json": "d55f788212d94d10f6dfa3304e3b06c86bf5dd881569adce56dc890417bac87d",
+    "16-guest-demo-proof-gate.json": "121b5957f5e297501a44074f2a1b84d0907e588bfb2f32bb1fec78f288c0def8",
+    "16-guest-demo-proof-result.json": "2c06cc7e638b851d73dec486c1c85fe32ca13799c9ed1c3ed44ca99b198ed6ae",
+    "17-demo-loaded-ax-and-image-gate.json": "00fdf7c36b03ab83184b07dff59957d8d0abdb86917a9aa4f736cb4611e0048b",
+    "17-demo-loaded-ax-and-image-result.json": "256cc0eddba5bd9ec2b6dada98c30fb568d6de331849b2367532722be5629531",
+    "17-demo.png": "fcaddcb7404c2f86a12bdfd9b664860a8134ef4d7a4148dbecaf986008ee50c7",
+    "18-open-store-toolbar-gate.json": "d18323119860d61c06b009e00301381aa9acbf486f8627d3fcc668784e005b6d",
+    "18-open-store-toolbar-result.json": "e268b59dd1dec9992b28e82a90957d49f40cfe03f38a13f43049072286768622",
+    "19-store-panel-model-guest-gate.json": "a2b8eff3710cf6ba66e9ee0f3d1c8af37a8b637006daa1839a69af26a3def7c6",
+    "19-store-panel-model-guest-result.json": "dbf8e38ddbaff9044aeaeba8d94b8571cca72c1209fe84bc6a073093fcb961e4",
+    "20-chat-before.png": "1809c51f4f6f5b25188b87e77666ddefdbd0dd4cc6a5b25a910e1b70519736ce",
+    "20-store-chat-rendered-model-gate.json": "594233fd8bdfbe981c0c85d24ebd81dfa0086f468bb988a72c5c605b8bbd2a4d",
+    "20-store-chat-rendered-model-result.json": "1317bc415bf0fc06d2d80781594cc77c0ef7aa2b0d507ede66e4dc08aaf3377c",
+    "21-fresh-new-chat-gate.json": "a84d20237d39de3d474931d930e0548575ae78b924fe33632c0d8605ff68fd55",
+    "21-fresh-new-chat-result.json": "c3e882f8df26e678082462b7e70b8dcac3776bdd90f80da0247b70826543e174",
+    "22-fresh-empty-conversation-gate.json": "40f7b3d9cd91131d5991d01edb95df4733727b96bcbc2331b14bde0b8e7ad3ba",
+    "22-fresh-empty-conversation-result.json": "9a3963232c18c8da4641ad25495a4e0656dfec611346fe1c4e31d766e12ebc8a",
+    "23-first-question-focus-gate.json": "4127c44a9220265a1ab33e00e5acc7291a1a61010faf3eb9809c36c3e3e3f65f",
+    "23-first-question-focus-result.json": "0a92122947a19ce9aa296c4e0796d8231931b979a98f394ef93723023fc4d765",
+    "24-first-question-text-gate.json": "89908f406ddd29877ffd97ebaedba3355414419396b9e576d9440268a2333063",
+    "24-first-question-text-result.json": "ba42788c204e2a5f8ac3971f34a7babaacba576866c5b1ac7c1a02bf0489df7a",
+    "25-first-question-ready-gate.json": "7571fb413bfe48d0f3fbd1eff6e642dacca20ec708f40185e93f31390f7fd6a7",
+    "25-first-question-ready-result.json": "900b2b4418b9b0a299f200b4b2dff34a416f858ea9548b550b3b2065979cec32",
+    "26-first-question-send-gate.json": "de399ec8dc339b54c9b5f4a9f5c6d237d6a8fcd2cb481de1163fad7ab3c75c52",
+    "26-first-question-send-result.json": "54d911c39c2a00e62fbd127044ba3085015bce986bbfd5618516c2f6195f6d5f",
+    "27-first-response-observation-gate.json": "8e03b8128aff7e605554bfc3dec0d0487967952bee7886d2f3fa0874acb9e555",
+    "27-first-response-observation-result.json": "b7566c4006498c81a8f19e1429b70c34d14940e306969587483886da916fd711",
+    "28-first-terminal-answer-gate.json": "99b80b7b7acdbba56092200b90066c2f907bef2c363fe4f20da3fc4b2ce96c48",
+    "28-first-terminal-answer-result.json": "8d216dda66595454ae3dd1c6bec46c9725e4af0ed94134b1aade13c2e1c40788",
+    "28-first-terminal.png": "56cd162a4019f7971f15754ccd1fc99351eba401596cf11ad3e0fabb3be01458",
+    "29-first-terminal-controls-gate.json": "a80831dbdb168d02df2ad8aa124b09dc28226f8207bf5bb279f218105abafd8c",
+    "29-first-terminal-controls-result.json": "95ae3ee6313406c57b323560d882b669a0aded36a668722570ce93069914bc95",
+    "30-followup-focus-gate.json": "30ba4dc5574f56655f275c5a42aea14d8f654a939d04254c5340290a7057992e",
+    "30-followup-focus-result.json": "72ebd5a4fd4b765c46ae0a727b9f42f93b7ea506113d4c3c0677b04910af42ad",
+    "31-followup-text-gate.json": "46c4ce5754bd87ec4311a3e7b0a32687a3a20fd56abf22af1ad99016c8e8672b",
+    "31-followup-text-result.json": "16e422b2983ff57acfe7200e91c2f135978a83c2ba692dded5b66747a4a7f40b",
+    "32-followup-ready-gate.json": "d38381c8fae20245ddfcf0e13b92c682be7e7afb1502714797c8b92cf85d51d5",
+    "32-followup-ready-result.json": "782dc3887a747e756eb152bd57fb600545badfd676a1703936744a502b2c2f96",
+    "33-followup-send-gate.json": "ee43ca51548e652bf3b975b200139473deecaff4660ab3be610b679b105b92f4",
+    "33-followup-send-result.json": "546ad7b51a0ea837b0dfac88112f79a30f60712903cacf14569ca89cdde50910",
+    "34-followup-first-observation-gate.json": "531753d79f3e1a7c679c3e7f1316c12d8fcad9fe46cdbbe1d37714ba8ee9c33a",
+    "34-followup-first-observation-result.json": "3b3e440db5826346521f66d86638d8b6181519c752bc457c319a6600285c8b3e",
+    "35-second-answer.png": "ea9d85be058eb5ef9cd829c6edcdbf087652bc2fb68807d3c98ceadeded7b11c",
+    "35-second-terminal-answer-gate.json": "2403a195fb50a6fd9db35fc2d9d4f5700d015644c4f713261f6d2623c7ea3221",
+    "35-second-terminal-answer-result.json": "88c860193081e22b2f02337d34c2f9d4cd12fece35da8922869d696e917eb8c7",
+    "36-followup-scroll-to-answer-gate.json": "53882e17a930367652c86c115fe6f06f02816d677b41941d047916aa06ddbed7",
+    "36-followup-scroll-to-answer-result.json": "4c057dafc9f1fe8b98334e1c7caab2c450d404d536c9bd8c50e596e0bd101690",
+    "37-followup-terminal-controls-gate.json": "c2aafcf9ca7897834dc47eaae69b4bbc4afe3dbc258b48686770d7d74607dee6",
+    "37-followup-terminal-controls-result.json": "663ab6a498bc7bd453acfb7f749af9f8f5dcc7126afc764c7615a160c7190552",
+    "37-second-terminal.png": "6b324f64410e245d9f2660477ac0d4ebe546def2ec68b2d02efec43edf945c5f",
+    "38-close-owned-sidepanel-gate.json": "cf4d540c08aafe2cbfbe342982826a4ce01924c0047877fc13ffb9f0dc2760f8",
+    "38-close-owned-sidepanel-result.json": "59c490bbe26d327f8e0ae4cc2ff2886ca16938c0f96f00cff8b009acb8f6ddd3",
+    "39-close-owned-demo-tab-gate.json": "577597997cad37e4f8fe60ef8dea1adfc92a564b450bb3fbeb9f027c34cc2292",
+    "39-close-owned-demo-tab-result.json": "d30fb13ae6a18e0f7b62bd83cc3a0a3419418cb8861155c164ae886c2d0ef250",
+    "40-guest-original-tabs-restored-gate.json": "74774f200529e4f43f7d9d1d264f2e6038333c2748f9aae07f43483a2e8961c4",
+    "40-guest-original-tabs-restored-result.json": "78aae5f64388c80bce233f236353e50f150a57462e3f4a9299a12a74254a54d2",
+    "41-restore-owner-window-menu-gate.json": "dd70324b0cb063c801a13a7b71a539038b5e1d74aa9e7a50027a518fe19002e1",
+    "41-restore-owner-window-menu-result.json": "781358942273ca1d8ceeeba7c83f86792ed2fd5d88297922ff23bce23a9aec7b",
+    "42-restore-owner-window-options-gate.json": "c8fa2e16130b0553354bdbfead25f94e4058616af38353e1976555bd97792d1c",
+    "42-restore-owner-window-options-result.json": "c00f83571581df8019079dcd95d2f9f7c21e99852d143ec6be9efa38710b31f5",
+    "43-restore-original-owner-window-gate.json": "6a69ea6f183a872cfcf1103ac4b64c5d84e7aa8180637cdfef859678fc3bc383",
+    "43-restore-original-owner-window-result.json": "74e349e933bf085ad023819bb9093d4f0261b262c132b733034743fc5239b9a3",
+    "44-owner-original-focus-restored-gate.json": "00b075604c3fc1cd47c679a83bba31f8cd807ead5caaee3d93efb4f76ff2ed69",
+    "44-owner-original-focus-restored-result.json": "9948bb064f179e3ff300f882ee5a0e56203e5a0c286bcbea215b1fe7fef85f50"
+  },
+  "limits": [
+    "Initial inventory call has original returned result plus external timing bounds; exact invocation/completion not instrumented.",
+    "getApp binding return serializes as helper object; automatic initial AX is in tool transcript, later decisive full AX retained in files.",
+    "Top-level Node REPL counter displayed stale1;44calls independently corroborated by initialinventory+sequential43gate/result pairs2–44; no further UI.",
+    "No cold restart, per-request wire/model correlation, private dashboard/mail, current development artifact, full Chat health or defect closure claim.",
+    "Exact combined-API expressions are retrospective metadata from retained tool transcript; original raw results/gates remain unchanged. Final holder exits and health brackets are explicitly parent testimony, not new operator API observations."
+  ],
+  "resource_final": {
+    "schema": 1,
+    "at": "2026-10-25T21:40:12.281Z",
+    "runId": "store577-runtime-20261025-2133",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid",
+    "code": "RESOURCE_FINAL_DECISION"
+  },
+  "watcher_terminal_attestation": {
+    "actual_session": 1819,
+    "actual_exit": 0,
+    "actual_reads": 189,
+    "max_gap_seconds": 2.012879,
+    "risk_events": 0,
+    "reporter": "/root/store577_watch_2133",
+    "parent_actual_exit_confirmation": true
+  },
+  "parent_holder_actual_exit": 0,
+  "parent_health_brackets": {
+    "before": {
+      "observed_at": "2026-10-25T21:34:05.697493Z",
+      "git_sha": "37fa6e1ae1ad071b6f52c98cd8ae8e6aa278972b",
+      "built_at": "2026-10-25T21:13:10Z"
+    },
+    "after": {
+      "observed_at": "2026-10-25T21:40:12.551215Z",
+      "git_sha": "37fa6e1ae1ad071b6f52c98cd8ae8e6aa278972b",
+      "built_at": "2026-10-25T21:13:10Z"
+    },
+    "source": "Parent public health GET observations; not a per-request wire trace."
+  },
+  "combined_native_api_clarification": {
+    "recorded_at": "2026-10-25T21:43:57.491991+00:00",
+    "source": "Operator read exact expressions in retained CUA tool-call transcript after independent peer question. This metadata was not a contemporaneously saved script.",
+    "documented_contract": "App.getAXStateAndScreenshot(options?:StateOptions): Promise<StateAndScreenshot> is one native API and returns state plus screenshot.",
+    "calls": [
+      {
+        "native_api_index": 17,
+        "expression": "await gated('demo-loaded-ax-and-image',()=>app.getAXStateAndScreenshot({disableDiffing:true}))",
+        "documented_native_calls": 1,
+        "per_api_gate_file": "17-demo-loaded-ax-and-image-gate.json",
+        "raw_result_file": "17-demo-loaded-ax-and-image-result.json"
+      },
+      {
+        "native_api_index": 20,
+        "expression": "await gated('store-chat-rendered-model',()=>app.getAXStateAndScreenshot({disableDiffing:true}))",
+        "documented_native_calls": 1,
+        "per_api_gate_file": "20-store-chat-rendered-model-gate.json",
+        "raw_result_file": "20-store-chat-rendered-model-result.json"
+      },
+      {
+        "native_api_index": 28,
+        "expression": "await gated('first-terminal-answer',()=>app.getAXStateAndScreenshot({disableDiffing:true}))",
+        "documented_native_calls": 1,
+        "per_api_gate_file": "28-first-terminal-answer-gate.json",
+        "raw_result_file": "28-first-terminal-answer-result.json"
+      },
+      {
+        "native_api_index": 35,
+        "expression": "await gated('second-terminal-answer',()=>app.getAXStateAndScreenshot({disableDiffing:true}))",
+        "documented_native_calls": 1,
+        "per_api_gate_file": "35-second-terminal-answer-gate.json",
+        "raw_result_file": "35-second-terminal-answer-result.json"
+      },
+      {
+        "native_api_index": 37,
+        "expression": "await gated('followup-terminal-controls',()=>app.getAXStateAndScreenshot({disableDiffing:true}))",
+        "documented_native_calls": 1,
+        "per_api_gate_file": "37-followup-terminal-controls-gate.json",
+        "raw_result_file": "37-followup-terminal-controls-result.json"
+      }
+    ],
+    "png_write": "Each returned screenshot was saved with fs.writeFile after the API; filesystem writes are not additional computer/native observation calls.",
+    "additional_ungated_native_calls": 0,
+    "actual_total_documented_native_api_calls": 44
+  },
+  "health_brackets": {
+    "before": {
+      "git_sha": "37fa6e1ae1ad071b6f52c98cd8ae8e6aa278972b",
+      "built_at": "2026-10-25T21:13:10Z",
+      "branch": null,
+      "observed_at": "2026-10-25T21:34:05.697493+00:00"
+    },
+    "after": {
+      "git_sha": "37fa6e1ae1ad071b6f52c98cd8ae8e6aa278972b",
+      "built_at": "2026-10-25T21:13:10Z",
+      "branch": null,
+      "observed_at": "2026-10-25T21:40:12.551215+00:00"
+    }
+  },
+  "independent_review": "docs/stabilization/reports/store577-37fa-evidence-peer-20261025.json",
+  "evidence_class": "Actual Chrome Web Store installed577 guest browser observation, not API-only, unpacked public CRX, current development acceptance or full Chat health.",
+  "daily_claim": "Existing completed October25 claim; new runtime drift37fa required this bounded follow-up, no duplicate private Store check."
+}
