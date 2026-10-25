@@ -1,0 +1,67 @@
+{
+  "id": "EXT-D-0287",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T04", "EXT-F-1003-T22"],
+  "title": "Settings acceptance readers reject tooltip-lifted tab labels",
+  "surface": "Browser acceptance harness; not an established product defect",
+  "auth_mode": "Supporting guest/admin/member test observations; no native mode pass inferred",
+  "severity": "S2: reload readiness and diagnostics can refuse a valid rendered tab",
+  "priority": "P1: restore reliable Settings original and surrounding retests",
+  "state": "in-fix",
+  "owner": "/root/settings_resolver_repair",
+  "preconditions": [
+    "Baseline e571e287c runtime/test drivers with new actual-DOM cases; shared tooltip moves title into data-matrx-title."
+  ],
+  "reproduction": [
+    "Use actual DOM fixture with button role=tab, tooltip-held Settings label, visible controlled pane and existing production driver observer.",
+    "Run normal guarded test:focused-acceptance with the new DOM guards and unchanged baseline drivers.",
+    "Observe lifted readiness matched=0, lifted active=false, duplicate-label rejection missing, inert lifted tab miscounted and lifted occluder owner unmapped."
+  ],
+  "expected": "Native title and tooltip-held label identify the same tab, preserving unique visible enabled target and controlled-pane requirements.",
+  "actual": "Baseline title-only readers reject tooltip-held labels while trusted clicks already accept them.",
+  "cause": "Readiness/active/pane/reload and diagnostic siblings use title-only selectors while tooltip lift moves label to data-matrx-title.",
+  "evidence": [
+    "docs/stabilization/reports/settings-locator-current-triage-20261025.json",
+    "docs/stabilization/resource-journals/settings-resolver-baseline-20261025.jsonl",
+    "docs/stabilization/resource-journals/settings-resolver-green-20261025.jsonl"
+  ],
+  "baseline": {
+    "total": 909,
+    "pass": 893,
+    "fail": 6,
+    "skip": 10,
+    "accepted_mismatch_failures": 5,
+    "guard_flaw": "One cross-realm assertion falsely failed the native positive control; corrected separately, never counted as a product or driver mismatch.",
+    "resource_invalid": false
+  },
+  "candidate_round1": {
+    "total": 909,
+    "pass": 894,
+    "fail": 5,
+    "skip": 10,
+    "resource_invalid": false,
+    "status": "Legacy fake DOM/source-extraction seams and remaining diagnostic siblings require repair; not green."
+  },
+  "native_limits": "October21 readiness cause unconfirmed; original T04 theme restore/full Reload, T22 adjacent controls and D217 guest Save/Retry remain unverified. DOM and CI guards are not product behavior passes.",
+  "next_action": "Second guarded full focused suite with repaired fixtures/siblings, independent fresh review and guarded compile; only then push verified source. Exact new CI artifact and independent original/adjacent native retest remain required.",
+  "transition_history": [
+    {
+      "at": "2026-10-25T08:12:55.956036+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Five meaningful real-DOM baseline failures observed under resource-valid guard; other failure separately classified test flaw."
+    },
+    {
+      "at": "2026-10-25T08:12:55.956036+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Tooltip label movement and inconsistent click/observer paths establish harness mismatch, not original native cause."
+    },
+    {
+      "at": "2026-10-25T08:12:55.956036+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Named implementation lane with guarded red/green and independent source review; first candidate has additional harness failures."
+    }
+  ]
+}

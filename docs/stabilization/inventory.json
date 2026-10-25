@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-21T20:11:37.575594+00:00",
+  "updated_at": "2026-10-25T08:14:43.932729+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -16353,7 +16353,8 @@
             "EXT-D-0155",
             "EXT-D-0157",
             "EXT-D-0186",
-            "EXT-D-0220"
+            "EXT-D-0220",
+            "EXT-D-0287"
           ],
           "run_ids": [
             "guest-local-001",
@@ -16396,7 +16397,8 @@
             "EXT-D-0007",
             "EXT-D-0084",
             "EXT-D-0086",
-            "EXT-D-0087"
+            "EXT-D-0087",
+            "EXT-D-0287"
           ],
           "run_ids": [
             "settings-mounted-member-full6-20261003-01",
@@ -16416,7 +16418,8 @@
             "EXT-D-0086",
             "EXT-D-0087",
             "EXT-D-0093",
-            "EXT-D-0159"
+            "EXT-D-0159",
+            "EXT-D-0287"
           ],
           "run_ids": [
             "admin-org-001",
