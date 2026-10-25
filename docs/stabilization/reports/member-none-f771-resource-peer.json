@@ -1,0 +1,25 @@
+{
+  "task_id": "member-resource-peer-1544",
+  "status": "DONE_WITH_CONCERNS_TERMINAL_INVALID_RESOURCE_ZERO_PRODUCT_CREDIT",
+  "verdict_A": "UNVERIFIED: member none/single Save has zero product credit; no native report/certificate. Prior A6f86 project/single pass remains separate; B6f86 invalid-resource remains zero credit.",
+  "verdict_B": "PARTIAL: independent GitHub run/job/artifact metadata, archive digest, exact imported development source and terminal resource journal verified. Cleanup backend restore/source-zero claims are retained worker readback attestations, not independently replayed.",
+  "provenance": {
+    "native_run": 40207639522,
+    "job": 121211907131,
+    "source": "f7711e9954dd8d1e992a1f5c549d5af63d5e2ca9",
+    "development_run": 40206117015,
+    "development_artifact": 12603809037,
+    "native_artifact": 12604577351,
+    "archive_sha256": "b9b6fa6563e2e85f99112ac8047502294976705201b41a08d3779ae4d410abab",
+    "runner": "GitHub Actions 1000116804",
+    "label": "macos-15-intel",
+    "terminal": "completed/failure; job completed15:42:12Z"
+  },
+  "chronology_utc": "admitted15:41:17.580 busy.0414/load.8; imported15:41:32.314; healthy15:41:33.650 busy.42/load.55; exact panel context ready15:41:45.283; initial images ZIP timestamp15:41:46; CPU pending15:41:49.878 busy1/load7.22; unsafe15:42:05.927 busy.84/load7.69; SIGTERM15:42:06.044; final invalid/exit3 at15:42:07.240. Package/browser journals valid0.",
+  "boundary": "Overload was first sampled after initial panel readiness (~4.6s later), not a demonstrated CDP startup failure. Causal onset and before/after member sign-in are unknown: auth/native stages were only in memory and final report is absent.",
+  "attribution": "15:41:49.960 snapshot includes coreaudiod79.3%, Chromium Helper51.3/30.2/19.1%, mediaremoted33.7%, Chromium17.3%, runningboardd18.9%, heard16.8%. Mixed system/browser snapshot cannot establish sole cause or interval CPU shares. Memory12.6GiB/swap0/disk108.5GiB were healthy.",
+  "comparators": "A6f86 run40195355360 runner1000116782: initial panel13:03:12.925, guest valid0 at13:03:54.525, raw report complete with real member auth/project-single. B6f86 run40195311320 runner1000116781: panel13:02:52.994, fluctuating CPU/recovery then unsafe13:04:18.235 and invalid3; no report. Distinct hosts/routes prevent causal regression conclusion.",
+  "cleanup": "Independent: native job terminal; retained normal verifier refuses HOSTED_RUN_NOT_SUCCESSFUL; member/reviewer-named GitHub secret count0; .output/member-none-a-1536-private absent. Worker receipt: exact original archived_at restored+readback, run-owned Sources0/edges none. Cleanup scratch receipt still says private_files_pending_removal=true, superseded by independent directory absence and final worker report.",
+  "next_predicate": "Existing reviewed startup-resource-diagnostic (unchanged from f771) tests whether guard invalidation recurs with headed Chromium+extension+panel and no authentication. Durable native stage times/panelReadyAt, CDP process-time bracket and GPU observations distinguish startup/pre-exercise boundaries. A healthy diagnostic only bounds no-auth startup; it does not prove member route healthy or explain lost auth stage.",
+  "route_limits": "A-only original macos-15-intel, headed, exact eligible f771/development artifact, normal source/capacity/resource guards; no credential/fixture staging, product credit, threshold bypass, blind member retry, relocation or headless substitution. No dispatch/tests/UI/source edits/commits performed; only this report written. Read-only normal plan-startup-diagnostic PASS for exact f771/40206117015/12603809037, laneA/headed/macos-15-intel; emitted DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE. Plan is feasible; dispatch must still enforce clean exact local/remote source and free capacity. No workflow executed."
+}

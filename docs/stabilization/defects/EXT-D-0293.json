@@ -1,0 +1,68 @@
+{
+  "id": "EXT-D-0293",
+  "feature_id": "EXT-F-1015",
+  "case_ids": ["EXT-F-1015-T33"],
+  "title": "Auth notice unit guard requires retired introductory wording",
+  "surface": "Supporting CI unit guard; no established product defect",
+  "auth_mode": "guest render with hook external seam; no native account action",
+  "severity": "S2: full CI development artifact blocked",
+  "priority": "P1: restore original CI test gate",
+  "state": "closed",
+  "owner": "/root",
+  "preconditions": [
+    "Contributor90768b intentionally changes failed sign-in introduction; existing AuthGate unit still requires old prefix."
+  ],
+  "reproduction": [
+    "Run original normal full CI40205134209 at90768b; Unit tests fails AuthGate sign-in failure notice assertion at tests/unit/auth-gate.test.tsx:35."
+  ],
+  "expected": "Guard requires real error details in rendered alert and routes retry through shared auth action, while allowing intentional introductory wording changes.",
+  "actual": "DOM contains Couldn't sign you in plus full error; assertion requires Sign-in failed and fails.2695unit passes,1failure,7skips; no development artifact.",
+  "cause": "Wording-only change detector in an otherwise useful real-component behavior test.",
+  "repair": "One assertion now requires full captured error Token exchange failed (400): invalid_grant. Alert/retry/no OAuth restart/guest content checks retained; no product code edited.",
+  "evidence": [
+    "docs/stabilization/reports/auth-notice-guard-repair-20261025.json",
+    "docs/stabilization/reports/auth-notice-guard-review-1516.json"
+  ],
+  "verification": "Original two CI wording failures now pass original AuthGate test and surrounding suite in normal40206117015:2696pass0fail7skip,379unitfiles; focused/typecheck/lint/resource/transport/build pass. Fresh independent CI evidence review accepts narrow supporting test repair. No product/native T33 closure.",
+  "native_retest": "Not claimed; supporting CI guard repair only.",
+  "transition_history": [
+    {
+      "at": "2026-10-25T15:16:45.073660+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Original CI unit fails on retired wording."
+    },
+    {
+      "at": "2026-10-25T15:16:45.073660+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Actual producer preserves full error; stale prefix alone causes failure."
+    },
+    {
+      "at": "2026-10-25T15:16:45.073660+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Minimal semantic error assertion repair independently source-reviewed; original CI rerun pending."
+    },
+    {
+      "at": "2026-10-25T15:58:55.042267+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Shared assertion-only commitf771 integrated; no product edit."
+    },
+    {
+      "at": "2026-10-25T15:58:55.042267+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original test and surrounding full unit suite pass normal CI40206117015; focused/typecheck/lint/build pass."
+    },
+    {
+      "at": "2026-10-25T15:58:55.042267+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Fresh independent execution evidence peer accepts supporting CI guard repair only; native caseT33 remains unverified."
+    }
+  ],
+  "fix_commits": ["f7711e9954dd8d1e992a1f5c549d5af63d5e2ca9"],
+  "independent_review": "docs/stabilization/reports/auth-guard-ci-peer-20261025.json"
+}

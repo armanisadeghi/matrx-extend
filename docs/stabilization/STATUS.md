@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-25 15:09 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-25T13:32:33.560076+00:00. 207 features · 831 cases · 1422 controls · 291 linked defect records.
+Generated 2026-10-25 16:02 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-25T16:02:32.452760+00:00. 207 features · 831 cases · 1422 controls · 292 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -978,7 +978,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1007-T03 · guest: Pass. Warm deep capture tests visible dialog Cancel preserving edits, then confirmation and actual deep result; post-reload fast capture explicitly records dialog/trusted confirmation and expected Article. This meets the stated guest recapture case across warm/reload and fast/deep. Cancel is not separately repeated after reload; no member/admin inference.
   Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
 - EXT-F-1007-T04 · member: Unverified.
-  Evidence / build / date recorded: member-6f86-40195355360, ['docs/stabilization/reports/member-native-a-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json', 'docs/stabilization/evidence/member-6f86-run40195355360/native-report.sanitized.json']
+  Evidence / build / date recorded: member-f771-40207639522, ['docs/stabilization/reports/member-none-f771-20261025.json', 'docs/stabilization/reports/member-none-f771-resource-peer.json']
 - EXT-F-1007-T05 · guest: Partial. Bounded current-artifact guest Save failure reproduced warm and after extension reload; no Source landed. Overall case remains partial because the editor and required auth lifecycle were not re-exercised after reload.
   Evidence quality: Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.
   Evidence / build / date recorded: guest-scrape-controls-https-20261012, docs/stabilization/runs/guest-scrape-controls-https-20261012.json
@@ -1024,7 +1024,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1007-T20 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Navigation and reload lifecycle remain to be exercised. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 - EXT-F-1007-T29 · member: Unverified.
-  Evidence / build / date recorded: member-6f86-40195355360, ['docs/stabilization/reports/member-native-a-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json', 'docs/stabilization/evidence/member-6f86-run40195355360/native-report.sanitized.json']
+  Evidence / build / date recorded: member-f771-40207639522, ['docs/stabilization/reports/member-none-f771-20261025.json', 'docs/stabilization/reports/member-none-f771-resource-peer.json']
 - EXT-F-1007-T41 · guest: Partial. Fresh independent evidence review accepts bounded post-reload subtargets on frozen older5a; T41 stayspartial, prior different-build observations preserved separately.
   Evidence / build / date recorded: guest-image-tiers-reload-20261021, 2026-10-21T19:14:05.075866+00:00, ['docs/stabilization/reports/guest-image-tiers-reload-20261021.json', 'docs/stabilization/reports/guest-image-tiers-evidence-peer-20261021.json', 'docs/stabilization/reports/native-recovery-watch-20261021.json', 'docs/stabilization/resource-journals/native-recovery-20261021-1906.jsonl']
 - EXT-F-1007-T42 · guest: Partial. Actual Profile10 DEV manager Reload/path/ID/584 and Settings Sign in/Email— verified. Wikipedia portal main logo and smaller donation-badge Copy image URL each matched full captured src warm and after extension+page Reload/recapture (four actions), clipboard reseeded each time, Images7/selection retained. Root full journal terminal valid0/process0. No controlled non-icon manifest or icon target; no full T42 PASS, member/admin, Store or overall Scrape health. Fresh evidence-only A/B review accepts bounded observations and full journal; no independent UI replay. Full guest case remains unverified beyond these substeps.
@@ -1410,7 +1410,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0069, EXT-D-0207, EXT-D-0266
 
-**Linked defects:** [EXT-D-0029](defects/EXT-D-0029.json) (closed), [EXT-D-0069](defects/EXT-D-0069.json) (fixed), [EXT-D-0207](defects/EXT-D-0207.json) (fixed), [EXT-D-0266](defects/EXT-D-0266.json) (fixed)
+**Linked defects:** [EXT-D-0029](defects/EXT-D-0029.json) (closed), [EXT-D-0069](defects/EXT-D-0069.json) (fixed), [EXT-D-0207](defects/EXT-D-0207.json) (fixed), [EXT-D-0266](defects/EXT-D-0266.json) (fixed), [EXT-D-0293](defects/EXT-D-0293.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

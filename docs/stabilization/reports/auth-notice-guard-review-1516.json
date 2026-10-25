@@ -1,0 +1,14 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "A_source": "PASS: AuthNotice retains the complete supplied error in role=alert; revised expectation matches that behavior without requiring retired presentation wording.",
+  "A_native": "UNVERIFIED: source review only; local test/UI execution prohibited by brief; no CI result independently inspected.",
+  "B_quality": "PASS for the one-line assertion change: real AuthGate DOM, retry call, absence of signIn call, and guest child rendering checks are retained; no production behavior weakened.",
+  "guard": "Dropping or corrupting the supplied error, removing the alert, misrouting retry to signIn, or hiding guest children still violates retained assertions.",
+  "limits": "No executed mutation/gut-check or RED-to-GREEN proof; single error fixture remains pre-existing limited coverage. This review does not certify full auth flow or native behavior.",
+  "evidence": [
+    "tests/unit/auth-gate.test.tsx:27-41",
+    "src/components/AuthGate.tsx:89-107",
+    "src/hooks/use-auth.entrypoints.test.tsx:258-306"
+  ],
+  "changes": "Only requested scratch report written; no source edits, test runs, commits, delegation, or blocked-job relocation."
+}

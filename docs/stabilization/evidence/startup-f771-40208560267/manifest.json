@@ -1,0 +1,9 @@
+{
+  "artifact_id": 12604933347,
+  "artifact_sha256": "edb0edaf5b86b5f94a2654a630409b1dd8211548475423ef00f59c4dfed65f08",
+  "raw_report_sha256": "bc2d278ce6627b370b371cddb08fcc3c3d974197e03501ade13131453dc82a89",
+  "report": "docs/stabilization/evidence/startup-f771-40208560267/startup-interval-diagnostic.json",
+  "scope": "Diagnostic only, no authentication/product action; original raw archive retained privately, CRC/rawdigest verified.",
+  "stored_report_sha256": "bc2d278ce6627b370b371cddb08fcc3c3d974197e03501ade13131453dc82a89",
+  "formatting": "Stored report is Biome formatted; raw report hash remains independent source hash."
+}

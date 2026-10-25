@@ -1,0 +1,32 @@
+{
+  "status": "SUPPORTING_CI_GUARD_VERIFIED_NO_PRODUCT_FIX",
+  "defect": "EXT-D-0293",
+  "original_run": 40205134209,
+  "original_source": "90768b21c56dae8b487954dbc5ed81a8e620adbb",
+  "failed_test": "tests/unit/auth-gate.test.tsx AuthGate sign-in failure notice",
+  "red_result": {
+    "unit_pass": 2695,
+    "unit_fail": 1,
+    "unit_skip": 7
+  },
+  "source_fix": "One stale prefix assertion replaced by full underlying error; all retry/guest content/realDOM checks retained. No product/runtime/workflow/package changes.",
+  "review": "docs/stabilization/reports/auth-notice-guard-review-1516.json",
+  "local_constraints": "Prior observer final CPU-invalid, normal recovery disk-refused; currently df about8.8GiB. No new localheavy/UI/import/promotion or test relocation. Observer patch remains preserved unapplied.",
+  "CI_path": "Original automatic public repo standard ubuntu fullCI on sourcepush, existing cost manifest declares billed increment0. No paid dispatch/manualworkflow/repository/runner change.",
+  "next_action": "Use only current exact artifact through normal gates; local owner import/promotion/Reload still unavailable below20GiB.",
+  "fix_commit": "f7711e9954dd8d1e992a1f5c549d5af63d5e2ca9",
+  "commit_provenance": "Shared contributor committed/pushed the one assertion while root source review was active; exact change preserved, no duplicate fix.",
+  "green_CI": {
+    "run_id": 40206117015,
+    "conclusion": "success",
+    "unit_pass": 2696,
+    "unit_fail": 0,
+    "unit_skip": 7,
+    "unit_files_pass": 379,
+    "unit_files_skip": 2,
+    "artifact_id": 12603809037,
+    "digest": "sha256:c2bbeb53990d6a7b6b54844836fc2bbc7d0fefbc8300ee63e20528fd3620cc60"
+  },
+  "independent_execution_review": "docs/stabilization/reports/auth-guard-ci-peer-20261025.json",
+  "native_limits": "No sign-in error recovery UI/wholefeature/productfix or Store acceptance credit; current member Save attempt is separately resource-invalid."
+}

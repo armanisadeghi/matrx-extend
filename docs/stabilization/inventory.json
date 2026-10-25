@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-25T13:32:33.560076+00:00",
+  "updated_at": "2026-10-25T16:02:32.452760+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -25197,31 +25197,23 @@
           "results": {
             "member": {
               "status": "unverified",
-              "run_id": "member-6f86-40195355360",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
+              "run_id": "member-f771-40207639522",
+              "source_sha": "f7711e9954dd8d1e992a1f5c549d5af63d5e2ca9",
+              "development_ci_run_id": 40206117015,
+              "development_artifact_id": 12603809037,
               "build_version": "0.2.621",
-              "resource_valid": true,
-              "bounded_status": "pass",
-              "verified_substeps": [
-                "Current nonadmin member identity and strict canonical role observer",
-                "Approved organization and logical request200",
-                "Custom Source name, selected Project, Saved confirmation",
-                "Persisted Source/original file/Project association",
-                "Actual Source UI reopen/name/URL/captured marker",
-                "Owned Source/Project/edge cleanup and original fixture restoration"
-              ],
+              "resource_valid": false,
+              "bounded_status": "unverified",
+              "verified_substeps": [],
               "remaining_criteria": [
-                "Other destinations, multiple selections, search/late results, retry, responsive and denied-org/other-role cases",
-                "Saved Source visual screenshot corroboration absent; native assertions provide UI proof"
+                "Current exact none/single Save and Source reopen unverified after resource invalidation; no native report.",
+                "All other destinations, multiple/search/retry/responsive/role cases remain unfinished."
               ],
               "evidence": [
-                "docs/stabilization/reports/member-native-a-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json",
-                "docs/stabilization/evidence/member-6f86-run40195355360/native-report.sanitized.json"
+                "docs/stabilization/reports/member-none-f771-20261025.json",
+                "docs/stabilization/reports/member-none-f771-resource-peer.json"
               ],
-              "scope": "Fresh bounded Project/single pass; not a Save repair or whole case/feature/Store claim."
+              "scope": "Artifact source621 only; zero accepted native actions. Prior6f86 Project/single retained in result_history."
             },
             "admin": {
               "status": "unverified",
@@ -25433,6 +25425,39 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "Fresh exact6f86 independently reviewed Project/single subtarget; full case remains unverified."
+            },
+            {
+              "mode": "member",
+              "result": {
+                "status": "unverified",
+                "run_id": "member-6f86-40195355360",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": true,
+                "bounded_status": "pass",
+                "verified_substeps": [
+                  "Current nonadmin member identity and strict canonical role observer",
+                  "Approved organization and logical request200",
+                  "Custom Source name, selected Project, Saved confirmation",
+                  "Persisted Source/original file/Project association",
+                  "Actual Source UI reopen/name/URL/captured marker",
+                  "Owned Source/Project/edge cleanup and original fixture restoration"
+                ],
+                "remaining_criteria": [
+                  "Other destinations, multiple selections, search/late results, retry, responsive and denied-org/other-role cases",
+                  "Saved Source visual screenshot corroboration absent; native assertions provide UI proof"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/member-native-a-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json",
+                  "docs/stabilization/evidence/member-6f86-run40195355360/native-report.sanitized.json"
+                ],
+                "scope": "Fresh bounded Project/single pass; not a Save repair or whole case/feature/Store claim."
+              },
+              "superseded_at": "2026-10-25T15:58:55.042267+00:00",
+              "reason": "New exactf771 none/single attempt resource-invalid; prior6f86 Project/single remains historical bounded proof."
             }
           ]
         },
@@ -29361,31 +29386,23 @@
           "results": {
             "member": {
               "status": "unverified",
-              "run_id": "member-6f86-40195355360",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
+              "run_id": "member-f771-40207639522",
+              "source_sha": "f7711e9954dd8d1e992a1f5c549d5af63d5e2ca9",
+              "development_ci_run_id": 40206117015,
+              "development_artifact_id": 12603809037,
               "build_version": "0.2.621",
-              "resource_valid": true,
-              "bounded_status": "pass",
-              "verified_substeps": [
-                "Current nonadmin member identity and strict canonical role observer",
-                "Approved organization and logical request200",
-                "Custom Source name, selected Project, Saved confirmation",
-                "Persisted Source/original file/Project association",
-                "Actual Source UI reopen/name/URL/captured marker",
-                "Owned Source/Project/edge cleanup and original fixture restoration"
-              ],
+              "resource_valid": false,
+              "bounded_status": "unverified",
+              "verified_substeps": [],
               "remaining_criteria": [
-                "Other destinations, multiple selections, search/late results, retry, responsive and denied-org/other-role cases",
-                "Saved Source visual screenshot corroboration absent; native assertions provide UI proof"
+                "Current exact none/single Save and Source reopen unverified after resource invalidation; no native report.",
+                "All other destinations, multiple/search/retry/responsive/role cases remain unfinished."
               ],
               "evidence": [
-                "docs/stabilization/reports/member-native-a-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json",
-                "docs/stabilization/evidence/member-6f86-run40195355360/native-report.sanitized.json"
+                "docs/stabilization/reports/member-none-f771-20261025.json",
+                "docs/stabilization/reports/member-none-f771-resource-peer.json"
               ],
-              "scope": "Fresh bounded Project/single pass; not a Save repair or whole case/feature/Store claim."
+              "scope": "Artifact source621 only; zero accepted native actions. Prior6f86 Project/single retained in result_history."
             },
             "admin": {
               "status": "unverified",
@@ -29601,6 +29618,39 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "Fresh exact6f86 independently reviewed Project/single subtarget; full case remains unverified."
+            },
+            {
+              "mode": "member",
+              "result": {
+                "status": "unverified",
+                "run_id": "member-6f86-40195355360",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": true,
+                "bounded_status": "pass",
+                "verified_substeps": [
+                  "Current nonadmin member identity and strict canonical role observer",
+                  "Approved organization and logical request200",
+                  "Custom Source name, selected Project, Saved confirmation",
+                  "Persisted Source/original file/Project association",
+                  "Actual Source UI reopen/name/URL/captured marker",
+                  "Owned Source/Project/edge cleanup and original fixture restoration"
+                ],
+                "remaining_criteria": [
+                  "Other destinations, multiple selections, search/late results, retry, responsive and denied-org/other-role cases",
+                  "Saved Source visual screenshot corroboration absent; native assertions provide UI proof"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/member-native-a-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json",
+                  "docs/stabilization/evidence/member-6f86-run40195355360/native-report.sanitized.json"
+                ],
+                "scope": "Fresh bounded Project/single pass; not a Save repair or whole case/feature/Store claim."
+              },
+              "superseded_at": "2026-10-25T15:58:55.042267+00:00",
+              "reason": "New exactf771 none/single attempt resource-invalid; prior6f86 Project/single remains historical bounded proof."
             }
           ]
         },
