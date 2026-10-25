@@ -7,7 +7,8 @@
  * really scrolls: the page itself when it can move, otherwise the largest visible scrollable panel.
  */
 
-/** Room left to scroll, in px, below which an element does not count as scrollable. */
+// KNOB MIRROR: room left to scroll, in px, below which an element does not count as scrollable —
+// a layout-detection threshold, not an organization opinion.
 const MIN_SCROLL_ROOM = 100;
 
 export interface FeedScroller {
