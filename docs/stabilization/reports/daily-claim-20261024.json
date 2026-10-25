@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "status": "claimed-local-canonical-push-refused",
+  "window": "2026-10-24 America/Los_Angeles",
+  "lane": "store-daily-20261024",
+  "canonical_claim_commit": "43bcec4f2",
+  "canonical_repository": "AI-Matrix-Engine/matrx-common-docs",
+  "push_error": "HTTP403: This repository was archived so it is read-only.",
+  "preserved_claim_patch": "docs/stabilization/pending/common-docs-oct24-claim.patch",
+  "patch_sha256": "8763d3088aecd1cf6248dbfee1faa7a0705becad4a0e15c9a9af0b262955bb04",
+  "limits": "Claim is local in canonical ledger; this extension report is the remote continuity fallback, not a second canonical Store record. No alternate repository/account used for a blocked CI job.",
+  "next_action": "Reconcile canonical claim when its authorized writable home is established; continue resource-admitted product and release checks without inventing Store transitions."
+}

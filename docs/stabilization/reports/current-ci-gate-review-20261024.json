@@ -1,0 +1,43 @@
+{
+  "task": "current-ci-gate-review",
+  "reviewed_source_sha": "cf311e068eccf9400f91a02b2004ab7abce931db",
+  "reviewed_ci": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40166571721",
+  "reviewed_ci_checks_job": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40166571721/job/121088787064",
+  "method": "Read-only independent review of old defect and prepared-patch leads, current source, contributor commits, and completed normal hosted CI logs. No local tests, install, or UI exercise.",
+  "vault_strict_mode": {
+    "A_behavior_evidence": {
+      "verdict": "Current source passes hosted Typecheck and its focused StrictMode test; no live browser behavior reviewed in this lane.",
+      "evidence": [
+        "CI checks job Typecheck step 9 succeeded: tsc --noEmit.",
+        "CI checks job Unit tests step 25 reports src/features/vault/VaultView.strict-mode.test.tsx (1 test) passed; overall 379 files passed, 2 skipped.",
+        "CI built and uploaded development test artifact 12587829474 from cf311e068eccf9400f91a02b2004ab7abce931db."
+      ],
+      "limit": "The hosted unit test stubs chrome.runtime.connect and does not establish a real panel Fill page result or current owner Reload."
+    },
+    "B_source_quality": {
+      "verdict": "Old prepared patch is superseded; committed repair keeps the substantive assertions and is verified by current hosted CI.",
+      "provenance": "6e344bcb98fe1114f3e1af2f33c5a2109fb20997 replaced callback-assigned local held with a mutable { current } holder; c981b88ecc reformatted the admission stub. Current lines 36-48 assert non-null post-render host, invoke find(), and require exactly one connect.",
+      "limit": "The exact pending getter patch was not applied; retaining it as an actionable next step would be stale."
+    }
+  },
+  "ext_d_0286": {
+    "A_behavior_evidence": {
+      "verdict": "The current-source auth approval gate is green and no longer blocks a development artifact; device-local sign-out on two real devices remains unproven here.",
+      "evidence": [
+        "CI checks job step 17: check:signout-scope PASS for visible source contract, reviewed OAuth artifact, and local revoke behavior.",
+        "CI checks job step 18: self-test PASS with 59 source cases, installed-package local revoke behavior, and 3 rejected behavior mutations.",
+        "CI checks job steps 30-32 built, recorded provenance for, and uploaded artifact 12587829474 at the exact reviewed source SHA."
+      ],
+      "limit": "The guard uses injected storage and fetch; CI does not show original or adjacent native two-device sign-out acceptance. Do not close EXT-D-0286 from this review alone."
+    },
+    "B_source_quality": {
+      "verdict": "The original 0.4.2 fingerprint refusal has an explicit committed repair and forcing self-test; the gate is meaningful for the reviewed source/module closure.",
+      "provenance": "1994d3f18050ea76c1b644be57437ebbbd5ae84b renewed the 0.4.6 OAuth approval; 569344ff2f89e7c7871522279ebac5b4011d8a8d changed approval to hash the static OAuth module closure and reject changed dependencies/imports, then run installed-package revoke proof and three behavior mutations. Current lock resolves @ai-matrx/auth 0.4.16 while the guard comment names reviewed 0.4.14; passing closure fingerprint plus behavior proof shows the locked installed closure still matches the reviewed bytes.",
+      "limit": "The source guard declares its own static-analysis bounds, and package proof exercises a synthetic client. It does not substitute for native cross-device acceptance."
+    }
+  },
+  "open_items": [
+    "Run independent original and adjacent native sign-out cases before defect closure.",
+    "Use the exact CI development artifact for live owner Reload and Vault Fill page acceptance if that remains required by the stabilization handoff."
+  ]
+}
