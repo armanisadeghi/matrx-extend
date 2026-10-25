@@ -1,0 +1,96 @@
+{
+  "task_id": "settings-resolver-repair-20261025",
+  "defect_id": "EXT-D-0287",
+  "scope": "Settings browser acceptance harness source and canonical focused command only; no production UI or release changes",
+  "source_base": "e571e287c",
+  "current_source_state": "uncommitted shared checkout; final guarded run included concurrent unrelated edits",
+  "repair": "Settings tab observation now accepts the shared tooltip-lifted label while preserving unique, visible, enabled, active-pane and occluder-owner checks; canonical focused command now includes the existing real-DOM shell diagnostic test",
+  "changed_files": [
+    "package.json",
+    "tests/browser/settings-d87-native-acceptance.mjs",
+    "tests/browser/settings-desktop-native-acceptance.mjs",
+    "tests/browser/settings-guest-absence.test.mjs",
+    "tests/browser/settings-guest-admin-absence-native.test.mjs",
+    "tests/browser/settings-guest-preference-batch.mjs",
+    "tests/browser/settings-guest-preference-batch.test.mjs",
+    "tests/browser/settings-guest-privacy-batch.mjs",
+    "tests/browser/settings-guest-scrape-controls.mjs",
+    "tests/browser/settings-guest-unrecorded-cases.mjs",
+    "tests/browser/settings-local-reset-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/settings-reload-boundary.mjs",
+    "tests/browser/settings-reload-boundary.test.mjs",
+    "tests/browser/settings-replacement-tab.test.mjs",
+    "tests/browser/settings-shell-diagnostic.mjs",
+    "tests/browser/settings-shell-diagnostic.test.mjs"
+  ],
+  "verification_runs": [
+    {
+      "run_id": "settings-resolver-baseline-20261025",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "tests": {
+        "total": 909,
+        "pass": 893,
+        "fail": 6,
+        "skip": 10
+      },
+      "interpretation": "five meaningful real-DOM mismatches and one separate cross-realm guard flaw"
+    },
+    {
+      "run_id": "settings-resolver-green-20261025",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "tests": {
+        "total": 909,
+        "pass": 894,
+        "fail": 5,
+        "skip": 10
+      },
+      "interpretation": "first fixture/source extraction repair candidate remained red"
+    },
+    {
+      "run_id": "settings-resolver-green2-20261025",
+      "decision": "refused_before_admission",
+      "tests_executed": false,
+      "interpretation": "combined shell command was not allowlisted"
+    },
+    {
+      "run_id": "settings-resolver-green3-20261025",
+      "decision": "valid",
+      "resource_invalid": false,
+      "tests": {
+        "total": 910,
+        "pass": 900,
+        "fail": 0,
+        "skip": 10
+      },
+      "limitation": "preceded package.json registration of settings-shell-diagnostic.test.mjs"
+    },
+    {
+      "run_id": "settings-resolver-final-green-20261025",
+      "command": ["pnpm", "test:focused-acceptance"],
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "tests": {
+        "total": null,
+        "pass": null,
+        "fail": null,
+        "skip": null
+      },
+      "observed_failure": "HOSTED_WORKFLOW_BLOB_UNREVIEWED in scripts/hosted-remote-admission.test.mjs while unrelated .github/workflows/hosted-guest-acceptance.yml changes were present in the shared checkout",
+      "dom_test_reachability": "tests/browser/settings-shell-diagnostic.test.mjs was present in executed node --test argv; individual case result not retained in truncated terminal output",
+      "journal": "docs/stabilization/resource-journals/settings-resolver-final-green-20261025.jsonl"
+    }
+  ],
+  "compile": "Not run because final focused child exited 1; requested guarded compile follows only a resource-valid zero-failure focused run.",
+  "format": "pnpm exec biome format --write on the 17 in-scope source/package files completed; git diff --check passed.",
+  "limitations": [
+    "October 21 replacement-tab readiness cause remains unconfirmed by original DOM evidence.",
+    "No exact-source native Settings T04 theme restore/full reload or T22 adjacent-controls pass; D217 guest Save/Retry remains pending.",
+    "No exact-source CI artifact, independent native check, integration, push, or release is claimed.",
+    "Latest focused suite is not green because concurrent unrelated workflow changes affected hosted admission tests."
+  ],
+  "next_owner_action": "Root coordinates a stable shared-checkout window, reruns exact guarded pnpm test:focused-acceptance with a unique run ID, then guarded pnpm compile only after valid zero-failure focused result; root owns review, integration, push and native retest."
+}

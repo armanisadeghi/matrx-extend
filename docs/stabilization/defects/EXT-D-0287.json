@@ -7,7 +7,7 @@
   "auth_mode": "Supporting guest/admin/member test observations; no native mode pass inferred",
   "severity": "S2: reload readiness and diagnostics can refuse a valid rendered tab",
   "priority": "P1: restore reliable Settings original and surrounding retests",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root/settings_resolver_repair",
   "preconditions": [
     "Baseline e571e287c runtime/test drivers with new actual-DOM cases; shared tooltip moves title into data-matrx-title."
@@ -43,7 +43,7 @@
     "status": "Legacy fake DOM/source-extraction seams and remaining diagnostic siblings require repair; not green."
   },
   "native_limits": "October21 readiness cause unconfirmed; original T04 theme restore/full Reload, T22 adjacent controls and D217 guest Save/Retry remain unverified. DOM and CI guards are not product behavior passes.",
-  "next_action": "Second guarded full focused suite with repaired fixtures/siblings, independent fresh review and guarded compile; only then push verified source. Exact new CI artifact and independent original/adjacent native retest remain required.",
+  "next_action": "Exact-source successful CI artifact and independent native original/adjacent T04/T22 retest; no original product cause or closure inferred from DOM harness proof.",
   "transition_history": [
     {
       "at": "2026-10-25T08:12:55.956036+00:00",
@@ -62,6 +62,22 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Named implementation lane with guarded red/green and independent source review; first candidate has additional harness failures."
+    },
+    {
+      "at": "2026-10-25T08:41:11.657008+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Meaningful DOM regression guards, full focused suite/current locked dependencies, compile, full lint and fresh source review passed; source pushed. Native product acceptance remains unverified."
     }
-  ]
+  ],
+  "fix_commit": "0fc85bdae10241c898191b022fc498968696e1e8",
+  "reviewer": "/root/frozen_integration_review",
+  "latest_verification": {
+    "focused_pass": 913,
+    "focused_fail": 0,
+    "focused_skip": 11,
+    "compile": "resource-valid pass after frozen dependency catch-up",
+    "lint": "resource-valid pass after import organization",
+    "evidence": "docs/stabilization/reports/frozen-source-integration-20261025.json"
+  }
 }

@@ -1,0 +1,99 @@
+{
+  "source_commit": "0fc85bdae10241c898191b022fc498968696e1e8",
+  "workflow_sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+  "files": [
+    {
+      "path": ".github/ci-cost.json",
+      "sha256": "01825163ccc57be9570bf1f5e7c19d27cd7fe11a4148ce07111b93422736a98e"
+    },
+    {
+      "path": ".github/workflows/hosted-guest-acceptance.yml",
+      "sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596"
+    },
+    {
+      "path": "package.json",
+      "sha256": "eb134a4e0b9b70e8e344b3370dee07532c82c5088775746058c7d772af0d468a"
+    },
+    {
+      "path": "scripts/hosted-remote-admission.mjs",
+      "sha256": "281b1b5c233c60c492b89074bddeef0e83ecf947a806882a7b64450e9933e6e6"
+    },
+    {
+      "path": "scripts/hosted-remote-guest-chat-admission.test.mjs",
+      "sha256": "37825f1f5e103693f25d5e83c575b064651d2bf8a2dfad2b24bf5c26a727f77e"
+    },
+    {
+      "path": "scripts/published-store-crx-target.mjs",
+      "sha256": "f2450f8ea6ebabb292c7a4002e0cbbf00c18a6db436048c0f2dcd770c9a9c2d5"
+    },
+    {
+      "path": "tests/browser/settings-d87-native-acceptance.mjs",
+      "sha256": "a3ee60ffedac7bb327b06d2cb386c7a463e9eaee35d7282c0c4c4d282617cd0d"
+    },
+    {
+      "path": "tests/browser/settings-desktop-native-acceptance.mjs",
+      "sha256": "3f94a6e1fbba1b8957c52c7aa719d71ac893a97ef977ee545b06f4d48be1a46b"
+    },
+    {
+      "path": "tests/browser/settings-guest-absence.test.mjs",
+      "sha256": "37f5d1d9b8929d2ef61b7b61e64a51bc2243ade29514579c927593c77f01b97f"
+    },
+    {
+      "path": "tests/browser/settings-guest-admin-absence-native.test.mjs",
+      "sha256": "34d3e06eecdd2a4026c4eb4e36a09967eb25beef3121c9922d77c2ab3b322008"
+    },
+    {
+      "path": "tests/browser/settings-guest-preference-batch.mjs",
+      "sha256": "74809a93c65c0676ebb1f5d4c2638f971c8dd265a455c48b14508989d0cb44c2"
+    },
+    {
+      "path": "tests/browser/settings-guest-preference-batch.test.mjs",
+      "sha256": "64446a3dc2a4e72642ca25eba2f109f4a98cb1b5cf6fcb078da05b417bdd26ab"
+    },
+    {
+      "path": "tests/browser/settings-guest-privacy-batch.mjs",
+      "sha256": "10d31a0eadaabb31704790f94b0ab7864b36aa0780df1bbc3237504e1bc0f051"
+    },
+    {
+      "path": "tests/browser/settings-guest-scrape-controls.mjs",
+      "sha256": "b29b06eccf6fc701d73aab7900144bf09c1f20f51ef4cf918bae1e2a3aab1405"
+    },
+    {
+      "path": "tests/browser/settings-guest-unrecorded-cases.mjs",
+      "sha256": "789e9023d427eea01f3c0b40ec3a2a9d996fcaa6541ed65b9d51c69619bcc321"
+    },
+    {
+      "path": "tests/browser/settings-local-reset-acceptance.mjs",
+      "sha256": "93a552e1573778471306b847d96e5188356b262ce4ab318964890a962c40b42b"
+    },
+    {
+      "path": "tests/browser/settings-panel-driver.mjs",
+      "sha256": "633fe3ad0c0e207e04f56fd49d87d3437d881920ffcde6d76d7a8ddab43da007"
+    },
+    {
+      "path": "tests/browser/settings-reload-boundary.mjs",
+      "sha256": "8d9ea017c1681bc980adb3e3a59919d115d06962e79257636744877b0a88362c"
+    },
+    {
+      "path": "tests/browser/settings-reload-boundary.test.mjs",
+      "sha256": "37f88e7b4bd19ddbe7fb23618fe830033e3166af999fceb4312b0859b3762751"
+    },
+    {
+      "path": "tests/browser/settings-replacement-tab.test.mjs",
+      "sha256": "8c1a5b817f79238b69eae35810938e53a9e7185f35cd68bbb60a05b793f2bb8d"
+    },
+    {
+      "path": "tests/browser/settings-shell-diagnostic.mjs",
+      "sha256": "ef8cb430a54c569f71b322dfe2d54c939c89d82ab77d92215a5db44071239675"
+    },
+    {
+      "path": "tests/browser/settings-shell-diagnostic.test.mjs",
+      "sha256": "a02c96de9074a720b0e09726b0157262a8e0134d5178b0d8bbb381b4838f06cd"
+    },
+    {
+      "path": "tests/unit/published-store-crx-target.test.mjs",
+      "sha256": "1abdb2e8bad2ee3ad537f2e114a59580e0e06fd43e176c4b365f2befc1f02868"
+    }
+  ],
+  "limit": "Final source matches pushed commit. Focused/current-dependency and compile gates precede one named-import organization; final full lint and subsequent hosted CI cover exact final source."
+}

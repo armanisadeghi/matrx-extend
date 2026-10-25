@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "task": "frozen-source-integration-20261025",
+  "recorded_at": "2026-10-25T08:41:11.657008+00:00",
+  "settings_fix_commit": "0fc85bdae10241c898191b022fc498968696e1e8",
+  "publication_binding_commit": "b863582f3c6c10e63efe12f80141e89f1a984ae4",
+  "status": "source_fix_verified_and_pushed_native_retest_pending",
+  "focused": {
+    "total": 924,
+    "pass": 913,
+    "fail": 0,
+    "skip": 11,
+    "current_dependencies": true,
+    "test_guards_only_not_product_passes": true
+  },
+  "verification": [
+    {
+      "run_id": "frozen-integrated-focused-20261025",
+      "command": "pnpm test:focused-acceptance",
+      "child_exit": 0,
+      "journal": "docs/stabilization/resource-journals/frozen-integrated-focused-20261025.jsonl",
+      "resource_invalid": false
+    },
+    {
+      "run_id": "frozen-integrated-compile-20261025",
+      "command": "pnpm compile",
+      "child_exit": 1,
+      "journal": "docs/stabilization/resource-journals/frozen-integrated-compile-20261025.jsonl",
+      "resource_invalid": false
+    },
+    {
+      "run_id": "frozen-install-20261025",
+      "command": "pnpm install --frozen-lockfile --ignore-scripts",
+      "child_exit": 0,
+      "journal": "docs/stabilization/resource-journals/frozen-install-20261025.jsonl",
+      "resource_invalid": false
+    },
+    {
+      "run_id": "frozen-integrated-compile2-20261025",
+      "command": "pnpm compile",
+      "child_exit": 0,
+      "journal": "docs/stabilization/resource-journals/frozen-integrated-compile2-20261025.jsonl",
+      "resource_invalid": false
+    },
+    {
+      "run_id": "frozen-current-deps-focused-20261025",
+      "command": "pnpm test:focused-acceptance",
+      "child_exit": 0,
+      "journal": "docs/stabilization/resource-journals/frozen-current-deps-focused-20261025.jsonl",
+      "resource_invalid": false
+    },
+    {
+      "run_id": "frozen-integrated-lint-20261025",
+      "command": "pnpm lint",
+      "child_exit": 1,
+      "journal": "docs/stabilization/resource-journals/frozen-integrated-lint-20261025.jsonl",
+      "resource_invalid": false
+    },
+    {
+      "run_id": "frozen-integrated-lint2-20261025",
+      "command": "pnpm lint",
+      "child_exit": 0,
+      "journal": "docs/stabilization/resource-journals/frozen-integrated-lint2-20261025.jsonl",
+      "resource_invalid": false
+    }
+  ],
+  "corrected_failures": [
+    "Local compile initially used stale installed shared packages; frozen lock install fixed missing exports without changing lockfile.",
+    "Full lint found one named-import ordering error; scoped Biome organize-imports corrected it and final whole-repo lint passed.",
+    "Publication baseline577 exposed exact205 CRX target/workflow token mismatch; independently verified public577 bytes and version-only reviewed workflow renewed exact fingerprint.",
+    "One final-focused attempt ran while workflow bytes were being updated; admission correctly refused unreviewed workflow. Subsequent frozen suite passed."
+  ],
+  "quality": {
+    "full_lint_files": 3250,
+    "full_lint_errors": 0,
+    "full_lint_warnings": 1022,
+    "workflow_cost_guard": "passed; no new runner/job/cadence/dispatch; no paid workflow launched",
+    "source_review": "docs/stabilization/reports/frozen-integration-review-20261025.json",
+    "source_snapshot": "owned code stayed unchanged across final focused/compile except named-import organization before final lint; exact new source CI/native proof remains pending"
+  },
+  "product_metrics_this_window": {
+    "actual_store_guest_grounded_terminal_turns": 2,
+    "new_native_settings_passes": 0,
+    "product_defects_closed": 0,
+    "store_publications_verified": 1,
+    "new_submissions": 0,
+    "harness_defect_source_fixes": 1
+  },
+  "limits": [
+    "EXT-D-0287 is supporting harness repair, not proof of October21 native root cause or Settings product closure.",
+    "Latest main still needs successful exact-source CI artifact, fresh independent native original T04/T22 retest and candidate guest/non-admin acceptance.",
+    "Owner Chrome loaded621/e571 is verified historically for this window; later source commits are not automatically loaded.",
+    "Canonical docs repository remains archived; four local canonical revisions are preserved remotely as exact patch evidence."
+  ],
+  "next_action": "Observe exact new CI handles; import/promote only eligible current artifact, verify owner reload, then guarded original+adjacent Settings and candidate guest/member acceptance. Recheck runtime/source/spend immediately before release adoption/upload/submission."
+}

@@ -1,0 +1,45 @@
+{
+  "task_id": "settings-resolver-final-review-20261025",
+  "mode": "independent source-only review of current eleven-file tracked diff; no tests, browser, install, build, or native rerun",
+  "A_behavior_evidence": {
+    "verdict": "unverified_product_behavior",
+    "integration_position": "No product closure. The current source supports a plausible tooltip-lift selector repair, but the October 21 matched=0 replacement-tab failure did not record the tab attributes. No exact-source native Settings retest establishes the original cause or completes EXT-F-1003-T04 restoration/full-reload, adjacent Settings controls, or D217.",
+    "baseline": "Guarded focused baseline ended child exit 1: 909 tests, 893 pass, 6 fail, 10 skip. Five failures exposed lifted/duplicate/inert/occluder mismatches; one was the now-corrected cross-realm assertion flaw. Baseline journal confirms admitted, resource-valid child failure; it is guard evidence, not product evidence.",
+    "green": "settings-resolver-green-20261025 was admitted and still had no final decision when reviewed. Root owner will append the completed result; no green claim here.",
+    "owner_native_evidence": "owner-dev621-native-reload-20261025.json and raw AX show the DEV 0.2.621 manager page, enabled/pinned state, exact extension ID, unpacked path, manager Reload and Reloaded acknowledgment; the Store 0.2.577 page shows its separate ID, pin, and Web Store origin. This verifies the recorded manager action at source e571e287, not a product Settings case or this later uncommitted diff. Provenance fields for CI artifact/tree hash are report claims, not independently rederived here."
+  },
+  "B_source_quality": {
+    "verdict": "revise_before_integration",
+    "positive_findings": [
+      "The occluder owner now compares the page-side title variable through getAttribute; the earlier literal '${title}' interpolation defect is gone (settings-panel-driver.mjs:912-915).",
+      "The shared tab predicate uses native title before data-matrx-title. Readiness keeps matched/visible uniqueness and inert rejection; activeTabPanelExpression keeps unique active tab plus aria-controls to an active tabpanel. The trusted pointer path still samples visibility/hit testing and dispatches CDP input.",
+      "The seven previously identified Settings acceptance readers now consume the shared predicate or active-pane expression. DOM guards cover native/lifted labels, duplicate tabs, inert tabs, wrong pane, native-title precedence, and a lifted occluder owner; these exercise the real generated expressions rather than matching source text."
+    ],
+    "findings": [
+      {
+        "severity": "Important",
+        "location": "tests/browser/settings-shell-diagnostic.mjs:47",
+        "issue": "captureSettingsShellDiagnostic still counts button[title=\"Settings\"] only. On a lifted Settings tab, its settings_button_count becomes zero and the available/disabled/visible fields become null despite a present tab. D87 invokes this diagnostic on failure, so the exact native retest could again report a false blank shell.",
+        "required_fix": "Use the same shared tab label predicate and preserve its unique, visible, non-inert observation contract; add a lifted-label diagnostic guard."
+      },
+      {
+        "severity": "Minor",
+        "location": "tests/browser/settings-desktop-native-acceptance.mjs:331,361; tests/browser/settings-guest-preference-batch.mjs:77",
+        "issue": "The touched Settings scenarios switch to Chat and still reacquire its pane with title-only selectors. A tooltip-lifted Chat tab can make the later draft/default-mode observation fail even though the shared driver accepts lifted Chat labels.",
+        "required_fix": "Use activeTabPanelExpression('Chat') at these callers when completing the same-class census."
+      }
+    ],
+    "guard_limit": "The new Happy DOM tests are meaningful source-boundary regressions, but no executed green result, exact-artifact CI, or native product pass was available during this review. The pointer test verifies sample attribution before dispatch, not successful native input."
+  },
+  "reviewed_evidence": [
+    "docs/stabilization/reports/settings-locator-current-triage-20261025.json",
+    ".output/stabilization-checkpoints/settings-resolver-patch-review-20261025.json",
+    "docs/stabilization/resource-journals/settings-resolver-baseline-20261025.jsonl",
+    "docs/stabilization/resource-journals/settings-resolver-green-20261025.pending.jsonl",
+    "docs/stabilization/reports/owner-dev621-native-reload-20261025.json",
+    "docs/stabilization/reports/owner-dev621-full.ax.txt",
+    "docs/stabilization/reports/owner-dev621-reloaded.ax.txt",
+    "docs/stabilization/reports/owner-store577.ax.txt"
+  ],
+  "checks": "git diff --check clean; no execution performed by reviewer"
+}
