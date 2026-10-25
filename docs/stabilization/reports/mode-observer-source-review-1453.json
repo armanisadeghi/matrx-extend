@@ -1,0 +1,18 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "baseline": "67ccba38c",
+  "scope": "Six frozen browser harness files; independent source/installed SDK review only",
+  "A": {
+    "verdict": "PARTIAL",
+    "native": "UNVERIFIED",
+    "finding": "settings-guest-preference-batch.mjs:87 accepts any document data-composer-panel or named Tools dialog. No relationship to the active Chat Options/expanded Tools door is required; a singleton stale or unrelated composer switch can satisfy the result. Bind current Tools ownership and guard the unrelated-composer singleton case."
+  },
+  "B": {
+    "verdict": "FAIL",
+    "finding": "settings-guest-preference-batch.mjs:117 opens Chat Options before try/finally; line143 proves only switch absence, which already holds when Tools-entry observation fails. Parent menu can remain open with cleanup accepted. Put opening inside cleanup scope and assert owned menu/sheet closure; test entry failure and ineffective Escape with parent still open."
+  },
+  "sdk_evidence": "chat0.8.370 DeviceToolsModeRow/PicksSwitchRow use aria-checked true=ask false=act and All chats; ComposerSubmenu uses data-composer-panel and Escape closes parent. Extension host registers no openRunControlsWindow opener, so inline path applies.",
+  "preserved": "Guest refusal, persistence, identity and exact-source gate paths unchanged by this six-file patch.",
+  "test_review": "Both checked values plus constant/inversion mutants are meaningful DOM behavior guards; traversal cleanup double does not currently model parent-menu survival.",
+  "limitations": "No heavy tests, native UI, production edits or commits performed; builder GREEN running at freeze. Earlier global-switch concern narrowed but ownership gap remains."
+}

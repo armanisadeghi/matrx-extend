@@ -1,0 +1,102 @@
+{
+  "task_id": "admission-mode-repair-1446",
+  "lane": "implementation",
+  "status": "REVIEWED_PATCH_PRESERVED_UNAPPLIED_RESOURCE_REFUSAL",
+  "source_baseline": "67ccba38c5726b0c990691e7675ed36b267b8353",
+  "admission": {
+    "verdict": "NO_FIX_INTENTIONAL_EXACT_SOURCE_CONTRACT",
+    "diagnosis_correction": "Initial admission-gap lead corrected: member Save deliberately requires successful exact source, synchronized main, and frozen native drivers; selected runtime-equivalent sibling routes do not grant this route an opt-in. No D293 allocated.",
+    "basis": [
+      "PLAN.md Build and reload contract freezes complete source including test-driver/assertion files",
+      "PLAN.md Runner diagnostic acceptance requires exact successful source",
+      "requireDevelopmentArtifact default allowRuntimeEquivalent=false; memberScrape has no opt-in",
+      "memberScrape dispatch independently calls requireExactDispatchSource"
+    ],
+    "normal_eligible_path": "Review/integrate observer patch and freeze exact synchronized main; obtain its successful normal CI artifact, then rerun unchanged normal member plan/dispatch/verifier. No admission, source/runtime/workflow/driver gate changed."
+  },
+  "observer": {
+    "cause": "Guest T10 fresh-chat observer selected retired Tool permission mode chip/lucide icons while current SDK exposes Tools Ask before acting switch.",
+    "repair": "Use real Chat Options \u2192 Tools trusted input; observe unique visible switch aria-checked in owned inline Composer submenu / Tools sheet with All chats row. Baseline refuses preexisting overlays; popover requires active Chat Options controlled popup and expanded Tools entry. Escape closes parent and child in finally, checks actual menu state, preserves original mismatch diagnostics.",
+    "reuse": [
+      "activeTabPanelExpression",
+      "shared settings-panel-driver pointer admission/evaluate/waitFor",
+      "current package DeviceToolsModeRow/PicksSwitchRow semantics"
+    ],
+    "fields": "permissionMode replaces obsolete modeIcon in two direct callers and their tests"
+  },
+  "changed_files": [
+    "tests/browser/settings-guest-preference-batch.mjs",
+    "tests/browser/settings-guest-preference-batch.test.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/settings-full-extension-rechecks.mjs",
+    "tests/browser/settings-full-extension-rechecks.test.mjs",
+    "tests/browser/settings-local-controls-acceptance.mjs"
+  ],
+  "verification": [
+    {
+      "run_id": "admission-mode-repair-1446-red",
+      "verdict": "EXPECTED_RED_RESOURCE_VALID_CHILD_EXIT1",
+      "evidence": ".output/stabilization-checkpoints/admission-mode-repair-1446-red.log",
+      "detail": "Original observer restored temporarily inside supervising try/finally; new DOM test fails count0 vs expected1 and obsolete matcher fails. Exact patch restoration confirmed."
+    },
+    {
+      "run_id": "admission-mode-repair-1446-green",
+      "verdict": "RESOURCE_VALID_CHILD_EXIT1",
+      "evidence": ".output/stabilization-checkpoints/admission-mode-repair-1446-green.log",
+      "detail": "941 total929pass1fail11skip. Only failure was duplicate DOM clone had no cloned bounding-box layout method (actual visible1 vs expected2); fixture repaired with explicit external layout."
+    },
+    {
+      "run_id": "admission-mode-repair-1446-green2",
+      "verdict": "RESOURCE_VALID_EXIT0",
+      "evidence": ".output/stabilization-checkpoints/admission-mode-repair-1446-green2.log",
+      "detail": "Normal CPU pending recovered before terminal valid0; 941total930pass11skip0fail."
+    },
+    {
+      "run_id": "admission-mode-repair-1446-final",
+      "verdict": "RESOURCE_INVALID_EXIT3_NO_FINAL_CREDIT",
+      "evidence": ".output/stabilization-checkpoints/admission-mode-repair-1446-final.log",
+      "detail": "15:05:49 CPU_BUSY87%;15:06:05 CPU_BUSY/HIGH_LOAD99%,load8.85; guard stopped owned group17048SIGTERM and terminal15:06:06.390. Subsequent canceled-file failures do not diagnose code. Attribution includes owned node and external OS/file/node processes, insufficient for sole cause."
+    }
+  ],
+  "source_peer": "root/mode_observer_round1_peer_1502 and final peer1505: runtime ownership/cleanup findings and final negative test delta passed source review; root retains review reports.",
+  "format": "Six owned files biome formatted; git diff --check passed",
+  "native_proof_remaining": [
+    "Guest actual Settings Act and fresh Chat Options Tools switch unchecked, warm and actual extension Reload on newly eligible exact artifact; no AI required.",
+    "Member both canonical knob values via Settings, same switch warm/fullReload and original value restoration, separate authorized admission.",
+    "Actual request permission_mode/host-turn latch/dispatch behavior beyond UI remains unverified."
+  ],
+  "limitations": [
+    "No product-case pass, independent native proof, release, Store claim, commit, push, fixture or credential mutation.",
+    "Root owns shared docs/defects/inventory, integration and final lint."
+  ],
+  "owned_jobs": [],
+  "commit_shas": [],
+  "updated_at": "2026-10-25T15:07:08.826515+00:00",
+  "owned_file_sha256": {
+    "tests/browser/settings-guest-preference-batch.mjs": "be29712be99d6c7dd7c9f2a338ac36deb207634b56a35c8aae1e680b8900929a",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "cd48fddfa03c2d00b2560dcce5c6c0700d0233f5ee394c867bd6d6db877c917c",
+    "tests/browser/settings-panel-driver.mjs": "e70b39cb8d17937db651f079060b5ed2bb4e0bdd4f7e241169f8dcf8b4086350",
+    "tests/browser/settings-full-extension-rechecks.mjs": "f3154876a247d81fe4d4012799cd9eb4d5bac4b70954325eb3419465c8c43c62",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "1ee838906ed9e57d270e093f5cf97c672959e615ef955de2ffe164d09170f380",
+    "tests/browser/settings-local-controls-acceptance.mjs": "2fc672369206f6f8349a0197923b058914c94fcaa68b839497a7d43028eea210"
+  },
+  "check_head": "90768b21c56dae8b487954dbc5ed81a8e620adbb",
+  "scope_freeze": "Only six owned file hashes are frozen; concurrent external contributor source/auth changes preserved.",
+  "next_action": "Root owns normal sustained resource recovery check, final focused+compile+whole lint on current shared source, exact-path integration/push, successful exact-source CI, and separate native retest. Worker remains terminal; no automatic retry.",
+  "cleanup": {
+    "final_session": 65449,
+    "terminal_exit": 3,
+    "owned_group": 17048,
+    "guard_action": "RESOURCE_GROUP_STOP_REQUESTED watchdog SIGTERM",
+    "guard_terminal": "RESOURCE_FINAL_DECISION invalid/resourceInvalid=true 2026-10-25T15:06:06.390Z",
+    "browser_or_ui_started": false,
+    "credentials_or_fixtures_mutated": false,
+    "active_owned_jobs": false,
+    "limitation": "No new independent process census; guard terminal is process cleanup evidence."
+  },
+  "compile": "NOT_RUN: final focused resource-invalid; root explicitly owns normal recovery, final focused rerun and subsequent compile.",
+  "owned_hashes_unchanged": true,
+  "preserved_patch": "docs/stabilization/reports/mode-observer-reviewed-patch-20261025.json",
+  "current_source_status": "Six owned script/test changes restored byte-identical to HEAD after verified exact patch preservation; no contributor files touched.",
+  "recovery": "mode-final-recovery-20261025-1508 actualsession32728exit2 RESOURCE_UNSAFE_HOLD/DISK_LOW19.8397GiB; no further localheavy/UI attempted."
+}

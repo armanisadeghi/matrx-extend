@@ -7,8 +7,8 @@
   "auth_mode": "Guest reproduction; shared driver siblings reviewed",
   "severity": "S2: prevents trustworthy native retest or diagnosis",
   "priority": "P1: original native failure follow-through",
-  "state": "fixed",
-  "owner": "/root/settings_truth_repair_1208",
+  "state": "in-fix",
+  "owner": "/root/admission_mode_repair_1446",
   "preconditions": [
     "Frozen exact0b CI development artifact and resource-valid nativeB40186301999."
   ],
@@ -23,7 +23,8 @@
     "docs/stabilization/runs/settings-guest-0b-20261025.json",
     "docs/stabilization/reports/settings-case-repair-fresh-review.json",
     "docs/stabilization/reports/settings-retest-b-1150.json",
-    "docs/stabilization/reports/settings-sink-diagnosis-1202.json"
+    "docs/stabilization/reports/settings-sink-diagnosis-1202.json",
+    "docs/stabilization/reports/mode-observer-source-review-1453.json"
   ],
   "reviewer": "/root/settings_member_final_review_1230",
   "verification": {
@@ -82,13 +83,30 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Reviewed source repair, real defect-specific guards and final CI-wired focused927pass0fail11skip plus compilevalid0; mandatory final lint/proof in linked report required before commit. Native original/adjacent retest and release remain pending."
+    },
+    {
+      "at": "2026-10-25T15:01:43.299216+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Supporting current-UI DOM guard refutes retired Chat mode chip/icon observer; zero new native verdict."
+    },
+    {
+      "at": "2026-10-25T15:01:43.299354+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Bounded current shared UI observer repair; first independent source review found stale-surface ownership/cleanup gaps; round1 ongoing."
     }
   ],
   "source_review": [
     "docs/stabilization/reports/settings-member-final-review-1230.json",
     "docs/stabilization/reports/settings-poll-final-verify-1235.json",
-    "docs/stabilization/reports/member-sdk-ci-wiring-review-1235.json"
+    "docs/stabilization/reports/member-sdk-ci-wiring-review-1235.json",
+    "docs/stabilization/reports/mode-observer-final-review-1505.json"
   ],
   "verification_final_report": "docs/stabilization/reports/settings-member-final-verification-20261025.json",
-  "source_only": true
+  "source_only": true,
+  "current_followthrough": "Fresh final source/quality review accepts current switch observer, but exact patch preserved unapplied after CPU-invalid final run and disk-refused recovery. FullT10/final compile/lint unverified; no code integrated or closure.",
+  "preserved_patch": "docs/stabilization/reports/mode-observer-reviewed-patch-20261025.json",
+  "checkpoint": "docs/stabilization/reports/mode-observer-repair-checkpoint-20261025.json",
+  "verification_current": "Green2 930pass0fail11skip predates final two test additions; finalrun invalid3 CPU99%; recovery refused disk19.8397GiB. Zero final acceptance credit."
 }
