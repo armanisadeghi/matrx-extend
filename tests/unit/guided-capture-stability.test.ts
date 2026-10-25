@@ -189,12 +189,17 @@ it('when the page has a little overflow of its own but an inner panel holds the 
 
 it('stops (instead of scrolling forever) when neither the page nor any panel can move — a sign-in wall', async () => {
   vi.useFakeTimers();
-  sized(document.documentElement, 5000, 900);
+  // Facebook signed out: the page cannot scroll; a panel scrolls to its end, then nothing loads.
+  sized(document.documentElement, 900, 900);
   vi.spyOn(window, 'scrollBy').mockImplementation(() => {});
   const panel = document.querySelector<HTMLElement>('#feed')!;
   panel.style.overflowY = 'auto';
-  sized(panel, 1200, 800);
-  panel.scrollBy = (() => {}) as never;
+  sized(panel, 1853, 900);
+  let top = 0;
+  Object.defineProperty(panel, 'scrollTop', { configurable: true, get: () => top });
+  panel.scrollBy = (({ top: by }: { top: number }) => {
+    top = Math.min(953, top + by);
+  }) as never;
   const shadow = mountProfileJob();
   shadow.querySelector<HTMLButtonElement>('[data-act="scroll"]')!.click();
   await vi.advanceTimersByTimeAsync(30_000);

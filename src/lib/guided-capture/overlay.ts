@@ -145,6 +145,8 @@ export function mountGuidedOverlay(): void {
     // The element that really scrolls this feed (the page, or an inner panel); found again if a
     // step does not move it (the site swapped its layout mid-run).
     let target: FeedScroller = findFeedScroller();
+    // The tallest scroll height seen this run: only real growth past it counts as new content.
+    let tallest = 0;
     try {
       scrollEnd = await runAutoScroll(
         {
@@ -162,7 +164,10 @@ export function mountGuidedOverlay(): void {
           viewportHeight: () => target.element?.clientHeight || window.innerHeight,
           // Growth is measured so that switching scrollers can never look like the feed growing
           // (flipping between the page and a panel of different heights reset the stall forever).
-          pageHeight: () => Math.max(document.documentElement.scrollHeight, target.height()),
+          pageHeight: () => {
+            tallest = Math.max(tallest, target.height());
+            return tallest;
+          },
           onTick: (c) => {
             dispatch({ type: 'items', count: c });
           },
