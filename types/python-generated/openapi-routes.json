@@ -802,6 +802,11 @@
  "/ai-models/own-key": {
   "get": []
  },
+ "/ai-models/translation-preview": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/ai-test-mode/status": {
   "get": []
  },
