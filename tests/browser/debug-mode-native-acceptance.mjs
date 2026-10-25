@@ -6,6 +6,8 @@ import {
   ADMIN_TAB_TITLES,
   DEBUG_MODE_STORAGE_KEY,
   parseDebugModePreference,
+  projectAdminAuthDiagnostic,
+  projectAdminAuthStage,
   requireAdminTabProjection,
 } from './debug-mode-native-contract.mjs';
 import {
@@ -291,14 +293,36 @@ try {
     artifactRoot: outputDir,
     resourceAction,
     exercisePanel: async ({ page, panel, browserSession, activatePanel }) => {
-      const auth = await signInSettings({
-        mode: 'admin',
-        page,
-        panel,
-        repo: REPO,
-        adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
-        resourceAction,
-      });
+      let auth;
+      try {
+        auth = await signInSettings({
+          mode: 'admin',
+          page,
+          panel,
+          repo: REPO,
+          adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
+          resourceAction,
+          onStage: (stage) => {
+            report.auth_stage = projectAdminAuthStage(stage);
+          },
+          onAuthDiagnostic: (diagnostic) => {
+            report.auth_diagnostic = projectAdminAuthDiagnostic(diagnostic);
+          },
+        });
+      } catch (error) {
+        if (
+          report.auth_diagnostic?.phase === 'admin_extension_auth_completion' &&
+          report.auth_diagnostic.outcome === 'extension_completion_unobserved'
+        ) {
+          try {
+            await captureStage(panel, 'admin-auth-completion-failure');
+            report.auth_failure_screenshot = 'captured_extension_panel';
+          } catch {
+            report.auth_failure_screenshot = 'capture_failed';
+          }
+        }
+        throw error;
+      }
       assert.equal(auth.extension_signed_in, true, 'debug_mode_admin_signin_unverified');
       await resourceAction(() => activatePanel());
 

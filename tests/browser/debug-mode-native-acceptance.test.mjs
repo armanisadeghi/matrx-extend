@@ -8,6 +8,8 @@ import {
   ADMIN_TAB_TITLES,
   DEBUG_MODE_STORAGE_KEY,
   parseDebugModePreference,
+  projectAdminAuthDiagnostic,
+  projectAdminAuthStage,
   requireAdminTabProjection,
 } from './debug-mode-native-contract.mjs';
 
@@ -170,5 +172,92 @@ test('admin tabs require both verified admin storage and the persisted Debug pre
         visibleAdminTabTitles: [...ADMIN_TAB_TITLES].reverse(),
       }),
     /admin_tab_projection_mismatch/,
+  );
+});
+
+test('Debug Mode auth diagnostics retain only allowlisted stage enums and safe state booleans', () => {
+  const projected = projectAdminAuthDiagnostic({
+    phase: 'admin_extension_auth_completion',
+    outcome: 'extension_completion_unobserved',
+    web_dashboard_reached: true,
+    extension_click_failure_code: 'pointer_target_not_unique',
+    settings_panel_active: true,
+    account_expanded: true,
+    sign_in_present: true,
+    sign_out_present: false,
+    auth_error_present: false,
+    auth_retry_present: false,
+    loading_present: true,
+    rendered_admin_email: false,
+    rendered_admin_role: null,
+    organization_selector_present: null,
+    storage_access_token_present: true,
+    storage_profile_present: false,
+    storage_admin_flag: false,
+    http_category: 'unobserved',
+    password: 'never-report-this',
+    access_token: 'secret-token',
+    url: 'https://example.invalid/private?token=secret',
+    raw_error: 'private backend response',
+  });
+  assert.deepEqual(projected, {
+    phase: 'admin_extension_auth_completion',
+    outcome: 'extension_completion_unobserved',
+    extension_click_failure_code: 'pointer_target_not_unique',
+    web_dashboard_reached: true,
+    settings_panel_active: true,
+    account_expanded: true,
+    sign_in_present: true,
+    sign_out_present: false,
+    auth_error_present: false,
+    auth_retry_present: false,
+    loading_present: true,
+    rendered_admin_email: false,
+    rendered_admin_role: null,
+    organization_selector_present: null,
+    storage_access_token_present: true,
+    storage_profile_present: false,
+    storage_admin_flag: false,
+    http_category: 'unobserved',
+  });
+  assert.equal(JSON.stringify(projected).includes('secret'), false);
+  assert.equal(JSON.stringify(projected).includes('private'), false);
+  assert.equal(
+    projectAdminAuthStage('admin_extension_auth_completion'),
+    'admin_extension_auth_completion',
+  );
+  assert.equal(
+    projectAdminAuthStage('https://private.invalid/?token=secret'),
+    'unknown_admin_phase',
+  );
+  assert.deepEqual(
+    projectAdminAuthDiagnostic({
+      phase: 'private-stage-token',
+      outcome: 'private error payload',
+      extension_click_failure_code: 'secret',
+      web_dashboard_reached: 'true',
+      storage_access_token_present: 'token-value',
+      http_category: '401 body with private data',
+    }),
+    {
+      phase: 'unknown_admin_phase',
+      outcome: 'other_admin_auth_failure',
+      extension_click_failure_code: null,
+      web_dashboard_reached: null,
+      settings_panel_active: null,
+      account_expanded: null,
+      sign_in_present: null,
+      sign_out_present: null,
+      auth_error_present: null,
+      auth_retry_present: null,
+      loading_present: null,
+      rendered_admin_email: null,
+      rendered_admin_role: null,
+      organization_selector_present: null,
+      storage_access_token_present: null,
+      storage_profile_present: null,
+      storage_admin_flag: null,
+      http_category: 'other',
+    },
   );
 });
