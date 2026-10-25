@@ -1,0 +1,95 @@
+{
+  "task_id": "observer-resume-1620",
+  "lane": "six-file implementation resume EXT-D-0289",
+  "status": "FINAL_SOURCE_GATES_PASS_NEW_CI_NATIVE_PENDING",
+  "source_head": "5745d762cd3305a2a260ab3fc97a8226717ef002",
+  "patch_sha256": "05abdc3a701fc04aa2ec975e7f61b0a7672366dc754601813749cf5ed8d854ff",
+  "producer_delta": "Current5745 lock and all16 direct @ai-matrx installed match; DS0.86.377/chat0.8.370; independent current producer review pending root receipt",
+  "changed_files": [
+    "tests/browser/settings-guest-preference-batch.mjs",
+    "tests/browser/settings-guest-preference-batch.test.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/settings-full-extension-rechecks.mjs",
+    "tests/browser/settings-full-extension-rechecks.test.mjs",
+    "tests/browser/settings-local-controls-acceptance.mjs"
+  ],
+  "owned_file_sha256": {
+    "tests/browser/settings-guest-preference-batch.mjs": "bd129268fa4af7f8cd42be5ab522a06edf56f89962d4bd389ad49df9658e9b16",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "bf0e1e052e87e348529d594eddcff2d53d61e1a5917ebfc16b0d15aa6f601d6e",
+    "tests/browser/settings-panel-driver.mjs": "e70b39cb8d17937db651f079060b5ed2bb4e0bdd4f7e241169f8dcf8b4086350",
+    "tests/browser/settings-full-extension-rechecks.mjs": "f3154876a247d81fe4d4012799cd9eb4d5bac4b70954325eb3419465c8c43c62",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "1ee838906ed9e57d270e093f5cf97c672959e615ef955de2ffe164d09170f380",
+    "tests/browser/settings-local-controls-acceptance.mjs": "2fc672369206f6f8349a0197923b058914c94fcaa68b839497a7d43028eea210"
+  },
+  "verification": [
+    {
+      "run_id": "observer-resume-1632-install",
+      "actual_session": 58093,
+      "verdict": "valid0",
+      "journal": "docs/stabilization/resource-journals/observer-resume-1632-install.jsonl"
+    },
+    {
+      "run_id": "observer-resume-1632-focused",
+      "actual_session": 19196,
+      "verdict": "valid0",
+      "journal": "docs/stabilization/resource-journals/observer-resume-1632-focused.jsonl"
+    },
+    {
+      "run_id": "observer-resume-1632-compile",
+      "actual_session": 93050,
+      "verdict": "valid0",
+      "journal": "docs/stabilization/resource-journals/observer-resume-1632-compile.jsonl"
+    }
+  ],
+  "focused": "941total930pass0fail11skip0cancel; actual switch DOM, constant/inverted mutant and openingFailure/noOpEscape cleanup cases passed",
+  "format": "Exact two-file biome check --write zero errors (one preexisting unused warning); git diff --check passed",
+  "owned_jobs": [],
+  "limitations": [
+    "No source/admission/workflow/package manifest/lock changes; existing contributor files preserved.",
+    "No native/UI/product-case closure or release; root owns final whole lint, metadata, commit and push."
+  ],
+  "next_action": "Root final independent lint-delta review and whole lint then exact six-file integration; native original/adjacent T10 remains unverified.",
+  "final_lint_delta": "Whole lint caught noUnsafeFinally/import-order; observer captures observation and errors, unconditionally cleans up after catch, resolves original/cleanup-only failure outside finally. Exact two-file biome check --write zero errors; one existing warning; no suppression.",
+  "verification_previous_round": [
+    {
+      "run_id": "observer-resume-1620-install",
+      "actual_session": 77864,
+      "verdict": "valid0",
+      "journal": "docs/stabilization/resource-journals/observer-resume-1620-install.jsonl"
+    },
+    {
+      "run_id": "observer-resume-1620-focused",
+      "actual_session": 96455,
+      "verdict": "valid0",
+      "journal": "docs/stabilization/resource-journals/observer-resume-1620-focused.jsonl"
+    },
+    {
+      "run_id": "observer-resume-1620-compile",
+      "actual_session": 63257,
+      "verdict": "valid0",
+      "journal": "docs/stabilization/resource-journals/observer-resume-1620-compile.jsonl"
+    }
+  ],
+  "current_review": "docs/stabilization/reports/observer-lint-delta-review-20261025.json",
+  "lint_history": "First full lint resourcevalid1: unsafe finally throw +2import order errors; cleanup control flow moved propagation after cleanup and imports sorted, existing guards rerun.",
+  "lint": {
+    "result": "resource_valid_exit0",
+    "actual_session": 1955,
+    "journal": "docs/stabilization/resource-journals/observer-final-lint-20261025-1640.jsonl",
+    "checked_files": 3271,
+    "errors": 0,
+    "warnings": 1023
+  },
+  "fix_commit_lookup": "Commit containing this exact final source/report unit.",
+  "source_base": "5745d762cd3305a2a260ab3fc97a8226717ef002",
+  "final_file_sha256": {
+    "tests/browser/settings-full-extension-rechecks.mjs": "f3154876a247d81fe4d4012799cd9eb4d5bac4b70954325eb3419465c8c43c62",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "1ee838906ed9e57d270e093f5cf97c672959e615ef955de2ffe164d09170f380",
+    "tests/browser/settings-guest-preference-batch.mjs": "bd129268fa4af7f8cd42be5ab522a06edf56f89962d4bd389ad49df9658e9b16",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "bf0e1e052e87e348529d594eddcff2d53d61e1a5917ebfc16b0d15aa6f601d6e",
+    "tests/browser/settings-local-controls-acceptance.mjs": "2fc672369206f6f8349a0197923b058914c94fcaa68b839497a7d43028eea210",
+    "tests/browser/settings-panel-driver.mjs": "e70b39cb8d17937db651f079060b5ed2bb4e0bdd4f7e241169f8dcf8b4086350"
+  },
+  "original_preserved_patch": "Historical reviewed restore was exact; final two files additionally correct unsafe-finally control flow/import order. New independent delta review and full focused rerun/compile/lint pass.",
+  "native_acceptance": "UNVERIFIED: require new successful exact/current eligible CI artifact, normal import/promotion/actual Reload and independent original/adjacent guest Tools switch/refusal/reload; no source-only closure."
+}

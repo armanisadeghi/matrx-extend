@@ -2,13 +2,13 @@
   "id": "EXT-D-0289",
   "feature_id": "EXT-F-1003",
   "case_ids": ["EXT-F-1003-T10"],
-  "title": "Preference retest selects an already active implicit default",
+  "title": "Guest default-mode acceptance drifts from current state and Tools control",
   "surface": "Supporting native acceptance harness; not a proven product defect",
   "auth_mode": "Guest reproduction; shared driver siblings reviewed",
   "severity": "S2: prevents trustworthy native retest or diagnosis",
   "priority": "P1: original native failure follow-through",
-  "state": "in-fix",
-  "owner": "/root/admission_mode_repair_1446",
+  "state": "fixed",
+  "owner": "/root",
   "preconditions": [
     "Frozen exact0b CI development artifact and resource-valid nativeB40186301999."
   ],
@@ -17,7 +17,7 @@
   ],
   "expected": "Drive an actual alternate-to-target transition and preserve original absence on cleanup; never accept missing persistence after a real change.",
   "actual": "Panel preference helper starts with Act although baseline is implicit Act/no storage. Native same-value selection does not dispatch a change, so expecting a persisted key falsely fails.",
-  "cause": "Panel preference helper starts with Act although baseline is implicit Act/no storage. Native same-value selection does not dispatch a change, so expecting a persisted key falsely fails.",
+  "cause": "Initial implicit same-value selection plus retired local-state/chip/icon observer. Current canonical guest refusal/Act rollback and Tools Ask-before-acting switch need distinct actual assertions.",
   "evidence": [
     "docs/stabilization/reports/settings-failure-class-repair-1109.json",
     "docs/stabilization/runs/settings-guest-0b-20261025.json",
@@ -39,7 +39,7 @@
     "guarded_session": 86803,
     "source_checks_not_native_passes": true
   },
-  "native_retest": "Not run on repaired candidate. Requires successful exact-main CI artifact, normal isolated original+surrounding guest/member retest and independent evidence before retest-pass/closed.",
+  "native_retest": "Not yet run on this current patch. Fresh exact CI artifact/adoption/Reload and canonical guest fresh-Chat Tools switch plus refusal/reload surrounding cases required; original fullT10/other roles remain unfinished.",
   "fix_commit_lookup": "Commit containing this record; use exact-path git log. Native acceptance and release remain pending.",
   "transition_history": [
     {
@@ -95,18 +95,27 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Bounded current shared UI observer repair; first independent source review found stale-surface ownership/cleanup gaps; round1 ongoing."
+    },
+    {
+      "at": "2026-10-25T16:43:00.939950+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Exact current patch and final cleanup/import fix pass current-producer independent source review plus guarded final focused/compile/wholelint; native original/adjacent retest and new CI pending."
     }
   ],
   "source_review": [
     "docs/stabilization/reports/settings-member-final-review-1230.json",
     "docs/stabilization/reports/settings-poll-final-verify-1235.json",
     "docs/stabilization/reports/member-sdk-ci-wiring-review-1235.json",
-    "docs/stabilization/reports/mode-observer-final-review-1505.json"
+    "docs/stabilization/reports/mode-observer-final-review-1505.json",
+    "docs/stabilization/reports/observer-current-review-20261025.json",
+    "docs/stabilization/reports/observer-lint-delta-review-20261025.json"
   ],
   "verification_final_report": "docs/stabilization/reports/settings-member-final-verification-20261025.json",
   "source_only": true,
-  "current_followthrough": "Fresh final source/quality review accepts current switch observer, but exact patch preserved unapplied after CPU-invalid final run and disk-refused recovery. FullT10/final compile/lint unverified; no code integrated or closure.",
-  "preserved_patch": "docs/stabilization/reports/mode-observer-reviewed-patch-20261025.json",
+  "current_followthrough": "Current-source observer repair independently source-reviewed; final guarded941total930pass0fail11skip/compile and wholelint3271files0errors1023warnings valid0. New CI/native original+surrounding acceptance remains pending; no closure.",
   "checkpoint": "docs/stabilization/reports/mode-observer-repair-checkpoint-20261025.json",
-  "verification_current": "Green2 930pass0fail11skip predates final two test additions; finalrun invalid3 CPU99%; recovery refused disk19.8397GiB. Zero final acceptance credit."
+  "verification_current": "docs/stabilization/reports/observer-resume-verification-20261025.json",
+  "current_verification": "docs/stabilization/reports/observer-resume-verification-20261025.json",
+  "prior_preserved_patch": "docs/stabilization/reports/mode-observer-reviewed-patch-20261025.json"
 }

@@ -6,35 +6,279 @@ import {
   GUEST_PREFERENCES,
   guestChatDefaultExpression,
   guestChatDefaultMatches,
+  observeGuestNewChatDefault,
   observeGuestPreference,
   preferenceMatches,
   runGuestPreferenceCase,
   runGuestThemeRenderingProbe,
 } from './settings-guest-preference-batch.mjs';
+import { chatToolsCandidatesExpression } from './settings-panel-driver.mjs';
 
-test('Chat default observation follows a lifted active tab to its controlled pane', async () => {
+// SUT owns traversal and DOM observation; browser layout/input are external seams.
+// Captured semantics: chat 0.8.370 DeviceToolsModeRow / PicksSwitchRow.
+function chatModeFixture(checked = 'false') {
   const window = new Window();
+  window.document.body.innerHTML = `<button role="tab" data-matrx-title="Chat"
+    data-state="active" aria-controls="chat-pane"></button>
+    <div id="chat-pane" role="tabpanel" data-state="active">
+      <button title="New chat"></button><button title="Chat Options" aria-controls="fixture-options" aria-expanded="true"></button>
+    </div><div id="fixture-options"><button aria-expanded="true">Tools</button></div><div data-composer-panel><label>Ask before acting<span>All chats</span>
+      <button role="switch" aria-label="Ask before acting" aria-checked="${checked}"></button>
+    </label></div>`;
+  const read = () =>
+    runInNewContext(guestChatDefaultExpression(), {
+      document: window.document,
+      getComputedStyle: () => ({ visibility: 'visible', display: 'block' }),
+    });
+  for (const node of window.document.querySelectorAll('*'))
+    node.getBoundingClientRect = () => ({ width: 100, height: 30 });
+  return { window, read };
+}
+
+test('Tools traversal selects package portal doors and excludes outer navigation and hidden copies', async () => {
+  const f = chatModeFixture();
   try {
-    window.document.body.innerHTML = `<button role="tab" data-matrx-title="Chat"
-      data-state="active" aria-controls="chat-pane"></button>
-      <div id="chat-pane" role="tabpanel" data-state="active">
-        <button title="New chat"></button>
-        <button title="Tool permission mode"><svg class="lucide-hand"></svg>Ask before acting</button>
-      </div>`;
-    const read = () => runInNewContext(guestChatDefaultExpression(), { document: window.document });
-    const lifted = await read();
-    assert.deepEqual(
-      [lifted.activeChat, lifted.newChatCount, lifted.modeControlCount, lifted.modeIcon],
-      [true, 1, 1, 'ask'],
-    );
-    const tab = window.document.querySelector('button[role="tab"]');
-    tab.setAttribute('aria-controls', 'wrong-pane');
-    assert.equal((await read()).activeChat, false);
-    tab.setAttribute('aria-controls', 'chat-pane');
-    window.document.getElementById('chat-pane').setAttribute('data-state', 'inactive');
-    assert.equal((await read()).activeChat, false);
+    const document = f.window.document;
+    const read = () =>
+      runInNewContext(chatToolsCandidatesExpression(), {
+        document,
+        getComputedStyle: () => ({ display: 'block', visibility: 'visible' }),
+      });
+    document.getElementById('fixture-options').remove();
+    document.body.innerHTML += `<button role="tab">Tools</button>
+      <div role="dialog" aria-label="Add to chat" id="options"><button><span><span>Tools</span></span><span>3</span></button></div>
+      <div role="dialog" aria-label="Unrelated"><button>Tools</button></div>
+      <div role="dialog" aria-label="Tools" hidden><button>Tools</button></div>`;
+    document.querySelector('[title="Chat Options"]').setAttribute('aria-controls', 'options');
+    for (const node of document.querySelectorAll('*'))
+      node.getBoundingClientRect = () => ({ width: 100, height: 30 });
+    assert.equal(read().length, 1);
+    document.getElementById('options').remove();
+    assert.equal(read().length, 0);
+    document.body.innerHTML +=
+      '<div id="options"><div role="tablist" aria-label="Run controls"><button role="tab">Tools</button></div></div>';
+    for (const node of document.querySelectorAll('*'))
+      node.getBoundingClientRect = () => ({ width: 100, height: 30 });
+    assert.equal(read().length, 1);
   } finally {
-    await window.happyDOM.abort();
+    await f.window.happyDOM.abort();
+  }
+});
+
+test('Chat default observes actual Ask switch for both values and rejects stale or ambiguous controls', async () => {
+  const f = chatModeFixture();
+  try {
+    const control = f.window.document.querySelector('[role="switch"]');
+    assert.deepEqual(
+      Array.from(
+        ['activeChat', 'newChatCount', 'modeControlCount', 'permissionMode'],
+        (key) => f.read()[key],
+      ),
+      [true, 1, 1, 'act'],
+    );
+    control.setAttribute('aria-checked', 'true');
+    assert.equal(f.read().permissionMode, 'ask');
+    control.setAttribute('aria-checked', 'mixed');
+    assert.equal(f.read().permissionMode, null);
+    control.setAttribute('aria-checked', 'false');
+    const duplicate = control.cloneNode(true);
+    duplicate.getBoundingClientRect = () => ({ width: 100, height: 30 });
+    control.parentElement.appendChild(duplicate);
+    assert.equal(f.read().modeControlCount, 2);
+    assert.equal(f.read().permissionMode, null);
+    control.parentElement.lastElementChild.remove();
+    f.window.document
+      .querySelector('#fixture-options button')
+      .setAttribute('aria-expanded', 'false');
+    assert.equal(f.read().modeControlCount, 0, 'stale singleton without opened Tools is refused');
+    f.window.document
+      .querySelector('#fixture-options button')
+      .setAttribute('aria-expanded', 'true');
+    control.setAttribute('hidden', '');
+    assert.equal(f.read().modeControlCount, 0);
+    control.removeAttribute('hidden');
+    f.window.document.getElementById('chat-pane').setAttribute('data-state', 'inactive');
+    assert.equal(f.read().activeChat, false);
+    f.window.document.getElementById('chat-pane').setAttribute('data-state', 'active');
+    control.parentElement.parentElement.removeAttribute('data-composer-panel');
+    assert.equal(f.read().modeControlCount, 0, 'unrelated singleton switch is not Tools evidence');
+    control.remove();
+    f.window.document.getElementById('chat-pane').innerHTML +=
+      '<button title="Tool permission mode"><svg class="lucide-zap"></svg>Act without asking</button>';
+    assert.equal(f.read().modeControlCount, 0);
+    assert.equal(f.read().permissionMode, null);
+    f.window.document.querySelector('[role="tab"]').setAttribute('aria-controls', 'wrong-pane');
+    assert.equal(f.read().activeChat, false);
+  } finally {
+    await f.window.happyDOM.abort();
+  }
+});
+
+test('mode observation assertions reject constant and inverted checked-state mutants', async () => {
+  const f = chatModeFixture();
+  try {
+    const control = f.window.document.querySelector('[role="switch"]');
+    const verify = (expression) => {
+      const read = () =>
+        runInNewContext(expression, {
+          document: f.window.document,
+          getComputedStyle: () => ({ visibility: 'visible', display: 'block' }),
+        });
+      control.setAttribute('aria-checked', 'false');
+      assert.equal(read().permissionMode, 'act');
+      control.setAttribute('aria-checked', 'true');
+      assert.equal(read().permissionMode, 'ask');
+    };
+    verify(guestChatDefaultExpression());
+    assert.throws(() => verify(`({ permissionMode: 'act' })`), assert.AssertionError);
+    assert.throws(
+      () =>
+        verify(
+          guestChatDefaultExpression().replace(
+            "permissionMode: checked === 'true' ? 'ask' : checked === 'false' ? 'act'",
+            "permissionMode: checked === 'true' ? 'act' : checked === 'false' ? 'ask'",
+          ),
+        ),
+      assert.AssertionError,
+    );
+  } finally {
+    await f.window.happyDOM.abort();
+  }
+});
+
+test('fresh Chat default traverses Chat Options and Tools without clicking the mode switch', async () => {
+  const f = chatModeFixture();
+  try {
+    const events = [];
+    let toolsOpen = false;
+    let optionsOpen = false;
+    const driver = {
+      pressEscape: async () => {
+        toolsOpen = false;
+        optionsOpen = false;
+        events.push(['key', 'Escape']);
+      },
+      click: async (_panel, kind, label) => {
+        events.push([kind, label]);
+        if (label === 'Chat Options') optionsOpen = true;
+        if (kind === 'chat-tools') toolsOpen = true;
+      },
+      evaluate: async (_panel, script) =>
+        script.includes('toolsEntryCount')
+          ? { toolsEntryCount: 1 }
+          : {
+              ...f.read(),
+              modeControlCount: toolsOpen ? 1 : 0,
+              optionsOpen,
+              ownedPopupOpen: optionsOpen,
+              composerPanelCount: toolsOpen ? 1 : 0,
+              optionsSheetCount: 0,
+            },
+      waitFor: async (label, read, accept) => {
+        const value = await read();
+        assert.equal(accept(value), true, label);
+        return value;
+      },
+    };
+    assert.equal(
+      (await observeGuestNewChatDefault({}, 'act', 'Act without asking', driver)).permissionMode,
+      'act',
+    );
+    assert.deepEqual(events, [
+      ['title', 'Chat'],
+      ['title', 'New chat'],
+      ['title', 'Chat Options'],
+      ['chat-tools', 'Tools'],
+      ['key', 'Escape'],
+    ]);
+    await assert.rejects(
+      observeGuestNewChatDefault({}, 'ask', 'Ask before acting', driver),
+      /guest_new_chat_default_mode/,
+    );
+    assert.equal(toolsOpen, false, 'mismatch still closes Tools');
+    const entryFailure = {
+      ...driver,
+      evaluate: async (_panel, script) =>
+        script.includes('toolsEntryCount')
+          ? { toolsEntryCount: 0 }
+          : driver.evaluate(_panel, script),
+    };
+    await assert.rejects(
+      observeGuestNewChatDefault({}, 'act', 'Act without asking', entryFailure),
+      /guest_chat_tools_entry_ready/,
+    );
+    assert.equal(
+      optionsOpen,
+      false,
+      'missing Tools entry closes parent menu even without a switch',
+    );
+    const openingFailure = {
+      ...driver,
+      click: async (panel, kind, label) => {
+        await driver.click(panel, kind, label);
+        if (label === 'Chat Options') throw new Error('options_open_dispatch_failed');
+      },
+    };
+    await assert.rejects(
+      observeGuestNewChatDefault({}, 'act', 'Act without asking', openingFailure),
+      /options_open_dispatch_failed/,
+    );
+    assert.equal(optionsOpen, false, 'opening dispatch failure still dismisses its menu');
+    for (const field of [
+      'optionsOpen',
+      'ownedPopupOpen',
+      'composerPanelCount',
+      'optionsSheetCount',
+    ]) {
+      const noOpEscape = {
+        ...entryFailure,
+        pressEscape: async () => {},
+        evaluate: async (_panel, script) =>
+          script.includes('toolsEntryCount')
+            ? { toolsEntryCount: 0 }
+            : {
+                ...f.read(),
+                modeControlCount: 0,
+                optionsOpen: false,
+                ownedPopupOpen: false,
+                composerPanelCount: 0,
+                optionsSheetCount: 0,
+                [field]: optionsOpen
+                  ? field.endsWith('Count')
+                    ? 1
+                    : true
+                  : field.endsWith('Count')
+                    ? 0
+                    : false,
+              },
+      };
+      await assert.rejects(
+        observeGuestNewChatDefault({}, 'act', 'Act without asking', noOpEscape),
+        (error) =>
+          error.message.includes('guest_chat_tools_entry_ready') && error.cleanupFailed === true,
+        `no-op Escape must detect remaining ${field} even with no switch`,
+      );
+      optionsOpen = false;
+    }
+    const cleanupDriver = {
+      ...driver,
+      pressEscape: async () => {
+        throw new Error('escape_failed');
+      },
+    };
+    await assert.rejects(
+      observeGuestNewChatDefault({}, 'ask', 'Ask before acting', cleanupDriver),
+      (error) =>
+        error.message.includes('guest_new_chat_default_mode') && error.cleanupFailed === true,
+    );
+    toolsOpen = false;
+    optionsOpen = false;
+    await assert.rejects(
+      observeGuestNewChatDefault({}, 'act', 'Act without asking', cleanupDriver),
+      /escape_failed/,
+    );
+  } finally {
+    await f.window.happyDOM.abort();
   }
 });
 
@@ -417,17 +661,17 @@ test('guest new chat exposes both selected default modes through their real mode
       newChatCount: 1,
       modeControlCount: 1,
       modeLabel,
-      modeIcon: icon,
+      permissionMode: icon,
     };
     assert.equal(guestChatDefaultMatches(observed, mode, modeLabel), true);
     assert.equal(
       guestChatDefaultMatches(
-        { ...observed, modeIcon: icon === 'act' ? 'ask' : 'act' },
+        { ...observed, permissionMode: icon === 'act' ? 'ask' : 'act' },
         mode,
         modeLabel,
       ),
       false,
-      `mode icon must match ${mode}`,
+      `switch mode must match ${mode}`,
     );
     assert.equal(
       guestChatDefaultMatches(

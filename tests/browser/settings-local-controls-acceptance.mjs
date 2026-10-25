@@ -593,7 +593,7 @@ try {
               criterion(
                 c,
                 `new chat inherits ${label}`,
-                chat.modeLabel === label && chat.modeIcon === value ? 'pass' : 'fail',
+                chat.modeLabel === label && chat.permissionMode === value ? 'pass' : 'fail',
                 chat,
               );
               await settings(panel);

@@ -1,0 +1,21 @@
+{
+  "status": "DONE",
+  "scope": "Fresh zero-authorship current source and post-install producer review at 5b85203347023a5697ce73e57ccf64b099f41e02; six file hashes match preserved reviewed patch.",
+  "A": {
+    "verdict": "PASS_SOURCE_SCOPE",
+    "native": "UNVERIFIED",
+    "admission": "Exact-source admission remains unchanged; a new CI artifact and independent original native reproduction are still required."
+  },
+  "B": {
+    "verdict": "PASS_SOURCE_REVIEW",
+    "findings": "No new source-quality gap found within this bounded harness repair."
+  },
+  "finding_1": "ADDRESSED: clean overlay baseline; active Chat-owned popup via aria-controls; unique expanded Tools and singleton visible composer panel gate the Ask switch. Stale/unrelated singleton and outer navigation are refused.",
+  "finding_2": "ADDRESSED: Chat Options opening is inside try/finally; Escape cleanup requires absent switch and closed options, owned popup, composer panel and sheet. Observation failure remains primary and receives cleanupFailed if dismissal fails.",
+  "guards": "Real guestChatDefaultExpression executes against DOM for checked=false/true, mixed/duplicate/hidden/stale/inactive/unrelated/legacy-button negatives; constant and inverted expression probes fail assertions. Opening-then-throw and independent no-op Escape remnants guard cleanup beyond switch absence.",
+  "producer": "After terminal install: chat 0.8.370 and design-system 0.86.376. DeviceToolsModeRow checked=true means ask, false act; PicksSwitchRow is label + All chats + Radix switch. ComposerSubmenu exposes expanded state, data-composer-panel, one sibling and Escape closeAll.",
+  "producer_ownership": "Current extension host supplies only openAiWatchWindow; ComposerPlusMenu therefore chooses inline Tools. Current design-system Popover forwards Radix trigger aria-controls/expanded and Switch forwards checked to Radix role=switch/aria-checked.",
+  "preservation": "Only six browser harness/test files differ; consumer assertions now use permissionMode. No production auth, guest refusal, persistence, identity or source/resource-admission gates changed.",
+  "install_evidence": "Worker confirmed session77864 exit0; independently read completed observer-resume-1620-install.jsonl RESOURCE_FINAL_DECISION admitted=true resourceInvalid=false exitCode=0 decision=valid at 2026-10-25T16:23:30.913Z.",
+  "limitations": "No tests, native UI, heavy checks, production edits, commits or subagents performed. Focused/compile execution belongs to implementation worker; this review does not claim those results or native acceptance."
+}

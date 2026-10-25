@@ -1,13 +1,15 @@
 import assert from 'node:assert/strict';
 import {
   activeTabPanelExpression,
+  chatToolsCandidatesExpression,
   click,
   evaluate,
   openSection,
+  pressEscape,
   waitFor,
 } from './settings-panel-driver.mjs';
 
-const nativeDriver = { click, evaluate, openSection, waitFor };
+const nativeDriver = { click, evaluate, openSection, waitFor, pressEscape };
 
 // The three controls share one UI path, but each comparison uses its own
 // fixed, external expectation. Only allowlisted preference values leave Chrome.
@@ -69,32 +71,107 @@ export function guestChatDefaultMatches(observed, expectedMode, expectedLabel) {
     observed?.newChatCount === 1 &&
     observed?.modeControlCount === 1 &&
     observed?.modeLabel === expectedLabel &&
-    observed?.modeIcon === expectedMode
+    observed?.permissionMode === expectedMode
   );
 }
 
 export function guestChatDefaultExpression() {
   return `(() => {
         const pane = ${activeTabPanelExpression('Chat')};
-        const mode = [...(pane?.querySelectorAll('button[title="Tool permission mode"]') ?? [])];
-        const newChat = [...(pane?.querySelectorAll('button[title="New chat"]') ?? [])];
-        const icon = mode.length === 1 ? mode[0].querySelector('svg') : null;
+        const visible = (node) => {
+          const rect = node.getBoundingClientRect(), style = getComputedStyle(node);
+          return rect.width > 0 && rect.height > 0 && style.display !== 'none' &&
+            style.visibility !== 'hidden' && !node.closest('[inert], [hidden]');
+        };
+        // Current inline Tools: ComposerSubmenu portal or the Tools sheet page.
+        const options = [...(pane?.querySelectorAll('button[title="Chat Options"], button:not([title])[data-matrx-title="Chat Options"]') ?? [])];
+        const content = options.length === 1 ? document.getElementById(options[0].getAttribute('aria-controls') ?? '') : null;
+        const optionsOpen = options.some((button) => button.getAttribute('aria-expanded') === 'true' || button.getAttribute('data-state') === 'open');
+        const ownedPopupOpen = content !== null && visible(content);
+        const panels = [...document.querySelectorAll('[data-composer-panel]')].filter(visible);
+        const sheets = [...document.querySelectorAll('[role="dialog"]')].filter(visible).filter((root) =>
+          ['Add to chat', 'Tools', 'Chat options'].includes(root.getAttribute('aria-label') ?? document.getElementById(root.getAttribute('aria-labelledby') ?? '')?.textContent.trim()));
+        const tools = ${chatToolsCandidatesExpression()};
+        const toolsExpanded = optionsOpen && ownedPopupOpen && tools.length === 1 && tools[0].getAttribute('aria-expanded') === 'true';
+        const roots = [...(toolsExpanded && panels.length === 1 ? panels : []), ...sheets.filter((root) =>
+          (root.getAttribute('aria-label') ?? document.getElementById(root.getAttribute('aria-labelledby') ?? '')?.textContent.trim()) === 'Tools')];
+        const mode = [...new Set(roots.flatMap((root) =>
+          [...root.querySelectorAll('[role="switch"][aria-label="Ask before acting"]')]))]
+          .filter((node) => visible(node) && [...(node.closest('label')?.querySelectorAll('span') ?? [])]
+            .some((span) => span.textContent.trim() === 'All chats'));
+        const newChat = [...(pane?.querySelectorAll('button[title="New chat"], button:not([title])[data-matrx-title="New chat"]') ?? [])];
+        const checked = mode.length === 1 ? mode[0].getAttribute('aria-checked') : null;
         return { activeChat: pane?.matches('[role="tabpanel"][data-state="active"]') === true,
           newChatCount: newChat.length, modeControlCount: mode.length,
-          modeLabel: mode.length === 1 ? mode[0].textContent.trim() : null,
-          modeIcon: icon?.classList.contains('lucide-zap') ? 'act'
-            : icon?.classList.contains('lucide-hand') ? 'ask' : null };
+          optionsOpen, ownedPopupOpen, composerPanelCount: panels.length, optionsSheetCount: sheets.length,
+          modeLabel: checked === 'true' ? 'Ask before acting' : checked === 'false' ? 'Act without asking' : null,
+          permissionMode: checked === 'true' ? 'ask' : checked === 'false' ? 'act' : null };
       })()`;
 }
 
-export async function observeGuestNewChatDefault(panel, expectedMode, expectedLabel) {
-  await click(panel, 'title', 'Chat');
-  const read = () => evaluate(panel, guestChatDefaultExpression());
-  await waitFor('guest_chat_default_mode_ready', read, (value) => value?.activeChat === true);
-  await click(panel, 'title', 'New chat');
-  return waitFor('guest_new_chat_default_mode', read, (value) =>
-    guestChatDefaultMatches(value, expectedMode, expectedLabel),
+export async function observeGuestNewChatDefault(
+  panel,
+  expectedMode,
+  expectedLabel,
+  driver = nativeDriver,
+) {
+  await driver.click(panel, 'title', 'Chat');
+  const read = () => driver.evaluate(panel, guestChatDefaultExpression());
+  await driver.waitFor(
+    'guest_chat_default_mode_ready',
+    read,
+    (value) =>
+      value?.activeChat === true &&
+      value.newChatCount === 1 &&
+      value.optionsOpen === false &&
+      value.ownedPopupOpen === false &&
+      value.composerPanelCount === 0 &&
+      value.optionsSheetCount === 0,
   );
+  await driver.click(panel, 'title', 'New chat');
+  let observation;
+  let observationFailure;
+  let cleanupFailure;
+  try {
+    await driver.click(panel, 'title', 'Chat Options');
+    await driver.waitFor(
+      'guest_chat_tools_entry_ready',
+      () =>
+        driver.evaluate(
+          panel,
+          `(() => ({ toolsEntryCount: ${chatToolsCandidatesExpression()}.length }))()`,
+        ),
+      (value) => value?.toolsEntryCount === 1,
+    );
+    await driver.click(panel, 'chat-tools', 'Tools');
+    observation = await driver.waitFor('guest_new_chat_default_mode', read, (value) =>
+      guestChatDefaultMatches(value, expectedMode, expectedLabel),
+    );
+  } catch (error) {
+    observationFailure = { error };
+  }
+  try {
+    // Composer submenu Escape closes its parent too; sheet Escape dismisses it.
+    await driver.pressEscape(panel);
+    await driver.waitFor(
+      'guest_chat_options_closed',
+      read,
+      (value) =>
+        value?.modeControlCount === 0 &&
+        value.optionsOpen === false &&
+        value.ownedPopupOpen === false &&
+        value.composerPanelCount === 0 &&
+        value.optionsSheetCount === 0,
+    );
+  } catch (error) {
+    cleanupFailure = { error };
+  }
+  if (observationFailure) {
+    if (cleanupFailure) observationFailure.error.cleanupFailed = true;
+    throw observationFailure.error;
+  }
+  if (cleanupFailure) throw cleanupFailure.error;
+  return observation;
 }
 
 export async function observeGuestPreference(panel, preference, driver = nativeDriver) {
