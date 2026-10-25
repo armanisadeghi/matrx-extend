@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "date": "2026-10-25",
+  "role": "independent saved-evidence review",
+  "scope": "Publication provenance and bounded actual Store-installed signed-out guest flow only; no new UI run, backend probe, or broad product-health assessment",
+  "source_report": "docs/stabilization/reports/store-daily-20261025.json",
+  "A_actual_bounded_behavior": {
+    "verdict": "validated_bounded_pass",
+    "observations": [
+      "The Chrome extension details AX records ID hnfolienncfklkgmdjjmhhegglimlamg, version 0.2.577, enabled, and Source Chrome Web Store. The demo page AX has Sign in, and the side panel account control is G; these support the signed-out guest profile characterization.",
+      "The first saved AX and screenshot show the assistant's painted H1 answer matching the page H1, A clear three-stage browser workflow.",
+      "The second AX has both user prompts and both assistant answers under one Conversation container. Its Capture purpose and expected result match the page table exactly. The screenshot is scrolled away from the second answer, so the AX, rather than that image, establishes painted second-turn content.",
+      "After each answer the saved AX has an empty Reply and disabled Send message and no Stop the run control. This supports terminal UI state in addition to actual answer content."
+    ],
+    "evidence": [
+      "docs/stabilization/reports/store-daily-20261025-installed.ax.txt",
+      "docs/stabilization/reports/store-daily-20261025-guest-turn1.ax.txt",
+      "docs/stabilization/reports/store-daily-20261025-guest-turn1.png",
+      "docs/stabilization/reports/store-daily-20261025-guest-turn2.ax.txt",
+      "docs/stabilization/reports/store-daily-20261025-guest-turn2.png"
+    ],
+    "server_bracket": "Daily report records independent root public /health/version HTTP 200 at 07:58:18.088952Z and 07:59:29.464603Z, both SHA 18bc9b2596ba6416141849bbf55c0fad60fc274e. Raw curl responses were not present in the reviewed saved files, so this bracket is corroboration reported by root, not independently re-derived here.",
+    "limits": "Warm two-turn UI path only; no cold restart, exact request trace/model correlation, allowance boundary, member flow, original intermittent cause closure, or full Chat/extension health is established."
+  },
+  "B_publication_provenance_quality": {
+    "verdict": "validated_with_specific_correction_and_linkage_limit",
+    "publication": "Primary authenticated dashboard AX identifies item hnfolienncfklkgmdjjmhhegglimlamg as Published - public, says the draft is published, and shows Published package 0.2.577. Official sender-search mail AX shows an Oct 23 publication notice naming that same item; its body was not opened. The installed AX independently shows Store origin, same item ID, and 0.2.577.",
+    "artifact": "Local exact Store ZIP SHA-256 independently recomputed as 9aa436f9e4f3571769be7f7afd154e066ce4756408e288f45660f01f75f0f1b8; ZIP CRC test passed; manifest is 0.2.577 with no development key or toolbar popup. Exact release receipt names source 91d7696626537676d0a5a1239ca29eb3fbed7331, matching local v0.2.577 tag. Submission receipt names hosted run 39443241939 and artifact 12274509270 with the same ZIP hash.",
+    "approved_policy_surface": "Every policy field selected by scripts/check-cws-release-risk.mjs in the exact ZIP manifest equals config/chrome-web-store-approved-baseline.json's recorded published 0.2.205 surface; no mismatched fields. This comparison is to the approved baseline record, not a byte comparison with the 0.2.205 ZIP.",
+    "resource_quality": "Completed journal store-daily-20261025-0755 was admitted, had healthy samples through 07:59:21.071Z, confirmed browser stop, and finalized valid/resourceInvalid=false/exitCode=0 at 07:59:34.491Z.",
+    "correction": "The daily report's submitted_store_candidate_source 9b254640968b4a3823be1409acfab95a36d9bf20 is the parent of release commit 91d7696626537676d0a5a1239ca29eb3fbed7331, not the submitted source. Use 91d7696626537676d0a5a1239ca29eb3fbed7331 for baseline provenance.",
+    "linkage_limit": "The saved publisher and installed AX prove item/version/Store origin, while the submission and release receipts tie the submitted candidate to the exact local ZIP. No downloaded published CRX or installed payload byte comparison was reviewed, so byte identity of the Store-delivered CRX with the ZIP is not independently proved.",
+    "evidence": [
+      "docs/stabilization/reports/store-daily-20261025-dashboard-status.ax.txt",
+      "docs/stabilization/reports/store-daily-20261025-package.ax.txt",
+      "docs/stabilization/reports/store-daily-20261025-mail.ax.txt",
+      "docs/stabilization/reports/store-daily-20261025-installed.ax.txt",
+      "docs/stabilization/resource-journals/store-daily-20261025-0755.jsonl",
+      "docs/stabilization/reports/store577-submission-20261020.json",
+      "test-results/store-release-577/.output/release-receipt.json",
+      "test-results/store-release-577/.output/matrx-extend-0.2.577-store.zip",
+      "config/chrome-web-store-approved-baseline.json"
+    ]
+  },
+  "baseline_advance_recommendation": "Evidence supports advancing the approved public item/version baseline to 0.2.577 with source 91d7696626537676d0a5a1239ca29eb3fbed7331 and exact submitted ZIP hash, while preserving the bounded behavioral and payload-linkage limits. Source/release/member 0.2.621 eligibility was outside this review and remains unverified."
+}

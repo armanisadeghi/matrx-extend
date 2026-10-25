@@ -1,0 +1,125 @@
+2026-10-25T07:57:19.806Z
+The following is a diff from the previous accessibility tree for Window: "Package Information" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 131-132, 135-165, 168-182
+~0 standard window Package Information - Google Chrome - Arman (armansadeghi.com), Secondary Actions: Raise, URL: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
+~	1 container Package Information - Google Chrome - Arman (armansadeghi.com), URL: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
+~					9 text field (settable) Address and search bar, Placeholder: Ask Google or type a URL, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
+~					120 HTML content Package Information, URL: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
+~								130 container
++									131 button Google apps
++									132 button Google Account: Arman Sadeghi (arman@armansadeghi.com)
+~								134 container Primary menu
++								135 container Matrx Extend
++									136 heading Matrx Extend, Value: 1
++										137 link Matrx Extend, Value: chromewebstore.google.com/detail/hnfolienncfklkgmdjjmhhegglimlamg?authuser=0&hl=en
++									138 text Status: Published  -  public ID:  hnfolienncfklkgmdjjmhhegglimlamg
++									139 button Roll back to previous version
++									140 button Upload new package
++								141 container Item menu
++									142 container Build
++										143 heading Build, Value: 2
++											144 text Build
++										145 content list
++											146 link Status, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/status
++											147 link Package, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
++											148 link Store listing, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/listing
++											149 link Privacy, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/privacy
++											150 link Distribution, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/distribution
++									151 container Access
++										152 heading Access, Value: 2
++											153 text Access
++										154 content list
++											155 link Test instructions, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/testcredentials
++									156 container Analytics
++										157 heading Analytics, Value: 2
++											158 text Analytics
++										159 content list
++											160 link Installs & uninstalls, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/analytics/installs
++											161 link Impressions, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/analytics/impressions
++											162 link Users, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/analytics/users
++											163 link Ratings, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/ratings
++								164 heading Package, Value: 2
++									165 text Package
+~								166 container
+~									167 heading Draft, Value: 3
++										168 text Draft
++									169 table Draft
++										170 row
++											171 row header
++												172 text Version
++											173 cell
++												174 text 0.2.577
++										175 row
++											176 row header
++												177 text Item type
++											178 cell
++												179 text Extension
++										180 row
++											181 row header
++												182 text Permissions
++											183 cell
++												184 text storage ,  sidePanel ,  activeTab ,  tabs ,  tabGroups ,  scripting ,  identity ,  offscreen ,  nativeMessaging ,  alarms ,  contextMenus ,  clipboardWrite ,  downloads ,  webNavigation ,  history ,  bookmarks ,  notifications ,  sessions ,  debugger ,  cookies ,  pageCapture ,  clipboardRead ,  tabCapture ,  host permission
++										185 row
++											186 row header
++												187 text CRX file
++											188 cell
++												189 link main.crx, Value: chrome.google.com/webstore/download/hnfolienncfklkgmdjjmhhegglimlamg/revision/__DRAFT/package/main/crx/3
++										190 row
++											191 row header
++												192 text Public key
++											193 cell
++												194 link View public key, Value: chrome.google.com/webstore/devconsole
++										195 row
++											196 row header
++												197 text Verified CRX uploads
++												198 pop up button Learn more about verified CRX uploads
++											199 cell
++												200 button Opt in to verified CRX uploads
++								201 container
++									202 heading Published, Value: 3
++										203 text Published
++									204 table Published
++										205 row
++											206 row header
++												207 text Version
++											208 cell
++												209 text 0.2.577
++										210 row
++											211 row header
++												212 text Item type
++											213 cell
++												214 text Extension
++										215 row
++											216 row header
++												217 text Permissions
++											218 cell
++												219 text storage ,  sidePanel ,  activeTab ,  tabs ,  tabGroups ,  scripting ,  identity ,  offscreen ,  nativeMessaging ,  alarms ,  contextMenus ,  clipboardWrite ,  downloads ,  webNavigation ,  history ,  bookmarks ,  notifications ,  sessions ,  debugger ,  cookies ,  pageCapture ,  clipboardRead ,  tabCapture ,  host permission
++										220 row
++											221 row header
++												222 text CRX file
++											223 cell
++												224 link main.crx, Value: chrome.google.com/webstore/download/hnfolienncfklkgmdjjmhhegglimlamg/package/main/crx/3
++										225 row
++											226 row header
++												227 text Public key
++											228 cell
++												229 link View public key, Value: chrome.google.com/webstore/devconsole
++								230 container
++									231 heading Useful Resources, Value: 2
++										232 text Useful Resources
++									233 content list Useful Resources
++										234 link Developer Guide, Value: developer.chrome.com/webstore?hl=en
++								235 heading Need Help?, Value: 2
++									236 text Need Help?
++								237 content list Need Help?
++									238 link Contact Us, Value: support.google.com/chrome_webstore?p=contact&hl=en
++									239 link Give Feedback, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
++								240 container
++									241 text ©  2026  Google  - 
++									242 link Developer Agreement, Value: developer.chrome.com/webstore/terms?hl=en
++									243 text  - 
++									244 link Google Privacy Policy, Value: google.com/intl/en/privacy.html
++							245 text Package Information
+~					97 tab (selected, settable, boolean) Package Information - Memory usage - 163 MB, Value: on
++		246 text chrome.google.com/webstore/devconsole/…/package
+The focused UI element is 120 HTML content Package Information, URL: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package

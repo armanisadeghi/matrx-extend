@@ -1,0 +1,14 @@
+2026-10-25T08:03:22.665Z
+The following is a diff from the previous accessibility tree for Window: "Extensions - Matrx Extend DEV" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 16, 590, 601, 608-611, 649
++					662 pop up button Matrx Extend DEV
++								663 button Reload
++								664 text 184 MB
++									665 container
++										666 AXListMarker • 
++										667 link service worker
++											668 text service worker
++								669 switch Pin to toolbar, Value: on
++						670 text Reloaded
+~					660 tab (selected, settable, boolean) Extensions - Matrx Extend DEV - Memory usage - 51.3 MB, Value: on
+The focused UI element is 562 HTML content Extensions - Matrx Extend DEV, URL: chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml

@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "status": "normal_ci_promoted_owner_native_reload_verified",
+  "recorded_at": "2026-10-25T08:05:36.206439+00:00",
+  "source_sha": "e571e287c4dca27af4abefbaea78c600843da0b0",
+  "main_at_promotion": "d53b4eb43b52fbfae17ca49742a26e39124c949a",
+  "version": "0.2.621",
+  "ci_run": 40171081023,
+  "artifact_id": 12590526841,
+  "tree_sha256": "57965d7343968c0882ddd16f9bf92e5967621fba555f23399186e677e0aa8ef3",
+  "profile": "arman@armansadeghi.com / Chrome Profile8",
+  "chrome": "156.0.8078.47 arm64",
+  "development": {
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "version": "0.2.621",
+    "enabled": true,
+    "pinned": true,
+    "reload": "Actual manager Reload click followed by Reloaded text and full details snapshot."
+  },
+  "store": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.577",
+    "origin": "Chrome Web Store",
+    "enabled": true,
+    "pinned": true
+  },
+  "journal": "docs/stabilization/resource-journals/owner-dev621-reload-20261025-0800.jsonl",
+  "resource": {
+    "admitted": true,
+    "invalid": false,
+    "exit": 0,
+    "decision": "valid"
+  },
+  "raw_ax": [
+    "docs/stabilization/reports/owner-dev621-profile.ax.txt",
+    "docs/stabilization/reports/owner-dev621-reloaded.ax.txt",
+    "docs/stabilization/reports/owner-dev621-full.ax.txt",
+    "docs/stabilization/reports/owner-store577.ax.txt"
+  ],
+  "cleanup": "One owned temporary DEV details tab closed; existing tabs and both extensions retained. Browser holder terminal actual0.",
+  "limits": "Manager identity/reload only; no new DEV product case or current-main-after-future-source-changes claim. Full AX observations reindex elements: one stale index click refused harmlessly; corrected from fresh tree."
+}

@@ -1,0 +1,86 @@
+2026-10-25T08:03:16.396Z
+The following is a diff from the previous accessibility tree for Window: "About Version" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 11-12, 22-531
+~1 standard window About Version - Google Chrome - Arman (armansadeghi.com), URL: chrome://version/, Secondary Actions: Raise
+~	2 container About Version - Google Chrome - Arman (armansadeghi.com), URL: chrome://version/
+~					9 pop up button Chrome
+~					10 text field (settable) Address and search bar, Value: chrome://version, Placeholder: Ask Google or type a URL
+~					15 pop up button LastPass
+~					16 pop up button Matrx Extend DEV
+~					17 pop up button Matrx
++				561 scroll area
++					562 HTML content About Version, URL: chrome://version/
++						563 container
++							564 image Chrome logo
++							565 text Google LLC
++							566 text Copyright 2026 Google LLC. All rights reserved.
++							567 container
++								568 container Google Chrome:
++									569 text Google Chrome :
++								570 container 156.0.8078.47 (Official Build) (arm64) Copy version string
++									571 container
++										572 text 156.0.8078.47  ( Official Build )  (arm64)
++									573 button Copy version string
++							574 container
++								575 container Revision:
++									576 text Revision :
++								577 container 1d17a2e2ee147bb7d6ae2ab6abdb3a2510c17775-refs/branch-heads/8078@{#1313}
++									578 text 1d17a2e2ee147bb7d6ae2ab6abdb3a2510c17775-refs/branch-heads/8078@{#1313}
++							579 container
++								580 container OS:
++									581 text OS :
++								582 container macOS Version 27.0.1 (Build 26A434)
++									583 container
++										584 text macOS Version 27.0.1 (Build 26A434)
++							585 container
++								586 container JavaScript:
++									587 text JavaScript :
++								588 container V8 15.6.75.19
++									589 text V8 15.6.75.19
++							590 container
++								591 container User Agent:
++									592 text User Agent :
++								593 container Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36
++									594 text Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36
++							595 container
++								596 container Command Line:
++									597 text Command Line :
++								598 container /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --profile-directory=Profile 8 --flag-switches-begin --flag-switches-end
++									599 text /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --profile-directory=Profile 8 --flag-switches-begin --flag-switches-end
++							600 container
++								601 container Executable Path:
++									602 text Executable Path :
++								603 container /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
++									604 text /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
++							605 container
++								606 container Profile Path:
++									607 text Profile Path :
++								608 container /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8
++									609 text /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8
++							610 container
++								611 container Linker:
++									612 text Linker :
++								613 container lld
++									614 text lld
++							615 container
++								616 container Variations Source:
++									617 text Variations Source :
++								618 container variations server
++									619 text variations server
++							620 container
++								621 container Command-line Variations:
++									622 text Command-line Variations :
++								623 container eyJkaXNhYmxlLWZlYXR1cmVzIjoiQXV0b2ZpbGxBaVdhbGxldFByaXZhdGVQ...
++									624 text eyJkaXNhYmxlLWZlYXR1cmVzIjoiQXV0b2ZpbGxBaVdhbGxldFByaXZhdGVQ...
++								625 container Copy variations string
++									626 button Copy variations string
++							627 container
++								628 container Active Variations:
++									629 text Active Variations :
++								630 container 832e9e2-ca7d8d80 a712e4cd-ca7d8d80 fa220cc1-377be55a f7adf49b-ca7d8d80 5d6e19f0-ca7d8d80 f7226032-ca7d8d80 5d43ba47-ca7d8d80 2ad3343-ca7d8d80 6e153b90-ca7d8d80 7cef7344-3f4a17df fd0a269a-60e4e4cd d609f093-377be55a da968c94-ca7d8d80 3b79d4f4-7791d058 99fb13df-ca7d8d80 cdc6dc11-d465060b 92b406bd-825c464d e51c83b-ca7d8d80 3095aa95-3f4a17df 5033fb03-33c3eba5 b0b483da-ca7d8d80 e4d43646-ca7d8d80 a8d4875a-dc18c817 ff1e0777-33c3eba5 58cdc9f0-d3dac184 153d998a-be68f3ee 81df393b-29326d4a 3fcc8d2-29326d4a f314f5b9-97c (showing 0-100 of 179 items)
++									631 text 832e9e2-ca7d8d80 a712e4cd-ca7d8d80 fa220cc1-377be55a f7adf49b-ca7d8d80 5d6e19f0-ca7d8d80 f7226032-ca7d8d80 5d43ba47-ca7d8d80 2ad3343-ca7d8d80 6e153b90-ca7d8d80 7cef7344-3f4a17df fd0a269a-60e4e4cd d609f093-377be55a da968c94-ca7d8d80 3b79d4f4-7791d058 99fb13df-ca7d8d80 cdc6dc11-d465060b 92b406bd-825c464d e51c83b-ca7d8d80 3095aa95-3f4a17df 5033fb03-33c3eba5 b0b483da-ca7d8d80 e4d43646-ca7d8d80 a8d4875a-dc18c817 ff1e0777-33c3eba5 58cdc9f0-d3dac184 153d998a-be68f3ee 81df393b-29326d4a 3fcc8d2-29326d4a f314f5b9-97ce6d6e 238649f0-321ca939 8095bf60-cd5781de b1b6eab0-ca7d8d80 4e5d86a8-7cfa6c5b f914376f-ca7d8d80 e9194174-3d47f4f4 38b96156-ca7d8d80 25d1e44f-ca7d8d80 52a4deb3-ca7d8d80 a582a1b8-5ad3f43d 6a64ab7e-377be55a 3b02c079-ca7d8d80 bd6dd170-ca7d8d80 19784e46-ca7d8d80 8d4c626e-377be55a 7515e6ea-ca7d8d80 6d423f36-ca7d8d80 9d5ecd8d-ca7d8d80 3299018c-ca7d8d80 557709c5-377be55a 310c8bf2-722cbc7b ed102d29-ee29209c d09c2d9-f54bd3e4 a0d52722-377be55a e6020cbf-377be55a 9ae8bfc4-6e522a5b 1e12d864-ca7d8d80 635e5df5-377be55a 432d9464-377be55a 3ca85ee1-ca7d8d80 1db33038-377be55a 2bdb6f15-377be55a f181271f-ca7d8d80 78049c75-7bc9a52b 46294e3b-aebaa9a8 c6fc28a7-ca7d8d80 4d4e8d94-377be55a 55cc39e1-42e09f37 66657049-17464aed a6ed9bee-f588741e c219b73b-ca3cb230 fca39b9a-e986cf53 3957ae57-c9a0730d 97604fae-ca7d8d80 7adbabf0-ca7d8d80 73d480d9-ca7d8d80 861960c3-377be55a 70640dfa-60e4e4cd b252442a-ca7d8d80 a29130c-ca7d8d80 9f8a0fd2-ca7d8d80 59ec3b4-ca7d8d80 3ac9fcb9-ca7d8d80 d09b7b7d-ca7d8d80 4ce582eb-377be55a f1082cd7-51a6e3be 626538e5-ca7d8d80 fc74ce3e-29326d4a 99a615e5-949af2cb a3652538-ca7d8d80 4fa4e3b8-377be55a 44fe0078-717062b5 8be81a01-ca7d8d80 3ede7bd6-ca7d8d80 1edcddf4-2d58eb1b 6cd68a95-ca7d8d80 433b0a9e-ca7d8d80 1f490b80-2647078b b6f29041-9af5ba90 53c64de7-aa077dda c526ddf6-ca7d8d80
++								632 container Copy variations string
++									633 button Copy variations string
+~					541 tab (selected, settable, boolean) About Version - Memory usage - 26.8 MB, Value: on
+~					543 tab (settable, boolean) Search results - arman@armansadeghi.com - armansadeghi.com Mail - High memory usage - 1.0 GB, Value: off
+The focused UI element is 562 HTML content About Version, URL: chrome://version/
