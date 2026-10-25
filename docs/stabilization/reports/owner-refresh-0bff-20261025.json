@@ -1,0 +1,79 @@
+{
+  "task_id": "owner-refresh-0bff-20261025",
+  "source_sha": "0bff3d9f37a64e57f1b9adb22873511eeee652cf",
+  "ci_run_id": 40198945745,
+  "artifact_id": 12601231454,
+  "artifact_digest": "sha256:9c7c3a5e3e5a7576ee3a7bc733869f5b8f7635dfaf7de208470d04c0c5647dd3",
+  "version": "0.2.621",
+  "tree_sha256": "155090b5877b852aad71cb879544a8ee662eeac71b258ee5fc31a1fb965e1c09",
+  "normal_import": { "exec_session": 9792, "actual_exit": 0 },
+  "normal_promotion": {
+    "exec_session": 4824,
+    "actual_exit": 0,
+    "main_sha": "4aa0b321377deafa09a4ab2ca0a5b8e7c30b4977",
+    "compatibility": "runtime-equivalent",
+    "allowed_diff_paths": [
+      "docs/stabilization/evidence/guest-mode-6f86-replay/07-manager-reloaded.ax.txt",
+      "docs/stabilization/evidence/guest-mode-6f86-replay/11-owner-restored.ax.txt",
+      "docs/stabilization/evidence/guest-mode-6f86-replay/evidence-manifest.json",
+      "docs/stabilization/resource-journals/hourly-dev-reload-6f86-20261025-1302.jsonl"
+    ]
+  },
+  "native": {
+    "profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "owner_window": "Arman (armansadeghi.com)",
+    "chrome": "156.0.8078.47 arm64",
+    "development_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "actual_reloaded_toast": true,
+    "enabled": true,
+    "pinned": true,
+    "store_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "store_version": "0.2.577",
+    "store_source": "Chrome Web Store",
+    "store_enabled": true,
+    "store_pinned": true,
+    "both_toolbar_controls_visible": true
+  },
+  "resource": {
+    "journal": "docs/stabilization/resource-journals/owner-0bff-refresh-20261025-1402.jsonl",
+    "decision": "valid",
+    "resourceInvalid": false,
+    "actual_root_exec_session": 94549,
+    "actual_exit": 0,
+    "watch_reads": 134,
+    "max_read_gap_seconds": 2.023,
+    "unsafe_events": 0,
+    "native_api_operations": 14,
+    "checks_per_operation": 1
+  },
+  "evidence": {
+    "owner-0bff-reloaded.ax.json": {
+      "path": ".output/stabilization-checkpoints/owner-0bff-reloaded.ax.json",
+      "sha256": "12fa84e95d2db3b94fa5e552a0e83f9e7f13614711cdf7fae2fffe231cda377d"
+    },
+    "owner-0bff-profile.ax.json": {
+      "path": ".output/stabilization-checkpoints/owner-0bff-profile.ax.json",
+      "sha256": "6c8d573d9cbc35d593812fdcd18fa0501076f209feb4186ddfd4b8752192a96e"
+    },
+    "owner-0bff-store.ax.json": {
+      "path": ".output/stabilization-checkpoints/owner-0bff-store.ax.json",
+      "sha256": "3566e4d57beb2fe0f568e27426ed2d4ec13febe2c797132ca88dd2759044b1b3"
+    },
+    "owner-0bff-final.ax.json": {
+      "path": ".output/stabilization-checkpoints/owner-0bff-final.ax.json",
+      "sha256": "a4c66a80a301eb42aa7e4cbdb7cce2ce042688cf3684b9ba8eef61636e2e0bb4"
+    },
+    "owner-0bff-operations.json": {
+      "path": ".output/stabilization-checkpoints/owner-0bff-operations.json",
+      "sha256": "a8b018b6ba83aa08357d57e841f3270ff3687df7d7b3863aa88ec559b2d37454"
+    },
+    "owner-resource-watch-1402.jsonl": {
+      "path": ".output/stabilization-checkpoints/owner-resource-watch-1402.jsonl",
+      "sha256": "68d4865e51f3ca781975e658d056adc4ca3e247ef28931aae201de776f5620c1"
+    }
+  },
+  "cleanup": "Owned Store manager tab closed, original owner DEV tab restored; UI stopped before owned holder SIGINT. All processes terminal. No product setting/auth/permission change or AI call.",
+  "normal_guard_handling": "Old6f86 duplicate import returned generic failure; normal promoter correctly refused6f86 after root events audit changed. Selected newer successful0bff artifact instead, with normal runtime-equivalence proof for current4aa; no override/deletion/allowlist change.",
+  "limits": "Manager/profile/reload identity only; native product evidence remains bound to earlier6f86 artifact. Shell exits root-observed; watcher independently saw journal and PID exit."
+}
