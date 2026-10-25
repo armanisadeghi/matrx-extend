@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "observed_at": "2026-10-25T09:15:24.552256+00:00",
+  "owner": "root",
+  "lane": "B Settings guest",
+  "artifact_source": "0fc85bdae10241c898191b022fc498968696e1e8",
+  "development_run_id": "40177491271",
+  "artifact_id": "12592193854",
+  "synchronized_main": "7683c68b0f72705c2374b7d1da4f032ac8b37aaa",
+  "attempts": [
+    {
+      "mode": "plan-settings-guest",
+      "result": "HOSTED_SETTINGS_GUEST_RUNNER_REFUSED",
+      "cause": "required explicit runner argument absent; no dispatch"
+    },
+    {
+      "mode": "plan-settings-guest",
+      "runner": "macos-15-intel",
+      "result": "admitted exact code artifact"
+    },
+    {
+      "mode": "dispatch-settings-guest",
+      "runner": "macos-15-intel",
+      "result": "HOSTED_SETTINGS_GUEST_SOURCE_DRIFT",
+      "cause": "later evidence-only main commits violate strict equality",
+      "job_started": false
+    }
+  ],
+  "next_action": "Existing free CI workflow_dispatch on one frozen synchronized main, then normal exact-source plan and dispatch; no guard bypass, no paid job relocation.",
+  "product_passes": 0,
+  "fixture_or_secret_changes": false
+}
