@@ -1,0 +1,16 @@
+{
+  "actualPollCount": 57,
+  "maxGapSeconds": 2.0107,
+  "alertEvents": [],
+  "final": {
+    "schema": 1,
+    "at": "2026-10-25T17:40:38.520Z",
+    "runId": "owner-fd622-20261025-1740",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid",
+    "code": "RESOURCE_FINAL_DECISION"
+  },
+  "elapsedSeconds": 112.43
+}

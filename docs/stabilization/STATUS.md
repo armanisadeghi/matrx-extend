@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-25 17:08 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-25T16:02:32.452760+00:00. 207 features · 831 cases · 1422 controls · 293 linked defect records.
+Generated 2026-10-25 17:42 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-25T17:37:53.731681+00:00. 207 features · 831 cases · 1422 controls · 293 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -554,7 +554,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1003-T09 · admin: Pass. FreshSol visual+AX/detail reconciled sameQuickTestAgent plus2memberbadge; actualchosenidentity persisted afterfullreload, originalMatrxBrowserAgent restored.
   Evidence / build / date recorded: admin-default-agent-002, docs/stabilization/runs/admin-default-agent-002.json
 - EXT-F-1003-T10 · guest: Unverified.
-  Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
+  Evidence / build / date recorded: guest-mode-622-20261025-1724, ['docs/stabilization/reports/owner622-adoption-native-20261025.json', 'docs/stabilization/reports/guest622-resource-watch-20261025.json']
 - EXT-F-1003-T13 · guest: Unverified.
   Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
 - EXT-F-1003-T15 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.

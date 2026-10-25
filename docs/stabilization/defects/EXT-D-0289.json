@@ -24,7 +24,9 @@
     "docs/stabilization/reports/settings-case-repair-fresh-review.json",
     "docs/stabilization/reports/settings-retest-b-1150.json",
     "docs/stabilization/reports/settings-sink-diagnosis-1202.json",
-    "docs/stabilization/reports/mode-observer-source-review-1453.json"
+    "docs/stabilization/reports/mode-observer-source-review-1453.json",
+    "docs/stabilization/reports/owner622-adoption-native-20261025.json",
+    "docs/stabilization/reports/owner622-evidence-review-20261025.json"
   ],
   "reviewer": "/root/settings_member_final_review_1230",
   "verification": {
@@ -39,7 +41,7 @@
     "guarded_session": 86803,
     "source_checks_not_native_passes": true
   },
-  "native_retest": "Not yet run on this current patch. Fresh exact CI artifact/adoption/Reload and canonical guest fresh-Chat Tools switch plus refusal/reload surrounding cases required; original fullT10/other roles remain unfinished.",
+  "native_retest": "FrozenF0 DEV622 owner actual Reload verified valid0; separate guest continuation pressure-invalid3 before Ask selection/freshChat consumer, zero product credit. Cleanup complete under separate valid0 lease. Original T10/D289/D291 native acceptance remains unverified; current fd runtime successful CI not yet adopted.",
   "fix_commit_lookup": "Commit containing this record; use exact-path git log. Native acceptance and release remain pending.",
   "transition_history": [
     {

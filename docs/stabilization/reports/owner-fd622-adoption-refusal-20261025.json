@@ -1,0 +1,18 @@
+{
+  "task_id": "owner-fd622-native-1740",
+  "status": "UI_NEVER_STARTED_PROMOTION_REFUSED",
+  "at": "2026-10-25T17:38:55.107680+00:00",
+  "native_api_calls": 0,
+  "native_api_budget": 20,
+  "scope": "OwnerProfile8 currentfd622 nativeDEVReload identity path/on/pin andStoreactualversion/pin; closeowninspectiontab restoreoriginalVault",
+  "expected_ci_run": "40215793878",
+  "expected_artifact": "12608330766",
+  "admission": "AwaitrootcombinedPROMOTED+literalADMITTED",
+  "prohibited": "No guest/productcase/auth/AI/source/build/release; no nativeAPIbeforehandoff",
+  "cleanup": "No newUIorownedtabs created; originalownerVault remains from priorcompletedcleanup.",
+  "finished_at": "2026-10-25T17:40:30.619992+00:00",
+  "ui_status": "STOPPED; no phaseUIever",
+  "promotion": "Parent normalfdimport4926 cached; promoterrefusedci_dev_pending_runtime_source dueconcurrent src/features/vault/vault-confirmation.tsworkingedit. No currentfdpromotion; existingF0receiptunchanged.",
+  "resource": "Parentactual77957exit0 final17:40:38.520Z valid/resourceInvalidfalse;57watchpolls/maxgap2.0107s; noUIorproductcredit",
+  "next_action": "Normal source reconciliation and eligible current-runtime promotion before any new guardednativehandoff."
+}

@@ -1,0 +1,16 @@
+{
+  "actualPollCount": 143,
+  "maxGapSeconds": 2.0158,
+  "alertEvents": [],
+  "final": {
+    "schema": 1,
+    "at": "2026-10-25T17:36:28.027Z",
+    "runId": "native-cleanup-622-20261025-1732",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid",
+    "code": "RESOURCE_FINAL_DECISION"
+  },
+  "elapsedSeconds": 285.29
+}
