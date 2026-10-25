@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "at": "2026-10-25T17:08:25.808290+00:00",
+  "status": "SOURCE_REPAIR_CI_PASS_CACHED_ARTIFACT_NOT_PROMOTED_NO_UI",
+  "repair_commit": "e595a14674f6b1eb68e03e7292be462dbcbaa008",
+  "successful_CI": [
+    {
+      "source": "e595a14674f6b1eb68e03e7292be462dbcbaa008",
+      "run_id": 40213012604,
+      "artifact_id": 12606666851,
+      "digest": "sha256:be5d2fc7a983dee2c249fbae8069e72a4fc344544e4c23bd1b692fbcaa676b7e"
+    },
+    {
+      "source": "aa7e3bfff5a2f378abb61e519d2457ba9f12b58d",
+      "run_id": 40213566401,
+      "artifact_id": 12606583428,
+      "digest": "sha256:9bb54a494ae6e7d1204043da529519c88861bceabcbb0203d90cd8110c78f929"
+    }
+  ],
+  "import": {
+    "session": 6171,
+    "exit_code": 0,
+    "result": "DEVELOPMENT_TEST_IMPORTED exact_pushed_commit_only",
+    "directory": "test-results/ci-artifacts/aa7e3bfff5a2f378abb61e519d2457ba9f12b58d/40213566401-1",
+    "version": "0.2.621",
+    "tree_sha256": "d5c9032d43d25712bca777263025cb81256139338cf97989d8f5c3af04971938"
+  },
+  "drift": {
+    "current_source": "f0d7a6b7fcb97afbb2bbc2414dff90f998083fff",
+    "current_source_version": "0.2.622",
+    "changed_paths": [
+      "package.json",
+      "docs/TOOLS.generated.md",
+      "types/python-generated/openapi-routes.json",
+      "types/python-generated/stream-events.ts",
+      "types/tool-catalog.json",
+      "types/tool-catalog.md"
+    ],
+    "pipeline_handles": [40214402403, 40214402308],
+    "state_at_observation": "Both in progress; select a successful normal-import-eligible exact current artifact later; do not duplicate dispatch."
+  },
+  "promotion": "NOT_ATTEMPTED after runtime/source/version drift; no stale-candidate promotion or source bypass",
+  "browser": {
+    "resource_journal": "docs/stabilization/resource-journals/owner-guest-aa7-20261025-1702.jsonl",
+    "actual_session": 42259,
+    "actual_exit_code": 0,
+    "final_at": "2026-10-25T17:06:24.300Z",
+    "decision": "valid",
+    "resource_invalid": false,
+    "native_api_calls": 0,
+    "CUA_initialized": false,
+    "owner_or_guest_changes": false,
+    "owned_browser_tabs_or_processes": false,
+    "operator": "owner_guest_native_1645 HANDOFF_READY_NO_UI",
+    "watch_report": "docs/stabilization/reports/native-resource-watch-1702.json"
+  },
+  "acceptance": "Zero product behaviors attempted/passed this UI lease; D289/D291/T10 remain native-unverified. Existing ownerLoaded0bff621 unchanged/stale. Resource valid is capacity evidence only.",
+  "release": "No root build/release/package publication/Store upload/submission; contributor release-sync source622 is not a dashboard state observation. Reuse completed daily577 observation.",
+  "next_action": "After current-source CI passes, recheck source/runtime, use normal importer (avoid duplicate cachedAA7 import), promote eligible622/current artifact, then fresh browser guard+watcher+independent native operator. Keep current same automation/daily claim; no repeats of unchanged private Store check."
+}

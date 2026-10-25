@@ -113,9 +113,11 @@
   ],
   "verification_final_report": "docs/stabilization/reports/settings-member-final-verification-20261025.json",
   "source_only": true,
-  "current_followthrough": "Current-source observer repair independently source-reviewed; final guarded941total930pass0fail11skip/compile and wholelint3271files0errors1023warnings valid0. New CI/native original+surrounding acceptance remains pending; no closure.",
+  "current_followthrough": "Source repair passes final guarded checks/current-source reviews and normal fullCIe59540213012604 plus aa740213566401. AA7 artifact621 normally imported cache only; origin622 runtime advanced before promotion, so promotion/native withheld. D289 remains fixed, not retest-pass/closed.",
   "checkpoint": "docs/stabilization/reports/mode-observer-repair-checkpoint-20261025.json",
   "verification_current": "docs/stabilization/reports/observer-resume-verification-20261025.json",
   "current_verification": "docs/stabilization/reports/observer-resume-verification-20261025.json",
-  "prior_preserved_patch": "docs/stabilization/reports/mode-observer-reviewed-patch-20261025.json"
+  "prior_preserved_patch": "docs/stabilization/reports/mode-observer-reviewed-patch-20261025.json",
+  "fix_commits": ["e595a14674f6b1eb68e03e7292be462dbcbaa008"],
+  "ci_adoption_checkpoint": "docs/stabilization/reports/observer-ci-adoption-checkpoint-20261025.json"
 }
