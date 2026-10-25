@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0294",
+  "lane": "/root/d294_resume_fix_2309",
+  "at": "2026-10-25T23:20:27.673249+00:00",
+  "status": "SOURCE_VERIFIED_PENDING_NATIVE",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "scope": "Supporting interrupted native acceptance diagnostic publication; no new product auth/CPU/Save defect established.",
+  "source": {
+    "head": "58f4dd55dcf2dbf404491213630d5f909ef4ba52",
+    "preserved_patch": "docs/stabilization/evidence/d294-prepared-unapplied/owned.patch.txt",
+    "patch_sha256": "da324c1a29e939d137e9448d6e58fc8f887dae4f3675fae2e0c043e11fc3091c",
+    "baseline3files_equal_preserved_fcc": true,
+    "candidate_sha256": {
+      "tests/browser/scrape-save-auth-report.mjs": "7a542bcc79fda4bbe3f53e4f6e36f92e5aa3c75cbe37b6944b1751b0a20c2a2b",
+      "tests/browser/scrape-save-native-acceptance.mjs": "9e3d0e8e4539da709371e2f55e296e3f53c5ace4d56704baafb405c03f1615ab",
+      "tests/browser/scrape-save-member-auth-diagnostic.test.mjs": "d43d6bf46f2ffa07d6f362cd3418c8d18dfe34cd1c7f4656c76b7fda9bade659"
+    },
+    "installed_lock_head": "f2cc5301a3bb049c1ab74ad1e61d9225eb237ae3",
+    "versions": { "node": "v26.12.1", "pnpm": "10.30.3" },
+    "executed_test_sha256": "d43d6bf46f2ffa07d6f362cd3418c8d18dfe34cd1c7f4656c76b7fda9bade659",
+    "final_candidate_sha256": {
+      "tests/browser/scrape-save-auth-report.mjs": "7a542bcc79fda4bbe3f53e4f6e36f92e5aa3c75cbe37b6944b1751b0a20c2a2b",
+      "tests/browser/scrape-save-native-acceptance.mjs": "9e3d0e8e4539da709371e2f55e296e3f53c5ace4d56704baafb405c03f1615ab",
+      "tests/browser/scrape-save-member-auth-diagnostic.test.mjs": "7a2d67530f47ff08b848152b485314c0ddeb156b84b81d2bf8f01d28015d4c34"
+    },
+    "final_test_delta": "docs/stabilization/reports/d294-style-delta-proof-20261025.json"
+  },
+  "change": "Existing Scrape report helper publishes synchronous mode0600 fsync+atomic replacement for intermediate checkpoints and final report. Existing actual native/member callbacks, auth-start/completion and pre-Save milestones publish finite projected diagnostic state before operation/return; in-memory progress commits only after publication. No signal handler, extra shutdown delay, resource/auth gate relaxation or second reporter.",
+  "verification": {
+    "deps": {
+      "actual_executor": 16504,
+      "exit": 0,
+      "journal": "docs/stabilization/resource-journals/d294-deps-20261025-2309.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T23:10:30.684Z",
+        "runId": "d294-deps-20261025-2309",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "log_sha256": "72f6ea27b2d9add77de359d427eb8ba628cd477bc54041b0caa57087497cdd03"
+    },
+    "focused": {
+      "actual_executor": 11412,
+      "run_id": "d294-focused-20261025-2311",
+      "status": "terminal0",
+      "log": ".output/stabilization-checkpoints/d294-focused-2311.log",
+      "admitted_at": "2026-10-25T23:11:50.590Z",
+      "actual_exit": 0,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T23:14:22.678Z",
+        "runId": "d294-focused-20261025-2311",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "tests": 1004,
+      "pass": 993,
+      "fail": 0,
+      "skip": 11,
+      "cancel": 0,
+      "duration_ms": 151577.452208,
+      "log_sha256": "c438b9aad94b25f813d9c95f2a597e73947b094e76ca67ad43f56e3662236937"
+    },
+    "compile": {
+      "actual_executor": 15984,
+      "run_id": "d294-compile-20261025-2314",
+      "status": "terminal0",
+      "log": ".output/stabilization-checkpoints/d294-compile-2314.log",
+      "actual_exit": 0,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T23:15:42.332Z",
+        "runId": "d294-compile-20261025-2314",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "log_sha256": "ce0d03fa18a6411219f95465a86bf1a91cc3aa3fcc80982937b09bdb41ab54ad"
+    },
+    "lint": {
+      "actual_executor": 47990,
+      "run_id": "d294-lint-20261025-2316",
+      "status": "terminal1 own two test styleerrors",
+      "log": ".output/stabilization-checkpoints/d294-lint-2316.log",
+      "actual_exit": 1,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T23:17:08.537Z",
+        "runId": "d294-lint-20261025-2316",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "final_lint": {
+      "actual_executor": 65196,
+      "run_id": "d294-lint-20261025-2318",
+      "status": "terminal0",
+      "log": ".output/stabilization-checkpoints/d294-lint-2318.log",
+      "actual_exit": 0,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T23:19:20.531Z",
+        "runId": "d294-lint-20261025-2318",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "checked_files": 3282,
+      "errors": 0,
+      "warnings": 1032,
+      "log_sha256": "f9c57528157fa37ff04f459042b8a77dfdde5aca7d77c952500c4b9301e6c95f"
+    }
+  },
+  "forcing_guards": {
+    "historical_original_red": "docs/stabilization/reports/member-checkpoint-diagnosis-20261025.json; 0.2s actual callback/finalwriter SIGTERM report absence on byte-identical3baseline source; not rerun as a new baseline execution by this lane.",
+    "fresh_exact_candidate": "Actual extracted native/member/preSave/catch-final producers with real report helper, real filesystem+IPC-before ordinary SIGTERM. Fullfocused guards also exercise six scratch-only wrong variants: dropped checkpoint, destructive final writer, corrupt timestamp, reset first_at, premature memory commit, raw stage assignment. Wrong guards fail rather than pass from unchanged in-memory state.",
+    "R7": "Exact actual waitFor uses (value)=>value===true; one forcedrename EACCES triggers identical-data retry reads2 and only successful publication commitsprogress.",
+    "negative_boundaries": "Auth completion after all original assertions; failedmemberassertions do not publish completion. Auth-start/Save IO refusal prevents actual action entry. Unknown stage through actual catch/final excludes canary. Store/unknown/malformed artifact and private diagnostic fields are not misrepresented as accepted development evidence."
+  },
+  "reused": "Existing scrape-save-auth-report.mjs and scrape-save-native-acceptance.json; existing callback/milestone sites, existing focused suite, real settings-panel-driver waitFor. Prior asynchronous reporter pattern was insufficient under ordinary SIGTERM.",
+  "limits": [
+    "No real browser, sign-in/backend/fixture/model actions; source guards use underlying operation fixtures only to reach interruption/IO boundaries.",
+    "Earlier950/955 passing suites are not latest-source evidence; current exact1004total993pass0fail11skip is separate.",
+    "No D294 native retest/closure, product behavior pass, installed extension adoption or Store/release eligibility.",
+    "New lock installed; agents291/vault52 changelogs mark consumer action unknown. This does not certify general package UI behavior; parent owns reconciliation."
+  ],
+  "owned_processes": [],
+  "commits": [],
+  "next_action": "Commit/push parent-authorized exact source unit; require new exact-source successful full CI and separately artifact-bound native diagnostic/member retest. D294 fixed/native pending, not closed/released.",
+  "independent_review": {
+    "reviewer": "/root/d294_candidate_peer_2310",
+    "report": "docs/stabilization/reports/d294-candidate-peer-20261025.json",
+    "source_verdict_a": "PASS bounded source",
+    "source_verdict_b": "PASS bounded source; R1-R7 addressed",
+    "limits": "No original native/member diagnostic or product acceptance"
+  }
+}

@@ -16,6 +16,7 @@ import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import {
   recordScrapeMemberAuthFailure,
+  recordScrapeSaveCheckpoint,
   recordScrapeSaveFailure,
   safeScrapeSaveFailureCode,
   writeScrapeSaveReport,
@@ -561,7 +562,7 @@ try {
     artifactRoot: join(process.env.RUNNER_TEMP ?? '/tmp', 'guest-acceptance'),
     ownedPages: { '/source-acceptance': fixture },
     onStage: (value) => {
-      report.native_stage = value;
+      recordScrapeSaveCheckpoint(report, 'native_stage', value);
     },
     exercisePanel: async (native) => {
       const { page, requireResourceHealth, resourceAction } = native;
@@ -648,6 +649,7 @@ try {
       try {
         report.stage = 'member_auth';
         await requireResourceHealth();
+        recordScrapeSaveCheckpoint(report, 'auth_start');
         let identity;
         try {
           identity = await resourceAction(() =>
@@ -662,10 +664,10 @@ try {
                 assert.fail('scrape_save_approved_organization_file_required'),
               allowLadderOrganization: true,
               onStage: (value) => {
-                report.auth_stage = value;
+                recordScrapeSaveCheckpoint(report, 'auth_stage', value);
               },
               onAuthDiagnostic: (value) => {
-                report.auth_diagnostic = { ...report.auth_diagnostic, ...value };
+                recordScrapeSaveCheckpoint(report, 'auth_diagnostic', value);
               },
             }),
           );
@@ -700,6 +702,7 @@ try {
           selected_organization_verified: true,
           organization_resolution: identity.organization_resolution,
         };
+        recordScrapeSaveCheckpoint(report, 'auth_complete');
 
         if (staleProfileRetry) {
           report.defect_id = 'EXT-D-0217';
@@ -953,6 +956,7 @@ try {
         report.stage = 'save_submit';
         const openBeforeSave = await dialogState(panel);
         assert.equal(openBeforeSave.open, true, 'scrape_save_dialog_closed_before_submit');
+        recordScrapeSaveCheckpoint(report, 'pre_save');
         if (staleProfileRetry) {
           panel = await exerciseStaleProfileRetry({
             native,
