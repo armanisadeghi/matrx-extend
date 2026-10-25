@@ -160,7 +160,9 @@ export function mountGuidedOverlay(): void {
             }
           },
           viewportHeight: () => target.element?.clientHeight || window.innerHeight,
-          pageHeight: () => target.height(),
+          // Growth is measured so that switching scrollers can never look like the feed growing
+          // (flipping between the page and a panel of different heights reset the stall forever).
+          pageHeight: () => Math.max(document.documentElement.scrollHeight, target.height()),
           onTick: (c) => {
             dispatch({ type: 'items', count: c });
           },

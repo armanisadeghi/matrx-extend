@@ -186,3 +186,18 @@ it('when the page has a little overflow of its own but an inner panel holds the 
   expect(panelScroll).toHaveBeenCalled();
   shadow.querySelector<HTMLButtonElement>('[data-act="scroll-stop"]')?.click();
 });
+
+it('stops (instead of scrolling forever) when neither the page nor any panel can move — a sign-in wall', async () => {
+  vi.useFakeTimers();
+  sized(document.documentElement, 5000, 900);
+  vi.spyOn(window, 'scrollBy').mockImplementation(() => {});
+  const panel = document.querySelector<HTMLElement>('#feed')!;
+  panel.style.overflowY = 'auto';
+  sized(panel, 1200, 800);
+  panel.scrollBy = (() => {}) as never;
+  const shadow = mountProfileJob();
+  shadow.querySelector<HTMLButtonElement>('[data-act="scroll"]')!.click();
+  await vi.advanceTimersByTimeAsync(30_000);
+  expect(shadow.querySelector('[data-act="scroll"]')).not.toBeNull();
+  expect(shadow.textContent).not.toContain('scrolling…');
+});
