@@ -11,6 +11,19 @@ import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 
+export function adminRoleMatchesExpectation(
+  { adminRole, roleAbsent },
+  expectedAdminRole = 'visible',
+) {
+  assert.ok(
+    ['visible', 'hidden'].includes(expectedAdminRole),
+    'd87_admin_role_expectation_invalid',
+  );
+  return expectedAdminRole === 'hidden'
+    ? roleAbsent === true && adminRole === false
+    : adminRole === true;
+}
+
 async function extensionAuthState(panel) {
   return evaluate(
     panel,
@@ -33,6 +46,7 @@ async function extensionAuthState(panel) {
         email_row_present: email !== null,
         expected_admin_email: email === 'Emailadmin@admin.com',
         admin_role: role?.toLowerCase() === 'roleadmin',
+        admin_role_row_absent: role === null,
         sign_in_count: signIn.length,
         sign_in_enabled: signIn.length === 1 && !signIn[0].disabled,
         sign_out_present: buttons.some((button) => button.textContent.trim() === 'Sign out'),
@@ -53,7 +67,12 @@ export async function signInAdminSettings({
   readCredentials,
   resourceAction = async (action) => action(),
   captureIdentity = false,
+  expectedAdminRole = 'visible',
 }) {
+  assert.ok(
+    ['visible', 'hidden'].includes(expectedAdminRole),
+    'd87_admin_role_expectation_invalid',
+  );
   const runResourceAction = (action) => resourceAction(action);
   await runResourceAction(() =>
     markBrowserAgentTraffic(page.context(), 'admin-settings-signin', WEB_ORIGIN),
@@ -196,7 +215,12 @@ export async function signInAdminSettings({
         report.signin_observations.extension_last = observed;
         return observed;
       },
-      (value) => value?.expected_admin_email && value.admin_role,
+      (value) =>
+        value?.expected_admin_email &&
+        adminRoleMatchesExpectation(
+          { adminRole: value.admin_role, roleAbsent: value.admin_role_row_absent },
+          expectedAdminRole,
+        ),
       90_000,
     );
     if (captureIdentity) {

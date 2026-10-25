@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { Window } from 'happy-dom';
+import { adminRoleMatchesExpectation } from './admin-settings-signin.mjs';
 import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 import { evaluate, openSection } from './settings-panel-driver.mjs';
 
@@ -18,32 +19,42 @@ function load(transform = (value) => value) {
   const implementation = transform(source)
     .replace(/^import[\s\S]*?from '[^']+';\n/gm, '')
     .replace(/^export /gm, '');
-  return new Function(
-    'nativeOAuthBearerExpression',
-    'assert',
-    'createHash',
-    'signInAdminSettings',
-    'evaluate',
-    'openSection',
-    'waitFor',
-    `${implementation}; return { signInSettings, verifyCurrentSettingsIdentity };`,
-  )(
-    nativeOAuthBearerExpression,
-    assert,
-    createHash,
-    async () => ({ email: 'admin@admin.com', userId: profileId }),
-    evaluate,
-    openSection,
-    // Only polling/time is replaced. The actual reader and readiness decision run.
-    async (label, read, accept) => {
-      const state = await read();
-      if (!accept(state)) throw new Error(`${label}_not_observed`);
-      return state;
-    },
+  const driver = {};
+  Object.assign(
+    driver,
+    new Function(
+      'nativeOAuthBearerExpression',
+      'assert',
+      'createHash',
+      'signInAdminSettings',
+      'adminRoleMatchesExpectation',
+      'evaluate',
+      'openSection',
+      'waitFor',
+      `${implementation}; return { signInSettings, verifyCurrentSettingsIdentity };`,
+    )(
+      nativeOAuthBearerExpression,
+      assert,
+      createHash,
+      (options) => {
+        driver.expectedAdminRoleForwarded = options.expectedAdminRole;
+        return { email: 'admin@admin.com', userId: profileId };
+      },
+      adminRoleMatchesExpectation,
+      evaluate,
+      openSection,
+      // Only polling/time is replaced. The actual reader and readiness decision run.
+      async (label, read, accept) => {
+        const state = await read();
+        if (!accept(state)) throw new Error(`${label}_not_observed`);
+        return state;
+      },
+    ),
   );
+  return driver;
 }
 
-async function check(driver, changed = {}, expectedReady = true) {
+async function check(driver, changed = {}, expectedReady = true, expectedAdminRole = 'visible') {
   const window = new Window();
   const state = {
     email: 'admin@admin.com',
@@ -71,7 +82,7 @@ async function check(driver, changed = {}, expectedReady = true) {
   window.document.body.innerHTML = `
     <div><button aria-expanded="true">Account</button></div>
     <div><div><span>Email</span><span>${state.email}</span></div>
-      <div><span>Role</span><span>${state.role}</span></div></div>
+      ${state.role === null ? '' : `<div><span>Role</span><span>${state.role}</span></div>`}</div>
     <div><button aria-expanded="true">Organization</button></div>
     <div><button role="combobox">${state.label ?? 'Choose…'}</button></div>
     ${state.signOut ? '<button>Sign out</button>' : ''}`;
@@ -79,7 +90,14 @@ async function check(driver, changed = {}, expectedReady = true) {
     send: async (_method, { expression }) => ({ result: { value: await window.eval(expression) } }),
   };
   try {
-    const run = () => driver.signInSettings({ mode: 'admin', panel, page: {}, onStage: () => {} });
+    const run = () =>
+      driver.signInSettings({
+        mode: 'admin',
+        panel,
+        page: {},
+        expectedAdminRole,
+        onStage: () => {},
+      });
     if (!expectedReady) {
       await assert.rejects(
         run,
@@ -89,6 +107,7 @@ async function check(driver, changed = {}, expectedReady = true) {
     }
     const result = await run();
     assert.equal(result.extension_signed_in, true);
+    assert.equal(driver.expectedAdminRoleForwarded, expectedAdminRole);
     assert.equal(result.organizationId, state.device?.id ?? null);
     assert.equal(result.rendered_identity.rendered_role_matches_mode, true);
     // The same shared check is called by Settings reload, audit-key, and panel reopen.
@@ -98,6 +117,7 @@ async function check(driver, changed = {}, expectedReady = true) {
       email: 'admin@admin.com',
       profileId,
       organizationId: result.organizationId,
+      expectedAdminRole,
     });
     await assert.rejects(
       () =>
@@ -152,6 +172,29 @@ async function contract(driver) {
 
 test('admin sign-in and reload accept the captured load-ladder state without weakening identity or approved-org checks', async () => {
   await contract(load());
+});
+
+test('Debug-off admin sign-in opts into strict role-row absence while default callers remain visible', async () => {
+  const driver = load();
+  await check(driver, { role: null }, true, 'hidden');
+  for (const changed of [
+    { role: 'Admin' },
+    { role: 'Member' },
+    { isAdmin: false },
+    { profileId: organizationId },
+    { token: null },
+    { email: 'other@example.test' },
+    { signOut: false },
+  ])
+    await check(driver, { role: null, ...changed }, false, 'hidden');
+  await assert.rejects(
+    () => check(load(), { role: null }, true, 'unknown'),
+    /d87_admin_role_expectation_invalid/,
+  );
+  await assert.rejects(
+    () => driver.signInSettings({ mode: 'member', expectedAdminRole: 'hidden' }),
+    /d87_admin_role_expectation_mode_invalid/,
+  );
 });
 
 test('readiness self-test rejects the obsolete no-device-no-selection rule and constant success', async () => {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, stat } from 'node:fs/promises';
-import { signInAdminSettings } from './admin-settings-signin.mjs';
+import { adminRoleMatchesExpectation, signInAdminSettings } from './admin-settings-signin.mjs';
 import {
   observeMemberLogicalOrganizationGet,
   refreshMemberLogicalOrganizationGet,
@@ -192,8 +192,17 @@ export function currentSettingsIdentityMatches(
     organizationResolution,
     requireSelectedOrganization = false,
     requiredOrganizationName,
+    expectedAdminRole = 'visible',
   },
 ) {
+  assert.ok(
+    ['visible', 'hidden'].includes(expectedAdminRole),
+    'd87_admin_role_expectation_invalid',
+  );
+  assert.ok(
+    mode === 'admin' || expectedAdminRole === 'visible',
+    'd87_admin_role_expectation_mode_invalid',
+  );
   // The load ladder keeps its validated logical organization in memory. It
   // renders the selected member organization without writing a device choice.
   const organizationMatches =
@@ -225,7 +234,7 @@ export function currentSettingsIdentityMatches(
       value.accessTokenPresent &&
       value.profileId === profileId &&
       (mode === 'admin'
-        ? value.adminRole && value.isAdmin === true
+        ? adminRoleMatchesExpectation(value, expectedAdminRole) && value.isAdmin === true
         : value.roleAbsent && !value.adminRole && value.isAdmin !== true) &&
       organizationMatches,
   );
@@ -240,7 +249,16 @@ export async function verifyCurrentSettingsIdentity({
   organizationResolution,
   requireSelectedOrganization = false,
   requiredOrganizationName,
+  expectedAdminRole = 'visible',
 }) {
+  assert.ok(
+    ['visible', 'hidden'].includes(expectedAdminRole),
+    'd87_admin_role_expectation_invalid',
+  );
+  assert.ok(
+    mode === 'admin' || expectedAdminRole === 'visible',
+    'd87_admin_role_expectation_mode_invalid',
+  );
   await openSection(panel, 'Account');
   await openSection(panel, 'Organization');
   const observed = await waitFor(
@@ -254,12 +272,16 @@ export async function verifyCurrentSettingsIdentity({
         organizationResolution,
         requireSelectedOrganization,
         requiredOrganizationName,
+        expectedAdminRole,
       }),
     30_000,
   );
   return {
     rendered_email_matches_first_party: observed.emailMatches,
-    rendered_role_matches_mode: mode === 'admin' ? observed.adminRole : observed.roleAbsent,
+    rendered_role_matches_mode:
+      mode === 'admin'
+        ? adminRoleMatchesExpectation(observed, expectedAdminRole)
+        : observed.roleAbsent,
     profile_matches_first_party: observed.profileId === profileId,
     selected_organization_matches_stored_uuid_and_name: requireSelectedOrganization
       ? observed.organizationId === organizationId &&
@@ -497,8 +519,17 @@ export async function signInSettings({
   onAuthDiagnostic,
   onTrace,
   observeBoundary = async () => {},
+  expectedAdminRole = 'visible',
 }) {
   assert.ok(['admin', 'member'].includes(mode), 'd87_auth_mode_invalid');
+  assert.ok(
+    ['visible', 'hidden'].includes(expectedAdminRole),
+    'd87_admin_role_expectation_invalid',
+  );
+  assert.ok(
+    mode === 'admin' || expectedAdminRole === 'visible',
+    'd87_admin_role_expectation_mode_invalid',
+  );
   if (mode === 'admin') {
     const diagnostic = { stage: 'admin_credentials', signin_observations: {} };
     const stage = (value) => {
@@ -514,6 +545,7 @@ export async function signInSettings({
         stage,
         resourceAction,
         captureIdentity: true,
+        expectedAdminRole,
         readCredentials: async () => {
           const secret = await privateJson(adminCredentialsFile, 'd87_admin_credentials');
           return requireSettingsCredential('admin', JSON.stringify(secret));
@@ -595,6 +627,7 @@ export async function signInSettings({
         email: identity.email,
         profileId: identity.userId,
         organizationId: stored.organizationId,
+        expectedAdminRole,
       });
     } catch (error) {
       const account = await accountIdentity(panel, identity.email).catch(() => null);

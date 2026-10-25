@@ -302,6 +302,7 @@ try {
           repo: REPO,
           adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
           resourceAction,
+          expectedAdminRole: 'hidden',
           onStage: (stage) => {
             report.auth_stage = projectAdminAuthStage(stage);
           },

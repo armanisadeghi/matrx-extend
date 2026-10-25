@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
+import { adminRoleMatchesExpectation } from './admin-settings-signin.mjs';
 import {
   MEMBER_TEST_ORGANIZATION_NAME,
   approvedAdminOrganizationName,
@@ -19,6 +20,24 @@ import {
   signInSettings,
   waitForOrganizationOption,
 } from './settings-native-auth-driver.mjs';
+
+test('admin role expectation defaults to the existing visible role and supports strict hidden-row proof', () => {
+  const visible = { adminRole: true, roleAbsent: false };
+  const hidden = { adminRole: false, roleAbsent: true };
+  assert.equal(adminRoleMatchesExpectation(visible), true);
+  assert.equal(adminRoleMatchesExpectation(visible, 'visible'), true);
+  assert.equal(adminRoleMatchesExpectation(hidden), false);
+  assert.equal(adminRoleMatchesExpectation(hidden, 'hidden'), true);
+  assert.equal(
+    adminRoleMatchesExpectation({ adminRole: false, roleAbsent: false }, 'hidden'),
+    false,
+  );
+  assert.equal(adminRoleMatchesExpectation({ adminRole: true, roleAbsent: true }, 'hidden'), false);
+  assert.throws(
+    () => adminRoleMatchesExpectation(hidden, 'either'),
+    /d87_admin_role_expectation_invalid/,
+  );
+});
 
 test('member organization proof distinguishes load ladder from a device choice', () => {
   const id = '123e4567-e89b-42d3-a456-426614174001';
@@ -561,6 +580,52 @@ test('reload identity rejects cached storage with wrong rendered role or organiz
   assert.equal(
     currentSettingsIdentityMatches({ ...valid, organizationId: MEMBER }, expected),
     false,
+  );
+});
+
+test('Debug-off admin identity requires exact Role-row absence and keeps every principal check', () => {
+  const hidden = {
+    emailMatches: true,
+    signOutVisible: true,
+    accessTokenPresent: true,
+    profileId: '123e4567-e89b-42d3-a456-426614174002',
+    roleAbsent: true,
+    adminRole: false,
+    isAdmin: true,
+    organizationId: null,
+    organizationName: null,
+    organizationLabel: null,
+    organizationSelected: false,
+  };
+  const expected = {
+    mode: 'admin',
+    profileId: hidden.profileId,
+    organizationId: null,
+    expectedAdminRole: 'hidden',
+  };
+  assert.equal(currentSettingsIdentityMatches(hidden, expected), true);
+  for (const changed of [
+    { roleAbsent: false },
+    { adminRole: true },
+    { isAdmin: false },
+    { emailMatches: false },
+    { signOutVisible: false },
+    { accessTokenPresent: false },
+    { profileId: '123e4567-e89b-42d3-a456-426614174099' },
+  ])
+    assert.equal(currentSettingsIdentityMatches({ ...hidden, ...changed }, expected), false);
+  assert.throws(
+    () => currentSettingsIdentityMatches(hidden, { ...expected, expectedAdminRole: 'unknown' }),
+    /d87_admin_role_expectation_invalid/,
+  );
+  assert.throws(
+    () =>
+      currentSettingsIdentityMatches(hidden, {
+        ...expected,
+        mode: 'member',
+        expectedAdminRole: 'hidden',
+      }),
+    /d87_admin_role_expectation_mode_invalid/,
   );
 });
 
