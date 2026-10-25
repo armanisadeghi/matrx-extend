@@ -7,7 +7,7 @@
   "auth_mode": "member attempt; diagnostic probe invokes no authentication/backend",
   "severity": "S2: failed native boundary cannot be diagnosed reliably",
   "priority": "P1: discriminating evidence before further member attempt",
-  "state": "triaged",
+  "state": "in-fix",
   "owner": "/root",
   "preconditions": [
     "Actual f771 memberA40207639522 stops under unchanged CPU resource watchdog after panel readiness."
@@ -26,7 +26,7 @@
     "docs/stabilization/reports/startup-f771-evidence-peer.json"
   ],
   "probe": "0.2s source-extracted actual callback plus real report helper subprocess; normal SIGTERM after IPC milestone yields absent report. Supporting reproduction only, not browser/CPU/product proof. Probe files removed.",
-  "plan_status": "COMMIT: fresh amended-contract reverify accepts both blocking-finding corrections. Design approved only; NOT IMPLEMENTED, member acceptance unverified.",
+  "plan_status": "Approved amended contract now in implementation; no tests/native acceptance yet.",
   "limits": "No CPU cause, native pass, member retry authorization, threshold/runner/shutdown changes or product repair claimed.",
   "transition_history": [
     {
@@ -40,6 +40,12 @@
       "from": "open",
       "to": "triaged",
       "reason": "Actual source callback/final-writer seam reproduces loss under ordinary SIGTERM; no code changes yet."
+    },
+    {
+      "at": "2026-10-25T17:44:52.368029+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Prior D289 frozen-artifact case and cleanup terminal; bounded named implementer begins approved D294 contract. Concurrent Vault contributor paths preserved."
     }
   ],
   "plan_review": "docs/stabilization/reports/member-checkpoint-plan-attack-20261025.json",
@@ -54,5 +60,11 @@
     }
   ],
   "next_action": "One bounded implementer extends existing report helper/path with atomic checkpoint+final publication and safe synchronous diagnostic callback updates, meaningful live-subprocess termination/IO failure guards, then fresh independent source review and normal native diagnostic predicate. Serialize after D289 exact CI/native source freeze. No member acceptance retry before durable boundary evidence.",
-  "plan_reverify": "docs/stabilization/reports/member-checkpoint-contract-reverify-20261025.json"
+  "plan_reverify": "docs/stabilization/reports/member-checkpoint-contract-reverify-20261025.json",
+  "implementation_lane": {
+    "owner": "/root/d294_durable_diagnostics",
+    "started_at": "2026-10-25T17:44:52.367942+00:00",
+    "baseline": "5f5ae7eba",
+    "scope": "Safe durable native/auth stage and final publication using existing helper/path; source-only repair until fresh independent review/normal tests and native diagnostic predicate."
+  }
 }
