@@ -278,8 +278,12 @@ async function nullOnTransient(read: () => Promise<string | null>): Promise<stri
 
 /** Returns a fresh access token, refreshing if necessary (single-flight, in the package). */
 export async function getAccessToken(): Promise<string | null> {
-  const oauth = getClient();
-  return oauth ? nullOnTransient(() => oauth.getAccessToken()) : null;
+  return nullOnTransient(getAccessTokenStrict);
+}
+
+/** Null is definitive absence; transient storage/refresh errors remain errors. */
+export async function getAccessTokenStrict(): Promise<string | null> {
+  return (await getClient()?.getAccessToken()) ?? null;
 }
 
 /**
@@ -289,9 +293,17 @@ export async function getAccessToken(): Promise<string | null> {
 export async function refreshAccessToken(
   rejectedAccessToken?: string,
 ): Promise<{ access_token: string } | null> {
-  const oauth = getClient();
-  if (!oauth) return null;
-  const token = await nullOnTransient(() => oauth.refresh(rejectedAccessToken));
+  const token = await nullOnTransient(
+    async () => (await refreshAccessTokenStrict(rejectedAccessToken))?.access_token ?? null,
+  );
+  return token ? { access_token: token } : null;
+}
+
+/** Refresh without converting a transient failure into a signed-out result. */
+export async function refreshAccessTokenStrict(
+  rejectedAccessToken?: string,
+): Promise<{ access_token: string } | null> {
+  const token = await getClient()?.refresh(rejectedAccessToken);
   return token ? { access_token: token } : null;
 }
 

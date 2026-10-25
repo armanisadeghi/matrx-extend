@@ -1,10 +1,20 @@
 # API client contract
 
-`client.ts` is the single REST client. It resolves the backend URL, attaches a
-signed-in bearer token or the stable guest fingerprint, applies a bounded
-timeout, retries one refreshed 401, and returns `ApiResult` rather than throwing
-for HTTP/network failures. Route modules under `routes/` own typed capability
-contracts and validate server responses with Zod.
+`matrx-api.ts` supplies host identity and configuration to the generated
+`@ai-matrx/api` operations; `client.ts` retains the extension's `ApiResult`
+adapter and private callback transport. Keep paths and operation contracts in
+the generated client rather than copying them into host code.
+
+`createPackageApi` accepts a `PackageSession` for a verified, pinned human
+workspace. Its bearer check runs before header hydration and again immediately
+before dispatch, including a refreshed retry. Awaited confirmation headers never
+replace the OAuth bearer; generated per-item organization overrides remain valid.
+Default callers retain the ordinary session/guest and refresh rules.
+
+Identity-sensitive callers use `auth/flow.ts`'s strict token/refresh readers:
+null means no session, while transient errors remain errors and preserve stored
+session material. A forced strict refresh receives the exact rejected bearer.
+Legacy callers retain their established null-on-transient contract.
 
 Private local-browser callbacks use `privatePost` and `routes/local-browser.ts`.
 They bind the verified user, exact login session and selected organization,

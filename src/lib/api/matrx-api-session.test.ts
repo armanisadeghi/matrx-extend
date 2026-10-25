@@ -33,7 +33,7 @@ vi.mock('@/lib/org/active-org', () => ({
 }));
 
 import { STATUS_INVALID_BODY, STATUS_SESSION_NOT_READY } from '@/lib/api/client';
-import { runOpAs } from '@/lib/api/matrx-api';
+import { createPackageApi, runOpAs } from '@/lib/api/matrx-api';
 import { listComputeTargets } from '@ai-matrx/api/architecture';
 
 afterEach(() => vi.unstubAllGlobals());
@@ -113,5 +113,80 @@ describe('runOp session rules', () => {
       ok: false,
       status: 0,
     });
+  });
+});
+
+describe('package session injection', () => {
+  it('hydrates confirmation before the final bearer read and preserves a per-item organization', async () => {
+    const events: string[] = [];
+    const api = createPackageApi('00000000-0000-4000-8000-000000000002', {
+      bearer: async () => {
+        events.push('bearer');
+        return 'parent';
+      },
+      refresh: async () => false,
+      headers: async () => {
+        events.push('headers');
+        return { 'X-Matrx-Step-Up': 'grant' };
+      },
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_url: unknown, init: RequestInit) => {
+        events.push('wire');
+        const headers = new Headers(init.headers);
+        expect(headers.get('Authorization')).toBe('Bearer parent');
+        expect(headers.get('X-Matrx-Step-Up')).toBe('grant');
+        expect(headers.get('X-Organization-Id')).toBe('00000000-0000-4000-8000-000000000003');
+        return Response.json([]);
+      }),
+    );
+    await listComputeTargets(api, undefined, { organizationId: '00000000-0000-4000-8000-000000000003' });
+    expect(events).toEqual(['bearer', 'headers', 'bearer', 'wire']);
+  });
+
+  it('sends nothing when identity changes while confirmation headers hydrate', async () => {
+    let changed = false;
+    const network = vi.fn();
+    const api = createPackageApi('00000000-0000-4000-8000-000000000002', {
+      bearer: async () => {
+        if (changed) throw new Error('workspace changed');
+        return 'parent';
+      },
+      refresh: async () => false,
+      headers: async () => {
+        changed = true;
+        return { 'X-Matrx-Step-Up': 'old-grant' };
+      },
+    });
+    vi.stubGlobal('fetch', network);
+    await expect(listComputeTargets(api)).rejects.toThrow();
+    expect(network).not.toHaveBeenCalled();
+  });
+
+  it('uses only the injected refresh and fresh pinned bearer on a 401', async () => {
+    let token = 'old-parent';
+    const refresh = vi.fn(async () => {
+      token = 'fresh-parent';
+      return true;
+    });
+    const seen: Array<string | null> = [];
+    const api = createPackageApi('00000000-0000-4000-8000-000000000002', {
+      bearer: async () => token,
+      refresh,
+      headers: async () => ({ 'X-Matrx-Step-Up': 'grant' }),
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_url: unknown, init: RequestInit) => {
+        const headers = new Headers(init.headers);
+        seen.push(headers.get('Authorization'));
+        expect(headers.get('X-Matrx-Step-Up')).toBe('grant');
+        return seen.length === 1 ? new Response('expired', { status: 401 }) : Response.json([]);
+      }),
+    );
+    await listComputeTargets(api);
+    expect(seen).toEqual(['Bearer old-parent', 'Bearer fresh-parent']);
+    expect(refresh).toHaveBeenCalledOnce();
   });
 });

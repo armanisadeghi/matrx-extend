@@ -62,10 +62,12 @@ function buildApi(
   credentials: NonNullable<CreateApiOptions['credentials']>,
   refreshCredentials: () => Promise<boolean>,
   organizationId?: CreateApiOptions['organizationId'],
+  headers?: CreateApiOptions['headers'],
 ): Api {
   return createApi({
     credentials,
     ...(organizationId ? { organizationId } : {}),
+    ...(headers ? { headers } : {}),
     resolveBaseUrl: () => currentBase || undefined,
     totalTimeoutMs: DEFAULT_TOTAL_TIMEOUT_MS,
     readyTimeoutMs: SESSION_READY_TIMEOUT_MS,
@@ -91,17 +93,31 @@ export function getMatrxApi(): Api {
  * reads the backend URL as `runOp` does. The bearer, guest rule and 401 refresh
  * are the shared ones.
  */
-export function createPackageApi(organizationId: string): Api {
+export interface PackageSession {
+  /** A currently verified, identity-pinned human bearer; errors send no request. */
+  bearer(): Promise<string>;
+  refresh(): Promise<boolean>;
+  headers?: CreateApiOptions['headers'];
+}
+
+export function createPackageApi(organizationId: string, session?: PackageSession): Api {
   return buildApi(
     {
-      ready: awaitSessionReady,
+      ready: session
+        ? async () => {
+            await session.bearer();
+          }
+        : awaitSessionReady,
       async get() {
         currentBase = await getBackendUrl();
-        return sessionCredentials.get();
+        return session
+          ? { kind: 'user' as const, accessToken: await session.bearer() }
+          : sessionCredentials.get();
       },
     },
-    refreshSession,
+    session?.refresh ?? refreshSession,
     () => organizationId,
+    session?.headers,
   );
 }
 

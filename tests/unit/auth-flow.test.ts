@@ -168,6 +168,42 @@ describe('extension sign-in wiring', () => {
     );
   });
 
+  it.each(['getAccessTokenStrict', 'refreshAccessTokenStrict'] as const)(
+    '%s preserves transient errors and the session, then recovers without signing in',
+    async (method) => {
+      const flow = await import('@/lib/auth/flow');
+      await flow.signIn();
+      const saved = local.get('matrx.oauth.session');
+      const callsBefore = server.tokenCalls.length;
+      server.refresh = () => {
+        throw new TypeError('connection interrupted');
+      };
+      vi.setSystemTime(NOW + 2 * 3_600_000);
+      await expect(flow[method]()).rejects.toThrow();
+      expect(local.get('matrx.oauth.session')).toEqual(saved);
+      expect(local.get('profile')).toMatchObject({ id: 'person-1' });
+      expect(broadcast).not.toHaveBeenCalled();
+      expect(server.tokenCalls.length).toBeGreaterThan(callsBefore);
+
+      server.refresh = () => tokenJson(jwt('person-1', 'recovered'), 'refresh-2');
+      const result = await flow[method]();
+      expect(result).toEqual(
+        method === 'getAccessTokenStrict'
+          ? jwt('person-1', 'recovered')
+          : { access_token: jwt('person-1', 'recovered') },
+      );
+      expect(
+        server.tokenCalls.filter((c) => c.get('grant_type') === 'authorization_code'),
+      ).toHaveLength(1);
+    },
+  );
+
+  it('strict readers report genuine session absence as null', async () => {
+    const flow = await import('@/lib/auth/flow');
+    expect(await flow.getAccessTokenStrict()).toBeNull();
+    expect(await flow.refreshAccessTokenStrict()).toBeNull();
+  });
+
   it('broadcasts signed-out once, and clears profile and organization, after a terminal refusal', async () => {
     const flow = await import('@/lib/auth/flow');
     await flow.signIn();
