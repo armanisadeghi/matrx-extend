@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "observed_at": "2026-10-25T09:42:17.943711+00:00",
+  "task_id": "settings_b_eligibility_repair_20261025",
+  "status": "reviewed_source_candidate_verified_locally_awaiting_root_integration",
+  "defect_id": "EXT-D-0288",
+  "allocated_on": "origin/main 3c0a21cdffb536e118f1f4b1e0e30aa377e5ff61; no existing D0288 file",
+  "classification": "supporting harness admission defect, no product behavior established",
+  "reported_symptom": "Successful explicit CI run 40179903193 and exact artifact 12593673415 refused by normal Settings guest plan with HOSTED_DEVELOPMENT_RUN_INVALID before any native job.",
+  "root_cause": "hosted-remote-admission.mjs and ci-change-scope.mjs treat run.name === CI as identity even though workflow_dispatch uses a descriptive display name; canonical importer already binds path, workflow ID, repository, event and source without run.name.",
+  "sibling_census": {
+    "current_test_artifact": "canonical importer accepts authorized explicit dispatch by workflow metadata and artifact binding",
+    "hosted_remote_admission": "stale display-name check repaired",
+    "ci_change_scope": "stale display-name check repaired",
+    "release_development_ci": "event/source driven; no display-name check",
+    "other_literal_ci_name_checks": "none found under scripts, tests or workflows"
+  },
+  "candidate_files": [
+    "scripts/development-ci-event.mjs",
+    "scripts/current-test-artifact.mjs",
+    "scripts/hosted-remote-admission.mjs",
+    "scripts/ci-change-scope.mjs",
+    "scripts/hosted-remote-admission.test.mjs",
+    "scripts/ci-change-scope.test.mjs",
+    "scripts/release-development-ci.test.mjs",
+    "scripts/hosted-member-data-lifecycle.test.mjs",
+    "scripts/hosted-member-scrape-save-admission.test.mjs",
+    "scripts/hosted-remote-scrape-admission.test.mjs",
+    "scripts/hosted-remote-notes-admission.test.mjs"
+  ],
+  "red_proof": [
+    {
+      "command": "node --test --test-name-pattern=hosted route accepts exact authorized development CI dispatch regardless of actor scripts/hosted-remote-admission.test.mjs",
+      "result": "fail: HOSTED_DEVELOPMENT_RUN_INVALID for descriptive workflow_dispatch name"
+    },
+    {
+      "command": "node --test --test-name-pattern=cancelled or unavailable CI artifact proof fails closed scripts/ci-change-scope.test.mjs",
+      "result": "fail: expected exact SHA, actual null for successful descriptive workflow_dispatch name"
+    }
+  ],
+  "green_proof": [
+    {
+      "target": "hosted exact authorized dispatch with descriptive name plus wrong path/event/branch/source negatives",
+      "result": "pass 1/1 focused case"
+    },
+    {
+      "target": "ci scope successful descriptive run and wrong path/event/source negatives",
+      "result": "pass 1/1 focused case"
+    },
+    {
+      "target": "canonical importer exact dispatch metadata/source test",
+      "result": "pass 1/1 focused case"
+    },
+    { "target": "ci scope CLI docs ancestor", "result": "pass 1/1 focused case" }
+  ],
+  "preserved_gates": [
+    "exact Settings source equality",
+    "artifact ID/name/digest",
+    "workflow path",
+    "allowed push/explicit dispatch event",
+    "main branch",
+    "completed/successful run",
+    "valid source SHA",
+    "canonical importer repository/workflow ID"
+  ],
+  "verification_pending": [
+    "root integration and push",
+    "new exact-source CI artifact",
+    "one normally admitted Settings B native attempt",
+    "T04 original theme restoration/full Reload and T22 native retest"
+  ],
+  "native": {
+    "dispatched": false,
+    "acceptance_credit": 0,
+    "T04": "unverified",
+    "T22": "unverified"
+  },
+  "tracked_defect_status": "not created or committed; root to integrate only after review",
+  "next_action": "Observe exact-main CI after integration; hold metadata commits until native Settings dispatch. CI lag and original T04/T22 native acceptance remain explicit.",
+  "review": "docs/stabilization/reports/ci-identity-fresh-review-20261025.json",
+  "candidate_diff": {
+    "path": ".output/stabilization-checkpoints/d288-candidate-final.diff",
+    "sha256": "393596bf45966fea381fc70d19176d9c83c24ffc89d43e574b643ab666e6a358"
+  },
+  "guard_rounds": [
+    {
+      "run_id": "d288-ci-run-name-focused-20261025-0931",
+      "exec_session_id": 50367,
+      "exit_code": 1,
+      "resource_decision": "child_failed",
+      "resource_invalid": false,
+      "journal": "docs/stabilization/resource-journals/d288-ci-run-name-focused-20261025-0931.jsonl",
+      "raw_failure_categories": [
+        "Three existing hosted CLI fake CI runs lacked status completed; new terminal predicate correctly refused them.",
+        "TMPDIR under workspace root inherited type module, so extensionless fake gh executable using require failed with ReferenceError: require is not defined."
+      ],
+      "raw_output_limit": "First tool stdout was truncated and not saved as a local log; no exact whole-suite count claimed."
+    },
+    {
+      "run_id": "d288-ci-run-name-focused-fixed-20261025-0933",
+      "exec_session_id": 61401,
+      "exit_code": 1,
+      "resource_decision": "child_failed",
+      "resource_invalid": false,
+      "journal": "docs/stabilization/resource-journals/d288-ci-run-name-focused-fixed-20261025-0933.jsonl",
+      "log": ".output/stabilization-checkpoints/d288-focused-fixed.log",
+      "tests": 924,
+      "pass": 909,
+      "fail": 4,
+      "skip": 11,
+      "failure_category": "Four more existing member Data, member Save, Scrape and Notes fake CI runs lacked status completed; no product failure."
+    },
+    {
+      "run_id": "d288-ci-run-name-focused-final-20261025-0937",
+      "exec_session_id": 95496,
+      "exit_code": 0,
+      "resource_decision": "valid",
+      "resource_invalid": false,
+      "journal": "docs/stabilization/resource-journals/d288-ci-run-name-focused-final-20261025-0937.jsonl",
+      "log": ".output/stabilization-checkpoints/d288-focused-final.log",
+      "tests": 924,
+      "pass": 913,
+      "fail": 0,
+      "skip": 11
+    },
+    {
+      "run_id": "d288-ci-run-name-lint-final-20261025-0940",
+      "exec_session_id": 64729,
+      "exit_code": 0,
+      "resource_decision": "valid",
+      "resource_invalid": false,
+      "journal": "docs/stabilization/resource-journals/d288-ci-run-name-lint-final-20261025-0940.jsonl",
+      "log": ".output/stabilization-checkpoints/d288-lint-final.log",
+      "checked_files": 3251,
+      "warnings": 1022,
+      "lint_exit": 0
+    }
+  ],
+  "temporary_environment": {
+    "tmpdir": "/Volumes/Samsung2TB/code/.stabilization-scratch/d288-commonjs",
+    "package_json": "{\"type\":\"commonjs\"}",
+    "package_json_sha256": "dbf8353f77358bc12169b7bb7301e1978d5b503e002ee927229a8993672818fc",
+    "reason": "Isolate extensionless fake gh commands from workspace root type module; no production guard change."
+  },
+  "local_heavy_jobs_remaining": 0,
+  "integration_owner": "root; source unit containing this report"
+}

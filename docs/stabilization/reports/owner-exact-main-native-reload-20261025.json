@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "owner": "root",
+  "source": "3c0a21cdffb536e118f1f4b1e0e30aa377e5ff61",
+  "promotion_receipt": {
+    "schema_version": 1,
+    "kind": "ci_development_test_promotion",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "observedAt": "2026-10-25T09:28:48.169Z",
+    "sourceSha": "3c0a21cdffb536e118f1f4b1e0e30aa377e5ff61",
+    "mainSha": "3c0a21cdffb536e118f1f4b1e0e30aa377e5ff61",
+    "compatibility": "exact-source",
+    "allowedDiffPaths": [],
+    "version": "0.2.621",
+    "runId": 40179903193,
+    "runAttempt": 1,
+    "artifactId": 12593673415,
+    "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/3c0a21cdffb536e118f1f4b1e0e30aa377e5ff61/40179903193-1/chrome-mv3",
+    "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "treeSha256": "9d9214363fed8221e153799f7546c78997e92be5415d611fcd4ae5f02e0760c9",
+    "fileCount": 2735
+  },
+  "browser_guard": {
+    "run_id": "owner-exact-main-reload-20261025-0930",
+    "session": 48316,
+    "actual_exit_code": 0,
+    "admitted_at": "2026-10-25T09:29:56.700Z",
+    "final_at": "2026-10-25T09:30:51.857Z",
+    "resourceInvalid": false,
+    "decision": "valid",
+    "journal": "docs/stabilization/resource-journals/owner-exact-main-reload-20261025-0930.jsonl"
+  },
+  "native_observation": {
+    "profile_label": "Arman (armansadeghi.com)",
+    "development_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.621",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "enabled": true,
+    "pinned": true,
+    "reload_toast": "Reloaded",
+    "owned_tab_closed": true,
+    "store_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "store_version": "0.2.577",
+    "store_source": "Chrome Web Store",
+    "store_enabled": true,
+    "store_pinned": true
+  },
+  "evidence": [
+    "owner-exact-main-reloaded-20261025.ax.json",
+    "owner-exact-main-store-preserved-20261025.ax.json"
+  ],
+  "limits": [
+    "Owner profile path was verified earlier in this window, this run retains the profile label rather than a new chrome://version path read.",
+    "Manager Reload is not a native Settings case pass.",
+    "Subsequent working eligibility-helper edits are not in this frozen artifact."
+  ]
+}

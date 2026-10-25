@@ -2,7 +2,7 @@
 /** Fail closed when the event's exact comparison range cannot be proved. */
 import { execFileSync } from 'node:child_process';
 import { appendFileSync } from 'node:fs';
-import { isEligibleDevelopmentCiEvent } from './development-ci-event.mjs';
+import { isSuccessfulDevelopmentCiRun } from './development-ci-event.mjs';
 import { isRuntimeEquivalentDocumentationPath } from './development-source-compatibility.mjs';
 
 export function classifyChangedPaths(paths, baseAvailable = true) {
@@ -90,10 +90,7 @@ export async function latestSuccessfulDevelopmentArtifactSource() {
     const run = await githubJson(`/actions/runs/${runId}`);
     if (!run) return null;
     if (
-      run.conclusion === 'success' &&
-      run.name === 'CI' &&
-      isEligibleDevelopmentCiEvent(run) &&
-      run.head_branch === 'main' &&
+      isSuccessfulDevelopmentCiRun(run) &&
       run.head_sha === sha &&
       String(run.run_attempt) === attempt
     )

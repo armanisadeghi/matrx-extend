@@ -9,7 +9,7 @@ import { dirname, join, resolve } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
 import { assertDevEmittedTitle } from './check-dev-emitted-title.mjs';
-import { isEligibleDevelopmentCiEvent } from './development-ci-event.mjs';
+import { isSuccessfulDevelopmentCiRun } from './development-ci-event.mjs';
 import {
   recordLocalDevBuild,
   requireLocalDevReceipt,
@@ -300,13 +300,7 @@ export function verifyGitHubMetadata(run, workflow, artifact, runId, artifactId)
     run.repository?.full_name !== OWNER ||
     run.head_repository?.full_name !== OWNER ||
     run.workflow_id !== workflow.id ||
-    run.path !== '.github/workflows/ci.yml' ||
-    !isEligibleDevelopmentCiEvent(run) ||
-    run.head_branch !== 'main' ||
-    run.status !== 'completed' ||
-    run.conclusion !== 'success' ||
-    !SHA.test(run.head_sha ?? '') ||
-    !DECIMAL.test(String(run.run_attempt ?? ''))
+    !isSuccessfulDevelopmentCiRun(run)
   )
     fail('test_artifact_run_refused');
   const expectedName = `${PREFIX}-${run.head_sha}-${run.id}-${run.run_attempt}`;

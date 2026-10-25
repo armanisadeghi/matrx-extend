@@ -376,7 +376,7 @@ else if(process.argv[2]==='run' && process.argv[3]==='view') { process.stdout.wr
 else if(e.includes('/actions/secrets')) r={total_count:0,secrets:[]};
 else if(e.includes('/artifacts?')) r=e.includes('/'+c.runId+'/')?{artifacts:[{name:'hosted-guest-'+c.runId+'-1',expired:false,digest:c.archiveDigest}]}:{artifacts:[{id:456,expired:false,name:'matrx-extend-development-test-'+c.sourceSha+'-123-1',digest:c.developmentDigest}]};
 else if(e.endsWith('/'+c.runId)) r={name:'Native A · scrape-save-member',path:'.github/workflows/hosted-guest-acceptance.yml',event:'workflow_dispatch',head_branch:'main',head_sha:c.sourceSha,conclusion:'success',run_attempt:1};
-else if(e.endsWith('/123')) r={name:'CI',path:'.github/workflows/ci.yml',event:'push',head_branch:'main',head_sha:c.sourceSha,conclusion:'success',run_attempt:1};
+else if(e.endsWith('/123')) r={name:'CI',path:'.github/workflows/ci.yml',event:'push',head_branch:'main',status:'completed',head_sha:c.sourceSha,conclusion:'success',run_attempt:1};
 else process.exit(98); process.stdout.write(JSON.stringify(r));
 `,
   );

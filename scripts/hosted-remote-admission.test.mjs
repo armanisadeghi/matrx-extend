@@ -920,7 +920,7 @@ const e=a[1];let r;
 if(e.includes('/contents/'))r={path:'.github/workflows/hosted-guest-acceptance.yml',type:'file',encoding:'base64',content:Buffer.from(c.workflow).toString('base64')};
 else if(e.includes('/artifacts?'))r={artifacts:e.includes('/'+c.runId+'/')?[{name:'hosted-guest-'+c.runId+'-1',expired:false,digest:c.archiveDigest}]:[{id:c.artifactId,expired:false,name:'matrx-extend-development-test-'+c.sourceSha+'-'+c.developmentRunId+'-1',digest:'sha256:'+'b'.repeat(64)}]};
 else if(e.endsWith('/'+c.runId))r={name:'Native A · settings-account-popover-member',path:'.github/workflows/hosted-guest-acceptance.yml',event:'workflow_dispatch',head_branch:'main',head_sha:c.workflowSha||c.sourceSha,conclusion:c.conclusion||'success',run_attempt:1};
-else if(e.endsWith('/'+c.developmentRunId))r={name:'CI',path:'.github/workflows/ci.yml',event:'push',head_branch:'main',head_sha:c.sourceSha,conclusion:'success',run_attempt:1};
+else if(e.endsWith('/'+c.developmentRunId))r={name:'CI',path:'.github/workflows/ci.yml',event:'push',head_branch:'main',status:'completed',head_sha:c.sourceSha,conclusion:'success',run_attempt:1};
 else process.exit(98);
 process.stdout.write(JSON.stringify(r));
 `;
@@ -1041,7 +1041,7 @@ if (process.argv[1].endsWith('/git')) {
   else if (endpoint.includes('/actions/secrets')) result = { secrets: cfg.noSecret ? [] : [{ name: 'MATRX_REVIEWER_MAGIC_LINK_JSON' }] };
   else if (endpoint.includes('/actions/workflows/')) result = { total_count: (cfg.runs || (endpoint.includes('hosted-resource-diagnostic') ? cfg.diagnosisRuns : []) || []).length, workflow_runs: cfg.runs || (endpoint.includes('hosted-resource-diagnostic') ? cfg.diagnosisRuns : []) || [] };
   else if (endpoint.includes('/artifacts?')) result = { artifacts: [{ id: cfg.wrongArtifact || cfg.artifactId, expired: false, name: 'matrx-extend-development-test-' + (cfg.artifactSourceSha || cfg.sourceSha) + '-' + cfg.runId + '-1', digest: cfg.digest }] };
-  else if (endpoint.endsWith('/actions/runs/' + cfg.runId)) result = { name: 'CI', path: '.github/workflows/ci.yml', event: 'push', head_branch: 'main', conclusion: 'success', head_sha: cfg.artifactSourceSha || cfg.sourceSha, run_attempt: 1 };
+  else if (endpoint.endsWith('/actions/runs/' + cfg.runId)) result = { name: 'CI', path: '.github/workflows/ci.yml', event: 'push', head_branch: 'main', status: 'completed', conclusion: 'success', head_sha: cfg.artifactSourceSha || cfg.sourceSha, run_attempt: 1 };
   else process.exit(98);
   process.stdout.write(JSON.stringify(result));
 }
@@ -1351,6 +1351,7 @@ function fixture() {
     path: '.github/workflows/ci.yml',
     event: 'push',
     head_branch: 'main',
+    status: 'completed',
     conclusion: 'success',
     head_sha: artifactSha,
     run_attempt: 1,
@@ -1405,6 +1406,7 @@ test('hosted route accepts exact authorized development CI dispatch regardless o
   const f = fixture();
   try {
     f.run.event = 'workflow_dispatch';
+    f.run.name = `CI release source ${f.artifactSha} (by extend-stabilization)`;
     f.run.actor = { login: 'github-actions[bot]' };
     git(f.root, 'update-ref', 'refs/remotes/origin/main', f.artifactSha);
     assert.equal(
@@ -1416,6 +1418,21 @@ test('hosted route accepts exact authorized development CI dispatch regardless o
       f.admit(f.artifactSha, { allowRuntimeEquivalent: false }).sourceSha,
       f.artifactSha,
     );
+    for (const change of [
+      { path: '.github/workflows/release.yml' },
+      { event: 'pull_request' },
+      { head_branch: 'feature' },
+      { status: 'in_progress' },
+      { run_attempt: 0 },
+    ]) {
+      const baseline = Object.fromEntries(Object.keys(change).map((key) => [key, f.run[key]]));
+      Object.assign(f.run, change);
+      assert.throws(
+        () => f.admit(f.artifactSha, { allowRuntimeEquivalent: false }),
+        /HOSTED_DEVELOPMENT_RUN_INVALID/,
+      );
+      Object.assign(f.run, baseline);
+    }
     f.run.head_sha = 'b'.repeat(40);
     assert.throws(
       () => f.admit(f.artifactSha, { allowRuntimeEquivalent: false }),
@@ -1633,7 +1650,7 @@ if (process.argv[1].endsWith('/git')) {
     const runs = endpoint.includes('hosted-resource-diagnostic') ? (cfg.diagnosisRuns || []) : (cfg.runs || []);
     result = { total_count: cfg.incomplete ? 101 : runs.length, workflow_runs: runs };
   } else if (endpoint.includes('/artifacts?')) result = { artifacts: [{ id: cfg.wrongArtifact ? '12112098475' : '12112098474', expired: false, name: 'matrx-extend-development-test-' + cfg.sha + '-39065713090-1', digest: 'sha256:' + 'c'.repeat(64) }] };
-  else if (endpoint.endsWith('/actions/runs/39065713090')) result = { name: 'CI', path: '.github/workflows/ci.yml', event: 'push', head_branch: 'main', conclusion: cfg.ciFailure ? 'failure' : 'success', head_sha: cfg.sha, run_attempt: 1 };
+  else if (endpoint.endsWith('/actions/runs/39065713090')) result = { name: 'CI', path: '.github/workflows/ci.yml', event: 'push', head_branch: 'main', status: 'completed', conclusion: cfg.ciFailure ? 'failure' : 'success', head_sha: cfg.sha, run_attempt: 1 };
   else process.exit(98); // In particular, this route may never read/stage member credentials.
   process.stdout.write(JSON.stringify(result));
 }

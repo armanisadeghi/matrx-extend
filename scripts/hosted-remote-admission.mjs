@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mjs';
-import { isEligibleDevelopmentCiEvent } from './development-ci-event.mjs';
+import { isSuccessfulDevelopmentCiRun } from './development-ci-event.mjs';
 import {
   isRuntimeEquivalentDocumentationPath,
   sourceCompatibility,
@@ -1737,15 +1737,7 @@ export function requireDevelopmentArtifact(
   if (!DECIMAL.test(runId ?? '') || !DECIMAL.test(artifactId ?? '') || !SHA.test(sourceSha ?? ''))
     refuse('HOSTED_ARTIFACT_ID_INVALID');
   const run = fetchJson(`repos/${OWNER}/actions/runs/${runId}`);
-  if (
-    run.name !== 'CI' ||
-    run.path !== '.github/workflows/ci.yml' ||
-    !isEligibleDevelopmentCiEvent(run) ||
-    run.head_branch !== 'main' ||
-    run.conclusion !== 'success' ||
-    !SHA.test(run.head_sha ?? '') ||
-    (run.head_sha !== sourceSha && !allowRuntimeEquivalent)
-  )
+  if (!isSuccessfulDevelopmentCiRun(run) || (run.head_sha !== sourceSha && !allowRuntimeEquivalent))
     refuse('HOSTED_DEVELOPMENT_RUN_INVALID');
   let compatibility;
   if (allowRuntimeEquivalent) {

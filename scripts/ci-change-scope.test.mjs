@@ -115,9 +115,11 @@ test('cancelled or unavailable CI artifact proof fails closed', async () => {
               }
             : {
                 conclusion,
-                name: 'CI',
-                event: 'push',
+                name: `CI release source ${sha} (by extend-stabilization)`,
+                path: '.github/workflows/ci.yml',
+                event: 'workflow_dispatch',
                 head_branch: 'main',
+                status: 'completed',
                 head_sha: sha,
                 run_attempt: 1,
               },
@@ -126,6 +128,38 @@ test('cancelled or unavailable CI artifact proof fails closed', async () => {
         await latestSuccessfulDevelopmentArtifactSource(),
         conclusion === 'success' ? sha : null,
       );
+    }
+    const eligibleRun = {
+      conclusion: 'success',
+      name: `CI release source ${sha} (by extend-stabilization)`,
+      path: '.github/workflows/ci.yml',
+      event: 'workflow_dispatch',
+      head_branch: 'main',
+      status: 'completed',
+      head_sha: sha,
+      run_attempt: 1,
+    };
+    for (const changed of [
+      { path: '.github/workflows/release.yml' },
+      { event: 'pull_request' },
+      { head_sha: 'b'.repeat(40) },
+    ]) {
+      globalThis.fetch = async (url) =>
+        Response.json(
+          String(url).includes('/actions/artifacts?')
+            ? {
+                artifacts: [
+                  {
+                    name: `matrx-extend-development-test-${sha}-123-1`,
+                    expired: false,
+                    size_in_bytes: 42,
+                    workflow_run: { id: 123, head_sha: sha },
+                  },
+                ],
+              }
+            : { ...eligibleRun, ...changed },
+        );
+      assert.equal(await latestSuccessfulDevelopmentArtifactSource(), null);
     }
     globalThis.fetch = async () => new Response('', { status: 403 });
     assert.equal(await latestSuccessfulDevelopmentArtifactSource(), null);
@@ -192,9 +226,11 @@ async function withCliFixture(run) {
           }
       : {
           conclusion: 'success',
-          name: 'CI',
-          event: 'push',
+          name: `CI release source ${artifactSource} (by extend-stabilization)`,
+          path: '.github/workflows/ci.yml',
+          event: 'workflow_dispatch',
           head_branch: 'main',
+          status: 'completed',
           head_sha: artifactSource,
           run_attempt: 1,
         };

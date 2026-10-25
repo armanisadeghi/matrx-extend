@@ -1,0 +1,73 @@
+{
+  "id": "EXT-D-0288",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T04", "EXT-F-1003-T22"],
+  "title": "Native acceptance rejects successful CI dispatch display names",
+  "surface": "CI artifact admission harness; no product defect established",
+  "auth_mode": "Supporting native test prerequisites; no new mode-case pass",
+  "severity": "S2: valid exact-source artifact refused before native launch",
+  "priority": "P1: unblock existing Settings original and adjacent retests",
+  "state": "fixed",
+  "owner": "/root/settings_b_native_20261025",
+  "preconditions": [
+    "Successful CI workflow_dispatch40179903193 on main3c0a21cdffb536e118f1f4b1e0e30aa377e5ff61 with eligible artifact12593673415."
+  ],
+  "reproduction": [
+    "Run normal plan-settings-guest on B/settings-controls with macos-15-intel and that exact CI/artifact/source.",
+    "Observe HOSTED_DEVELOPMENT_RUN_INVALID before any native dispatch, although canonical importer verifies same artifact."
+  ],
+  "expected": "CI identity follows workflow path, authorized event, successful completed main run and exact source/artifact provenance; descriptive display names remain presentation.",
+  "actual": "Hosted artifact admission and docs scope require literal run.name CI while authorized explicit CI uses a descriptive name.",
+  "cause": "Display name was incorrectly treated as stable CI identity in two consumers.",
+  "sibling_census": [
+    "scripts/hosted-remote-admission.mjs",
+    "scripts/ci-change-scope.mjs",
+    "scripts/current-test-artifact.mjs retains stronger repository/workflow-ID checks using shared predicate",
+    "scripts/release-development-ci.mjs uses event/source, no display-name assumption"
+  ],
+  "evidence": [
+    "docs/stabilization/reports/settings-b-native-20261025.json",
+    "docs/stabilization/reports/ci-identity-fresh-review-20261025.json",
+    "docs/stabilization/resource-journals/d288-ci-run-name-focused-final-20261025-0937.jsonl",
+    "docs/stabilization/resource-journals/d288-ci-run-name-lint-final-20261025-0940.jsonl"
+  ],
+  "native_limits": "No native job started. D287 Settings original T04/full Reload and adjacent T22 remain unverified. Source/admission success is not product acceptance.",
+  "next_action": "Observe successful CI for synchronized main after this fix, hold metadata commits, then normal exact-source Settings B plan/dispatch; independently retest T04/full Reload and adjacentT22.",
+  "transition_history": [
+    {
+      "at": "2026-10-25T09:34:36.573442+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual normal admission refusal on successful explicit CI."
+    },
+    {
+      "at": "2026-10-25T09:34:36.573442+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Two literal CI-name assumptions reproduce; canonical importer accepts same provenance."
+    },
+    {
+      "at": "2026-10-25T09:34:36.573442+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Named bounded implementation lane and fresh independent reviewer; full guard and mock fixture correction pending."
+    },
+    {
+      "at": "2026-10-25T09:42:23.589172+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Shared predicate source and all seven fixture siblings reviewed, actual original read-only plan passed independently, final guarded913pass0fail11skip and full lint passed. Native acceptance and new-source hosted CI remain pending."
+    }
+  ],
+  "reviewer": "/root/ci_identity_fresh_review_20261025",
+  "latest_verification": {
+    "focused_total": 924,
+    "focused_pass": 913,
+    "focused_fail": 0,
+    "focused_skip": 11,
+    "lint": "resource-valid pass; actual child/holder exit0",
+    "original_repro": "Independent normal read-only plan admitted actual CI40179903193/artifact12593673415 at exact3c source and original digest. No native dispatch.",
+    "limits": "New pushed source still requires hosted CI and exact-source artifact before native Settings; no product closure."
+  },
+  "fix_commit_lookup": "Commit containing this D288 record; resolve with git log -1 --format=%H -- scripts/development-ci-event.mjs"
+}

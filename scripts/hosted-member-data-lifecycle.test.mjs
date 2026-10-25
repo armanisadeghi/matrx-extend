@@ -488,7 +488,7 @@ if(e.includes('/contents/')) r={path:'.github/workflows/hosted-guest-acceptance.
 else if(e.includes('/actions/secrets')) r={total_count:c.secretPresent?1:0,secrets:c.secretPresent?[{name:'MATRX_REVIEWER_MAGIC_LINK_JSON'}]:[]};
 else if(e.includes('/artifacts?')) r={artifacts:e.includes('/'+c.runId+'/')?[{name:'hosted-guest-'+c.runId+'-1',expired:false,digest:c.archiveDigest}]:[{id:11700000000,expired:false,name:'matrx-extend-development-test-'+(c.artifactSourceSha||c.sourceSha)+'-38116138170-1',digest:'sha256:'+'b'.repeat(64)}]};
 else if(e.endsWith('/'+c.runId)) r={name:'Native A · member-data',path:'.github/workflows/hosted-guest-acceptance.yml',event:'workflow_dispatch',head_branch:'main',head_sha:c.workflowSha||c.sourceSha,conclusion:'success',run_attempt:1};
-else if(e.endsWith('/38116138170')) r={name:'CI',path:'.github/workflows/ci.yml',event:'push',head_branch:'main',head_sha:c.artifactSourceSha||c.sourceSha,conclusion:'success',run_attempt:1};
+else if(e.endsWith('/38116138170')) r={name:'CI',path:'.github/workflows/ci.yml',event:'push',head_branch:'main',status:'completed',head_sha:c.artifactSourceSha||c.sourceSha,conclusion:'success',run_attempt:1};
 else process.exit(98);
 process.stdout.write(JSON.stringify(r));
 `;

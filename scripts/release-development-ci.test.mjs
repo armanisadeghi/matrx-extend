@@ -16,6 +16,7 @@ const sourceSha = 'a'.repeat(40);
 const laterSha = 'b'.repeat(40);
 const baseRun = {
   id: 123,
+  name: `CI release source ${sourceSha} (by extend-stabilization)`,
   repository: { full_name: 'armanisadeghi/matrx-extend' },
   head_repository: { full_name: 'armanisadeghi/matrx-extend' },
   workflow_id: 99,
