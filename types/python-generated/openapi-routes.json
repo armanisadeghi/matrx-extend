@@ -973,6 +973,14 @@
    "application/json"
   ]
  },
+ "/ai/context/recorded": {
+  "get": []
+ },
+ "/ai/context/recorded/pointer": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/ai/conversation/{conversation_id}": {
   "post": [
    "application/json"
@@ -10056,6 +10064,19 @@
  },
  "/vault/organizations/{organization_id}/members/{member_user_id}/access": {
   "put": [
+   "application/json"
+  ]
+ },
+ "/vault/password-health/scans": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/password-health/scans/{execution_id}": {
+  "get": []
+ },
+ "/vault/password-health/scans/{execution_id}/resume": {
+  "post": [
    "application/json"
   ]
  },

@@ -2691,6 +2691,28 @@ export interface StructuredInputWarningData {
   failures?: StructuredInputFailure[];
 }
 
+export interface VaultPasswordHealthProgressData {
+  type?: "vault_password_health_progress";
+  __kind: "password_health_progress";
+  request_id: string;
+  execution_id: string;
+  checked: number;
+  skipped: number;
+}
+
+export interface VaultPasswordHealthScanReferenceData {
+  type?: "vault_password_health_scan_reference";
+  __kind: "password_health_scan_reference";
+  request_id: string;
+  execution_id: string;
+  resumed_from_execution_id?: string | null;
+  status_path: string;
+  events_path: string;
+  rejoin_path: string;
+  result_path: string;
+  resume_path: string;
+}
+
 export interface VideoOutputData {
   type?: "video_output";
   url: string;
@@ -2891,6 +2913,8 @@ export type TypedDataPayload =
   | SocialResultEvent
   | SocialStageEvent
   | StructuredInputWarningData
+  | VaultPasswordHealthProgressData
+  | VaultPasswordHealthScanReferenceData
   | VideoOutputData
   | WorkflowNodeTestResultData
   | WorkflowStepData
