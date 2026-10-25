@@ -21,10 +21,13 @@ const GUIDE_SCRIPT = 'content-scripts/guided-capture.js';
 /** Make sure the tab's guide is alive and asks for its job now. */
 export async function wakeGuide(tabId: number): Promise<void> {
   try {
-    await chrome.tabs.sendMessage(tabId, { t: GUIDED_WAKE });
-    return;
+    // Another live extension script on the tab may receive this too; only the guide answers 'alive'.
+    const answer = (await chrome.tabs.sendMessage(tabId, { t: GUIDED_WAKE })) as
+      | { guide?: unknown }
+      | undefined;
+    if (answer?.guide === 'alive') return;
   } catch {
-    // No live listener on the tab (it predates this copy of the extension): inject the guide.
+    // No live listener on the tab (it predates this copy of the extension).
   }
   await chrome.scripting.executeScript({ target: { tabId }, files: [GUIDE_SCRIPT] });
 }

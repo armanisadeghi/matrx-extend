@@ -15,7 +15,8 @@ const sized = (el: Element, scrollHeight: number, clientHeight: number) =>
   });
 
 let receive: (message: GuidedHostMsg) => void = () => {};
-let wakeListener: ((m: unknown) => boolean) | null = null;
+let wakeListener: ((m: unknown, sender: unknown, reply: (r: unknown) => void) => boolean) | null =
+  null;
 const sent = vi.fn();
 
 function mountProfileJob() {
@@ -107,8 +108,10 @@ it('scrolls the page itself when the page can move', () => {
 it('a wake from the service worker makes the guide ask for its job again', () => {
   mountGuidedOverlay();
   sent.mockClear();
-  wakeListener?.({ t: GUIDED_WAKE });
+  const reply = vi.fn();
+  wakeListener?.({ t: GUIDED_WAKE }, {}, reply);
   expect(sent).toHaveBeenCalledWith({ t: 'hello' });
+  expect(reply).toHaveBeenCalledWith({ guide: 'alive' });
 });
 
 it('re-injects the guide when the tab only has a dead copy (opened before the extension reloaded)', async () => {
@@ -128,8 +131,16 @@ it('re-injects the guide when the tab only has a dead copy (opened before the ex
     files: ['content-scripts/guided-capture.js'],
   });
 
+  // Another live script answered, but not the guide: still re-inject.
   executeScript.mockClear();
   Object.assign(chrome, { tabs: { ...chrome.tabs, sendMessage: vi.fn(async () => undefined) } });
+  await wakeGuide(7);
+  expect(executeScript).toHaveBeenCalledTimes(1);
+
+  executeScript.mockClear();
+  Object.assign(chrome, {
+    tabs: { ...chrome.tabs, sendMessage: vi.fn(async () => ({ guide: 'alive' })) },
+  });
   await wakeGuide(7);
   expect(executeScript).not.toHaveBeenCalled();
 });
