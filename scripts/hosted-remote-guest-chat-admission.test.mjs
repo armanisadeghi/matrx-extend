@@ -10,6 +10,7 @@ import {
   planHostedPublishedGuestChat,
   requireGuestChatDispatchAdmission,
 } from './hosted-remote-admission.mjs';
+import { PUBLISHED_STORE_CRX } from './published-store-crx-target.mjs';
 const sha = '8f879d15b1fb5293d73a2f4d1a4e4c37e79d4e6f';
 const input = {
   lane: 'B',
@@ -28,7 +29,7 @@ test('published guest Chat plan pins the public item and uses only isolated gues
     lane: 'B',
     acceptanceCase: 'guest-chat',
     runnerLabel: 'macos-15-intel',
-    publicVersion: '0.2.205',
+    publicVersion: PUBLISHED_STORE_CRX.version,
     publicId: 'hnfolienncfklkgmdjjmhhegglimlamg',
     sourceSha: sha,
   };
@@ -327,7 +328,7 @@ else {const e=a[1];let r;
           '--case',
           'guest-chat',
           '--public-version',
-          changes.publicVersion ?? '0.2.205',
+          changes.publicVersion ?? PUBLISHED_STORE_CRX.version,
           '--public-id',
           changes.publicId ?? 'hnfolienncfklkgmdjjmhhegglimlamg',
           '--source-sha',
@@ -345,10 +346,7 @@ else {const e=a[1];let r;
       );
     const publicPlan = executePublished('plan-published-guest-chat');
     assert.equal(publicPlan.status, 0, publicPlan.stderr);
-    assert.equal(
-      JSON.parse(publicPlan.stdout).crxSha256,
-      '7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23',
-    );
+    assert.equal(JSON.parse(publicPlan.stdout).crxSha256, PUBLISHED_STORE_CRX.crxSha256);
     assert.equal(existsSync(log), false);
     for (const [changes, extras, reason] of [
       [{ dirty: ' M src/main.ts' }, [], 'SOURCE_NOT_SYNCHRONIZED'],
@@ -373,7 +371,7 @@ else {const e=a[1];let r;
       ...planHostedPublishedGuestChat({
         lane: 'B',
         acceptanceCase: 'guest-chat',
-        publicVersion: '0.2.205',
+        publicVersion: PUBLISHED_STORE_CRX.version,
         publicId: 'hnfolienncfklkgmdjjmhhegglimlamg',
         sourceSha: sha,
       }).args,

@@ -12,7 +12,7 @@ import {
 test('published CRX target admits the approved baseline and refuses stale workflow token', async () => {
   const baselinePath = resolve('config/chrome-web-store-approved-baseline.json');
   assert.deepEqual(
-    await requirePublishedStoreCrxTarget('0.2.205', baselinePath),
+    await requirePublishedStoreCrxTarget('0.2.577', baselinePath),
     PUBLISHED_STORE_CRX,
   );
   await assert.rejects(
@@ -32,7 +32,7 @@ test('published CRX target refuses a stale approved baseline before download', a
       JSON.stringify({ ...original, publishedVersion: '0.2.176' }),
     );
     await assert.rejects(
-      requirePublishedStoreCrxTarget('0.2.205', join(directory, 'baseline.json')),
+      requirePublishedStoreCrxTarget('0.2.577', join(directory, 'baseline.json')),
       /published_store_crx_baseline_version_mismatch/,
     );
   } finally {
@@ -51,7 +51,7 @@ test('published CRX target refuses another item in the approved baseline', async
       JSON.stringify({ ...original, itemId: 'pifjakncjcpnkjbdlijgddhiipdlfbde' }),
     );
     await assert.rejects(
-      requirePublishedStoreCrxTarget('0.2.205', join(directory, 'baseline.json')),
+      requirePublishedStoreCrxTarget('0.2.577', join(directory, 'baseline.json')),
       /published_store_crx_baseline_item_mismatch/,
     );
   } finally {

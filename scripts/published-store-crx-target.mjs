@@ -3,8 +3,8 @@ import { readFile } from 'node:fs/promises';
 
 export const PUBLISHED_STORE_CRX = Object.freeze({
   id: 'hnfolienncfklkgmdjjmhhegglimlamg',
-  version: '0.2.205',
-  crxSha256: '7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23',
+  version: '0.2.577',
+  crxSha256: '45802ce7241dfbd5f4053bd98443f9617ac60fe6ec9b4443b7c82d18d1ff2a11',
 });
 
 export async function requirePublishedStoreCrxTarget(requestedVersion, baselinePath) {

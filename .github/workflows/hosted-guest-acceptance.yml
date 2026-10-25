@@ -33,7 +33,7 @@ on:
         required: false
         type: string
       published_store_crx:
-        description: Test exact published 0.2.205 CRX from Google's public update service
+        description: Test exact published 0.2.577 CRX from Google's public update service
         required: false
         default: false
         type: boolean
@@ -472,7 +472,7 @@ jobs:
           MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_diagnostic == 'resource' && '1' || '0' }}
           MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_diagnostic == 'interrupt-manual' && 'manual_button_returns_to_current_page' || 'none' }}
           MATRX_HOSTED_DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
-          MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
+          MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.577' || '' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
           MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: ${{ inputs.scrape_reload_open_diagnostic == true && '1' || '0' }}
           MATRX_RELOAD_SENDER_DOCUMENT_DIAGNOSTIC: ${{ inputs.reload_sender_document_diagnostic == true && '1' || '0' }}
@@ -540,7 +540,7 @@ jobs:
           MATRX_HOSTED_RELEASE_RUN_ID: ${{ inputs.release_run_id }}
           MATRX_HOSTED_DEV_RUN_ID: ${{ inputs.development_run_id }}
           MATRX_HOSTED_DEV_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
-          MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
+          MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.577' || '' }}
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_HOSTED_ACCEPTANCE_LANE: ${{ inputs.acceptance_lane }}
           MATRX_MEMBER_DATA_SCOPE: ${{ inputs.member_data_scope }}
