@@ -1,5 +1,5 @@
 import type { OpenAiWatchWindowOptions } from '@ai-matrx/chat/host/window-openers';
-import { formatLinkToken } from '@ai-matrx/summon/open';
+import { formatLinkToken } from '@ai-matrx/summon/boot-kit';
 
 type CreateTab = (properties: { url: string }) => Promise<unknown>;
 

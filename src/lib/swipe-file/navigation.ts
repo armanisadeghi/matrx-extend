@@ -1,5 +1,5 @@
 import { ENV } from '@/config/env';
-import { formatLinkToken } from '@ai-matrx/summon/open';
+import { formatLinkToken } from '@ai-matrx/summon/boot-kit';
 
 export const SWIPE_OPEN_KEY = 'matrx.swipe.open';
 
