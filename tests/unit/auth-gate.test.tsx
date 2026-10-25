@@ -33,7 +33,7 @@ describe('AuthGate sign-in failure notice', () => {
     );
 
     expect(screen.getByRole('alert').textContent).toContain(
-      'Sign-in failed: Token exchange failed',
+      'Token exchange failed (400): invalid_grant',
     );
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(auth.retry).toHaveBeenCalledOnce();
