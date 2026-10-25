@@ -86,7 +86,10 @@
       "protect.txt": "6935d6ede511405a7f5e8c0891d6675d044004c86a7f4008124bb3b3044b186a"
     },
     "limits": "Existing protection/registry copied byte-identically; scan/deleteworkers1 and deletionbudget1min, no retention/protection/schedule change, no Chrome profile/code/credential deletion. Free-space change has no sole attribution.",
-    "after_observation": { "pressure_level": 4, "system_free_kib": 15106028 },
+    "after_observation": {
+      "pressure_level": 4,
+      "system_free_kib": 15106028
+    },
     "normal_resource_admission_recovered": false,
     "latest_read_only_observation": {
       "pressure_level": 1,
@@ -128,7 +131,7 @@
   },
   "daily_store": "Reuse completed October25 primary published577/Draft577 unpublished and official mail observation. Actual Store guest577 two grounded terminal turns belong to timed public servera6696caa57281d0c9989a5c18d7639c88e1ad339 observation; no new Store/API/browser check, upload or submission.",
   "ownership_and_cleanup": "All own workers, test executors, cleanup processes terminal; no browser/auth/backend/fixture/AI actions this wake; no temporary credentials created. Only own3sourcefiles restored after patch/hash preservation.",
-  "next_action": "Normal resource recovery first; inspect latest main/CI and contributor fix for sign-out guard. Recheck/apply preserved3file patch only on eligible source, guarded focused/compile/lint and fresh independent source reverify. Do not transfer earlier green metrics to latest transaction/predicate bytes. Native member diagnostic/guest acceptance, current artifact promotion/Chrome reload and release gates remain separate.",
+  "next_action": "Normal resource recovery first. Re-evaluate latest main/CI, then apply and verify preserved D294 source only if still compatible: final guarded focused/compile/lint and fresh independent review. Separately implement approved D295 frozen-proof class with unchanged strict-current gates before another normal SEO retest. No old source-CI failure, earlier green suite or failed/noUI hosted run establishes current acceptance.",
   "latest_hourly_observation": {
     "at": "2026-10-25T18:46:43.179442+00:00",
     "source": "d1aea242e77cb0a3ea89235c8284e0a6c048b8b3",
@@ -155,5 +158,14 @@
       "failed_step": "A SIGN-OUT ENDS ONLY THE DEVICE THAT ASKED"
     },
     "unchanged": "D294 preserved unapplied/latest tests unexecuted; ownerF0622 remains unadopted for current source; completed same-day Store577/mail/installed-guest timed result reused; no upload/submission/auth/fixture mutation or new worker."
+  },
+  "latest_followthrough": {
+    "at": "2026-10-25T20:44:01.962300+00:00",
+    "canonical_current_report": "docs/stabilization/reports/hosted-regression-75ab-20261025.json",
+    "D294_source_status": "Still preserved UNAPPLIED; no latest source tests/compile/lint/native verification.",
+    "current_source_note": "e87/ce6/75/6aa/befb fullCI success supersedes old sign-out failure; use current report/latest GitHub metadata, not old pending/failed snapshot as permanent blocker.",
+    "local_resource": "Actual51510 final20:21:01.313 refused2 solelydisk19.324GiB<20; no threshold/permission bypass.",
+    "new_product_testing": "Two original independent free hosted cases on frozen75 ended before UI, zero observations; allownedcredentials/fixturecleanupcomplete.",
+    "new_supporting_defect": "D295 triaged designCOMMIT only; no implemented source fix or closure."
   }
 }
