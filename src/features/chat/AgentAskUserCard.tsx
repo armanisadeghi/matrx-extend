@@ -606,14 +606,10 @@ function Icon({
   if (kind === 'notify') {
     const l = level ?? 'info';
     if (l === 'success') {
-      return (
-        <CheckCircle2 className="matrx-line-icon text-emerald-600 dark:text-emerald-400" />
-      );
+      return <CheckCircle2 className="matrx-line-icon text-emerald-600 dark:text-emerald-400" />;
     }
     if (l === 'warning') {
-      return (
-        <AlertTriangle className="matrx-line-icon text-amber-600 dark:text-amber-400" />
-      );
+      return <AlertTriangle className="matrx-line-icon text-amber-600 dark:text-amber-400" />;
     }
     if (l === 'error') {
       return <XCircle className="matrx-line-icon text-red-600 dark:text-red-400" />;

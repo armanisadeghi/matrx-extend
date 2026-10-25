@@ -83,11 +83,7 @@ export function NoticeHost() {
           {n.tone === 'info' ? (
             <Info aria-hidden="true" data-icon="info" className="matrx-line-icon-sm" />
           ) : (
-            <AlertTriangle
-              aria-hidden="true"
-              data-icon="warning"
-              className="matrx-line-icon-sm"
-            />
+            <AlertTriangle aria-hidden="true" data-icon="warning" className="matrx-line-icon-sm" />
           )}
           <div className="min-w-0 flex-1">
             <div className="font-medium">{n.title}</div>
