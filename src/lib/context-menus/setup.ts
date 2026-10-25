@@ -38,7 +38,7 @@ import {
 } from '@/lib/panel/adapter';
 import { captureAndEdit } from '@/lib/screenshot/shortcuts';
 import { saveFromMenu } from '@/lib/swipe-file/host';
-import { swipeTargetFromUrl } from '@/lib/swipe-file/urls';
+import { SWIPE_MATCH_PATTERNS, swipeTargetFromUrl } from '@/lib/swipe-file/urls';
 
 const MENU_ID_ASK_SELECTION = 'matrx.menu.ask-selection';
 const MENU_ID_OPEN_PANEL = 'matrx.menu.open-panel';
@@ -46,6 +46,7 @@ const MENU_ID_CAPTURE_PROSPECT = 'matrx.menu.capture-prospect';
 const MENU_ID_CAPTURE_STUDY_SET = 'matrx.menu.capture-study-set';
 const MENU_ID_SWIPE_SAVE = 'matrx.menu.swipe-save';
 const MENU_ID_SCREENSHOT_EDIT = 'matrx.menu.screenshot-edit';
+const MENU_ID_GUIDED_CAPTURE = 'matrx.menu.guided-capture';
 
 /**
  * The drafted instruction behind "Save this site as a prospect". Deliberately
@@ -80,6 +81,21 @@ export function setupContextMenus(): void {
   }
 
   chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+    if (info.menuItemId === MENU_ID_GUIDED_CAPTURE) {
+      const { captureFeedOnTab } = await import('@/lib/guided-capture/start');
+      const result =
+        typeof tab?.id === 'number' && tab.url
+          ? await captureFeedOnTab({ tabId: tab.id, url: tab.url })
+          : { ok: false as const, sentence: 'Open a profile or feed, then try again.' };
+      if (!result.ok)
+        await chrome.notifications?.create(`matrx-guided-${Date.now()}`, {
+          type: 'basic',
+          iconUrl: chrome.runtime.getURL('icon/128.png'),
+          title: 'Capture this feed',
+          message: result.sentence,
+        });
+      return;
+    }
     if (info.menuItemId === MENU_ID_SCREENSHOT_EDIT) {
       await captureAndEdit(tab, 'visible');
       return;
@@ -160,6 +176,15 @@ function registerMenus(): void {
       id: MENU_ID_SWIPE_SAVE,
       title: 'Save to swipe file',
       contexts: ['page', 'link'],
+    });
+    chrome.contextMenus.create({
+      id: MENU_ID_GUIDED_CAPTURE,
+      title: 'Capture this feed with Matrx',
+      contexts: ['page'],
+      // The social sites the guide knows (YouTube has its own capture).
+      documentUrlPatterns: SWIPE_MATCH_PATTERNS.filter(
+        (p) => !p.includes('youtube') && !p.includes('youtu.be'),
+      ),
     });
     chrome.contextMenus.create({
       id: MENU_ID_SCREENSHOT_EDIT,

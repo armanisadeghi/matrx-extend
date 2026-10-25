@@ -3,6 +3,7 @@ import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { MarkdownView } from '@/components/MarkdownView';
 import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
 import { FileSourcePanel } from '@/features/scrape/FileSourcePanel';
+import { GuidedCaptureBanner } from '@/features/scrape/GuidedCaptureBanner';
 import { SaveSourceForm } from '@/features/scrape/SaveSourceForm';
 import { UnsavedCapturesCard } from '@/features/scrape/UnsavedCapturesCard';
 import { SeoDetails } from '@/features/seo/SeoDetails';
@@ -422,6 +423,7 @@ export function ScrapeView() {
           {current && <CopyMenu title="Copy capture" options={fullCaptureCopyOptions(current)} />}
         </div>
         <HighlightRegionsBanner />
+        <GuidedCaptureBanner tabId={tab.id ?? null} url={tab.url ?? null} signedIn={signedIn} />
         {recognition.checkFailed && !saved && (
           <div className="mt-2 rounded-xl bg-secondary/60 px-3 py-1.5 text-xs text-muted-foreground">
             {recognition.checkNeedsOrganization ? (

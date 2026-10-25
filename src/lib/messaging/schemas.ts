@@ -95,6 +95,7 @@ export const CHANNELS = {
   CREDENTIAL_CAPTURE_STATUS: 'credential-capture:status', // sidepanel → SW: pending candidate for a tab (metadata)
   CREDENTIAL_CAPTURE_CHANGED: 'credential-capture:changed', // SW → all: { tabId } — a candidate appeared / resolved
   CREDENTIAL_ASSISTANCE_STATUS: 'credential-assistance:status', // extension page → SW metadata-only tab snapshot
+  GUIDED_CAPTURE_START: 'guided-capture:start', // sidepanel → SW: start a guided capture of the feed in { tabId, url }
   CREDENTIAL_ASSISTANCE_CHANGED: 'credential-assistance:changed', // SW → extension pages: { tabId }
   // Inline saved-login suggestions. These envelopes are metadata-only: values
   // are materialized only after a user chooses an offer inside the SW.

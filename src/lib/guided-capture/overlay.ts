@@ -24,6 +24,7 @@ import {
 import { nextSlideControl, scanPost, waitForSlide } from '@/lib/guided-capture/post';
 import {
   GUIDED_PORT,
+  GUIDED_WAKE,
   type GuidedCapturePayload,
   type GuidedClientMsg,
   type GuidedHostMsg,
@@ -37,6 +38,7 @@ import {
   recipeForUrl,
   stepsFor,
 } from '@/lib/guided-capture/recipes';
+import { type FeedScroller, findFeedScroller } from '@/lib/guided-capture/scroller';
 
 const MAX_HTML_CHARS = 8_000_000;
 const MAX_PAGE_IMAGES = 60;
@@ -140,13 +142,23 @@ export function mountGuidedOverlay(): void {
     const keyStop = (e: KeyboardEvent) => e.key === 'Escape' && ctl.abort();
     window.addEventListener('keydown', keyStop, true);
     render();
+    // The element that really scrolls this feed (the page, or an inner panel); found again if a
+    // step does not move it (the site swapped its layout mid-run).
+    let target: FeedScroller = findFeedScroller();
     try {
       scrollEnd = await runAutoScroll(
         {
           count: () => scan(acc!, recipe),
-          scrollBy: (px) => window.scrollBy({ top: px, behavior: 'smooth' }),
-          viewportHeight: () => window.innerHeight,
-          pageHeight: () => document.documentElement.scrollHeight,
+          scrollBy: (px) => {
+            const before = target.position();
+            target.scrollBy(px);
+            if (target.position() === before) {
+              target = findFeedScroller();
+              target.scrollBy(px);
+            }
+          },
+          viewportHeight: () => target.element?.clientHeight || window.innerHeight,
+          pageHeight: () => target.height(),
           onTick: (c) => {
             dispatch({ type: 'items', count: c });
           },
@@ -282,6 +294,8 @@ export function mountGuidedOverlay(): void {
   }
 
   function mount() {
+    // A guide left by an earlier copy of the extension (reloaded since) is dead: replace it.
+    document.getElementById('matrx-guided-capture')?.remove();
     host = document.createElement('div');
     host.id = 'matrx-guided-capture';
     host.style.cssText = 'all:initial;position:fixed;right:16px;bottom:16px;z-index:2147483646;';
@@ -359,6 +373,16 @@ export function mountGuidedOverlay(): void {
     return `<div class="row"><select id="scroll-target" aria-label="How many to collect"${scroller ? ' disabled' : ''}>${opts}${all}</select><button class="b alt" data-act="${scroller ? 'scroll-stop' : 'scroll'}"${state.phase === 'filing' ? ' disabled' : ''}>${scroller ? 'Stop (Esc)' : 'Scroll for me'}</button></div>`;
   }
 
+  // The page re-renders constantly on a busy feed, and every scan asks for a render. Writing the
+  // same markup again REPLACED the buttons, so a click that landed mid-write was lost ("Scroll for
+  // me did nothing"). Only a real change touches the card now.
+  let lastMarkup = '';
+  function paint(card: Element, markup: string) {
+    if (markup === lastMarkup) return;
+    lastMarkup = markup;
+    card.innerHTML = markup;
+  }
+
   function render() {
     const card = root?.querySelector('.card');
     if (!card || !job) return;
@@ -373,7 +397,7 @@ export function mountGuidedOverlay(): void {
         : countSentence(recipe, state.itemCount);
     const head = `<div class="head"><span>Matrx · ${esc(label)}</span><button class="x" data-act="min" aria-label="${collapsed ? 'Expand guide' : 'Collapse guide'}">${collapsed ? '+' : '–'}</button></div>`;
     if (collapsed) {
-      card.innerHTML = head + `<div class="count" role="status">${esc(count)}</div>`;
+      paint(card, head + `<div class="count" role="status">${esc(count)}</div>`);
       return;
     }
     const list = `<ol>${steps.map((s, i) => `<li${i === steps.length - 1 ? ' class="last"' : ''}>${esc(s)}</li>`).join('')}</ol>`;
@@ -392,13 +416,20 @@ export function mountGuidedOverlay(): void {
       body = `${list}<div class="count" role="status" aria-live="polite">${esc(scroller || scrollEnd ? scrollSentence(scroller ? null : scrollEnd, state.itemCount, recipe?.noun.many ?? 'items') : `${count} found`)}</div>${manual}
 <div class="row"><button class="b" data-act="capture"${state.phase === 'filing' || !postAvailable || reveal ? ' disabled' : ''}>${state.phase === 'filing' ? 'Saving…' : 'Capture'}</button></div>`;
     }
-    card.innerHTML = head + body;
+    paint(card, head + body);
   }
 
   // The Swipe card adopts this tab for a capture after the page loaded; ask again when it says so.
-  window.addEventListener('matrx:guided-wake', () => {
+  const wake = () => {
     retriesLeft = 3;
     if (!job) send({ t: 'hello' });
+  };
+  window.addEventListener('matrx:guided-wake', wake);
+  // The service worker wakes the guide when a capture is started on this tab from the side panel
+  // or the right-click menu.
+  chrome.runtime.onMessage.addListener((m: unknown) => {
+    if ((m as { t?: unknown } | null)?.t === GUIDED_WAKE) wake();
+    return false;
   });
   send({ t: 'hello' });
 }

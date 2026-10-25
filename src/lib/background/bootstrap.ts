@@ -79,6 +79,7 @@ import {
 import { registerGeneratedPasswordHost } from '@/lib/credentials/generation-host';
 import { registerInlineCredentialSuggestionHost } from '@/lib/credentials/inline-suggestions-host';
 import { registerGuidedCaptureHost } from '@/lib/guided-capture/host';
+import { registerGuidedCaptureStart } from '@/lib/guided-capture/start';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
@@ -166,6 +167,7 @@ export function bootstrapBackground(): void {
   registerBrokerHandlers();
   registerSwipeFileHost();
   registerGuidedCaptureHost();
+  registerGuidedCaptureStart();
   // "Save this login?" host — raw value-bearing listener + value-free bus handlers.
   registerCredentialCaptureHost();
   registerInlineCredentialSuggestionHost();

@@ -118,10 +118,11 @@ export function registerSwipeFileHost(): void {
       }
       if (msg.t === 'feed_capture') {
         const tabId = port.sender?.tab?.id;
-        const { startFeedCapture } = await import('@/lib/swipe-file/browser-capture');
+        // The same start as the side panel and the right-click menu: it also wakes the tab's guide.
+        const { captureFeedOnTab } = await import('@/lib/guided-capture/start');
         const result =
           typeof tabId === 'number'
-            ? await startFeedCapture({ url: msg.url, tabId })
+            ? await captureFeedOnTab({ url: msg.url, tabId })
             : { ok: false as const, sentence: 'Open this page in a normal tab to capture it.' };
         post({
           t: 'feed_started',

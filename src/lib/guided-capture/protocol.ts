@@ -3,6 +3,8 @@
 export const GUIDED_PORT = 'matrx.guided-capture';
 /** chrome.storage.session key: which tabs are on a guided job. */
 export const GUIDED_TABS_KEY = 'matrx.guided.tabs';
+/** Runtime message the service worker sends a tab so its guide asks for its job again. */
+export const GUIDED_WAKE = 'matrx.guided-wake';
 
 /** What the service worker remembers about a tab it sent a person to. */
 export interface GuidedTabJob {
