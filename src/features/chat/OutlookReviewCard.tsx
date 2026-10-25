@@ -78,7 +78,7 @@ export function OutlookReviewCard({ req }: { req: PendingAskUserRequest }) {
   return (
     <div className="rounded-xl border border-sky-300/60 bg-sky-50/70 p-3 text-sm shadow-sm dark:border-sky-700/60 dark:bg-sky-950/30">
       <div className="flex items-start gap-2">
-        <Mail className="mt-0.5 h-4 w-4 shrink-0 text-sky-600 dark:text-sky-400" />
+        <Mail className="matrx-line-icon text-sky-600 dark:text-sky-400" />
         <div className="min-w-0 flex-1">
           <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
             Review before sending

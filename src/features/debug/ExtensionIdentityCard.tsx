@@ -46,9 +46,9 @@ export function ExtensionIdentityCard() {
     >
       <div className="flex items-start gap-2">
         {ok ? (
-          <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+          <Check className="matrx-line-icon-sm text-emerald-600 dark:text-emerald-400" />
         ) : (
-          <ShieldAlert className="mt-0.5 size-3.5 shrink-0 text-red-600 dark:text-red-400" />
+          <ShieldAlert className="matrx-line-icon-sm text-red-600 dark:text-red-400" />
         )}
         <div className="flex-1 min-w-0">
           <div

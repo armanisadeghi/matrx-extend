@@ -383,7 +383,7 @@ export function PilotView() {
           role="alert"
           className="mx-3 mt-2 flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs text-amber-700 dark:text-amber-400"
         >
-          <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
+          <AlertTriangle className="matrx-line-icon-sm" />
           <div className="flex-1 leading-snug">{sessionError}</div>
           <button
             type="button"

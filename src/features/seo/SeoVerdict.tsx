@@ -114,7 +114,7 @@ export function SeoVerdict({
 
       {evaluation.findings.length === 0 ? (
         <div className="flex items-start gap-2 text-xs text-emerald-600 dark:text-emerald-400">
-          <CheckCircle className="mt-0.5 size-3.5 shrink-0" />
+          <CheckCircle className="matrx-line-icon-sm" />
           <span>
             No problems found. Indexing, the social share card, the heading outline, and the URL all
             check out.

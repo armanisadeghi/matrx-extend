@@ -258,9 +258,9 @@ function ToolRow({
         className="flex w-full items-start gap-2 px-2.5 py-2 text-left"
       >
         {open ? (
-          <ChevronDown className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+          <ChevronDown className="matrx-line-icon-sm text-muted-foreground" />
         ) : (
-          <ChevronRight className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+          <ChevronRight className="matrx-line-icon-sm text-muted-foreground" />
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">

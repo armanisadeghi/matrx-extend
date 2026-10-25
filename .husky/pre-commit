@@ -11,3 +11,15 @@ if [ -f "$OUTBOUND" ] && [ -n "$STAGED" ]; then
         exit 1
     }
 fi
+
+# THE LINE ICON (Arman, 2026-10-24): a leading icon is never nudged down by hand (mt-0.5 h-3.5 w-3.5
+# shrink-0); it uses matrx-line-icon*, centered on the first text line (@ai-matrx/design-system line-icon.css).
+LINE_ICONS="node_modules/@ai-matrx/design-system/scripts/check-line-icons.mjs"
+ICON_STAGED=$(git diff --cached --name-only --diff-filter=ACMR -- 'src/*.tsx' | grep -v '\.test\.' || true)
+if [ -f "$LINE_ICONS" ] && [ -n "$ICON_STAGED" ]; then
+    # shellcheck disable=SC2086
+    node "$LINE_ICONS" $ICON_STAGED || {
+        echo "COMMIT REFUSED: an icon is nudged down by hand (above)." >&2
+        exit 1
+    }
+fi

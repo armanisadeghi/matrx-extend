@@ -157,7 +157,7 @@ export function GoogleFileAttachmentChip() {
           // are gone when they may be fine.
           <div className="px-2 pb-2 pt-1">
             <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground">
-              <AlertTriangle className="mt-px size-3 shrink-0 text-amber-600 dark:text-amber-400" />
+              <AlertTriangle className="matrx-line-icon-xs text-amber-600 dark:text-amber-400" />
               <span>
                 Couldn’t load your Google files just now. This doesn’t affect any files you’ve
                 already shared with AI Matrx.

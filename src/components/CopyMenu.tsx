@@ -212,9 +212,9 @@ export function CopyMenu({
             className="flex w-full items-start gap-2 rounded-lg px-2.5 py-2 text-left text-sm transition-colors hover:bg-accent"
           >
             {o.ai ? (
-              <Sparkles className="mt-0.5 size-3.5 shrink-0 text-primary" />
+              <Sparkles className="matrx-line-icon-sm text-primary" />
             ) : (
-              <Copy className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+              <Copy className="matrx-line-icon-sm text-muted-foreground" />
             )}
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">

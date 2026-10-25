@@ -607,23 +607,23 @@ function Icon({
     const l = level ?? 'info';
     if (l === 'success') {
       return (
-        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+        <CheckCircle2 className="matrx-line-icon text-emerald-600 dark:text-emerald-400" />
       );
     }
     if (l === 'warning') {
       return (
-        <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+        <AlertTriangle className="matrx-line-icon text-amber-600 dark:text-amber-400" />
       );
     }
     if (l === 'error') {
-      return <XCircle className="mt-0.5 size-4 shrink-0 text-red-600 dark:text-red-400" />;
+      return <XCircle className="matrx-line-icon text-red-600 dark:text-red-400" />;
     }
-    return <Bell className="mt-0.5 size-4 shrink-0 text-sky-600 dark:text-sky-400" />;
+    return <Bell className="matrx-line-icon text-sky-600 dark:text-sky-400" />;
   }
   if (kind === 'confirm') {
-    return <Info className="mt-0.5 size-4 shrink-0 text-sky-600 dark:text-sky-400" />;
+    return <Info className="matrx-line-icon text-sky-600 dark:text-sky-400" />;
   }
-  return <HelpCircle className="mt-0.5 size-4 shrink-0 text-sky-600 dark:text-sky-400" />;
+  return <HelpCircle className="matrx-line-icon text-sky-600 dark:text-sky-400" />;
 }
 
 function useCountdown(expiresAt: number | undefined): number | null {

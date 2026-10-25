@@ -117,7 +117,7 @@ export function QueueSelectionBar({
                       }}
                       className="flex w-full items-start gap-2 rounded-lg px-2.5 py-2 text-left text-sm transition-colors hover:bg-accent"
                     >
-                      <Icon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+                      <Icon className="matrx-line-icon-sm text-muted-foreground" />
                       <div className="min-w-0 flex-1">
                         <div className="truncate">{opt.label}</div>
                         <div className="text-[11px] text-muted-foreground">{opt.description}</div>

@@ -749,7 +749,7 @@ export function ScrapeView() {
                       key={scrapeLinkKey(l.href, l.text)}
                       className="group flex items-start gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-accent"
                     >
-                      <LinkIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                      <LinkIcon className="matrx-line-icon text-muted-foreground" />
                       <OutboundLink href={l.href} className="min-w-0 flex-1">
                         <div className="truncate">{l.text || l.href}</div>
                         <div className="truncate text-xs text-muted-foreground">{l.href}</div>
@@ -1199,7 +1199,7 @@ function CaptureErrorCard({
   return (
     <div className={cn('mt-2 rounded-xl border p-3', tone)}>
       <div className="flex items-start gap-2">
-        <Icon className="mt-0.5 size-4 shrink-0" />
+        <Icon className="matrx-line-icon" />
         <div className="min-w-0 flex-1 space-y-1">
           <div className="text-sm font-medium">{error.title}</div>
           <div className="text-xs leading-relaxed opacity-90">{error.description}</div>

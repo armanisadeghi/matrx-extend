@@ -134,9 +134,9 @@ export function ToolReceiptDialog({
               )}
             >
               {verify.valid ? (
-                <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
+                <ShieldCheck className="matrx-line-icon-sm" />
               ) : (
-                <ShieldAlert className="mt-0.5 size-3.5 shrink-0" />
+                <ShieldAlert className="matrx-line-icon-sm" />
               )}
               <div className="min-w-0">
                 <div className="font-medium">
