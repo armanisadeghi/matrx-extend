@@ -254,9 +254,67 @@ function oauthProvenance(sourceFile, nodes) {
     ts.isShorthandPropertyAssignment(node.parent)
       ? checker.getShorthandAssignmentValueSymbol(node.parent)
       : checker.getSymbolAtLocation(node);
+  // One target normalization/write census for receivers AND callable factories.
+  // Transparent TS syntax changes no binding identity; destructuring/loops/updates
+  // are unknown writes, while a simple assignment can retain proven provenance.
+  const writes = new Map();
+  function target(expression) {
+    let node = expression;
+    while (
+      ts.isParenthesizedExpression(node) ||
+      ts.isAsExpression(node) ||
+      ts.isTypeAssertionExpression(node) ||
+      ts.isNonNullExpression(node) ||
+      ts.isSatisfiesExpression(node)
+    )
+      node = node.expression;
+    return node;
+  }
+  function recordTarget(expression, assigned) {
+    const node = target(expression);
+    if (ts.isIdentifier(node)) {
+      const identity = symbol(node);
+      if (identity) writes.set(identity, [...(writes.get(identity) ?? []), assigned]);
+    } else if (ts.isObjectLiteralExpression(node)) {
+      for (const property of node.properties) {
+        if (ts.isShorthandPropertyAssignment(property)) recordTarget(property.name);
+        else if (ts.isPropertyAssignment(property)) recordTarget(property.initializer);
+        else if (ts.isSpreadAssignment(property)) recordTarget(property.expression);
+      }
+    } else if (ts.isArrayLiteralExpression(node)) {
+      for (const element of node.elements) recordTarget(element);
+    } else if (ts.isSpreadElement(node)) recordTarget(node.expression);
+    else if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken)
+      recordTarget(node.left); // destructuring default never proves the incoming value
+    else if (ts.isVariableDeclarationList(node)) {
+      for (const declaration of node.declarations) recordTarget(declaration.name);
+    } else if (ts.isObjectBindingPattern(node) || ts.isArrayBindingPattern(node)) {
+      for (const element of node.elements)
+        if (ts.isBindingElement(element)) recordTarget(element.name);
+    }
+  }
+  for (const node of nodes) {
+    if (
+      ts.isBinaryExpression(node) &&
+      node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
+      node.operatorToken.kind <= ts.SyntaxKind.LastAssignment
+    )
+      recordTarget(
+        node.left,
+        node.operatorToken.kind === ts.SyntaxKind.EqualsToken ? node.right : undefined,
+      );
+    else if (ts.isForOfStatement(node) || ts.isForInStatement(node)) recordTarget(node.initializer);
+    else if (
+      (ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node)) &&
+      (node.operator === ts.SyntaxKind.PlusPlusToken ||
+        node.operator === ts.SyntaxKind.MinusMinusToken)
+    )
+      recordTarget(node.operand);
+  }
   function importedFactory(node) {
     const declarations = symbol(node)?.declarations;
     return (
+      !writes.has(symbol(node)) &&
       declarations?.length === 1 &&
       ts.isImportSpecifier(declarations[0]) &&
       !declarations[0].isTypeOnly &&
@@ -284,15 +342,7 @@ function oauthProvenance(sourceFile, nodes) {
         !declaration.body ||
         declaration.parameters.length ||
         visiting.has(declaration) ||
-        nodes.some(
-          (candidate) =>
-            ts.isBinaryExpression(candidate) &&
-            candidate.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
-            candidate.operatorToken.kind <= ts.SyntaxKind.LastAssignment &&
-            nodesIn(candidate.left).some(
-              (part) => ts.isIdentifier(part) && symbol(part) === symbol(node.expression),
-            ),
-        )
+        writes.has(symbol(node.expression))
       )
         return null;
       const next = new Set(visiting).add(declaration);
@@ -317,35 +367,7 @@ function oauthProvenance(sourceFile, nodes) {
       return null;
     const next = new Set(visiting).add(declaration);
     const values = [value(declaration.initializer, next)];
-    for (const candidate of nodes) {
-      if (
-        (ts.isForOfStatement(candidate) || ts.isForInStatement(candidate)) &&
-        nodesIn(candidate.initializer).some(
-          (part) => ts.isIdentifier(part) && symbol(part) === identity,
-        )
-      )
-        values.push(null);
-      if (
-        ts.isBinaryExpression(candidate) &&
-        ts.isIdentifier(candidate.left) &&
-        symbol(candidate.left) === identity &&
-        candidate.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
-        candidate.operatorToken.kind <= ts.SyntaxKind.LastAssignment
-      )
-        values.push(
-          candidate.operatorToken.kind === ts.SyntaxKind.EqualsToken
-            ? value(candidate.right, next)
-            : null,
-        );
-      if (
-        ts.isBinaryExpression(candidate) &&
-        candidate.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
-        (ts.isObjectLiteralExpression(candidate.left) ||
-          ts.isArrayLiteralExpression(candidate.left)) &&
-        nodesIn(candidate.left).some((part) => ts.isIdentifier(part) && symbol(part) === identity)
-      )
-        values.push(null);
-    }
+    for (const assigned of writes.get(identity) ?? []) values.push(value(assigned, next));
     return combine(values);
   }
   return (expression) => value(expression) === true;
@@ -608,6 +630,61 @@ async function selfTest() {
     ['const device = make(config, runtime); const leave = device.signOut; leave()', true],
   ])
     cases.push([factoryImport + body, expected]);
+  // Both factory and receiver bindings use the same write census. Every planted
+  // write must fail for the unsafe call, never merely for a parser diagnostic.
+  const writeCases = [];
+  for (const [binding, setup, call] of [
+    ['device', 'let device = make(config, runtime);', 'device.signOut()'],
+    ['get', 'function get() { return make(config, runtime); }', 'get().signOut()'],
+  ]) {
+    for (const target of [
+      binding,
+      `(${binding})`,
+      `(${binding} as any)`,
+      `(<any>${binding})`,
+      `${binding}!`,
+      `(${binding} satisfies any)`,
+    ]) {
+      for (const write of [
+        `${target} = other;`,
+        `${target} ||= other;`,
+        `for (${target} of others) {}`,
+        `for (${target} in others) {}`,
+        `[${target}] = others;`,
+        `({value: ${target}} = other);`,
+        `({value: [${target} = fallback]} = other);`,
+        `[...${target}] = others;`,
+        `({ ...${target} } = other);`,
+        `++${target};`,
+        `${target}--;`,
+      ])
+        writeCases.push(factoryImport + setup + write + call);
+    }
+  }
+  for (const target of [
+    'device',
+    '(device)',
+    '(device as any)',
+    '(<any>device)',
+    'device!',
+    '(device satisfies any)',
+  ])
+    cases.push([
+      `${factoryImport}let device = null; ${target} = make(config, runtime); device.signOut()`,
+      false,
+    ]);
+  for (const source of writeCases) {
+    const findings = findingsIn(source, 'assignment-write.ts');
+    assert.equal(
+      findings.some((item) => item.includes('unparseable source')),
+      false,
+      source,
+    );
+    assert.ok(
+      findings.some((item) => item.includes('sign-out requires exactly')),
+      source,
+    );
+  }
   cases.push([
     'const attempt = { auth: deps.auth() }; attempt.auth.signOut({scope:"local"})',
     false,
@@ -645,6 +722,46 @@ async function selfTest() {
       expected,
       `source-contract case: ${source.slice(0, 120)}`,
     );
+  // Execute the real guard under in-memory mutations; never weaken shared files.
+  // Mixed accepted/rejected inputs make constant verdicts fail the same suite.
+  const guardSource = readFileSync(fileURLToPath(import.meta.url), 'utf8');
+  const guardMutations = [
+    [
+      'constant approval',
+      'export function findingsIn(source, file) {',
+      'export function findingsIn(source, file) { return [];',
+    ],
+    [
+      'constant refusal',
+      'export function findingsIn(source, file) {',
+      'export function findingsIn(source, file) { return ["refused"];',
+    ],
+    [
+      'ignored target wrappers',
+      'function target(expression) {',
+      'function target(expression) { return expression;',
+    ],
+    ['ignored factory writes', 'writes.has(symbol(node.expression))', 'false'],
+    ['ignored write census', 'for (const node of nodes) {', 'for (const node of nodes) { break;'],
+  ];
+  for (const [label, before, after] of guardMutations) {
+    assert.ok(guardSource.includes(before), `mutation target exists: ${label}`);
+    let mutant = guardSource.replace(before, after);
+    mutant = mutant
+      .slice(0, mutant.lastIndexOf('\nconst isMain ='))
+      .replace("from 'typescript'", `from ${JSON.stringify(import.meta.resolve('typescript'))}`)
+      .replace("resolve(fileURLToPath(new URL('..', import.meta.url)))", JSON.stringify(REPO_ROOT));
+    const { findingsIn: mutatedFindings } = await import(
+      `data:text/javascript;base64,${Buffer.from(mutant).toString('base64')}`
+    );
+    assert.ok(
+      [...cases, ...writeCases.map((source) => [source, true])].some(
+        ([source, expected, file = 'planted.ts']) =>
+          mutatedFindings(source, file).length > 0 !== expected,
+      ),
+      `guard mutation must fail its forcing inputs: ${label}`,
+    );
+  }
   const { approvalSource, implementation, implementationUrl, modules } = readReviewedOAuth();
   assert.equal(
     approvedImplementation(approvalSource),
@@ -737,7 +854,7 @@ async function selfTest() {
     await assert.rejects(() => packageProof(createMatrxOAuth), assert.AssertionError);
   }
   console.log(
-    `check:signout-scope self-test: PASS (${cases.length} source cases + installed-package local revoke behavior + ${mutants.length} rejected behavior mutations)`,
+    `check:signout-scope self-test: PASS (${cases.length} source cases + ${writeCases.length} assignment cases + installed-package local revoke behavior + ${mutants.length} rejected behavior mutations + ${guardMutations.length} rejected guard mutations)`,
   );
 }
 const isMain = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
