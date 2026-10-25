@@ -4,12 +4,12 @@
  * - SDK signOut/sign_out references must be direct calls with one literal
  *   { scope: 'local' | 'others' }; extraction/bind/call/apply are forbidden.
  * - An `auth` property may only receive a direct, statically named method call
- *   or be compared with a primitive (the vault's auth status). It cannot escape
+ *   or itself be called as a factory, or compared with a primitive. It cannot escape
  *   through assignments, arguments, returns, destructuring, spreads or containers.
  * - useAuth() UI callbacks are application actions, not SDK methods.
- * - The sole bare OAuth call is allowed in the exact reviewed flow.ts artifact,
- *   with the exact reviewed installed OAuth implementation. Changes require review
- *   and renewed package behavior proof, NOT pinning the dependency version.
+ * - Bare OAuth calls require lexical provenance to the reviewed package factory.
+ *   Every local assignment and function return must resolve to that factory or null;
+ *   assertions, unknown values and shadowed imports do not establish provenance.
  *
  * This checks visible property syntax in tracked/unignored source, not arbitrary
  * imported functions, reflective access, dynamically constructed property names
@@ -33,7 +33,6 @@ const COMMENT = /^\s*(?:\/\/|\*|\/\*|#)/;
 const FLOW = 'src/lib/auth/flow.ts';
 // Reviewed against @ai-matrx/auth 0.4.14. Approval fingerprints, not dependency pins.
 // Since 0.3.5 signOut is unchanged: local clear first, then POST logout?scope=local.
-const FLOW_SHA = 'a3918502f40c9b7c34a753d2c4a696b9a1613ec2a0804870e0cf9fb64f423e90';
 const OAUTH_SHA = 'a32106dc15c064b483e05e4d595d56455438a00e805f02c341b38bca5c567ab5';
 const hash = (text) => createHash('sha256').update(text).digest('hex');
 const approvedImplementation = (source) => hash(source) === OAUTH_SHA;
@@ -233,12 +232,131 @@ function uiHookCall(nodes, initializer) {
   );
 }
 
+// Bind symbols within this source without loading dependencies or trusting assertions.
+// A shadowed import is a different symbol and cannot establish factory provenance.
+function oauthProvenance(sourceFile, nodes) {
+  const host = {
+    getSourceFile: (name) => (name === sourceFile.fileName ? sourceFile : undefined),
+    getDefaultLibFileName: () => '',
+    writeFile() {},
+    getCurrentDirectory: () => '',
+    getDirectories: () => [],
+    fileExists: () => false,
+    readFile: () => undefined,
+    getCanonicalFileName: (name) => name,
+    useCaseSensitiveFileNames: () => true,
+    getNewLine: () => '\n',
+  };
+  const checker = ts
+    .createProgram([sourceFile.fileName], { noLib: true, noResolve: true }, host)
+    .getTypeChecker();
+  const symbol = (node) =>
+    ts.isShorthandPropertyAssignment(node.parent)
+      ? checker.getShorthandAssignmentValueSymbol(node.parent)
+      : checker.getSymbolAtLocation(node);
+  function importedFactory(node) {
+    const declarations = symbol(node)?.declarations;
+    return (
+      declarations?.length === 1 &&
+      ts.isImportSpecifier(declarations[0]) &&
+      !declarations[0].isTypeOnly &&
+      !declarations[0].parent.parent.isTypeOnly &&
+      (declarations[0].propertyName ?? declarations[0].name).text === 'createMatrxOAuth' &&
+      declarations[0].parent.parent.parent.moduleSpecifier.text === '@ai-matrx/auth/matrx-oauth'
+    );
+  }
+  function combine(values) {
+    return values.length && values.every((item) => item !== null) ? values.some(Boolean) : null;
+  }
+  function value(node, visiting = new Set()) {
+    if (!node) return null;
+    if (node.kind === ts.SyntaxKind.NullKeyword) return false;
+    if (ts.isParenthesizedExpression(node)) return value(node.expression, visiting);
+    if (ts.isConditionalExpression(node))
+      return combine([value(node.whenTrue, visiting), value(node.whenFalse, visiting)]);
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
+      if (importedFactory(node.expression)) return true;
+      const declaration = symbol(node.expression)?.valueDeclaration;
+      if (
+        symbol(node.expression)?.declarations?.length !== 1 ||
+        !declaration ||
+        !ts.isFunctionDeclaration(declaration) ||
+        !declaration.body ||
+        declaration.parameters.length ||
+        visiting.has(declaration) ||
+        nodes.some(
+          (candidate) =>
+            ts.isBinaryExpression(candidate) &&
+            candidate.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
+            candidate.operatorToken.kind <= ts.SyntaxKind.LastAssignment &&
+            nodesIn(candidate.left).some(
+              (part) => ts.isIdentifier(part) && symbol(part) === symbol(node.expression),
+            ),
+        )
+      )
+        return null;
+      const next = new Set(visiting).add(declaration);
+      const returns = [];
+      function visit(child) {
+        if (ts.isReturnStatement(child)) returns.push(value(child.expression, next));
+        else if (!ts.isFunctionLike(child)) ts.forEachChild(child, visit);
+      }
+      visit(declaration.body);
+      return combine(returns);
+    }
+    if (!ts.isIdentifier(node)) return null;
+    const identity = symbol(node);
+    const declaration = identity?.valueDeclaration;
+    if (
+      identity?.declarations?.length !== 1 ||
+      !declaration ||
+      !ts.isVariableDeclaration(declaration) ||
+      !ts.isIdentifier(declaration.name) ||
+      visiting.has(declaration)
+    )
+      return null;
+    const next = new Set(visiting).add(declaration);
+    const values = [value(declaration.initializer, next)];
+    for (const candidate of nodes) {
+      if (
+        (ts.isForOfStatement(candidate) || ts.isForInStatement(candidate)) &&
+        nodesIn(candidate.initializer).some(
+          (part) => ts.isIdentifier(part) && symbol(part) === identity,
+        )
+      )
+        values.push(null);
+      if (
+        ts.isBinaryExpression(candidate) &&
+        ts.isIdentifier(candidate.left) &&
+        symbol(candidate.left) === identity &&
+        candidate.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
+        candidate.operatorToken.kind <= ts.SyntaxKind.LastAssignment
+      )
+        values.push(
+          candidate.operatorToken.kind === ts.SyntaxKind.EqualsToken
+            ? value(candidate.right, next)
+            : null,
+        );
+      if (
+        ts.isBinaryExpression(candidate) &&
+        candidate.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+        (ts.isObjectLiteralExpression(candidate.left) ||
+          ts.isArrayLiteralExpression(candidate.left)) &&
+        nodesIn(candidate.left).some((part) => ts.isIdentifier(part) && symbol(part) === identity)
+      )
+        values.push(null);
+    }
+    return combine(values);
+  }
+  return (expression) => value(expression) === true;
+}
+
 export function findingsIn(source, file) {
   const out = [];
   if (!/\.(rs|py|sh)$/.test(file)) {
     const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true);
     const nodes = nodesIn(sourceFile);
-    const approvedOAuth = file === FLOW && hash(source) === FLOW_SHA;
+    const approvedOAuth = oauthProvenance(sourceFile, nodes);
     const report = (node, message) =>
       out.push(
         `${file}:${sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1}: ${message}`,
@@ -261,11 +379,7 @@ export function findingsIn(source, file) {
             );
           else if (
             !scoped(call) &&
-            !(
-              approvedOAuth &&
-              node.getText(sourceFile) === 'oauth.signOut' &&
-              call.arguments.length === 0
-            )
+            !(approvedOAuth(node.expression) && call.arguments.length === 0)
           )
             report(node, 'sign-out requires exactly { scope: "local" } or { scope: "others" }');
         }
@@ -273,11 +387,12 @@ export function findingsIn(source, file) {
           const next = node.parent;
           if (
             !(
-              member(next) &&
-              next.expression === node &&
-              memberName(next) !== null &&
-              ts.isCallExpression(next.parent) &&
-              next.parent.expression === next
+              (ts.isCallExpression(next) && next.expression === node) ||
+              (member(next) &&
+                next.expression === node &&
+                memberName(next) !== null &&
+                ts.isCallExpression(next.parent) &&
+                next.parent.expression === next)
             )
           )
             report(
@@ -462,6 +577,46 @@ async function selfTest() {
     ['// supabase.auth.signOut()', false],
     ['supabase.auth.signOut(', true],
   ];
+  const factoryImport = 'import {createMatrxOAuth as make} from "@ai-matrx/auth/matrx-oauth";';
+  for (const [body, expected] of [
+    ['const device = make(config, runtime); device.signOut()', false],
+    ['const device = make(config, runtime); const renamed = device; renamed.signOut()', false],
+    [
+      'let cached = null; function get() { if (cached) return cached; cached = make(config, runtime); return cached; } const device = get(); device.signOut()',
+      false,
+    ],
+    ['const device = make(config, runtime); device.signOut({scope:"global"})', true],
+    ['function run(make) { const device = make(); device.signOut(); }', true],
+    ['const device = other as MatrxOAuthClient; device.signOut()', true],
+    ['let device = make(config, runtime); device = other; device.signOut()', true],
+    ['let device = make(config, runtime); ({device} = other); device.signOut()', true],
+    ['let device = make(config, runtime); [device] = other; device.signOut()', true],
+    ['let device = make(config, runtime); for (device of others) { device.signOut(); }', true],
+    ['var device = make(config, runtime); var device = other; device.signOut()', true],
+    [
+      'function get() { return make(config, runtime); } function get() { return other; } get().signOut()',
+      true,
+    ],
+    ['function get() { return other; } const device = get(); device.signOut()', true],
+    ['function get() { return make(config, runtime); } get = replacement; get().signOut()', true],
+    [
+      'function get() { if (ready) return make(config, runtime); return other; } const device = get(); device.signOut()',
+      true,
+    ],
+    ['function get(device) { return device; } get(other).signOut()', true],
+    ['const device = make(config, runtime); function run(device) { device.signOut(); }', true],
+    ['const device = make(config, runtime); const leave = device.signOut; leave()', true],
+  ])
+    cases.push([factoryImport + body, expected]);
+  cases.push([
+    'const attempt = { auth: deps.auth() }; attempt.auth.signOut({scope:"local"})',
+    false,
+  ]);
+  cases.push(['const attempt = { auth: deps.auth() }; attempt.auth.signOut()', true]);
+  cases.push([
+    'const attempt = { auth: client.auth }; attempt.auth.signOut({scope:"local"})',
+    true,
+  ]);
   const flow = readFileSync(resolve(REPO_ROOT, FLOW), 'utf8');
   cases.push([flow, false, FLOW]);
   cases.push([
