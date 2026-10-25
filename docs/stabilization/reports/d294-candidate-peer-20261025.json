@@ -1,0 +1,165 @@
+{
+  "task_id": "d294_candidate_peer_2310",
+  "reviewer": "/root/d294_candidate_peer_2310",
+  "zero_authorship": true,
+  "at": "2026-10-25T23:20:08.468626+00:00",
+  "status": "DONE_WITH_BOUNDED_SOURCE_PASS",
+  "frozen_sha256": {
+    "tests/browser/scrape-save-auth-report.mjs": "7a542bcc79fda4bbe3f53e4f6e36f92e5aa3c75cbe37b6944b1751b0a20c2a2b",
+    "tests/browser/scrape-save-native-acceptance.mjs": "9e3d0e8e4539da709371e2f55e296e3f53c5ace4d56704baafb405c03f1615ab",
+    "tests/browser/scrape-save-member-auth-diagnostic.test.mjs": "d43d6bf46f2ffa07d6f362cd3418c8d18dfe34cd1c7f4656c76b7fda9bade659"
+  },
+  "verdict_a": {
+    "verdict": "PASS_BOUNDED_SUPPORTING_SOURCE_REPAIR",
+    "scope": "Latest real source-seam subprocess durability and negative-boundary guards pass. No actual native/member/product acceptance or closure.",
+    "supported": [
+      "Original onStage/member callbacks now synchronously publish through existing report helper/path before returning. Auth intent follows health and precedes guarded sign-in; auth_complete follows original web/extension/nonadmin/org assertions; pre_save precedes initial guarded Save action.",
+      "Exclusive0600 temp write/fsync/close/rename primitive is reused by intermediate and final publication; old complete checkpoint remains until atomic replacement. Default resource SIGTERM and final status authority are unchanged.",
+      "Candidate progress/diagnostic/stage commit to in-memory report only after successful disk publication; identical safe retry still reaches writer after transient EACCES.",
+      "Stage allowlists reject unknown callback input before raw report assignment; safe phase/bool/count/network/artifact/auth projection excludes private fields."
+    ]
+  },
+  "verdict_b": {
+    "verdict": "PASS_BOUNDED_SOURCE_QUALITY_AND_GUARDS",
+    "supported": [
+      "Actual native, member auth, Save and failure/final source seams are extracted, with real helper imports and real disk. Test doubles replace slow auth/page/resource/externalIO inputs, not publication state logic.",
+      "Real child process IPC barriers park after required boundary; parent sends ordinary SIGTERM and reads actual file/mode. No signal interception added.",
+      "Six scratch mutant classes cover checkpoint omission/constant no-op, destructive final overwrite, corrupt timestamps, reset first_at, premature memory commit and raw prevalidation stage assignments. Shared production files are never weakened.",
+      "R7 now uses actual waitFor with strict value===true, rejecting caught transient marker object before second identical observation. First rename fails, reads==2/progress==3 and durable auth_diagnostic are asserted.",
+      "Declared intermediate status unverified is distinct from final pass. There is no browser/member acceptance, CPU cause, current Store eligibility or whole-surface claim."
+    ],
+    "important_findings": []
+  },
+  "prior_findings": {
+    "D294-R1": "ADDRESSED source: finite safe authentication projection and actual completion-after-assertions/failure cases.",
+    "D294-R2": "ADDRESSED source/tests: external deterministic clock, ISO/order/latest/first_at assertions; corrupt/reset scratch mutants.",
+    "D294-R3": "ADDRESSED source/tests: real auth_start publication failure causes health-only/no sign-in action.",
+    "D294-R4": "ADDRESSED source/tests: incoming artifact kind/eligible_store checked, not relabeled blindly.",
+    "D294-R5": "ADDRESSED source/tests: synchronous publication before memory commit; real actual waiter repeated-identical observation case and premature-commit mutant.",
+    "D294-R6": "ADDRESSED source/tests: no raw stage preassignment; actual callback/catch/final unknown canary rejection with old-assignment mutant.",
+    "D294-R7": "ADDRESSED: strict value===true actual waiter retry executed green in focused11412; final style-only equivalent regex/lower-bound initializer independently proved."
+  },
+  "execution": {
+    "reviewer_ran_tests": false,
+    "latest_checks": "Focused1004total993pass0fail0cancel11skip + compile valid0. First lint childfailed1 solelytwo owned style errors; exact two-hunk equivalence independently verified and final whole lint3282files0errors1032warnings valid0. No fresh final-test-byte fullsuite claimed.",
+    "focused": {
+      "actual_executor": "11412 root/worker testimony; reviewer read logs only",
+      "log": ".output/stabilization-checkpoints/d294-focused-2311.log",
+      "log_sha256": "c438b9aad94b25f813d9c95f2a597e73947b094e76ca67ad43f56e3662236937",
+      "total": 1004,
+      "pass": 993,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 11,
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-25T23:14:22.678Z",
+        "runId": "d294-focused-20261025-2311",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "journal_sha256": "21b273aef6c98b8fd2bfbfeaef52d3017b7ab780940cc6c48a3d9318db31372c",
+      "specific_tests": "Real SIGTERM checkpoint/final, strict actual waiter EACCES retry, unknown callback→failure/final, all six scratch mutation classes present green."
+    },
+    "deps": {
+      "reviewer_log_and_journal_read": true,
+      "log": ".output/stabilization-checkpoints/d294-deps-2309.log",
+      "log_sha256": "72f6ea27b2d9add77de359d427eb8ba628cd477bc54041b0caa57087497cdd03",
+      "journal": "docs/stabilization/resource-journals/d294-deps-20261025-2309.jsonl",
+      "journal_sha256": "790bb7f0cde3dde80bcdb74e18af9d03f6402144e3f5113b2601a7e74d1714be",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T23:10:30.684Z",
+        "runId": "d294-deps-20261025-2309",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "compile": {
+      "reviewer_log_and_journal_read": true,
+      "log": ".output/stabilization-checkpoints/d294-compile-2314.log",
+      "log_sha256": "ce0d03fa18a6411219f95465a86bf1a91cc3aa3fcc80982937b09bdb41ab54ad",
+      "journal": "docs/stabilization/resource-journals/d294-compile-20261025-2314.jsonl",
+      "journal_sha256": "8e9298e07c07c0b08650a9a49480a7fef8d106c77224ed06aa866ec21174f859",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T23:15:42.332Z",
+        "runId": "d294-compile-20261025-2314",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "lint_before_style": {
+      "reviewer_log_and_journal_read": true,
+      "log": ".output/stabilization-checkpoints/d294-lint-2316.log",
+      "log_sha256": "db41149312fb441cbc29fa44b0d426762c947c09a3810f99246f6ac97fff4bc6",
+      "journal": "docs/stabilization/resource-journals/d294-lint-20261025-2316.jsonl",
+      "journal_sha256": "e4d21d1663a518c89577887a6b8b94ae323aca6d4e823ac1aa48488f8c5709ea",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T23:17:08.537Z",
+        "runId": "d294-lint-20261025-2316",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "lint_final": {
+      "reviewer_log_and_journal_read": true,
+      "log": ".output/stabilization-checkpoints/d294-lint-2318.log",
+      "log_sha256": "f9c57528157fa37ff04f459042b8a77dfdde5aca7d77c952500c4b9301e6c95f",
+      "journal": "docs/stabilization/resource-journals/d294-lint-20261025-2318.jsonl",
+      "journal_sha256": "a0e03b535904e31f9d7804b1d1ae8500d6604817026619df969d26417a355c9b",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T23:19:20.531Z",
+        "runId": "d294-lint-20261025-2318",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "checked_files": 3282,
+      "errors": 0,
+      "warnings": 1032
+    }
+  },
+  "limits": [
+    "No UI/auth/backend/AI/heavy/test/Git mutation by reviewer.",
+    "Native diagnostic preservation under actual hosted resource interruption remains an independently gated later artifact run; source subprocess evidence is supporting only."
+  ],
+  "actions": "Read-only source/diff/prior-report review; this private report only.",
+  "style_delta_review": {
+    "independent_inverse_reconstruction_matches_executed_test": true,
+    "executed_test_sha256": "d43d6bf46f2ffa07d6f362cd3418c8d18dfe34cd1c7f4656c76b7fda9bade659",
+    "final_test_sha256": "7a2d67530f47ff08b848152b485314c0ddeb156b84b81d2bf8f01d28015d4c34",
+    "only_changes": [
+      "Regex four literal U+0020 characters replaced by U+0020 {4}; regex flags/anchors/rest unchanged.",
+      "-Infinity lower-bound initializer replaced by ES Number.NEGATIVE_INFINITY; no lexical Number/Infinity binding in module."
+    ],
+    "actual_matched_native_callback_same_bytes_sha256": "f42cb9b712115efad30546d46b9bc44334c4f5df9241e21e1c0fea5405fa61f9",
+    "actual_callable_callback_after_label_strip_sha256": "fa4322be16ead52f88e631b6b0af85d633c5d541baea58d1de0b4135f210fc0f",
+    "interpretation": "Exact old focused execution remains accurately before-style. Both edits preserve semantics; no fresh exact-final-test-byte fullsuite is claimed. Production helper/native unchanged. New whole lint pending."
+  },
+  "final_sha256": {
+    "tests/browser/scrape-save-auth-report.mjs": "7a542bcc79fda4bbe3f53e4f6e36f92e5aa3c75cbe37b6944b1751b0a20c2a2b",
+    "tests/browser/scrape-save-native-acceptance.mjs": "9e3d0e8e4539da709371e2f55e296e3f53c5ace4d56704baafb405c03f1615ab",
+    "tests/browser/scrape-save-member-auth-diagnostic.test.mjs": "7a2d67530f47ff08b848152b485314c0ddeb156b84b81d2bf8f01d28015d4c34"
+  },
+  "recommendation": "Source-only FIXED eligible for parent exact-path integration after current Git reconciliation; leave actual artifact-bound native diagnostic/member retest and defect closure pending.",
+  "findings": [],
+  "commits": [],
+  "owned_processes": []
+}
