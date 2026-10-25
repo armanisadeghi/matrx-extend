@@ -427,7 +427,7 @@ export function mountGuidedOverlay(): void {
   window.addEventListener('matrx:guided-wake', wake);
   // The service worker wakes the guide when a capture is started on this tab from the side panel
   // or the right-click menu.
-  chrome.runtime.onMessage.addListener((m: unknown) => {
+  chrome.runtime.onMessage?.addListener((m: unknown) => {
     if ((m as { t?: unknown } | null)?.t === GUIDED_WAKE) wake();
     return false;
   });

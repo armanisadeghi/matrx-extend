@@ -1,8 +1,8 @@
-import { send } from '@/lib/messaging/native';
-import { CHANNELS } from '@/lib/messaging/schemas';
 import type { OpenGuidedResult } from '@/lib/guided-capture/host';
 import { recipeForUrl } from '@/lib/guided-capture/recipes';
 import type { GuidedStartRequest } from '@/lib/guided-capture/start';
+import { send } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { Button } from '@ai-matrx/design-system';
 import { Rows3 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -54,13 +54,18 @@ export function GuidedCaptureBanner({
     <div className="mt-2 flex flex-col gap-1.5 rounded-xl bg-secondary/60 px-3 py-2 text-xs">
       <div className="flex items-center gap-2">
         <Rows3 className="size-3.5 shrink-0 text-muted-foreground" />
-        <span className="min-w-0 flex-1 text-foreground">Capture posts from this {recipe.label} page</span>
+        <span className="min-w-0 flex-1 text-foreground">
+          Capture posts from this {recipe.label} page
+        </span>
         <Button size="sm" variant="outline" disabled={busy} onClick={() => void start()}>
           {busy ? 'Opening…' : 'Capture feed'}
         </Button>
       </div>
       {said && (
-        <div role={said.ok ? 'status' : 'alert'} className={said.ok ? 'text-muted-foreground' : 'text-destructive'}>
+        <div
+          role={said.ok ? 'status' : 'alert'}
+          className={said.ok ? 'text-muted-foreground' : 'text-destructive'}
+        >
           {said.text}
         </div>
       )}

@@ -13,8 +13,8 @@
 
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { GUIDED_WAKE } from './protocol';
 import type { OpenGuidedResult } from './host';
+import { GUIDED_WAKE } from './protocol';
 
 const GUIDE_SCRIPT = 'content-scripts/guided-capture.js';
 
@@ -40,7 +40,10 @@ export async function captureFeedOnTab(args: {
   try {
     await wakeGuide(args.tabId);
   } catch {
-    return { ok: false, sentence: 'The guide could not open on this page. Reload it and try again.' };
+    return {
+      ok: false,
+      sentence: 'The guide could not open on this page. Reload it and try again.',
+    };
   }
   return started;
 }
