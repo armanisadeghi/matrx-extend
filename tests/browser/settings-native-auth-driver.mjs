@@ -615,7 +615,18 @@ export async function signInSettings({
       });
       throw error;
     }
-    const stored = await panelIdentity(panel);
+    const stored =
+      expectedAdminRole === 'hidden'
+        ? await waitFor(
+            'd87_admin_storage_identity',
+            () => panelIdentity(panel),
+            (value) =>
+              value?.profileId === identity.userId &&
+              value?.accessTokenPresent === true &&
+              value?.isAdmin === true,
+            30_000,
+          )
+        : await panelIdentity(panel);
     assert.equal(stored.profileId, identity.userId, 'd87_admin_profile_mismatch');
     assert.equal(stored.isAdmin, true, 'd87_admin_role_unverified');
     onStage?.('admin_rendered_identity');

@@ -45,17 +45,27 @@ function load(transform = (value) => value) {
       openSection,
       // Only polling/time is replaced. The actual reader and readiness decision run.
       async (label, read, accept) => {
-        const state = await read();
-        if (!accept(state)) throw new Error(`${label}_not_observed`);
-        return state;
+        for (let attempt = 0; attempt < 12; attempt += 1) {
+          const state = await read();
+          if (accept(state)) return state;
+          await Promise.resolve();
+        }
+        throw new Error(`${label}_not_observed`);
       },
     ),
   );
   return driver;
 }
 
-async function check(driver, changed = {}, expectedReady = true, expectedAdminRole = 'visible') {
+async function check(
+  driver,
+  changed = {},
+  expectedReady = true,
+  expectedAdminRole = 'visible',
+  adminFlagReadings = null,
+) {
   const window = new Window();
+  let storageReads = 0;
   const state = {
     email: 'admin@admin.com',
     role: 'Admin',
@@ -70,12 +80,17 @@ async function check(driver, changed = {}, expectedReady = true, expectedAdminRo
   window.chrome = {
     storage: {
       local: {
-        get: async () => ({
-          'matrx.user.profile': { id: state.profileId },
-          'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: state.token }),
-          'matrx.user.isAdmin': state.isAdmin,
-          'matrx.org.active': state.device,
-        }),
+        get: async () => {
+          const isAdmin = Array.isArray(adminFlagReadings)
+            ? adminFlagReadings[Math.min(storageReads++, adminFlagReadings.length - 1)]
+            : state.isAdmin;
+          return {
+            'matrx.user.profile': { id: state.profileId },
+            'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: state.token }),
+            'matrx.user.isAdmin': isAdmin,
+            'matrx.org.active': state.device,
+          };
+        },
       },
     },
   };
@@ -101,7 +116,7 @@ async function check(driver, changed = {}, expectedReady = true, expectedAdminRo
     if (!expectedReady) {
       await assert.rejects(
         run,
-        /d87_admin_(profile_mismatch|role_unverified)|d87_rendered_identity_not_observed/,
+        /d87_admin_(profile_mismatch|role_unverified)|d87_admin_storage_identity_not_observed|d87_rendered_identity_not_observed/,
       );
       return;
     }
@@ -195,6 +210,14 @@ test('Debug-off admin sign-in opts into strict role-row absence while default ca
     () => driver.signInSettings({ mode: 'member', expectedAdminRole: 'hidden' }),
     /d87_admin_role_expectation_mode_invalid/,
   );
+});
+
+test('Debug-off admin waits for the matching authenticated storage identity before role assertions', async () => {
+  const driver = load();
+  await check(driver, { role: null }, true, 'hidden', [false, false, true]);
+  await check(driver, { role: null, isAdmin: false }, false, 'hidden', [false]);
+  await check(driver, { role: null, profileId: organizationId }, false, 'hidden', [true]);
+  await check(driver, { role: null, token: null }, false, 'hidden', [true]);
 });
 
 test('readiness self-test rejects the obsolete no-device-no-selection rule and constant success', async () => {
