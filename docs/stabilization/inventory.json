@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-25T16:02:32.452760+00:00",
+  "updated_at": "2026-10-25T17:37:53.731681+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -8213,39 +8213,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
+              "run_id": "guest-mode-622-20261025-1724",
+              "source_sha": "f0d7a6b7fcb97afbb2bbc2414dff90f998083fff",
+              "development_ci_run_id": 40214402308,
+              "development_artifact_id": 12607790100,
+              "build_version": "0.2.622",
               "resource_valid": false,
               "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                "docs/stabilization/reports/owner622-adoption-native-20261025.json",
+                "docs/stabilization/reports/guest622-resource-watch-20261025.json"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots.",
-              "manual_retest": {
-                "run_id": "guest-mode-6f86-replay-20261025-1330",
-                "bounded_status": "partial",
-                "resource_valid": true,
-                "verified_substeps": [
-                  "Actual guest DEV621 identity/path and guest UI",
-                  "Ask selection visibly refused with sign-in message and Act rollback",
-                  "Settings reopen and actual manager fullReload retain Act"
-                ],
-                "unverified": [
-                  "Canonical freshChat mode consumer",
-                  "Raw storage/absence, server and actual tool behavior",
-                  "FullT10/driver batch/Store"
-                ],
-                "evidence": [
-                  "docs/stabilization/reports/guest-mode-replay-1330.json",
-                  "docs/stabilization/reports/guest-replay-peer-1338.json",
-                  "docs/stabilization/evidence/guest-mode-6f86-replay/evidence-manifest.json"
-                ],
-                "limits": "First1320manual attempt excluded; valid replay is separate. One harmless stale-index capture excluded; guest Sources popover remains background."
-              }
+              "scope": "Memorypressure2 invalid3 before original Ask selection/refusal or freshChat consumer; zero accepted product behaviors. Owner install proof belongs to separate valid0 lease. Cleanup separate valid0; current fd source not adopted."
             }
           },
           "linked_defects": [
@@ -8547,6 +8526,47 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots.",
+                "manual_retest": {
+                  "run_id": "guest-mode-6f86-replay-20261025-1330",
+                  "bounded_status": "partial",
+                  "resource_valid": true,
+                  "verified_substeps": [
+                    "Actual guest DEV621 identity/path and guest UI",
+                    "Ask selection visibly refused with sign-in message and Act rollback",
+                    "Settings reopen and actual manager fullReload retain Act"
+                  ],
+                  "unverified": [
+                    "Canonical freshChat mode consumer",
+                    "Raw storage/absence, server and actual tool behavior",
+                    "FullT10/driver batch/Store"
+                  ],
+                  "evidence": [
+                    "docs/stabilization/reports/guest-mode-replay-1330.json",
+                    "docs/stabilization/reports/guest-replay-peer-1338.json",
+                    "docs/stabilization/evidence/guest-mode-6f86-replay/evidence-manifest.json"
+                  ],
+                  "limits": "First1320manual attempt excluded; valid replay is separate. One harmless stale-index capture excluded; guest Sources popover remains background."
+                }
+              },
+              "superseded_at": "2026-10-25T17:37:53.727128+00:00",
+              "reason": "Newest frozenF0 continuation pressure-invalid; historical6f86 bounded replay preserved, no transfer of case credit."
             }
           ],
           "attempt_history": [
