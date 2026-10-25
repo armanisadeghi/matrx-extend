@@ -229,14 +229,23 @@ const productionDeps: VaultConfirmationHostDeps = {
   readSnapshot: () => readParentSnapshot(productionParentDeps),
   refresh: refreshAccessTokenStrict,
   api: createPackageApi,
-  proofAuth: () =>
-    createClient(ENV.SUPABASE_URL, ENV.SUPABASE_PUBLISHABLE_KEY, {
+  proofAuth: () => {
+    const client = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_PUBLISHABLE_KEY, {
       auth: {
         persistSession: false,
         autoRefreshToken: false,
         detectSessionInUrl: false,
       },
-    }).auth as IsolatedConfirmationAuth,
+    });
+    // The SDK auth object never escapes this custody boundary. In particular, cleanup always uses
+    // local scope so an isolated proof cannot revoke or replace the extension's OAuth session.
+    return {
+      signInWithPassword: (input) => client.auth.signInWithPassword(input),
+      signInWithOtp: (input) => client.auth.signInWithOtp(input),
+      verifyOtp: (input) => client.auth.verifyOtp(input),
+      signOut: () => client.auth.signOut({ scope: 'local' }),
+    } satisfies IsolatedConfirmationAuth;
+  },
   issueGrant: (api, proofToken) => primaryStepUpGrant(api, { body: { access_token: proofToken } }),
   cache: {
     async read() {

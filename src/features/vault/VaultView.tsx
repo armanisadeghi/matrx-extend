@@ -76,6 +76,15 @@ export function VaultView() {
     void organization.active?.id;
     void revision;
     void user?.id;
+    // A known account/organization switch retires the old workspace immediately. Its pinned API
+    // would refuse a wire call, but leaving its values visible while verification runs is stale UI.
+    setParentState((current) => {
+      if (current.kind !== 'ready') return current;
+      const knownUserChanged = !!user?.id && current.parent.userId !== user.id;
+      const knownOrganizationChanged =
+        !!organization.active?.id && current.parent.organizationId !== organization.active.id;
+      return knownUserChanged || knownOrganizationChanged ? { kind: 'loading' } : current;
+    });
     let live = true;
     void readVaultParentMetadata().then(
       (parent) => {

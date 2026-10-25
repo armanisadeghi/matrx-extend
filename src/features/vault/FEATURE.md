@@ -26,5 +26,7 @@ adapter. Source tests do not establish installed acceptance.
 - Expiry, definitive sign-out and identity/session/org changes invalidate mismatched grants.
   An old workspace cannot erase a newer identity's grant. Store no password, code, proof token
   or refresh material in the confirmation cache.
+- A known account or organization change retires the visible workspace before async verification;
+  an OAuth-row refresh keeps it mounted only when verified actor/session/org metadata is unchanged.
 
 Installed first-confirmation/reuse/expiry/cancellation journeys remain M1 work in the register.
