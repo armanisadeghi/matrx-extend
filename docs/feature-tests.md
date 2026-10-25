@@ -3007,11 +3007,19 @@ Every entry follows this shape:
      signed in / verification step / challenge / rejected.
   4. On a `chrome://` page → page view says filling cannot target this page; no Fill.
   5. Switch to All items → the full vault list; open an item → edit / reveal / copy work.
+     On the first protected reveal/copy, confirm in the existing dialog with the account password
+     or an email code. Reveal/copy a different item and field without confirming again. Close and
+     reopen the side panel and repeat while the grant is current. After its fixed server expiry,
+     verify the next protected action asks once again. Cancel one confirmation, reopen it and
+     complete it; the cancelled proof must not close or satisfy the new dialog.
   6. Submit a new login on a disposable site → the "Save this login?" card appears;
      **Save** → the item appears in the list.
   7. Generator on a sign-up page → **Fill page** fills the new-password boxes.
-- **Expected:** no screen shows a dead control; anything the extension cannot do
-  (confirm-it's-you dialog, passkey approval from the vault) is absent rather than broken.
+- **Expected:** ordinary reveal/copy confirmation stays inside the Vault and never launches or
+  replaces extension OAuth. One session-only grant is reused across items, actions and fresh
+  panels until its fixed expiry; actor, OAuth-session or organization changes refuse old work and
+  start a fresh workspace. A transient token/JWKS/storage failure shows a retryable error and
+  preserves a completed grant. Passkey approval from the vault remains absent rather than broken.
 - **Covered by:** `tests/unit/vault-panel.test.ts` (routes, outcome maps, no persistence),
   `tests/unit/credential-capture-prompt.test.ts` (capture host); the screens' own tests
   live in `@ai-matrx/vault`.

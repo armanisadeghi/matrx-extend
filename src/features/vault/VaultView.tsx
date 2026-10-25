@@ -9,8 +9,9 @@
  * new-password boxes (`useVaultPage.ts`, `extension-vault-host.ts`) — and opens
  * on the page view when a tab is there.
  *
- * Confirming it's you for a secret (`identity`) re-runs this extension's own
- * Matrx sign-in and waits for the fresh bearer (`extension-vault-identity.ts`).
+ * Confirming it's you for a secret (`identity`) happens inside the shared
+ * password/email-code dialog over an isolated proof client. The host exchanges
+ * that proof for a session-bound grant without replacing extension OAuth.
  * Not offered here: approving a browser with a passkey from the vault
  * (`passkeys`) — it needs an aimatrx.com page, so the package hides it.
  */
@@ -19,8 +20,6 @@ import { ENV } from '@/config/env';
 import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
-import { createPackageApi } from '@/lib/api/matrx-api';
-import { hasRealUserToken } from '@/lib/api/routes/vault';
 import { getSupabase } from '@/lib/supabase/client';
 import { platformDb } from '@/lib/supabase/schemas';
 import { Button } from '@ai-matrx/design-system/controls';
@@ -42,11 +41,14 @@ import {
   createFillSetupHost,
   createNewPasswordFieldsHost,
 } from './extension-vault-host';
-import { extensionVaultIdentity } from './extension-vault-identity';
 import { usePanelAdmission } from './usePanelAdmission';
 import { useVaultPage } from './useVaultPage';
-
-type Actor = { userId: string; organizationId: string };
+import type { ConfirmationParent } from './vault-confirmation';
+import {
+  createVaultConfirmationHost,
+  listenForVaultAuthSessionChanges,
+  readVaultParentMetadata,
+} from './vault-confirmation-host';
 
 const openUrl = (url: string) => void openOutbound(url, '_blank', 'noopener');
 /** The vault menu's "Open on the web": the full workspace on the website. */
@@ -55,34 +57,84 @@ const openWebVault = () => openUrl(`${ENV.FRONTEND_URL}/vault`);
 export function VaultView() {
   const { user } = useAuth();
   const organization = useActiveOrganization();
-  const actor = useMemo<Actor | null>(
-    () =>
-      user && organization.active
-        ? { userId: user.id, organizationId: organization.active.id }
-        : null,
-    [organization.active, user],
-  );
-  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [revision, setRevision] = useState(0);
+  const [parentState, setParentState] = useState<
+    | { kind: 'loading' }
+    | { kind: 'signed-out' }
+    | { kind: 'ready'; parent: ConfirmationParent }
+    | { kind: 'error'; message: string }
+  >({ kind: 'loading' });
+
+  // Token replacement, sign-out and refresh all change this one canonical storage row.
+  // Same-session refresh rereads metadata but retains the existing workspace object.
   useEffect(() => {
+    return listenForVaultAuthSessionChanges(() => setRevision((value) => value + 1));
+  }, []);
+
+  useEffect(() => {
+    // These external signals deliberately rerun the verified metadata read.
+    void organization.active?.id;
+    void revision;
+    void user?.id;
     let live = true;
-    setSignedIn(null);
-    void hasRealUserToken().then((ok) => {
-      if (live) setSignedIn(ok);
-    });
+    void readVaultParentMetadata().then(
+      (parent) => {
+        if (!live) return;
+        if (!parent) {
+          setParentState({ kind: 'signed-out' });
+          return;
+        }
+        setParentState((current) =>
+          current.kind === 'ready' &&
+          current.parent.userId === parent.userId &&
+          current.parent.sessionId === parent.sessionId &&
+          current.parent.organizationId === parent.organizationId
+            ? current
+            : { kind: 'ready', parent },
+        );
+      },
+      (error: unknown) => {
+        if (!live) return;
+        setParentState({
+          kind: 'error',
+          message:
+            error instanceof Error
+              ? error.message
+              : 'The Vault session could not be checked. Try again.',
+        });
+      },
+    );
     return () => {
       live = false;
     };
-  }, [user?.id]);
+  }, [organization.active?.id, revision, user?.id]);
 
-  if (signedIn === null || (signedIn && !actor))
+  if (parentState.kind === 'loading')
     return (
       <div className="flex h-full items-center justify-center text-muted-foreground">
         <Loader2 className="size-4 animate-spin" />
       </div>
     );
-  if (!signedIn || !actor) return <SignInPrompt />;
-  // A different account or organization is a fresh workspace: nothing of the last one carries over.
-  return <VaultWorkspace key={`${actor.userId}:${actor.organizationId}`} actor={actor} />;
+  if (parentState.kind === 'signed-out') return <SignInPrompt />;
+  if (parentState.kind === 'error') {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
+        <p className="text-sm text-foreground">{parentState.message}</p>
+        <Button variant="outline" onClick={() => setRevision((value) => value + 1)}>
+          Try again
+        </Button>
+      </div>
+    );
+  }
+  const actor = parentState.parent;
+  // Account, OAuth session or organization changes get a fresh workspace. A bearer refresh in
+  // the same verified session retains this exact actor object and its controller/cache hydration.
+  return (
+    <VaultWorkspace
+      key={`${actor.userId}:${actor.sessionId}:${actor.organizationId}`}
+      actor={actor}
+    />
+  );
 }
 
 /**
@@ -97,12 +149,19 @@ export function useNewPasswordFieldsHost(
   return useDisposable(() => createNewPasswordFieldsHost(tabId, admission), [tabId, admission]);
 }
 
-function VaultWorkspace({ actor }: { actor: Actor }) {
+/** One confirmation controller/API pair per verified actor/session/organization workspace. */
+export function useVaultConfirmationHost(actor: ConfirmationParent) {
+  return useDisposable(() => createVaultConfirmationHost(actor), [actor]);
+}
+
+function VaultWorkspace({ actor }: { actor: ConfirmationParent }) {
   const tab = useActiveTab();
   const { admission } = usePanelAdmission(tab.id, tab.url, actor);
   const { page, fill } = useVaultPage(tab, actor, admission);
 
+  const confirmation = useVaultConfirmationHost(actor);
   const port = useMemo(() => {
+    if (!confirmation) return null;
     const supabase = getSupabase();
     // The full generic query builders exceed TypeScript's comparison depth
     // against VaultUserStateDoor. Pass both existing clients through intact:
@@ -110,30 +169,30 @@ function VaultWorkspace({ actor }: { actor: Actor }) {
     // while the platform-scoped client supplies the door's rpc.
     const userState = supabase as unknown as VaultUserStateDoor;
     const platformDoor = platformDb() as unknown as VaultUserStateDoor;
-    return createApiVaultPort(createPackageApi(actor.organizationId), {
+    return createApiVaultPort(confirmation.api, {
       userState,
       platformDoor,
     });
-  }, [actor.organizationId]);
+  }, [confirmation]);
   const knobs = useMemo(() => createVaultKnobs(getSupabase(), actor), [actor]);
   const fillSetup = useMemo(() => createFillSetupHost(openUrl), []);
   const capture = useMemo(() => createCaptureHost(tab.id), [tab.id]);
   const newPasswordFields = useNewPasswordFieldsHost(tab.id, admission);
 
-  const host = useMemo<VaultHostCapabilities>(
-    () => ({
+  const host = useMemo<VaultHostCapabilities | null>(() => {
+    if (!confirmation) return null;
+    return {
       knobs,
       openUrl,
       openWebVault,
-      identity: extensionVaultIdentity,
+      identity: confirmation.identity,
       fillSetup,
       capture,
       ...(newPasswordFields ? { newPasswordFields } : {}),
       ...(page ? { page } : {}),
       ...(fill ? { fill } : {}),
-    }),
-    [capture, fill, fillSetup, knobs, newPasswordFields, page],
-  );
+    };
+  }, [capture, confirmation, fill, fillSetup, knobs, newPasswordFields, page]);
 
   // The side panel opens on the page beside it; everywhere else the workspace starts at All items.
   // The active tab resolves after mount, so the page view is taken once it exists, unless the
@@ -144,6 +203,14 @@ function VaultWorkspace({ actor }: { actor: Actor }) {
   useEffect(() => {
     if (hasPage && !moved) setLocation((l) => (l.view === 'page' ? l : { ...l, view: 'page' }));
   }, [hasPage, moved]);
+
+  if (!confirmation || !port || !host) {
+    return (
+      <div className="flex h-full items-center justify-center text-muted-foreground">
+        <Loader2 className="size-4 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <VaultApp
