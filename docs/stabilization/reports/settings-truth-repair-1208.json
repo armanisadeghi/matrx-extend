@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "task_id": "settings_truth_repair_1208",
+  "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+  "status": "candidate_frozen_for_fresh_review",
+  "native_baseline_run": 40190567571,
+  "native_baseline_counts": {
+    "pass": 10,
+    "fail": 7,
+    "unverified": 2
+  },
+  "scope": [
+    "EXT-F-1003-T10",
+    "EXT-F-1003-T16",
+    "EXT-F-1003-T19",
+    "EXT-F-1003-T28",
+    "EXT-F-1003-T31",
+    "EXT-F-1003-T34",
+    "EXT-F-1003-T40"
+  ],
+  "source_proof": {
+    "T10": "The platform knob setter marked pending before auth resolution, and its no-user/no-org return left pending visible. The native observer read retired local defaultPermissionMode. Candidate clears and notifies on each refusal, shows Settings guidance, and tests guest refusal through the canonical reader; member/admin persistence stays distinct.",
+    "privacy": "Production defaults were implicit in the Zustand initializer. Candidate centralizes four defaults for the production store and native observer, accepts original absent field/container only at baseline, still requires actual changed-value writes, and restores the original absence.",
+    "T28_T40": "Full extension rechecks invoked independent runners without reentering Settings after a prior Chat visit or failure. Candidate reopens Settings before each runner."
+  },
+  "changed_files": [
+    "src/lib/settings/act-without-asking.ts",
+    "src/lib/settings/act-without-asking.test.ts",
+    "src/features/settings/SettingsView.tsx",
+    "src/state/settings.ts",
+    "src/lib/settings/privacy-defaults.json",
+    "tests/browser/settings-guest-preference-batch.mjs",
+    "tests/browser/settings-guest-preference-batch.test.mjs",
+    "tests/browser/settings-guest-privacy-batch.mjs",
+    "tests/browser/settings-guest-privacy-batch.test.mjs",
+    "tests/browser/settings-full-extension-rechecks.mjs",
+    "tests/browser/settings-full-extension-rechecks.test.mjs",
+    "docs/feature-tests.md"
+  ],
+  "guard_commands": [
+    {
+      "run_id": "settings-truth-targeted-1208a",
+      "command": "node --test selected Settings files",
+      "result": "policy_refused_before_admission",
+      "journal": "docs/stabilization/resource-journals/settings-truth-targeted-1208a.jsonl"
+    },
+    {
+      "run_id": "settings-truth-focused-1208b",
+      "command": "pnpm test:focused-acceptance",
+      "result": "resource_valid_exit_0_916_pass_11_skip_0_fail",
+      "log": ".output/stabilization-checkpoints/settings-truth-focused-1208b.log",
+      "journal": "docs/stabilization/resource-journals/settings-truth-focused-1208b.jsonl"
+    },
+    {
+      "run_id": "settings-truth-producer-red-1208",
+      "command": "pnpm exec vitest run --maxWorkers=1 src/lib/settings/act-without-asking.test.ts",
+      "result": "resource_valid_expected_red_1_failed_5_passed_after_temporary_original_guest_early_return_mutation",
+      "log": ".output/stabilization-checkpoints/settings-truth-producer-red-1208.log",
+      "journal": "docs/stabilization/resource-journals/settings-truth-producer-red-1208.jsonl"
+    },
+    {
+      "run_id": "settings-truth-producer-green-1208",
+      "command": "pnpm exec vitest run --maxWorkers=1 src/lib/settings/act-without-asking.test.ts",
+      "result": "resource_valid_exit_0_6_pass_0_fail_after_repair_restored",
+      "log": ".output/stabilization-checkpoints/settings-truth-producer-green-1208.log",
+      "journal": "docs/stabilization/resource-journals/settings-truth-producer-green-1208.jsonl"
+    },
+    {
+      "run_id": "settings-truth-diagnostics-1208c",
+      "command": "pnpm test:focused-acceptance",
+      "result": "resource_valid_child_failed_915_pass_11_skip_1_fail_A_observer_intentional_red;_Settings_diagnostic_tests_passed_before_final_poll_fix",
+      "log": ".output/stabilization-checkpoints/settings-truth-diagnostics-1208c.log",
+      "journal": "docs/stabilization/resource-journals/settings-truth-diagnostics-1208c.jsonl"
+    }
+  ],
+  "format": "pnpm exec biome format --write on all 11 edited source/test files; git diff --check clean",
+  "review": "pending",
+  "native_retest": "not_dispatched",
+  "limits": "Source candidate only; no new native acceptance or signed-in knob persistence result. Final T10 last-poll assertion uses a supporting fixture whose wait predicate rejects after one read; it proves last-poll serialization, not real timer expiry, and awaits root's combined guarded suite. T40 exception last-safe observation is now captured from the actual runner but also needs the combined suite and native retest; independent Settings reentry alone cannot close D290. Root owns shared inventory/defect integration and independent review.",
+  "root_adjudication": "1208c single failure was ReferenceError verifyMemberNonadminRole undefined in extracted caller harness, not SDK red. Member worker repaired the real helper seam; final root combined verification pending."
+}

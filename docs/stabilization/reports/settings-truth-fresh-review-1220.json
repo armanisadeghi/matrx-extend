@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "task_id": "settings_truth_fresh_review_1220",
+  "status": "DONE_WITH_CONCERNS",
+  "review_role": "fresh independent reviewer; no production/test authorship",
+  "base_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+  "candidate": "builder declared frozen; Settings candidate reviewed as uncommitted diff; unrelated simultaneous member-auth/inventory changes excluded",
+  "verdict_A": {
+    "verdict": "PARTIAL",
+    "native_acceptance": "PENDING; no browser or hosted run executed by this reviewer",
+    "targets": [
+      {
+        "target": "Guest account Default mode refusal",
+        "source_verdict": "PASS",
+        "evidence": "writeActMode clears pending and notifies on guest, missing org, returned failure, and thrown failure; SettingsView displays role=alert refusal. Guest helper now expects Act rollback instead of retired local mode persistence."
+      },
+      {
+        "target": "Local privacy persistence and original absent baseline",
+        "source_verdict": "PASS",
+        "evidence": "privacySwitchMatches still requires visible and stored changed values; privacyBaselineMatches alone accepts implicit canonical defaults. Cleanup removes only the absent field if a container originally existed; reload checks original absence."
+      },
+      {
+        "target": "Independent Settings entry after replacement",
+        "source_verdict": "PASS",
+        "evidence": "Special guest T10 reopens Settings after validated worker/panel replacement; T28/T40 reenter Settings individually before their runner."
+      },
+      {
+        "target": "Signed-in persistence",
+        "source_verdict": "UNCHANGED_PATH",
+        "evidence": "User/org scoped writeFeatureKnob target, boolean conversion, invalidation and warm remain. Package-chat caller still propagates refusal. Chat/Pilot setters share canonical reader/writer; no local guest fallback was added. Real member/admin round-trip remains unverified."
+      }
+    ],
+    "open_items": [
+      "Fresh native guest and signed-in acceptance required.",
+      "D290 T40 exception last-safe diagnostic remains explicitly unfinished; Settings reentry cannot close it."
+    ]
+  },
+  "verdict_B": {
+    "verdict": "FAIL",
+    "findings": [
+      {
+        "id": "SETTINGS-REVIEW-1220-1",
+        "severity": "Important",
+        "file": "tests/browser/settings-full-extension-rechecks.mjs",
+        "line": 304,
+        "problem": "The new T10 special branch bypasses runGuestChoicesAcrossExtensionRestarts stage/transport diagnostics. Its catch at lines347-353 only reacquires the panel and rethrows. runFullExtensionRecheck then serializes only generic exception name/code/source, losing fixed failing stage and last-safe observations for replacement, Settings reopen, refusal wait, document reload, and consumer boundaries.",
+        "why_it_matters": "This regresses T10 failure attribution exactly where the candidate must retain safe diagnostics. A failed native attempt cannot distinguish rollback refusal failure from panel/reload/consumer failure. PLAN Runner diagnostic acceptance requires every failing boundary to record a fixed stage/target and last safe safe booleans/counts.",
+        "requested_change": "Attach and serialize a bounded T10 stage/target plus last safe observation and allowlisted transport class across those boundaries, preserving generic privacy-safe errors. Add targeted failure-injection coverage demonstrating serialized stages/booleans survive and raw details do not.",
+        "evidence_type": "static caller and serializer trace; not a native reproduction"
+      }
+    ],
+    "accepted_source_properties": [
+      "Canonical account setting door reused; no alternate guest persistence path.",
+      "Strict changed-value local persistence assertions retained.",
+      "Production privacy defaults remain unchanged after extraction.",
+      "Guest rollback production seam has a recorded defect-specific red and restored green."
+    ],
+    "limits": [
+      "Producer return-expected gut-check evidence was not supplied; the observed real early-return sabotage proves only the named rollback break.",
+      "No source/test mutations made by reviewer."
+    ]
+  },
+  "evidence": {
+    "builder_focused": ".output/stabilization-checkpoints/settings-truth-focused-1208b.log",
+    "builder_red": ".output/stabilization-checkpoints/settings-truth-producer-red-1208.log",
+    "builder_green": ".output/stabilization-checkpoints/settings-truth-producer-green-1208.log",
+    "independent_producer": {
+      "run_id": "settings-truth-fresh-review-producer-1220",
+      "status": "terminal_valid_exit_0_6_pass_0_fail",
+      "log": ".output/stabilization-checkpoints/settings-truth-fresh-review-producer-1220.log",
+      "journal": "docs/stabilization/resource-journals/settings-truth-fresh-review-producer-1220.jsonl",
+      "terminal_confirmed": true
+    },
+    "independent_diff_check": "git diff --check exit0"
+  },
+  "commits": [],
+  "next_action": "Fix T10 safe diagnostics, then fresh scoped source review; keep native acceptance and D290 open."
+}

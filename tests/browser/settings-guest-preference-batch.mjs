@@ -105,7 +105,8 @@ export async function observeGuestPreference(panel, preference, driver = nativeD
     const rows = [...(pane?.querySelectorAll('span') ?? [])]
       .filter((node) => node.textContent.trim() === ${JSON.stringify(preference.label)});
     const triggers = rows.flatMap((row) => [...row.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
-    const raw = (await chrome.storage.local.get('matrx.settings.v1'))['matrx.settings.v1'];
+    const raw = ${JSON.stringify(preference.caseId)} === 'T10'
+      ? null : (await chrome.storage.local.get('matrx.settings.v1'))['matrx.settings.v1'];
     let value = null;
     let storedPresent = false;
     try {
@@ -144,12 +145,94 @@ export async function observeGuestPreference(panel, preference, driver = nativeD
       stored: allowed.includes(value) ? value : null,
       storedPresent,
       storagePresent: typeof raw === 'string',
+      saveRefusal: ${JSON.stringify(preference.caseId)} === 'T10' &&
+        [...(pane?.querySelectorAll('[role="alert"]') ?? [])]
+          .some((node) => node.textContent.trim() === 'Sign in to save Default mode.'),
       darkClass: document.documentElement.classList.contains('dark'),
       systemDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
       renderedBackgroundMatches: rendered.matches,
       renderedBackgrounds: rendered.backgrounds };
   })()`,
   );
+}
+
+export function guestModeRefusalMatches(state) {
+  return (
+    state?.activeSettings === true &&
+    state?.count === 1 &&
+    state.selected === 'Act without asking' &&
+    state.saveRefusal === true
+  );
+}
+
+export async function runGuestModeRefusalCase(
+  panel,
+  reloadSettings,
+  preference,
+  record,
+  afterReload = async () => {},
+  driver = nativeDriver,
+  onStage = () => {},
+) {
+  const at = async (stage, action) => {
+    onStage(stage, 'started');
+    try {
+      const value = await action();
+      onStage(stage, 'completed', value);
+      return value;
+    } catch (error) {
+      onStage(stage, 'failed');
+      throw error;
+    }
+  };
+  assert.equal(preference.caseId, 'T10');
+  await at('initial_baseline_section', () => driver.openSection(panel, preference.section));
+  const initial = await at('initial_baseline_observation', () =>
+    observeGuestPreference(panel, preference, driver),
+  );
+  assert.equal(initial?.selected, 'Act without asking', 'guest_mode_requires_effective_act');
+  await at('choice_control', () => driver.click(panel, 'settings-select', preference.label));
+  await at('choice_option', () => driver.click(panel, 'option', 'Ask before acting'));
+  const refused = await at('choice_observation', () =>
+    driver.waitFor(
+      'T10_guest_ask_refused',
+      async () => {
+        const sample = await observeGuestPreference(panel, preference, driver);
+        onStage('choice_observation', 'sample', sample);
+        return sample;
+      },
+      guestModeRefusalMatches,
+    ),
+  );
+  record('Guest Ask choice is refused and Act restored with sign-in guidance', refused, true);
+  await at('choice_panel_reload', () => reloadSettings(panel));
+  await at('choice_section_reopen', () => driver.openSection(panel, preference.section));
+  const reloaded = await at('choice_preference_observation', () =>
+    observeGuestPreference(panel, preference, driver),
+  );
+  const restored =
+    reloaded?.activeSettings === true &&
+    reloaded?.count === 1 &&
+    reloaded.selected === 'Act without asking';
+  record('Guest mode remains Act after panel reload', reloaded, restored);
+  assert.equal(restored, true, 'T10_guest_mode_reload_mismatch');
+  await at('choice_after_reload_callback', () =>
+    afterReload({
+      panel,
+      preference,
+      value: 'act',
+      label: 'Act without asking',
+      observation: reloaded,
+    }),
+  );
+  return {
+    value: 'act',
+    label: 'Act without asking',
+    storedPresent: false,
+    storagePresent: false,
+    matched: restored,
+    observation: reloaded,
+  };
 }
 
 export async function runGuestPreferenceCase(
@@ -161,6 +244,8 @@ export async function runGuestPreferenceCase(
   driver = nativeDriver,
   onBaseline = () => {},
 ) {
+  if (preference.caseId === 'T10')
+    return runGuestModeRefusalCase(panel, reloadSettings, preference, record, afterReload, driver);
   await driver.openSection(panel, preference.section);
   const initial = await observeGuestPreference(panel, preference, driver);
   const baselineChoice =

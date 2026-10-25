@@ -64,30 +64,31 @@ export function useActMode(): ActMode {
 export async function writeActMode(mode: ActMode): Promise<{ ok: boolean; detail?: string }> {
   pending = mode;
   notify();
-  const userId = useAuthStore.getState().user?.id ?? null;
-  const organizationId = await ensureRequestOrganizationId();
-  if (!userId || !organizationId) {
-    console.error(
-      '[act-without-asking] no signed-in person or organization — the choice was not saved.',
-    );
-    return { ok: false, detail: 'not signed in' };
-  }
-  const result = await writeFeatureKnob(platformDb(), {
-    feature: 'chat',
-    key: 'act_without_asking',
-    target: { scopeKind: 'user', scopeId: userId, organizationId },
-    value: mode === 'act',
-    note: 'Person changed the Act without asking setting in the extension.',
-  });
-  if (!result.ok) {
-    console.error(`[act-without-asking] the choice was not saved: ${result.message}`);
+  const refuse = (detail: string) => {
+    console.error(`[act-without-asking] the choice was not saved: ${detail}`);
     pending = null;
     notify();
-    return { ok: false, detail: result.message };
+    return { ok: false, detail };
+  };
+  try {
+    const userId = useAuthStore.getState().user?.id ?? null;
+    if (!userId) return refuse('not signed in');
+    const organizationId = await ensureRequestOrganizationId();
+    if (!organizationId) return refuse('no organization');
+    const result = await writeFeatureKnob(platformDb(), {
+      feature: 'chat',
+      key: 'act_without_asking',
+      target: { scopeKind: 'user', scopeId: userId, organizationId },
+      value: mode === 'act',
+      note: 'Person changed the Act without asking setting in the extension.',
+    });
+    if (!result.ok) return refuse(result.message);
+    invalidateKnobSnapshot();
+    void warmPlatformKnobs();
+    return { ok: true };
+  } catch (error) {
+    return refuse(error instanceof Error ? error.message : 'unexpected write failure');
   }
-  invalidateKnobSnapshot();
-  void warmPlatformKnobs();
-  return { ok: true };
 }
 
 /**

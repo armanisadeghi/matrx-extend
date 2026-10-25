@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "task_id": "settings_member_final_review_1230",
+  "review_role": "fresh independent final source verifier; zero authorship",
+  "status": "DONE_WITH_CONCERNS",
+  "base_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+  "scope": "working diff from baseline; source-only review; no tests/guards/browser/CI/resource jobs executed",
+  "finding_dispositions": [
+    {
+      "id": "SETTINGS-REVIEW-1220-1",
+      "status": "ADDRESSED",
+      "severity": "Important",
+      "evidence": "T10 special branch attaches allowlisted failure stage/transport/post-replacement progress and four lastModeObservation booleans; choice_panel_reload is in both allowlists. Final per-read onStage(choice_observation,sample,sample) call updates lastModeObservation before predicate evaluation so failed polling cannot retain the earlier baseline. Safe report serializer retains four booleans only. The new failed-predicate producer-to-serializer case differentiates initial Act from final Ask/no-refusal.",
+      "anchors": [
+        {
+          "file": "tests/browser/settings-guest-preference-batch.mjs",
+          "lines": "175-225"
+        },
+        {
+          "file": "tests/browser/settings-full-extension-rechecks.mjs",
+          "lines": "106-158,322-419"
+        },
+        {
+          "file": "tests/browser/settings-guest-extension-rechecks.mjs",
+          "lines": "8-59"
+        },
+        {
+          "file": "tests/browser/settings-full-extension-rechecks.test.mjs",
+          "lines": "693-707"
+        }
+      ],
+      "limits": "Supporting test uses one read and a rejecting predicate, accurately named; it does not prove real timer expiry. Final combined root guard and native exact-main retest remain required."
+    }
+  ],
+  "verdict_A": {
+    "verdict": "PARTIAL",
+    "native_acceptance": "PENDING exact-main guest and signed-in real product retest",
+    "settings_source": {
+      "guest_default_mode_refusal": "Sound rollback source: no-user/no-org/returned-failure/thrown-failure clears pending and notifies; Settings shows refusal.",
+      "local_privacy": "Default values unchanged; baseline-only implicit defaults; changed writes remain strict; cleanup restores original absent field/container and checks after reload.",
+      "settings_reentry": "T28/T40 reenter Settings independently; T10 reenters after replacement.",
+      "signed_in_persistence": "Canonical user/org scoped writeFeatureKnob, boolean conversion, invalidation and warm remain; no local guest fallback.",
+      "T40_exception_retention": "failedSample captured before finally cleanup, then flattened safe booleans/counts survive safeUnexpectedError serialization."
+    },
+    "member_source": {
+      "verdict": "SOURCE_SUPPORTED_NATIVE_PENDING",
+      "sdk_compatibility": "Current installed @ai-matrx/auth readAdminStatus selects user_id, level; real Supabase SDK emits select=user_id,level. Observer now matches that exact projection in both request admission and mismatch diagnosis.",
+      "preserved_gates": "Exact Supabase origin and /rest/v1/admins; GET; Accept-Profile admin; UUID user filter and equality to expected extension subject; HTTP200; completed JSON array; exactly zero rows. Wrong projection, endpoint, schema, method, subject, HTTP failure, malformed shape and admin rows continue to refuse.",
+      "failure_snapshot_callsite": "signInSettings invokes verifyMemberNonadminRole; its failed canonical role boundary emits observer snapshot/networkSnapshot through onAuthDiagnostic. Scrape Save report callback merges these fixed categories/counts/status/outcomes without URLs, email, auth headers or user UUID."
+    }
+  },
+  "verdict_B": {
+    "verdict": "PASS_WITH_CONCERNS",
+    "settings": "Prior Important finding ADDRESSED after final per-poll sample repair. Canonical knob write/read reused; no guest local persistence fallback; privacy defaults unchanged; strict changed-value storage matching retained. T40 saves the pre-cleanup sample, then serializer projects booleans/counts. No new actionable source findings.",
+    "member": "Observer aligns exact emitted SDK projection without weakening request/response gates; added SDK test stubs network underneath real readAdminStatus and Supabase query construction. Rejection corpus tests invalid boundary shapes and an in-memory constant-success mutant. Failure callback exercises actual exported driver boundary invoked by signInSettings. No new actionable source findings.",
+    "concerns": [
+      "Final combined root guarded suite remains pending at review handoff.",
+      "No live browser executed by reviewer. Native exact-main guest/member/admin acceptance must remain pending.",
+      "Settings failed-predicate test is supporting serialization evidence, not real timeout expiry; this limitation is accurately named and documented.",
+      "Earlier review recorded missing broad Settings return-expected gut-check evidence; this review does not invent such proof or treat guard counts as product acceptance."
+    ]
+  },
+  "commits": [],
+  "open_items": [
+    "Root combined final guarded checks.",
+    "Exact-main native guest Settings and signed-in member/admin product retest.",
+    "Retain D289/D290 and member native case pending until actual acceptance evidence exists."
+  ],
+  "candidate": "Final Settings candidate declared frozen by root; member projection repair reviewed from final live diff after formatting and successful targeted guard result. Root combined checks and native exact-main retest remain pending.",
+  "evidence": {
+    "member_red": {
+      "log": ".output/stabilization-checkpoints/member-role-sdk-red-1225b.log",
+      "observed": "Actual SDK producer failed to match before projection repair; strict obsolete-projection rejection also failed, as intended."
+    },
+    "member_green": {
+      "log": ".output/stabilization-checkpoints/member-role-sdk-green-1225.log",
+      "observed": "Terminal RESOURCE_FINAL_DECISION admitted=true resourceInvalid=false exitCode=0 decision=valid. Supporting guard evidence only."
+    },
+    "settings_final_limit": "settings-truth-repair-1208.json explicitly says final per-poll fix awaits root combined suite; pre-final diagnostics run included independent A intentional red.",
+    "reviewer_execution": "Read-only source/log review; no test, guard, browser, CI, resource job, production/test mutation or commit."
+  },
+  "reviewed_file_sha256": {
+    "tests/browser/member-native-auth-proof.mjs": "83eb26e25b9a6d8f1ea34be9e76e7262ab817246d6936340666e7e2e5ad31fdd",
+    "tests/browser/member-native-auth-proof.test.mjs": "db53e047591a73e846b9542ac6a3bfed8dbca67a90a917b452811871a33cd4de",
+    "tests/browser/settings-native-auth-driver.mjs": "4621d2973fb3fceefd9b0fba0439a3de48ded73f91c76ac50d44dae89d34394a",
+    "tests/browser/settings-guest-preference-batch.mjs": "a1f32078d2f1af4c3bd2bca4c514b19e94682fbde70065ee5aa3731749b12933",
+    "tests/browser/settings-full-extension-rechecks.mjs": "2e3a9a754d20e3cd5f70f7daaf1001ae0bcdc85e1c49adb498aea54d51752f78",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "729c6278352e052d2fa39a80ba1a1ae5896ff282eb8d0a8f1d7b90a1254ba63f",
+    "tests/browser/settings-guest-scrape-controls.mjs": "e93bbd0b69b46f47ca47ada0ec1bd5b9803607c47f22137f17488c63125739ea"
+  },
+  "root_adjudication": "The intermediate1208c single failure was a missing real helper binding in extracted panel-transition fixture, not an intentional SDK red. A worker repaired it; final root focused917pass0fail11skip passed. Actual SDK-specific red/green are separate1225b/1225 guards."
+}

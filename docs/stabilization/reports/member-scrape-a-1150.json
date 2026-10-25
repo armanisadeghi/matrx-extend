@@ -1,0 +1,101 @@
+{
+  "task_id": "member-scrape-a-1150",
+  "lane": "A",
+  "status": "NATIVE_FAILED_AUTH_BOUNDARY_CLEANED",
+  "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+  "development_run_id": 40189608507,
+  "development_artifact_id": 12598225185,
+  "artifact_digest": "sha256:94c9b3e7a3f12e5117587addfa65a332e5f23c755b4e33d4ee577c70dda55dc5",
+  "subtarget": "scrape-save-member destination=project scope=single",
+  "normal_plan": "PASS exact SHA and artifact; Project/single, standard free macos-15-intel",
+  "fixture_identity": "approved config ID/name/fingerprint, known test owner and row test_fixture marker matched",
+  "fixture_mutation": "conditional archived_at-only restore matched one owned test_fixture row; original archived_at privately preserved for cleanup",
+  "preparation": "unchanged helper READY existing_reviewer_nonadmin_authority after authorized already-issued service_role point-of-use key",
+  "diagnosis": "Existing already-issued service_role key used only at point of use for authorized unchanged reviewer preparation/link; no key generation/rotation or persistent credential-setting change. Existing listed default secret returned401 in this observation.",
+  "secret_staged": true,
+  "link_minted": true,
+  "native_dispatch": true,
+  "owned_runs": [
+    {
+      "run_id": 40190838685,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40190838685",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "cleanup": "GitHub temporary reviewer link secret deleted and absence verified; local link/admin key/timestamp files removed; exact original fixture archive value conditionally restored and read back; native report attests no write possible, no owned Source/Project/edge created; source checkout clean",
+  "next_action": "Investigate member_nonadmin_role_observation failure with fresh hypothesis and independent native evidence before any A retry; no unchanged red rerun.",
+  "run_terminal": {
+    "run_id": 40190838685,
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "failure",
+    "artifact_id": 12598536393,
+    "artifact_digest": "sha256:92b16b434df88166424cbebfd1292a8dc06f082846fe89fcdf245600b8147d97",
+    "failed_step": "Exercise the selected Chrome side-panel case"
+  },
+  "native_report": {
+    "status": "fail",
+    "stage": "member_auth",
+    "native_stage": "exercise_panel",
+    "auth_stage": "member_extension_token_observation",
+    "auth_failure_stage": "member_nonadmin_role_observation",
+    "auth_failure_code": "member_nonadmin_role_observation_failed",
+    "error_code": "member_auth_boundary_failed",
+    "cleanup_verified": true,
+    "no_write_possible": true,
+    "case_ids": [
+      "EXT-F-1007-T04",
+      "EXT-F-1007-T29"
+    ],
+    "product_verdict": "UNVERIFIED: save/reopen not reached"
+  },
+  "resource_journals": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "child_failed"
+  },
+  "normal_certificate": "not issued: hosted workflow failed before Scrape Save acceptance",
+  "secret_currently_present": false,
+  "resource_journal_proof": {
+    "package": {
+      "path": "docs/stabilization/resource-journals/member-1a9-package-40190838685.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T11:56:54.479Z",
+        "runId": "hosted-package-40190838685-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "browser": {
+      "path": "docs/stabilization/resource-journals/member-1a9-browser-40190838685.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T11:58:56.848Z",
+        "runId": "hosted-browser-40190838685-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "guest": {
+      "path": "docs/stabilization/resource-journals/member-1a9-guest-40190838685.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T12:02:38.290Z",
+        "runId": "hosted-guest-40190838685-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  }
+}

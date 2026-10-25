@@ -446,7 +446,7 @@ test('guest new chat exposes both selected default modes through their real mode
   );
 });
 
-test('T10 implicit Act cycles through Ask before selecting Act and restores absent storage', async () => {
+test('T10 guest Ask is refused, visibly reverted, and remains Act after panel reload', async () => {
   const preference = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
   const state = {
     activeSettings: true,
@@ -455,6 +455,7 @@ test('T10 implicit Act cycles through Ask before selecting Act and restores abse
     stored: null,
     storedPresent: false,
     storagePresent: false,
+    saveRefusal: false,
   };
   const clicks = [];
   const driver = {
@@ -462,18 +463,9 @@ test('T10 implicit Act cycles through Ask before selecting Act and restores abse
     click: async (_panel, kind, label) => {
       if (kind !== 'option') return;
       clicks.push(label);
-      if (state.selected === label) return; // Native select does not emit a change for its current value.
-      state.selected = label;
-      state.stored = label === 'Act without asking' ? 'act' : 'ask';
-      state.storedPresent = true;
-      state.storagePresent = true;
+      state.saveRefusal = true;
     },
     evaluate: async (_panel, script) => {
-      if (script.includes('const originalStoragePresent =')) {
-        state.stored = null;
-        state.storedPresent = false;
-        state.storagePresent = false;
-      }
       return { ...state };
     },
     waitFor: async (label, read, accept) => {
@@ -490,7 +482,8 @@ test('T10 implicit Act cycles through Ask before selecting Act and restores abse
     async () => {},
     driver,
   );
-  assert.deepEqual(clicks.slice(0, 2), ['Ask before acting', 'Act without asking']);
+  assert.deepEqual(clicks, ['Ask before acting']);
+  assert.equal(state.saveRefusal, true);
   assert.deepEqual(
     [state.selected, state.stored, state.storedPresent, state.storagePresent],
     ['Act without asking', null, false, false],
@@ -520,10 +513,10 @@ test('T10 baseline is captured after T04 restores its original absent settings c
     T10: {
       activeSettings: true,
       count: 1,
-      selected: 'Ask before acting',
-      stored: 'ask',
-      storedPresent: true,
-      storagePresent: true,
+      selected: 'Act without asking',
+      stored: null,
+      storedPresent: false,
+      storagePresent: false,
     },
   };
   const originalTheme = preferenceBaseline(
@@ -551,13 +544,19 @@ test('T10 baseline is captured after T04 restores its original absent settings c
       state.T10 = { ...state.T10, stored: null, storedPresent: false, storagePresent: false };
     },
   });
-  assert.equal(baselines.T10.value, 'ask');
+  assert.equal(baselines.T10.value, 'act');
   assert.equal(baselines.T10.storedPresent, false);
   assert.equal(baselines.T10.storagePresent, false);
   assert.equal(preferenceBaselineMatches(state.T10, mode, baselines.T10), true);
   assert.equal(
     preferenceBaselineMatches(
-      { ...state.T10, stored: 'ask', storedPresent: true, storagePresent: true },
+      {
+        ...state.T10,
+        stored: 'ask',
+        selected: 'Ask before acting',
+        storedPresent: true,
+        storagePresent: true,
+      },
       mode,
       baselines.T10,
     ),

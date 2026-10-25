@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "task_id": "settings-member-final-verification-20261025",
+  "status": "all_source_gates_passed_native_pending",
+  "base_source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+  "candidate_commit_lookup": "Commit containing this report; no source commit self-hash invented.",
+  "native_evidence": {
+    "settings_run": 40190567571,
+    "settings_runner_counts": { "pass": 10, "fail": 7, "unverified": 2 },
+    "member_run": 40190838685,
+    "member_scope": "failed role observer before Save; no product write, cleanup verified"
+  },
+  "source_review": [
+    "docs/stabilization/reports/settings-member-final-review-1230.json",
+    "docs/stabilization/reports/settings-poll-final-verify-1235.json",
+    "docs/stabilization/reports/member-sdk-ci-wiring-review-1235.json"
+  ],
+  "verification": {
+    "focused_initial": {
+      "total": 928,
+      "pass": 917,
+      "fail": 0,
+      "skip": 11,
+      "journal": "docs/stabilization/resource-journals/settings-member-final-focused-20261025-1230.jsonl"
+    },
+    "focused_final_CI_wired": {
+      "total": 938,
+      "pass": 927,
+      "fail": 0,
+      "skip": 11,
+      "journal": "docs/stabilization/resource-journals/settings-member-ci-wired-focused-20261025-1236.jsonl"
+    },
+    "compile": {
+      "result": "valid_exit0",
+      "journal": "docs/stabilization/resource-journals/settings-member-final-compile-20261025-1230.jsonl",
+      "limits": "Subsequent edits only JS test import ordering, CI script test-list wiring and durable metadata; TypeScript sources unchanged."
+    },
+    "lint": {
+      "result": "resource_valid_exit0",
+      "checked_files": 3259,
+      "errors": 0,
+      "warnings": 1023,
+      "journal": "docs/stabilization/resource-journals/settings-member-formatted-lint-20261025-1241.jsonl"
+    },
+    "defect_guards": {
+      "setter": "Original missing-auth early-return sabotage1fail5pass; repaired6pass, valid journals.",
+      "SDK": "Original strict obsolete projection31pass2fail; current exact SDK projection33pass0fail, valid journals.",
+      "limits": "Supporting source/integration checks; no native product pass. Failed-predicate sample fixture is not timer expiry."
+    }
+  },
+  "intermediate_failures": {
+    "settings1208c": "One extracted panel-transition harness ReferenceError after A helper extraction, fixed by using real helper seam; not intentional SDK red. Final focused passes this original caller case.",
+    "first_final_lint": "Import ordering in member-native-auth-proof.test.mjs; Biome check --write corrected only imports.",
+    "second_final_lint": "Root record updates expanded compact defect arrays after formatting; source checks unchanged. Defect records reformatted, final lint required."
+  },
+  "code_sha256": {
+    "package.json": "1245f16b98803616fb00bca95e169f8d18a28c5a3a7109682e140fbe0ceea768",
+    "src/features/settings/SettingsView.tsx": "e9e22ba9229cf07da55f1bcfce2541acb2f45c273bb51ab4a7cac4a85daa9f91",
+    "src/lib/settings/act-without-asking.test.ts": "700926e581e1b1b551fe49ef99a3677468a8330a8429bd943de9fa283191d5d7",
+    "src/lib/settings/act-without-asking.ts": "a60b8304fd5dd82dc1fe6ad9d5929b0e778061ce5717e3d87edde96a7723cd34",
+    "src/state/settings.ts": "adc6f3483e4fab8374f807de0ad823238ef3923a4d064a28d6b758ebdb8a96ad",
+    "tests/browser/member-native-auth-proof.mjs": "83eb26e25b9a6d8f1ea34be9e76e7262ab817246d6936340666e7e2e5ad31fdd",
+    "tests/browser/member-native-auth-proof.test.mjs": "485eb0ab98b59d8ff0b196b77c6333cb9308753369af160c2b18190e7bf2e72f",
+    "tests/browser/panel-transition-recorder.test.mjs": "9d43ec6f8cb537ce13a73be4941006a3ae28b2b6674ce3fac119bb0e594e90a1",
+    "tests/browser/settings-full-extension-rechecks.mjs": "2e3a9a754d20e3cd5f70f7daaf1001ae0bcdc85e1c49adb498aea54d51752f78",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "729c6278352e052d2fa39a80ba1a1ae5896ff282eb8d0a8f1d7b90a1254ba63f",
+    "tests/browser/settings-guest-extension-rechecks.mjs": "8ecf79cfb74d537398a93be156078f3d649be0a17cad8c6c4ec3acfee77b0714",
+    "tests/browser/settings-guest-preference-batch.mjs": "a1f32078d2f1af4c3bd2bca4c514b19e94682fbde70065ee5aa3731749b12933",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "0f1c82661b6909a11e2c791a1e4d4f9ddf91439d1774429ba1f54e9e1f445587",
+    "tests/browser/settings-guest-privacy-batch.mjs": "cbfbc2b056cabd8fd027ea32924c68a1e0e4ef9f769e1de0a213f5bf60852434",
+    "tests/browser/settings-guest-privacy-batch.test.mjs": "3b65558e31de49c21226e2235f3e3aded82a10ae3574483e9b03e9585ebd5849",
+    "tests/browser/settings-guest-scrape-controls.mjs": "e93bbd0b69b46f47ca47ada0ec1bd5b9803607c47f22137f17488c63125739ea",
+    "tests/browser/settings-guest-scrape-controls.test.mjs": "49c8faf88b6485f0f04ae5625f2733fa93ba6e8af119f58189ce5a60b09d18d4",
+    "tests/browser/settings-native-auth-driver.mjs": "4621d2973fb3fceefd9b0fba0439a3de48ded73f91c76ac50d44dae89d34394a",
+    "src/lib/settings/privacy-defaults.json": "42f3f140955d2cd2fe8e720b366f9f661f585e048d7f7715cc8fcc95f37207b5"
+  },
+  "ownership": {
+    "workers": "all completed/checkpointed",
+    "native_runs": "both terminal",
+    "fixture": "original archive restored/readback; no owned Source/Project/edge created",
+    "temporary_reviewer_secret": "deleted and absence verified",
+    "local_link_key_timestamp_files": "removed",
+    "local_checks": "All terminal; final guard actual exec56348 exit0, previous chain20861 terminalchild1 for record format fixed subsequently."
+  },
+  "release": "No build/release/deploy/version bump/package publish/upload/submission manually performed; next successful exact-main CI artifact, owner Reload and independent native acceptance remain required.",
+  "browser": {
+    "last_verified_owner_source": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+    "last_verified_version": "0.2.621",
+    "store_version": "0.2.577",
+    "next_unit": "Exact-main CI/import/promotion/Reload pending after push; do not call new main loaded."
+  },
+  "limits": [
+    "D289/D290/D291/D292 fixed source only; no retest-pass/closed transitions.",
+    "No whole Settings/Scrape/product-health claim.",
+    "Reuse completed daily Store/private/mail and actual Store577/servera669 two-turn proof; deeper route query genuinely refused and not bypassed.",
+    "No paid job or billing-block relocation."
+  ],
+  "verified_at": "2026-10-25T12:43:08.219220+00:00"
+}

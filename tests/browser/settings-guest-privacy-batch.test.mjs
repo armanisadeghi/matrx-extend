@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   GUEST_PRIVACY_SWITCHES,
   nextPrivacyRestoreClick,
+  privacyBaselineMatches,
   privacySwitchMatches,
   runGuestPrivacySwitchCase,
 } from './settings-guest-privacy-batch.mjs';
@@ -16,6 +17,8 @@ test('guest Privacy switch evidence requires actual UI and storage agreement for
         count: 1,
         checked: expected,
         stored: preference.caseId === 'T34' ? (expected ? 'on_page' : 'quiet') : expected,
+        fieldPresent: true,
+        storagePresent: true,
         saveError: false,
       };
       assert.equal(privacySwitchMatches(valid, preference, expected), true);
@@ -53,6 +56,28 @@ test('guest Privacy switch evidence requires actual UI and storage agreement for
   }
 });
 
+test('absent Privacy fields use production defaults; a changed value still requires storage', () => {
+  for (const preference of GUEST_PRIVACY_SWITCHES) {
+    const checked = preference.caseId !== 'T34';
+    const absent = {
+      activeSettings: true,
+      privacyOpen: true,
+      count: 1,
+      checked,
+      stored: null,
+      fieldPresent: false,
+      storagePresent: false,
+      saveError: false,
+    };
+    assert.equal(privacyBaselineMatches(absent, preference, absent), true);
+    assert.equal(privacySwitchMatches(absent, preference, checked), false);
+    assert.equal(
+      privacyBaselineMatches({ ...absent, checked: !checked }, preference, absent),
+      false,
+    );
+  }
+});
+
 function panelBoundary(
   preference,
   { baselineMismatch = false, ignoreClick = false, ignoreClickAt = 0, failReloadOnce = false } = {},
@@ -71,6 +96,8 @@ function panelBoundary(
       count: 1,
       checked,
       stored,
+      fieldPresent: true,
+      storagePresent: true,
       saveError: false,
     }),
     click: async (_panel, kind, label) => {

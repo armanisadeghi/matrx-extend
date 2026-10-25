@@ -67,7 +67,7 @@ export function observeCanonicalAdminCheck(panel, origin, timeoutMs = 60_000) {
           origin: url.origin !== origin,
           method: event.request.method !== 'GET',
           schema: String(profile).toLowerCase() !== 'admin',
-          selection: url.searchParams.get('select') !== 'user_id',
+          selection: url.searchParams.get('select') !== 'user_id,level',
           user_filter: !UUID.test(userId ?? ''),
         }))
           if (mismatched) roleMismatches[category] = (roleMismatches[category] ?? 0) + 1;
@@ -77,7 +77,7 @@ export function observeCanonicalAdminCheck(panel, origin, timeoutMs = 60_000) {
         url.pathname === '/rest/v1/admins' &&
         event.request.method === 'GET' &&
         String(profile).toLowerCase() === 'admin' &&
-        url.searchParams.get('select') === 'user_id' &&
+        url.searchParams.get('select') === 'user_id,level' &&
         UUID.test(userId ?? '')
       )
         requests.set(event.requestId, { userId, status: null, rowCount: null, outcome: 'pending' });

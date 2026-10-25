@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-1a9-40190567571",
+  "status": "native_failed_resource_valid",
+  "scope": {
+    "auth_mode": "guest",
+    "lane": "B",
+    "frozen_product_source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+    "development_run_id": 40189608507,
+    "development_artifact_id": 12598225185,
+    "artifact_digest": "sha256:94c9b3e7a3f12e5117587addfa65a332e5f23c755b4e33d4ee577c70dda55dc5",
+    "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
+    "extension_version": "0.2.621",
+    "channel": "CI development unpacked, not Store"
+  },
+  "dispatch": {
+    "run_id": 40190567571,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40190567571",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "result": {
+    "runner_counts": { "pass": 10, "fail": 7, "unverified": 2 },
+    "cases": [
+      {
+        "case_id": "EXT-F-1003-T04",
+        "runner_case_status": "pass",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T13",
+        "runner_case_status": "pass",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T22",
+        "runner_case_status": "pass",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T37",
+        "runner_case_status": "pass",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T46",
+        "runner_case_status": "pass",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T64",
+        "runner_case_status": "pass",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T67",
+        "runner_case_status": "pass",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T73",
+        "runner_case_status": "pass",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T76",
+        "runner_case_status": "pass",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T92",
+        "runner_case_status": "pass",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T10",
+        "runner_case_status": "fail",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T16",
+        "runner_case_status": "fail",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T19",
+        "runner_case_status": "fail",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T28",
+        "runner_case_status": "fail",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T31",
+        "runner_case_status": "fail",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T34",
+        "runner_case_status": "fail",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T40",
+        "runner_case_status": "fail",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T63",
+        "runner_case_status": "unverified",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      },
+      {
+        "case_id": "EXT-F-1003-T70",
+        "runner_case_status": "unverified",
+        "bounded_status": "unverified",
+        "scope": "Runner observation; no new independent full-case credit. Ten earlier independently accepted0b scopes remain separate historical evidence."
+      }
+    ]
+  },
+  "resource": {
+    "package": "valid_exit_0",
+    "browser": "valid_exit_0",
+    "guest": "admitted_resourceInvalid_false_child_failed_exit_1",
+    "cleanup": "hosted_job_complete_no_owned_local_process_or_fixture"
+  },
+  "evidence": [
+    "docs/stabilization/reports/settings-retest-b-1150.json",
+    "docs/stabilization/reports/settings-sink-diagnosis-1202.json"
+  ],
+  "limits": "No Store installation, owner Mac UI, member/admin, or whole Settings acceptance. Native report lists 19 case outcomes; product versus harness causes of failures require diagnosis. No unchanged retry.",
+  "next_action": "Reviewed source fixes, successful exact-main artifact and original+surrounding native retest required; no unchanged retry or product closure."
+}

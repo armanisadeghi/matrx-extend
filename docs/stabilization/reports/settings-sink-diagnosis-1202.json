@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "task_id": "settings_sink_diagnosis_1202",
+  "status": "read_only_causal_diagnosis",
+  "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+  "native_run_id": 40190567571,
+  "artifact_id": 12598225185,
+  "build_version": "0.2.621",
+  "mode": "signed_out_guest",
+  "counts": {
+    "pass": 10,
+    "fail": 7,
+    "unverified": 2
+  },
+  "causal_map": [
+    {
+      "cases": ["T10"],
+      "confidence": "high",
+      "ui_writer": "SettingsView.tsx:398-403 invokes writeActMode",
+      "real_sink": "act-without-asking.ts:64-90 writes platform chat.act_without_asking with user and organization through writeFeatureKnob; no signed-out sink",
+      "hydration_reader": "useActMode/readActMode -> peekPlatformKnob(chat.act_without_asking), default Act; worker readActModeInWorker same knob",
+      "native_observer": "settings-guest-preference-batch.mjs:16-36,107-146 still reads matrx.settings.v1.state.defaultPermissionMode",
+      "direct_product_defect": "writeActMode sets optimistic pending before auth check, and missing user/org return at lines 69-74 does not clear it. Signed-out Ask appears in UI transiently although unsaved; reload restores Act. Result of write is discarded by SettingsView onChange.",
+      "evidence": "Native T10 Ask selected while legacy field absent; cold reload Act returns. Source proves guest cannot write the platform knob. Earlier local same-value no-op corrected in driver but does not change this boundary.",
+      "uncertainty": "No direct DB snapshot in this guest run; signed-in persistence through the real service remains unverified."
+    },
+    {
+      "cases": ["T16", "T19", "T31", "T34"],
+      "confidence": "high for baseline contract error; native exact before snapshot unavailable",
+      "ui_writer": "SettingsView.tsx:430-475 Switches invoke useSettingsStore setters",
+      "real_sink": "state/settings.ts:124-153 Zustand persist -> lib/settings/persistence.ts -> chrome.storage.local key matrx.settings.v1",
+      "hydration_reader": "sidepanel/main.tsx:39-49 waits for useSettingsStore.persist hydration; service worker consumer reads matching local keys in lib/settings/persisted.ts",
+      "native_observer": "settings-guest-privacy-batch.mjs:45-74 reads the same local blob; lines 92-96 require explicit stored value at initial baseline",
+      "cause": "Prior T13 absence-baseline restoration removes entire matrx.settings.v1 container when original storage was absent (settings-guest-preference-batch.mjs:440-455); T13 native report confirms storagePresent=false. Privacy UI then correctly displays defaults true,true,true,quiet, but native observer maps absent fields to null and asserts stored equality before any clicks. Thus four failures do not establish persistence defects.",
+      "uncertainty": "Report omits raw initial privacy observations on precondition failure; no direct runtime value for each failed initial read. Consecutive T13 absence evidence and code establish the route."
+    },
+    {
+      "cases": ["T28", "T40"],
+      "confidence": "medium-high as cascade, no independent product verdict",
+      "cause": "After T10 full-reload preference/restore failure, rerunGuestSettingsAfterExtensionReload directly invokes T28/T40 runners at full-extension-rechecks.mjs:413-420 without opening Settings. T10 afterReload visits Chat and only returns to Settings on its success path (lines 343-355). T28 safe census active=false,count=0,headings=[]; T40 waits until settings-panel-driver.mjs:58 after no last-safe diagnostic. Both warm/panel-reload paths passed.",
+      "uncertainty": "Native evidence does not record active Chat tab immediately before T28, so classify exact stale-panel/tab route as likely, not proven. T40 last sample was not serialized on this branch."
+    }
+  ],
+  "falsifiable_next_checks": [
+    "Run a fast producer-seam test on actual writeActMode with guest identity and no org: click/request Ask must return failure, clear pending, notify, and render Act; a signed-in two-choice test must exercise writeFeatureKnob with a real captured contract shaped response and fresh snapshot, not echo a mocked expected value. First plant the missing-auth early-return bug in scratch/in-memory and show red.",
+    "Change native T10 guest acceptance to truthful semantics: guest cannot persist user-scoped platform knob; test refusal/reversion and separate signed-in case for actual platform.knob_snapshot persistence through full extension reload and chat consumer. Observe canonical knob through package accessor or UI, not legacy local field. A signed-out test must not claim a persisted Ask choice.",
+    "For T16/T19/T31/T34, derive absent-field defaults at the native observer from production defaults/consumer contract; assert initial UI equals effective value, then click opposite and verify actual local blob write, panel/full reload, restore original absence without replacing unrelated keys. Include earlier T13 cleanup sequence to catch cross-case contamination.",
+    "Make T28/T40 rechecks independently enter Settings after each prior recheck and capture a safe tab/panel readiness sample on failure; rerun exact frozen acceptance only after changed source and review."
+  ],
+  "scope_limit": "Read-only static trace plus resource-valid native report; no new native execution, source edit, commit, auth or storage dump. T10 platform write signed-in and T28/T40 independent full-reload behavior remain unverified."
+}

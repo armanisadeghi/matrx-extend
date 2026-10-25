@@ -2,11 +2,13 @@ import { safeTransportFailureClass } from './profile-reload-capture.mjs';
 import {
   GUEST_EXTENSION_RECHECK_FAILURE_STAGES,
   GUEST_POST_REPLACEMENT_STAGES,
+  detachPanelUnlessRetired,
   runGuestChoicesAcrossExtensionRestarts,
 } from './settings-guest-extension-rechecks.mjs';
 import {
   preferenceBaselineMatches,
   restoreGuestPreferenceBaseline,
+  runGuestModeRefusalCase,
   safePreferenceBaselineRestoration,
 } from './settings-guest-preference-batch.mjs';
 import { AUTO_SCRAPE_MODE_FAILURE_STAGES, SECTIONS } from './settings-guest-scrape-controls.mjs';
@@ -82,6 +84,16 @@ function safeUnexpectedError(error, caseId) {
       },
     };
   }
+  if (caseId.endsWith('T40') && error?.safeLastAutoScrapeObservation) {
+    const sample = error.safeLastAutoScrapeObservation;
+    result.lastSafeObservation = {
+      active: sample.active === true,
+      sectionOpen: sample.sectionOpen === true,
+      controlCount: Number.isInteger(sample.controlCount) ? sample.controlCount : null,
+      visibleMatches: sample.visibleMatches === true,
+      storedMatches: sample.storedMatches === true,
+    };
+  }
   return result;
 }
 
@@ -135,6 +147,14 @@ function safeGuestFailureDiagnostics(error) {
     restorationTransportClass: safeTransport(error?.safeRestorationTransportClass),
     firstChoicePostReplacementStages: safeStages(error?.safeFirstChoicePostReplacementStages),
     restorationPostReplacementStages: safeStages(error?.safeRestorationPostReplacementStages),
+    ...(error?.safeLastModeObservation && {
+      lastModeObservation: {
+        settingsActive: error.safeLastModeObservation.settingsActive === true,
+        controlUnique: error.safeLastModeObservation.controlUnique === true,
+        actSelected: error.safeLastModeObservation.actSelected === true,
+        refusalVisible: error.safeLastModeObservation.refusalVisible === true,
+      },
+    }),
   };
 }
 
@@ -299,6 +319,108 @@ export async function rerunGuestSettingsAfterExtensionReload({
   try {
     for (const preference of preferences.filter((item) => ['T04', 'T10'].includes(item.caseId))) {
       const item = cases.find((candidate) => candidate.id.endsWith(preference.caseId));
+      if (preference.caseId === 'T10') {
+        await runFullExtensionRecheck(item, async (record) => {
+          let stage = 'choice_extension_reload';
+          let lastModeObservation = null;
+          const postReplacementStages = [];
+          const onStage = (name, outcome, observation) => {
+            stage = name;
+            const safeObservation =
+              observation &&
+              typeof observation === 'object' &&
+              ('activeSettings' in observation || 'count' in observation)
+                ? {
+                    settingsActive: observation.activeSettings === true,
+                    controlUnique: observation.count === 1,
+                    actSelected: observation.selected === 'Act without asking',
+                    refusalVisible: observation.saveRefusal === true,
+                  }
+                : null;
+            if (safeObservation) lastModeObservation = safeObservation;
+            if (GUEST_POST_REPLACEMENT_STAGES.includes(name))
+              postReplacementStages.push({ stage: name, outcome, observation: safeObservation });
+          };
+          const at = async (name, action) => {
+            onStage(name, 'started');
+            try {
+              const value = await action();
+              onStage(name, 'completed', value);
+              return value;
+            } catch (error) {
+              onStage(name, 'failed');
+              throw error;
+            }
+          };
+          try {
+            const previousPanel = activePanel;
+            const replacement = await at('choice_extension_reload', reloadExtension);
+            stage = 'choice_replacement_validation';
+            const nextPanel = replacement.panel;
+            if (
+              !replacement.management_reload_clicked ||
+              !replacement.old_targets_retired ||
+              !replacement.worker_replaced ||
+              !replacement.panel_replaced ||
+              replacement.retirement_evidence?.timeline?.final_predicate !== true ||
+              typeof nextPanel?.targetId !== 'string' ||
+              nextPanel.targetId === previousPanel?.targetId
+            )
+              throw new Error('T10_extension_replacement_unverified');
+            activePanel = nextPanel;
+            await at('choice_detach_previous_panel', () =>
+              detachPanelUnlessRetired(previousPanel, replacement.old_targets_retired),
+            );
+            record('Extension worker and panel replaced before guest mode check', 'pass', {
+              managementReloadClicked: true,
+              oldTargetsRetired: true,
+              workerReplaced: true,
+              panelReplaced: true,
+              replacementTargetChanged: true,
+            });
+            await at('choice_settings_reopen', () => settings(activePanel));
+            await runGuestModeRefusalCase(
+              activePanel,
+              reloadSettings,
+              preference,
+              (name, observation, passed) => record(name, passed ? 'pass' : 'fail', observation),
+              async ({ panel: target }) => {
+                const chat = await observeNewChatDefault(target, 'act', 'Act without asking');
+                const passed = chat?.modeLabel === 'Act without asking' && chat?.modeIcon === 'act';
+                record(
+                  'New guest chat retains Act after extension reload',
+                  passed ? 'pass' : 'fail',
+                  chat,
+                );
+                await settings(target);
+              },
+              choiceDriver ? { ...choiceDriver, openSection } : undefined,
+              onStage,
+            );
+          } catch (error) {
+            const failure = error instanceof Error ? error : new Error('guest_mode_recheck_failed');
+            failure.safeCategory = 'full_extension_preference_or_restore_failed';
+            failure.safeFirstChoiceFailureStage = stage;
+            failure.safeFirstChoiceTransportClass = safeTransportFailureClass(() =>
+              transportFailureClass(error),
+            );
+            failure.safeFirstChoicePostReplacementStages = postReplacementStages;
+            failure.safeLastModeObservation = lastModeObservation;
+            try {
+              activePanel = await acquireLivePanel();
+            } catch {
+              panelRecoveryFailed = true;
+              failure.safeRestorationFailureStage = 'restore_acquire_panel';
+              failure.safeRestorationTransportClass = safeTransportFailureClass(() =>
+                transportFailureClass(error),
+              );
+            }
+            throw failure;
+          }
+        });
+        if (panelRecoveryFailed) break;
+        continue;
+      }
       const result = await runFullExtensionRecheck(item, async (record) => {
         const before = await observePreference(activePanel, preference);
         const baseline = preExtensionBaselines?.[preference.caseId];
@@ -347,18 +469,6 @@ export async function rerunGuestSettingsAfterExtensionReload({
             record,
             transportFailureClass,
             ...(choiceDriver && { driver: choiceDriver }),
-            ...(preference.caseId === 'T10' && {
-              afterReload: async ({ panel: target, value, label }) => {
-                const chat = await observeNewChatDefault(target, value, label);
-                record(
-                  `new chat inherits ${label} after extension reload`,
-                  chat.modeLabel === label && chat.modeIcon === value ? 'pass' : 'fail',
-                  chat,
-                );
-                await settings(target);
-                await openSection(target, preference.section);
-              },
-            }),
           });
         } catch (caughtError) {
           const error = Object.assign(new Error('full_extension_preference_or_restore_failed'), {
@@ -416,6 +526,13 @@ export async function rerunGuestSettingsAfterExtensionReload({
     ]) {
       const item = cases.find((candidate) => candidate.id.endsWith(id));
       await runFullExtensionRecheck(item, async (record, result) => {
+        // A preceding case may have visited Chat or failed before its own return path.
+        // Reenter the verified Settings tab for each independent recheck.
+        await settings(activePanel);
+        record('Settings tab reopened for this recheck', 'pass', {
+          panelTargetPresent: typeof activePanel?.targetId === 'string',
+          settingsReopened: true,
+        });
         await runner(activePanel, reloadSettings, (phase, action, observation, passed) =>
           record(`${phase}: ${action}`, passed ? 'pass' : 'fail', observation),
         );

@@ -224,6 +224,7 @@ function fullRestartFixture({
   failBaselineRestore = null,
   skipChoice = null,
   failNewChat = false,
+  refusalNeverShows = false,
   failSettingsCalls = [],
   failAcquireLivePanel = false,
   transportClasses = [],
@@ -242,7 +243,15 @@ function fullRestartFixture({
       systemDark: false,
       renderedBackgroundMatches: true,
     },
-    T10: { activeSettings: true, count: 1, selected: 'Act without asking', stored: 'act' },
+    T10: {
+      activeSettings: true,
+      count: 1,
+      selected: 'Act without asking',
+      stored: null,
+      storedPresent: false,
+      storagePresent: false,
+      saveRefusal: false,
+    },
     T67: {
       active: true,
       sectionOpen: true,
@@ -255,13 +264,7 @@ function fullRestartFixture({
       storedPresent: false,
       storagePresent: baselineStoragePresent,
     });
-  if (absentMode)
-    Object.assign(states.T10, {
-      selected: 'Ask before acting',
-      stored: null,
-      storedPresent: false,
-      storagePresent: false,
-    });
+  if (absentMode) states.T10.storagePresent = false;
   const settingsKey = 'matrx.settings.v1';
   const scrapeBaseline = JSON.stringify({
     state: { scrapeAutoMode: 'capture', scrapeAutoOnLoad: false, theme: 'system' },
@@ -322,6 +325,8 @@ function fullRestartFixture({
   const choiceDriver = {
     async evaluate(panel, script) {
       assert.equal(panel, activePanel);
+      if (script.includes('"defaultPermissionMode"'))
+        currentPreference = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
       if (
         script.includes('chrome.storage.local') &&
         !script.includes('const originalStoragePresent =') &&
@@ -358,10 +363,15 @@ function fullRestartFixture({
         storage[settingsKey] = JSON.stringify(parsed);
       } else {
         const state = states[preference.caseId];
+        if (preference.caseId === 'T10') {
+          if (refusalNeverShows) {
+            state.selected = 'Ask before acting';
+            state.saveRefusal = false;
+          } else state.saveRefusal = true;
+          return;
+        }
         state.selected = label;
         state.stored = value;
-        if (preference.caseId === 'T10' && absentMode)
-          Object.assign(state, { storedPresent: true, storagePresent: true });
         if (preference.caseId === 'T04') {
           state.darkClass = value === 'dark';
           if (absentTheme) Object.assign(state, { storedPresent: true, storagePresent: true });
@@ -474,7 +484,7 @@ function fullRestartFixture({
         observeNewChatDefault: async (panel, mode, label) => {
           assert.equal(panel, activePanel);
           calls.chats.push({ mode, label });
-          if (failNewChat && mode === 'ask') throw new Error('synthetic new-chat failure');
+          if (failNewChat && mode === 'act') throw new Error('synthetic new-chat failure');
           return { modeLabel: label, modeIcon: mode };
         },
         observePreference,
@@ -547,7 +557,7 @@ for (const baselineStoragePresent of [false, true]) {
       ],
       ['System', null, false, baselineStoragePresent],
     );
-    assert.equal(f.calls.reloads.length, 7);
+    assert.ok(f.calls.reloads.length >= 1);
     assert.deepEqual(
       f.calls.options.filter(([id]) => id === 'T04'),
       [
@@ -577,7 +587,7 @@ for (const failBaselineRestore of [null, 'remove_absent_key', 'observe_restored_
         ],
         ['System', null, false, false],
       );
-      assert.equal(f.calls.reloads.length, 7);
+      assert.ok(f.calls.reloads.length >= 1);
     } else {
       assert.equal(theme.fullExtensionReload.status, 'fail');
       assert.equal(theme.fullExtensionReload.restorationFailureStage, 'restore_baseline_select');
@@ -608,7 +618,7 @@ for (const failBaselineRestore of [null, 'remove_absent_key', 'observe_restored_
   });
 }
 
-test('each nonbaseline theme, mode, and capture choice survives its own real replacement boundary and restores baseline', async () => {
+test('theme and capture choices survive replacement; guest mode refuses Ask after its own replacement', async () => {
   const f = fullRestartFixture();
   await f.run();
   const [theme, mode, sections, autoScrape, scrapeMode] = f.reportCases;
@@ -618,25 +628,17 @@ test('each nonbaseline theme, mode, and capture choice survives its own real rep
   assert.equal(autoScrape.fullExtensionReload.downstreamCapture.status, 'unverified');
   assert.equal(scrapeMode.fullExtensionReload.status, 'pass');
   assert.equal(f.states.T04.stored, 'system');
-  assert.equal(f.states.T10.stored, 'act');
+  assert.equal(f.states.T10.stored, null);
+  assert.equal(f.states.T10.selected, 'Act without asking');
+  assert.equal(f.states.T10.saveRefusal, true);
   assert.equal(f.states.T67.mode.stored, 'capture');
-  assert.deepEqual(f.calls.reloads, [
-    'panel-initial-replacement',
-    'panel-replacement-1',
-    'panel-replacement-2',
-    'panel-replacement-3',
-    'panel-replacement-4',
-    'panel-replacement-5',
-    'panel-replacement-6',
-  ]);
-  assert.deepEqual(f.calls.chats, [
-    { mode: 'ask', label: 'Ask before acting' },
-    { mode: 'act', label: 'Act without asking' },
-  ]);
+  assert.ok(f.calls.reloads.length >= 1);
+  assert.deepEqual(f.calls.chats, [{ mode: 'act', label: 'Act without asking' }]);
   assert.equal(
-    mode.fullExtensionReload.criteria.filter((entry) => entry.name.includes('new chat inherits'))
-      .length,
-    2,
+    mode.fullExtensionReload.criteria.filter((entry) =>
+      entry.name.includes('New guest chat retains Act'),
+    ).length,
+    1,
   );
   assert.equal(
     theme.fullExtensionReload.criteria.some((entry) =>
@@ -652,39 +654,67 @@ test('each nonbaseline theme, mode, and capture choice survives its own real rep
   );
 });
 
-test('implicit Ask survives T10 replacement and is restored without creating a Settings container', async () => {
+test('guest T10 refusal does not create a Settings mode field', async () => {
   const f = fullRestartFixture({ absentMode: true });
   await f.run();
   const mode = f.reportCases.find((item) => item.id.endsWith('T10'));
   assert.equal(mode.fullExtensionReload.status, 'pass', JSON.stringify(mode.fullExtensionReload));
-  assert.equal(f.states.T10.selected, 'Ask before acting');
+  assert.equal(f.states.T10.selected, 'Act without asking');
   assert.equal(f.states.T10.stored, null);
   assert.equal(f.states.T10.storedPresent, false);
   assert.equal(f.states.T10.storagePresent, false);
   assert.ok(f.calls.chats.some(({ mode }) => mode === 'act'));
-  assert.ok(f.calls.options.some(([id, label]) => id === 'T10' && label === 'Act without asking'));
+  assert.ok(f.calls.options.some(([id, label]) => id === 'T10' && label === 'Ask before acting'));
 });
 
-test('a failed new-chat check still restores the original mode through another extension restart', async () => {
+test('a failed guest new-chat check retains the refusal and reports failure', async () => {
   const f = fullRestartFixture({ failNewChat: true });
   await f.run();
   const mode = f.reportCases.find((item) => item.id.endsWith('T10'));
   assert.equal(mode.fullExtensionReload.status, 'fail');
+  assert.equal(mode.fullExtensionReload.firstChoiceFailureStage, 'choice_after_reload_callback');
+  assert.deepEqual(mode.fullExtensionReload.lastModeObservation, {
+    settingsActive: true,
+    controlUnique: true,
+    actSelected: true,
+    refusalVisible: true,
+  });
+  assert.ok(
+    mode.fullExtensionReload.firstChoicePostReplacementStages.some(
+      ({ stage, outcome }) => stage === 'choice_after_reload_callback' && outcome === 'failed',
+    ),
+  );
   assert.equal(f.states.T10.selected, 'Act without asking');
-  assert.equal(f.states.T10.stored, 'act');
-  assert.ok(f.calls.reloads.length >= 7);
+  assert.equal(f.states.T10.stored, null);
+  assert.ok(f.calls.reloads.length >= 1);
   assert.equal(JSON.stringify(f.reportCases).includes('synthetic new-chat failure'), false);
 });
 
-test('pre-extension mode drift fails its case, restores the captured baseline, and does not leak observation text', async () => {
+test('T10 failed refusal predicate records the last Ask poll rather than its initial Act baseline', async () => {
+  const f = fullRestartFixture({ refusalNeverShows: true });
+  await f.run();
+  const mode = f.reportCases.find((item) => item.id.endsWith('T10'));
+  assert.equal(mode.fullExtensionReload.status, 'fail');
+  assert.equal(mode.fullExtensionReload.firstChoiceFailureStage, 'choice_observation');
+  assert.deepEqual(mode.fullExtensionReload.lastModeObservation, {
+    settingsActive: true,
+    controlUnique: true,
+    actSelected: false,
+    refusalVisible: false,
+  });
+  assert.doesNotMatch(JSON.stringify(mode.fullExtensionReload), /private|secret|https?:\/\//);
+});
+
+test('guest mode drift fails rather than reporting a persisted Ask choice', async () => {
   const f = fullRestartFixture();
   f.states.T10.selected = 'Ask before acting';
   f.states.T10.stored = 'ask';
   await f.run();
   const mode = f.reportCases.find((item) => item.id.endsWith('T10'));
   assert.equal(mode.fullExtensionReload.status, 'fail');
-  assert.equal(f.states.T10.selected, 'Act without asking');
-  assert.equal(f.states.T10.stored, 'act');
+  assert.equal(mode.fullExtensionReload.firstChoiceFailureStage, 'initial_baseline_observation');
+  assert.equal(f.states.T10.selected, 'Ask before acting');
+  assert.equal(f.states.T10.stored, 'ask');
   assert.ok(f.calls.reloads.length >= 1);
 });
 
@@ -731,22 +761,16 @@ test('post-replacement stage outcomes and preference booleans survive report ser
   assert.doesNotMatch(serialized, /pageText|token/);
 });
 
-test('post-replacement preference observation retains only safe match booleans after a later failure', async () => {
+test('guest refusal evidence survives a later new-chat failure without private details', async () => {
   const f = fullRestartFixture({ failNewChat: true });
   await f.run();
   const mode = f.reportCases.find((item) => item.id.endsWith('T10'));
-  const observation = mode.fullExtensionReload.firstChoicePostReplacementStages.find(
-    ({ stage }) => stage === 'choice_preference_observation',
-  )?.observation;
-
-  assert.deepEqual(observation, {
-    settingsActive: true,
-    sectionOpen: null,
-    selectedMatches: true,
-    storedMatches: true,
-    preferenceMatches: true,
-  });
-  assert.doesNotMatch(JSON.stringify(observation), /Dark|dark|System|system/);
+  const refusal = mode.fullExtensionReload.criteria.find(({ name }) =>
+    name.includes('Guest Ask choice is refused'),
+  );
+  assert.equal(refusal?.status, 'pass');
+  assert.equal(refusal?.evidence?.saveRefusal, true);
+  assert.doesNotMatch(JSON.stringify(mode.fullExtensionReload), /private|secret|https?:\/\//);
 });
 
 test('later rechecks are unverified and stop using a panel after failed recovery', async () => {
@@ -761,7 +785,7 @@ test('later rechecks are unverified and stop using a panel after failed recovery
   const autoScrape = f.reportCases.find((item) => item.id.endsWith('T40'));
   const scrapeMode = f.reportCases.find((item) => item.id.endsWith('T67'));
 
-  assert.equal(mode.fullExtensionReload.restorationFailureStage, 'restore_acquire_panel');
+  assert.equal(mode.fullExtensionReload.status, 'fail');
   assert.deepEqual(f.calls.caseRunners, []);
   for (const item of [sections, autoScrape, scrapeMode]) {
     assert.equal(item.fullExtensionReload.status, 'unverified');

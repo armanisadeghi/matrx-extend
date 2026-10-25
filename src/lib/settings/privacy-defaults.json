@@ -1,0 +1,6 @@
+{
+  "sharePageIdentity": true,
+  "captureLoginsEnabled": true,
+  "offerSavedLoginsEnabled": true,
+  "credentialAssistancePresentation": "quiet"
+}

@@ -8,7 +8,7 @@
   "severity": "S2: prevents trustworthy native retest or diagnosis",
   "priority": "P1: original native failure follow-through",
   "state": "fixed",
-  "owner": "/root/settings_failure_class_repair_1109",
+  "owner": "/root/settings_truth_repair_1208",
   "preconditions": [
     "Frozen exact0b CI development artifact and resource-valid nativeB40186301999."
   ],
@@ -21,18 +21,25 @@
   "evidence": [
     "docs/stabilization/reports/settings-failure-class-repair-1109.json",
     "docs/stabilization/runs/settings-guest-0b-20261025.json",
-    "docs/stabilization/reports/settings-case-repair-fresh-review.json"
+    "docs/stabilization/reports/settings-case-repair-fresh-review.json",
+    "docs/stabilization/reports/settings-retest-b-1150.json",
+    "docs/stabilization/reports/settings-sink-diagnosis-1202.json"
   ],
-  "reviewer": "/root/settings_case_repair_fresh_review",
+  "reviewer": "/root/settings_member_final_review_1230",
   "verification": {
-    "final_guarded_focused": { "total": 926, "pass": 915, "fail": 0, "skip": 11 },
+    "final_guarded_focused": {
+      "total": 926,
+      "pass": 915,
+      "fail": 0,
+      "skip": 11
+    },
     "compile": "guarded valid0",
     "lint": "guarded valid0,3251files0errors1022warnings",
     "guarded_session": 86803,
     "source_checks_not_native_passes": true
   },
-  "native_retest": "pending new successful exact-main CI artifact; T10/T28/T40 remain unverified.",
-  "fix_commit_lookup": "Commit containing this record; resolve git log -1 --format=%H -- tests/browser/settings-guest-preference-batch.mjs",
+  "native_retest": "Not run on repaired candidate. Requires successful exact-main CI artifact, normal isolated original+surrounding guest/member retest and independent evidence before retest-pass/closed.",
+  "fix_commit_lookup": "Commit containing this record; use exact-path git log. Native acceptance and release remain pending.",
   "transition_history": [
     {
       "at": "2026-10-25T11:24:19.317133+00:00",
@@ -57,6 +64,31 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Meaningful red/green producer tests, fresh code review, guarded full focused/compile/lint passed; native retest still pending."
+    },
+    {
+      "at": "2026-10-25T12:19:18.778741+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Exact1a9 nativeB40190567571 remains failed; T10 still uses retired sink, T40 exception has no last sample."
+    },
+    {
+      "at": "2026-10-25T12:19:18.778741+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Fresh causal diagnosis and bounded settings_truth_repair_1208 implementation; native acceptance still pending."
+    },
+    {
+      "at": "2026-10-25T12:40:55.082352+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Reviewed source repair, real defect-specific guards and final CI-wired focused927pass0fail11skip plus compilevalid0; mandatory final lint/proof in linked report required before commit. Native original/adjacent retest and release remain pending."
     }
-  ]
+  ],
+  "source_review": [
+    "docs/stabilization/reports/settings-member-final-review-1230.json",
+    "docs/stabilization/reports/settings-poll-final-verify-1235.json",
+    "docs/stabilization/reports/member-sdk-ci-wiring-review-1235.json"
+  ],
+  "verification_final_report": "docs/stabilization/reports/settings-member-final-verification-20261025.json",
+  "source_only": true
 }

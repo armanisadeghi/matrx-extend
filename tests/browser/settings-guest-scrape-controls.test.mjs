@@ -278,8 +278,9 @@ test('T28 onFailure receipt bounds diagnostics for inactive and same-count roste
 
 test('T40 case runner repairs UI-baseline/storage-drift through clicks and verifies after reload', async () => {
   const { state, driver, reload } = simulatedPanel();
-  await assert.rejects(
-    runGuestAutoScrapeCase(
+  let failure;
+  try {
+    await runGuestAutoScrapeCase(
       null,
       reload,
       (phase) => {
@@ -290,8 +291,25 @@ test('T40 case runner repairs UI-baseline/storage-drift through clicks and verif
         }
       },
       driver,
-    ),
-    /injected_after_write_failure/,
+    );
+  } catch (error) {
+    failure = error;
+  }
+  assert.match(failure?.message ?? '', /injected_after_write_failure/);
+  assert.deepEqual(failure.safeLastAutoScrapeObservation, {
+    active: true,
+    sectionOpen: true,
+    controlCount: 1,
+    visibleMatches: false,
+    storedMatches: false,
+  });
+  const item = { id: 'EXT-F-1003-T40', steps: [], criteria: [] };
+  await runFullExtensionRecheck(item, async () => {
+    throw failure;
+  });
+  assert.deepEqual(
+    item.fullExtensionReload.exception.lastSafeObservation,
+    failure.safeLastAutoScrapeObservation,
   );
   assert.equal(state.clicks.filter(([kind]) => kind === 'switch').length, 3);
   assert.equal(state.switchVisible, false);

@@ -1,6 +1,7 @@
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { SETTINGS_PERSIST_VERSION, migrateDefaultBrowserAgent } from '@/lib/settings/migrate';
 import { SETTINGS_STORAGE_KEY, settingsStorage } from '@/lib/settings/persistence';
+import privacyDefaults from '@/lib/settings/privacy-defaults.json';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -125,10 +126,11 @@ export const useSettingsStore = create<SettingsState>()(
       defaultChatSpeed: 'fast',
       autoFullScrollOnFirstSubmit: false,
       modelOverrideId: null,
-      sharePageIdentity: true,
-      captureLoginsEnabled: true,
-      offerSavedLoginsEnabled: true,
-      credentialAssistancePresentation: 'quiet',
+      sharePageIdentity: privacyDefaults.sharePageIdentity,
+      captureLoginsEnabled: privacyDefaults.captureLoginsEnabled,
+      offerSavedLoginsEnabled: privacyDefaults.offerSavedLoginsEnabled,
+      credentialAssistancePresentation:
+        privacyDefaults.credentialAssistancePresentation as CredentialAssistancePresentation,
       scrapeAutoOnLoad: false,
       scrapeAutoMode: 'capture',
       setTheme: (theme) => set({ theme }),

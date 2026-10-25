@@ -122,89 +122,108 @@ export async function observeGuestAutoScrapeMode(panel, driver = nativeDriver) {
 }
 
 export async function runGuestAutoScrapeCase(panel, reloadSettings, record, driver = nativeDriver) {
-  await driver.openSection(panel, 'Scrape');
-  const initial = await observeScrape(panel, driver);
-  record(
-    'initial',
-    'Auto-scrape initial UI and storage observed',
-    initial,
-    scrapeSwitchMatches(
-      { ...initial.toggle, active: initial.active, sectionOpen: initial.sectionOpen },
-      initial.toggle.stored,
-    ),
-  );
-  assert.equal(
-    initial.active && initial.sectionOpen && initial.toggle.count === 1,
-    true,
-    'auto_scrape_requires_visible_guest_control',
-  );
-  assert.equal(
-    initial.toggle.visible,
-    initial.toggle.stored,
-    'auto_scrape_initial_ui_storage_disagree',
-  );
-  const baseline = initial.toggle.visible;
+  let last;
+  let failedSample;
+  let baseline;
+  const observe = async () => {
+    last = await observeScrape(panel, driver);
+    return last;
+  };
   try {
-    for (const expected of [!baseline, baseline]) {
-      await driver.click(panel, 'switch', 'Auto-scrape on load');
-      const warm = await driver.waitFor(
-        `auto_scrape_${expected}_warm`,
-        () => observeScrape(panel, driver),
+    await driver.openSection(panel, 'Scrape');
+    const initial = await observe();
+    record(
+      'initial',
+      'Auto-scrape initial UI and storage observed',
+      initial,
+      scrapeSwitchMatches(
+        { ...initial.toggle, active: initial.active, sectionOpen: initial.sectionOpen },
+        initial.toggle.stored,
+      ),
+    );
+    assert.equal(
+      initial.active && initial.sectionOpen && initial.toggle.count === 1,
+      true,
+      'auto_scrape_requires_visible_guest_control',
+    );
+    assert.equal(
+      initial.toggle.visible,
+      initial.toggle.stored,
+      'auto_scrape_initial_ui_storage_disagree',
+    );
+    baseline = initial.toggle.visible;
+    try {
+      for (const expected of [!baseline, baseline]) {
+        await driver.click(panel, 'switch', 'Auto-scrape on load');
+        const warm = await driver.waitFor(
+          `auto_scrape_${expected}_warm`,
+          observe,
+          (state) =>
+            scrapeSwitchMatches(
+              { ...state?.toggle, active: state?.active, sectionOpen: state?.sectionOpen },
+              expected,
+            ),
+          undefined,
+          (state) => scrapeSwitchWaitDiagnostic(state, expected),
+        );
+        record('warm', `Auto-scrape ${expected ? 'on' : 'off'} appears and persists`, warm, true);
+        await reloadSettings(panel);
+        await driver.openSection(panel, 'Scrape');
+        const reloaded = await observe();
+        record(
+          'reload',
+          `Auto-scrape ${expected ? 'on' : 'off'} survives reload`,
+          reloaded,
+          scrapeSwitchMatches(
+            { ...reloaded.toggle, active: reloaded.active, sectionOpen: reloaded.sectionOpen },
+            expected,
+          ),
+        );
+      }
+    } catch (error) {
+      failedSample = last;
+      throw error;
+    } finally {
+      await driver.openSection(panel, 'Scrape');
+      const current = await observe();
+      // A stale UI can already show the baseline while storage still holds the other value.
+      // Drive away and back so the baseline write is exercised by a real control click.
+      if (current.toggle.visible === baseline && current.toggle.stored !== baseline) {
+        await driver.click(panel, 'switch', 'Auto-scrape on load');
+      }
+      if ((await observe()).toggle.visible !== baseline)
+        await driver.click(panel, 'switch', 'Auto-scrape on load');
+      const restored = await driver.waitFor(
+        'auto_scrape_baseline_restored',
+        observe,
         (state) =>
           scrapeSwitchMatches(
             { ...state?.toggle, active: state?.active, sectionOpen: state?.sectionOpen },
-            expected,
+            baseline,
           ),
         undefined,
-        (state) => scrapeSwitchWaitDiagnostic(state, expected),
+        (state) => scrapeSwitchWaitDiagnostic(state, baseline),
       );
-      record('warm', `Auto-scrape ${expected ? 'on' : 'off'} appears and persists`, warm, true);
       await reloadSettings(panel);
       await driver.openSection(panel, 'Scrape');
-      const reloaded = await observeScrape(panel, driver);
-      record(
-        'reload',
-        `Auto-scrape ${expected ? 'on' : 'off'} survives reload`,
-        reloaded,
+      const persisted = await observe();
+      assert.equal(
         scrapeSwitchMatches(
-          { ...reloaded.toggle, active: reloaded.active, sectionOpen: reloaded.sectionOpen },
-          expected,
-        ),
-      );
-    }
-  } finally {
-    await driver.openSection(panel, 'Scrape');
-    const current = await observeScrape(panel, driver);
-    // A stale UI can already show the baseline while storage still holds the other value.
-    // Drive away and back so the baseline write is exercised by a real control click.
-    if (current.toggle.visible === baseline && current.toggle.stored !== baseline) {
-      await driver.click(panel, 'switch', 'Auto-scrape on load');
-    }
-    if ((await observeScrape(panel, driver)).toggle.visible !== baseline)
-      await driver.click(panel, 'switch', 'Auto-scrape on load');
-    const restored = await driver.waitFor(
-      'auto_scrape_baseline_restored',
-      () => observeScrape(panel, driver),
-      (state) =>
-        scrapeSwitchMatches(
-          { ...state?.toggle, active: state?.active, sectionOpen: state?.sectionOpen },
+          { ...persisted.toggle, active: persisted.active, sectionOpen: persisted.sectionOpen },
           baseline,
         ),
-      undefined,
-      (state) => scrapeSwitchWaitDiagnostic(state, baseline),
-    );
-    await reloadSettings(panel);
-    await driver.openSection(panel, 'Scrape');
-    const persisted = await observeScrape(panel, driver);
-    assert.equal(
-      scrapeSwitchMatches(
-        { ...persisted.toggle, active: persisted.active, sectionOpen: persisted.sectionOpen },
+        true,
+        'auto_scrape_baseline_not_restored_after_reload',
+      );
+      record('cleanup', 'Original Auto-scrape value restored in UI and storage', restored, true);
+    }
+  } catch (error) {
+    if (error && typeof error === 'object')
+      error.safeLastAutoScrapeObservation = scrapeSwitchWaitDiagnostic(
+        failedSample ?? last,
         baseline,
-      ),
-      true,
-      'auto_scrape_baseline_not_restored_after_reload',
-    );
-    record('cleanup', 'Original Auto-scrape value restored in UI and storage', restored, true);
+      );
+    throw error;
   }
 }
 

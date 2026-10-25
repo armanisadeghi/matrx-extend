@@ -116,6 +116,7 @@ export function SettingsView() {
   const matrx2 = useMatrx2();
   const settings = useSettingsStore();
   const actMode = useActMode();
+  const [actModeSaveError, setActModeSaveError] = useState<string | null>(null);
   const settingsSaveState = useSettingsSaveState();
   const [pairTokenInput, setPairTokenInput] = useState('');
   const [pairTokenError, setPairTokenError] = useState<string | null>(null);
@@ -396,7 +397,17 @@ export function SettingsView() {
                 control={
                   <PillSelect
                     value={actMode}
-                    onChange={(v) => void writeActMode(v as typeof actMode)}
+                    onChange={(v) => {
+                      setActModeSaveError(null);
+                      void writeActMode(v as typeof actMode).then((result) => {
+                        if (!result.ok)
+                          setActModeSaveError(
+                            result.detail === 'not signed in'
+                              ? 'Sign in to save Default mode.'
+                              : 'Could not save Default mode. Try again.',
+                          );
+                      });
+                    }}
                     options={[
                       { value: 'ask', label: 'Ask before acting' },
                       { value: 'act', label: 'Act without asking' },
@@ -404,6 +415,11 @@ export function SettingsView() {
                   />
                 }
               />
+              {actModeSaveError && (
+                <div role="alert" className="px-3 text-xs text-destructive">
+                  {actModeSaveError}
+                </div>
+              )}
               <ControlRow
                 label="Default speed"
                 hint="coming soon"

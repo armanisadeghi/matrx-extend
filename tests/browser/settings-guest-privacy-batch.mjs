@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   activeTabPanelExpression,
   click,
@@ -19,6 +20,9 @@ export const GUEST_PRIVACY_SWITCHES = [
     key: 'credentialAssistancePresentation',
   },
 ];
+const PRIVACY_DEFAULTS = JSON.parse(
+  readFileSync(new URL('../../src/lib/settings/privacy-defaults.json', import.meta.url), 'utf8'),
+);
 
 function storedValue(preference, value) {
   return preference.caseId === 'T34' ? (value ? 'on_page' : 'quiet') : value;
@@ -32,6 +36,25 @@ export function privacySwitchMatches(state, preference, expected) {
     state?.checked === expected &&
     state?.stored === storedValue(preference, expected) &&
     state?.saveError === false
+  );
+}
+
+export function privacyBaselineMatches(state, preference, before) {
+  return (
+    state?.activeSettings === true &&
+    state?.privacyOpen === true &&
+    state?.count === 1 &&
+    state?.checked === before.checked &&
+    state?.saveError === false &&
+    state?.fieldPresent === before.fieldPresent &&
+    state?.storagePresent === before.storagePresent &&
+    (before.fieldPresent
+      ? state.stored === storedValue(preference, before.checked)
+      : state.stored === null &&
+        before.checked ===
+          (preference.caseId === 'T34'
+            ? PRIVACY_DEFAULTS[preference.key] === 'on_page'
+            : PRIVACY_DEFAULTS[preference.key]))
   );
 }
 
@@ -54,8 +77,10 @@ async function observe(panel, preference) {
       .filter((node) => node.getAttribute('aria-label') === ${JSON.stringify(preference.label)});
     const raw = (await chrome.storage.local.get('matrx.settings.v1'))['matrx.settings.v1'];
     let stored = null;
+    let fieldPresent = false;
     try {
       const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      fieldPresent = Object.hasOwn(parsed?.state ?? {}, ${JSON.stringify(preference.key)});
       const value = parsed?.state?.[${JSON.stringify(preference.key)}];
       if (typeof value === 'boolean' || value === 'on_page' || value === 'quiet') stored = value;
     } catch {}
@@ -63,7 +88,8 @@ async function observe(panel, preference) {
     return { activeSettings: pane?.matches('[role="tabpanel"][data-state="active"]') === true,
       privacyOpen: sections.length === 1 && sections[0].getAttribute('aria-expanded') === 'true',
       count: switches.length, checked: checked === 'true' ? true : checked === 'false' ? false : null,
-      stored, saveError: [...(pane?.querySelectorAll('[role="alert"]') ?? [])]
+      stored, fieldPresent, storagePresent: typeof raw === 'string',
+      saveError: [...(pane?.querySelectorAll('[role="alert"]') ?? [])]
         .some((node) => node.textContent.includes('Could not save preferences')) };
   })()`,
   );
@@ -90,7 +116,7 @@ export async function runGuestPrivacySwitchCase(
   assert.equal(before.count, 1, `${preference.caseId}_requires_unique_switch`);
   assert.equal(typeof before.checked, 'boolean', `${preference.caseId}_requires_readable_switch`);
   assert.equal(
-    privacySwitchMatches(before, preference, before.checked),
+    privacyBaselineMatches(before, preference, before),
     true,
     `${preference.caseId}_requires_matching_ui_and_persisted_baseline`,
   );
@@ -140,9 +166,30 @@ export async function runGuestPrivacySwitchCase(
         (state) => privacySwitchMatches(state, preference, target),
       );
     }
+    if (!before.fieldPresent) {
+      await evaluate(
+        panel,
+        `(async () => {
+          const key = 'matrx.settings.v1';
+          if (!${JSON.stringify(before.storagePresent)}) {
+            await chrome.storage.local.remove(key);
+            return;
+          }
+          const raw = (await chrome.storage.local.get(key))[key];
+          if (typeof raw !== 'string') throw new Error('privacy_settings_container_missing');
+          const parsed = JSON.parse(raw);
+          if (!parsed.state || typeof parsed.state !== 'object')
+            throw new Error('privacy_settings_state_missing');
+          delete parsed.state[${JSON.stringify(preference.key)}];
+          await chrome.storage.local.set({ [key]: JSON.stringify(parsed) });
+        })()`,
+      );
+    }
     const settled = await read(panel, preference);
     assert.equal(
-      privacySwitchMatches(settled, preference, original),
+      before.fieldPresent
+        ? privacySwitchMatches(settled, preference, original)
+        : settled.checked === original,
       true,
       `${preference.caseId}_restoration_failed`,
     );
@@ -150,7 +197,7 @@ export async function runGuestPrivacySwitchCase(
     await expand(panel, 'Privacy');
     const restored = await read(panel, preference);
     assert.equal(
-      privacySwitchMatches(restored, preference, original),
+      privacyBaselineMatches(restored, preference, before),
       true,
       `${preference.caseId}_restoration_not_persisted_after_reload`,
     );

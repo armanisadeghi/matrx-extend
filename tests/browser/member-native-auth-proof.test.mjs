@@ -2,13 +2,16 @@ import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { readAdminStatus } from '@ai-matrx/auth/admin';
+import { createClient } from '@supabase/supabase-js';
 import { observeCanonicalAdminCheck } from './member-native-auth-proof.mjs';
 import { verifyReviewerRole } from './reviewer-chat-identity-diagnostic.mjs';
+import { verifyMemberNonadminRole } from './settings-native-auth-driver.mjs';
 
 const ORIGIN = 'https://example.supabase.co';
 const USER = '123e4567-e89b-42d3-a456-426614174000';
 
-function panelWithRows(rows, userId = USER) {
+function panelWithRows(rows, userId = USER, overrides = {}) {
   const emitter = new EventEmitter();
   const panel = {
     on(event, listener) {
@@ -27,19 +30,58 @@ function panelWithRows(rows, userId = USER) {
       emitter.emit('Network.requestWillBeSent', {
         requestId: 'owned-admin-read',
         request: {
-          url: `${ORIGIN}/rest/v1/admins?select=user_id&user_id=eq.${userId}`,
+          url: `${ORIGIN}/rest/v1/admins?select=user_id,level&user_id=eq.${userId}`,
           method: 'GET',
           headers: { 'Accept-Profile': 'admin' },
+          ...overrides.request,
         },
       });
       emitter.emit('Network.responseReceived', {
         requestId: 'owned-admin-read',
-        response: { status: 200 },
+        response: { status: overrides.status ?? 200 },
       });
       emitter.emit('Network.loadingFinished', { requestId: 'owned-admin-read' });
     },
   };
 }
+
+test('current SDK admin reader produces a request recognized by the native observer', async () => {
+  const candidate = panelWithRows([]);
+  const proof = observeCanonicalAdminCheck(candidate.panel, ORIGIN, 10);
+  await proof.start();
+  const client = createClient(ORIGIN, 'transport-only-test-key', {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    global: {
+      fetch: async (url, options) => {
+        candidate.emitter.emit('Network.requestWillBeSent', {
+          requestId: 'sdk-admin-read',
+          request: {
+            url: String(url),
+            method: options.method,
+            headers: Object.fromEntries(new Headers(options.headers)),
+          },
+        });
+        candidate.emitter.emit('Network.responseReceived', {
+          requestId: 'sdk-admin-read',
+          response: { status: 200 },
+        });
+        candidate.emitter.emit('Network.loadingFinished', { requestId: 'sdk-admin-read' });
+        return new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } });
+      },
+    },
+  });
+  try {
+    assert.deepEqual(await readAdminStatus(client, USER), { state: 'not_admin' });
+    assert.deepEqual(await proof.verify(USER), {
+      matched_current_extension_user: true,
+      http_status: 200,
+      returned_rows: 0,
+    });
+    assert.deepEqual(proof.networkSnapshot().role_mismatches, {});
+  } finally {
+    await proof.stop();
+  }
+});
 
 test('canonical non-admin proof requires zero admin rows for the current extension user', async () => {
   const zero = panelWithRows([]);
@@ -222,7 +264,7 @@ test('role diagnostics separate pre-fetch bootstrap refusal from filtered role r
     response: { status: 403 },
   });
   candidate.emitter.emit('Network.loadingFinished', { requestId: 'bootstrap' });
-  request('role', `/rest/v1/admins?select=user_id&user_id=eq.${USER}`, {
+  request('role', `/rest/v1/admins?select=user_id,level&user_id=eq.${USER}`, {
     'Accept-Profile': 'public',
     Authorization: 'private-secret',
   });
@@ -250,4 +292,129 @@ test('role diagnostics separate pre-fetch bootstrap refusal from filtered role r
     boundaries: [{ boundary: 'role', status: 200, outcome: 'complete', count: 1 }],
   });
   await observed.stop();
+});
+
+// Exercise the same failure boundary invoked by signInSettings and persisted by
+// the native Scrape Save report callback; the observer provides only safe fields.
+test('member driver retains bounded role failure diagnostics after identity success', async () => {
+  const candidate = panelWithRows([]);
+  const proof = observeCanonicalAdminCheck(candidate.panel, ORIGIN, 1);
+  await proof.start();
+  const report = { auth_diagnostic: { identity_observed: true } };
+  await assert.rejects(
+    verifyMemberNonadminRole({
+      adminCheck: proof,
+      userId: USER,
+      onAuthDiagnostic: (value) => {
+        report.auth_diagnostic = { ...report.auth_diagnostic, ...value };
+      },
+    }),
+    (error) => error.memberAuthBoundary === 'member_nonadmin_role_observation',
+  );
+  assert.deepEqual(report.auth_diagnostic, {
+    identity_observed: true,
+    phase: 'canonical_role_verify_failed',
+    canonical_role_observation: { observed_request_count: 0, current_user_requests: [] },
+    canonical_role_network: {
+      total_requests: 0,
+      database_requests: 0,
+      role_mismatches: {},
+      boundaries: [],
+    },
+  });
+  const serialized = JSON.stringify(report);
+  for (const privateValue of [USER, ORIGIN, 'Authorization', 'email'])
+    assert.equal(serialized.includes(privateValue), false);
+  await proof.stop();
+});
+
+test('member role failure retains HTTP refusal and query mismatch without private request data', async () => {
+  for (const [request, status, observedCount, mismatch] of [
+    [{}, 403, 1, {}],
+    [{ url: `${ORIGIN}/rest/v1/admins?select=other&user_id=eq.${USER}` }, 200, 0, { selection: 1 }],
+  ]) {
+    const candidate = panelWithRows([], USER, { request, status });
+    const proof = observeCanonicalAdminCheck(candidate.panel, ORIGIN, 1);
+    await proof.start();
+    candidate.emit();
+    let diagnostic;
+    await assert.rejects(
+      verifyMemberNonadminRole({
+        adminCheck: proof,
+        userId: USER,
+        onAuthDiagnostic: (value) => {
+          diagnostic = value;
+        },
+      }),
+    );
+    assert.equal(diagnostic.canonical_role_observation.observed_request_count, observedCount);
+    assert.deepEqual(diagnostic.canonical_role_network.role_mismatches, mismatch);
+    assert.deepEqual(diagnostic.canonical_role_network.boundaries, [
+      { boundary: 'role', status, outcome: 'complete', count: 1 },
+    ]);
+    assert.deepEqual(
+      diagnostic.canonical_role_observation.current_user_requests,
+      observedCount ? [{ status, row_count: 0, outcome: 'complete' }] : [],
+    );
+    for (const privateValue of [USER, ORIGIN, 'Authorization', 'email'])
+      assert.equal(JSON.stringify(diagnostic).includes(privateValue), false);
+    await proof.stop();
+  }
+});
+
+async function requireGuardRejections(observe) {
+  for (const [label, rows, request, status] of [
+    [
+      'obsolete_projection',
+      [],
+      { url: `${ORIGIN}/rest/v1/admins?select=user_id&user_id=eq.${USER}` },
+    ],
+    [
+      'origin',
+      [],
+      { url: `https://other.example/rest/v1/admins?select=user_id,level&user_id=eq.${USER}` },
+    ],
+    ['endpoint', [], { url: `${ORIGIN}/rest/v1/profiles?select=user_id,level&user_id=eq.${USER}` }],
+    ['method', [], { method: 'POST' }],
+    ['schema', [], { headers: { 'Accept-Profile': 'public', Authorization: 'private-secret' } }],
+    ['subject', [], { url: `${ORIGIN}/rest/v1/admins?select=user_id,level&user_id=eq.invalid` }],
+    ['status', [], {}, 403],
+    ['body_shape', { user_id: USER }, {}],
+    ['admin_row', [{ user_id: USER, level: 'developer' }], {}],
+  ]) {
+    const candidate = panelWithRows(rows, USER, { request, status });
+    const proof = observe(candidate.panel, ORIGIN, 1);
+    await proof.start();
+    candidate.emit();
+    try {
+      await assert.rejects(proof.verify(USER), undefined, label);
+    } finally {
+      await proof.stop();
+    }
+  }
+}
+
+test('native role proof preserves endpoint, projection, schema, method, subject, status and body guards', async () => {
+  await requireGuardRejections(observeCanonicalAdminCheck);
+});
+
+test('guard rejection corpus catches a constant successful role proof in memory', async () => {
+  const source = await readFile(new URL('./member-native-auth-proof.mjs', import.meta.url), 'utf8');
+  const mutated = source
+    .replace(
+      "from './settings-panel-driver.mjs'",
+      `from '${new URL('./settings-panel-driver.mjs', import.meta.url).href}'`,
+    )
+    .replace(
+      'async verify(expectedUserId) {',
+      `async verify(expectedUserId) {
+      return { matched_current_extension_user: true, http_status: 200, returned_rows: 0 };`,
+    );
+  assert.notEqual(mutated, source);
+  const mutant = await import(
+    `data:text/javascript;base64,${Buffer.from(mutated).toString('base64')}`
+  );
+  await assert.rejects(requireGuardRejections(mutant.observeCanonicalAdminCheck), {
+    code: 'ERR_ASSERTION',
+  });
 });

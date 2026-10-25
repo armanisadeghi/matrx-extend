@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "task_id": "settings_poll_final_verify_1235",
+  "review_role": "fresh independent narrow re-verifier; zero authorship",
+  "status": "ADDRESSED_SOURCE_WITH_VALIDATION_LIMIT",
+  "scope": "Current frozen native T10 producer, bounded observation projection, failure serializer, and new rejection regression only; no tests, guards, browser, mutations, or delegation executed.",
+  "finding_dispositions": [
+    {
+      "id": "SETTINGS-REVIEW-1220-1",
+      "status": "ADDRESSED",
+      "reason": "The real runGuestModeRefusalCase read callback now invokes onStage for every completed polling read, before waitFor evaluates acceptance or eventually rejects. Thus the last Ask/no-refusal sample replaces the initial Act baseline before the catch attaches safeLastModeObservation. The failure serializer emits only settingsActive/controlUnique/actSelected/refusalVisible booleans.",
+      "anchors": [
+        "tests/browser/settings-guest-preference-batch.mjs:199-204",
+        "tests/browser/settings-full-extension-rechecks.mjs:325-340",
+        "tests/browser/settings-full-extension-rechecks.mjs:408",
+        "tests/browser/settings-full-extension-rechecks.mjs:150-156"
+      ],
+      "limits": "Static source disposition; native timeout not reproduced."
+    }
+  ],
+  "verdict_A": {
+    "verdict": "PARTIAL",
+    "source_behavior": "PASS: latest completed Ask/no-refusal polling observation survives rejection and report serialization; no weakened refusal predicate or timeout found in this follow-up.",
+    "native_acceptance": "PENDING exact-main guest and signed-in real product retest; broader Settings sources previously accepted and not re-audited here."
+  },
+  "verdict_B": {
+    "verdict": "PASS_WITH_CONCERNS",
+    "source_quality": "Bounded inline projection reuses existing stage observer and safe serializer; no raw error, page text, URL, token, or waitDiagnostic is copied to the new lastModeObservation. Poll samples are not appended to the post-replacement timeline because choice_observation is outside that timeline allowlist. No new source breakage found in the bounded follow-up.",
+    "regression": "The test runs the real refusal producer, onStage projection, catch and report serializer. Its distinct initial Act and final Ask/no-refusal expectations would catch the original dropped-sample bug and hardcoded Act success. Existing success/later-failure tests provide a different true/true mode outcome.",
+    "concern": "Minor coverage/wording limitation: test named T10 refusal timeout at settings-full-extension-rechecks.test.mjs:693 uses the fixture waitFor at :381-390, which reads once and throws AssertionError when acceptance is false. It does not execute native waitFor timeout, multiple polls, or waitDiagnostic. Its negative private-data assertion has no private sample fields injected. This is rejection-path source coverage, not demonstrated native timeout or adversarial redaction proof.",
+    "execution": "Root combined guarded tests pending; no executed new regression result, gut-check or mutation proof inferred.",
+    "concern_severity": "Minor supporting-evidence limitation; no Important source blocker remains.",
+    "concern_criterion": "Forcing-function-tests: distinguish the actual owned callback/catch/serialization seam from external timer mechanics. One successful read plus predicate rejection meaningfully catches omitted sample forwarding. A literal native timer is not necessary to prove that callback fix; calling this test timeout proof overstates the executed seam. Injection of private sample extras would strengthen the negative redaction assertion, while static allowlisted projection already excludes them."
+  },
+  "open_items": [
+    "Root combined guarded verification.",
+    "Exact-main native guest/member acceptance.",
+    "Adjudicate narrow regression timeout naming/coverage limitation; actual source loss is repaired."
+  ],
+  "commits": []
+}

@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-25 11:27 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-25T08:14:43.932729+00:00. 207 features · 831 cases · 1422 controls · 289 linked defect records.
+Generated 2026-10-25 12:40 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-25T12:20:27.028547+00:00. 207 features · 831 cases · 1422 controls · 291 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -21,11 +21,11 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 4 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 7, fail 0, unverified 21, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 16 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 14 pass · 8 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | pass 32, partial 14, fail 0, unverified 54, n/a 1 | 8 |
+| [Settings](#settings) | 1 | 16 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 14 pass · 8 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | pass 32, partial 14, fail 0, unverified 54, n/a 1 | 9 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 10 pass · 7 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 37 unverified · 0 deferred; 0/1 full | pass 10, partial 20, fail 0, unverified 80, n/a 0 | 13 |
+| [Scrape](#scrape) | 1 | 10 pass · 7 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 37 unverified · 0 deferred; 0/1 full | pass 10, partial 20, fail 0, unverified 80, n/a 0 | 14 |
 | [SEO](#seo) | 1 | 1 pass · 6 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 1, partial 7, fail 0, unverified 40, n/a 0 | 3 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 6 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -433,9 +433,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Partial · member: Partial · admin: Partial. **Cases:** 96. **Controls:** 41.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0159, EXT-D-0167, EXT-D-0189, EXT-D-0220, EXT-D-0223, EXT-D-0232, EXT-D-0289, EXT-D-0290
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0159, EXT-D-0167, EXT-D-0189, EXT-D-0220, EXT-D-0223, EXT-D-0232, EXT-D-0289, EXT-D-0290, EXT-D-0291
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed), [EXT-D-0084](defects/EXT-D-0084.json) (closed), [EXT-D-0086](defects/EXT-D-0086.json) (closed), [EXT-D-0087](defects/EXT-D-0087.json) (closed), [EXT-D-0093](defects/EXT-D-0093.json) (closed), [EXT-D-0155](defects/EXT-D-0155.json) (closed), [EXT-D-0157](defects/EXT-D-0157.json) (closed), [EXT-D-0159](defects/EXT-D-0159.json) (fixed), [EXT-D-0161](defects/EXT-D-0161.json) (closed), [EXT-D-0162](defects/EXT-D-0162.json) (closed), [EXT-D-0167](defects/EXT-D-0167.json) (in-fix), [EXT-D-0186](defects/EXT-D-0186.json) (closed), [EXT-D-0189](defects/EXT-D-0189.json) (in-fix), [EXT-D-0220](defects/EXT-D-0220.json) (in-fix), [EXT-D-0223](defects/EXT-D-0223.json) (in-fix), [EXT-D-0224](defects/EXT-D-0224.json) (closed), [EXT-D-0232](defects/EXT-D-0232.json) (fixed), [EXT-D-0287](defects/EXT-D-0287.json) (closed), [EXT-D-0288](defects/EXT-D-0288.json) (closed), [EXT-D-0289](defects/EXT-D-0289.json) (fixed), [EXT-D-0290](defects/EXT-D-0290.json) (fixed)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed), [EXT-D-0084](defects/EXT-D-0084.json) (closed), [EXT-D-0086](defects/EXT-D-0086.json) (closed), [EXT-D-0087](defects/EXT-D-0087.json) (closed), [EXT-D-0093](defects/EXT-D-0093.json) (closed), [EXT-D-0155](defects/EXT-D-0155.json) (closed), [EXT-D-0157](defects/EXT-D-0157.json) (closed), [EXT-D-0159](defects/EXT-D-0159.json) (fixed), [EXT-D-0161](defects/EXT-D-0161.json) (closed), [EXT-D-0162](defects/EXT-D-0162.json) (closed), [EXT-D-0167](defects/EXT-D-0167.json) (in-fix), [EXT-D-0186](defects/EXT-D-0186.json) (closed), [EXT-D-0189](defects/EXT-D-0189.json) (in-fix), [EXT-D-0220](defects/EXT-D-0220.json) (in-fix), [EXT-D-0223](defects/EXT-D-0223.json) (in-fix), [EXT-D-0224](defects/EXT-D-0224.json) (closed), [EXT-D-0232](defects/EXT-D-0232.json) (fixed), [EXT-D-0287](defects/EXT-D-0287.json) (closed), [EXT-D-0288](defects/EXT-D-0288.json) (closed), [EXT-D-0289](defects/EXT-D-0289.json) (fixed), [EXT-D-0290](defects/EXT-D-0290.json) (fixed), [EXT-D-0291](defects/EXT-D-0291.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -554,15 +554,15 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1003-T09 · admin: Pass. FreshSol visual+AX/detail reconciled sameQuickTestAgent plus2memberbadge; actualchosenidentity persisted afterfullreload, originalMatrxBrowserAgent restored.
   Evidence / build / date recorded: admin-default-agent-002, docs/stabilization/runs/admin-default-agent-002.json
 - EXT-F-1003-T10 · guest: Unverified.
-  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+  Evidence / build / date recorded: settings-1a9-40190567571, ['docs/stabilization/reports/settings-retest-b-1150.json']
 - EXT-F-1003-T13 · guest: Pass.
   Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T15 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
   Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
 - EXT-F-1003-T16 · guest: Unverified.
-  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+  Evidence / build / date recorded: settings-1a9-40190567571, ['docs/stabilization/reports/settings-retest-b-1150.json']
 - EXT-F-1003-T19 · guest: Unverified.
-  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+  Evidence / build / date recorded: settings-1a9-40190567571, ['docs/stabilization/reports/settings-retest-b-1150.json']
 - EXT-F-1003-T22 · guest: Pass.
   Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T25 · guest: N/A. Audit key is admin-only: source isAdmin gate and actual guest T22 evidence confirm absence. Negative access remains covered byT22/T63; this does not waive member/direct-state checks.
@@ -570,17 +570,17 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1003-T27 · admin: Partial. Admin identity and key-read/error recovery exercised; no assertions for creation time, receipt count, recent rows, filters, or a normal warm/reload display comparison.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T28 · guest: Unverified.
-  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+  Evidence / build / date recorded: settings-1a9-40190567571, ['docs/stabilization/reports/settings-retest-b-1150.json']
 - EXT-F-1003-T30 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
   Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
 - EXT-F-1003-T31 · guest: Unverified.
-  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+  Evidence / build / date recorded: settings-1a9-40190567571, ['docs/stabilization/reports/settings-retest-b-1150.json']
 - EXT-F-1003-T34 · guest: Unverified.
-  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+  Evidence / build / date recorded: settings-1a9-40190567571, ['docs/stabilization/reports/settings-retest-b-1150.json']
 - EXT-F-1003-T37 · guest: Pass.
   Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T40 · guest: Unverified.
-  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+  Evidence / build / date recorded: settings-1a9-40190567571, ['docs/stabilization/reports/settings-retest-b-1150.json']
 - EXT-F-1003-T43 · guest: Partial.
   Evidence / build / date recorded: 38034890248, ['docs/stabilization/evidence/desktop-settings-hosted/run38034890248/receipt.sanitized.json', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/native-report.sanitized.json', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-package-38034890248-1.jsonl', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-browser-38034890248-1.jsonl', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-guest-38034890248-1.jsonl']
 - EXT-F-1003-T44 · member: Partial.
@@ -618,13 +618,13 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1003-T62 · admin: Unverified. No receipt-origin filter selection, per-filter row/count assertion, or empty-origin assertion.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T63 · guest: Unverified.
-  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+  Evidence / build / date recorded: settings-1a9-40190567571, ['docs/stabilization/reports/settings-retest-b-1150.json']
 - EXT-F-1003-T64 · guest: Pass.
   Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T67 · guest: Pass.
   Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
 - EXT-F-1003-T70 · guest: Unverified.
-  Evidence / build / date recorded: settings-guest-0b-20261025, ['docs/stabilization/runs/settings-guest-0b-20261025.json', 'docs/stabilization/evidence/settings-0b-run40186301999/native-report.json']
+  Evidence / build / date recorded: settings-1a9-40190567571, ['docs/stabilization/reports/settings-retest-b-1150.json']
 - EXT-F-1003-T72 · admin: Partial.
   Evidence / build / date recorded: personal-dev577-refresh-20261020, ['docs/stabilization/reports/personal-dev577-refresh-20261020.json']
 - EXT-F-1003-T73 · guest: Pass.
@@ -914,9 +914,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Partial · member: Partial · admin: Partial. **Cases:** 44. **Controls:** 42.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138, EXT-D-0139, EXT-D-0166, EXT-D-0187, EXT-D-0192, EXT-D-0217, EXT-D-0280
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138, EXT-D-0139, EXT-D-0166, EXT-D-0187, EXT-D-0192, EXT-D-0217, EXT-D-0280, EXT-D-0292
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (retest-pass), [EXT-D-0124](defects/EXT-D-0124.json) (closed), [EXT-D-0125](defects/EXT-D-0125.json) (closed), [EXT-D-0126](defects/EXT-D-0126.json) (closed), [EXT-D-0127](defects/EXT-D-0127.json) (fixed), [EXT-D-0128](defects/EXT-D-0128.json) (fixed), [EXT-D-0129](defects/EXT-D-0129.json) (closed), [EXT-D-0130](defects/EXT-D-0130.json) (closed), [EXT-D-0131](defects/EXT-D-0131.json) (closed), [EXT-D-0132](defects/EXT-D-0132.json) (closed), [EXT-D-0133](defects/EXT-D-0133.json) (fixed), [EXT-D-0135](defects/EXT-D-0135.json) (closed), [EXT-D-0137](defects/EXT-D-0137.json) (closed), [EXT-D-0138](defects/EXT-D-0138.json) (fixed), [EXT-D-0139](defects/EXT-D-0139.json) (fixed), [EXT-D-0154](defects/EXT-D-0154.json) (closed), [EXT-D-0163](defects/EXT-D-0163.json) (closed), [EXT-D-0164](defects/EXT-D-0164.json) (closed), [EXT-D-0166](defects/EXT-D-0166.json) (in-fix), [EXT-D-0175](defects/EXT-D-0175.json) (closed), [EXT-D-0178](defects/EXT-D-0178.json) (closed), [EXT-D-0180](defects/EXT-D-0180.json) (closed), [EXT-D-0187](defects/EXT-D-0187.json) (in-fix), [EXT-D-0192](defects/EXT-D-0192.json) (fixed), [EXT-D-0194](defects/EXT-D-0194.json) (closed), [EXT-D-0196](defects/EXT-D-0196.json) (closed), [EXT-D-0217](defects/EXT-D-0217.json) (fixed), [EXT-D-0260](defects/EXT-D-0260.json) (closed), [EXT-D-0280](defects/EXT-D-0280.json) (fixed)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (retest-pass), [EXT-D-0124](defects/EXT-D-0124.json) (closed), [EXT-D-0125](defects/EXT-D-0125.json) (closed), [EXT-D-0126](defects/EXT-D-0126.json) (closed), [EXT-D-0127](defects/EXT-D-0127.json) (fixed), [EXT-D-0128](defects/EXT-D-0128.json) (fixed), [EXT-D-0129](defects/EXT-D-0129.json) (closed), [EXT-D-0130](defects/EXT-D-0130.json) (closed), [EXT-D-0131](defects/EXT-D-0131.json) (closed), [EXT-D-0132](defects/EXT-D-0132.json) (closed), [EXT-D-0133](defects/EXT-D-0133.json) (fixed), [EXT-D-0135](defects/EXT-D-0135.json) (closed), [EXT-D-0137](defects/EXT-D-0137.json) (closed), [EXT-D-0138](defects/EXT-D-0138.json) (fixed), [EXT-D-0139](defects/EXT-D-0139.json) (fixed), [EXT-D-0154](defects/EXT-D-0154.json) (closed), [EXT-D-0163](defects/EXT-D-0163.json) (closed), [EXT-D-0164](defects/EXT-D-0164.json) (closed), [EXT-D-0166](defects/EXT-D-0166.json) (in-fix), [EXT-D-0175](defects/EXT-D-0175.json) (closed), [EXT-D-0178](defects/EXT-D-0178.json) (closed), [EXT-D-0180](defects/EXT-D-0180.json) (closed), [EXT-D-0187](defects/EXT-D-0187.json) (in-fix), [EXT-D-0192](defects/EXT-D-0192.json) (fixed), [EXT-D-0194](defects/EXT-D-0194.json) (closed), [EXT-D-0196](defects/EXT-D-0196.json) (closed), [EXT-D-0217](defects/EXT-D-0217.json) (fixed), [EXT-D-0260](defects/EXT-D-0260.json) (closed), [EXT-D-0280](defects/EXT-D-0280.json) (fixed), [EXT-D-0292](defects/EXT-D-0292.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

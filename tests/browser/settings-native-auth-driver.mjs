@@ -505,6 +505,21 @@ export async function selectRequiredSettingsOrganization({
   };
 }
 
+export async function verifyMemberNonadminRole({ adminCheck, userId, onAuthDiagnostic }) {
+  return runMemberAuthBoundary('member_nonadmin_role_observation', null, async () => {
+    try {
+      return await adminCheck.verify(userId);
+    } catch (error) {
+      onAuthDiagnostic?.({
+        phase: 'canonical_role_verify_failed',
+        canonical_role_observation: adminCheck.snapshot(userId),
+        canonical_role_network: adminCheck.networkSnapshot(),
+      });
+      throw error;
+    }
+  });
+}
+
 export async function signInSettings({
   mode,
   page,
@@ -777,9 +792,11 @@ export async function signInSettings({
       });
       await observeBoundary('member_oauth_completed').catch(() => {});
       await onTrace?.('auth_admin_before');
-      canonical = await runMemberAuthBoundary('member_nonadmin_role_observation', null, () =>
-        adminCheck.verify(identity.userId),
-      );
+      canonical = await verifyMemberNonadminRole({
+        adminCheck,
+        userId: identity.userId,
+        onAuthDiagnostic,
+      });
       await onTrace?.('auth_admin_after');
       await onTrace?.('auth_org_before');
       const org = await runMemberAuthBoundary('member_organization_availability', onStage, () =>

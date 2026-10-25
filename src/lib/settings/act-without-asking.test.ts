@@ -7,7 +7,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const knob = { value: undefined as unknown };
+const identity = { userId: 'person-1' as string | null, organizationId: 'org-1' as string | null };
+let writeFailure = false;
 const rpc = vi.fn(async (_name: string, args: Record<string, unknown>) => {
+  if (writeFailure) return { data: null, error: { message: 'write refused' } };
   knob.value = args.p_value;
   return { data: { ok: true }, error: null };
 });
@@ -25,10 +28,10 @@ vi.mock('@/lib/settings/platform-knob-snapshot', () => ({
 }));
 vi.mock('@/lib/supabase/schemas', () => ({ platformDb: () => ({ schema: () => ({ rpc }) }) }));
 vi.mock('@/hooks/use-request-organization', () => ({
-  ensureRequestOrganizationId: async () => 'org-1',
+  ensureRequestOrganizationId: async () => identity.organizationId,
 }));
 vi.mock('@/state/auth', () => ({
-  useAuthStore: { getState: () => ({ user: { id: 'person-1' } }) },
+  useAuthStore: { getState: () => ({ user: identity.userId ? { id: identity.userId } : null }) },
 }));
 
 import { extensionKnobs } from '@/features/package-chat/knobs';
@@ -36,6 +39,9 @@ import { readActMode, readActModeInWorker, writeActMode } from './act-without-as
 
 beforeEach(() => {
   knob.value = undefined;
+  identity.userId = 'person-1';
+  identity.organizationId = 'org-1';
+  writeFailure = false;
   rpc.mockClear();
 });
 
@@ -82,5 +88,36 @@ describe('act without asking — one setting', () => {
   it('a value the web wrote is what the extension reads', () => {
     knob.value = false;
     expect(extensionKnobs.peekSession('chat.act_without_asking')).toBe(false);
+  });
+
+  it('refuses a guest choice and restores the effective mode for subscribers', async () => {
+    identity.userId = null;
+    knob.value = true;
+    const observed: string[] = [];
+    const { subscribeActMode } = await import('./act-without-asking');
+    const unsubscribe = subscribeActMode(() => observed.push(readActMode()));
+    try {
+      const result = await writeActMode('ask');
+      expect(result).toEqual({ ok: false, detail: 'not signed in' });
+      expect(observed).toEqual(['ask', 'act']);
+      expect(readActMode()).toBe('act');
+      expect(rpc).not.toHaveBeenCalled();
+    } finally {
+      unsubscribe();
+    }
+  });
+
+  it('restores the effective mode when an organization or the real write refuses', async () => {
+    knob.value = true;
+    identity.organizationId = null;
+    expect((await writeActMode('ask')).ok).toBe(false);
+    expect(readActMode()).toBe('act');
+    expect(rpc).not.toHaveBeenCalled();
+
+    identity.organizationId = 'org-1';
+    writeFailure = true;
+    expect((await writeActMode('ask')).ok).toBe(false);
+    expect(readActMode()).toBe('act');
+    expect(rpc).toHaveBeenCalledOnce();
   });
 });

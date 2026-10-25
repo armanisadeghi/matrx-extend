@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-25T08:14:43.932729+00:00",
+  "updated_at": "2026-10-25T12:20:27.028547+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -8179,11 +8179,12 @@
             "Verify the Settings panel is signed out (Sign in is visible; account email is unavailable); do not infer guest state from a profile label."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Select Ask/Act."
+            "Open Settings > Chat as a verified signed-out guest and record the effective Default mode.",
+            "Choose Ask before acting; verify sign-in guidance and rollback to the canonical effective Act selection.",
+            "Reopen/reload the panel, perform actual extension-management Reload, then open a fresh Chat and check the canonical effective mode; do not send an AI message solely for this setting check."
           ],
           "expected": [
-            "Ask or Act choice is retained and becomes the new chat default."
+            "The account-scoped chat.act_without_asking setting cannot be saved by a guest: refusal is visible and the optimistic selection rolls back. Canonical guest Act remains after panel/full extension reload and in a new Chat. No local guest shadow override is written. Signed-in account persistence remains separate T11/T12 positive acceptance."
           ],
           "dimensions": [
             "warm",
@@ -8192,26 +8193,25 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "run_id": "settings-1a9-40190567571",
+              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+              "development_ci_run_id": 40189608507,
+              "development_artifact_id": 12598225185,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
               "resource_valid": true,
               "runner_reported_status": "fail",
-              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-retest-b-1150.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
             }
           },
           "linked_defects": [
             "EXT-D-0087",
-            "EXT-D-0186"
+            "EXT-D-0186",
+            "EXT-D-0289",
+            "EXT-D-0291"
           ],
           "result_history": [
             {
@@ -8463,6 +8463,29 @@
                 }
               },
               "reason": "Preserve the preceding bounded result when recording hosted run 38331187170."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "fail",
+                "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T12:19:18.778741+00:00",
+              "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
             }
           ],
           "attempt_history": [
@@ -8618,7 +8641,12 @@
               "scope": "Visible selection/restoration only; rendering/storage/reopen/full reload/runtime effects unverified; no independent retest or current-main credit.",
               "evidence": "docs/stabilization/reports/store205-settings-guest-native-20261019.json"
             }
-          ]
+          ],
+          "procedure_revision": {
+            "at": "2026-10-25T12:23:37.762797+00:00",
+            "reason": "October22 canonical account-knob migration retired local defaultPermissionMode; current producer and live1a9 failure traced in settings-sink-diagnosis-1202. Correct negative guest expectation, no relaxation of signed-in persistence.",
+            "evidence": "docs/stabilization/reports/settings-sink-diagnosis-1202.json"
+          }
         },
         {
           "id": "EXT-F-1003-T11",
@@ -8951,21 +8979,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "run_id": "settings-1a9-40190567571",
+              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+              "development_ci_run_id": 40189608507,
+              "development_artifact_id": 12598225185,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
               "resource_valid": true,
-              "runner_reported_status": "unverified",
-              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+              "runner_reported_status": "fail",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-retest-b-1150.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
             }
           },
           "linked_defects": [
@@ -9155,6 +9180,29 @@
               },
               "superseded_at": "2026-10-11T02:57:55Z",
               "reason": "Preserve the previous top-level guest result before recording independently reviewed current-equivalent v0.2.490 run 38105457992."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "unverified",
+                "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T12:19:18.778741+00:00",
+              "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
             }
           ],
           "attempt_history": [
@@ -9343,21 +9391,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "run_id": "settings-1a9-40190567571",
+              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+              "development_ci_run_id": 40189608507,
+              "development_artifact_id": 12598225185,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
               "resource_valid": true,
-              "runner_reported_status": "unverified",
-              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+              "runner_reported_status": "fail",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-retest-b-1150.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
             }
           },
           "attempt_history": [
@@ -9423,6 +9468,29 @@
                 "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
               },
               "superseded_at": "2026-10-08T05:10:28.331547+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "unverified",
+                "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T12:19:18.778741+00:00",
+              "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
             }
           ],
           "revalidation_history": [
@@ -10013,21 +10081,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "run_id": "settings-1a9-40190567571",
+              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+              "development_ci_run_id": 40189608507,
+              "development_artifact_id": 12598225185,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
               "resource_valid": true,
               "runner_reported_status": "fail",
-              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-retest-b-1150.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
             }
           },
           "preparation_history": [
@@ -10152,6 +10217,29 @@
                 "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
               },
               "superseded_at": "2026-10-10T03:04:48Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "fail",
+                "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T12:19:18.778741+00:00",
+              "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
             }
           ],
           "attempt_history": [
@@ -10262,21 +10350,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "run_id": "settings-1a9-40190567571",
+              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+              "development_ci_run_id": 40189608507,
+              "development_artifact_id": 12598225185,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
               "resource_valid": true,
-              "runner_reported_status": "unverified",
-              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+              "runner_reported_status": "fail",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-retest-b-1150.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
             }
           },
           "linked_defects": [
@@ -10316,6 +10401,29 @@
                 "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
               },
               "superseded_at": "2026-10-08T05:10:28.331547+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "unverified",
+                "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T12:19:18.778741+00:00",
+              "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
             }
           ],
           "attempt_history": [
@@ -10489,21 +10597,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "run_id": "settings-1a9-40190567571",
+              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+              "development_ci_run_id": 40189608507,
+              "development_artifact_id": 12598225185,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
               "resource_valid": true,
-              "runner_reported_status": "unverified",
-              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+              "runner_reported_status": "fail",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-retest-b-1150.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
             }
           },
           "linked_defects": [
@@ -10556,6 +10661,29 @@
                 "detail": "Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim."
               },
               "retained_reason": "Historical bounded proof preserved when the valid local ARM 0.2.397 guest attempt refreshed this exact case result."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "unverified",
+                "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T12:19:18.778741+00:00",
+              "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
             }
           ],
           "attempt_history": [
@@ -11033,21 +11161,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "run_id": "settings-1a9-40190567571",
+              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+              "development_ci_run_id": 40189608507,
+              "development_artifact_id": 12598225185,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
               "resource_valid": true,
               "runner_reported_status": "fail",
-              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-retest-b-1150.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
             }
           },
           "result_history": [
@@ -11255,6 +11380,29 @@
                 ]
               },
               "reason": "Preserve the preceding bounded result when recording hosted run 38331187170."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "fail",
+                "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T12:19:18.778741+00:00",
+              "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
             }
           ],
           "linked_defects": [
@@ -13115,21 +13263,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "run_id": "settings-1a9-40190567571",
+              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+              "development_ci_run_id": 40189608507,
+              "development_artifact_id": 12598225185,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
               "resource_valid": true,
               "runner_reported_status": "unverified",
-              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-retest-b-1150.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
             }
           },
           "result_history": [
@@ -13217,6 +13362,29 @@
                 }
               ],
               "superseded_at": "2026-10-20T03:37:24.048612Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "unverified",
+                "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T12:19:18.778741+00:00",
+              "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
             }
           ],
           "attempt_history": [
@@ -13945,21 +14113,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "run_id": "settings-1a9-40190567571",
+              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+              "development_ci_run_id": 40189608507,
+              "development_artifact_id": 12598225185,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
               "resource_valid": true,
               "runner_reported_status": "unverified",
-              "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-retest-b-1150.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
             }
           },
           "result_history": [
@@ -14030,6 +14195,29 @@
                 "observed_at": "2026-10-07T22:18:59.711910+00:00"
               },
               "superseded_at": "2026-10-08T05:10:28.331547+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "unverified",
+                "scope": "No new full-case credit; failed or incomplete receipt requires original/adjacent exact-artifact retest.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T12:19:18.778741+00:00",
+              "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
             }
           ],
           "attempt_history": [
@@ -15862,7 +16050,8 @@
             "EXT-D-0287",
             "EXT-D-0288",
             "EXT-D-0289",
-            "EXT-D-0290"
+            "EXT-D-0290",
+            "EXT-D-0291"
           ],
           "run_ids": [
             "guest-local-001",
@@ -15895,7 +16084,8 @@
             "38124123515",
             "local-settings-guest-20261012-1441",
             "39363918633",
-            "settings-guest-0b-20261025"
+            "settings-guest-0b-20261025",
+            "settings-1a9-40190567571"
           ],
           "retest_status": "Exact development .568/source9185 native39363918633 independently passes T22 guest and T63 guest cells with real extension replacement. Other Settings cases, T04 restoration, member/admin, Store and whole feature remain unverified; no whole-health claim."
         },
@@ -24599,7 +24789,8 @@
           "verification_status": "partial-native-substeps; final-focus-build-unverified",
           "prior_results_history": "Prior EXT-F-1007 cell run and defect IDs are retained; this older Save procedure predates Source landing and is not fresh proof.",
           "linked_defects": [
-            "EXT-D-0187"
+            "EXT-D-0187",
+            "EXT-D-0292"
           ],
           "results": {
             "member": {
@@ -28835,7 +29026,8 @@
             }
           },
           "linked_defects": [
-            "EXT-D-0187"
+            "EXT-D-0187",
+            "EXT-D-0292"
           ],
           "attempt_history": [
             {
@@ -29831,7 +30023,8 @@
             "EXT-D-0137",
             "EXT-D-0138",
             "EXT-D-0139",
-            "EXT-D-0187"
+            "EXT-D-0187",
+            "EXT-D-0292"
           ],
           "run_ids": [
             "incoming-sources-001",

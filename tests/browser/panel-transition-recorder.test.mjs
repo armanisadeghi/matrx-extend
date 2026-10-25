@@ -381,8 +381,8 @@ test('real Scrape auth caller records first member selection, skip, identity, an
   assert.ok(start >= 0 && end > start, 'authenticated setup seam missing');
   const prefix = scrapeSource.slice(start + 'exercisePanel: '.length, end);
   const authBody = authSource
-    .slice(authSource.indexOf('export async function signInSettings('))
-    .replace('export async function', 'async function');
+    .slice(authSource.indexOf('export async function verifyMemberNonadminRole('))
+    .replaceAll('export async function', 'async function');
   const organizationResolutionSource = authSource
     .slice(
       authSource.indexOf('export function resolveMemberOrganizationSelection('),
@@ -523,6 +523,13 @@ test('real Scrape auth caller records first member selection, skip, identity, an
         return { rendered: true };
       },
       observeCanonicalAdminCheck: () => ({
+        snapshot: () => ({ observed_request_count: 0, current_user_requests: [] }),
+        networkSnapshot: () => ({
+          total_requests: 0,
+          database_requests: 0,
+          role_mismatches: {},
+          boundaries: [],
+        }),
         start: async () => {},
         verify: async () => {
           if (failAdmin) throw new Error('admin observer failed');
