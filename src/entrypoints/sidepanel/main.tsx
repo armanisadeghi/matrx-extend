@@ -1,5 +1,7 @@
 import { RealtimeHost } from '@/components/RealtimeHost';
 import { RootErrorBoundary } from '@/components/RootErrorBoundary';
+// Registers the content IR host with @ai-matrx/rich-content before anything renders.
+import '@/components/kinds/rich-content-host';
 import { initAppConfig } from '@/lib/config';
 import { startAppConfigEnforcement } from '@/lib/config/enforce';
 import { log, startDebugRelay } from '@/lib/debug/log';

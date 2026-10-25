@@ -67,6 +67,17 @@ export function scanReaders(srcDir: string): {
       key ??= constant(m[2]!);
       if (feature && key) (knobs[`${feature}.${key}`] ??= []).push(rel);
     }
+    // The platform-snapshot readers take the full `feature.key` (a literal or a same-file constant).
+    // Missing them let `chat.act_without_asking` ship unregistered (a console warning on every read).
+    for (const m of text.matchAll(
+      /\b(?:peekPlatformKnob|resolvePlatformKnob|resolvePlatformKnobString|resolvePlatformKnobInWorker|peekKnobSnapshot)\(\s*([A-Za-z_]+|'[a-z0-9_.]+')\s*\)/g,
+    )) {
+      const arg = m[1]!;
+      const full = arg.startsWith("'")
+        ? arg.slice(1, -1)
+        : text.match(new RegExp(`const\\s+${arg}\\s*=\\s*'([a-z0-9_.]+)'`))?.[1];
+      if (full?.includes('.')) (knobs[full] ??= []).push(rel);
+    }
   }
   return { appKeys, knobs };
 }

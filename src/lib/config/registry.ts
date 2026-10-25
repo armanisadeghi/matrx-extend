@@ -38,6 +38,20 @@ export const KNOB_FEATURES = [
   defineKnobFeature('platform.config_attestation', {
     flush_interval_minutes: knob('flush_interval_minutes', any),
   }),
+  // Read through the platform snapshot (src/lib/settings/platform-knobs.ts, platform-knob-snapshot.ts).
+  // A one-word feature: the published @ai-matrx/data refuses those in defineKnobFeature until its
+  // next publish (fixed in aidream 2026-10-24), so this entry is the same frozen shape built directly.
+  Object.freeze({
+    feature: 'chat',
+    defs: { act_without_asking: knob('act_without_asking', any) },
+  }),
+  defineKnobFeature('agents.model_prefs', {
+    chat_default_model: knob('chat_default_model', any),
+  }),
+  defineKnobFeature('extension.desktop_callers', {
+    privileged_tools: knob('privileged_tools', any),
+  }),
+  defineKnobFeature('media.listening', { voice: knob('voice', any) }),
   // Shared features the @ai-matrx/chat package reads through the extension's knobs port
   // (src/features/package-chat/knobs.ts). Census: grep of the package's literal {feature, key} refs.
   defineKnobFeature('chat.history', { nest_child_sessions: knob('nest_child_sessions', any) }),
