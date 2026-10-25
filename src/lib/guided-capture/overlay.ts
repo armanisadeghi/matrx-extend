@@ -153,7 +153,9 @@ export function mountGuidedOverlay(): void {
             const before = target.position();
             target.scrollBy(px);
             if (target.position() === before) {
-              target = findFeedScroller();
+              // That element did not move: look again, skipping it (the page can have a little
+              // overflow of its own while an inner panel holds the feed).
+              target = findFeedScroller(document, target.element ?? 'page');
               target.scrollBy(px);
             }
           },
@@ -245,7 +247,16 @@ export function mountGuidedOverlay(): void {
 
   function onHost(m: GuidedHostMsg) {
     if (m.t === 'job') {
-      if (job) return;
+      // The same job again (a repeated hello) changes nothing; a NEW job on this tab (captured or
+      // closed, then started again) replaces the old guide.
+      if (job?.handoffId === m.job.handoffId && host?.isConnected) return;
+      stopRevealing();
+      stopScrolling();
+      state = INITIAL_GUIDED_STATE;
+      scrollEnd = null;
+      collapsed = false;
+      revealNotice = '';
+      lastMarkup = '';
       job = m.job;
       recipe = recipeForPlatform(m.job.platform) ?? recipeForUrl(location.href);
       acc = recipe ? createAccumulator(recipe) : null;
@@ -262,6 +273,8 @@ export function mountGuidedOverlay(): void {
   }
 
   let scanTimer: ReturnType<typeof setTimeout> | null = null;
+  let watcher: MutationObserver | null = null;
+  let watchRun: (() => void) | null = null;
   function startWatching() {
     const run = () => {
       if (!acc) return;
@@ -276,6 +289,8 @@ export function mountGuidedOverlay(): void {
       } else dispatch({ type: 'items', count: scan(acc, recipe) });
     };
     run();
+    // One watcher per page, whichever job is current (a new job replaces the old one's).
+    watcher?.disconnect();
     const obs = new MutationObserver(() => {
       if (scanTimer) return;
       scanTimer = setTimeout(() => {
@@ -283,12 +298,18 @@ export function mountGuidedOverlay(): void {
         run();
       }, 400);
     });
+    watcher = obs;
     obs.observe(document.documentElement, {
       childList: true,
       subtree: true,
       attributes: true,
       attributeFilter: ['src', 'srcset', 'poster', 'aria-label', 'aria-disabled', 'disabled'],
     });
+    if (watchRun) {
+      document.removeEventListener('load', watchRun, true);
+      document.removeEventListener('loadeddata', watchRun, true);
+    }
+    watchRun = run;
     document.addEventListener('load', run, true);
     document.addEventListener('loadeddata', run, true);
   }
@@ -296,6 +317,8 @@ export function mountGuidedOverlay(): void {
   function mount() {
     // A guide left by an earlier copy of the extension (reloaded since) is dead: replace it.
     document.getElementById('matrx-guided-capture')?.remove();
+    // A new card is empty: whatever was painted before belongs to the removed one.
+    lastMarkup = '';
     host = document.createElement('div');
     host.id = 'matrx-guided-capture';
     host.style.cssText = 'all:initial;position:fixed;right:16px;bottom:16px;z-index:2147483646;';
@@ -355,6 +378,8 @@ export function mountGuidedOverlay(): void {
         stopScrolling();
         send({ t: 'finish' });
         host?.remove();
+        // Closed: the next capture started on this tab draws a fresh guide.
+        job = null;
       } else if (id === 'min') {
         collapsed = !collapsed;
         render();
@@ -420,9 +445,10 @@ export function mountGuidedOverlay(): void {
   }
 
   // The Swipe card adopts this tab for a capture after the page loaded; ask again when it says so.
+  // A wake always asks: the tab may have been given a new job (the reply is ignored if it is the same one).
   const wake = () => {
     retriesLeft = 3;
-    if (!job) send({ t: 'hello' });
+    send({ t: 'hello' });
   };
   window.addEventListener('matrx:guided-wake', wake);
   // The service worker wakes the guide when a capture is started on this tab from the side panel

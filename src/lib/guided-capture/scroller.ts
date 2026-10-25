@@ -28,8 +28,14 @@ function scrollsVertically(el: Element, view: Window): boolean {
   return /(auto|scroll|overlay)/.test(style.overflowY);
 }
 
-/** The page scroller when the page moves; otherwise the largest visible scrolling panel. */
-export function findFeedScroller(doc: Document = document): FeedScroller {
+/**
+ * The page scroller when the page moves; otherwise the largest visible scrolling panel.
+ * `skip` names a scroller that just failed to move ('page', or an element) so the search looks past it.
+ */
+export function findFeedScroller(
+  doc: Document = document,
+  skip: Element | 'page' | null = null,
+): FeedScroller {
   const view = doc.defaultView ?? window;
   const root = (doc.scrollingElement ?? doc.documentElement) as Element;
   const page: FeedScroller = {
@@ -38,12 +44,12 @@ export function findFeedScroller(doc: Document = document): FeedScroller {
     position: () => view.scrollY || root.scrollTop,
     height: () => root.scrollHeight,
   };
-  if (root.scrollHeight - root.clientHeight >= MIN_SCROLL_ROOM) return page;
+  if (skip !== 'page' && root.scrollHeight - root.clientHeight >= MIN_SCROLL_ROOM) return page;
 
   let best: Element | null = null;
   let bestArea = 0;
   for (const el of Array.from(doc.body?.querySelectorAll('*') ?? [])) {
-    if (el.id === 'matrx-guided-capture') continue;
+    if (el === skip || el.id === 'matrx-guided-capture') continue;
     const area = el.clientWidth * el.clientHeight;
     if (area <= bestArea || !scrollsVertically(el, view)) continue;
     best = el;

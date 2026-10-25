@@ -144,3 +144,45 @@ it('re-injects the guide when the tab only has a dead copy (opened before the ex
   await wakeGuide(7);
   expect(executeScript).not.toHaveBeenCalled();
 });
+
+it('a new capture started on a tab whose guide was closed draws a fresh guide', () => {
+  const shadow = mountProfileJob();
+  shadow.querySelector<HTMLButtonElement>('[data-act="close"]')?.click();
+  // Close lives behind the done/failed states; closing from the header is the same as removing it.
+  document.querySelector('#matrx-guided-capture')?.remove();
+  receive({
+    t: 'job',
+    job: {
+      handoffId: 'h2',
+      url: profile,
+      title: 'Harbor Bakery',
+      platform: 'instagram',
+      target: 'profile',
+      rowSteps: '',
+    },
+  });
+  expect(document.querySelectorAll('#matrx-guided-capture')).toHaveLength(1);
+  expect(document.querySelector('#matrx-guided-capture')?.shadowRoot?.textContent).toContain(
+    'Scroll for me',
+  );
+});
+
+it('when the page has a little overflow of its own but an inner panel holds the feed, the panel scrolls', async () => {
+  vi.useFakeTimers();
+  sized(document.documentElement, 1100, 900);
+  vi.spyOn(window, 'scrollBy').mockImplementation(() => {});
+  const panel = document.querySelector<HTMLElement>('#feed')!;
+  panel.style.overflowY = 'auto';
+  sized(panel, 6000, 800);
+  let top = 0;
+  Object.defineProperty(panel, 'scrollTop', { configurable: true, get: () => top });
+  const panelScroll = vi.fn(({ top: by }: { top: number }) => {
+    top += by;
+  });
+  panel.scrollBy = panelScroll as never;
+  const shadow = mountProfileJob();
+  shadow.querySelector<HTMLButtonElement>('[data-act="scroll"]')!.click();
+  await vi.advanceTimersByTimeAsync(2000);
+  expect(panelScroll).toHaveBeenCalled();
+  shadow.querySelector<HTMLButtonElement>('[data-act="scroll-stop"]')?.click();
+});
