@@ -86,14 +86,16 @@
       "protect.txt": "6935d6ede511405a7f5e8c0891d6675d044004c86a7f4008124bb3b3044b186a"
     },
     "limits": "Existing protection/registry copied byte-identically; scan/deleteworkers1 and deletionbudget1min, no retention/protection/schedule change, no Chrome profile/code/credential deletion. Free-space change has no sole attribution.",
-    "after_observation": {
-      "pressure_level": 4,
-      "system_free_kib": 15106028
-    },
-    "normal_resource_admission_recovered": false
+    "after_observation": { "pressure_level": 4, "system_free_kib": 15106028 },
+    "normal_resource_admission_recovered": false,
+    "latest_read_only_observation": {
+      "pressure_level": 1,
+      "system_free_kib": 19335600,
+      "admission_not_recovered_reason": "system disk below20GiB; no new admission attempted"
+    }
   },
   "source_integration": {
-    "current_source": "32838cf9cfa1764f3b776ad8470af5497c5d72da",
+    "current_source": "d1aea242e77cb0a3ea89235c8284e0a6c048b8b3",
     "contributor_vault_files": "Committed by contributor; preserved without edits; no longer dirty.",
     "owner_loaded_source": "f0d7a6b7fcb97afbb2bbc2414dff90f998083fff",
     "owner_loaded_version": "0.2.622",
@@ -110,15 +112,48 @@
       "source": "fccbc7df35ad2270a2df47065b937cc1e4e4c1a6"
     },
     "current_CI": {
-      "run": 40220542827,
-      "status": "pending",
-      "focused_run": 40220542877,
-      "focused_status": "in_progress",
-      "observed_scope": "New lock-only descendant; current outcome unknown, do not carry priorfcc failure as permanent result."
+      "run": 40220737277,
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_step": "A SIGN-OUT ENDS ONLY THE DEVICE THAT ASKED",
+      "detail": "src/features/vault/vault-confirmation.ts:139 auth object escape/computed access is forbidden; use a direct named method call"
     },
-    "dependency_install_scope": "Last local frozen-lock install verified5f5; later328 lock not installed under unsafe resource state."
+    "dependency_install_scope": "Last local frozen-lock install verified5f5; later328 lock not installed under unsafe resource state.",
+    "prior_pending_328_CI": {
+      "run": 40220542827,
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_step": "A SIGN-OUT ENDS ONLY THE DEVICE THAT ASKED"
+    }
   },
   "daily_store": "Reuse completed October25 primary published577/Draft577 unpublished and official mail observation. Actual Store guest577 two grounded terminal turns belong to timed public servera6696caa57281d0c9989a5c18d7639c88e1ad339 observation; no new Store/API/browser check, upload or submission.",
   "ownership_and_cleanup": "All own workers, test executors, cleanup processes terminal; no browser/auth/backend/fixture/AI actions this wake; no temporary credentials created. Only own3sourcefiles restored after patch/hash preservation.",
-  "next_action": "Normal resource recovery first; inspect latest main/CI and contributor fix for sign-out guard. Recheck/apply preserved3file patch only on eligible source, guarded focused/compile/lint and fresh independent source reverify. Do not transfer earlier green metrics to latest transaction/predicate bytes. Native member diagnostic/guest acceptance, current artifact promotion/Chrome reload and release gates remain separate."
+  "next_action": "Normal resource recovery first; inspect latest main/CI and contributor fix for sign-out guard. Recheck/apply preserved3file patch only on eligible source, guarded focused/compile/lint and fresh independent source reverify. Do not transfer earlier green metrics to latest transaction/predicate bytes. Native member diagnostic/guest acceptance, current artifact promotion/Chrome reload and release gates remain separate.",
+  "latest_hourly_observation": {
+    "at": "2026-10-25T18:46:43.179442+00:00",
+    "source": "d1aea242e77cb0a3ea89235c8284e0a6c048b8b3",
+    "origin_main_equal": true,
+    "working_tree_clean": true,
+    "pressure_level": 1,
+    "system_free_kib": 19335600,
+    "system_free_gib": 18.439865112304688,
+    "policy_minimum_free_disk_gib": 20,
+    "new_heavy_or_browser_job": false,
+    "new_native_product_credit": 0,
+    "reason": "Pressure recovered but observed system disk remains below unchanged20GiB policy; no duplicate refused test or cleanup retry.",
+    "current_full_CI": {
+      "run": 40220737277,
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_step": "A SIGN-OUT ENDS ONLY THE DEVICE THAT ASKED",
+      "detail": "src/features/vault/vault-confirmation.ts:139 auth object escape/computed access is forbidden; use a direct named method call"
+    },
+    "prior_pending_328_CI": {
+      "run": 40220542827,
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_step": "A SIGN-OUT ENDS ONLY THE DEVICE THAT ASKED"
+    },
+    "unchanged": "D294 preserved unapplied/latest tests unexecuted; ownerF0622 remains unadopted for current source; completed same-day Store577/mail/installed-guest timed result reused; no upload/submission/auth/fixture mutation or new worker."
+  }
 }
