@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "task_id": "settings_native_b_1247",
+  "lane": "B",
+  "status": "terminal_invalid_resource_zero_case_credit",
+  "observed_at": "2026-10-25T12:48:59.910433+00:00",
+  "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+  "development_run_id": 40194412591,
+  "focused_run_id": 40194412668,
+  "focused_conclusion": "success",
+  "native_run_id": 40195311320,
+  "attempts": 1,
+  "paid_work": "none",
+  "local_heavy_or_browser_work": false,
+  "source_edits": false,
+  "credential_or_fixture_mutations": false,
+  "next_action": "Root integrate sanitized terminal evidence; leave D289/D290/D291/D292 native gates open. No retry authorized in this lane; re-admit only under a separately changed plan after environment diagnosis, never bypass resource refusal.",
+  "server_supporting_pre": {
+    "http_status": 200,
+    "git_sha": "a6696caa57281d0c9989a5c18d7639c88e1ad339",
+    "built_at": "2026-10-25T10:39:56Z",
+    "observed_at": "2026-10-25T12:51:29.692236+00:00",
+    "url": "https://server.app.matrxserver.com/health/version",
+    "extension_binding_proven": false
+  },
+  "development_artifact_id": 12599612108,
+  "development_digest": "sha256:690100a577a292d455da41dd9980ba26abea9bdd60bee1f4ccaba80c3088233d",
+  "development_conclusion": "success",
+  "native_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40195311320",
+  "dispatched_at": "2026-10-25T12:56:06.466460+00:00",
+  "normal_plan": "pass",
+  "normal_dispatch": "pass",
+  "server_supporting_post": {
+    "http_status": 200,
+    "git_sha": "a6696caa57281d0c9989a5c18d7639c88e1ad339",
+    "built_at": "2026-10-25T10:39:56Z",
+    "observed_at": "2026-10-25T13:05:46.686866+00:00",
+    "extension_binding_proven": false
+  },
+  "native_run_conclusion": "failure",
+  "native_artifact_id": 12600320511,
+  "native_artifact_digest": "sha256:1ae8f3c781b982c03dcc4b216e206670b8d28ee428395b48aa54f4fba97ccd5c",
+  "archive_digest_matches": true,
+  "archive_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/settings-native-b-1247.zip",
+  "raw_artifact_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/settings-native-b-1247-raw",
+  "journals": {
+    "hosted-package-40195311320-1": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/settings-native-b-1247-raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40195311320-1.jsonl",
+      "sha256": "ba5380ae6227dc39681e8afbec66c95af81cbcf150402cc725a0044dc69b3899",
+      "normal_journal_validation": "pass",
+      "events": 4,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T12:58:34.355Z",
+        "runId": "hosted-package-40195311320-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "safe_diagnostics": []
+    },
+    "hosted-browser-40195311320-1": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/settings-native-b-1247-raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40195311320-1.jsonl",
+      "sha256": "bac583c68ab171a5e8deff1df2849fe984d272792907d155ee475692f8319018",
+      "normal_journal_validation": "pass",
+      "events": 4,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T13:00:38.782Z",
+        "runId": "hosted-browser-40195311320-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "safe_diagnostics": []
+    },
+    "hosted-guest-40195311320-1": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/settings-native-b-1247-raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40195311320-1.jsonl",
+      "sha256": "843842ab693907d3b8d8c989153309509ed8feab22eb26e0c7b074c053e09922",
+      "normal_journal_validation": "pass",
+      "events": 14,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-25T13:04:21.561Z",
+        "runId": "hosted-guest-40195311320-1",
+        "admitted": true,
+        "resourceInvalid": true,
+        "exitCode": 3,
+        "decision": "invalid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "safe_diagnostics": [
+        {
+          "schema": 1,
+          "at": "2026-10-25T13:04:18.235Z",
+          "runId": "hosted-guest-40195311320-1",
+          "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 4.63,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.93,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 108.70752334594727,
+            "profileFreeGiB": 108.70752334594727,
+            "safetyFreeGiB": 108.70752334594727,
+            "systemFreeGiB": 108.70752334594727
+          },
+          "code": "RESOURCE_WATCH_UNSAFE"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-25T13:04:18.261Z",
+          "runId": "hosted-guest-40195311320-1",
+          "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+          "code": "RESOURCE_STOP_AT_SAFE_BOUNDARY"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-25T13:04:18.384Z",
+          "runId": "hosted-guest-40195311320-1",
+          "groupId": 6784,
+          "reason": "watchdog",
+          "signal": "SIGTERM",
+          "code": "RESOURCE_GROUP_STOP_REQUESTED"
+        }
+      ]
+    }
+  },
+  "normal_archive_journal_set_validation": "pass",
+  "normal_guest_certificate": "unavailable: no verify-settings-guest mode; normal in-job guard failed resource gate",
+  "native_report": "absent: watchdog stopped native child before report finalized",
+  "cases": {
+    "pass": [],
+    "fail": [],
+    "unverified": [
+      "EXT-F-1003-T04",
+      "EXT-F-1003-T10",
+      "EXT-F-1003-T13",
+      "EXT-F-1003-T16",
+      "EXT-F-1003-T19",
+      "EXT-F-1003-T22",
+      "EXT-F-1003-T28",
+      "EXT-F-1003-T31",
+      "EXT-F-1003-T34",
+      "EXT-F-1003-T37",
+      "EXT-F-1003-T40",
+      "EXT-F-1003-T46",
+      "EXT-F-1003-T63",
+      "EXT-F-1003-T64",
+      "EXT-F-1003-T67",
+      "EXT-F-1003-T70",
+      "EXT-F-1003-T73",
+      "EXT-F-1003-T76",
+      "EXT-F-1003-T92"
+    ]
+  },
+  "verdict_A": "UNVERIFIED: all native observations invalid-resource; no product verdict",
+  "verdict_B": "PARTIAL: exact-source successful CI artifact selection and native import, archive digest, exact3journals and normal journal validators pass; guard correctly invalidated/stopped CPU-unsafe run; native runtime receipt and case report absent, no normal guest certificate",
+  "runtime_build": "unverified: native case report absent; no screenshots credited after resource-invalid run",
+  "native_import": "DEVELOPMENT_TEST_IMPORTED exact6f86 /40194412591-1 current_pushed_source at13:02:39Z",
+  "cleanup": "Hosted run terminal; guest watchdog group SIGTERM, finalized invalid3, job cleanup completed; no owned local process, temporary secret or mutable account fixture created",
+  "root_adjudication": "B resource invalidation gives zero case credit. Separate A40195355360 passed D292 original boundary and surrounding Save, accepted by fresh peer; B cannot invalidate that separate-host evidence."
+}

@@ -1,0 +1,39 @@
+The following is a diff from the previous accessibility tree for Window: "Matrx Extend Demo Page — AI Matrx" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 24-26
++					116 button Close Side Panel
++							117 pop up button Menu
++			118 scroll area
++				119 HTML content Matrx Extend, URL: chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html
++					120 container
++						121 tab group
++							122 tab (selected) Chat, Value: 1
++							123 tab (settable, integer) Scrape, Value: 0
++							124 tab (settable, integer) SEO, Value: 0
++							125 tab (settable, integer) Data, Value: 0
++							126 tab (settable, integer) Settings, Value: 0
++						127 pop up button Site access
++						128 pop up button G, Help: Account
++						129 container Chat
++							130 container
++								131 toggle button Conversations, Value: 0
++								132 button New chat
++								133 container
++									134 heading Morning, Value: 1
++										135 text Morning
++									136 pop up button Files, Help: Attach a Google Doc or Sheet you've shared with AI Matrx
++									137 text entry area (settable) How can I help you today?
++									138 button Chat Options
++									139 toggle button Record audio, Value: 0
++									140 pop up button Choose microphone
++									141 button Live audio, Help: Live audio — talk and hear the answer
++									142 button (disabled) Send message
++									143 pop up button Sources
++									144 toggle button 11 included, Value: 0
++									145 button Agent: Matrx Browser Agent · Claude Sonnet 5.5
++									146 container Loading quick actions
++			147 slider Side Panel Resize Handle (draggable), Secondary Actions: Decrement, Increment
++			148 container
++				149 text Matrx
++				150 checkbox Unpin from toolbar, Value: 1
++				151 button Close side panel
+The focused UI element is 21 HTML content Matrx Extend Demo Page — AI Matrx, URL: aimatrx.com/matrx-extend-demo

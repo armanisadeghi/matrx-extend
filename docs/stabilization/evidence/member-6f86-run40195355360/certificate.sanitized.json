@@ -1,0 +1,34 @@
+{
+  "runId": "40195355360",
+  "attempt": "1",
+  "workflowSha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+  "workflowSourceSha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+  "archiveDigest": "b0d0ae9f198736e2c151dbdde20f8e3da4d32d751ac3dadea6b88fbd93e3020c",
+  "artifact": {
+    "sourceSha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+    "artifactId": "12599612108",
+    "developmentRunId": "40194412591",
+    "developmentRunAttempt": 1,
+    "githubArtifactDigest": "sha256:690100a577a292d455da41dd9980ba26abea9bdd60bee1f4ccaba80c3088233d"
+  },
+  "certifiedDestination": "project",
+  "certifiedScope": "single",
+  "valid": true,
+  "receipts": {
+    "hosted-package": {
+      "runId": "hosted-package-40195355360-1",
+      "sha256": "dccc2a3bc7621b658bccb2487b03cc39627f049c82f51b4ed6de5eb588f0e66f",
+      "decision": "valid"
+    },
+    "hosted-browser": {
+      "runId": "hosted-browser-40195355360-1",
+      "sha256": "4579cc88e27d5bc14aa08b7f6f5d4015746081a522cb7f022ef35872c4d88ff8",
+      "decision": "valid"
+    },
+    "hosted-guest": {
+      "runId": "hosted-guest-40195355360-1",
+      "sha256": "34e802b362ba0559c01ccb00c716f63bf3c2ba5f4d357e99384442e4ed617bf8",
+      "decision": "valid"
+    }
+  }
+}

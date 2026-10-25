@@ -1,0 +1,157 @@
+Window: "Matrx Extend Demo Page — AI Matrx", App: Google Chrome.
+0 standard window Matrx Extend Demo Page — AI Matrx - Google Chrome - Matrx Guest Test, URL: aimatrx.com/matrx-extend-demo, Secondary Actions: Raise
+	1 container Matrx Extend Demo Page — AI Matrx - Google Chrome - Matrx Guest Test, URL: aimatrx.com/matrx-extend-demo
+		2 container
+			3 toolbar
+				4 button Back
+				5 button (disabled) Forward
+				6 button Reload
+				7 container
+					8 pop up button View site information
+					9 text field (settable) Address and search bar, Value: aimatrx.com/matrx-extend-demo, Placeholder: Ask Google or type a URL
+					10 button Install AI Matrx
+					11 button Bookmark this tab
+				12 container
+					13 pop up button Matrx
+Has access to this site
+					14 pop up button Matrx Extend DEV
+Has access to this site
+					15 pop up button Extensions
+					16 button Close Side Panel
+				17 button Matrx Guest Test
+				18 pop up button Chrome
+			19 container
+				20 scroll area
+					21 HTML content Matrx Extend Demo Page — AI Matrx, URL: aimatrx.com/matrx-extend-demo
+						22 container
+							23 link AI Matrx home, Value: aimatrx.com/
+							24 pop up button Menu
+							25 button Switch to light theme
+							26 toggle button Show canvas, Value: 0
+							27 button Sign in
+						28 container
+							29 text MATRX EXTEND DEMO
+							30 heading A clear three-stage browser workflow, Value: 1
+								31 text A clear three-stage browser workflow
+							32 text This stable sample page lets anyone try Matrx Extend without signing in. The page contains a real article, useful links, a structured table, and JSON-LD metadata so the extension's page-aware features have predictable material to work with.
+							33 container The three workflow stages
+								34 heading The three workflow stages, Value: 2
+									35 text The three workflow stages
+								36 table
+									37 row
+										38 column header
+											39 text Stage
+										40 column header
+											41 text Purpose
+										42 column header
+											43 text Expected result
+									44 row
+										45 row header
+											46 text Capture
+										47 cell
+											48 text Turn the open page into readable content.
+										49 cell
+											50 text Article text, links, media, metadata, and schema.
+									51 row
+										52 row header
+											53 text Understand
+										54 cell
+											55 text Ask questions about what is actually on the page.
+										56 cell
+											57 text Answers grounded in the current page.
+									58 row
+										59 row header
+											60 text Use
+										61 cell
+											62 text Extract the details needed for the next task.
+										63 cell
+											64 text Structured rows that can be copied or reused.
+							65 container Why page-aware assistance matters
+								66 heading Why page-aware assistance matters, Value: 2
+									67 text Why page-aware assistance matters
+								68 text A browser assistant is most useful when its answer is grounded in the page the user chose. Matrx Extend can capture readable content on demand, inspect page structure, and use that context to answer a direct question. Automatic capture is optional and is off on a fresh installation.
+								69 text The user remains in control: read-only tools can inspect the active page, while the default interaction mode asks before an action changes a page. Privileged actions always require confirmation.
+							70 container Related resources
+								71 heading Related resources, Value: 2
+									72 text Related resources
+								73 content list
+									74 link Matrx Extend privacy policy, Value: aimatrx.com/privacy-policy/extension
+									75 link Contact AI Matrx support, Value: aimatrx.com/contact
+									76 link How AI Matrx works, Value: aimatrx.com/how-it-works
+						77 container
+							78 text ©  2026  AI Matrx · Operated by
+							79 link ALL GREEN ELECTRONICS RECYCLING, LLC, Value: allgreenrecycling.com/
+							80 container Footer
+								81 link Matrx Desktop, Value: aimatrx.com/desktop
+								82 link Matrx Extend, Value: aimatrx.com/extend
+								83 link Download, Value: aimatrx.com/download
+								84 link How It Works, Value: aimatrx.com/how-it-works
+								85 link Why AI Matrx, Value: aimatrx.com/why-ai-matrx
+								86 link How We Prove It, Value: aimatrx.com/how-we-prove-it
+								87 link The Landscape, Value: aimatrx.com/the-landscape
+								88 link Privacy Policy, Value: aimatrx.com/privacy-policy
+								89 link Terms of Service, Value: aimatrx.com/terms-of-service
+								90 link Contact, Value: aimatrx.com/contact
+						91 container Notifications alt+T
+			92 scroll area
+				93 HTML content Matrx Extend, URL: chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html
+					94 container
+						95 tab group
+							96 tab (selected) Chat, Value: 1
+							97 tab (settable, integer) Scrape, Value: 0
+							98 tab (settable, integer) SEO, Value: 0
+							99 tab (settable, integer) Data, Value: 0
+							100 tab (settable, integer) Settings, Value: 0
+						101 pop up button Site access
+						102 pop up button G, Help: Account
+						103 container Chat
+							104 container
+								105 toggle button Conversations, Value: 0
+								106 button New chat
+								107 container
+									108 heading Morning, Value: 1
+										109 text Morning
+									110 pop up button Files, Help: Attach a Google Doc or Sheet you've shared with AI Matrx
+									111 text entry area (settable) How can I help you today?
+									112 button Chat Options
+									113 toggle button Record audio, Value: 0
+									114 pop up button Choose microphone
+									115 button Live audio, Help: Live audio — talk and hear the answer
+									116 button (disabled) Send message
+									117 pop up button Sources
+									118 toggle button 11 included, Value: 0
+									119 button Agent: Matrx Browser Agent · Claude Sonnet 5.5
+									120 container Loading quick actions
+						121 container
+							122 text Your AI Matrx
+							123 checkbox AI may search all Files, Value: 0
+							124 button Files
+							125 text Can search
+							126 button Connected apps
+			127 slider Side Panel Resize Handle (draggable), Secondary Actions: Decrement, Increment
+			128 container
+				129 text Matrx
+				130 checkbox Unpin from toolbar, Value: 1
+				131 button Close side panel
+			132 pop up button Tab search
+			133 container
+				134 tab group
+						136 button Close
+						138 button Close
+			139 button New Tab
+	140 close button
+	141 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	142 minimize button
+143 menu bar
+	144 Chrome
+	145 File
+	146 Edit
+	147 View
+	148 History
+	149 Bookmarks
+	150 Profiles
+	151 Tab
+	152 Window
+	153 Help
+
+The focused UI element is 123 checkbox AI may search all Files, Value: 0

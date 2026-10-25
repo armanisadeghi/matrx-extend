@@ -1,0 +1,102 @@
+{
+  "task_id": "native-6f86-evidence-peer-1307",
+  "status": "DONE",
+  "reviewer": "/root/native_6f86_evidence_peer_1307",
+  "review_type": "Fresh zero-authorship read-only raw-evidence/source review; no native replay",
+  "reviewed_at_utc": "2026-10-25T13:10:49.290710+00:00",
+  "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+  "head_unchanged": true,
+  "method": {
+    "read": [
+      "Repo and workspace CLAUDE instructions",
+      "PLAN case/closure/resources sections",
+      "reviewer-playbook and subagent-dispatch/verifier brief",
+      "A/B checkpoints",
+      "A normal certificate",
+      "A raw native report",
+      "all six completed resource journals",
+      "frozen role/auth/Save/reopen/cleanup drivers",
+      "exact6f86 role repair diff",
+      "original1a9 failure diagnosis and source-review/guard records"
+    ],
+    "executed": "Read-only file/hash/git inspection only; no tests, resource guard, browser, CI polls, fixture/secret mutation or nested agents"
+  },
+  "attempt_A": {
+    "native_run_id": 40195355360,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40195355360",
+    "development_artifact_id": 12599612108,
+    "verdict_A_behavior": {
+      "verdict": "PASS_BOUNDED",
+      "scope": "Current ordinary-member canonical nonadmin role observer and adjacent approved-org Project/single Save path",
+      "evidence": [
+        "Original1a9 failure was before organization/Save; diagnosis demonstrates obsolete select=user_id rejected current SDK projection, while original actual role HTTP result was not retained.",
+        "Frozen observer now requires exact origin, /rest/v1/admins GET, Accept-Profile admin, select=user_id,level, current matching extension/web user UUID, status200, complete array with zero rows. No relaxed status/subject fallback.",
+        "Frozen auth caller verifies actual web identity, extension profile/token/rendered sign-in and nonadmin observation before approved organization selection; raw success cannot be reached without those assertions.",
+        "Raw completed report records logical organization authenticated request200 with matching organization; trusted custom name, single Project selected from real picker, saved confirmation, service row/name/org/original-file, persisted selected Project edge.",
+        "Frozen driver directly opens saved Source through Saved captures and checks name/URL, Original file readiness, original captured data and rendered article heading/marker; raw report retains matching observations.",
+        "Native cleanup asserts Source soft deletion, association removal and disposable Project absence. Checkpoint additionally records original fixture archive restoration/readback and private-file removal."
+      ]
+    },
+    "verdict_B_evidence_source_quality": {
+      "verdict": "PASS_BOUNDED",
+      "archive_sha256": "b0d0ae9f198736e2c151dbdde20f8e3da4d32d751ac3dadea6b88fbd93e3020c",
+      "workflow_sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+      "checks": [
+        "Locally recomputed archive/workflow and all journal hashes exactly match normal certificate.",
+        "Normal certificate binds workflow/source6f86, imported CI40194412591 attempt1/artifact12599612108/digest690100a..., project/single; valid=true. Read verifier implementation: checks terminal workflow provenance, archive listing/digest, report identity and predicates, dispatch destination/scope and secret cleanup before journal verdict.",
+        "Exactly three completed journals, no pending journal: package/browser/guest finalized valid resourceInvalid=false exit0. Guest healthy watch observations0.38/0.49/0.13/0.49 through child exit0.",
+        "Exact role diff changes strict producer projection only and adds bounded failure diagnostics; preserves canonical endpoint/method/schema/subject/200/zero-row checks. Prior reviewed actual SDK red/green and focused CI wiring are supporting source evidence, not re-executed here."
+      ]
+    },
+    "closure_recommendation": "D292 original member-role observer reproduction and adjacent bounded supporting-harness path have native retest evidence; recommend fixed→retest-pass→closed for D292 only after root normal certificate re-read. Describe harness repair, never a repaired product Save claim. A operator native run plus this independent evidence review are distinct; this peer did not replay UI.",
+    "limits": [
+      "Only screenshots retained are initial panel and controlled fixture; no saved Source screenshot. Reopen/content proof is generated native assertions/observations, not independent visual corroboration.",
+      "Canonical successful role request is enforced by frozen executed driver; successful raw report summarizes it as non_admin_role_verified rather than exporting per-request response trace.",
+      "External fixture archive restoration/private-file cleanup are checkpoint attestations beyond native report; no fresh backend replay performed by this peer.",
+      "D187 and full EXT-F-1007-T04/T29 remain open; no other destinations, modes, late results, retry/refusal, responsive timing, Store acceptance or release credit."
+    ]
+  },
+  "attempt_B": {
+    "native_run_id": 40195311320,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40195311320",
+    "development_artifact_id": 12599612108,
+    "verdict_A_behavior": {
+      "verdict": "UNVERIFIED_INVALID_RESOURCE",
+      "case_credit": 0,
+      "reason": "No finalized native report. Watchdog invalidates entire browser lease; screenshots receive no behavior credit and failure is not a product failure."
+    },
+    "verdict_B_evidence_source_quality": {
+      "verdict": "PARTIAL_TRUTHFUL_INVALIDATION",
+      "archive_sha256": "1ae8f3c781b982c03dcc4b216e206670b8d28ee428395b48aa54f4fba97ccd5c",
+      "checks": [
+        "Locally recomputed archive and all three journal hashes match checkpoint; package/browser finalize valid0.",
+        "Guest journal records CPU0.96 at13:04:01.965 and unsafe0.93/load4.63/logicalCPUs4 at13:04:18.235, stop-at-safe-boundary and owned group SIGTERM; finalized resourceInvalid=true exitCode3 decision=invalid.",
+        "No JSON case report anywhere in extracted B artifact, only initial PNGs and journals. No normal guest certificate/runtime receipt. Successful exact artifact import/provenance attested in checkpoint is supporting only."
+      ],
+      "limits": [
+        "No newly observed extension runtime build or behavior report; preserve all19 listed Settings cases unverified.",
+        "Server health/version does not bind the actual extension backend and grants no case coverage.",
+        "B host-local invalidation does not invalidate separately admitted A journals."
+      ]
+    },
+    "closure_recommendation": "Keep D289/D290/D291 native gates and all B target cells unfinished; no B-derived D292 closure. Root may use separate A evidence for D292 only. No automatic unchanged rerun or resource bypass."
+  },
+  "open_items": [
+    "D187/fullT04/T29",
+    "All19 B Settings case cells",
+    "Other auth modes/destinations/timing/refusal/retry coverage",
+    "Store/release acceptance"
+  ],
+  "journal_hashes": {
+    "A": {
+      "hosted-browser-40195355360-1.jsonl": "4579cc88e27d5bc14aa08b7f6f5d4015746081a522cb7f022ef35872c4d88ff8",
+      "hosted-guest-40195355360-1.jsonl": "34e802b362ba0559c01ccb00c716f63bf3c2ba5f4d357e99384442e4ed617bf8",
+      "hosted-package-40195355360-1.jsonl": "dccc2a3bc7621b658bccb2487b03cc39627f049c82f51b4ed6de5eb588f0e66f"
+    },
+    "B": {
+      "hosted-browser-40195311320-1.jsonl": "bac583c68ab171a5e8deff1df2849fe984d272792907d155ee475692f8319018",
+      "hosted-guest-40195311320-1.jsonl": "843842ab693907d3b8d8c989153309509ed8feab22eb26e0c7b074c053e09922",
+      "hosted-package-40195311320-1.jsonl": "ba5380ae6227dc39681e8afbec66c95af81cbcf150402cc725a0044dc69b3899"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "path": "docs/stabilization/evidence/guest-mode-6f86-replay/01-dev-panel.ax.txt",
+    "raw_sha256": "75b361492ddb76014f9ce39dd566fc10c908c3faa8d1fd555db2a38b59eb605b",
+    "sanitized_sha256": "ac0693968188cf213424b941b64d3a3506e0429747551f5d4aa31702c23836e0",
+    "removed_browser_tab_lines": 0
+  },
+  {
+    "path": "docs/stabilization/evidence/guest-mode-6f86-replay/03-guest-settings.ax.txt",
+    "raw_sha256": "3d71cfa6b60c473fbe8ad6d14a8127520aad2a9c6e3aabe4bea0c80a6130685d",
+    "sanitized_sha256": "6e5b48098edd29aa630921ece85fead4de43c7a3d1411591fe962a0239fbfb7c",
+    "removed_browser_tab_lines": 2
+  },
+  {
+    "path": "docs/stabilization/evidence/guest-mode-6f86-replay/04-guest-settings-settled.ax.txt",
+    "raw_sha256": "1b4396d6f68cf3fecb1551237ac7d9b7d1688634962bf61ac235e529e94ca44b",
+    "sanitized_sha256": "1fabb144268f3713e3faa0ff65ebc1b6affcce617f381fa0e09bb79d89f8cc44",
+    "removed_browser_tab_lines": 2
+  },
+  {
+    "path": "docs/stabilization/evidence/guest-mode-6f86-replay/05-ask-refusal.ax.txt",
+    "raw_sha256": "a9f0f2cf27d0a460b5d0a0485dc38a5410023d1b338bf7481b41255a1f00f441",
+    "sanitized_sha256": "f64fd3851670c88562163097443c85d0c80c984041fd84d3616ac897e48f291a",
+    "removed_browser_tab_lines": 2
+  },
+  {
+    "path": "docs/stabilization/evidence/guest-mode-6f86-replay/06-settings-reopen.ax.txt",
+    "raw_sha256": "1b4396d6f68cf3fecb1551237ac7d9b7d1688634962bf61ac235e529e94ca44b",
+    "sanitized_sha256": "1fabb144268f3713e3faa0ff65ebc1b6affcce617f381fa0e09bb79d89f8cc44",
+    "removed_browser_tab_lines": 2
+  },
+  {
+    "path": "docs/stabilization/evidence/guest-mode-6f86-replay/07-manager-reloaded.ax.txt",
+    "raw_sha256": "b09e38e3dba32065c388d5860b80e8d62f5091dd74c0ec7f334dd936ceefe073",
+    "sanitized_sha256": "16413fcde97a297893c14b2d4a276298214531ca9d6e59a12d2f28e5c276972e",
+    "removed_browser_tab_lines": 3
+  },
+  {
+    "path": "docs/stabilization/evidence/guest-mode-6f86-replay/08-cold-settings.ax.txt",
+    "raw_sha256": "9d518e56145e7b103870c20c66d84dc36e3e2e2bd436d5b18a818771c2cf04cf",
+    "sanitized_sha256": "6e5b48098edd29aa630921ece85fead4de43c7a3d1411591fe962a0239fbfb7c",
+    "removed_browser_tab_lines": 2
+  },
+  {
+    "path": "docs/stabilization/evidence/guest-mode-6f86-replay/09-cold-settings-settled.ax.txt",
+    "raw_sha256": "643eeef217cfea618b738c6ff2ceff8b9f3741390299713ba629971019f148c4",
+    "sanitized_sha256": "1fabb144268f3713e3faa0ff65ebc1b6affcce617f381fa0e09bb79d89f8cc44",
+    "removed_browser_tab_lines": 2
+  },
+  {
+    "path": "docs/stabilization/evidence/guest-mode-6f86-replay/10-chat-picker.ax.txt",
+    "raw_sha256": "f43a87ba97620eff06b67723a091457dbcc9a302993d5cd14b67db42805a7bcf",
+    "sanitized_sha256": "c3f40d58a5ec3b47f44368191aa80edc51d8430e7673f84d403b35dd4f806892",
+    "removed_browser_tab_lines": 2
+  },
+  {
+    "path": "docs/stabilization/evidence/guest-mode-6f86-replay/11-owner-restored.ax.txt",
+    "raw_sha256": "8db5374dba8614498be3cb8a971fc15931417225c437b58a3bc7f0c87c253e9e",
+    "sanitized_sha256": "4f8b852fec183e0e71f71307323a2d0e76eab817e683988c6ce23af05fc55572",
+    "removed_browser_tab_lines": 5
+  }
+]

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-25T12:20:27.028547+00:00",
+  "updated_at": "2026-10-25T13:32:33.560076+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -7215,22 +7215,19 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "status": "unverified",
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
-              "resource_valid": true,
-              "runner_reported_status": "pass",
-              "scope": "System/light/dark applied and restored original absent theme/container after actual manager full extension Reload;21/21.",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "linked_defects": [
@@ -7730,6 +7727,29 @@
                 "detail": "Latest current-source guest attempt is partial: the warm Dark selection/render/storage criteria were observed, but the panel reload readiness check failed and persistence was not proved. The guest acceptance job failed after one recovery observation; this is not attributed to the theme product without a separate reproduction. No other scheduled control receives pass credit."
               },
               "reason": "Preserve earlier partial warm-only result; new frozen579 actual three-theme full-manager-Reload evidence plus independent admitted nondefault replay."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "pass",
+                "scope": "System/light/dark applied and restored original absent theme/container after actual manager full extension Reload;21/21.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -8193,18 +8213,39 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-1a9-40190567571",
-              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
-              "development_ci_run_id": 40189608507,
-              "development_artifact_id": 12598225185,
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
-              "resource_valid": true,
-              "runner_reported_status": "fail",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/reports/settings-retest-b-1150.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots.",
+              "manual_retest": {
+                "run_id": "guest-mode-6f86-replay-20261025-1330",
+                "bounded_status": "partial",
+                "resource_valid": true,
+                "verified_substeps": [
+                  "Actual guest DEV621 identity/path and guest UI",
+                  "Ask selection visibly refused with sign-in message and Act rollback",
+                  "Settings reopen and actual manager fullReload retain Act"
+                ],
+                "unverified": [
+                  "Canonical freshChat mode consumer",
+                  "Raw storage/absence, server and actual tool behavior",
+                  "FullT10/driver batch/Store"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/guest-mode-replay-1330.json",
+                  "docs/stabilization/reports/guest-replay-peer-1338.json",
+                  "docs/stabilization/evidence/guest-mode-6f86-replay/evidence-manifest.json"
+                ],
+                "limits": "First1320manual attempt excluded; valid replay is separate. One harmless stale-index capture excluded; guest Sources popover remains background."
+              }
             }
           },
           "linked_defects": [
@@ -8486,6 +8527,26 @@
               },
               "superseded_at": "2026-10-25T12:19:18.778741+00:00",
               "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-1a9-40190567571",
+                "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+                "development_ci_run_id": 40189608507,
+                "development_artifact_id": 12598225185,
+                "build_version": "0.2.621",
+                "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
+                "resource_valid": true,
+                "runner_reported_status": "fail",
+                "evidence": [
+                  "docs/stabilization/reports/settings-retest-b-1150.json"
+                ],
+                "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -8736,22 +8797,19 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "status": "unverified",
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
-              "resource_valid": true,
-              "runner_reported_status": "pass",
-              "scope": "Default speed selection/persistence through panel-document reload only;4/4.",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "linked_defects": [
@@ -8795,6 +8853,29 @@
               "independent_review": "373b28df",
               "detail": "Fast/Thinking selection and displayed/persisted values pass the guest inventory expectation.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "pass",
+                "scope": "Default speed selection/persistence through panel-document reload only;4/4.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -8979,18 +9060,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-1a9-40190567571",
-              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
-              "development_ci_run_id": 40189608507,
-              "development_artifact_id": 12598225185,
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
-              "resource_valid": true,
-              "runner_reported_status": "fail",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/reports/settings-retest-b-1150.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "linked_defects": [
@@ -9203,6 +9284,26 @@
               },
               "superseded_at": "2026-10-25T12:19:18.778741+00:00",
               "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-1a9-40190567571",
+                "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+                "development_ci_run_id": 40189608507,
+                "development_artifact_id": 12598225185,
+                "build_version": "0.2.621",
+                "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
+                "resource_valid": true,
+                "runner_reported_status": "fail",
+                "evidence": [
+                  "docs/stabilization/reports/settings-retest-b-1150.json"
+                ],
+                "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -9391,18 +9492,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-1a9-40190567571",
-              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
-              "development_ci_run_id": 40189608507,
-              "development_artifact_id": 12598225185,
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
-              "resource_valid": true,
-              "runner_reported_status": "fail",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/reports/settings-retest-b-1150.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "attempt_history": [
@@ -9491,6 +9592,26 @@
               },
               "superseded_at": "2026-10-25T12:19:18.778741+00:00",
               "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-1a9-40190567571",
+                "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+                "development_ci_run_id": 40189608507,
+                "development_artifact_id": 12598225185,
+                "build_version": "0.2.621",
+                "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
+                "resource_valid": true,
+                "runner_reported_status": "fail",
+                "evidence": [
+                  "docs/stabilization/reports/settings-retest-b-1150.json"
+                ],
+                "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "revalidation_history": [
@@ -9618,22 +9739,19 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "status": "unverified",
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
-              "resource_valid": true,
-              "runner_reported_status": "pass",
-              "scope": "Rendered signed-out guest admin/permission controls absent warm and after panel-document reload;2/2, not separately after manager Reload.",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "result_history": [
@@ -9790,6 +9908,29 @@
                 }
               ],
               "superseded_at": "2026-10-20T03:37:24.048612Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "pass",
+                "scope": "Rendered signed-out guest admin/permission controls absent warm and after panel-document reload;2/2, not separately after manager Reload.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -10081,18 +10222,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-1a9-40190567571",
-              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
-              "development_ci_run_id": 40189608507,
-              "development_artifact_id": 12598225185,
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
-              "resource_valid": true,
-              "runner_reported_status": "fail",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/reports/settings-retest-b-1150.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "preparation_history": [
@@ -10240,6 +10381,26 @@
               },
               "superseded_at": "2026-10-25T12:19:18.778741+00:00",
               "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-1a9-40190567571",
+                "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+                "development_ci_run_id": 40189608507,
+                "development_artifact_id": 12598225185,
+                "build_version": "0.2.621",
+                "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
+                "resource_valid": true,
+                "runner_reported_status": "fail",
+                "evidence": [
+                  "docs/stabilization/reports/settings-retest-b-1150.json"
+                ],
+                "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -10350,18 +10511,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-1a9-40190567571",
-              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
-              "development_ci_run_id": 40189608507,
-              "development_artifact_id": 12598225185,
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
-              "resource_valid": true,
-              "runner_reported_status": "fail",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/reports/settings-retest-b-1150.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "linked_defects": [
@@ -10424,6 +10585,26 @@
               },
               "superseded_at": "2026-10-25T12:19:18.778741+00:00",
               "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-1a9-40190567571",
+                "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+                "development_ci_run_id": 40189608507,
+                "development_artifact_id": 12598225185,
+                "build_version": "0.2.621",
+                "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
+                "resource_valid": true,
+                "runner_reported_status": "fail",
+                "evidence": [
+                  "docs/stabilization/reports/settings-retest-b-1150.json"
+                ],
+                "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -10597,18 +10778,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-1a9-40190567571",
-              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
-              "development_ci_run_id": 40189608507,
-              "development_artifact_id": 12598225185,
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
-              "resource_valid": true,
-              "runner_reported_status": "fail",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/reports/settings-retest-b-1150.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "linked_defects": [
@@ -10684,6 +10865,26 @@
               },
               "superseded_at": "2026-10-25T12:19:18.778741+00:00",
               "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-1a9-40190567571",
+                "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+                "development_ci_run_id": 40189608507,
+                "development_artifact_id": 12598225185,
+                "build_version": "0.2.621",
+                "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
+                "resource_valid": true,
+                "runner_reported_status": "fail",
+                "evidence": [
+                  "docs/stabilization/reports/settings-retest-b-1150.json"
+                ],
+                "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -10858,22 +11059,19 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "status": "unverified",
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
-              "resource_valid": true,
-              "runner_reported_status": "pass",
-              "scope": "Deep clean switch/hint/persistence and restoration through panel reload;3/3, no actual deep-clean processing claim.",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "linked_defects": [
@@ -10976,6 +11174,29 @@
               "independent_review": "373b28df",
               "detail": "Toggle state and visible coming-soon hint persist; original guest expectation met.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "pass",
+                "scope": "Deep clean switch/hint/persistence and restoration through panel reload;3/3, no actual deep-clean processing claim.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -11161,18 +11382,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-1a9-40190567571",
-              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
-              "development_ci_run_id": 40189608507,
-              "development_artifact_id": 12598225185,
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
-              "resource_valid": true,
-              "runner_reported_status": "fail",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/reports/settings-retest-b-1150.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "result_history": [
@@ -11403,6 +11624,26 @@
               },
               "superseded_at": "2026-10-25T12:19:18.778741+00:00",
               "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-1a9-40190567571",
+                "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+                "development_ci_run_id": 40189608507,
+                "development_artifact_id": 12598225185,
+                "build_version": "0.2.621",
+                "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
+                "resource_valid": true,
+                "runner_reported_status": "fail",
+                "evidence": [
+                  "docs/stabilization/reports/settings-retest-b-1150.json"
+                ],
+                "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "linked_defects": [
@@ -11906,22 +12147,19 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "status": "unverified",
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
-              "resource_valid": true,
-              "runner_reported_status": "pass",
-              "scope": "Owned loopback port persistence/validation/clear plus real worker rediscovery;8/8. Fixture intentionally returns503 at65001, no healthy desktop claim.",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "linked_defects": [
@@ -12105,6 +12343,29 @@
               "independent_review": "373b28df",
               "detail": "Valid save/rediscovery, bounds, invalid range, clearing, and panel reload persistence all pass.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "pass",
+                "scope": "Owned loopback port persistence/validation/clear plus real worker rediscovery;8/8. Fixture intentionally returns503 at65001, no healthy desktop claim.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -13263,18 +13524,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-1a9-40190567571",
-              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
-              "development_ci_run_id": 40189608507,
-              "development_artifact_id": 12598225185,
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
-              "resource_valid": true,
-              "runner_reported_status": "unverified",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/reports/settings-retest-b-1150.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "result_history": [
@@ -13385,6 +13646,26 @@
               },
               "superseded_at": "2026-10-25T12:19:18.778741+00:00",
               "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-1a9-40190567571",
+                "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+                "development_ci_run_id": 40189608507,
+                "development_artifact_id": 12598225185,
+                "build_version": "0.2.621",
+                "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
+                "resource_valid": true,
+                "runner_reported_status": "unverified",
+                "evidence": [
+                  "docs/stabilization/reports/settings-retest-b-1150.json"
+                ],
+                "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -13490,22 +13771,19 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "status": "unverified",
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
-              "resource_valid": true,
-              "runner_reported_status": "pass",
-              "scope": "Owned loopback allowed-origin list removal and panel reload;5/5.",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "result_history": [
@@ -13566,6 +13844,29 @@
               "independent_review": "373b28df",
               "detail": "The inventory steps and expected outcome are met: remove one selected origin, preserve the other, hide empty list, and verify state after Settings panel reload.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "pass",
+                "scope": "Owned loopback allowed-origin list removal and panel reload;5/5.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -13727,22 +14028,19 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "status": "unverified",
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
-              "resource_valid": true,
-              "runner_reported_status": "pass",
-              "scope": "Auto-scrape mode selection including two real manager full Reload replacements and original absent container restoration;15/15.",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "linked_defects": [
@@ -13935,6 +14233,29 @@
                 ]
               },
               "reason": "Preserve the preceding bounded result when recording hosted run 38331187170."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "pass",
+                "scope": "Auto-scrape mode selection including two real manager full Reload replacements and original absent container restoration;15/15.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -14113,18 +14434,18 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "settings-1a9-40190567571",
-              "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
-              "development_ci_run_id": 40189608507,
-              "development_artifact_id": 12598225185,
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
-              "resource_valid": true,
-              "runner_reported_status": "unverified",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/reports/settings-retest-b-1150.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "result_history": [
@@ -14218,6 +14539,26 @@
               },
               "superseded_at": "2026-10-25T12:19:18.778741+00:00",
               "reason": "New exact1a9 native observation; failures classified separately from product acceptance."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-1a9-40190567571",
+                "source_sha": "1a9a0425caaeb3618359f0644cafb430dfa7b788",
+                "development_ci_run_id": 40189608507,
+                "development_artifact_id": 12598225185,
+                "build_version": "0.2.621",
+                "tree_sha256": "e8ceec83197dd444a6894423eb75d2373ed805b03937b070432d1552d2c0981b",
+                "resource_valid": true,
+                "runner_reported_status": "unverified",
+                "evidence": [
+                  "docs/stabilization/reports/settings-retest-b-1150.json"
+                ],
+                "scope": "Native failed or incomplete receipt; product-versus-harness diagnosis recorded, no full-case pass or closure."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -14466,22 +14807,19 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "status": "unverified",
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
-              "resource_valid": true,
-              "runner_reported_status": "pass",
-              "scope": "Signed-out account negative before/after manager full extension Reload;2/2.",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "linked_defects": [
@@ -14532,6 +14870,29 @@
               "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
               "verified_at": "2026-10-08T05:10:28.331547+00:00",
               "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "pass",
+                "scope": "Signed-out account negative before/after manager full extension Reload;2/2.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -14704,22 +15065,19 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "status": "unverified",
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
-              "resource_valid": true,
-              "runner_reported_status": "pass",
-              "scope": "Signed-out Organization negative before/after manager full extension Reload;2/2, zero organization requests.",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             }
           },
           "linked_defects": [
@@ -14770,6 +15128,29 @@
               "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
               "verified_at": "2026-10-08T05:10:28.331547+00:00",
               "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "pass",
+                "scope": "Signed-out Organization negative before/after manager full extension Reload;2/2, zero organization requests.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "attempt_history": [
@@ -15630,22 +16011,19 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "settings-guest-0b-20261025",
-              "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
-              "development_ci_run_id": 40181800284,
-              "development_artifact_id": 12594596898,
+              "status": "unverified",
+              "run_id": "settings-6f86-40195311320",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
               "build_version": "0.2.621",
-              "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
-              "resource_valid": true,
-              "runner_reported_status": "pass",
-              "scope": "Guest-only negative Organization/archive-navigation slice before/after manager Reload;2/2; member/admin navigation unverified.",
+              "resource_valid": false,
+              "runner_reported_status": "invalid",
               "evidence": [
-                "docs/stabilization/runs/settings-guest-0b-20261025.json",
-                "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                "docs/stabilization/reports/settings-native-b-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
               ],
-              "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
-              "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
             },
             "member": {
               "status": "unverified",
@@ -15709,6 +16087,29 @@
               "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
               "verified_at": "2026-10-08T05:10:28.331547+00:00",
               "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "settings-guest-0b-20261025",
+                "source_sha": "0bcbfb5e4ba83626366a8b4d29d7eb11b043e32c",
+                "development_ci_run_id": 40181800284,
+                "development_artifact_id": 12594596898,
+                "build_version": "0.2.621",
+                "tree_sha256": "2c90d7366e10f1d5486c0b4d6bb9804bc3f27ebf7be26ad6ac9c027d4bbf80c5",
+                "resource_valid": true,
+                "runner_reported_status": "pass",
+                "scope": "Guest-only negative Organization/archive-navigation slice before/after manager Reload;2/2; member/admin navigation unverified.",
+                "evidence": [
+                  "docs/stabilization/runs/settings-guest-0b-20261025.json",
+                  "docs/stabilization/evidence/settings-0b-run40186301999/native-report.json"
+                ],
+                "independent_review": "docs/stabilization/reports/settings-0b-native-evidence-review.json",
+                "limits": "Guest scoped observation only; panel vs full manager Reload identified in run. Other modes and whole feature unverified."
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
             }
           ],
           "linked_defects": [
@@ -16085,9 +16486,10 @@
             "local-settings-guest-20261012-1441",
             "39363918633",
             "settings-guest-0b-20261025",
-            "settings-1a9-40190567571"
+            "settings-1a9-40190567571",
+            "settings-6f86-40195311320"
           ],
-          "retest_status": "Exact development .568/source9185 native39363918633 independently passes T22 guest and T63 guest cells with real extension replacement. Other Settings cases, T04 restoration, member/admin, Store and whole feature remain unverified; no whole-health claim."
+          "retest_status": "Current6f86 batch resource-invalid, all19current cases unverified. Older bounded passes retained in case history. D289/D290/D291 not closed from this attempt."
         },
         "member": {
           "test_status": "unverified",
@@ -24794,102 +25196,32 @@
           ],
           "results": {
             "member": {
-              "run_id": "scrape-save-native-5-browser",
-              "build_variant": "development 0.2.457; extension cihdmkcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
-              "verified_at": "2026-10-10T01:27:29Z",
-              "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl; docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json; docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
-              "status": "partial",
+              "status": "unverified",
+              "run_id": "member-6f86-40195355360",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
+              "build_version": "0.2.621",
+              "resource_valid": true,
+              "bounded_status": "pass",
               "verified_substeps": [
-                "Named Source 5f25b273-3f3b-4708-808b-b7a290c688cf (“EXT-D-0187 Native Save 5 2026-10-10”) persisted and independently reopened at its Source page with Saved state, page heading, full unique URL and captured content.",
-                "The same Source was listed after reopening the dedicated Project Attach sources panel, confirming persisted association with EXT-D-0187 TEST PROJECT — native retest (4484ab9c-bb04-4adc-a894-df2e9f18960f).",
-                "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified."
+                "Current nonadmin member identity and strict canonical role observer",
+                "Approved organization and logical request200",
+                "Custom Source name, selected Project, Saved confirmation",
+                "Persisted Source/original file/Project association",
+                "Actual Source UI reopen/name/URL/captured marker",
+                "Owned Source/Project/edge cleanup and original fixture restoration"
               ],
               "remaining_criteria": [
-                "Only the member/no-destination duplicate-rename controlled 503 refusal and 200 retry subtarget is newly covered; other refusal paths, destinations, Library/File elsewhere, Project display, precise confirmation latency, guest/admin, Store/current-main and full case coverage remain open.",
-                "Project search and scroll-to-late-result acceptance and the remaining Save Source destination flows are still unverified."
+                "Other destinations, multiple selections, search/late results, retry, responsive and denied-org/other-role cases",
+                "Saved Source visual screenshot corroboration absent; native assertions provide UI proof"
               ],
-              "detail": "Resource-valid native member run confirmed exact loaded extension identity, saved Source persistence, and persisted Project association after reopening the Project Attach sources panel. These are bounded substeps only; EXT-D-0187 remains in-fix. See the native receipt for evidence limits. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix. Independent review of hosted member run 38107457332 adds bounded no-destination duplicate rename refusal/retry evidence on unpublished development v0.2.490: HTTP 503 preserved the original name and draft, Retry completed with HTTP 200, one renamed Source and zero associations were independently read, reopened content matched, all resource finals were valid, and cleanup was verified. This does not promote the case; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
-              "bounded_subtarget_evidence": [
-                {
-                  "run_id": "38044665604",
-                  "status": "bounded-pass",
-                  "destination_mode": "none",
-                  "evidence": [
-                    "docs/stabilization/evidence/scrape-save-member/run38044665604/receipt.sanitized.json",
-                    "docs/stabilization/evidence/scrape-save-member/run38044665604/native-report.sanitized.json",
-                    "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-package-38044665604-1.jsonl",
-                    "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-browser-38044665604-1.jsonl",
-                    "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl"
-                  ],
-                  "limits": "Member no-destination substep only; Project/Library/multiple destinations, duplicate/refusal/retry, guest/admin, Store/current-main, and full T04/T29 remain unverified."
-                },
-                {
-                  "run_id": "38107457332",
-                  "status": "bounded-pass",
-                  "destination_mode": "none",
-                  "save_scope": "member duplicate rename with controlled refusal and retry",
-                  "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
-                  "product_artifact": "unpublished CI development v0.2.490; CI 38106946361/artifact 11690348157; source 5b01a35fd5a15aadbf95062b411e92e833ce0292; tree fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
-                  "hosted_result_artifact": "11690605351; sha256 255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847",
-                  "reviewed_at": "2026-10-11T03:23:40Z",
-                  "evidence": [
-                    "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
-                    "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
-                  ],
-                  "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
-                  "resource_finals_valid": true,
-                  "credential_cleanup_verified": "The exact temporary GitHub secret name is absent; the known local one-time link file is absent from temp/workspace locations; no credential values were persisted.",
-                  "verified": "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified.",
-                  "limits": "Member and destination-none duplicate rename/refusal-retry only. T04/T29 remain partial and EXT-D-0187 remains in-fix. No overall feature pass or closure; other refusal paths, destinations/Library/File elsewhere, Project display, latency, guest/admin, current-main and Store behavior remain open."
-                },
-                {
-                  "run_id": "39519174392",
-                  "source_sha": "fec65a33ed9af26fb2c8d726375e3d20428e999a",
-                  "development_ci_run_id": 39516230572,
-                  "development_artifact_id": 12308238876,
-                  "version": "0.2.578",
-                  "status": "bounded-pass",
-                  "auth_mode": "member",
-                  "destination_mode": "none",
-                  "resource_valid": true,
-                  "evidence": [
-                    "docs/stabilization/reports/member-fec-native-20261021.json",
-                    "docs/stabilization/reports/member-fec-native-fresh-peer-20261021.json",
-                    "docs/stabilization/reports/member-fec-native-39519174392-certificate.json",
-                    "docs/stabilization/evidence/member-fec-native/run39519174392/native-report.sanitized.json"
-                  ],
-                  "verified_substeps": [
-                    "Real member/non-admin sign-in and approved organization selected; logical organization request observed authenticated200.",
-                    "Custom name and no destination; keyboard focus contained; Save confirmation; persisted name/org/original file and zero destination associations.",
-                    "Source name/URL/captured heading/marker reopened by actual UI checks; run-owned soft-delete/zero-active-row and association cleanup."
-                  ],
-                  "limits": "Normal verifier and fresh raw A accept only this bounded subtarget. Peer B partial: screenshots show initial loading/fixture, not saved Source UI; native driver/report supplies UI assertions. No independent UI rerun, full T04/T29, other destinations/roles/refusal/latency or Store claim."
-                },
-                {
-                  "run_id": "39524463666",
-                  "source_sha": "252bde8bc7f2fba22c6063869638d5df71590a3d",
-                  "development_ci_run_id": 39523293146,
-                  "development_artifact_id": 12311454209,
-                  "version": "0.2.578",
-                  "status": "bounded-pass",
-                  "auth_mode": "member",
-                  "destination_mode": "project",
-                  "resource_valid": true,
-                  "evidence": [
-                    "docs/stabilization/reports/member-project-native-20261021.json",
-                    "docs/stabilization/reports/member-project-native-fresh-peer-20261021.json",
-                    "docs/stabilization/reports/member-project-native-39524463666-certificate.json",
-                    "docs/stabilization/evidence/member-project-native/run39524463666/native-report.sanitized.json"
-                  ],
-                  "verified_substeps": [
-                    "Real non-admin member and approved organization; owned Project created and selected in matching organization.",
-                    "Custom Source name entered with trusted keyboard; contained focus; Saved confirmation; Source name/org/original-file and selected Project association persisted.",
-                    "Source UI name/URL/captured heading/marker reopened; owned Source/edge/Project cleanup and temporary secret/link absence verified."
-                  ],
-                  "limits": "Fresh raw A accepts bounded behavior; B accepts provenance with image limitation. Images show initial loading/fixture, not saved Source; peer did not independently repeat remote preflight or secret inventory. No Project display/reopened association UI, late-result/search, other destinations/roles, full T04/T29 or D187 closure."
-                }
+              "evidence": [
+                "docs/stabilization/reports/member-native-a-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json",
+                "docs/stabilization/evidence/member-6f86-run40195355360/native-report.sanitized.json"
               ],
-              "latest_bounded_retest_run": "39524463666"
+              "scope": "Fresh bounded Project/single pass; not a Save repair or whole case/feature/Store claim."
             },
             "admin": {
               "status": "unverified",
@@ -24996,6 +25328,111 @@
               ],
               "detail": "Independent native review accepts this bounded member/no-destination duplicate-rename refusal/retry subtarget. HTTP 503 refusal preserved the original saved name and retry draft; the user-visible retry completed with HTTP 200. Independent service reads confirmed one renamed Source with the same ID and zero associations; reopened UI name/URL/content matched. All package/browser/guest resource finals are valid and cleanup is verified. The run-owned Source was soft-deleted and associations removed; temporary GitHub secret and local one-time link are absent. T04/T29 remain partial and EXT-D-0187 remains in-fix.",
               "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
+            }
+          ],
+          "result_history": [
+            {
+              "mode": "member",
+              "result": {
+                "run_id": "scrape-save-native-5-browser",
+                "build_variant": "development 0.2.457; extension cihdmkcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
+                "verified_at": "2026-10-10T01:27:29Z",
+                "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl; docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json; docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
+                "status": "partial",
+                "verified_substeps": [
+                  "Named Source 5f25b273-3f3b-4708-808b-b7a290c688cf (“EXT-D-0187 Native Save 5 2026-10-10”) persisted and independently reopened at its Source page with Saved state, page heading, full unique URL and captured content.",
+                  "The same Source was listed after reopening the dedicated Project Attach sources panel, confirming persisted association with EXT-D-0187 TEST PROJECT — native retest (4484ab9c-bb04-4adc-a894-df2e9f18960f).",
+                  "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified."
+                ],
+                "remaining_criteria": [
+                  "Only the member/no-destination duplicate-rename controlled 503 refusal and 200 retry subtarget is newly covered; other refusal paths, destinations, Library/File elsewhere, Project display, precise confirmation latency, guest/admin, Store/current-main and full case coverage remain open.",
+                  "Project search and scroll-to-late-result acceptance and the remaining Save Source destination flows are still unverified."
+                ],
+                "detail": "Resource-valid native member run confirmed exact loaded extension identity, saved Source persistence, and persisted Project association after reopening the Project Attach sources panel. These are bounded substeps only; EXT-D-0187 remains in-fix. See the native receipt for evidence limits. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix. Independent review of hosted member run 38107457332 adds bounded no-destination duplicate rename refusal/retry evidence on unpublished development v0.2.490: HTTP 503 preserved the original name and draft, Retry completed with HTTP 200, one renamed Source and zero associations were independently read, reopened content matched, all resource finals were valid, and cleanup was verified. This does not promote the case; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
+                "bounded_subtarget_evidence": [
+                  {
+                    "run_id": "38044665604",
+                    "status": "bounded-pass",
+                    "destination_mode": "none",
+                    "evidence": [
+                      "docs/stabilization/evidence/scrape-save-member/run38044665604/receipt.sanitized.json",
+                      "docs/stabilization/evidence/scrape-save-member/run38044665604/native-report.sanitized.json",
+                      "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-package-38044665604-1.jsonl",
+                      "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-browser-38044665604-1.jsonl",
+                      "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl"
+                    ],
+                    "limits": "Member no-destination substep only; Project/Library/multiple destinations, duplicate/refusal/retry, guest/admin, Store/current-main, and full T04/T29 remain unverified."
+                  },
+                  {
+                    "run_id": "38107457332",
+                    "status": "bounded-pass",
+                    "destination_mode": "none",
+                    "save_scope": "member duplicate rename with controlled refusal and retry",
+                    "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+                    "product_artifact": "unpublished CI development v0.2.490; CI 38106946361/artifact 11690348157; source 5b01a35fd5a15aadbf95062b411e92e833ce0292; tree fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+                    "hosted_result_artifact": "11690605351; sha256 255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847",
+                    "reviewed_at": "2026-10-11T03:23:40Z",
+                    "evidence": [
+                      "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
+                      "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
+                    ],
+                    "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
+                    "resource_finals_valid": true,
+                    "credential_cleanup_verified": "The exact temporary GitHub secret name is absent; the known local one-time link file is absent from temp/workspace locations; no credential values were persisted.",
+                    "verified": "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified.",
+                    "limits": "Member and destination-none duplicate rename/refusal-retry only. T04/T29 remain partial and EXT-D-0187 remains in-fix. No overall feature pass or closure; other refusal paths, destinations/Library/File elsewhere, Project display, latency, guest/admin, current-main and Store behavior remain open."
+                  },
+                  {
+                    "run_id": "39519174392",
+                    "source_sha": "fec65a33ed9af26fb2c8d726375e3d20428e999a",
+                    "development_ci_run_id": 39516230572,
+                    "development_artifact_id": 12308238876,
+                    "version": "0.2.578",
+                    "status": "bounded-pass",
+                    "auth_mode": "member",
+                    "destination_mode": "none",
+                    "resource_valid": true,
+                    "evidence": [
+                      "docs/stabilization/reports/member-fec-native-20261021.json",
+                      "docs/stabilization/reports/member-fec-native-fresh-peer-20261021.json",
+                      "docs/stabilization/reports/member-fec-native-39519174392-certificate.json",
+                      "docs/stabilization/evidence/member-fec-native/run39519174392/native-report.sanitized.json"
+                    ],
+                    "verified_substeps": [
+                      "Real member/non-admin sign-in and approved organization selected; logical organization request observed authenticated200.",
+                      "Custom name and no destination; keyboard focus contained; Save confirmation; persisted name/org/original file and zero destination associations.",
+                      "Source name/URL/captured heading/marker reopened by actual UI checks; run-owned soft-delete/zero-active-row and association cleanup."
+                    ],
+                    "limits": "Normal verifier and fresh raw A accept only this bounded subtarget. Peer B partial: screenshots show initial loading/fixture, not saved Source UI; native driver/report supplies UI assertions. No independent UI rerun, full T04/T29, other destinations/roles/refusal/latency or Store claim."
+                  },
+                  {
+                    "run_id": "39524463666",
+                    "source_sha": "252bde8bc7f2fba22c6063869638d5df71590a3d",
+                    "development_ci_run_id": 39523293146,
+                    "development_artifact_id": 12311454209,
+                    "version": "0.2.578",
+                    "status": "bounded-pass",
+                    "auth_mode": "member",
+                    "destination_mode": "project",
+                    "resource_valid": true,
+                    "evidence": [
+                      "docs/stabilization/reports/member-project-native-20261021.json",
+                      "docs/stabilization/reports/member-project-native-fresh-peer-20261021.json",
+                      "docs/stabilization/reports/member-project-native-39524463666-certificate.json",
+                      "docs/stabilization/evidence/member-project-native/run39524463666/native-report.sanitized.json"
+                    ],
+                    "verified_substeps": [
+                      "Real non-admin member and approved organization; owned Project created and selected in matching organization.",
+                      "Custom Source name entered with trusted keyboard; contained focus; Saved confirmation; Source name/org/original-file and selected Project association persisted.",
+                      "Source UI name/URL/captured heading/marker reopened; owned Source/edge/Project cleanup and temporary secret/link absence verified."
+                    ],
+                    "limits": "Fresh raw A accepts bounded behavior; B accepts provenance with image limitation. Images show initial loading/fixture, not saved Source; peer did not independently repeat remote preflight or secret inventory. No Project display/reopened association UI, late-result/search, other destinations/roles, full T04/T29 or D187 closure."
+                  }
+                ],
+                "latest_bounded_retest_run": "39524463666"
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "Fresh exact6f86 independently reviewed Project/single subtarget; full case remains unverified."
             }
           ]
         },
@@ -28923,102 +29360,32 @@
           ],
           "results": {
             "member": {
-              "run_id": "scrape-save-native-5-browser",
-              "build_variant": "development 0.2.457; extension cihdmkcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
-              "verified_at": "2026-10-10T01:27:29Z",
-              "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl; docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json; docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
-              "status": "partial",
+              "status": "unverified",
+              "run_id": "member-6f86-40195355360",
+              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+              "development_ci_run_id": 40194412591,
+              "development_artifact_id": 12599612108,
+              "build_version": "0.2.621",
+              "resource_valid": true,
+              "bounded_status": "pass",
               "verified_substeps": [
-                "Save Source exposed editable name and place controls; Projects candidates appeared after choosing Projects.",
-                "Selecting EXT-D-0187 TEST PROJECT — native retest and saving produced named Source 5f25b273-3f3b-4708-808b-b7a290c688cf; after reopening the Project Attach sources panel, that Source was listed, confirming persisted association.",
-                "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified."
+                "Current nonadmin member identity and strict canonical role observer",
+                "Approved organization and logical request200",
+                "Custom Source name, selected Project, Saved confirmation",
+                "Persisted Source/original file/Project association",
+                "Actual Source UI reopen/name/URL/captured marker",
+                "Owned Source/Project/edge cleanup and original fixture restoration"
               ],
               "remaining_criteria": [
-                "This run covers member/no-destination duplicate rename refusal/retry only. Scroll-to-late-result, search, multi-target/remove, Library/no-Library, File elsewhere, responsive layout, focus containment/wrap and admin behavior remain unverified.",
-                "The run does not establish full T29 or EXT-D-0187 acceptance; guest/member/admin, Store/current-main and remaining destination paths are open."
+                "Other destinations, multiple selections, search/late results, retry, responsive and denied-org/other-role cases",
+                "Saved Source visual screenshot corroboration absent; native assertions provide UI proof"
               ],
-              "detail": "Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or Save Source UI changes committed in 3e3c2770c. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix. Independent review of hosted member run 38107457332 adds bounded no-destination duplicate rename refusal/retry evidence on unpublished development v0.2.490: HTTP 503 preserved the original name and draft, Retry completed with HTTP 200, one renamed Source and zero associations were independently read, reopened content matched, all resource finals were valid, and cleanup was verified. This does not promote the case; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
-              "bounded_subtarget_evidence": [
-                {
-                  "run_id": "38044665604",
-                  "status": "bounded-pass",
-                  "destination_mode": "none",
-                  "evidence": [
-                    "docs/stabilization/evidence/scrape-save-member/run38044665604/receipt.sanitized.json",
-                    "docs/stabilization/evidence/scrape-save-member/run38044665604/native-report.sanitized.json",
-                    "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-package-38044665604-1.jsonl",
-                    "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-browser-38044665604-1.jsonl",
-                    "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl"
-                  ],
-                  "limits": "Member no-destination substep only; Project/Library/multiple destinations, duplicate/refusal/retry, guest/admin, Store/current-main, and full T04/T29 remain unverified."
-                },
-                {
-                  "run_id": "38107457332",
-                  "status": "bounded-pass",
-                  "destination_mode": "none",
-                  "save_scope": "member duplicate rename with controlled refusal and retry",
-                  "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
-                  "product_artifact": "unpublished CI development v0.2.490; CI 38106946361/artifact 11690348157; source 5b01a35fd5a15aadbf95062b411e92e833ce0292; tree fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
-                  "hosted_result_artifact": "11690605351; sha256 255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847",
-                  "reviewed_at": "2026-10-11T03:23:40Z",
-                  "evidence": [
-                    "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
-                    "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
-                  ],
-                  "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
-                  "resource_finals_valid": true,
-                  "credential_cleanup_verified": "The exact temporary GitHub secret name is absent; the known local one-time link file is absent from temp/workspace locations; no credential values were persisted.",
-                  "verified": "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified.",
-                  "limits": "Member and destination-none duplicate rename/refusal-retry only. T04/T29 remain partial and EXT-D-0187 remains in-fix. No overall feature pass or closure; other refusal paths, destinations/Library/File elsewhere, Project display, latency, guest/admin, current-main and Store behavior remain open."
-                },
-                {
-                  "run_id": "39519174392",
-                  "source_sha": "fec65a33ed9af26fb2c8d726375e3d20428e999a",
-                  "development_ci_run_id": 39516230572,
-                  "development_artifact_id": 12308238876,
-                  "version": "0.2.578",
-                  "status": "bounded-pass",
-                  "auth_mode": "member",
-                  "destination_mode": "none",
-                  "resource_valid": true,
-                  "evidence": [
-                    "docs/stabilization/reports/member-fec-native-20261021.json",
-                    "docs/stabilization/reports/member-fec-native-fresh-peer-20261021.json",
-                    "docs/stabilization/reports/member-fec-native-39519174392-certificate.json",
-                    "docs/stabilization/evidence/member-fec-native/run39519174392/native-report.sanitized.json"
-                  ],
-                  "verified_substeps": [
-                    "Real member/non-admin sign-in and approved organization selected; logical organization request observed authenticated200.",
-                    "Custom name and no destination; keyboard focus contained; Save confirmation; persisted name/org/original file and zero destination associations.",
-                    "Source name/URL/captured heading/marker reopened by actual UI checks; run-owned soft-delete/zero-active-row and association cleanup."
-                  ],
-                  "limits": "Normal verifier and fresh raw A accept only this bounded subtarget. Peer B partial: screenshots show initial loading/fixture, not saved Source UI; native driver/report supplies UI assertions. No independent UI rerun, full T04/T29, other destinations/roles/refusal/latency or Store claim."
-                },
-                {
-                  "run_id": "39524463666",
-                  "source_sha": "252bde8bc7f2fba22c6063869638d5df71590a3d",
-                  "development_ci_run_id": 39523293146,
-                  "development_artifact_id": 12311454209,
-                  "version": "0.2.578",
-                  "status": "bounded-pass",
-                  "auth_mode": "member",
-                  "destination_mode": "project",
-                  "resource_valid": true,
-                  "evidence": [
-                    "docs/stabilization/reports/member-project-native-20261021.json",
-                    "docs/stabilization/reports/member-project-native-fresh-peer-20261021.json",
-                    "docs/stabilization/reports/member-project-native-39524463666-certificate.json",
-                    "docs/stabilization/evidence/member-project-native/run39524463666/native-report.sanitized.json"
-                  ],
-                  "verified_substeps": [
-                    "Real non-admin member and approved organization; owned Project created and selected in matching organization.",
-                    "Custom Source name entered with trusted keyboard; contained focus; Saved confirmation; Source name/org/original-file and selected Project association persisted.",
-                    "Source UI name/URL/captured heading/marker reopened; owned Source/edge/Project cleanup and temporary secret/link absence verified."
-                  ],
-                  "limits": "Fresh raw A accepts bounded behavior; B accepts provenance with image limitation. Images show initial loading/fixture, not saved Source; peer did not independently repeat remote preflight or secret inventory. No Project display/reopened association UI, late-result/search, other destinations/roles, full T04/T29 or D187 closure."
-                }
+              "evidence": [
+                "docs/stabilization/reports/member-native-a-1247.json",
+                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json",
+                "docs/stabilization/evidence/member-6f86-run40195355360/native-report.sanitized.json"
               ],
-              "latest_bounded_retest_run": "39524463666"
+              "scope": "Fresh bounded Project/single pass; not a Save repair or whole case/feature/Store claim."
             },
             "admin": {
               "status": "unverified",
@@ -29129,6 +29496,111 @@
               ],
               "detail": "Independent native review accepts this bounded member/no-destination duplicate-rename refusal/retry subtarget. HTTP 503 refusal preserved the original saved name and retry draft; the user-visible retry completed with HTTP 200. Independent service reads confirmed one renamed Source with the same ID and zero associations; reopened UI name/URL/content matched. All package/browser/guest resource finals are valid and cleanup is verified. The run-owned Source was soft-deleted and associations removed; temporary GitHub secret and local one-time link are absent. T04/T29 remain partial and EXT-D-0187 remains in-fix.",
               "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
+            }
+          ],
+          "result_history": [
+            {
+              "mode": "member",
+              "result": {
+                "run_id": "scrape-save-native-5-browser",
+                "build_variant": "development 0.2.457; extension cihdmkcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
+                "verified_at": "2026-10-10T01:27:29Z",
+                "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl; docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json; docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
+                "status": "partial",
+                "verified_substeps": [
+                  "Save Source exposed editable name and place controls; Projects candidates appeared after choosing Projects.",
+                  "Selecting EXT-D-0187 TEST PROJECT — native retest and saving produced named Source 5f25b273-3f3b-4708-808b-b7a290c688cf; after reopening the Project Attach sources panel, that Source was listed, confirming persisted association.",
+                  "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified."
+                ],
+                "remaining_criteria": [
+                  "This run covers member/no-destination duplicate rename refusal/retry only. Scroll-to-late-result, search, multi-target/remove, Library/no-Library, File elsewhere, responsive layout, focus containment/wrap and admin behavior remain unverified.",
+                  "The run does not establish full T29 or EXT-D-0187 acceptance; guest/member/admin, Store/current-main and remaining destination paths are open."
+                ],
+                "detail": "Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or Save Source UI changes committed in 3e3c2770c. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix. Independent review of hosted member run 38107457332 adds bounded no-destination duplicate rename refusal/retry evidence on unpublished development v0.2.490: HTTP 503 preserved the original name and draft, Retry completed with HTTP 200, one renamed Source and zero associations were independently read, reopened content matched, all resource finals were valid, and cleanup was verified. This does not promote the case; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
+                "bounded_subtarget_evidence": [
+                  {
+                    "run_id": "38044665604",
+                    "status": "bounded-pass",
+                    "destination_mode": "none",
+                    "evidence": [
+                      "docs/stabilization/evidence/scrape-save-member/run38044665604/receipt.sanitized.json",
+                      "docs/stabilization/evidence/scrape-save-member/run38044665604/native-report.sanitized.json",
+                      "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-package-38044665604-1.jsonl",
+                      "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-browser-38044665604-1.jsonl",
+                      "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl"
+                    ],
+                    "limits": "Member no-destination substep only; Project/Library/multiple destinations, duplicate/refusal/retry, guest/admin, Store/current-main, and full T04/T29 remain unverified."
+                  },
+                  {
+                    "run_id": "38107457332",
+                    "status": "bounded-pass",
+                    "destination_mode": "none",
+                    "save_scope": "member duplicate rename with controlled refusal and retry",
+                    "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+                    "product_artifact": "unpublished CI development v0.2.490; CI 38106946361/artifact 11690348157; source 5b01a35fd5a15aadbf95062b411e92e833ce0292; tree fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+                    "hosted_result_artifact": "11690605351; sha256 255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847",
+                    "reviewed_at": "2026-10-11T03:23:40Z",
+                    "evidence": [
+                      "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
+                      "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
+                    ],
+                    "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
+                    "resource_finals_valid": true,
+                    "credential_cleanup_verified": "The exact temporary GitHub secret name is absent; the known local one-time link file is absent from temp/workspace locations; no credential values were persisted.",
+                    "verified": "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified.",
+                    "limits": "Member and destination-none duplicate rename/refusal-retry only. T04/T29 remain partial and EXT-D-0187 remains in-fix. No overall feature pass or closure; other refusal paths, destinations/Library/File elsewhere, Project display, latency, guest/admin, current-main and Store behavior remain open."
+                  },
+                  {
+                    "run_id": "39519174392",
+                    "source_sha": "fec65a33ed9af26fb2c8d726375e3d20428e999a",
+                    "development_ci_run_id": 39516230572,
+                    "development_artifact_id": 12308238876,
+                    "version": "0.2.578",
+                    "status": "bounded-pass",
+                    "auth_mode": "member",
+                    "destination_mode": "none",
+                    "resource_valid": true,
+                    "evidence": [
+                      "docs/stabilization/reports/member-fec-native-20261021.json",
+                      "docs/stabilization/reports/member-fec-native-fresh-peer-20261021.json",
+                      "docs/stabilization/reports/member-fec-native-39519174392-certificate.json",
+                      "docs/stabilization/evidence/member-fec-native/run39519174392/native-report.sanitized.json"
+                    ],
+                    "verified_substeps": [
+                      "Real member/non-admin sign-in and approved organization selected; logical organization request observed authenticated200.",
+                      "Custom name and no destination; keyboard focus contained; Save confirmation; persisted name/org/original file and zero destination associations.",
+                      "Source name/URL/captured heading/marker reopened by actual UI checks; run-owned soft-delete/zero-active-row and association cleanup."
+                    ],
+                    "limits": "Normal verifier and fresh raw A accept only this bounded subtarget. Peer B partial: screenshots show initial loading/fixture, not saved Source UI; native driver/report supplies UI assertions. No independent UI rerun, full T04/T29, other destinations/roles/refusal/latency or Store claim."
+                  },
+                  {
+                    "run_id": "39524463666",
+                    "source_sha": "252bde8bc7f2fba22c6063869638d5df71590a3d",
+                    "development_ci_run_id": 39523293146,
+                    "development_artifact_id": 12311454209,
+                    "version": "0.2.578",
+                    "status": "bounded-pass",
+                    "auth_mode": "member",
+                    "destination_mode": "project",
+                    "resource_valid": true,
+                    "evidence": [
+                      "docs/stabilization/reports/member-project-native-20261021.json",
+                      "docs/stabilization/reports/member-project-native-fresh-peer-20261021.json",
+                      "docs/stabilization/reports/member-project-native-39524463666-certificate.json",
+                      "docs/stabilization/evidence/member-project-native/run39524463666/native-report.sanitized.json"
+                    ],
+                    "verified_substeps": [
+                      "Real non-admin member and approved organization; owned Project created and selected in matching organization.",
+                      "Custom Source name entered with trusted keyboard; contained focus; Saved confirmation; Source name/org/original-file and selected Project association persisted.",
+                      "Source UI name/URL/captured heading/marker reopened; owned Source/edge/Project cleanup and temporary secret/link absence verified."
+                    ],
+                    "limits": "Fresh raw A accepts bounded behavior; B accepts provenance with image limitation. Images show initial loading/fixture, not saved Source; peer did not independently repeat remote preflight or secret inventory. No Project display/reopened association UI, late-result/search, other destinations/roles, full T04/T29 or D187 closure."
+                  }
+                ],
+                "latest_bounded_retest_run": "39524463666"
+              },
+              "superseded_at": "2026-10-25T13:32:33.560076+00:00",
+              "reason": "Fresh exact6f86 independently reviewed Project/single subtarget; full case remains unverified."
             }
           ]
         },
@@ -30041,9 +30513,10 @@
             "scrape-save-native-5-browser",
             "38043392549",
             "38044665604",
-            "38107457332"
+            "38107457332",
+            "member-6f86-40195355360"
           ],
-          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. Initial native-5 ended resource-invalid at 19.9955GiB before Save/write. Follow-up native-5-browser was resource-valid and confirmed named Source persistence plus its Project association, but only bounded substeps passed; dialog URL, scrolling, focus containment, other save routes, and full T04/T29 remain unverified. Save Source UI changes in 3e3c2770c need a current exact-artifact retest. The D187-specific hosted driver is committed at a8839d016/94a281c8f and awaits green exact-source CI and a member-lane run. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects and focus acceptance remain unverified; association has only bounded native-5-browser evidence. Hosted-lane feasibility: docs/stabilization/reports/d187-hosted-lane-feasibility-20261009.json. Latest EXT-D-0187 hosted member run 38043392549 (workflow source 94d7a148) is infrastructure-invalid with zero product credit: `owned_cdp_endpoint_timeout` at inputs/cdp_connect before auth or Save, destination mode none; guest resource journal ended CPU pending/invalid exit 3. The no-destination path remains unverified. Earlier run 38044665604 (workflow c6ff0838d; frozen development v0.2.459) independently verified one member no-destination Save: custom-named Source persisted, zero association edges read, original read and reopened content matched, cleanup verified. Bounded substep only; T04/T29 remain partial and EXT-D-0187 remains in-fix. Independent review of hosted member run 38107457332 on unpublished development v0.2.490 (CI 38106946361/artifact 11690348157; workflow source 5b01a35f) accepts only the no-destination duplicate-rename controlled refusal/retry subtarget: HTTP 503 preserved the saved name and draft, Retry returned HTTP 200, one same-ID renamed Source and zero associations were independently read, reopened content matched, resource finals and cleanup were valid, and temporary GitHub secret/local link absence was verified. Member Scrape surface and EXT-D-0187 stay partial/in-fix pending the original reproduction and surrounding-case coverage; other destinations, guest/admin, Store/current-main and full-surface acceptance remain open."
+          "retest_status": "Exact6f86 Project/single bounded pass, D292 supporting observer closed; fullT04/T29/D187 and Store remain open."
         },
         "admin": {
           "test_status": "unverified",

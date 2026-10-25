@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "task_id": "owner-6f86-refresh-20261025-1257",
+  "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+  "ci_run_id": 40194412591,
+  "ci_result": "success",
+  "artifact_id": 12599612108,
+  "artifact_digest": "sha256:690100a577a292d455da41dd9980ba26abea9bdd60bee1f4ccaba80c3088233d",
+  "normal_import": {
+    "exec_session": 49149,
+    "actual_exit": 0,
+    "path": "test-results/ci-artifacts/6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b/40194412591-1/chrome-mv3"
+  },
+  "normal_promotion": {
+    "exec_session": 39028,
+    "actual_exit": 0,
+    "destination": ".output/chrome-mv3-dev",
+    "version": "0.2.621",
+    "tree_sha256": "cf59fb531d2b2d0faded1caff68d33ab693e0274f68ae1fe8f236dbe6faf5df0"
+  },
+  "native": {
+    "account": "arman@armansadeghi.com",
+    "profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "chrome_version": "156.0.8078.47 arm64",
+    "development_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.621",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "reload_toast_observed": true,
+    "enabled": true,
+    "pinned": true,
+    "store_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "store_version": "0.2.577",
+    "store_source": "Chrome Web Store",
+    "store_enabled": true,
+    "store_pinned": true,
+    "both_toolbar_controls_visible": true
+  },
+  "resource": {
+    "journal": "docs/stabilization/resource-journals/owner-6f86-refresh-20261025-1257.jsonl",
+    "admitted_at": "2026-10-25T12:58:06.711Z",
+    "final_at": "2026-10-25T13:01:16.741Z",
+    "decision": "valid",
+    "resourceInvalid": false,
+    "actual_exec_session": 79603,
+    "actual_exec_exit": 0,
+    "owned_holder_pid": 25826,
+    "watcher": "/root/owner_resource_watch_1257",
+    "watch_reads": 70,
+    "unsafe_events": 0,
+    "max_ui_read_gap_seconds": 3.022,
+    "pre_admission_restart_gap_seconds": 9.624,
+    "reported_max_read_gap_seconds": 3.021
+  },
+  "evidence": {
+    "owner-6f86-reloaded.ax.json": {
+      "path": ".output/stabilization-checkpoints/owner-6f86-reloaded.ax.json",
+      "sha256": "e6a458b0869b50c311ff2ed8eee4772f4dac4258f24f3c6f17574bb16e59ad15"
+    },
+    "owner-6f86-dev-full.ax.json": {
+      "path": ".output/stabilization-checkpoints/owner-6f86-dev-full.ax.json",
+      "sha256": "0e79c463c05e644ef715a6590fdb0d36181e91d6b563a720fad1686b8ab71d6e"
+    },
+    "owner-6f86-dev.png": {
+      "path": ".output/stabilization-checkpoints/owner-6f86-dev.png",
+      "sha256": "6b760c98b12059f0a9cb5ef1a7b0a24f64017a1c8474fd40c36aef5c5b575164"
+    },
+    "owner-6f86-profile.ax.json": {
+      "path": ".output/stabilization-checkpoints/owner-6f86-profile.ax.json",
+      "sha256": "cf32a6ee063954b309a081373a79115a974867db2106d1e8537a648e07eaa6dd"
+    },
+    "owner-6f86-account.ax.json": {
+      "path": ".output/stabilization-checkpoints/owner-6f86-account.ax.json",
+      "sha256": "54da0a8be4aa405bfacd670e1129c40096d7b4bcf95d8d05ac3c1e79c4012d86"
+    },
+    "owner-6f86-store.ax.json": {
+      "path": ".output/stabilization-checkpoints/owner-6f86-store.ax.json",
+      "sha256": "51f28f622c637b938d5eaa99cb77b6eea8f4e8ec758813f928b373c72f788bd4"
+    },
+    "owner-6f86-restored.ax.json": {
+      "path": ".output/stabilization-checkpoints/owner-6f86-restored.ax.json",
+      "sha256": "ca0aa8c959d6090acdb319acf36f2d634397acd4a74517ddd83b3e4712b62e64"
+    },
+    "owner-6f86-ui-calls.json": {
+      "path": ".output/stabilization-checkpoints/owner-6f86-ui-calls.json",
+      "sha256": "dcf58e2d9c13b639341e851826e4ec30499b051fa700ae4d44dcfa3df4d80c00"
+    },
+    "owner-resource-watch-1257.jsonl": {
+      "path": ".output/stabilization-checkpoints/owner-resource-watch-1257.jsonl",
+      "sha256": "376b338a179aa3d46442f76807b4655be169f28164db6ac187c3f0e355f6ec68"
+    }
+  },
+  "cleanup": "Owned new Store manager tab closed; pre-existing About Version tab preserved; original DEV tab restored; account menu closed; UI stopped before owned holder SIGINT. No settings/auth/permission changes or AI calls.",
+  "limits": "Manager/profile/reload identity only; no Settings/Scrape/Store Chat product-case acceptance; watcher independently observed journal/PID exit, parent observed shell exit.",
+  "independent_peer": "docs/stabilization/reports/owner-refresh-6f86-peer.json"
+}

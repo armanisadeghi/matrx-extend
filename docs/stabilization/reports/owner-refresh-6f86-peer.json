@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "reviewer": "/root/owner_refresh_peer_1303",
+  "at": "2026-10-25T13:06:35.146644+00:00",
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Fresh evidence-only review; zero source/UI authorship. No tests, guards, UI replay, CI polling, delegation, or tracked-file/HEAD changes.",
+  "reviewed_receipt": ".output/stabilization-checkpoints/owner-refresh-6f86-20261025.json",
+  "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+  "verdict_a": {
+    "result": "PASS",
+    "bounded_to": "Saved original native identity/reload evidence; no independent UI replay or product cases.",
+    "observations": [
+      "Raw account AX confirms requested arman@armansadeghi.com; raw chrome://version AX confirms Profile 8 path and Chrome 156.0.8078.47 arm64.",
+      "Raw DEV full AX confirms cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.621, loaded from /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev, enabled and pinned. Reload diff contains Reloaded toast.",
+      "Raw Store AX confirms hnfolienncfklkgmdjjmhhegglimlamg, version 0.2.577, Chrome Web Store origin, enabled and pinned.",
+      "DEV screenshot corroborates manager identity/version/enabled state and both toolbar controls; raw AX names both Matrx Extend DEV and Matrx toolbar popups.",
+      "Restored full AX returns to original DEV manager tab, removes owned Store manager tab, preserves About Version tab, and shows no account menu."
+    ],
+    "findings": []
+  },
+  "verdict_b": {
+    "result": "PASS",
+    "bounded_to": "Locally available artifact provenance, resource telemetry, evidence integrity, and native cleanup.",
+    "observations": [
+      "All nine receipt-listed evidence SHA256 values match original files.",
+      "Normal import-status/provenance/local-dev and CI receipts agree on exact source, run 40194412591 attempt 1, artifact 12599612108, digest sha256:690100a577a292d455da41dd9980ba26abea9bdd60bee1f4ccaba80c3088233d, DEV 0.2.621. CI/provenance receipt file hashes match import-status.",
+      "Normal test-results/ci-dev-promotion-receipt.json records exact-source promotion to stable DEV path with empty allowedDiffPaths. Independently recomputed imported and destination 2735-file trees both equal cf59fb531d2b2d0faded1caff68d33ab693e0274f68ae1fe8f236dbe6faf5df0; manifest key independently derives requested DEV ID.",
+      "Raw resource journal admitted at 2026-10-25T12:58:06.711Z, has no unsafe/invalid events, and ends RESOURCE_FINAL_DECISION valid/admitted true/resourceInvalid false/exitCode 0 at 13:01:16.741Z.",
+      "Independent watcher raw final segment has 70 reads at independently recomputed maximum wall-clock gap 3.022s (summary reports 3.021s) and terminates with holderAlive false after final valid decision. File additionally contains an earlier three-read pre-admission segment, with restart gap 9.624s before admission; this does not interrupt guarded UI interval.",
+      "All eight recorded UI-call timestamps fall after admission and before stop/final; raw restore AX at 13:00:43.011Z precedes SIGINT at 13:01:16.734Z."
+    ],
+    "findings": [
+      {
+        "severity": "Minor",
+        "evidence": ".output/stabilization-checkpoints/owner-resource-watch-1257.jsonl",
+        "detail": "Final 70-read segment raw readAt timestamps have max gap 3.022s (12:58:21.231Z to 12:58:24.253Z); watcher summary/owner receipt says 3.021s. Preserve recomputed timestamp-based figure; 1ms discrepancy does not undermine continuous coverage."
+      }
+    ]
+  },
+  "limitations": [
+    "Actual normal import session 49149 exit 0, normal promotion session 39028 exit 0, and root resource session 79603 exit 0 are directly root-observed tool evidence only. No separate raw terminal-output files were saved, so this peer does not independently establish those shell exits from receipts/journals.",
+    "CI success and remote artifact digest authenticity were not freshly queried; local normal importer receipts bind the recorded identifiers and digests.",
+    "No Settings, Scrape, Store Chat, or other product-case acceptance; no independent native interaction replay.",
+    "Restoration is supported by before/after tab structure and saved call sequence, without persistent native tab IDs."
+  ],
+  "genuine_gaps": [
+    "No independently available raw shell-exit transcript for the three root-observed sessions; preserve this attribution in any completion claim.",
+    "Minor telemetry precision discrepancy: raw final-segment readAt max is 3.022s versus summary 3.021s."
+  ],
+  "evidence_paths": [
+    ".output/stabilization-checkpoints/owner-6f86-reloaded.ax.json",
+    ".output/stabilization-checkpoints/owner-6f86-dev-full.ax.json",
+    ".output/stabilization-checkpoints/owner-6f86-dev.png",
+    ".output/stabilization-checkpoints/owner-6f86-profile.ax.json",
+    ".output/stabilization-checkpoints/owner-6f86-account.ax.json",
+    ".output/stabilization-checkpoints/owner-6f86-store.ax.json",
+    ".output/stabilization-checkpoints/owner-6f86-restored.ax.json",
+    ".output/stabilization-checkpoints/owner-6f86-ui-calls.json",
+    ".output/stabilization-checkpoints/owner-resource-watch-1257.jsonl",
+    "docs/stabilization/resource-journals/owner-6f86-refresh-20261025-1257.jsonl",
+    "test-results/ci-dev-promotion-receipt.json",
+    "test-results/ci-artifacts/6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b/40194412591-1/import-status.json"
+  ],
+  "privacy": "Report includes relevant owner identity only; no unrelated profile/tab inventory or authentication data."
+}

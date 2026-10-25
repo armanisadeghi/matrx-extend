@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "task_id": "member-6f86-40195355360",
+  "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+  "development_run_id": 40194412591,
+  "development_artifact_id": 12599612108,
+  "evidence": "docs/stabilization/reports/member-native-a-1247.json",
+  "independent_peer": "docs/stabilization/reports/native-6f86-evidence-peer-1307.json",
+  "status": "bounded_native_pass_full_cases_unverified",
+  "limits": "Independent per-host resource verdict; no whole feature or Store claim."
+}
