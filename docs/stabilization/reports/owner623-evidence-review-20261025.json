@@ -1,0 +1,129 @@
+{
+  "task_id": "owner623-evidence-review-2110",
+  "reviewer": "/root/owner623_evidence_review_2110",
+  "zero_authorship": true,
+  "reviewed_at": "2026-10-25T21:10:57.843806+00:00",
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Independent review of retained original evidence only; no new browser, API, authentication, product test, heavy job or Git mutation.",
+  "verdict_a": {
+    "verdict": "PASS_BOUNDED_OWNER_REFRESH",
+    "observations": [
+      {
+        "target": "Actual owner profile/account",
+        "verdict": "PASS",
+        "evidence": ["06-profile-proof-result.json", "18-owner-account-proof-result.json"],
+        "observed": "Chrome156.0.8078.47 arm64; Profile8 and arman@armansadeghi.com."
+      },
+      {
+        "target": "Actual development Reload, identity, path, enabled and pin",
+        "verdict": "PASS",
+        "evidence": [
+          "10-dev-before-result.json",
+          "11-actual-dev-reload-result.json",
+          "12-dev-after-reload-result.json"
+        ],
+        "observed": "Before0.2.622; manager detail exposes Reload; operation completion followed by Reloaded and0.2.623. Development IDcihdmkcdjjckfhjpgoedmgfpoljebaml; stable .output/chrome-mv3-dev loaded path; enabled and Pin to toolbar on."
+      },
+      {
+        "target": "Store copy preserved beside DEV",
+        "verdict": "PASS",
+        "evidence": ["16-store-installed-proof-result.json"],
+        "observed": "Installed0.2.577, primary hnfolienncfklkgmdjjmhhegglimlamg, Chrome Web Store source; enabled/pinned; DEV and Matrx toolbar entries adjacent in contemporaneous AX."
+      },
+      {
+        "target": "Owned tab cleanup/original focus",
+        "verdict": "PASS",
+        "evidence": [
+          "02-initial-ax-result.json",
+          "20-close-owned-inspection-tab-result.json",
+          "21-restored-owner-focus-result.json"
+        ],
+        "observed": "Before and after have same single original Vault tab selected and HTML content focused; inspection tab absent after cleanup."
+      }
+    ],
+    "limits": [
+      "These are evidence-review observations, not a new independent browser replay.",
+      "No product behavior, guest/member acceptance, dashboard status, server SHA, release or overall health credit.",
+      "Loaded development proof binds promoted befb artifact and then-current runtime-equivalent39af; later D295 harness changes are outside that loaded-source claim."
+    ]
+  },
+  "verdict_b": {
+    "verdict": "PARTIAL_FULL_PROTOCOL_PASS_DECISIVE_API2_TO21_EVIDENCE",
+    "findings": [
+      {
+        "severity": "Important if full-protocol PASS is claimed",
+        "finding": "Initial getApp original completion/result and exact invocation time are absent; its retained external gate is healthy but does not prove immediately-before timing for that initial call. First truncated output is excluded from decisive assertions. Full21-call procedural proof cannot be upgraded to complete.",
+        "evidence": "00-first-api-external-gate.json; no01 result file"
+      },
+      {
+        "severity": "Minor metadata, corrected",
+        "finding": "Earlier top-level journal/session/awaiting state and firstgate code:null were stale/derived-shape artifacts; final checkpoint now names completedNEW2102/71177, terminalvalid0, and correctly derives firstgate last.code. Original raw unmodified.",
+        "evidence": ".output/stabilization-checkpoints/owner-refresh-2100.json"
+      }
+    ],
+    "accepted_checks": [
+      "Twenty sequential original result/gate pairs API2\u201321; each gate healthy, correctNEW2102run; max journal age15.338s and watcher age1.741395s at gate, max gate\u2192result completion0.796s. All decisive UI mutations and assertions are in this set.",
+      "NEW2102 resource journal admits21:03:41.662Z, final21:08:51.174Z valid/admittedtrue/resourceInvalidfalse/exit0. All decisiveUI ends21:08:40.021Z beforefinal.",
+      "Watcher audit198actual reads, prepared beforeadmission, maxgap2.0122129917144775s, no risk events; finalcompletedjournalread21:08:52.195899Z.",
+      "Earlier2059 adoption-only permit finalvalid0; watch bootstrap35.475542s after admission disclosed and grants noUIcredit. Parent attests0operatorAPIs there.",
+      "Raw directory700 and all41retainedfiles600. Countermetadata alone is not relied on:20resultpairs independently corroborated; total21includes operator-attested initialgetApp and stays below24budget.",
+      "Import/promotion logs and receipt agree sourcebefb, CI40229845819/attempt1/artifact12613021942, manifest623, tree543eecc7691de72abf3ddef541f03a48edfe6764c01a9b9c9d2301b7e061511f; import-status CIreceipt/provenance SHA256 hashes independentlymatch; 22befb\u219239afdiffpaths metadataonlymatch promotionallowedpaths.",
+      "Parent actualexecutor exit testimony53701/14417/71177/97597each0 is explicitly distinct from reviewer-owned session observation."
+    ],
+    "limits": [
+      "No archive re-download or whole promoted-tree rehash was performed in this evidence-only review; normal importer/promoter validation and retained receipts supply that provenance.",
+      "No source implementation or test verdict is issued."
+    ]
+  },
+  "parent_actual_executor_testimony": {
+    "import_promotion_53701": 0,
+    "adoption_holder_14417": 0,
+    "ui_holder_71177": 0,
+    "watcher_97597": 0
+  },
+  "checkpoint_sha256": "67aa5bd16e77fedddf158e9a1779c1f56d3c0868a904553ed3cbe3779b2f5ee8",
+  "raw_evidence_sha256": {
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/00-first-api-external-gate.json": "2dcc3bd748a8e2d9b4d8383d7d2ae0e2e8f8311670e75156bebb2edc1edc3401",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/02-initial-ax-gate.json": "58245f44de280bd80954b14f24803d8d0c645181da39b2a36bfb7b7fd74f5e4c",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/02-initial-ax-result.json": "18a33121946ee58e45cc21e902ce89149ba64388d1b79e4da95e1b2d0780af5a",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/03-new-owned-tab-gate.json": "ef91be7e50ab554f18982721fa7402bc0d0ef4af90efe4e74f83572ba3277e25",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/03-new-owned-tab-result.json": "1976019cb2fab3712651bcda6560674eb73352e40eb4330d4c7402f2984d90df",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/04-version-url-gate.json": "716fbaba64e75e6a11e3980b17aaf3b6f3d77f11fd049c8da599ec825b745b9e",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/04-version-url-result.json": "a2b91e1754b0d4651ce09a226209320742eecf9f322a1a926dc46e57a10f455c",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/05-version-navigate-gate.json": "ecf671958e705fe22a431bc36d832154d1c44ae3d9c068cc0512a1b8d880ca27",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/05-version-navigate-result.json": "1133de86b75b799e7acf4b0b010534a002f18e69781f285295eb67f1a341894e",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/06-profile-proof-gate.json": "f0f0336804112b564179c9619572db301883eea0f80c997864ae6829ec39bfe4",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/06-profile-proof-result.json": "c522152a6fa61a31f1fc0bca221f05ec86bb40269cea13fa9746750a7c4839a4",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/07-address-focus-gate.json": "3520e43d078544981619283788112bdd475de698d1bcd022e60559bf3fdf687f",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/07-address-focus-result.json": "f57e60605fb097167887932a47e9003c008d893306eb984c60bb9cd94a847b51",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/08-dev-url-gate.json": "f27d342f855789b4e52032d9e9f526026ef878096971a3632c1fe3384e33c955",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/08-dev-url-result.json": "55c0ab7328bc72d2b93e24564984247788d4d69b05fdbe8a380628e53f73ce67",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/09-dev-navigate-gate.json": "e16210f36380d27e50e74e45f3535b2e065a081d845ed7fe3fcab826931072d8",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/09-dev-navigate-result.json": "850ca3744985913186dab3ffa70e6135b4f496c939077fe545cc7a853eeca796",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/10-dev-before-gate.json": "1f0ebe2e1b0a88dda8b94e38d936c131b139b06cdec05770cd5b5b9b39e7a696",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/10-dev-before-result.json": "34347901e884d581014bba715dd76c001e0fabfee643f4c05d693a5b828ea2a5",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/11-actual-dev-reload-gate.json": "d3cca723a4c948a8daaf794823b4f1b98dc5517c34ca7fbc37cc5070be653e6d",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/11-actual-dev-reload-result.json": "6e120f1d014f0be5f17eb0107c33ed37af9c1b56b03f8ec9098351632a5705e3",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/12-dev-after-reload-gate.json": "497af915f9df57c52fc21f788496518986072211e5e8dc52557f4bdc09724384",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/12-dev-after-reload-result.json": "21f84edce67cdda719e3917a421fe3099696acf7c5099e6fe7d8fadfdbb0330e",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/13-store-address-focus-gate.json": "0a15bce79ade1f315d5e4aff38ab4b226120f49374739edd5f114ff3ef129c46",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/13-store-address-focus-result.json": "112071ea91911a248c3083a61ae0c5ef4b7d84b8c433433cea7fc4739878cd57",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/14-store-url-gate.json": "87222132582a357e180d6105939d16da65721cb1347de6c5402e0822f70df0d3",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/14-store-url-result.json": "874687d7f581fb090f6bb9b4024144f3a248c5b0817c60b7ec6138d801aa8fd0",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/15-store-navigate-gate.json": "d0cd329ff92b0bb7bf63383eb94c9c408e1bee19df999fb1cdbe80fb37a1e538",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/15-store-navigate-result.json": "50eafca585ba4147bc62abecb5aa4c12be6aba89e68549d16cf4eab050dc1a1b",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/16-store-installed-proof-gate.json": "f7cc7dc963799295a7acd4f19974692075cba7e7e8a387c55bd3d03412030ba1",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/16-store-installed-proof-result.json": "0c68204ccd15484c1d73296d01389a29813ae74770d20716fa6785a866bc880f",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/17-profile-popup-gate.json": "c5bdc2bfb0b18994ceb54a65b8690817d89e6277f100638cab1fa8ddbdf9575d",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/17-profile-popup-result.json": "e14f3eeccf417ab222c3c4d6068e353bff454c780e35e69fae6f06487a013b42",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/18-owner-account-proof-gate.json": "cc13e64a44d6a046b3b63b5c8a7827df35d61973533a9f37a24721221e0af614",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/18-owner-account-proof-result.json": "50a9f8199895b476df52c9db51f22b32e9e39023261c00fa165d76cde924503d",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/19-dismiss-profile-popup-gate.json": "2a58a39f8861b8a73fcceedc4285726568fff0dfd293b0fd948fd442f9bb054f",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/19-dismiss-profile-popup-result.json": "fc0c8e0ef8b95781f514aedf6cca7fe4fff384fe73f9239f8c7b513933af5d1c",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/20-close-owned-inspection-tab-gate.json": "8b6264f9a7e7bbb267c69e23e7ab5ad1f3f2f64e1f22630c4357c629ff5fba34",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/20-close-owned-inspection-tab-result.json": "91b664e88f904c6f6c0c9d945a21a376ddc94a706b459344156fcea9848115a2",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/21-restored-owner-focus-gate.json": "577e57152fbc6d39fd62bb9d1037f5e715aead52562017fd397ffe97a64e4b4b",
+    ".output/stabilization-checkpoints/owner-refresh-2100-raw/21-restored-owner-focus-result.json": "d35357ecbb427280c2dd173ca5705feaadf7d1c69ec433e1f05e54529eb13102"
+  },
+  "next_action": "Owner may publish bounded native owner adoption proof with initialgetApp protocol limitation; preserve completedresourcejournals/provenance and continue D295 independently. Do not rerun UI merely to repair historical firstcall evidence."
+}

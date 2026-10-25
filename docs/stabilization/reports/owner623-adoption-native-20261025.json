@@ -1,0 +1,237 @@
+{
+  "task_id": "owner-refresh-2100",
+  "status": "UI_STOPPED_VERIFIED_OWNER_REFRESH",
+  "at": "2026-10-25T21:09:55.538481+00:00",
+  "native_api_calls": 21,
+  "native_api_budget": 24,
+  "CUA_initialized": true,
+  "journal": "docs/stabilization/resource-journals/owner-reload-20261025-2102.jsonl",
+  "guard_root_session": 71177,
+  "raw_dir": ".output/stabilization-checkpoints/owner-refresh-2100-raw",
+  "scope": "Owner Profile8 actual DEV Reload/ID/version/path/enabled/pin and Store version/pin only; preserve original tabs and close only own inspection tab",
+  "prohibited": "No API or CUA init before combined PROMOTED+literalADMITTED; no scripts/DevTools/CDP/codepaste/profiletokens/auth/guest/product/mode writes/build/source/release",
+  "next_action": "Owner refresh complete; no further UI under the ended lease. Parent may resume guarded stabilization from current canonical records.",
+  "promotion_parent_receipt": {
+    "source": "befbdf56174d0d4c548cf006415c8d27a3277a97",
+    "ci_run": 40229845819,
+    "artifact": 12613021942,
+    "digest": "sha256:fc012f880ff2be74dce8914948802857c1167553cbf56cd34efa93e8793941f3",
+    "version": "0.2.623",
+    "tree": "543eecc7691de72abf3ddef541f03a48edfe6764c01a9b9c9d2301b7e061511f",
+    "promotion_at": "2026-10-25T20:59:53.041Z",
+    "actual_parent_session": 53701,
+    "exit_code": 0,
+    "source_binding": "Parent-provided normal promotion provenance: source befbdf56174d0d4c548cf006415c8d27a3277a97; runtime-equivalent metadata descendant 39af. Operator independently observed DEV Reload and version/path/identity, but did not independently rehash the artifact or establish source equivalence through UI."
+  },
+  "old_permit_limit": "Parent ends adoption-only2059lease because watcher preUIbootstrap gap35.48sec; zerooperatorAPIs, new fullywatched lease required.",
+  "new_lease": {
+    "run_id": "owner-reload-20261025-2102",
+    "root_actual_session": 71177,
+    "journal": "docs/stabilization/resource-journals/owner-reload-20261025-2102.jsonl",
+    "watcher": "/root/owner_watch_2100",
+    "watcher_preholder_first_audit": "2026-10-25T21:02:16.896Z",
+    "status": "TERMINAL_VALID_EXIT_0_UI_STOPPED",
+    "pending_journal_historical": "docs/stabilization/resource-journals/owner-reload-20261025-2102.pending.jsonl",
+    "root_exit_code": 0,
+    "final_event": {
+      "schema": 1,
+      "at": "2026-10-25T21:08:51.174Z",
+      "runId": "owner-reload-20261025-2102",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "native_api_calls": 21
+  },
+  "old_permit_final": {
+    "actual_root_session": 14417,
+    "exit_code": 0,
+    "final_at": "2026-10-25T21:01:20.314Z",
+    "decision": "valid",
+    "operator_api_calls": 0,
+    "journal": "docs/stabilization/resource-journals/owner-current-20261025-2059.jsonl",
+    "status": "HISTORICAL_ADOPTION_ONLY_ZERO_UI"
+  },
+  "documentation_only_calls": 1,
+  "completed_at": "2026-10-25T21:09:02.680074+00:00",
+  "owner": {
+    "account": "arman@armansadeghi.com",
+    "profile": "Profile 8",
+    "evidence": ["06-profile-proof-result.json", "18-owner-account-proof-result.json"]
+  },
+  "development": {
+    "before_version": "0.2.622",
+    "actual_manager_reload": true,
+    "after_version": "0.2.623",
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "enabled": true,
+    "pinned": true,
+    "evidence": "12-dev-after-reload-result.json"
+  },
+  "store": {
+    "actual_installed_version": "0.2.577",
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "source": "Chrome Web Store",
+    "enabled": true,
+    "pinned": true,
+    "evidence": "16-store-installed-proof-result.json"
+  },
+  "cleanup": {
+    "owned_tab_closed": true,
+    "original_single_vault_tab_restored": true,
+    "original_focus_restored": true,
+    "evidence": "21-restored-owner-focus-result.json"
+  },
+  "limits": [
+    "First getApp output truncated and not used as decisive proof; fresh original raw AX retained at API 2.",
+    "Final CUA top-level counter display was stale (2); closure-generated gate/result filenames prove sequential APIs 2 through 21, plus initial getApp API 1.",
+    "Artifact provenance is parent promotion receipt; UI version alone does not assert source.",
+    "No product behavior, guest acceptance, release or dashboard evidence claimed.",
+    "Holder finalized: root actual 71177 exit 0 and watcher actual 97597 exit 0; final NEW2102 valid/resourceInvalid false. No further native APIs authorized under this ended lease."
+  ],
+  "raw_evidence_directory": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/owner-refresh-2100-raw",
+  "per_api_gates": [
+    {
+      "file": "00-first-api-external-gate.json",
+      "before": "2026-10-25T21:07:00.065898+00:00",
+      "code": "RESOURCE_WATCH_HEALTHY",
+      "raw_code_pointer": "last.code",
+      "journal_at": "2026-10-25T21:06:54.007Z",
+      "watcher_read_at": "2026-10-25T21:06:59.946816Z",
+      "explanation": "Earlier derived code null was a checkpoint parser mistake: it searched journal/guard keys, while this original external gate stores the event at last and watcher data at watch_tail. Original raw unchanged; last.code is RESOURCE_WATCH_HEALTHY. Saved pre-call gate time is retained; no reconstructed API-1 completion timestamp or raw AX is claimed."
+    },
+    {
+      "file": "02-initial-ax-gate.json",
+      "before": "2026-10-25T21:08:13.443Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "03-new-owned-tab-gate.json",
+      "before": "2026-10-25T21:08:18.451Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "04-version-url-gate.json",
+      "before": "2026-10-25T21:08:18.537Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "05-version-navigate-gate.json",
+      "before": "2026-10-25T21:08:18.829Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "06-profile-proof-gate.json",
+      "before": "2026-10-25T21:08:18.834Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "07-address-focus-gate.json",
+      "before": "2026-10-25T21:08:22.625Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "08-dev-url-gate.json",
+      "before": "2026-10-25T21:08:22.639Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "09-dev-navigate-gate.json",
+      "before": "2026-10-25T21:08:22.829Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "10-dev-before-gate.json",
+      "before": "2026-10-25T21:08:22.839Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "11-actual-dev-reload-gate.json",
+      "before": "2026-10-25T21:08:25.775Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "12-dev-after-reload-gate.json",
+      "before": "2026-10-25T21:08:25.882Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "13-store-address-focus-gate.json",
+      "before": "2026-10-25T21:08:30.688Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "14-store-url-gate.json",
+      "before": "2026-10-25T21:08:30.700Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "15-store-navigate-gate.json",
+      "before": "2026-10-25T21:08:30.901Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "16-store-installed-proof-gate.json",
+      "before": "2026-10-25T21:08:30.911Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "17-profile-popup-gate.json",
+      "before": "2026-10-25T21:08:35.315Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "18-owner-account-proof-gate.json",
+      "before": "2026-10-25T21:08:35.351Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "19-dismiss-profile-popup-gate.json",
+      "before": "2026-10-25T21:08:39.169Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "20-close-owned-inspection-tab-gate.json",
+      "before": "2026-10-25T21:08:39.178Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "file": "21-restored-owner-focus-gate.json",
+      "before": "2026-10-25T21:08:39.225Z",
+      "code": "RESOURCE_WATCH_HEALTHY"
+    }
+  ],
+  "watcher_terminal_report": {
+    "final_at": "2026-10-25T21:08:51.174Z",
+    "valid": true,
+    "exit_code": 0,
+    "resource_invalid": false,
+    "actual_polls": 198,
+    "max_actual_gap_seconds": 2.012213,
+    "no_risks": true,
+    "source": "independent owner_watch_2100 report"
+  },
+  "guard_terminal": {
+    "actual_root_session": 71177,
+    "actual_root_exit_code": 0,
+    "watcher_actual_session": 97597,
+    "watcher_exit_code": 0,
+    "final_journal": "docs/stabilization/resource-journals/owner-reload-20261025-2102.jsonl",
+    "final_event": {
+      "schema": 1,
+      "at": "2026-10-25T21:08:51.174Z",
+      "runId": "owner-reload-20261025-2102",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "independent_review": "docs/stabilization/reports/owner623-evidence-review-20261025.json",
+  "acceptance_scope": "Bounded owner installation refresh only; independent A PASS for observations, B PARTIAL full initial-call protocol. No product case or release acceptance.",
+  "current_source_limit": "Loaded artifact sourcebefb and then-current metadata-equivalent39af; subsequent D295 harness edits require new CI eligibility and are not loaded-source proof."
+}
