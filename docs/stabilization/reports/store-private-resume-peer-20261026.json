@@ -1,0 +1,58 @@
+{
+  "task_id": "private_store_evidence_peer",
+  "at": "2026-10-26T23:19:24.343904+00:00",
+  "zero_authorship": true,
+  "status": "PASS_BOUNDED_AUTHENTICATED_PRIMARY_AND_MAIL_EVIDENCE",
+  "source_report_sha256": "736e420343f5737ee301cc40618dfc262dd2371de72c46ec80eb1105a8901d7d",
+  "A": {
+    "verdict": "PASS_BOUNDED_CURRENT_AUTHENTICATED_FACTS",
+    "primary_item": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "published_version": "0.2.577",
+    "draft_version": "0.2.577",
+    "observed_status": "Published-public; Draft unpublished; selected Published available to public",
+    "pending_limit": "No pending/review shown in inspected package/status/published views; no mail/public-listing inference",
+    "mail": "Existing publisher Gmail exact official-sender/date search retains one visible Oct23 publication result and opened body confirms primary577/Public. Not exhaustive across other senders/spam/trash; exact global result count not independently proved by retained diff alone.",
+    "restoration": "Retained restored fullAX shows selected original Vault URL and one visible owner tab; initial OS foreground unknown.",
+    "limits": "Read-only evidence review, no independent native UI replay; diff-form published/mail evidence accepted with full package/status context. Auth recovery cause unobserved."
+  },
+  "B": {
+    "verdict": "PASS_BOUNDED_PROVENANCE_AND_CONTROLS_WITH_EXPLICIT_LIMITS",
+    "all8_referenced_hashes_match": true,
+    "journal_final": {
+      "schema": 1,
+      "at": "2026-10-26T23:18:20.185Z",
+      "runId": "release-private-resume-20261026-2316",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "watch_independent_audit": {
+      "actual_reads": 92,
+      "max_actual_gap_seconds": 2.0080919999745674,
+      "before_admission": true,
+      "alerts": []
+    },
+    "procedure_limits": [
+      "Exact API timestamps are not independently retained; reported observation window follows guard admission, but per-call fencing/timing is operator-reported.",
+      "Actual OS exits0 are reported by operator; completed valid0 journal and completed watcher audit independently verified.",
+      "No raw authentication challenge/action transcript supplied in these eight retained evidence files; wrong-autofill/user-changed-app chronology is operator-reported, recovery cause unknown.",
+      "Watcher template incorrectly says prepared before holder; operator explicitly corrects it: watcherREADY before admission/UI, after holder opened.",
+      "Upload new package appears as an ordinary AX button without disabled marker; no click or upload occurred.",
+      "No screenshot or full independent UI replay; raw Vault/Gmail AX remains private and must be narrowly sanitized before public commit."
+    ]
+  },
+  "actions": {
+    "browser_calls": 0,
+    "AI_calls": 0,
+    "heavy_jobs": 0,
+    "source_edits": 0,
+    "commits": 0
+  },
+  "cleanup": {
+    "own_processes_created": false,
+    "heavy_lease_currently_absent": true
+  },
+  "next": "Parent may update same Oct26 daily claim and canonical577 observed status with these limits; do not infer current-source release eligibility or perform duplicate submission from status evidence."
+}
