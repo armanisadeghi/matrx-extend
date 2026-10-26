@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "reviewer": "/root/owner_9a_peer_0348",
+  "zero_authorship": true,
+  "at": "2026-10-26T03:49:42.371202+00:00",
+  "scope": "bounded actual Profile8 development Reload and paired installed Store identity; no product acceptance",
+  "verdict_A_installation": {
+    "verdict": "PASS_BOUNDED",
+    "observations": {
+      "actual_profile": "Raw011 actual Profile8 path, Chrome156 arm64 and Arman armansadeghi.com title; exact Chrome account email not freshly displayed.",
+      "development": "Raw015 identifies DEV ID cihdmkcdjjckfhjpgoedmgfpoljebaml, 0.2.624, Unpacked extension, stable Loaded from path, enabled On and pin On. Raw016 gate invokes chrome9.click(48), where priorAX48 is Reload; raw017 contains explicit Reloaded toast with same identity/path/enabled/pin.",
+      "paired_store": "Raw021 primary hnfolienncfklkgmdjjmhhegglimlamg, 0.2.577, exact Source Chrome Web Store, enabled On and pin On. No publisher-state claim.",
+      "cleanup": "Raw022 closes owned inspection tab; raw023 owner original sole tab retained. Raw003 and raw027 full AX results are byte-identical strings: original Guest User Research Repository template, same two tabs and selected HTML focus restored."
+    },
+    "product_passes": 0,
+    "defect_closures": 0
+  },
+  "verdict_B_provenance_controls": {
+    "verdict": "PASS_BOUNDED_INITIAL_CAPTURE_PARTIAL",
+    "observations": {
+      "artifact": "Fresh official GitHub metadata confirms full CI40263371440 push/main success exact9a055021e6699c1aeaa434ccb373e2aa3955e7fe, attempt1, expected CI workflow; artifact12626000349 nonexpired exact source/run and digest37a3f42f80aea7670cf979696d5c15a89cbdd76e8ea3302cba250c0b694d99ec.",
+      "promotion": "Existing receipt03:46:11.939 exactsource/main, development-only eligibleStore false, version624, 2731files. Independent hashReleaseTree stable directory matches b362a3235261326aaa9d533c44030264fc8dcf172cb49c9fee0e79f62ea6422b.",
+      "raw_integrity": "All52 raw files hashes match actor manifest, directory0700/allfiles0600. 26 numbered gate/result pairs002-027 verified; first inventory001 remains transcript-only, actual call count27 operator-attested.",
+      "individual_gates": "All26 preserved starts use this exact run healthy/admitted current journal, maxage15.502s; watcher maxage1.892994s; every end afterstart, no risk/refusal/pending.",
+      "resource": "Exact completed journal SHA bf2a3e55cc2fd412d89a2f8b53373fa716a185c3a9213ec28332008913ddcc36 finalvalid0 at03:48:09.109; no unsafe/pending. Watch183actualreads/maxgap2.012359458s/noalerts.",
+      "process_cleanup": { "94599": "absent", "94646": "absent" }
+    },
+    "limits": [
+      "First001 original inventory and API002 automatic getApp AX only tool transcript; exact initial native invocation/completion times not independently recoverable. Full initial procedure remains PARTIAL, while decisive AX003+ retained.",
+      "No browser-internal SHA measured. Exact artifact receipt/tree plus native Reload/path/ID bind bounded adoption, not browser SHA attestation.",
+      "Actual holder/watch exec session handles were lost by parent output truncation; final journal exitCode0 and independently absent exact PIDs are distinct evidence, not recovered OS terminal statuses.",
+      "No product case, sign-in, model, server, Store publisher, pending-status, release or health claim. Unrelated raw content remains private and must not be published."
+    ]
+  },
+  "missing": [
+    "Fresh exact Chrome account email",
+    "Preserved full first-entry result/timestamps",
+    "Browser-internal SHA",
+    "Recovered original OS exec terminal handles"
+  ],
+  "extra": [],
+  "misunderstood": [],
+  "evidence_sha256": {
+    ".output/stabilization-checkpoints/owner-9a-refresh-0346.json": "e7147d7c24310e67a07caec291e44e79cffcd814acb84257289ed9d3f835d8b4",
+    "test-results/ci-dev-promotion-receipt.json": "f1908085cfe5e7b17d2ed97fd458f2625dd792f51f7dc7f2a7cbed5b5912c561",
+    "docs/stabilization/resource-journals/owner-9a-refresh-20261026-0340.jsonl": "bf2a3e55cc2fd412d89a2f8b53373fa716a185c3a9213ec28332008913ddcc36",
+    ".output/stabilization-checkpoints/owner-9a-watch-0340.jsonl": "a2619c3a74b25bcd194d5d6cf25e69c3a54eda955785ace1b72d1fe6de223ab5",
+    ".output/stabilization-checkpoints/owner-9a-watch-0340-report.json": "7542d5fa33deb14fdb958664f6a7625fabe97d843f76964fa00212aa7111ee9c",
+    "docs/stabilization/reports/owner624-9a-native-20261026.json": "59107697d717657d27190b49b025148c1b9426de2cce4c35208555c435aa8bb6"
+  },
+  "raw_manifest_verified": {
+    "002-gate.json": "cba736ffa322dd861776052d4d69e2510f189fc78692b041cf2d4f8d33169517",
+    "002-result.json": "048d9ccc08643e8c52c4a0bbffe9cf1b58934e1043b44a6eb564ed511fb88197",
+    "003-gate.json": "06e4e9538446cc80d57cb1fae037d73d2e0fb89db71e26bd080cb72ed71dd61a",
+    "003-result.json": "93026bd1dc4d44c2a3e9c10a8ea364f30fc72cf2cccb3d6543679a655cef44e2",
+    "004-gate.json": "b5ca601fb996144040cce4c627ad78bf2f9c1842be31ca76a71c208b6997a89f",
+    "004-result.json": "db82c61650bc08f6d947e90f95a058ec1a6c22ae5b2d6140ceb61ab4df948279",
+    "005-gate.json": "3013361bc4e92424b0ed4f8b5cf785e47f607d7a200b10b9256e9f948b4f9669",
+    "005-result.json": "db07b7ca5042d474812d38bf86964e34c2e81f40f508a89790a2a446e4cd2f9c",
+    "006-gate.json": "52a7bb021db5b8292d87afa6ad4329159dc080daf03ca285de722adb1e2fbc36",
+    "006-result.json": "0a9d75f059d765308eb3250065b05c09872da129c6d1764932e611a8e8d46502",
+    "007-gate.json": "8851f96a257b2643139d4ba502a4651efd3be46385e86da948231846d406ea52",
+    "007-result.json": "b2153764e909c3670d661bf209cb29cd9144e99921d1a9674940ed031a0a10ee",
+    "008-gate.json": "5a32ccaa51809f37d9a472db699c5042d153e77c8d2f97505f3ed0fa8046eeec",
+    "008-result.json": "694a937c6b8c8b11cae16af4cc9a71e9e4166cf0566a8fa4eae1e9f32c0a959c",
+    "009-gate.json": "f5ce8772f4c718d9238fdf3c4c925c6516544cf2f96d695e062c0974209cbcf6",
+    "009-result.json": "d7ad030b37e6fec027c65573c63249e94927e7fa6f95e1fd40da24bb56e3a492",
+    "010-gate.json": "a9f609eb4c06556982e56e52f0c530952ff45021b4bdb246ac8c30d1010ad170",
+    "010-result.json": "ca5d86b0520a8ca2a00fe8440f6a60ef517f4836eafbf75c2006662eea6d1a97",
+    "011-gate.json": "f752501188aa014198d81d61489e7dcce4121c4beb803fe766bb42eafc663fa0",
+    "011-result.json": "98a8268a6599b477ad4fa56797284af05b6a00f9de75075a0b4d4c8258ee834f",
+    "012-gate.json": "2945189fe4b6f91988cd4d1505eebdb6826cddecc872f09e5cb0f7c264643fad",
+    "012-result.json": "8d868949a2001d1c572db0e917076758c944370ab73ae6ba58edc6a7d20671b5",
+    "013-gate.json": "ab0b954a4bf4adb6608697dade3efb0599d47e27489affa70ab1211de23883e5",
+    "013-result.json": "c71dc4d94b60e405afa2dcf2f30b161c695aa7c414edddee0f640372b06f5cd5",
+    "014-gate.json": "8d9f5fedcc2f3d239aece1f97c8ad2cbffb429a3a64c484b5fef570ce7271992",
+    "014-result.json": "df5567536c13cdf288d892d71691297d95fef5b81b7ee768e21d616d9fef3688",
+    "015-gate.json": "8eb4a02e7d533e174dbf641be582298f62a258e9cd5cb9cc312ac4bceb9da030",
+    "015-result.json": "6bcb86584c571404747c7194c9be44d4cac9a75ab523013d951206e2cac1c401",
+    "016-gate.json": "ae992c591fb6673c8a5b062c3b7770f9a59cc1ba118a764391bbd9bcc3884c6d",
+    "016-result.json": "a9d88a0804346888f038342ae8a4eae8d6212efbc4e0047203076eaa97531ace",
+    "017-gate.json": "4412658e9342596da41dd10fc6a82d831ea2d837e1f295b9116314fd42106866",
+    "017-result.json": "b6938f6a78aec544261012f447c60521c71f3a3a2ef9f1d668bd16d3b6fb6997",
+    "018-gate.json": "b8f07a509f96078592e751db71f77878d47c3d4153481bce8ddeca96bc256797",
+    "018-result.json": "bb066ba73ee1b6a05fdfc9ce113d9b5da9a29388fe1a78171b77b1f353097845",
+    "019-gate.json": "d0cf12366df7a0868c5008e96beea4d604d7e913e17656b39fb87ea071f1ad6e",
+    "019-result.json": "a92c006b48e45c426134348cfd3bdf9ef7466e60a2f556f331ae84473915744e",
+    "020-gate.json": "a92a2d3bf0b86ef2ece86fa8cad377074c6135b5e98ac8bebfaa0098dec58dec",
+    "020-result.json": "5cf740b273e64ea8a3e8d38b19cd206ea571a37e6fa8661c747685db11ab9a44",
+    "021-gate.json": "23d0781f2d5779667095a9d64448cca196fcae4b70fdac45f9489d60c4b18d52",
+    "021-result.json": "6944743ba7f7a0eb70d74552c82e3baa0b9a74566eeb62eb4ef45bba8d44f3cf",
+    "022-gate.json": "c01ba080cf215a44259289c06de68251f57b076203630dc62d42859ba658a258",
+    "022-result.json": "8e34d69b641c302315039f33399e9a6fb509698277214fd0a7b2199122a55aff",
+    "023-gate.json": "7d477eb17b26475d6be7ba35a2e31105d0d33de759c7294a3a4b4c62a925bacb",
+    "023-result.json": "cb20ee1a911a3c93b4005f63cf8d00716b795f074fde28846e1906404daac36d",
+    "024-gate.json": "a575db3c05aa74189ce669b81924626bf3700cc63fbef6b831d32e49bbe2bce3",
+    "024-result.json": "a0f462d4e519d47dd44a06f9f28d6bcd881cde1edd6550281c3d6de4b9a636dc",
+    "025-gate.json": "f2a510c9d5b7460abb704a15d655f245fee20c4bb20f9c524a3e7a0a0a9e5fb1",
+    "025-result.json": "c8c0caaf2a5092583ba4ee777eae7bce2495dd0faf09b54d421d8e2635f04f44",
+    "026-gate.json": "07b6c00db4d777c51e8ea24a7de8f1171eb8c3106b551644faad2b21cb1b45dc",
+    "026-result.json": "eafa6af10499d2be023efd2cf1a6b932e49eba8c9ca2b6ca7610f116510c4815",
+    "027-gate.json": "cfe36074cee780788f061380918d466570f31b101a5de0423dd6c4ff152baa36",
+    "027-result.json": "89973486cc72b214a3c1e6366c971900e02748011e57d36cf0bdc9f47625f5e1"
+  },
+  "next_action": "Parent integrate sanitized bounded installation report and this peer; preserve explicit limits. No further UI or new acceptance credit.",
+  "records_commit_status": "Private scratch only; no tracked source or Git edits/commits.",
+  "public_report_review": {
+    "sha256": "59107697d717657d27190b49b025148c1b9426de2cce4c35208555c435aa8bb6",
+    "verdict": "PASS_BOUNDED",
+    "observations": "Reviewed intended public summary against originalAX, receipt, journal and watcher. It preserves identity/email/browserSHA/firstentry/processhandle/product limits, exact artifact and scoped nativeReload, and does not publish raw unrelated UI contents. Parent processabsence attestation matches fresh independent PID checks.",
+    "minor_limits": "Top-level at records operator UI-stop report time before finalization; explicit completed journal03:48:09 and parenttermination03:49:16 show later authorities, so no inference those existed at earlier top-level time."
+  }
+}
