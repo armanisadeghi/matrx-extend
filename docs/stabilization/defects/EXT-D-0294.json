@@ -69,7 +69,7 @@
       "ruling": "CONFIRMED: project through existing allowlisted safe diagnostics then synchronously publish on meaningful callback update before returning; raw unknown diagnostic fields are never dumped. Guard updates within same stage and termination after observation."
     }
   ],
-  "next_action": "D294sourceCIpassed;2b624normalartifact/nativeownerReload nowverified independently, but newer c85lockruntime update awaitsCI/adoption. After normalcapacity and newcurrent-runtimeeligibleartifact/ownerReload, independently retest originalinterrupted native diagnostic +adjacentmember/auth/Save. Separateguest023d attempt0UI/0AI resourceinvalid givesno productverdict. No D294nativeclosure/release.",
+  "next_action": "Currentcff624ownerinstallationverified; D294originalnative diagnostic/adjacentmember test remainsunverified. Nextwell-definedA D217stale-profile-retry has reviewed changeddrivers+durablestages, requires exactcurrent-sourceCI artifact and privateordinarymember/approvedorgfixture readiness. NormalA dispatchclean-firstbeforelocalguard; awaitindependentoriginal/adjacentnativeproof beforeD294closure. Store577/58aaguestpass doesnotcloseD294.",
   "plan_reverify": "docs/stabilization/reports/member-checkpoint-contract-reverify-20261025.json",
   "implementation_lane": {
     "owner": "/root/d294_resume_fix_2309",
@@ -95,16 +95,12 @@
     "artifact_adopted": false
   },
   "current_descendant": {
-    "source": "2b534c5c9a0fd5210b86dfdbb4cacaf924bec675",
-    "run_id": 40249547558,
+    "source": "cffc5ef5fcc3e5c86e503f89adebac693761fd8e",
+    "run_id": 40258385505,
     "conclusion": "success",
-    "development_artifact_id": 12620014847,
+    "development_artifact_id": 12624001313,
     "disk_promoted": true,
     "owner_Chrome_reload": "verified_bounded_Profile8_resource_valid0",
-    "native_D294_retest": "unverified",
-    "newer_main": "c85aa396e573b1e55616d482b9a5dca9d5e715e2",
-    "newer_CI": 40253581201,
-    "newer_CI_status": "in_progress",
-    "newer_artifact_adopted": false
+    "native_D294_retest": "unverified"
   }
 }
