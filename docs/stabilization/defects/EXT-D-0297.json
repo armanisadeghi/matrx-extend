@@ -1,0 +1,54 @@
+{
+  "id": "EXT-D-0297",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T03", "EXT-F-0002-T04"],
+  "title": "Native harness omission silently removes live action guard",
+  "surface": "Supporting native browser harness callback/session composition",
+  "auth_mode": "All callers of shared native harness; reproduced path signed-out publishedCRX guest",
+  "severity": "S2: resource enforcement gap invalidates guarded acceptance; no unsafe escalation or public Chat outage established",
+  "priority": "P1: enforce canonical guard before further affected native runs",
+  "state": "in-fix",
+  "owner": "/root / native_default_guard_fix",
+  "preconditions": [
+    "runNativeSidepanelQa caller omits optional resourceAction (actual guest-chat caller).",
+    "Guarded native run admitted, later journal CPU_PENDING without subsequent CPU_RECOVERED."
+  ],
+  "reproduction": [
+    "Observe native report and matching journal from40403343034 on79.",
+    "Trace caller omittedresourceAction through sharedharness optional rawpanel branch and exposed callback sessions.",
+    "Execute default-caller composition with controlled healthy→pending→recovered journal and transport recorder; meaningful RED/GREEN pending implementation."
+  ],
+  "expected": "Omission uses canonical existing await/runNativeResourceAction gate, never raw native transport. Pending/stop/stale refuse or wait under existing policy; ownedtermination remains possible.",
+  "actual": "Source composition supplies rawpanel if callback omitted. Original same/fresh requesttimestamps followCPU_PENDING; exact trustedinput timestamps not retained, so no inventedclick chronology.",
+  "cause": "Caller-wiring omission at sharedharness composition; underlying pending parser and threshold policy correctly refuse pending.",
+  "reproducibility": "Source path and retained official chronology independently confirmed; synthetic defaultcaller RED/nativeoriginalretet pending.",
+  "source_sha": "79f526fb1adf875752e55cb6c605bc90dd27b0ea",
+  "evidence": ["docs/stabilization/reports/published-crx-40403343034-unverified-20261026.json"],
+  "independent_diagnosis": {
+    "reviewer": "native_pending_diagnosis",
+    "private_report_sha256": "a1171b5eff47fad611ff10d711b0a1e3632173288dda2c868822daddfd83bad2",
+    "verdict": "confirmed caller-wiring gap; standalonefacadetests insufficient; actualcomposition regression needed"
+  },
+  "related_defects": ["EXT-D-0296"],
+  "related_limits": [
+    "RawPlaywrightPage methods separate surface; no genericdeep proxy or globalcoverage claim.",
+    "OriginalpublicCRXrun independently unverified by backend726→466 drift and nativeinvalid3; no public productregression claim."
+  ],
+  "fix_sha": null,
+  "cleanup": "Originalexternalrunterminal; no owned credential/fixture staged. No runtimepolicy/threshold/runner bypass.",
+  "next_action": "Defaultcanonical harness gate and callbackCDP-session composition; actualdefaultcaller RED/GREEN+guardedcompile; fresh independentreview; integratedsourceCI and normalnativeoriginalretet beforeclosure.",
+  "transition_history": [
+    {
+      "at": "2026-10-26T21:36:34.048697+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Fresh independent source/journal diagnosis confirms omission path; no exactinputtimes invented."
+    },
+    {
+      "at": "2026-10-26T21:36:34.048697+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Exclusive native_default_guard_fix source/test lane; parent integration."
+    }
+  ]
+}

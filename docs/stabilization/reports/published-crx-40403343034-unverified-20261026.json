@@ -1,0 +1,50 @@
+{
+  "at": "2026-10-26T21:36:34.048697+00:00",
+  "run": 40403343034,
+  "job": 121854663778,
+  "source": "79f526fb1adf875752e55cb6c605bc90dd27b0ea",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "lane": "A",
+  "runner": "original standard macos-15-intel, public repository unpaid",
+  "artifact": {
+    "id": 12690092049,
+    "digest": "sha256:dc43d2a71c6a1b6445cfe5055baa98825c7e38c43d528330b139386c3c355076"
+  },
+  "status": "UNVERIFIED_NO_ACCEPTANCE_CREDIT",
+  "installation": {
+    "type": "published_store_crx_unpacked",
+    "version": "0.2.577",
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "tree": "039a23c816acaaf16d8f3978baa2db1c2f57967fc3caf1e3da5221f7c465e739",
+    "artifact_unchanged": true,
+    "actual_Store_installed": false,
+    "published_source_from_package": null
+  },
+  "observations": {
+    "first_sameconversation_postreload_requests": [
+      "2026-10-26T21:27:15.634Z",
+      "2026-10-26T21:27:34.553Z",
+      "2026-10-26T21:27:52.199Z"
+    ],
+    "transport": "All3 actual200/semanticcompletion success/terminal_answer; same-conversation identity verified by canonical transport observer",
+    "screenshots": "Root inspected first/same/postreload original images; visible partial assistant replies contain owned pagecodes, guest G and composer. Full body/completion from retained DOM+streamreport, not screenshotalone.",
+    "credit": "Observations only. No acceptedproductcase/fixclosure/Storeinstalled/privatepublisherstatus."
+  },
+  "backend": {
+    "before": "726827db2b08ab714f420ae23b7f9676fd3859f0",
+    "after": "4669a8a5801dadc0cdcabc0db06f225657b81b6c",
+    "stable": false,
+    "limit": "Health bracket changed; exact deployed SHA perrequest unproven. Driver correctly changed overallpass to unverified."
+  },
+  "resources": {
+    "package": "valid0",
+    "browser": "valid0",
+    "native": "invalid3",
+    "native_limit": "CPU_PENDING21:27:27.835, no recordedrecovery beforechild1/final21:28:11.704. No WATCH_UNSAFE or forcedstop. Finalinvalid arose childfailure/backenddrift whilepending; do not claim unsafeescalation.",
+    "enforcement_gap": "Independent source diagnosis confirms omitted resourceAction caller can receive rawpanel. Postpending requesttimestamps do not establish exact native inputtimes."
+  },
+  "next": "Repair shared defaultcaller guard under EXT-D-0297, focusedRED/GREEN/compile/independentreview and nativeoriginalretet; no blindrerun/serverrepair inferred. Dailyprivatecheck incomplete, no upload/submission/newclaim.",
+  "counts": { "accepted_product_passes": 0, "defect_closures": 0, "releases": 0 },
+  "evidence_private": ".output/stabilization-checkpoints/public-crx-40403343034",
+  "cleanup": "Externalrunterminalfailure; childlocalwatch88573actual130 intentionallystopped; parentwatch79182actual1. No authsecret/fixture staging. Owned remoteprofile deletion not independently read back."
+}
