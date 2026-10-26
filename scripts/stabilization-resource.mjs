@@ -57,6 +57,7 @@ let operatorStopped = false;
 let cpuPending = false;
 let unconfirmedGroupSignal = false;
 let startupBracket;
+let stopRequestsOpen = true;
 const flags = new Map();
 let command = [];
 for (let i = 0; i < raw.length; i++) {
@@ -722,6 +723,8 @@ async function main() {
   let previous;
   let swapWindowAt = 0;
   const stopSignal = (signal) => {
+    // Repeated interrupts confirm the same stop, never a second journal write.
+    if (!stopRequestsOpen || stop) return;
     stop = true;
     emit('RESOURCE_STOP_REQUESTED', { runId, signal });
     wakeStop({ stop: true, signal });
@@ -778,11 +781,20 @@ async function main() {
       await writeFile(join(lock, 'owner.json'), JSON.stringify(owner) + '\n', { mode: 0o600 });
     }
     while (true) {
-      const result = await Promise.race([
-        sleep(policy.watchIntervalSeconds * 1000).then(() => null),
-        settled ?? new Promise(() => {}),
-        stopEvent,
-      ]);
+      let watchTimer;
+      let result;
+      try {
+        result = await Promise.race([
+          new Promise((done) => {
+            watchTimer = setTimeout(() => done(null), policy.watchIntervalSeconds * 1000);
+          }),
+          settled ?? new Promise(() => {}),
+          stopEvent,
+        ]);
+      } finally {
+        // A child/stop winner must not leave a referenced watchdog wait alive.
+        clearTimeout(watchTimer);
+      }
       if (result?.stop) {
         operatorStopped = true;
         if (cpu.pending) resourceInvalid = true;
@@ -987,6 +999,9 @@ try {
     }
   }
 } finally {
+  // main() has returned from ownership cleanup; failures retain their lease.
+  // Only terminal journal publication remains, even without an operator stop.
+  stopRequestsOpen = false;
   if (journal) {
     try {
       const exitCode = process.exitCode ?? 0;
