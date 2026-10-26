@@ -7,8 +7,8 @@
   "auth_mode": "all; no identity dependency",
   "severity": "S2: terminal evidence becomes inconsistent; no unsafe product behavior established",
   "priority": "P1: restore reliable guarded acceptance without weakening refusals",
-  "state": "in-fix",
-  "owner": "/root/resource_stop_fix_0402",
+  "state": "fixed",
+  "owner": "/root",
   "preconditions": [
     "Browser permit guest-mode-20261026-0354 admitted normally; designated guest native UI completed and restored original state before stop.",
     "First Ctrl-C starts normal finalization; parent mistakenly sends a second SIGINT while process still exists."
@@ -20,20 +20,22 @@
   ],
   "expected": "Completed cleanup and finalization settle consistently; repeated or late stop signals cannot write to a sealed journal. First stop, active ownership, unsafe/pending decisions and genuine journal failures remain strict.",
   "actual": "Finalvalid0 conflicts with actual OSexit1 and RESOURCE_JOURNAL_WRITE_FAILED/closed-fd stack. Dedicated watcher completed0/173reads/noalerts; no further UI after last action.",
-  "cause": "Independent source/trace diagnosis confirms signal handlers outlive journal closure. Referenced losing watch timer is a source-backed keepalive explanation, not an independently timed reproduction yet. SIGTERM shares callback; other guard modes share lifecycle.",
+  "cause": "Stop handlers remained live after journal finalization, and a losing referenced watch timer could retain the process. Fixed by idempotent stop requests, sealing stop publication only after cleanup/retained-ownership decisions, and cancelling the losing watch timeout. First-stop, resource invalidity and journal failure rules remain strict.",
   "reproducibility": "One actual duplicate-stop failure plus original traceback and independent source review. Deterministic guarded RED/GREEN reproduction assigned, not yet claimed.",
   "evidence": [
     "docs/stabilization/resource-journals/guest-mode-20261026-0354.jsonl",
     "docs/stabilization/reports/late-stop-diagnosis-20261026.json",
     "docs/stabilization/reports/guest-mode-9a-20261026.json",
-    "docs/stabilization/reports/guest-mode-peer-20261026.json"
+    "docs/stabilization/reports/guest-mode-peer-20261026.json",
+    "docs/stabilization/reports/d296-implementation-20261026.json",
+    "docs/stabilization/reports/d296-independent-review-20261026.json"
   ],
   "source_sha": "1727c8d37bae69e14ca40cb81380d8cafd5af3b8",
   "related_defects": ["EXT-D-0283"],
   "related_limits": "D283 original pending-child-error exit/close hang remains open; this distinct post-final duplicate-signal failure does not establish the same cause.",
   "cleanup": "Independent canonical resource lease read found no heavy/owner/reclaim/unsafe hold; original PID99936 absent, no manual recovery/delete needed.",
-  "fix_sha": null,
-  "next_action": "Guarded deterministic original lifecycle reproduction, minimal class repair with fail-closed safety siblings, fresh independent verification, current CI and development-artifact maintenance. Never retroactively certify the original UI run.",
+  "fix_sha": "f89140eba04071987a398ce81ad2836bebcf3da6",
+  "next_action": "Finish supported-host testfixture repair and fresh independent review; latest successful current-source hosted CI developmentartifact still required before import/promotion/native ownerReload. No stale f891 artifact adoption. OriginalguestUI run remains uncertified; D283/fullT10/Store unchanged.",
   "transition_history": [
     {
       "at": "2026-10-26T04:03:16.661826+00:00",
@@ -52,6 +54,44 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Bounded implementation lane resource_stop_fix_0402 assigned RED/GREEN and lifecycle safety siblings."
+    },
+    {
+      "at": "2026-10-26T04:24:08.482288+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Sourceunit pushed; guarded original mechanism and safety siblings pass fresh independent CLI retest. Latest-main hosted CI/adoption still pending; no closure or guest acceptance inferred."
     }
-  ]
+  ],
+  "source_verification": {
+    "RED": "four actual copied-CLI lifecycle failures, journalfailure safety sibling alreadypassed",
+    "GREEN": "final exact16/16; actualCLI signals, unsafeinvalid3/hold, journalfailure nonzero/lease retained, timer mutant rejected",
+    "compile": "actual10583exit0/finalvalid0; introduced helper declaration boundary corrected before success",
+    "format": "focused3files0errors,4existing warnings",
+    "gutcheck": "constant-success/no-work main returned0 but lifecycle oracle rejected missing real journal; actual71733exit0/finalvalid0, temporarytest removed",
+    "evidence": "docs/stabilization/reports/d296-implementation-20261026.json"
+  },
+  "independent_retest": {
+    "reviewer": "/root/d296_fresh_review_0413",
+    "source_unit": "f89140eba04071987a398ce81ad2836bebcf3da6",
+    "behavior": "PASS bounded supporting CLI lifecycle",
+    "quality": "PASS",
+    "run": "d296-peer-20261026-0417",
+    "actual_executor": 68946,
+    "actual_exit": 0,
+    "tests": "16/16",
+    "resource": "finalvalid0 at04:18:56.204; no owned process/scratch/lease remains",
+    "evidence": "docs/stabilization/reports/d296-independent-review-20261026.json"
+  },
+  "current_CI_followthrough": {
+    "failed_run": 40267965001,
+    "failed_source": "f89140eba04071987a398ce81ad2836bebcf3da6",
+    "failed_job": 121394484162,
+    "result": "All9 new lifecycle tests exit2 beforestop;383otherunitfiles pass; normalresourceintegrationjob passes",
+    "confirmed_cause": "New fixture mocked telemetry but not platform(); actual production guard correctly refuses Linux RESOURCE_UNSUPPORTED_PLATFORM. Executed forced-Linux oldfixture RED83176 preserves this exact boundary.",
+    "owner": "/root/d296_ci_fixture_fix_0425",
+    "repair_status": "guarded test-only explicit supported-host fixture repair under verification, production guard/platform gates unchanged",
+    "latest_contributor_main": "71728e88d883c5187215be1a08fc6083818aaa05",
+    "latest_CI": 40268373935,
+    "latest_CI_state": "in_progress; same fixture failure not yet superseded"
+  }
 }

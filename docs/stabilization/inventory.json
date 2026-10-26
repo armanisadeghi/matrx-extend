@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-26T04:03:47.617530+00:00",
+  "updated_at": "2026-10-26T04:24:08.482288+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -977,7 +977,8 @@
             "EXT-D-0083",
             "EXT-D-0119",
             "EXT-D-0168",
-            "EXT-D-0182"
+            "EXT-D-0182",
+            "EXT-D-0296"
           ],
           "supporting_evidence": [
             {
@@ -1048,7 +1049,8 @@
           },
           "defect_ids": [
             "EXT-D-0168",
-            "EXT-D-0182"
+            "EXT-D-0182",
+            "EXT-D-0296"
           ]
         },
         {

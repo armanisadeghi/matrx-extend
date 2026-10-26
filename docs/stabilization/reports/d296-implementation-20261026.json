@@ -1,0 +1,196 @@
+{
+  "schema": 1,
+  "task_id": "resource_stop_fix_0402",
+  "lane": "D296 resource stop/finalization implementation",
+  "at": "2026-10-26T04:14:11.480243+00:00",
+  "status": "SOURCE_FIXED_GUARDED_REGRESSIONS_AND_TYPES_PASS_FRESH_REVIEW_PENDING",
+  "source_commit": "f89140eba04071987a398ce81ad2836bebcf3da6",
+  "push_executor": 57032,
+  "push_observed_exit": 0,
+  "files": {
+    "scripts/stabilization-resource.mjs": "ce5dc85325db0883c0298b7607782101bc498cafebbbc892eda9196c8ae2e4d9",
+    "scripts/stabilization-resource-test-measurements.d.mts": "3c99bba163420527c39fbdb08f8492cb2032e415f931027909d10de83173cca0",
+    "tests/unit/resource-stop-lifecycle.test.ts": "8c38229d703bddf60c50fdd85b654f685d0ccb3e2b7d1a166b8434a0b57fd2e6"
+  },
+  "symptom": "A duplicate operator stop signal reached still-installed handlers after the terminal journal closed, throwing closed-FD and replacing terminalvalid0 with process1. A losing watchdog timeout kept the finished process alive.",
+  "reuse": "Existing copyResourceGuardModules and setHealthyHostMeasurements, existing actualCLI/journal/lease/verdict/processcensus; added precise declarations instead of copied helpers or suppressions.",
+  "changes": [
+    "First stop publication stays active; repeated requests are idempotent.",
+    "Stop publication sealed only after main ownership cleanup has returned; failed cleanup still retains its lease. Terminal journal remains immutable even when no prior stop happened.",
+    "Promise.race watchdog timeout cleared after child/stop/timer completion so losing timer cannot retain the completed guard."
+  ],
+  "regression_tests": [
+    "Actual copiedCLI lateSIGINT and lateSIGTERM after realjournalclose both keep one stop/final and correct process0.",
+    "Actual duplicateSIGINT/SIGTERM during delayedrealcleanup retainleaseuntilcleanup and publishone stop.",
+    "First stop injectedfilesystemwritefailure remainsnonzero and retainslease/no validfinal.",
+    "Actual low-memorywatch stop remainsinvalid3 plusdurableunsafehold despite lateSIGTERM.",
+    "No-prior-stop completedcheck sealedbeforefirstlateSIGTERM.",
+    "Actualprocessnaturalexitprompt; restoringolduncancelledwatch mutant is rejected by timingassertion."
+  ],
+  "evidence": [
+    {
+      "run_id": "resource-stop-red-20261026-0404",
+      "actual_executor_session": null,
+      "observed_terminal_exit": 2,
+      "meaning": "command_refused_no_admission",
+      "journal": "docs/stabilization/resource-journals/resource-stop-red-20261026-0404.jsonl",
+      "journal_sha256": "67e2d6bacd7d1364ff65cf5dc184f1481272fbcd937d8b5488dcec848055a70d",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T04:04:35.028Z",
+        "runId": "resource-stop-red-20261026-0404",
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "log": ".output/stabilization-checkpoints/resource-stop-red-0404.log",
+      "log_sha256": "417e455abe0ba5c6338b29c614fccb96e8fd09b57ac60c640d80e186c65b3df9"
+    },
+    {
+      "run_id": "resource-stop-red-20261026-0406",
+      "actual_executor_session": 67066,
+      "observed_terminal_exit": 1,
+      "meaning": "RED4fail1pass_original_late_signal_closed_FD_and_duplicate_publication",
+      "journal": "docs/stabilization/resource-journals/resource-stop-red-20261026-0406.jsonl",
+      "journal_sha256": "cd6faea71330599e57320a05f55465787bcd7a642aee390a1d187cf8444ea3db",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T04:06:12.373Z",
+        "runId": "resource-stop-red-20261026-0406",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "log": ".output/stabilization-checkpoints/resource-stop-red-0406.log",
+      "log_sha256": "6e96fd20af82b3eae39f16ac21ec7b1ed6bac791aae613df8becada7cfdf04c4"
+    },
+    {
+      "run_id": "resource-stop-green-20261026-0407",
+      "actual_executor_session": 15740,
+      "observed_terminal_exit": 0,
+      "meaning": "GREEN14pass_first7behavior_plus7verdict",
+      "journal": "docs/stabilization/resource-journals/resource-stop-green-20261026-0407.jsonl",
+      "journal_sha256": "6daa7eb62047653d8344b816c05e07c41839a41e6d9728e99099493a08c4a5d7",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T04:08:01.009Z",
+        "runId": "resource-stop-green-20261026-0407",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "log": ".output/stabilization-checkpoints/resource-stop-green-0407.log",
+      "log_sha256": "6f55330bfcc44589d58a53d2fa0dbe6d4dd628a10c2ff78a7cddb06ec86d83d8"
+    },
+    {
+      "run_id": "resource-stop-types-20261026-0409",
+      "actual_executor_session": 2975,
+      "observed_terminal_exit": 1,
+      "meaning": "introduced_missing_JS_helper_declaration_repaired_no_suppression",
+      "journal": "docs/stabilization/resource-journals/resource-stop-types-20261026-0409.jsonl",
+      "journal_sha256": "9b96af9bdc043f76142797364dcb952d926075ef8cb9b2a5298ac32001862a78",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T04:09:59.029Z",
+        "runId": "resource-stop-types-20261026-0409",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "log": ".output/stabilization-checkpoints/resource-stop-types-0409.log",
+      "log_sha256": "552be892bad5a8ea6a69f024c7b778f11859278a87e3c2fc01b313503ea53e55"
+    },
+    {
+      "run_id": "resource-stop-final-tests-20261026-0410",
+      "actual_executor_session": 23340,
+      "observed_terminal_exit": 0,
+      "meaning": "GREEN16pass_exact9behavior_mutation_plus7verdict",
+      "journal": "docs/stabilization/resource-journals/resource-stop-final-tests-20261026-0410.jsonl",
+      "journal_sha256": "83c2936ee2f4ca2b6075abe7b04250d73380c6930b15ff37bc9234af71fcc69d",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T04:11:38.158Z",
+        "runId": "resource-stop-final-tests-20261026-0410",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "log": ".output/stabilization-checkpoints/resource-stop-final-tests-0410.log",
+      "log_sha256": "36d8b528023bf872084895ca8747da380b2ca421d7fab723e0da2714406bb426"
+    },
+    {
+      "run_id": "resource-stop-types-20261026-0412",
+      "actual_executor_session": 10583,
+      "observed_terminal_exit": 0,
+      "meaning": "compile_PASS",
+      "journal": "docs/stabilization/resource-journals/resource-stop-types-20261026-0412.jsonl",
+      "journal_sha256": "73038beece3ffebd5cb6b4cf1ba82b4bb6b974a6df052bbf056b96cca57eb794",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T04:13:04.252Z",
+        "runId": "resource-stop-types-20261026-0412",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "log": ".output/stabilization-checkpoints/resource-stop-types-0412.log",
+      "log_sha256": "f04227b9c3a155f3e6dd2d3faff8c312f72d83c46dfcf50cc872e1731f4adba7"
+    }
+  ],
+  "focused_biome": {
+    "exit": 0,
+    "files": 3,
+    "errors": 0,
+    "preexisting_guard_useTemplate_warnings": 4,
+    "log": ".output/stabilization-checkpoints/resource-stop-focused-biome-0412.log"
+  },
+  "limitations": [
+    "No productcase, Store, release or liveguest acceptance credited. Originalguest-mode holderexit1 remainshistorical and is not retroactively repaired.",
+    "Existing fullCPUintegration suite not rerun bythislane; unsafeactualmemory/journalfailure and existingverdictneighbors are covered. Freshindependent reviewer stillneeded.",
+    "First directnewnodetestcommand was refused beforeadmission; registered canonicalunit/Vitest route used, no policythresholdrunnerchange or resource-refusal bypass."
+  ],
+  "owned_external_jobs_processes_in_flight": [],
+  "owned_scratch_test_directories_remaining": [],
+  "next_action": "Parent freshindependent A/B review and guarded original/surrounding replay; integratejournals/defectrecord, selectcurrentCI artifact andownerrefresh through normalgates. No manualbuild/release.",
+  "constant_success_gutcheck": {
+    "at": "2026-10-26T04:17:21.412634+00:00",
+    "finding": "Executed constant-success replacement distinct from timer mutant was missing from first report",
+    "status": "ADDRESSED_EXECUTED_ORACLE_REJECTS_SKIPPED_ACTUAL_GUARD_WORK",
+    "actual_executor": 71733,
+    "actual_terminal_exit": 0,
+    "result": "1/1 mutation-oracle test PASS: actual copied CLI replaces only await main() with process.exitCode=0; test first asserts actual child exit0/no signal and no lease, then existing lifecycle oracle rejects missing real journal with ENOENT. No fake journal/ownership/event or successful lifecycle result is supplied.",
+    "test_source_audit": ".output/stabilization-checkpoints/resource-stop-gutcheck-0402.test.ts.txt",
+    "test_source_sha256": "b621c3b937ef323c6308bd5a06eb12373a7ba89ae26c17c320a4b4cff4efc3ce",
+    "test_scope": "Temporary canonical Vitest test derives original full behavioral oracle/real module-copy harness; only main SUT replaced with constant-success. Not a production source modification.",
+    "journal": "docs/stabilization/resource-journals/resource-stop-gutcheck-20261026-0415.jsonl",
+    "journal_sha256": "098fa389dfc8db50079cc77dc82fbfcdc51d72acddad0113323b1853fbd5abd8",
+    "final": {
+      "schema": 1,
+      "at": "2026-10-26T04:16:18.727Z",
+      "runId": "resource-stop-gutcheck-20261026-0415",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "log": ".output/stabilization-checkpoints/resource-stop-gutcheck-0415.log",
+    "log_sha256": "b45cce2dffe402dc840ef3c4a175f3889f0dc40d67e04fe354a46f5cfaad0ae7",
+    "temporary_test_removed": true,
+    "scratch_fixture_dirs_remaining": [],
+    "production_hashes_unchanged": true,
+    "limit": "Vitest console output suppressed by test setup; 1/1 PASS binds the explicit exit0/no-lease and ENOENT assertions in retained executed source; no invented unsuppressed child stdout."
+  }
+}
