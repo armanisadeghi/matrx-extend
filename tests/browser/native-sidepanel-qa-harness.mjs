@@ -1613,6 +1613,70 @@ async function observeOwnedEndpointAfterTimeout({
   };
 }
 
+function resolveNativeResourceAction(resourceAction, resourceHealthOptions = { repo: REPO }) {
+  if (resourceAction !== undefined && typeof resourceAction !== 'function')
+    throw new Error('native_resource_action_invalid');
+  return (
+    resourceAction ??
+    ((action) =>
+      runNativeResourceAction(() => awaitNativeResourceHealth(resourceHealthOptions), action))
+  );
+}
+
+// This is the actual harness callback handoff, including its default-caller path.
+// Session cleanup remains available when health becomes pending, stopped or unsafe.
+export async function exerciseNativePanel({
+  panel,
+  resourceAction,
+  resourceHealthOptions = { repo: REPO },
+  createContext,
+  exercisePanel,
+}) {
+  try {
+    const run = resolveNativeResourceAction(resourceAction, resourceHealthOptions);
+    const guard = (session) => guardNativeResourceSessionSend(session, run);
+    const guardedPanel = guard(panel);
+    const context = await createContext(guardedPanel);
+    const exposed = { ...context, panel: guardedPanel, resourceAction: run };
+    if (context.browserSession) exposed.browserSession = guard(context.browserSession);
+    for (const name of ['attachWorker', 'attachOffscreen', 'acquireLivePanel']) {
+      if (typeof context[name] === 'function')
+        exposed[name] = async (...args) => guard(await run(() => context[name](...args)));
+    }
+    for (const name of ['reloadExtension', 'cycleOwnedPanel']) {
+      if (typeof context[name] === 'function')
+        exposed[name] = async (...args) => {
+          const replacement = await run(() => context[name](...args));
+          return { ...replacement, panel: guard(replacement.panel) };
+        };
+    }
+    for (const name of [
+      'activatePanel',
+      'reopenPanel',
+      'observePanelVisibility',
+      'observeAuthenticatedPanel',
+      'inspectPanelContext',
+    ]) {
+      if (typeof context[name] === 'function')
+        exposed[name] = (...args) => run(() => context[name](...args));
+    }
+    return await exercisePanel(Object.freeze(exposed));
+  } finally {
+    await panel.detach();
+  }
+}
+
+// Chrome creation is a native boundary too; callers cannot launch first and
+// wait for resource health only when the first CDP command is sent.
+export async function launchNativeBrowser({
+  launch,
+  resourceAction,
+  resourceHealthOptions = { repo: REPO },
+}) {
+  const run = resolveNativeResourceAction(resourceAction, resourceHealthOptions);
+  return run(launch);
+}
+
 export async function runNativeSidepanelQa({
   headed = false,
   extensionDir,
@@ -1638,6 +1702,7 @@ export async function runNativeSidepanelQa({
   reloadOpenDiagnostic = false,
   reloadSenderDocumentDiagnostic = false,
 } = {}) {
+  resourceAction = resolveNativeResourceAction(resourceAction);
   onStage('receipt');
   let receipt;
   try {
@@ -1707,38 +1772,46 @@ export async function runNativeSidepanelQa({
         // The startup result remains authoritative; record unavailable at its end.
       }
     }
-    onStage('browser_spawn');
-    startupStartedAt = performance.now();
-    child = spawn(
-      chromeExecutable,
-      [
-        ...(!headed ? ['--headless=new'] : []),
-        '--enable-automation',
-        ...(enableUserSiteRestrictions ? ['--enable-features=ExtensionsMenuAccessControl'] : []),
-        ...(enableWebMcpTesting ? ['--enable-features=WebMCPTesting'] : []),
-        '--no-first-run',
-        '--no-default-browser-check',
-        '--use-mock-keychain',
-        '--remote-debugging-address=127.0.0.1',
-        '--remote-debugging-port=0',
-        `--user-data-dir=${profile}`,
-        `--disable-extensions-except=${verifiedExtensionDir}`,
-        `--load-extension=${verifiedExtensionDir}`,
-        // Avoid loading an unused New Tab page during owned-profile startup.
-        'about:blank',
-      ],
-      { stdio: ['ignore', 'ignore', 'pipe'] },
-    );
     let chromeStderr = '';
     let spawnObserved = false;
-    child.once('spawn', () => {
-      spawnObserved = true;
-    });
-    child.stderr.on('data', (chunk) => {
-      chromeStderr = (chromeStderr + String(chunk)).slice(-2000);
-    });
-    child.once('error', (error) => {
-      launchError = error;
+    await launchNativeBrowser({
+      resourceAction,
+      launch: () => {
+        onStage('browser_spawn');
+        startupStartedAt = performance.now();
+        child = spawn(
+          chromeExecutable,
+          [
+            ...(!headed ? ['--headless=new'] : []),
+            '--enable-automation',
+            ...(enableUserSiteRestrictions
+              ? ['--enable-features=ExtensionsMenuAccessControl']
+              : []),
+            ...(enableWebMcpTesting ? ['--enable-features=WebMCPTesting'] : []),
+            '--no-first-run',
+            '--no-default-browser-check',
+            '--use-mock-keychain',
+            '--remote-debugging-address=127.0.0.1',
+            '--remote-debugging-port=0',
+            `--user-data-dir=${profile}`,
+            `--disable-extensions-except=${verifiedExtensionDir}`,
+            `--load-extension=${verifiedExtensionDir}`,
+            // Avoid loading an unused New Tab page during owned-profile startup.
+            'about:blank',
+          ],
+          { stdio: ['ignore', 'ignore', 'pipe'] },
+        );
+        child.once('spawn', () => {
+          spawnObserved = true;
+        });
+        child.stderr.on('data', (chunk) => {
+          chromeStderr = (chromeStderr + String(chunk)).slice(-2000);
+        });
+        child.once('error', (error) => {
+          launchError = error;
+        });
+        return child;
+      },
     });
 
     try {
@@ -1804,7 +1877,7 @@ export async function runNativeSidepanelQa({
     onStage('endpoint_read');
     const endpoint = await ownedEndpoint(profile);
     onStage('command_line_query');
-    const commandLine = await cdp.send('Browser.getBrowserCommandLine');
+    const commandLine = await resourceAction(() => cdp.send('Browser.getBrowserCommandLine'));
     onStage('command_line_verify');
     requireOwnedCommandLine(commandLine, profile);
     const browserLaunch = requireBrowserDisplayMode(commandLine, headed);
@@ -1860,41 +1933,37 @@ export async function runNativeSidepanelQa({
     // This attach is derived exclusively from this profile's DevToolsActivePort,
     // after the process/profile/extension checks above. It is never a shared port.
     onStage('playwright_connect');
-    playwrightBrowser = await browserRuntime.chromium.connectOverCDP(
-      `http://127.0.0.1:${endpoint.port}`,
+    playwrightBrowser = await resourceAction(() =>
+      browserRuntime.chromium.connectOverCDP(`http://127.0.0.1:${endpoint.port}`),
     );
     onStage('page_create');
     const context = playwrightBrowser.contexts()[0];
     // Every drive of our app/server from this owned browser is ours, not a visitor's.
-    await (resourceAction ?? ((action) => action()))(() =>
+    await resourceAction(() =>
       markBrowserAgentTraffic(context, 'native-sidepanel-qa-harness', WEB_ORIGIN),
     );
-    await (resourceAction ?? ((action) => action()))(() =>
+    await resourceAction(() =>
       markBrowserAgentTraffic(
         context,
         'native-sidepanel-qa-harness',
         'https://server.app.matrxserver.com',
       ),
     );
-    const page = await (resourceAction ?? ((action) => action()))(() => context.newPage());
+    const page = await resourceAction(() => context.newPage());
     onStage('local_page_navigation');
-    await (resourceAction ?? ((action) => action()))(() =>
-      page.goto(`http://localhost:${serverPort}/`),
-    );
+    await resourceAction(() => page.goto(`http://localhost:${serverPort}/`));
     onStage('panel_open');
-    await (resourceAction ?? ((action) => action()))(() => page.locator('#open-panel').click()); // Real trusted Chromium input.
+    await resourceAction(() => page.locator('#open-panel').click()); // Real trusted Chromium input.
     await waitForVisibleResource(page.locator('#result'), resourceAction);
     onStage('panel_reply');
     const reply = JSON.parse(
-      (await (resourceAction ?? ((action) => action()))(() =>
-        page.locator('#result').textContent(),
-      )) || '{}',
+      (await resourceAction(() => page.locator('#result').textContent())) || '{}',
     );
     if (reply?.ok !== true || reply?.result?.opened !== true)
       throw new Error(`native_sidepanel_open_refused:${JSON.stringify(reply)}`);
 
     const normalTarget = (
-      await (resourceAction ?? ((action) => action()))(() => cdp.send('Target.getTargets'))
+      await resourceAction(() => cdp.send('Target.getTargets'))
     ).targetInfos.find((entry) => entry.type === 'page' && entry.url === page.url());
     if (!normalTarget) throw new Error('native_sidepanel_normal_target_missing');
     const panelUrl = `chrome-extension://${expectedExtensionId}/sidepanel.html`;
@@ -1927,15 +1996,13 @@ export async function runNativeSidepanelQa({
       if (onPanelVisibilityObservation)
         onPanelVisibilityObservation({ phase, ...(await observePanelVisibility(session)) });
     };
-    await (resourceAction ?? ((action) => action()))(() =>
-      observeVisibility('initial_settled_before_screenshots'),
-    );
+    await resourceAction(() => observeVisibility('initial_settled_before_screenshots'));
 
     if (publicDemoUrl) {
       if (publicDemoUrl !== 'https://www.aimatrx.com/matrx-extend-demo')
         throw new Error('native_sidepanel_public_demo_url_refused');
       onStage('demo_navigation');
-      await (resourceAction ?? ((action) => action()))(() => page.goto(publicDemoUrl));
+      await resourceAction(() => page.goto(publicDemoUrl));
       await waitForVisibleResource(page.locator('main article'), resourceAction);
     }
 
@@ -1944,18 +2011,11 @@ export async function runNativeSidepanelQa({
     onStage('screenshot');
     await captureTarget(cdp, normalTarget.targetId, normalPng, resourceAction);
     await captureTarget(cdp, panelTarget.targetId, panelPng, resourceAction);
-    await (resourceAction ?? ((action) => action()))(() =>
-      observeVisibility('after_initial_screenshots'),
-    );
-    await (resourceAction ?? ((action) => action()))(() => readyPanel.detach());
+    await resourceAction(() => observeVisibility('after_initial_screenshots'));
+    await resourceAction(() => readyPanel.detach());
     onStage('exercise_panel');
     if (exercisePanel) {
-      const panel = await (resourceAction ?? ((action) => action()))(() =>
-        attachTargetSession(cdp, panelTarget.targetId),
-      );
-      const guardedPanel = resourceAction
-        ? guardNativeResourceSessionSend(panel, resourceAction)
-        : panel;
+      const panel = await resourceAction(() => attachTargetSession(cdp, panelTarget.targetId));
       const reloadController = createOwnedExtensionReloadController(
         panelTarget.targetId,
         (oldPanelId) =>
@@ -1970,165 +2030,160 @@ export async function runNativeSidepanelQa({
             reloadSenderDocumentDiagnostic,
           }),
       );
-      try {
-        await exercisePanel(
-          Object.freeze({
-            page,
-            panel: guardedPanel,
-            browserSession: cdp,
-            activatePanel: () =>
-              cdp.send('Target.activateTarget', { targetId: panelTarget.targetId }),
-            reopenPanel: ({ page: triggerPage } = {}) =>
-              activateOwnedSidePanel({
-                cdp,
-                panel: guardedPanel,
-                panelTargetId: panelTarget.targetId,
-                page,
-                ...(triggerPage && { triggerPage }),
-                extensionId: expectedExtensionId,
-                resourceAction,
-                observe: (phase) => observeVisibility(phase, guardedPanel),
-              }),
-            cycleOwnedPanel: async (currentPanel) => {
-              const currentWorker = await waitForExpectedExtension(cdp, expectedExtensionId);
-              const worker = await attachTargetSession(cdp, currentWorker.targetId);
-              try {
-                const replacement = await runOwnedPanelReopen({
-                  identify: async () => {
-                    const contexts = await sidePanelContexts(cdp, currentWorker.targetId);
-                    const exact = contexts.filter((entry) => entry.documentUrl === panelUrl);
-                    const targets = (await cdp.send('Target.getTargets')).targetInfos;
-                    if (
-                      exact.length !== 1 ||
-                      !targets.some(
-                        (entry) =>
-                          entry.targetId === currentPanel.targetId && entry.url === panelUrl,
-                      )
+      await exerciseNativePanel({
+        panel,
+        resourceAction,
+        exercisePanel,
+        createContext: (guardedPanel) => ({
+          page,
+          panel: guardedPanel,
+          browserSession: cdp,
+          activatePanel: () =>
+            cdp.send('Target.activateTarget', { targetId: panelTarget.targetId }),
+          reopenPanel: ({ page: triggerPage } = {}) =>
+            activateOwnedSidePanel({
+              cdp,
+              panel: guardedPanel,
+              panelTargetId: panelTarget.targetId,
+              page,
+              ...(triggerPage && { triggerPage }),
+              extensionId: expectedExtensionId,
+              resourceAction,
+              observe: (phase) => observeVisibility(phase, guardedPanel),
+            }),
+          cycleOwnedPanel: async (currentPanel) => {
+            const currentWorker = await waitForExpectedExtension(cdp, expectedExtensionId);
+            const worker = await attachTargetSession(cdp, currentWorker.targetId);
+            try {
+              const replacement = await runOwnedPanelReopen({
+                identify: async () => {
+                  const contexts = await sidePanelContexts(cdp, currentWorker.targetId);
+                  const exact = contexts.filter((entry) => entry.documentUrl === panelUrl);
+                  const targets = (await cdp.send('Target.getTargets')).targetInfos;
+                  if (
+                    exact.length !== 1 ||
+                    !targets.some(
+                      (entry) => entry.targetId === currentPanel.targetId && entry.url === panelUrl,
                     )
-                      throw new Error('owned_panel_not_unique');
-                    return {
-                      targetId: currentPanel.targetId,
-                      contextId: requireSidePanelContext(contexts, panelUrl).contextId,
-                    };
-                  },
-                  close: async () => {
-                    const response = await worker.send('Runtime.evaluate', {
-                      expression: `(async () => {
+                  )
+                    throw new Error('owned_panel_not_unique');
+                  return {
+                    targetId: currentPanel.targetId,
+                    contextId: requireSidePanelContext(contexts, panelUrl).contextId,
+                  };
+                },
+                close: async () => {
+                  const response = await worker.send('Runtime.evaluate', {
+                    expression: `(async () => {
                         const roots = (await chrome.tabs.query({})).filter(tab => tab.url === ${JSON.stringify(page.url())});
                         if (roots.length !== 1 || !Number.isInteger(roots[0].windowId) || typeof chrome.sidePanel.close !== 'function') return false;
                         await chrome.sidePanel.close({ windowId: roots[0].windowId });
                         return true;
                       })()`,
-                      awaitPromise: true,
-                      returnByValue: true,
-                    });
-                    return !response.exceptionDetails && response.result?.value === true;
-                  },
-                  retired: async (before) => {
-                    for (let attempt = 0; attempt < ATTEMPTS; attempt++) {
-                      const targets = (await cdp.send('Target.getTargets')).targetInfos;
-                      const contexts = await sidePanelContexts(cdp, currentWorker.targetId);
-                      const observation = {
-                        targetRetired: !targets.some((entry) => entry.targetId === before.targetId),
-                        contextRetired:
-                          !contexts.some((entry) => entry.contextId === before.contextId) &&
-                          !contexts.some((entry) => entry.documentUrl === panelUrl),
-                      };
-                      if (observation.targetRetired && observation.contextRetired)
-                        return observation;
-                      if (attempt === ATTEMPTS - 1) return observation;
-                      await wait(WAIT_MS);
-                    }
-                  },
-                  open: async () => {
-                    await page.bringToFront();
-                    const result = page.locator('#result');
-                    await result.evaluate((element) => {
-                      element.textContent = '';
-                    });
-                    await page.locator('#open-panel').click();
-                    await result.filter({ hasText: /\S/ }).waitFor({ state: 'visible' });
-                    return (
-                      panelOpenReplyCategory(JSON.parse((await result.textContent()) || '{}')) ===
-                      'opened'
-                    );
-                  },
-                  acquire: async () => {
-                    const ready = await waitForInitialPanelReady({
-                      cdp,
-                      panelUrl,
-                      serviceWorkerTargetId: currentWorker.targetId,
-                      normalTargetId: normalTarget.targetId,
-                    });
-                    const next = await waitForSettledGuestPanel(cdp, ready.panelTarget.targetId);
+                    awaitPromise: true,
+                    returnByValue: true,
+                  });
+                  return !response.exceptionDetails && response.result?.value === true;
+                },
+                retired: async (before) => {
+                  for (let attempt = 0; attempt < ATTEMPTS; attempt++) {
+                    const targets = (await cdp.send('Target.getTargets')).targetInfos;
                     const contexts = await sidePanelContexts(cdp, currentWorker.targetId);
-                    const context = requireSidePanelContext(contexts, panelUrl);
-                    const visibility = await observePanelVisibility(next);
-                    return {
-                      panel: next,
-                      contextId: context.contextId,
-                      visible: visibility.measured && visibility.visibility === 'visible',
+                    const observation = {
+                      targetRetired: !targets.some((entry) => entry.targetId === before.targetId),
+                      contextRetired:
+                        !contexts.some((entry) => entry.contextId === before.contextId) &&
+                        !contexts.some((entry) => entry.documentUrl === panelUrl),
                     };
-                  },
-                });
-                reloadController.adoptLivePanel(replacement.panel);
-                await currentPanel.detach();
-                return replacement;
-              } finally {
-                await worker.detach();
-              }
-            },
-            observePanelVisibility: (phase) => observeVisibility(phase, guardedPanel),
-            observeAuthenticatedPanel: async (phase) => {
-              if (onPanelVisibilityObservation)
-                onPanelVisibilityObservation({
-                  phase,
-                  ...(await observePanelVisibility(guardedPanel)),
-                  host: await observeAuthenticatedPanelHost({
+                    if (observation.targetRetired && observation.contextRetired) return observation;
+                    if (attempt === ATTEMPTS - 1) return observation;
+                    await wait(WAIT_MS);
+                  }
+                },
+                open: async () => {
+                  await page.bringToFront();
+                  const result = page.locator('#result');
+                  await result.evaluate((element) => {
+                    element.textContent = '';
+                  });
+                  await page.locator('#open-panel').click();
+                  await result.filter({ hasText: /\S/ }).waitFor({ state: 'visible' });
+                  return (
+                    panelOpenReplyCategory(JSON.parse((await result.textContent()) || '{}')) ===
+                    'opened'
+                  );
+                },
+                acquire: async () => {
+                  const ready = await waitForInitialPanelReady({
                     cdp,
-                    panel: guardedPanel,
-                    rootTargetId: normalTarget.targetId,
                     panelUrl,
-                    rootUrl: page.url(),
-                  }),
-                });
-            },
-            transportFailureClass: () => cdp.failureClass,
-            panelTarget,
-            artifacts,
-            requireResourceHealth: () => awaitNativeResourceHealth({ repo: REPO }),
-            resourceAction: (action) =>
-              runNativeResourceAction(() => awaitNativeResourceHealth({ repo: REPO }), action),
-            attachWorker: () => attachTargetSession(cdp, extensionWorker.targetId),
-            inspectPanelContext: async () =>
-              panelContextDiagnostic(
-                await sidePanelContexts(cdp, extensionWorker.targetId),
-                panelUrl,
-              ),
-            attachOffscreen: async () => {
-              const offscreenUrl = `chrome-extension://${expectedExtensionId}/offscreen.html`;
-              const targets = (await cdp.send('Target.getTargets')).targetInfos.filter(
-                (target) => target.url === offscreenUrl,
-              );
-              if (targets.length !== 1)
-                throw new Error('native_sidepanel_offscreen_target_missing');
-              return attachTargetSession(cdp, targets[0].targetId);
-            },
-            reloadExtension: () => reloadController.reload(),
-            acquireLivePanel: async () => {
-              const livePanel = await acquireLiveExtensionPanel({
-                cdp,
-                page,
-                extensionId: expectedExtensionId,
+                    serviceWorkerTargetId: currentWorker.targetId,
+                    normalTargetId: normalTarget.targetId,
+                  });
+                  const next = await waitForSettledGuestPanel(cdp, ready.panelTarget.targetId);
+                  const contexts = await sidePanelContexts(cdp, currentWorker.targetId);
+                  const context = requireSidePanelContext(contexts, panelUrl);
+                  const visibility = await observePanelVisibility(next);
+                  return {
+                    panel: next,
+                    contextId: context.contextId,
+                    visible: visibility.measured && visibility.visibility === 'visible',
+                  };
+                },
               });
-              reloadController.adoptLivePanel(livePanel);
-              return livePanel;
-            },
-          }),
-        );
-      } finally {
-        await guardedPanel.detach();
-      }
+              reloadController.adoptLivePanel(replacement.panel);
+              await currentPanel.detach();
+              return replacement;
+            } finally {
+              await worker.detach();
+            }
+          },
+          observePanelVisibility: (phase) => observeVisibility(phase, guardedPanel),
+          observeAuthenticatedPanel: async (phase) => {
+            if (onPanelVisibilityObservation)
+              onPanelVisibilityObservation({
+                phase,
+                ...(await observePanelVisibility(guardedPanel)),
+                host: await observeAuthenticatedPanelHost({
+                  cdp,
+                  panel: guardedPanel,
+                  rootTargetId: normalTarget.targetId,
+                  panelUrl,
+                  rootUrl: page.url(),
+                }),
+              });
+          },
+          transportFailureClass: () => cdp.failureClass,
+          panelTarget,
+          artifacts,
+          requireResourceHealth: () => awaitNativeResourceHealth({ repo: REPO }),
+          resourceAction,
+          attachWorker: () => attachTargetSession(cdp, extensionWorker.targetId),
+          inspectPanelContext: async () =>
+            panelContextDiagnostic(
+              await sidePanelContexts(cdp, extensionWorker.targetId),
+              panelUrl,
+            ),
+          attachOffscreen: async () => {
+            const offscreenUrl = `chrome-extension://${expectedExtensionId}/offscreen.html`;
+            const targets = (await cdp.send('Target.getTargets')).targetInfos.filter(
+              (target) => target.url === offscreenUrl,
+            );
+            if (targets.length !== 1) throw new Error('native_sidepanel_offscreen_target_missing');
+            return attachTargetSession(cdp, targets[0].targetId);
+          },
+          reloadExtension: () => reloadController.reload(),
+          acquireLivePanel: async () => {
+            const livePanel = await acquireLiveExtensionPanel({
+              cdp,
+              page,
+              extensionId: expectedExtensionId,
+            });
+            reloadController.adoptLivePanel(livePanel);
+            return livePanel;
+          },
+        }),
+      });
     }
     return Object.freeze({
       artifacts,
