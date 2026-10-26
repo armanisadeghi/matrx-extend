@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-26T09:24:26.315101+00:00",
+  "main": "7443c8739bde588eedb63a3bc082ca72312cf48e",
+  "synchronized_with_origin": true,
+  "CI": {
+    "repair": { "run": 40291979826, "source": "9a5dda78f", "status": "success" },
+    "subsequent_dependency_sync": {
+      "run": 40294366532,
+      "source": "22727bc5db8a52d8c6c259bd9434d315d2c83486",
+      "status": "success"
+    },
+    "current_metadata_only": {
+      "run": 40298958871,
+      "status": "success",
+      "checks": "skipped",
+      "resource_integration": "skipped",
+      "docs": "success"
+    }
+  },
+  "artifact_selected_metadata_only": {
+    "run": 40294366532,
+    "id": 12638325818,
+    "digest": "sha256:baf7e293e1399688aa40acee0e8da15123aff22bec8c7de2217bb1a705270d8b",
+    "expired": false,
+    "source": "22727bc5db8a52d8c6c259bd9434d315d2c83486",
+    "currentmain_exact_artifact": false
+  },
+  "adoption": {
+    "attempt": "Combined sh import-then-promote guard request",
+    "run": "ci-adopt-22727-20261026-0925",
+    "actual_executor_exit": 2,
+    "result": "RESOURCE_COMMAND_NOT_ALLOWED before admission. No import/promotion/browser action executed. No policy or command bypass attempted.",
+    "journal": "docs/stabilization/resource-journals/ci-adopt-22727-20261026-0925.jsonl"
+  },
+  "owner_chrome": "Last actual observation737/624 historical. Current source promotion and native Reload remain unverified.",
+  "daily": "Oct26 existing claim checkpointed/incomplete; no exposed native Chrome/CUA or schedule_claim tool now. Last authenticated577 exact status remains historical; current dashboard/mail/pending and live guest Chat/server unobserved. No duplicateclaim, upload or submission.",
+  "product_behavior_passes": 0,
+  "defect_closures": 0,
+  "release_actions": 0,
+  "owned_active_processes": "None; refused guard terminal2",
+  "next": "Use normal authorized artifact adoption paths with safe resource ownership; native ownerReload and sameclaimed daily Store+guest checks when native tools exposed. Preserve current unknowns and no product-health claim."
+}
