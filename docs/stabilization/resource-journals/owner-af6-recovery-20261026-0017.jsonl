@@ -1,0 +1,3 @@
+{"schema":1,"at":"2026-10-26T00:17:21.615Z","runId":"owner-af6-recovery-20261026-0017","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-26T00:17:38.750Z","reasons":["RESOURCE_PRESSURE_UNSAFE"],"sample":{"pressureLevel":2,"availableMemoryGiB":7.84,"requiredMemoryGiB":4,"oneMinuteLoad":2.31,"logicalCpus":10,"cpuBusyFraction":0.38,"swapUsedMiB":2383.44,"repoFreeGiB":1599.0476989746094,"profileFreeGiB":1599.0476989746094,"safetyFreeGiB":35.90171432495117,"systemFreeGiB":35.90171432495117},"code":"RESOURCE_UNSAFE_HOLD"}
+{"schema":1,"at":"2026-10-26T00:17:38.757Z","runId":"owner-af6-recovery-20261026-0017","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}

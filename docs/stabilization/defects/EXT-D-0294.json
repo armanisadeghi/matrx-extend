@@ -69,7 +69,7 @@
       "ruling": "CONFIRMED: project through existing allowlisted safe diagnostics then synchronously publish on meaningful callback update before returning; raw unknown diagnostic fields are never dumped. Guard updates within same stage and termination after observation."
     }
   ],
-  "next_action": "After synchronized exact-source fullCI success, normally import/promote artifact and verify owner DEV native Reload with fresh resource/watch. Then independently retest original interrupted native diagnostic route and surrounding member/auth/Save cases under normal admission; preserve resource failure as failure. Remaining acceptance/release gates unverified.",
+  "next_action": "SourceCI nowpasses. Af6 descendantartifact normallypromoted, but ownerReload stopped beforeAPI3 bypressure2; new normalrecoverycheck refused. Await normalcapacity; newownerpermit/watch Reloadverification then independently admitted original interrupted native diagnostic and adjacent member/auth/Save cases. No closed/release/productpass claim.",
   "plan_reverify": "docs/stabilization/reports/member-checkpoint-contract-reverify-20261025.json",
   "implementation_lane": {
     "owner": "/root/d294_resume_fix_2309",
@@ -90,8 +90,17 @@
   "full_ci": {
     "source": "81c87b0af08804c2d7c4f07395c8a94e04b5ec2b",
     "run_id": 40244327800,
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "success",
     "artifact_adopted": false
+  },
+  "current_descendant": {
+    "source": "af6be003c20d23cf140b3f00ba4d8b7e0063d0a9",
+    "run_id": 40246848583,
+    "conclusion": "success",
+    "development_artifact_id": 12619138028,
+    "disk_promoted": true,
+    "owner_Chrome_reload": "unverified_resource_stop",
+    "native_D294_retest": "unverified"
   }
 }
