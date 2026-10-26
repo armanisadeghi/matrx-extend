@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "task_id": "member_stale_a_run_0255",
+  "lane": "A / independent D217 stale-profile Save/Retry attempt",
+  "owner": "/root/member_stale_a_run_0255",
+  "at": "2026-10-26T03:20:43.095247+00:00",
+  "status": "TERMINAL_RESOURCE_INVALID_BEFORE_PRODUCT_UI_CLEANUP_VERIFIED",
+  "zero_source_authorship": true,
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T05", "EXT-F-1007-T22"],
+  "defect_id": "EXT-D-0217",
+  "native_run": {
+    "id": 40262086699,
+    "attempt": 1,
+    "head_sha": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+    "created_at": "2026-10-26T03:02:41Z",
+    "status": "completed",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40262086699",
+    "conclusion": "failure",
+    "updated_at": "2026-10-26T03:09:57Z"
+  },
+  "dispatch": {
+    "actual_executor": 2007,
+    "actual_exit": 0,
+    "normal_helper": true
+  },
+  "CI": {
+    "run_id": 40260774042,
+    "source": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+    "event": "workflow_dispatch",
+    "requested_by": "extend-stabilization",
+    "conclusion": "success",
+    "artifact_id": 12623724158,
+    "digest": "sha256:3b923ab86a89d8c466967f2a255c4b2cfec1c5d7a0b4ad96a4b5a33573f6b869",
+    "version": "0.2.624",
+    "tree_sha256": "3c410c4f1b6044150abce017ab7598d20149301a34ac15f2b5c1ce10425933f9",
+    "eligibleStore": false
+  },
+  "workflow": {
+    "path": ".github/workflows/hosted-guest-acceptance.yml",
+    "sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+    "runner": "macos-15-intel",
+    "case": "scrape-save-member",
+    "destination": "none",
+    "scope": "stale-profile-retry",
+    "public_original_standard_unpaid_route": true,
+    "paid_work_paused": true,
+    "no_billing_runner_repo_account_or_resource_bypass": true
+  },
+  "actual_observation": {
+    "browser_CDP_connection": false,
+    "product_UI_observations": 0,
+    "member_UI_login_observed": false,
+    "guest_Save_Retry_observed": false,
+    "Source_write_observed": false,
+    "last_native_stage": "cdp_connect",
+    "auth_stage": null,
+    "error_code": "owned_cdp_endpoint_timeout",
+    "native_report_status": "fail",
+    "native_report_stage": "inputs",
+    "native_report_observations": {},
+    "harness_checkout_sha": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+    "manifest_version_not_loaded_browser_proof": true
+  },
+  "chronology": {
+    "acceptance_admitted": "2026-10-26T03:09:04.089Z",
+    "browser_spawn": "2026-10-26T03:09:29.941Z",
+    "CDP_connect_begin": "2026-10-26T03:09:29.958Z",
+    "CPU_pending": "2026-10-26T03:09:36.839Z",
+    "CPU_fraction": 1,
+    "logical_cpus": 4,
+    "one_minute_load": 1.84,
+    "memory_pressure": 1,
+    "available_memory_GiB": 12.6,
+    "child_exit": "2026-10-26T03:09:42.622Z code1/noSignal",
+    "wrapper_final": "2026-10-26T03:09:42.827Z invalid3",
+    "cause_limit": "Concurrent attribution contains Chromium, Metal compiler and OS management/services; cannot assign CPU or CDP timeout solely to extension or infer product auth failure. No repeated job or timeout/resource-threshold change."
+  },
+  "D294_supporting_evidence": {
+    "durable_report_present": true,
+    "safe_stage_count": 6,
+    "stage_progress": {
+      "sequence": 6,
+      "latest": {
+        "key": "native_stage:cdp_connect",
+        "kind": "native_stage",
+        "label": "cdp_connect",
+        "at": "2026-10-26T03:09:29.958Z",
+        "sequence": 6
+      },
+      "boundaries": [
+        {
+          "key": "native_stage:receipt",
+          "kind": "native_stage",
+          "label": "receipt",
+          "at": "2026-10-26T03:09:28.564Z",
+          "sequence": 1,
+          "first_at": "2026-10-26T03:09:28.564Z"
+        },
+        {
+          "key": "native_stage:artifact_verify",
+          "kind": "native_stage",
+          "label": "artifact_verify",
+          "at": "2026-10-26T03:09:28.600Z",
+          "sequence": 2,
+          "first_at": "2026-10-26T03:09:28.600Z"
+        },
+        {
+          "key": "native_stage:browser_runtime",
+          "kind": "native_stage",
+          "label": "browser_runtime",
+          "at": "2026-10-26T03:09:29.461Z",
+          "sequence": 3,
+          "first_at": "2026-10-26T03:09:29.461Z"
+        },
+        {
+          "key": "native_stage:profile_prepare",
+          "kind": "native_stage",
+          "label": "profile_prepare",
+          "at": "2026-10-26T03:09:29.928Z",
+          "sequence": 4,
+          "first_at": "2026-10-26T03:09:29.928Z"
+        },
+        {
+          "key": "native_stage:browser_spawn",
+          "kind": "native_stage",
+          "label": "browser_spawn",
+          "at": "2026-10-26T03:09:29.941Z",
+          "sequence": 5,
+          "first_at": "2026-10-26T03:09:29.941Z"
+        },
+        {
+          "key": "native_stage:cdp_connect",
+          "kind": "native_stage",
+          "label": "cdp_connect",
+          "at": "2026-10-26T03:09:29.958Z",
+          "sequence": 6,
+          "first_at": "2026-10-26T03:09:29.958Z"
+        }
+      ]
+    },
+    "scope_limit": "Actual native caller publishes six safe milestones before CDP failure; this is infrastructure evidence, not product behavior. This run has a caught CDP timeout and childexit1/noSignal, not original resource SIGTERM after panel/auth; no D294 original native interruption closure inferred."
+  },
+  "normal_verifier": {
+    "actual_exit": 1,
+    "expected_refusal": "HOSTED_RUN_NOT_SUCCESSFUL",
+    "path": ".output/stabilization-checkpoints/member-stale-a-0255-normal-verifier.log",
+    "no_certificate_accepted": true
+  },
+  "resource_journals": {
+    "hosted-guest-40262086699-1.jsonl": {
+      "path": "docs/stabilization/resource-journals/hosted-guest-40262086699-1.jsonl",
+      "sha256": "191feeba0550f7cde8f057c12cb1918c3645416d883c7808119466c755c8988c",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T03:09:42.827Z",
+        "runId": "hosted-guest-40262086699-1",
+        "admitted": true,
+        "resourceInvalid": true,
+        "exitCode": 3,
+        "decision": "invalid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        {
+          "at": "2026-10-26T03:07:56.346Z",
+          "code": "RESOURCE_JOURNAL_OPENED",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-26T03:09:04.089Z",
+          "code": "RESOURCE_ADMITTED",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-26T03:09:20.227Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-26T03:09:36.839Z",
+          "code": "RESOURCE_CPU_PENDING",
+          "reasons": ["RESOURCE_CPU_BUSY"]
+        },
+        {
+          "at": "2026-10-26T03:09:42.622Z",
+          "code": "RESOURCE_JOB_EXIT",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-26T03:09:42.827Z",
+          "code": "RESOURCE_FINAL_DECISION",
+          "reasons": null
+        }
+      ]
+    },
+    "hosted-browser-40262086699-1.jsonl": {
+      "path": "docs/stabilization/resource-journals/hosted-browser-40262086699-1.jsonl",
+      "sha256": "175842d8d2b2fa7351cdaa7b08f9a5b3e38efed841bc04debd38a21f0daf2ee6",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T03:07:12.038Z",
+        "runId": "hosted-browser-40262086699-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        {
+          "at": "2026-10-26T03:05:43.523Z",
+          "code": "RESOURCE_JOURNAL_OPENED",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-26T03:06:51.357Z",
+          "code": "RESOURCE_ADMITTED",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-26T03:07:07.532Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-26T03:07:11.711Z",
+          "code": "RESOURCE_JOB_EXIT",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-26T03:07:12.038Z",
+          "code": "RESOURCE_FINAL_DECISION",
+          "reasons": null
+        }
+      ]
+    },
+    "hosted-package-40262086699-1.jsonl": {
+      "path": "docs/stabilization/resource-journals/hosted-package-40262086699-1.jsonl",
+      "sha256": "eb581805b559d847ab4ba8d448b9e170aa11cc804b5c51478cde78d8da2e10ab",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T03:05:01.185Z",
+        "runId": "hosted-package-40262086699-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        {
+          "at": "2026-10-26T03:03:46.629Z",
+          "code": "RESOURCE_JOURNAL_OPENED",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-26T03:04:54.819Z",
+          "code": "RESOURCE_ADMITTED",
+          "reasons": []
+        },
+        {
+          "at": "2026-10-26T03:05:01.014Z",
+          "code": "RESOURCE_JOB_EXIT",
+          "reasons": null
+        },
+        {
+          "at": "2026-10-26T03:05:01.185Z",
+          "code": "RESOURCE_FINAL_DECISION",
+          "reasons": null
+        }
+      ]
+    }
+  },
+  "result_artifact": {
+    "id": 12624718178,
+    "sha256": "8856d2a7f02091b5aed91e40e0ce6d106217b424fe51409bdeea1b9e2dfdd1dc",
+    "download_executor": 1466,
+    "download_exit": 0
+  },
+  "artifact_zip_sha256": "8856d2a7f02091b5aed91e40e0ce6d106217b424fe51409bdeea1b9e2dfdd1dc",
+  "native_report_sha256": "935db22a0f44a0e3e13687c825860893dd3ecc24058b18068f59ee5273ad7106",
+  "private_log_sha256": "8821ee6e89784ae8e51324359f6d51c503d638c159e2597e8a783988202f3d44",
+  "screenshots": [],
+  "cleanup": {
+    "approved_fixture_exact_archive_restored": true,
+    "DB_exact_timestamp_equality_verified": true,
+    "owned_secret_deleted_and_absent": true,
+    "owned_credentials_link_identity_removed": true,
+    "exact_run_source_rows_total": 0,
+    "exact_run_source_rows_active": 0,
+    "secret_output_scan": "zero_owned_link_hash_or_service_key_occurrences",
+    "private_receipts_retained_0600": true
+  },
+  "owned_jobs_processes_secrets_fixtures_remaining": [],
+  "verdict_a": "UNVERIFIED: zero productUI/guestSaveRetry/memberrecovery observations; D217 and fullT05/T22 remain open/unverified.",
+  "next_action": "No blind retry. Diagnose measured owned Chromium/CDP startup boundary on original route with reviewed bounded startup diagnostics; preserve CPU cause uncertainty and all source/resource/auth gates. Native D217/Save and original D294 interruption retests remain pending.",
+  "original_actor_report_sha256": "14168c2b1cee20d3855c27f1e6bed69b0ad3066ab2812913b211cd51455c12d6",
+  "native_report_path": "docs/stabilization/evidence/member-stale-40262086699/native-report.original.json.txt",
+  "label_limit": {
+    "requested": {
+      "defect": "EXT-D-0217",
+      "cases": ["EXT-F-1007-T05", "EXT-F-1007-T22"],
+      "save_scope": "stale-profile-retry"
+    },
+    "actual_report": {
+      "defect": "EXT-D-0187",
+      "cases": ["EXT-F-1007-T04", "EXT-F-1007-T29"]
+    },
+    "owner_source_inference": "Runner initializes generic D187 labels; staleProfileRetry remapping to D217/T05/T22 follows auth_complete (tests/browser/scrape-save-native-acceptance.mjs). This pre-auth timeout never entered that branch. Original bytes preserved, no silent relabel.",
+    "original_limits_field": "Describes intended scope, not measured completion; no authentication, credential-removal, Save/Retry or Source write happened in this attempt."
+  },
+  "fixture_preparation": {
+    "existing_designated_ordinary_member_and_approved_fixture_validated": true,
+    "one_use_link_staged_privately": true,
+    "original_archive_restored_exactly": true,
+    "existing_approved_org_secret_untouched": true,
+    "no_new_account_org_membership_role": true,
+    "fresh_independent_cleanup": "reports/hosted-ab-evidence-peer-20261026.json"
+  },
+  "product_counts": {
+    "passes": 0,
+    "reproduced_defects": 0,
+    "independent_fix_closures": 0
+  },
+  "independent_review": "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+}

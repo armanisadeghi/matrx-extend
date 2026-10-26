@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0187",
+  "case_ids": [
+    "EXT-F-1007-T04",
+    "EXT-F-1007-T29"
+  ],
+  "auth_mode": "member",
+  "destination_mode": "none",
+  "save_scope": "stale-profile-retry",
+  "status": "fail",
+  "stage": "inputs",
+  "native_stage": "cdp_connect",
+  "artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+    "run_id": 40260774042,
+    "artifact_id": 12623724158,
+    "tree_sha256": "3c410c4f1b6044150abce017ab7598d20149301a34ac15f2b5c1ce10425933f9",
+    "version": "0.2.624",
+    "github_artifact_digest": "sha256:3b923ab86a89d8c466967f2a255c4b2cfec1c5d7a0b4ad96a4b5a33573f6b869",
+    "ci_run_attempt": 1
+  },
+  "authentication": null,
+  "auth_stage": null,
+  "auth_diagnostic": null,
+  "auth_failure": null,
+  "observations": {},
+  "cleanup": null,
+  "failure_stage": "inputs",
+  "limits": "Controlled credential removal in the owned profile followed by real extension restore; guest Save/warm Retry/post-full-reload Retry, real member recovery, edited landing HTTP and Source read/cleanup. Server-caused refresh rejection and Store installation remain unverified.",
+  "harness_checkout_sha": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+  "diagnostic_progress": {
+    "sequence": 6,
+    "latest": {
+      "key": "native_stage:cdp_connect",
+      "kind": "native_stage",
+      "label": "cdp_connect",
+      "at": "2026-10-26T03:09:29.958Z",
+      "sequence": 6
+    },
+    "boundaries": [
+      {
+        "key": "native_stage:receipt",
+        "kind": "native_stage",
+        "label": "receipt",
+        "at": "2026-10-26T03:09:28.564Z",
+        "sequence": 1,
+        "first_at": "2026-10-26T03:09:28.564Z"
+      },
+      {
+        "key": "native_stage:artifact_verify",
+        "kind": "native_stage",
+        "label": "artifact_verify",
+        "at": "2026-10-26T03:09:28.600Z",
+        "sequence": 2,
+        "first_at": "2026-10-26T03:09:28.600Z"
+      },
+      {
+        "key": "native_stage:browser_runtime",
+        "kind": "native_stage",
+        "label": "browser_runtime",
+        "at": "2026-10-26T03:09:29.461Z",
+        "sequence": 3,
+        "first_at": "2026-10-26T03:09:29.461Z"
+      },
+      {
+        "key": "native_stage:profile_prepare",
+        "kind": "native_stage",
+        "label": "profile_prepare",
+        "at": "2026-10-26T03:09:29.928Z",
+        "sequence": 4,
+        "first_at": "2026-10-26T03:09:29.928Z"
+      },
+      {
+        "key": "native_stage:browser_spawn",
+        "kind": "native_stage",
+        "label": "browser_spawn",
+        "at": "2026-10-26T03:09:29.941Z",
+        "sequence": 5,
+        "first_at": "2026-10-26T03:09:29.941Z"
+      },
+      {
+        "key": "native_stage:cdp_connect",
+        "kind": "native_stage",
+        "label": "cdp_connect",
+        "at": "2026-10-26T03:09:29.958Z",
+        "sequence": 6,
+        "first_at": "2026-10-26T03:09:29.958Z"
+      }
+    ]
+  },
+  "error_code": "owned_cdp_endpoint_timeout"
+}

@@ -32,11 +32,12 @@
     "docs/stabilization/reports/scrape-source-save-fresh-peer-20261020.json",
     "docs/stabilization/reports/scrape-dialog-current-native-20261020.json",
     "docs/stabilization/reports/source-retry578-live-peer-20261020.json",
-    "docs/stabilization/reports/hosted-reload-evidence-adjudication-20261021.json"
+    "docs/stabilization/reports/hosted-reload-evidence-adjudication-20261021.json",
+    "docs/stabilization/reports/member-stale-a-40262086699-20261026.json"
   ],
   "fix_sha": "c5e739074325d553a59c42e2e9d113b668cbcd4d",
   "review": "Fresh independent source review passed A correctness and B evidence after the guarded RED/GREEN/mutation/compile report. Exact-main CI at 3e5b8f182 passed and its v0.2.509 development artifact was promoted on disk; Chrome loaded state is not verified.",
-  "next_action": "Retest the original stale-profile guest Save and refused Retry using an owned disposable fixture on the latest loaded development artifact: prove edited draft retention, sign-in remedy, no guest organization/landing call, full extension reload, and signed-in Retry landing the edited text. The public demo queue is now empty after one authorized Retry and canonical Source 7f70b11a-d5ab-4153-af6c-b4b33d0953d5 is recovered; preserve that Source, do not Retry the empty queue or archive/delete the recovered Source. Current signed-in Retry/readback is surrounding evidence only, not guest original reproduction or D217 closure.",
+  "next_action": "Original guest Save/refused Retry/reload/real-member recovery remains unverified. Latest40262086699 stopped before authentication at owned CDP timeout; fixture and temporary-secret cleanup independently verified. Startup-only40264782778 on later9a connected under valid resource checks but does not reproduce the failure or close D217. Select one changed-discriminator guarded product attempt after latest-source/artifact and fixture checks; never overwrite the original native D187 metadata or credit invalid runs. Preserve the recovered canonical Source 7f70b11a-d5ab-4153-af6c-b4b33d0953d5; do not Retry its empty queue or archive/delete that Source.",
   "transition_history": [
     {
       "at": "2026-10-12T20:18:00Z",
@@ -64,10 +65,28 @@
     }
   ],
   "current_surrounding_retest": {
-    "run_id": 39670665256,
-    "source_sha": "7d92195705c2a3f7997594814d0ffe125b7c81cf",
-    "status": "original_guest_assertions_unverified",
-    "detail": "Normal A dispatch admitted; approved-org member auth and credential-removal/fullReload fixture completed, then member_auth/native_acceptance_error before guest_restore_observed. No Save/Retry/write. Temporary secret deleted and zero active run-owned Sources checked. Diagnose Settings tooltip-label locator and safe exact substep before normal independent rerun.",
-    "evidence": "docs/stabilization/reports/d217-current-normal-20261021.json"
-  }
+    "run_id": 40262086699,
+    "source_sha": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+    "status": "resource_invalid_pre_auth_zero_product_credit",
+    "detail": "Intended D217 stale-profile-retry; original report still generic D187/T04/T29 because pre-auth CDP timeout precedes scope remap. No Save/Retry/auth/write; original D217 and D294 interruption unverified.",
+    "evidence": "docs/stabilization/reports/member-stale-a-40262086699-20261026.json"
+  },
+  "retest_attempts": [
+    {
+      "run_id": 40262086699,
+      "source_sha": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+      "status": "resource_invalid_pre_auth_zero_product_credit",
+      "detail": "Intended D217 stale-profile-retry; original report still generic D187/T04/T29 because pre-auth CDP timeout precedes scope remap. No Save/Retry/auth/write; original D217 and D294 interruption unverified.",
+      "evidence": "docs/stabilization/reports/member-stale-a-40262086699-20261026.json"
+    }
+  ],
+  "prior_surrounding_retests": [
+    {
+      "run_id": 39670665256,
+      "source_sha": "7d92195705c2a3f7997594814d0ffe125b7c81cf",
+      "status": "original_guest_assertions_unverified",
+      "detail": "Normal A dispatch admitted; approved-org member auth and credential-removal/fullReload fixture completed, then member_auth/native_acceptance_error before guest_restore_observed. No Save/Retry/write. Temporary secret deleted and zero active run-owned Sources checked. Diagnose Settings tooltip-label locator and safe exact substep before normal independent rerun.",
+      "evidence": "docs/stabilization/reports/d217-current-normal-20261021.json"
+    }
+  ]
 }

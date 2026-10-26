@@ -27,7 +27,9 @@
     "docs/stabilization/reports/d294-initial-source-review-20261025.json",
     "docs/stabilization/reports/d294-corrected-source-review-20261025.json",
     "docs/stabilization/reports/d294-transaction-source-review-20261025.json",
-    "docs/stabilization/reports/d294-prepared-resource-checkpoint-20261025.json"
+    "docs/stabilization/reports/d294-prepared-resource-checkpoint-20261025.json",
+    "docs/stabilization/reports/member-stale-a-40262086699-20261026.json",
+    "docs/stabilization/reports/startup-a-40264782778-20261026.json"
   ],
   "probe": "0.2s source-extracted actual callback plus real report helper subprocess; normal SIGTERM after IPC milestone yields absent report. Supporting reproduction only, not browser/CPU/product proof. Probe files removed.",
   "plan_status": "Source-FIXED after exact preserved candidate application, latest guarded real-caller/SIGTERM/retry focused guards, compile, corrected wholelint and fresh independent A/B bounded source review. Native/member retest and closure remain pending.",
@@ -69,7 +71,7 @@
       "ruling": "CONFIRMED: project through existing allowlisted safe diagnostics then synchronously publish on meaningful callback update before returning; raw unknown diagnostic fields are never dumped. Guard updates within same stage and termination after observation."
     }
   ],
-  "next_action": "Currentcff624ownerinstallationverified; D294originalnative diagnostic/adjacentmember test remainsunverified. Nextwell-definedA D217stale-profile-retry has reviewed changeddrivers+durablestages, requires exactcurrent-sourceCI artifact and privateordinarymember/approvedorgfixture readiness. NormalA dispatchclean-firstbeforelocalguard; awaitindependentoriginal/adjacentnativeproof beforeD294closure. Store577/58aaguestpass doesnotcloseD294.",
+  "next_action": "Source remains FIXED. Actual40262086699 retains six safe stages through pre-auth CDP timeout, not original resource SIGTERM after panel/auth. Startup-only40264782778 succeeds on later9a with valid journals and zero product credit; no D294 closure. Original interruption and adjacent member cases still need independent guarded native reproduction.",
   "plan_reverify": "docs/stabilization/reports/member-checkpoint-contract-reverify-20261025.json",
   "implementation_lane": {
     "owner": "/root/d294_resume_fix_2309",
@@ -102,5 +104,14 @@
     "disk_promoted": true,
     "owner_Chrome_reload": "verified_bounded_Profile8_resource_valid0",
     "native_D294_retest": "unverified"
+  },
+  "native_supporting_observation": {
+    "run_id": 40262086699,
+    "six_durable_safe_milestones": true,
+    "last_stage": "cdp_connect",
+    "auth_stage": null,
+    "caught_error": "owned_cdp_endpoint_timeout",
+    "original_interrupted_after_auth_reproduction": false,
+    "closure": false
   }
 }

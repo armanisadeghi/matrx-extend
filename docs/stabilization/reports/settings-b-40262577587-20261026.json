@@ -1,0 +1,166 @@
+{
+  "schema": 1,
+  "lane": "independent productTEST B / Settings-navigation",
+  "owner": "/root/settings_b_native_0303",
+  "source_sha": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+  "development_CI": 40260774042,
+  "development_artifact_id": 12623724158,
+  "development_artifact_digest": "sha256:3b923ab86a89d8c466967f2a255c4b2cfec1c5d7a0b4ad96a4b5a33573f6b869",
+  "workflow_sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+  "changed_discriminator": [
+    "PackageChatView host creation now waits authKnown and skips sessionEnded; old creates host immediately at mount. This changes startup work ordering, not proof of priorCPUcause.",
+    "Guestmode observer now opens canonical Chat Options/Tools and observes actual popup controls; Escape cleanup closes owned popup. Oldobserver searched absent top-levelmode toggle. Actual source107/286line repairs; no assertion or source edits by B."
+  ],
+  "run": {
+    "id": 40262577587,
+    "attempt": 1,
+    "source_sha": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+    "expected_case": "settings-controls",
+    "expected_lane": "B",
+    "job_id": 121377913695,
+    "runner_id": 1000116989,
+    "runner_name": "GitHub Actions 1000116989",
+    "runner_label": "macos-15-intel",
+    "created_at": "2026-10-26T03:08:28Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "updated_at": "2026-10-26T03:16:29Z"
+  },
+  "result_artifact": {
+    "id": 12625407323,
+    "name": "hosted-guest-40262577587-1",
+    "zip_sha256": "fe901fa92b7efaa165db7d8a758befe0213ad617f9702ff9eb89deb5e7d01c14",
+    "official_digest_matches_download": true,
+    "bytes": 33237
+  },
+  "verdict": "RESOURCE_INVALID_ZERO_PRODUCT_CREDIT",
+  "normal_certificate": {
+    "valid": false,
+    "normal_resource_validator": "verifyHostedResourceJournals",
+    "error": "HOSTED_JOURNAL_EVIDENCE_MISSING",
+    "guest_settings_certificate_CLI": "not implemented in current reviewed helper; no fabricated certificate"
+  },
+  "resource_journals": [
+    {
+      "path": "docs/stabilization/resource-journals/hosted-browser-40262577587-1.jsonl",
+      "sha256": "8bfcaf880814ae894e3a236f37e9d4da8045e7f67228a646148a81fb15e866bf",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T03:13:07.456Z",
+        "runId": "hosted-browser-40262577587-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-guest-40262577587-1.jsonl",
+      "sha256": "91e27428e1418c45ccbb702f70f0304b79ebe62ef8323315ee2b9bd76d2240fe",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T03:16:11.953Z",
+        "runId": "hosted-guest-40262577587-1",
+        "admitted": true,
+        "resourceInvalid": true,
+        "exitCode": 3,
+        "decision": "invalid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-package-40262577587-1.jsonl",
+      "sha256": "58ab5106cb9e05724fb9c149c42dae3e5c9252d588fde9d4d460e0bd46d9521d",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T03:10:44.402Z",
+        "runId": "hosted-package-40262577587-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  ],
+  "exact_failure": {
+    "code": "RESOURCE_WATCH_UNSAFE",
+    "reason": ["RESOURCE_CPU_HIGH_LOAD_BUSY"],
+    "at": "2026-10-26T03:16:10.317Z",
+    "oneMinuteLoad": 5.6,
+    "logicalCpus": 4,
+    "cpuBusyFraction": 0.66,
+    "pressureLevel": 1,
+    "availableMemoryGiB": 12.6,
+    "swapUsedMiB": 0,
+    "stopped_at_safe_boundary": true,
+    "group_stop_requested": {
+      "groupId": 10913,
+      "signal": "SIGTERM",
+      "at": "2026-10-26T03:16:10.786Z"
+    },
+    "cause": "unknown; resource observation does not identify a product or observer fault"
+  },
+  "UI_evidence": {
+    "inspected": ["native-side-panel.png", "normal-target-after-open.png"],
+    "native_panel": "Top-level toolbar present and guest G avatar; main body blank at captured startup. No Settings controls or case action evidence.",
+    "normal_target": "Owned public research article and open-panel receipt visible.",
+    "case_report": "absent from official uploaded archive",
+    "case_level_observations": 0,
+    "passes": 0,
+    "reproducible_product_defects": 0,
+    "independently_verified_fixes": 0,
+    "all_case_ids_unverified": [
+      "T04",
+      "T10",
+      "T13",
+      "T16",
+      "T19",
+      "T22",
+      "T28",
+      "T31",
+      "T34",
+      "T37",
+      "T40",
+      "T46",
+      "T63",
+      "T64",
+      "T67",
+      "T70",
+      "T73",
+      "T76",
+      "T92"
+    ],
+    "limits": [
+      "No original reproduction or adjacent Settings case verified",
+      "No warm/reload/role coverage",
+      "No Store-installed/browser or server health claim",
+      "New startup ordering did not establish a resource-valid run; no observer-fix efficacy conclusion"
+    ]
+  },
+  "cleanup": {
+    "native_job_terminal": true,
+    "read_only_watch_executor": 27720,
+    "watch_exit": 1,
+    "native_dispatch_executor": 9736,
+    "dispatch_exit": 0,
+    "log_download_executor": 39283,
+    "log_download_exit": 0,
+    "hosted_runner_orphan_cleanup_logged_at": "2026-10-26T03:16:14.1547950Z",
+    "fresh_owned_hosted_profile_disposal": "ephemeral hosted runner terminated; no explicit profile deletion receipt in artifact, therefore profile deletion not independently verified",
+    "shared_auth_fixture_secret_org_access_or_mutation": false,
+    "A_run_and_fixture": "untouched; independent parent lane",
+    "owned_external_jobs_in_flight": [],
+    "native_retry": false
+  },
+  "actions": {
+    "dispatch": true,
+    "auth_or_fixture_or_secret_access_or_mutation": false,
+    "source_or_Git_edits": false,
+    "Mac_UI_or_heavy": false
+  },
+  "next_action": "Parent independent peer review and sanitized durable integration. Keep 19 cases unverified. No repeat of unchanged native attempt and no guard bypass; diagnose relevant startup/resource boundary using existing evidence before any new changed-discriminator run.",
+  "original_actor_report_sha256": "93b2c02d898dae328c37dde412b3bc2aa8b1bf858e019312d0c1a20fe9933e67",
+  "independent_review": "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+}

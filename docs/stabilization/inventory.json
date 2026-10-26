@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-25T20:38:33.747127+00:00",
+  "updated_at": "2026-10-26T03:50:40.848960+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -8023,6 +8023,19 @@
               "scope": "Visible selection/restoration only; rendering/storage/reopen/full reload/runtime effects unverified; no independent retest or current-main credit.",
               "evidence": "docs/stabilization/reports/store205-settings-guest-native-20261019.json"
             }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
+            }
           ]
         },
         {
@@ -8802,7 +8815,20 @@
             "at": "2026-10-25T12:23:37.762797+00:00",
             "reason": "October22 canonical account-knob migration retired local defaultPermissionMode; current producer and live1a9 failure traced in settings-sink-diagnosis-1202. Correct negative guest expectation, no relaxation of signed-in persistence.",
             "evidence": "docs/stabilization/reports/settings-sink-diagnosis-1202.json"
-          }
+          },
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T11",
@@ -9055,6 +9081,19 @@
               "resource_valid": true,
               "scope": "Visible selection/restoration only; rendering/storage/reopen/full reload/runtime effects unverified; no independent retest or current-main credit.",
               "evidence": "docs/stabilization/reports/store205-settings-guest-native-20261019.json"
+            }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
             }
           ]
         },
@@ -9490,6 +9529,19 @@
               "detail": "Four switch UI/storage warm and panel-document reload criteria received a qualified independent PASS. T16 remains partial; downstream identity/email behavior and explicit restoration proof remain open.",
               "release_scope": "Frozen unpublished development artifact only; no full extension reload, Store, current-main runtime, member/admin or overall Settings acceptance."
             }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
+            }
           ]
         },
         {
@@ -9737,6 +9789,19 @@
               "independent_review": "4a5a8e98",
               "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
             }
           ]
         },
@@ -10119,6 +10184,19 @@
               ],
               "detail": "Fresh independent bounded guest revalidation: Advanced agent capabilities and permission controls absent in warm and Settings reload DOM (2/2 criteria).",
               "release_scope": "Frozen unpublished development artifact only; no current-main, member/admin, Store or full Settings claim."
+            }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
             }
           ]
         },
@@ -10511,6 +10589,19 @@
               ],
               "detail": "Initial extension replacement/guest observations pass; native callback unbound acquireLivePanel stops before per-choice rechecks. Binding repaired4b14e0a6; next native awaiting hosted gate/API reset. No new product acceptance or failure inferred."
             }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
+            }
           ]
         },
         {
@@ -10773,6 +10864,19 @@
               "independent_review": "4a5a8e98",
               "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
             }
           ]
         },
@@ -11057,6 +11161,19 @@
               "independent_review": "4a5a8e98",
               "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
             }
           ]
         },
@@ -11385,6 +11502,19 @@
               ],
               "detail": "Fresh independent bounded guest revalidation: Deep clean coming-soon hint, false-to-true toggle, reload persistence and original false preference restored (3/3 criteria).",
               "release_scope": "Frozen unpublished development artifact only; no current-main, member/admin, Store or full Settings claim."
+            }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
             }
           ]
         },
@@ -11856,6 +11986,19 @@
               "resource_valid": true,
               "scope": "Freshguest safeDOM switch off; absentpref accepteddefaultoff; requiredcontrol screenshot target failed. Visiblecrop proof unverified.",
               "evidence": "docs/stabilization/reports/store-release-v0562-acceptance-20261019.json"
+            }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
             }
           ]
         },
@@ -12565,6 +12708,19 @@
               ],
               "detail": "Fresh independent bounded guest revalidation: valid port save and rediscovery trace, boundary ports 1/65535, invalid 65536 refusal, clear override and reload persistence (8/8 criteria).",
               "release_scope": "Frozen unpublished development artifact only; no current-main, member/admin, Store or full Settings claim."
+            }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
             }
           ]
         },
@@ -13836,6 +13992,19 @@
               "detail": "Independent review confirms original guest criteria.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
+            }
           ]
         },
         {
@@ -14038,6 +14207,19 @@
               "independent_review": "4a5a8e98",
               "detail": "Independent review confirms original guest criteria.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
             }
           ]
         },
@@ -14410,6 +14592,19 @@
               ],
               "detail": "Diagnosed retry was refused at browser resource admission with RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count before full Chromium or Settings interaction; no product evidence. Stop after this second unusable B attempt."
             }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
+            }
           ]
         },
         {
@@ -14748,6 +14943,19 @@
               "detail": "The native guest run observed matching identity, real no-update and the Available readiness label. The runner accepted Ready or Available at run time, so the independent peer withheld readiness-label credit. The source contract was subsequently adjudicated as Available by original product commit c7e98585c and independently reviewed exact-oracle commit d33342f70; this resolves the wording conflict without making T70 complete. API-unavailable, update-available, throttled, error and update-API-unavailable dimensions remain unverified.",
               "release_scope": "Frozen unpublished development artifact only; no current-main, member/admin, Store or full Settings claim."
             }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
+            }
           ]
         },
         {
@@ -15062,6 +15270,19 @@
               "detail": "Independent review confirms original guest criteria.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
+            }
           ]
         },
         {
@@ -15319,6 +15540,19 @@
               "independent_review": "4a5a8e98",
               "detail": "Independent review confirms original guest criteria.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
             }
           ]
         },
@@ -16283,6 +16517,19 @@
               "detail": "Independent review confirms original guest criteria.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
+          ],
+          "execution_attempts": [
+            {
+              "mode": "guest",
+              "run_id": 40262577587,
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
+            }
           ]
         },
         {
@@ -16582,9 +16829,10 @@
             "39363918633",
             "settings-guest-0b-20261025",
             "settings-1a9-40190567571",
-            "settings-6f86-40195311320"
+            "settings-6f86-40195311320",
+            "settings-46bb-40262577587"
           ],
-          "retest_status": "Current6f86 batch resource-invalid, all19current cases unverified. Older bounded passes retained in case history. D289/D290/D291 not closed from this attempt."
+          "retest_status": "Toolbar/G avatar plus blank main body only; no Settings case report. Native final invalid3 after CPU high-load/busy safe stop. All19 selected cases unverified; no CPU cause or source-fix closure."
         },
         "member": {
           "test_status": "unverified",
@@ -16924,6 +17172,44 @@
             "docs/stabilization/reports/settings-guest578-frozen-20261020.json",
             "docs/stabilization/reports/settings578-native-evidence-peer-20261020.json"
           ]
+        },
+        {
+          "at": "2026-10-26T03:16:29Z",
+          "mode": "guest",
+          "run_id": 40262577587,
+          "source_sha": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+          "development_ci_run_id": 40260774042,
+          "development_artifact_id": 12623724158,
+          "build_version": "0.2.624",
+          "status": "resource_invalid_no_product_verdict",
+          "resource_valid": false,
+          "new_acceptance_credit": false,
+          "selected_case_ids": [
+            "EXT-F-1003-T04",
+            "EXT-F-1003-T10",
+            "EXT-F-1003-T13",
+            "EXT-F-1003-T16",
+            "EXT-F-1003-T19",
+            "EXT-F-1003-T22",
+            "EXT-F-1003-T28",
+            "EXT-F-1003-T31",
+            "EXT-F-1003-T34",
+            "EXT-F-1003-T37",
+            "EXT-F-1003-T40",
+            "EXT-F-1003-T46",
+            "EXT-F-1003-T63",
+            "EXT-F-1003-T64",
+            "EXT-F-1003-T67",
+            "EXT-F-1003-T70",
+            "EXT-F-1003-T73",
+            "EXT-F-1003-T76",
+            "EXT-F-1003-T92"
+          ],
+          "evidence": [
+            "docs/stabilization/reports/settings-b-40262577587-20261026.json",
+            "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+          ],
+          "detail": "Toolbar/G avatar plus blank main body only; no Settings case report. Native final invalid3 after CPU high-load/busy safe stop. All19 selected cases unverified; no CPU cause or source-fix closure."
         }
       ]
     },
@@ -25695,6 +25981,29 @@
               ],
               "detail": "Owner and fresh peer observed local Article Cancel/Apply and Links validation/add/remove/recapture; entire shared journal invalid exit3 due OS pressureLevel2. ZERO acceptance credit; prior valid results unchanged. No blind local repeat."
             }
+          ],
+          "execution_attempts": [
+            {
+              "at": "2026-10-26T03:09:57Z",
+              "mode": "intended guest/member transition; auth not reached",
+              "run_id": 40262086699,
+              "source_sha": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+              "development_ci_run_id": 40260774042,
+              "development_artifact_id": 12623724158,
+              "build_version": "0.2.624",
+              "status": "resource_invalid_pre_auth_cdp_timeout",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "selected_case_ids": [
+                "EXT-F-1007-T05",
+                "EXT-F-1007-T22"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/member-stale-a-40262086699-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ],
+              "detail": "Intended D217 stale-profile-retry; original report still generic D187/T04/T29 because pre-auth CDP timeout precedes scope remap. No Save/Retry/auth/write; original D217 and D294 interruption unverified."
+            }
           ]
         },
         {
@@ -29166,6 +29475,29 @@
                 "docs/stabilization/reports/source-retry578-live-peer-20261020.json"
               ]
             }
+          ],
+          "execution_attempts": [
+            {
+              "at": "2026-10-26T03:09:57Z",
+              "mode": "intended guest/member transition; auth not reached",
+              "run_id": 40262086699,
+              "source_sha": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+              "development_ci_run_id": 40260774042,
+              "development_artifact_id": 12623724158,
+              "build_version": "0.2.624",
+              "status": "resource_invalid_pre_auth_cdp_timeout",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "selected_case_ids": [
+                "EXT-F-1007-T05",
+                "EXT-F-1007-T22"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/member-stale-a-40262086699-20261026.json",
+                "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ],
+              "detail": "Intended D217 stale-profile-retry; original report still generic D187/T04/T29 because pre-auth CDP timeout precedes scope remap. No Save/Retry/auth/write; original D217 and D294 interruption unverified."
+            }
           ]
         },
         {
@@ -30994,6 +31326,29 @@
           "report": "docs/stabilization/reports/linux-native-capacity-20261020.json",
           "real_ubuntu_evidence": "pending automatic source CI",
           "product_behavior_credit": 0
+        }
+      ],
+      "execution_attempts": [
+        {
+          "at": "2026-10-26T03:09:57Z",
+          "mode": "intended guest/member transition; auth not reached",
+          "run_id": 40262086699,
+          "source_sha": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+          "development_ci_run_id": 40260774042,
+          "development_artifact_id": 12623724158,
+          "build_version": "0.2.624",
+          "status": "resource_invalid_pre_auth_cdp_timeout",
+          "resource_valid": false,
+          "new_acceptance_credit": false,
+          "selected_case_ids": [
+            "EXT-F-1007-T05",
+            "EXT-F-1007-T22"
+          ],
+          "evidence": [
+            "docs/stabilization/reports/member-stale-a-40262086699-20261026.json",
+            "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+          ],
+          "detail": "Intended D217 stale-profile-retry; original report still generic D187/T04/T29 because pre-auth CDP timeout precedes scope remap. No Save/Retry/auth/write; original D217 and D294 interruption unverified."
         }
       ]
     },

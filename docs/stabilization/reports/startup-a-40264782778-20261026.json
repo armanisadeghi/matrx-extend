@@ -1,0 +1,314 @@
+{
+  "schema": 1,
+  "owner": "/root/startup_diag_a_0329",
+  "at": "2026-10-26T03:46:12.105199+00:00",
+  "status": "TERMINAL_DIAGNOSTIC_VALID_NO_PRODUCT_ACCEPTANCE",
+  "source_sha": "9a055021e6699c1aeaa434ccb373e2aa3955e7fe",
+  "development_CI": 40263371440,
+  "development_artifact_id": 12626000349,
+  "development_digest": "sha256:37a3f42f80aea7670cf979696d5c15a89cbdd76e8ea3302cba250c0b694d99ec",
+  "extension_version": "0.2.624",
+  "workflow_sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+  "run": {
+    "id": 40264782778,
+    "head_sha": "9a055021e6699c1aeaa434ccb373e2aa3955e7fe",
+    "run_attempt": 1,
+    "created_at": "2026-10-26T03:35:01Z",
+    "updated_at": "2026-10-26T03:43:35Z",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "job": {
+    "id": 121384688889,
+    "status": "completed",
+    "conclusion": "success",
+    "runner_id": 1000116994,
+    "runner_name": "GitHub Actions 1000116994",
+    "labels": ["macos-15-intel"],
+    "started_at": "2026-10-26T03:35:06Z",
+    "completed_at": "2026-10-26T03:43:34Z"
+  },
+  "result_artifact": {
+    "id": 12625459388,
+    "digest": "sha256:075b6179ff933c5e1cacedf4d0664369b79c4d1b8905afc7938ccdd055635ffc",
+    "zip_sha256": "075b6179ff933c5e1cacedf4d0664369b79c4d1b8905afc7938ccdd055635ffc",
+    "all_archive_members_byte_matched": true
+  },
+  "startup_diagnostic_original": {
+    "schema": 2,
+    "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE",
+    "sourceSha": "9a055021e6699c1aeaa434ccb373e2aa3955e7fe",
+    "runId": 40263371440,
+    "artifactId": 12626000349,
+    "startedAt": "2026-10-26T03:41:43.843Z",
+    "lastNativeStage": "exercise_panel",
+    "nativeStages": [
+      {
+        "stage": "receipt",
+        "at": "2026-10-26T03:41:43.848Z"
+      },
+      {
+        "stage": "artifact_verify",
+        "at": "2026-10-26T03:41:43.850Z"
+      },
+      {
+        "stage": "browser_runtime",
+        "at": "2026-10-26T03:41:44.678Z"
+      },
+      {
+        "stage": "profile_prepare",
+        "at": "2026-10-26T03:41:44.689Z"
+      },
+      {
+        "stage": "browser_spawn",
+        "at": "2026-10-26T03:41:44.721Z"
+      },
+      {
+        "stage": "cdp_connect",
+        "at": "2026-10-26T03:41:44.724Z"
+      },
+      {
+        "stage": "endpoint_read",
+        "at": "2026-10-26T03:41:49.206Z"
+      },
+      {
+        "stage": "command_line_query",
+        "at": "2026-10-26T03:41:49.207Z"
+      },
+      {
+        "stage": "command_line_verify",
+        "at": "2026-10-26T03:41:49.227Z"
+      },
+      {
+        "stage": "extension_worker",
+        "at": "2026-10-26T03:41:49.227Z"
+      },
+      {
+        "stage": "spawn_owner",
+        "at": "2026-10-26T03:41:49.339Z"
+      },
+      {
+        "stage": "local_server",
+        "at": "2026-10-26T03:41:49.340Z"
+      },
+      {
+        "stage": "playwright_connect",
+        "at": "2026-10-26T03:41:49.346Z"
+      },
+      {
+        "stage": "page_create",
+        "at": "2026-10-26T03:41:49.449Z"
+      },
+      {
+        "stage": "local_page_navigation",
+        "at": "2026-10-26T03:41:49.576Z"
+      },
+      {
+        "stage": "panel_open",
+        "at": "2026-10-26T03:41:49.845Z"
+      },
+      {
+        "stage": "panel_reply",
+        "at": "2026-10-26T03:41:52.507Z"
+      },
+      {
+        "stage": "panel_target",
+        "at": "2026-10-26T03:41:52.518Z"
+      },
+      {
+        "stage": "panel_context",
+        "at": "2026-10-26T03:41:52.518Z"
+      },
+      {
+        "stage": "panel_settle",
+        "at": "2026-10-26T03:41:52.745Z"
+      },
+      {
+        "stage": "screenshot",
+        "at": "2026-10-26T03:41:54.982Z"
+      },
+      {
+        "stage": "exercise_panel",
+        "at": "2026-10-26T03:41:55.350Z"
+      }
+    ],
+    "runnerArch": "X64",
+    "requestedDisplayMode": "headed",
+    "browserLaunch": {
+      "requested_mode": "headed",
+      "observed_mode": "headed",
+      "verified_by": "Browser.getBrowserCommandLine"
+    },
+    "startupEndpointObservations": [
+      {
+        "phase": "cdp_connected",
+        "endpointPresent": true,
+        "inspectionFailed": false,
+        "exitObserved": false,
+        "elapsedMs": 4392,
+        "polls": 0,
+        "at": "2026-10-26T03:41:49.205Z"
+      }
+    ],
+    "gpuObservation": {
+      "status": "RESOLVED",
+      "requestedAt": "2026-10-26T03:41:49.340Z",
+      "resolvedAt": "2026-10-26T03:41:49.428Z",
+      "skiaBackendType": "GaneshGL",
+      "glRenderer": "ANGLE (Apple Inc., Apple Software Renderer, OpenGL 4.1 APPLE-21.1.1)",
+      "featureStatus": {
+        "gpu_compositing": "disabled_software",
+        "rasterization": "unavailable_off",
+        "webgl": "unavailable_off",
+        "webgl2": "unavailable_off"
+      }
+    },
+    "panelReadyAt": "2026-10-26T03:41:55.353Z",
+    "completedAt": "2026-10-26T03:43:22.625Z",
+    "guardJournal": "docs/stabilization/resource-journals/hosted-startup-40264782778-1.jsonl"
+  },
+  "validation": {
+    "provenance": {
+      "workflowSha": "9a055021e6699c1aeaa434ccb373e2aa3955e7fe",
+      "workflowSourceSha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596"
+    },
+    "journals": [
+      {
+        "name": "hosted-browser-40264782778-1.jsonl",
+        "sanitizer": true,
+        "final": {
+          "schema": 1,
+          "at": "2026-10-26T03:39:34.466Z",
+          "runId": "hosted-browser-40264782778-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "name": "hosted-package-40264782778-1.jsonl",
+        "sanitizer": true,
+        "final": {
+          "schema": 1,
+          "at": "2026-10-26T03:37:29.508Z",
+          "runId": "hosted-package-40264782778-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "name": "hosted-startup-40264782778-1.jsonl",
+        "sanitizer": true,
+        "final": {
+          "schema": 1,
+          "at": "2026-10-26T03:43:22.763Z",
+          "runId": "hosted-startup-40264782778-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      }
+    ],
+    "normal_product_validator": {
+      "valid": false,
+      "error": "HOSTED_JOURNAL_FOREIGN",
+      "limit": "Existing normal product validator expects hosted-guest, diagnostic emits hosted-startup; no renaming or product certificate."
+    }
+  },
+  "observations": {
+    "cdp": "Connected4392ms; endpointPresent true, inspectionFailed false, exitObserved false; polls0 is producer value, not independently counted. Timeout/post-timeout branches unexercised.",
+    "panel": "Actual toolbar/Gavatar + loading skeleton screenshot, owned article/open reply; panelReady is harness boundary only, no content-readiness/product success.",
+    "resource": "Package/browser/startup actual journals admitted and final valid0; transient CPU_BUSY .89 on4cores at03:41:52.551 followed low samples .05/.21 and recovered .04 at03:42:40.913; no unsafe/SIGTERM. Mixed process attribution does not prove CPU cause.",
+    "gpu": "Resolved Apple software renderer/GaneshGL, disabled_software compositing; no causal claim.",
+    "comparison": "Neither original Apre-CDPtimeout nor Bpost-panelunsafe reproduced in this diagnostic. Current source9a differs from original46bb. Does not diagnose either cause or establish product-batch reliability."
+  },
+  "product_counts": {
+    "passes": 0,
+    "defects_reproduced": 0,
+    "verified_fixes": 0,
+    "closures": []
+  },
+  "cleanup": {
+    "dispatch_executor": {
+      "session": 17213,
+      "exit": 0
+    },
+    "watch_executor": {
+      "session": 53288,
+      "exit": 0
+    },
+    "downloads": "Synchronous terminal0",
+    "owned_browser": "STARTUP_INTERVAL_DIAGNOSTIC_COMPLETE is emitted only after nativeRunner finally awaits child termination and rm(root). Source-backed completion evidence, no fresh OS/process or profile-absence readback.",
+    "profile_deletion": "Not independently verified; terminal ephemeralVM is not deletion proof.",
+    "runner_orphan_cleanup": "Official log03:43:31.204805Z",
+    "auth_fixture_secret_access_or_mutation": false,
+    "owned_external_jobs_in_flight": [],
+    "all_owned_local_executors_terminal": true
+  },
+  "actions": {
+    "normal_dispatch_count": 1,
+    "retry": false,
+    "source_Git_workflow_edit": false,
+    "Mac_UI_heavy": false,
+    "model_calls": 0
+  },
+  "next_action": "Fresh independent evidence peer, retain source-specific diagnostic result; parent chooses changed-discriminator guarded product work. No automatic retry or defect closure.",
+  "original_actor_report_sha256": "41073b55ab176a5aa45843cd75bf29afcb909f9bd5b3a7ac5028b0588075f0fd",
+  "original_diagnostic_path": "docs/stabilization/evidence/startup-40264782778/startup-interval-diagnostic.original.json.txt",
+  "original_diagnostic_sha256": "8b5eebc99b7a70064bed74154c937b9de962985fbb7485c2fee8facb98f79e5f",
+  "resource_journals": [
+    {
+      "path": "docs/stabilization/resource-journals/hosted-browser-40264782778-1.jsonl",
+      "sanitizer": true,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T03:39:34.466Z",
+        "runId": "hosted-browser-40264782778-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "sha256": "5a524526cca65c35c0ca2b83207cede4e300d20d9f325f6c0238891b5cb2f7f7"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-package-40264782778-1.jsonl",
+      "sanitizer": true,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T03:37:29.508Z",
+        "runId": "hosted-package-40264782778-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "sha256": "ebba41a2768ea81a46d028fa9a8cde16f04e13b4351f10fb91e6a677d03df999"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-startup-40264782778-1.jsonl",
+      "sanitizer": true,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T03:43:22.763Z",
+        "runId": "hosted-startup-40264782778-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "sha256": "7e6ad4aa6d1715ee8efb1465cbd0fb1e5bc20166107b58cb7e90afd176445fe4"
+    }
+  ],
+  "independent_review": "docs/stabilization/reports/startup-evidence-peer-20261026.json"
+}
