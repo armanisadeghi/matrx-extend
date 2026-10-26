@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "reviewer": "/root/d296_fresh_review_0413",
+  "zero_authorship": true,
+  "status": "DONE_BOUNDED_SUPPORTING_LIFECYCLE_VERIFIED",
+  "at": "2026-10-26T04:21:18.812768+00:00",
+  "source_commit": "f89140eba04071987a398ce81ad2836bebcf3da6",
+  "source_hashes": {
+    "scripts/stabilization-resource.mjs": "ce5dc85325db0883c0298b7607782101bc498cafebbbc892eda9196c8ae2e4d9",
+    "scripts/stabilization-resource-test-measurements.d.mts": "3c99bba163420527c39fbdb08f8492cb2032e415f931027909d10de83173cca0",
+    "tests/unit/resource-stop-lifecycle.test.ts": "8c38229d703bddf60c50fdd85b654f685d0ccb3e2b7d1a166b8434a0b57fd2e6"
+  },
+  "verdict_A": {
+    "verdict": "PASS_BOUNDED_SUPPORTING_GUARD_LIFECYCLE",
+    "scope": "Actual resource CLI orchestration/journal/lease/process lifecycle in isolated copied-module scenarios; no extension/product acceptance.",
+    "independent_execution": {
+      "actual_session": 68946,
+      "observed_terminal_exit": 0,
+      "run_id": "d296-peer-20261026-0417",
+      "tests_passed": 16,
+      "tests_failed": 0,
+      "test_files": 2,
+      "duration_seconds": 11.31,
+      "final_at": "2026-10-26T04:18:56.204Z",
+      "decision": "valid",
+      "resourceInvalid": false,
+      "journal_exitCode": 0
+    },
+    "observations": [
+      "Late SIGINT and SIGTERM after completed browser journal retain exactly one stop/final and process0.",
+      "Duplicate SIGINT/SIGTERM during delayed actual cleanup retain lease until cleanup and publish one stop.",
+      "Active first-stop journal-write EIO remains nonzero with retained ownership and no valid final.",
+      "Actual guard decision driven by isolated low-memory telemetry remains invalid3 with durable unsafe hold despite late SIGTERM.",
+      "Completed check with no prior stop ignores post-close SIGTERM; stopping exits naturally without waiting for losing watchdog timer.",
+      "Executed original-watch mutant is rejected by the natural-exit assertion."
+    ],
+    "original_reproduction": "Original captured second SIGINT after finalized valid0 produced closed-FD exception and process1. Builder RED4fail/1pass independently read; fresh repaired CLI rerun passed corresponding original/surrounding cases.",
+    "product_case_passes": 0,
+    "defect_closure_authority": "Parent adjudicates supporting D296; neither original guest run nor D283 is certified by these tests."
+  },
+  "verdict_B": {
+    "verdict": "PASS_BOUNDED",
+    "diff_review": "Reviewed exact own commit f89140eba04071987a398ce81ad2836bebcf3da6: 3files,249insertions/5deletions; no broad BASE..HEAD attribution.",
+    "observations": [
+      "First-stop publication remains active; duplicate stops are idempotent. stopRequestsOpen is sealed after main ownership cleanup/catch has returned, before terminal publication; failed cleanup retains ownership unchanged.",
+      "Watchdog timer cancellation only removes the losing wait; resource thresholds, physical-host admission, CPU/unsafe policy, cleanup census, failure verdict and journal writer remain unchanged.",
+      "Reused existing copied module graph and measurement fixture helpers; added exact Promise<void> declarations instead of suppressions or duplicated implementation.",
+      "Regressions use real copied production CLI, real OS signals and filesystem journal/lease outputs. Only external host telemetry, isolated lease path and timing stimulus are controlled; no replacement success decision in normal cases.",
+      "Different valid0, unsafe3 and write-failure outputs test real refusal/cleanup outcomes. Original RED failures, final exact GREEN and independent16case rerun are consistent."
+    ],
+    "forcing_proof": {
+      "constant_return_gutcheck": "Executed private copied-CLI constant-success/no-work stand-in is rejected by shared lifecycle oracle for missing real resource journal (ENOENT). One late-SIGINT invocation exercises that common forcing journal requirement; it is not a claim of nine separate constant-stand-in runs.",
+      "gutcheck_run": "resource-stop-gutcheck-20261026-0415",
+      "gutcheck_observed": "1 PASS, finalvalid0, child0; builder actualexecutor71733 separately parent-attested; reviewer did not inherit that handle.",
+      "mutation": "Committed actual test restores original uncancelled watch in private copy; natural-exit assertion rejects it. No shared working source planted or weakened.",
+      "initial_gap": "Mandatory executed gutcheck was absent from initial builderreport; followup execution now resolves common-oracle proof gap."
+    },
+    "findings": []
+  },
+  "owned_work": [],
+  "missing": [],
+  "extra": [],
+  "misunderstood": [],
+  "cannot_verify": [
+    "No physical Chrome UI/product/fullT10/Store/release/current-main acceptance.",
+    "No new run-mode descendant/pipe integration replay; original D283 remains distinct and unresolved.",
+    "Original actual UI permit process1 remains historical even though its immutable journal says valid0.",
+    "Independent test fixtures intentionally isolate physical telemetry/lease location; real host admission is independently enforced by outer guard.",
+    "Contributor71728e88d883c5187215be1a08fc6083818aaa05 later changed dependency lock only; D2963file hashes unchanged, latest source CI/artifact/adoption remains parent-owned and pending."
+  ],
+  "cleanup": {
+    "at": "2026-10-26T04:20:06.119642+00:00",
+    "owned_node_processes": [],
+    "resource_state": { "heavy": false, "reclaim": false, "unsafe-hold.json": false },
+    "scratch_count": 0
+  },
+  "source_unit_commit": "f89140eba04071987a398ce81ad2836bebcf3da6",
+  "latest_contributor_boundary_parent_attested": "71728e88d883c5187215be1a08fc6083818aaa05 pnpm-lock-only",
+  "evidence_sha256": {
+    ".output/stabilization-checkpoints/d296-peer-0413-run.log": "ede923a998ec4a7f16d118f65cbe1eb7d7a0b7766823e3e4525fa48654541187",
+    "docs/stabilization/resource-journals/d296-peer-20261026-0417.jsonl": "ef0bf0810213a230e6f98431d711439d3a57933e5d4888625820f3b516066e33",
+    ".output/stabilization-checkpoints/d296-peer-0413-cleanup.json": "c4200ab0d5375bc13c8a58c0d1dfd3172df984ca166612a74842fab97375fff9",
+    ".output/stabilization-checkpoints/resource-stop-red-0406.log": "6e96fd20af82b3eae39f16ac21ec7b1ed6bac791aae613df8becada7cfdf04c4",
+    ".output/stabilization-checkpoints/resource-stop-final-tests-0410.log": "36d8b528023bf872084895ca8747da380b2ca421d7fab723e0da2714406bb426",
+    ".output/stabilization-checkpoints/resource-stop-types-0412.log": "f04227b9c3a155f3e6dd2d3faff8c312f72d83c46dfcf50cc872e1731f4adba7",
+    ".output/stabilization-checkpoints/resource-stop-gutcheck-0415.log": "b45cce2dffe402dc840ef3c4a175f3889f0dc40d67e04fe354a46f5cfaad0ae7",
+    ".output/stabilization-checkpoints/resource-stop-gutcheck-0402.test.ts.txt": "b621c3b937ef323c6308bd5a06eb12373a7ba89ae26c17c320a4b4cff4efc3ce",
+    ".output/stabilization-checkpoints/resource-stop-fix-0402.json": "195ad64294bcfa7a0124fc6ceb53f09c95d798d8d1709a7016f744369a1b1d23"
+  },
+  "hash_consistency": {
+    "scripts/stabilization-resource.mjs": {
+      "working_tree": "ce5dc85325db0883c0298b7607782101bc498cafebbbc892eda9196c8ae2e4d9",
+      "own_commit": "ce5dc85325db0883c0298b7607782101bc498cafebbbc892eda9196c8ae2e4d9",
+      "unchanged": true
+    },
+    "scripts/stabilization-resource-test-measurements.d.mts": {
+      "working_tree": "3c99bba163420527c39fbdb08f8492cb2032e415f931027909d10de83173cca0",
+      "own_commit": "3c99bba163420527c39fbdb08f8492cb2032e415f931027909d10de83173cca0",
+      "unchanged": true
+    },
+    "tests/unit/resource-stop-lifecycle.test.ts": {
+      "working_tree": "8c38229d703bddf60c50fdd85b654f685d0ccb3e2b7d1a166b8434a0b57fd2e6",
+      "own_commit": "8c38229d703bddf60c50fdd85b654f685d0ccb3e2b7d1a166b8434a0b57fd2e6",
+      "unchanged": true
+    }
+  },
+  "next_action": "Parent integrates exact evidence and adjudicates supporting D296 state; wait successful latest717 source CI/artifact before owner development refresh. No more reviewer UI/heavy actions, no retroactive case certification."
+}

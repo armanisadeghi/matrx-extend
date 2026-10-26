@@ -7,6 +7,7 @@ import { test } from 'vitest';
 import {
   copyResourceGuardModules,
   setHealthyHostMeasurements,
+  setSupportedLifecycleHost,
 } from '../../scripts/stabilization-resource-test-measurements.mjs';
 
 const source = resolve(import.meta.dirname, '../..');
@@ -22,12 +23,11 @@ async function fixture(kind: string, uncancelledWatch = false) {
   await mkdir(docs, { recursive: true });
   await copyResourceGuardModules(join(source, 'scripts'), scripts);
   await setHealthyHostMeasurements(scripts);
+  await setSupportedLifecycleHost(scripts);
   const guard = join(scripts, 'stabilization-resource.mjs');
   let text = await readFile(guard, 'utf8');
-  // The real outer guard owns host admission. Only the nested fixture's lease
-  // location and external telemetry are isolated; stop/cleanup/verdict stay real.
-  if (process.env.MATRX_RESOURCE_OWNER)
-    text = text.replace('await assertNoLegacyWork();', '/* admitted outer test guard */');
+  // External host snapshots are explicit on every platform. The actual guard
+  // still owns admission decisions, PID identity, leases, signals and journals.
   if (uncancelledWatch) {
     // Mutation check: keep every decision real but restore the original losing
     // timer. The natural-exit assertion must reject this otherwise-valid run.
@@ -102,12 +102,46 @@ ${text.slice(end)}`;
   return { scratch, guard, docs, lease, memoryPhase };
 }
 
-async function scenario(kind: string, signal: NodeJS.Signals, uncancelledWatch = false) {
+async function scenario(
+  kind: string,
+  signal: NodeJS.Signals,
+  uncancelledWatch = false,
+  incompatibleHost = false,
+) {
   const item = await fixture(kind, uncancelledWatch);
   const runId = `stop-${randomUUID()}`;
+  const hostIsolation = join(item.scratch, 'incompatible-host.mjs');
+  if (incompatibleHost)
+    await writeFile(
+      hostIsolation,
+      `import cp from 'node:child_process';
+import os from 'node:os';
+import { syncBuiltinESMExports } from 'node:module';
+import { promisify } from 'node:util';
+const actualExecFile = cp.execFile;
+os.platform = () => 'linux';
+Object.defineProperty(process, 'platform', { value: 'linux' });
+cp.execFile = (cmd, args, ...rest) => {
+  if (cmd === '/bin/ps' && JSON.stringify(args) === JSON.stringify(['-p', String(process.pid), '-o', 'lstart=']))
+    return actualExecFile(cmd, args, ...rest);
+  throw new Error('UNEXPECTED_FIXTURE_HOST_COMMAND');
+};
+// Preserve execFile's promisified { stdout, stderr } contract while rejecting
+// unsupported host commands, rather than accidentally returning stdout alone.
+cp.execFile[promisify.custom] = (cmd, args, options) => new Promise((resolve, reject) => {
+  cp.execFile(cmd, args, options, (error, stdout, stderr) => {
+    if (error) reject(error);
+    else resolve({ stdout, stderr });
+  });
+});
+syncBuiltinESMExports();
+console.log('TEST_INCOMPATIBLE_HOST');
+`,
+    );
   const child = spawn(
     process.execPath,
     [
+      ...(incompatibleHost ? ['--import', hostIsolation] : []),
       item.guard,
       kind === 'check-complete' ? 'check' : 'browser',
       '--run-id',
@@ -163,9 +197,10 @@ async function scenario(kind: string, signal: NodeJS.Signals, uncancelledWatch =
       .trim()
       .split('\n')
       .map((line) => JSON.parse(line));
+    if (incompatibleHost) assert.match(stdout, /TEST_INCOMPATIBLE_HOST/);
     if (kind === 'journal-failure') {
       assert.notEqual(exit.code, 0);
-      assert.match(stderr, /RESOURCE_JOURNAL_WRITE_FAILED/);
+      assert.match(stderr, /RESOURCE_JOURNAL_WRITE_FAILED/, stdout);
       assert((await stat(join(item.lease, 'heavy/owner.json'))).isFile());
       assert.equal(
         events.some(
@@ -174,7 +209,7 @@ async function scenario(kind: string, signal: NodeJS.Signals, uncancelledWatch =
         false,
       );
     } else {
-      assert.deepEqual(exit, { code: kind === 'unsafe' ? 3 : 0, signal: null }, stderr);
+      assert.deepEqual(exit, { code: kind === 'unsafe' ? 3 : 0, signal: null }, stderr || stdout);
       assert.equal(
         events.filter((event) => event.code === 'RESOURCE_STOP_REQUESTED').length,
         kind === 'check-complete' ? 0 : 1,
@@ -225,3 +260,6 @@ test('natural-exit assertion rejects the original uncancelled-watch mutant', asy
 
 test('completed check with no prior stop ignores a post-close SIGTERM', () =>
   scenario('check-complete', 'SIGTERM'));
+
+test('lifecycle host snapshots isolate incompatible Linux discovery', () =>
+  scenario('late', 'SIGTERM', false, true));

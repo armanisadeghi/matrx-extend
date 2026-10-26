@@ -39,3 +39,36 @@ export async function setHealthyHostMeasurements(scripts) {
   }
   await writeFile(path, source);
 }
+
+/** Supply external host discovery for lifecycle tests; real PID/lease work stays real. */
+export async function setSupportedLifecycleHost(scripts) {
+  const path = join(scripts, 'stabilization-resource.mjs');
+  let source = await readFile(path, 'utf8');
+  const substitutions = [
+    ["import { platform } from 'node:os';", "const platform = () => 'darwin';"],
+    [
+      'await assertNoLegacyLease(await legacyLeaseRoots(undefined, policy.legacyTempDirectories));',
+      'await assertNoLegacyLease([]);',
+    ],
+    [
+      'const output = async (cmd, args) =>\n  (\n    await run(cmd, args, { timeout: 5000, maxBuffer: policy.processSnapshotMaxBytes })\n  ).stdout.trim();',
+      `const output = async (cmd, args) => {
+  // The fixture has no legacy host processes; identity queries still use the real OS.
+  if (cmd === '/bin/ps' && (
+    JSON.stringify(args) === JSON.stringify(['-axo', 'pid=,ppid=,lstart=,comm=']) ||
+    JSON.stringify(args) === JSON.stringify(['eww', '-axo', 'pid=,stat=,command='])
+  )) return '';
+  return (await run(cmd, args, { timeout: 5000, maxBuffer: policy.processSnapshotMaxBytes })).stdout.trim();
+};`,
+    ],
+  ];
+  for (const [original, replacement] of substitutions) {
+    assert.equal(
+      source.split(original).length,
+      2,
+      `missing unique lifecycle host boundary: ${original}`,
+    );
+    source = source.replace(original, replacement);
+  }
+  await writeFile(path, source);
+}

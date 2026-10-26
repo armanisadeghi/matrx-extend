@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "reviewer": "/root/d296_fixture_fresh_peer_0435",
+  "zero_authorship": true,
+  "at": "2026-10-26T04:41:12.220936+00:00",
+  "status": "DONE_BOUNDED_LOCAL_REVIEW_HOSTED_UBUNTU_PENDING",
+  "source_commit": "737d814b93a59933b154bb7f6af2b9bd6e478315",
+  "observed_head": "737d814b93a59933b154bb7f6af2b9bd6e478315",
+  "scope": "D296 test-only supported-host fixture repair; actual copied production CLI lifecycle and source quality, no product acceptance",
+  "verdict_A_behavior": {
+    "verdict": "PASS_BOUNDED_LOCAL_REPLAY",
+    "independent_run": {
+      "id": "d296-fixture-peer-20261026-0438",
+      "actual_executor": 3522,
+      "actual_exit": 0,
+      "tests_passed": 17,
+      "tests_total": 17,
+      "test_files": 2,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T04:39:02.449Z",
+        "runId": "d296-fixture-peer-20261026-0438",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "journal": "docs/stabilization/resource-journals/d296-fixture-peer-20261026-0438.jsonl",
+      "journal_sha256": "b0d1332648024a2c8890256e3e5b56cceeb35f9ad7bc50d986915ba975db5e6d",
+      "log": ".output/stabilization-checkpoints/d296-fixture-peer-0438.log",
+      "log_sha256": "25bc82e323896713cbe51869ded1cbb78a8b6d793dd7197336f1276e5835789b"
+    },
+    "observations": [
+      "Independent actualCLI corpus passed10 lifecycle/host-boundary cases plus7existing resourceverdict cases under unchanged real Mac outerguard.",
+      "Synthetic incompatible Linux platform/host-command rejection still executes supported-host scratch CLI through real PID identity, OS signals, actual lease filesystem/journals and terminal decisions. This is controlled dependency replay, not an actual Ubuntu host.",
+      "Original exact oldfixture Linux replay log independently shows RESOURCE_UNSUPPORTED_PLATFORM/refused2 before stop; original failedCI log only retained expected0/3 versus actual2, so original child reason is source/replay-supported diagnosis rather than recovered missing stdout.",
+      "Sourceguard continues to refuse unsupported platforms in production; unchanged hash and platform() !== darwin branch confirmed."
+    ],
+    "actual_Ubuntu_hosted_CI": "UNVERIFIED by this lane; parent owns latest-source CI and artifact eligibility",
+    "formal_product_passes": 0,
+    "defect_closures": 0
+  },
+  "verdict_B_quality": {
+    "verdict": "PASS_BOUNDED",
+    "observations": [
+      "Exact owncommit737d814b9 contains only shared test-measurement helper/declaration/lifecycle unit fixture; productionguardce5dc853 unchanged.",
+      "Reuses existing copyResourceGuardModules/setHealthyHostMeasurements and canonical safety-test explicit supported-platform/process-snapshot technique. All substitutions require unique boundaries and refuse drift.",
+      "External telemetry/platform/empty legacy discovery are controlled; admission decisions, PID identity, lease creation/release, stop ordering, unsafe/refusal handling and actual journal writes remain real. No production gate, workflow, threshold, runner, timeout, auth or package change.",
+      "Removed whole legacy-check skip conditional on MATRX_RESOURCE_OWNER; final tests do not remove or spoof inherited tracking metadata.",
+      "Hostile execFile double preserves Node custom promisify stdout/stderr API; unexpected host commands refuse instead of receiving fabricated lifecycle answers.",
+      "Independent14 builder file/log/journal hash checks all matched. Executed final18case builder run and actual compilevalid0 verified.",
+      "Updated executed constant-success gutcheck uses same fixture/oracle with only awaitmain replaced by exitCode0, verifies child0/no lease then rejects ENOENT missing real journal. Timer mutant remains rejected. No static-only gutcheck claim."
+    ],
+    "files_sha256": {
+      "scripts/stabilization-resource.mjs": "ce5dc85325db0883c0298b7607782101bc498cafebbbc892eda9196c8ae2e4d9",
+      "scripts/stabilization-resource-test-measurements.mjs": "44cff9bb88eada4d43fc7dc4fc868fece592d4aedeef87568d177f784144979e",
+      "scripts/stabilization-resource-test-measurements.d.mts": "cc83a7cf379fd4ed9b5d0597c8bbce8f30a282acb84f7f6914dfc16a0ccb50d4",
+      "tests/unit/resource-stop-lifecycle.test.ts": "f647f53e3d057052020909ce0f30bb722b8631af341837469ba6d5b7b9786e5e"
+    },
+    "builder_evidence_hash_checks": { "checked": 14, "matched": 14 }
+  },
+  "missing": [
+    "Actual Ubuntu latest-source hosted CI completion and development artifact eligibility remain parent-owned pending gates."
+  ],
+  "extra": [],
+  "misunderstood": [],
+  "findings": [],
+  "cleanup": {
+    "owned_run_processes": [],
+    "owned_resource_stop_scratch_directories": [],
+    "canonical_root": "/var/tmp/matrx-stabilization-resource-501",
+    "heavy": false,
+    "owner": false,
+    "reclaim": false,
+    "unsafe_hold": false,
+    "private_report_only_no_tracked_edits": true
+  },
+  "limitations": [
+    "Local hostile Linux dependency simulation does not prove actual native Linux host acceptance or recover original failed CI stdout.",
+    "Earlier sourceguard and guest UI failures remain historical; no retroactive certification of original guestmode finalvalid0/OSexit1 run.",
+    "No guestT10/fullSettings/D283/Store/Chrome installation or current-main product-health claim."
+  ],
+  "owned_in_flight_jobs_or_processes": [],
+  "next_action": "Parent integrates bounded evidence and observes latest exact-source hosted CI before artifact adoption/owner Chrome refresh; no further reviewer heavy work or UI."
+}
