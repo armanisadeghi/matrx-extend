@@ -1,0 +1,121 @@
+{
+  "schema": 1,
+  "at": "2026-10-26T05:00:05.762860+00:00",
+  "owner": "/root/settings_b_readiness_0457",
+  "lane": "B Settings readiness, read-only",
+  "status": "NOT_READY_EXACT_SOURCE_GATE_AND_STARTUP_DISCRIMINATOR_UNPROVEN",
+  "source": {
+    "HEAD": "bacb3327abf7d4f23f0bc175a6c75ecf5b6d9b4a",
+    "origin_main": "bacb3327abf7d4f23f0bc175a6c75ecf5b6d9b4a",
+    "synchronized": true,
+    "dirty_paths": [
+      "?? docs/stabilization/resource-journals/owner-737-refresh-20261026-0452.jsonl"
+    ],
+    "note": "Parent-owned active/completed journal must remain visible, not hidden to pass clean-source gate."
+  },
+  "candidate": {
+    "source": "737d814b93a59933b154bb7f6af2b9bd6e478315",
+    "CI": 40269940075,
+    "artifact": 12628111520,
+    "digest": "sha256:ddaab76ca8c691ed0c0dcf06db961290360eeb44936aceb4cd4c52dfc498d646",
+    "version": "0.2.624",
+    "tree": "40a30bb93177f731b05cae4120674f5e9316d303a3e0bcce09b40d87fa94196d",
+    "scope": "CI/import/promotion parent evidence; no installation or product verdict by this lane"
+  },
+  "normal_plan_probe": {
+    "command": [
+      "node",
+      "scripts/hosted-remote-admission.mjs",
+      "plan-settings-guest",
+      "--lane",
+      "B",
+      "--case",
+      "settings-controls",
+      "--runner-label",
+      "macos-15-intel",
+      "--development-run-id",
+      "40269940075",
+      "--development-artifact-id",
+      "12628111520",
+      "--source-sha",
+      "bacb3327abf7d4f23f0bc175a6c75ecf5b6d9b4a"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "HOSTED_REMOTE_REFUSED HOSTED_DEVELOPMENT_RUN_INVALID\n",
+    "dispatch": false
+  },
+  "route_rules": {
+    "artifact": "requireDevelopmentArtifact allowRuntimeEquivalent defaultfalse; CLI enables equivalence only guestSEO/memberData, not settingsGuest",
+    "dispatch": "requireSettingsGuestDispatchAdmission requires exactsource/currentlocal/remote and no dirtypaths, originalmacos-15-intel, maxoneB alongsideA; full10listing capacity completeness checked again immediatelybeforedispatch",
+    "source_evidence": [
+      "scripts/hosted-remote-admission.mjs:1760",
+      "scripts/hosted-remote-admission.mjs:2123",
+      "scripts/hosted-remote-admission.mjs:1083"
+    ]
+  },
+  "last_invalid_B": {
+    "run": 40262577587,
+    "source": "46bbdb3da22712e7f6dd9bb2387f94f18d764faf",
+    "status": "resource-invalid3, toolbar/Gblankbody, noSettingscasereport,19unverified",
+    "cause": "activeCPU cause unknown; no new productdefect or closure inferred"
+  },
+  "changed_discriminator_review": {
+    "src_browser_workflow_diff_since46bb": [],
+    "packages": [
+      {
+        "name": "@ai-matrx/design-system",
+        "before": "0.86.386",
+        "after": "0.86.387",
+        "documented_change": "opt-in Ghostframe tokens/styles andButtonoption",
+        "consumer_action": "none"
+      },
+      {
+        "name": "@ai-matrx/media",
+        "before": "0.15.182",
+        "after": "0.15.183",
+        "documented_change": "recognizes serialized expected attachment403/404 errors without console/errorbadge",
+        "consumer_action": "none"
+      },
+      {
+        "name": "@ai-matrx/icons",
+        "before": "0.3.90",
+        "after": "0.3.91",
+        "documented_change": "storedMatrxLogo Memoryidentityregistry resolution",
+        "consumer_action": "none"
+      }
+    ],
+    "usage": "SettingsView imports design-system controls/Switch; sidepanel App imports design-system. Changeddependencies are real but no documented activeCPU/blankstartup fix established.",
+    "D296_limit": "stop/finaljournal/timercleanup fix cannot be called an activeCPU startup repair",
+    "evidence": "Exactpnpm-lock delta46bb..737 and bounded publishedversion sections of sibling canonical package CHANGELOGs; newerUnreleased/Icons0.3.92 excluded from candidatefacts."
+  },
+  "capacity": {
+    "at": "2026-10-26T04:58:22.989368+00:00",
+    "all10_complete": true,
+    "active_runs": [],
+    "snapshot_path": ".output/stabilization-checkpoints/settings-b-readiness-0457-capacity.json",
+    "limit": "Read-only snapshot only; recheck normal fullcapacity immediately beforeanydispatch; unrelatedMacowner orUbuntuCI is not a global veto."
+  },
+  "cost": {
+    "repository_public_verified": true,
+    "workflow_sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+    "original_runner": "macos-15-intel",
+    "new_paid_job": false,
+    "existing_canonical_evidence": "docs/stabilization/reports/unpaid-existing-native-lane-20261025.json",
+    "limit": "No new live weeklyspend measurement; historical189.64/100 not presented ascurrent. Paidworkremains paused; no runner/repo/account move."
+  },
+  "next_action": "Do not dispatch broadB merelybecause developmentartifact changed. For that existingroute, first complete/commit parentowned localpermit records and obtain successful exact-current-source fullCI artifact, then freshsource/runtime/capacity/runner checks. Review a concrete startup/capacity discriminator before another broadattempt. Meanwhile actual post-fullReload freshChatOptions>Tools effectiveMode is the narrower registered manualT10 gap; a fresh admittedlocalguest run is separate evidence and cannot retrocertify invalidhostedB.",
+  "formal_product_passes": 0,
+  "new_defects": 0,
+  "fixes_closed": 0,
+  "actions": {
+    "dispatch": false,
+    "auth_secret_fixture_access_or_mutation": false,
+    "UI_or_heavy": false,
+    "source_or_Git_edits": false
+  },
+  "cleanup": {
+    "owned_external_jobs_processes_credentials_fixtures": [],
+    "private_only_report_no_commit": true
+  }
+}

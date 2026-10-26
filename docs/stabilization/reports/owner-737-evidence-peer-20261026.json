@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "reviewer": "/root/owner_737_evidence_peer_0502",
+  "zero_authorship": true,
+  "at": "2026-10-26T05:06:36.688165+00:00",
+  "target_owner_installation": {
+    "verdict_A": {
+      "verdict": "PASS_BOUNDED_INSTALLATION",
+      "observations": [
+        "Raw011 actual Profile8 path, Arman armansadeghi.com window and Chrome156 arm64; exact Chrome account email remains unverified.",
+        "Raw015 DEV cihdmkcdjjckfhjpgoedmgfpoljebaml/version624/Unpacked stable Loaded from path/On/pin, explicit48 Reload anchor; raw016 executes click48 and raw017 contains Reloaded toast with same identity/path/enabled/pin.",
+        "Raw025 primary Store hnfolienncfklkgmdjjmhhegglimlamg/version577/Chrome Web Store origin/On/pin; installed copy observation only, not publisher status.",
+        "Initial001 owner tab2091613774 URL equals sole final background tab metadata036 URL; no final owner body revisit. Raw003 and037 guest window title/URL set/two-tab context/focus43 match; dynamic AX memory differs, not byte-identical.",
+        "Independent stable tree hash40a30bb93177f731b05cae4120674f5e9316d303a3e0bcce09b40d87fa94196d matches2731-file promotion receipt. Normal runtime-equivalence proof737→bacb passes; no browser-internal SHA measured."
+      ],
+      "product_case_passes": 0
+    },
+    "verdict_B": {
+      "verdict": "PARTIAL_PROCEDURE_ERRORS_AND_INITIAL_CAPTURE",
+      "observations": [
+        "All74 raw file hashes match manifest; directory0700/files0600. All36 preserved002–037 gates use exact healthy/admitted run, maxjournalage14.028s/maxwatchage1.988565s and nonnegative start/end order.",
+        "Initial001 exact invocation/completion unknown; automatic002 app AX remains transcript-only. Bounded decisive originalAX retained.",
+        "Malformed StoreURI led to ordinary GoogleSearch, then corrected; stale Window-menu index opened a different masked Vault record before original route restoration. These are out-of-scope operator errors and prevent full clean-procedure acceptance.",
+        "Preserved sequence shows no explicit Show/Copy/edit/login action. Wrong-record AX includes a masked value; automatic read-side effects/nonvisible behavior were not measured. Do not replace this with a blanket no-credential-access/no-side-effects claim.",
+        "Completed journal SHA3826fc6095ae3bb42cc1923cf6c08a4fc988a5b9f916033415d31386fc20ae52 finalvalid0 at04:59:36.468, no unsafe/CPU_PENDING events. Parent actual holder67341exit0 and watch40033exit0 are parent terminal authority, separately bounded.",
+        "Watcher246reads/maxgap2.011805875s retains ONE alert at04:59:36.463166 for RESOURCE_BROWSER_STOP_CONFIRMED. It is afterlastUI04:58:53.111, between normal StopConfirmed and final9mslater; not a CPU/pressure unsafe event and not a no-alert run.",
+        "Exact owner737 holder/watch process scan is absent. Current canonical heavy lease belongs to a new parent guest-mode-737-20261026-0504 run, not an owner737 cleanup residue; no mutation/recovery performed."
+      ],
+      "findings": [
+        {
+          "severity": "Important for procedure trust",
+          "id": "OWNER-PROCEDURE-PARTIAL",
+          "detail": "Retain two operator errors and initial capture limits; bounded installation evidence remains usable, full clean procedure is not established."
+        }
+      ]
+    }
+  },
+  "target_D296_closure_readiness": {
+    "verdict_A": {
+      "verdict": "PASS_SUPPORTING_CLI_REPRODUCTION_AND_SURROUNDING_GATES",
+      "observations": [
+        "Prior zero-authorship independent original mechanism/siblings16case replay actual68946exit0/finalvalid0 includes late and duplicate SIGINT/SIGTERM, lease retained during cleanup, genuine journal-write failure nonzero/retained lease, unsafeinvalid3/hold, completed-check late signal and losingwatch mutation.",
+        "Fixture-correction fresh independent actual3522exit0/finalvalid0 passes17 permanent lifecycle/host-boundary/verdict cases. Current review read both original independent reports and their explicit limits; no claim that this reviewer reran them.",
+        "Fresh official CI40269940075 on source737d814b93a59933b154bb7f6af2b9bd6e478315/push/main/attempt1 completedSUCCESS04:50:10. Ubuntu checksjob121400866242 Unit tests shows resource-stop-lifecycle10PASS, resource-verdict7PASS; whole unit suite384filesPASS/2skip,2746testsPASS/7skip. These are source tests, not product behavior passes.",
+        "Official checks Typecheck/Lint/Resource safety/Guest transport and keyed development artifact steps allsuccess. Separate macos-latest resource-guard-integration job121400866250 has every safety-marker/disk/journal/CPU/native-boundary/hosted-lane step success.",
+        "Actual new Mac owner guard normally stopped once and produced finalvalid0 with parent observed OSexit0, without the prior post-final exception. This normal stop is supporting live operation, not a new late-second-signal reproduction."
+      ]
+    },
+    "verdict_B": {
+      "verdict": "PASS_BOUNDED_SOURCE_PROVENANCE_AND_FORCING_TESTS",
+      "observations": [
+        "Current production guard/helper/declaration/lifecycle test bytes exactly equal git737 blobs and expected frozen hashes. Production guard ce5dc853 unchanged by fixture correction; no unsupported-platform/threshold/ownership/refusal relaxation.",
+        "Executed original-watch mutant and constant-success/no-work gutcheck remain independently documented; no static-only proof substituted.",
+        "Fresh official artifact12628111520 is nonexpired and exact737/CI40269940075; digestsha256:ddaab76ca8c691ed0c0dcf06db961290360eeb44936aceb4cd4c52dfc498d646 matches parent adoption receipt. Development-only eligibleStorefalse, not a Store package.",
+        "Normal artifact737 is runtime-equivalent to mainbacb by documented paths; do not call it an exact bacb build or infer current Store/release readiness."
+      ]
+    },
+    "recommendation": "Parent may advance D296 fixed→retest-pass→closed for the supporting resource CLI lifecycle defect only. Required actual Ubuntu CI gap is now satisfied; preserve original guest-mode exit1 run as uncertified and D283/fullF0002/fullT10/Store as separate open scopes."
+  },
+  "source_hashes": {
+    "scripts/stabilization-resource.mjs": "ce5dc85325db0883c0298b7607782101bc498cafebbbc892eda9196c8ae2e4d9",
+    "scripts/stabilization-resource-test-measurements.mjs": "44cff9bb88eada4d43fc7dc4fc868fece592d4aedeef87568d177f784144979e",
+    "scripts/stabilization-resource-test-measurements.d.mts": "cc83a7cf379fd4ed9b5d0597c8bbce8f30a282acb84f7f6914dfc16a0ccb50d4",
+    "tests/unit/resource-stop-lifecycle.test.ts": "f647f53e3d057052020909ce0f30bb722b8631af341837469ba6d5b7b9786e5e"
+  },
+  "privacy": "Onlyboundedobservations published. All unrelated rawVault/Google content/private route identifiers remain private.",
+  "owned_jobs_processes_mutations": []
+}

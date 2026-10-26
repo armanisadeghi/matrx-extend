@@ -7,7 +7,7 @@
   "auth_mode": "all; no identity dependency",
   "severity": "S2: terminal evidence becomes inconsistent; no unsafe product behavior established",
   "priority": "P1: restore reliable guarded acceptance without weakening refusals",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root",
   "preconditions": [
     "Browser permit guest-mode-20261026-0354 admitted normally; designated guest native UI completed and restored original state before stop.",
@@ -37,7 +37,7 @@
   "related_limits": "D283 original pending-child-error exit/close hang remains open; this distinct post-final duplicate-signal failure does not establish the same cause.",
   "cleanup": "Independent canonical resource lease read found no heavy/owner/reclaim/unsafe hold; original PID99936 absent, no manual recovery/delete needed.",
   "fix_sha": "737d814b93a59933b154bb7f6af2b9bd6e478315",
-  "next_action": "Read actual CI40269940075 and any intervening current-main changes. If successful, select/verify latest eligible source artifact, normal import/promotion and ownerProfile8 nativeReload. Keep CI lag/unverified Reload explicit; no stale artifact adoption or local build. If failed, diagnose current exact feedback before new run. D296 stays sourceFIXED pending current hosted gate; originalguestT10 run remains uncertified, D283 and Store remain separate.",
+  "next_action": "No D296 implementation remains. Maintain fresh source/artifact/resource gates for new runs; preserve originalguestT10exit1 run uncertified and D283 separate/open.",
   "transition_history": [
     {
       "at": "2026-10-26T04:03:16.661826+00:00",
@@ -62,6 +62,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Sourceunit pushed; guarded original mechanism and safety siblings pass fresh independent CLI retest. Latest-main hosted CI/adoption still pending; no closure or guest acceptance inferred."
+    },
+    {
+      "at": "2026-10-26T05:12:08.605243+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Both zero-authorship CLI replaysets pass and current737 actualUbuntu hostedgate passes; fresh independentclosure reviewA/B PASS."
+    },
+    {
+      "at": "2026-10-26T05:12:08.605243+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "SupportingCLI originalmechanism/siblings/forcing-tests/currenthostedsourcegate verified; normal newMacownerstop actual0 supportsoperation, not late-signalrepro."
     }
   ],
   "source_verification": {
@@ -104,12 +116,25 @@
       "limits": "Actual Ubuntu hosted acceptance still pending; no product or originalguest-run certification."
     },
     "latest_source_CI": 40269940075,
-    "latest_source_CI_state": "in_progress at04:40UTC, no current artifact adopted",
+    "latest_source_CI_state": "SUCCESS at04:50:10UTC; oldfailedruns are historical supersededfixture failures",
     "owner": "/root",
     "evidence": [
       "docs/stabilization/reports/d296-ci-fixture-repair-20261026.json",
       "docs/stabilization/reports/d296-ci-fixture-peer-20261026.json"
     ]
   },
-  "guard_fix_sha": "f89140eba04071987a398ce81ad2836bebcf3da6"
+  "guard_fix_sha": "f89140eba04071987a398ce81ad2836bebcf3da6",
+  "hosted_gate": {
+    "run": 40269940075,
+    "source": "737d814b93a59933b154bb7f6af2b9bd6e478315",
+    "conclusion": "success",
+    "completed_at": "2026-10-26T04:50:10Z",
+    "Ubuntu_checks_job": 121400866242,
+    "lifecycle_tests_pass": 10,
+    "verdict_tests_pass": 7,
+    "whole_unit_suite": "384filesPASS/2skipped;2746testsPASS/7skipped",
+    "other_required_steps": "Typecheck/Lint/ResourceSafety/GuestTransport/developmentartifact success; separateMacresourceintegration allstepssuccess",
+    "independent_review": "docs/stabilization/reports/owner-737-evidence-peer-20261026.json"
+  },
+  "closure_scope": "Supporting CLI stop/finalization defect only: originallate/duplicateOS-signal mechanism and safety siblings independentlyretested, executedgutchecks pass, actualUbuntu fullCI passes. No originalguestUI runretrocertification, fullF0002/T10/D283/productbehavior/Store release acceptance inferred."
 }
