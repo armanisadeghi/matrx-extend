@@ -69,7 +69,7 @@
       "ruling": "CONFIRMED: project through existing allowlisted safe diagnostics then synchronously publish on meaningful callback update before returning; raw unknown diagnostic fields are never dumped. Guard updates within same stage and termination after observation."
     }
   ],
-  "next_action": "SourceCI nowpasses. Af6 descendantartifact normallypromoted, but ownerReload stopped beforeAPI3 bypressure2; new normalrecoverycheck refused. Await normalcapacity; newownerpermit/watch Reloadverification then independently admitted original interrupted native diagnostic and adjacent member/auth/Save cases. No closed/release/productpass claim.",
+  "next_action": "D294sourceCIpassed;2b624normalartifact/nativeownerReload nowverified independently, but newer c85lockruntime update awaitsCI/adoption. After normalcapacity and newcurrent-runtimeeligibleartifact/ownerReload, independently retest originalinterrupted native diagnostic +adjacentmember/auth/Save. Separateguest023d attempt0UI/0AI resourceinvalid givesno productverdict. No D294nativeclosure/release.",
   "plan_reverify": "docs/stabilization/reports/member-checkpoint-contract-reverify-20261025.json",
   "implementation_lane": {
     "owner": "/root/d294_resume_fix_2309",
@@ -95,12 +95,16 @@
     "artifact_adopted": false
   },
   "current_descendant": {
-    "source": "af6be003c20d23cf140b3f00ba4d8b7e0063d0a9",
-    "run_id": 40246848583,
+    "source": "2b534c5c9a0fd5210b86dfdbb4cacaf924bec675",
+    "run_id": 40249547558,
     "conclusion": "success",
-    "development_artifact_id": 12619138028,
+    "development_artifact_id": 12620014847,
     "disk_promoted": true,
-    "owner_Chrome_reload": "unverified_resource_stop",
-    "native_D294_retest": "unverified"
+    "owner_Chrome_reload": "verified_bounded_Profile8_resource_valid0",
+    "native_D294_retest": "unverified",
+    "newer_main": "c85aa396e573b1e55616d482b9a5dca9d5e715e2",
+    "newer_CI": 40253581201,
+    "newer_CI_status": "in_progress",
+    "newer_artifact_adopted": false
   }
 }

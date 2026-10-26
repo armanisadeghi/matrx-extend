@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/owner_guest_evidence_peer_0110",
+  "zero_authorship": true,
+  "status": "DONE_WITH_BOUNDED_OWNER_PASS_GUEST_RESOURCE_UNVERIFIED",
+  "observed_at": "2026-10-26T01:20:27.019005+00:00",
+  "owner": {
+    "verdict_a": "PASS_BOUNDED: designated actualProfile8; exactmanagerReload click48 and Reloaded toast, DEV624 correctID/path/On/pin; primaryStore577/ChromeWebStore/On/pin untouched. Ownedinspectiontabclosed, owneroriginalVaulttab and originalforegroundGuestTemplates restored.",
+    "verdict_b": "PASS_BOUNDED_CONTROLS; fullinitialentrytiming remainsPARTIAL. Raw2+ originalexactexpression/start/end/results and freshgates retained. CPU_PENDING correctlypaused before24; no calls duringpending; onlyafter3normalhealthyrecovery samples and freshsafe gate resumed under same validpermit. NoWATCH_UNSAFE/STOP or threshold change.",
+    "official_ci": {
+      "run": 40249547558,
+      "head": "2b534c5c9a0fd5210b86dfdbb4cacaf924bec675",
+      "conclusion": "success",
+      "artifact_id": 12620014847,
+      "digest": "sha256:880de55449a5f9ece772eb4f2363a90835e5a56bb22bbf60ff6194320f916d33"
+    },
+    "physical_stable_tree_sha256": "447a105202a6bf71f0b18c57296b9961218e67b18201e2245704bda25019dfcb",
+    "decisive_raw_sha256": {
+      "017-result.json": "ce9b007afadb76d1fcfb813764c322d31a98ff48ed1d3dbeec2147096c841707",
+      "021-result.json": "206f61ac77fa6999db71b4cf02ed2d9f8b07a48d40677f3a3cd9b203395cc6fa",
+      "022-result.json": "42635e86b55ce58faaeda477f995ead5df90492b84c23ae2029ff7cac1381b2f",
+      "023-result.json": "da354116fe95dc2606a393b2afbaeeb2acf9a25a1ebed684c401a97702bda2ce",
+      "028-result.json": "f1716f62e6f1829464baa3e74a57779aacf0c7f1f756c661312c936d9aec0571",
+      "030-result.json": "f352c2c4947548e021ae76eeb3c289c16c926381f6c1989bad8ee3d117ab9be3",
+      "034-result.json": "ffac88e2f6b1844aef4f880f7da6299178264fcc97548b26254c88a5b93dd4d7",
+      "refused-24.json": "b100554964d463bb210d940d611a34c882c3b8e0b5e6b148a30887098c824d62"
+    },
+    "account_limit": "ActualChromeProfile8/profilelabel confirmed; designated owneremail mapping inherited, not independentfresh exactfullGoogleemail read.",
+    "raw_gate_result_count": 34,
+    "max_journal_age_seconds": 14.872,
+    "max_watch_age_seconds": 1.774025,
+    "completed_resource_final": {
+      "schema": 1,
+      "at": "2026-10-26T01:15:09.307Z",
+      "runId": "owner-2b-refresh-20261026-0107",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "watch_actual_rows": 244,
+    "watch_max_gap_seconds": 2.011092875007307,
+    "watch_alerts": "HistoricalCPU_PENDING alert; not allintervalshealthy.",
+    "raw_dir_mode": "0700",
+    "raw_file_modes": "0600",
+    "resource_journal_sha256": "2b093f48509ccc1def3682061f9d640718ccb945068d7201b309a2ff068f3ce7",
+    "watch_audit_sha256": "78b5372c11323280ac9d83a4a64a4a67dedba3cd19ab27d99da8acfcd9ac8947",
+    "parent_actual_terminal_attestation": {
+      "holder": 20154,
+      "exit": 0,
+      "watch": 81060,
+      "watch_exit": 0,
+      "pids_absent": [48861, 48834]
+    },
+    "operator_final_sha256": "f332eef94a9b8d63f54d3a2384ba021813d22f8182429f125f9cb66d7330597f",
+    "operator_raw_hash_count_verified": 69,
+    "raw_hashes_all_match": true,
+    "budget": "Initial30 extendedbyparentto34 beforecap, sameinstallation/cleanupscope, actual34",
+    "installation_bound": "Actual2b CI artifact normallypromoted then correctChromeReload+Reloadedtoast supports loaded2b624 atobservationtime. No browserinternal SHAmeasurement. Latercontributorc85 locksourceadvance doesnot turn this into current-mainloaded proof."
+  },
+  "guest": {
+    "verdict_a": "UNVERIFIED: zeroCUA/zeroAI; no guestStoreidentity/authmode/newassistantreply/terminalcompletion observed. PlannedtargetStore577/Profile10 is not freshobserved by this attempt. LastacceptedStore577/08c23:04 remains historical, not023d acceptance.",
+    "verdict_b": "PASS_BOUNDED_SAFE_STOP: separate freshguestpermit/watch, then firstgate refused WATCH_UNSAFE/STOP before anyCUA. Pressure2 setresourceInvalid; laterpressure1 readings didnotclearthatlatch orauthorizecontinuation. Newguestjournalfinalinvalid3, no samepermitreuse or jobrelocation. No ownedUI/fixtures/credentials created.",
+    "completed_resource_final": {
+      "schema": 1,
+      "at": "2026-10-26T01:18:32.247Z",
+      "runId": "store577-runtime-20261026-0115",
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "actual_watch_rows": 95,
+    "watch_max_gap_seconds": 2.0108102909871377,
+    "resource_journal_sha256": "175369bcc26c359cf3b9461eadaf9e709d9e160f77c7160ea03c5603f03bbfa3",
+    "watch_audit_sha256": "cc3d3680695352f657d3c0b0bbd6bb0e76e55fcb853bebca9e2e867da9f0b5bc",
+    "first_gate_refusal_sha256": "38339dcf1b1d23b5ba9219c7eb58746338c07bf216335ff6c59cd968bedf24ea",
+    "operator_checkpoint_sha256": "1b1284920765977d651fd88eaa63970c7cedb3369e8eb3c478c9673453330364",
+    "parent_actual_terminal_attestation": {
+      "holder": 44152,
+      "actual_exit": 3,
+      "watch": 51270,
+      "watch_exit": 0,
+      "pids_absent": [52419, 52399]
+    },
+    "before_health": {
+      "observed_at": "2026-10-26T01:15:31.681638+00:00",
+      "url": "https://server.app.matrxserver.com/health/version",
+      "health": {
+        "git_sha": "023d2f8b5bd276bd81e50b01d66870b886658635",
+        "built_at": "2026-10-26T00:45:00Z",
+        "branch": null
+      }
+    },
+    "health_limit": "Onlypublicadvertiseddeployment observation beforeplanned run; no guestUI requests or perrequestwire correlation. No postbehaviorbracket applicablebecause0behaviorcalls."
+  },
+  "scope": "Read-only official gh API, physicaltree hash and originalretainednativeevidence. No newUI/AI/auth/tests/heavyjobs/source/Git changes.",
+  "source_boundary": {
+    "parent_observation": "Contributorc85aa396e573b1e55616d482b9a5dca9d5e715e2 lock70lines afterownerReload, FFpreserved; no c85artifactadoption orloadedclaim.",
+    "limit": "Owner2b sourceboundevidence acceptedhistorically; currentmaincopy/nextCI/nativeproductacceptance unverified.",
+    "independent_git_read": {
+      "HEAD": "c85aa396e573b1e55616d482b9a5dca9d5e715e2",
+      "diff_from_2b": "Onlypnpm-lock.yaml,70lines35insertions35deletions"
+    }
+  },
+  "verdict_a": "OwnerdesignatedProfile8/2b624 reload PASS_BOUNDED; guestcurrent023d UNVERIFIED; no fullChat/Settings/Save/current-main/Storepublication health claim.",
+  "verdict_b": "OwnernormalCPU pause/recovery/safeindividualgates PASS_BOUNDED with initialentrycapture/timing PARTIAL. Guestseparatememorypressureinvalidstop PASS_BOUNDED safecontrols with0UIcredit. Resourceepisodesnevermerged.",
+  "next_action": "After newexactcurrent-source successfulCI and normalcapacity recovery, normalimport/promotion/current ownerReload asneeded, then entire separatefreshguestpermit/watch plus two actualcurrentserver terminalturns. No threshold/source/auth/safety bypass, duplicateoldimport, localmanualbuild, paiddispatch or Storepending inference.",
+  "own_actions": "Read-only gh metadata, originalretainedfile/AX inspection and physicaltreehash; noUI/auth/AI/tests/heavywork/Git changes. Scratchreport only.",
+  "process_absence": "Read-only ps independently showed no currentprocess for ownerPIDs48861/48834 and guestPIDs52419/52399; actual exec session terminal codes are separately parentattestation."
+}

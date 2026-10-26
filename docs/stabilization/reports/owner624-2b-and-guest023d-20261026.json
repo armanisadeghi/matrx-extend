@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "scope": "Two separate resource episodes: owner installation verification on frozen2b succeeds; newer-server guest attempt stops beforefirstCUA, no productbehavior verdict.",
+  "owner": {
+    "task_id": "owner_2b_reload_0109",
+    "lane": "Owner Profile8 DEV native Reload and installation identity",
+    "status": "UI_STOPPED_BOUNDED_INSTALLATION_VERIFIED_RESOURCE_FINAL_VALID0",
+    "at": "2026-10-26T01:15:51.157096+00:00",
+    "native_api_calls": 34,
+    "native_api_budget": 34,
+    "api_counter_authority": "Numbered001–034 originalgate/result pairs; refused-24 occurred beforeinvocation and laterexecuted024 retained separately.",
+    "raw_dir": ".output/stabilization-checkpoints/owner-2b-refresh-0109-raw",
+    "resource_run": "owner-2b-refresh-20261026-0107",
+    "profile": {
+      "actual_profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+      "chrome_version": "156.0.8078.47 arm64",
+      "observed_profile_name": "Arman (armansadeghi.com)",
+      "requested_account": "arman@armansadeghi.com",
+      "account_limit": "Exact Chrome account email was not independently displayed; actual Profile8/path and existing profile name/domain observed. Vault record email is not used as Chrome account identity."
+    },
+    "development": {
+      "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "version_before": "0.2.624",
+      "version_after": "0.2.624",
+      "enabled": true,
+      "pinned": true,
+      "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "source": "Unpacked extension",
+      "pre_raw": "021-result.json",
+      "reload_raw": "022-result.json",
+      "exact_reload_expression": "await chrome0109.click(48)",
+      "post_raw": "023-result.json",
+      "explicit_toast": "Reloaded",
+      "no_browser_SHA_measurement": true
+    },
+    "store": {
+      "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+      "version": "0.2.577",
+      "enabled": true,
+      "pinned": true,
+      "source": "Chrome Web Store",
+      "raw": "028-result.json",
+      "mutated": false
+    },
+    "parent_provenance_not_browser_measured": {
+      "source_sha": "2b534c5c9a0fd5210b86dfdbb4cacaf924bec675",
+      "full_CI": 40249547558,
+      "artifact": 12620014847,
+      "digest": "sha256:880de55449a5f9ece772eb4f2363a90835e5a56bb22bbf60ff6194320f916d33",
+      "tree": "447a105202a6bf71f0b18c57296b9961218e67b18201e2245704bda25019dfcb",
+      "files": 2731,
+      "normal_promotion_at": "2026-10-26T01:09:45.521Z",
+      "authority": "Parent message actual import81888exit0/promote58559exit0; no source/import/promotion actions by native operator."
+    },
+    "pause": {
+      "refused_before_API24": "2026-10-26T01:12:49.903Z",
+      "reason": "Latest journal RESOURCE_PROCESS_ATTRIBUTION and actualwatchpendingrisk after transient CPU_PENDING; operator stopped beforeaction.",
+      "original_refusal": "refused-24.json",
+      "parent_resume": "Explicit sameguard normalrecovery authorization: CPU_RECOVERED01:13:32.662 after3healthy samples, then WATCH_HEALTHY; no WATCH_UNSAFE/STOP/resourceInvalid perparent. Operator freshlyregated andobserved024 state beforecontinuing.",
+      "limit": "Do not labelwholeepisode continuouslyhealthy; parent owns terminalfinaldecision."
+    },
+    "cleanup": {
+      "owned_inspection_tab": "Opened014, closed029; soleoriginalownerVaulttab verified030",
+      "original_foreground": "GuestTemplates restored033/034, originalExtensions+Templates only, Templatesselected andHTMLfocus",
+      "owned_tabs_remaining": 0,
+      "last_native_api_after": "2026-10-26T01:14:56.846Z"
+    },
+    "limits": [
+      "No product acceptance, guestChat, backendwire, Store dashboard/pending or release claim.",
+      "Sameversion before/after alone does not proveadoption; actualcorrectReloadaction + explicitReloadedtoast andpath/identity bind boundedloaded evidence to parent normalpromotion.",
+      "Initialinventory nativeexactinvocation/completion externalbounds only; originalreturnedinventory retained001. getAppautomaticAX retainedtooltranscript only; fulloriginal003state savedpremutation.",
+      "No credential/password/guest-auth values revealed, copied or submitted; maskedVault originalpage retainedprivately during originaltabrestoration.",
+      "No UI after034 andno localprocess, source/Git/build/auth/fixture/model action by operator."
+    ],
+    "raw_evidence_sha256": {
+      "001-gate.json": "c89c44a48f7eeb901dd7b968c1ad47d2b103b1f71bd7b25a79e0e1deb1989f63",
+      "001-result.json": "fe350eba4f9480cb1ea131528afad2236f4855e055715271ebe1998f457177d6",
+      "002-gate.json": "6636210539de42763a084c65e34f5aae0a8daf31a5ca77b20332e64ba57cfced",
+      "002-result.json": "d665156814df0633f531b11301e59ecd6f5146b0d05f2367cbb94aa6baeedce6",
+      "003-gate.json": "9c4cd5a96db2d87badd388cd19585f75697fa5a0668f4bfd4c53280cf524e206",
+      "003-result.json": "890bb5f2769e71ac0510b3d6caa66451a16cc81fb44bf0a973c9a012758dba9a",
+      "004-gate.json": "895a6a69cd8bcde6dcf65bb30f80579b3302d825ccac0af2d5de8d6ad7888c81",
+      "004-result.json": "49aac7de6ebcf7c74b6ba5244fd386fd8f7958daab3b2766b564499123298134",
+      "005-gate.json": "036726f98f22df8e142e9a90ce0ad1439938fd4b82b18bb88ec6fa569ca271d4",
+      "005-result.json": "2a0533bbeabedc3e880867dcffedba37c6d19be44a5640ff2001dc0caa50ed24",
+      "006-gate.json": "5b037ace24d58817fdf6a17db2620db7082b6aca077bd6edc057a3114875836d",
+      "006-result.json": "e169d578739d5f3eaaa1e0a1c3ba077c9b75b5495a6f48a9d03b5f24bee7e50b",
+      "007-gate.json": "a862c24f6af85ca714da952527e0a954f62ec3621a0ec660bd0cc2d80b4eb15e",
+      "007-result.json": "1ffa59282235c7805aa1e4043d6f85834f22500f8ec0d64cc98d33b109c214f0",
+      "008-gate.json": "11484531eda77f39bb78854aa4507f99e13fb8dbcd8071909db834f9e0163468",
+      "008-result.json": "4ba97e87ee3b2af6f162a563a73d740e8ba736adbe335cb1555f1a1772f39017",
+      "009-gate.json": "a47f1eba92c6ee3ce47d9eb4b960ea9e6de201a6fd92551e57b51f5cc7214755",
+      "009-result.json": "1944e4fc27d4d4c54e2dbe7ecec406d9c2ce64b53267480af3f549d1180fc071",
+      "010-gate.json": "b379ac289daa3fe43e30f63800c2ff719cb802f82ccdd1491b8803334d4c1cf1",
+      "010-result.json": "97a11f7d6c9673a4cecc2e0f0052c00c7a95a4aace8eac0d3c46a194b4dfe0f0",
+      "011-gate.json": "46e843a05a117cb10e45af76c5cc86b6aa6354c8c7f4978cff3734033310d010",
+      "011-result.json": "c40da97dbc760d62dddcd9e2e8c997e31667cd29aad255cdf70b28db92b7f0d2",
+      "012-gate.json": "c16d70bf5b3d68d10ca6f4a3167f723ff35a5c824da9837276cee61ea08a04ac",
+      "012-result.json": "da0366cc3db4cf134c9b75eab3f1e8615c52fc4ae14ac8e644398e9595920496",
+      "013-gate.json": "7f52191be01135887cc1e56564a0fec3b70d692b3bbba88d33cb1a7614af4ec8",
+      "013-result.json": "a25eae638f60957819981046bdc58c79be6fe77dd24fbde7189fca1217267d25",
+      "014-gate.json": "ddb82d39efd0de9a5461b89d33e6bce8d08591091640addb727dfd58cd261d82",
+      "014-result.json": "102a9a25396faa201624cf36991c47b25b3944729aaa9624f610a115c2905218",
+      "015-gate.json": "2e13d2447f0e22902121aa504205cc1a95f1b39dc79dc02446f1fb1aea6d5f4f",
+      "015-result.json": "f509c6a5a6122da185950259ddc75068d8eee4a7de192a12fd051bd3bc5e6fba",
+      "016-gate.json": "284f413c06b10c829062ee14c8343766019da5482e3ad540773e0c7841ad42ab",
+      "016-result.json": "36e4a838c1fec4c33191a978764d261718f7df2ea3f5a778ed7fe45a019b3efc",
+      "017-gate.json": "778373a9fb5fe8045d49b9f583eb5a1164a77aa3150c6bd94698cb367f2a9947",
+      "017-result.json": "ce9b007afadb76d1fcfb813764c322d31a98ff48ed1d3dbeec2147096c841707",
+      "018-gate.json": "ce2799d75208288ffdbaa1122aca77fe35706a98aa80a8c1f71e9a693bd0f677",
+      "018-result.json": "88f39762bf5428e83c4ac7ef144a9139e1cce5326d95cace2d5e0186790acb7c",
+      "019-gate.json": "bce7da7253f691b5cc1730d36f019d9917bb14870109a98d1c32bc8065ab79d0",
+      "019-result.json": "3a1f54b9c3f0588237c5feadb94b9925737fbf0a5010507fa24cd430a715595e",
+      "020-gate.json": "36cf4cd4e72a549b1bd0ae6641c7352e8fcbc2f0ad5ea09aa8134e94bcbfc57b",
+      "020-result.json": "7c9f07543015587442629cac4e41116e1ad0c2c5e9efb8744f51db9326aa61f3",
+      "021-gate.json": "5fcf586af0c8a96cb2b8dbafaad526d9c7e6f7d96ca158dfcb90fa8a94cdbb48",
+      "021-result.json": "206f61ac77fa6999db71b4cf02ed2d9f8b07a48d40677f3a3cd9b203395cc6fa",
+      "022-gate.json": "bf7b991ff6859d0a17988d60ea7d2ec3b1beb858f773be3238c8eed8d1a75779",
+      "022-result.json": "42635e86b55ce58faaeda477f995ead5df90492b84c23ae2029ff7cac1381b2f",
+      "023-gate.json": "8186b517b0ca5d109991d8602ddfde4cc81bd05a4add8b11a90e54dc62e5da3a",
+      "023-result.json": "da354116fe95dc2606a393b2afbaeeb2acf9a25a1ebed684c401a97702bda2ce",
+      "024-gate.json": "553c1e173070cfdb9794bfd8848d2b67aff5d86c6c20b35dc5abdf523643d6d6",
+      "024-result.json": "0796666fe72e732733c74fbdcef84dbcb7df646fa0de1442b0a0a382b620d7d1",
+      "025-gate.json": "7e37540477689820635b4d0b80f445c8c6dac4bc26c68cd10bcf196118224f5c",
+      "025-result.json": "1d63919e3107494db8d39429511a378176108a9f6e95229f98d42c03fdc19dfc",
+      "026-gate.json": "c8a338c6975a92ab0c5cc8fd0dd9d7913f39847a1719c81b24e43b787134a35e",
+      "026-result.json": "0169e2b9436ea2c4295f74d73937821aa57bbce672b18b1c9daae7c779a9edf8",
+      "027-gate.json": "041f8318a8dcfbd311f2f9601da993b062f4d0f81135f904eeb7abdc4998c034",
+      "027-result.json": "69e1638daa3c7b11c6aa3be94a98eacea38c3d87ae11ff66911237565b94e526",
+      "028-gate.json": "e76a65690bf0c378d34d670477cebbe691f8918feb07b1a1e1ac4230d0c91e62",
+      "028-result.json": "f1716f62e6f1829464baa3e74a57779aacf0c7f1f756c661312c936d9aec0571",
+      "029-gate.json": "f038ba5351178f0b5f5ee929d8c965759f40d085beb8b00b4782826f71727be4",
+      "029-result.json": "0b1ea6dc7638adee80c14a0f7b58628f34c5697a9bb76e3906ebfd322bf6f392",
+      "030-gate.json": "6d22989ba91a36ce0091255819184a194bd3e113e820b4efe874c1b917d5b1cf",
+      "030-result.json": "f352c2c4947548e021ae76eeb3c289c16c926381f6c1989bad8ee3d117ab9be3",
+      "031-gate.json": "108e3f0598fc099e50fa4f2e4804cd0aa23b087382556ae0712d4c2d25294137",
+      "031-result.json": "550ae5fef3d2cf365349a7844c5909844c0387dd4e8f58d3508c553719ea2184",
+      "032-gate.json": "a33800afef6fba04b9a65adb28955ea6b4fb440aaaa7bc0523d427b6d2acd6a8",
+      "032-result.json": "e3511f3c81e46057ba62e0b354c423916d7846f84a50876d5c6f546852d9ceee",
+      "033-gate.json": "bd9a28294ed7231480610e15e3aef55c30558a7e7544a116f0c96a69f5b30909",
+      "033-result.json": "62d7c6d92b8291d36845f46b98f850ff0375362b55b2e20afd90aefa7c63bbc2",
+      "034-gate.json": "3697c34de9e37ecc4d135255474516f2e7bb7acda112ceb01418158d9bc2b5ee",
+      "034-result.json": "ffac88e2f6b1844aef4f880f7da6299178264fcc97548b26254c88a5b93dd4d7",
+      "refused-24.json": "b100554964d463bb210d940d611a34c882c3b8e0b5e6b148a30887098c824d62"
+    },
+    "next_action": "Parent freshpeer/integration of boundedowner624installation; lane finished,no UI/processesremaining.",
+    "resource_final_read": {
+      "schema": 1,
+      "at": "2026-10-26T01:15:09.307Z",
+      "runId": "owner-2b-refresh-20261026-0107",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "resource_journal_sha256": "2b093f48509ccc1def3682061f9d640718ccb945068d7201b309a2ff068f3ce7",
+    "watch_report_read": {
+      "runId": "owner-2b-refresh-20261026-0107",
+      "first_read_at": "2026-10-26T01:07:03.145517Z",
+      "last_read_at": "2026-10-26T01:15:10.718284Z",
+      "actualPollCount": 244,
+      "maxGapSeconds": 2.011092875007307,
+      "riskEvents": [
+        {
+          "at": "2026-10-26T01:12:46.336558Z",
+          "reason": "JOURNAL_UNSAFE_OR_PENDING_EVENT",
+          "latest_code": "RESOURCE_PROCESS_ATTRIBUTION",
+          "latest_at": "2026-10-26T01:12:44.629Z"
+        }
+      ],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T01:15:09.307Z",
+        "runId": "owner-2b-refresh-20261026-0107",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/owner-2b-refresh-20261026-0107.jsonl",
+      "audit": ".output/stabilization-checkpoints/owner-2b-watch-0107.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    },
+    "parent_terminal_attestation": {
+      "holder_actual_executor": 20154,
+      "holder_actual_exit": 0,
+      "watch_actual_executor": 81060,
+      "watch_actual_exit": 0,
+      "pids_absent": [48861, 48834],
+      "authority": "Parent actualterminal/pid observations in message, separatefrom operator file reads."
+    }
+  },
+  "promotion": {
+    "schema_version": 1,
+    "kind": "ci_development_test_promotion",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "observedAt": "2026-10-26T01:09:45.521Z",
+    "sourceSha": "2b534c5c9a0fd5210b86dfdbb4cacaf924bec675",
+    "mainSha": "2b534c5c9a0fd5210b86dfdbb4cacaf924bec675",
+    "compatibility": "exact-source",
+    "allowedDiffPaths": [],
+    "version": "0.2.624",
+    "runId": 40249547558,
+    "runAttempt": 1,
+    "artifactId": 12620014847,
+    "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/2b534c5c9a0fd5210b86dfdbb4cacaf924bec675/40249547558-1/chrome-mv3",
+    "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "treeSha256": "447a105202a6bf71f0b18c57296b9961218e67b18201e2245704bda25019dfcb",
+    "fileCount": 2731
+  },
+  "parent_import": { "actual_executor": 81888, "actual_exit": 0 },
+  "parent_promotion": { "actual_executor": 58559, "actual_exit": 0 },
+  "owner_parent_terminals": {
+    "holder_actual": 20154,
+    "holder_exit": 0,
+    "watcher_actual": 81060,
+    "watcher_exit": 0,
+    "pids_absent": [48861, 48834],
+    "watcher_report": {
+      "runId": "owner-2b-refresh-20261026-0107",
+      "first_read_at": "2026-10-26T01:07:03.145517Z",
+      "last_read_at": "2026-10-26T01:15:10.718284Z",
+      "actualPollCount": 244,
+      "maxGapSeconds": 2.011092875007307,
+      "riskEvents": [
+        {
+          "at": "2026-10-26T01:12:46.336558Z",
+          "reason": "JOURNAL_UNSAFE_OR_PENDING_EVENT",
+          "latest_code": "RESOURCE_PROCESS_ATTRIBUTION",
+          "latest_at": "2026-10-26T01:12:44.629Z"
+        }
+      ],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T01:15:09.307Z",
+        "runId": "owner-2b-refresh-20261026-0107",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/owner-2b-refresh-20261026-0107.jsonl",
+      "audit": ".output/stabilization-checkpoints/owner-2b-watch-0107.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    }
+  },
+  "guest": {
+    "task_id": "store577_023d_guest_0110",
+    "lane": "ActualStore577 guest currentserver023d two-turn verification",
+    "status": "UI_STOPPED_RESOURCE_UNSAFE_BEFORE_FIRST_CUA",
+    "at": "2026-10-26T01:18:02.929627+00:00",
+    "native_api_calls": 0,
+    "native_api_budget": 55,
+    "AI_prompts": 0,
+    "owned_ui_or_processes": [],
+    "raw_dir": ".output/stabilization-checkpoints/store577-023d-0110-raw",
+    "next_action": "Parent finalize exact holder/watch; after later normal capacity recovery require entirely new guest browser permit/watch before first CUA, then only two actual grounded terminal turns. No bypass, relocation or same-permit continuation.",
+    "catalog_parent_authority": {
+      "observed_at": "2026-10-26T01:09:40.668892+00:00",
+      "authority": "Existing0600CLI token; read-only modelcatalog SELECT, no token values logged",
+      "choice": {
+        "why": "Recommended default for tests that measure real intelligence (ai.test_models/intelligence_model). Pick another model if the job needs it, but never one in restricted_models.",
+        "source": "knob",
+        "purpose": "intelligence",
+        "model_id": "3f1c9a52-7b4e-4d2a-9c61-5e8a0b2d7f15",
+        "provider": "Anthropic",
+        "model_name": "claude-sonnet-5-5",
+        "served_via": "Anthropic",
+        "common_name": "Claude Sonnet 5.5",
+        "restricted_models": [
+          "Claude Fable 5",
+          "Claude Fable 5 Max",
+          "Claude Fable 5.1",
+          "Claude Mythos 5",
+          "Claude Mythos 5.1",
+          "Claude Opus 4.8 Max",
+          "Claude Opus 5 Max",
+          "Claude Opus 5.5 Max",
+          "Claude Sonnet 5 Max",
+          "Claude Sonnet 5.5 Max",
+          "Flux 2 Max",
+          "FLUX 2 Max (Replicate)",
+          "FLUX Kontext Max",
+          "Gemini Deep Research Max",
+          "GPT-6 Astra",
+          "Qwen3.7 Max"
+        ],
+        "price_in_per_1m_usd": 2,
+        "price_out_per_1m_usd": 10,
+        "restricted_min_cost_rating": 6
+      }
+    },
+    "resource": {
+      "parent_holder_actual_session": 44152,
+      "parent_watcher_actual_session": 51270,
+      "run_id": "store577-runtime-20261026-0115",
+      "journal": "docs/stabilization/resource-journals/store577-runtime-20261026-0115.pending.jsonl",
+      "watch_audit": ".output/stabilization-checkpoints/store577-023d-watch-0115.jsonl",
+      "first_unsafe_event": {
+        "schema": 1,
+        "at": "2026-10-26T01:17:09.791Z",
+        "runId": "store577-runtime-20261026-0115",
+        "reasons": ["RESOURCE_PRESSURE_UNSAFE"],
+        "sample": {
+          "pressureLevel": 2,
+          "availableMemoryGiB": 7.52,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 3.16,
+          "logicalCpus": 10,
+          "cpuBusyFraction": 0.17,
+          "swapUsedMiB": 2368.69,
+          "repoFreeGiB": 1598.7648239135742,
+          "profileFreeGiB": 1598.7648239135742,
+          "safetyFreeGiB": 36.394344329833984,
+          "systemFreeGiB": 36.394344329833984
+        },
+        "code": "RESOURCE_WATCH_UNSAFE"
+      },
+      "first_gate_refusal": ".output/stabilization-checkpoints/store577-023d-0110-first-gate-refusal.json",
+      "actual_holder_final": "Parent owns finalization; unknown to this lane until parent receipt"
+    },
+    "evidence_class": "Prepared-only; no API-only, unpacked CRX, or actual Store-installed browser acceptance performed by this lane.",
+    "backend": {
+      "parent_before": "2026-10-26T01:15:31.681Z",
+      "git_sha": "023d2f8b5bd276bd81e50b01d66870b886658635",
+      "built_at": "2026-10-26T00:45:00Z",
+      "bound": "Parent public health observation only; no UI request/wire correlation or fresh Chat behavior"
+    },
+    "verdict_a": "UNVERIFIED: no browser/Store identity/guest or assistant observations were attempted. Last accepted Store577/08c23:04 stays historical.",
+    "verdict_b": "First gate correctly refused STOP/pending/unsafe state; no CUA invocation or stale permit reuse. No cleanup required because no owned UI mutation."
+  },
+  "guest_parent_terminals": {
+    "holder_actual": 44152,
+    "holder_exit": 3,
+    "watcher_actual": 51270,
+    "watcher_exit": 0,
+    "pids_absent": [52419, 52399],
+    "watcher_report": {
+      "runId": "store577-runtime-20261026-0115",
+      "first_read_at": "2026-10-26T01:15:23.933915Z",
+      "last_read_at": "2026-10-26T01:18:32.377206Z",
+      "actualPollCount": 95,
+      "maxGapSeconds": 2.0108102909871377,
+      "riskEvents": [
+        {
+          "at": "2026-10-26T01:17:10.173978Z",
+          "reason": "JOURNAL_UNSAFE_OR_PENDING_EVENT",
+          "latest_code": "RESOURCE_PROCESS_ATTRIBUTION",
+          "latest_at": "2026-10-26T01:17:09.827Z"
+        },
+        {
+          "at": "2026-10-26T01:18:32.377206Z",
+          "reason": "INVALID_FINAL",
+          "latest_code": "RESOURCE_FINAL_DECISION",
+          "latest_at": "2026-10-26T01:18:32.247Z"
+        }
+      ],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T01:18:32.247Z",
+        "runId": "store577-runtime-20261026-0115",
+        "admitted": true,
+        "resourceInvalid": true,
+        "exitCode": 3,
+        "decision": "invalid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/store577-runtime-20261026-0115.jsonl",
+      "audit": ".output/stabilization-checkpoints/store577-023d-watch-0115.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    }
+  },
+  "server_observation_before_unexecuted_guest": {
+    "observed_at": "2026-10-26T01:15:31.681638+00:00",
+    "url": "https://server.app.matrxserver.com/health/version",
+    "health": {
+      "git_sha": "023d2f8b5bd276bd81e50b01d66870b886658635",
+      "built_at": "2026-10-26T00:45:00Z",
+      "branch": null
+    }
+  },
+  "source_boundary": {
+    "loaded_artifact_source": "2b534c5c9a0fd5210b86dfdbb4cacaf924bec675",
+    "successful_CI": 40249547558,
+    "artifact_id": 12620014847,
+    "digest": "sha256:880de55449a5f9ece772eb4f2363a90835e5a56bb22bbf60ff6194320f916d33",
+    "newer_contributor": "c85aa396e573b1e55616d482b9a5dca9d5e715e2",
+    "changes": "pnpm-lock.yaml 35insertions/35deletions; FFpreserved atboundary afterownerReload",
+    "newer_CI": 40253581201,
+    "newer_CI_status": "in_progress",
+    "newer_artifact_adopted": false,
+    "limit": "Owner2b installation proof remains source-bound; do not call it currentc85 merely because manifestversion624 matches."
+  },
+  "metrics": {
+    "new_product_behavior_passes": 0,
+    "guest_UI_calls": 0,
+    "guest_AI_prompts": 0,
+    "bounded_installation_verifications": 1,
+    "releases_or_submissions": 0
+  },
+  "peer": "docs/stabilization/reports/owner-guest-live-peer-20261026.json",
+  "daily_claim": "Existingcompleted2026-10-25AmericaLosAngeles reused; no newprivatecheck/mail/upload/submission.",
+  "next_action": "Waitnewc85/current-source successfulCI andnormalcapacity, adoptneweligibleartifact withnormal scripts andverifyownerReload; separatefreshguestpermit/watch currentserver first+sameconversation two terminalreplies. No repeatedguestUI afterinvalid episode thiswake; no manualbuild/refusalbypass or relocation."
+}
