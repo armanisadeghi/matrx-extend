@@ -46,5 +46,11 @@
   "next": "Repair shared defaultcaller guard under EXT-D-0297, focusedRED/GREEN/compile/independentreview and nativeoriginalretet; no blindrerun/serverrepair inferred. Dailyprivatecheck incomplete, no upload/submission/newclaim.",
   "counts": { "accepted_product_passes": 0, "defect_closures": 0, "releases": 0 },
   "evidence_private": ".output/stabilization-checkpoints/public-crx-40403343034",
-  "cleanup": "Externalrunterminalfailure; childlocalwatch88573actual130 intentionallystopped; parentwatch79182actual1. No authsecret/fixture staging. Owned remoteprofile deletion not independently read back."
+  "cleanup": "Externalrunterminalfailure; childlocalwatch88573actual130 intentionallystopped; parentwatch79182actual1. No authsecret/fixture staging. Owned remoteprofile deletion not independently read back.",
+  "preserved_public_journals_sha256": {
+    "docs/stabilization/resource-journals/hosted-package-40403343034-1.jsonl": "c3fdef567915015d81667a113e95249d577fc6bd1c22667012291157707de31d",
+    "docs/stabilization/resource-journals/hosted-guest-40403343034-1.jsonl": "676d594bfe7f12ab658f3ea99fe5a5134281d58a1b38d9fd70f10fbfa960c962",
+    "docs/stabilization/resource-journals/hosted-browser-40403343034-1.jsonl": "75b742bde7c27b21ffc655d2eaab961187bb0481ba45f1d780e1112e67cd1420"
+  },
+  "preserved_original_report": "docs/stabilization/evidence/d297-original-40403343034/native-report.sanitized.json"
 }

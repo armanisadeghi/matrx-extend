@@ -1,0 +1,191 @@
+{
+  "schema": 1,
+  "at": "2026-10-26T22:12:51.521335+00:00",
+  "status": "PASS_BOUNDED_PUBLIC_CRX_GUEST_SEQUENCE",
+  "scope": "Publishedprimary577 publicCRX unpacked: first+sameconversationfollowup+freshafterPANELdocumentreload on livebackend. No actualStoreinstalled/privatepublisher/fullChat/currentDEV acceptance.",
+  "run": {
+    "run": 40408186617,
+    "job": 121871297648,
+    "run_event": "workflow_dispatch",
+    "source": "8232ae1b72019807c1c194e243ac9deb556d6656",
+    "status": "completed",
+    "conclusion": "success",
+    "job_completed_at": "2026-10-26T22:03:12Z",
+    "artifact_id": 12692317493,
+    "artifact_name": "hosted-guest-40408186617-1",
+    "official_digest": "sha256:60b9855e5df986e05a02edc93c49dfdfc2d50e4025330677870ffcbbe9924daa",
+    "zip_sha256": "60b9855e5df986e05a02edc93c49dfdfc2d50e4025330677870ffcbbe9924daa",
+    "zip_entries_and_extracted_files_verified": 20,
+    "safe_archive_paths": true,
+    "job_log": ".output/stabilization-checkpoints/d297-native-outcome-peer-job.log",
+    "job_log_sha256": "2a5d43cc69694007f170a1f7cd5fefb839d1c223aae0b4974a11881d9dbab7ad",
+    "log_evidence": "PREPARED_PUBLISHED_STORE_CRX0.2.577/primaryID/tree039a23…e739 and PASSguest_chat_store plus three finalvalid0 records independently found."
+  },
+  "harness_source": {
+    "frozen_harness_sha256": "12b060756415d3934fa768d03e71bf02c1eb05b77a169aeae7f2468bd10a4d80",
+    "working_tree_harness_same_hash": true,
+    "prior_independent_source_peer_sha256": "dffe0caf88005835f72464f5e36a0475b06e7e67d48596d4ba0f0f36a120842f",
+    "source_negative_gate_evidence": "Prior zeroauthorship reviewer independently ran actualcomposition14 real-journal regression cases; executor19589 actual0/finalvalid0. This reviewer inspected/hash-checked that report, did not rerun heavytests."
+  },
+  "installation": {
+    "version": "0.2.577",
+    "tree_sha256": "039a23c816acaaf16d8f3978baa2db1c2f57967fc3caf1e3da5221f7c465e739",
+    "receipt_kind": "published_store_crx_unpacked",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "artifact_unchanged": true
+  },
+  "backend": {
+    "before": {
+      "reachable": true,
+      "status": 200,
+      "git_sha": "4669a8a5801dadc0cdcabc0db06f225657b81b6c"
+    },
+    "after": {
+      "reachable": true,
+      "status": 200,
+      "git_sha": "4669a8a5801dadc0cdcabc0db06f225657b81b6c"
+    },
+    "stable": true,
+    "limit": "Healthbracket only; exactdeployedSHAperrequest not wire-correlated"
+  },
+  "requests": [
+    {
+      "attempt": "opening",
+      "request_at_utc": "2026-10-26T22:02:18.501Z",
+      "status": 200,
+      "terminal_success": true,
+      "semantic_completion": "success",
+      "conversation_fingerprint": "dd9f0e0839577dd9",
+      "is_new": true,
+      "transport_complete": true,
+      "pending_tool_count": 0
+    },
+    {
+      "attempt": "same_conversation_followup",
+      "request_at_utc": "2026-10-26T22:02:35.663Z",
+      "status": 200,
+      "terminal_success": true,
+      "semantic_completion": "success",
+      "conversation_fingerprint": "dd9f0e0839577dd9",
+      "is_new": false,
+      "transport_complete": true,
+      "pending_tool_count": 0
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "request_at_utc": "2026-10-26T22:02:52.465Z",
+      "status": 200,
+      "terminal_success": true,
+      "semantic_completion": "success",
+      "conversation_fingerprint": "dc1e6f72fe349c4c",
+      "is_new": true,
+      "transport_complete": true,
+      "pending_tool_count": 0
+    }
+  ],
+  "actual_content": "Three original responsePNGs independently viewed. Opening and same-followup code text visible; manually read visible code SHA16 fingerprints57308f9eaa2c2bbb/a134bdf3791ac2a3 independently match native report fixture fingerprints. First/same bodies partly occluded; postreload PNG shows tools and only partial heading text. Fullpostreload sanitizedlatestAssistantReply is retained in report with code/headingmarkers; no fullfirst/same literalbodies retained. Content+terminal acceptance combines originalpartialimages with actual DOM/semantictransport evidence, never screenshots alone.",
+  "terminal_verdicts": {
+    "opening_turn_verdict": "terminal_answer",
+    "same_conversation_turn_verdict": "terminal_answer",
+    "followup_turn_verdict": "terminal_answer"
+  },
+  "resources": [
+    {
+      "path": ".output/stabilization-checkpoints/d297-public-crx-40408186617/hosted-guest-40408186617-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40408186617-1.jsonl",
+      "sha256": "c63928dc8eb5ff2653fa31d736a9b8194d9268b067e58674ba7956475eb4762f",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T21:58:39.187Z",
+        "runId": "hosted-browser-40408186617-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "pending_recovered_unsafe_events": [],
+      "public_path": "docs/stabilization/resource-journals/hosted-browser-40408186617-1.jsonl"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/d297-public-crx-40408186617/hosted-guest-40408186617-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40408186617-1.jsonl",
+      "sha256": "ef38da6f0293fd72ccce628a28023673f06c8b1cd4ccb5e3a97c3a300ae42432",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T22:03:05.740Z",
+        "runId": "hosted-guest-40408186617-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "pending_recovered_unsafe_events": [],
+      "public_path": "docs/stabilization/resource-journals/hosted-guest-40408186617-1.jsonl"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/d297-public-crx-40408186617/hosted-guest-40408186617-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40408186617-1.jsonl",
+      "sha256": "ca069b11e44b46c5152a423e535d9ae5fb6ed0c49f914e2e437aa181447a1481",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T21:56:49.853Z",
+        "runId": "hosted-package-40408186617-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "pending_recovered_unsafe_events": [],
+      "public_path": "docs/stabilization/resource-journals/hosted-package-40408186617-1.jsonl"
+    }
+  ],
+  "evidence": {
+    "report": "docs/stabilization/evidence/d297-public-crx-40408186617/native-report.sanitized.json",
+    "original_private_report_sha256": "79ffea40d143f32488516566a43849f29b885d5e52e31c40cda12c7a53631f36",
+    "official_archive_digest": "sha256:60b9855e5df986e05a02edc93c49dfdfc2d50e4025330677870ffcbbe9924daa",
+    "private_child_checkpoint_sha256": "b42bc39e1365203bc73ea8ab871392fa3f5b7b50d273bdcd3f9710bfe1644496",
+    "files_sha256": {
+      "docs/stabilization/evidence/d297-public-crx-40408186617/guest-chat-real-answer.png": "a6a86cc104c33caba6bc7df2d17fb193fa1564d81e9d1e7598ca4a67b6969247",
+      "docs/stabilization/evidence/d297-public-crx-40408186617/guest-chat-same-conversation-followup.png": "d568ad55275cd951482675ff72b8b8ff5238bf2eba5da4a62624228b69f360fa",
+      "docs/stabilization/evidence/d297-public-crx-40408186617/guest-chat-real-followup-answer.png": "b3426cd9af71f82496f934f9c44ceb321c421379c7a4b9213a55577b26d161c1",
+      "docs/stabilization/resource-journals/hosted-browser-40408186617-1.jsonl": "c63928dc8eb5ff2653fa31d736a9b8194d9268b067e58674ba7956475eb4762f",
+      "docs/stabilization/resource-journals/hosted-guest-40408186617-1.jsonl": "ef38da6f0293fd72ccce628a28023673f06c8b1cd4ccb5e3a97c3a300ae42432",
+      "docs/stabilization/resource-journals/hosted-package-40408186617-1.jsonl": "ca069b11e44b46c5152a423e535d9ae5fb6ed0c49f914e2e437aa181447a1481"
+    },
+    "images": [
+      "docs/stabilization/evidence/d297-public-crx-40408186617/guest-chat-real-answer.png",
+      "docs/stabilization/evidence/d297-public-crx-40408186617/guest-chat-same-conversation-followup.png",
+      "docs/stabilization/evidence/d297-public-crx-40408186617/guest-chat-real-followup-answer.png"
+    ]
+  },
+  "actions": {
+    "AI_prompts": 3,
+    "hosted_dispatches": 1,
+    "Store_uploads": 0,
+    "Store_submissions": 0,
+    "new_auth_grants": 0
+  },
+  "normalization": "Corrected readiness-era child actions.AI_prompts0 to actual3 and superseded stale readinessnext; originalprivate checkpoint/hash retained unchanged.",
+  "limits": [
+    "Published577CRXunpacked is not actualStoreinstalled or authenticateddashboard/mail/pendingstate.",
+    "Runtimeharnesssource8232 with sourceCI VMfixture-onlyfailure separatelyowned; no fullsourceCI greenclaim.",
+    "No CPU_PENDING occurred inthisnative journal: originalomittedcallbackroute retested, pending-recovery enforcement still rests onseparate actualcompositionRED/GREEN and peerreview.",
+    "RawPlaywrightPage methods/globalcoverage not closed bythisrun.",
+    "Original40403343034/nativeinvalid3/backenddrift remainsuncertified, notretrofitted.",
+    "Modelcatalogrecommendation is fresh, screenshotagentlabeltruncated; no exactprovidermodelwireclaim."
+  ],
+  "cleanup": {
+    "local_processes": "Watch89203actual0; download64900actual0; no ownactivebrowser/resource/credential/fixture",
+    "remote": "Workflowterminalsuccess and all3journalsvalid0 afternormalcleanup; remoteownedprofiledeletion not independentlyreadback; do not claim fullfilesystemcleanup proof."
+  },
+  "source_CI": "8232CI40408086395 failed6startupVMfixturemissinghelperbindings; productionharnessbindingspresent. Correctedtest-only fixtures underverification; no D297closure untilgreen integratedCI.",
+  "original_failed_run": "40403343034 remains unverified/nativeinvalid+backenddrift, never retrocertified.",
+  "counts": {
+    "bounded_live_chat_turns": 3,
+    "formal_inventory_case_passes": 0,
+    "product_fixes_closed": 0,
+    "supporting_defects_closed": 0,
+    "releases": 0
+  },
+  "next_action": "Finishindependentfixturefullfocused, pushcorrection and currentCI; obtainnormalcurrentartifact for B Scrape. SameOct26privatedashboard/mail/actualStoreinstalled observation remainsincomplete, no newclaim or publicmodelrerun ifunchanged."
+}

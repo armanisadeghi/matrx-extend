@@ -4,24 +4,30 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { beginStartupProcessInterval } from '../../scripts/startup-process-interval.mjs';
+import {
+  guardNativeResourceSessionSend,
+  runNativeResourceAction,
+} from './native-resource-boundary.mjs';
 
 // Execute the actual complete driver, including its finally. Replace only the
-// artifact/runtime/OS/CDP boundaries so no native browser or heavy job is needed.
+// artifact/runtime/OS/CDP/policy-health boundaries so no native browser is needed.
 const source = await readFile(
   new URL('./native-sidepanel-qa-harness.mjs', import.meta.url),
   'utf8',
 );
 const driver = source
   .slice(
-    source.indexOf('export async function runNativeSidepanelQa'),
+    source.indexOf('function resolveNativeResourceAction'),
     source.indexOf('\nif (process.argv[1]'),
   )
-  .replace('export ', '');
+  .replace(/^export /gm, '');
 const startupError = new Error('original startup error');
 const stopAfterStartup = new Error('stop after startup');
+const policyError = new Error('resource readiness refused');
 
 async function run({
   spawnFails = false,
+  healthFails = false,
   connectFails = false,
   snapshotFails = false,
   beginFails = false,
@@ -38,6 +44,16 @@ async function run({
   const session = { detach: async () => events.push('detach') };
   const sandbox = {
     REPO: '/repo',
+    // Keep the real owning composition/action primitive. Only the external
+    // policy/lease read is adapted; both readiness and refusal are exercised.
+    guardNativeResourceSessionSend,
+    runNativeResourceAction,
+    awaitNativeResourceHealth: async (options) => {
+      assert.equal(JSON.stringify(options), '{"repo":"/repo"}');
+      events.push('resource-health');
+      if (healthFails) throw policyError;
+      return { event: 'RESOURCE_WATCH_HEALTHY', runId: 'owned-startup', ageMs: 0 };
+    },
     RELEASE_RECEIPT: '/receipt',
     EXPECTED_EXTENSION_ID: 'owned',
     join: (...parts) => parts.join('/'),
@@ -97,7 +113,7 @@ async function run({
     safeStartupFailureCode: () => 'test_failure',
     browserDiagnosticFlags: () => ({}),
     stopOwnedChild: async (value) => {
-      assert.equal(value, spawnFails ? undefined : child);
+      assert.equal(value, spawnFails || healthFails ? undefined : child);
       events.push('cleanup');
     },
   };
@@ -108,7 +124,9 @@ async function run({
         if (stage === 'endpoint_read') throw stopAfterStartup;
       },
     }),
-    (error) => error === (spawnFails || connectFails ? startupError : stopAfterStartup),
+    (error) =>
+      error ===
+      (healthFails ? policyError : spawnFails || connectFails ? startupError : stopAfterStartup),
   );
   const brackets = output
     .filter((line) => line.startsWith('BROWSER_STARTUP_CPU_INTERVAL '))
@@ -121,6 +139,7 @@ test('actual driver brackets successful spawn and CDP exactly once before cleanu
   const { events, brackets } = await run();
   assert.deepEqual(events, [
     'snapshot',
+    'resource-health',
     'spawn',
     'connect',
     'snapshot',
@@ -133,7 +152,14 @@ test('actual driver brackets successful spawn and CDP exactly once before cleanu
 });
 test('actual driver preserves synchronous spawn error while closing its bracket', async () => {
   const { events, brackets } = await run({ spawnFails: true });
-  assert.deepEqual(events, ['snapshot', 'spawn', 'snapshot', 'cleanup', 'remove-profile']);
+  assert.deepEqual(events, [
+    'snapshot',
+    'resource-health',
+    'spawn',
+    'snapshot',
+    'cleanup',
+    'remove-profile',
+  ]);
   assert.equal(brackets.length, 1);
   assert.equal(brackets[0].outcome, 'spawn_failed');
 });
@@ -157,12 +183,38 @@ test('diagnostic begin and finish failures cannot replace driver success or fail
 });
 test('ordinary startup performs no diagnostic process reads', async () => {
   const { events, brackets } = await run({ enabled: false });
-  assert.deepEqual(events, ['spawn', 'connect', 'detach', 'cleanup', 'remove-profile']);
+  assert.deepEqual(events, [
+    'resource-health',
+    'spawn',
+    'connect',
+    'detach',
+    'cleanup',
+    'remove-profile',
+  ]);
   assert.deepEqual(brackets, []);
 });
 test('Notes CDP diagnostic brackets actual startup without enabling SEO diagnostics', async () => {
   const { events, brackets } = await run({ enabled: false, cdpEnabled: true });
   assert.equal(brackets.length, 1, 'Notes startup lost its process CPU bracket');
   assert.equal(brackets[0].outcome, 'cdp_connected');
-  assert.deepEqual(events.slice(0, 4), ['snapshot', 'spawn', 'connect', 'snapshot']);
+  assert.deepEqual(events.slice(0, 5), [
+    'snapshot',
+    'resource-health',
+    'spawn',
+    'connect',
+    'snapshot',
+  ]);
+});
+
+test('actual composed driver refuses unavailable policy before spawn and still cleans its profile', async () => {
+  const { events, brackets } = await run({ healthFails: true });
+  assert.deepEqual(events, [
+    'snapshot',
+    'resource-health',
+    'snapshot',
+    'cleanup',
+    'remove-profile',
+  ]);
+  assert.equal(brackets.length, 1);
+  assert.equal(brackets[0].outcome, 'spawn_failed');
 });

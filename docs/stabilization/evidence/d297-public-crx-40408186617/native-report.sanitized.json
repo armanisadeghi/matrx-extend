@@ -1,0 +1,113 @@
+{
+  "original_report_sha256": "79ffea40d143f32488516566a43849f29b885d5e52e31c40cda12c7a53631f36",
+  "build": {
+    "version": "0.2.577",
+    "tree_sha256": "039a23c816acaaf16d8f3978baa2db1c2f57967fc3caf1e3da5221f7c465e739",
+    "receipt_kind": "published_store_crx_unpacked",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "artifact_unchanged": true
+  },
+  "server_version_before": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "4669a8a5801dadc0cdcabc0db06f225657b81b6c"
+  },
+  "server_version_after": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "4669a8a5801dadc0cdcabc0db06f225657b81b6c"
+  },
+  "server_version_stable": true,
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": true,
+    "session_absent_after_reload": true,
+    "fixture_reinstalled_before_first_send": false,
+    "fixture_reinstalled_after_reload": false
+  },
+  "chat": {
+    "opening_question_fingerprint": "8b0041e45eb47431",
+    "fixture_fragment_fingerprint": "f7654463c67edfc6",
+    "opening_code_fingerprint": "57308f9eaa2c2bbb",
+    "completed_reply_count": 1,
+    "answer_contains_unpredictable_page_code": true,
+    "answer_names_page_stages": true,
+    "answer_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "followup_completed_after_reload": true,
+    "same_conversation_followup_completed": true,
+    "same_conversation_followup_reply_count": 2,
+    "same_conversation_followup_contains_page_code": true,
+    "same_conversation_identity_verified": true,
+    "followup_question_fingerprint": "be2d5336e111bd21",
+    "followup_code_fingerprint": "a134bdf3791ac2a3",
+    "followup_reply_count": 1,
+    "followup_contains_unpredictable_page_code": true,
+    "followup_names_fixture_heading": true
+  },
+  "requests": [
+    {
+      "attempt": "opening",
+      "request_at_utc": "2026-10-26T22:02:18.501Z",
+      "status": 200,
+      "terminal_success": true,
+      "semantic_completion": "success",
+      "conversation_fingerprint": "dd9f0e0839577dd9",
+      "is_new": true,
+      "transport_complete": true,
+      "pending_tool_count": 0
+    },
+    {
+      "attempt": "same_conversation_followup",
+      "request_at_utc": "2026-10-26T22:02:35.663Z",
+      "status": 200,
+      "terminal_success": true,
+      "semantic_completion": "success",
+      "conversation_fingerprint": "dd9f0e0839577dd9",
+      "is_new": false,
+      "transport_complete": true,
+      "pending_tool_count": 0
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "request_at_utc": "2026-10-26T22:02:52.465Z",
+      "status": 200,
+      "terminal_success": true,
+      "semantic_completion": "success",
+      "conversation_fingerprint": "dc1e6f72fe349c4c",
+      "is_new": true,
+      "transport_complete": true,
+      "pending_tool_count": 0
+    }
+  ],
+  "terminal_verdicts": {
+    "opening_turn_verdict": "terminal_answer",
+    "same_conversation_turn_verdict": "terminal_answer",
+    "followup_turn_verdict": "terminal_answer"
+  },
+  "stage_progress": [
+    "owned_profile",
+    "native_setup_resource_readiness",
+    "native_setup_resource_ready",
+    "fresh_guest",
+    "owned_article_page",
+    "reviewer_public_demo",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_question",
+    "post_setup_resource_readiness",
+    "guest_question_ready",
+    "real_guest_answer",
+    "same_conversation_followup_question",
+    "real_same_conversation_followup_answer",
+    "real_panel_reload",
+    "guest_followup_composer",
+    "guest_followup_question",
+    "real_guest_followup_answer",
+    "guest_values_chip_observation",
+    "artifact_unchanged"
+  ],
+  "status": "pass",
+  "scope_limit": "Unpacked public CRX577, not actualStoreinstalled. Thirdturn follows PANEL/documentreload, not full extensionmanagement Reload. Partialoriginalimages; no full first/same literalbody or perrequest deployedSHA/wiremodel attestation."
+}

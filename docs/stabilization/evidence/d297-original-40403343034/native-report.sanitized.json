@@ -1,0 +1,104 @@
+{
+  "status": "unverified",
+  "build": {
+    "version": "0.2.577",
+    "tree_sha256": "039a23c816acaaf16d8f3978baa2db1c2f57967fc3caf1e3da5221f7c465e739",
+    "receipt_kind": "published_store_crx_unpacked",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "artifact_unchanged": true
+  },
+  "server_version_before": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "726827db2b08ab714f420ae23b7f9676fd3859f0"
+  },
+  "server_version_after": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "4669a8a5801dadc0cdcabc0db06f225657b81b6c"
+  },
+  "server_version_stable": false,
+  "chat": {
+    "opening_question_fingerprint": "8b0041e45eb47431",
+    "fixture_fragment_fingerprint": "25ae06d80f46f90b",
+    "opening_code_fingerprint": "430594ebb0b2d6ea",
+    "completed_reply_count": 1,
+    "answer_contains_unpredictable_page_code": true,
+    "answer_names_page_stages": true,
+    "answer_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "followup_completed_after_reload": true,
+    "same_conversation_followup_completed": true,
+    "same_conversation_followup_reply_count": 2,
+    "same_conversation_followup_contains_page_code": true,
+    "same_conversation_identity_verified": true,
+    "followup_question_fingerprint": "be2d5336e111bd21",
+    "followup_code_fingerprint": "cb154ebdfc133568",
+    "followup_reply_count": 1,
+    "followup_contains_unpredictable_page_code": true,
+    "followup_names_fixture_heading": true
+  },
+  "opening_turn_verdict": "terminal_answer",
+  "same_conversation_turn_verdict": "terminal_answer",
+  "followup_turn_verdict": "terminal_answer",
+  "failure_stage": "server_version_after",
+  "failure_code": "backend_version_changed_during_acceptance",
+  "stage_progress": [
+    "owned_profile",
+    "native_setup_resource_readiness",
+    "native_setup_resource_ready",
+    "fresh_guest",
+    "owned_article_page",
+    "reviewer_public_demo",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_question",
+    "post_setup_resource_readiness",
+    "guest_question_ready",
+    "real_guest_answer",
+    "same_conversation_followup_question",
+    "real_same_conversation_followup_answer",
+    "real_panel_reload",
+    "guest_followup_composer",
+    "guest_followup_question",
+    "real_guest_followup_answer",
+    "guest_values_chip_observation",
+    "artifact_unchanged"
+  ],
+  "requests": [
+    {
+      "attempt": "opening",
+      "request_at_utc": "2026-10-26T21:27:15.634Z",
+      "status": 200,
+      "terminal_success": true,
+      "semantic_completion": "success",
+      "conversation_fingerprint": "24d1bd41bae5e702",
+      "is_new": true,
+      "transport_complete": true,
+      "pending_tool_count": 0
+    },
+    {
+      "attempt": "same_conversation_followup",
+      "request_at_utc": "2026-10-26T21:27:34.553Z",
+      "status": 200,
+      "terminal_success": true,
+      "semantic_completion": "success",
+      "conversation_fingerprint": "24d1bd41bae5e702",
+      "is_new": false,
+      "transport_complete": true,
+      "pending_tool_count": 0
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "request_at_utc": "2026-10-26T21:27:52.199Z",
+      "status": 200,
+      "terminal_success": true,
+      "semantic_completion": "success",
+      "conversation_fingerprint": "c7116328786eba40",
+      "is_new": true,
+      "transport_complete": true,
+      "pending_tool_count": 0
+    }
+  ],
+  "scope": "Original40403343034 staysUNVERIFIED/no acceptancecredit. Requesttimestampsnotexactnativeinputtimes; no forcedunsafe escalation inferred."
+}

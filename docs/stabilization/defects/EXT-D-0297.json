@@ -16,14 +16,18 @@
   "reproduction": [
     "Observe native report and matching journal from40403343034 on79.",
     "Trace caller omittedresourceAction through sharedharness optional rawpanel branch and exposed callback sessions.",
-    "Execute default-caller composition with controlled healthy→pending→recovered journal and transport recorder; meaningful RED/GREEN pending implementation."
+    "Execute default-caller composition with controlled healthy\u2192pending\u2192recovered journal and transport recorder; meaningful RED/GREEN pending implementation."
   ],
   "expected": "Missing action uses canonical existing gate before actual Chrome creation and callback CDP/session commands. Pending/stopped/stale/wrongowner/unsafe evidence does not forward; owned termination remains possible.",
   "actual": "Source composition supplies rawpanel if callback omitted. Original same/fresh requesttimestamps followCPU_PENDING; exact trustedinput timestamps not retained, so no inventedclick chronology.",
   "cause": "Confirmed defaultcaller composition omission, plus independently discovered raw Chrome spawn before first healthgate. Existing gate/parser/policy are unchanged.",
-  "reproducibility": "Source path and retained official chronology independently confirmed; synthetic defaultcaller RED/nativeoriginalretet pending.",
+  "reproducibility": "Actual composition RED/GREEN and fresh14 replay verified; original-route native40408186617 succeeds bounded, no pending/recovery live event.",
   "source_sha": "79f526fb1adf875752e55cb6c605bc90dd27b0ea",
-  "evidence": ["docs/stabilization/reports/published-crx-40403343034-unverified-20261026.json"],
+  "evidence": [
+    "docs/stabilization/reports/published-crx-40403343034-unverified-20261026.json",
+    "docs/stabilization/reports/published-crx577-4669-runtime-20261026.json",
+    "docs/stabilization/reports/published-crx577-4669-peer-20261026.json"
+  ],
   "independent_diagnosis": {
     "reviewer": "native_pending_diagnosis",
     "private_report_sha256": "a1171b5eff47fad611ff10d711b0a1e3632173288dda2c868822daddfd83bad2",
@@ -32,12 +36,12 @@
   "related_defects": ["EXT-D-0296"],
   "related_limits": [
     "RawPlaywrightPage methods separate surface; no genericdeep proxy or globalcoverage claim.",
-    "OriginalpublicCRXrun independently unverified by backend726→466 drift and nativeinvalid3; no public productregression claim.",
+    "OriginalpublicCRXrun independently unverified by backend726\u2192466 drift and nativeinvalid3; no public productregression claim.",
     "Independentreview prelaunch finding addressed and covered by new real-journal launch-recorder tests; rawPage/internal multi-command coverage still not a globalguard claim."
   ],
-  "fix_sha": null,
+  "fix_sha": "8232ae1b72019807c1c194e243ac9deb556d6656",
   "cleanup": "All8builderguards and independent19589 terminal; fixture directories absent; rootps saw no guard/Vitest process. No credentials or nativefixtures staged.",
-  "next_action": "Push reviewedunit, capture actualfixSHA, await automaticcurrent-source CI; run same normalA publishedCRX originalroute on changedsource with freshcapacity/catalog/source gates. Require independent native evidence beforeclosure; preserve source/rawPage/procedure limits.",
+  "next_action": "Push reviewed fixture/evidence unit on contributor a872 main; require successful integrated current-source CI before closure, then eligible exact artifact and normal B guest Scrape seo-schema-empty. Original404033 remains unverified; private Store status and owner Chrome Reload remain unobserved.",
   "transition_history": [
     {
       "at": "2026-10-26T21:36:34.048697+00:00",
@@ -81,7 +85,32 @@
     "tests": "14/14PASS/finalvalid0",
     "A": "PASS_BOUNDED_SUPPORTING_COMPOSITION_REPLAY",
     "B": "PASS_BOUNDED_SOURCE_WITH_RECORDED_PROCEDURAL_DEVIATION",
-    "native": "UNVERIFIED; required originalpublishedCRX native retest not yet dispatched on fixedsource"
+    "native": "PASS bounded original-route publicCRX577 unpacked on40408186617, stable4669 backend/three terminal replies/all3journalsvalid0; independently reviewed. No liveCPU_PENDING, actualStore installation or fullF0002 claim."
   },
-  "fix_commit_status": "This record is bundled with reviewedsource; self-referential commit SHA will be recorded with subsequent native/CI outcome, not invented."
+  "fix_commit_status": "Production fix committed/pushed8232; test-fixture correction pending independent replay and integrated current-source CI.",
+  "ci_followthrough": {
+    "source_run": 40408086395,
+    "result": "failed6 VM missing-helper fixture bindings; production module bindings present",
+    "correction": "Reviewed test-only VM composition and atomic positive endpoint fixtures; local and fresh independent full focused1005total994pass0fail11skip/actual0valid0.",
+    "interrupted_peer": "68446 handle missing and no OS process at resumed23:07UTC; pending journal has no terminal, earns no credit",
+    "latest_contributor_run": {
+      "run": 40415466566,
+      "source": "a87279a076c1f8e5489e2f5429c3c860d1140394",
+      "result": "same6 ReferenceErrors in startup VM fixture; resource integration successful; current corrected test unit not included"
+    },
+    "independent_fixture_replay": {
+      "session": 14134,
+      "actual_exit": 0,
+      "total": 1005,
+      "pass": 994,
+      "fail": 0,
+      "skip": 11,
+      "journal": "docs/stabilization/resource-journals/d297-fixture-peer-recovery-20261026.jsonl",
+      "final": "valid0",
+      "A": "PASS bounded composition/replay",
+      "B": "PASS fixture correction",
+      "report": "docs/stabilization/reports/d297-ci-fixture-peer-recovery-20261026.json",
+      "limits": "Frozen8232 installed dependencies; postmerge current-source CI required for contributor package integration."
+    }
+  }
 }

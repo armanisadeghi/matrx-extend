@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, symlink, writeFile } from 'node:fs/promises';
+import { mkdtemp, rename, rm, symlink, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -29,6 +29,14 @@ test('native startup admits an owned endpoint arriving after the old 5-second cu
     const preparedProfile = await prepareOwnedProfile(profile);
     const endpoint = join(profile, 'DevToolsActivePort');
     const endpointRecord = '9222\n/devtools/browser/owned-id\n';
+    // This is the delayed VALID-record fixture. Publish it atomically so the
+    // reader never mistakes a writeFile truncation window for malformed Chrome.
+    // Invalid/incomplete record refusal has its own negative fixtures.
+    const publishEndpoint = async () => {
+      const staging = join(profile, 'DevToolsActivePort.next');
+      await writeFile(staging, endpointRecord, { flag: 'wx', mode: 0o600 });
+      await rename(staging, endpoint);
+    };
     const owner = async () => ({
       executable: chromeExecutable,
       args: `--user-data-dir=${profile} --remote-debugging-port=0`,
@@ -38,7 +46,7 @@ test('native startup admits an owned endpoint arriving after the old 5-second cu
     let endpointWritten;
     const firstEndpoint = new Promise((resolve, reject) => {
       endpointTimer = setTimeout(() => {
-        endpointWritten = writeFile(endpoint, endpointRecord).then(resolve, reject);
+        endpointWritten = publishEndpoint().then(resolve, reject);
       }, 6_100);
     });
     await assert.rejects(
@@ -57,7 +65,7 @@ test('native startup admits an owned endpoint arriving after the old 5-second cu
     const configuredDeadlineMs = await nativeCdpStartupDeadlineMs();
     assert.ok(configuredDeadlineMs >= 6_200);
     endpointTimer = setTimeout(() => {
-      endpointWritten = writeFile(endpoint, endpointRecord);
+      endpointWritten = publishEndpoint();
     }, 6_100);
     const connected = await connectNativeStartupOwnedCdp({
       preparedProfile,
