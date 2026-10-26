@@ -1390,6 +1390,11 @@
  "/auth/organizations": {
   "get": []
  },
+ "/auth/session/continue": {
+  "post": [
+   "application/x-www-form-urlencoded"
+  ]
+ },
  "/auth/session/exchange": {
   "post": [
    "application/json"
@@ -10070,7 +10075,8 @@
  "/vault/password-health/scans": {
   "post": [
    "application/json"
-  ]
+  ],
+  "get": []
  },
  "/vault/password-health/scans/{execution_id}": {
   "get": []
