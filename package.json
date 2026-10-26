@@ -169,6 +169,10 @@
       "@ai-matrx/associations": "latest",
       "@ai-matrx/design-system": "latest"
     },
-    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "spawn-sync"]
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild",
+      "spawn-sync"
+    ]
   }
 }
