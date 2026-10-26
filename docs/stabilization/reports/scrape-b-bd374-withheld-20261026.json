@@ -1,0 +1,56 @@
+{
+  "task_id": "scrape_b_registered_retest",
+  "at": "2026-10-26T23:24:32.316538+00:00",
+  "status": "WITHHELD_NO_ELIGIBLE_EXACT_SOURCE_ARTIFACT",
+  "lane": "B",
+  "registered_case": "EXT-F-1007-T08",
+  "control": "EXT-F-1007-C08",
+  "auth": "guest",
+  "scope": "seo-schema-empty",
+  "source_sha": "bd374717244423bb68c58a15d7536d676e39cfc0",
+  "source_check": {
+    "local_head": "bd374717244423bb68c58a15d7536d676e39cfc0",
+    "origin_main": "bd374717244423bb68c58a15d7536d676e39cfc0",
+    "full_tree_clean": true,
+    "at_utc": "2026-10-26T23:24:20Z"
+  },
+  "required_CI": {
+    "run": 40418186170,
+    "status": "completed",
+    "conclusion": "failure",
+    "checks": "failure",
+    "resource_guard_integration": "success",
+    "focused_workflow": 40418185960,
+    "focused_workflow_conclusion": "success",
+    "development_artifacts": [],
+    "failed_step": "Guest transport observer regression",
+    "failure_location": "tests/browser/panel-visibility-diagnostic.test.mjs:283",
+    "failed_test": "in-memory mutations cannot omit checkpoints or manufacture successful measurements",
+    "exact_boundary": "replaceOnce expected old optional resourceAction target exactly once, actual0 expected1. No production diagnosis inferred.",
+    "log_private_path": ".output/stabilization-checkpoints/scrape-b-bd374-ci-failed.log",
+    "log_sha256": "cef237fe379954c916764dcdfd6cef0629a7d81b85c1d939936acb24c62a7645"
+  },
+  "admission": {
+    "normal_plan_executed": false,
+    "normal_dispatch_executed": false,
+    "reason": "Successful exact-source fullCI/artifact is prerequisite; terminalfailedrun has noartifact. No stale artifact or source/resource/runner/policy bypass attempted.",
+    "capacity": "No dispatch-specific allstatus check needed because artifact prerequisite failed; no claim capacitypassed."
+  },
+  "actions": {
+    "new_workflow_dispatches": 0,
+    "native_browser_actions": 0,
+    "AI_prompts": 0,
+    "auth_credentials_fixture_mutations": 0,
+    "source_edits": 0,
+    "product_behavior_passes": 0,
+    "releases": 0
+  },
+  "cleanup": {
+    "own_live_processes": 0,
+    "own_hosted_jobs": 0,
+    "own_credentials_or_fixtures": 0,
+    "CI_watch": "Parent-owned29202, not inherited or signaled"
+  },
+  "readiness": "Existing unchanged normalB guestScrape scope still selected, not productexecuted. PriorinvalidA/B and D297 nativepublicCRX evidence remain separate. FullT08/reload/clipboard/member/admin/Store unverified.",
+  "next": "Parent repairs failed fixture through reviewed unit and new current-source CI. Then obtain exact artifact and rerun normal plan+fresh clean/source/capacity checks for oneB dispatch. No blindCI/native retry."
+}

@@ -286,14 +286,14 @@ test('in-memory mutations cannot omit checkpoints or manufacture successful meas
     [
       omitOnce(
         harnessSource,
-        "await (resourceAction ?? ((action) => action()))(() =>\n      observeVisibility('initial_settled_before_screenshots'),\n    );",
+        "await resourceAction(() => observeVisibility('initial_settled_before_screenshots'));",
       ),
       scrapeSource,
     ],
     [
       omitOnce(
         harnessSource,
-        "await (resourceAction ?? ((action) => action()))(() =>\n      observeVisibility('after_initial_screenshots'),\n    );",
+        "await resourceAction(() => observeVisibility('after_initial_screenshots'));",
       ),
       scrapeSource,
     ],

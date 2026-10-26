@@ -41,7 +41,7 @@
   ],
   "fix_sha": "8232ae1b72019807c1c194e243ac9deb556d6656",
   "cleanup": "All8builderguards and independent19589 terminal; fixture directories absent; rootps saw no guard/Vitest process. No credentials or nativefixtures staged.",
-  "next_action": "Push reviewed fixture/evidence unit on contributor a872 main; require successful integrated current-source CI before closure, then eligible exact artifact and normal B guest Scrape seo-schema-empty. Original404033 remains unverified; private Store status and owner Chrome Reload remain unobserved.",
+  "next_action": "Await automatic current-source CI for reviewed two-line visibility mutation fixture correction; runtimeGREEN and D297closure withheld. On successful exactartifact resume normal BguestScrape seo-schema-empty and currentDEVadoption/ownerReload. SameOct26 privateStore daily577/577 boundedcheck complete, no upload/submission.",
   "transition_history": [
     {
       "at": "2026-10-26T21:36:34.048697+00:00",
@@ -111,6 +111,26 @@
       "B": "PASS fixture correction",
       "report": "docs/stabilization/reports/d297-ci-fixture-peer-recovery-20261026.json",
       "limits": "Frozen8232 installed dependencies; postmerge current-source CI required for contributor package integration."
+    },
+    "integrated_bd374": {
+      "full_CI": 40418186170,
+      "result": "failure at old in-memory panel-visibility mutation target count0; focused/type/lint/unit/resource passed",
+      "focused_CI": 40418185960,
+      "focused_result": "success",
+      "artifact": "none; B notdispatched",
+      "next": "Test-only mutation-seam correction with RED/GREEN/peer, newcurrentCI; productionharness unchanged"
+    },
+    "visibility_fixture_correction": {
+      "change": "Two exact in-memory omission mutation targets updated to current mandatory resourceAction statements; allassertions unchanged",
+      "fixture_sha256": "a1b87e25b4259e339f76425ada83616d501150c79cf95d2763fa0ca62735741b",
+      "harness_sha256": "12b060756415d3934fa768d03e71bf02c1eb05b77a169aeae7f2468bd10a4d80",
+      "A": "PASS source-only exactseam",
+      "B": "PASS source-only doctrine",
+      "runtime_GREEN": "unverified locally: targetedcommand refused2 beforeadmission, no bypass; nextautomaticCI required",
+      "reports": [
+        "docs/stabilization/reports/d297-visibility-mutation-fixture-fix-20261026.json",
+        "docs/stabilization/reports/d297-visibility-fixture-source-peer-20261026.json"
+      ]
     }
   }
 }
