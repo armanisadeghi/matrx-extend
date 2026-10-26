@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-26T08:23:41.610919+00:00",
+  "source_before": "047b19c22a07bf5de61d87a756f8d1935e2a99f7",
+  "scope": "Supporting dependency sync formatting; zero product behavior passes or releases",
+  "actual_failure": {
+    "CI": 40288204774,
+    "stage": "Lint",
+    "symptom": "package.json onlyBuiltDependencies multiline serialization fails canonical Biome",
+    "prior_same_failure": 40282355633
+  },
+  "cause": "sync:matrx-packages performs pnpm writers and restore-aliases JSON.stringify serialization but omitted canonical formatting before sync-main commits the resulting manifest. Repeated dependency updates overwrite manual format corrections.",
+  "fix": "Reuse installed canonical Biome formatter after pnpm install and before unchanged strict check:matrx-packages, within existing && chain. Dependency versions, alias, install/update sequence and gates preserved.",
+  "root_verification": "Actual Biome check package.json reproduced RED; format and focused check GREEN. No full dependency update/build/suite run on Mac.",
+  "independent_review": {
+    "reviewer": "sync_format_peer",
+    "verdict": "PASS bounded",
+    "actual_file_replay": "External unique package.json fixture serialized indent2 produces exact onlyBuiltDependencies RED exit1; actual Biome format0 then check0. Parsed values/alias preserved; scratch removed.",
+    "limit": "Initial stdin experiment unusable and excluded; no full sync/network/build/suite or hostedCI acceptance."
+  },
+  "current_artifact": "Owner Chrome remains observed737/624 historical. Previous b30 fullCI40285235664 succeeds but latest047 changed dependencies, so no stale artifact adopted. New commit fullCI pending."
+}

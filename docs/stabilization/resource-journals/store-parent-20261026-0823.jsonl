@@ -1,0 +1,4 @@
+{"schema":1,"at":"2026-10-26T08:21:36.003Z","runId":"store-parent-20261026-0823","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-26T08:22:15.662Z","runId":"store-parent-20261026-0823","signal":"SIGINT","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-26T08:22:43.232Z","runId":"store-parent-20261026-0823","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-26T08:22:43.240Z","runId":"store-parent-20261026-0823","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}
