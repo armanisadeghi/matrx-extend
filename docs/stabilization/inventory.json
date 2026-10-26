@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-26T03:50:40.848960+00:00",
+  "updated_at": "2026-10-26T04:03:47.617530+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -8827,6 +8827,18 @@
                 "docs/stabilization/reports/settings-b-40262577587-20261026.json",
                 "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
               ]
+            },
+            {
+              "at": "2026-10-26T04:03:47.617530+00:00",
+              "mode": "guest",
+              "run_id": "guest-mode-20261026-0354",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "evidence": [
+                "docs/stabilization/reports/guest-mode-9a-20261026.json",
+                "docs/stabilization/reports/guest-mode-peer-20261026.json"
+              ],
+              "detail": "Warm refusal/Act rollback and actual freshChatTools consumer observed; second fullReload SettingsAct observed, postReloadToolsconsumer unverified. Completed resourcefinalvalid0 conflicts with late-secondSIGINT holderexit1; preserve observations but no formal acceptance or closure. No rawstorage/server/AI observation."
             }
           ]
         },

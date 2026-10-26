@@ -1,0 +1,57 @@
+{
+  "id": "EXT-D-0296",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T03", "EXT-F-0002-T04"],
+  "title": "Late stop signal writes to a finalized resource journal and crashes the guard",
+  "surface": "Supporting resource-guard stop/finalization lifecycle",
+  "auth_mode": "all; no identity dependency",
+  "severity": "S2: terminal evidence becomes inconsistent; no unsafe product behavior established",
+  "priority": "P1: restore reliable guarded acceptance without weakening refusals",
+  "state": "in-fix",
+  "owner": "/root/resource_stop_fix_0402",
+  "preconditions": [
+    "Browser permit guest-mode-20261026-0354 admitted normally; designated guest native UI completed and restored original state before stop.",
+    "First Ctrl-C starts normal finalization; parent mistakenly sends a second SIGINT while process still exists."
+  ],
+  "reproduction": [
+    "Observe normal RESOURCE_STOP_REQUESTED, RESOURCE_BROWSER_STOP_CONFIRMED and immutable final valid0 at03:59:22.264Z.",
+    "During the still-alive process window, second SIGINT invokes the registered stopSignal callback.",
+    "Callback calls emit after journal.close; writeSync on closed descriptor throws uncaught. Actual executor32501 exits1 despite already published final exitCode0."
+  ],
+  "expected": "Completed cleanup and finalization settle consistently; repeated or late stop signals cannot write to a sealed journal. First stop, active ownership, unsafe/pending decisions and genuine journal failures remain strict.",
+  "actual": "Finalvalid0 conflicts with actual OSexit1 and RESOURCE_JOURNAL_WRITE_FAILED/closed-fd stack. Dedicated watcher completed0/173reads/noalerts; no further UI after last action.",
+  "cause": "Independent source/trace diagnosis confirms signal handlers outlive journal closure. Referenced losing watch timer is a source-backed keepalive explanation, not an independently timed reproduction yet. SIGTERM shares callback; other guard modes share lifecycle.",
+  "reproducibility": "One actual duplicate-stop failure plus original traceback and independent source review. Deterministic guarded RED/GREEN reproduction assigned, not yet claimed.",
+  "evidence": [
+    "docs/stabilization/resource-journals/guest-mode-20261026-0354.jsonl",
+    "docs/stabilization/reports/late-stop-diagnosis-20261026.json",
+    "docs/stabilization/reports/guest-mode-9a-20261026.json",
+    "docs/stabilization/reports/guest-mode-peer-20261026.json"
+  ],
+  "source_sha": "1727c8d37bae69e14ca40cb81380d8cafd5af3b8",
+  "related_defects": ["EXT-D-0283"],
+  "related_limits": "D283 original pending-child-error exit/close hang remains open; this distinct post-final duplicate-signal failure does not establish the same cause.",
+  "cleanup": "Independent canonical resource lease read found no heavy/owner/reclaim/unsafe hold; original PID99936 absent, no manual recovery/delete needed.",
+  "fix_sha": null,
+  "next_action": "Guarded deterministic original lifecycle reproduction, minimal class repair with fail-closed safety siblings, fresh independent verification, current CI and development-artifact maintenance. Never retroactively certify the original UI run.",
+  "transition_history": [
+    {
+      "at": "2026-10-26T04:03:16.661826+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual terminal discrepancy and original closed-journal traceback independently confirmed."
+    },
+    {
+      "at": "2026-10-26T04:03:16.661826+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Registered stop handler survives finalized journal; distinct from D283."
+    },
+    {
+      "at": "2026-10-26T04:03:16.661826+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded implementation lane resource_stop_fix_0402 assigned RED/GREEN and lifecycle safety siblings."
+    }
+  ]
+}

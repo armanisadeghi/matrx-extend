@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "owner": "/root/late_stop_diagnosis_0400",
+  "at": "2026-10-26T04:02:27.572770+00:00",
+  "status": "DONE_READONLY_CONFIRMED_POST_FINAL_SIGNAL_LIFECYCLE_HAZARD",
+  "scope": "Original captured actual execution and source localization only; no new reproduction loop/test/edit/dispatch/UI",
+  "hypotheses": [
+    {
+      "hypothesis": "Second signal enters live stop handler after journal close",
+      "prediction": "Original failure stack names stopSignal→emit→journal.write after completed final",
+      "result": "CONFIRMED by actual original traceback and final chronology"
+    },
+    {
+      "hypothesis": "Resource pressure or CPU failure during native UI invalidated run",
+      "prediction": "Unsafe/pending or invalid final precedes stop",
+      "result": "NOT SUPPORTED; actual watcher173reads/maxgap2.012336166/noalerts and completed journal valid0, no unsafe/pending"
+    },
+    {
+      "hypothesis": "Error text proves retained lease",
+      "prediction": "heavy/owner exists with dead owner",
+      "result": "REFUTED by independent read-only canonical lease-root absence; text is generic failure guidance, not current state"
+    },
+    {
+      "hypothesis": "Uncancelled race timer keeps process alive after finalization",
+      "prediction": "Current source uses referenced noncancelled setTimeout losing Promise.race, plus handlers remain installed",
+      "result": "Source-confirmed mechanism, not independently timed/reproduced under brief prohibition on tests"
+    }
+  ],
+  "actual_execution": {
+    "first_stop_request": "2026-10-26T03:59:22.248Z",
+    "browser_stop_confirmed": "2026-10-26T03:59:22.253Z",
+    "completed_final": "2026-10-26T03:59:22.264Z valid0",
+    "later_error": "RESOURCE_JOURNAL_WRITE_FAILED from journal.write line316 through emit74, stopSignal726, SIGINT listener729",
+    "holder_actual_exit": "1, separately parent observed through session32501; no own live session inherited",
+    "watch_exit": "0 parent observed session29987; report independently read",
+    "operator_contribution": "Parent duplicate SIGINT is the trigger; source leaves an unsafe post-final handler lifecycle, so operator error and implementation hazard coexist. No Chrome/product fault established."
+  },
+  "cause": {
+    "confirmed": "Anonymous SIGINT and SIGTERM listeners installed in main remain after main cleanup and outer-finally journal.close. Any late signal still calls stopSignal→emit on closed journal FD; writer correctly refuses write and throws, but asynchronous process listener has no catch, so uncaught exception overrides final valid0 with process exit1. Completed journal is immutable and cannot attest actual final process exit.",
+    "process_alive_window": "sleep115 returns a referenced setTimeout Promise; watchrace782 does not cancel loser on stop/settled. This provides a source-backed keepalive interval (policy15seconds), not measured timing proof.",
+    "sibling_census": "Same stopSignal shared SIGINT729/SIGTERM730, and shared main for browser/run/check; post-final path common to modes. SIGTERM sibling unexecuted. Existing resource CPU integration exercises operatorstop/childerror but no identified after-publication second-signal forcing target. D283 original pending-child awaiting_close hang is distinct and remains unproven/open."
+  },
+  "cleanup_independent_observation": {
+    "lease_root": "/var/tmp/matrx-stabilization-resource-501",
+    "heavy_directory": false,
+    "owner_json": false,
+    "reclaim_directory": false,
+    "unsafe_hold_json": false,
+    "pid99936_absent": true,
+    "recovery_needed": false,
+    "mutations": []
+  },
+  "verdict_A_product_evidence": "Native gated-before-stop observations may be reported bounded as observations. No product failure inferred from parent late stop. Post-fullReload consumer and completeT10 are separately unverified per operator. Do not use completed valid0 alone to grant full resource/procedure acceptance over actual exit1.",
+  "verdict_B_procedure": "PARTIAL/terminal mismatch: original journal final valid0 and actual holderexit1 must both remain, with duplicate stop disclosed. No retroactive repair or certificate. No owned lease remains; do not run recovery/delete absent lease.",
+  "next_small_authorized_step": "Owner can assign bounded lifecycle repair after a deterministic red-capable real-script integration reproduces second SIGINT/SIGTERM after final publication while original race timer remains. Reuse existing guarded resource integration scaffolding, preserve real orchestrator/journal/exit/lease responsibilities, vary only external measurement fixtures. Assert actual process exit matches immutable verdict, no post-final write/extra final event, no leftover owned lease, and pre-final unsafe/failed-write still refuse. Fix handler/timer lifetime/idempotent stop at origin, not by swallowing journal write failures or suppressing resource refusal. Fresh independent review and normal guarded tests required.",
+  "limits": [
+    "No new deterministic reproduction was run because brief explicitly prohibited tests; causal stack is original captured actual execution.",
+    "No source change, defect allocation, Git commit, UI, auth, credential, fixture, process signal, lease recovery or cleanup mutation by this lane."
+  ],
+  "evidence_sha256": {
+    ".output/stabilization-checkpoints/guest-mode-0354-guard.log": "adf91553cdf47bdd3676a808b02f1a2c16b3976709bc2fa5ff3c757b6525a99b",
+    "docs/stabilization/resource-journals/guest-mode-20261026-0354.jsonl": "cf75e74bd63f2340acb1e9e063d0f96d5be24cd113b3139c62cff231423b5b29",
+    ".output/stabilization-checkpoints/guest-mode-watch-0354-report.json": "b738fd40eab7ac8add082580e82b7be44a7e56eb712b073e1dbbf4a38d466211",
+    "scripts/stabilization-resource.mjs": "163c10328fe23994c168a791b51cf98676a613b4a70800253a98f3aafff4a4da",
+    "scripts/stabilization-resource-journal.mjs": "6d064502de245c8588a379705618053c61d0d58bd259654b9437ad0f2f73c7c5",
+    "scripts/stabilization-resource-lease.mjs": "b614767aad6b998095154f8fcf89a69f7d7b19509ded38a445cad5c3317560d5"
+  }
+}
