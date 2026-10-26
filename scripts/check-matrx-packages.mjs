@@ -136,6 +136,27 @@ export function normalizeAlias(name, specifier) {
     return { name, specifier };
 }
 
+/**
+ * `pnpm update --latest` rewrites an alias's `@latest` to a caret range of the version it found
+ * (2026-10-25: `npm:@ai-matrx/chat-v2@latest` -> `npm:@ai-matrx/chat-v2@^0.0.0`). Every npm: spec naming a
+ * renamed package's registry name goes back to exactly `npm:<registry name>@latest`. Pure: returns the
+ * rewritten manifest and the [section, name, from] it changed. Run by `--restore-aliases` after every update.
+ */
+export function restoreAliases(manifest) {
+    const changed = [];
+    for (const section of ['dependencies', 'devDependencies', 'optionalDependencies']) {
+        for (const [name, spec] of Object.entries(manifest[section] ?? {})) {
+            const target = REGISTRY_ALIASES[name];
+            const lawful = target && `npm:${target}@latest`;
+            if (target && typeof spec === 'string' && spec.startsWith(`npm:${target}@`) && spec !== lawful) {
+                manifest[section][name] = lawful;
+                changed.push([section, name, spec]);
+            }
+        }
+    }
+    return changed;
+}
+
 /** `name` resolved to `resolved` (a version, or `@scope/real@version` for an alias) → `{ name, version }` | null. */
 function splitResolved(name, resolved) {
     return resolved.startsWith(SCOPE) ? splitPackageKey(resolved) : splitPackageKey(`${name}@${resolved}`);
@@ -1123,6 +1144,14 @@ async function selfTest() {
         expect('aliased copy is installed under its registry name', g.installed.get('@ai-matrx/chat-v2')?.has('0.8.371'), true);
     }
 
+    {
+        const m = { dependencies: { '@ai-matrx/chat': 'npm:@ai-matrx/chat-v2@^0.0.0', '@ai-matrx/kit': '^0.9.0' } };
+        const changed = restoreAliases(m);
+        expect('a caret-rewritten alias is restored to @latest', m.dependencies['@ai-matrx/chat'], 'npm:@ai-matrx/chat-v2@latest');
+        expect('restoreAliases never touches another package', m.dependencies['@ai-matrx/kit'], '^0.9.0');
+        expect('restoreAliases reports what it changed', changed.length, 1);
+    }
+
     // ── The classifier (unchanged rulings) ──────────────────────────────────
 
     // 1. THE INCIDENT: behind + latest's tarball 404s inside the window = transient.
@@ -1523,6 +1552,14 @@ const projectRoot =
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
     if (process.argv.includes('--self-test')) {
         await selfTest();
+    } else if (process.argv.includes('--restore-aliases')) {
+        const manifestPath = resolve(projectRoot, 'package.json');
+        const raw = readFileSync(manifestPath, 'utf8');
+        const manifest = JSON.parse(raw);
+        const changed = restoreAliases(manifest);
+        for (const [section, name, from] of changed) console.log(`restored ${section}["${name}"]: "${from}" -> "${manifest[section][name]}"`);
+        if (changed.length) writeFileSync(manifestPath, `${JSON.stringify(manifest, null, raw.match(/^( +)"/m)?.[1].length ?? 2)}\n`);
+        process.exit(0);
     } else if (process.argv.includes('--duplicates')) {
         const pnpm = existsSync(resolve(projectRoot, 'pnpm-lock.yaml'));
         process.exit(runDuplicatesCheck({ graph: collectGraph(projectRoot), updateCommand: updateCommandFor({ pnpm }) }));
