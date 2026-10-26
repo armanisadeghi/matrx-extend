@@ -1,0 +1,117 @@
+{
+  "selected": {
+    "feature_id": "EXT-F-1007",
+    "defect_id": "EXT-D-0217",
+    "case_ids": ["EXT-F-1007-T05", "EXT-F-1007-T22"],
+    "acceptance_case": "scrape-save-member",
+    "scope": "stale-profile-retry",
+    "destination": "none",
+    "lane": "A",
+    "runner": "macos-15-intel",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml"
+  },
+  "why_this_case": "Original guest Save/warm Retry/full-extension-reload Retry after real failed session restoration is still unverified. Existing approved normal route also proves real member recovery and edited persisted Source. It is a distinct missing behavior, not a repeated stacked-notice target or already-passed project-single Save.",
+  "prior_attempt": {
+    "run_id": 39670665256,
+    "source": "7d92195705c2a3f7997594814d0ffe125b7c81cf",
+    "result": "Real member sign-in/approved org and disposable-profile credential removal/full Reload occurred; runner failed before guest_restore_observed. No guest Save/Retry/write assertion or D217 closure.",
+    "evidence": "docs/stabilization/reports/d217-current-normal-20261021.json"
+  },
+  "new_discriminating_source": {
+    "D294": "Actual native/auth/pre-Save safe checkpoints now atomic/durable at original runner callback seam. No assumption of product/CPU cause or native D294 closure.",
+    "shared_driver": "Since failed7d921, settings-panel-driver.mjs has 72insertions/13deletions incl canonical title/data-matrx-title click resolution, settings-native-auth-driver.mjs changed77lines; current stale-profile helper uses that canonical click for Settings/Scrape.",
+    "source_diff_read_only": true,
+    "not_an_unchanged_blind_retry": true
+  },
+  "workflow": {
+    "sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+    "matches_reviewed_41bda5": true,
+    "normal_helper": "scripts/hosted-remote-admission.mjs plan/dispatch-member-scrape-save",
+    "contract": "Existing function allows A, scrape-save-member, destination none + stale-profile-retry, original macos-15-intel; no new scope/runner/workflow path."
+  },
+  "capacity": {
+    "observed_at": "2026-10-26T02:23:14.580745+00:00",
+    "workflows": ["hosted-guest-acceptance.yml", "hosted-resource-diagnostic.yml"],
+    "active_statuses": ["queued", "in_progress", "waiting", "pending", "requested"],
+    "complete_lists": true,
+    "active_runs": [],
+    "evidence": ".output/stabilization-checkpoints/hosted-product-lane-0219-capacity.json",
+    "fresh_recheck_required_before_dispatch": true,
+    "enforced_lane_group": "Existing A fixture serialization and per-host resource phases remain mandatory; unrelated local Mac guest job is not a global hosted capacity veto."
+  },
+  "cost": {
+    "repository": "armanisadeghi/matrx-extend",
+    "public_api_verified": true,
+    "original_standard_runner": "macos-15-intel",
+    "public_standard_runner_unpaid": "Fresh official GitHub pages confirm standard GitHub-hosted runner labels, including macos-15-intel, are free in public repositories. This is the unchanged original route, not relocation.",
+    "primary_sources": [
+      "https://docs.github.com/en/actions/concepts/billing-and-usage",
+      "https://docs.github.com/en/actions/reference/runners/github-hosted-runners"
+    ],
+    "existing_cost_record": "docs/stabilization/reports/unpaid-existing-native-lane-20261025.json",
+    "historical_weekly_actual": 189.64,
+    "cap": 100,
+    "paid_work": "paused; no paid job dispatched/relocated; no new spend-status query by this lane",
+    "stop_if_billing_block": true
+  },
+  "prerequisites": [
+    {
+      "id": "member_magic_link_secret",
+      "state": "missing_by_fresh_secret_NAME_listing",
+      "name": "MATRX_REVIEWER_MAGIC_LINK_JSON",
+      "observed": "gh secret list metadata only; values neither read nor logged",
+      "next": "Parent authorized private fixture preparation must revalidate existing ordinary non-admin principal/current approved-org membership, mint one-use link only at dispatch-ready boundary, stage through existing normal secret contract, serialize A, then remove owned temporary secret and verify absence after terminal run. No new account/membership or admin substitution."
+    },
+    {
+      "id": "approved_org",
+      "state": "name_exists_content_not_verified",
+      "name": "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON",
+      "next": "Existing secret presence is not approval/content proof; canonical helper must confirm selected member/org and exact archived fixture state before staging."
+    },
+    {
+      "id": "clean_exact_source",
+      "state": "currently_blocked_by_parent_active_Mac_pending_journal",
+      "next": "Do not hide/move active journal or relax source gate. Parent must finish guard and integrate evidence; then choose the successful exact-current-main CI artifact. Member-Scrape path does NOT allow metadata-equivalent older-artifact source; no 2a artifact substituted under later metadata SHA."
+    }
+  ],
+  "acceptance_and_cleanup": "Warm edited guest Save + Retry: sign-in remedy, edited draft retained, zero memberships/landings. Full management Reload must retire oldtargets/replace worker/panel; guest Retry again no write. Real member recovery then exactly one authorized landing with selectedorg + edited marker; Source UI/readback and exactowned Source cleanup. Invalid resource/no final report never earns product credit. Independent fresh retest required for closure; no full T05/T22/Save-surface claim from partial result.",
+  "known_private_authority_path": {
+    "existing_reviewed_helper": "tests/browser/prepare-reviewer-magic-link.mjs",
+    "input_environment_names": [
+      "MATRX_REVIEWER_IDENTITY_FILE",
+      "MATRX_ADMIN_ENV_FILE",
+      "MATRX_REVIEWER_ORGANIZATION_CONFIG_FILE",
+      "MATRX_REVIEWER_MAGIC_LINK_FILE"
+    ],
+    "approval_config_default": "test-results/files-saved-private-config.json",
+    "private_mode": "identity/config/link files0600; no existing private values read by preparation lane",
+    "authority_checks": "Existing project brsgrqvjdzwihsvnfqkf; designated reviewerfingerprint3d6137db6c081c07; confirmed/unbanned existingauth user; zero canonical admin role; explicitly approved organization ID, archived_atnull and settings.test_fixturetrue; exactly one active undeleted rolemember membership scoped to thatorg. No newaccount/membership, rolegrant or adminsubstitution.",
+    "dry_run": "MATRX_REVIEWER_DRY_RUN=1 validates identity/role/org without minting. Not invoked by this lane.",
+    "live_mint": "Normal first-party https://www.aimatrx.com/auth/confirm magiclink written once to0600 LINK_FILE (flagwx), then real UI login; never authstorage injection or localhost dev-login substitution.",
+    "existing_env_key_names": "Helper reads SUPABASE_MATRIX_URL/SUPABASE_MATRIX_SECRET_KEY privately from approved admin-env file; do not print or put values in arguments.",
+    "source_review": "docs/stabilization/reports/member-fixture-mint-peer-20261017.json historicalsource review; current helper inspected, no new live auth assertion."
+  },
+  "actions": {
+    "workflow_dispatched": false,
+    "plan_CLI_executed": false,
+    "auth_link_minted": false,
+    "secret_staged": false,
+    "fixture_mutated": false,
+    "Mac_UI_or_heavy": false,
+    "source_or_Git_mutated": false,
+    "subagents": false
+  },
+  "observed_at": "2026-10-26T02:25:54.519592+00:00",
+  "status": "PREPARED_NO_NATIVE_DISPATCH_OR_AUTH_STAGING",
+  "preparation_source": "Original2a metadata snapshot is historical; currentcff is adopted forowner, final evidencecommit requires its own exact-source CI artifact before normalmember dispatch.",
+  "parent_next_pipeline": [
+    "Integrate this evidence on synchronized main first; no active local guard/journal when planning A.",
+    "One explicit existing ci.yml run for the final pushed evidence commit, expected_source_sha exactmain and requested_by extend-stabilization, produces the exact-source artifact required by normalmember gate. StandardpublicGitHub jobs only; no paid runner/workflow/threshold change, no duplicate successful artifact or dispatch loop.",
+    "CI run handle recorded in repo-private root-cycle-latest.json immediately after dispatch; no later metadata commit merely for that handle, since member gate requires exactsamecurrent SHA. Nextwake query exactsource if needed.",
+    "Before any local guard nextwake: validate exactcurrentmain successful CI/artifact and approved ordinary member/org fixture via existing helper; mint/stage only owned short-lived link privately, refresh A/B capacity and run normalplan+dispatch A/none/stale-profile-retry.",
+    "Once official immutable native run/head known, parent may integrate metadata and run independentlocalowner work; honor isolated per-host resource guards and A fixture serialization.",
+    "Await native terminal, normalcertificate/freshpeer and exactownedSource/secret/privatefixture cleanup before ending that dispatched native lane."
+  ],
+  "native_dispatch_command_template": "node scripts/hosted-remote-admission.mjs dispatch-member-scrape-save --lane A --case scrape-save-member --destination none --scope stale-profile-retry --runner-label macos-15-intel --development-run-id EXACT_SUCCESSFUL_CURRENT_CI --development-artifact-id EXACT_ARTIFACT --source-sha CURRENT_MAIN_SHA",
+  "root_decision_supersedes_earlier_wait": "Earlierpreparation suggested no newCI solely for readiness. Exact-current membergate demonstrably cannotreuse older metadata-equivalent artifact; one guarded exactsourceCI is required to unlock this existingwell-defined test, not a source/dirty bypass or new scope. No native auth/staging/mutation yet."
+}

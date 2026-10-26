@@ -1,0 +1,318 @@
+{
+  "task_id": "store577_58aa_guest_0219",
+  "lane": "ActualStore577 guest currentserver browser verification",
+  "status": "DONE_TWO_BOUNDED_TERMINAL_GUEST_TURNS_UI_STOPPED",
+  "at": "2026-10-26T02:25:25.204698+00:00",
+  "native_api_calls": 33,
+  "native_api_budget": 55,
+  "api_counter_authority": "33 numbered original gate/result pairs, not REPL displaycounter",
+  "raw_dir": ".output/stabilization-checkpoints/store577-58aa-0219-raw",
+  "raw_evidence_sha256": {
+    "001-gate.json": "27e17147af808a16944ab50b663422af4db68505927d608eca9dba96ebb80a96",
+    "001-result.json": "f4b409f5a20af4086b45f0efd42a22a47292ed95d8c83633cd9ea38a2857c883",
+    "002-gate.json": "ced0b60ca4d85294d9b3f86ce4005b58a3ad0fcfe527917d63d6dc94cb555aaa",
+    "002-result.json": "6fd94a4f10beb2e9ef2fe30bc1e4fc82ddf420ac6c126b9b4ec46eb54387559b",
+    "003-gate.json": "a264919b634e46d93d2117b13043f6122732026bfcd0e2626135a655180dcce2",
+    "003-result.json": "ac3ce5345dfb4a6103401b1ccb8fb6d86f3166285b60ae234b23b1ab8925cc92",
+    "004-gate.json": "4140e7f7e226ab6f4cd1329d67e6eda9998db49cac321ff556cbaafd57db0567",
+    "004-result.json": "6eddbfac6b3d64a68675d92d1804dc7fc2efbd39d6432cb1a3dff06d2224c6fd",
+    "005-gate.json": "ff1f78345a9dd9795e0c952d2c1083ea9d78bb22580f14ffe9d1eafebd00d7d6",
+    "005-result.json": "9604e9de0a34c354476a081ccf9cfaafdb2cc05a478c3d07fb20bcd3e7977687",
+    "006-gate.json": "ddf7fce712645992b04e04ccee40807a7dbcf6dd57ccdd0a5bcde6b673c0ee58",
+    "006-result.json": "db84997c632436e355cb95a207ef6c41d47634a063524a6abf355bfdace0632a",
+    "007-gate.json": "b5a9c10e6f472e0d768270e4f342a68d590f79f3073bac0ac0b73f463b6ff8bb",
+    "007-result.json": "17affc52e49c8a1873d96794e33d929ad4fc75c38fc4af12da9fbad0b7b69ac9",
+    "008-gate.json": "43aaa6cf1426414b697859de7b3400c38b879b411d196db5032d8acac35fe0e8",
+    "008-result.json": "d71754f5c4a331656b6d9c434ec297307bcad986a2751114548e523bbc6bf059",
+    "009-gate.json": "70c85f55df1b195bd8f3d3ae0ca0d6643fe24ab7ffaa9ada1dddd6557d5535e2",
+    "009-result.json": "9a9ad79a268fbc391bd2d06c2338805cf9d49088327a7cd0e6c0d7e82d31e831",
+    "010-gate.json": "9008caf79b18639b71f4c58e7f24cd74bee2556035386595215faca10cafd665",
+    "010-result.json": "58429ea07a3d0055b58e94c5f52284bd9b7476c5cd308d638f8b29014384f678",
+    "011-gate.json": "0b0cdb19ecc041fcbd1f5d0fd941027635cc3259adb2516500b1d5f6c28bbccb",
+    "011-result.json": "5ea9d29527469188a46eb730ea6187c51bd5c98dec952880b9cc445a09186815",
+    "012-gate.json": "4a50f7b56bb3c15ac656b01d68ff8948163f23856a1256ac03929d4c377cc2af",
+    "012-result.json": "70023c81e8541955fc2ced733e300c1fbf5447960392d2f6a113b3a9aa3a3f98",
+    "013-gate.json": "066ad0259525f134b65d102eacb5779f26d73a5a7da0a0bbc68f4fb68904e760",
+    "013-result.json": "8a664327d1c4c2f02d08300ba5e699bc13ea1ea9881cf8ba4c3c6e7c3b22dece",
+    "014-gate.json": "848fe6c0089860eba126f594e58b8e6c3c9afd5a1cec642e82741682d4d84825",
+    "014-result.json": "923855613a28c6caeef04aa138026a117a65d7f06d6d247c01c436e2b2b6ac31",
+    "014.png": "3d30536bce46c8fbbcaeab69af8184dff6626769999f566482b489244c508f89",
+    "015-gate.json": "4a93f0902c49d73d64e0e6017d46bc266c6a3e6ffc6ba8db0414da9e57a461a8",
+    "015-result.json": "8ddc6965606e8dbb6edb08fa29b70778f00af3429ceca941dfa42bfbc2eec268",
+    "016-gate.json": "7a9127de0168bee72a2e608ffe835e8da8c95a9fc7c9737fc2d72a1f7e681e9e",
+    "016-result.json": "2bbf4ea4682a77a080b0b2815b388770e5bad93fb4fd14ce65664fb7b601319a",
+    "017-gate.json": "cf381ef3f063285d931ed067d95daf622499814b380f8f56d92f969cf6b36c6a",
+    "017-result.json": "f2b3f82e099929952eb760f50f6f40456928b862213201b72e75935aa2177755",
+    "018-gate.json": "76b8fb8ead36d5f91eb48631db94ed06d708c78574aa283c593cc049f8680ac7",
+    "018-result.json": "2effacffe13f2625529d513b639b90420d4bf1836df0fc8104cb6fd2d0d4caed",
+    "019-gate.json": "fb469ea445e7c47f548299a1a8770f2d87d9de35ccd37c21f618276336f18d6a",
+    "019-result.json": "b08a53f0f7d643825a8d2c9931673511b947271c5371377a7fc02029eab763d7",
+    "020-gate.json": "2b3f6f37d9ffb937ef7294f6563584453fcb539562b7386dd29c7215b136f5c2",
+    "020-result.json": "1a0192c7f18d3c8a5a03d9dc5dfa123dacd6a532a9ad9b7d2b2b115c44b34182",
+    "021-gate.json": "e95f8afae7ef67b3e15cb7a32aeb9572a2995f845cab0eed136f2f8c52ac06d5",
+    "021-result.json": "cb6e0c6886dfd6ad582dbc8a3660dd29daec017c5212a3ce8edcf385fd18aa1c",
+    "022-gate.json": "d2c7da6ae43aa1cf89f0a79572f526001f3413ec916d1de06d298bce68982ffd",
+    "022-result.json": "30c7f15b3de8061b77b737d619a5af6badf1a507e5adea9c434f0a2460ce2c2d",
+    "023-gate.json": "40676e42dccf611fa899f6b57b9995e725ab3590fc3a151fc91349f5464dab42",
+    "023-result.json": "f5910a51dd7ae9928d60a85a2e83788a5fcf4c13b4b0d900da77a140db46ea44",
+    "024-gate.json": "04d252817c379a8ad5bcadc1c470c3161f4ae34a1b9ca00748de9fea0b91e7f6",
+    "024-result.json": "625cc0fb3fc4ec7183e28c8d54c1527f3d54e2fd6c77c215960329b2f12a4de8",
+    "024.png": "f052f47b983b15391876c110f7247f23147d1493ad46d2c2b9b824d81e589785",
+    "025-gate.json": "f6bfc5b2b7d28db672fa1236a87c7d03c0f566651cd1050054db174d560f4b79",
+    "025-result.json": "4e327016d63426b5a02c5c2d0d3027746caf6f9ff56c4f4f44a77b3333ac77ed",
+    "026-gate.json": "9bc223de844369e2a6345c86c98536a4092ec55c72e4cd3446591d5f52ea13dd",
+    "026-result.json": "4a2de95bbcaf482ff16ad49d03acf2bfef571aa3840a834aaf38b744563af7da",
+    "027-gate.json": "3d4aa59e700eb5e9ceaa384c4e379a1bca7e874d34cfa48cf6e8f7c0f974393c",
+    "027-result.json": "faee709c02da8ec5fc1e28a96905e09d3dc73a58b73826721b13b388ac38e0c5",
+    "028-gate.json": "27a7f145a39e8eb37db58e79c8957353668159c962be4d1da6a0d57d1d90a19a",
+    "028-result.json": "b17bba24d78ba6fab6f45ee9d6085aadce6c87fdadd9db368052804833179ea9",
+    "029-gate.json": "dbf6c15c8638f0877c8e9c13e4ce1a373e3a0143d95449eff258d8b509445fe9",
+    "029-result.json": "ed27807eab10d92c68f6224a9e14ae924f141029fb563a3ddaf51527c879a3df",
+    "030-gate.json": "3f232cc1ca339af936ab6107cc523c1e0e3b93cb5e7315b744bfaa701838b71e",
+    "030-result.json": "9dcd8672035132cf9e08196db8e31108181c74f05ff5d9b6e0d8d4266c64d676",
+    "030.png": "76b5037399c1c8c2910cf04adcb83f993f6e532bbcc659c091c2fe5b5d9b98eb",
+    "031-gate.json": "f9cf2ec80b686c60036a5f4967a1e55dd2f0638a7c12bae5cadde205237ca42b",
+    "031-result.json": "aa1f379b40e0a1559adf582c3fe2cf602ddfb601591d3fbc83c5b1e46ac6d3c2",
+    "032-gate.json": "6d2557550b25198eb488840cd320f1427c2eacfd3d6855857cabd9bb279878ae",
+    "032-result.json": "86e48bac8bdb48afca321d49f08423e8592c95b5421f464cf6f15973d32c9fbe",
+    "033-gate.json": "5937c04e90d512dd16bca5563d17fc625a148377ef0b8100827796f13deeb45b",
+    "033-result.json": "5815cf9ec3baf7fbf59ebc62ab369242360008dcbcbb6c53d78c407820ee85b5"
+  },
+  "extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.577",
+    "source": "Chrome Web Store",
+    "enabled": true,
+    "pinned": true,
+    "evidence": "005-result.json actualmanager; 016/018 Store sidepanel URL; no extension setting mutation",
+    "evidence_class": "ActualStoreinstalled Chrome, not API-only, not unpacked publicCRX or developmentbuild"
+  },
+  "browser": {
+    "profile": "Matrx Guest Test / actual Profile 10",
+    "profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10",
+    "version": "156.0.8078.47 arm64",
+    "evidence": "009-result.json",
+    "initial_foreground": "Healthcare templates — AI Matrx guestwindow",
+    "original_tabs": ["Extensions - Matrx Extend", "Healthcare templates — AI Matrx"]
+  },
+  "guest_context": {
+    "evidence": "G accountavatar in actualStorepanel plus publicpage Sign in; dedicatedProfile10; no login/session/authvalues accessed or changed",
+    "limit": "UI guest continuity; no backendprincipal/wire proof or coldrestart",
+    "fresh_conversation": "ExplicitNewchat017 thenemptyEvening/composer018 beforefirstsend; sameconversationretainsbothmessages/results in030"
+  },
+  "page": {
+    "url": "https://www.aimatrx.com/matrx-extend-demo",
+    "expected_H1": "A clear three-stage browser workflow",
+    "capture_purpose": "Turn the open page into readable content.",
+    "capture_expected_result": "Article text, links, media, metadata, and schema.",
+    "evidence": "014 originalfullAX+PNG"
+  },
+  "model": {
+    "UI": "Matrx Browser Agent · Claude Sonnet 5.5",
+    "evidence": "016/018/021/030",
+    "fresh_catalog_parent_authority": {
+      "observed_at": "2026-10-26T02:17:44.636324+00:00",
+      "authority": "Existing0600CLI token read-only catalogSELECT; no auth values logged",
+      "choice": {
+        "why": "Recommended default for tests that measure real intelligence (ai.test_models/intelligence_model). Pick another model if the job needs it, but never one in restricted_models.",
+        "source": "knob",
+        "purpose": "intelligence",
+        "model_id": "3f1c9a52-7b4e-4d2a-9c61-5e8a0b2d7f15",
+        "provider": "Anthropic",
+        "model_name": "claude-sonnet-5-5",
+        "served_via": "Anthropic",
+        "common_name": "Claude Sonnet 5.5",
+        "restricted_models": [
+          "Claude Fable 5",
+          "Claude Fable 5 Max",
+          "Claude Fable 5.1",
+          "Claude Mythos 5",
+          "Claude Mythos 5.1",
+          "Claude Opus 4.8 Max",
+          "Claude Opus 5 Max",
+          "Claude Opus 5.5 Max",
+          "Claude Sonnet 5 Max",
+          "Claude Sonnet 5.5 Max",
+          "Flux 2 Max",
+          "FLUX 2 Max (Replicate)",
+          "FLUX Kontext Max",
+          "Gemini Deep Research Max",
+          "GPT-6 Astra",
+          "Qwen3.7 Max"
+        ],
+        "price_in_per_1m_usd": 2,
+        "price_out_per_1m_usd": 10,
+        "restricted_min_cost_rating": 6
+      }
+    },
+    "limit": "UI label and catalog recommendation; no providerresponsemodel/wirecorrelation; no default/model change"
+  },
+  "turns": [
+    {
+      "position": 1,
+      "prompt": "What is the exact H1 heading on this page?",
+      "sent_at": "2026-10-26T02:21:25.867Z",
+      "terminal_at": "2026-10-26T02:21:42.647Z",
+      "answer": [
+        "The page's H1 heading is:",
+        "A clear three-stage browser workflow",
+        "It's the only H1 on the page."
+      ],
+      "tool": "Query Elements",
+      "terminal_controls": "emptycomposer disabledSend/noStop",
+      "evidence": ["024-result.json", "024.png"],
+      "verdict": "PASS_BOUNDED"
+    },
+    {
+      "position": 2,
+      "same_conversation": true,
+      "prompt": "In the table on this same page, what are the purpose and expected result for the Capture stage?",
+      "sent_at": "2026-10-26T02:21:54.201Z",
+      "terminal_at": "2026-10-26T02:22:23.669Z",
+      "answer": [
+        "For the Capture stage, the table gives:",
+        "Purpose: Turn the open page into readable content.",
+        "Expected result: Article text, links, media, metadata, and schema."
+      ],
+      "tool": "Extract Table",
+      "terminal_controls": "emptycomposer disabledSend/noStop",
+      "evidence": ["030-result.json", "030.png"],
+      "verdict": "PASS_BOUNDED"
+    }
+  ],
+  "resource": {
+    "run_id": "store577-runtime-20261026-0217",
+    "completed_journal": "docs/stabilization/resource-journals/store577-runtime-20261026-0217.jsonl",
+    "final": {
+      "schema": 1,
+      "at": "2026-10-26T02:24:04.372Z",
+      "runId": "store577-runtime-20261026-0217",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "max_gate_journal_age_seconds": 13.191,
+    "max_gate_watch_age_seconds": 1.997624,
+    "watcher_report": {
+      "runId": "store577-runtime-20261026-0217",
+      "first_read_at": "2026-10-26T02:17:07.755792Z",
+      "last_read_at": "2026-10-26T02:24:05.017272Z",
+      "actualPollCount": 209,
+      "maxGapSeconds": 2.011275333003141,
+      "riskEvents": [],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T02:24:04.372Z",
+        "runId": "store577-runtime-20261026-0217",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/store577-runtime-20261026-0217.jsonl",
+      "audit": ".output/stabilization-checkpoints/store577-58aa-watch-0217.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    },
+    "operator_scope": "All33nativeAPIs individuallygated; no unsafe/pending/stale event encountered by operator; parentownsactualholder/watch termination"
+  },
+  "parent_terminal_attestation": {
+    "holder_actual": 85646,
+    "holder_actual_exit": 0,
+    "watcher_actual": 4292,
+    "watcher_actual_exit": 0,
+    "pids_absent": [65643, 65622],
+    "authority": "Parent NEW_TASK termination report; finaljournal independentlyread, no new processcontrol by thislane"
+  },
+  "backend": {
+    "before": {
+      "observed_at": "2026-10-26T02:17:44.637306+00:00",
+      "url": "https://server.app.matrxserver.com/health/version",
+      "health": {
+        "git_sha": "58aab6b0f5634884ccfc1df825c8bc5bfd51c939",
+        "built_at": "2026-10-26T01:45:51Z",
+        "branch": null
+      }
+    },
+    "after": {
+      "observed_at": "2026-10-26T02:24:04.382748+00:00",
+      "url": "https://server.app.matrxserver.com/health/version",
+      "health": {
+        "git_sha": "58aab6b0f5634884ccfc1df825c8bc5bfd51c939",
+        "built_at": "2026-10-26T01:45:51Z",
+        "branch": null
+      }
+    },
+    "limit": "Matching advertised publicdeployment before/after, not perrequest wirecorrelation; extension577 actualbrowser source separate from backendSHA"
+  },
+  "cleanup": {
+    "owned_sidepanel_closed": "031",
+    "only_owned_demo_tab_closed": "032",
+    "original_two_guest_tabs_and_HealthcareTemplates_foreground_HTMLfocus_restored": "033",
+    "last_native_at": "2026-10-26T02:22:45.916Z",
+    "owned_tabs_processes_fixtures_secrets_remaining": false,
+    "limit": "Ownerprofile/window untouched by thislane; originalforegroundwasGuestHealthcareTemplates, restored rather than assumingOwnerVault."
+  },
+  "verdict_a": "PASS bounded actualStore577 signedout first+sameconversationsecond groundedterminalreplies on matching58aa advertiseddeployment; no fullChat/member/DEV/release claim",
+  "verdict_b": {
+    "bounded_procedure": "PASS: decisiveoriginalAX+pairedPNGs, perAPIexactexpression/times/freshgates, validfinal/cleanup",
+    "full_initial_entry": "PARTIAL: firstgetState invocation/completion externallybounded; originalreturned inventory saved001. getApp002 automaticAX original onlyin tooltranscript; originalfullforeground/tabs separatelysaved003 beforefirstmutation."
+  },
+  "actions_not_taken": [
+    "No login/authvalues/defaultmodel change",
+    "No dashboard/mail/newdailyclaim/upload/submission",
+    "No source/Git/build/release/fixture writes",
+    "No newAIcalls afterexact2prompts"
+  ],
+  "next_action": "Reuse bounded current58aa two-turn proof; remaining fullChat/member/currentDEV coverage and releasegates stayunverified.",
+  "parent_health_before": {
+    "observed_at": "2026-10-26T02:17:44.637306+00:00",
+    "url": "https://server.app.matrxserver.com/health/version",
+    "health": {
+      "git_sha": "58aab6b0f5634884ccfc1df825c8bc5bfd51c939",
+      "built_at": "2026-10-26T01:45:51Z",
+      "branch": null
+    }
+  },
+  "parent_health_after": {
+    "observed_at": "2026-10-26T02:24:04.382748+00:00",
+    "url": "https://server.app.matrxserver.com/health/version",
+    "health": {
+      "git_sha": "58aab6b0f5634884ccfc1df825c8bc5bfd51c939",
+      "built_at": "2026-10-26T01:45:51Z",
+      "branch": null
+    }
+  },
+  "parent_final": {
+    "holder": 85646,
+    "actual_exit": 0,
+    "watcher": 4292,
+    "watcher_exit": 0,
+    "pids_absent": [65643, 65622],
+    "watch_report": {
+      "runId": "store577-runtime-20261026-0217",
+      "first_read_at": "2026-10-26T02:17:07.755792Z",
+      "last_read_at": "2026-10-26T02:24:05.017272Z",
+      "actualPollCount": 209,
+      "maxGapSeconds": 2.011275333003141,
+      "riskEvents": [],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T02:24:04.372Z",
+        "runId": "store577-runtime-20261026-0217",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/store577-runtime-20261026-0217.jsonl",
+      "audit": ".output/stabilization-checkpoints/store577-58aa-watch-0217.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    }
+  },
+  "independent_review": "docs/stabilization/reports/store577-58aa-evidence-peer-20261026.json",
+  "daily_claim": "Reuses completed2026-10-25AmericaLosAngeles dailywindow; UTC26 stilllocal25. No dashboard/mail/newclaim/upload/submission."
+}
