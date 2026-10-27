@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T10:13:21.950198+00:00",
+  "reviewer": "/root/sixea_evidence_peer",
+  "status": "PASS_WITH_LIMITS_PUBLICATION_FINALIZATION_REQUIRED",
+  "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+  "independence": {
+    "authorship": 0,
+    "live_UI_calls": 0,
+    "workflow_dispatches": 0,
+    "heavy_jobs": 0,
+    "credential_access": 0,
+    "commits": [],
+    "method": "Read original archived bytes, exact-source driver and decisive existing AX/PNG; no expensive replay."
+  },
+  "A_vision_evidence": {
+    "verdict": "PASS_FOR_BOUNDED_OBSERVATIONS_WITH_OPEN_GUEST_FAILURE",
+    "owner_maintenance": {
+      "verdict": "PASS",
+      "observed": [
+        "Profile8 chrome://version path and owner account projection",
+        "DEV0.2.629 correct ID, canonical stable loaded-from path, enabled and pinned",
+        "Reload clicked and genuine Reloaded rawAX plus visually inspected PNG",
+        "Store0.2.577 enabled/pinned with ChromeWebStore source",
+        "Owned tab closed, Vault preserved, initialGuestNewTab foreground/address focus restored"
+      ],
+      "limits": [
+        "Maintenance only, zero product acceptance credit",
+        "Current source binding is exact frozen6ea, not subsequent main updates"
+      ]
+    },
+    "member_A": {
+      "verdict": "PASS",
+      "full_case_credit": [
+        "EXT-F-1001-T20/member",
+        "EXT-F-1001-T23/member",
+        "EXT-F-1001-T26/member"
+      ],
+      "reason": "Inventory preconditions/steps/expected matched. Exact6ea executed driver awaits closedMenu after each click and asserts closed trigger/content plus0openDialogs; retainedIdentity asserts same profileID and isAdmin. Native summary omits closedMenu projection but successful executed path and normal certificate support assertion. Profile pane/Back/Save, activeSettings, real nonadmin identity, signout guest/reopened menu and actual Page.reload persistence are original native observations.",
+      "limits": [
+        "Warm/navigation scope only",
+        "No network organization-header/body proof",
+        "Native local_dev_unpacked sourceSha null is externally bound by normal exact artifact/workflow verifier; do not represent it as an emitted runtime SHA",
+        "No Store-installed or server deployment proof"
+      ]
+    },
+    "scrape_B": {
+      "verdict": "PASS_BOUNDED_SUBTARGET_ONLY",
+      "observed": [
+        "SEO title/no-description baseline",
+        "Empty Schema JSON",
+        "Capture export identity and digest unchanged after each pane"
+      ],
+      "screenshots": "Independently viewed original SEO and Schema pane PNGs",
+      "limits": [
+        "Full EXT-F-1007-T08 remains partial",
+        "Guest designation is requested/freshprofile scope; no conditional native signed-out identity observation",
+        "No populated schema/media/fullrole/width/Store/backendSHA/timeoutbranch coverage"
+      ]
+    },
+    "guest_B": {
+      "verdict": "FAILED_CASE_WITH_RECOVERED_ADJACENT_OBSERVATIONS",
+      "raw_cases": {
+        "pass": 11,
+        "fail": 1,
+        "unverified": 7
+      },
+      "failed_case": "EXT-F-1003-T10",
+      "failure": "guest_new_chat_default_mode_not_observed; modeControlCount0/optionsSheetCount1; full reload callback also failed",
+      "guest_identity": "Original conditional Settings account observations show no token/profile, emailUnavailable, Signin1/Signout0 warm and after real extension reload",
+      "limits": [
+        "Raw pass rows all have passing recorded criteria, but no full inventory mapping audit of11cases performed; parent must retain scoped observations instead of automatically promoting them",
+        "No product vs harness cause attribution from this review",
+        "No original T10 failure-surface screenshot; initial/fixture PNGs cannot establish selected Chat options presentation",
+        "D299 remains open; no Store/release/overallhealth claim"
+      ]
+    }
+  },
+  "B_provenance_quality": {
+    "verdict": "PASS_WITH_RECORD_CORRECTION",
+    "archives": {
+      "scrape": {
+        "run": 40481625336,
+        "artifact": 12723437805,
+        "members": 8,
+        "digest": "70bd4e61960c2b58de74c6b6b903b5100840dcd5e2b6d91ef6f7086727467da4",
+        "normal_certificate_valid": true
+      },
+      "member": {
+        "run": 40484355701,
+        "artifact": 12724876834,
+        "members": 6,
+        "digest": "5791471c46ff40578a0116ca7a97f22e521b21c0aa4c40c2092847dc72d9ec19",
+        "normal_certificate_valid": true
+      },
+      "guest": {
+        "run": 40483916612,
+        "artifact": 12724009569,
+        "members": 6,
+        "digest": "7fc4c6b74f9f8385e732958df9febcc2db802657e85ad3e2f4b3413680f73970",
+        "normal_certificate_valid": false,
+        "native_exit": 1
+      }
+    },
+    "archive_verification": "Independently hashed original ZIPs, checked original member counts/resource journal bytes and native reports; matches saved official artifact metadata exact6ea. No new official metadata API fetch performed.",
+    "development_binding": {
+      "run": 40479439004,
+      "artifact": 12723041435,
+      "digest": "da7881f9fe5db4d23a5f6fea97af238247048ca00284c500b4fd8820467c3e14",
+      "tree": "14d39196f53cdeebdc26788a5157c4264404e1598838c67f417379ff2530d321"
+    },
+    "owner_protocol": {
+      "ledger": {
+        "unique_begin": 29,
+        "matching_end": 29,
+        "abort": 0,
+        "callback_source_hashes_valid": 28,
+        "first_entry": "honest external before/aftertool bounds"
+      },
+      "watch": {
+        "reads": 198,
+        "max_gap_seconds": 2.0116512500098906,
+        "risk_events": 0,
+        "all_build_fingerprint_valid": true
+      },
+      "final": {
+        "valid": true,
+        "exitCode": 0,
+        "resourceInvalid": false
+      },
+      "proper_profile_root": "Intent and parent admission receipt bind actual Chrome root; journal sampled system/profile26.22GiB vs repo1588GiB, not earlier wrongvolume admission.",
+      "resource_ownership_after": "Independent /var/tmp resource owner scan found0owner.json and0holdpaths at reviewtime",
+      "limits": [
+        "PerAPI gate checks stable directory metadata+receipt, while full tree hashing before/after bounds content proof; no globalatomicpromotionlock fix claimed",
+        "Parent finalSIGTERM only guard; no browser process killed"
+      ]
+    },
+    "hosted_resources": "All original package/browser journals valid0/noninvalid; Scrape/member nativevalid0; guest nativechild_failed1/noninvalid.",
+    "browser_mode": "Scrape headed execution supported by exactsource mandatory Browser.getBrowserCommandLine check before exercisePanel plus successful original run; raw standalone commandline not retained. Member/guest executed browser version/mode remain unverified; downloadedversion alone not runtime proof.",
+    "cleanup": "Member safe receipts record ownedsecret deletion/metadataabsence and fresh original archive restore/readback0; three temporary authfiles independently absent. No new account/database calls to reverify externalstate. Remote profile filesystem deletion remainsunverified.",
+    "privacy": "23Scrapeallowlist filehashes and9member safe manifest filehashes match. Keep whole joblogs/ZIPcontainers/private fixture and auth prep excluded; guest use typed sanitized summary; owner Vault body/credentiallabel exclusions retained. No credential values viewed."
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "publication_correction",
+      "status": "OPEN_PARENT_FINALIZATION",
+      "finding": "Owner main report still awaiting finalization; evidence hash/bytes for native-holder.log stale after normal final appended. All other21evidence refs match. Refresh terminal status/parentfinal references, hashbytes, setup/acceptance stale noGUI/awaiting text before publication.",
+      "current_holder_sha256": "a4de12b66119ef4e0fa01653bd0db13adc084e3aad44a1cf1c830642a4148355",
+      "current_holder_bytes": 9363,
+      "effect": "No invalidation of raw decisive UI/build/watch/resource proof; blocks representing old report as internally finalized."
+    }
+  ],
+  "inputs": {
+    "PRIVATE_UNPUBLISHED_OR_HISTORICAL_REFERENCE: .output/stabilization-checkpoints/owner629-6ea-adoption-20261027.json": "b112beb5c798d6926d7cf364fe804947d76d3f016cb58d2469ed126d26735072",
+    "PRIVATE_UNPUBLISHED_OR_HISTORICAL_REFERENCE: .output/stabilization-checkpoints/scrape-b-6ea-native-20261027.json": "daa7cb59135a6844cb32cd35a2d88719a3dcaacda3f3b69323c3ecc7d50dcfcf",
+    "PRIVATE_UNPUBLISHED_OR_HISTORICAL_REFERENCE: .output/stabilization-checkpoints/settings-member-a6ea-native-20261027.json": "d36d8f567d411f06db86e076f3f329f1316695bd32c0a42dcfbb72ead6191009",
+    "PRIVATE_UNPUBLISHED_OR_HISTORICAL_REFERENCE: .output/stabilization-checkpoints/settings-guest-b6ea-native-20261027.json": "d9c5236a10721dbd5849ce27504404c85bd6594c7bf88e3141a3291cb6991d06",
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-resource-build-watch-20261027-report.json": "16def32a664218f71f9e030a7b1925bfd97f409648ccfc8323a6d8c1d6309993",
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-native-api-ledger-20261027.jsonl": "99187ac75359f456235e79d3bf6d2724dd976639583eb60d40720387614c89db"
+  },
+  "next_action": "Parent refresh owner terminal report/hash, publish allowlisted evidence with byte/semantic provenance; credit only3membercases; preserve guestT10 failure and fullScrape/guest unknowns; no automatic workflowretry or release.",
+  "publication": {
+    "original_private_sha256": "f35150684c7c8c06e06b0eeeb6346a05ad1f78a3a773287d57f7eddb7e9223a4",
+    "source_report": ".output/stabilization-checkpoints/sixea-evidence-peer-20261027.json",
+    "reference_policy": "Exact safe paths remapped; excluded or historical scratch references explicitly marked unavailable. Run-time and pending labels are original actor observations; owner finalization is a separate receipt, not rewritten history.",
+    "evidence_manifest": "docs/stabilization/reports/sixea-publication-manifest-20261027.json",
+    "guest_raw": "Excluded by original guest allowlist; typed bounded summary only"
+  }
+}
