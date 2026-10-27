@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { preserveFailureDuringCleanup } from './settings-probe-cleanup.mjs';
 import {
   activeTabPanelExpression,
   chatToolsCandidatesExpression,
@@ -10,6 +9,7 @@ import {
   pressEscape,
   waitFor,
 } from './settings-panel-driver.mjs';
+import { preserveFailureDuringCleanup } from './settings-probe-cleanup.mjs';
 
 const nativeDriver = { click, evaluate, openSection, waitFor, pressEscape };
 

@@ -79,7 +79,9 @@ class SettingsCleanupFailure extends Error {
 }
 
 export async function preserveFailureDuringCleanup(operation, cleanup) {
-  let value, failure, cleanupFailure;
+  let value;
+  let failure;
+  let cleanupFailure;
   try {
     value = await operation();
   } catch (error) {
@@ -117,9 +119,9 @@ export async function preserveFailureDuringCleanup(operation, cleanup) {
   return value;
 }
 
-export function serializeGuestReloadFailure(error) {
-  const cleanupAlsoFailed = error?.safeCleanupFailed === true;
-  if (error instanceof SettingsCleanupFailure) error = error.cause;
+export function serializeGuestReloadFailure(failure) {
+  const cleanupAlsoFailed = failure?.safeCleanupFailed === true;
+  const error = failure instanceof SettingsCleanupFailure ? failure.cause : failure;
   if (error?.safeCategory !== 'full_extension_preference_or_restore_failed') return null;
   const stage = (value) =>
     value === 'not_failed' || GUEST_EXTENSION_RECHECK_FAILURE_STAGES.includes(value)

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
 import { readFile } from 'node:fs/promises';
+import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
 import {
@@ -8,11 +8,11 @@ import {
   guestChatDefaultExpression,
   guestChatDefaultMatches,
   observeGuestNewChatDefault,
-  withSettingsRestoration,
   observeGuestPreference,
   preferenceMatches,
   runGuestPreferenceCase,
   runGuestThemeRenderingProbe,
+  withSettingsRestoration,
 } from './settings-guest-preference-batch.mjs';
 import {
   chatToolsCandidatesExpression,

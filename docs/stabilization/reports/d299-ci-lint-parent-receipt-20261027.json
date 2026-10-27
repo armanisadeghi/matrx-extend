@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T09:14:19.242493+00:00",
+  "failed_source": "61d3356ecf377c30c157b4fcd1ce374f215dc607",
+  "failed_run": 40477304703,
+  "failed_job": 122098738563,
+  "failure": "5lint/style/importerrors; focused/routes/typecheck/schema/resourcechecks passed, laterunit/build/artifactstepsskipped",
+  "repair": "Onlydeclaration/parameterbindingstyle/importorganization, no rule suppression or behaviorintent",
+  "source_hashes": {
+    "tests/browser/settings-probe-cleanup.mjs": "975d14a086b912542820ea4c4c237ca2fbb29f550b068f226fc018508d4f8112",
+    "tests/browser/settings-local-controls-acceptance.mjs": "2198d95fffcd0996ce2c1d628156aa7671a4ac42b70f587159f0c650a5821f7a",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "195ece30fcb671a1fc0aaed4c58ccc63673075f8bae4ecc8424adcb86e76f983",
+    "tests/browser/settings-guest-preference-batch.mjs": "2152df0acf76f05a8b2004eebde6fb667c0f7d73706eb2ab120bfcda282a124d"
+  },
+  "local_gate": {
+    "session": 85864,
+    "actual_exit": 0,
+    "run": "d299-ci-lint-fix-20261027",
+    "resource": "valid0/noninvalid",
+    "files": 3410,
+    "errors": 0,
+    "warnings": 1035,
+    "original_log_sha256": "cbd02e0d8db93b1388c326b0fd64e04cb769757fa9f74676fa3bbf5fdb725501",
+    "original_log_bytes": 899692,
+    "public_terminal": "docs/stabilization/evidence/d299-ci-lint-20261027/full-lint-terminal.txt",
+    "terminal_sha256": "46cbf5202932f553366ad8cd64160868fb02423938603e0b36f695a3d2e14a28",
+    "journal": "docs/stabilization/resource-journals/d299-ci-lint-fix-20261027.jsonl",
+    "journal_sha256": "4e6ba490bf8647eed0683bb490edee860c8d62ab8f75598bf2ccf7b129ef8348"
+  },
+  "limit": "Fullprivatewarninglognotpublished. Existingwarningsnotsuppressed/fixedoutsideownedCIerrors. No newfocusedtestreplay/manualbuild/nativeacceptance/currentartifact; corrected CI pending."
+}

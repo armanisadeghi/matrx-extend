@@ -1,0 +1,19 @@
+{
+  "base": "61d3356ecf377c30c157b4fcd1ce374f215dc607",
+  "paths": [
+    "tests/browser/settings-probe-cleanup.mjs",
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "tests/browser/settings-guest-preference-batch.test.mjs",
+    "tests/browser/settings-guest-preference-batch.mjs"
+  ],
+  "hashes": {
+    "tests/browser/settings-probe-cleanup.mjs": "975d14a086b912542820ea4c4c237ca2fbb29f550b068f226fc018508d4f8112",
+    "tests/browser/settings-local-controls-acceptance.mjs": "2198d95fffcd0996ce2c1d628156aa7671a4ac42b70f587159f0c650a5821f7a",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "195ece30fcb671a1fc0aaed4c58ccc63673075f8bae4ecc8424adcb86e76f983",
+    "tests/browser/settings-guest-preference-batch.mjs": "2152df0acf76f05a8b2004eebde6fb667c0f7d73706eb2ab120bfcda282a124d"
+  },
+  "diff": ".output/stabilization-checkpoints/d299-ci-lint-fix-20261027.diff",
+  "diff_sha256": "a065d429df24118b0147bb333bbbb9c57afad72bcffeafdc203e3557f9b097a9",
+  "scope": "MechanicalCI lint correction only: separateletdeclarators, unchangedknown-envelopeunwrapusinglocalconst, importsort3files. No rule suppression/functionality changes.",
+  "original_private_sha256": "b3585780391999299fc445bf16384e676584a5fa05dd4b7ff465eafa7a4ff217"
+}

@@ -1,0 +1,4 @@
+Checked 3410 files in 1101ms. No fixes applied.
+Found 1035 warnings.
+{"schema":1,"at":"2026-10-27T09:11:12.911Z","runId":"d299-ci-lint-fix-20261027","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-27T09:11:12.960Z","runId":"d299-ci-lint-fix-20261027","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}

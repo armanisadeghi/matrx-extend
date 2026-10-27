@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T09:12:44.406695+00:00",
+  "reviewer": "root/d299_ci_lint_delta_review",
+  "status": "PASS_WITH_LIMITS",
+  "independence": "Zero source authorship; read-only source/diff/official CI excerpt/resource files. No tests, UI, mutations, source edits or commits. This report file is the only write.",
+  "packet": ".output/stabilization-checkpoints/d299-ci-lint-fix-packet-20261027.json",
+  "packet_sha256": "b3585780391999299fc445bf16384e676584a5fa05dd4b7ff465eafa7a4ff217",
+  "source_base": "61d3356ecf377c30c157b4fcd1ce374f215dc607",
+  "source_hashes": {
+    "tests/browser/settings-probe-cleanup.mjs": "975d14a086b912542820ea4c4c237ca2fbb29f550b068f226fc018508d4f8112",
+    "tests/browser/settings-local-controls-acceptance.mjs": "2198d95fffcd0996ce2c1d628156aa7671a4ac42b70f587159f0c650a5821f7a",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "195ece30fcb671a1fc0aaed4c58ccc63673075f8bae4ecc8424adcb86e76f983",
+    "tests/browser/settings-guest-preference-batch.mjs": "2152df0acf76f05a8b2004eebde6fb667c0f7d73706eb2ab120bfcda282a124d"
+  },
+  "hash_audit": {
+    "all_four_sources_match": true,
+    "diff_sha256": "a065d429df24118b0147bb333bbbb9c57afad72bcffeafdc203e3557f9b097a9",
+    "live_diff_sha256_matches": true
+  },
+  "A_semantic_behavior_compatibility": {
+    "verdict": "PASS_SOURCE_EQUIVALENCE_WITH_LIVE_UNVERIFIED",
+    "details": [
+      "Splitting three let declarations retains the same lexical bindings and initialization ordering.",
+      "The serializer reads the cleanup flag first, then unwraps only the same SettingsCleanupFailure instance into the same local error value. Renaming the input and using const remove parameter reassignment without changing branch/category/allowlist behavior, function name or arity.",
+      "The three import sorting changes preserve bindings. Inspected affected dependency cycle: imported preference/driver references are function declarations; no newly reordered eager access to an uninitialized imported binding was found.",
+      "The canonical cleanup tests import serializeGuestReloadFailure directly; the inspected callers do not extract its old parameter-name spelling."
+    ]
+  },
+  "B_quality_no_bypass": {
+    "verdict": "PASS_WITH_LIMITS",
+    "findings": [],
+    "official_failure": {
+      "run": 40477304703,
+      "job": 122098738563,
+      "errors": 5,
+      "rules": [
+        "lint/style/useSingleVarDeclarator",
+        "lint/style/noParameterAssign",
+        "organizeImports"
+      ],
+      "scope": "Two style errors plus three import-organization errors; no lint suppression, workflow/policy/dependency/package changes."
+    },
+    "full_lint_observation": {
+      "command": "pnpm lint through parent normal guard",
+      "checked_files": 3410,
+      "errors": 0,
+      "warnings": 1035,
+      "warnings_limit": "No warning-clean claim; warning provenance was not audited.",
+      "job_exit_event": {
+        "schema": 1,
+        "at": "2026-10-27T09:11:12.911Z",
+        "runId": "d299-ci-lint-fix-20261027",
+        "childExitCode": 0,
+        "childSignal": null,
+        "code": "RESOURCE_JOB_EXIT"
+      },
+      "final_event": {
+        "schema": 1,
+        "at": "2026-10-27T09:11:12.960Z",
+        "runId": "d299-ci-lint-fix-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "journal_sha256": "4e6ba490bf8647eed0683bb490edee860c8d62ab8f75598bf2ccf7b129ef8348",
+      "log_sha256": "cbd02e0d8db93b1388c326b0fd64e04cb769757fa9f74676fa3bbf5fdb725501"
+    }
+  },
+  "limits": [
+    "No independent runtime/functional test replay; semantic equivalence is from the pinned mechanical diff and inspected source graph.",
+    "Parent owns actual unified exec session85864 terminal confirmation. File-backed jobExit0 and resourcevalid0 were independently inspected.",
+    "Corrected source full CI/build artifact, current unpacked refresh and original guest/member native retests remain unverified. Prior61d focused CI/typecheck successes do not certify a new development artifact."
+  ],
+  "actions": {
+    "source_edits": false,
+    "tests": false,
+    "UI": false,
+    "network_mutations": false,
+    "commits": false
+  },
+  "original_private_sha256": "1dabadd72f6880cdf5435e8cd7f1fce1bba1a1914c7d59dd8a138abf11c774f6"
+}

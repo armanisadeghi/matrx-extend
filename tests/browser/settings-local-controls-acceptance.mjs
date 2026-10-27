@@ -22,13 +22,13 @@ import { recordGuestAdminAbsence } from './settings-guest-absence.mjs';
 import {
   GUEST_PREFERENCES,
   observeGuestNewChatDefault,
-  withSettingsRestoration,
   observeGuestPreference,
   preferenceBaseline,
   preferenceMatches,
   restoreGuestPreferenceBaseline,
   runGuestPreferenceCase,
   runGuestThemeRenderingProbe,
+  withSettingsRestoration,
 } from './settings-guest-preference-batch.mjs';
 import {
   GUEST_PRIVACY_SWITCHES,
