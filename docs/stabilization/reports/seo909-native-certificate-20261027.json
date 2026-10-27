@@ -1,0 +1,56 @@
+{
+  "runId": "40531082596",
+  "attempt": "1",
+  "workflowSha": "3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7",
+  "workflowSourceSha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+  "archiveDigest": "c66ab719d787139712b7227754277c126d5cd18e0fd4747eca54725265bd3384",
+  "artifact": {
+    "sourceSha": "9093620ce6d9733f4a7b4b23dbe0a2c2d8c617a2",
+    "artifactId": "12745946437",
+    "developmentRunId": "40528122564",
+    "developmentRunAttempt": 1,
+    "githubArtifactDigest": "sha256:c51fc641fb3fe1dc2cbdc047ef020ecfe0c870d9e71c46bad4a416f1a9081dbc",
+    "purpose": "historical-hosted-evidence",
+    "frozenCheckoutSha": "3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7",
+    "compatibility": "runtime-equivalent",
+    "allowedDiffPaths": [
+      "docs/stabilization/COORDINATOR.md",
+      "docs/stabilization/defects/EXT-D-0299.json",
+      "docs/stabilization/reports/d299-final-lint-integration-20261027.json",
+      "docs/stabilization/reports/d299-fixture-delta-reverify-20261027.json",
+      "docs/stabilization/reports/d299-fresh-fixer-20261027.json",
+      "docs/stabilization/reports/d299-remaining-contracts-20261027.json",
+      "docs/stabilization/reports/d299-remaining-source-peer-20261027.json",
+      "docs/stabilization/reports/d299-scoped-reverify-20261027.json",
+      "docs/stabilization/reports/d299-source-integration-20261027.json",
+      "docs/stabilization/reports/seo-publication-delta-peer-20261027.json",
+      "docs/stabilization/reports/seo-raw-json-transport-fix-20261027.json",
+      "docs/stabilization/resource-journals/d299-contracts-green-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-contracts-red2-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-final-lint-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-fresh-compile-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-fresh-green-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-fresh-green2-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-fresh-lint-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-fresh-red-20261027.jsonl"
+    ]
+  },
+  "valid": true,
+  "receipts": {
+    "hosted-package": {
+      "runId": "hosted-package-40531082596-1",
+      "sha256": "4754fa4df253ac9df828b6abde12b04cc67ae0057b9b67518382f3895347b182",
+      "decision": "valid"
+    },
+    "hosted-browser": {
+      "runId": "hosted-browser-40531082596-1",
+      "sha256": "2fa6cf7d180ca5b434b08bbeef896c1c96077186afba9f45e65a0fe0b9d9c754",
+      "decision": "valid"
+    },
+    "hosted-guest": {
+      "runId": "hosted-guest-40531082596-1",
+      "sha256": "9f75250b982275b2227407e22e503b7118097a4f873d649615c12d47a78e2dfe",
+      "decision": "valid"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "status": "DONE_WITH_CONCERNS: A bounded behavior PASS; B historical provenance PASS with image limits",
+  "source": "workflow3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7/app9093620ce6d9733f4a7b4b23dbe0a2c2d8c617a2; current280267fcd473826d944112007c10aacebeb60d78 no acceptance transfer",
+  "official_metadata": "GitHub run40531082596 success/attempt1/workflow_dispatch/main; archive12745189323 37908B digest match; development12745946437 run40528122564 digest c51fc641fb3fe1dc2cbdc047ef020ecfe0c870d9e71c46bad4a416f1a9081dbc, unexpired",
+  "archive_sha256": "c66ab719d787139712b7227754277c126d5cd18e0fd4747eca54725265bd3384",
+  "member_sha256": {
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40531082596-1.jsonl": "4754fa4df253ac9df828b6abde12b04cc67ae0057b9b67518382f3895347b182",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40531082596-1.jsonl": "2fa6cf7d180ca5b434b08bbeef896c1c96077186afba9f45e65a0fe0b9d9c754",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40531082596-1.jsonl": "9f75250b982275b2227407e22e503b7118097a4f873d649615c12d47a78e2dfe",
+    "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-t7SpWp/native-side-panel.png": "86426d0be4776150d8df5a88f6c751b20c8b26f7f31b350bcdda6849f0f5bf6c",
+    "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-t7SpWp/normal-target-after-open.png": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c",
+    "matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json": "9213de307f0bce7a06621c70abc40d56eebb8a7366e10465f83ec9f2beb78116"
+  },
+  "historical_certificate": {
+    "sha256": "3384cd46764f61bc827d8911d007157fc0b74babf0c4e8a3e4e9f7dfccb1fab9",
+    "workflow_sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+    "valid": true
+  },
+  "canonical_replay": "Current canonical node scripts/hosted-remote-admission.mjs verify-guest-seo --run-id40531082596 --attempt1 --source-sha3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7 --artifact-zip original: exit0 historical certificate; independently replayed, not new UI execution",
+  "A": "Actual original report + frozen executable assertions support native360, stacked2/199char long notice, nine Re-audit target hits/zero notice hits before and after audit, trusted event450ms\u2192running456ms\u2192settled509ms, current title, dismiss2\u21921\u21920, cleanup2/2",
+  "B": "Six original members rehashed; raw native7132B matches ZIP exactly; all3 full journals admitted/final valid exit0, no pending/recovery; inspected images show only startup skeleton and fixture page, no target geometry corroboration",
+  "publication_allowlist": "All6 original ZIP members plus historical certificate and bounded peer/actor report are safe after reviewed paths; raw JSON requires canonical base64 preserving original bytes plus formatted readable projection when formatting differs; private172361B raw log and whole checkpoint not approved wholesale",
+  "limits": "No independent native UI rerun; browser version/profile/backend SHA unknown; ephemeral profile cleanup not independently emitted; no fullT02/D199/otherrole/currentmain/Store/health acceptance. Original wrong-source preflight refused HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT; root-authorized one corrected normal attempt, no waiver.",
+  "cleanup": "No source/docs/fixture/auth/build/dispatch/install changes; verifier terminal exit0; no owned running processes; only peer report retained, extracted image copies removed; root owns durable publication and inventory"
+}

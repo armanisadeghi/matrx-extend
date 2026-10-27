@@ -1,0 +1,578 @@
+{
+  "task_id": "seo-b-909-regression",
+  "lane": "B",
+  "status": "terminal-bounded-pass-awaiting-independent-review",
+  "at": "2026-10-27T15:25:58.818069+00:00",
+  "plan": {
+    "mode": "plan-guest-seo",
+    "source_sha_argument": "9093620ce6d9733f4a7b4b23dbe0a2c2d8c617a2",
+    "development_run_id": 40528122564,
+    "development_artifact_id": 12745946437,
+    "scope": "notice-stacked",
+    "runner": "macos-15-intel"
+  },
+  "source": {
+    "head": "3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7",
+    "origin_main": "3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7",
+    "clean": true,
+    "diff_paths": [
+      "docs/stabilization/COORDINATOR.md",
+      "docs/stabilization/defects/EXT-D-0299.json",
+      "docs/stabilization/reports/d299-final-lint-integration-20261027.json",
+      "docs/stabilization/reports/d299-fixture-delta-reverify-20261027.json",
+      "docs/stabilization/reports/d299-fresh-fixer-20261027.json",
+      "docs/stabilization/reports/d299-remaining-contracts-20261027.json",
+      "docs/stabilization/reports/d299-remaining-source-peer-20261027.json",
+      "docs/stabilization/reports/d299-scoped-reverify-20261027.json",
+      "docs/stabilization/reports/d299-source-integration-20261027.json",
+      "docs/stabilization/reports/seo-publication-delta-peer-20261027.json",
+      "docs/stabilization/reports/seo-raw-json-transport-fix-20261027.json",
+      "docs/stabilization/resource-journals/d299-contracts-green-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-contracts-red2-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-final-lint-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-fresh-compile-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-fresh-green-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-fresh-green2-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-fresh-lint-20261027.jsonl",
+      "docs/stabilization/resource-journals/d299-fresh-red-20261027.jsonl"
+    ],
+    "interpretation": "Normal current-source guard requires compatibility.mainSha equal source-sha argument; supplied frozen artifact SHA differs from current docs-only main. Exact refusal honored without corrected-input retry; no claim that runtime contributors changed."
+  },
+  "preflight": {
+    "visibility": "PUBLIC",
+    "ci_breaker": [],
+    "development_ci": "success",
+    "artifact_expired": false,
+    "artifact_size": 49686992,
+    "artifact_digest": "sha256:c51fc641fb3fe1dc2cbdc047ef020ecfe0c870d9e71c46bad4a416f1a9081dbc",
+    "latest_hosted_native_status": "completed",
+    "latest_resource_diagnostic_status": "completed",
+    "workflow_sha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+    "admission_sha256": "08b192f12c00c70f5602a5340c7d9c736f0aade52ebe4cded32208d0078de9e1"
+  },
+  "resources": {
+    "jobs_started": 1,
+    "terminal": true,
+    "local_owned_processes": 0,
+    "journals": {
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40531082596-1.jsonl": {
+        "codes": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ],
+        "final": {
+          "schema": 1,
+          "at": "2026-10-27T15:29:42.029Z",
+          "runId": "hosted-package-40531082596-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "pending": [],
+        "recovery": []
+      },
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40531082596-1.jsonl": {
+        "codes": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ],
+        "final": {
+          "schema": 1,
+          "at": "2026-10-27T15:31:33.190Z",
+          "runId": "hosted-browser-40531082596-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "pending": [],
+        "recovery": []
+      },
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40531082596-1.jsonl": {
+        "codes": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_WATCH_HEALTHY",
+          "RESOURCE_WATCH_HEALTHY",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ],
+        "final": {
+          "schema": 1,
+          "at": "2026-10-27T15:33:50.936Z",
+          "runId": "hosted-guest-40531082596-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "pending": [],
+        "recovery": []
+      }
+    },
+    "fixture_cleanup": {
+      "status": "cleared",
+      "attempted_count": 2,
+      "cleared_count": 2,
+      "failed_count": 0,
+      "failure_code": null
+    },
+    "browser_profile_cleanup": "not separately emitted; ephemeral hosted VM job terminal",
+    "private_log": ".output/stabilization-checkpoints/seo-b-909-40531082596-private.log",
+    "private_log_bytes": 172361
+  },
+  "limits": [
+    "Only selected native360px stacked/long notice subtarget passes; overall native report partial",
+    "No fullT02/D199/current-main release/Store acceptance",
+    "Executed browser version/profilepath/backendSHA unknown",
+    "Startup screenshots are not target geometry corroboration; no independent UI rerun",
+    "Original ZIP/log remain private scratch; publication requires parent reviewed allowlist"
+  ],
+  "next": "Fresh parent independent evidence review before closure/publication",
+  "original_refusal": {
+    "exit_code": 1,
+    "raw_output": "HOSTED_REMOTE_REFUSED HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT\n",
+    "dispatch_run_id": null,
+    "native_verdict": "UNVERIFIED",
+    "product_credit": false,
+    "retry": false
+  },
+  "root_adjudication": "Input error: source-sha must be current workflow/main. One corrected normal attempt authorized; no waiver.",
+  "corrected_attempt": {
+    "workflow_source": "3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7",
+    "artifact_source": "9093620ce6d9733f4a7b4b23dbe0a2c2d8c617a2",
+    "normal_plan": "pass",
+    "normal_dispatch": "pass",
+    "run_id": 40531082596,
+    "status": "completed",
+    "polls": [
+      {
+        "monotonic": 383367.33389775,
+        "interval": 70.27892237500055,
+        "status": "in_progress",
+        "conclusion": ""
+      },
+      {
+        "monotonic": 383441.766038833,
+        "interval": 74.43214108300162,
+        "status": "in_progress",
+        "conclusion": ""
+      },
+      {
+        "monotonic": 383515.689016416,
+        "interval": 73.9229775830172,
+        "status": "in_progress",
+        "conclusion": ""
+      },
+      {
+        "monotonic": 383589.449441625,
+        "interval": 73.76042520895135,
+        "status": "in_progress",
+        "conclusion": ""
+      },
+      {
+        "monotonic": 383668.002487875,
+        "interval": 78.55304625001736,
+        "status": "in_progress",
+        "conclusion": ""
+      },
+      {
+        "monotonic": 383743.535801375,
+        "interval": 75.53331349999644,
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "last_poll_monotonic": 383743.535801375,
+    "conclusion": "success",
+    "certificate": {
+      "runId": "40531082596",
+      "attempt": "1",
+      "workflowSha": "3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7",
+      "workflowSourceSha256": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+      "archiveDigest": "c66ab719d787139712b7227754277c126d5cd18e0fd4747eca54725265bd3384",
+      "artifact": {
+        "sourceSha": "9093620ce6d9733f4a7b4b23dbe0a2c2d8c617a2",
+        "artifactId": "12745946437",
+        "developmentRunId": "40528122564",
+        "developmentRunAttempt": 1,
+        "githubArtifactDigest": "sha256:c51fc641fb3fe1dc2cbdc047ef020ecfe0c870d9e71c46bad4a416f1a9081dbc",
+        "purpose": "historical-hosted-evidence",
+        "frozenCheckoutSha": "3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7",
+        "compatibility": "runtime-equivalent",
+        "allowedDiffPaths": [
+          "docs/stabilization/COORDINATOR.md",
+          "docs/stabilization/defects/EXT-D-0299.json",
+          "docs/stabilization/reports/d299-final-lint-integration-20261027.json",
+          "docs/stabilization/reports/d299-fixture-delta-reverify-20261027.json",
+          "docs/stabilization/reports/d299-fresh-fixer-20261027.json",
+          "docs/stabilization/reports/d299-remaining-contracts-20261027.json",
+          "docs/stabilization/reports/d299-remaining-source-peer-20261027.json",
+          "docs/stabilization/reports/d299-scoped-reverify-20261027.json",
+          "docs/stabilization/reports/d299-source-integration-20261027.json",
+          "docs/stabilization/reports/seo-publication-delta-peer-20261027.json",
+          "docs/stabilization/reports/seo-raw-json-transport-fix-20261027.json",
+          "docs/stabilization/resource-journals/d299-contracts-green-20261027.jsonl",
+          "docs/stabilization/resource-journals/d299-contracts-red2-20261027.jsonl",
+          "docs/stabilization/resource-journals/d299-final-lint-20261027.jsonl",
+          "docs/stabilization/resource-journals/d299-fresh-compile-20261027.jsonl",
+          "docs/stabilization/resource-journals/d299-fresh-green-20261027.jsonl",
+          "docs/stabilization/resource-journals/d299-fresh-green2-20261027.jsonl",
+          "docs/stabilization/resource-journals/d299-fresh-lint-20261027.jsonl",
+          "docs/stabilization/resource-journals/d299-fresh-red-20261027.jsonl"
+        ]
+      },
+      "valid": true,
+      "receipts": {
+        "hosted-package": {
+          "runId": "hosted-package-40531082596-1",
+          "sha256": "4754fa4df253ac9df828b6abde12b04cc67ae0057b9b67518382f3895347b182",
+          "decision": "valid"
+        },
+        "hosted-browser": {
+          "runId": "hosted-browser-40531082596-1",
+          "sha256": "2fa6cf7d180ca5b434b08bbeef896c1c96077186afba9f45e65a0fe0b9d9c754",
+          "decision": "valid"
+        },
+        "hosted-guest": {
+          "runId": "hosted-guest-40531082596-1",
+          "sha256": "9f75250b982275b2227407e22e503b7118097a4f873d649615c12d47a78e2dfe",
+          "decision": "valid"
+        }
+      }
+    }
+  },
+  "archive": {
+    "path": ".output/stabilization-checkpoints/seo-b-909-40531082596-original.zip",
+    "bytes": 37908,
+    "sha256": "c66ab719d787139712b7227754277c126d5cd18e0fd4747eca54725265bd3384",
+    "artifact_id": 12745189323,
+    "files": {
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40531082596-1.jsonl": {
+        "sha256": "4754fa4df253ac9df828b6abde12b04cc67ae0057b9b67518382f3895347b182",
+        "bytes": 993
+      },
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40531082596-1.jsonl": {
+        "sha256": "2fa6cf7d180ca5b434b08bbeef896c1c96077186afba9f45e65a0fe0b9d9c754",
+        "bytes": 993
+      },
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40531082596-1.jsonl": {
+        "sha256": "9f75250b982275b2227407e22e503b7118097a4f873d649615c12d47a78e2dfe",
+        "bytes": 1823
+      },
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-t7SpWp/native-side-panel.png": {
+        "sha256": "86426d0be4776150d8df5a88f6c751b20c8b26f7f31b350bcdda6849f0f5bf6c",
+        "bytes": 8598
+      },
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-t7SpWp/normal-target-after-open.png": {
+        "sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c",
+        "bytes": 27046
+      },
+      "matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json": {
+        "sha256": "9213de307f0bce7a06621c70abc40d56eebb8a7366e10465f83ec9f2beb78116",
+        "bytes": 7132
+      }
+    }
+  },
+  "native_report": {
+    "schema_version": 1,
+    "feature_id": "EXT-F-1008",
+    "mode": "guest",
+    "status": "partial",
+    "scope": "two controlled guest SEO notices and trusted Re-audit at native 360px",
+    "targets": [
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+        "status": "pass",
+        "evidence": {
+          "viewport_width": 360,
+          "viewport_source": "native",
+          "notice_count": 2,
+          "long_message_length": 199,
+          "distinct_notice_titles": 2,
+          "visible_dismiss_counts": [1, 1],
+          "target_hit_points": 9,
+          "notice_hit_points": 0,
+          "current_title_matched": true,
+          "independently_dismissed": [[0, 1], [0, 0]],
+          "cleared_count": 0
+        }
+      }
+    ],
+    "deferred": [
+      {
+        "case": "T01",
+        "part": "one audit per URL and slow-old-result race"
+      },
+      {
+        "case": "T02",
+        "part": "stale advice replacement and failure report after re-audit"
+      },
+      {
+        "case": "T03",
+        "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+      },
+      {
+        "case": "T04,T05,T08",
+        "part": "database save, saved-row history, and diff flows"
+      },
+      {
+        "case": "T06",
+        "part": "guest/member/admin history failure and retry modes"
+      },
+      {
+        "case": "T07",
+        "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+      },
+      {
+        "case": "T09",
+        "part": "detail controls beyond the bounded next batch; optional metadata-fixture phase is excluded by controlled scope"
+      },
+      {
+        "case": "T10-T13",
+        "part": "recommendations and Chat staging"
+      },
+      {
+        "case": "T14",
+        "part": "social snippet behavior beyond the two controlled public page states"
+      },
+      {
+        "case": "all",
+        "part": "member and admin modes"
+      }
+    ],
+    "last_safe_stage": "stacked_notice_trusted_reaudit_dispatched",
+    "last_safe_observable": {
+      "trustedInput": true
+    },
+    "current_operation": "build_recheck",
+    "build": {
+      "before": {
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.629",
+        "treeSha256": "3d04cf74d5540ef229a458536a06bdd474b541c3da558fcda9b55c8cae0dce6f"
+      },
+      "after": {
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.629",
+        "treeSha256": "3d04cf74d5540ef229a458536a06bdd474b541c3da558fcda9b55c8cae0dce6f"
+      }
+    },
+    "imported_artifact": {
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "repository": "armanisadeghi/matrx-extend",
+      "workflow": ".github/workflows/ci.yml",
+      "sourceSha": "9093620ce6d9733f4a7b4b23dbe0a2c2d8c617a2",
+      "runId": 40528122564,
+      "runAttempt": 1,
+      "artifactId": 12745946437,
+      "githubArtifactDigest": "sha256:c51fc641fb3fe1dc2cbdc047ef020ecfe0c870d9e71c46bad4a416f1a9081dbc",
+      "version": "0.2.629",
+      "treeSha256": "3d04cf74d5540ef229a458536a06bdd474b541c3da558fcda9b55c8cae0dce6f",
+      "source": {
+        "originMain": "3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7",
+        "localHead": "3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7",
+        "trackedDirty": false,
+        "untrackedRunnerInputs": [],
+        "claim": "exact_pushed_commit_only"
+      }
+    },
+    "case_selection": {
+      "scope": "notice-stacked",
+      "selected_cases": ["T02"],
+      "selected_subtargets": ["multiple_and_long_notice_clearance_at_native_360px"],
+      "excluded_cases": ["all other SEO targets; no full T02 or D199 closure"]
+    },
+    "resource_diagnostic_enabled": false,
+    "operation_start_sample": {
+      "at": "2026-10-27T15:33:48.592Z",
+      "user": 2528635,
+      "system": 1116527
+    },
+    "boundary_sample": {
+      "at": "2026-10-27T15:33:45.257Z",
+      "user": 2350367,
+      "system": 781632
+    },
+    "reaudit_transition_diagnostic": {
+      "observer_available": true,
+      "sample_count": 9,
+      "dropped_samples": 0,
+      "samples": [
+        {
+          "stage": "before_click",
+          "elapsed_ms": 1,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        },
+        {
+          "stage": "click_event",
+          "elapsed_ms": 450,
+          "click_trusted": true,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        },
+        {
+          "stage": "dom_transition",
+          "elapsed_ms": 456,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": true,
+          "auditSpinner": true,
+          "reAudit": false,
+          "error": false
+        },
+        {
+          "stage": "after_release",
+          "elapsed_ms": 478,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": true,
+          "auditSpinner": true,
+          "reAudit": false,
+          "error": false
+        },
+        {
+          "stage": "running_wait",
+          "elapsed_ms": 489,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": true,
+          "auditSpinner": true,
+          "reAudit": false,
+          "error": false
+        },
+        {
+          "stage": "settle_wait",
+          "elapsed_ms": 500,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": true,
+          "auditSpinner": true,
+          "reAudit": false,
+          "error": false
+        },
+        {
+          "stage": "dom_transition",
+          "elapsed_ms": 509,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        },
+        {
+          "stage": "settle_wait",
+          "elapsed_ms": 624,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        },
+        {
+          "stage": "finished",
+          "elapsed_ms": 638,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        }
+      ]
+    },
+    "click_phase": "release_returned",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "stacked_notice_fixture_diagnostic": {
+      "failure_code": null,
+      "stage": "independent_dismiss",
+      "cleanup": {
+        "status": "cleared",
+        "attempted_count": 2,
+        "cleared_count": 2,
+        "failed_count": 0,
+        "failure_code": null
+      }
+    }
+  },
+  "parent_publication": {
+    "map": [
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/seo909-original-hosted-package-40531082596-1.jsonl",
+        "original_sha256": "4754fa4df253ac9df828b6abde12b04cc67ae0057b9b67518382f3895347b182",
+        "original_bytes": 993,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/seo909/hosted-package-40531082596-1.jsonl",
+        "public_sha256": "4754fa4df253ac9df828b6abde12b04cc67ae0057b9b67518382f3895347b182",
+        "public_bytes": 993,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/seo909-original-hosted-browser-40531082596-1.jsonl",
+        "original_sha256": "2fa6cf7d180ca5b434b08bbeef896c1c96077186afba9f45e65a0fe0b9d9c754",
+        "original_bytes": 993,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/seo909/hosted-browser-40531082596-1.jsonl",
+        "public_sha256": "2fa6cf7d180ca5b434b08bbeef896c1c96077186afba9f45e65a0fe0b9d9c754",
+        "public_bytes": 993,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/seo909-original-hosted-guest-40531082596-1.jsonl",
+        "original_sha256": "9f75250b982275b2227407e22e503b7118097a4f873d649615c12d47a78e2dfe",
+        "original_bytes": 1823,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/seo909/hosted-guest-40531082596-1.jsonl",
+        "public_sha256": "9f75250b982275b2227407e22e503b7118097a4f873d649615c12d47a78e2dfe",
+        "public_bytes": 1823,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/seo909-original-seo-guest-acceptance.json",
+        "original_sha256": "9213de307f0bce7a06621c70abc40d56eebb8a7366e10465f83ec9f2beb78116",
+        "original_bytes": 7132,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/seo909/seo-guest-acceptance.json",
+        "public_sha256": "fb2293d76cde603762446347cfdd855a3910fbde2ff5aaeaf27435a71b7fc0ce",
+        "public_bytes": 6964,
+        "transport": "decoded lossless payload is original; view is declared formatting projection",
+        "raw_payload_path": "docs/stabilization/evidence/cycle280-20261027/seo909/seo-guest-acceptance.json.raw.json",
+        "raw_payload_sha256": "ca45c722855015063f5776e005a2374be6fae7e24272decfb2c659c808a75261",
+        "decoded_original_sha256": "9213de307f0bce7a06621c70abc40d56eebb8a7366e10465f83ec9f2beb78116"
+      }
+    ],
+    "normal_certificate": "docs/stabilization/reports/seo909-native-certificate-20261027.json",
+    "peer": "docs/stabilization/reports/seo-909-native-peer-20261027.json",
+    "full_case_pass": false,
+    "projection_note": "Actor report parsed/ formatted as typed data; original native JSON stored losslessly in raw payload when formatted. Both startup-only PNGs, originalZIP and private workflow log excluded."
+  }
+}

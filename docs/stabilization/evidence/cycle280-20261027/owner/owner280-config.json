@@ -1,0 +1,9 @@
+{
+  "phase": "UI_READY",
+  "runId": "owner280-native-20261027-1638",
+  "fingerprintPath": ".output/stabilization-checkpoints/wake1518/owner280-fingerprint.json",
+  "journalPath": "docs/stabilization/resource-journals/owner280-native-20261027-1638.pending.jsonl",
+  "watchPath": ".output/stabilization-checkpoints/wake1518/owner280-watch.jsonl",
+  "ledgerPath": ".output/stabilization-checkpoints/wake1518/owner280-api-ledger.jsonl",
+  "approvalPath": ".output/stabilization-checkpoints/wake1518/owner280-parent-approval.json"
+}

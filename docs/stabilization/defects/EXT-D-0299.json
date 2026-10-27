@@ -57,7 +57,7 @@
     "Shared settings-probe-cleanup preserveFailureDuringCleanup has primitive/frozen original-error masking; fresh fixer extends canonical primitive instead of adding a duplicate.",
     "Mobile and desktop current Tools mode sheets; no-op Escape retained-open state."
   ],
-  "next_action": "Observe fullCI909 and exact development artifact; recheck source/runtime eligibility, normal import/verify/promote, then owner Profile8 native Reload/ID/path/version/pin proof. Use normal exact-source admission for frozen guest T10 and member D87/tab-groups retests; do not transfer old passes or relax refusal. Preserve daily Store state and paid-spend hold.",
+  "next_action": "Preserve frozen80 T10 partial and source-reviewed909 repair. Failed280 native batch has zero credit and no proven application cause; no blind retry or failed-job relocation. Use existing original-B startup-resource diagnostic only after normal current-source/artifact/spend/host admission to distinguish base startup/post-panel resource load from Settings-specific behavior; no threshold/deadline/process bypass. Then retest original guest T10 plus member D87/tab-groups on one eligible artifact with fresh independent native evidence.",
   "transition_history": [
     {
       "at": "2026-10-27T07:59:58.931033+00:00",
@@ -209,5 +209,15 @@
     "evidence": "docs/stabilization/reports/d299-source-integration-20261027.json",
     "full_case_pass": false,
     "closure": false
+  },
+  "native_280_attempt": {
+    "run_id": 40542388953,
+    "status": "resource-invalid; native case outcomes unverified",
+    "source_sha": "280267fcd473826d944112007c10aacebeb60d78",
+    "guest_resource_exit": 3,
+    "native_case_report_emitted": false,
+    "product_failure_established": false,
+    "new_case_passes": 0,
+    "evidence": "docs/stabilization/reports/settings280-resource-diagnosis-20261027.json"
   }
 }

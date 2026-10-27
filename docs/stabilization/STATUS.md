@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-27 14:34 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-27T13:49:55.424027+00:00. 207 features · 833 cases · 1422 controls · 298 linked defect records.
+Generated 2026-10-27 17:19 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-27T13:49:55.424027+00:00. 207 features · 833 cases · 1422 controls · 298 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -1079,7 +1079,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1008-T01 · guest: Partial.  Reviewed frozen guest controlled run38041517954 adds 2 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass.
   Evidence / build / date recorded: 38016503649, ['.research/seo-controlled-followon-38016503649.json', '.research/seo-controlled-followon-38016503649-peer.json', '.research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json']
 - EXT-F-1008-T02 · guest: Partial.
-  Evidence / build / date recorded: 40520285304, ['docs/stabilization/reports/seo-notice-b-dd5e-20261027.json', 'docs/stabilization/reports/seo-dd5e-native-certificate-20261027.json', 'docs/stabilization/reports/seo-dd5e-native-peer-20261027.json']
+  Evidence / build / date recorded: 40531082596, ['docs/stabilization/reports/seo-b-909-1518-20261027.json', 'docs/stabilization/reports/seo909-native-certificate-20261027.json', 'docs/stabilization/reports/seo-909-native-peer-20261027.json']
 - EXT-F-1008-T03 · guest: Partial.  Reviewed frozen guest controlled run38041517954 adds 2 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Current frozen579 adds only two independently evidence-reviewed postmanagerReload internal-error/recovery subtargets; oldwarm578notcredited. FullT03 stayspartial. Frozen584 adds warm/reload DNS failure, data scheme and internal-page observations with public recovery; overcallbudget and independent native retest remain explicit. No fullcasepromotion.
   Evidence / build / date recorded: 38016503649, ['.research/seo-controlled-followon-38016503649.json', '.research/seo-controlled-followon-38016503649-peer.json', '.research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json', 'docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json']
 - EXT-F-1008-T06 · guest: Partial.

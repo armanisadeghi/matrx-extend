@@ -1,0 +1,530 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T17:02:33.688965+00:00",
+  "lane": "root-owner280-maintenance",
+  "status": "OBSERVED_RELOADED_RESOURCE_VALID_AWAIT_INDEPENDENT_REVIEW",
+  "source_sha": "280267fcd473826d944112007c10aacebeb60d78",
+  "development": {
+    "ci": 40540113616,
+    "artifact": 12751147523,
+    "digest": "sha256:b7c0609a4d75cd0a76402ee61da3cd6d59b138f80aa91717181cfb9863067e44",
+    "version": "0.2.629",
+    "tree": "b9eabceb1d92d0ae295cf3eede97f7c4c9279197e739b2d27dc10ae18b8e5c3c",
+    "file_count": 2819,
+    "import_actual_exit": 0,
+    "verify_actual_exit": 0,
+    "promotion_actual_exit": 0,
+    "stable_path": ".output/chrome-mv3-dev",
+    "initial_fingerprint": {
+      "at": "2026-10-27T16:37:14.910Z",
+      "source_sha": "280267fcd473826d944112007c10aacebeb60d78",
+      "artifact": 12751147523,
+      "run": 40540113616,
+      "version": "0.2.629",
+      "tree_sha256": "b9eabceb1d92d0ae295cf3eede97f7c4c9279197e739b2d27dc10ae18b8e5c3c",
+      "file_count": 2819,
+      "receipt_path": "test-results/ci-dev-promotion-receipt.json",
+      "receipt_sha256": "d78309e5cf1bbdef15b975a2b45d0751d27a139010641b4b2e495be4abc55834",
+      "directory": {
+        "path": ".output/chrome-mv3-dev",
+        "dev": "16777244",
+        "ino": "25198201",
+        "ctimeNs": "1793118953033602621",
+        "mtimeNs": "1793118952792039295"
+      }
+    }
+  },
+  "owner": {
+    "email_observed": "arman@armansadeghi.com",
+    "profile_path_observed": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "chrome_observed": "156.0.8078.48 Official Build arm64",
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from_observed": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "version": "0.2.629",
+    "enabled": true,
+    "pin": true,
+    "reload_button": 48,
+    "toolbar_reload_button_6_excluded": true,
+    "literal_Reloaded_in_original_AX": true,
+    "original_AX": "owner280-reload.ax.txt",
+    "original_PNG": "owner280-reload.png"
+  },
+  "store": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version_observed": "0.2.577",
+    "source_observed": "Chrome Web Store",
+    "enabled": true,
+    "pin": true,
+    "no_Store_reload_or_toggle": true
+  },
+  "UI": {
+    "actual_begins": 30,
+    "actual_ends": 30,
+    "aborts": 0,
+    "first_begin": "2026-10-27T16:40:29.180Z",
+    "last_end": "2026-10-27T16:46:34.862Z",
+    "parent_approval": {
+      "at": "2026-10-27T16:40:22.707570+00:00",
+      "runId": "owner280-native-20261027-1638",
+      "UI_READY_sent": true,
+      "source_sha": "280267fcd473826d944112007c10aacebeb60d78",
+      "parent": "root",
+      "first_native_API_not_yet_invoked": true,
+      "holder_pid": 51944,
+      "holder_session": 87798,
+      "watcher_session": 39686,
+      "journal_last_code": "RESOURCE_WATCH_HEALTHY",
+      "watch_read_at": "2026-10-27T16:40:22.505028Z"
+    },
+    "counter_basis": "One actual documented cua API per invoke callback; guarded before and after each API. Documentation rewrite was prior documentation-only, no native assertion or input.",
+    "minor_recovery": "Escape did not dismiss native Profiles menu; exposed Cancel action succeeded. No profile switch or setting write.",
+    "deviation": "chrome://settings/syncSetup redirected to people read-only identity page. All assertion captures are original native output.",
+    "cleanup": "Owned probe/manager tab closed; original Vault tab and actual Store Chat/Morning/emptycomposer restored. Final focus is empty composer, initial focus was Vault document; no same-focus claim.",
+    "owned_new_tabs_closed": true,
+    "temporary_closed_empty_Store_panel_restored": true,
+    "no_auth_credential_permission_AI_changes": true
+  },
+  "resource": {
+    "holder_session": 87798,
+    "holder_pid": 51944,
+    "holder_actual_exit": 0,
+    "watcher_session": 39686,
+    "watcher_actual_exit": 0,
+    "profile_root": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "watch_final": {
+      "runId": "owner280-native-20261027-1638",
+      "first_read_at": "2026-10-27T16:37:27.842385Z",
+      "last_read_at": "2026-10-27T16:48:15.748860Z",
+      "actualPollCount": 324,
+      "maxGapSeconds": 2.0119237080216408,
+      "riskEvents": [],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T16:48:14.879Z",
+        "runId": "owner280-native-20261027-1638",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/owner280-native-20261027-1638.jsonl",
+      "audit": ".output/stabilization-checkpoints/wake1518/owner280-watch.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    },
+    "journal": "docs/stabilization/resource-journals/owner280-native-20261027-1638.jsonl",
+    "heavy_owner_remaining": false,
+    "unsafe_hold_remaining": false,
+    "original_command_execution_records": {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-original-command-executions.json",
+      "sha256": "67459f7f76a00685464025011809334730d18fc05b2f7b69f6fba321fb33d8eb",
+      "provenance": "Retrieved selected original structured commandExecution items from Codex app read_thread currenttask, including actual Chrome-root argv and both completed exit0. Not parent transcription."
+    }
+  },
+  "postcheck": {
+    "at": "2026-10-27T16:58:49.404Z",
+    "treeSha256": "b9eabceb1d92d0ae295cf3eede97f7c4c9279197e739b2d27dc10ae18b8e5c3c",
+    "allStableFilesEqualImported": true,
+    "originalReceiptSha256": "d78309e5cf1bbdef15b975a2b45d0751d27a139010641b4b2e495be4abc55834",
+    "currentReceiptSha256": "d6fbcc3ce4fbd69bd171bc86a41768c5675b67c39e75f356a940aca4facb0f23",
+    "originalPromotionAt": "2026-10-27T16:35:52.267Z",
+    "laterPromotionAt": "2026-10-27T16:50:44.553Z",
+    "originalDirectory": {
+      "path": ".output/chrome-mv3-dev",
+      "dev": "16777244",
+      "ino": "25198201",
+      "ctimeNs": "1793118953033602621",
+      "mtimeNs": "1793118952792039295"
+    },
+    "currentDirectory": {
+      "dev": "16777244",
+      "ino": "25220885",
+      "ctimeNs": "1793119845279867819",
+      "mtimeNs": "1793119845038787787"
+    },
+    "metadataEpochChangedAfterUI": true,
+    "limit": "A later same-source/run/artifact/tree normal-form promotion receipt appeared after UI_STOPPED and watcher final; actor unestablished. First postcheck exit1 was receipt/directory metadata mismatch, not app-byte change. Frozen UI interval fingerprint stayed valid; no unchanged-post-UI receipt/inode claim.",
+    "head": "280267fcd473826d944112007c10aacebeb60d78",
+    "normalVerify": {
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "repository": "armanisadeghi/matrx-extend",
+      "workflow": ".github/workflows/ci.yml",
+      "sourceSha": "280267fcd473826d944112007c10aacebeb60d78",
+      "runId": 40540113616,
+      "runAttempt": 1,
+      "artifactId": 12751147523,
+      "githubArtifactDigest": "sha256:b7c0609a4d75cd0a76402ee61da3cd6d59b138f80aa91717181cfb9863067e44",
+      "version": "0.2.629",
+      "treeSha256": "b9eabceb1d92d0ae295cf3eede97f7c4c9279197e739b2d27dc10ae18b8e5c3c",
+      "source": {
+        "originMain": "280267fcd473826d944112007c10aacebeb60d78",
+        "localHead": "280267fcd473826d944112007c10aacebeb60d78",
+        "trackedDirty": false,
+        "untrackedRunnerInputs": [],
+        "claim": "current_pushed_source"
+      }
+    }
+  },
+  "postcheck_first_failure": {
+    "actual_exit": 1,
+    "message": "owner_after_tree_changed",
+    "interpretation": "Combined check failed on later receipt/directory metadata epoch; exact app tree remained b9 and all2819files equal imported. Later receipt timestamp16:50:44 is after UI_STOPPED16:48:14 and watcher final16:48:15. Actor unestablished. No unchanged post-UI metadata claim."
+  },
+  "privacy": "Original Vault restoration AX, full version/command-line and account-page captures retained privately; publish bounded typed profile/restore facts only. Manager AX/PNGs and guard/build receipts are publication candidates subject to peer. Raw AX must use lossless payload plus declared readable normalization if committed.",
+  "limits": [
+    "Maintenance only; no guest/member/product-case/Store release acceptance.",
+    "About Version command-line mentions Profile10 but active Profile Path is8; the active page and account identity bind owner window, not startup arguments.",
+    "Original active-tab baseline was automatically emitted getApp output; no separate raw file saved for that entry. Decisive profile/account/manager/reload/Store/restoration captures retained.",
+    "Initial focus was Vault document; final focus empty Store composer. Tabs/panel/empty draft restored, exact focus equality not claimed.",
+    "Subsequent same-artifact re-promotion metadata changed after native interval; source/tree remain equal, no proof of actor."
+  ],
+  "files": [
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-dev-before.ax.txt",
+      "bytes": 6233,
+      "sha256": "f0e41b7adb70acc7f7739f152c42729e035e5f3adb81c230e2e55566b9f9b554",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-dev-before.png",
+      "bytes": 164953,
+      "sha256": "65476b2820e782f511685f6df1a6d1159125cffcf480f2a947faa5832b839ec2",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-reload.ax.txt",
+      "bytes": 6287,
+      "sha256": "0fbe6e8a4ba5f923d7df3a1a87d16ab381c6dee4a4ff702f36a7fe320744502c",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-reload.png",
+      "bytes": 166892,
+      "sha256": "1860a80d2f3a0eb836ea899d3099ae4d29a1c1578ffb35cb70cb7a9a4214f1e0",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-store.ax.txt",
+      "bytes": 6035,
+      "sha256": "6bebfe3c4c19e3e324c6bcacbcaf2af6b4d3021696226f2a3b6cc923417d4664",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-store.png",
+      "bytes": 164146,
+      "sha256": "09a7882e37be1526528f84eca483f3f5625c563ba8d2f9aefb562cda58de468f",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-account-view.ax.txt",
+      "bytes": 4713,
+      "sha256": "47f0c04cfe5d6cc65711bb9fe5768f8bc032d3653cf26738a313545828e658a6",
+      "public_candidate": false
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-version.ax.txt",
+      "bytes": 6917,
+      "sha256": "bd44ab5572f13450720a4436c9efa96d86abf5a3f162ddc2c12b091bbd31748f",
+      "public_candidate": false
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-api-ledger.jsonl",
+      "bytes": 39638,
+      "sha256": "1c08389f748269209bbe417e427b5da29396851695c8c8044cb0349fa01c3ce7",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-parent-approval.json",
+      "bytes": 417,
+      "sha256": "fe1a73f4d0764951299c45fea9698d4d0b806f67e5c4178bec4c080619f79ad6",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-config.json",
+      "bytes": 528,
+      "sha256": "c0c9b913f958bf6ed2237f208048a08c9b5ce08d0b7b2a9d3bb721c30649a0b1",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-fingerprint.json",
+      "bytes": 612,
+      "sha256": "5992da0e4078d7e25e1f1d2669581c7ad00b73e05d5449e90da1e71f2773f8d7",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-watch.jsonl",
+      "bytes": 162225,
+      "sha256": "fa540b040541cdd0db4ffbb56a85db043b93fb7b2a485c4d363b17637a6822e3",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-watch-report.json",
+      "bytes": 776,
+      "sha256": "729caea3fe458a8b899271e394fe465cd6b2914e4242e8d78c9f4550941ab25b",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-promotion-receipt.json",
+      "bytes": 785,
+      "sha256": "d78309e5cf1bbdef15b975a2b45d0751d27a139010641b4b2e495be4abc55834",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-later-promotion-receipt.json",
+      "bytes": 785,
+      "sha256": "d6fbcc3ce4fbd69bd171bc86a41768c5675b67c39e75f356a940aca4facb0f23",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-postcheck.json",
+      "bytes": 2054,
+      "sha256": "41b81945899f9638f4773d227ae7f07c150e13409e323a77304b111bd1526737",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-ui-stopped.json",
+      "bytes": 437,
+      "sha256": "d4a22e9312fa2ef7bb9802cf31a8da0fa4efde3b1d25c764b627f179358b13f8",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-verify.json",
+      "bytes": 788,
+      "sha256": "09b434b6e649a940cb267332251dfb9ad0c363f75e1a43c0989629f13c52f182",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-import.log",
+      "bytes": 167,
+      "sha256": "4aa7e2c1778267dd29c8a4f6fa91a4ded83c6a13b41272ea32696f2895ebd0d8",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-promotion.log",
+      "bytes": 191,
+      "sha256": "56be2196e84eab63fd69cc0bcc9afa885c807637ad3866d1e14f2dd28ad25fd9",
+      "public_candidate": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-restored-tab.private.ax.txt",
+      "bytes": 27765,
+      "sha256": "9237617fcd123557b9ce54cab9c8636568f9fca1da7c9cb84c05db53947ba5aa",
+      "public_candidate": false
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-restored.private.ax.txt",
+      "bytes": 23796,
+      "sha256": "5add65dc2baa5b10e44495b9772225c59c55677627413f90a9c9875799f601ea",
+      "public_candidate": false
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake1518/owner280-original-command-executions.json",
+      "bytes": 2770,
+      "sha256": "67459f7f76a00685464025011809334730d18fc05b2f7b69f6fba321fb33d8eb",
+      "public_candidate": true
+    }
+  ],
+  "owned_processes": [],
+  "next_action": "Fresh independent source/build/native evidence review; then publish safe proof and current owner state. Settings B failure receives separate invalid-resource diagnosis, no product verdict.",
+  "parent_publication": {
+    "at": "2026-10-27T17:19:06.266642+00:00",
+    "review": "docs/stabilization/reports/owner280-peer-20261027.json",
+    "current_verdict": "A frozen maintenance PASS; B bounded integrity/resource/provenance PASS",
+    "map": [
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-dev-before.ax.txt",
+        "original_sha256": "f0e41b7adb70acc7f7739f152c42729e035e5f3adb81c230e2e55566b9f9b554",
+        "original_bytes": 6233,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-dev-before.ax.txt",
+        "public_sha256": "7dd947c88d3c6b6e7659036c5ca259699264252a4a04887764a711c7e9065f04",
+        "public_bytes": 6221,
+        "transport": "decoded lossless payload is original; view is declared formatting projection",
+        "raw_payload_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-dev-before.ax.txt.raw.json",
+        "raw_payload_sha256": "c2dc6d398b7a470ad43e398d67c60b00891f7d3c74f187aa36caecf98d3d6652",
+        "decoded_original_sha256": "f0e41b7adb70acc7f7739f152c42729e035e5f3adb81c230e2e55566b9f9b554"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-dev-before.png",
+        "original_sha256": "65476b2820e782f511685f6df1a6d1159125cffcf480f2a947faa5832b839ec2",
+        "original_bytes": 164953,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-dev-before.png",
+        "public_sha256": "65476b2820e782f511685f6df1a6d1159125cffcf480f2a947faa5832b839ec2",
+        "public_bytes": 164953,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-reload.ax.txt",
+        "original_sha256": "0fbe6e8a4ba5f923d7df3a1a87d16ab381c6dee4a4ff702f36a7fe320744502c",
+        "original_bytes": 6287,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-reload.ax.txt",
+        "public_sha256": "379e637520ceb006fdc46f8c73389003384e0d64b46ea865c842e87f97c485b0",
+        "public_bytes": 6275,
+        "transport": "decoded lossless payload is original; view is declared formatting projection",
+        "raw_payload_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-reload.ax.txt.raw.json",
+        "raw_payload_sha256": "df4f86d8f12a768f11524c16942757dee06d91b7db64392f4bc35d2bd52b71df",
+        "decoded_original_sha256": "0fbe6e8a4ba5f923d7df3a1a87d16ab381c6dee4a4ff702f36a7fe320744502c"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-reload.png",
+        "original_sha256": "1860a80d2f3a0eb836ea899d3099ae4d29a1c1578ffb35cb70cb7a9a4214f1e0",
+        "original_bytes": 166892,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-reload.png",
+        "public_sha256": "1860a80d2f3a0eb836ea899d3099ae4d29a1c1578ffb35cb70cb7a9a4214f1e0",
+        "public_bytes": 166892,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-store.ax.txt",
+        "original_sha256": "6bebfe3c4c19e3e324c6bcacbcaf2af6b4d3021696226f2a3b6cc923417d4664",
+        "original_bytes": 6035,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-store.ax.txt",
+        "public_sha256": "4760617aeaacf5772281381fdb4093e09030b4db90065d78909cfa3915605f37",
+        "public_bytes": 6023,
+        "transport": "decoded lossless payload is original; view is declared formatting projection",
+        "raw_payload_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-store.ax.txt.raw.json",
+        "raw_payload_sha256": "20813989f040193dc869d4464c4e9b5b3f7f0db8d7bc28581c71cade8660c4a8",
+        "decoded_original_sha256": "6bebfe3c4c19e3e324c6bcacbcaf2af6b4d3021696226f2a3b6cc923417d4664"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-store.png",
+        "original_sha256": "09a7882e37be1526528f84eca483f3f5625c563ba8d2f9aefb562cda58de468f",
+        "original_bytes": 164146,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-store.png",
+        "public_sha256": "09a7882e37be1526528f84eca483f3f5625c563ba8d2f9aefb562cda58de468f",
+        "public_bytes": 164146,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-api-ledger.jsonl",
+        "original_sha256": "1c08389f748269209bbe417e427b5da29396851695c8c8044cb0349fa01c3ce7",
+        "original_bytes": 39638,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-api-ledger.jsonl",
+        "public_sha256": "1c08389f748269209bbe417e427b5da29396851695c8c8044cb0349fa01c3ce7",
+        "public_bytes": 39638,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-parent-approval.json",
+        "original_sha256": "fe1a73f4d0764951299c45fea9698d4d0b806f67e5c4178bec4c080619f79ad6",
+        "original_bytes": 417,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-parent-approval.json",
+        "public_sha256": "fe1a73f4d0764951299c45fea9698d4d0b806f67e5c4178bec4c080619f79ad6",
+        "public_bytes": 417,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-config.json",
+        "original_sha256": "c0c9b913f958bf6ed2237f208048a08c9b5ce08d0b7b2a9d3bb721c30649a0b1",
+        "original_bytes": 528,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-config.json",
+        "public_sha256": "c0c9b913f958bf6ed2237f208048a08c9b5ce08d0b7b2a9d3bb721c30649a0b1",
+        "public_bytes": 528,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-fingerprint.json",
+        "original_sha256": "5992da0e4078d7e25e1f1d2669581c7ad00b73e05d5449e90da1e71f2773f8d7",
+        "original_bytes": 612,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-fingerprint.json",
+        "public_sha256": "5992da0e4078d7e25e1f1d2669581c7ad00b73e05d5449e90da1e71f2773f8d7",
+        "public_bytes": 612,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-watch.jsonl",
+        "original_sha256": "fa540b040541cdd0db4ffbb56a85db043b93fb7b2a485c4d363b17637a6822e3",
+        "original_bytes": 162225,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-watch.jsonl",
+        "public_sha256": "fa540b040541cdd0db4ffbb56a85db043b93fb7b2a485c4d363b17637a6822e3",
+        "public_bytes": 162225,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-watch-report.json",
+        "original_sha256": "729caea3fe458a8b899271e394fe465cd6b2914e4242e8d78c9f4550941ab25b",
+        "original_bytes": 776,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-watch-report.json",
+        "public_sha256": "729caea3fe458a8b899271e394fe465cd6b2914e4242e8d78c9f4550941ab25b",
+        "public_bytes": 776,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-promotion-receipt.json",
+        "original_sha256": "d78309e5cf1bbdef15b975a2b45d0751d27a139010641b4b2e495be4abc55834",
+        "original_bytes": 785,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-promotion-receipt.json",
+        "public_sha256": "d78309e5cf1bbdef15b975a2b45d0751d27a139010641b4b2e495be4abc55834",
+        "public_bytes": 785,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-later-promotion-receipt.json",
+        "original_sha256": "d6fbcc3ce4fbd69bd171bc86a41768c5675b67c39e75f356a940aca4facb0f23",
+        "original_bytes": 785,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-later-promotion-receipt.json",
+        "public_sha256": "d6fbcc3ce4fbd69bd171bc86a41768c5675b67c39e75f356a940aca4facb0f23",
+        "public_bytes": 785,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-postcheck.json",
+        "original_sha256": "41b81945899f9638f4773d227ae7f07c150e13409e323a77304b111bd1526737",
+        "original_bytes": 2054,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-postcheck.json",
+        "public_sha256": "41b81945899f9638f4773d227ae7f07c150e13409e323a77304b111bd1526737",
+        "public_bytes": 2054,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-ui-stopped.json",
+        "original_sha256": "d4a22e9312fa2ef7bb9802cf31a8da0fa4efde3b1d25c764b627f179358b13f8",
+        "original_bytes": 437,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-ui-stopped.json",
+        "public_sha256": "d4a22e9312fa2ef7bb9802cf31a8da0fa4efde3b1d25c764b627f179358b13f8",
+        "public_bytes": 437,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-verify.json",
+        "original_sha256": "09b434b6e649a940cb267332251dfb9ad0c363f75e1a43c0989629f13c52f182",
+        "original_bytes": 788,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-verify.json",
+        "public_sha256": "09b434b6e649a940cb267332251dfb9ad0c363f75e1a43c0989629f13c52f182",
+        "public_bytes": 788,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-import.log",
+        "original_sha256": "4aa7e2c1778267dd29c8a4f6fa91a4ded83c6a13b41272ea32696f2895ebd0d8",
+        "original_bytes": 167,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-import.log",
+        "public_sha256": "4aa7e2c1778267dd29c8a4f6fa91a4ded83c6a13b41272ea32696f2895ebd0d8",
+        "public_bytes": 167,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-promotion.log",
+        "original_sha256": "56be2196e84eab63fd69cc0bcc9afa885c807637ad3866d1e14f2dd28ad25fd9",
+        "original_bytes": 191,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-promotion.log",
+        "public_sha256": "56be2196e84eab63fd69cc0bcc9afa885c807637ad3866d1e14f2dd28ad25fd9",
+        "public_bytes": 191,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1518/owner280-original-command-executions.json",
+        "original_sha256": "67459f7f76a00685464025011809334730d18fc05b2f7b69f6fba321fb33d8eb",
+        "original_bytes": 2770,
+        "public_path": "docs/stabilization/evidence/cycle280-20261027/owner/owner280-original-command-executions.json",
+        "public_sha256": "67459f7f76a00685464025011809334730d18fc05b2f7b69f6fba321fb33d8eb",
+        "public_bytes": 2770,
+        "transport": "byte-exact"
+      }
+    ],
+    "original_private_report_sha256": "309c67de54c4d0770e8cc4844ea46e55d497aa2cae1d2cb90290147f7b926d7a",
+    "private_exclusions": "Account/version/command-line and Vault restoration originals remain private; typed identity/cleanup assertions are independently checked projections."
+  }
+}
