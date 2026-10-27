@@ -676,3 +676,57 @@ test('actual retry and final-report guards reject old premature-commit and raw-s
     );
   }
 });
+
+test('member Records auth checkpoint retains safe pointer evidence without exposing failure contents', async () => {
+  const { refreshMemberLogicalOrganizationGet } = await import('./member-logical-org-proof.mjs');
+  for (const [hitTarget, animating, category, stable, center] of [
+    [false, true, 'hit_affecting_or_unknown', false, 'other_element'],
+    [true, false, 'none', true, 'target'],
+  ]) {
+    const outputDir = await mkdtemp(join(tmpdir(), 'auth-pointer-evidence-'));
+    const report = {};
+    const error = new Error('private-token');
+    error.driverFailure = {
+      code: 'pointer_stable_hit_not_observed',
+      matchedTargetCount: 1,
+      visibleMatchCount: 1,
+      hitTarget,
+      animating,
+      animationCategory: category,
+      positionStable: stable,
+      stableSamples: 2,
+      targetHasArea: true,
+      clippedTargetHasArea: true,
+      selectedPointAvailable: true,
+      centerHitCategory: center,
+      raw: 'private-token',
+    };
+    try {
+      await assert.rejects(
+        () =>
+          runMemberAuthBoundary('member_logical_organization_proof', null, () =>
+            refreshMemberLogicalOrganizationGet(
+              {},
+              { arm() {} },
+              async () => {
+                throw error;
+              },
+              (value) => recordScrapeSaveCheckpoint(report, 'auth_diagnostic', value, outputDir),
+            ),
+          ),
+        (caught) => caught.memberAuthFailureCode === 'pointer_stable_hit_not_observed',
+      );
+      const saved = JSON.parse(
+        await readFile(join(outputDir, 'scrape-save-native-acceptance.json'), 'utf8'),
+      );
+      assert.equal(saved.auth_diagnostic.hit_target, hitTarget);
+      assert.equal(saved.auth_diagnostic.animating, animating);
+      assert.equal(saved.auth_diagnostic.animation_category, category);
+      assert.equal(saved.auth_diagnostic.position_stable, stable);
+      assert.equal(saved.auth_diagnostic.center_hit_category, center);
+      assert.equal(JSON.stringify(saved).includes('private-token'), false);
+    } finally {
+      await rm(outputDir, { recursive: true, force: true });
+    }
+  }
+});

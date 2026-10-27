@@ -27,7 +27,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Observe new exact synchronized-main full CI, import/promote eligible artifact, and repeat original native case with safe new diagnostics plus surrounding cases. Product/driver cause remains unknown until first bad boundary is measured. Keep original click/insert/wait and immutable baseline unchanged; never relax comparators/rebaseline or infer input remount from document timeOrigin. D300 late/sibling retention scope remains open; D301 automatic extraction remains untested. No CI/native/source-count conflation, paid relocation or Store closure.",
+  "next_action": "Successful exact synchronized-main CI/artifact for committed supporting auth pointer capture unit, then one discriminating member native retest through unchanged normal gates. Original D301 name-entry remains untested on diagnostic source; underlying product/driver cause UNKNOWN. Keep source gates/diagnostic capture separate from actual native/Store acceptance; no blind retry or resource bypass.",
   "transition_history": [
     {
       "at": "2026-10-27T20:56:20.359552+00:00",
@@ -48,5 +48,27 @@
   "diagnostic_independent_review": "docs/stabilization/reports/failure-capture-source-peer-20261027.json",
   "native_diagnostic_retest": "UNVERIFIED",
   "underlying_product_cause": "UNKNOWN",
-  "diagnostic_source_fix_sha": "8157f0811f675548c867b740121229793afba376"
+  "diagnostic_source_fix_sha": "8157f0811f675548c867b740121229793afba376",
+  "current_native_observation": {
+    "run_id": 40590496401,
+    "source_sha": "f670242504c54f99f434d74236a3155b0d713e54",
+    "stage": "member_auth/member_logical_organization_proof",
+    "error": "pointer_stable_hit_not_observed",
+    "original_reproduction_reached": false,
+    "authentication": null,
+    "scope": "Samecase stopped earlier, before actual Tools mouse dispatch. Existing safe pointer veto sample is dropped by shared auth report; supporting capture repair owned by root. Product/driver cause UNKNOWN. No D301 closure."
+  },
+  "supporting_auth_capture": {
+    "owner": "root/auth_pointer_capture_fix",
+    "state": "source-verified-native-pending",
+    "evidence": [
+      "docs/stabilization/reports/member-data-f670-report-20261027.json",
+      "docs/stabilization/reports/member-f670-failure-peer-20261027.json"
+    ],
+    "scope": "Retain preexisting finite pointer veto evidence through shared Records/auth/persisted checkpoint. Preserve pointer sampling/admission/input/budgets and primary error. No extra browser read or product fix.",
+    "source_fix_sha": "b23fa826a02324f2d1c6920ba488d21569bd0220",
+    "verification": "docs/stabilization/reports/auth-pointer-capture-fix-20261027.json",
+    "independent_review": "docs/stabilization/reports/auth-pointer-final-peer-20261027.json",
+    "gate_audit": "docs/stabilization/reports/auth-pointer-gate-audit-20261027.json"
+  }
 }

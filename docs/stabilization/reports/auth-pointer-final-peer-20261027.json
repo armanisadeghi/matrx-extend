@@ -1,0 +1,68 @@
+{
+  "task_id": "auth-pointer-final-peer",
+  "at": "2026-10-27T22:14:09.424813+00:00",
+  "status": "SOURCE_REVIEW_COMPLETE_FINAL_GATES_PENDING",
+  "prior_findings": {
+    "failure_callback_rejection": "ADDRESSED",
+    "stage_callback_sync_throw_and_rejection": "ADDRESSED"
+  },
+  "verdict_A": {
+    "verdict": "PASS_SOURCE_CAPABILITY_ONLY",
+    "facts": [
+      "Records stage and failure paths reuse one best-effort emitter; synchronous exceptions cannot prevent primary click and rejected promises are consumed immediately.",
+      "Promise.resolve assimilates returned thenables: a throwing then getter becomes a handled rejection; sync invocation exceptions are caught.",
+      "Original primary click exception/value is rethrown unchanged. Driver sampling, input, timing budgets and application behavior are untouched.",
+      "Own data pointer facts are retained through actual Records caller, auth boundary, and checkpoint projection; unknown strings and raw contents are omitted."
+    ],
+    "native_pointer_cause": "UNKNOWN",
+    "data_name_test": "NOT_REACHED",
+    "live_native_verified": false
+  },
+  "verdict_B": {
+    "verdict": "PASS_SOURCE_REVIEW_PENDING_FINAL_GATES",
+    "findings": [],
+    "reuse": "Shared finite pointer projector used at all three changed diagnostic boundaries; local emitter serves both Records diagnostic paths.",
+    "guard_quality": "Actual caller + boundary + checkpoint writer assertion uses opposite booleans and category observations; guards assert original exception identity and actual click count. Strict rejection child-process guards cover failure-only and always-failing stage callbacks.",
+    "red_green": "Actor report records stage guard and failure guard red exit1 -> green exit0; not independently rerun.",
+    "limitations": [
+      "No duplicate test/permit execution; source and persisted evidence review only.",
+      "No explicit thenable regression guard, but Promise.resolve/catch source handles throwing then getter and rejection."
+    ]
+  },
+  "source_hashes": {
+    "tests/browser/member-logical-org-proof.mjs": "aec984b177a0d85655ede06278e4a954a05ade67db6dbfcbbaac531db5051d1a",
+    "tests/browser/member-records-proof271.test.mjs": "778b5b83861406cafeca553057ca64a945c4e8241148c21702beafc858245398",
+    "tests/browser/scrape-save-auth-report.mjs": "9725a1bd2c554d263a5b0994203c78158de0de15d999ad58ea1f0b5a1a3d2fdc",
+    "tests/browser/scrape-save-member-auth-diagnostic.test.mjs": "985478b0a3a6058dee8597175568ae9944cc18a4ab5f4518e6d505f7350153e7",
+    "tests/browser/settings-member-auth-diagnostic.mjs": "051740aa7e7c1e48163675456a137fc8beebd98d1e9032211bcf02d4542759b1",
+    "tests/browser/settings-member-auth-diagnostic.test.mjs": "389f35725d151cc0b21eb0c4987add7b1f6b4eacc76f4071653768c90dfc40b3"
+  },
+  "gates": {
+    "focused_final": { "run_id": "auth-pointer-focused-1027d", "status": "pending" },
+    "focused_final_journal": "docs/stabilization/resource-journals/auth-pointer-focused-1027d.pending.jsonl: RESOURCE_JOURNAL_OPENED only at inspection",
+    "focused_previous": {
+      "run_id": "auth-pointer-focused-1027c",
+      "exit": 0,
+      "decision": "valid",
+      "passed": 1196,
+      "skipped": 11,
+      "journal_sha256": "3916e8a623f36bf238742d26959c9b926fdcbb82500c6288d1846790565e2d07"
+    },
+    "compile": {
+      "run_id": "auth-pointer-compile-1027",
+      "exit": 0,
+      "decision": "valid",
+      "journal_sha256": "56f883583db443e55bfa6e8c9dd157fa0d02194600d3f1ada0a541b4b5bd9642",
+      "scope": "before async callback follow-up"
+    },
+    "lint": "PENDING at final review; no final actor evidence available",
+    "independent_execution": "NOT_RUN: prior resource command refused COMMAND_NOT_ALLOWED; no bypass or duplicate run"
+  },
+  "source_edits": 0,
+  "native_UI_runs": 0,
+  "auth_mutations": 0,
+  "CI_dispatches": 0,
+  "children_spawned": 0,
+  "publication": "Typed source-only review; not native acceptance. Private report original hash retained; no raw authenticated fixture payload.",
+  "private_original_sha256": "dc32e8252b6f962a4d91aea6d32a8a944ec6efca216de14d4ca3ecddd30eed45"
+}

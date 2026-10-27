@@ -56,3 +56,38 @@ test('member Settings authentication continues through successful boundaries', a
   ]);
   assert.deepEqual(result, { identity_observed: true });
 });
+
+test('member auth boundary retains bounded pointer evidence and rejects accessor data', async () => {
+  const { runMemberAuthBoundary } = await import('./settings-member-auth-diagnostic.mjs');
+  for (const hit of [true, false]) {
+    const failure = {
+      code: 'pointer_stable_hit_not_observed',
+      hitTarget: hit,
+      animationCategory: 'private-secret',
+      raw: 'private-secret',
+    };
+    Object.defineProperty(failure, 'animating', {
+      get() {
+        throw new Error('getter');
+      },
+    });
+    const original = Object.freeze(
+      Object.assign(new Error('private-secret'), { driverFailure: Object.freeze(failure) }),
+    );
+    await assert.rejects(
+      () =>
+        runMemberAuthBoundary('member_logical_organization_proof', null, async () => {
+          throw original;
+        }),
+      (caught) => {
+        assert.equal(caught.memberAuthFailureCode, 'pointer_stable_hit_not_observed');
+        assert.deepEqual(caught.driverFailure, {
+          code: 'pointer_stable_hit_not_observed',
+          hit_target: hit,
+        });
+        assert.equal(JSON.stringify(caught.driverFailure).includes('private-secret'), false);
+        return true;
+      },
+    );
+  }
+});

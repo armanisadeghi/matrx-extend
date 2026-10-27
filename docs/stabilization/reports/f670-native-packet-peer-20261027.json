@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "task": "f670-native-packet-peer",
+  "status": "DONE_WITH_LIMITS",
+  "reviewed_at": "2026-10-27T22:12:50.957828+00:00",
+  "scope": "Read-only local privacy/provenance/inventory packet review of exactly six named public reports and original private evidence. Source/gates, root coordinator current truth, and other mutable reports excluded. No UI/native run/API/DB/auth/dispatch/heavy operations. Only this private review report written.",
+  "public_sha256": {
+    "docs/stabilization/reports/disk-f670-adoption-20261027.json": "ce463e9e5152dfb8ebdb57f0afcc6542ca89e2413d1dc3fe9eee5c1ff7c8d6ad",
+    "docs/stabilization/reports/disk-f670-peer-20261027.json": "2d83c3dd760468fa5b81060e2ae522f3fc69d39f3e70314206c9d73395dda193",
+    "docs/stabilization/reports/member-data-f670-report-20261027.json": "ee0463ffd1fed1c94cc527fe96ba9ab4686bef6fc2f6f26169528fb198a9c0ba",
+    "docs/stabilization/reports/member-f670-failure-peer-20261027.json": "4540e0c4d1b0cc36e454e1a66df38b519f8b254530e433a076606856fb1dc58a",
+    "docs/stabilization/reports/settings-controls-f670-20261027.json": "20937323369397c0139db64e0949f5e8e337382b691bcc7e43105be76346dfea",
+    "docs/stabilization/reports/settings-f670-primary-diagnosis-20261027.json": "cb64580c1ac1dde878f4af65cc561f5c527c419118bd9c26b266ffeadf149b91"
+  },
+  "verdict_A": {
+    "status": "PASS_WITH_LIMITS",
+    "meaning": "Packet faithfully retains failed native boundaries and bounded coverage; no native/product acceptance inferred.",
+    "checks": [
+      "All six private_original_sha256 values match actual private original bytes. Shared original/public semantic fields match except member next_action wording adds repair authority; this is action text, not changed evidence.",
+      "Both original native ZIP SHA256 values match published references; all twelve original member byte lengths/hashes verify. Member report thirteen private evidence references also match actual bytes.",
+      "Settings original native19 case ids/statuses exactly match typed derivative:5fail/5pass/9unverified. Primary warm_observation/initial_mode_compare T10_shadow_baseline_mismatch_before_capture retained. Five failures represent missing full extension rechecks; no predicate/app cause credit.",
+      "Member original native member_auth/member_logical_organization_proof pointer_stable_hit_not_observed retained; authentication=null, observations empty, cleanup=null. No name-entry or automatic extraction acceptance.",
+      "HEAD-to-working-inventory semantic results diff contains exactly EXT-F-1003-T10 guest partial and EXT-F-2005-T08 member unverified; both superseded1038 results preserved exactly in previous_results, older historical result retained.",
+      "Generated STATUS.md/STATUS.html reference exact new runs with partial/unverified badges; CHECKLIST change only freshness. D300/D301 remain in-fix. No case/feature closure added."
+    ],
+    "source_boundary": {
+      "source_sha": "f670242504c54f99f434d74236a3155b0d713e54",
+      "development_run": 40587669744,
+      "development_artifact": 12774320314,
+      "version": "0.2.630",
+      "tree_sha256": "c134c28e0cc7f2fb62076e9cc3727fc49d34a5a0dfccf47cc8b81b71dae9ede9",
+      "limits": "Frozen unpacked DEV disk/native identity only; no current later main transfer, owner Chrome reload, Store, member completion, full extension reload or backend/browser/profile certification. No new official metadata download in this review."
+    }
+  },
+  "verdict_B": {
+    "status": "PASS_WITH_LIMITS",
+    "privacy": "Six public reports contain typed booleans/counts/stages/build metadata and private file/hash references, not raw auth/org identity/storage values, authenticated links, raw logs, images or ZIP bytes. URL enumeration contains only GitHub run/artifact metadata endpoints, including official ZIP download URL; no authenticated login link. No JWT/sensitive key/value overlap found against private fixture, dispatch, owned-readback and plan objects. Private checkpoint files are not git-tracked.",
+    "integrity": "Local original-byte and derivative checks pass; no independent native replay, fresh remote metadata read, installed tree rehash, or live DB cleanup read was performed by this reviewer. Prior peers\u2019 fresh official checks remain historical peer evidence.",
+    "cleanup": "Actor receipt records zero owned rows before/after, fixture restored/reread, secret/auth-file absence and observer closure. This reviewer checked corresponding hashed local receipts; their existence/internal consistency does not become fresh DB or remote process proof. Settings terminal workflow/source-chain cleanup inference remains expressly short of independent remote profile/process readback.",
+    "resources": "Both guest finals admitted/noninvalid child_failed; CPU pending/recovery events do not establish causal resource failure. Package/browser valid finals are not proof every interval was healthy.",
+    "findings": []
+  },
+  "limitations": [
+    "No overall-health or application-cause verdict.",
+    "Source implementation and executable gates were not frozen/reviewed in this packet lane.",
+    "Privacy assessment scoped to six named public reports and inventory/generated-view deltas, not the repository or historical evidence corpus."
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-27T13:49:55.424027+00:00",
+  "updated_at": "2026-10-27T22:04:03.551921+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -8654,34 +8654,34 @@
           ],
           "results": {
             "guest": {
-              "run_id": "40579558041",
-              "source_sha": "103850a3e2168311a370dca67dbd99e00f342715",
-              "development_ci_run_id": 40577593421,
-              "development_artifact_id": 12767619920,
+              "status": "partial",
+              "run_id": 40590805172,
+              "source_sha": "f670242504c54f99f434d74236a3155b0d713e54",
+              "development_ci_run_id": 40587669744,
+              "development_artifact_id": 12774320314,
               "build_version": "0.2.630",
               "resource_invalid": false,
               "acceptance_run_successful": false,
               "full_case_pass": false,
               "new_product_credit": false,
-              "status": "partial",
               "observed_subtargets": [
-                "warmAskrefusal",
-                "realSettingsChatPilotstorefootprints_absent_before_after_panelreload_againstimmutablewarmexpectation",
-                "actualChatActconsumer_samepanel_withoutAIcall"
+                "warm Ask refusal",
+                "actual settings/chat/pilot absence before/after panel reload",
+                "actual Chat Act consumer withoutAI"
               ],
+              "failure_stage": "warm_observation/initial_mode_compare",
+              "error_code": "T10_shadow_baseline_mismatch_before_capture",
               "unverified": [
-                "latefootprintafterinterveningsiblingwrites",
-                "fullmanagementextensionReload_worker_panelreplacement",
-                "postextensionReloadconsumer",
-                "exactwarmbaselineexception_productvsdrivercause",
-                "runtimebrowser_profile_backend_Store_currentmain"
+                "specific false comparator predicate and late snapshot",
+                "full management extension Reload and worker/panel replacement",
+                "postextension consumer",
+                "exactbrowser/profile/backend/Store/currentmain"
               ],
               "evidence": [
-                "docs/stabilization/reports/settings-controls-1038-20261027.json",
-                "docs/stabilization/reports/settings-1038-failure-diagnosis-20261027.json",
-                "docs/stabilization/reports/native1038-publication-manifest-20261027.json"
+                "docs/stabilization/reports/settings-controls-f670-20261027.json",
+                "docs/stabilization/reports/settings-f670-primary-diagnosis-20261027.json"
               ],
-              "scope": "Original1038retstFAILEDacceptance; warmT10actual3storeabsence/refusal/panelReload/ChatActretained. LatercaptureGuestPreferenceBaselines stoppedbeforeextensionreload. Primaryexceptiondiscardedbyordinarycatch, exactcauseUNKNOWN; immutablemismatchafterothercasewritesplausibleNOTproven. Whitelist/Reactguessesnotfixbasis. Fivefull_extension_recheck_missing aresecondaryacceptancefailuresNOTfiveproductbugs. NoCPU_PENDING/resourceInvalid; nativechildfailed1, no verifierinvented. D299/D300/fullT10/Storestayopen."
+              "scope": "Same later baseline boundary failed, now primary error retained. Five raw failures secondary missingfullrecheck, notfiveprovenbugs. Warm three absent store footprints/refusal/panelReload/consumer happen before later siblingwrites. Guest6CPU_PENDING2RECOVERED, finalnoninvalidchildfailed1; causal resource explanation unproven. No retry/rebaseline/comparator relaxation/appcause/closure."
             }
           },
           "linked_defects": [
@@ -9286,6 +9286,40 @@
                 ],
                 "scope": "Frozen source80 CI development unpacked actual signed-out native UI only. Raw batch12pass/0fail/7unknown does not confer12 inventoryPASS cells. Full T10 remains partial."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "run_id": "40579558041",
+                "source_sha": "103850a3e2168311a370dca67dbd99e00f342715",
+                "development_ci_run_id": 40577593421,
+                "development_artifact_id": 12767619920,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "status": "partial",
+                "observed_subtargets": [
+                  "warmAskrefusal",
+                  "realSettingsChatPilotstorefootprints_absent_before_after_panelreload_againstimmutablewarmexpectation",
+                  "actualChatActconsumer_samepanel_withoutAIcall"
+                ],
+                "unverified": [
+                  "latefootprintafterinterveningsiblingwrites",
+                  "fullmanagementextensionReload_worker_panelreplacement",
+                  "postextensionReloadconsumer",
+                  "exactwarmbaselineexception_productvsdrivercause",
+                  "runtimebrowser_profile_backend_Store_currentmain"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/settings-controls-1038-20261027.json",
+                  "docs/stabilization/reports/settings-1038-failure-diagnosis-20261027.json",
+                  "docs/stabilization/reports/native1038-publication-manifest-20261027.json"
+                ],
+                "scope": "Original1038retstFAILEDacceptance; warmT10actual3storeabsence/refusal/panelReload/ChatActretained. LatercaptureGuestPreferenceBaselines stoppedbeforeextensionreload. Primaryexceptiondiscardedbyordinarycatch, exactcauseUNKNOWN; immutablemismatchafterothercasewritesplausibleNOTproven. Whitelist/Reactguessesnotfixbasis. Fivefull_extension_recheck_missing aresecondaryacceptancefailuresNOTfiveproductbugs. NoCPU_PENDING/resourceInvalid; nativechildfailed1, no verifierinvented. D299/D300/fullT10/Storestayopen."
+              },
+              "reason": "Fresh exactf670 diagnostic retest identifies primary initial comparison failure; preserve original1038 observations."
             }
           ]
         },
@@ -12107,7 +12141,7 @@
                 "docs/stabilization/reports/settings-guest-capture-944-peer-20261027.json",
                 "docs/stabilization/reports/settings944-publication-manifest-20261027.json"
               ],
-              "scope": "Frozen944 bounded13nativeassertions reviewed; not13casepasses. All3resourcefinalvalid0 after two guestCPU_PENDING recoveries19:44:03\u219219:44:52 and19:45:08\u219219:45:56; not allintervalhealthy. OriginalsendMessage observer calls real function; captures match exact owned fixtureURL/articlemarker. OFFzero only bounded3s. Formal Settings signed-out precondition notasserted; fullT40partial. Imagesstartup/demo only/no targetmarker corroboration. No supported normalguest verifier; independent historical evidence review only/no freshnative replay. Remote profile deletion notobserved. No D299/D300/globalSettings/Store closure."
+              "scope": "Frozen944 bounded13nativeassertions reviewed; not13casepasses. All3resourcefinalvalid0 after two guestCPU_PENDING recoveries19:44:03→19:44:52 and19:45:08→19:45:56; not allintervalhealthy. OriginalsendMessage observer calls real function; captures match exact owned fixtureURL/articlemarker. OFFzero only bounded3s. Formal Settings signed-out precondition notasserted; fullT40partial. Imagesstartup/demo only/no targetmarker corroboration. No supported normalguest verifier; independent historical evidence review only/no freshnative replay. Remote profile deletion notobserved. No D299/D300/globalSettings/Store closure."
             }
           },
           "result_history": [
@@ -27726,7 +27760,7 @@
                 "docs/stabilization/reports/result-tabs-evidence-peer-20261021.json",
                 "docs/stabilization/resource-journals/guest-result-tabs-b8-20261021-1804.jsonl"
               ],
-              "detail": "GuestProfile10 actualDEVpath/ID/584/SignInEmail\u2014,6panes warm+reload; retained sanitizedAXexcerpts;35/42calls,14entryfulljournalvalid0/actualprocess0,2ownedtabsclosed. Fresh evidencepeer acceptsboundedobservations, fullcasepartial. NoexplicitVideoemptytext is observation, notconfirmeddefect."
+              "detail": "GuestProfile10 actualDEVpath/ID/584/SignInEmail—,6panes warm+reload; retained sanitizedAXexcerpts;35/42calls,14entryfulljournalvalid0/actualprocess0,2ownedtabsclosed. Fresh evidencepeer acceptsboundedobservations, fullcasepartial. NoexplicitVideoemptytext is observation, notconfirmeddefect."
             }
           ],
           "result_history": [
@@ -33136,7 +33170,7 @@
                 "docs/stabilization/reports/seo909-native-certificate-20261027.json",
                 "docs/stabilization/reports/seo-909-native-peer-20261027.json"
               ],
-              "scope": "Frozen workflow3de/app909 guest native360 stacked/long notice target only:9target/0noticehits, trustedrunning\u2192settled/currenttitle and independentdismiss2\u21921\u21920/cleanup2of2. All3resourcefinalsvalid0/no pending, originalhistoricalcertificate+freshcanonicalreplayvalid. Startupimages do notcorroboratetargetgeometry; browser/profile/backendunobserved. Originalwrong-source preflightrefusal retained, oneowner-authorized correctednormalattempt. FullT02/D199/otherroles/latest280/Store unchanged."
+              "scope": "Frozen workflow3de/app909 guest native360 stacked/long notice target only:9target/0noticehits, trustedrunning→settled/currenttitle and independentdismiss2→1→0/cleanup2of2. All3resourcefinalsvalid0/no pending, originalhistoricalcertificate+freshcanonicalreplayvalid. Startupimages do notcorroboratetargetgeometry; browser/profile/backendunobserved. Originalwrong-source preflightrefusal retained, oneowner-authorized correctednormalattempt. FullT02/D199/otherroles/latest280/Store unchanged."
             }
           },
           "result_history": [
@@ -33936,7 +33970,7 @@
                   "docs/stabilization/reports/seo-dd5e-native-certificate-20261027.json",
                   "docs/stabilization/reports/seo-dd5e-native-peer-20261027.json"
                 ],
-                "scope": "Frozen dd5e workflow/app eBee; native360 stacked 199-character notices leave all9 Re-audit points clear, trusted running/settled/current title and independent dismiss2\u21921\u21920; cleanup2/2. All3resources valid0/no pending. Fresh independent evidence peer accepts original historical certificate; new replay refused after Settings executable edits. Startup images do not show target. Exact executed browser/profile/backend unverified. No full T02/D199/current-main/member/admin/Store acceptance."
+                "scope": "Frozen dd5e workflow/app eBee; native360 stacked 199-character notices leave all9 Re-audit points clear, trusted running/settled/current title and independent dismiss2→1→0; cleanup2/2. All3resources valid0/no pending. Fresh independent evidence peer accepts original historical certificate; new replay refused after Settings executable edits. Startup images do not show target. Exact executed browser/profile/backend unverified. No full T02/D199/current-main/member/admin/Store acceptance."
               }
             }
           ],
@@ -49399,40 +49433,36 @@
               "detail": "Signed-out useAutoExtract returns before starting the automatic extraction path; this does not waive guest Data or access-control checks."
             },
             "member": {
-              "run_id": "40579681320",
-              "source_sha": "103850a3e2168311a370dca67dbd99e00f342715",
-              "development_ci_run_id": 40577593421,
-              "development_artifact_id": 12767619920,
+              "status": "unverified",
+              "run_id": 40590496401,
+              "source_sha": "f670242504c54f99f434d74236a3155b0d713e54",
+              "development_ci_run_id": 40587669744,
+              "development_artifact_id": 12774320314,
               "build_version": "0.2.630",
               "resource_invalid": false,
               "acceptance_run_successful": false,
               "full_case_pass": false,
               "new_product_credit": false,
-              "status": "unverified",
-              "failure_stage": "save_pattern",
-              "error_code": "data_member_pattern_name_entered_not_observed",
-              "auth_preconditions_verified": "realordinarymember/nonadmin/approvedorg",
-              "observed_setup": [
-                "twopickerfields_distinctpreviews",
-                "uniquenameinput_andSavepatternbutton"
-              ],
+              "failure_stage": "member_auth/member_logical_organization_proof",
+              "error_code": "pointer_stable_hit_not_observed",
+              "auth_preconditions_verified": false,
               "not_exercised": [
-                "saveclick",
-                "patternwrite",
-                "automaticextractionstates"
+                "Tools click dispatch",
+                "logical organization proof completion",
+                "original name entry",
+                "automatic extraction states"
               ],
               "evidence": [
-                "docs/stabilization/reports/member-data-1038-20261027.json",
-                "docs/stabilization/reports/member-data-1038-failure-diagnosis-20261027.json",
-                "docs/stabilization/reports/native1038-publication-manifest-20261027.json"
+                "docs/stabilization/reports/member-data-f670-report-20261027.json",
+                "docs/stabilization/reports/member-f670-failure-peer-20261027.json"
               ],
-              "scope": "OriginaltrustedCDPclick/Input.insertText ran butexpectedvalueequalitynotobserved. ProductvsdriverUNKNOWN; no failingfocus/inputstate/lastwaittargetcapture. D300notDataUIchange. NormalverifierHOSTED_RUN_NOT_SUCCESSFUL; package/browservalid0, guestchildfailed1(noninvalid). Ownedsecret/authfilesabsent/exactarchiveRestoredReadback/exactrunownedpatternrows0 independentlyreviewed; remoteprofiledeletionunobserved. NoT08productpass/defectclosure/AIcall/retry."
+              "scope": "Shared pointer admission refused before mouse dispatch; one matched/visible target and expected selected organization do not prove complete browser member authentication. Safe pointer veto details lost. Cause UNKNOWN; no resource cause proven, busy sample recovered and guest final child_failed1 NONINVALID. Original D301 not reached. Exact fixture archive and zero fresh-run rows restored/readback by actor, secret/authfiles absent; peer verified receipt consistency and GitHub secret absence, not fresh DB read. Remote profile deletion unknown. No retry/AI/closure."
             },
             "admin": {
               "status": "unverified"
             }
           },
-          "verification_status": "member-pass-frozen-0.2.493; guest-not-applicable; admin-unverified; feature-incomplete",
+          "verification_status": "member-unverified-current-f670; frozen0.2.493 pass retained; guest-not-applicable; admin-unverified; feature-incomplete",
           "previous_results": [
             {
               "mode": "member",
@@ -49469,6 +49499,41 @@
                 "screenshots": "Hosted screenshots show generic guest Chat, not T08; native rendered-DOM assertions and independently reviewed artifact/journals support the bounded member verdict.",
                 "detail": "Independent A/B review passed bounded member T08 on frozen CI development v0.2.493 source a98c46a7d01cbf99af88aa90e4cabc296546a46f. Native driver observed all applicable member running/success/no_match/error/manual-Extract states and matching selected organization header/body on saved-pattern POST. Exact owned row cleanup and selector restoration passed; all three hosted resource finals were valid. This is a historical frozen member case pass, not current-main, admin, Store or whole-feature acceptance."
               }
+            },
+            {
+              "mode": "member",
+              "result": {
+                "run_id": "40579681320",
+                "source_sha": "103850a3e2168311a370dca67dbd99e00f342715",
+                "development_ci_run_id": 40577593421,
+                "development_artifact_id": 12767619920,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "status": "unverified",
+                "failure_stage": "save_pattern",
+                "error_code": "data_member_pattern_name_entered_not_observed",
+                "auth_preconditions_verified": "realordinarymember/nonadmin/approvedorg",
+                "observed_setup": [
+                  "twopickerfields_distinctpreviews",
+                  "uniquenameinput_andSavepatternbutton"
+                ],
+                "not_exercised": [
+                  "saveclick",
+                  "patternwrite",
+                  "automaticextractionstates"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/member-data-1038-20261027.json",
+                  "docs/stabilization/reports/member-data-1038-failure-diagnosis-20261027.json",
+                  "docs/stabilization/reports/native1038-publication-manifest-20261027.json"
+                ],
+                "scope": "OriginaltrustedCDPclick/Input.insertText ran butexpectedvalueequalitynotobserved. ProductvsdriverUNKNOWN; no failingfocus/inputstate/lastwaittargetcapture. D300notDataUIchange. NormalverifierHOSTED_RUN_NOT_SUCCESSFUL; package/browservalid0, guestchildfailed1(noninvalid). Ownedsecret/authfilesabsent/exactarchiveRestoredReadback/exactrunownedpatternrows0 independentlyreviewed; remoteprofiledeletionunobserved. NoT08productpass/defectclosure/AIcall/retry."
+              },
+              "superseded_at": "2026-10-27T22:04:03.551921+00:00",
+              "reason": "Fresh f670 native attempt stopped earlier in auth pointer admission; original1038 name-entry evidence preserved without cause inference."
             }
           ]
         },

@@ -1,0 +1,210 @@
+{
+  "task_id": "auth-pointer-gate-audit",
+  "at": "2026-10-27T22:19:44.385251+00:00",
+  "verdict_A": {
+    "verdict": "PASS_SOURCE_GATES_ONLY",
+    "six_hashes_match_current_actor_final_peer": true,
+    "final_gates": [
+      "auth-pointer-focused-1027d",
+      "auth-pointer-lint-1027",
+      "auth-pointer-compile-1027d"
+    ],
+    "actual_final_gates": "All three independently read journals have admitted=true, resourceInvalid=false, exitCode=0, decision=valid. No pending auth-pointer journal remains. Compile process absent at final process inspection.",
+    "source_hashes": {
+      "tests/browser/member-logical-org-proof.mjs": "aec984b177a0d85655ede06278e4a954a05ade67db6dbfcbbaac531db5051d1a",
+      "tests/browser/member-records-proof271.test.mjs": "778b5b83861406cafeca553057ca64a945c4e8241148c21702beafc858245398",
+      "tests/browser/scrape-save-auth-report.mjs": "9725a1bd2c554d263a5b0994203c78158de0de15d999ad58ea1f0b5a1a3d2fdc",
+      "tests/browser/scrape-save-member-auth-diagnostic.test.mjs": "985478b0a3a6058dee8597175568ae9944cc18a4ab5f4518e6d505f7350153e7",
+      "tests/browser/settings-member-auth-diagnostic.mjs": "051740aa7e7c1e48163675456a137fc8beebd98d1e9032211bcf02d4542759b1",
+      "tests/browser/settings-member-auth-diagnostic.test.mjs": "389f35725d151cc0b21eb0c4987add7b1f6b4eacc76f4071653768c90dfc40b3"
+    }
+  },
+  "verdict_B": {
+    "verdict": "PASS_BOUNDED_PROVENANCE",
+    "native_pointer_cause": "UNKNOWN",
+    "actual_Data_name_entry": "NOT_REACHED",
+    "live_native_verified": false,
+    "limitations": [
+      "Source hashes match at audit observations; journals do not bind frozen source hashes during gate execution. Actor explicitly records the same limitation.",
+      "Final gate commands and focused counts (1197 pass, 11 skip, 0 fail; 1208 total) and lint counts (3507 files, 1039 warnings) are actor-transcribed from tool outputs, not independently recovered output logs.",
+      "Original red and callback red/green outcomes are actor tool-transcript claims. Saved scratch red/fixed-green log SHA256 values independently match actor metadata.",
+      "Earlier fix b/focused c/compile success predates final callback delta; final d focused and compile plus final lint supersede them.",
+      "Independent adversarial command was refused before admission; this is not a test execution or product failure.",
+      "Final source peer source acceptance is valid for exact six hashes; its final-gate fields remain historical pending observations, superseded by this audit and updated actor evidence.",
+      "No product, Store release, native pointer cause or full-case closure claimed."
+    ]
+  },
+  "journals": [
+    {
+      "path": "docs/stabilization/resource-journals/auth-pointer-compile-1027.jsonl",
+      "sha256": "56f883583db443e55bfa6e8c9dd157fa0d02194600d3f1ada0a541b4b5bd9642",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T22:09:20.716Z",
+        "runId": "auth-pointer-compile-1027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ]
+    },
+    {
+      "path": "docs/stabilization/resource-journals/auth-pointer-compile-1027d.jsonl",
+      "sha256": "901678eee3386b7eb1b19ad803f9c51d6f92a287346ed4e49111e9900fa2080a",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T22:19:18.825Z",
+        "runId": "auth-pointer-compile-1027d",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ]
+    },
+    {
+      "path": "docs/stabilization/resource-journals/auth-pointer-fix-1027.jsonl",
+      "sha256": "1bbe3fcb5f6e5dca92dd316a5e5240c74c00faa8d4cced3814ae9e94fe0fd16f",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T22:03:58.354Z",
+        "runId": "auth-pointer-fix-1027",
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_MEASUREMENT_FAILED",
+        "RESOURCE_FINAL_DECISION"
+      ]
+    },
+    {
+      "path": "docs/stabilization/resource-journals/auth-pointer-fix-1027b.jsonl",
+      "sha256": "c344ca21cfb3c05bd28b5c77ecba6ab456f10f4f9d8af380766db4bb1060ce1e",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T22:07:36.563Z",
+        "runId": "auth-pointer-fix-1027b",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ]
+    },
+    {
+      "path": "docs/stabilization/resource-journals/auth-pointer-focused-1027c.jsonl",
+      "sha256": "3916e8a623f36bf238742d26959c9b926fdcbb82500c6288d1846790565e2d07",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T22:13:10.675Z",
+        "runId": "auth-pointer-focused-1027c",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ]
+    },
+    {
+      "path": "docs/stabilization/resource-journals/auth-pointer-focused-1027d.jsonl",
+      "sha256": "ebefca6d0ef6238ab1d418917458fd8f6d5f868d12199ca7bba6c33c56bd8ba5",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T22:16:56.935Z",
+        "runId": "auth-pointer-focused-1027d",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ]
+    },
+    {
+      "path": "docs/stabilization/resource-journals/auth-pointer-lint-1027.jsonl",
+      "sha256": "84804b6ffe2fe25b1dfce5ac4f3f0eb8fceec945aec912c2360300fd17a3caf0",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T22:18:07.875Z",
+        "runId": "auth-pointer-lint-1027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ]
+    },
+    {
+      "path": "docs/stabilization/resource-journals/auth-pointer-peer-1027.jsonl",
+      "sha256": "d6d27ab4794cb6beedb451a83634350dcc8203435eaf29b6a3d63f11b1b3b8d7",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T22:07:50.501Z",
+        "runId": "auth-pointer-peer-1027",
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json",
+        "RESOURCE_FINAL_DECISION"
+      ]
+    }
+  ],
+  "journal_count": 8,
+  "reproduced_log_hash_matches": {
+    ".output/stabilization-checkpoints/wake2135/auth-pointer-scratch-constant-red.log": true,
+    ".output/stabilization-checkpoints/wake2135/auth-pointer-scratch-erased-red.log": true,
+    ".output/stabilization-checkpoints/wake2135/auth-pointer-fixed-green.log": true
+  },
+  "actor_final_status": "SOURCE_GATES_PASS_PEER_REVIEW_PENDING",
+  "mutations": "Only this audit report written; no source writes, test reruns, UI/auth/native work, installs, builds or CI dispatches.",
+  "publication": "Typed source-only evidence; transcript-only counts/REDs and hash-observation limits retained. No native/product/Store acceptance.",
+  "private_original_sha256": "42ba69e86e2db371e6428abc6c13b5cbfb4060c1dcd7b159e74ec87cd4891563",
+  "integrated_source_commit": "b23fa826a02324f2d1c6920ba488d21569bd0220",
+  "final_independent_source_review": "docs/stabilization/reports/auth-pointer-final-peer-20261027.json",
+  "final_gate_audit": "docs/stabilization/reports/auth-pointer-gate-audit-20261027.json"
+}

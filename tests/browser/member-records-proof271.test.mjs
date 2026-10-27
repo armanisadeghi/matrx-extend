@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import {
   PRODUCTION_BACKEND_ORIGIN,
@@ -86,3 +87,78 @@ for (const target of ['title', 'tool-row']) {
     assert.equal(JSON.stringify(diagnostics).includes('private-credential'), false);
   });
 }
+
+test('Records diagnostic failure cannot replace the primary click exception', async () => {
+  for (const thrown of [
+    Object.freeze(
+      Object.defineProperty(new Error('pointer primary'), 'driverFailure', {
+        get() {
+          throw new Error('private getter');
+        },
+      }),
+    ),
+    'pointer primary',
+  ]) {
+    let clickEvents = 0;
+    await assert.rejects(
+      () =>
+        refreshMemberLogicalOrganizationGet(
+          {},
+          { arm() {} },
+          async () => {
+            throw thrown;
+          },
+          (value) => {
+            if (value.target === 'organization_tools_click' && ++clickEvents === 2)
+              throw new Error('diagnostic callback');
+          },
+        ),
+      (caught) => caught === thrown,
+    );
+    assert.equal(clickEvents, 2);
+  }
+});
+
+test('Records failure callback rejection cannot escape the primary click exception', () => {
+  const moduleUrl = new URL('./member-logical-org-proof.mjs', import.meta.url).href;
+  const script = `
+    const { refreshMemberLogicalOrganizationGet } = await import(${JSON.stringify(moduleUrl)});
+    let visits = 0;
+    const primary = new Error('pointer primary');
+    try {
+      await refreshMemberLogicalOrganizationGet({}, { arm() {} }, async () => { throw primary; },
+        value => { if (value.target === 'organization_tools_click' && ++visits === 2) return Promise.reject(new Error('callback rejected')); });
+      process.exit(3);
+    } catch (error) { if (error !== primary) process.exit(4); }
+    await new Promise(resolve => setImmediate(resolve));
+  `;
+  const result = spawnSync(
+    process.execPath,
+    ['--unhandled-rejections=strict', '--input-type=module', '-e', script],
+    { encoding: 'utf8' },
+  );
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test('Records stage reporting failures cannot prevent the primary click', () => {
+  const moduleUrl = new URL('./member-logical-org-proof.mjs', import.meta.url).href;
+  for (const mode of ['throw', 'reject']) {
+    const script = `
+      const { refreshMemberLogicalOrganizationGet } = await import(${JSON.stringify(moduleUrl)});
+      const primary = new Error('pointer primary');
+      let clicks = 0;
+      try {
+        await refreshMemberLogicalOrganizationGet({}, { arm() {} }, async () => { clicks++; throw primary; },
+          () => { if (${JSON.stringify(mode)} === 'throw') throw new Error('callback'); return Promise.reject(new Error('callback')); });
+        process.exit(3);
+      } catch (error) { if (error !== primary || clicks !== 1) process.exit(4); }
+      await new Promise(resolve => setImmediate(resolve));
+    `;
+    const result = spawnSync(
+      process.execPath,
+      ['--unhandled-rejections=strict', '--input-type=module', '-e', script],
+      { encoding: 'utf8' },
+    );
+    assert.equal(result.status, 0, `${mode}: ${result.stderr}`);
+  }
+});

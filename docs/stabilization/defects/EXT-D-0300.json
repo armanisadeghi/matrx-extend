@@ -34,7 +34,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Observe new exact synchronized-main full CI, import/promote eligible artifact, and repeat original native case with safe new diagnostics plus surrounding cases. Product/driver cause remains unknown until first bad boundary is measured. Keep original click/insert/wait and immutable baseline unchanged; never relax comparators/rebaseline or infer input remount from document timeOrigin. D300 late/sibling retention scope remains open; D301 automatic extraction remains untested. No CI/native/source-count conflation, paid relocation or Store closure.",
+  "next_action": "Queue same-sample finite comparator receipt to localize false T10 predicate without extra Chrome reads, raw storage or immutable-baseline/verdict change; prove actual caller/projector capture guards. Intermediate sibling container mutation is proven, late thrown predicate and application cause UNKNOWN. Remaining final-only report siblings/fullreload proof stay open. No closure from diagnostic source/nativepartial.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -78,5 +78,20 @@
   "diagnostic_independent_review": "docs/stabilization/reports/failure-capture-source-peer-20261027.json",
   "native_diagnostic_retest": "UNVERIFIED",
   "underlying_product_cause": "UNKNOWN",
-  "diagnostic_source_fix_sha": "8157f0811f675548c867b740121229793afba376"
+  "diagnostic_source_fix_sha": "8157f0811f675548c867b740121229793afba376",
+  "latest_diagnostic_native": {
+    "run_id": 40590805172,
+    "source_sha": "f670242504c54f99f434d74236a3155b0d713e54",
+    "primary": "T10_shadow_baseline_mismatch_before_capture",
+    "capture_stage": "initial_mode_compare",
+    "last_progress": "case_end T63 sequence62",
+    "native_status": "fail",
+    "resource_invalid": false,
+    "full_case_pass": false,
+    "specific_predicate": "UNKNOWN; late observed sample discarded",
+    "evidence": [
+      "docs/stabilization/reports/settings-controls-f670-20261027.json",
+      "docs/stabilization/reports/settings-f670-primary-diagnosis-20261027.json"
+    ]
+  }
 }
