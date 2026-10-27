@@ -1,0 +1,163 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T07:34:41.921350+00:00",
+  "reviewer": "/root/daily27_release_evidence_review",
+  "status": "PASS_WITH_LIMITS",
+  "actor": ".output/stabilization-checkpoints/release-daily-20261027.json",
+  "actor_sha256": "7810329d1f97770301dfc1660c70500939d7f5ce63f5a26447f13513f210c14d",
+  "actions": {
+    "UI": 0,
+    "network": 0,
+    "source_edits": 0,
+    "commits": 0,
+    "excluded_private_reads": 0
+  },
+  "A_behavior": {
+    "verdict": "PASS bounded current authenticated status and official-mail observation",
+    "published_version": "0.2.577",
+    "draft_version": "0.2.577",
+    "draft_status": "explicitly unpublished",
+    "published_status": "Published - public; published and available",
+    "identity": "exact primary hnfolienncfklkgmdjjmhhegglimlamg; publisherMatrx; arman@armansadeghi.com in safe original dashboard AX",
+    "pending": "No pending/review displayed in inspected exact-primary draft/published/package views only; no global no-pending inference",
+    "mail": "Safe completed item-scoped query shows oneOct23 publication577/Public; opened safe original-line projection identifies chromewebstore-noreply@google.com and correct primary item link/version/visibility. Broader query completion is actor claim supported by opened message URL; excluded full initial query original not independently opened.",
+    "cleanup": "safe projected original ownerVault tab restored and full guestNewTab AX/PNG; actions close ownedmail/dashboard, last extra dashboard tab closure corrected before focus restored",
+    "limits": [
+      "Independent evidence review, not fresh native replay or server/guestChat verification.",
+      "Private mail originals/projection completeness not independently compared; only safe line projections inspected.",
+      "No upload/submission/approvaltransition/public-listing-current/package-release acceptance claimed."
+    ]
+  },
+  "B_quality_provenance": {
+    "verdict": "PASS_WITH_LIMITS; no confirmed blocking resource or identity gap for this bounded Store observation",
+    "safe_actor_hashes": 15,
+    "private_excluded_unopened": 5,
+    "dashboard_screenshots_inspected": 3,
+    "resource": {
+      "admitted": "2026-10-27T07:18:28.518Z",
+      "actual_profile_volume": "intent actual Chrome user-data root; admission profile/system26.578GiB vs repo1588.957GiB",
+      "first_UI": "2026-10-27T07:29:54.050Z",
+      "last_UI": "2026-10-27T07:32:02.075Z",
+      "final": "2026-10-27T07:32:25.466Z valid0/resourceInvalidfalse",
+      "watch_reads": 456,
+      "max_gap_seconds": 2.0121837080223486,
+      "risks": 0,
+      "API_calls": 35,
+      "persisted_gates": 14,
+      "calls_before_first_persisted_gate": 3,
+      "subsequent_group_counts": [2, 4, 1, 2, 2, 4, 2, 4, 1, 3, 1, 2, 2, 2],
+      "initial_gate_limit": "Parent provides contemporaneous worker message: correct-root journal latest07:29:25 HEALTHY/no risks confirmed before firstUI. That manual check is not a row in gates.jsonl; do not claim all initial gate output is persisted. Continuous watch bridges firstinput with healthy read07:29:52.205587. PLAN requires initialmanualcheck but not a particular file schema; message plus continuoushealthy journal supports it, while independent replay of initialmanualread remains unavailable.",
+      "no_unsafe_during_UI": true,
+      "actual_process_exits": "Parent reported9330actual0 and45235actual0; completedjournal/watchreport independently agree finalvalid0, child did not own those livehandles."
+    },
+    "source_limit": "Actor source417/a1 preflight is explicitly timed snapshot; not current-main eligibility certificate. No release action occurred, so no stale artifact adopted."
+  },
+  "safe_publication_whitelist": {
+    ".output/stabilization-checkpoints/release-daily-20261027/a1-official-artifacts.json": {
+      "sha256": "0703d192c76e1cef2e891e53ff7a9e5e9acdc0111de3894f8ce75bd966cc7909",
+      "bytes": 798,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/actions.json": {
+      "sha256": "c4d3ab74955ae298debf86c4a30bc9d0e72abb5c32c59a9b1815419912e340a3",
+      "bytes": 4679,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/dashboard-package.ax.txt": {
+      "sha256": "5900f3bb26c8f8241e9f1dc06436516f7dafd71637123ceb28f2f70a313d17db",
+      "bytes": 8703,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/dashboard-package.png": {
+      "sha256": "61ad49fdec36a1b2eaea5ed5c2474499f2f662fef4aa16fe05f59359d2105552",
+      "bytes": 182436,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/dashboard-published.ax.txt": {
+      "sha256": "d7dc2ca6b26d2a74acae1f7679155e16e49688670255eea3989d4a00d7171574",
+      "bytes": 5830,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/dashboard-published.png": {
+      "sha256": "f8e04ef16fab290a65412cee34c37f15a24cad0b35d30cb1cda814586a23c48b",
+      "bytes": 113306,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/dashboard-status.ax.txt": {
+      "sha256": "242feb973e881549dd46b26aae75c4bff6b2d57efcacc5ed1d1e45b1706e616e",
+      "bytes": 5868,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/dashboard-status.png": {
+      "sha256": "9fedbe04c562552926d2463b5e3d5792e9e7eed65310bb037603eae5f1825081",
+      "bytes": 110849,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/gates.jsonl": {
+      "sha256": "20d5bdeb08c27c767752982591ab60c38c3599e9a486b946464076f78158c60c",
+      "bytes": 11343,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/mail-item-search.safe-projection.ax.txt": {
+      "sha256": "bd374f6c0f64169c6141658863491d60e8af5da213605327fd1ddf64ffba6dec",
+      "bytes": 2193,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/mail-publication.safe-projection.ax.txt": {
+      "sha256": "e027336690ccf30c0338078bdc6218e1793437c9576f3a3c9448057e28da77f9",
+      "bytes": 3170,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/restored-guest.ax.txt": {
+      "sha256": "8435c97644ee013f92723270c445ff01bcfcf52a7c2866e1294a23032e3ba445",
+      "bytes": 3716,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/restored-guest.png": {
+      "sha256": "26568e041b22ec0c9d0dc679a94aa8ca30d2d46fb387b5d6af96345f2feac6c4",
+      "bytes": 86761,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/restored-owner.safe-projection.ax.txt": {
+      "sha256": "b091a6e65afeddaf1ec0f04c10b9656d8d5012be9ed6eefeabf0461901071ff7",
+      "bytes": 298,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    ".output/stabilization-checkpoints/release-daily-20261027/rich-content-freshness.json": {
+      "sha256": "f125056db7f2f36e01796ab6849d33c1642c4d6739774d009e9e96720e0a95c0",
+      "bytes": 331,
+      "basis": "actor safe allowlist independently bytes/hash verified; text inspected, dashboard3PNG inspected"
+    },
+    "docs/stabilization/resource-journals/release27-correct-profile-20261027-0715.jsonl": {
+      "sha256": "ff20bc89a91a0f22b66e4343fe7b9d7656634f4549cdc0733473a2a9dcf58035",
+      "bytes": 23904,
+      "basis": "parent-owned resource evidence independently inspected"
+    },
+    ".output/stabilization-checkpoints/release27-correct-profile-watch-20261027.jsonl": {
+      "sha256": "8ac32b72d6512ddbd59dd91e7fa5307fdbe2a1baf3c7644c51568ea513695487",
+      "bytes": 152008,
+      "basis": "parent-owned resource evidence independently inspected"
+    },
+    ".output/stabilization-checkpoints/release27-correct-profile-watch-20261027-report.json": {
+      "sha256": "d5e84fe37551704b31d17bd95db682f7891a39c373abaf42d8ae6106c4be11be",
+      "bytes": 823,
+      "basis": "parent-owned resource evidence independently inspected"
+    },
+    ".output/stabilization-checkpoints/release27-correct-profile-intent-20261027.json": {
+      "sha256": "304d1c14cfbcdb9f0af4906610817cabd34cb6402fdb8880dc61b1a667650e78",
+      "bytes": 319,
+      "basis": "parent-owned resource evidence independently inspected"
+    }
+  },
+  "publication_exclusions": [
+    ".output/stabilization-checkpoints/release-daily-20261027/mail-item-search.private.ax.txt",
+    ".output/stabilization-checkpoints/release-daily-20261027/mail-item-search.private.png",
+    ".output/stabilization-checkpoints/release-daily-20261027/mail-publication.private.ax.txt",
+    ".output/stabilization-checkpoints/release-daily-20261027/mail-publication.private.png",
+    ".output/stabilization-checkpoints/release-daily-20261027/mail-search-initial.ax.txt"
+  ],
+  "next_action": "Parent publish safe report/maps/completedjournal, mark Oct27daily observation completed in canonicalledger and replace canonical Store currentstate. Continue actualStoreguestChat on ownlease; current realguest/nonadmin release gates remain unmet. Retain initialgate message-vs-file limit; no redundantprivate-status replay needed absent change.",
+  "original_private_report_sha256": "36e688840935f383ec9ad1017062d82d8bb7fc563a9dd3b792c08a3ea7733120",
+  "durable_evidence_manifest": "docs/stabilization/reports/cycle-0603-publication-manifest-20261027.json",
+  "publication_limits": "Only mapped evidence is retained publicly; unmapped logs/ZIP/private original bodies are private references, not public evidence. Original actor/peer verdicts retained with owner correction below. No new formal inventory credit, current-main health, defect closure or Store acceptance."
+}

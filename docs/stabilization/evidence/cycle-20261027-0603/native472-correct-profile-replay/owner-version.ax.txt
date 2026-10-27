@@ -1,0 +1,118 @@
+Window: "About Version", App: Google Chrome.
+0 standard window About Version - Google Chrome - Arman (armansadeghi.com), URL: chrome://version/, Secondary Actions: Raise
+	1 container About Version - Google Chrome - Arman (armansadeghi.com), URL: chrome://version/
+		2 container
+			3 toolbar
+				4 button Back
+				5 button (disabled) Forward
+				6 button Reload
+				7 container
+					8 pop up button Chrome
+					9 text field (settable) Address and search bar, Value: chrome://version, Placeholder: Ask Google or type a URL
+					10 button Bookmark this tab
+				11 container
+					12 pop up button LastPass
+					13 pop up button Matrx Extend DEV
+					14 pop up button Matrx
+					15 pop up button Extensions
+				16 button Work
+				17 pop up button Chrome
+			18 container
+				19 scroll area
+					20 HTML content About Version, URL: chrome://version/
+						21 container
+							22 image Chrome logo
+							23 text Google LLC
+							24 text Copyright 2026 Google LLC. All rights reserved.
+							25 container
+								26 container Google Chrome:
+									27 text Google Chrome :
+								28 container 156.0.8078.48 (Official Build) (arm64) Copy version string
+									29 container
+										30 text 156.0.8078.48  ( Official Build )  (arm64)
+									31 button Copy version string
+							32 container
+								33 container Revision:
+									34 text Revision :
+								35 container d0c02bfad08ec92a6ffcf989e53cd995e6381a4c-refs/branch-heads/8078@{#1314}
+									36 text d0c02bfad08ec92a6ffcf989e53cd995e6381a4c-refs/branch-heads/8078@{#1314}
+							37 container
+								38 container OS:
+									39 text OS :
+								40 container macOS Version 27.0.1 (Build 26A434)
+									41 container
+										42 text macOS Version 27.0.1 (Build 26A434)
+							43 container
+								44 container JavaScript:
+									45 text JavaScript :
+								46 container V8 15.6.75.19
+									47 text V8 15.6.75.19
+							48 container
+								49 container User Agent:
+									50 text User Agent :
+								51 container Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36
+									52 text Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36
+							53 container
+								54 container Command Line:
+									55 text Command Line :
+								56 container /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --profile-directory=Profile 8 --flag-switches-begin --flag-switches-end
+									57 text /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --profile-directory=Profile 8 --flag-switches-begin --flag-switches-end
+							58 container
+								59 container Executable Path:
+									60 text Executable Path :
+								61 container /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+									62 text /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+							63 container
+								64 container Profile Path:
+									65 text Profile Path :
+								66 container /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8
+									67 text /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8
+							68 container
+								69 container Linker:
+									70 text Linker :
+								71 container lld
+									72 text lld
+							73 container
+								74 container Variations Source:
+									75 text Variations Source :
+								76 container variations server
+									77 text variations server
+							78 container
+								79 container Command-line Variations:
+									80 text Command-line Variations :
+								81 container eyJkaXNhYmxlLWZlYXR1cmVzIjoiQXV0b2ZpbGxBaVdhbGxldFByaXZhdGVQ...
+									82 text eyJkaXNhYmxlLWZlYXR1cmVzIjoiQXV0b2ZpbGxBaVdhbGxldFByaXZhdGVQ...
+								83 container Copy variations string
+									84 button Copy variations string
+							85 container
+								86 container Active Variations:
+									87 text Active Variations :
+								88 container 832e9e2-ca7d8d80 a712e4cd-ca7d8d80 fa220cc1-377be55a f7adf49b-ca7d8d80 5d6e19f0-ca7d8d80 b64f1761-ca7d8d80 f7226032-ca7d8d80 5d43ba47-ca7d8d80 49d61dc2-ca7d8d80 2ad3343-ca7d8d80 6e153b90-ca7d8d80 bf7e54f4-ca7d8d80 7cef7344-3f4a17df 259f5c95-ca7d8d80 fd0a269a-60e4e4cd 4ce9e3a9-e3b828c5 d609f093-377be55a da968c94-ca7d8d80 3b79d4f4-7791d058 99fb13df-ca7d8d80 cdc6dc11-d465060b 92b406bd-825c464d e51c83b-ca7d8d80 3095aa95-3f4a17df 5033fb03-33c3eba5 b0b483da-ca7d8d80 e4d43646-ca7d8d80 a8d4875a-dc18c817 ff1e0777-33 (showing 0-100 of 191 items)
+									89 text 832e9e2-ca7d8d80 a712e4cd-ca7d8d80 fa220cc1-377be55a f7adf49b-ca7d8d80 5d6e19f0-ca7d8d80 b64f1761-ca7d8d80 f7226032-ca7d8d80 5d43ba47-ca7d8d80 49d61dc2-ca7d8d80 2ad3343-ca7d8d80 6e153b90-ca7d8d80 bf7e54f4-ca7d8d80 7cef7344-3f4a17df 259f5c95-ca7d8d80 fd0a269a-60e4e4cd 4ce9e3a9-e3b828c5 d609f093-377be55a da968c94-ca7d8d80 3b79d4f4-7791d058 99fb13df-ca7d8d80 cdc6dc11-d465060b 92b406bd-825c464d e51c83b-ca7d8d80 3095aa95-3f4a17df 5033fb03-33c3eba5 b0b483da-ca7d8d80 e4d43646-ca7d8d80 a8d4875a-dc18c817 ff1e0777-33c3eba5 58cdc9f0-d3dac184 153d998a-be68f3ee 81df393b-29326d4a 3fcc8d2-29326d4a f314f5b9-97ce6d6e 238649f0-321ca939 8095bf60-cd5781de b1b6eab0-ca7d8d80 4e5d86a8-7cfa6c5b f914376f-ca7d8d80 e9194174-3d47f4f4 38b96156-ca7d8d80 25d1e44f-ca7d8d80 52a4deb3-ca7d8d80 a582a1b8-5ad3f43d 6a64ab7e-377be55a 3b02c079-ca7d8d80 bd6dd170-ca7d8d80 19784e46-ca7d8d80 8d4c626e-377be55a 7515e6ea-ca7d8d80 6d423f36-ca7d8d80 9d5ecd8d-ca7d8d80 3299018c-ca7d8d80 557709c5-377be55a 310c8bf2-722cbc7b ed102d29-ee29209c d09c2d9-f54bd3e4 a0d52722-377be55a e6020cbf-377be55a 9ae8bfc4-6e522a5b 1e12d864-ca7d8d80 635e5df5-377be55a 432d9464-377be55a 3ca85ee1-ca7d8d80 334b1a1c-ca7d8d80 1db33038-377be55a b60ea2ed-ca7d8d80 2bdb6f15-377be55a f181271f-ca7d8d80 78049c75-7bc9a52b 46294e3b-aebaa9a8 c6fc28a7-ca7d8d80 4d4e8d94-377be55a 55cc39e1-42e09f37 66657049-17464aed a6ed9bee-f588741e c219b73b-ca3cb230 fca39b9a-e986cf53 3957ae57-c9a0730d 97604fae-ca7d8d80 126950a-ca7d8d80 7adbabf0-ca7d8d80 73d480d9-ca7d8d80 861960c3-377be55a 70640dfa-60e4e4cd b252442a-ca7d8d80 a29130c-ca7d8d80 9f8a0fd2-ca7d8d80 59ec3b4-ca7d8d80 3ac9fcb9-ca7d8d80 a015f6e1-ca7d8d80 d09b7b7d-ca7d8d80 4ce582eb-377be55a 626538e5-ca7d8d80 fc74ce3e-29326d4a 99a615e5-949af2cb a3652538-ca7d8d80 4fa4e3b8-377be55a 44fe0078-717062b5 8be81a01-ca7d8d80
+								90 container Copy variations string
+									91 button Copy variations string
+			92 pop up button Tab search
+			93 container
+				94 tab group
+					95 tab (settable, boolean) Vault | AI Matrx — AI Matrx - Memory usage - 269 MB, Value: off
+						96 button Close
+					97 tab (selected, settable, boolean) About Version - Memory usage - 26.3 MB, Value: on
+						98 button Close
+			99 button New Tab
+			100 button Open Gemini in Chrome
+	101 close button
+	102 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	103 minimize button
+104 menu bar
+	105 Chrome
+	106 File
+	107 Edit
+	108 View
+	109 History
+	110 Bookmarks
+	111 Profiles
+	112 Tab
+	113 Window
+	114 Help
+
+The focused UI element is 20 HTML content About Version, URL: chrome://version/

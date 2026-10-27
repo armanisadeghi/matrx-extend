@@ -1,0 +1,188 @@
+Window: "Matrx Extend Demo Page — AI Matrx", App: Google Chrome.
+0 standard window Matrx Extend Demo Page — AI Matrx - Google Chrome - Matrx Guest Test, URL: aimatrx.com/matrx-extend-demo, Secondary Actions: Raise
+	1 container Matrx Extend Demo Page — AI Matrx - Google Chrome - Matrx Guest Test, URL: aimatrx.com/matrx-extend-demo
+		2 container
+			3 toolbar
+				4 button Back
+				5 button (disabled) Forward
+				6 button Reload
+				7 container
+					8 pop up button View site information
+					9 text field (settable) Address and search bar, Value: aimatrx.com/matrx-extend-demo, Placeholder: Ask Google or type a URL
+					10 button Install AI Matrx
+					11 button Bookmark this tab
+				12 container
+					13 pop up button Matrx
+Has access to this site
+					14 pop up button Matrx Extend DEV
+Has access to this site
+					15 pop up button Extensions
+				16 button Matrx Guest Test
+				17 pop up button Chrome
+			18 container
+				19 scroll area
+					20 HTML content Matrx Extend Demo Page — AI Matrx, URL: aimatrx.com/matrx-extend-demo
+						21 container
+							22 link AI Matrx home, Value: aimatrx.com/
+							23 link Download, Value: aimatrx.com/download
+							24 link Discover, Value: aimatrx.com/canvas/discover
+							25 link Templates, Value: aimatrx.com/templates
+							26 button Switch to dark theme
+							27 toggle button Show canvas, Value: 0
+							28 button Sign in
+						29 container
+							30 text MATRX EXTEND DEMO
+							31 heading A clear three-stage browser workflow, Value: 1
+								32 text A clear three-stage browser workflow
+							33 text This stable sample page lets anyone try Matrx Extend without signing in. The page contains a real article, useful links, a structured table, and JSON-LD metadata so the extension's page-aware features have predictable material to work with.
+							34 container The three workflow stages
+								35 heading The three workflow stages, Value: 2
+									36 text The three workflow stages
+								37 table
+									38 row
+										39 column header
+											40 text Stage
+										41 column header
+											42 text Purpose
+										43 column header
+											44 text Expected result
+									45 row
+										46 row header
+											47 text Capture
+										48 cell
+											49 text Turn the open page into readable content.
+										50 cell
+											51 text Article text, links, media, metadata, and schema.
+									52 row
+										53 row header
+											54 text Understand
+										55 cell
+											56 text Ask questions about what is actually on the page.
+										57 cell
+											58 text Answers grounded in the current page.
+									59 row
+										60 row header
+											61 text Use
+										62 cell
+											63 text Extract the details needed for the next task.
+										64 cell
+											65 text Structured rows that can be copied or reused.
+							66 container Why page-aware assistance matters
+								67 heading Why page-aware assistance matters, Value: 2
+									68 text Why page-aware assistance matters
+								69 text A browser assistant is most useful when its answer is grounded in the page the user chose. Matrx Extend can capture readable content on demand, inspect page structure, and use that context to answer a direct question. Automatic capture is optional and is off on a fresh installation.
+								70 text The user remains in control: read-only tools can inspect the active page, while the default interaction mode asks before an action changes a page. Privileged actions always require confirmation.
+							71 container Related resources
+								72 heading Related resources, Value: 2
+									73 text Related resources
+								74 content list
+									75 link Matrx Extend privacy policy, Value: aimatrx.com/privacy-policy/extension
+									76 link Contact AI Matrx support, Value: aimatrx.com/contact
+									77 link How AI Matrx works, Value: aimatrx.com/how-it-works
+						78 container
+							79 text ©  2026  AI Matrx · Operated by
+							80 link ALL GREEN ELECTRONICS RECYCLING, LLC, Value: allgreenrecycling.com/
+							81 container Footer
+								82 link Matrx Desktop, Value: aimatrx.com/desktop
+								83 link Matrx Extend, Value: aimatrx.com/extend
+								84 link Download, Value: aimatrx.com/download
+								85 link How It Works, Value: aimatrx.com/how-it-works
+								86 link Why AI Matrx, Value: aimatrx.com/why-ai-matrx
+								87 link How We Prove It, Value: aimatrx.com/how-we-prove-it
+								88 link The Landscape, Value: aimatrx.com/the-landscape
+								89 link Privacy Policy, Value: aimatrx.com/privacy-policy
+								90 link Terms of Service, Value: aimatrx.com/terms-of-service
+								91 link Contact, Value: aimatrx.com/contact
+						92 container Notifications alt+T
+			93 scroll area
+				94 HTML content Matrx Extend, URL: chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html
+					95 container
+						96 tab group
+							97 tab (settable, integer) Chat, Value: 0
+							98 tab (settable, integer) Scrape, Value: 0
+							99 tab (settable, integer) SEO, Value: 0
+							100 tab (settable, integer) Data, Value: 0
+							101 tab (selected) Settings, Value: 1
+						102 pop up button Site access
+						103 pop up button G, Help: Account
+						104 container Settings
+							105 text Settings
+							106 container
+								107 button ACCOUNT
+								108 text Email
+								109 text —
+								110 button ORGANIZATION
+								111 button APPEARANCE
+								112 text Theme
+								113 combo box (settable) System
+									114 text System
+								115 button CHAT
+								116 text Default agent Choose an organization above Default mode
+								117 combo box (settable) Act without asking
+									118 text Act without asking
+								119 text Default speed COMING SOON
+								120 combo box (settable) Fast
+									121 text Fast
+								122 button PRIVACY
+								123 text Share page identity & email content LETS THE AGENT SEE YOUR VISIBLE USERNAME ON SITES AND GMAIL SUBJECTS/EXCERPTS
+								124 switch Share page identity & email content, Value: on
+								125 text Offer to save logins to the Vault AFTER YOU SIGN IN TO A SITE, ASK WHETHER TO SAVE THAT LOGIN — NOTHING IS SAVED WITHOUT YOUR CLICK
+								126 switch Offer to save logins to the Vault, Value: on
+								127 text Offer saved logins on sign-in forms ALLOWS MATCHING SAVED LOGINS; CHOOSE WHERE SUGGESTIONS APPEAR BELOW
+								128 switch Offer saved logins on sign-in forms, Value: on
+								129 text Show password suggestions on websites OFF KEEPS WEBSITES QUIET. PIN MATRX TO SEE TOOLBAR ASSISTANCE, THEN OPEN VAULT TO REVIEW SAVE OR UPDATE; NOTHING IS SAVED AUTOMATICALLY.
+								130 switch Show password suggestions on websites, Value: off
+								131 button SCRAPE
+								132 text Deep clean COMING SOON
+								133 switch Deep clean, Value: off
+								134 text Auto-scrape on load CAPTURE PAGE CONTENT IN THE BACKGROUND AFTER EACH LOAD
+								135 switch Auto-scrape on load, Value: off
+								136 text Auto-scrape mode SCROLL & CAPTURE LOADS LAZY CONTENT FIRST (SLOWER)
+								137 combo box (settable) Capture
+									138 text Capture
+								139 button DATA
+								140 button SEO
+								141 button DESKTOP BRIDGE
+								142 text Matrx 2
+								143 text Matrx 2 is not running on this computer
+								144 text Matrx Local
+								145 text Not connected
+								146 text Pairing is automatic when the Matrx desktop app runs on this computer. The code below is only needed to pair with a desktop app on another machine — copy it from that app's Settings → Bridge Test → Extension pairing.
+								147 text field (settable) Pair code
+								148 button (disabled) Pair
+								149 text Local engine port
+								150 text field (settable) auto
+								151 button Set
+								152 button DATA & RESET
+								153 button Clear local data on this device
+								154 button ABOUT
+							155 button Sign in
+			156 slider Side Panel Resize Handle (draggable), Secondary Actions: Decrement, Increment
+			157 container
+				158 text Matrx
+				159 checkbox Unpin from toolbar, Value: 1
+				160 button Close side panel
+			161 pop up button Tab search
+			162 container
+				163 tab group
+					164 tab (settable, boolean) New Tab - Memory usage - 81.3 MB, Value: off
+						165 button Close
+					166 tab (selected, settable, boolean) Matrx Extend Demo Page — AI Matrx - Memory usage - 156 MB, Value: on
+						167 button Close
+			168 button New Tab
+	169 close button
+	170 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	171 minimize button
+172 menu bar
+	173 Chrome
+	174 File
+	175 Edit
+	176 View
+	177 History
+	178 Bookmarks
+	179 Profiles
+	180 Tab
+	181 Window
+	182 Help
+
+The focused UI element is 1 container Matrx Extend Demo Page — AI Matrx - Google Chrome - Matrx Guest Test, URL: aimatrx.com/matrx-extend-demo

@@ -1,0 +1,47 @@
+The following is a diff from the previous accessibility tree for Window: "New Tab" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 91-102, 105-128, 130-133
+~									90 heading 1
++									91 container
++										92 link Gmail , Value: mail.google.com/mail/?tab=rm&ogbl
++										93 link Search for Images , Value: google.com/imghp?hl=en&tab=ri&ogbl
++									94 button Google apps
++							95 container
++								96 container
++									97 container
++										98 button Enhance your search with tabs, files, or an AI tool
++									99 text entry area (settable) Ask Google
++									100 button Search by voice
++									101 button Search by image
++									102 button Ask AI Mode in Google Search
+~							103 button Do more with AI Mode Create, summarize, plan
+~							104 button Create images Reimagine, illustrate, edit
++							105 container
++								106 link Matrx Extend Demo Page — AI Matrx, Value: aimatrx.com/matrx-extend-demo
++								107 button More actions for Matrx Extend Demo Page — AI Matrx shortcut
++								108 text Matrx Extend Demo Page — AI Matrx
++							109 container
++								110 link Example Domain, Value: example.com/
++								111 button More actions for Example Domain shortcut
++								112 text Example Domain
++							113 container
++								114 link Wikipedia, Value: en.wikipedia.org/wiki/Golden_Gate_Bridge
++								115 button More actions for Wikipedia shortcut
++								116 text Wikipedia
++							117 container
++								118 link IANA-managed Reserved Domains, Value: iana.org/domains/reserved
++								119 button More actions for IANA-managed Reserved Domains shortcut
++								120 text IANA-managed Reserved Domains
++							121 container
++								122 link data:text/html,%3Ch1%3EOwned%20restricted%20fixture%3C%2Fh1%3E
++								123 button More actions for data:text/html,%3Ch1%3EOwned%20restricted%20fixture%3C%2Fh1%3E shortcut
++								124 text data:text/html,%3Ch1%3EOwned%20restricted%20fixture%3C%2Fh1%3E
++							125 container
++								126 link Web scraping, Value: en.wikipedia.org/wiki/Web_scraping
++								127 button More actions for Web scraping shortcut
++								128 text Web scraping
+~							129 button Show more
++							130 toggle button Customize Chrome, Help: Customize this page, Value: 0
++								131 text Customize Chrome
++							132 image
+~					67 tab (selected, settable, boolean) New Tab - Memory usage - 74.4 MB, Value: on
+The focused UI element is 9 text field (settable) Address and search bar, Placeholder: Press tab then enter to ask AI Mode. Press up or down arrow for auto completions. Type to autocomplete..

@@ -1,0 +1,329 @@
+{
+  "schema": 1,
+  "task_id": "owner629_472_ci_refresh",
+  "at": "2026-10-27T06:17:13.810377+00:00",
+  "status": "ACTUAL_OWNER_RELOAD_VERIFIED_CANONICAL_EXISTING_IMPORT_REUSED_REVIEW_PENDING",
+  "sourceSha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+  "headOriginBeforePromotionAndAfterUI": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+  "officialCI": {
+    "runId": 40452473314,
+    "runAttempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "sourceSha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+    "artifactId": 12711641563,
+    "digest": "sha256:aed5f1cbf3c23802b7d490744797a215485cd4e6a24aaa4d0924d4910a874f02",
+    "sizeBytes": 49835614,
+    "checksAndResourceIntegration": "SUCCESS;docsSKIPPED"
+  },
+  "import": {
+    "commandAttemptSession": 24998,
+    "commandAttemptActualExit": 1,
+    "commandAttemptOutput": "test_artifact_operation_failed",
+    "specificFailureStage": "UNKNOWN: CLI masks nonallowlisted error. Existing target observed after failure with files predating this attempt; do not infer exact EEXIST chronology/cause from this alone.",
+    "existingTarget": "test-results/ci-artifacts/472c12bd6b3e3c8c952dc7d19fb05269b564bbe0/40452473314-1",
+    "existingTargetCanonicalVerificationActualExit": 0,
+    "existingTargetEvidence": {
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "repository": "armanisadeghi/matrx-extend",
+      "workflow": ".github/workflows/ci.yml",
+      "sourceSha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+      "runId": 40452473314,
+      "runAttempt": 1,
+      "artifactId": 12711641563,
+      "githubArtifactDigest": "sha256:aed5f1cbf3c23802b7d490744797a215485cd4e6a24aaa4d0924d4910a874f02",
+      "version": "0.2.629",
+      "treeSha256": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6",
+      "source": {
+        "originMain": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+        "localHead": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+        "trackedDirty": false,
+        "untrackedRunnerInputs": [],
+        "claim": "current_pushed_source"
+      }
+    },
+    "reused": true,
+    "noOverwriteOrRemoval": true,
+    "otherOperatorOrigin": "Parent normal plan/dispatch may have created canonical target; actor attribution is parent-attested, not inferred from file mtimes.",
+    "diagnosticEvalTypo": "One read-only verification eval SyntaxError occurred before function execution; corrected structured heredoc exited0. No artifact mutation.",
+    "archiveRetention": "Canonical importer normally hashes GitHub ZIP then removes temporary archive in finally. No original ZIP retained or independently rehashed offline by this worker; no alternate download/copy path."
+  },
+  "promotion": {
+    "session": 89280,
+    "actualExit": 0,
+    "receipt": {
+      "schema_version": 1,
+      "kind": "ci_development_test_promotion",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "observedAt": "2026-10-27T06:13:33.519Z",
+      "sourceSha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+      "mainSha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+      "compatibility": "exact-source",
+      "allowedDiffPaths": [],
+      "version": "0.2.629",
+      "runId": 40452473314,
+      "runAttempt": 1,
+      "artifactId": 12711641563,
+      "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/472c12bd6b3e3c8c952dc7d19fb05269b564bbe0/40452473314-1/chrome-mv3",
+      "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "treeSha256": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6",
+      "fileCount": 2819
+    },
+    "actualStableTreeBeforeReload": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6",
+    "actualStableTreeAfterUI": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6"
+  },
+  "native": {
+    "actualProfilePath": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "actualAccount": "arman@armansadeghi.com",
+    "ChromeVersion": "156.0.8078.48 Official Build arm64",
+    "devId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "beforeVersion": "0.2.629",
+    "afterVersion": "0.2.629",
+    "actualManagementReload": true,
+    "ReloadedToast": true,
+    "LoadedFrom": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "enabled": true,
+    "pinned": true,
+    "StoreId": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "StoreVersion": "0.2.577",
+    "StoreSource": "Chrome Web Store",
+    "StoreOnPinned": true,
+    "initialChromeWindow": "Matrx Guest Test New Tab; native Chrome active window differed from owner-only provider browser inventory",
+    "correction": "Opened one owned neutral tab in initially selected Guest window, immediately closed it and restored original sole New Tab before switching owner. No Guest extension Reload, auth, Settings or product action.",
+    "restoration": "Owner original Vault tab/providerTab2091622300 preserved; owned owner maintenance tab closed. Initial native Chrome Guest NewTab/profile/sole-tab structure restored. No assertion about original macOS global foreground application or exact Guest physical window/tab IDs.",
+    "GuestRuntime": "Not reloaded/tested; no current-build or guest acceptance transfer."
+  },
+  "resource": {
+    "runId": "owner629-472-20261027-0610",
+    "holderSession": 29194,
+    "holderPid": 84476,
+    "holderActualExit": 0,
+    "watcherSession": 90880,
+    "watcherActualExit": 0,
+    "final": {
+      "schema": 1,
+      "at": "2026-10-27T06:15:37.375Z",
+      "runId": "owner629-472-20261027-0610",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "watcher": {
+      "runId": "owner629-472-20261027-0610",
+      "first_read_at": "2026-10-27T06:09:17.663739Z",
+      "last_read_at": "2026-10-27T06:15:38.805169Z",
+      "actualPollCount": 191,
+      "maxGapSeconds": 2.011602375016082,
+      "riskEvents": [],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T06:15:37.375Z",
+        "runId": "owner629-472-20261027-0610",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/owner629-472-20261027-0610.jsonl",
+      "audit": ".output/stabilization-checkpoints/owner629-472-watch-20261027.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    },
+    "gateGroups": {
+      "1": 4,
+      "2": 4,
+      "3": 4,
+      "4": 4,
+      "5": 4,
+      "6": 2,
+      "7": 4,
+      "8": 4,
+      "9": 4,
+      "10": 4,
+      "11": 1
+    },
+    "UIAPICalls": 39,
+    "ledgerContemporaneous": true,
+    "scope": "Canonical artifact verify/hash/copy light IO during admitted browser-maintenance permit, not arbitrary run-mode heavy-command admission. Actual UI stopped before owned exact holder PID received SIGINT; normal stop handler/finalvalid0."
+  },
+  "cleanup": {
+    "at": "2026-10-27T06:15:42.389Z",
+    "heavyExists": false,
+    "unsafeHoldExists": false,
+    "holderPidAbsent": true,
+    "holderPidCheckAt": "2026-10-27T06:18:14.710220+00:00"
+  },
+  "backend": {
+    "observation": "Optional public /health/version probe returned HTTPError; HTTP status was not retained. No SHA obtained, no fallback/retry and no health/wire/guest inference."
+  },
+  "limits": [
+    "Bounded actual owner installation maintenance only; no product behavior case or Store release acceptance.",
+    "Native observations are actual actor actions, not independent live replay.",
+    "Canonical cached import verification, official metadata, receipts and stable tree hashes do not supply independent original ZIP offline rehash.",
+    "Original native Guest profile correction/restoration explicitly included; full private-state and macOS global focus restoration not proven.",
+    "No builds/releases/workflow dispatch/tests/AI calls/credentials/Store publisher actions/source edits/commits/children."
+  ],
+  "evidence": {
+    ".output/stabilization-checkpoints/owner629-472-native/dev-before-original.png": {
+      "sha256": "cd7d372f95cdcaf112fb511f4f6dd2109f0f3eef18c1d4bff6f5738f3cefd900",
+      "bytes": 160121
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/original-structure.json": {
+      "sha256": "42db7b7dee3e636d1892b89d6dc6c6af8872a0b51f3d037af41c7d477286f72e",
+      "bytes": 552
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/guest-neutral-restored.ax.txt": {
+      "sha256": "5ea009b9c383b34ff51b6baf5b5c3f771ee7468c4f567e50f2c853d63697b604",
+      "bytes": 2658
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/dev-after-original.ax.txt": {
+      "sha256": "9a9b0149266b9e839138e122f7964ea5ee5e6b9622d23af0b96d2bbc896e65a5",
+      "bytes": 688
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/api-ledger.jsonl": {
+      "sha256": "503b7ab2621f8c0591509262ad9e1cb505341768ec083b2cbceb276200ddac2a",
+      "bytes": 15625
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/guest-final-restored.ax.txt": {
+      "sha256": "59a68479dbf1bb577a7ab5b9b5912e1343af9eed56948119174503768ca2e18b",
+      "bytes": 3716
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/cleanup.json": {
+      "sha256": "7d0fcf6ecac98f3615be1ad056193c963e6bd090338a37be743ad22b78042790",
+      "bytes": 499
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/owner-account-original.ax.txt": {
+      "sha256": "c0a9519fe8482e019c1138da9dbccfc1927e9daff1d0e33a4ebc1ac6d0ee050c",
+      "bytes": 1425
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/profile-version-original.ax.txt": {
+      "sha256": "cdaaae5af294d14bfd3597622c1f1562b5ce101e36307cd9a9442ea942d0c380",
+      "bytes": 7333
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/store-preserved-original.png": {
+      "sha256": "a46c9ef8b5b799fd5e1769bd2a6ae5f662cd48b67d483e6b691bef600bae994f",
+      "bytes": 159472
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/dev-before-original.ax.txt": {
+      "sha256": "79140ad57d725900977fca84d5cbfa12f0c2a6ac0fd253c8228cc0048db0322a",
+      "bytes": 5696
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/dev-prereload-original.ax.txt": {
+      "sha256": "8179bded135c748ec02f6b4c05733a5feca4dd73480901636b675c8410d07ae1",
+      "bytes": 6258
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/dev-after-original.png": {
+      "sha256": "a012155a3ec51dd1a181f6b92b0837655c18d1010935c64ee9b1bcb56d8bdea2",
+      "bytes": 162009
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/neutral-original.ax.txt": {
+      "sha256": "c7df3e944ab7eaf5774eb77e74c73936e9d72c59655f17575a916f6a80ec7df9",
+      "bytes": 3121
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/store-preserved-original.ax.txt": {
+      "sha256": "9327c2ff95c187412513db2562989497f598a343a5fb68e549bee637d099e9e2",
+      "bytes": 5503
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/cleanup-owner-structure.json": {
+      "sha256": "37686f5c60a187820448712483c57392bdbcdcc6d76a5ff5ec322ab56b814015",
+      "bytes": 664
+    },
+    ".output/stabilization-checkpoints/owner629-472-eligibility-before.json": {
+      "sha256": "03d1b9bde9b6476a577d60267c91c38d22b43366608ac1d9e32538d00e187b28",
+      "bytes": 101
+    },
+    ".output/stabilization-checkpoints/owner629-472-verified-existing.json": {
+      "sha256": "04c8593fc99073c91c1b7b4e269bb31731db7490397fdf685ba63faca30e8576",
+      "bytes": 698
+    },
+    ".output/stabilization-checkpoints/owner629-472-import.log": {
+      "sha256": "8c783689cd8f48efe8bcb282167c7ca4727355e8a63d435db05d6a4d56b38588",
+      "bytes": 31
+    },
+    ".output/stabilization-checkpoints/owner629-472-promotion.log": {
+      "sha256": "3b5468df782b139636f4c47aed72874376868324e0587220aee210c9be42e27d",
+      "bytes": 191
+    },
+    ".output/stabilization-checkpoints/owner629-472-promotion-receipt.json": {
+      "sha256": "5ae218bc072c3394f65d058b164375adb4875577235e1de4ca11b7cc5d86af34",
+      "bytes": 785
+    },
+    ".output/stabilization-checkpoints/owner629-472-prereload.json": {
+      "sha256": "dba41dc63fb3c7cc142ef9c9f9080cc92d8ae2bc6941bbba012c3216373f052e",
+      "bytes": 218
+    },
+    ".output/stabilization-checkpoints/owner629-472-postui.json": {
+      "sha256": "5d7eabe23fa521ed62b13eb816f3f8d82c51b799b6dfbbc91b60f2a1bfc7bb95",
+      "bytes": 218
+    },
+    ".output/stabilization-checkpoints/owner629-472-cleanup-state.json": {
+      "sha256": "c5fe48d926be8c6912ab5e4c6a1a114d92d503ec06b8db4fe03522b07498f848",
+      "bytes": 79
+    },
+    ".output/stabilization-checkpoints/owner629-472-ci-receipt.json": {
+      "sha256": "5504e1e65319e22ebb768567e4543c1de0a7105f7bd86916e34dd4563526e286",
+      "bytes": 330
+    },
+    ".output/stabilization-checkpoints/owner629-472-provenance.json": {
+      "sha256": "d5624018a605b1205b552ef0049e3e1cdae986bf24a22696471cc82bd2504280",
+      "bytes": 527
+    },
+    ".output/stabilization-checkpoints/owner629-472-local-dev-receipt.json": {
+      "sha256": "204c8ba7931dace628a50a508475c46756b3301719e00e0dc11e84d9a34de2b0",
+      "bytes": 397
+    },
+    ".output/stabilization-checkpoints/owner629-472-import-status.json": {
+      "sha256": "cbd3e5876fd673c25661b400b535f8271e8910f85521729953740f7da9796b8d",
+      "bytes": 786
+    },
+    ".output/stabilization-checkpoints/owner629-472-watch-20261027.jsonl": {
+      "sha256": "8206f0aa827ee66974e5a6e82863ac9dd08f74c604cf94c7028484b31e3261ff",
+      "bytes": 61148
+    },
+    ".output/stabilization-checkpoints/owner629-472-watch-20261027-report.json": {
+      "sha256": "7f73c036d5adc26911175c86cfe8bca368e7f7dd38986ee21cac9251a3b149bf",
+      "bytes": 770
+    },
+    "docs/stabilization/resource-journals/owner629-472-20261027-0610.jsonl": {
+      "sha256": "8cc063db47e61bc4ca4e0e1660d8620effc8960abb0b3ea53560f43f2939bf44",
+      "bytes": 9174
+    },
+    ".output/stabilization-checkpoints/ci472-official-run-20261027.json": {
+      "sha256": "8595a09d13162049f0e9d2ed724c3b43011f8f7c98f4da97f549eacaf6742c06",
+      "bytes": 12842
+    },
+    ".output/stabilization-checkpoints/ci472-official-jobs-20261027.json": {
+      "sha256": "48cdda90835e52114d58cfa5e5dec7a90052a68e7cd17b9bbd6ec3da1fc60db0",
+      "bytes": 13668
+    },
+    ".output/stabilization-checkpoints/ci472-official-artifacts-20261027.json": {
+      "sha256": "88cfe5cac2c795a2fb5fe71a719c69cec119dc4a9ef7a89212072e365bd89c78",
+      "bytes": 798
+    },
+    ".output/stabilization-checkpoints/owner629-472-native/owner-safe-original-structure.json": {
+      "sha256": "05ddb9a480b115923575e57988ea0dacc3d5a1b63084f0635a678a7de23c13b8",
+      "bytes": 526
+    }
+  },
+  "next_action": "Parent fresh independent bounded evidence review, publish safe evidence and actual owner state. Recheck main before any new action; do not transfer this source-bound Reload to later main or Guest.",
+  "publication_exclusions": {
+    ".output/stabilization-checkpoints/owner629-472-native/owner-original-structure.json": {
+      "sha256": "4a2dd2d74ee304c5efe1f6ab4b8e0febb92860eb89b64f6b44a0541a57d310b3",
+      "reason": "Private initial structural filter matched some unrelated Vault body labels. Keep original private; safe projection retains only window header and exact toolbar/address labels. No credential values recorded."
+    }
+  },
+  "setup_limits": [
+    "Two unsupported --help CLI invocations refused arguments/native path before adoption; no artifact mutation.",
+    "Initial raw owner structure is private/excluded because filter was broader than toolbar; safe projection provided."
+  ],
+  "original_private_report_sha256": "c0529fe4feaafdec6185fcc350d4d59028f50f2e7e39c5aed4d266a779d81045",
+  "durable_evidence_manifest": "docs/stabilization/reports/cycle-0603-publication-manifest-20261027.json",
+  "publication_limits": "Only mapped evidence is retained publicly; unmapped logs/ZIP/private original bodies are private references, not public evidence. Original actor/peer verdicts retained with owner correction below. No new formal inventory credit, current-main health, defect closure or Store acceptance.",
+  "owner_adjudication": "Manual Mac lease measured external repo/substitute rather than actual Chrome user-data root internal volume. Finalvalid0 alone cannot satisfy profile-binding rule. Manual product/owner maintenance acceptance UNVERIFIED; hosted B bounded verdict separately valid. See settings472-three-run-evidence-peer-20261027.json. No retroactive acceptance."
+}

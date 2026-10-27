@@ -1,0 +1,13 @@
+{
+  "ACCOUNT": true,
+  "ORGANIZATION": false,
+  "APPEARANCE": true,
+  "CHAT": true,
+  "PRIVACY": true,
+  "SCRAPE": true,
+  "DATA": false,
+  "SEO": false,
+  "DESKTOP BRIDGE": true,
+  "DATA & RESET": true,
+  "ABOUT": false
+}

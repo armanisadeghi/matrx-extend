@@ -1,0 +1,689 @@
+{
+  "schema": 1,
+  "task_id": "guest_settings_visibility_472_native_20261027",
+  "at": "2026-10-27T06:40:30.399490+00:00",
+  "status": "FIVE_SCOPED_GUEST_CASES_OBSERVED_WARM_AND_ACTUAL_MANAGEMENT_RELOAD_REVIEW_PENDING",
+  "A_behavior": {
+    "operator_judgment": "PASS for five named cases on frozenDEV629/472 guest only; independent review pending",
+    "cases": [
+      {
+        "id": "EXT-F-1003-T01",
+        "operator_verdict": "pass",
+        "criteria": [
+          "Sign in to choose; no organization selector/action in expanded Organization warm/post"
+        ],
+        "evidence": [
+          ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ORGANIZATION-open.ax.txt",
+          ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ORGANIZATION-open.ax.txt"
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T07",
+        "operator_verdict": "pass",
+        "criteria": [
+          "Choose an organization above; no default-agent picker/action in expanded Chat warm/post"
+        ],
+        "evidence": [
+          ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-CHAT-open.ax.txt",
+          ".output/stabilization-checkpoints/guest-settings-visibility-472/post-CHAT-open.ax.txt"
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T22",
+        "operator_verdict": "pass",
+        "criteria": [
+          "All11actualguestsectionheadings inspected; no Advanced agent capabilities or audit/permission controls warm/post"
+        ],
+        "evidence": [
+          ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-complete.ax.txt",
+          ".output/stabilization-checkpoints/guest-settings-visibility-472/post-complete.ax.txt"
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T28",
+        "operator_verdict": "pass",
+        "criteria": [
+          "All11actualroleavailablegroups expanded and collapsed warm and after actualmanagementReload; correct content and Data/SEO Nooptionsyet; initial state restored"
+        ],
+        "group_observations": [
+          {
+            "phase": "warm",
+            "group": "ACCOUNT",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ACCOUNT-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ACCOUNT-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "warm",
+            "group": "ORGANIZATION",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ORGANIZATION-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ORGANIZATION-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "warm",
+            "group": "APPEARANCE",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-APPEARANCE-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-APPEARANCE-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "warm",
+            "group": "CHAT",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-CHAT-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-CHAT-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "warm",
+            "group": "PRIVACY",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-PRIVACY-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-PRIVACY-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "warm",
+            "group": "SCRAPE",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-SCRAPE-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-SCRAPE-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "warm",
+            "group": "DATA",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-DATA-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-DATA-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "warm",
+            "group": "SEO",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-SEO-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-SEO-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "warm",
+            "group": "DESKTOP BRIDGE",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-DESKTOP BRIDGE-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-DESKTOP BRIDGE-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "warm",
+            "group": "DATA & RESET",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-DATA & RESET-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-DATA & RESET-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "warm",
+            "group": "ABOUT",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ABOUT-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ABOUT-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "post",
+            "group": "ACCOUNT",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ACCOUNT-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ACCOUNT-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "post",
+            "group": "ORGANIZATION",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ORGANIZATION-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ORGANIZATION-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "post",
+            "group": "APPEARANCE",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-APPEARANCE-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-APPEARANCE-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "post",
+            "group": "CHAT",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-CHAT-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-CHAT-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "post",
+            "group": "PRIVACY",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-PRIVACY-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-PRIVACY-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "post",
+            "group": "SCRAPE",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-SCRAPE-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-SCRAPE-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "post",
+            "group": "DATA",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-DATA-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-DATA-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "post",
+            "group": "SEO",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-SEO-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-SEO-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "post",
+            "group": "DESKTOP BRIDGE",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-DESKTOP BRIDGE-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-DESKTOP BRIDGE-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "post",
+            "group": "DATA & RESET",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-DATA & RESET-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-DATA & RESET-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          },
+          {
+            "phase": "post",
+            "group": "ABOUT",
+            "open": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ABOUT-open.ax.txt",
+            "closed": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ABOUT-closed.ax.txt",
+            "observed": "content shown under correct section; absent after collapse; initial open/closed state restored by pair"
+          }
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T73",
+        "operator_verdict": "pass",
+        "criteria": ["Email unavailable —; no Name/adminbadge; conditionalfooterSign in warm/post"],
+        "evidence": [
+          ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ACCOUNT-open.ax.txt",
+          ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ACCOUNT-open.ax.txt",
+          ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-complete.ax.txt",
+          ".output/stabilization-checkpoints/guest-settings-visibility-472/post-complete.ax.txt"
+        ]
+      }
+    ],
+    "groups": [
+      "ACCOUNT",
+      "ORGANIZATION",
+      "APPEARANCE",
+      "CHAT",
+      "PRIVACY",
+      "SCRAPE",
+      "DATA",
+      "SEO",
+      "DESKTOP BRIDGE",
+      "DATA & RESET",
+      "ABOUT"
+    ],
+    "initial_group_states": {
+      "ACCOUNT": true,
+      "ORGANIZATION": false,
+      "APPEARANCE": true,
+      "CHAT": true,
+      "PRIVACY": true,
+      "SCRAPE": true,
+      "DATA": false,
+      "SEO": false,
+      "DESKTOP BRIDGE": true,
+      "DATA & RESET": true,
+      "ABOUT": false
+    },
+    "no_product_defect_reproduced": true
+  },
+  "B_provenance": {
+    "judgment": "SUPPORTED_WITH_SETUP_TRACE_LIMIT",
+    "setup_correction": "One capture helper referenced a future app binding: original structural read and owned tab creation had completed and were ledgered, then capture threw ReferenceError before native API. Direct readonly getApp rebind was an additional actual API call without contemporaneous start/end ledger; tool transcript retains it. All actual case inputs/decisive states from G2 onward are contemporaneously ledgered and saved. No retroactive timing invented.",
+    "recorded_call_attempts": 144,
+    "recorded_successful_API_calls": 143,
+    "unledgered_direct_readonly_getApp_calls": 1,
+    "total_actual_API_calls": 144,
+    "groups": 38,
+    "max_ledger_index_per_group": 4,
+    "failed_nonAPI_capture_attempts": [
+      {
+        "type": "call",
+        "groupId": 1,
+        "index": 4,
+        "label": "owned-tab",
+        "start": "2026-10-27T06:30:03.819Z",
+        "end": "2026-10-27T06:30:03.819Z",
+        "ok": false,
+        "errorName": "ReferenceError"
+      }
+    ],
+    "all_product_phase_inputs_logged": true
+  },
+  "build": {
+    "source_sha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+    "ci_run": 40452473314,
+    "artifact_id": 12711641563,
+    "github_digest": "sha256:aed5f1cbf3c23802b7d490744797a215485cd4e6a24aaa4d0924d4910a874f02",
+    "version": "0.2.629",
+    "channel": "development",
+    "wxt_mode": "development",
+    "runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "tree_after": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6",
+    "tree_before_receipt": "owner629-472-adoption-20261027.json promotion/stabletree verified; no artifact write performed here",
+    "file_count": 2819,
+    "lock_sha256": "c876e565520b4ecb1ac262030e7283ff58dcf6b7977eb152b0e9319dce7d65f2",
+    "effective_env_flags": "CI canonical development artifact; no injected sessions/mocks/service interception by operator; complete emitted env not independently re-extracted",
+    "native_full_management_reloads": 2,
+    "reload_evidence": [
+      ".output/stabilization-checkpoints/guest-settings-visibility-472/dev-initial-reloaded.ax.txt",
+      ".output/stabilization-checkpoints/guest-settings-visibility-472/case-management-reloaded.ax.txt"
+    ],
+    "about_identity_evidence": ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ABOUT-open.ax.txt"
+  },
+  "runtime": {
+    "Chrome": "156.0.8078.48 arm64",
+    "OS": "macOS27.0.1 Build26A434",
+    "profile": "Matrx Guest Test/Profile10 observed ProfilePath; process commandline says Profile8 because shared Chrome process, not current window identity",
+    "identity": "Conditional Settings Sign in and Email— observed warm/post; no Name/admin badge. No login/auth mutation. Account menu label alone not used.",
+    "organization": "Sign in to choose and no selector; no guest org chosen; DB membership requests not inspected",
+    "permissions": "Management current all-sites, debugger and other visible granted categories retained; no permission changes; see dev manager raw snapshot",
+    "display_mode": "Actual native macOS Chrome window via accessibility +screenshots, not hosted/headless",
+    "backend_sha": "UNVERIFIED; no backend/version read or wire capture; no paid AI prompt sent",
+    "fixture": "One owned public https://www.aimatrx.com/matrx-extend-demo tab; page/frontend role not substituted for extension role"
+  },
+  "resource": {
+    "run_id": "guest-settings-visibility-472-native-20261027-0630",
+    "holder_session": 32649,
+    "holder_actual_exit": 0,
+    "watcher_session": 55622,
+    "watcher_actual_exit": 0,
+    "watcher": {
+      "runId": "guest-settings-visibility-472-native-20261027-0630",
+      "first_read_at": "2026-10-27T06:28:39.567559Z",
+      "last_read_at": "2026-10-27T06:38:19.126608Z",
+      "actualPollCount": 290,
+      "maxGapSeconds": 2.0117790840449743,
+      "riskEvents": [],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T06:38:17.751Z",
+        "runId": "guest-settings-visibility-472-native-20261027-0630",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/guest-settings-visibility-472-native-20261027-0630.jsonl",
+      "audit": ".output/stabilization-checkpoints/guest-settings-visibility-472-watch-20261027.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    },
+    "final": {
+      "schema": 1,
+      "at": "2026-10-27T06:38:17.751Z",
+      "runId": "guest-settings-visibility-472-native-20261027-0630",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "cleanup": {
+    "original_guest_foreground_newtab_restored": {
+      "at": "2026-10-27T06:37:56.810Z",
+      "window": "Window: \"New Tab\", App: Google Chrome.",
+      "structure": [
+        "0 standard window New Tab - Google Chrome - Matrx Guest Test, URL: chrome://newtab/, Secondary Actions: Raise",
+        "\t\t\t\t\t12 pop up button Matrx",
+        "\t\t\t\t\t13 pop up button Matrx Extend DEV",
+        "\t\t\t\t15 button Matrx Guest Test",
+        "\t\t\t\t\t69 tab (selected, settable, boolean) New Tab - Memory usage - 77.5 MB, Value: on"
+      ],
+      "sidepanelPresent": false
+    },
+    "groups_initial_state_restored_each_pair": true,
+    "only_owned_tab_closed": true,
+    "Store577_initial_On_pin_source_verified": ".output/stabilization-checkpoints/guest-settings-visibility-472/store-preserved.ax.txt",
+    "DEV_On_pin_verified_after_reload": ".output/stabilization-checkpoints/guest-settings-visibility-472/case-management-reloaded.ax.txt",
+    "ownerProfile8_not_operated": true,
+    "post_tree_and_leases": {
+      "at": "2026-10-27T06:38:18.401Z",
+      "treeSha256": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6",
+      "heavyExists": false,
+      "unsafeHoldExists": false
+    },
+    "all_owned_sessions_terminal": true,
+    "no_auth_org_or_pairing_actions_by_operator": true,
+    "no_preference_control_values_changed_by_operator": true
+  },
+  "limits": [
+    "No independent live replay or source/quality review by this operator; parent adjudicates formal inventory updates.",
+    "Five exact guest cases only; no Store/member/admin/allSettings or overallextension health claim.",
+    "Original D87/D186 and startupD254/D298 reproduction/closure not exercised.",
+    "No backend read/write/identity/email-sharing/bridge-health behavior inferred from grouping/labels; UI unknown/unavailable text retained.",
+    "Initial readonly getApp setup call lacks contemporaneous timing ledger; behavior phase remains fully recorded.",
+    "No new code/commits/builds/releases/CI dispatches/AI prompts; only resource journal is tracked-path write.",
+    "No operator auth/org/pairing/preference action was initiated; background authentication/network behavior was not inspected."
+  ],
+  "safe_evidence_whitelist": {
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-DATA-open.ax.txt": {
+      "sha256": "134520c77bc7197c6fce053e923e0b791cbd796200b1107b8cc6515bd1622fe5",
+      "bytes": 8785
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/panel-closed-before-reload.ax.txt": {
+      "sha256": "c604d8d913a1daaf77e152f7a1cd1247ee201a9550df20780208b65d7e0a8808",
+      "bytes": 8823
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-SCRAPE-closed.ax.txt": {
+      "sha256": "7ab2fe43cf907e7d7c3447e35be198cd6075b3216a43be0d99fa0f18ac434959",
+      "bytes": 8378
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-settings-initial.ax.txt": {
+      "sha256": "065e52beaa108a4d3871db0e9cda5ef7dee692d3c7a76938cba069e81d233059",
+      "bytes": 8775
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-SEO-open.ax.txt": {
+      "sha256": "eed86d0640aa06f2bc17728bda9b36a1787a7082de8958cfe304c2a7c61e18e0",
+      "bytes": 8784
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-PRIVACY-open.ax.txt": {
+      "sha256": "6ce3abe71b42f9f0f93411451dc093486243527cb21f348829be6e346ff74fd8",
+      "bytes": 8786
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/demo.ax.txt": {
+      "sha256": "81de77b7bd384306eeaa2d0319263601f767e9e949f9870cde2b8fe1c0b29eb6",
+      "bytes": 5796
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/case-management-reloaded.png": {
+      "sha256": "14e88c71b6ebc80fbf6e67d69eb5a40a63b4bc5d7593900a266fabf1a1ace787",
+      "bytes": 155138
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ORGANIZATION-open.ax.txt": {
+      "sha256": "0a935e547aba054f33be64cf2c78761f42948fc6e9bcd54cc59342768cf2f7d4",
+      "bytes": 8832
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/original-structure.json": {
+      "sha256": "cc3b9b8773d55b10f262c4913b978b0946b95e64478ba907eb4c05fd1d48f877",
+      "bytes": 460
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-APPEARANCE-closed.ax.txt": {
+      "sha256": "83c623461a612130aca34976d6085f5339a9ca200ff7b4d5ce557faec5bbf050",
+      "bytes": 8671
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-CHAT-closed.ax.txt": {
+      "sha256": "f27d8be391cd06c63b3dea9fe9468c4a8ed4db9dead19ee1a30ef6df8b25e3d3",
+      "bytes": 8487
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-APPEARANCE-open.ax.txt": {
+      "sha256": "b80c384c9aaef537c0f650c71b99070e9d99a7371256bd8033d35753ce04e24c",
+      "bytes": 8784
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-DESKTOP BRIDGE-open.ax.txt": {
+      "sha256": "5b7bc8ce9577d054197bd613192a380d536a55baf70153de16ffa1cb07ccb26c",
+      "bytes": 8723
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/cleanup-structure.json": {
+      "sha256": "6b287410a7de81ad51bc8ea8bc5a7a44ac929fdc7271bd01de5eb39aece2b850",
+      "bytes": 492
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-DATA & RESET-open.ax.txt": {
+      "sha256": "b5400ae541a28dbdd38e0c2cb6c98b5a1d55ae595c6849965354924f32764e81",
+      "bytes": 8761
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/case-management-reloaded.ax.txt": {
+      "sha256": "2f5ecdbd0ed74cf53a18228baf21bc58c4c2f29d113890bcc39ff19fde1b6c46",
+      "bytes": 6194
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-complete.ax.txt": {
+      "sha256": "f086e164a9c2cae380c4ffe62fb99003d1ae98ace9c61da3bffab4593cb19e2c",
+      "bytes": 8754
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-DATA & RESET-closed.ax.txt": {
+      "sha256": "097087ac091b1e386954fc0a76eec1e63a8a7651deb555280e57949d2b046004",
+      "bytes": 8710
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-complete.png": {
+      "sha256": "d055b23d8e9684c972f602ca118d6bbb7feb576bce9198a723714d3349d7eb87",
+      "bytes": 265469
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/dev-initial-reloaded.ax.txt": {
+      "sha256": "1c7dd3167e493cb4b58046538a5a75dec250a7b58aba560e74d893312a7fdfa1",
+      "bytes": 6194
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-CHAT-open.ax.txt": {
+      "sha256": "cb326c3be296dfba449161bfeea510d5843bb38ef9d0bdb7165a6668b3fbe661",
+      "bytes": 8781
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/settings-warm-settled.ax.txt": {
+      "sha256": "dba3de54dfa5d658c2c9b14255be7012a02319c09540513f0db19487f6b7a849",
+      "bytes": 8775
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ORGANIZATION-closed.ax.txt": {
+      "sha256": "3b6858c43017ef8cf06e5fd5faa9229d5cc8cea116bfd648b69aae4fe74c2315",
+      "bytes": 8761
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/dev-panel-open.ax.txt": {
+      "sha256": "4e20509918ab615eda9cf81ef11535a5b8b0993cd945e2e264447335db67e64a",
+      "bytes": 6802
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-SCRAPE-open.ax.txt": {
+      "sha256": "ca2256057631a6831ac3dc7d3934521735cda9396d9c1a6131fe0109b077a1e5",
+      "bytes": 8784
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-DATA-closed.ax.txt": {
+      "sha256": "66065dfe10b871d123dd4b2c05d09494dad41298cded64c0ee205cc70e9fb130",
+      "bytes": 8753
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/api-ledger.jsonl": {
+      "sha256": "520a2183253b99eaa899b99e238382e7fa31615be8bbb5d6fc83b0bc0c96e5f8",
+      "bytes": 37300
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/store-preserved.ax.txt": {
+      "sha256": "de624fee2a4e039238a0123f964942b5e84388cf03cfda42ffb9d710924970cd",
+      "bytes": 5942
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-PRIVACY-open.ax.txt": {
+      "sha256": "a8b3001e90dc14a0aa3a9a8c360b4c92f5cb403aee89e40ddca7e70b6b6b7ebd",
+      "bytes": 8786
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-SCRAPE-closed.ax.txt": {
+      "sha256": "7033abf27b82061db4482b253c0be5a57da8ccbff91fc61b144945c7f9c6be6d",
+      "bytes": 8378
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/demo-loaded.ax.txt": {
+      "sha256": "24031395e0e769f3164ca601442b334824987a465d2d8a3ff9844861370dff79",
+      "bytes": 5449
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-DESKTOP BRIDGE-open.ax.txt": {
+      "sha256": "ffe5de032192ec009f02be32b7620276f53dfff373ebb0ab247694c04b1371de",
+      "bytes": 8723
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-complete.png": {
+      "sha256": "24f725f8f868f5a9356a4cf5680388f7b43d7da8a479adecf2487e33e40790da",
+      "bytes": 265995
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-complete.ax.txt": {
+      "sha256": "eb805264206bf2565b5495ca4c3afc37c38b4a010f6e77e414f00a07ef67ce62",
+      "bytes": 8754
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ABOUT-closed.ax.txt": {
+      "sha256": "f086e164a9c2cae380c4ffe62fb99003d1ae98ace9c61da3bffab4593cb19e2c",
+      "bytes": 8754
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-CHAT-closed.ax.txt": {
+      "sha256": "4fc04493466806842e13845dfe649b0ffef30dc1ea577b848a13d2e93c46475c",
+      "bytes": 8487
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-demo.ax.txt": {
+      "sha256": "74297566e7177c65c7adfac99a4b5016c446b22522dd31e3ffd972972940c2b1",
+      "bytes": 5425
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ABOUT-open.ax.txt": {
+      "sha256": "ba6713a2661c7feef3b5c2dadcb51f08258965dd8ccaa161c0177b85ef6b2f58",
+      "bytes": 9061
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/dev-initial-reloaded.png": {
+      "sha256": "48151b8cf120bcc72c2654eb8af141cf9eb38a8f1e8d57a205259031f57cf8ea",
+      "bytes": 155141
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ACCOUNT-open.ax.txt": {
+      "sha256": "88f7063cb0b9d61a196f8bfd82e0edfcb8eca089f7ee1846cec99525dc41e137",
+      "bytes": 8762
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-DATA-open.ax.txt": {
+      "sha256": "203f4c1e9c3636e952fe0b12d093e0408c163ebeafd7ed7d78f26aa7e59f316d",
+      "bytes": 8785
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ACCOUNT-closed.ax.txt": {
+      "sha256": "e6dd13ac9a9acd22458c49b58c02b71275dfe4cdce16de2ff0cd72c717fa725a",
+      "bytes": 8712
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-panel-open.ax.txt": {
+      "sha256": "1a34bc7bbff355b2675292a321f92081c25bd8ab89355846b9fd618588b51212",
+      "bytes": 6215
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-PRIVACY-closed.ax.txt": {
+      "sha256": "aabf60f4093f2389b1d203bac1499d1185c58a7ff0eedb386366ca617c2ec901",
+      "bytes": 7896
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-SEO-closed.ax.txt": {
+      "sha256": "92b7dce188b5deed10aaed660d98d473ccf7d43c9ac660efb0d81f0f3bdaf57d",
+      "bytes": 8752
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/initial-groups.json": {
+      "sha256": "30edd035f98f486744644e4c9bf827afc0ece586f687228d334f9e231df252ce",
+      "bytes": 222
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-APPEARANCE-closed.ax.txt": {
+      "sha256": "c6c45d5e4890703c7d59993d6a45c09855b3b23d5bf992330555bbd56950105a",
+      "bytes": 8671
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-SEO-closed.ax.txt": {
+      "sha256": "72d23d9dc6f411874be34c4bb61287ec9f42518db0e7203961f4c4179c77e7a6",
+      "bytes": 8752
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-SEO-open.ax.txt": {
+      "sha256": "9e74253966838ced1614d4e116b1f8121be9d9250c37a6c3d6ba2535fb2df635",
+      "bytes": 8784
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ACCOUNT-closed.ax.txt": {
+      "sha256": "2adfbf9c4f9e81d8bfbac72e3a34dbd98b815b578d71132911143338d0b12253",
+      "bytes": 8712
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-APPEARANCE-open.ax.txt": {
+      "sha256": "b47d8dfd93ffa2e4ead072797d52af7e6f04d10baf765eeaa13d3e21d3fd49dc",
+      "bytes": 8784
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-SCRAPE-open.ax.txt": {
+      "sha256": "c50026f78dc9f6728f2126d3631c72bd3862338f56c1137f05c68b200ffc7d77",
+      "bytes": 8784
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ORGANIZATION-open.ax.txt": {
+      "sha256": "c3d1d330e1c1140c026e2e89716061dc4169b5adea4959adc160d8859c9d02c2",
+      "bytes": 8832
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-CHAT-open.ax.txt": {
+      "sha256": "a6049d20882e4590fd983ad65ba30f71fb9468ab94bc5fed1d0dd548598bb205",
+      "bytes": 8781
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/dev-before-reload.ax.txt": {
+      "sha256": "cea0a4e6bff85d9c7e44381d6ed72b4545f528ed3c0d0f31c3882998ba08a2d1",
+      "bytes": 6140
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/dev-before-case-reload.ax.txt": {
+      "sha256": "cea0a4e6bff85d9c7e44381d6ed72b4545f528ed3c0d0f31c3882998ba08a2d1",
+      "bytes": 6140
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-PRIVACY-closed.ax.txt": {
+      "sha256": "d78d1be3b48a9c67bd3fac177deb3a70a16107e727c80b12147b717cfee1a697",
+      "bytes": 7896
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/profile-version.ax.txt": {
+      "sha256": "4e2fca4b9e7f812739092c295f5ab57b764857a711e3ec4a0241ab9fbf571940",
+      "bytes": 6962
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-DESKTOP BRIDGE-closed.ax.txt": {
+      "sha256": "906e4aa353c709785d2fb2501aaa95daec5c32d88d3a02db9720afaaeffffb33",
+      "bytes": 8205
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ABOUT-open.ax.txt": {
+      "sha256": "aa71e19a3dddd379663d0be3e181356149203c0cc324b64efe088ca33dd576ce",
+      "bytes": 9061
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/settings-warm-initial.png": {
+      "sha256": "87558269e4aeeb9fdf54ca428b14a4c8a75e3f9beb52e2cf29e950498eba36ee",
+      "bytes": 265840
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/settings-warm-initial.ax.txt": {
+      "sha256": "e5163f0583b9b0765670ad1fdbd859b279272f6bf3945854fc20ae9e6d5b92fe",
+      "bytes": 6155
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-DATA & RESET-closed.ax.txt": {
+      "sha256": "b6d34c2a402fceed4d8f96520707784e4d2030ba9e2819a75efc9a2436c94c0b",
+      "bytes": 8710
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ACCOUNT-open.ax.txt": {
+      "sha256": "7c7be23e0d9d89cb076a1549a46d6e3640abdc9cf0f6e9fdb5c797fc35031b4d",
+      "bytes": 8762
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-ORGANIZATION-closed.ax.txt": {
+      "sha256": "b50bdfdf69230ab2a2ba68fcb8d558f682b8ef871223150181e2b9f97e09fc11",
+      "bytes": 8761
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-tree-cleanup.json": {
+      "sha256": "cc3b807ad968bf958753ff7080809448bdc4727086bfc8c018881373bbfb229c",
+      "bytes": 176
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-DATA-closed.ax.txt": {
+      "sha256": "f4435406e14a4f31cde7906c48bc0fa464c7b328d1dbedcb13041863b4982b10",
+      "bytes": 8753
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-ABOUT-closed.ax.txt": {
+      "sha256": "eb805264206bf2565b5495ca4c3afc37c38b4a010f6e77e414f00a07ef67ce62",
+      "bytes": 8754
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/warm-DATA & RESET-open.ax.txt": {
+      "sha256": "d25ed830e3feda29e03849df078383a3386bfbe668b05add0e782281c6fdb2e6",
+      "bytes": 8761
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472/post-DESKTOP BRIDGE-closed.ax.txt": {
+      "sha256": "65ab0dd8925f51493713c356e04a8b26f7b53743d0618a67e9697860f22a43d1",
+      "bytes": 8205
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472-watch-20261027.jsonl": {
+      "sha256": "d8502874c3761e1b37740c9d96a679465d1ecc8378b1b6fc8fefa1bdc39138ed",
+      "bytes": 99974
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472-watch-20261027-report.json": {
+      "sha256": "18383dd34fa0b42eb7d99298ef9faa32eb9d38ef36d9f605c270b4cbe25adc9c",
+      "bytes": 860
+    },
+    ".output/stabilization-checkpoints/guest-settings-visibility-472-holder.log": {
+      "sha256": "9c4d5c7a6e961840f1069a28b2a753e47e954aa5b31b272f0052b6237780d300",
+      "bytes": 15271
+    },
+    "docs/stabilization/resource-journals/guest-settings-visibility-472-native-20261027-0630.jsonl": {
+      "sha256": "2b0f56eade8e1922386bade594662ec997e32f7b56f6430fc3c94018f85dcdac",
+      "bytes": 15122
+    }
+  },
+  "next_action": "Fresh independent evidence review and, if needed, actual independent retest before defect closure; preserve formal case/build scope and setup trace gap.",
+  "additional_T10_request": {
+    "status": "SKIPPED_ALREADY_ENDED_HOLDER",
+    "reason": "Parent requested Chat Options/Tools consumer observation after UI/holder ended; no restart as instructed.",
+    "initial_chat_AX": ".output/stabilization-checkpoints/guest-settings-visibility-472/dev-panel-open.ax.txt",
+    "observed_only": "Initial actual Chat displayed Chat Options and Capabilities; menu never opened, no Tools-door/default-mode consumer inference."
+  },
+  "original_private_report_sha256": "49bd83b4b1ca6ed80b0fd0e30b2ab0ae8ea18369ccae4467873a7411d873e31f",
+  "durable_evidence_manifest": "docs/stabilization/reports/cycle-0603-publication-manifest-20261027.json",
+  "publication_limits": "Only mapped evidence is retained publicly; unmapped logs/ZIP/private original bodies are private references, not public evidence. Original actor/peer verdicts retained with owner correction below. No new formal inventory credit, current-main health, defect closure or Store acceptance.",
+  "owner_adjudication": "Manual Mac lease measured external repo/substitute rather than actual Chrome user-data root internal volume. Finalvalid0 alone cannot satisfy profile-binding rule. Manual product/owner maintenance acceptance UNVERIFIED; hosted B bounded verdict separately valid. See settings472-three-run-evidence-peer-20261027.json. No retroactive acceptance."
+}

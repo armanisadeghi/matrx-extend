@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T06:53:57.508023+00:00",
+  "inquiry": "READONLY native resource profile binding; no retroactive repair",
+  "requiredManualProfileDir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+  "holders": [
+    {
+      "holderSession": 32649,
+      "exactProfileDirFlagValue": null,
+      "exactArgv": null,
+      "argvEvidence": "Not retained in current compacted context or inspected artifact records; cannot establish exact first-slice flag value.",
+      "admission": {
+        "schema": 1,
+        "at": "2026-10-27T06:29:48.285Z",
+        "runId": "guest-settings-visibility-472-native-20261027-0630",
+        "mode": "browser",
+        "policySchema": 1,
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 8.64,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 4.01,
+          "logicalCpus": 10,
+          "cpuBusyFraction": 0.3614285714285715,
+          "swapUsedMiB": 325.56,
+          "repoFreeGiB": 1589.3148956298828,
+          "profileFreeGiB": 1589.3148956298828,
+          "safetyFreeGiB": 26.684406280517578,
+          "systemFreeGiB": 26.684406280517578
+        },
+        "cpuBusySamples": [0.38, 0.39, 0.33, 0.3, 0.25, 0.5, 0.38],
+        "reasons": [],
+        "swapWindowSeconds": 60,
+        "code": "RESOURCE_ADMITTED"
+      },
+      "samplePathProvenance": "Log has numeric samples but no sampled path/argv field. For 71332 launcher directly supplies repo measurement path; no inferred path for 32649.",
+      "log": ".output/stabilization-checkpoints/guest-settings-visibility-472-holder.log",
+      "sha256": "9c4d5c7a6e961840f1069a28b2a753e47e954aa5b31b272f0052b6237780d300"
+    },
+    {
+      "holderSession": 71332,
+      "exactProfileDirFlagValue": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/guest-chat-options-472-native-diagnostic/measurement",
+      "exactArgv": [
+        "node",
+        "scripts/stabilization-resource.mjs",
+        "browser",
+        "--run-id",
+        "guest-chat-options-472-native-diagnostic-20261027-0645",
+        "--profile-dir",
+        "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/guest-chat-options-472-native-diagnostic/measurement"
+      ],
+      "argvEvidence": "Exact launcher command retained in conversation compaction summary.",
+      "admission": {
+        "schema": 1,
+        "at": "2026-10-27T06:46:23.971Z",
+        "runId": "guest-chat-options-472-native-diagnostic-20261027-0645",
+        "mode": "browser",
+        "policySchema": 1,
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 9.12,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 3.75,
+          "logicalCpus": 10,
+          "cpuBusyFraction": 0.19428571428571426,
+          "swapUsedMiB": 325.56,
+          "repoFreeGiB": 1589.2708740234375,
+          "profileFreeGiB": 1589.2708740234375,
+          "safetyFreeGiB": 26.66016387939453,
+          "systemFreeGiB": 26.66016387939453
+        },
+        "cpuBusySamples": [0.16, 0.17, 0.16, 0.23, 0.23, 0.19, 0.22],
+        "reasons": [],
+        "swapWindowSeconds": 60,
+        "code": "RESOURCE_ADMITTED"
+      },
+      "samplePathProvenance": "Log has numeric samples but no sampled path/argv field. For 71332 launcher directly supplies repo measurement path; no inferred path for 32649.",
+      "log": ".output/stabilization-checkpoints/guest-chat-options-472-holder.log",
+      "sha256": "79988541abd748f99944f612f1bb7fa6f14e0cbc10d51c5b7f0e2e18b020a361"
+    }
+  ],
+  "ownerHolder29194": {
+    "exactArgv": null,
+    "exactProfileDirFlagValue": null,
+    "status": "Unknown: launcher not retained in this child context; owner adoption report identifies session/pid/exit only."
+  },
+  "assessment": "T10 holder 71332 was incorrectly bound to repo measurement directory, not actual Chrome user data root. RESOURCE_FINAL_DECISION valid/exit 0 and actual UI Profile 10 do not repair that binding. First five-case holder samples show profileFreeGiB equals repoFreeGiB rather than systemFreeGiB; exact flag remains unknown here. Parent must invalidate inappropriate acceptance/resource credit.",
+  "actions": "No UI, lease, tests, private profile reads, source edits, tracked writes or commits; wrote only this inquiry.",
+  "original_private_report_sha256": "55d6cd51e181154a56c6c1723befaa452dab7e467220388a85dff88a2551fed2",
+  "durable_evidence_manifest": "docs/stabilization/reports/cycle-0603-publication-manifest-20261027.json",
+  "publication_limits": "Only mapped evidence is retained publicly; unmapped logs/ZIP/private original bodies are private references, not public evidence. Original actor/peer verdicts retained with owner correction below. No new formal inventory credit, current-main health, defect closure or Store acceptance."
+}

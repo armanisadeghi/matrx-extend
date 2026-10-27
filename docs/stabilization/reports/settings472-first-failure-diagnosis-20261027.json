@@ -1,0 +1,143 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T06:48:00.996527+00:00",
+  "task_id": "settings472_first_failure_diagnosis",
+  "status": "CONFIRMED_DRIVER_CONTRACT_GAPS_WITH_MISSING_VISIBLE_FAILURE_CAPTURE_NO_PRODUCT_ROOT_CAUSE_PROVEN",
+  "lane": "settings472_failure_diagnosis",
+  "actions": {
+    "tests": 0,
+    "heavy": 0,
+    "UI": 0,
+    "API": 0,
+    "source_edits": 0,
+    "commits": 0,
+    "children": 0
+  },
+  "A_factual": "PARTIAL: first actual failures and two confirmed source-contract gaps localized. Neither failed picker/menu state was retained, so no proven visible product regression or claim all downstream failures are independent.",
+  "B_quality_provenance": "PASS bounded read-only diagnosis: raw failure first, exact472 artifact SDK392 sourcemaps used instead of stale local SDK388/current aidream source; no retries, changed policies or invented pass/closure.",
+  "raw_first": {
+    "A": {
+      "run": 40460876503,
+      "native_report": ".output/stabilization-checkpoints/settings-member-a472/raw/matrx-extend/matrx-extend/test-results/settings-account-popover-member.json",
+      "native_status": "fail/member_auth_boundary_failed/all3casesunverified",
+      "original_log": ".output/stabilization-checkpoints/settings-member-a472/job.log",
+      "first_boundary": "member_organization_selection",
+      "first_code": "d87_member_organization_option_unavailable_not_observed",
+      "resource": "package/browservalid0;nativechild_failed1/resourceInvalidfalse",
+      "missing": "No actual post-auth organization label, option list or failed-picker screenshot; prior identity success inferred from source order only."
+    },
+    "B": {
+      "run": 40460707057,
+      "native_report": ".output/stabilization-checkpoints/settings-guest-b472/raw/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+      "first_case": "EXT-F-1003-T10",
+      "first_code": "guest_chat_tools_entry_ready_not_observed:{toolsEntryCount:0}",
+      "prior_actual_passes": "Ask refusal/Act rollback, absent guest-shadow storage and panel persistence pass; full reload worker/panel replacement succeeds; same consumer failure repeats afterward.",
+      "later_cascade_evidence": "T13 Chat_section_ready count0; T16/T19/etc signed-out prerequisites false; T22 warm signedOuttrue/activefalse/guestfalse/sections[] then reload activeguesttrue with sections. This supports wrong-pane contamination, not auth change.",
+      "resource": "package/browservalid0;nativechild_failed1/resourceInvalidfalse",
+      "missing": "No opened Chat Options DOM/menu screenshot at first failure; actor screenshots initial only."
+    }
+  },
+  "confirmed_gaps": [
+    {
+      "id": "A_APPROVED_CONTEXT_SPLIT",
+      "scope": "Member authentication test context",
+      "facts": [
+        "settings-account-popover-native passes memberLinkFile and allowLadderOrganization=true but no memberApprovedOrganizationFile.",
+        "Wrapper needsApprovedMemberOrganization and childEnv approved-file forwarding include member-chat/member-data/scrape-save-member, not settings-account-popover-member.",
+        "signInSettings obtains expected UUID from credential.organization_id but required name defaults independently to hardcoded MEMBER_TEST_ORGANIZATION_NAME. Selection and visible-identity waits demand that legacy name before load-ladder resolution.",
+        "Retained safe source diagnosis reports approved fixture name differs from fallback; no values exposed.",
+        "Data-member and scrape-save already pass the existing approved organization file."
+      ],
+      "conclusion": "The approved UUID/name contract is split; this is a deterministic test-driver context mismatch independent of whether it was the only live picker failure. Do not fix by selecting any organization or accepting a guessed label."
+    },
+    {
+      "id": "B_OBSOLETE_CONSUMER_DOOR",
+      "scope": "Guest Default mode new-Chat consumer traversal",
+      "facts": [
+        "Driver clicks Chat Options then searches direct Tools buttons under trigger aria-controls or named dialogs; mode reader expects ComposerSubmenu/data-composer-panel or Tools-named dialog. Existing fixture explicitly models SDK0.8.370.",
+        "Exact SDK392 RunControlsMenu is instantiated by InputActionButtons with variant=plus and composer state. At mobile width it opens ComposerPlusMenu sheet. Captured PNG width360 is below exact SDK useIsMobile767 cutoff.",
+        "Exact composerPlusCarries(meta=full) excludes capabilities from plus menu; Tools lives inside Capabilities menu/submenu in that presentation. Actual headed initial AX separately displays Chat Options and Capabilities.",
+        "Desktop gear WindowPanel and its Tools role tabs are another current SDK presentation absent from current selector/mode scopes; this is NOT proof desktop presentation was executed in failing360px run."
+      ],
+      "conclusion": "Driver assumes an obsolete universal door. Product Tools absence is not proven. First repair must derive actual supported presentation/owned root, not blindly widen global Tools search or add desktop-only selector."
+    },
+    {
+      "id": "B_CASE_BOUNDARY_CONTAMINATION",
+      "scope": "Batch isolation after consumer failure",
+      "facts": [
+        "observeGuestNewChatDefault switches Chat, presses New chat, opens options, then finally only Escape/closed-menu checks. It never restores Settings.",
+        "Caller navigates Settings only after successful consumer await; runCase catches failure and continues without pane restoration.",
+        "Raw subsequent wrong-pane observations match this path; full-reload later restores valid guest Settings state."
+      ],
+      "conclusion": "Confirmed cleanup/case-entry defect can manufacture downstream failures. Restore Settings in finally and explicitly reacquire valid guest Settings before dependent cases; report blocked/cleanup failure rather than product-fail if restoration cannot be proven."
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "A1",
+      "if": "Approved UUID/name mismatch causes organization selection failure",
+      "prediction": "Binding current validated approved name+UUID through existing context makes actual helper skip matching current selection or click exact approved option; no legacy-name query.",
+      "one_variable_discriminator": "Actual signInSettings/caller composition with different approved vs legacy name at external browser/auth seams; then one independently retested original A run after guard green.",
+      "falsifier": "Correct approved target still absent/unselectable in retained real option snapshot."
+    },
+    {
+      "id": "A2",
+      "if": "Picker rendering/filter/auth lifecycle additionally prevents valid target",
+      "prediction": "Correct approved context still yields unavailable/closed/filtered/zero matching option; safe snapshot identifies boundary.",
+      "one_variable_discriminator": "Retain existing safe trigger/menu/filter/count/hit observations on failure; no raw labels/auth URLs.",
+      "falsifier": "Exact approved option is uniquely visible/hittable and selected after context binding."
+    },
+    {
+      "id": "B1",
+      "if": "SDK392 presentation drift is first consumer failure",
+      "prediction": "Actual owned Capabilities/Tools presentation yields one mode control and canonical Act without a preference write; old direct Chat Options path still finds0.",
+      "one_variable_discriminator": "Exact392 captured DOM/sourcemap based actual traversal fixture plus next actual headed menu capture; do not send AI.",
+      "falsifier": "Current owned presentation has no Tools/mode control despite correct navigation."
+    },
+    {
+      "id": "B2",
+      "if": "Missing Settings restoration drives later failures",
+      "prediction": "Force original consumer error, then require finally restoration/current-panel reacquisition; following T13 starts Settingsactive/guesttrue rather than reading Chat.",
+      "one_variable_discriminator": "Actual whole callback/runCase composition at external input/CDP seam with deliberate consumer error.",
+      "falsifier": "Following case retains invalid Settings/guest state after proven restoration, requiring separate investigation."
+    }
+  ],
+  "minimal_repair_and_guard_plan": [
+    "A: reuse approvedShowcaseOrganization/private config mechanism and existing member-data/scrape-save producer-to-consumer path. Before changing workflow/context staging, verify intended organization JSON already resolves the exact approved member UUID/name and use existing fixture authority. Wire settings member context consistently through wrapper plus caller, require exact UUID match; never add another hardcoded name or silently accept arbitrary active organization. If context unavailable, refuse preflight before Chrome with safe explicit code. Add real wrapper/caller/helper composition guard for nonlegacy names, mismatched UUID, missing context, and same-name/different-ID. Current path must fail named context assertion, not import/setup. Census sibling allowLadder callers that omit approved file.",
+    "A capture: retain existing safe organization option diagnostics at failing boundary (counts, open/filter/visible/hit booleans and expected-match only); source already supports onAuthDiagnostic but this caller does not supply it. Do not emit private option labels, UUIDs or credentials.",
+    "B consumer: obtain actual current Tools door/owned root via exact392 fixture and a fresh actual headed menu observation; current source supports Capabilities/Tools and multiple presentations, but absent actual failed-state capture prevents asserting which visible target existed. Extend the existing shared traversal and mode reader in place to current owned surfaces; exclude unrelated outer Tools navigation, hidden/stale/duplicate windows. Preserve trusted input, refusal on ambiguity and fixed canonical Act expectation, no timeouts/retries/forced state.",
+    "B isolation: put Settings restoration/current-panel reacquisition in finally around the consumer handoff and verify guest Settings at case entry. Keep original consumer failure authoritative, attach cleanup outcome separately; classify dependent cases blocked/unverified if cleanup fails. Add whole-callback guards proving forced consumer failure does not contaminate next case and does not erase original error.",
+    "Tests first under normal resource admission once Mac operator ends; use real SUT composition/DOM fixtures from exact artifact semantics, not mocks returning desired tool counts. Include direct mode-switch mutation, constant-return and unrelated/hidden duplicate roots; full focused, compile and fresh A/B code review before one exact-new-source hosted retest. No release/defect closure from these supporting guards."
+  ],
+  "exact_artifact_source": {
+    "artifact_source": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+    "SDK": "@ai-matrx/chat-v2@0.8.392",
+    "map": "test-results/ci-artifacts/472c12bd6b3e3c8c952dc7d19fb05269b564bbe0/40452473314-1/chrome-mv3/chunks/useComposerMode-TI3f7Muh.js.map",
+    "map_sha256": "8f061bf90350bdc62880be3f041ada95f982d628d7b3db22ec2ca7b8cac8325d",
+    "source_content_hashes": {
+      "agents/components/inputs/smart-input/composer/composer-mode-visibility.js": "cb16c626281fa400c6d88da6dce9fe7a3ec288de6ef7f123ecd5c99b20aec78c",
+      "agents/components/inputs/smart-input/RunControlsMenu.js": "5b6adacb402ecdb6155a853ccf396f17dec0cd9d879a1d86bd65dc03c4bdd781",
+      "agents/components/inputs/smart-input/InputActionButtons.js": "968f0553510d53bda63a9af7074b3cd57aa88abf49ebb49b5b142098fa9d445d"
+    },
+    "native_headed_lead": ".output/stabilization-checkpoints/guest-settings-visibility-472/dev-panel-open.ax.txt",
+    "lead_limit": "Initial AX only; extra T10 menu request explicitly skipped after holder ended. No restart or opened-menu proof."
+  },
+  "source_hashes": {
+    "tests/browser/settings-native-auth-driver.mjs": "4621d2973fb3fceefd9b0fba0439a3de48ded73f91c76ac50d44dae89d34394a",
+    "tests/browser/settings-account-popover-native.mjs": "79abaacfe39716e02b51c990cef55b25c81d394af1ca2c37525ab957943bcec3",
+    "scripts/hosted-guest-acceptance.mjs": "5116b5781ee2431048be0e97a09b12acc67d70753f27d3bc4df826e500e54a8e",
+    "tests/browser/settings-panel-driver.mjs": "e70b39cb8d17937db651f079060b5ed2bb4e0bdd4f7e241169f8dcf8b4086350",
+    "tests/browser/settings-guest-preference-batch.mjs": "bd129268fa4af7f8cd42be5ab522a06edf56f89962d4bd389ad49df9658e9b16",
+    "tests/browser/settings-local-controls-acceptance.mjs": "2fc672369206f6f8349a0197923b058914c94fcaa68b839497a7d43028eea210",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "bf0e1e052e87e348529d594eddcff2d53d61e1a5917ebfc16b0d15aa6f601d6e"
+  },
+  "limits": [
+    "No tests or browser/service reproduction executed by this lane. No product cause, original case pass, defect closure or successful repair claimed.",
+    "A source-context defect confirmed; exact visible organization-selection failure cause remains unproved. Existing staged-profile organization JSON compatibility with approved member fixture must be checked before reuse.",
+    "B consumer presentation contract gap and case cleanup defect confirmed by exact artifact/source plus raw wrong-pane evidence; actual first opened menu state remains missing.",
+    "No private fixture/env/auth values read to output; only actor-safe mismatch boolean and retained public client artifact semantics used."
+  ],
+  "original_private_report_sha256": "078e2fb3edc05df010dcee1f2366b77d78c6c0793bfcac5d4d0ae5a388bacfe9",
+  "durable_evidence_manifest": "docs/stabilization/reports/cycle-0603-publication-manifest-20261027.json",
+  "publication_limits": "Only mapped evidence is retained publicly; unmapped logs/ZIP/private original bodies are private references, not public evidence. Original actor/peer verdicts retained with owner correction below. No new formal inventory credit, current-main health, defect closure or Store acceptance."
+}

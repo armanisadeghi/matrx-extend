@@ -1,0 +1,191 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 122039180592,
+      "run_id": 40459086951,
+      "workflow_name": "Native B · guest-scrape-development (by extend-stabilization)",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs/40459086951",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSQW2os8AAAAcahodMA",
+      "head_sha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+      "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/jobs/122039180592",
+      "html_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40459086951/job/122039180592",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-27T06:06:03Z",
+      "started_at": "2026-10-27T06:06:07Z",
+      "completed_at": "2026-10-27T06:12:39Z",
+      "name": "guest",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-27T06:06:08Z",
+          "completed_at": "2026-10-27T06:06:10Z"
+        },
+        {
+          "name": "Require bounded lane and isolate shared credentials",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-27T06:06:10Z",
+          "completed_at": "2026-10-27T06:06:10Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-27T06:06:10Z",
+          "completed_at": "2026-10-27T06:06:44Z"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-27T06:06:44Z",
+          "completed_at": "2026-10-27T06:06:46Z"
+        },
+        {
+          "name": "Require a matching CI development artifact for Settings acceptance",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-27T06:06:46Z",
+          "completed_at": "2026-10-27T06:06:46Z"
+        },
+        {
+          "name": "Require a successful published release artifact",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-10-27T06:06:46Z",
+          "completed_at": "2026-10-27T06:06:46Z"
+        },
+        {
+          "name": "Require exactly one artifact provenance mode",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-27T06:06:46Z",
+          "completed_at": "2026-10-27T06:06:46Z"
+        },
+        {
+          "name": "Require selected authentication before browser setup",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-27T06:06:46Z",
+          "completed_at": "2026-10-27T06:06:46Z"
+        },
+        {
+          "name": "Disable indexing on the disposable hosted VM",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-27T06:06:46Z",
+          "completed_at": "2026-10-27T06:06:47Z"
+        },
+        {
+          "name": "Wait for measured package readiness",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-27T06:06:47Z",
+          "completed_at": "2026-10-27T06:07:21Z"
+        },
+        {
+          "name": "Prepare pinned browser driver under an owned permit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-27T06:07:21Z",
+          "completed_at": "2026-10-27T06:08:31Z"
+        },
+        {
+          "name": "Wait for measured browser readiness",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-27T06:08:31Z",
+          "completed_at": "2026-10-27T06:09:04Z"
+        },
+        {
+          "name": "Prepare full Chromium under a fresh owned permit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-27T06:09:04Z",
+          "completed_at": "2026-10-27T06:10:24Z"
+        },
+        {
+          "name": "Wait for measured acceptance readiness",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-27T06:10:24Z",
+          "completed_at": "2026-10-27T06:10:57Z"
+        },
+        {
+          "name": "Exercise the selected Chrome side-panel case",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-27T06:10:57Z",
+          "completed_at": "2026-10-27T06:12:35Z"
+        },
+        {
+          "name": "Measure owned Chromium startup during the existing guard interval",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-27T06:12:35Z",
+          "completed_at": "2026-10-27T06:12:35Z"
+        },
+        {
+          "name": "Upload browser result and native-panel screenshots",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-27T06:12:35Z",
+          "completed_at": "2026-10-27T06:12:37Z"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 33,
+          "started_at": "2026-10-27T06:12:37Z",
+          "completed_at": "2026-10-27T06:12:37Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 34,
+          "started_at": "2026-10-27T06:12:37Z",
+          "completed_at": "2026-10-27T06:12:38Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 35,
+          "started_at": "2026-10-27T06:12:38Z",
+          "completed_at": "2026-10-27T06:12:38Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/armanisadeghi/matrx-extend/check-runs/122039180592",
+      "labels": ["macos-15-intel"],
+      "runner_id": 1000117256,
+      "runner_name": "GitHub Actions 1000117256",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
