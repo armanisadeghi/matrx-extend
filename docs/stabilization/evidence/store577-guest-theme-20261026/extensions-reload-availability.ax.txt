@@ -1,0 +1,98 @@
+Window: "Extensions", App: Google Chrome.
+0 standard window Extensions - Google Chrome - Matrx Guest Test, URL: chrome://extensions/, Secondary Actions: Raise
+	1 container Extensions - Google Chrome - Matrx Guest Test, URL: chrome://extensions/
+		2 container
+			3 toolbar
+				4 button Back
+				5 button (disabled) Forward
+				6 button Reload
+				7 container
+					8 pop up button Chrome
+					9 text field (settable) Address and search bar, Value: chrome://extensions, Placeholder: Ask Google or type a URL
+					10 button Bookmark this tab
+				11 container
+					12 pop up button Matrx
+					13 pop up button Matrx Extend DEV
+					14 pop up button Extensions
+				15 button Matrx Guest Test
+				16 pop up button Chrome
+			17 container
+				18 scroll area
+					19 HTML content Extensions, URL: chrome://extensions/
+						20 container
+							21 heading Extensions, Value: 1
+								22 text Extensions
+							23 search text field (settable) Search extensions
+							24 text Developer mode
+							25 switch Developer mode, Value: on
+							26 container
+								27 button Load unpacked
+								28 button Pack extension
+								29 button Update, Help: Update extensions now
+						30 container
+							31 container
+								32 menu Secondary Actions: Cancel
+									33 My extensions
+										34 text My extensions
+									35 Keyboard shortcuts
+										36 text Keyboard shortcuts
+								37 text Using AI coding agents to build extensions? Install the 
+								38 link Chrome Extensions and Chrome Web Store skill, Value: developer.chrome.com/docs/extensions/ai/build-with-ai?utm_source=ext_sidebar&hl=en-US#modern_web_guidance
+								39 text  to teach your coding agent the latest API updates and best practices.
+								40 container
+									41 text Discover more extensions and themes on the 
+									42 link Chrome Web Store, Value: chromewebstore.google.com/category/extensions?utm_source=ext_sidebar&hl=en-US
+							43 container
+								44 heading All Extensions Pin new extensions to Toolbar Pin new extensions to Toolbar, Value: 2
+									45 text All Extensions Pin new extensions to Toolbar
+									46 switch Pin new extensions to Toolbar, Value: on
+								47 image Unpacked extension
+								48 heading Matrx Extend DEV, Value: 3
+									49 text Matrx Extend DEV
+								50 text 0.2.625 AI assistant for understanding and working with the page open in your browser. ID: cihdmkcdjjckfhjpgoedmgfpoljebaml Inspect views
+								51 link service worker
+									52 text service worker
+								53 button Details
+								54 button Remove
+								55 button Reload
+								56 switch On, extension enabled, Value: on
+								57 heading Google Docs Offline, Value: 3
+									58 text Google Docs Offline
+								59 text 1.111.1 Edit, create, and view your documents, spreadsheets, and presentations — all without internet access. ID: ghbmnnjooekpmoecnnnilnnbdlolhkhi Inspect views
+								60 link service worker (Inactive)
+									61 text service worker (Inactive)
+								62 button Details
+								63 button Remove
+								64 switch On, extension enabled, Value: on
+								65 heading Matrx Extend, Value: 3
+									66 text Matrx Extend
+								67 text 0.2.577 AI assistant for understanding and working with the page open in your browser. ID: hnfolienncfklkgmdjjmhhegglimlamg Inspect views
+								68 link service worker
+									69 text service worker
+								70 button Details
+								71 button Remove
+								72 switch On, extension enabled, Value: on
+			73 pop up button Tab search
+			74 container
+				75 tab group
+					76 tab (settable, boolean) New Tab - Memory usage - 85.8 MB, Value: off
+						77 button Close
+					78 tab (selected, settable, boolean) Extensions, Value: on
+						79 button Close
+			80 button New Tab
+	81 close button
+	82 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	83 minimize button
+84 menu bar
+	85 Chrome
+	86 File
+	87 Edit
+	88 View
+	89 History
+	90 Bookmarks
+	91 Profiles
+	92 Tab
+	93 Window
+	94 Help
+
+The focused UI element is 23 search text field (settable) Search extensions

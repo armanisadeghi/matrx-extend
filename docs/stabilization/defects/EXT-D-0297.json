@@ -7,7 +7,7 @@
   "auth_mode": "All callers of shared native harness; reproduced path signed-out publishedCRX guest",
   "severity": "S2: resource enforcement gap invalidates guarded acceptance; no unsafe escalation or public Chat outage established",
   "priority": "P1: enforce canonical guard before further affected native runs",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root / native_default_guard_fix",
   "preconditions": [
     "runNativeSidepanelQa caller omits optional resourceAction (actual guest-chat caller).",
@@ -26,7 +26,8 @@
   "evidence": [
     "docs/stabilization/reports/published-crx-40403343034-unverified-20261026.json",
     "docs/stabilization/reports/published-crx577-4669-runtime-20261026.json",
-    "docs/stabilization/reports/published-crx577-4669-peer-20261026.json"
+    "docs/stabilization/reports/published-crx577-4669-peer-20261026.json",
+    "docs/stabilization/reports/d297-closure-audit-20261026.json"
   ],
   "independent_diagnosis": {
     "reviewer": "native_pending_diagnosis",
@@ -41,7 +42,7 @@
   ],
   "fix_sha": "8232ae1b72019807c1c194e243ac9deb556d6656",
   "cleanup": "All8builderguards and independent19589 terminal; fixture directories absent; rootps saw no guard/Vitest process. No credentials or nativefixtures staged.",
-  "next_action": "Commit reviewed class+inventory unit, merge contributor55ac/v627 without losing changes, require successful integratedfullCI/exactartifact; then normalBguestScrape and ownerChromeupdate. D297 remainsfixed untilfullCI; memberA activation additionally waits validminimalB content/resource result.",
+  "next_action": "Bounded supporting defect closed; keep broader native enforcement/product cases separate. Diagnose existing D254/D231 cold headed CDP timeout using reviewed existing diagnostic and unchanged admission; member fixture activation held.",
   "transition_history": [
     {
       "at": "2026-10-26T21:36:34.048697+00:00",
@@ -60,6 +61,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Final14GREEN+compile and zeroauthorship independent14replay pass; realnative acceptance pending; sourcecommit bundled, no closure."
+    },
+    {
+      "at": "2026-10-27T00:53:42.633001+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent original controlled14-case replay, bounded original native publicCRX route, fixture-class independent replay and integrated dff fullCI40424445926 success; supporting default/session/prelaunch wiring scope only."
+    },
+    {
+      "at": "2026-10-27T00:53:42.633001+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Fresh closure audit separate A/B accepts bounded supporting harness defect. Historical mutation-procedure deviation retained; no live CPU_PENDING/recovery, raw Page/global enforcement, Store/product or release claim."
     }
   ],
   "source_verification": {
@@ -85,7 +98,8 @@
     "tests": "14/14PASS/finalvalid0",
     "A": "PASS_BOUNDED_SUPPORTING_COMPOSITION_REPLAY",
     "B": "PASS_BOUNDED_SOURCE_WITH_RECORDED_PROCEDURAL_DEVIATION",
-    "native": "PASS bounded original-route publicCRX577 unpacked on40408186617, stable4669 backend/three terminal replies/all3journalsvalid0; independently reviewed. No liveCPU_PENDING, actualStore installation or fullF0002 claim."
+    "native": "PASS bounded original-route publicCRX577 unpacked on40408186617, stable4669 backend/three terminal replies/all3journalsvalid0; independently reviewed. No liveCPU_PENDING, actualStore installation or fullF0002 claim.",
+    "closure_audit": "docs/stabilization/reports/d297-closure-audit-20261026.json"
   },
   "fix_commit_status": "Production fix8232 pushed; classfixture followthrough independentlyreplayed and bundled with current evidence. Integrated627 fullCI pending; do not retrocertify prior failedruns.",
   "ci_followthrough": {
@@ -191,6 +205,22 @@
         "docs/stabilization/reports/d297-native-fixture-class-peer-20261026.json"
       ],
       "limits": "Frozen8db+existinginstalleddeps only; contributor627/dependency merge needs currentfullCI/artifact. No native/product/fullF0002 acceptance or closure."
+    },
+    "integrated_closure": {
+      "source": "dff694c1cdf4eab88848b398f3efc0c5414ce0dd",
+      "full_ci": 40424445926,
+      "focused_ci": 40424445956,
+      "result": "success",
+      "focused_counts": {
+        "total": 1076,
+        "pass": 1075,
+        "fail": 0,
+        "skip": 1
+      },
+      "D297_unit_tests": 14,
+      "artifact_id": 12700040517,
+      "artifact_digest": "sha256:03073262c3afea8d5055940678e9f5d44eaf37553f9fd41ea4c901497c50123f",
+      "current_adoption_limit": "dff artifact historical;9ec successor also green/adopted, c072 later runtime drift means latest-main refresh pending."
     }
   }
 }

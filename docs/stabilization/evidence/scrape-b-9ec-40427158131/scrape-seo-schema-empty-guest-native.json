@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T08",
+  "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+  "auth_mode": "guest",
+  "status": "fail",
+  "stage": "preflight",
+  "native_stage": "cdp_connect",
+  "artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+    "run_id": 40425771456,
+    "artifact_id": 12699643957,
+    "version": "0.2.627",
+    "tree_sha256": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277"
+  },
+  "observations": null,
+  "capture_diagnostic": null,
+  "pane_screenshots": null,
+  "panel_viewport": null,
+  "failure_code": "owned_cdp_endpoint_timeout",
+  "limits": "One owned localhost guest page; only T08 no-signal SEO and empty Schema panes. No broader T08, role, width, Store, or current-main claim.",
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "sourceSha": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+    "runId": 40425771456,
+    "artifactId": 12699643957,
+    "githubArtifactDigest": "sha256:8b070e51259fc6263d7dd41dbec4658b2e23a67f4fc16f0a444073b4915d3c08",
+    "runAttempt": 1,
+    "version": "0.2.627",
+    "treeSha256": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277"
+  },
+  "build": {
+    "before": {
+      "treeSha256": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277"
+    },
+    "after": {
+      "treeSha256": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277"
+    }
+  }
+}
