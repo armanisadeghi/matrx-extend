@@ -1,0 +1,19 @@
+{
+  "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+  "driver": {
+    "path": "tests/browser/scrape-seo-schema-empty-guest.mjs",
+    "sha256": "b805760d6975131e1224cfbd47e6258c00861037b6628199013370eae6e303ab",
+    "headed_argument": true
+  },
+  "harness": {
+    "path": "tests/browser/native-sidepanel-qa-harness.mjs",
+    "sha256": "0873e3c37625d718f7b4c7271a41c73a67efef442d426bee0d3b671b00602cfe",
+    "mandatory_runtime_checks": [
+      "Browser.getBrowserCommandLine",
+      "requireOwnedCommandLine",
+      "requireBrowserDisplayMode before exercisePanel"
+    ]
+  },
+  "execution_evidence": "Official complete native run emitted SCRAPE_T08_EMPTY_SEO_SCHEMA and reached exercise_panel/complete; the pinned route requires headed:true and actual command-line verification before that path. Browser.getVersion emitted Chrome/141.0.7390.37.",
+  "limit": "No standalone raw command-line/browserLaunch receipt is retained in the native JSON; headed execution is supported by the mandatory executed check and exact source binding, not screenshots alone. Actual temporary profile path and backend SHA are not emitted."
+}

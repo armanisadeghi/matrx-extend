@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-27T09:55:35.343488+00:00",
+  "runId": "owner6ea-native-20261027-0955",
+  "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+  "fingerprint_file": ".output/stabilization-checkpoints/owner629-6ea-disk-fingerprint-20261027.json",
+  "fingerprint_file_sha256": "389588019332f882220af92b2096ff07a6616ba149505ebb40cf75c11a508ad0",
+  "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+  "tree_sha256": "14d39196f53cdeebdc26788a5157c4264404e1598838c67f417379ff2530d321",
+  "receipt_sha256": "d0b34f62df994c7e3bdb822082149b16da05968e7edfc6f6a2460a6586a83cb8",
+  "A_run": 40484355701,
+  "B_settings_run": 40483916612,
+  "B_scrape_run": 40481625336,
+  "ui_allowed": false,
+  "rule": "ParentverifyliteralactualRootRESOURCE_ADMITTEDandfreshresource/buildwatchbeforeUI_READY. Nopromotions/thirdlocalheavywhileUI."
+}
