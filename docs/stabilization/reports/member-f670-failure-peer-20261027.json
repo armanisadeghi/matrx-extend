@@ -1,0 +1,108 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "task": "member-f670-failure-peer",
+  "reviewed_at": "2026-10-27T22:03:24.826569+00:00",
+  "independence": "Read-only fresh review of original archive, source at exact attempted commit, fresh GitHub metadata and private cleanup receipts; no actor conclusion used as proof.",
+  "scope": {
+    "run_id": 40590496401,
+    "run_attempt": 1,
+    "source_sha": "f670242504c54f99f434d74236a3155b0d713e54",
+    "case": "EXT-F-2005-T08",
+    "member_data_scope": "auto-extract"
+  },
+  "verdict_A": {
+    "verdict": "FAIL",
+    "meaning": "Native attempt fails during precondition; original Data/name-entry behavior untested. Product cause UNKNOWN.",
+    "earliest_proven_boundary": "member_auth -> member_logical_organization_proof -> logical_organization_request -> organization_tools_click -> shared click pointer admission",
+    "observed": {
+      "matched_target_count": 1,
+      "visible_target_count": 1,
+      "error_code": "pointer_stable_hit_not_observed",
+      "organization_selected": true,
+      "expected_organization_matches": true,
+      "authentication": null,
+      "observations_empty": true,
+      "name_entry_diagnostic_present": false
+    },
+    "boundary_semantics": "Exact-source click requires two stable, hit-tested, nonanimating samples before sending mousePressed/mouseReleased. Its stable-hit refusal is before either dispatch. openOrganizationRecords arms the Records product observer only after this Tools click and catalog readiness; neither was reached.",
+    "identity_limit": "Earlier rendered-identity/storage boundaries completed by source control flow, but complete signed-in nonadmin member and logical organization proof never returned; do not infer authentication success from selected-organization booleans.",
+    "D301_original_name_entry_exercised": false,
+    "cause_verdicts": {
+      "resource": "NOT ESTABLISHED: all admission checks pass; package/browser final valid; guest final admitted=true resourceInvalid=false child_failed. One CPU busy sample reached 0.8, recovered before exit; temporal co-occurrence proves no cause.",
+      "driver": "PROVEN refusal boundary, NOT proven defective driver. Report omits the hit/animation/stability fields necessary to explain admission refusal.",
+      "app": "UNKNOWN: no click dispatch means no app Tools handler failure demonstrated; animation, occlusion, layout, suspended clock, remount and input loss are unproven."
+    }
+  },
+  "verdict_B": {
+    "verdict": "PASS_WITH_LIMITS",
+    "provenance": "Fresh GitHub run and both artifact metadata match attempt/source; original official ZIP digest, byte length and six member hashes verify; extracted bytes match every original ZIP member.",
+    "cleanup": "Private receipts show successful exact owned-secret/auth-file cleanup, observer stop, zero owned rows before/after, and original fixture archive restored and reread. Fixture identity matches privately and timestamp representations differ only formatting, same instant. Fresh GitHub list has no attempt-named secret. Private directory mode 0700.",
+    "limits": [
+      "Remote process/profile removal not independently observed.",
+      "Database cleanup and fixture restoration independently cross-checked as internally consistent receipts/scripts, not a new live DB read.",
+      "Native authentication=null and cleanup=null prevent claims of full native member proof or native row cleanup.",
+      "Development ZIP bytes/tree not downloaded anew by this reviewer; native identity plus fresh GitHub artifact metadata support exact-source identity, not independently rehashed installed tree after failed run."
+    ],
+    "diagnostic_gap": "Existing shared click already assembles bounded hit/stability/animation data. refreshMemberLogicalOrganizationGet retains only counts; runMemberAuthBoundary then preserves only driverFailure.code. Failure receipt cannot distinguish the actual veto reason. This is a capture gap, not a demonstrated product cause.",
+    "doctrine": "No retry, timeout increase, synthetic product request, alternate case, auth mutation, source edit, local heavy work or acceptance claim performed. Existing routine in-scope repair authority does not require new conversational approval."
+  },
+  "identity_crosscheck": {
+    "native_artifact_id": 12773269166,
+    "native_zip_bytes": 43792,
+    "native_zip_sha256": "bab641055c78b5791bbd0b682d0a20e0320256a0a2eea07eb1c293f37ecb2a8a",
+    "native_member_count": 6,
+    "development_run_id": 40587669744,
+    "development_artifact_id": 12774320314,
+    "development_artifact_digest": "sha256:8c35c03e3886cfaad5dbeca1ce96e541c7c3d0be87fe37b43981d00f7d38dbc9",
+    "native_reported_build": {
+      "source_sha": "f670242504c54f99f434d74236a3155b0d713e54",
+      "run_id": 40587669744,
+      "artifact_id": 12774320314,
+      "tree_sha256": "c134c28e0cc7f2fb62076e9cc3727fc49d34a5a0dfccf47cc8b81b71dae9ede9",
+      "version": "0.2.630"
+    },
+    "normal_verifier": "correctly refused unsuccessful hosted run"
+  },
+  "bounded_next_action": {
+    "owner": "Parent repair lane",
+    "change": "At shared refreshMemberLogicalOrganizationGet catch, project existing error.driverFailure into a finite content-free pointer observation before runMemberAuthBoundary discards it. Reuse shared click failure fields and safe auth diagnostic allowlist/sibling desktop pointer projection; do not create a second pointer sampler or transport raw errors/DOM/identity.",
+    "retain": [
+      "matched/visible counts",
+      "hitTarget",
+      "animating",
+      "animationCategory",
+      "stableSamples",
+      "positionStable",
+      "targetHasArea",
+      "clippedTargetHasArea",
+      "selectedPointAvailable",
+      "centerHitCategory",
+      "targetDisabled",
+      "pointerEventsNone",
+      "bounded animationInitialDiagnostic/animationDiagnostic if already supported by canonical serializer"
+    ],
+    "guard": "Prove the real shared auth wrapper retains safe reason categories while dropping identity/URLs/text; keep exact selector, click admission, sampling cadence and time budget unchanged.",
+    "execution": "After normal review/source/artifact gates, one discriminating member-data hosted attempt with the same case/scope. No blind rerun of f670.",
+    "decision_rule": "If failure recurs, use retained veto fields to choose one falsifiable discriminator at that boundary. If auth passes, evaluate original name-entry samples. Neither outcome licenses a product fix without actual failing-boundary evidence."
+  },
+  "evidence_paths": {
+    "original_archive": ".output/stabilization-checkpoints/wake2135/member-data-f670-private/native.zip",
+    "archive_manifest": ".output/stabilization-checkpoints/wake2135/member-data-f670-private/archive-members.json",
+    "native_report": ".output/stabilization-checkpoints/wake2135/member-data-f670-private/native/matrx-extend/matrx-extend/test-results/data-member-auto-extract-acceptance.json",
+    "private_run_log": ".output/stabilization-checkpoints/wake2135/member-data-f670-private/job.log",
+    "cleanup": ".output/stabilization-checkpoints/wake2135/member-data-f670-private/cleanup.json",
+    "fixture_readback": ".output/stabilization-checkpoints/wake2135/member-data-f670-private/fixture-read-receipt.json",
+    "owned_rows_readback": ".output/stabilization-checkpoints/wake2135/member-data-f670-private/owned-pattern-readback.json"
+  },
+  "source_primitives": [
+    "tests/browser/settings-panel-driver.mjs:click/pointerFailure",
+    "tests/browser/member-logical-org-proof.mjs:refreshMemberLogicalOrganizationGet",
+    "tests/browser/organization-records-navigation.mjs:openOrganizationRecords",
+    "tests/browser/settings-member-auth-diagnostic.mjs:runMemberAuthBoundary",
+    "tests/browser/scrape-save-auth-report.mjs:safeScrapeSaveAuthDiagnostic",
+    "tests/browser/settings-desktop-pointer-diagnostics.mjs"
+  ],
+  "mutations": "Only this derived report file. No raw auth, organization identifiers, links, identity payloads or fixture values included.",
+  "publication": "Privacy-limited typed derivative; raw native/auth/fixture/log/image/ZIP remains private. Original hash references are integrity references, not public byte copies.",
+  "private_original_sha256": "d54162eb510dc248b044fd08d35d8f9c55ce1e297aa907bb71accdbeebdd39d1"
+}

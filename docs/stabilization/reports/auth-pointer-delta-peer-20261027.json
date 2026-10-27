@@ -1,0 +1,51 @@
+{
+  "task_id": "auth-pointer-delta-peer",
+  "at": "2026-10-27T22:11:20.745577+00:00",
+  "status": "SOURCE_REVIEW_COMPLETE_GATES_PENDING",
+  "verdict_A": {
+    "verdict": "PASS_SOURCE_CAPABILITY_ONLY",
+    "original_rejected_failure_callback_finding": "ADDRESSED",
+    "facts": [
+      "Failure path attaches rejection handler immediately with Promise.resolve(pending).catch and rethrows exact primary click value.",
+      "Finite own-data projection is reused in Records callback, auth boundary and scrape checkpoint. Driver input, pointer sampler and timing budgets untouched."
+    ],
+    "native_pointer_cause": "UNKNOWN",
+    "data_name_test": "NOT_REACHED"
+  },
+  "verdict_B": {
+    "verdict": "IMPORTANT_REMAINING_BEST_EFFORT_GAP",
+    "findings": [
+      {
+        "severity": "Important",
+        "file": "tests/browser/member-logical-org-proof.mjs",
+        "line": 39,
+        "finding": "onStage calls onDiagnostic without swallowing synchronous exceptions or consuming returned rejection. Callback returning Promise.reject for all diagnostics leaves gate/click-stage rejections unhandled before primary click failure; a synchronous stage throw prevents the click.",
+        "evidence": "Source inspection of openOrganizationRecords shows synchronous onStage at gate and before click. Added child-process guard rejects only second organization_tools_click occurrence (failure callback), so excludes earlier stage callbacks.",
+        "execution": "Not independently executed; previous adversarial resource invocation refused COMMAND_NOT_ALLOWED; no bypass attempted."
+      }
+    ],
+    "guard_quality": "Actual caller plus checkpoint-writer guard meaningful for safe evidence retention; opposite boolean fixtures reject constant projection, persisted scratch erased-projector red rejects omission. New strict unhandled-rejection child guard meaningful for failure callback but incomplete across stage callback class."
+  },
+  "source_hashes": {
+    "tests/browser/member-logical-org-proof.mjs": "3d48b09b2e2540ce35a5554098f19bd2a88c5af63bfbec0b6d61a6d86b986ee6",
+    "tests/browser/member-records-proof271.test.mjs": "3474256391c873c7ef3aa6c1c0e3c8cef998d0137c7662bfb60c0655c59dbfad",
+    "tests/browser/scrape-save-auth-report.mjs": "9725a1bd2c554d263a5b0994203c78158de0de15d999ad58ea1f0b5a1a3d2fdc",
+    "tests/browser/scrape-save-member-auth-diagnostic.test.mjs": "985478b0a3a6058dee8597175568ae9944cc18a4ab5f4518e6d505f7350153e7",
+    "tests/browser/settings-member-auth-diagnostic.mjs": "051740aa7e7c1e48163675456a137fc8beebd98d1e9032211bcf02d4542759b1",
+    "tests/browser/settings-member-auth-diagnostic.test.mjs": "389f35725d151cc0b21eb0c4987add7b1f6b4eacc76f4071653768c90dfc40b3"
+  },
+  "gates": {
+    "focused": "auth-pointer-focused-1027c admitted, pending at inspection",
+    "compile": "auth-pointer-compile-1027 exit0 before async callback .mjs delta; not final-source certified",
+    "lint": "PENDING",
+    "independent_adversarial": "NOT_RUN_REFUSED_COMMAND_NOT_ALLOWED"
+  },
+  "source_edits": 0,
+  "native_UI_runs": 0,
+  "auth_mutations": 0,
+  "CI_dispatches": 0,
+  "children_spawned": 0,
+  "publication": "Typed source-only review; not native acceptance. Private report original hash retained; no raw authenticated fixture payload.",
+  "private_original_sha256": "7b4729113e24873970007cfe1b80a2ae2da067a993abb68203c19f7653abc8d7",
+  "superseded_source_review": "Final source review in auth-pointer-final-peer-20261027.json addresses later callback findings. This earlier verdict is bounded to its recorded hashes; no final gate/native claim."
+}

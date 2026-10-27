@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-27 21:20 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-27T13:49:55.424027+00:00. 207 features · 833 cases · 1422 controls · 300 linked defect records.
+Generated 2026-10-27 22:20 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-27T22:04:03.551921+00:00. 207 features · 833 cases · 1422 controls · 300 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -560,7 +560,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1003-T09 · admin: Unverified. Expanded membership-backed load/unavailable-organization criteria are unverified; original agent-selection evidence is retained whole as bounded history. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.
   Evidence / build / date recorded: ['docs/stabilization/reports/settings-inventory-reconcile-20261026.json', 'docs/stabilization/reports/settings-inventory-peer-20261026.json']
 - EXT-F-1003-T10 · guest: Partial.
-  Evidence / build / date recorded: 40579558041, ['docs/stabilization/reports/settings-controls-1038-20261027.json', 'docs/stabilization/reports/settings-1038-failure-diagnosis-20261027.json', 'docs/stabilization/reports/native1038-publication-manifest-20261027.json']
+  Evidence / build / date recorded: 40590805172, ['docs/stabilization/reports/settings-controls-f670-20261027.json', 'docs/stabilization/reports/settings-f670-primary-diagnosis-20261027.json']
 - EXT-F-1003-T13 · guest: Unverified.
   Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
 - EXT-F-1003-T15 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
@@ -1627,7 +1627,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-2005-T07 · guest: Pass. Independent exact568 guest T07 pass: hover geometry tracks two elements, trusted selection uniquely matches clicked heading, Clear removes entries, selected-field Cancel restores Data baseline, zero observed panel-target pattern writes. All current guest T07 expected outcomes covered; other modes are separate axes. Native DOM/CDP assertions support actions; setup-only images do not provide final-control paint. No backend persistence readback, nonzero-scroll evidence from this fixture, member/admin or Store-installed credit. Whole Data remains unverified with partial case coverage.
   Evidence / build / date recorded: 39357989631, ['docs/stabilization/reports/guest-data-scrolled-hosted-retest-20261020.json', 'docs/stabilization/reports/data568-native-fresh-peer-20261020.json']
 - EXT-F-2005-T08 · member: Unverified.
-  Evidence / build / date recorded: 40579681320, ['docs/stabilization/reports/member-data-1038-20261027.json', 'docs/stabilization/reports/member-data-1038-failure-diagnosis-20261027.json', 'docs/stabilization/reports/native1038-publication-manifest-20261027.json']
+  Evidence / build / date recorded: 40590496401, ['docs/stabilization/reports/member-data-f670-report-20261027.json', 'docs/stabilization/reports/member-f670-failure-peer-20261027.json']
 
 **Controls without a mapped case:** EXT-F-2005-C20 Picker Done; EXT-F-2005-C23 Copy saved pattern Selectors text; EXT-F-2005-C24 Copy saved pattern For AI agent; EXT-F-2005-C25 Copy saved pattern Full JSON admin option; EXT-F-2005-C26 Copy extracted rows TSV; EXT-F-2005-C27 Copy extracted rows JSON; EXT-F-2005-C28 Copy extracted rows For AI agent
 

@@ -1,0 +1,55 @@
+{
+  "observedAt": "2026-10-27T21:56:26.746Z",
+  "reviewer": "disk_f670_peer",
+  "verdictA": {
+    "status": "PASS",
+    "scope": "Requested unpacked DEV630 disk update",
+    "evidence": {
+      "kind": "ci_development_test_promotion",
+      "publishState": "not_published",
+      "extensionDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "sourceSha": "f670242504c54f99f434d74236a3155b0d713e54",
+      "mainSha": "f670242504c54f99f434d74236a3155b0d713e54",
+      "compatibility": "exact-source",
+      "version": "0.2.630",
+      "treeSha256": "c134c28e0cc7f2fb62076e9cc3727fc49d34a5a0dfccf47cc8b81b71dae9ede9",
+      "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "runId": 40587669744,
+      "runAttempt": 1,
+      "artifactId": 12774320314,
+      "githubArtifactDigest": "sha256:8c35c03e3886cfaad5dbeca1ce96e541c7c3d0be87fe37b43981d00f7d38dbc9"
+    }
+  },
+  "verdictB": {
+    "status": "PASS_WITH_LIMITS",
+    "scope": "Exact-source import and promotion provenance; successful Full CI metadata verified independently",
+    "github": {
+      "runId": 40587669744,
+      "runAttempt": 1,
+      "artifactId": 12774320314,
+      "conclusion": "success",
+      "expired": false,
+      "digest": "sha256:8c35c03e3886cfaad5dbeca1ce96e541c7c3d0be87fe37b43981d00f7d38dbc9",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40587669744"
+    },
+    "checks": [
+      "verifyCiDevPromotionReceipt passed; transitively verifies imported local receipt, CI receipt, provenance bytes and hashes, manifests, source package version, import tree and stable DEV tree",
+      "verifyGitHubMetadata passed against fresh GitHub run/workflow/artifact metadata",
+      "Import and promotion completion markers observed"
+    ],
+    "source": {
+      "head": "f670242504c54f99f434d74236a3155b0d713e54",
+      "remoteMain": "f670242504c54f99f434d74236a3155b0d713e54",
+      "statusPorcelain": "",
+      "claim": "current_pushed_source"
+    },
+    "limitations": [
+      "Disk-only verification; no browser/controller/UI attempt",
+      "Owner browser last verified DEV629; DEV630 reload, loaded profile, loaded path and extension pin remain unverified",
+      "Successful CI and disk identity do not establish application behavior, native acceptance, publication or Store acceptance",
+      "Artifact archive was not independently downloaded again; digest cross-checked between imported evidence and fresh GitHub metadata"
+    ]
+  },
+  "publication": "Typed disk-only report; no raw authenticated browser or native payload. Original private report remains independently hashed in checkpoint.",
+  "private_original_sha256": "8fe3688c6f7d2c34948e31cbc3064bbd1117b86a2abf4c51d5fbab06a5fdc4d3"
+}
