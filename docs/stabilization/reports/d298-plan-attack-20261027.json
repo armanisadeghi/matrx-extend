@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "lane": "fresh-zero-authorship-BUILDABILITY-CONTRACTS",
+  "verdict": "COMMIT",
+  "pinned_source": "5f121076bc1cb9690377905446903d0e7246c9f4",
+  "plan_sha256": "7a1ae51a192e1daf3cc7f8508bd4deab4f6dda623957736fc4f973e2ad71ad63",
+  "readonly": true,
+  "reality_first": {
+    "inspected_before_plan": [
+      "actual startup-b3 ZIP and all four member hashes",
+      "original startup-interval-diagnostic.json inside ZIP",
+      "corrected public diagnostic report",
+      "actual connector read/parser/owner code and harness failure callback"
+    ],
+    "archive_sha256": "3112adc015e0b877b68fd450ab2f6943428bd86a912f64ff70c5585fac717051",
+    "observation": "Timeout callback false is a literal emitted after CPU bookkeeping.221 completed ENOENT reads plus later lstat true cannot establish publication after8s. Original child_failed1/resourceInvalid:false is retained. No product UI acceptance occurred."
+  },
+  "coverage": {
+    "mapped": 12,
+    "total": 12,
+    "unmapped": [],
+    "requirements": [
+      {
+        "id": 1,
+        "existing": "startupDeadlineMs poll entry, parser/owner checks before socket",
+        "plan": "retain8000/acceptance/refusals and failed verdict",
+        "oracle": "normal successful connector/refusal/cleanup regressions"
+      },
+      {
+        "id": 2,
+        "existing": "literal timeout false; lstat error false; zero/sample-exhaustion false",
+        "plan": "census and nullable measured/unobserved producers",
+        "oracle": "old RED unknown,error,zero-sample cases"
+      },
+      {
+        "id": 3,
+        "existing": "two strict boolean serializers; Notes truthiness outcome",
+        "plan": "boolean|null plus exact presenceBasis enum across sinks",
+        "oracle": "null round-trip and explicit unknown outcome"
+      },
+      {
+        "id": 4,
+        "existing": "post-timeout observer has no sample timing",
+        "plan": "lstat begin/end relative observer origin; last sample semantics",
+        "oracle": "delayed lstat and window exhaustion retain interval, not publication timestamp"
+      },
+      {
+        "id": 5,
+        "existing": "connector polls/elapsed/longestRead and timeout-only safe serializer",
+        "plan": "bounded lastRead numeric/enum metadata only",
+        "oracle": "straddling read timing plus hostile extra-field stripping"
+      },
+      {
+        "id": 6,
+        "existing": "startup failure elapsed captured before awaited CPU bracket; callback timestamp after it",
+        "plan": "failure observation distinguished from report emission",
+        "oracle": "delayed CPU/report sink cannot relabel filesystem observation time"
+      },
+      {
+        "id": 7,
+        "existing": "exact two-line parser plus SingletonLock/process executable/profile proof precede WebSocket",
+        "plan": "extract shared private parsing/owner proof; separate safe inspection API",
+        "oracle": "real filesystem valid/malformed/foreign records; zero sockets and handshake hooks"
+      },
+      {
+        "id": 8,
+        "existing": "observer window independent from connector deadline; ps inspector has fixed5000ms timeout",
+        "plan": "inspection consumes remaining existing observation window; original error preserved",
+        "oracle": "expired/slow inspection never changes original failure or initiates connection"
+      },
+      {
+        "id": 9,
+        "existing": "hosted startup serializer, hosted SEO route, Notes serializer/acceptance and extracted VM fixtures",
+        "plan": "atomic consumer/fixture changes, immutable historical raw artifacts",
+        "oracle": "all live consumers exercise null and safe metadata; no compatibility shim"
+      },
+      {
+        "id": 10,
+        "existing": "connector has mocked transport/Map filesystem tests and VM-extracted harness checks",
+        "plan": "real isolated temp filesystem with production functions and controlled external seams",
+        "oracle": "RED/GREEN plus normal connector refusal/cleanup and secrecy assertions"
+      },
+      {
+        "id": 11,
+        "existing": "canonical focused acceptance and resource admission, not arbitrary reviewer commands",
+        "plan": "existing fast collections or one explicit collected suite; compile/fullCI/independent replay",
+        "oracle": "exact candidate source receipts and admitted terminal journals"
+      },
+      {
+        "id": 12,
+        "existing": "D298 supporting truthfulness separated from D254/D231 startup cause",
+        "plan": "supporting defect only; no product PASS/account/model/deadline/release work",
+        "oracle": "independent original-path retest required and underlying investigations remain open"
+      }
+    ]
+  },
+  "contracts": {
+    "producers": [
+      "vault-owned-cdp.cjs endpointWaitDiagnostic",
+      "native-sidepanel-qa-harness.mjs success/timeout/post-timeout observations"
+    ],
+    "normalizers": [
+      "safeEndpointWaitDiagnostic",
+      "safeStartupEndpointObservation",
+      "safeNotesEndpointObservation"
+    ],
+    "consumers": [
+      "scripts/hosted-startup-interval-diagnostic.mjs",
+      "scripts/hosted-seo-route.mjs",
+      "tests/browser/notes-native-acceptance.mjs",
+      "associated fixture compositions"
+    ],
+    "reuse": "Canonical exact record parser and executable/profile ownership must remain the sole implementation; diagnostic helper must not call observeNativeCdpStartup or connectOwnedCdp to inspect a late record.",
+    "budget_semantics": "8000ms remains poll admission cutoff, not guaranteed awaited-I/O deadline. Existing observation budget starts after CPU bookkeeping; optional record inspection gets only its remaining time. Last-read and lstat intervals must retain distinct origins."
+  },
+  "blocking": [],
+  "advisory": [
+    {
+      "id": "A1",
+      "subject": "Remaining-budget implementation trap",
+      "evidence": "defaultProcessInspector uses two ps children with fixed5000ms timeout; a Promise.race alone bounds caller latency but does not cancel reads/children or stop subsequent owner inspection.",
+      "recommendation": "Implement requirement8 with explicit deadline checks before each diagnostic stage; cancel/drain owned process work where supported and ensure late completions cannot append evidence or advance stages. Include delayed filesystem/process inspector forcing cases. This is an implementation constraint already implied by the pinned bounded-inspection requirement."
+    },
+    {
+      "id": "A2",
+      "subject": "Discriminating preservation oracle",
+      "evidence": "safeEndpointWaitDiagnostic currently accepts only timeout errors; read_error is thrown as owned_cdp_endpoint_refused and a successful read leads onward to socket.",
+      "recommendation": "Declare which failure envelopes retain lastRead rather than widening success/refusal behavior incidentally. Exercise the actual thrown error and actual safe serializer, not only a manufactured lastRead object. Keep malformed/owner/socket failures unchanged."
+    }
+  ],
+  "owner_only": [],
+  "A": {
+    "status": "PLAN_BUILDABLE_NO_BLOCKING_FINDINGS",
+    "summary": "12/12 requirements mapped. The proposed nullable truth/provenance and canonical parser reuse address the measured false-absence class without asserting an8s publication cause or granting product credit."
+  },
+  "B": {
+    "status": "IMPLEMENTATION_AND_LIVE_RETEST_UNVERIFIED",
+    "summary": "No code/test/browser/run/credential/model actions performed. COMMIT approves committing to this pinned plan, not implementation correctness, D298 closure, startup repair, source integration or release readiness."
+  },
+  "processes": "All reviewer read commands terminal; no owned background processes, browser profiles, fixtures or credentials created."
+}

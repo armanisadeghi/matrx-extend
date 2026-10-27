@@ -1,14 +1,16 @@
 {
   "id": "EXT-D-0298",
   "feature_id": "EXT-F-0001",
-  "case_ids": ["EXT-F-0001-T01"],
+  "case_ids": [
+    "EXT-F-0001-T01"
+  ],
   "title": "Startup diagnostics report unmeasured endpoint absence as false",
   "surface": "supporting native startup diagnostics",
   "auth_mode": "not-applicable; no auth or product behavior tested",
   "severity": "S3",
   "priority": "P0",
-  "state": "triaged",
-  "owner": "/root / endpoint_observation_truthfulness",
+  "state": "in-fix",
+  "owner": "/root/d298_truthful_diagnostics_implementation",
   "preconditions": [
     "Owned startup connector times out; optional startup observation callback enabled."
   ],
@@ -26,15 +28,24 @@
     "docs/stabilization/reports/late-cdp-publication-diagnosis-20261027.json",
     "docs/stabilization/reports/hosted-startup-b3-20261027.json"
   ],
-  "related_defects": ["EXT-D-0254", "EXT-D-0231"],
+  "related_defects": [
+    "EXT-D-0254",
+    "EXT-D-0231"
+  ],
   "fix_sha": null,
-  "next_action": "Attack bounded truthful-measurement contract, then implement with forcing RED/GREEN/compile and fresh independent retest. Preserve8s/polling behavior/resource thresholds/owner proof/original failed verdict. No product retry or bootstrap closure.",
+  "next_action": "Implement approved nullable provenance and timing contract with canonical nonconnecting record inspection, RED/GREEN and independent review; no timeout/resource/runner or product acceptance change.",
   "transition_history": [
     {
       "at": "2026-10-27T01:57:17.590334+00:00",
       "from": "open",
       "to": "triaged",
       "reason": "Fresh independent raw/source diagnosis confirms manufactured absence, distinct from still-open startup cause."
+    },
+    {
+      "at": "2026-10-27T02:09:51.669145+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Approved 12/12 plan attack COMMIT; bounded implementation lane assigned with both timing/refusal advisories binding."
     }
   ]
 }
