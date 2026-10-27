@@ -585,8 +585,25 @@ export function chatToolsContextExpression() {
       .filter(visible).filter((root) => root.getAttribute('data-window-id') === 'run-controls-window' ||
         ['Chat options', 'Chat Options'].includes(root.getAttribute('aria-label') ??
           document.getElementById(root.getAttribute('aria-labelledby') ?? '')?.textContent.trim())) : [];
-    const toolWindows = windows.filter((root) => [...root.querySelectorAll('[role="tab"][aria-selected="true"]')]
-      .some((tab) => (tab.getAttribute('title') ?? tab.getAttribute('data-matrx-title') ?? tab.textContent.trim()) === 'Tools'));
+    const toolWindows = windows.length === 1 ? windows.flatMap((root) => {
+      if (root.getAttribute('data-window-id') === 'run-controls-window') {
+        const selected = [...root.querySelectorAll('[role="tab"][aria-selected="true"]')].filter(visible);
+        return selected.length === 1 && (selected[0].getAttribute('title') ??
+          selected[0].getAttribute('data-matrx-title') ?? selected[0].textContent.trim()) === 'Tools' ? [root] : [];
+      }
+      // TabbedBottomSheet selects a header/content pair, not desktop role=tab navigation.
+      const sheets = [...root.querySelectorAll('.matrx-mobile-sheet')].filter(visible);
+      if (sheets.length !== 1) return [];
+      const header = sheets[0].firstElementChild, content = header?.nextElementSibling;
+      if (!header || !content || !visible(header) || !visible(content)) return [];
+      const back = [...header.querySelectorAll('button[aria-label="Back"]')]
+        .filter((button) => visible(button) && button.getAttribute('aria-hidden') !== 'true');
+      const titles = [...header.querySelectorAll(':scope > span')].filter(visible);
+      const fullTools = [...content.querySelectorAll('input[placeholder]')]
+        .some((field) => /^Search(?: \\d+)? tools$/.test(field.getAttribute('placeholder') ?? ''));
+      return back.length === 1 && titles.length === 1 && titles[0].textContent.trim() === 'Tools' &&
+        fullTools ? [content] : [];
+    }) : [];
     const modeRoots = [...new Set([...inline, ...toolWindows])];
     return { capabilities, menus, tools, pickers, details, windows, modeRoots, composerPanels };
   })()`;

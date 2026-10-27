@@ -20,11 +20,13 @@ import {
 } from './settings-panel-driver.mjs';
 import { preserveFailureDuringCleanup } from './settings-probe-cleanup.mjs';
 
-// Source-derived, reduced unit input from official SDK396 (same six source files as395).
+// Source-derived, reduced unit input from frozen SDK397 / design-system399.
+// The b175 native capture corroborates the mobile Tools header and Device switch;
+// this controlled DOM input is NOT a captured live DOM or native acceptance proof.
 // ComposerSourcesChip uses PopoverTrigger; ComposerSubmenu uses PopoverAnchor +
 // MenuRow, so ONLY Capabilities has aria-controls. Tools/Advanced never do.
 // RunPicksSurface menu exposes data-picks-layout/search; full picker owns All chats.
-// This is controlled DOM input, not a captured live DOM or native acceptance proof.
+// Mobile TabbedBottomSheet has Back + a direct title span, never desktop role=tab navigation.
 function chatModeFixture(checked = 'false', presentation = 'window') {
   const window = new Window();
   const document = window.document;
@@ -35,8 +37,10 @@ function chatModeFixture(checked = 'false', presentation = 'window') {
     </div><div id="capabilities" hidden><button aria-expanded="false"><span>Tools</span></button></div>
     <div id="tools" data-composer-panel hidden><div data-picks-layout="menu"><input placeholder="Search tools to add"/><button ${presentation === 'inline' ? 'aria-expanded="false"' : ''}><span>${presentation === 'inline' ? 'Advanced' : 'See all'}</span></button></div></div>
     <div id="advanced" hidden ${presentation === 'window' ? 'data-window-panel data-window-id="run-controls-window"' : presentation === 'sheet' ? 'role="dialog" aria-label="Chat options"' : 'data-composer-panel'}>
-      ${presentation !== 'inline' ? '<nav aria-label="Run controls"><button role="tab" title="Tools" aria-selected="true">Tools</button></nav>' : ''}
+      ${presentation === 'window' ? '<nav aria-label="Run controls"><button role="tab" title="Tools" aria-selected="true">Tools</button></nav>' : ''}
+      ${presentation === 'sheet' ? '<div class="matrx-mobile-sheet"><div><div><button aria-label="Back" aria-hidden="false"></button></div><span>Tools</span><div></div></div><div>' : ''}
       <input placeholder="Search tools"/><label>Ask before acting<span>All chats</span><button role="switch" aria-label="Ask before acting" aria-checked="${checked}"></button></label>
+      ${presentation === 'sheet' ? '</div></div>' : ''}
     </div>`;
   for (const node of document.querySelectorAll('*'))
     node.getBoundingClientRect = () => ({ width: 100, height: 30 });
@@ -146,6 +150,114 @@ test('full picker observes Ask and Act; compact Tools and unrelated Agent action
     }
   }
 });
+
+test('actual mobile selected Tools header certifies Device Ask/Act without fabricated desktop tabs', async () => {
+  const f = chatModeFixture('false', 'sheet');
+  try {
+    f.open('capabilities');
+    f.open('tools');
+    f.open('advanced');
+    assert.equal(f.document.querySelectorAll('[role="tab"][aria-selected]').length, 0);
+    const verify = (expression) => {
+      const control = f.document.querySelector('[role="switch"]');
+      for (const [checked, expected] of [
+        ['false', 'act'],
+        ['true', 'ask'],
+        ['mixed', null],
+      ]) {
+        control.setAttribute('aria-checked', checked);
+        assert.equal(f.evaluate(expression).permissionMode, expected);
+      }
+    };
+    verify(guestChatDefaultExpression());
+    assert.throws(() => verify('({permissionMode: "act"})'), assert.AssertionError);
+    assert.throws(() => verify('({permissionMode: null})'), assert.AssertionError);
+    f.document.querySelector('[role="switch"]').setAttribute('aria-checked', 'false');
+    f.document.querySelector('#advanced input').setAttribute('placeholder', 'Search 37 tools');
+    assert.equal(
+      f.read().permissionMode,
+      'act',
+      'mobile full picker permits actual catalog-count search label',
+    );
+  } finally {
+    await f.window.happyDOM.abort();
+  }
+});
+
+test('mobile context resolver rejects empty and constant-root guts and a missing-header mutant', async () => {
+  const f = chatModeFixture('false', 'sheet');
+  try {
+    f.open('capabilities');
+    f.open('tools');
+    f.open('advanced');
+    const title = f.document.querySelector('.matrx-mobile-sheet > div > span');
+    const verify = (expression) => {
+      title.textContent = 'Tools';
+      assert.equal(f.evaluate(expression).modeRoots.length, 1);
+      title.textContent = 'Model';
+      assert.equal(f.evaluate(expression).modeRoots.length, 0);
+    };
+    const actual = chatToolsContextExpression();
+    verify(actual);
+    assert.throws(() => verify('({modeRoots: []})'), assert.AssertionError);
+    assert.throws(
+      () => verify('({modeRoots: [document.getElementById("advanced")]})'),
+      assert.AssertionError,
+    );
+    const missingHeader = actual.replace("titles[0].textContent.trim() === 'Tools'", 'true');
+    assert.notEqual(missingHeader, actual);
+    assert.throws(() => verify(missingHeader), assert.AssertionError);
+  } finally {
+    await f.window.happyDOM.abort();
+  }
+});
+
+for (const corruption of [
+  'wrong-header',
+  'index',
+  'hidden-back',
+  'hidden-header',
+  'duplicate-sheet',
+  'missing-picker',
+  'unrelated-dialog',
+  'hidden-dialog',
+  'inert-dialog',
+  'device-outside-selected-content',
+]) {
+  test(`mobile Tools ownership rejects ${corruption} despite a present Device switch`, async () => {
+    const f = chatModeFixture('false', 'sheet');
+    try {
+      f.open('capabilities');
+      f.open('tools');
+      f.open('advanced');
+      const root = f.document.getElementById('advanced');
+      const sheet = root.querySelector('.matrx-mobile-sheet');
+      const header = sheet.firstElementChild;
+      if (corruption === 'wrong-header')
+        header.querySelector(':scope > span').textContent = 'Model';
+      else if (corruption === 'index')
+        header.querySelector(':scope > span').textContent = 'Chat options';
+      else if (corruption === 'hidden-back')
+        header.querySelector('button').setAttribute('aria-hidden', 'true');
+      else if (corruption === 'hidden-header') header.setAttribute('hidden', '');
+      else if (corruption === 'duplicate-sheet') {
+        const duplicate = sheet.cloneNode(true);
+        for (const node of [duplicate, ...duplicate.querySelectorAll('*')])
+          node.getBoundingClientRect = () => ({ width: 100, height: 30 });
+        root.appendChild(duplicate);
+      } else if (corruption === 'missing-picker') root.querySelector('input').remove();
+      else if (corruption === 'unrelated-dialog') root.setAttribute('aria-label', 'Unrelated');
+      else if (corruption === 'hidden-dialog') root.setAttribute('hidden', '');
+      else if (corruption === 'inert-dialog') root.setAttribute('inert', '');
+      else if (corruption === 'device-outside-selected-content')
+        root.appendChild(root.querySelector('label'));
+      assert.equal(f.read().permissionMode, null);
+      assert.equal(f.read().modeControlCount, 0);
+    } finally {
+      await f.window.happyDOM.abort();
+    }
+  });
+}
 
 test('ambiguous compact pickers and full permission surfaces never select an arbitrary portal', async () => {
   const f = chatModeFixture('false', 'inline');
