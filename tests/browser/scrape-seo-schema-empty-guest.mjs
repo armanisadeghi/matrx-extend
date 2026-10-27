@@ -6,6 +6,7 @@ import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflateSync } from 'node:zlib';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { safeEndpointObservation } from './native-cdp-startup-diagnostic.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { scrapeNativeSelection, selectScrapePanelViewport } from './scrape-native-selection.mjs';
 import {
@@ -24,6 +25,10 @@ const title = 'Harbor Dental appointment information';
 const fixturePath = '/seo-schema-empty';
 const fixtureHtml = `<!doctype html><html><head><meta charset="utf-8"><title>${title}</title></head><body></body></html>`;
 const outputPath = join(REPO, 'test-results', 'scrape-seo-schema-empty-guest-native.json');
+const startupPolicy = JSON.parse(
+  await readFile(new URL('../../docs/stabilization/resource-policy.json', import.meta.url)),
+);
+const startupObservationWindowMs = startupPolicy.watchIntervalSeconds * 1000;
 const paneScreenshotNames = Object.freeze({
   SEO: 'scrape-t08-seo-pane.png',
   Schema: 'scrape-t08-schema-pane.png',
@@ -101,6 +106,13 @@ async function run() {
       ownedPages: { [fixturePath]: fixtureHtml },
       onStage: (stage) => {
         report.native_stage = stage;
+      },
+      startupEndpointObservationMs: startupObservationWindowMs,
+      onStartupEndpointObservation: (observation) => {
+        const safe = safeEndpointObservation(observation);
+        report.startup_endpoint_observations ??= [];
+        report.startup_endpoint_observations.push(safe);
+        process.stderr.write(`BROWSER_STARTUP_ENDPOINT_OBSERVATION ${JSON.stringify(safe)}\n`);
       },
       exercisePanel: async ({
         page,

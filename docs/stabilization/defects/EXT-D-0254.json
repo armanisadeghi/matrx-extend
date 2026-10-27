@@ -37,10 +37,12 @@
     "docs/stabilization/reports/fixture-and-headless-peer-20261019.json",
     "docs/stabilization/reports/headless-startup-lane-a-20261019.json",
     "docs/stabilization/reports/startup-a-b-boundary-diagnosis-20261027.json",
-    "docs/stabilization/reports/startup35b-matched-evidence-peer-20261027.json"
+    "docs/stabilization/reports/startup35b-matched-evidence-peer-20261027.json",
+    "docs/stabilization/reports/b-passive-failure-implementation-20261027.json",
+    "docs/stabilization/reports/b-passive-falsey-rejection-reverify-20261027.json"
   ],
-  "cause": "Unproven. Matched35b B has only spawn/no-exit-observed and missing endpoint7978–7979ms before8044ms timeout; that does not prove actual Chrome progress or publication time. Matched A reads endpoint7618ms then owner7850/socket10163ms under the same8000ms polling-entry policy. A/B differ in child Node nesting and enabled startup observers. CPU_PENDING overlaps A but not B; no CPU causal finding.",
-  "next_action": "No product retry/member activation or timeout/resource/runner change. Plan and independently attack one bounded way to retain PID/profile-lock/stdio lifecycle, reader timing, CPU interval and canonical nonconnecting post-timeout record evidence on the original failing B path, reusing existing observers and preserving the original failure. Direct A controls have succeeded; repeating them does not repair B.",
+  "cause": "Unproven. Matched35b B has only spawn/no-exit-observed and missing endpoint7978\u20137979ms before8044ms timeout; that does not prove actual Chrome progress or publication time. Matched A reads endpoint7618ms then owner7850/socket10163ms under the same8000ms polling-entry policy. A/B differ in child Node nesting and enabled startup observers. CPU_PENDING overlaps A but not B; no CPU causal finding.",
+  "next_action": "Require successful eligible exact-current-main CI artifact and normal source/spend/capacity admission, then one original B guest seo-schema-empty attempt with passive failed-state evidence. Preserve original failure and official log; natural timeout branch, original-child identity at late canonical record, CPU cause and reliability remain unverified. No blind retry/direct-A repetition/member activation/deadline/runner/resource relaxation.",
   "active_diagnostic_run": null,
   "completed_diagnostic_run": "40446409519",
   "completed_diagnostic_runs": ["39312706355", "39318657314", "40442729853", "40446409519"],
@@ -65,7 +67,7 @@
       "at": "2026-10-27T04:12:41.747358+00:00",
       "run": 40444784947,
       "report": "docs/stabilization/reports/scrape-b-35b-native-20261027.json",
-      "boundary": "B35bpreUIendpointtimeout8044ms/238polls/lastmissing7978–7979; nativechild_failed1/resourceInvalidfalse/noCPUPENDING",
+      "boundary": "B35bpreUIendpointtimeout8044ms/238polls/lastmissing7978\u20137979; nativechild_failed1/resourceInvalidfalse/noCPUPENDING",
       "product_credit": 0
     },
     {

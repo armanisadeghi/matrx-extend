@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { beginStartupProcessInterval } from '../../scripts/startup-process-interval.mjs';
+import { observeNativeStartupBoundary } from './native-cdp-startup-diagnostic.mjs';
 import {
   guardNativeResourceSessionSend,
   runNativeResourceAction,
@@ -38,13 +39,22 @@ async function run({
   endpointTimeout = false,
   observationFails = false,
   driverCode = driver,
+  passiveEndpoint = false,
+  boundaryStalled = false,
+  boundaryFails = false,
+  outerLstatStalled = false,
+  observationWindowMs = 100,
 } = {}) {
   const events = [];
   const output = [];
   const observations = [];
+  const boundaryBudgets = [];
   const timeoutError = new Error('owned_cdp_endpoint_timeout');
   const child = new EventEmitter();
   child.stderr = new EventEmitter();
+  child.pid = 123;
+  child.stderr.destroyed = false;
+  child.stderr.readableEnded = false;
   child.exitCode = null;
   child.signalCode = null;
   const session = { detach: async () => events.push('detach') };
@@ -79,9 +89,11 @@ async function run({
     resolveBrowserRuntime: async () => ({ executablePath: '/chrome' }),
     mkdtemp: async () => '/owned',
     mkdir: async () => {},
-    prepareOwnedProfile: async () => ({}),
+    prepareOwnedProfile: async () => ({ profile: '/owned/profile' }),
     rm: async () => events.push('remove-profile'),
     performance,
+    setTimeout,
+    clearTimeout,
     process: {
       env: {
         MATRX_STARTUP_INTERVAL_DIAGNOSTIC: enabled ? '1' : '0',
@@ -115,12 +127,26 @@ async function run({
       if (connectFails) throw startupError;
       return session;
     },
+    observeNativeStartupBoundary: (options, budget) => {
+      boundaryBudgets.push(budget);
+      if (boundaryFails) throw new Error('private snapshot failed');
+      return observeNativeStartupBoundary(
+        {
+          ...options,
+          fileSystem: {
+            readlink: async () => (boundaryStalled ? new Promise(() => {}) : 'host-123'),
+          },
+        },
+        budget,
+      );
+    },
     safeEndpointDiagnostic: () => null,
     safeEndpointWaitDiagnostic: () => null,
     observeOwnedEndpointAfterTimeout: (options) =>
       observeOwnedEndpointAfterTimeout({
         ...options,
-        windowMs: 0,
+        windowMs: outerLstatStalled ? 20 : 0,
+        ...(outerLstatStalled && { fileSystem: { lstat: () => new Promise(() => {}) } }),
       }),
     safeStartupFailureCode: () => 'test_failure',
     browserDiagnosticFlags: () => ({}),
@@ -132,8 +158,8 @@ async function run({
   const invoke = runInNewContext(`${driverCode}; runNativeSidepanelQa`, sandbox);
   await assert.rejects(
     invoke({
-      ...(endpointTimeout && {
-        startupEndpointObservationMs: 100,
+      ...((endpointTimeout || passiveEndpoint) && {
+        startupEndpointObservationMs: observationWindowMs,
         onStartupEndpointObservation: async (value) => {
           observations.push(value);
           if (observationFails) throw new Error('private diagnostic sink failed');
@@ -157,7 +183,10 @@ async function run({
     .filter((line) => line.startsWith('BROWSER_STARTUP_CPU_INTERVAL '))
     .map((line) => JSON.parse(line.slice('BROWSER_STARTUP_CPU_INTERVAL '.length)));
   assert.deepEqual(events.slice(-2), ['cleanup', 'remove-profile']);
-  return { events, brackets, observations };
+  const failures = output
+    .filter((line) => line.startsWith('BROWSER_STARTUP_FAILURE '))
+    .map((line) => JSON.parse(line.slice('BROWSER_STARTUP_FAILURE '.length)));
+  return { events, brackets, observations, boundaryBudgets, failures };
 }
 
 test('actual driver brackets successful spawn and CDP exactly once before cleanup', async () => {
@@ -270,4 +299,57 @@ test('actual timeout observation oracle rejects the manufactured false callback 
   };
   await assertUnknown(driver);
   await assert.rejects(assertUnknown(mutated), /timeout alone cannot prove filesystem absence/);
+});
+
+test('passive timeout bounds child snapshot and stalled lstat without replacing original cleanup sentinel', async () => {
+  for (const options of [
+    { boundaryStalled: true },
+    { boundaryFails: true },
+    { outerLstatStalled: true },
+    { observationFails: true },
+  ]) {
+    const { events, brackets, observations, boundaryBudgets, failures } = await run({
+      enabled: false,
+      endpointTimeout: true,
+      observationWindowMs: 15000,
+      ...options,
+    });
+    assert.deepEqual(
+      boundaryBudgets,
+      [300],
+      'passive snapshot uses existing observation-window cadence',
+    );
+    assert.deepEqual(brackets, [], 'passive failure cannot enable CPU observations');
+    assert.deepEqual(events.slice(-2), ['cleanup', 'remove-profile']);
+    assert.equal(failures[0].childPid, 123);
+    assert.equal(failures[0].failureObservedElapsedMs, failures[0].elapsedMs);
+    assert.equal(failures[0].startupBoundaryTiming.origin, 'failure_observer');
+    assert.ok(failures[0].startupBoundaryTiming.completedElapsedMs >= 0);
+    assert.equal(
+      failures[0].startupBoundary.profileLock,
+      options.boundaryStalled || options.boundaryFails ? 'unavailable' : 'spawned_child',
+    );
+    assert.equal(observations[0].endpointPresent, null);
+    if (options.outerLstatStalled) assert.equal(observations[1].inspectionFailed, true);
+  }
+});
+
+test('passive callback success adds no failure snapshot or startup CPU I/O', async () => {
+  const { events, brackets, observations, boundaryBudgets, failures } = await run({
+    enabled: false,
+    passiveEndpoint: true,
+  });
+  assert.deepEqual(boundaryBudgets, []);
+  assert.deepEqual(brackets, []);
+  assert.deepEqual(failures, []);
+  assert.equal(observations[0].phase, 'cdp_connected');
+  assert.equal(observations[0].presenceBasis, 'validated_connector_record');
+  assert.deepEqual(events, [
+    'resource-health',
+    'spawn',
+    'connect',
+    'detach',
+    'cleanup',
+    'remove-profile',
+  ]);
 });

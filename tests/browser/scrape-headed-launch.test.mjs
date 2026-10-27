@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
+import { runInNewContext } from 'node:vm';
+import { safeEndpointObservation } from './native-cdp-startup-diagnostic.mjs';
 import { runNativeResourceAction } from './native-resource-boundary.mjs';
 import { requireBrowserDisplayMode } from './native-sidepanel-qa-harness.mjs';
 
@@ -135,4 +137,102 @@ test('launch seam oracles reject in-memory constant success and omitted health g
     ),
     assert.AssertionError,
   );
+});
+
+// Actual B driver invocation: dropped callback/window must fail even if headed launch remains.
+test('B Scrape actual invocation retains safe passive timeout observations without full startup observers', async () => {
+  const driver = await readFile(
+    new URL('./scrape-seo-schema-empty-guest.mjs', import.meta.url),
+    'utf8',
+  );
+  const start = driver.indexOf('await runNativeSidepanelQa({');
+  const end = driver.indexOf('      exercisePanel:', start);
+  assert.ok(start >= 0 && end > start, 'actual B invocation must be exercised');
+  const report = {};
+  const output = [];
+  const fragment = driver.slice(start, end);
+  const policyStart = driver.indexOf('const startupPolicy =');
+  const policyEnd = driver.indexOf('const paneScreenshotNames', policyStart);
+  const policyCode = driver
+    .slice(policyStart, policyEnd)
+    .replaceAll('import.meta.url', 'driverUrl');
+  const options = await runInNewContext(
+    `(async () => { ${policyCode} return ${fragment} }); })()`,
+    {
+      runNativeSidepanelQa: (value) => value,
+      extensionDir: '/owned/extension',
+      receiptPath: '/owned/receipt',
+      receipt: {},
+      join: (...parts) => parts.join('/'),
+      fixturePath: '/seo-schema-empty',
+      fixtureHtml: '',
+      process: {
+        env: {
+          RUNNER_TEMP: '/owned',
+          MATRX_STARTUP_INTERVAL_DIAGNOSTIC: '0',
+          MATRX_CDP_STARTUP_DIAGNOSTIC: '0',
+        },
+        stderr: { write: (line) => output.push(line) },
+      },
+      report,
+      safeEndpointObservation,
+      readFile,
+      URL,
+      driverUrl: new URL('./scrape-seo-schema-empty-guest.mjs', import.meta.url).href,
+    },
+  );
+  assert.equal(options.headed, true);
+  assert.equal(
+    options.startupEndpointObservationMs,
+    15000,
+    'B timeout observation window must use existing policy',
+  );
+  assert.equal(
+    typeof options.onStartupEndpointObservation,
+    'function',
+    'B timeout callback must preserve bounded evidence',
+  );
+  const value = {
+    phase: 'cdp_timeout',
+    endpointPresent: null,
+    presenceBasis: 'unobserved',
+    sampleTiming: null,
+    recordInspection: { outcome: 'not_attempted', timing: null },
+    failureObservedElapsedMs: 8000,
+    reportedElapsedMs: 8001,
+    inspectionFailed: false,
+    exitObserved: false,
+    elapsedMs: 8000,
+    polls: 238,
+    privatePath: '/private/profile',
+  };
+  await options.onStartupEndpointObservation(value);
+  assert.equal(report.startup_endpoint_observations.length, 1);
+  assert.equal(report.startup_endpoint_observations[0].endpointPresent, null);
+  assert.doesNotMatch(JSON.stringify(report), /privatePath|private\/profile/);
+  assert.equal(output.length, 1, 'safe callback must survive a later final-writer interruption');
+  assert.doesNotMatch(output[0], /privatePath|private\/profile/);
+  await options.onStartupEndpointObservation({
+    phase: 'post_timeout',
+    endpointPresent: false,
+    presenceBasis: 'lstat',
+    sampleTiming: { startedElapsedMs: 1, completedElapsedMs: 2, origin: 'post_timeout_observer' },
+    recordInspection: { outcome: 'not_attempted', timing: null },
+    inspectionFailed: false,
+    exitObserved: false,
+    elapsedMs: 2,
+    polls: 1,
+    privatePath: '/private/profile',
+  });
+  assert.equal(
+    report.startup_endpoint_observations.length,
+    2,
+    'each distinct safe observation must be retained',
+  );
+  assert.equal(
+    report.startup_endpoint_observations[1].endpointPresent,
+    false,
+    'callback cannot manufacture constant unknown',
+  );
+  assert.equal(output.length, 2);
 });

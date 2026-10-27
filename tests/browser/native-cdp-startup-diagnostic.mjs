@@ -32,6 +32,58 @@ function probeHandshake(url, mark) {
   return () => probe.destroy();
 }
 
+// A shape-only bounded snapshot shared by connected-path diagnostics and a
+// failure-only caller. A late noncancelable readlink cannot mutate the result.
+export async function observeNativeStartupBoundary(options, budgetMs) {
+  const fileSystem = options.fileSystem ?? fs;
+  const unavailable = {
+    profileLock: 'unavailable',
+    childExitObserved: null,
+    stderrClosed: null,
+    stderrReadableEnded: null,
+  };
+  if (!Number.isFinite(budgetMs) || budgetMs <= 0) return unavailable;
+  const snapshot = async () => {
+    const child = options.startupChild;
+    let profileLock = 'unavailable';
+    try {
+      const lock = await fileSystem.readlink(
+        join(options.preparedProfile.profile, 'SingletonLock'),
+      );
+      const owner = /-(\d+)$/.exec(lock)?.[1];
+      profileLock = !owner
+        ? 'malformed'
+        : !Number.isSafeInteger(child?.pid)
+          ? 'owner_uncompared'
+          : Number(owner) === child.pid
+            ? 'spawned_child'
+            : 'other_owner';
+    } catch (error) {
+      if (error?.code === 'ENOENT') profileLock = 'absent';
+    }
+    return {
+      profileLock,
+      childExitObserved: child ? child.exitCode !== null || child.signalCode !== null : null,
+      stderrClosed: typeof child?.stderr?.destroyed === 'boolean' ? child.stderr.destroyed : null,
+      stderrReadableEnded:
+        typeof child?.stderr?.readableEnded === 'boolean' ? child.stderr.readableEnded : null,
+    };
+  };
+  let timer;
+  try {
+    return await Promise.race([
+      snapshot(),
+      new Promise((resolve) => {
+        timer = setTimeout(() => resolve(unavailable), budgetMs);
+      }),
+    ]);
+  } catch {
+    return unavailable;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function observeNativeCdpStartup(
   options,
   connect,
@@ -65,54 +117,7 @@ export async function observeNativeCdpStartup(
   }, cadenceMs);
   const fileSystem = options.fileSystem ?? fs;
   const WebSocketCtor = options.WebSocketCtor ?? globalThis.WebSocket;
-  // Shape-only evidence: never read a foreign owner's process or attach to it.
-  // Two snapshots bound the extra I/O independently of endpoint poll frequency.
-  const startupBoundary = async () => {
-    const child = options.startupChild;
-    let profileLock = 'unavailable';
-    try {
-      const lock = await fileSystem.readlink(
-        join(options.preparedProfile.profile, 'SingletonLock'),
-      );
-      const owner = /-(\d+)$/.exec(lock)?.[1];
-      profileLock = !owner
-        ? 'malformed'
-        : !Number.isSafeInteger(child?.pid)
-          ? 'owner_uncompared'
-          : Number(owner) === child.pid
-            ? 'spawned_child'
-            : 'other_owner';
-    } catch (error) {
-      if (error?.code === 'ENOENT') profileLock = 'absent';
-    }
-    return {
-      profileLock,
-      childExitObserved: child ? child.exitCode !== null || child.signalCode !== null : null,
-      stderrClosed: child?.stderr ? child.stderr.destroyed : null,
-      stderrReadableEnded: child?.stderr ? child.stderr.readableEnded : null,
-    };
-  };
-  const boundedBoundary = async () => {
-    let snapshotTimer;
-    const unavailable = {
-      profileLock: 'unavailable',
-      childExitObserved: null,
-      stderrClosed: null,
-      stderrReadableEnded: null,
-    };
-    try {
-      return await Promise.race([
-        startupBoundary(),
-        new Promise((resolve) => {
-          snapshotTimer = setTimeout(() => resolve(unavailable), cadenceMs);
-        }),
-      ]);
-    } catch {
-      return unavailable;
-    } finally {
-      clearTimeout(snapshotTimer);
-    }
-  };
+  const boundedBoundary = () => observeNativeStartupBoundary(options, cadenceMs);
   // Start alongside the connector: diagnostic I/O cannot delay its deadline.
   let observedInitialBoundary = null;
   const initialBoundaryPending = boundedBoundary().then((value) => {

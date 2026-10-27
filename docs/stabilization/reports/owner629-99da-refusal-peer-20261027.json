@@ -1,0 +1,161 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T04:36:47.327499+00:00",
+  "reviewer": "owner99da_refusal_peer",
+  "status": "CORE_REFUSAL_SUPPORTED_NARROW_CHRONOLOGY_CORRECTION",
+  "actorReport": ".output/stabilization-checkpoints/owner629-99da-adoption-20261027.json",
+  "actorReportSha256": "b01e469469b648a65c1f8ebb6034b6a5fcb8dcce0d74774d91ee196a3e5dbf07",
+  "A_factual": {
+    "verdict": "PARTIAL",
+    "scope": "Core bounded refusal supported; one minor unsupported temporal sequencing phrase needs correction. No adoption/UI/current-main claim is accepted from this lane.",
+    "finding_ids": ["C1"]
+  },
+  "B_quality_provenance": {
+    "verdict": "PASS_WITH_LIMITS",
+    "scope": "All eight originals hash/byte matched. Retained official metadata identity, actual completed guard journal, watch audit and canonical git logic support the bounded refusal; live API/UI/terminal-session replay absent."
+  },
+  "findings": [
+    {
+      "id": "C1",
+      "severity": "Minor",
+      "location": ".output/stabilization-checkpoints/owner629-99da-adoption-20261027.json#/resource/reason",
+      "actual": "Reason says canonical source refusal, then operator-requested stop. First guard stop timestamp04:29:08.726 precedes canonical refusal receipt04:29:36.558.",
+      "evidence": {
+        "firstJournalStop": "2026-10-27T04:29:08.726Z",
+        "canonicalReceiptAt": "2026-10-27T04:29:36.558Z"
+      },
+      "impact": "Retained timestamps do not prove claimed ordering; does not change safe refusal/zero-adoption conclusion.",
+      "correction": "State that canonical refusal was checkpointed and operator stop occurred during preflight, without then or inferred order."
+    }
+  ],
+  "checks": {
+    "evidenceHashes": [
+      {
+        "path": ".output/stabilization-checkpoints/owner629-99da-official-ci.json",
+        "sha256": "ae2c6cf0702c7f9feb3a0b9fca1f8f3c0ffd8e6f3b447353d468b30f35788287",
+        "hashMatches": true,
+        "bytesMatch": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/owner629-99da-official-artifacts.json",
+        "sha256": "c717f9b63fb0cda5bcfdd7e75b248cf6f841cb9fe726c9b99a1cfce6ceb307ce",
+        "hashMatches": true,
+        "bytesMatch": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/owner629-99da-canonical-refusal.json",
+        "sha256": "740225c3b3b87f45816373d4f7663600fa285d6afec4eeb72317a50d2cfd3590",
+        "hashMatches": true,
+        "bytesMatch": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/owner629-99da-source-refusal.json",
+        "sha256": "587a21f605c4415c4434641ecc06e8853f43ec65cc90579adbbfe0ca7edcea17",
+        "hashMatches": true,
+        "bytesMatch": true
+      },
+      {
+        "path": "docs/stabilization/resource-journals/owner629-99da-20261027-0431.jsonl",
+        "sha256": "2ec5dc94f0bd053a381d118b0dc9ce6e587636c407ad8cc2ce9d682b1f994e6c",
+        "hashMatches": true,
+        "bytesMatch": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/owner629-99da-watch-20261027.jsonl",
+        "sha256": "c305693cbb9a970b02057f4f2fec44c753d5d62dfa49fb918039cd259dad0474",
+        "hashMatches": true,
+        "bytesMatch": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/owner629-99da-watch-20261027-report.json",
+        "sha256": "78d3d48a85f45da25d67a820104e74ef72f30752cf7285f4ec5902b79b6d492f",
+        "hashMatches": true,
+        "bytesMatch": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/owner629-99da-cleanup.json",
+        "sha256": "cdb16cd69c4f33f815838402b76aef843db1e6858327f610458bfd825e096c5a",
+        "hashMatches": true,
+        "bytesMatch": true
+      }
+    ],
+    "officialMetadata": {
+      "repository": "armanisadeghi/matrx-extend",
+      "repositoryId": 1225111202,
+      "public": true,
+      "runId": 40448941804,
+      "runAttempt": 1,
+      "headSha": "99da9d88b14de3b366ae7fb043ec543b1214f708",
+      "status": "completed",
+      "conclusion": "success",
+      "artifactId": 12710081481,
+      "artifactName": "matrx-extend-development-test-99da9d88b14de3b366ae7fb043ec543b1214f708-40448941804-1",
+      "digest": "sha256:d6cf4317ded7f2dcff1c00184faa20b5913a299ea6d8d887e59453032d1191ab",
+      "sizeBytes": 49834731,
+      "expired": false,
+      "scope": "Retained official-response JSON identity independently read, no remote refetch or ZIP rehash."
+    },
+    "git": {
+      "frozenSource": "99da9d88b14de3b366ae7fb043ec543b1214f708",
+      "frozenCheckout": "5d14970cb029d4bc8cf2d6135db61ea98c158588",
+      "netDiffPaths": 123,
+      "netPathsAllStabilizationDocs": true,
+      "exactCanonicalTraversal": "git log --diff-merges=first-parent --no-renames --format= --name-only -z source..checkout",
+      "rejectedCommittedPaths": ["pnpm-lock.yaml"],
+      "merge": "cb886143597a8260e1b0d524c078634cbaa94213",
+      "explanation": "Merge first parentf0e4685a6, second parent99da includes runtime lock against execution parent, although endpoint net diff is documentation-only. Source guard intentionally refuses any such committed path. No change/bypass proposed."
+    },
+    "guard": {
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T04:29:57.311Z",
+        "runId": "owner629-99da-20261027-0431",
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "resourceAdmittedEvents": 0,
+      "completedJournal": true,
+      "pendingFinalNotUsed": true,
+      "watchAuditRows": 37,
+      "watchMaxGapSecondsIndependent": 2.006705,
+      "watchRisk": "INVALID_FINAL corresponds refused exit2, not resourceInvalid or product-fail."
+    },
+    "cleanup": {
+      "historicalReceipt": {
+        "at": "2026-10-27T04:30:20.916Z",
+        "heavyLeaseAbsent": true,
+        "unsafeHoldAbsent": true,
+        "noUiWasStarted": true,
+        "allOwnedHandlesTerminal": true,
+        "ownedRemainingHandles": [],
+        "originalUiRestoration": "No UI calls or focus/tab actions were made, so no restoration operation was needed."
+      },
+      "independentLaterObservationAt": "2026-10-27T04:36:02.987874+00:00",
+      "root": "/var/tmp/matrx-stabilization-resource-501",
+      "heavyAbsent": true,
+      "unsafeHoldAbsent": true,
+      "scope": "Point-in-time filesystem observation; no claim that another owned lane cannot acquire later."
+    },
+    "actualSessionExits": {
+      "holder58087": {
+        "claimedExit": 2,
+        "basis": "Actor tool-session attestation; journal independently records wrapper exit2, not a live handle replay."
+      },
+      "watcher99185": {
+        "claimedExit": 0,
+        "basis": "Actor tool-session attestation; complete37-row audit and final report independently verified, not a live handle replay."
+      }
+    }
+  },
+  "limits": [
+    "No UI/API/tests/heavy work, source/docs edits, commits, or children. Only this requested private report written.",
+    "No independent negative proof of every absence of import/promotion/UI beyond recorded actor actions, pure precheck output, and observed non-admitted guard; no browser runtime or disk adoption acceptance.",
+    "No current-source/current-loaded/version/pin/Guest/Store/product health claim. Source subsequently advanced to0757bacc4; historical frozen-pair rejection is evaluated separately.",
+    "Review is eight-call bounded; no ZIP download/hash or terminal session/process census performed."
+  ],
+  "original_private_report_sha256": "55184d2b40a0161b32cc12ba57955caf6cad35bceeb3b7cdb4a53d513864d025",
+  "reference_limits": "Mapped originals are durable; unmapped private scratch logs, reports and context are not implied publicly retained or independently replayed. Supporting source/tests are not product acceptance or natural-timeout closure."
+}

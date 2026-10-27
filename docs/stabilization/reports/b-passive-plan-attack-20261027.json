@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T04:32:11.294852+00:00",
+  "reviewer": "b_passive_plan_attack",
+  "status": "FIX-FIRST",
+  "plan": ".output/stabilization-checkpoints/b-failure-observation-plan-20261027.json",
+  "plan_sha256": "5bbe020c4956cdc973e763b620a92bd4b98fc1b08177efbe5e65b30a7deee45f",
+  "live_contact": "Retained original B failure job log and native report inspected before plan, then original matched A diagnostic payload. No live execution was permitted in this read-only lane.",
+  "A_factual_spec": {
+    "verdict": "FIX-FIRST",
+    "assessment": "Original-B passive fail-only composition is a useful next discriminator; no source evidence establishes cause or repair. Two contract/interpretation gaps must be corrected before implementation."
+  },
+  "B_quality_provenance": {
+    "verdict": "PARTIAL",
+    "assessment": "Reuse of canonical parser/owner inspector and extracted bounded snapshot is appropriate; no workflow or guard bypass is needed. The newly activated outer lstat is not currently bounded; late canonical ownership is profile-scoped rather than spawned-child identity."
+  },
+  "coverage": {
+    "mapped": 12,
+    "total": 12,
+    "items": [
+      "Original B separate Node wrapper/launch/fixture retained",
+      "No startup deadline/runner/resource-policy change",
+      "Extract/reuse bounded child lock/stdio snapshot",
+      "Numeric PID and safe lifecycle labels only",
+      "Canonical safe endpoint observations with measured origins",
+      "Remaining observation window and original error/cleanup",
+      "No socket/probe or foreign attachment",
+      "No prelaunch CPU/initial lock/timer evidence inferred",
+      "Successful product assertions/certification remain independent",
+      "RED/GREEN composition and full focused/independent gates",
+      "Fresh exact artifact/source/spend/capacity before one B attempt",
+      "Official log/native ZIP/resource journals with hashes retained"
+    ],
+    "gaps": ["C1 bounded lstat requirement", "C2 late original-child ownership claim limit"]
+  },
+  "blocking": [
+    {
+      "id": "C1",
+      "priority": "Important",
+      "target": "recommended_minimal_plan.posttimeout and first_measurement_interpretation window claim",
+      "evidence": "tests/browser/native-sidepanel-qa-harness.mjs:1630 directly awaits fileSystem.lstat before remaining-budget inspectOwnedCdpEndpointRecord at1649. A never-settling lstat never reaches that bounded inspector, original rethrow or cleanup. Existing late-sample test deliberately allows completed lstat beyond window, but does not cover a stalled promise.",
+      "why": "Activating this dormant path on normal B can turn an endpoint timeout into unbounded diagnostic wait; the stated policy-sized bound is unsupported.",
+      "fix": "Bound the presence read by the remaining existing observation window; fence late fulfillment/rejection so it cannot mutate returned evidence, start canonical inspection, emit output or affect cleanup. Preserve original connector error identity. No deadline/window increase. Expiration uses existing safeEndpointObservation shape: endpointPresent:null, presenceBasis:unobserved, sampleTiming:null, inspectionFailed:true, recordInspection:{outcome:not_attempted,timing:null}. No new public field is required for this discriminator; never label unattempted inspection budget_expired.",
+      "verification": "Meaningful actual observer/callsite test with never-settling lstat and separate late fulfillment/rejection: bounded return, canonical inspection not started, unknown shape, original exception after cleanup. Existing measured completed samples retain truthful timing; no physical publication inference."
+    },
+    {
+      "id": "C2",
+      "priority": "Important",
+      "target": "falsifiable_hypotheses original Chrome owner/same child profile ownership prediction",
+      "evidence": "vault-owned-cdp.cjs validateOwnedEndpointRecord checks SingletonLock owner executable+profile; inspectOwnedCdpEndpointRecord accepts no expected startupChild PID. Outer observer uses child only for exitObserved. Spawned-child equality is separately required on successful harness path at spawn_owner, which is not reached after timeout.",
+      "why": "A failure-time spawned_child snapshot plus later validated_owned_record does not prove the late lock still belongs to the original child. Claiming it would exceed the planned observations.",
+      "fix": "Bound the first interpretation to canonical profile-owner validation and explicitly keep late spawned-child PID equality unknown; failure-time equality remains scoped to its own timing. A new late PID check is not required for the first discriminator. If same-child equality is required later, plan a measured sample rather than deriving it from validated_owned_record.",
+      "verification": "Plan/evidence interpretation states exact ownership scope; no test or collector reconstructs late PID equality from the canonical outcome."
+    }
+  ],
+  "advisory": [],
+  "limits": [
+    "No tests, UI/API, browser/native launch, build, dispatch, source edits, commits or children.",
+    "Runtime proof is retained original evidence, not fresh live replay.",
+    "The successful matched A control does not exercise timeout/posttimeout branches or repair B.",
+    "Readonly inspection only; no claim the proposed changes pass or that product acceptance is achieved."
+  ],
+  "inspected_hashes": {
+    "docs/stabilization/reports/scrape-b-35b-native-20261027.json": "74e758d0ec83868b0946e8e817de6b5623fdfaf387716fe8eb27199bc06b7226",
+    "docs/stabilization/reports/startup-35b-matched-20261027.json": "3f0df5251568d3adcf6c9f27ba1bb432d40cfcf7f2bf44a43d629c07892c5a01",
+    ".output/stabilization-checkpoints/scrape-b-35b/job.log": "ff91c739fe8bb0c00dd549fc0206a2d42308c30c25ba5b2102527f763d9b3fcb",
+    "docs/stabilization/evidence/hosted-startup-35b-40446409519/startup-interval-diagnostic.json": "e2dd327ee336853661c720f386ba2bbebc5be419934eb67bbf8c17268b02cccf",
+    "tests/browser/native-sidepanel-qa-harness.mjs": "05c26eb45aba1d55087fb889e1fb5ea9143cca24ff33e17810646a2610af827f",
+    "tests/browser/native-cdp-startup-diagnostic.mjs": "2795a56dd7162c99c8200ca38693cdec69ab925fe976dc2eae1744b570bf1290",
+    "tests/browser/vault-owned-cdp.cjs": "4a8ab7180b966fccfbfa06ab03f4357f2b6e3a3ffbae48aae07501ae1bd71bd7",
+    "tests/browser/scrape-seo-schema-empty-guest.mjs": "8b497c03a5abdc248eb745e608405fcefae905b1e7a47cb7cbdc158726360732",
+    "tests/browser/native-cdp-startup-diagnostic.test.mjs": "2b83fcace49c2e21b1c24c07de46accbe33c09ec1ca581db7c4680eeaa53cb38",
+    "docs/stabilization/PLAN.md": "0cc9ae04622ca3875ec1d5d6d005eadd5b21c71d2dae0bc23a3bd66c57a8bf56",
+    "docs/stabilization/defects/EXT-D-0254.json": "e8f59477da710f3aa963f95f44634f339581940251b072ba83afcfbac1e17343"
+  },
+  "original_private_report_sha256": "74cfd76dc34cb5a1a599e6ae84945480a3189b63cf8b42a0a3b60cc8fcc861a9",
+  "reference_limits": "Mapped originals are durable; unmapped private scratch logs, reports and context are not implied publicly retained or independently replayed. Supporting source/tests are not product acceptance or natural-timeout closure."
+}

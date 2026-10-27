@@ -7,7 +7,11 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
-import { observeNativeCdpStartup } from './native-cdp-startup-diagnostic.mjs';
+import {
+  observeNativeCdpStartup,
+  observeNativeStartupBoundary,
+  safeEndpointObservation,
+} from './native-cdp-startup-diagnostic.mjs';
 
 const require = createRequire(import.meta.url);
 const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
@@ -395,7 +399,7 @@ test('actual connector failures retain last-read intervals through the safe seri
   });
 });
 
-test('post-timeout sample interval stays distinct from report time and inspection budget', async () => {
+test('post-timeout lstat completed after window remains unknown without starting record inspection', async () => {
   await recordFixture(async ({ profile, endpoint }) => {
     await writeFile(endpoint, '9222\n/devtools/browser/owned\n');
     let elapsed = 0;
@@ -414,14 +418,11 @@ test('post-timeout sample interval stays distinct from report time and inspectio
         },
       },
     });
-    assert.equal(value.endpointPresent, true);
-    assert.equal(value.presenceBasis, 'lstat');
-    assert.deepEqual(value.sampleTiming, {
-      startedElapsedMs: 0,
-      completedElapsedMs: 12,
-      origin: 'post_timeout_observer',
-    });
-    assert.equal(value.recordInspection.outcome, 'budget_expired');
+    assert.equal(value.endpointPresent, null);
+    assert.equal(value.presenceBasis, 'unobserved');
+    assert.equal(value.sampleTiming, null);
+    assert.equal(value.inspectionFailed, true);
+    assert.equal(value.recordInspection.outcome, 'not_attempted');
     assert.equal(value.elapsedMs, 12);
   });
 });
@@ -589,14 +590,16 @@ test('actual failed-read timing guard rejects dropped last-read metadata', async
 test('failed filesystem observation guard rejects manufactured absence mutation', async () => {
   const source = observeOwnedEndpointAfterTimeout.toString();
   const mutated = source.replace(
-    'endpointPresent = null;\n        sampleTiming = null;',
-    'endpointPresent = false;\n        sampleTiming = null;',
+    "if (sample.failed && sample.error?.code !== 'ENOENT') {\n      endpointPresent = null;",
+    "if (sample.failed && sample.error?.code !== 'ENOENT') {\n      endpointPresent = false;",
   );
   assert.notEqual(mutated, source, 'mutation must target the real inspection error branch');
   const inspect = runInNewContext(`(${mutated})`, {
     join,
     performance,
     wait: async () => {},
+    setTimeout,
+    clearTimeout,
   });
   const assertUnknown = async (observe) => {
     const result = await observe({
@@ -614,4 +617,261 @@ test('failed filesystem observation guard rejects manufactured absence mutation'
   };
   await assertUnknown(observeOwnedEndpointAfterTimeout);
   await assert.rejects(assertUnknown(inspect), /inspection failure cannot prove absence/);
+});
+
+// Break: an awaited noncancelable lstat can retain the owned browser forever.
+async function assertExpiredOuterLstat(observe, { rejectLate = false, afterMissing = false } = {}) {
+  let resolveRead;
+  let rejectRead;
+  let entered;
+  let calls = 0;
+  let recordReads = 0;
+  let lockReads = 0;
+  const readEntered = new Promise((resolve) => {
+    entered = resolve;
+  });
+  const deferred = new Promise((resolve, reject) => {
+    resolveRead = resolve;
+    rejectRead = reject;
+  });
+  const pending = observe({
+    profile: '/owned/profile',
+    chromeExecutable: '/owned/chrome',
+    child: { exitCode: null, signalCode: null },
+    windowMs: 40,
+    sleep: async () => {},
+    fileSystem: {
+      lstat: () => {
+        calls++;
+        if (afterMissing && calls === 1)
+          return Promise.reject(Object.assign(new Error('missing'), { code: 'ENOENT' }));
+        entered();
+        return deferred;
+      },
+      readFile: async () => {
+        recordReads++;
+        return '9222\n/devtools/browser/private\n';
+      },
+      readlink: async () => {
+        lockReads++;
+        return 'private-123';
+      },
+    },
+  });
+  let watchdog;
+  const noUnhandled = [];
+  const onUnhandled = (error) => noUnhandled.push(error);
+  process.on('unhandledRejection', onUnhandled);
+  try {
+    await readEntered;
+    const value = await Promise.race([
+      pending,
+      new Promise((resolve) => {
+        watchdog = setTimeout(() => resolve('still_pending'), 250);
+      }),
+    ]);
+    assert.notEqual(
+      value,
+      'still_pending',
+      'outer lstat must release original failure cleanup within its existing observation window',
+    );
+    assert.equal(value.endpointPresent, null);
+    assert.equal(value.presenceBasis, 'unobserved');
+    assert.equal(value.sampleTiming, null);
+    assert.equal(value.inspectionFailed, true);
+    assert.deepEqual(value.recordInspection, { outcome: 'not_attempted', timing: null });
+    safeEndpointObservation(value);
+    const before = JSON.stringify(value);
+    if (rejectLate) rejectRead(new Error('late private lstat rejection'));
+    else resolveRead({});
+    await new Promise(setImmediate);
+    await new Promise(setImmediate);
+    assert.equal(JSON.stringify(value), before, 'late lstat cannot mutate returned observation');
+    assert.equal(recordReads, 0, 'late lstat cannot launch canonical record parsing');
+    assert.equal(lockReads, 0, 'late lstat cannot launch owner inspection');
+    assert.deepEqual(noUnhandled, [], 'late rejected lstat must stay handled');
+  } finally {
+    clearTimeout(watchdog);
+    resolveRead({});
+    await pending;
+    process.removeListener('unhandledRejection', onUnhandled);
+  }
+}
+
+test('outer post-timeout lstat expiry releases cleanup and fences late resolution', async () => {
+  await assertExpiredOuterLstat(observeOwnedEndpointAfterTimeout);
+});
+test('outer post-timeout lstat expiry handles late rejection without leaking an earlier missing sample', async () => {
+  await assertExpiredOuterLstat(observeOwnedEndpointAfterTimeout, {
+    rejectLate: true,
+    afterMissing: true,
+  });
+});
+
+async function assertTimelyOuterPresence(observe) {
+  let recordReads = 0;
+  const value = await observe({
+    profile: '/owned/profile',
+    chromeExecutable: '/owned/chrome',
+    child: { exitCode: null, signalCode: null },
+    windowMs: 1000,
+    fileSystem: {
+      lstat: async () => ({}),
+      readFile: async () => {
+        recordReads++;
+        throw Object.assign(new Error('denied'), { code: 'EACCES' });
+      },
+    },
+  });
+  assert.equal(
+    value.endpointPresent,
+    true,
+    'timely real presence must not become constant unknown',
+  );
+  assert.equal(value.presenceBasis, 'lstat');
+  assert.equal(value.inspectionFailed, false);
+  assert.equal(value.recordInspection.outcome, 'inspection_failed');
+  assert.equal(recordReads, 1, 'timely real presence must reach canonical record inspection');
+  safeEndpointObservation(value);
+}
+
+test('outer lstat guard distinguishes timely presence from constant unknown and omitted bound mutants', async () => {
+  await assertTimelyOuterPresence(observeOwnedEndpointAfterTimeout);
+  await assert.rejects(
+    assertTimelyOuterPresence(async () => ({ endpointPresent: null })),
+    /timely real presence/,
+  );
+  const source = observeOwnedEndpointAfterTimeout.toString();
+  const omitted = source
+    .replace('sample = await Promise.race([', 'sample = await pending; /*')
+    .replace(
+      '    } finally {\n      clearTimeout(timer);',
+      '*/\n    } finally {\n      clearTimeout(timer);',
+    );
+  assert.notEqual(omitted, source, 'in-memory mutation must remove outer lstat race');
+  const inspect = runInNewContext(`(${omitted})`, {
+    join,
+    performance,
+    wait: async () => {},
+    setTimeout,
+    clearTimeout,
+    inspectOwnedCdpEndpointRecord,
+  });
+  await assert.rejects(
+    assertExpiredOuterLstat(inspect),
+    /outer lstat must release original failure cleanup/,
+  );
+});
+
+test('passive child snapshot compares only sampled original child and fences stalled readlink', async () => {
+  await recordFixture(async ({ preparedProfile }) => {
+    const child = {
+      pid: 123,
+      exitCode: null,
+      signalCode: null,
+      stderr: { destroyed: false, readableEnded: false },
+    };
+    const same = await observeNativeStartupBoundary({ preparedProfile, startupChild: child }, 1000);
+    assert.deepEqual(same, {
+      profileLock: 'spawned_child',
+      childExitObserved: false,
+      stderrClosed: false,
+      stderrReadableEnded: false,
+    });
+    const other = await observeNativeStartupBoundary(
+      { preparedProfile, startupChild: { ...child, pid: 456, exitCode: 1 } },
+      1000,
+    );
+    assert.equal(other.profileLock, 'other_owner');
+    assert.equal(other.childExitObserved, true);
+    let resolveRead;
+    const delayed = new Promise((resolve) => {
+      resolveRead = resolve;
+    });
+    const value = await observeNativeStartupBoundary(
+      { preparedProfile, startupChild: child, fileSystem: { readlink: () => delayed } },
+      20,
+    );
+    const before = JSON.stringify(value);
+    assert.deepEqual(value, {
+      profileLock: 'unavailable',
+      childExitObserved: null,
+      stderrClosed: null,
+      stderrReadableEnded: null,
+    });
+    resolveRead('private-lock-123');
+    await new Promise(setImmediate);
+    assert.equal(JSON.stringify(value), before, 'late snapshot cannot mutate returned unknown');
+    assert.doesNotMatch(
+      JSON.stringify([same, other, value]),
+      /private-lock|\/owned\/profile|123|456/,
+    );
+  });
+});
+
+async function assertLstatRejectionKinds(observe) {
+  for (const reason of [
+    null,
+    undefined,
+    false,
+    0,
+    '',
+    Object.assign(new Error('missing'), { code: 'ENOENT' }),
+  ]) {
+    const missing = reason?.code === 'ENOENT';
+    const value = await observe({
+      profile: '/owned/profile',
+      chromeExecutable: '/owned/chrome',
+      child: { exitCode: 1, signalCode: null },
+      windowMs: 1000,
+      fileSystem: { lstat: () => Promise.reject(reason) },
+    });
+    assert.equal(
+      value.endpointPresent,
+      missing ? false : null,
+      'only actual ENOENT may become measured absence',
+    );
+    assert.equal(
+      value.inspectionFailed,
+      !missing,
+      'every other rejected value is failed measurement',
+    );
+    assert.equal(value.presenceBasis, missing ? 'lstat' : 'unobserved');
+    safeEndpointObservation(value);
+  }
+}
+
+test('outer lstat rejects falsy failure reasons as unknown and reserves absence for ENOENT', async () => {
+  await assertLstatRejectionKinds(observeOwnedEndpointAfterTimeout);
+  const source = observeOwnedEndpointAfterTimeout.toString();
+  const omitted = source
+    .replace('return { failed: true, error };', 'return { error };')
+    .replace(
+      "if (sample.failed && sample.error?.code !== 'ENOENT') {",
+      "if (sample.error && sample.error.code !== 'ENOENT') {",
+    );
+  assert.notEqual(omitted, source, 'mutation must remove rejection tagging');
+  const inspect = runInNewContext(`(${omitted})`, {
+    join,
+    performance,
+    wait: async () => {},
+    setTimeout,
+    clearTimeout,
+    inspectOwnedCdpEndpointRecord,
+  });
+  await assert.rejects(assertLstatRejectionKinds(inspect), /only actual ENOENT/);
+  await assert.rejects(
+    assertLstatRejectionKinds(async () => ({
+      phase: 'post_timeout',
+      endpointPresent: null,
+      presenceBasis: 'unobserved',
+      sampleTiming: null,
+      inspectionFailed: true,
+      recordInspection: { outcome: 'not_attempted', timing: null },
+      exitObserved: true,
+      elapsedMs: 0,
+      polls: 1,
+    })),
+    /only actual ENOENT/,
+  );
 });

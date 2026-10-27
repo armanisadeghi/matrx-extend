@@ -28,7 +28,10 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { verifyCiDevPromotionReceipt } from '../../scripts/verify-ci-dev-promotion.mjs';
 import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
-import { observeNativeCdpStartup } from './native-cdp-startup-diagnostic.mjs';
+import {
+  observeNativeCdpStartup,
+  observeNativeStartupBoundary,
+} from './native-cdp-startup-diagnostic.mjs';
 import {
   extensionStartupDiagnostic,
   readExtensionStartupRegistries,
@@ -1626,19 +1629,50 @@ async function observeOwnedEndpointAfterTimeout({
   while (clock.now() - started < windowMs) {
     polls += 1;
     const sampleStarted = elapsed();
+    // lstat has no cancellation signal. Bound only our wait, and handle both
+    // late outcomes without allowing either to advance observation or inspection.
+    let timer;
+    let expired = false;
+    let sample;
     try {
-      await fileSystem.lstat(join(profile, 'DevToolsActivePort'));
-      endpointPresent = true;
-    } catch (error) {
-      if (error?.code !== 'ENOENT') {
-        // Neither denied I/O nor a zero-sample window proves file absence.
-        endpointPresent = null;
-        sampleTiming = null;
-        inspectionFailed = true;
-        return result();
-      }
-      endpointPresent = false;
+      const pending = Promise.resolve().then(async () => {
+        if (clock.now() - started >= windowMs) return { expired: true };
+        try {
+          await fileSystem.lstat(join(profile, 'DevToolsActivePort'));
+          return { present: true };
+        } catch (error) {
+          return { failed: true, error };
+        }
+      });
+      sample = await Promise.race([
+        pending,
+        new Promise((resolve) => {
+          timer = setTimeout(
+            () => {
+              expired = true;
+              resolve({ expired: true });
+            },
+            Math.max(0, windowMs - (clock.now() - started)),
+          );
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
     }
+    if (expired || sample.expired || clock.now() - started >= windowMs) {
+      endpointPresent = null;
+      sampleTiming = null;
+      inspectionFailed = true;
+      recordInspection = { outcome: 'not_attempted', timing: null };
+      return result();
+    }
+    if (sample.failed && sample.error?.code !== 'ENOENT') {
+      endpointPresent = null;
+      sampleTiming = null;
+      inspectionFailed = true;
+      return result();
+    }
+    endpointPresent = sample.present === true;
     sampleTiming = {
       startedElapsedMs: sampleStarted,
       completedElapsedMs: elapsed(),
@@ -1910,6 +1944,35 @@ export async function runNativeSidepanelQa({
         ...(endpointDiagnostic && { endpointDiagnostic }),
         ...(endpointWaitDiagnostic && { endpointWaitDiagnostic }),
       };
+      if (
+        error?.message === 'owned_cdp_endpoint_timeout' &&
+        onStartupEndpointObservation &&
+        startupEndpointObservationMs > 0
+      ) {
+        // This starts after the original failure. No prelaunch observation or
+        // socket probe is enabled by a passive endpoint callback.
+        const failureObserverStarted = performance.now();
+        startupDiagnostic.failureObservedElapsedMs = startupDiagnostic.elapsedMs;
+        startupDiagnostic.childPid = Number.isSafeInteger(child.pid) ? child.pid : null;
+        try {
+          startupDiagnostic.startupBoundary = await observeNativeStartupBoundary(
+            { preparedProfile, startupChild: child },
+            Math.max(1, Math.floor(startupEndpointObservationMs / 50)),
+          );
+        } catch {
+          startupDiagnostic.startupBoundary = {
+            profileLock: 'unavailable',
+            childExitObserved: null,
+            stderrClosed: null,
+            stderrReadableEnded: null,
+          };
+        }
+        startupDiagnostic.startupBoundaryTiming = {
+          origin: 'failure_observer',
+          startedElapsedMs: 0,
+          completedElapsedMs: Math.max(0, Math.round(performance.now() - failureObserverStarted)),
+        };
+      }
       // Guest result summaries truncate errors; preserve bounded startup evidence
       // in the runner log before forwarding the unchanged failure.
       process.stderr.write(`BROWSER_STARTUP_FAILURE ${JSON.stringify(startupDiagnostic)}\n`);
