@@ -98,5 +98,15 @@
     ".output/stabilization-checkpoints/owner-ebee-resource-build-watch-20261027.jsonl": "bda073851fb83579a699cda4b77d7a72843bd6ae2c7b592af9b57d4c06e11aa4",
     ".output/stabilization-checkpoints/owner-ebee-resource-build-watch-20261027-report.json": "c5232be1e367968b9f8d5d89aee4ba5d8f26afd0ecc0b71c2be9125251d00bc2",
     ".output/stabilization-checkpoints/owner-ebee-parent-stop-20261027.json": "f845159e55ce10cb838822e7d3371cca47c83c58fe71a7b0e63d4dfb9ff77835"
+  },
+  "evidence_transport": {
+    "status": "Publication transport repair only; native observations and verdicts are unchanged.",
+    "raw_capture_semantics": "Original producer/reviewer hash references at ignored original locations still describe decoded authoritative raw bytes. Public .ax.txt paths in the associated manifest are now whitespace-normalized readable views, not byte-exact captures.",
+    "payload_index": {
+      "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt.raw.json",
+      "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt.raw.json",
+      "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt.raw.json"
+    },
+    "review_boundary": "The original native peer checked the raw source bytes. Publication hash maps, when keyed by a public view path, now describe the current view bytes; this transport repair is not a new native UI review."
   }
 }

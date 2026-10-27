@@ -37,11 +37,11 @@ Window: "Extensions - Matrx Extend", App: Google Chrome.
 										35 text My extensions
 									36 Keyboard shortcuts
 										37 text Keyboard shortcuts
-								38 text Using AI coding agents to build extensions? Install the 
+								38 text Using AI coding agents to build extensions? Install the
 								39 link Chrome Extensions and Chrome Web Store skill, Value: developer.chrome.com/docs/extensions/ai/build-with-ai?utm_source=ext_sidebar&hl=en-US#modern_web_guidance
 								40 text  to teach your coding agent the latest API updates and best practices.
 								41 container
-									42 text Discover more extensions and themes on the 
+									42 text Discover more extensions and themes on the
 									43 link Chrome Web Store, Value: chromewebstore.google.com/category/extensions?utm_source=ext_sidebar&hl=en-US
 							44 container
 								45 click to navigate away from matrx extend details page. Matrx Extend details page back button
@@ -65,38 +65,38 @@ Window: "Extensions - Matrx Extend", App: Google Chrome.
 									63 text Inspect views
 								64 content list
 									65 container
-										66 AXListMarker • 
+										66 AXListMarker •
 										67 link service worker
 											68 text service worker
 								69 heading Permissions, Value: 2
 									70 text Permissions
 								71 content list
 									72 container
-										73 AXListMarker • 
+										73 AXListMarker •
 										74 text Access the page debugger backend
 									75 container
-										76 AXListMarker • 
+										76 AXListMarker •
 										77 text Read and change all your data on all websites
 									78 container
-										79 AXListMarker • 
+										79 AXListMarker •
 										80 text Read and change your browsing history on all your signed-in devices
 									81 container
-										82 AXListMarker • 
+										82 AXListMarker •
 										83 text Display notifications
 									84 container
-										85 AXListMarker • 
+										85 AXListMarker •
 										86 text Read and change your bookmarks
 									87 container
-										88 AXListMarker • 
+										88 AXListMarker •
 										89 text Modify data you copy and paste
 									90 container
-										91 AXListMarker • 
+										91 AXListMarker •
 										92 text Manage your downloads
 									93 container
-										94 AXListMarker • 
+										94 AXListMarker •
 										95 text Communicate with cooperating native applications
 									96 container
-										97 AXListMarker • 
+										97 AXListMarker •
 										98 text View and manage your tab groups
 								99 heading Site access, Value: 2
 									100 text Site access
@@ -106,7 +106,7 @@ Window: "Extensions - Matrx Extend", App: Google Chrome.
 									104 (selected) On all sites
 								105 link Site settings
 								106 switch Pin to toolbar, Value: on
-								107 switch Value: off, Allow in Incognito Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option. Changes to this setting will be applied once Chrome restarts. 
+								107 switch Value: off, Allow in Incognito Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option. Changes to this setting will be applied once Chrome restarts.
 								108 switch Allow access to file URLs Changes to this setting will be applied once Chrome restarts. , Value: off
 								109 switch Collect errors, Value: off
 								110 link Extension options

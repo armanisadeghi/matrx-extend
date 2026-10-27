@@ -122,11 +122,11 @@
     "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-original-structural-20261027.txt": "d84233e31cc5519819856b26edd99d214cb26b545dcca0ae02766d4fd6adb04a",
     "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-version-profile-20261027.ax.txt": "c4607815dca0fffbbbbac3a8953fd5ee5172e4c3fa83cafbe42c4a19a13faa59",
     "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-active-account-20261027.ax.txt": "2f8d9073dc5b245d1e11228116e0b99007d455a9393a1e92d4f1ba0e571d172a",
-    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt": "4b9cc21ed70f2f6e7524d941fa545abfe69406462e6e8e6fc4bb6704ffb93db1",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt": "2acdf01ab4f9917ef690a3b5bdb82199db5fd9dada2069d1c5d4e68f48d238e4",
     "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture1-20261027.png": "e2e927cb9d9584b62f85232e53ce5b98ca5746cbcc533cae2f6f89635536aa5a",
-    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt": "366639769b86cf3a5a53781b0647f9bf69629a27eefb1b8a99f3e90f1e13aca4",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt": "89ffb84d8c1979a872eaa0eae4c7524aeb5cb580e33a30d643a6198dce055b58",
     "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.png": "e4153d9010516e72bc0ff003c8767a1560c37a6f4a2e2e7ee8655ff431b420e3",
-    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt": "f487613091f9043c3f71bff5e875ea6f1f99b355a9e697bdde44231accd8d069",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt": "281e84961df4b37ae44e6909f52980f8ddc8691f34a80136dbc429585dcb9dd7",
     "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-restored-structural-20261027.txt": "5cd8691c30ab91d35fe21a878d5e5bc10c4676a76f5efe395226e0e7cc16dcdb",
     "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-fulltree-after-20261027.json": "d3c2e5f2d9beaa4386ab0549fd7168e0f410e5dfc7499723a92e878d3f476347",
     "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-parent-ui-admission-20261027.json": "09c9f3ef5d5c12bdf8eeca16b284f7c3bb1cedaa600c5ada33c084ed3934eed3",
@@ -138,5 +138,15 @@
   "commits": [],
   "owned_source_writes": [],
   "next_action": "Parentnormalfinalizeguard/watchthenfreshpeeragainstliteralReloadedrawAX/PNG/fulltree/source/approval/perAPIledger; preserveStoreandownerstate.",
-  "owned_processes": []
+  "owned_processes": [],
+  "evidence_transport": {
+    "status": "Publication transport repair only; native observations and verdicts are unchanged.",
+    "raw_capture_semantics": "Original producer/reviewer hash references at ignored original locations still describe decoded authoritative raw bytes. Public .ax.txt paths in the associated manifest are now whitespace-normalized readable views, not byte-exact captures.",
+    "payload_index": {
+      "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt.raw.json",
+      "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt.raw.json",
+      "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt.raw.json"
+    },
+    "review_boundary": "The original native peer checked the raw source bytes. Publication hash maps, when keyed by a public view path, now describe the current view bytes; this transport repair is not a new native UI review."
+  }
 }

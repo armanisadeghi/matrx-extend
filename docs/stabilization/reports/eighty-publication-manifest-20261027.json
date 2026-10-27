@@ -3,7 +3,7 @@
   "at": "2026-10-27T13:36:50.977033+00:00",
   "source_sha": "80e30c62a1259e657519ec274bc951bbf36c5100",
   "scope": "Frozen80 original guest consumer retest and bounded owner maintenance; no Store/eBee/current-main release acceptance transfer",
-  "reference_policy": "Exact allowlisted path VALUES are remapped to durable public paths. Producer safe_evidence_sha256 keys preserve original locations and original byte hashes. Excluded/unmapped cache/output/private-original references are unavailable in this publication. Manifest entries own all published hashes. Reports are immutable producer observation snapshots, not retroactive current-source claims.",
+  "reference_policy": "Exact path values point to durable public evidence. Producer private hash keys retain original locations and decoded raw byte hashes. AX views are explicitly whitespace-normalized; declared lossless payloads preserve every original byte. Manifest entries own published file hashes. Transport notes do not change native observations or verdicts.",
   "current_truth": {
     "guest_native_run": 40509061963,
     "guest_batch": "12 raw pass / 0 fail / 7 unverified; original consumer warm/full-reload observation passes",
@@ -397,10 +397,15 @@
       "original_sha256": "1e583bda5ac2b48c2c3298c4d32d7984e3a839c82c174c1a218a6adcdc41edc7",
       "producer_recorded_sha256": "1e583bda5ac2b48c2c3298c4d32d7984e3a839c82c174c1a218a6adcdc41edc7",
       "producer_hash_current": true,
-      "published_sha256": "1e583bda5ac2b48c2c3298c4d32d7984e3a839c82c174c1a218a6adcdc41edc7",
+      "published_sha256": "63653362acea0e54053b0bd7430dee007140ec67923810978405ef6a210174f1",
       "bytes_original": 7776,
-      "bytes_published": 7776,
-      "transformation": "byte-exact"
+      "bytes_published": 7764,
+      "transformation": "Whitespace-normalized readable projection; authoritative exact original capture is the declared base64 payload.",
+      "kind": "lossless_raw_payload_plus_whitespace_normalized_view",
+      "raw_payload_public_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-dev-before-20261027.ax.txt.raw.json",
+      "raw_payload_file_sha256": "5bc5c03eb496ce99323380aadee0fce6eb3bdaa885a8a4d6d60add7ae825ca2e",
+      "raw_decoded_sha256": "1e583bda5ac2b48c2c3298c4d32d7984e3a839c82c174c1a218a6adcdc41edc7",
+      "normalization": "Remove ASCII space/tab at line ends and blank EOF lines only; keep LF line endings, leading indentation and all other text unchanged. Original bytes are authoritative in the lossless payload."
     },
     {
       "original_path": ".output/stabilization-checkpoints/owner80-store577-20261027.ax.txt",
@@ -408,10 +413,15 @@
       "original_sha256": "4b8a01b9320b2ce04d83216a4d856a726e0f5081cf2375c2dda121a48fbaa753",
       "producer_recorded_sha256": "4b8a01b9320b2ce04d83216a4d856a726e0f5081cf2375c2dda121a48fbaa753",
       "producer_hash_current": true,
-      "published_sha256": "4b8a01b9320b2ce04d83216a4d856a726e0f5081cf2375c2dda121a48fbaa753",
+      "published_sha256": "f636cc65f8b2a561f07dc254f2757f1155e9fdff631f5029b17d7018413ebc0a",
       "bytes_original": 7702,
-      "bytes_published": 7702,
-      "transformation": "byte-exact"
+      "bytes_published": 7689,
+      "transformation": "Whitespace-normalized readable projection; authoritative exact original capture is the declared base64 payload.",
+      "kind": "lossless_raw_payload_plus_whitespace_normalized_view",
+      "raw_payload_public_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-store577-20261027.ax.txt.raw.json",
+      "raw_payload_file_sha256": "08dee8b0c05e859ca7c75c99ed0866519d44f9b8e9369e4e4c273789be39f996",
+      "raw_decoded_sha256": "4b8a01b9320b2ce04d83216a4d856a726e0f5081cf2375c2dda121a48fbaa753",
+      "normalization": "Remove ASCII space/tab at line ends and blank EOF lines only; keep LF line endings, leading indentation and all other text unchanged. Original bytes are authoritative in the lossless payload."
     },
     {
       "original_path": ".output/stabilization-checkpoints/owner80-restored-structural-20261027.txt",
@@ -452,10 +462,15 @@
       "original_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
       "producer_recorded_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
       "producer_hash_current": true,
-      "published_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+      "published_sha256": "af6b40f8e3379a66d713ffd5d1e681072c0cb131c1f2c1dfb5f75154de7e7c9b",
       "bytes_original": 7781,
-      "bytes_published": 7781,
-      "transformation": "byte-exact"
+      "bytes_published": 7769,
+      "transformation": "Whitespace-normalized readable projection; authoritative exact original capture is the declared base64 payload.",
+      "kind": "lossless_raw_payload_plus_whitespace_normalized_view",
+      "raw_payload_public_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt.raw.json",
+      "raw_payload_file_sha256": "fa2910ee867c2f2899620c0840832cf2d85949226263f7d1f4a91aadd94c8222",
+      "raw_decoded_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+      "normalization": "Remove ASCII space/tab at line ends and blank EOF lines only; keep LF line endings, leading indentation and all other text unchanged. Original bytes are authoritative in the lossless payload."
     },
     {
       "original_path": ".output/stabilization-checkpoints/owner80-reload-attempt-physical-20261027.ax.txt",
@@ -463,10 +478,15 @@
       "original_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
       "producer_recorded_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
       "producer_hash_current": true,
-      "published_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+      "published_sha256": "af6b40f8e3379a66d713ffd5d1e681072c0cb131c1f2c1dfb5f75154de7e7c9b",
       "bytes_original": 7781,
-      "bytes_published": 7781,
-      "transformation": "byte-exact"
+      "bytes_published": 7769,
+      "transformation": "Whitespace-normalized readable projection; authoritative exact original capture is the declared base64 payload.",
+      "kind": "lossless_raw_payload_plus_whitespace_normalized_view",
+      "raw_payload_public_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt.raw.json",
+      "raw_payload_file_sha256": "080df453c84e1e5d0b9f3451c86bbb913b14b41ca0ab427f557858e3befa7834",
+      "raw_decoded_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+      "normalization": "Remove ASCII space/tab at line ends and blank EOF lines only; keep LF line endings, leading indentation and all other text unchanged. Original bytes are authoritative in the lossless payload."
     },
     {
       "original_path": ".output/stabilization-checkpoints/owner80-reload-attempt-fast-20261027.png",
@@ -496,10 +516,15 @@
       "original_sha256": "4e47cbb33ae2a15a7f3606dc5b724b4cbcbd45eb101545c3894f7ade33e2e002",
       "producer_recorded_sha256": "4e47cbb33ae2a15a7f3606dc5b724b4cbcbd45eb101545c3894f7ade33e2e002",
       "producer_hash_current": true,
-      "published_sha256": "4e47cbb33ae2a15a7f3606dc5b724b4cbcbd45eb101545c3894f7ade33e2e002",
+      "published_sha256": "08151b92d812bc58e381d81ab891b26fc9b466bab6bfd345ec850e1a20860f96",
       "bytes_original": 7781,
-      "bytes_published": 7781,
-      "transformation": "byte-exact"
+      "bytes_published": 7769,
+      "transformation": "Whitespace-normalized readable projection; authoritative exact original capture is the declared base64 payload.",
+      "kind": "lossless_raw_payload_plus_whitespace_normalized_view",
+      "raw_payload_public_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt.raw.json",
+      "raw_payload_file_sha256": "66a7d29c567d672f256216d4c941d93d02a79e896c19f45eb90889c6292dff39",
+      "raw_decoded_sha256": "4e47cbb33ae2a15a7f3606dc5b724b4cbcbd45eb101545c3894f7ade33e2e002",
+      "normalization": "Remove ASCII space/tab at line ends and blank EOF lines only; keep LF line endings, leading indentation and all other text unchanged. Original bytes are authoritative in the lossless payload."
     },
     {
       "original_path": ".output/stabilization-checkpoints/owner80-reload-attempt-physical-20261027.png",
@@ -529,10 +554,12 @@
       "original_sha256": "1489807d98a2d04c0948c8ac22474a2a591e333106784e0df218a123666e7baa",
       "producer_recorded_sha256": null,
       "producer_hash_current": true,
-      "published_sha256": "0c4f8fb45c42f2c5fa91ce9b1e3d1506fc1a6c0f943a4642d1c0595fa2705326",
+      "published_sha256": "535c261a354c678c3cdce0f3c19fa86e96a3d2d720f1536d185a35d56ce8be8b",
       "bytes_original": 10954,
-      "bytes_published": 11066,
-      "transformation": "JSON formatted; only declared exact path VALUES remapped; producer hash-map keys retained"
+      "bytes_published": 12734,
+      "transformation": "Original observation/findings retained; explicit evidence transport note added and public view hash references updated. Original producer/reviewer byte hash remains original_sha256.",
+      "transport_metadata_added": true,
+      "kind": "producer_or_peer_findings_preserved_with_explicit_transport_note"
     },
     {
       "original_path": ".output/stabilization-checkpoints/eighty-native-evidence-peer-20261027.json",
@@ -540,10 +567,12 @@
       "original_sha256": "98281ee3e11f45bb3c13d89feafce53fbad7eaad3f2da7c7c198da2d4c88446d",
       "producer_recorded_sha256": null,
       "producer_hash_current": true,
-      "published_sha256": "98281ee3e11f45bb3c13d89feafce53fbad7eaad3f2da7c7c198da2d4c88446d",
+      "published_sha256": "a8de4fddf1991a52bf763e50b25a91c7f22d04b2b38c798c279a0db9d371bd79",
       "bytes_original": 7931,
-      "bytes_published": 7931,
-      "transformation": "JSON formatted; only declared exact path VALUES remapped; producer hash-map keys retained"
+      "bytes_published": 9599,
+      "transformation": "Original observation/findings retained; explicit evidence transport note added and public view hash references updated. Original producer/reviewer byte hash remains original_sha256.",
+      "transport_metadata_added": true,
+      "kind": "producer_or_peer_findings_preserved_with_explicit_transport_note"
     },
     {
       "original_path": ".output/stabilization-checkpoints/80-exact-ci-decision-20261027.json",
@@ -555,6 +584,62 @@
       "bytes_original": 983,
       "bytes_published": 983,
       "transformation": "JSON formatted; only declared exact path VALUES remapped; producer hash-map keys retained"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner80-dev-before-20261027.ax.txt",
+      "original_sha256": "1e583bda5ac2b48c2c3298c4d32d7984e3a839c82c174c1a218a6adcdc41edc7",
+      "kind": "lossless_base64_raw_capture_payload",
+      "decoded_sha256": "1e583bda5ac2b48c2c3298c4d32d7984e3a839c82c174c1a218a6adcdc41edc7",
+      "decoded_byte_count": 7776,
+      "readable_projection": "docs/stabilization/evidence/eighty-20261027/owner/owner80-dev-before-20261027.ax.txt",
+      "relationship": "Same original capture has a lossless raw payload and a separate readable projection.",
+      "published_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-dev-before-20261027.ax.txt.raw.json",
+      "published_sha256": "5bc5c03eb496ce99323380aadee0fce6eb3bdaa885a8a4d6d60add7ae825ca2e"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner80-reload-attempt-ax-20261027.ax.txt",
+      "original_sha256": "4e47cbb33ae2a15a7f3606dc5b724b4cbcbd45eb101545c3894f7ade33e2e002",
+      "kind": "lossless_base64_raw_capture_payload",
+      "decoded_sha256": "4e47cbb33ae2a15a7f3606dc5b724b4cbcbd45eb101545c3894f7ade33e2e002",
+      "decoded_byte_count": 7781,
+      "readable_projection": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt",
+      "relationship": "Same original capture has a lossless raw payload and a separate readable projection.",
+      "published_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt.raw.json",
+      "published_sha256": "66a7d29c567d672f256216d4c941d93d02a79e896c19f45eb90889c6292dff39"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner80-reload-attempt-fast-20261027.ax.txt",
+      "original_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+      "kind": "lossless_base64_raw_capture_payload",
+      "decoded_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+      "decoded_byte_count": 7781,
+      "readable_projection": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt",
+      "relationship": "Same original capture has a lossless raw payload and a separate readable projection.",
+      "published_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt.raw.json",
+      "published_sha256": "fa2910ee867c2f2899620c0840832cf2d85949226263f7d1f4a91aadd94c8222"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner80-reload-attempt-physical-20261027.ax.txt",
+      "original_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+      "kind": "lossless_base64_raw_capture_payload",
+      "decoded_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+      "decoded_byte_count": 7781,
+      "readable_projection": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt",
+      "relationship": "Same original capture has a lossless raw payload and a separate readable projection.",
+      "published_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt.raw.json",
+      "published_sha256": "080df453c84e1e5d0b9f3451c86bbb913b14b41ca0ab427f557858e3befa7834"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner80-store577-20261027.ax.txt",
+      "original_sha256": "4b8a01b9320b2ce04d83216a4d856a726e0f5081cf2375c2dda121a48fbaa753",
+      "kind": "lossless_base64_raw_capture_payload",
+      "decoded_sha256": "4b8a01b9320b2ce04d83216a4d856a726e0f5081cf2375c2dda121a48fbaa753",
+      "decoded_byte_count": 7702,
+      "readable_projection": "docs/stabilization/evidence/eighty-20261027/owner/owner80-store577-20261027.ax.txt",
+      "relationship": "Same original capture has a lossless raw payload and a separate readable projection.",
+      "published_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-store577-20261027.ax.txt.raw.json",
+      "published_sha256": "08dee8b0c05e859ca7c75c99ed0866519d44f9b8e9369e4e4c273789be39f996"
     }
-  ]
+  ],
+  "transport_contract": "Privacy-approved original captures with CI-sensitive whitespace are authoritative in lossless base64 JSON payloads; decoded hashes/byte counts preserve original evidence. Readable AX views are declared whitespace-normalized projections. No native findings, screenshots, JSONL, CI checks or policies were changed."
 }

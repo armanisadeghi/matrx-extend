@@ -177,5 +177,17 @@
     ".output/stabilization-checkpoints/owner80-reload-attempt-ax-20261027.png": "8970bc89c8bf05c2c1a21d278daf48dbf055756b9aecb69c3d51f94ea127520f",
     ".output/stabilization-checkpoints/owner80-reload-attempt-ax-20261027.ax.txt": "4e47cbb33ae2a15a7f3606dc5b724b4cbcbd45eb101545c3894f7ade33e2e002",
     ".output/stabilization-checkpoints/owner80-reload-attempt-physical-20261027.png": "6ad8e327f2b2cac98fca188e07b0472a71c9047357510883e9636f3c4944c05b"
+  },
+  "evidence_transport": {
+    "status": "Publication transport repair only; native observations and verdicts are unchanged.",
+    "raw_capture_semantics": "Original producer/reviewer hash references at ignored original locations still describe decoded authoritative raw bytes. Public .ax.txt paths in the associated manifest are now whitespace-normalized readable views, not byte-exact captures.",
+    "payload_index": {
+      "docs/stabilization/evidence/eighty-20261027/owner/owner80-dev-before-20261027.ax.txt": "docs/stabilization/evidence/eighty-20261027/owner/owner80-dev-before-20261027.ax.txt.raw.json",
+      "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt.raw.json",
+      "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt.raw.json",
+      "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt.raw.json",
+      "docs/stabilization/evidence/eighty-20261027/owner/owner80-store577-20261027.ax.txt": "docs/stabilization/evidence/eighty-20261027/owner/owner80-store577-20261027.ax.txt.raw.json"
+    },
+    "review_boundary": "The original native peer checked the raw source bytes. Publication hash maps, when keyed by a public view path, now describe the current view bytes; this transport repair is not a new native UI review."
   }
 }
