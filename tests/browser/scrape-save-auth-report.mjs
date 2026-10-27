@@ -3,6 +3,7 @@ import { publishAtomicJsonReport } from './atomic-json-report.mjs';
 import {
   memberAuthFailureReport,
   safeMemberAuthFailureCode,
+  safeMemberPointerDiagnostic,
 } from './settings-member-auth-diagnostic.mjs';
 
 export const NATIVE_STAGES = new Set([
@@ -83,7 +84,7 @@ const count = (value) => (Number.isSafeInteger(value) && value >= 0 ? value : nu
 /** Project only the member driver's finite labels, booleans and counts. */
 export function safeScrapeSaveAuthDiagnostic(value) {
   if (!PHASES.has(value?.phase)) return {};
-  const safe = { phase: value.phase };
+  const safe = { phase: value.phase, ...safeMemberPointerDiagnostic(value, true) };
   if (TARGETS.has(value.target)) safe.target = value.target;
   for (const field of BOOLEAN_FIELDS) {
     if (typeof value[field] === 'boolean' || value[field] === null) safe[field] = value[field];

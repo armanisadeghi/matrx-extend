@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { observeShowcaseProductRequest, panelBearerHash } from './organization-product-request.mjs';
 import { openOrganizationRecords } from './organization-records-navigation.mjs';
+import { safeMemberPointerDiagnostic } from './settings-member-auth-diagnostic.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -29,23 +30,31 @@ export async function refreshMemberLogicalOrganizationGet(
   onDiagnostic = () => {},
 ) {
   let target = 'organization_tools_gate';
+  const emitDiagnostic = (value) => {
+    try {
+      const pending = onDiagnostic(value);
+      Promise.resolve(pending).catch(() => {});
+    } catch {}
+  };
   try {
     await openOrganizationRecords(panel, {
       clickControl,
       beforeRecords: () => observer.arm(),
       onStage: (stage) => {
         target = stage;
-        onDiagnostic({ phase: 'logical_organization_request', target });
+        emitDiagnostic({ phase: 'logical_organization_request', target });
       },
     });
   } catch (error) {
-    const count = (value) =>
-      Number.isSafeInteger(value) && value >= 0 && value <= 100 ? value : null;
-    onDiagnostic({
+    // Reporting is best effort: hostile getters and a failed callback cannot mask the click.
+    let failure;
+    try {
+      failure = Object.getOwnPropertyDescriptor(error, 'driverFailure')?.value;
+    } catch {}
+    emitDiagnostic({
       phase: 'logical_organization_request',
       target,
-      matched_target_count: count(error?.driverFailure?.matchedTargetCount),
-      visible_target_count: count(error?.driverFailure?.visibleMatchCount),
+      ...safeMemberPointerDiagnostic(failure),
     });
     throw error;
   }
