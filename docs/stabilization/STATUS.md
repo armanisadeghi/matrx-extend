@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-27 09:14 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-27T04:12:41.747358+00:00. 207 features · 833 cases · 1422 controls · 298 linked defect records.
+Generated 2026-10-27 10:13 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-27T10:13:20.826710+00:00. 207 features · 833 cases · 1422 controls · 298 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1340** — Pass: 91 · Partial: 97 · Fail: 1 · Unverified: 1140 · N/A: 11.
-Unverified splits into **208 explicitly marked unverified** and **932 with no result record**.
+Applicable case-by-role slots: **1340** — Pass: 94 · Partial: 97 · Fail: 1 · Unverified: 1137 · N/A: 11.
+Unverified splits into **205 explicitly marked unverified** and **932 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -19,7 +19,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 8, partial 3, fail 0, unverified 23, n/a 0 | 11 |
 | [Release infrastructure](#release-infrastructure) | 1 | 10 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 28, partial 0, fail 0, unverified 13, n/a 0 | 3 |
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
-| [Navigation / shell](#navigation--shell) | 1 | 4 pass · 4 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 12 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 4, partial 7, fail 0, unverified 24, n/a 0 | 0 |
+| [Navigation / shell](#navigation--shell) | 1 | 4 pass · 4 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 7, fail 0, unverified 21, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 5 pass · 4 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 12 pass · 8 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | pass 19, partial 15, fail 0, unverified 68, n/a 1 | 10 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
@@ -338,13 +338,13 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1001-T17 Explicit persistent grant and temporary-access preservation | Partial | Unverified | Partial | EXT-F-1001-C07 |
 | EXT-F-1001-T18 Explicit reload recovers withheld page action | Partial | Unverified | Partial | EXT-F-1001-C08 |
 | EXT-F-1001-T19 guest: Profile menu entry is hidden | Pass | N/A | N/A | EXT-F-1001-C09 |
-| EXT-F-1001-T20 member: Profile menu entry opens Profile | N/A | Unverified | N/A | EXT-F-1001-C09 |
+| EXT-F-1001-T20 member: Profile menu entry opens Profile | N/A | Pass | N/A | EXT-F-1001-C09 |
 | EXT-F-1001-T21 admin: Profile menu entry opens Profile | N/A | N/A | Unverified | EXT-F-1001-C09 |
 | EXT-F-1001-T22 guest: Preferences menu entry opens Settings | Pass | N/A | N/A | EXT-F-1001-C10 |
-| EXT-F-1001-T23 member: Preferences menu entry opens Settings | N/A | Unverified | N/A | EXT-F-1001-C10 |
+| EXT-F-1001-T23 member: Preferences menu entry opens Settings | N/A | Pass | N/A | EXT-F-1001-C10 |
 | EXT-F-1001-T24 admin: Preferences menu entry opens Settings | N/A | N/A | Unverified | EXT-F-1001-C10 |
 | EXT-F-1001-T25 guest: Sign out menu action | Pass | N/A | N/A | EXT-F-1001-C11 |
-| EXT-F-1001-T26 member: Sign out menu action | N/A | Unverified | N/A | EXT-F-1001-C11 |
+| EXT-F-1001-T26 member: Sign out menu action | N/A | Pass | N/A | EXT-F-1001-C11 |
 | EXT-F-1001-T27 admin: Sign out menu action | N/A | N/A | Unverified | EXT-F-1001-C11 |
 | EXT-F-1001-T28 Recover navigation after popup Capture claim failure | N/A | Unverified | Unverified | EXT-F-1001-C12 |
 
@@ -370,16 +370,16 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: siteaccess-prepare-pathchecked-sol-20261002-01, docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json
 - EXT-F-1001-T19 · guest: Pass. Native guest avatar menu rendered no Profile entry while Preferences and Sign out were present; selected tab and guest identity stayed unchanged on the exact driver's pass path. Frozen unpublished development v0.2.502 only.
   Evidence / build / date recorded: 38167323328, docs/stabilization/reports/settings-account-popover-guest-run38167323328.json
-- EXT-F-1001-T20 · member: Unverified.
-  Evidence / build / date recorded: 40229297028, ['docs/stabilization/reports/settings-a-75-resource-invalid-20261025.json', 'docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json']
+- EXT-F-1001-T20 · member: Pass.
+  Evidence / build / date recorded: 40484355701, ['docs/stabilization/reports/sixea-member-20261027.json', 'docs/stabilization/reports/sixea-evidence-peer-20261027.json']
 - EXT-F-1001-T22 · guest: Pass. Trusted native pointer chose Preferences; the menu closed, Settings tab and pane became active, and guest identity remained unchanged on frozen unpublished development v0.2.502.
   Evidence / build / date recorded: 38167323328, docs/stabilization/reports/settings-account-popover-guest-run38167323328.json
-- EXT-F-1001-T23 · member: Unverified.
-  Evidence / build / date recorded: 40229297028, ['docs/stabilization/reports/settings-a-75-resource-invalid-20261025.json', 'docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json']
+- EXT-F-1001-T23 · member: Pass.
+  Evidence / build / date recorded: 40484355701, ['docs/stabilization/reports/sixea-member-20261027.json', 'docs/stabilization/reports/sixea-evidence-peer-20261027.json']
 - EXT-F-1001-T25 · guest: Pass. Trusted native pointer chose Sign out; the menu closed, guest session and rendered Guest header persisted through reopening and full panel document reload on frozen unpublished development v0.2.502.
   Evidence / build / date recorded: 38167323328, docs/stabilization/reports/settings-account-popover-guest-run38167323328.json
-- EXT-F-1001-T26 · member: Unverified.
-  Evidence / build / date recorded: 40229297028, ['docs/stabilization/reports/settings-a-75-resource-invalid-20261025.json', 'docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json']
+- EXT-F-1001-T26 · member: Pass.
+  Evidence / build / date recorded: 40484355701, ['docs/stabilization/reports/sixea-member-20261027.json', 'docs/stabilization/reports/sixea-evidence-peer-20261027.json']
 
 
 ## Popup / options / mic permission

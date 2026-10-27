@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-27T10:14:14.044894+00:00",
+  "A_verdict": "PASS_EXCEPT_AMBIGUOUS_DAILY_MAIL_SENTENCE",
+  "B_verdict": "PASS_WITH_TWO_RECORD_WORDING_CORRECTIONS",
+  "semantic_inventory_delta": "Only T20/T23/T26 member results and preserved priorhistory plus updated_at; no guest/fullT08 case change. 3additionalcasepasses; zero fullfeature-rolepairs; D299in-fix/closurefalse.",
+  "source_checks": "AwaitedclosedMenu assertion and retainedIdentity verified in exact6ea git blob; not merely inferred from rawsummary.",
+  "record_corrections": [
+    {
+      "id": "R2",
+      "severity": "Important",
+      "text": "COORD daily paragraph says mail absence proves no pending status; replace with explicit absence does not establish whether pending."
+    },
+    {
+      "id": "R3",
+      "severity": "Minor",
+      "text": "COORD daily paragraph inventory unchanged now conflicts with3membercredit; describe daily release check adding no casecredit or remove."
+    }
+  ],
+  "scope": "No new UI/replay or source authorship; source diagnosis not independently retraced here. Existing diagnosis worker owns cause evidence.",
+  "schema": 1,
+  "reviewer": "/root/sixea_evidence_peer",
+  "status": "SEMANTIC_DELTA_PASS_WORDING_CORRECTIONS_OWNER_REPORTED_PENDING_OWNER_VERIFICATION",
+  "correction_state": "Owner reports R2/R3 now corrected and broad ASCII formatting being restored; reviewer did not independently reread that latest edit, owner finalverification remains.",
+  "reviewed_paths": [
+    "docs/stabilization/COORDINATOR.md",
+    "docs/stabilization/defects/EXT-D-0299.json",
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/CHECKLIST.md"
+  ],
+  "no_authorship": true,
+  "commits": []
+}

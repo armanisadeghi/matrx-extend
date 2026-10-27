@@ -9,7 +9,7 @@
   "severity": "S3",
   "priority": "P0",
   "state": "in-fix",
-  "owner": "root/settings_driver_repair_round2",
+  "owner": "root",
   "preconditions": [
     "Exact472 successful CI development artifact and normal guarded hosted Settings A/B routes."
   ],
@@ -19,11 +19,11 @@
     "Independent actual built-source diagnosis finds approved fixture UUID paired with fallback organization name, obsolete Tools navigation, and absent Settings restoration after failed Chat subcases."
   ],
   "expected": "Carry canonical approved organization name/id through strict role verification; reach actual device permission-mode controls through current owned composer surfaces; restore Settings between independent subcases and retain cleanup/original failure truthfully.",
-  "actual": "Original hosted drivers fail before meaningful target behavior. First repair draft additionally invents aria-controls absent from real Tools/Advanced rows and misses cleanup postconditions; green source guards do not certify that draft.",
-  "cause": "Acceptance composition and fixtures drifted from canonical fixture identity/current shared UI contract; failure recovery lacks an independently forced Settings state.",
+  "actual": "Exact6ea original member T20/T23/T26 now pass normal native verification. Guest6ea has11rawpass/1fail/7unverified: T10 reaches one Chat options sheet but reports zero mode controls; surrounding wrong-pane cascade does not recur. Original screenshots precede failure, so product attribution remains unresolved.",
+  "cause": "Confirmed acceptance-driver drift includes mobile TabbedBottomSheet incorrectly required to contain desktop selected-tab navigation; sheet unit fixture invents that navigation. Whether this source defect caused the actual guestT10 failure requires bounded live discriminator.",
   "source_sha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
   "fix_sha": null,
-  "reproducibility": "Two exact-artifact hosted failures retained. First repair baseline1110tests1099pass11skip/valid0 is NOT accepted: fresh source review FIX_FIRST. No fresh native or Store-candidate acceptance.",
+  "reproducibility": "Original6ea member failure repaired and independently retested; current guestT10 failure reproduced on warm and full-reload consumer paths. No full guest acceptance/closure.",
   "evidence": [
     "docs/stabilization/reports/settings-member-a472-native-20261027.json",
     "docs/stabilization/reports/settings-guest-b472-native-20261027.json",
@@ -33,14 +33,18 @@
     "docs/stabilization/reports/settings-driver-repair-round2-20261027.json",
     "docs/stabilization/reports/d299-b5-final-reverify-20261027.json",
     "docs/stabilization/reports/d299-ci-lint-official-20261027.json",
-    "docs/stabilization/reports/d299-ci-lint-parent-receipt-20261027.json"
+    "docs/stabilization/reports/d299-ci-lint-parent-receipt-20261027.json",
+    "docs/stabilization/reports/sixea-member-20261027.json",
+    "docs/stabilization/reports/sixea-guest-20261027.json",
+    "docs/stabilization/reports/sixea-evidence-peer-20261027.json",
+    "docs/stabilization/reports/sixea-t10-diagnosis-20261027.json"
   ],
   "sibling_census": [
     "Other allowLadder callers settings-d87-native-acceptance and tab-groups-member: unresolved class scope.",
     "Shared settings-probe-cleanup preserveFailureDuringCleanup has primitive/frozen original-error masking; fresh fixer extends canonical primitive instead of adding a duplicate.",
     "Mobile and desktop current Tools mode sheets; no-op Escape retained-open state."
   ],
-  "next_action": "Require successful exact-source full CI/typecheck and eligible development artifact; normal guarded hosted original A member T20/T23/T26 and B guest Settings-controls retests on one frozen artifact, with real approved non-admin sign-in. Evaluate two remaining allowLadder sibling fixture contracts. Keep D299 in-fix/native unverified until gates pass; source-only guards do not close it. Owner pinned copy/current formal Store health remain independently unverified.",
+  "next_action": "Obtain properly admitted frozen Guest DEV6ea structural capture at T10 (sheet identity/header, raw visible Device switch and All chats context, checked state, viewport, screenshot). Then repair canonical harness for observed mobile semantics with RED/GREEN guard and fresh review; repeat original/adjacent guest cases on eligible frozen artifact. Preserve3member case passes,11rawguestpasses as bounded leads, fullT08 partial, D299 in-fix. No blind workflow retry or package fix without actual product evidence.",
   "transition_history": [
     {
       "at": "2026-10-27T07:59:58.931033+00:00",
@@ -56,7 +60,7 @@
     }
   ],
   "supporting_source": {
-    "status": "reviewed_guarded_source_ready_pending_full_CI_and_original_native_retest",
+    "status": "full_CI_passed_member_original_retest_passed_guest_T10_mobile_shape_unresolved",
     "source_hashes": {
       "scripts/hosted-guest-acceptance.mjs": "3ae95438af04bc644609536867f45c5a190f116531571551a16173b04d8d5f65",
       "tests/browser/settings-account-popover-native.mjs": "e17d7c2788b5c18ab3d886e6212a39b632a0b351d9ce19bd0fdbd53dd00f25f5",
@@ -102,7 +106,7 @@
       "kind": "mechanical_lint_correction",
       "review": "docs/stabilization/reports/d299-ci-lint-delta-review-20261027.json",
       "gate": "docs/stabilization/reports/d299-ci-lint-parent-receipt-20261027.json",
-      "current_full_CI_native": "pending; no result transferred from prior source"
+      "current_full_CI_native": "6ea fullCI40479439004/focused40479438946 SUCCESS; official devartifact12723041435. Member40484355701 normalverifierPASS; guest40483916612 T10fails with no wrongpane cascade."
     }
   },
   "repair_attempts": [
@@ -111,5 +115,18 @@
       "result": "source_review_pass_with_limits",
       "details": "Permanent RED4 then registered canonical RED13 failures; source-derived unit portals/canonical cleanup/context-closure/strict case serialization repaired. Final1141/1130pass/11skip valid0; B4/B5/G1 fresh reviews accept source only. All6round2 guards terminal; no source mutation/UI/auth/hosted action remains."
     }
-  ]
+  ],
+  "native_6ea": {
+    "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+    "member_run": 40484355701,
+    "guest_run": 40483916612,
+    "member_cases_pass": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
+    "guest_raw": {
+      "pass": 11,
+      "fail": 1,
+      "unverified": 7
+    },
+    "cleanup": "all jobs terminal; owned temporary member secret/authfiles removed; fresh original fixture archive restored/readback verified",
+    "closure": false
+  }
 }

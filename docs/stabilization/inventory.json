@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-27T04:12:41.747358+00:00",
+  "updated_at": "2026-10-27T10:13:20.826710+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -3777,22 +3777,22 @@
           ],
           "results": {
             "member": {
-              "status": "unverified",
-              "run_id": "40229297028",
-              "source_sha": "75abadd4867ba642b6b4ba45bcff2736d36ff805",
-              "development_ci_run_id": 40228213436,
-              "development_artifact_id": 12612417676,
-              "artifact_manifest_version": "0.2.623",
-              "runtime_extension_identity_observed": false,
-              "resource_decision": "invalid",
-              "resource_invalid": true,
-              "actual_UI_observations": 0,
-              "new_product_credit": false,
+              "status": "pass",
+              "run_id": "40484355701",
+              "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+              "development_ci_run_id": 40479439004,
+              "development_artifact_id": 12723041435,
+              "artifact_manifest_version": "0.2.629",
+              "runtime_extension_identity_observed": true,
+              "resource_decision": "valid",
+              "resource_invalid": false,
+              "actual_UI_observations": 1,
+              "new_product_credit": true,
               "evidence": [
-                "docs/stabilization/reports/settings-a-75-resource-invalid-20261025.json",
-                "docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json"
+                "docs/stabilization/reports/sixea-member-20261027.json",
+                "docs/stabilization/reports/sixea-evidence-peer-20261027.json"
               ],
-              "scope": "Target mode only, no authenticated/signed-out UI observed. Source/current-origin guard stopped B before UI; resource/CDP startup stopped A before UI/auth. Earlier accepted source-bound history is preserved; no product failure, current-main or Store acceptance."
+              "scope": "Frozen6ea hosted unpacked ordinary-member warm/navigation only. Original driver awaits closedMenu; Profile/Preferences retain exact identity and nonadmin role; Sign out clears identity and guest persists after Page.reload. Normal verifier validtrue/exit0. No Store, overall Settings, request-header or current-main extrapolation."
             }
           },
           "result_history": [
@@ -3808,6 +3808,29 @@
               },
               "superseded_at": "2026-10-25T20:38:33.747127+00:00",
               "reason": "Newest frozen75 regression attempt failed before UI; retain earlier source-bound observations without transferring them to newer builds."
+            },
+            {
+              "mode": "member",
+              "result": {
+                "status": "unverified",
+                "run_id": "40229297028",
+                "source_sha": "75abadd4867ba642b6b4ba45bcff2736d36ff805",
+                "development_ci_run_id": 40228213436,
+                "development_artifact_id": 12612417676,
+                "artifact_manifest_version": "0.2.623",
+                "runtime_extension_identity_observed": false,
+                "resource_decision": "invalid",
+                "resource_invalid": true,
+                "actual_UI_observations": 0,
+                "new_product_credit": false,
+                "evidence": [
+                  "docs/stabilization/reports/settings-a-75-resource-invalid-20261025.json",
+                  "docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json"
+                ],
+                "scope": "Target mode only, no authenticated/signed-out UI observed. Source/current-origin guard stopped B before UI; resource/CDP startup stopped A before UI/auth. Earlier accepted source-bound history is preserved; no product failure, current-main or Store acceptance."
+              },
+              "superseded_at": "2026-10-27T10:13:20.826710+00:00",
+              "reason": "Exact6ea original member native retest and independent evidence review passed after approved-organization driver repair."
             }
           ]
         },
@@ -3910,22 +3933,22 @@
           ],
           "results": {
             "member": {
-              "status": "unverified",
-              "run_id": "40229297028",
-              "source_sha": "75abadd4867ba642b6b4ba45bcff2736d36ff805",
-              "development_ci_run_id": 40228213436,
-              "development_artifact_id": 12612417676,
-              "artifact_manifest_version": "0.2.623",
-              "runtime_extension_identity_observed": false,
-              "resource_decision": "invalid",
-              "resource_invalid": true,
-              "actual_UI_observations": 0,
-              "new_product_credit": false,
+              "status": "pass",
+              "run_id": "40484355701",
+              "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+              "development_ci_run_id": 40479439004,
+              "development_artifact_id": 12723041435,
+              "artifact_manifest_version": "0.2.629",
+              "runtime_extension_identity_observed": true,
+              "resource_decision": "valid",
+              "resource_invalid": false,
+              "actual_UI_observations": 1,
+              "new_product_credit": true,
               "evidence": [
-                "docs/stabilization/reports/settings-a-75-resource-invalid-20261025.json",
-                "docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json"
+                "docs/stabilization/reports/sixea-member-20261027.json",
+                "docs/stabilization/reports/sixea-evidence-peer-20261027.json"
               ],
-              "scope": "Target mode only, no authenticated/signed-out UI observed. Source/current-origin guard stopped B before UI; resource/CDP startup stopped A before UI/auth. Earlier accepted source-bound history is preserved; no product failure, current-main or Store acceptance."
+              "scope": "Frozen6ea hosted unpacked ordinary-member warm/navigation only. Original driver awaits closedMenu; Profile/Preferences retain exact identity and nonadmin role; Sign out clears identity and guest persists after Page.reload. Normal verifier validtrue/exit0. No Store, overall Settings, request-header or current-main extrapolation."
             }
           },
           "result_history": [
@@ -3941,6 +3964,29 @@
               },
               "superseded_at": "2026-10-25T20:38:33.747127+00:00",
               "reason": "Newest frozen75 regression attempt failed before UI; retain earlier source-bound observations without transferring them to newer builds."
+            },
+            {
+              "mode": "member",
+              "result": {
+                "status": "unverified",
+                "run_id": "40229297028",
+                "source_sha": "75abadd4867ba642b6b4ba45bcff2736d36ff805",
+                "development_ci_run_id": 40228213436,
+                "development_artifact_id": 12612417676,
+                "artifact_manifest_version": "0.2.623",
+                "runtime_extension_identity_observed": false,
+                "resource_decision": "invalid",
+                "resource_invalid": true,
+                "actual_UI_observations": 0,
+                "new_product_credit": false,
+                "evidence": [
+                  "docs/stabilization/reports/settings-a-75-resource-invalid-20261025.json",
+                  "docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json"
+                ],
+                "scope": "Target mode only, no authenticated/signed-out UI observed. Source/current-origin guard stopped B before UI; resource/CDP startup stopped A before UI/auth. Earlier accepted source-bound history is preserved; no product failure, current-main or Store acceptance."
+              },
+              "superseded_at": "2026-10-27T10:13:20.826710+00:00",
+              "reason": "Exact6ea original member native retest and independent evidence review passed after approved-organization driver repair."
             }
           ]
         },
@@ -4043,22 +4089,22 @@
           ],
           "results": {
             "member": {
-              "status": "unverified",
-              "run_id": "40229297028",
-              "source_sha": "75abadd4867ba642b6b4ba45bcff2736d36ff805",
-              "development_ci_run_id": 40228213436,
-              "development_artifact_id": 12612417676,
-              "artifact_manifest_version": "0.2.623",
-              "runtime_extension_identity_observed": false,
-              "resource_decision": "invalid",
-              "resource_invalid": true,
-              "actual_UI_observations": 0,
-              "new_product_credit": false,
+              "status": "pass",
+              "run_id": "40484355701",
+              "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+              "development_ci_run_id": 40479439004,
+              "development_artifact_id": 12723041435,
+              "artifact_manifest_version": "0.2.629",
+              "runtime_extension_identity_observed": true,
+              "resource_decision": "valid",
+              "resource_invalid": false,
+              "actual_UI_observations": 1,
+              "new_product_credit": true,
               "evidence": [
-                "docs/stabilization/reports/settings-a-75-resource-invalid-20261025.json",
-                "docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json"
+                "docs/stabilization/reports/sixea-member-20261027.json",
+                "docs/stabilization/reports/sixea-evidence-peer-20261027.json"
               ],
-              "scope": "Target mode only, no authenticated/signed-out UI observed. Source/current-origin guard stopped B before UI; resource/CDP startup stopped A before UI/auth. Earlier accepted source-bound history is preserved; no product failure, current-main or Store acceptance."
+              "scope": "Frozen6ea hosted unpacked ordinary-member warm/navigation only. Original driver awaits closedMenu; Profile/Preferences retain exact identity and nonadmin role; Sign out clears identity and guest persists after Page.reload. Normal verifier validtrue/exit0. No Store, overall Settings, request-header or current-main extrapolation."
             }
           },
           "result_history": [
@@ -4074,6 +4120,29 @@
               },
               "superseded_at": "2026-10-25T20:38:33.747127+00:00",
               "reason": "Newest frozen75 regression attempt failed before UI; retain earlier source-bound observations without transferring them to newer builds."
+            },
+            {
+              "mode": "member",
+              "result": {
+                "status": "unverified",
+                "run_id": "40229297028",
+                "source_sha": "75abadd4867ba642b6b4ba45bcff2736d36ff805",
+                "development_ci_run_id": 40228213436,
+                "development_artifact_id": 12612417676,
+                "artifact_manifest_version": "0.2.623",
+                "runtime_extension_identity_observed": false,
+                "resource_decision": "invalid",
+                "resource_invalid": true,
+                "actual_UI_observations": 0,
+                "new_product_credit": false,
+                "evidence": [
+                  "docs/stabilization/reports/settings-a-75-resource-invalid-20261025.json",
+                  "docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json"
+                ],
+                "scope": "Target mode only, no authenticated/signed-out UI observed. Source/current-origin guard stopped B before UI; resource/CDP startup stopped A before UI/auth. Earlier accepted source-bound history is preserved; no product failure, current-main or Store acceptance."
+              },
+              "superseded_at": "2026-10-27T10:13:20.826710+00:00",
+              "reason": "Exact6ea original member native retest and independent evidence review passed after approved-organization driver repair."
             }
           ]
         },
