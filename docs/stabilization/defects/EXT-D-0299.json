@@ -9,7 +9,7 @@
   "severity": "S3",
   "priority": "P0",
   "state": "in-fix",
-  "owner": "root",
+  "owner": "root/d299_mobile_driver_fix",
   "preconditions": [
     "Exact472 successful CI development artifact and normal guarded hosted Settings A/B routes."
   ],
@@ -20,7 +20,7 @@
   ],
   "expected": "Carry canonical approved organization name/id through strict role verification; reach actual device permission-mode controls through current owned composer surfaces; restore Settings between independent subcases and retain cleanup/original failure truthfully.",
   "actual": "Exact6ea original member T20/T23/T26 now pass normal native verification. Guest6ea has11rawpass/1fail/7unverified: T10 reaches one Chat options sheet but reports zero mode controls; surrounding wrong-pane cascade does not recur. Original screenshots precede failure, so product attribution remains unresolved.",
-  "cause": "Confirmed acceptance-driver drift includes mobile TabbedBottomSheet incorrectly required to contain desktop selected-tab navigation; sheet unit fixture invents that navigation. Whether this source defect caused the actual guestT10 failure requires bounded live discriminator.",
+  "cause": "Live-corroborated mobile Tools sheet driver excludes present correct Device switch by requiring desktop selected-tab navigation. Actualb175 SDK397/design399 mobileheader/content has no such tabs; unitfixture inventedthem. Earlier approvedorganization/cleanup supportingrepairs retain bounded6ea retest evidence.",
   "source_sha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
   "fix_sha": null,
   "reproducibility": "Original6ea member failure repaired and independently retested; current guestT10 failure reproduced on warm and full-reload consumer paths. No full guest acceptance/closure.",
@@ -37,14 +37,17 @@
     "docs/stabilization/reports/sixea-member-20261027.json",
     "docs/stabilization/reports/sixea-guest-20261027.json",
     "docs/stabilization/reports/sixea-evidence-peer-20261027.json",
-    "docs/stabilization/reports/sixea-t10-diagnosis-20261027.json"
+    "docs/stabilization/reports/sixea-t10-diagnosis-20261027.json",
+    "docs/stabilization/reports/b175-native-20261027.json",
+    "docs/stabilization/reports/b175-native-peer-20261027.json",
+    "docs/stabilization/reports/b175-native-publication-manifest-20261027.json"
   ],
   "sibling_census": [
     "Other allowLadder callers settings-d87-native-acceptance and tab-groups-member: unresolved class scope.",
     "Shared settings-probe-cleanup preserveFailureDuringCleanup has primitive/frozen original-error masking; fresh fixer extends canonical primitive instead of adding a duplicate.",
     "Mobile and desktop current Tools mode sheets; no-op Escape retained-open state."
   ],
-  "next_action": "Obtain properly admitted frozen Guest DEV6ea structural capture at T10 (sheet identity/header, raw visible Device switch and All chats context, checked state, viewport, screenshot). Then repair canonical harness for observed mobile semantics with RED/GREEN guard and fresh review; repeat original/adjacent guest cases on eligible frozen artifact. Preserve3member case passes,11rawguestpasses as bounded leads, fullT08 partial, D299 in-fix. No blind workflow retry or package fix without actual product evidence.",
+  "next_action": "Finish canonical mobile context resolver and accurate source-derivedfixture with meaningfulpermanentRED→GREEN, gutchecks and fresh independentreview. Then successful exact-new-mainCIartifact, ownerreloadcompletion and original/adjacent guest Settings native retest undernormaladmission. No fullT10 or product permission-mode failure inferred from discriminator;3memberpasses remain frozen6ea. Two otherallowLaddercaller fixturecontracts remain unresolved.",
   "transition_history": [
     {
       "at": "2026-10-27T07:59:58.931033+00:00",
@@ -128,5 +131,20 @@
     },
     "cleanup": "all jobs terminal; owned temporary member secret/authfiles removed; fresh original fixture archive restored/readback verified",
     "closure": false
+  },
+  "native_b175_discriminator": {
+    "source_sha": "b1751d77a1f99b2fb1ef56329cc35a062c3b522f",
+    "development_ci_run_id": 40493853885,
+    "development_artifact_id": 12729758260,
+    "tree_sha256": "5c12ce8e92cf073161c099b1e27e59de7c188e3ac1ca08243314d26e3a975f4c",
+    "observations": "Actual signedoutSettingsActwithoutasking; actualmobileChatoptionsTools DeviceAskbeforeactingAllchatsswitchOFF; nativeAX+PNG andunchangedSDK397/design399 selectedmobilebranch corroborate desktop-tab resolver mismatch.",
+    "product_credit": false,
+    "resource": "valid0/145reads/no risks",
+    "limits": [
+      "No fullT10warm/cold originalcasepass",
+      "Guestlabelverified; actualprofilepath notvisited",
+      "No rawDOM/mediaqueryprobe",
+      "Ownerreloadcompletionunverified"
+    ]
   }
 }
