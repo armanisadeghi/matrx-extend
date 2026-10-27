@@ -32943,11 +32943,12 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "40241481628",
-              "source_sha": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
-              "development_ci_run_id": 40240416949,
-              "development_artifact_id": 12616888627,
-              "artifact_manifest_version": "0.2.623",
+              "run_id": "40520285304",
+              "workflow_source_sha": "dd5e56b344aaf0a12fdc370b897944cb2ecc98c7",
+              "source_sha": "ebee382ab03092bd3177e0475e2ac16d25e55c25",
+              "development_ci_run_id": 40510348725,
+              "development_artifact_id": 12736992428,
+              "artifact_manifest_version": "0.2.629",
               "runtime_extension_identity_observed": true,
               "resource_decision": "valid",
               "resource_invalid": false,
@@ -32959,11 +32960,11 @@
               ],
               "full_case_pass": false,
               "evidence": [
-                "docs/stabilization/reports/d295-native-b-20261025.json",
-                "docs/stabilization/reports/d295-native-b-40241481628-certificate.json",
-                "docs/stabilization/reports/d295-owner-final-evidence-peer-20261025.json"
+                "docs/stabilization/reports/seo-notice-b-dd5e-20261027.json",
+                "docs/stabilization/reports/seo-dd5e-native-certificate-20261027.json",
+                "docs/stabilization/reports/seo-dd5e-native-peer-20261027.json"
               ],
-              "scope": "One fresh independent bounded guest native360px stacked77/199-character notice target: nine clear Re-audit hitpoints, trusted running/settled/currenttitle, independent Dismiss and cleanup2/2. Normal frozen-source/historical certificate accepted with finalHEADbaa/origin4f52; no current-main eligibility. Screenshots startup-only, assertions/trace supply target evidence. Full warm/reload/stale-advice/failure/member/admin/Store acceptance remains unverified; supporting D295 closed, no new SEO product defect fixed."
+              "scope": "Frozen dd5e workflow/app eBee; native360 stacked 199-character notices leave all9 Re-audit points clear, trusted running/settled/current title and independent dismiss2\u21921\u21920; cleanup2/2. All3resources valid0/no pending. Fresh independent evidence peer accepts original historical certificate; new replay refused after Settings executable edits. Startup images do not show target. Exact executed browser/profile/backend unverified. No full T02/D199/current-main/member/admin/Store acceptance."
             }
           },
           "result_history": [
@@ -33709,6 +33710,33 @@
                   "docs/stabilization/reports/hosted-failed-evidence-peer-20261025.json"
                 ],
                 "scope": "Target mode only, no authenticated/signed-out UI observed. Source/current-origin guard stopped B before UI; resource/CDP startup stopped A before UI/auth. Earlier accepted source-bound history is preserved; no product failure, current-main or Store acceptance."
+              }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "40241481628",
+                "source_sha": "baa68adac35b09a59b1c9e6359cf6d2ea925853f",
+                "development_ci_run_id": 40240416949,
+                "development_artifact_id": 12616888627,
+                "artifact_manifest_version": "0.2.623",
+                "runtime_extension_identity_observed": true,
+                "resource_decision": "valid",
+                "resource_invalid": false,
+                "observed_subtargets": [
+                  {
+                    "id": "multiple_and_long_notice_clearance_at_native_360px",
+                    "status": "pass"
+                  }
+                ],
+                "full_case_pass": false,
+                "evidence": [
+                  "docs/stabilization/reports/d295-native-b-20261025.json",
+                  "docs/stabilization/reports/d295-native-b-40241481628-certificate.json",
+                  "docs/stabilization/reports/d295-owner-final-evidence-peer-20261025.json"
+                ],
+                "scope": "One fresh independent bounded guest native360px stacked77/199-character notice target: nine clear Re-audit hitpoints, trusted running/settled/currenttitle, independent Dismiss and cleanup2/2. Normal frozen-source/historical certificate accepted with finalHEADbaa/origin4f52; no current-main eligibility. Screenshots startup-only, assertions/trace supply target evidence. Full warm/reload/stale-advice/failure/member/admin/Store acceptance remains unverified; supporting D295 closed, no new SEO product defect fixed."
               }
             }
           ],

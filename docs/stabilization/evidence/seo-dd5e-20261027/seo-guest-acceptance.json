@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "partial",
+  "scope": "two controlled guest SEO notices and trusted Re-audit at native 360px",
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+      "status": "pass",
+      "evidence": {
+        "viewport_width": 360,
+        "viewport_source": "native",
+        "notice_count": 2,
+        "long_message_length": 199,
+        "distinct_notice_titles": 2,
+        "visible_dismiss_counts": [
+          1,
+          1
+        ],
+        "target_hit_points": 9,
+        "notice_hit_points": 0,
+        "current_title_matched": true,
+        "independently_dismissed": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "cleared_count": 0
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "case": "T01",
+      "part": "one audit per URL and slow-old-result race"
+    },
+    {
+      "case": "T02",
+      "part": "stale advice replacement and failure report after re-audit"
+    },
+    {
+      "case": "T03",
+      "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+    },
+    {
+      "case": "T04,T05,T08",
+      "part": "database save, saved-row history, and diff flows"
+    },
+    {
+      "case": "T06",
+      "part": "guest/member/admin history failure and retry modes"
+    },
+    {
+      "case": "T07",
+      "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+    },
+    {
+      "case": "T09",
+      "part": "detail controls beyond the bounded next batch; optional metadata-fixture phase is excluded by controlled scope"
+    },
+    {
+      "case": "T10-T13",
+      "part": "recommendations and Chat staging"
+    },
+    {
+      "case": "T14",
+      "part": "social snippet behavior beyond the two controlled public page states"
+    },
+    {
+      "case": "all",
+      "part": "member and admin modes"
+    }
+  ],
+  "last_safe_stage": "stacked_notice_trusted_reaudit_dispatched",
+  "last_safe_observable": {
+    "trustedInput": true
+  },
+  "current_operation": "build_recheck",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.629",
+      "treeSha256": "76fb21bac80481678627e5ec06cce9b4fec5c084204bf3d92d498162d6517336"
+    },
+    "after": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.629",
+      "treeSha256": "76fb21bac80481678627e5ec06cce9b4fec5c084204bf3d92d498162d6517336"
+    }
+  },
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "ebee382ab03092bd3177e0475e2ac16d25e55c25",
+    "runId": 40510348725,
+    "runAttempt": 1,
+    "artifactId": 12736992428,
+    "githubArtifactDigest": "sha256:fc0a138e049568844eeb80875a4c9a8b102c2b624ae73638f2f3b962b8fcd37e",
+    "version": "0.2.629",
+    "treeSha256": "76fb21bac80481678627e5ec06cce9b4fec5c084204bf3d92d498162d6517336",
+    "source": {
+      "originMain": "b55538450a658a8ab1486c2393b8732ee516546f",
+      "localHead": "dd5e56b344aaf0a12fdc370b897944cb2ecc98c7",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "case_selection": {
+    "scope": "notice-stacked",
+    "selected_cases": [
+      "T02"
+    ],
+    "selected_subtargets": [
+      "multiple_and_long_notice_clearance_at_native_360px"
+    ],
+    "excluded_cases": [
+      "all other SEO targets; no full T02 or D199 closure"
+    ]
+  },
+  "resource_diagnostic_enabled": false,
+  "operation_start_sample": {
+    "at": "2026-10-27T14:27:37.051Z",
+    "user": 2419164,
+    "system": 1029340
+  },
+  "boundary_sample": {
+    "at": "2026-10-27T14:27:35.938Z",
+    "user": 2285782,
+    "system": 761418
+  },
+  "reaudit_transition_diagnostic": {
+    "observer_available": true,
+    "sample_count": 9,
+    "dropped_samples": 0,
+    "samples": [
+      {
+        "stage": "before_click",
+        "elapsed_ms": 1,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "click_event",
+        "elapsed_ms": 233,
+        "click_trusted": true,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "dom_transition",
+        "elapsed_ms": 238,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": true,
+        "auditSpinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "after_release",
+        "elapsed_ms": 257,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": true,
+        "auditSpinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "running_wait",
+        "elapsed_ms": 268,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": true,
+        "auditSpinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "settle_wait",
+        "elapsed_ms": 279,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": true,
+        "auditSpinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "dom_transition",
+        "elapsed_ms": 293,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "settle_wait",
+        "elapsed_ms": 401,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "finished",
+        "elapsed_ms": 422,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      }
+    ]
+  },
+  "click_phase": "release_returned",
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "stacked_notice_fixture_diagnostic": {
+    "failure_code": null,
+    "stage": "independent_dismiss",
+    "cleanup": {
+      "status": "cleared",
+      "attempted_count": 2,
+      "cleared_count": 2,
+      "failed_count": 0,
+      "failure_code": null
+    }
+  }
+}
