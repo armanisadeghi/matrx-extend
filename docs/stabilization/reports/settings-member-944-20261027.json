@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "kind": "sanitized typed actor projection; private identity/organization/link/auth receipts excluded",
+  "actor_original_sha256": "3f73ecaccb7fe5f47421cb6054c07a8c5a96bef25fcf8e0627014906f9b43f6e",
+  "run_id": 40570803762,
+  "source_sha": "944d1f612f52ebe89ed57cec8733bfdc449a69c1",
+  "status": "TERMINAL_SUCCESS_BOUNDED_THREE_CASES_CLEANUP_VERIFIED",
+  "workflow_conclusion": "success",
+  "development": { "run_id": 40567597724, "artifact_id": 12765221050, "version": "0.2.630" },
+  "cases": {
+    "T20": "Profile present, popover closure awaited, active Profile with Back/Save, exact identity/nonadmin retained",
+    "T23": "Preferences present, popover closure awaited, one active Settings pane, exact identity/nonadmin retained",
+    "T26": "Sign out present, closure awaited, token/profile cleared, guest rendered and Profile absent; guest persists after panel Page.reload only"
+  },
+  "verified_auth_preconditions": {
+    "ordinary_member_nonadmin": true,
+    "expected_approved_organization": true,
+    "identity_and_org_values_omitted": true
+  },
+  "cleanup": {
+    "at": "2026-10-27T19:45:39.050185+00:00",
+    "owned_secret_absent": true,
+    "owned_auth_files_absent": true,
+    "fixture_restore_readback_exact": true
+  },
+  "normal_verifier": "Original validtrue certificate publicly mapped; fresh independent historical replay accepted. Not current-source/release eligibility.",
+  "limits": "Frozen944 only; native build.sourceSha=null bridged by verified official workflow/import/tree. No current-main/dirty candidate, Store, full Settings/D299, D87 or tab-groups closure; no full extension Reload/cross-device logout, Profile save, or Settings persistence credit. Screenshots are startup only.",
+  "peer": "docs/stabilization/reports/settings-member-944-peer-20261027.json",
+  "map": [
+    {
+      "original_private_path": ".output/stabilization-checkpoints/wake1935/settings-member-944-private/native/matrx-extend/matrx-extend/test-results/settings-account-popover-member.json",
+      "original_sha256": "5351f140caeafd871f5ac4e6624685cd661ec1fbe211fcac059874b21d695fa5",
+      "original_bytes": 3346,
+      "public_path": "docs/stabilization/evidence/settings944-20261027/memberA/settings-account-popover-member.json",
+      "public_sha256": "fb111bf40bdcbfa05df89a26675951cf10d7383200bcf5077aadbb4ee42487ef",
+      "public_bytes": 3042,
+      "transport": "declared formatted projection; original bytes in lossless payload",
+      "raw_payload_path": "docs/stabilization/evidence/settings944-20261027/memberA/settings-account-popover-member.json.raw.json",
+      "raw_payload_sha256": "9b2a7b02305d6c1efdfd9bdd6699089057d27f97069f575f32abfe6fedb019de"
+    },
+    {
+      "original_private_path": ".output/stabilization-checkpoints/wake1935/settings-member-944-private/native/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40570803762-1.jsonl",
+      "original_sha256": "1acf30abd5d716290cd616de2f88e2dbf799057f38558d9c5504cee9a0d74b09",
+      "original_bytes": 985,
+      "public_path": "docs/stabilization/evidence/settings944-20261027/memberA/hosted-package-40570803762-1.jsonl",
+      "public_sha256": "1acf30abd5d716290cd616de2f88e2dbf799057f38558d9c5504cee9a0d74b09",
+      "public_bytes": 985,
+      "transport": "byte-exact"
+    },
+    {
+      "original_private_path": ".output/stabilization-checkpoints/wake1935/settings-member-944-private/native/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40570803762-1.jsonl",
+      "original_sha256": "b3d5a9a8847a562d523592a36b6795a56294752bcdc55bbc5ce3e965ae75c2ef",
+      "original_bytes": 988,
+      "public_path": "docs/stabilization/evidence/settings944-20261027/memberA/hosted-browser-40570803762-1.jsonl",
+      "public_sha256": "b3d5a9a8847a562d523592a36b6795a56294752bcdc55bbc5ce3e965ae75c2ef",
+      "public_bytes": 988,
+      "transport": "byte-exact"
+    },
+    {
+      "original_private_path": ".output/stabilization-checkpoints/wake1935/settings-member-944-private/native/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40570803762-1.jsonl",
+      "original_sha256": "90819af7d045273b720451302946548da222854b7d9ee790cb3e6b80c4325572",
+      "original_bytes": 2239,
+      "public_path": "docs/stabilization/evidence/settings944-20261027/memberA/hosted-guest-40570803762-1.jsonl",
+      "public_sha256": "90819af7d045273b720451302946548da222854b7d9ee790cb3e6b80c4325572",
+      "public_bytes": 2239,
+      "transport": "byte-exact"
+    },
+    {
+      "original_private_path": ".output/stabilization-checkpoints/wake1935/settings-member-944-private/verifier.json",
+      "original_sha256": "2b4df2477e9240706968bb7d92376493223ed8729596c3dd9ad1e80579f26132",
+      "original_bytes": 1103,
+      "public_path": "docs/stabilization/evidence/settings944-20261027/memberA/verifier.json",
+      "public_sha256": "5a9c914ae10db5e4166eae43295e631678c5b77c66801ce32dd7fd0fc4f3397d",
+      "public_bytes": 1290,
+      "transport": "declared formatted projection; original bytes in lossless payload",
+      "raw_payload_path": "docs/stabilization/evidence/settings944-20261027/memberA/verifier.json.raw.json",
+      "raw_payload_sha256": "caebd339c27272c5d40a59d3b6e44e9cbfdaa80fd9adea34428c1f9530ba9c36"
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T19:47:16.184700+00:00",
+  "task": "settings-guest-capture-944",
+  "status": "DONE_WITH_CONCERNS",
+  "run_id": 40570683530,
+  "run_attempt": 1,
+  "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40570683530",
+  "lane": "B",
+  "workflow_conclusion": "success",
+  "source_sha": "944d1f612f52ebe89ed57cec8733bfdc449a69c1",
+  "development_run_id": 40567597724,
+  "development_artifact_id": 12765221050,
+  "development_digest": "a6bf8e58abcdb91091c455157a02e0b7d2a45c0dd46d64a54da947700217934d",
+  "result_artifact_id": 12765737067,
+  "official_digest": "182bf92f8efda708205be3da644930683646a661cc98dfcaef2bce3d2312c306",
+  "download_digest_matches": true,
+  "native_status": "pass",
+  "case_id": "EXT-F-1003-T40",
+  "criteria": [
+    { "name": "ON emits one real capture with the page marker", "status": "pass" },
+    { "name": "OFF emits no capture after the loaded page settles", "status": "pass" },
+    { "name": "initial: original preference matches", "status": "pass" },
+    { "name": "On changes visible and stored preference", "status": "pass" },
+    { "name": "On extension worker and panel were replaced", "status": "pass" },
+    { "name": "On survives full extension reload", "status": "pass" },
+    { "name": "ON survives full extension reload and emits one real capture", "status": "pass" },
+    { "name": "original preference restored before extension reload", "status": "pass" },
+    { "name": "Off extension worker and panel were replaced", "status": "pass" },
+    { "name": "Off survives full extension reload", "status": "pass" },
+    { "name": "OFF survives full extension reload with zero capture calls", "status": "pass" },
+    { "name": "original preference restored after extension reload", "status": "pass" },
+    { "name": "Original OFF baseline restored in UI and chrome.storage", "status": "pass" }
+  ],
+  "build": {
+    "version": "0.2.630",
+    "treeSha256": "845bdf4e6ced8850e2dbafa1cfeacd1bdbcdf7725de7f1f844ef6746d911092e"
+  },
+  "journals": {
+    "hosted-browser-40570683530-1.jsonl": {
+      "sha256": "9c7031c0e0bc98028255394195837a01f1e7cdb1375fca570087c9846bbd91a4",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T19:41:33.623Z",
+        "runId": "hosted-browser-40570683530-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "cpu_pending": [],
+      "cpu_recovered": []
+    },
+    "hosted-guest-40570683530-1.jsonl": {
+      "sha256": "d7aee1721ca89c31d01b4c5ef7bc680dbee76f77c099772b4e0c14eca8b0ece1",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T19:46:10.148Z",
+        "runId": "hosted-guest-40570683530-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "cpu_pending": [
+        "2026-10-27T19:44:03.815Z",
+        "2026-10-27T19:44:19.926Z",
+        "2026-10-27T19:44:36.005Z",
+        "2026-10-27T19:45:08.378Z",
+        "2026-10-27T19:45:24.520Z",
+        "2026-10-27T19:45:40.627Z"
+      ],
+      "cpu_recovered": ["2026-10-27T19:44:52.164Z", "2026-10-27T19:45:56.737Z"]
+    },
+    "hosted-package-40570683530-1.jsonl": {
+      "sha256": "4036b328d91e70cef9e825ca85887e88634d409cf0552efa986fbf2382c6860e",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T19:39:38.573Z",
+        "runId": "hosted-package-40570683530-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "cpu_pending": [],
+      "cpu_recovered": []
+    }
+  },
+  "files_sha256": {
+    "workflow.log": "e47e4fb387169882542468beba6f71c2cc6e669cffed259f346d6f91504a5af5",
+    "official.zip": "182bf92f8efda708205be3da644930683646a661cc98dfcaef2bce3d2312c306",
+    "raw/matrx-extend/matrx-extend/test-results/settings-auto-scrape-capture-native.json": "8994c4d515293650419501c7642e904d5c7991932beb119edf85fb60b118e21d",
+    "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-dmTw6z/native-side-panel.png": "9b19214a70f24bfffdcb6caf6c7d435ade7779821709499c20c2f747535b1aa5",
+    "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-dmTw6z/normal-target-after-open.png": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c",
+    "raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40570683530-1.jsonl": "9c7031c0e0bc98028255394195837a01f1e7cdb1375fca570087c9846bbd91a4",
+    "raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40570683530-1.jsonl": "d7aee1721ca89c31d01b4c5ef7bc680dbee76f77c099772b4e0c14eca8b0ece1",
+    "raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40570683530-1.jsonl": "4036b328d91e70cef9e825ca85887e88634d409cf0552efa986fbf2382c6860e"
+  },
+  "verdict": "Bounded guest warm/full-extension-reload ON real-marker capture and OFF zero-capture observations pass; full inventory case not promoted.",
+  "normal_verifier": "UNSUPPORTED: no verify-settings-guest CLI mode; no substitute verifier invoked",
+  "image_review": "Both originals inspected: initial Guest chat panel and initial demo page only; neither shows Settings control or unique-marker target. Behavioral evidence is original driver assertions.",
+  "limits": [
+    "Independent retest not performed; parent review required",
+    "Two CPU pending episodes recovered before final valid0; no zero-pending or original settings-controls CPU recovery claim",
+    "Native report omits source/run/artifact fields although workflow exact import log binds source and tree",
+    "Actual Chrome version, extension id, absolute loaded profile and backend SHA unreported",
+    "Remote profile deletion not independently observed; source finally closes Chrome/client/server/removes owned root; successful child and workflow terminal",
+    "No member/admin/Store/globalSettings/D299 closure credit"
+  ],
+  "cleanup": {
+    "owned_workflow": "completed success",
+    "local_process_handles": [],
+    "all_owned_local_processes_closed": true,
+    "remote_child_exit": 0,
+    "remote_host_terminal": true,
+    "credentials_or_ai_used": false,
+    "baseline": "Original OFF/absent stored field restored per native assertion"
+  },
+  "changes": "Scratch evidence/report only; unrelated concurrent dirty paths preserved",
+  "next_action": "Fresh independent evidence review; no retry or full-case promotion",
+  "parent_publication": {
+    "actor_original_sha256": "2124da2e32e78234e034d7d13302400bd4526373f8300aad121401859cb2eadc",
+    "corrections": "Only bounded native warm/full-management-reload ONmarker/OFFzero observations accepted. FullT40partial: explicit Settings signed-out precondition not asserted; runtime browser/extension/profile/backend details unverified. Thirteen assertions are not thirteen case passes. Two CPU_PENDING episodes recovered; not all-intervals healthy. Target marker not shown in startup-only PNGs. No normal verifier supported.",
+    "peer": "docs/stabilization/reports/settings-guest-capture-944-peer-20261027.json",
+    "map": [
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1935/settings-capture-40570683530/raw/matrx-extend/matrx-extend/test-results/settings-auto-scrape-capture-native.json",
+        "original_sha256": "8994c4d515293650419501c7642e904d5c7991932beb119edf85fb60b118e21d",
+        "original_bytes": 9633,
+        "public_path": "docs/stabilization/evidence/settings944-20261027/captureB/settings-auto-scrape-capture-native.json",
+        "public_sha256": "bd9b3fe461455b931efd02ddde27fe3c635d4cffb38f6071cc985aa3bdeaa400",
+        "public_bytes": 9611,
+        "transport": "declared formatted projection; original bytes in lossless payload",
+        "raw_payload_path": "docs/stabilization/evidence/settings944-20261027/captureB/settings-auto-scrape-capture-native.json.raw.json",
+        "raw_payload_sha256": "7038a231d19d5903469dcdabaec2a08b6e3905f6537d4322cdf75ff877d00949"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1935/settings-capture-40570683530/raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-dmTw6z/native-side-panel.png",
+        "original_sha256": "9b19214a70f24bfffdcb6caf6c7d435ade7779821709499c20c2f747535b1aa5",
+        "original_bytes": 19709,
+        "public_path": "docs/stabilization/evidence/settings944-20261027/captureB/native-side-panel.png",
+        "public_sha256": "9b19214a70f24bfffdcb6caf6c7d435ade7779821709499c20c2f747535b1aa5",
+        "public_bytes": 19709,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1935/settings-capture-40570683530/raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-dmTw6z/normal-target-after-open.png",
+        "original_sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c",
+        "original_bytes": 27046,
+        "public_path": "docs/stabilization/evidence/settings944-20261027/captureB/normal-target-after-open.png",
+        "public_sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c",
+        "public_bytes": 27046,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1935/settings-capture-40570683530/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40570683530-1.jsonl",
+        "original_sha256": "4036b328d91e70cef9e825ca85887e88634d409cf0552efa986fbf2382c6860e",
+        "original_bytes": 993,
+        "public_path": "docs/stabilization/evidence/settings944-20261027/captureB/hosted-package-40570683530-1.jsonl",
+        "public_sha256": "4036b328d91e70cef9e825ca85887e88634d409cf0552efa986fbf2382c6860e",
+        "public_bytes": 993,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1935/settings-capture-40570683530/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40570683530-1.jsonl",
+        "original_sha256": "9c7031c0e0bc98028255394195837a01f1e7cdb1375fca570087c9846bbd91a4",
+        "original_bytes": 987,
+        "public_path": "docs/stabilization/evidence/settings944-20261027/captureB/hosted-browser-40570683530-1.jsonl",
+        "public_sha256": "9c7031c0e0bc98028255394195837a01f1e7cdb1375fca570087c9846bbd91a4",
+        "public_bytes": 987,
+        "transport": "byte-exact"
+      },
+      {
+        "original_private_path": ".output/stabilization-checkpoints/wake1935/settings-capture-40570683530/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40570683530-1.jsonl",
+        "original_sha256": "d7aee1721ca89c31d01b4c5ef7bc680dbee76f77c099772b4e0c14eca8b0ece1",
+        "original_bytes": 9509,
+        "public_path": "docs/stabilization/evidence/settings944-20261027/captureB/hosted-guest-40570683530-1.jsonl",
+        "public_sha256": "d7aee1721ca89c31d01b4c5ef7bc680dbee76f77c099772b4e0c14eca8b0ece1",
+        "public_bytes": 9509,
+        "transport": "byte-exact"
+      }
+    ]
+  }
+}

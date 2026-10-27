@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-27T19:49:18.755Z",
+  "A_disk": "PASS frozen on-disk imported tree and stable development tree both version 0.2.630, hash 845bdf4e6ced8850e2dbafa1cfeacd1bdbcdf7725de7f1f844ef6746d911092e; receipt/provenance byte hashes match import-status",
+  "B_provenance": "PASS bounded historical metadata: official GitHub CI run 40567597724 attempt 1 completed success, push main source 944d1f612f52ebe89ed57cec8733bfdc449a69c1; artifact 12765221050 unexpired digest sha256:a6bf8e58abcdb91091c455157a02e0b7d2a45c0dd46d64a54da947700217934d matches local status",
+  "importFailure": "Attempt 13409 exited 1 test_artifact_operation_failed; target and receipt predate wake; cause and actor unestablished, no successful import claim",
+  "promotionLimit": "Parent records normal promoter exit 0 at 19:36:56 after failed import, then standalone verifier exit 0; historical frozen disk verification does not erase failed import or establish current-source eligibility",
+  "currentLimit": "No current-source or new eligibility/adoption claim; current HEAD/source mutations outside scope; no promoter rerun",
+  "browserLimit": "Current browser profile, pin, loaded version, GUI reload and product acceptance UNVERIFIED; disk evidence only",
+  "actions": "Read-only GitHub/local inspection plus this private report; no UI, jobs, tests, retries, cleanup or source edits",
+  "publication": {
+    "projection": "parsed report, formatted; no original-byte identity claim",
+    "private_report_sha256": "bee4f3de17e00f7d44e091dfcc1f5da57efb68718721b733440b727d55787c2f",
+    "import_failure_preserved": true,
+    "no_current_browser_eligibility_claim": true
+  }
+}

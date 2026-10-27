@@ -1,0 +1,26 @@
+{
+  "status": "DONE_WITH_CONCERNS: ACCEPT_BOUNDED_FROZEN_HISTORY",
+  "verdict_A": "PASS original T20/T23/T26 warm/native member criteria by original evidence and frozen driver; independent evidence review only, no independent UI replay.",
+  "case_coverage": {
+    "T20": "Profile present, popover closure awaited, active Profile with Back/Save, exact identity/nonadmin retained",
+    "T23": "Preferences present, popover closure awaited, one active Settings pane, exact identity/nonadmin retained",
+    "T26": "Sign out present, closure awaited, token/profile cleared, guest rendered and Profile absent; guest persists after panel Page.reload only"
+  },
+  "verdict_B": "PASS scoped integrity/role/provenance: 24 evidence hashes+sizes and all 6 official archive members match; remote official digest/run confirmed; fresh normal verify-settings-member replay valid=true/exit0 with all three receipts valid.",
+  "resources": "UTC package admitted19:39:58.903/final19:40:02.564; browser19:41:43.936/19:41:52.622; guest19:43:33.719/19:44:32.816 with three healthy samples; all exit0/resourceInvalid=false/valid; no pending/unsafe events. Poll minimum gap65.419057s.",
+  "cleanup": "Original/restore/readback same fixture id+test_fixture and identical timestamp instant (format differs); guarded restore/readback receipts verified. Exact owned GitHub secret absent via complete fresh metadata listing; known local auth files absent. No remote profile/process deletion readback and no rollback of session audit events.",
+  "limits": "Frozen944 only; native build.sourceSha=null bridged by verified official workflow/import/tree. No current-main/dirty candidate, Store, full Settings/D299, D87 or tab-groups closure; no full extension Reload/cross-device logout, Profile save, or Settings persistence credit. Screenshots are startup only.",
+  "original_publication_allowlist": [
+    ".output/stabilization-checkpoints/wake1935/settings-member-944-private/native/matrx-extend/matrx-extend/test-results/settings-account-popover-member.json",
+    ".output/stabilization-checkpoints/wake1935/settings-member-944-private/native/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40570803762-1.jsonl",
+    ".output/stabilization-checkpoints/wake1935/settings-member-944-private/native/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40570803762-1.jsonl",
+    ".output/stabilization-checkpoints/wake1935/settings-member-944-private/native/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40570803762-1.jsonl",
+    ".output/stabilization-checkpoints/wake1935/settings-member-944-private/verifier.json"
+  ],
+  "publication_rule": "Only the five exact allowlisted original files; safe booleans/counts and provenance/resource metadata. Keep raw logs/archive/screenshots, fixture receipts/scripts/state, dispatch/readiness/run/artifact metadata and all identity/org/link/auth material private; publish cleanup as safe summary only.",
+  "projection": {
+    "original_sha256": "a352320d5029a13f64efff2838531638dc7ea8ce8833b9691b1fc5d15b0eb3c9",
+    "omitted_keys": ["provenance", "auth_and_gate"],
+    "reason": "Raw identity/org/readiness material retained privately; safe frozen provenance and booleans are in actor and original mapped certificate."
+  }
+}

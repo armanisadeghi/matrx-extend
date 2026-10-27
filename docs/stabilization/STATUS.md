@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-27 19:40 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-27T13:49:55.424027+00:00. 207 features · 833 cases · 1422 controls · 299 linked defect records.
+Generated 2026-10-27 19:54 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-27T13:49:55.424027+00:00. 207 features · 833 cases · 1422 controls · 299 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1340** — Pass: 94 · Partial: 97 · Fail: 1 · Unverified: 1137 · N/A: 11.
-Unverified splits into **205 explicitly marked unverified** and **932 with no result record**.
+Applicable case-by-role slots: **1340** — Pass: 94 · Partial: 98 · Fail: 1 · Unverified: 1136 · N/A: 11.
+Unverified splits into **204 explicitly marked unverified** and **932 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -21,7 +21,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 4 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 7, fail 0, unverified 21, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 5 pass · 4 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 12 pass · 8 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | pass 19, partial 15, fail 0, unverified 68, n/a 1 | 11 |
+| [Settings](#settings) | 1 | 5 pass · 5 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 12 pass · 8 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | pass 19, partial 16, fail 0, unverified 67, n/a 1 | 11 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -371,15 +371,15 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1001-T19 · guest: Pass. Native guest avatar menu rendered no Profile entry while Preferences and Sign out were present; selected tab and guest identity stayed unchanged on the exact driver's pass path. Frozen unpublished development v0.2.502 only.
   Evidence / build / date recorded: 38167323328, docs/stabilization/reports/settings-account-popover-guest-run38167323328.json
 - EXT-F-1001-T20 · member: Pass.
-  Evidence / build / date recorded: 40484355701, ['docs/stabilization/reports/sixea-member-20261027.json', 'docs/stabilization/reports/sixea-evidence-peer-20261027.json']
+  Evidence / build / date recorded: 40570803762, ['docs/stabilization/reports/settings-member-944-20261027.json', 'docs/stabilization/reports/settings-member-944-peer-20261027.json']
 - EXT-F-1001-T22 · guest: Pass. Trusted native pointer chose Preferences; the menu closed, Settings tab and pane became active, and guest identity remained unchanged on frozen unpublished development v0.2.502.
   Evidence / build / date recorded: 38167323328, docs/stabilization/reports/settings-account-popover-guest-run38167323328.json
 - EXT-F-1001-T23 · member: Pass.
-  Evidence / build / date recorded: 40484355701, ['docs/stabilization/reports/sixea-member-20261027.json', 'docs/stabilization/reports/sixea-evidence-peer-20261027.json']
+  Evidence / build / date recorded: 40570803762, ['docs/stabilization/reports/settings-member-944-20261027.json', 'docs/stabilization/reports/settings-member-944-peer-20261027.json']
 - EXT-F-1001-T25 · guest: Pass. Trusted native pointer chose Sign out; the menu closed, guest session and rendered Guest header persisted through reopening and full panel document reload on frozen unpublished development v0.2.502.
   Evidence / build / date recorded: 38167323328, docs/stabilization/reports/settings-account-popover-guest-run38167323328.json
 - EXT-F-1001-T26 · member: Pass.
-  Evidence / build / date recorded: 40484355701, ['docs/stabilization/reports/sixea-member-20261027.json', 'docs/stabilization/reports/sixea-evidence-peer-20261027.json']
+  Evidence / build / date recorded: 40570803762, ['docs/stabilization/reports/settings-member-944-20261027.json', 'docs/stabilization/reports/settings-member-944-peer-20261027.json']
 
 
 ## Popup / options / mic permission
@@ -478,7 +478,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T37 guest: Deep clean | Unverified | N/A | N/A | EXT-F-1003-C13 |
 | EXT-F-1003-T38 member: Deep clean | N/A | Unverified | N/A | EXT-F-1003-C13 |
 | EXT-F-1003-T39 admin: Deep clean | N/A | N/A | Unverified | EXT-F-1003-C13 |
-| EXT-F-1003-T40 guest: Auto-scrape on load | Unverified | N/A | N/A | EXT-F-1003-C14 |
+| EXT-F-1003-T40 guest: Auto-scrape on load | Partial | N/A | N/A | EXT-F-1003-C14 |
 | EXT-F-1003-T41 member: Auto-scrape on load | N/A | Unverified | N/A | EXT-F-1003-C14 |
 | EXT-F-1003-T42 admin: Auto-scrape on load | N/A | N/A | Unverified | EXT-F-1003-C14 |
 | EXT-F-1003-T43 guest: Desktop bridge pairing | Partial | N/A | N/A | EXT-F-1003-C15 |
@@ -585,8 +585,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
 - EXT-F-1003-T37 · guest: Unverified.
   Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
-- EXT-F-1003-T40 · guest: Unverified.
-  Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
+- EXT-F-1003-T40 · guest: Partial.
+  Evidence / build / date recorded: 40570683530, ['docs/stabilization/reports/settings-capture-944-20261027.json', 'docs/stabilization/reports/settings-guest-capture-944-peer-20261027.json', 'docs/stabilization/reports/settings944-publication-manifest-20261027.json']
 - EXT-F-1003-T43 · guest: Partial.
   Evidence / build / date recorded: 38034890248, ['docs/stabilization/evidence/desktop-settings-hosted/run38034890248/receipt.sanitized.json', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/native-report.sanitized.json', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-package-38034890248-1.jsonl', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-browser-38034890248-1.jsonl', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-guest-38034890248-1.jsonl']
 - EXT-F-1003-T44 · member: Partial.

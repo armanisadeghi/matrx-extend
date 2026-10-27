@@ -3778,21 +3778,22 @@
           "results": {
             "member": {
               "status": "pass",
-              "run_id": "40484355701",
-              "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
-              "development_ci_run_id": 40479439004,
-              "development_artifact_id": 12723041435,
-              "artifact_manifest_version": "0.2.629",
+              "run_id": "40570803762",
+              "source_sha": "944d1f612f52ebe89ed57cec8733bfdc449a69c1",
+              "development_ci_run_id": 40567597724,
+              "development_artifact_id": 12765221050,
+              "artifact_manifest_version": "0.2.630",
               "runtime_extension_identity_observed": true,
               "resource_decision": "valid",
               "resource_invalid": false,
               "actual_UI_observations": 1,
-              "new_product_credit": true,
+              "new_product_credit": false,
+              "reverified_on_new_frozen_build": true,
               "evidence": [
-                "docs/stabilization/reports/sixea-member-20261027.json",
-                "docs/stabilization/reports/sixea-evidence-peer-20261027.json"
+                "docs/stabilization/reports/settings-member-944-20261027.json",
+                "docs/stabilization/reports/settings-member-944-peer-20261027.json"
               ],
-              "scope": "Frozen6ea hosted unpacked ordinary-member warm/navigation only. Original driver awaits closedMenu; Profile/Preferences retain exact identity and nonadmin role; Sign out clears identity and guest persists after Page.reload. Normal verifier validtrue/exit0. No Store, overall Settings, request-header or current-main extrapolation."
+              "scope": "Frozen944 hosted ordinary-member expected-org/nonadmin warm navigation original criteria independently accepted. Profile and Preferences popover closure + correct destination/identity; sign-out clears identity and guest survives panel Page.reload only. Normal original certificate and fresh historical replay validtrue; all3resourcefinalsvalid0. Exactfixture archive restored/readback and ownedsecret/authfiles absent. No Profile save/fullmanagementextensionReload/cross-device signout/Settingspersistence/D87/tabgroups/D299closure/Store/current-main extrapolation. Reverification of previously covered cases, no new case credit."
             }
           },
           "result_history": [
@@ -3831,6 +3832,29 @@
               },
               "superseded_at": "2026-10-27T10:13:20.826710+00:00",
               "reason": "Exact6ea original member native retest and independent evidence review passed after approved-organization driver repair."
+            }
+          ],
+          "previous_results": [
+            {
+              "mode": "member",
+              "result": {
+                "status": "pass",
+                "run_id": "40484355701",
+                "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+                "development_ci_run_id": 40479439004,
+                "development_artifact_id": 12723041435,
+                "artifact_manifest_version": "0.2.629",
+                "runtime_extension_identity_observed": true,
+                "resource_decision": "valid",
+                "resource_invalid": false,
+                "actual_UI_observations": 1,
+                "new_product_credit": true,
+                "evidence": [
+                  "docs/stabilization/reports/sixea-member-20261027.json",
+                  "docs/stabilization/reports/sixea-evidence-peer-20261027.json"
+                ],
+                "scope": "Frozen6ea hosted unpacked ordinary-member warm/navigation only. Original driver awaits closedMenu; Profile/Preferences retain exact identity and nonadmin role; Sign out clears identity and guest persists after Page.reload. Normal verifier validtrue/exit0. No Store, overall Settings, request-header or current-main extrapolation."
+              }
             }
           ]
         },
@@ -3934,21 +3958,22 @@
           "results": {
             "member": {
               "status": "pass",
-              "run_id": "40484355701",
-              "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
-              "development_ci_run_id": 40479439004,
-              "development_artifact_id": 12723041435,
-              "artifact_manifest_version": "0.2.629",
+              "run_id": "40570803762",
+              "source_sha": "944d1f612f52ebe89ed57cec8733bfdc449a69c1",
+              "development_ci_run_id": 40567597724,
+              "development_artifact_id": 12765221050,
+              "artifact_manifest_version": "0.2.630",
               "runtime_extension_identity_observed": true,
               "resource_decision": "valid",
               "resource_invalid": false,
               "actual_UI_observations": 1,
-              "new_product_credit": true,
+              "new_product_credit": false,
+              "reverified_on_new_frozen_build": true,
               "evidence": [
-                "docs/stabilization/reports/sixea-member-20261027.json",
-                "docs/stabilization/reports/sixea-evidence-peer-20261027.json"
+                "docs/stabilization/reports/settings-member-944-20261027.json",
+                "docs/stabilization/reports/settings-member-944-peer-20261027.json"
               ],
-              "scope": "Frozen6ea hosted unpacked ordinary-member warm/navigation only. Original driver awaits closedMenu; Profile/Preferences retain exact identity and nonadmin role; Sign out clears identity and guest persists after Page.reload. Normal verifier validtrue/exit0. No Store, overall Settings, request-header or current-main extrapolation."
+              "scope": "Frozen944 hosted ordinary-member expected-org/nonadmin warm navigation original criteria independently accepted. Profile and Preferences popover closure + correct destination/identity; sign-out clears identity and guest survives panel Page.reload only. Normal original certificate and fresh historical replay validtrue; all3resourcefinalsvalid0. Exactfixture archive restored/readback and ownedsecret/authfiles absent. No Profile save/fullmanagementextensionReload/cross-device signout/Settingspersistence/D87/tabgroups/D299closure/Store/current-main extrapolation. Reverification of previously covered cases, no new case credit."
             }
           },
           "result_history": [
@@ -3987,6 +4012,29 @@
               },
               "superseded_at": "2026-10-27T10:13:20.826710+00:00",
               "reason": "Exact6ea original member native retest and independent evidence review passed after approved-organization driver repair."
+            }
+          ],
+          "previous_results": [
+            {
+              "mode": "member",
+              "result": {
+                "status": "pass",
+                "run_id": "40484355701",
+                "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+                "development_ci_run_id": 40479439004,
+                "development_artifact_id": 12723041435,
+                "artifact_manifest_version": "0.2.629",
+                "runtime_extension_identity_observed": true,
+                "resource_decision": "valid",
+                "resource_invalid": false,
+                "actual_UI_observations": 1,
+                "new_product_credit": true,
+                "evidence": [
+                  "docs/stabilization/reports/sixea-member-20261027.json",
+                  "docs/stabilization/reports/sixea-evidence-peer-20261027.json"
+                ],
+                "scope": "Frozen6ea hosted unpacked ordinary-member warm/navigation only. Original driver awaits closedMenu; Profile/Preferences retain exact identity and nonadmin role; Sign out clears identity and guest persists after Page.reload. Normal verifier validtrue/exit0. No Store, overall Settings, request-header or current-main extrapolation."
+              }
             }
           ]
         },
@@ -4090,21 +4138,22 @@
           "results": {
             "member": {
               "status": "pass",
-              "run_id": "40484355701",
-              "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
-              "development_ci_run_id": 40479439004,
-              "development_artifact_id": 12723041435,
-              "artifact_manifest_version": "0.2.629",
+              "run_id": "40570803762",
+              "source_sha": "944d1f612f52ebe89ed57cec8733bfdc449a69c1",
+              "development_ci_run_id": 40567597724,
+              "development_artifact_id": 12765221050,
+              "artifact_manifest_version": "0.2.630",
               "runtime_extension_identity_observed": true,
               "resource_decision": "valid",
               "resource_invalid": false,
               "actual_UI_observations": 1,
-              "new_product_credit": true,
+              "new_product_credit": false,
+              "reverified_on_new_frozen_build": true,
               "evidence": [
-                "docs/stabilization/reports/sixea-member-20261027.json",
-                "docs/stabilization/reports/sixea-evidence-peer-20261027.json"
+                "docs/stabilization/reports/settings-member-944-20261027.json",
+                "docs/stabilization/reports/settings-member-944-peer-20261027.json"
               ],
-              "scope": "Frozen6ea hosted unpacked ordinary-member warm/navigation only. Original driver awaits closedMenu; Profile/Preferences retain exact identity and nonadmin role; Sign out clears identity and guest persists after Page.reload. Normal verifier validtrue/exit0. No Store, overall Settings, request-header or current-main extrapolation."
+              "scope": "Frozen944 hosted ordinary-member expected-org/nonadmin warm navigation original criteria independently accepted. Profile and Preferences popover closure + correct destination/identity; sign-out clears identity and guest survives panel Page.reload only. Normal original certificate and fresh historical replay validtrue; all3resourcefinalsvalid0. Exactfixture archive restored/readback and ownedsecret/authfiles absent. No Profile save/fullmanagementextensionReload/cross-device signout/Settingspersistence/D87/tabgroups/D299closure/Store/current-main extrapolation. Reverification of previously covered cases, no new case credit."
             }
           },
           "result_history": [
@@ -4143,6 +4192,29 @@
               },
               "superseded_at": "2026-10-27T10:13:20.826710+00:00",
               "reason": "Exact6ea original member native retest and independent evidence review passed after approved-organization driver repair."
+            }
+          ],
+          "previous_results": [
+            {
+              "mode": "member",
+              "result": {
+                "status": "pass",
+                "run_id": "40484355701",
+                "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+                "development_ci_run_id": 40479439004,
+                "development_artifact_id": 12723041435,
+                "artifact_manifest_version": "0.2.629",
+                "runtime_extension_identity_observed": true,
+                "resource_decision": "valid",
+                "resource_invalid": false,
+                "actual_UI_observations": 1,
+                "new_product_credit": true,
+                "evidence": [
+                  "docs/stabilization/reports/sixea-member-20261027.json",
+                  "docs/stabilization/reports/sixea-evidence-peer-20261027.json"
+                ],
+                "scope": "Frozen6ea hosted unpacked ordinary-member warm/navigation only. Original driver awaits closedMenu; Profile/Preferences retain exact identity and nonadmin role; Sign out clears identity and guest persists after Page.reload. Normal verifier validtrue/exit0. No Store, overall Settings, request-header or current-main extrapolation."
+              }
             }
           ]
         },
@@ -11973,19 +12045,34 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
-              "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+              "status": "partial",
+              "run_id": "40570683530",
+              "source_sha": "944d1f612f52ebe89ed57cec8733bfdc449a69c1",
+              "development_ci_run_id": 40567597724,
+              "development_artifact_id": 12765221050,
+              "build_version": "0.2.630",
+              "resource_valid": true,
+              "resource_invalid": false,
+              "full_case_pass": false,
+              "formal_guest_auth_precondition_verified": false,
+              "observed_native_assertions_passed": 13,
+              "observed_subtargets": [
+                "warm_ON_real_article_marker_and_OFF_zero_calls_in_bounded3s",
+                "full_management_reload_ON_marker_and_OFF_zero_with_worker_panel_replacement",
+                "stored_baseline_restored"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "SettingsSignInVisible_and_accountEmailUnavailable",
+                "actual_runtime_browser_extensionID_profilepath_permissions_device_org_backendSHA",
+                "fullT40_guest_acceptance",
+                "manualCapture_downstreamChat_context_Store_currentmain"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/settings-capture-944-20261027.json",
+                "docs/stabilization/reports/settings-guest-capture-944-peer-20261027.json",
+                "docs/stabilization/reports/settings944-publication-manifest-20261027.json"
+              ],
+              "scope": "Frozen944 bounded13nativeassertions reviewed; not13casepasses. All3resourcefinalvalid0 after two guestCPU_PENDING recoveries19:44:03\u219219:44:52 and19:45:08\u219219:45:56; not allintervalhealthy. OriginalsendMessage observer calls real function; captures match exact owned fixtureURL/articlemarker. OFFzero only bounded3s. Formal Settings signed-out precondition notasserted; fullT40partial. Imagesstartup/demo only/no targetmarker corroboration. No supported normalguest verifier; independent historical evidence review only/no freshnative replay. Remote profile deletion notobserved. No D299/D300/globalSettings/Store closure."
             }
           },
           "result_history": [
@@ -12366,6 +12453,26 @@
                 "docs/stabilization/reports/settings-b-40262577587-20261026.json",
                 "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
               ]
+            }
+          ],
+          "previous_results": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              }
             }
           ]
         },
