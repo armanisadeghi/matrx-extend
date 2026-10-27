@@ -7,6 +7,9 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { parsePnpmLock } from './check-matrx-packages.mjs';
 
+// The host installs `@ai-matrx/chat` as an npm alias of `@ai-matrx/chat-v2`: on disk and in the lock it is chat-v2.
+const real = name => (name === 'chat' ? 'chat-v2' : name);
+
 // The real packed dependency JS must link; tsc skips the .175/.15 missing named export.
 // An incomplete installed package must produce a failed release gate, never a successful no-op.
 test('published Chat link gate accepts the installed artifacts and refuses a missing dist', () => {
@@ -37,13 +40,13 @@ for (const linked of ['chat', 'summon']) {
       const scope = join(scratch, 'node_modules', '@ai-matrx');
       mkdirSync(scope, { recursive: true });
       for (const name of ['chat', 'summon']) {
-        const root = name === linked ? join(scratch, 'workspace', name) : join(scope, name);
+        const root = name === linked ? join(scratch, 'workspace', name) : join(scope, real(name));
         mkdirSync(root, { recursive: true });
         writeFileSync(
           join(root, 'package.json'),
           JSON.stringify({
-            name: `@ai-matrx/${name}`,
-            version: [...graph.installed.get(`@ai-matrx/${name}`).keys()][0],
+            name: `@ai-matrx/${real(name)}`,
+            version: [...graph.installed.get(`@ai-matrx/${real(name)}`).keys()][0],
             type: 'module',
           }),
         );
@@ -52,14 +55,14 @@ for (const linked of ['chat', 'summon']) {
           mkdirSync(dist, { recursive: true });
           writeFileSync(join(dist, 'chat-overlays.js'), 'export const CHAT_OVERLAYS = [];');
         }
-        if (name === linked) symlinkSync(root, join(scope, name), 'dir');
+        if (name === linked) symlinkSync(root, join(scope, real(name)), 'dir');
       }
       if (linked === 'chat') {
         const sourceScope = join(scratch, 'workspace', 'chat', 'node_modules', '@ai-matrx');
         mkdirSync(sourceScope, { recursive: true });
         symlinkSync(join(scope, 'summon'), join(sourceScope, 'summon'), 'dir');
       }
-      const refused = spawnSync(process.execPath, [script, '--package-root', join(scope, 'chat')], {
+      const refused = spawnSync(process.execPath, [script, '--package-root', join(scope, 'chat-v2')], {
         encoding: 'utf8',
       });
       assert.equal(
@@ -84,13 +87,13 @@ test('published Chat link gate executes ESM linking after provenance checks', ()
     try {
       const scope = join(scratch, 'node_modules', '@ai-matrx');
       for (const name of ['chat', 'summon']) {
-        const root = join(scope, name);
+        const root = join(scope, real(name));
         mkdirSync(join(root, 'dist'), { recursive: true });
         writeFileSync(
           join(root, 'package.json'),
           JSON.stringify({
-            name: `@ai-matrx/${name}`,
-            version: [...graph.installed.get(`@ai-matrx/${name}`).keys()][0],
+            name: `@ai-matrx/${real(name)}`,
+            version: [...graph.installed.get(`@ai-matrx/${real(name)}`).keys()][0],
             type: 'module',
             ...(name === 'summon'
               ? {
@@ -112,13 +115,13 @@ test('published Chat link gate executes ESM linking after provenance checks', ()
         join(scope, 'summon', 'dist', 'define.js'),
         'export const defineOverlay = () => spec => spec;',
       );
-      const windows = join(scope, 'chat', 'dist', 'window-panels', 'overlays');
+      const windows = join(scope, 'chat-v2', 'dist', 'window-panels', 'overlays');
       mkdirSync(windows, { recursive: true });
       writeFileSync(
         join(windows, 'chat-overlays.js'),
         `import { defineOverlay } from '@ai-matrx/summon/${entry}'; export const CHAT_OVERLAYS = [defineOverlay()({id:'run-controls'})];`,
       );
-      const linked = spawnSync(process.execPath, [script, '--package-root', join(scope, 'chat')], {
+      const linked = spawnSync(process.execPath, [script, '--package-root', join(scope, 'chat-v2')], {
         encoding: 'utf8',
       });
       if (entry === 'root') {
