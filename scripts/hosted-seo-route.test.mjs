@@ -183,7 +183,12 @@ test('headless SEO timeout observation survives native failure without acceptanc
       assert.equal(headed, false);
       await onStartupEndpointObservation({
         phase: 'cdp_timeout',
-        endpointPresent: false,
+        endpointPresent: null,
+        presenceBasis: 'unobserved',
+        sampleTiming: null,
+        recordInspection: { outcome: 'not_attempted', timing: null },
+        failureObservedElapsedMs: 5022,
+        reportedElapsedMs: 5022,
         inspectionFailed: false,
         exitObserved: false,
         elapsedMs: 5022,
@@ -193,6 +198,13 @@ test('headless SEO timeout observation survives native failure without acceptanc
       await onStartupEndpointObservation({
         phase: 'post_timeout',
         endpointPresent: true,
+        presenceBasis: 'lstat',
+        sampleTiming: {
+          startedElapsedMs: 300,
+          completedElapsedMs: 300,
+          origin: 'post_timeout_observer',
+        },
+        recordInspection: { outcome: 'not_attempted', timing: null },
         inspectionFailed: false,
         exitObserved: false,
         elapsedMs: 300,

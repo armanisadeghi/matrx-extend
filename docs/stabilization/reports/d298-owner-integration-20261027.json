@@ -1,0 +1,57 @@
+{
+  "at": "2026-10-27T02:33:15.775658+00:00",
+  "lane": "root/D298-integration",
+  "status": "CURRENT_LOCK_INSTALL_AND_LOCAL_COMPILE_PASS_INDEPENDENT_FULL_CI_HOSTED_PENDING",
+  "builder_report": "docs/stabilization/reports/d298-implementation-20261027.json",
+  "builder_report_original_sha256": "516bd3240d345b2f32dd5ca564fc3af4a36fda1be488d9a09bda1a7909696784",
+  "source_basis": "58a10dfc81ee4904bd0b6b89f6b887e564ff2faf plus frozen D298 owned files; subsequent normal merge preserves contributor09285bc323d5b6888b352e05e260dcfd988103e9/development629. Exact owned commit and merge are discoverable in Git and parent checkpoint after push.",
+  "dependency_recovery": "Existing node_modules lagged locked auth0.4.18/chat388/agents299/api97. Canonical guarded frozen-lock install with --ignore-scripts completed; no build, host compatibility patch, lock update or publication. Earlier failed compile and all candidate failed journals retained.",
+  "checks": [
+    {
+      "run_id": "d298-owner-dependency-catchup-20261027",
+      "journal": "docs/stabilization/resource-journals/d298-owner-dependency-catchup-20261027.jsonl",
+      "sha256": "cfefea5796911693ffb628a3646b23f1e0e4fb3450d3620d79ff8052eb5e1d2a",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T02:31:09.305Z",
+        "runId": "d298-owner-dependency-catchup-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "run_id": "d298-owner-current-dependency-compile-20261027",
+      "journal": "docs/stabilization/resource-journals/d298-owner-current-dependency-compile-20261027.jsonl",
+      "sha256": "39f61fdf1bbc42db81a64f82933d5b6c8560a3934fb5b159efa4d10631a3ad80",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T02:32:51.306Z",
+        "runId": "d298-owner-current-dependency-compile-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  ],
+  "installed_versions": {
+    "auth": "0.4.18",
+    "chat": "0.8.388",
+    "agents": "0.59.299",
+    "api": "0.1.97"
+  },
+  "independent_review": "Fresh zero-authorship D298 review owns readonly source/evidence then admitted current-dependency focused replay; parent releases Mac slot only after compile terminal.",
+  "limits": [
+    "Local supporting tests/compile are not current-source full CI, hosted original-path retest, Chrome runtime, Store acceptance or product behavior passes.",
+    "Comprehensive connector/harness suites are in full CI ci.yml lines256/265, not canonical focused; retain pending until actual current CI completes.",
+    "Original D254/D231 startup cause, physical publication time and critical CPU interval remain unknown.",
+    "OwnerProfile8 DEV628/sourceB3 is historical behind updated dependencies and629; canonical exact-main CI artifact adoption and actual Reload remain pending.",
+    "Same Oct26LA Store daily claim remains577Published/577Draft-unpublished; no Store action or new daily claim.",
+    "StoreAA9 two-turn guest evidence remains historical; subsequent9cbb server compatibility unverified."
+  ],
+  "next": "Finish contributor-preserving source integration/push; independent A/B replay; exact current full CI; canonical owner dev refresh; normal exact-source hosted startup diagnostic. No D298 closure yet."
+}

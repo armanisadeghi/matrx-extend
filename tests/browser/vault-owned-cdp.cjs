@@ -29,61 +29,37 @@ async function prepareOwnedProfile(profileDir, fileSystem = fs) {
   return Object.freeze({ profile });
 }
 
-async function defaultProcessInspector(pid) {
-  const options = { timeout: DEADLINE_MS, maxBuffer: 32768 };
-  const [command, argumentsLine] = await Promise.all([
-    execFileAsync('ps', ['-p', String(pid), '-o', 'comm='], options),
-    execFileAsync('ps', ['-p', String(pid), '-o', 'args='], options),
-  ]);
+async function defaultProcessInspector(pid, bounded = null) {
+  const options = {
+    timeout: DEADLINE_MS,
+    maxBuffer: 32768,
+    // The existing command timeout stays intact. The diagnostic controller
+    // owns the shorter remaining window and aborts both children together.
+    ...(bounded && { signal: bounded.signal }),
+  };
+  const run = (columns) => {
+    const pending = execFileAsync('ps', ['-p', String(pid), '-o', columns], options);
+    if (!bounded) return pending;
+    const closed = new Promise((resolve) => pending.child.once('close', resolve));
+    return pending.finally(() => closed);
+  };
+  const pending = [run('comm='), run('args=')];
+  // Diagnostic aborts drain both owned children. Normal connector semantics stay unchanged.
+  const [command, argumentsLine] = bounded
+    ? await Promise.allSettled(pending).then((results) => {
+        const failed = results.find((entry) => entry.status === 'rejected');
+        if (failed) throw failed.reason;
+        return results.map((entry) => entry.value);
+      })
+    : await Promise.all(pending);
   return { executable: command.stdout.trim(), args: argumentsLine.stdout.trim() };
 }
-async function connectOwnedCdp({
-  preparedProfile,
-  chromeExecutable,
-  fileSystem = fs,
-  WebSocketCtor = globalThis.WebSocket,
-  processInspector = defaultProcessInspector,
-  timeoutMs = DEADLINE_MS,
-  startupDeadlineMs = timeoutMs,
-}) {
-  if (
-    !preparedProfile?.profile ||
-    typeof chromeExecutable !== 'string' ||
-    !WebSocketCtor ||
-    !Number.isSafeInteger(startupDeadlineMs) ||
-    startupDeadlineMs <= 0
-  )
-    throw new Error('owned_cdp_configuration_refused');
-  const profile = preparedProfile.profile;
-  const deadline = performance.now() + startupDeadlineMs;
-  const waitStartedAt = performance.now();
-  let endpointPolls = 0;
-  let longestReadMs = 0;
-  let raw;
-  while (performance.now() < deadline) {
-    const readStartedAt = performance.now();
-    try {
-      endpointPolls += 1;
-      raw = await fileSystem.readFile(path.join(profile, 'DevToolsActivePort'), 'utf8');
-      break;
-    } catch (error) {
-      if (error?.code !== 'ENOENT') throw endpointRefusal('read_failed');
-    } finally {
-      longestReadMs = Math.max(longestReadMs, performance.now() - readStartedAt);
-    }
-    await new Promise((resolve) =>
-      setTimeout(resolve, Math.min(25, Math.max(0, deadline - performance.now()))),
-    );
-  }
-  if (typeof raw !== 'string') {
-    const error = new Error('owned_cdp_endpoint_timeout');
-    error.endpointWaitDiagnostic = Object.freeze({
-      polls: endpointPolls,
-      elapsedMs: Math.round(performance.now() - waitStartedAt),
-      longestReadMs: Math.round(longestReadMs),
-    });
-    throw error;
-  }
+
+async function validateOwnedEndpointRecord(
+  raw,
+  { profile, chromeExecutable, fileSystem, processInspector, bounded = null },
+) {
+  const stage = bounded?.stage ?? ((action) => action());
   const lines = raw.split(/\r?\n/);
   if (lines.length === 3 && lines[2] === '') lines.pop();
   const shape = {
@@ -111,16 +87,20 @@ async function connectOwnedCdp({
     );
   let lock;
   try {
-    lock = await fileSystem.readlink(path.join(profile, 'SingletonLock'));
-  } catch {
+    lock = await stage(() => fileSystem.readlink(path.join(profile, 'SingletonLock')));
+  } catch (error) {
+    if (bounded?.expired()) throw new Error('owned_cdp_inspection_budget_expired');
     throw new Error('owned_cdp_owner_refused');
   }
   const match = /-(\d+)$/.exec(lock);
   if (!match) throw new Error('owned_cdp_owner_refused');
   let owner;
   try {
-    owner = await processInspector(Number(match[1]));
-  } catch {
+    owner = await stage(() =>
+      bounded ? processInspector(Number(match[1]), bounded) : processInspector(Number(match[1])),
+    );
+  } catch (error) {
+    if (bounded?.expired()) throw new Error('owned_cdp_inspection_budget_expired');
     throw new Error('owned_cdp_process_inspection_failed');
   }
   const escapedProfile = profile.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -129,6 +109,176 @@ async function connectOwnedCdp({
   ).test(String(owner?.args ?? ''));
   if (owner?.executable !== chromeExecutable || !hasProfile)
     throw new Error('owned_cdp_owner_refused');
+
+  return { port, browserPath: lines[1] };
+}
+
+// Safe diagnostic only: the canonical record/owner phase is shared with the
+// connector, but this entry point never constructs a socket or probes a handshake.
+async function inspectOwnedCdpEndpointRecord({
+  preparedProfile,
+  chromeExecutable,
+  fileSystem = fs,
+  processInspector = defaultProcessInspector,
+  budgetMs,
+}) {
+  if (!preparedProfile?.profile || typeof chromeExecutable !== 'string')
+    return { outcome: 'not_attempted', timing: null };
+  const started = performance.now();
+  const controller = new AbortController();
+  let timer;
+  let expired = false;
+  let ownedProcessPending;
+  const remainingMs = () => Math.max(0, budgetMs - (performance.now() - started));
+  const bounded = {
+    signal: controller.signal,
+    remainingMs,
+    expired: () => expired || remainingMs() <= 0,
+    async stage(action) {
+      if (bounded.expired()) throw new Error('owned_cdp_inspection_budget_expired');
+      const result = await action();
+      if (bounded.expired()) throw new Error('owned_cdp_inspection_budget_expired');
+      return result;
+    },
+  };
+  const result = (outcome) => ({
+    outcome,
+    timing: {
+      startedElapsedMs: 0,
+      completedElapsedMs: Math.max(0, Math.round(performance.now() - started)),
+      origin: 'record_inspection',
+    },
+  });
+  if (!Number.isFinite(budgetMs) || budgetMs <= 0) return result('budget_expired');
+  const inspect = async () => {
+    try {
+      const raw = await bounded.stage(() =>
+        fileSystem.readFile(path.join(preparedProfile.profile, 'DevToolsActivePort'), {
+          encoding: 'utf8',
+          signal: controller.signal,
+        }),
+      );
+      await bounded.stage(() =>
+        validateOwnedEndpointRecord(raw, {
+          profile: preparedProfile.profile,
+          chromeExecutable,
+          fileSystem,
+          bounded,
+          processInspector: (pid, context) => {
+            const pending = processInspector(pid, context);
+            if (processInspector === defaultProcessInspector) ownedProcessPending = pending;
+            return pending;
+          },
+        }),
+      );
+      return 'validated_owned_record';
+    } catch (error) {
+      if (bounded.expired()) return 'budget_expired';
+      if (error?.code === 'ENOENT') return 'missing';
+      if (error?.message === 'owned_cdp_endpoint_refused') return 'record_refused';
+      if (error?.message === 'owned_cdp_owner_refused') return 'owner_refused';
+      return 'inspection_failed';
+    }
+  };
+  try {
+    const pending = inspect();
+    const outcome = await Promise.race([
+      pending,
+      new Promise((resolve) => {
+        timer = setTimeout(() => {
+          expired = true;
+          controller.abort();
+          resolve('budget_expired');
+        }, remainingMs());
+      }),
+    ]);
+    // Abortable ps children are drained before returning. Non-abortable filesystem
+    // completions may settle later, but every next stage is fenced and emits nothing.
+    if (outcome === 'budget_expired' && ownedProcessPending)
+      await Promise.allSettled([ownedProcessPending]);
+    return result(outcome);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function connectOwnedCdp({
+  preparedProfile,
+  chromeExecutable,
+  fileSystem = fs,
+  WebSocketCtor = globalThis.WebSocket,
+  processInspector = defaultProcessInspector,
+  timeoutMs = DEADLINE_MS,
+  startupDeadlineMs = timeoutMs,
+}) {
+  if (
+    !preparedProfile?.profile ||
+    typeof chromeExecutable !== 'string' ||
+    !WebSocketCtor ||
+    !Number.isSafeInteger(startupDeadlineMs) ||
+    startupDeadlineMs <= 0
+  )
+    throw new Error('owned_cdp_configuration_refused');
+  const profile = preparedProfile.profile;
+  const deadline = performance.now() + startupDeadlineMs;
+  const waitStartedAt = performance.now();
+  let endpointPolls = 0;
+  let longestReadMs = 0;
+  let raw;
+  let lastRead = null;
+  const waitDiagnostic = () =>
+    Object.freeze({
+      polls: endpointPolls,
+      elapsedMs: Math.round(performance.now() - waitStartedAt),
+      longestReadMs: Math.round(longestReadMs),
+      lastRead,
+    });
+  while (performance.now() < deadline) {
+    const readStartedAt = performance.now();
+    let outcome = 'read';
+    let readError;
+    try {
+      endpointPolls += 1;
+      raw = await fileSystem.readFile(path.join(profile, 'DevToolsActivePort'), 'utf8');
+      break;
+    } catch (error) {
+      outcome = error?.code === 'ENOENT' ? 'missing' : 'read_error';
+      if (outcome === 'read_error') readError = endpointRefusal('read_failed');
+    } finally {
+      const completedAt = performance.now();
+      longestReadMs = Math.max(longestReadMs, completedAt - readStartedAt);
+      lastRead = Object.freeze({
+        startedElapsedMs: Math.max(0, Math.round(readStartedAt - waitStartedAt)),
+        completedElapsedMs: Math.max(0, Math.round(completedAt - waitStartedAt)),
+        outcome,
+      });
+    }
+    if (readError) {
+      readError.endpointWaitDiagnostic = waitDiagnostic();
+      throw readError;
+    }
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.min(25, Math.max(0, deadline - performance.now()))),
+    );
+  }
+  if (typeof raw !== 'string') {
+    const error = new Error('owned_cdp_endpoint_timeout');
+    error.endpointWaitDiagnostic = waitDiagnostic();
+    throw error;
+  }
+  let endpoint;
+  try {
+    endpoint = await validateOwnedEndpointRecord(raw, {
+      profile,
+      chromeExecutable,
+      fileSystem,
+      processInspector,
+    });
+  } catch (error) {
+    error.endpointWaitDiagnostic = waitDiagnostic();
+    throw error;
+  }
+  const { port, browserPath } = endpoint;
 
   let socket;
   let fatal = false;
@@ -236,7 +386,7 @@ async function connectOwnedCdp({
     }
   };
   try {
-    socket = new WebSocketCtor(`ws://127.0.0.1:${port}${lines[1]}`);
+    socket = new WebSocketCtor(`ws://127.0.0.1:${port}${browserPath}`);
   } catch {
     throw new Error('owned_cdp_socket_construction_failed');
   }
@@ -368,3 +518,5 @@ async function connectOwnedCdp({
 }
 exports.prepareOwnedProfile = prepareOwnedProfile;
 exports.connectOwnedCdp = connectOwnedCdp;
+
+exports.inspectOwnedCdpEndpointRecord = inspectOwnedCdpEndpointRecord;

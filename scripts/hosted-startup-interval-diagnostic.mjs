@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { safeEndpointObservation } from '../tests/browser/native-cdp-startup-diagnostic.mjs';
 import { runNativeSidepanelQa } from '../tests/browser/native-sidepanel-qa-harness.mjs';
 
 const policy = JSON.parse(
@@ -13,21 +14,12 @@ export function safeStartupEndpointObservation(value) {
     ['cdp_connected', 'cdp_timeout', 'post_timeout'].includes(value?.phase),
     'startup_endpoint_phase_refused',
   );
-  for (const key of ['endpointPresent', 'inspectionFailed', 'exitObserved'])
-    assert.equal(typeof value[key], 'boolean', 'startup_endpoint_boolean_refused');
   for (const key of ['elapsedMs', 'polls'])
     assert.ok(
       Number.isSafeInteger(value[key]) && value[key] >= 0,
       'startup_endpoint_count_refused',
     );
-  return {
-    phase: value.phase,
-    endpointPresent: value.endpointPresent,
-    inspectionFailed: value.inspectionFailed,
-    exitObserved: value.exitObserved,
-    elapsedMs: value.elapsedMs,
-    polls: value.polls,
-  };
+  return safeEndpointObservation(value);
 }
 
 export async function runHostedStartupIntervalDiagnostic({

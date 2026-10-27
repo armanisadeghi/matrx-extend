@@ -175,3 +175,443 @@ test('refused ownership cannot start an independent loopback probe', async () =>
     false,
   );
 });
+
+// D298: the diagnostic uses the real endpoint/parser/owner boundary, without
+// attaching to Chrome. Files are isolated and all endpoint values remain local.
+const fsPromises = await import('node:fs/promises');
+const { inspectOwnedCdpEndpointRecord } = require('./vault-owned-cdp.cjs');
+const { safeEndpointWaitDiagnostic, observeOwnedEndpointAfterTimeout } = await import(
+  './native-sidepanel-qa-harness.mjs'
+);
+
+async function recordFixture(action) {
+  const profile = await mkdtemp(join(tmpdir(), 'owned-endpoint-observation-'));
+  try {
+    const preparedProfile = await prepareOwnedProfile(profile);
+    await symlink('host-123', join(profile, 'SingletonLock'));
+    const endpoint = join(profile, 'DevToolsActivePort');
+    const owner = async () => ({ executable: '/owned/chrome', args: `--user-data-dir=${profile}` });
+    await action({ profile, preparedProfile, endpoint, owner });
+  } finally {
+    await rm(profile, { recursive: true, force: true });
+  }
+}
+
+test('diagnostic validates the canonical owned record without constructing a socket', async () => {
+  await recordFixture(async ({ preparedProfile, endpoint, owner }) => {
+    let sockets = 0;
+    const previous = globalThis.WebSocket;
+    globalThis.WebSocket = class {
+      constructor() {
+        sockets++;
+        throw new Error('socket forbidden');
+      }
+    };
+    try {
+      const input = {
+        preparedProfile,
+        chromeExecutable: '/owned/chrome',
+        processInspector: owner,
+        budgetMs: 1000,
+      };
+      for (const [raw, expected] of [
+        ['9222\n/devtools/browser/captured-owned\n', 'validated_owned_record'],
+        ['64231\n/devtools/browser/another-owned', 'validated_owned_record'],
+        ['65536\n/devtools/browser/private-record', 'record_refused'],
+        ['9222\n/devtools/browser/private-record\nextra', 'record_refused'],
+      ]) {
+        await writeFile(endpoint, raw);
+        const value = await inspectOwnedCdpEndpointRecord(input);
+        assert.equal(value.outcome, expected);
+        assert.deepEqual(Object.keys(value).sort(), ['outcome', 'timing']);
+        assert.doesNotMatch(
+          JSON.stringify(value),
+          /9222|64231|65536|devtools|captured-owned|private-record/,
+        );
+      }
+      await writeFile(endpoint, '9222\n/devtools/browser/owned\n');
+      assert.equal(
+        (
+          await inspectOwnedCdpEndpointRecord({
+            ...input,
+            processInspector: async () => ({
+              executable: '/foreign/chrome',
+              args: '--user-data-dir=/foreign',
+            }),
+          })
+        ).outcome,
+        'owner_refused',
+      );
+      await rm(endpoint);
+      assert.equal((await inspectOwnedCdpEndpointRecord(input)).outcome, 'missing');
+      assert.equal(sockets, 0, 'inspection must never enter socket or handshake path');
+    } finally {
+      globalThis.WebSocket = previous;
+    }
+  });
+});
+
+test('expired diagnostic cannot inspect a later filesystem result or advance to owner lookup', async () => {
+  await recordFixture(async ({ preparedProfile, endpoint, owner }) => {
+    await writeFile(endpoint, '9222\n/devtools/browser/owned\n');
+    let release;
+    let entered;
+    let returned;
+    let reads = 0;
+    let owners = 0;
+    const readEntered = new Promise((resolve) => {
+      entered = resolve;
+    });
+    const readReturned = new Promise((resolve) => {
+      returned = resolve;
+    });
+    const pendingRead = new Promise((resolve) => {
+      release = resolve;
+    });
+    const input = {
+      preparedProfile,
+      chromeExecutable: '/owned/chrome',
+      budgetMs: 50,
+      processInspector: async (...args) => {
+        owners++;
+        return owner(...args);
+      },
+      fileSystem: {
+        ...fsPromises,
+        readFile: async (path) => {
+          // Deliberately non-abortable external I/O: cancellation cannot make
+          // this fixture skip the late-completion stage fence it must prove.
+          const value = await fsPromises.readFile(path, 'utf8');
+          entered();
+          await pendingRead;
+          returned();
+          return value;
+        },
+        readlink: async (...args) => {
+          reads++;
+          return fsPromises.readlink(...args);
+        },
+      },
+    };
+    const pending = inspectOwnedCdpEndpointRecord(input);
+    await readEntered;
+    const value = await pending;
+    assert.equal(value.outcome, 'budget_expired');
+    release();
+    await readReturned;
+    await new Promise(setImmediate);
+    assert.equal(reads, 0);
+    assert.equal(owners, 0);
+    assert.equal(value.outcome, 'budget_expired', 'late completion cannot change evidence');
+  });
+});
+
+test('expired process inspection cannot turn a diagnostic into validated evidence', async () => {
+  await recordFixture(async ({ preparedProfile, endpoint, owner }) => {
+    await writeFile(endpoint, '9222\n/devtools/browser/owned\n');
+    let release;
+    let entered;
+    const started = new Promise((resolve) => {
+      entered = resolve;
+    });
+    const delayed = new Promise((resolve) => {
+      release = resolve;
+    });
+    const pending = inspectOwnedCdpEndpointRecord({
+      preparedProfile,
+      chromeExecutable: '/owned/chrome',
+      budgetMs: 200,
+      processInspector: async () => {
+        entered();
+        await delayed;
+        return owner();
+      },
+    });
+    await Promise.race([started, pending.then(() => assert.fail('process fixture never entered'))]);
+    const value = await pending;
+    assert.equal(value.outcome, 'budget_expired');
+    release();
+    await new Promise(setImmediate);
+    assert.equal(value.outcome, 'budget_expired');
+  });
+});
+
+test('actual connector failures retain last-read intervals through the safe serializer', async () => {
+  await recordFixture(async ({ preparedProfile, endpoint }) => {
+    for (const [kind, expectedError, outcome] of [
+      ['missing', 'owned_cdp_endpoint_timeout', 'missing'],
+      ['denied', 'owned_cdp_endpoint_refused', 'read_error'],
+      ['malformed', 'owned_cdp_endpoint_refused', 'read'],
+    ]) {
+      if (kind === 'malformed') await writeFile(endpoint, 'not-an-endpoint');
+      else await rm(endpoint, { force: true });
+      let error;
+      try {
+        await connectOwnedCdp({
+          preparedProfile,
+          chromeExecutable: '/owned/chrome',
+          startupDeadlineMs: 5,
+          WebSocketCtor: class {
+            constructor() {
+              assert.fail('failed record must not connect');
+            }
+          },
+          fileSystem: {
+            ...fsPromises,
+            readFile: async (...args) => {
+              // Deliberately straddle the polling-entry deadline, matching the
+              // real long-read pattern. This is a timing test, not a readiness sleep.
+              await new Promise((resolve) => setTimeout(resolve, 15));
+              if (kind === 'denied')
+                throw Object.assign(new Error('private denied'), { code: 'EACCES' });
+              return fsPromises.readFile(...args);
+            },
+          },
+        });
+      } catch (caught) {
+        error = caught;
+      }
+      assert.equal(error?.message, expectedError);
+      const value = safeEndpointWaitDiagnostic(error);
+      assert.equal(value.polls, 1);
+      assert.equal(value.lastRead.outcome, outcome);
+      assert.ok(value.lastRead.completedElapsedMs >= 5);
+      assert.ok(value.lastRead.completedElapsedMs >= value.lastRead.startedElapsedMs);
+      error.endpointWaitDiagnostic = {
+        ...error.endpointWaitDiagnostic,
+        privatePath: endpoint,
+        lastRead: { ...value.lastRead, raw: 'private endpoint contents' },
+      };
+      assert.doesNotMatch(
+        JSON.stringify(safeEndpointWaitDiagnostic(error)),
+        /private|devtools|DevToolsActivePort/,
+      );
+      error.endpointWaitDiagnostic = {
+        ...error.endpointWaitDiagnostic,
+        lastRead: { ...value.lastRead, outcome: 'private' },
+      };
+      assert.equal(safeEndpointWaitDiagnostic(error), null);
+    }
+  });
+});
+
+test('post-timeout sample interval stays distinct from report time and inspection budget', async () => {
+  await recordFixture(async ({ profile, endpoint }) => {
+    await writeFile(endpoint, '9222\n/devtools/browser/owned\n');
+    let elapsed = 0;
+    const value = await observeOwnedEndpointAfterTimeout({
+      profile,
+      chromeExecutable: '/owned/chrome',
+      child: { exitCode: null, signalCode: null },
+      windowMs: 10,
+      clock: { now: () => elapsed },
+      fileSystem: {
+        ...fsPromises,
+        lstat: async (...args) => {
+          const value = await fsPromises.lstat(...args);
+          elapsed = 12;
+          return value;
+        },
+      },
+    });
+    assert.equal(value.endpointPresent, true);
+    assert.equal(value.presenceBasis, 'lstat');
+    assert.deepEqual(value.sampleTiming, {
+      startedElapsedMs: 0,
+      completedElapsedMs: 12,
+      origin: 'post_timeout_observer',
+    });
+    assert.equal(value.recordInspection.outcome, 'budget_expired');
+    assert.equal(value.elapsedMs, 12);
+  });
+});
+
+test('diagnostic abort drains both owned process-inspection children before returning', async () => {
+  await recordFixture(async ({ preparedProfile, endpoint }) => {
+    await writeFile(endpoint, '9222\n/devtools/browser/owned\n');
+    const source = await readFile(new URL('./vault-owned-cdp.cjs', import.meta.url), 'utf8');
+    const { execFile } = require('node:child_process');
+    const exercise = async (body) => {
+      const children = new Set();
+      const closes = [];
+      const exports = {};
+      let spawned = 0;
+      const slowPs = (_file, _args, options, callback) => {
+        // External ps stand-in: real owned foreground children stalled until
+        // production abort. Parser, stage fencing and cleanup stay real.
+        const child = execFile(
+          process.execPath,
+          ['-e', 'setInterval(() => {}, 1000)'],
+          options,
+          callback,
+        );
+        spawned++;
+        children.add(child);
+        closes.push(
+          new Promise((resolve) =>
+            child.once('close', () => {
+              children.delete(child);
+              resolve();
+            }),
+          ),
+        );
+        return child;
+      };
+      slowPs[require('node:util').promisify.custom] = (...args) => {
+        let child;
+        const pending = new Promise((resolve, reject) => {
+          child = slowPs(...args, (error, stdout, stderr) => {
+            if (error) reject(error);
+            else resolve({ stdout, stderr });
+          });
+        });
+        pending.child = child;
+        return pending;
+      };
+      runInNewContext(body, {
+        require: (name) => (name === 'node:child_process' ? { execFile: slowPs } : require(name)),
+        exports,
+        Error,
+        performance,
+        AbortController,
+        setTimeout,
+        clearTimeout,
+      });
+      try {
+        const value = await exports.inspectOwnedCdpEndpointRecord({
+          preparedProfile,
+          chromeExecutable: '/owned/chrome',
+          budgetMs: 300,
+        });
+        assert.equal(value.outcome, 'budget_expired');
+        assert.equal(spawned, 2, 'both actual default ps children must be exercised');
+        assert.equal(children.size, 0, 'abort must drain the actual child close events');
+      } finally {
+        // Even a deliberately broken drain must leave no owned process behind.
+        await Promise.all(closes);
+      }
+    };
+    await exercise(source);
+    const mutated = source.replace('return pending.finally(() => closed);', 'return pending;');
+    assert.notEqual(mutated, source, 'mutation must remove the actual default-inspector drain');
+    await assert.rejects(exercise(mutated), /abort must drain the actual child close events/);
+  });
+});
+
+test('record validation guard rejects a constant validated-result mutation', async () => {
+  await recordFixture(async ({ preparedProfile, endpoint, owner }) => {
+    await writeFile(endpoint, '65536\n/devtools/browser/owned\n');
+    const source = await readFile(new URL('./vault-owned-cdp.cjs', import.meta.url), 'utf8');
+    const start = source.indexOf('async function inspectOwnedCdpEndpointRecord(');
+    const end = source.indexOf('async function connectOwnedCdp(', start);
+    assert.ok(start >= 0 && end > start, 'mutation must target actual diagnostic entry point');
+    const mutated = `${source.slice(0, start)}async function inspectOwnedCdpEndpointRecord() {
+      return { outcome: 'validated_owned_record', timing: null };
+    }\n${source.slice(end)}`;
+    const exports = {};
+    runInNewContext(mutated, {
+      require,
+      exports,
+      Error,
+      performance,
+      AbortController,
+      setTimeout,
+      clearTimeout,
+    });
+    const assertRefusal = async (inspect) => {
+      const value = await inspect({
+        preparedProfile,
+        chromeExecutable: '/owned/chrome',
+        processInspector: owner,
+        budgetMs: 1000,
+      });
+      assert.equal(
+        value.outcome,
+        'record_refused',
+        'malformed record cannot become validated evidence',
+      );
+    };
+    await assertRefusal(inspectOwnedCdpEndpointRecord);
+    await assert.rejects(
+      assertRefusal(exports.inspectOwnedCdpEndpointRecord),
+      /malformed record cannot become validated evidence/,
+    );
+  });
+});
+
+test('actual failed-read timing guard rejects dropped last-read metadata', async () => {
+  await recordFixture(async ({ preparedProfile }) => {
+    const source = await readFile(new URL('./vault-owned-cdp.cjs', import.meta.url), 'utf8');
+    const mutated = source.replace('    lastRead,', '    lastRead: null,');
+    assert.notEqual(mutated, source, 'mutation must drop the actual failure metadata field');
+    const exports = {};
+    runInNewContext(mutated, {
+      require,
+      exports,
+      Error,
+      performance,
+      AbortController,
+      setTimeout,
+      clearTimeout,
+    });
+    const assertRead = async (connect) => {
+      let error;
+      try {
+        await connect({
+          preparedProfile,
+          chromeExecutable: '/owned/chrome',
+          startupDeadlineMs: 5,
+          WebSocketCtor: class {
+            constructor() {
+              assert.fail('missing record cannot construct socket');
+            }
+          },
+        });
+      } catch (caught) {
+        error = caught;
+      }
+      assert.equal(error?.message, 'owned_cdp_endpoint_timeout');
+      const safe = safeEndpointWaitDiagnostic(error);
+      assert.equal(
+        safe?.lastRead?.outcome,
+        'missing',
+        'last completed read must survive actual error serialization',
+      );
+    };
+    await assertRead(connectOwnedCdp);
+    await assert.rejects(
+      assertRead(exports.connectOwnedCdp),
+      /last completed read must survive actual error serialization/,
+    );
+  });
+});
+
+test('failed filesystem observation guard rejects manufactured absence mutation', async () => {
+  const source = observeOwnedEndpointAfterTimeout.toString();
+  const mutated = source.replace(
+    'endpointPresent = null;\n        sampleTiming = null;',
+    'endpointPresent = false;\n        sampleTiming = null;',
+  );
+  assert.notEqual(mutated, source, 'mutation must target the real inspection error branch');
+  const inspect = runInNewContext(`(${mutated})`, {
+    join,
+    performance,
+    wait: async () => {},
+  });
+  const assertUnknown = async (observe) => {
+    const result = await observe({
+      profile: '/owned/profile',
+      windowMs: 100,
+      child: { exitCode: null, signalCode: null },
+      sleep: async () => {},
+      fileSystem: {
+        lstat: async () => {
+          throw Object.assign(new Error('private denied'), { code: 'EACCES' });
+        },
+      },
+    });
+    assert.equal(result.endpointPresent, null, 'inspection failure cannot prove absence');
+  };
+  await assertUnknown(observeOwnedEndpointAfterTimeout);
+  await assert.rejects(assertUnknown(inspect), /inspection failure cannot prove absence/);
+});

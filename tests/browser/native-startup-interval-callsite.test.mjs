@@ -8,6 +8,7 @@ import {
   guardNativeResourceSessionSend,
   runNativeResourceAction,
 } from './native-resource-boundary.mjs';
+import { observeOwnedEndpointAfterTimeout } from './native-sidepanel-qa-harness.mjs';
 
 // Execute the actual complete driver, including its finally. Replace only the
 // artifact/runtime/OS/CDP/policy-health boundaries so no native browser is needed.
@@ -34,9 +35,14 @@ async function run({
   finishFails = false,
   enabled = true,
   cdpEnabled = false,
+  endpointTimeout = false,
+  observationFails = false,
+  driverCode = driver,
 } = {}) {
   const events = [];
   const output = [];
+  const observations = [];
+  const timeoutError = new Error('owned_cdp_endpoint_timeout');
   const child = new EventEmitter();
   child.stderr = new EventEmitter();
   child.exitCode = null;
@@ -105,11 +111,17 @@ async function run({
     },
     connectNativeStartupOwnedCdp: async () => {
       events.push('connect');
+      if (endpointTimeout) throw timeoutError;
       if (connectFails) throw startupError;
       return session;
     },
     safeEndpointDiagnostic: () => null,
     safeEndpointWaitDiagnostic: () => null,
+    observeOwnedEndpointAfterTimeout: (options) =>
+      observeOwnedEndpointAfterTimeout({
+        ...options,
+        windowMs: 0,
+      }),
     safeStartupFailureCode: () => 'test_failure',
     browserDiagnosticFlags: () => ({}),
     stopOwnedChild: async (value) => {
@@ -117,22 +129,35 @@ async function run({
       events.push('cleanup');
     },
   };
-  const invoke = runInNewContext(`${driver}; runNativeSidepanelQa`, sandbox);
+  const invoke = runInNewContext(`${driverCode}; runNativeSidepanelQa`, sandbox);
   await assert.rejects(
     invoke({
+      ...(endpointTimeout && {
+        startupEndpointObservationMs: 100,
+        onStartupEndpointObservation: async (value) => {
+          observations.push(value);
+          if (observationFails) throw new Error('private diagnostic sink failed');
+        },
+      }),
       onStage: (stage) => {
         if (stage === 'endpoint_read') throw stopAfterStartup;
       },
     }),
     (error) =>
       error ===
-      (healthFails ? policyError : spawnFails || connectFails ? startupError : stopAfterStartup),
+      (healthFails
+        ? policyError
+        : endpointTimeout
+          ? timeoutError
+          : spawnFails || connectFails
+            ? startupError
+            : stopAfterStartup),
   );
   const brackets = output
     .filter((line) => line.startsWith('BROWSER_STARTUP_CPU_INTERVAL '))
     .map((line) => JSON.parse(line.slice('BROWSER_STARTUP_CPU_INTERVAL '.length)));
   assert.deepEqual(events.slice(-2), ['cleanup', 'remove-profile']);
-  return { events, brackets };
+  return { events, brackets, observations };
 }
 
 test('actual driver brackets successful spawn and CDP exactly once before cleanup', async () => {
@@ -217,4 +242,32 @@ test('actual composed driver refuses unavailable policy before spawn and still c
   ]);
   assert.equal(brackets.length, 1);
   assert.equal(brackets[0].outcome, 'spawn_failed');
+});
+
+test('actual timeout callback reports unknown presence and preserves failure through sink errors', async () => {
+  for (const observationFails of [false, true]) {
+    const { observations } = await run({ endpointTimeout: true, observationFails });
+    assert.equal(observations[0].phase, 'cdp_timeout');
+    assert.equal(observations[0].endpointPresent, null);
+    assert.equal(observations[0].presenceBasis, 'unobserved');
+    assert.equal(observations[0].sampleTiming, null);
+    assert.equal(observations[0].elapsedMs, observations[0].failureObservedElapsedMs);
+    assert.ok(observations[0].reportedElapsedMs >= observations[0].failureObservedElapsedMs);
+    if (!observationFails) assert.equal(observations[1].endpointPresent, null);
+  }
+});
+
+test('actual timeout observation oracle rejects the manufactured false callback mutation', async () => {
+  const mutated = driver.replace(/(phase: 'cdp_timeout',\n\s*endpointPresent:) null,/, '$1 false,');
+  assert.notEqual(mutated, driver, 'mutation must target the actual timeout callback');
+  const assertUnknown = async (driverCode) => {
+    const { observations } = await run({ endpointTimeout: true, driverCode });
+    assert.equal(
+      observations[0].endpointPresent,
+      null,
+      'timeout alone cannot prove filesystem absence',
+    );
+  };
+  await assertUnknown(driver);
+  await assert.rejects(assertUnknown(mutated), /timeout alone cannot prove filesystem absence/);
 });

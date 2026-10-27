@@ -700,12 +700,14 @@ timeoutError.endpointWaitDiagnostic = {
   polls: 180,
   elapsedMs: 5037,
   longestReadMs: 2,
+  lastRead: { startedElapsedMs: 5035, completedElapsedMs: 5037, outcome: 'missing' },
   privatePath: '/private/profile',
 };
 assert.deepEqual(safeEndpointWaitDiagnostic(timeoutError), {
   polls: 180,
   elapsedMs: 5037,
   longestReadMs: 2,
+  lastRead: { startedElapsedMs: 5035, completedElapsedMs: 5037, outcome: 'missing' },
 });
 timeoutError.endpointWaitDiagnostic.polls = 'private value';
 assert.equal(safeEndpointWaitDiagnostic(timeoutError), null);

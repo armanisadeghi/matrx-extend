@@ -79,6 +79,10 @@ async function drive(failureAt, error, nativeStage = 'cdp_connect', diagnostic =
               {
                 phase: 'cdp_connected',
                 endpointPresent: true,
+                presenceBasis: 'validated_connector_record',
+                sampleTiming: null,
+                recordInspection: { outcome: 'not_attempted', timing: null },
+                reportedElapsedMs: 8500,
                 inspectionFailed: false,
                 exitObserved: false,
                 elapsedMs: 8500,
@@ -90,7 +94,12 @@ async function drive(failureAt, error, nativeStage = 'cdp_connect', diagnostic =
           : [
               {
                 phase: 'cdp_timeout',
-                endpointPresent: false,
+                endpointPresent: null,
+                presenceBasis: 'unobserved',
+                sampleTiming: null,
+                recordInspection: { outcome: 'not_attempted', timing: null },
+                failureObservedElapsedMs: 8006,
+                reportedElapsedMs: 8006,
                 inspectionFailed: false,
                 exitObserved: false,
                 elapsedMs: 8006,
@@ -99,6 +108,13 @@ async function drive(failureAt, error, nativeStage = 'cdp_connect', diagnostic =
               {
                 phase: 'post_timeout',
                 endpointPresent: true,
+                presenceBasis: 'lstat',
+                sampleTiming: {
+                  startedElapsedMs: 1250,
+                  completedElapsedMs: 1250,
+                  origin: 'post_timeout_observer',
+                },
+                recordInspection: { outcome: 'not_attempted', timing: null },
                 inspectionFailed: false,
                 exitObserved: false,
                 elapsedMs: 1250,
@@ -204,6 +220,10 @@ test('connected CDP observation lets Notes reach sign-in without product credit'
       phase: 'cdp_connected',
       outcome: 'connected',
       endpointPresent: true,
+      presenceBasis: 'validated_connector_record',
+      sampleTiming: null,
+      recordInspection: { outcome: 'not_attempted', timing: null },
+      reportedElapsedMs: 8500,
       inspectionFailed: false,
       exitObserved: false,
       elapsedMs: 8500,
@@ -221,7 +241,7 @@ test('Notes A retains late endpoint evidence after the original timeout remains 
   assert.equal(persisted.failure_stage, 'native_cdp_connect');
   assert.deepEqual(
     persisted.observations.startup_endpoint.map(({ outcome }) => outcome),
-    ['timed_out', 'late_endpoint'],
+    ['timed_out', 'endpoint_observed'],
   );
   assert.equal(persisted.observations.startup_endpoint[1].elapsedMs, 1250);
   assert.doesNotMatch(JSON.stringify(persisted), /DevToolsActivePort|\/owned\/profile|"pid"/);
@@ -233,19 +253,42 @@ test('post-timeout observation classifies exit and stall without private values'
   const base = {
     phase: 'post_timeout',
     endpointPresent: false,
+    presenceBasis: 'lstat',
+    sampleTiming: {
+      startedElapsedMs: 15000,
+      completedElapsedMs: 15000,
+      origin: 'post_timeout_observer',
+    },
+    recordInspection: { outcome: 'not_attempted', timing: null },
     inspectionFailed: false,
     exitObserved: false,
     elapsedMs: 15_000,
     polls: 150,
     pid: 123,
   };
-  assert.equal(safeNotesEndpointObservation(base).outcome, 'still_absent');
+  assert.equal(safeNotesEndpointObservation(base).outcome, 'last_sample_absent');
+  assert.equal(
+    safeNotesEndpointObservation({
+      ...base,
+      endpointPresent: null,
+      presenceBasis: 'unobserved',
+      sampleTiming: null,
+    }).outcome,
+    'presence_unknown',
+  );
+
   assert.equal(
     safeNotesEndpointObservation({ ...base, exitObserved: true }).outcome,
     'child_exited',
   );
   assert.equal(
-    safeNotesEndpointObservation({ ...base, inspectionFailed: true }).outcome,
+    safeNotesEndpointObservation({
+      ...base,
+      inspectionFailed: true,
+      endpointPresent: null,
+      presenceBasis: 'unobserved',
+      sampleTiming: null,
+    }).outcome,
     'inspection_failed',
   );
   assert.equal(Object.hasOwn(safeNotesEndpointObservation(base), 'pid'), false);
@@ -327,6 +370,6 @@ test('owned post-timeout poller observes late publication, child exit, and a bou
       (await observe({})).outcome,
       (await observe({ failOnPoll: 2 })).outcome,
     ],
-    ['late_endpoint', 'child_exited', 'still_absent', 'inspection_failed'],
+    ['endpoint_observed', 'child_exited', 'last_sample_absent', 'inspection_failed'],
   );
 });

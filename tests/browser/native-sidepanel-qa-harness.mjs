@@ -47,7 +47,11 @@ import { prepareReloadSenderDocument } from './reload-sender-document-diagnostic
 import { maybeStartScrapeReloadOpenDiagnostic } from './scrape-reload-open-diagnostic.mjs';
 
 const require = createRequire(import.meta.url);
-const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
+const {
+  prepareOwnedProfile,
+  connectOwnedCdp,
+  inspectOwnedCdpEndpointRecord,
+} = require('./vault-owned-cdp.cjs');
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -1546,7 +1550,15 @@ function safeEndpointDiagnostic(error) {
 }
 
 function safeEndpointWaitDiagnostic(error) {
-  if (safeStartupFailureCode(error) !== 'owned_cdp_endpoint_timeout') return null;
+  if (
+    ![
+      'owned_cdp_endpoint_timeout',
+      'owned_cdp_endpoint_refused',
+      'owned_cdp_owner_refused',
+      'owned_cdp_process_inspection_failed',
+    ].includes(safeStartupFailureCode(error))
+  )
+    return null;
   const diagnostic = error.endpointWaitDiagnostic;
   if (
     !Number.isSafeInteger(diagnostic?.polls) ||
@@ -1557,10 +1569,30 @@ function safeEndpointWaitDiagnostic(error) {
     diagnostic.longestReadMs < 0
   )
     return null;
+  const read = diagnostic.lastRead;
+  if ((diagnostic.polls === 0) !== (read === null)) return null;
+  if (
+    read !== null &&
+    (!Number.isSafeInteger(read?.startedElapsedMs) ||
+      read.startedElapsedMs < 0 ||
+      !Number.isSafeInteger(read.completedElapsedMs) ||
+      read.completedElapsedMs < read.startedElapsedMs ||
+      read.completedElapsedMs > diagnostic.elapsedMs ||
+      !['missing', 'read', 'read_error'].includes(read.outcome))
+  )
+    return null;
   return {
     polls: diagnostic.polls,
     elapsedMs: diagnostic.elapsedMs,
     longestReadMs: diagnostic.longestReadMs,
+    lastRead:
+      read === null
+        ? null
+        : {
+            startedElapsedMs: read.startedElapsedMs,
+            completedElapsedMs: read.completedElapsedMs,
+            outcome: read.outcome,
+          },
   };
 }
 
@@ -1568,49 +1600,73 @@ async function observeOwnedEndpointAfterTimeout({
   profile,
   child,
   windowMs,
-  fileSystem = { lstat },
+  chromeExecutable,
+  fileSystem = { lstat, readFile, readlink },
   sleep = wait,
   clock = performance,
 }) {
   const started = clock.now();
   let polls = 0;
+  let endpointPresent = null;
+  let sampleTiming = null;
+  let inspectionFailed = false;
+  let recordInspection = { outcome: 'not_attempted', timing: null };
+  const elapsed = () => Math.max(0, Math.round(clock.now() - started));
+  const result = () => ({
+    phase: 'post_timeout',
+    endpointPresent,
+    presenceBasis: endpointPresent === null ? 'unobserved' : 'lstat',
+    sampleTiming,
+    recordInspection,
+    inspectionFailed,
+    exitObserved: child.exitCode !== null || child.signalCode !== null,
+    elapsedMs: elapsed(),
+    polls,
+  });
   while (clock.now() - started < windowMs) {
     polls += 1;
-    let endpointPresent = false;
+    const sampleStarted = elapsed();
     try {
       await fileSystem.lstat(join(profile, 'DevToolsActivePort'));
       endpointPresent = true;
     } catch (error) {
-      if (error?.code !== 'ENOENT')
-        return {
-          phase: 'post_timeout',
-          endpointPresent: false,
-          inspectionFailed: true,
-          exitObserved: child.exitCode !== null || child.signalCode !== null,
-          elapsedMs: Math.round(clock.now() - started),
-          polls,
+      if (error?.code !== 'ENOENT') {
+        // Neither denied I/O nor a zero-sample window proves file absence.
+        endpointPresent = null;
+        sampleTiming = null;
+        inspectionFailed = true;
+        return result();
+      }
+      endpointPresent = false;
+    }
+    sampleTiming = {
+      startedElapsedMs: sampleStarted,
+      completedElapsedMs: elapsed(),
+      origin: 'post_timeout_observer',
+    };
+    if (endpointPresent) {
+      const inspectionStarted = elapsed();
+      recordInspection = await inspectOwnedCdpEndpointRecord({
+        preparedProfile: { profile },
+        chromeExecutable,
+        fileSystem,
+        budgetMs: Math.max(0, windowMs - (clock.now() - started)),
+      });
+      if (recordInspection.timing)
+        recordInspection = {
+          outcome: recordInspection.outcome,
+          timing: {
+            startedElapsedMs: inspectionStarted,
+            completedElapsedMs: elapsed(),
+            origin: 'post_timeout_observer',
+          },
         };
     }
-    const exitObserved = child.exitCode !== null || child.signalCode !== null;
-    if (endpointPresent || exitObserved)
-      return {
-        phase: 'post_timeout',
-        endpointPresent,
-        inspectionFailed: false,
-        exitObserved,
-        elapsedMs: Math.round(clock.now() - started),
-        polls,
-      };
+    if (endpointPresent || child.exitCode !== null || child.signalCode !== null) return result();
     await sleep(Math.min(WAIT_MS, Math.max(0, windowMs - (clock.now() - started))));
   }
-  return {
-    phase: 'post_timeout',
-    endpointPresent: false,
-    inspectionFailed: false,
-    exitObserved: child.exitCode !== null || child.signalCode !== null,
-    elapsedMs: Math.round(clock.now() - started),
-    polls,
-  };
+  // Retain the actual last sample interval, not a claim of continuous absence.
+  return result();
 }
 
 function resolveNativeResourceAction(resourceAction, resourceHealthOptions = { repo: REPO }) {
@@ -1828,6 +1884,13 @@ export async function runNativeSidepanelQa({
         await onStartupEndpointObservation({
           phase: 'cdp_connected',
           endpointPresent: true,
+          presenceBasis: 'validated_connector_record',
+          sampleTiming: null,
+          recordInspection: { outcome: 'not_attempted', timing: null },
+          reportedElapsedMs: Math.max(
+            startupElapsedMs,
+            Math.round(performance.now() - startupStartedAt),
+          ),
           inspectionFailed: false,
           exitObserved: false,
           elapsedMs: startupElapsedMs,
@@ -1856,21 +1919,35 @@ export async function runNativeSidepanelQa({
         onStartupEndpointObservation &&
         startupEndpointObservationMs > 0
       ) {
-        await onStartupEndpointObservation({
-          phase: 'cdp_timeout',
-          endpointPresent: false,
-          inspectionFailed: false,
-          exitObserved: child.exitCode !== null || child.signalCode !== null,
-          elapsedMs: startupDiagnostic.elapsedMs,
-          polls: endpointWaitDiagnostic?.polls ?? 0,
-        });
-        await onStartupEndpointObservation(
-          await observeOwnedEndpointAfterTimeout({
-            profile,
-            child,
-            windowMs: startupEndpointObservationMs,
-          }),
-        );
+        try {
+          await onStartupEndpointObservation({
+            phase: 'cdp_timeout',
+            endpointPresent: null,
+            presenceBasis: 'unobserved',
+            sampleTiming: null,
+            recordInspection: { outcome: 'not_attempted', timing: null },
+            failureObservedElapsedMs: startupDiagnostic.elapsedMs,
+            reportedElapsedMs: Math.max(
+              startupDiagnostic.elapsedMs,
+              Math.round(performance.now() - startupStartedAt),
+            ),
+            inspectionFailed: false,
+            exitObserved: child.exitCode !== null || child.signalCode !== null,
+            elapsedMs: startupDiagnostic.elapsedMs,
+            polls: endpointWaitDiagnostic?.polls ?? 0,
+          });
+          await onStartupEndpointObservation(
+            await observeOwnedEndpointAfterTimeout({
+              profile,
+              child,
+              chromeExecutable,
+              windowMs: startupEndpointObservationMs,
+            }),
+          );
+        } catch {
+          // Diagnostic I/O/sinks cannot replace the original connector failure.
+          process.stderr.write('BROWSER_STARTUP_ENDPOINT_OBSERVATION_FAILED\n');
+        }
       }
       throw error;
     }

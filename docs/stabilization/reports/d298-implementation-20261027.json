@@ -1,0 +1,245 @@
+{
+  "task_id": "EXT-D-0298",
+  "lane": "/root/d298_truthful_diagnostics_implementation",
+  "model": "inherited parent model",
+  "status": "SOURCE_IMPLEMENTED_CURRENT_DEPENDENCY_COMPILE_AND_INDEPENDENT_RETEST_PENDING",
+  "at": "2026-10-27T02:30:02.348951+00:00",
+  "feature_ids": ["EXT-F-0001"],
+  "case_ids": ["EXT-F-0001-T01"],
+  "defect_ids": ["EXT-D-0298"],
+  "scope": "Supporting startup measurement only; zero product behavior passes, no bootstrap-cause/CPU-causality/physical-publication-time claim.",
+  "summary": "Unmeasured timeout/error/zero-sample presence stays null. Measured lstat intervals and canonical validated connector records carry separate provenance; reader intervals survive safe errors/serializers. Optional diagnostic-only record validation reuses the sole parser/owner phase, never opens a socket and fences late stages; remaining-window abort drains default inspector children. Original startup failure and5000/8000ms command/startup settings remain intact.",
+  "changed_files": [
+    "package.json",
+    "scripts/hosted-seo-route.test.mjs",
+    "scripts/hosted-startup-interval-diagnostic.mjs",
+    "scripts/test-hosted-startup-interval-diagnostic.mjs",
+    "tests/browser/native-cdp-startup-diagnostic.mjs",
+    "tests/browser/native-cdp-startup-diagnostic.test.mjs",
+    "tests/browser/native-cdp-startup-deadline.test.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/native-sidepanel-qa-harness.test.mjs",
+    "tests/browser/native-startup-interval-callsite.test.mjs",
+    "tests/browser/notes-startup-diagnostic.mjs",
+    "tests/browser/notes-startup-diagnostic.test.mjs",
+    "tests/browser/vault-owned-cdp.cjs",
+    "docs/stabilization/PLAN.md"
+  ],
+  "source_sha256": {
+    "package.json": "c8e353cf322e3476b1b592debce2197f1c8fd321a48ba663478c669c8dc87299",
+    "scripts/hosted-seo-route.test.mjs": "d7cc365bb2c5956eea8198e3805bfdcf4d42c1a3e6b7d7d0787049a6d53c12d5",
+    "scripts/hosted-startup-interval-diagnostic.mjs": "978390fe5f139fb0be0081248c146bd64636211caa37cf6dd665eeaeacce6c55",
+    "scripts/test-hosted-startup-interval-diagnostic.mjs": "c98193169df188b7c302ba40316268d90f713788d35196bf40cd31de3d9c7dca",
+    "tests/browser/native-cdp-startup-diagnostic.mjs": "2795a56dd7162c99c8200ca38693cdec69ab925fe976dc2eae1744b570bf1290",
+    "tests/browser/native-cdp-startup-diagnostic.test.mjs": "2b83fcace49c2e21b1c24c07de46accbe33c09ec1ca581db7c4680eeaa53cb38",
+    "tests/browser/native-cdp-startup-deadline.test.mjs": "c8fdd5be36a6af31b24d82d094594204fec460f586dcefb63ec469ebe79fff5a",
+    "tests/browser/native-sidepanel-qa-harness.mjs": "05c26eb45aba1d55087fb889e1fb5ea9143cca24ff33e17810646a2610af827f",
+    "tests/browser/native-sidepanel-qa-harness.test.mjs": "fe9880b410224f620adcfcc47db100a71bc4b04f3572db322766849e723b0104",
+    "tests/browser/native-startup-interval-callsite.test.mjs": "abd9d2367d7791f9f77a9afd1253dfc26088619e260a71400ba858b0ae52fac2",
+    "tests/browser/notes-startup-diagnostic.mjs": "d302db4b14f8b76155cc971a7d0b61e0769c5d66b4766071834ca4c7d0d57cc7",
+    "tests/browser/notes-startup-diagnostic.test.mjs": "70bf5aee5f4902935280a659a3043e597e52f5cc1132d8d4e75915dc09320a0c",
+    "tests/browser/vault-owned-cdp.cjs": "4a8ab7180b966fccfbfa06ab03f4357f2b6e3a3ffbae48aae07501ae1bd71bd7",
+    "docs/stabilization/PLAN.md": "0cc9ae04622ca3875ec1d5d6d005eadd5b21c71d2dae0bc23a3bd66c57a8bf56"
+  },
+  "base_at_claim": "0f18452a4",
+  "plan_attack": "docs/stabilization/reports/d298-plan-attack-20261027.json",
+  "commit_provenance": "Exact implementation SHA is the commit containing this report, discoverable by git log on the listed owned paths; final private return records actual pushed SHA after commit. No self-referential invented SHA.",
+  "sibling_census": [
+    "literal timeout false callback",
+    "non-ENOENT lstat failure false",
+    "zero-sample/window-exhausted false",
+    "connected-record versus live-filesystem conflation",
+    "missing per-read intervals",
+    "strict boolean hosted/Notes serializers",
+    "Notes truthiness/absence/late-publication labels",
+    "SEO shared sink",
+    "VM actual-driver compositions",
+    "default ps child cancellation/close accounting"
+  ],
+  "reused": "Extracted the existing exact two-line record parser and executable/profile owner validation as one private phase used by normal connector and diagnostic inspection. Extended existing native CDP diagnostic module for one safe observation contract reused by hosted and Notes wrappers; SEO already consumes hosted wrapper.",
+  "verification": [
+    {
+      "run_id": "d298-red-20261027",
+      "journal": "docs/stabilization/resource-journals/d298-red-20261027.jsonl",
+      "journal_sha256": "1e412ece0bd4f96ca52e32da95e34cf5630bea3090ab9454b7d03c7e5094768d",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T02:14:04.909Z",
+        "runId": "d298-red-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "admitted": true,
+      "resource_invalid": false,
+      "counts": {
+        "tests": 1078,
+        "pass": 1065,
+        "fail": 2,
+        "skipped": 11
+      },
+      "stdout_limit": "Original terminal output observed through tool session58884; complete child stdout was not redirected to disk. Counts/assertions here are an explicitly transcribed observation, not a fabricated raw log."
+    },
+    {
+      "run_id": "d298-green-20261027",
+      "journal": "docs/stabilization/resource-journals/d298-green-20261027.jsonl",
+      "journal_sha256": "a3c952abd211c3be517fac33c18af237738a05f6b328e675bfefc9e98727e441",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T02:19:21.167Z",
+        "runId": "d298-green-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "admitted": true,
+      "resource_invalid": false,
+      "private_original_log": ".output/stabilization-checkpoints/d298-green-20261027.log",
+      "log_sha256": "c1d2e05f7268a6994253dbbe2f8ae316247d09ffb7f927499b94e055f1355fad",
+      "counts": {
+        "tests": 1095,
+        "pass": 1084,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 11
+      },
+      "decisive_lines": [
+        "\u2714 endpoint absence stays unknown when no filesystem sample completed (0.466625ms)",
+        "\u2714 unknown endpoint presence round trips without becoming absent (0.163917ms)",
+        "\u2714 actual connector failures retain last-read intervals through the safe serializer (54.165458ms)",
+        "\u2714 actual timeout callback reports unknown presence and preserves failure through sink errors (0.790583ms)"
+      ]
+    },
+    {
+      "run_id": "d298-final-green-20261027",
+      "journal": "docs/stabilization/resource-journals/d298-final-green-20261027.jsonl",
+      "journal_sha256": "ac52241b8499c08c22575be141b01a2e71019098de357edf870cd1a15a5a8ac4",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T02:23:17.152Z",
+        "runId": "d298-final-green-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "admitted": true,
+      "resource_invalid": false,
+      "private_original_log": ".output/stabilization-checkpoints/d298-final-green-20261027.log",
+      "log_sha256": "fa732d6c94652bc12b5fe3390f002cdfe943aa7a5c38fdb2d233f5b86fed3c77",
+      "counts": {
+        "tests": 1099,
+        "pass": 1087,
+        "fail": 1,
+        "cancelled": 0,
+        "skipped": 11
+      },
+      "decisive_lines": [
+        "\u2714 endpoint absence stays unknown when no filesystem sample completed (0.519833ms)",
+        "\u2714 unknown endpoint presence round trips without becoming absent (0.167ms)",
+        "\u2714 actual connector failures retain last-read intervals through the safe serializer (55.722209ms)",
+        "\u2716 diagnostic abort drains both owned process-inspection children before returning (5.063167ms)",
+        "\u2714 record validation guard rejects a constant validated-result mutation (2.928709ms)",
+        "\u2714 actual failed-read timing guard rejects dropped last-read metadata (13.396416ms)",
+        "\u2714 failed filesystem observation guard rejects manufactured absence mutation (0.790084ms)",
+        "\u2714 actual timeout callback reports unknown presence and preserves failure through sink errors (2.282208ms)",
+        "\u2716 failing tests:",
+        "\u2716 diagnostic abort drains both owned process-inspection children before returning (5.063167ms)"
+      ]
+    },
+    {
+      "run_id": "d298-batched-green-20261027",
+      "journal": "docs/stabilization/resource-journals/d298-batched-green-20261027.jsonl",
+      "journal_sha256": "eababfb2696af18eb2a811b8764c8669e3688d99c84fd0631714d15919333302",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T02:28:01.024Z",
+        "runId": "d298-batched-green-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "admitted": true,
+      "resource_invalid": false,
+      "private_original_log": ".output/stabilization-checkpoints/d298-batched-green-20261027.log",
+      "log_sha256": "1eb34506c5271a5e0662f1b5a812997fb8ec4eff252e3035b18b56210647e235",
+      "counts": {
+        "tests": 1100,
+        "pass": 1089,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 11
+      },
+      "decisive_lines": [
+        "\u2714 endpoint absence stays unknown when no filesystem sample completed (0.578125ms)",
+        "\u2714 unknown endpoint presence round trips without becoming absent (0.179542ms)",
+        "\u2714 actual connector failures retain last-read intervals through the safe serializer (56.616792ms)",
+        "\u2714 diagnostic abort drains both owned process-inspection children before returning (608.256084ms)",
+        "\u2714 record validation guard rejects a constant validated-result mutation (3.604292ms)",
+        "\u2714 actual failed-read timing guard rejects dropped last-read metadata (13.913125ms)",
+        "\u2714 failed filesystem observation guard rejects manufactured absence mutation (1.11375ms)",
+        "\u2714 actual timeout callback reports unknown presence and preserves failure through sink errors (1.24275ms)",
+        "\u2714 actual timeout observation oracle rejects the manufactured false callback mutation (1.813334ms)"
+      ]
+    },
+    {
+      "run_id": "d298-compile-20261027",
+      "journal": "docs/stabilization/resource-journals/d298-compile-20261027.jsonl",
+      "journal_sha256": "6009884635e92c63300904e4e88120d630950babf516388922d313f6544df96e",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T02:29:13.002Z",
+        "runId": "d298-compile-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "admitted": true,
+      "resource_invalid": false,
+      "private_original_log": ".output/stabilization-checkpoints/d298-compile-20261027.log",
+      "log_sha256": "85840275e3967e2ee1643461c900fcd928445b8f0b11c84cf95a699ac0ef1491",
+      "counts": {},
+      "decisive_lines": []
+    }
+  ],
+  "regression_caught": "FirstGREEN1095 was limited to its earlier frozen source. Later1099 run caught candidate diagnostic regression: fractional remainingMs was passed as native execFile timeout, which requires an integer, yielding inspection_failed before the intended child wait. Native Node26 implementation validateTimeout calls validateInteger(timeout, timeout,0). Corrected by retaining original5000ms command timeout and using existing diagnostic AbortSignal for the shorter remaining window; no new knob or rounding policy. Final batched run includes actual default-inspector child close/drain and executed removal-of-drain sabotage.",
+  "forcing_coverage": [
+    "old-code false!==null and boolean serializer refusal RED",
+    "controlled actual driver timeout callback plus manufactured-false mutation",
+    "real isolated temp endpoint records valid/invalid/foreign/missing without socket construction",
+    "deliberately non-abortable read completes after budget; no owner/readlink stage follows",
+    "delayed process inspection cannot produce validated evidence after expiration",
+    "actual default inspector with external ps adapted to real owned foreground Node children; abort waits both close events; executed drain-removal mutation fails the specific oracle",
+    "actual connector timeout/read error/malformed-record errors retain reader timing through safe serializer; executed dropped-lastRead mutation fails",
+    "actual inspection error remains unknown; executed false-absence mutation fails",
+    "constant validated-result mutation fails malformed-record oracle",
+    "shared hosted/Notes null and safe-state serialization, raw-private-field stripping, existing normal connector/refusal/cleanup cases"
+  ],
+  "preserved": [
+    "resource-policy/workflow/runner/admission/refusal settings unchanged",
+    "nativeCdpStartupDeadlineMs8000 remains polling-entry budget",
+    "normal default ps/socket command timeout5000 unchanged",
+    "historical original hosted raw files and failed verdicts unchanged",
+    "D254/D231 investigations and all product case statuses unchanged",
+    "contributor dependency manifest/lock changes preserved"
+  ],
+  "limits": [
+    "Fresh zero-authorship independent original-repro/surrounding review pending",
+    "Local compile failed exactly2 existing Vault/auth package API errors: signInWithOtp/verifyOtp unavailable from installed @ai-matrx/auth. No diagnostic TS error. Current-dependency compile/full CI pending; installed dependency equivalence not asserted",
+    "Exact-source guarded hosted startup original-path retest pending; no actual Chrome/Store UI acceptance in this lane",
+    "Default-inspector cancellation test adapts external ps command to real foreground Node children; it is supporting control-flow/process-cleanup proof, not actual Chrome ownership acceptance",
+    "FirstRED complete stdout not saved; explicitly transcribed assertions and original completed resource journal retained",
+    "No Store adoption/upload/submission/baseline update/release or local build"
+  ],
+  "cleanup": "All owned local test/compile guard sessions terminal (compile actual1, not a pass), all completed journals final; isolated temp fixture directories removed, aborted test children awaited through actual close events, no browser/auth/secret fixtures created.",
+  "next_action": "Parent repair installed-dependency mismatch or establish current-dependency CI compile, then dispatch fresh independent A/B verification of this exact owned source unit; observe current-source full CI, then normal exact-source hosted startup diagnostic with preserved failures and measured unknowns. No D298 closure or D254/D231 closure until respective original-path gates pass."
+}

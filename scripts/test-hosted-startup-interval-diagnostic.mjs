@@ -36,6 +36,13 @@ test('owned endpoint observer separates late file, absent file, and child exit',
   assert.deepEqual(late, {
     phase: 'post_timeout',
     endpointPresent: true,
+    presenceBasis: 'lstat',
+    sampleTiming: {
+      startedElapsedMs: 200,
+      completedElapsedMs: 200,
+      origin: 'post_timeout_observer',
+    },
+    recordInspection: { outcome: 'not_attempted', timing: null },
     inspectionFailed: false,
     exitObserved: false,
     elapsedMs: 200,
@@ -50,6 +57,13 @@ test('owned endpoint observer separates late file, absent file, and child exit',
   assert.deepEqual(absent, {
     phase: 'post_timeout',
     endpointPresent: false,
+    presenceBasis: 'lstat',
+    sampleTiming: {
+      startedElapsedMs: 100,
+      completedElapsedMs: 100,
+      origin: 'post_timeout_observer',
+    },
+    recordInspection: { outcome: 'not_attempted', timing: null },
     inspectionFailed: false,
     exitObserved: false,
     elapsedMs: 200,
@@ -80,6 +94,13 @@ test('endpoint observation strips private fields and rejects malformed state', (
   const safe = safeStartupEndpointObservation({
     phase: 'post_timeout',
     endpointPresent: false,
+    presenceBasis: 'lstat',
+    sampleTiming: {
+      startedElapsedMs: 5037,
+      completedElapsedMs: 5037,
+      origin: 'post_timeout_observer',
+    },
+    recordInspection: { outcome: 'not_attempted', timing: null },
     inspectionFailed: false,
     exitObserved: true,
     elapsedMs: 5037,
@@ -151,7 +172,12 @@ test('diagnostic writer preserves headed default and explicitly isolates headles
           assert.equal(startupEndpointObservationMs, 15_000);
           await onStartupEndpointObservation({
             phase: 'cdp_timeout',
-            endpointPresent: false,
+            endpointPresent: null,
+            presenceBasis: 'unobserved',
+            sampleTiming: null,
+            recordInspection: { outcome: 'not_attempted', timing: null },
+            failureObservedElapsedMs: 5000,
+            reportedElapsedMs: 5000,
             exitObserved: false,
             inspectionFailed: false,
             elapsedMs: 5000,
@@ -186,7 +212,7 @@ test('diagnostic writer preserves headed default and explicitly isolates headles
     assert.equal(report.gpuObservation.skiaBackendType, 'Graphite');
     assert.equal(report.gpuObservation.glRenderer, 'ANGLE Metal');
     assert.equal(report.runnerArch, 'X64');
-    assert.equal(report.startupEndpointObservations[0].endpointPresent, false);
+    assert.equal(report.startupEndpointObservations[0].endpointPresent, null);
     assert.equal(report.startupEndpointObservations[0].phase, 'cdp_timeout');
     assert.equal(Object.hasOwn(report.startupEndpointObservations[0], 'privatePath'), false);
     assert.match(report.completedAt, /^20\d\d-/);
@@ -221,7 +247,12 @@ test('diagnostic writer preserves headed default and explicitly isolates headles
         nativeRunner: async ({ onStartupEndpointObservation }) => {
           await onStartupEndpointObservation({
             phase: 'cdp_timeout',
-            endpointPresent: false,
+            endpointPresent: null,
+            presenceBasis: 'unobserved',
+            sampleTiming: null,
+            recordInspection: { outcome: 'not_attempted', timing: null },
+            failureObservedElapsedMs: 5000,
+            reportedElapsedMs: 5000,
             inspectionFailed: false,
             exitObserved: false,
             elapsedMs: 5000,
@@ -230,6 +261,13 @@ test('diagnostic writer preserves headed default and explicitly isolates headles
           await onStartupEndpointObservation({
             phase: 'post_timeout',
             endpointPresent: true,
+            presenceBasis: 'lstat',
+            sampleTiming: {
+              startedElapsedMs: 400,
+              completedElapsedMs: 400,
+              origin: 'post_timeout_observer',
+            },
+            recordInspection: { outcome: 'not_attempted', timing: null },
             inspectionFailed: false,
             exitObserved: false,
             elapsedMs: 400,
@@ -256,4 +294,49 @@ test('diagnostic writer preserves headed default and explicitly isolates headles
     }
     await rm(outputDir, { recursive: true, force: true });
   }
+});
+
+// D298: actual failed file inspection and zero samples cannot prove absence.
+test('endpoint absence stays unknown when no filesystem sample completed', async () => {
+  for (const options of [
+    { windowMs: 0, fileSystem: { lstat: async () => assert.fail('zero budget must not read') } },
+    {
+      windowMs: 100,
+      fileSystem: {
+        lstat: async () => {
+          throw Object.assign(new Error('private denied'), { code: 'EACCES' });
+        },
+      },
+    },
+  ]) {
+    const result = await observeOwnedEndpointAfterTimeout({
+      profile: '/owned/profile',
+      child: { exitCode: null, signalCode: null },
+      ...options,
+    });
+    assert.equal(result.endpointPresent, null, 'unmeasured presence must remain unknown');
+    assert.equal(result.presenceBasis, 'unobserved');
+    assert.equal(result.sampleTiming, null);
+  }
+});
+
+test('unknown endpoint presence round trips without becoming absent', () => {
+  const value = {
+    phase: 'cdp_timeout',
+    endpointPresent: null,
+    presenceBasis: 'unobserved',
+    sampleTiming: null,
+    recordInspection: { outcome: 'not_attempted', timing: null },
+    inspectionFailed: false,
+    exitObserved: false,
+    elapsedMs: 8016,
+    polls: 221,
+    failureObservedElapsedMs: 8016,
+    reportedElapsedMs: 8249,
+  };
+  const safe = safeStartupEndpointObservation(value);
+  assert.equal(safe.endpointPresent, null);
+  assert.equal(safe.presenceBasis, 'unobserved');
+  assert.equal(safe.failureObservedElapsedMs, 8016);
+  assert.equal(safe.reportedElapsedMs, 8249);
 });

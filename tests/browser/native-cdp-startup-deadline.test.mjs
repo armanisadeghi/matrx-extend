@@ -41,8 +41,9 @@ test('native startup admits an owned endpoint arriving after the old 5-second cu
       executable: chromeExecutable,
       args: `--user-data-dir=${profile} --remote-debugging-port=0`,
     });
-    // The captured hosted run's endpoint appeared 1,145 ms after a 5,024 ms cutoff.
-    // Exercise the same real file-read boundary with no Chrome or heavy job.
+    // Earlier hosted evidence observed a record after timeout; it did not
+    // timestamp physical publication. This controlled fixture publishes after
+    // 6,100 ms at the real file-read boundary, without Chrome.
     let endpointWritten;
     const firstEndpoint = new Promise((resolve, reject) => {
       endpointTimer = setTimeout(() => {

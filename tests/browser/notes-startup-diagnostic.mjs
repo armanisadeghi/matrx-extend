@@ -1,3 +1,4 @@
+import { safeEndpointObservation } from './native-cdp-startup-diagnostic.mjs';
 // Only fixed labels leave the startup boundary; exception text is never serialized.
 const NATIVE_STAGES = new Set([
   'receipt',
@@ -49,12 +50,12 @@ export function notesEndpointObservationEnabled(env) {
 export function safeNotesEndpointObservation(value) {
   if (!['cdp_connected', 'cdp_timeout', 'post_timeout'].includes(value?.phase))
     throw new Error('notes_endpoint_observation_phase_refused');
-  for (const key of ['endpointPresent', 'inspectionFailed', 'exitObserved'])
-    if (typeof value[key] !== 'boolean')
-      throw new Error('notes_endpoint_observation_shape_refused');
-  for (const key of ['elapsedMs', 'polls'])
-    if (!Number.isSafeInteger(value[key]) || value[key] < 0)
-      throw new Error('notes_endpoint_observation_shape_refused');
+  let safe;
+  try {
+    safe = safeEndpointObservation(value);
+  } catch {
+    throw new Error('notes_endpoint_observation_shape_refused');
+  }
   const outcome =
     value.phase === 'cdp_connected'
       ? 'connected'
@@ -62,18 +63,12 @@ export function safeNotesEndpointObservation(value) {
         ? 'timed_out'
         : value.inspectionFailed
           ? 'inspection_failed'
-          : value.endpointPresent
-            ? 'late_endpoint'
+          : value.endpointPresent === true
+            ? 'endpoint_observed'
             : value.exitObserved
               ? 'child_exited'
-              : 'still_absent';
-  return {
-    phase: value.phase,
-    outcome,
-    endpointPresent: value.endpointPresent,
-    inspectionFailed: value.inspectionFailed,
-    exitObserved: value.exitObserved,
-    elapsedMs: value.elapsedMs,
-    polls: value.polls,
-  };
+              : value.endpointPresent === null
+                ? 'presence_unknown'
+                : 'last_sample_absent';
+  return { ...safe, outcome };
 }

@@ -193,3 +193,90 @@ export async function observeNativeCdpStartup(
     }
   }
 }
+
+// One bounded observation contract for hosted and Notes diagnostic sinks.
+// Unknown is distinct from an actual lstat result and validated connector record.
+export function safeEndpointObservation(value) {
+  const count = (n) => Number.isSafeInteger(n) && n >= 0;
+  const fail = () => {
+    throw new Error('endpoint_observation_shape_refused');
+  };
+  if (!['cdp_connected', 'cdp_timeout', 'post_timeout'].includes(value?.phase)) fail();
+  if (value.endpointPresent !== null && typeof value.endpointPresent !== 'boolean') fail();
+  if (!['unobserved', 'lstat', 'validated_connector_record'].includes(value.presenceBasis)) fail();
+  if ((value.endpointPresent === null) !== (value.presenceBasis === 'unobserved')) fail();
+  if (
+    value.presenceBasis === 'validated_connector_record' &&
+    (value.endpointPresent !== true || value.phase !== 'cdp_connected')
+  )
+    fail();
+  if (value.phase === 'cdp_timeout' && value.presenceBasis !== 'unobserved') fail();
+  if (value.phase === 'cdp_connected' && value.presenceBasis !== 'validated_connector_record')
+    fail();
+  if (value.inspectionFailed && (value.endpointPresent !== null || value.phase !== 'post_timeout'))
+    fail();
+  for (const key of ['inspectionFailed', 'exitObserved'])
+    if (typeof value[key] !== 'boolean') fail();
+  for (const key of ['elapsedMs', 'polls']) if (!count(value[key])) fail();
+  const timing = (input, origin) => {
+    if (
+      !input ||
+      input.origin !== origin ||
+      !count(input.startedElapsedMs) ||
+      !count(input.completedElapsedMs) ||
+      input.completedElapsedMs < input.startedElapsedMs
+    )
+      fail();
+    return {
+      startedElapsedMs: input.startedElapsedMs,
+      completedElapsedMs: input.completedElapsedMs,
+      origin,
+    };
+  };
+  const sampleTiming =
+    value.sampleTiming === null ? null : timing(value.sampleTiming, 'post_timeout_observer');
+  if ((value.presenceBasis === 'lstat') !== (sampleTiming !== null)) fail();
+  if (sampleTiming && sampleTiming.completedElapsedMs > value.elapsedMs) fail();
+  const inspection = value.recordInspection;
+  if (
+    ![
+      'validated_owned_record',
+      'missing',
+      'record_refused',
+      'owner_refused',
+      'inspection_failed',
+      'budget_expired',
+      'not_attempted',
+    ].includes(inspection?.outcome)
+  )
+    fail();
+  const inspectionTiming =
+    inspection.timing === null ? null : timing(inspection.timing, 'post_timeout_observer');
+  if ((inspection.outcome === 'not_attempted') !== (inspectionTiming === null)) fail();
+  if (inspectionTiming && inspectionTiming.completedElapsedMs > value.elapsedMs) fail();
+  if (inspection.outcome === 'validated_owned_record' && value.endpointPresent !== true) fail();
+  const safe = {
+    phase: value.phase,
+    endpointPresent: value.endpointPresent,
+    presenceBasis: value.presenceBasis,
+    sampleTiming,
+    recordInspection: { outcome: inspection.outcome, timing: inspectionTiming },
+    inspectionFailed: value.inspectionFailed,
+    exitObserved: value.exitObserved,
+    elapsedMs: value.elapsedMs,
+    polls: value.polls,
+  };
+  if (value.phase !== 'post_timeout') {
+    if (!count(value.reportedElapsedMs) || value.reportedElapsedMs < value.elapsedMs) fail();
+    safe.reportedElapsedMs = value.reportedElapsedMs;
+  }
+  if (value.phase === 'cdp_timeout') {
+    if (
+      !count(value.failureObservedElapsedMs) ||
+      value.failureObservedElapsedMs !== value.elapsedMs
+    )
+      fail();
+    safe.failureObservedElapsedMs = value.failureObservedElapsedMs;
+  }
+  return safe;
+}

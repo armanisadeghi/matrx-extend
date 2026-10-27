@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0298",
   "feature_id": "EXT-F-0001",
-  "case_ids": [
-    "EXT-F-0001-T01"
-  ],
+  "case_ids": ["EXT-F-0001-T01"],
   "title": "Startup diagnostics report unmeasured endpoint absence as false",
   "surface": "supporting native startup diagnostics",
   "auth_mode": "not-applicable; no auth or product behavior tested",
@@ -22,18 +20,16 @@
   "expected": "Unknown, last-reader outcome and actual filesystem observations are distinct, timestamped and honest; no file absence manufactured from a timeout or inspection error.",
   "actual": "Timeout callback manufactures false; postwatch non-ENOENT inspection errors also return false. Aggregate last-read timing cannot establish physical publication time.",
   "cause": "Presence and connector outcomes conflated; diagnostic serialization lacks observation provenance/per-read timing.",
-  "reproducibility": "Deterministic source composition plus one actual diagnostic; controlled RED/GREEN pending.",
+  "reproducibility": "Old-code canonical RED2; corrected batched focused1100total1089pass0fail11skip resource-valid; compile failed2 existing installed Vault/auth API errors. Current-dependency/independent/hosted retest pending.",
   "source_sha": "b3b3d345e87959e277a3513b3c38226160fe6d13",
   "evidence": [
     "docs/stabilization/reports/late-cdp-publication-diagnosis-20261027.json",
-    "docs/stabilization/reports/hosted-startup-b3-20261027.json"
+    "docs/stabilization/reports/hosted-startup-b3-20261027.json",
+    "docs/stabilization/reports/d298-implementation-20261027.json"
   ],
-  "related_defects": [
-    "EXT-D-0254",
-    "EXT-D-0231"
-  ],
+  "related_defects": ["EXT-D-0254", "EXT-D-0231"],
   "fix_sha": null,
-  "next_action": "Implement approved nullable provenance and timing contract with canonical nonconnecting record inspection, RED/GREEN and independent review; no timeout/resource/runner or product acceptance change.",
+  "next_action": "Parent repair installed-dependency mismatch or establish current-dependency CI compile, then dispatch fresh independent A/B verification of this exact owned source unit; observe current-source full CI, then normal exact-source hosted startup diagnostic with preserved failures and measured unknowns. No D298 closure or D254/D231 closure until respective original-path gates pass.",
   "transition_history": [
     {
       "at": "2026-10-27T01:57:17.590334+00:00",
@@ -47,5 +43,18 @@
       "to": "in-fix",
       "reason": "Approved 12/12 plan attack COMMIT; bounded implementation lane assigned with both timing/refusal advisories binding."
     }
-  ]
+  ],
+  "sibling_census": [
+    "literal timeout false callback",
+    "non-ENOENT lstat failure false",
+    "zero-sample/window-exhausted false",
+    "connected-record versus live-filesystem conflation",
+    "missing per-read intervals",
+    "strict boolean hosted/Notes serializers",
+    "Notes truthiness/absence/late-publication labels",
+    "SEO shared sink",
+    "VM actual-driver compositions",
+    "default ps child cancellation/close accounting"
+  ],
+  "fix_sha_note": "Exact implementation SHA is the commit containing this report, discoverable by git log on the listed owned paths; final private return records actual pushed SHA after commit. No self-referential invented SHA."
 }
