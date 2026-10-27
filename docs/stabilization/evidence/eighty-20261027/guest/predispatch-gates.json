@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-27T13:05:38.589288+00:00",
+  "head": "80e30c62a1259e657519ec274bc951bbf36c5100",
+  "origin": "80e30c62a1259e657519ec274bc951bbf36c5100",
+  "dirty": "",
+  "public": true,
+  "ci_breaker": [],
+  "member_link_secret_present": false,
+  "auth_or_fixture_writes": 0,
+  "plan_actual_exit": 0,
+  "operator_correction": "Initial unquoted metadataendpoint rejected byshellbeforeAPI; canonicalreadonlyplancompleted0. Correctedmetadataquerybeforeanydispatch; noadmissionrefusal/retry."
+}

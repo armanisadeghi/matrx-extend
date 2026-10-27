@@ -1,0 +1,9 @@
+{
+  "phase": "UI_READY",
+  "runId": "owner80-native-20261027-130706",
+  "fingerprintPath": "docs/stabilization/evidence/eighty-20261027/owner/owner80-disk-fingerprint-20261027.json",
+  "journalPath": "docs/stabilization/resource-journals/owner80-native-20261027-130706.pending.jsonl",
+  "watchPath": "docs/stabilization/evidence/eighty-20261027/owner/owner80-resource-build-watch-20261027.jsonl",
+  "ledgerPath": "docs/stabilization/evidence/eighty-20261027/owner/owner80-native-api-ledger-20261027.jsonl",
+  "approvalPath": "docs/stabilization/evidence/eighty-20261027/owner/owner80-parent-ui-admission-20261027.json"
+}

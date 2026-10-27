@@ -1,0 +1,181 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T13:20:15.786520+00:00",
+  "lane": "owner80_reload_only",
+  "status": "TERMINAL_NATIVE_OWNER_RELOAD_COMPLETION_UNVERIFIED",
+  "source_sha": "80e30c62a1259e657519ec274bc951bbf36c5100",
+  "native_api_budget": 30,
+  "tool_budget": 55,
+  "source_writes": [],
+  "commits": [],
+  "operations": {
+    "import_actual_exit": 0,
+    "combined_verify_and_promote_actual_exit": 0,
+    "standalone_verify_exit_not_separately_captured": true,
+    "normal_verifier_returned_valid_exact80_object": true,
+    "last_normal_promote_exit": 0,
+    "no_build_install_release_dispatch": true
+  },
+  "owned_processes": [],
+  "next_action": "Rootfreshindependentpeerandcanonicalrecord; actualownerloaded-sourcecompletionunverified. A changedfreshboundedmanagementrestartrecipe may verifyit; no moretoastblindretry inthislane.",
+  "development": {
+    "source_sha": "80e30c62a1259e657519ec274bc951bbf36c5100",
+    "run": 40507157903,
+    "artifact": 12736232145,
+    "github_digest": "58452c43bfd6206e0f80949fb2cdff911f9cfce515f698144383d484e0af6fbf",
+    "tree_sha256": "a42ab51cdbef887da5d8ef707fe5ad49a2095815083d94f756d1ba5ca11b4b0f",
+    "version": "0.2.629",
+    "eligibleStore": false
+  },
+  "owner": {
+    "profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "active_account": "arman@armansadeghi.com",
+    "chrome": "156.0.8078.48",
+    "development_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "manager_version": "0.2.629",
+    "enabled": true,
+    "pin": true,
+    "reload_attempts": [
+      "AXmanagerReload49+combinedAXPNG",
+      "freshscreenshotcoordinate933230+combinedAXPNG",
+      "AXmanagerReload49+separatefastAXthenPNG"
+    ],
+    "reload_completion": "UNVERIFIED; none ofretainedAX/PNGcontainsliteralReloaded",
+    "exact_loaded_source": "UNVERIFIED; staticmetadata+activationattemptsnotcompletionproof"
+  },
+  "store": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.577",
+    "source": "Chrome Web Store",
+    "enabled": true,
+    "pin": true
+  },
+  "cleanup": {
+    "owned_tabs_opened": 1,
+    "owned_tabs_closed": 1,
+    "original_vault_tab_preserved_selected": true,
+    "initial_store_sidepanel_preserved": true,
+    "original_composer_focus_388_restored": true,
+    "no_settings_auth_AI_fixture_mutations": true
+  },
+  "resource": {
+    "run": "owner80-native-20261027-130706",
+    "holder_pid": 446,
+    "holder_session": 50339,
+    "watcher_session": 87943,
+    "parent_finalization_pending": false,
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "holder_actual_exit": 0,
+    "watcher_actual_exit": 0,
+    "final": {
+      "runId": "owner80-native-20261027-130706",
+      "first_read_at": "2026-10-27T13:07:31.559359Z",
+      "last_read_at": "2026-10-27T13:19:55.915353Z",
+      "actualPollCount": 372,
+      "maxGapSeconds": 2.0282764169969596,
+      "riskEvents": [],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T13:19:55.082Z",
+        "runId": "owner80-native-20261027-130706",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/owner80-native-20261027-130706.jsonl",
+      "audit": "docs/stabilization/evidence/eighty-20261027/owner/owner80-resource-build-watch-20261027.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    }
+  },
+  "ui_calls": {
+    "begins": 26,
+    "ends": 26,
+    "aborts": 0,
+    "budget": 30,
+    "initial_API": "externallygatedbefore/afterfirstgetApp; parentapprovalrecordbeforeAPI_BEGIN",
+    "rest": "one documentedCuaAPIpercallback withactualFunction.toStringSHA; ledgercountderivednotmutablecounter"
+  },
+  "postcheck": {
+    "at": "2026-10-27T13:17:16.167Z",
+    "tree": "a42ab51cdbef887da5d8ef707fe5ad49a2095815083d94f756d1ba5ca11b4b0f",
+    "head": "80e30c62a1259e657519ec274bc951bbf36c5100",
+    "origin": "80e30c62a1259e657519ec274bc951bbf36c5100",
+    "receiptSha256": "fd6d3b5ccc716f98049e5696f88a8d79f43abb157ac1416ff8a24d1daa649b81",
+    "inode": "24590313"
+  },
+  "renamed_evidence": [
+    {
+      "old": ".output/stabilization-checkpoints/owner80-reloaded-20261027.ax.txt",
+      "new": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt",
+      "reason": "Attempt evidence doesnotcontainliteralReloadedcompletion; no misleading successfulfilename."
+    },
+    {
+      "old": ".output/stabilization-checkpoints/owner80-reloaded-20261027.png",
+      "new": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.png",
+      "reason": "Attempt evidence doesnotcontainliteralReloadedcompletion; no misleading successfulfilename."
+    },
+    {
+      "old": ".output/stabilization-checkpoints/owner80-reloaded-physical-20261027.ax.txt",
+      "new": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt",
+      "reason": "Attempt evidence doesnotcontainliteralReloadedcompletion; no misleading successfulfilename."
+    },
+    {
+      "old": ".output/stabilization-checkpoints/owner80-reloaded-physical-20261027.png",
+      "new": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.png",
+      "reason": "Attempt evidence doesnotcontainliteralReloadedcompletion; no misleading successfulfilename."
+    },
+    {
+      "old": ".output/stabilization-checkpoints/owner80-reloaded-fast-20261027.ax.txt",
+      "new": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt",
+      "reason": "Attempt evidence doesnotcontainliteralReloadedcompletion; no misleading successfulfilename."
+    },
+    {
+      "old": ".output/stabilization-checkpoints/owner80-reloaded-fast-20261027.png",
+      "new": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.png",
+      "reason": "Attempt evidence doesnotcontainliteralReloadedcompletion; no misleading successfulfilename."
+    }
+  ],
+  "privacy": {
+    "first_getApp_auto_output": "VaultitemLABELSautomaticallyemitted; nocredentialvalues; nofirstrawstatepersisted. SubsequentVault observationssuppressedandoriginal-linestructuralprojectiononly.",
+    "version_projection": "OnlyoriginalChromeversion/ProfilePathlines retained; browsercommandline/encodeddiagnostics excluded.",
+    "no_credential_or_guest_auth_values_logged": true
+  },
+  "limits": [
+    "OwnerReloadcompletionnotproven despite3boundedactivation/capturevariants; no furtherretrieswithinthislane.",
+    "Maintenanceonly;zero productcase/guest/Storeacceptance credit.",
+    "Normalverifierreturnvaluevalid, standaloneverifyprocessexitnotseparatelycapturedfromcombinedcommand.",
+    "Fresh independentpeerrequired; exactresourcewatchcount/finalreceipt inresource.final governs."
+  ],
+  "safe_evidence_sha256": {
+    ".output/stabilization-checkpoints/owner80-import-20261027.log": "f86025de69df88e54299f19d93b9c4ef965ec66d759ef11a3506554da9c8e04b",
+    ".output/stabilization-checkpoints/owner80-verify-20261027.json": "92d46c4eb684ece00ea600711035fa77345894956ed0f3688d502c8ace5e9f92",
+    ".output/stabilization-checkpoints/owner80-promotion-20261027.log": "65f228360bd000c61243be46a01d3a0531af626160c02ec378b403bfec757643",
+    ".output/stabilization-checkpoints/owner80-disk-fingerprint-20261027.json": "72008249036f1e2b7a842bd848ad33c91be0b546cf47871a62ae060197c6c630",
+    ".output/stabilization-checkpoints/owner80-fulltree-before-20261027.json": "e1295907836fdbd681cb8c0c65b5bf06569ee82bbf3babf0c96c32856a07ada0",
+    ".output/stabilization-checkpoints/owner80-fulltree-after-20261027.json": "a359579f4ac2518a12a8d7cc1cf1bf6280ee0e65ba017ecf6286252675cee031",
+    ".output/stabilization-checkpoints/owner80-ui-config-20261027.json": "67ccf731c07d7995e6e206c8c72716865a6b36a63c092e9e3eec5e88aab90adb",
+    ".output/stabilization-checkpoints/owner80-ui-gate-20261027.mjs": "64abc775e051c754dc76bfb2b8ea734d59057fc630aca9ccefa9446100d14438",
+    ".output/stabilization-checkpoints/owner80-native-holder-20261027.log": "515747e881bd9f9b36c0737d3ab06fb3a1900c4a4a6742e5567c72bbc2c1b9ea",
+    ".output/stabilization-checkpoints/owner80-resource-build-watch-20261027.jsonl": "76fde8e9649d6fe3d8003941d80f0a099ff1b50f451c86c6d8eb91f7d8f05494",
+    ".output/stabilization-checkpoints/owner80-resource-build-watch-20261027-report.json": "06dbb89bea5b6eea0943f05b121806a0f9c02988a0a28f1213c30995201e4ce7",
+    ".output/stabilization-checkpoints/owner80-native-api-ledger-20261027.jsonl": "8859ad2e9e7877a1c66ba1ff3752d543644a8e3404c178c40eec13f9d497dcef",
+    ".output/stabilization-checkpoints/owner80-initial-call-20261027.json": "4c538c60f95e4c89b867d5e89d57ce132cbd5c1584fe47e1164eb4d5324e10ce",
+    ".output/stabilization-checkpoints/owner80-original-structural-20261027.txt": "8f662f5b0d4f321925c6b56c610c1e7ae465a50e2caa5f6edce80ffa428e9840",
+    ".output/stabilization-checkpoints/owner80-version-profile-20261027.ax.txt": "cf0c032941ea8f4974c22f488e45f5d0be307608868442c48cc3c43c4edf1162",
+    ".output/stabilization-checkpoints/owner80-active-account-20261027.ax.txt": "595278a644429804ea01c61ceba61f75b48ccab2c890b6e9330b9c1024a7c915",
+    ".output/stabilization-checkpoints/owner80-dev-before-20261027.ax.txt": "1e583bda5ac2b48c2c3298c4d32d7984e3a839c82c174c1a218a6adcdc41edc7",
+    ".output/stabilization-checkpoints/owner80-store577-20261027.ax.txt": "4b8a01b9320b2ce04d83216a4d856a726e0f5081cf2375c2dda121a48fbaa753",
+    ".output/stabilization-checkpoints/owner80-restored-structural-20261027.txt": "8f662f5b0d4f321925c6b56c610c1e7ae465a50e2caa5f6edce80ffa428e9840",
+    ".output/stabilization-checkpoints/owner80-parent-ui-admission-20261027.json": "fdf3ef22f82a37aecf6dfb5855eb52ada659f8a9b9c95c654af8b5e7f4924341",
+    ".output/stabilization-checkpoints/owner80-parent-stop-20261027.json": "096fd44ed3a96f123c8cbc9696cdb2babcd50d1e7a4fe26d129a8200fee27e8c",
+    ".output/stabilization-checkpoints/owner80-reload-attempt-fast-20261027.ax.txt": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+    ".output/stabilization-checkpoints/owner80-reload-attempt-physical-20261027.ax.txt": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+    ".output/stabilization-checkpoints/owner80-reload-attempt-fast-20261027.png": "12b2acf29654e9854fe040bd1e7f06faf22dfee21ea47581c94e867ddc3de152",
+    ".output/stabilization-checkpoints/owner80-reload-attempt-ax-20261027.png": "8970bc89c8bf05c2c1a21d278daf48dbf055756b9aecb69c3d51f94ea127520f",
+    ".output/stabilization-checkpoints/owner80-reload-attempt-ax-20261027.ax.txt": "4e47cbb33ae2a15a7f3606dc5b724b4cbcbd45eb101545c3894f7ade33e2e002",
+    ".output/stabilization-checkpoints/owner80-reload-attempt-physical-20261027.png": "6ad8e327f2b2cac98fca188e07b0472a71c9047357510883e9636f3c4944c05b"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "archive_id": 12737395838,
+  "official_digest": "sha256:3cda8f0276619c0695b4b18f6baf68c13d6217e1ad8b5c05b9e5191b279b2f66",
+  "actual_archive_sha256": "3cda8f0276619c0695b4b18f6baf68c13d6217e1ad8b5c05b9e5191b279b2f66",
+  "job_log_sha256": "c885407afd5cbb2e55d6675e3bc471b8ddfe3d92cdcd6efd540dd7fe8f8c82ca",
+  "members": [
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40509061963-1.jsonl",
+      "bytes": 995,
+      "sha256": "8807ef9a5a837cdbf16827be04146d5d5e0447714ed445fd0a5868e11083e760"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40509061963-1.jsonl",
+      "bytes": 988,
+      "sha256": "93bdc321b88d0a3bb00aa738afd6813ff8e6b3a8c2891be7fcb7d7aa332f72a9"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-BJYxNN/native-side-panel.png",
+      "bytes": 8598,
+      "sha256": "86426d0be4776150d8df5a88f6c751b20c8b26f7f31b350bcdda6849f0f5bf6c"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40509061963-1.jsonl",
+      "bytes": 12076,
+      "sha256": "f5cd247c8112858fc149b0c7e3f445e77077862e57de0710ab30828168de0c88"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-BJYxNN/normal-target-after-open.png",
+      "bytes": 27046,
+      "sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+      "bytes": 423449,
+      "sha256": "7c2968fe8f00f6c017ca6d7ef37bc2cd64dc80fd09caa1f938cb2b6d595b732a"
+    }
+  ]
+}

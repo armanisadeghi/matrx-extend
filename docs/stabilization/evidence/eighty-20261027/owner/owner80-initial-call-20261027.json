@@ -1,0 +1,5 @@
+{
+  "callId": "31554744-231e-4e6f-bbf0-c6a2b5f130c5",
+  "source": "var owner80Chrome = await cua.getApp(\"Google Chrome\");",
+  "at": "2026-10-27T13:11:29.848Z"
+}
