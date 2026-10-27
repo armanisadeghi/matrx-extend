@@ -44,14 +44,15 @@
     "docs/stabilization/reports/d299-mobile-driver-fix-20261027.json",
     "docs/stabilization/reports/d299-mobile-source-peer-20261027.json",
     "docs/stabilization/reports/d299-mobile-publication-manifest-20261027.json",
-    "docs/stabilization/reports/d299-mobile-final-resource-state-20261027.json"
+    "docs/stabilization/reports/d299-mobile-final-resource-state-20261027.json",
+    "docs/stabilization/reports/d299-mobile-focused-ci-20261027.json"
   ],
   "sibling_census": [
     "Other allowLadder callers settings-d87-native-acceptance and tab-groups-member: unresolved class scope.",
     "Shared settings-probe-cleanup preserveFailureDuringCleanup has primitive/frozen original-error masking; fresh fixer extends canonical primitive instead of adding a duplicate.",
     "Mobile and desktop current Tools mode sheets; no-op Escape retained-open state."
   ],
-  "next_action": "Require successful exact-source canonicalautomaticCI (focused/full/type/lint) for pushedmobile repair; no furtherlocalverification thisturn aftersecondresourceinvalid. Then canonicalartifactimport/promotion, ownerReloadcompletion and independentoriginal/adjacentguestSettingsnative retest. Preserveinfix/source-onlylimits; no manualworkflow/alternatehost/resourcebypass. FullT10/Storeacceptanceremainunverified;3memberpasses remainfrozen6ea.",
+  "next_action": "Focusedsource1afCI40502341569passed; require successful exact-current-source canonicalfullCI/type/lint/artifact for pushedmobile repair; no furtherlocalverification thisturn aftersecondresourceinvalid. Then canonicalartifactimport/promotion, ownerReloadcompletion and independentoriginal/adjacentguestSettingsnative retest. Preserveinfix/source-onlylimits; no manualworkflow/alternatehost/resourcebypass. FullT10/Storeacceptanceremainunverified;3memberpasses remainfrozen6ea.",
   "transition_history": [
     {
       "at": "2026-10-27T07:59:58.931033+00:00",
@@ -127,7 +128,15 @@
         "tests/browser/settings-panel-driver.mjs": "aa0d53e53f8c94275b818f8677239b0f7668174a63cbc8f31e5926ae0886d4a2",
         "tests/browser/settings-guest-preference-batch.test.mjs": "b389433ede4d141dfab3ceaef204a70bab0d00c4944f2816c43a8a6cb5b5c58d"
       },
-      "final_resource_state": "Noheavy leases/ownedprocesses; canonicalunsafe-hold retained afterCPUinvalid. No manualdeletion/recoveryattempt afterstop; nextfreshcanonicaladmission ownsrecovery."
+      "final_resource_state": "Noheavy leases/ownedprocesses; canonicalunsafe-hold retained afterCPUinvalid. No manualdeletion/recoveryattempt afterstop; nextfreshcanonicaladmission ownsrecovery.",
+      "focused_ci": {
+        "run_id": 40502341569,
+        "source_sha": "1af361ce2112e64016da3795df619c40326d62a8",
+        "conclusion": "success",
+        "job": 122182866472,
+        "evidence": "docs/stabilization/reports/d299-mobile-focused-ci-20261027.json",
+        "limit": "Acceptedremote focusedexecution; doesnoterase2invalidlocalruns orreplacefullCI/originalnativeT10."
+      }
     }
   },
   "repair_attempts": [
