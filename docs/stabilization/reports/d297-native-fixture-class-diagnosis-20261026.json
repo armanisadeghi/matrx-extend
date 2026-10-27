@@ -1,0 +1,409 @@
+{
+  "task_id": "native_fixture_class_diagnosis",
+  "at": "2026-10-26T23:45:40.990868+00:00",
+  "status": "DONE_SOURCE_DIAGNOSIS_AND_BOUNDED_COLLECTION_PLAN_NO_EDITS_OR_TESTS",
+  "source_sha": "8db97680a83e7b462dda8247511a38f3c3b638ae",
+  "original_reproduction": {
+    "run": 40419767773,
+    "step": "Guest transport observer regression",
+    "file": "tests/browser/scrape-headed-launch.test.mjs:49",
+    "actual": "2pass/1fail; production launch seam eval ReferenceError resourceAction is not defined",
+    "stack_boundary": "new Function at57; eval line4; execute at70",
+    "log": ".output/stabilization-checkpoints/d297-8db-ci-failed.log",
+    "log_sha256": "47dc7c294e26813fbe08c5a55dc6b217e6d73a180e1b11d96bd459a5c246563d"
+  },
+  "A": {
+    "verdict": "CONFIRMED_FIXTURE_LEXICAL_COMPOSITION_CLASS_WITH_ADDITIONAL_SOURCE_CONFIRMED_SIBLINGS",
+    "cause": "Partial source extraction does not carry lexical dependencies/updated source boundaries after optional caller guard became a mandatory resolved action and Chrome spawn moved into actual launchNativeBrowser callback. Production module parameter and resolve assignment exist; fixture constructor lacks resourceAction. Mutation literal drift was one earlier member of this wider class, not the only sibling.",
+    "hypotheses": [
+      {
+        "if": "Fixture dropped required lexical binding",
+        "prediction": "Extracted seam references resourceAction while new Function params do not; production module declares/resolves it",
+        "evidence": "Exact CI eval ReferenceError plus constructor57-65 and actual runNativeSidepanelQa parameter1693/assignment1705",
+        "result": "confirmed source+actual CI"
+      },
+      {
+        "if": "Production module lacks binding",
+        "prediction": "Owning function has no resourceAction parameter/resolution",
+        "evidence": "Parameter and resolveNativeResourceAction assignment present; source hash12b unchanged",
+        "result": "refuted for reported error"
+      },
+      {
+        "if": "Headed/display contract regressed",
+        "prediction": "Reported failure is display_mode_mismatch after command query, rather than free identifier before query",
+        "evidence": "First two mode/caller cases pass; reported third fails eval before CDP command. Production integration remains separately required",
+        "result": "not cause of reported ReferenceError; no new whole-browser claim"
+      },
+      {
+        "if": "Current guard/resource refusal caused this result",
+        "prediction": "Failure has RESOURCE_* boundary after health invocation",
+        "evidence": "ReferenceError occurs evaluating fixture free identifier before resourceAction can be called",
+        "result": "not cause of this failure; prior command admission refusal remains independent/honored"
+      }
+    ],
+    "required_repairs": [
+      {
+        "file": "tests/browser/scrape-headed-launch.test.mjs",
+        "source_proof": "Actual command_line_query seam references resourceAction; fixture constructor has no such parameter",
+        "minimal_fix": "Supply explicit real action primitive with declared external health adapter to the actual extracted seam; retain actual requireBrowserDisplayMode and original positive/mismatch receipt assertions. Add refusal-before-command/no-receipt oracle so missing gate cannot pass merely by binding a no-op wrapper. No production gate weakening."
+      },
+      {
+        "file": "tests/browser/native-sidepanel-origin.test.mjs",
+        "source_proof": "First end marker const page = await context.newPage() is absent; current page creation is resourceAction-wrapped. Second end marker let chromeStderr precedes nested spawn rather than following it, so forward range search fails. New actual launch callback also owns stage/timestamp/listeners and conditional flags.",
+        "minimal_fix": "Retarget to current actual gated context marking/page boundary and actual launchNativeBrowser callback composition; do not reconstruct a duplicate launch. Declare resourceAction/real launch helper, onStage/performance/startupStartedAt, enableUserSiteRestrictions/enableWebMcpTesting and child event/listener state at their external fixture boundary. Child double must support once+stderr.on; preserve exact flags/about:blank checks for headed/headless and assert admitted launch ordering/refusal where covered."
+      },
+      {
+        "file": "tests/browser/native-extension-startup-diagnostic.test.mjs",
+        "source_proof": "Extracted let extensionWorker..spawn_owner body now passes resourceAction to waitForExpectedExtension; sandbox omits resourceAction, so original failure identity/safe-classification case is source-incompatible. This additional failure has NOT been executed in this lane.",
+        "minimal_fix": "Supply declared action dependency in sandbox and assert it is threaded to fake external waitForExpectedExtension; preserve original failure identity, safe diagnostic classification and sink-failure assertions. No fallback swallowing ReferenceError or relaxed error expectation."
+      }
+    ],
+    "sibling_census": {
+      "test_files_referencing_harness": [
+        "tests/unit/native-panel-default-resource-boundary.test.ts",
+        "tests/browser/native-target-session-retirement.test.mjs",
+        "tests/browser/scrape-headed-launch.test.mjs",
+        "tests/browser/native-resource-boundary.test.mjs",
+        "tests/browser/panel-visibility-diagnostic.test.mjs",
+        "tests/browser/native-cdp-startup-diagnostic.test.mjs",
+        "tests/browser/native-extension-reload-controller.test.mjs",
+        "tests/browser/native-extension-startup-diagnostic.test.mjs",
+        "tests/browser/native-panel-open-reply.test.mjs",
+        "tests/browser/authenticated-panel-host.test.mjs",
+        "tests/browser/native-ci-promotion-gate.test.mjs",
+        "tests/browser/native-cdp-startup-deadline.test.mjs",
+        "tests/browser/native-sidepanel-child-stop.test.mjs",
+        "tests/browser/panel-visible-reopen-repair.test.mjs",
+        "tests/browser/native-sidepanel-qa-harness.test.mjs",
+        "tests/browser/native-startup-interval-callsite.test.mjs",
+        "tests/browser/profile-report-boundary.test.mjs",
+        "tests/browser/initial-panel-context-readiness.test.mjs",
+        "tests/browser/notes-startup-diagnostic.test.mjs",
+        "tests/browser/native-sidepanel-origin.test.mjs",
+        "scripts/hosted-notes-startup-diagnostic-route.test.mjs",
+        "scripts/test-hosted-startup-interval-diagnostic.mjs"
+      ],
+      "count": 22,
+      "already_repaired": [
+        "native-startup-interval-callsite uses contiguous resolver/exercise/launch/driver + real primitive; actual focused CI pass",
+        "panel-visibility mutation statements now match mandatory action; actual currentCI28cases pass"
+      ],
+      "other_extraction_review": "initial-panel-context readiness already supplies resourceAction; panel-visible/visibility helper slices own unchanged helper deps; native CI promotion and CDP startup connector extract unchanged functions with declared dependencies; profile report attachTargetSession end marker function stopOwnedChild still exists and cleanup source is unchanged; authenticated-panel-host extracts its unchanged helper/auth consumer. Notes route extracts unchanged connector. Notes startup extracts Notes driver, not harness. Live module imports retain lexical bindings. These are SOURCE scope checks, not substitute runtimeGREEN.",
+      "remaining_CI_command_graph": [
+        {
+          "command": "node --test tests/unit/published-store-crx-target.test.mjs",
+          "files": [
+            {
+              "path": "tests/unit/published-store-crx-target.test.mjs",
+              "already_focused": true,
+              "harness_reference": false
+            }
+          ]
+        },
+        {
+          "command": "node --test tests/unit/tailwind-source-boundary.test.mjs",
+          "files": [
+            {
+              "path": "tests/unit/tailwind-source-boundary.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            }
+          ]
+        },
+        {
+          "command": "node --test tests/browser/guest-chat-completion-oracle.test.mjs tests/browser/guest-chat-transport-observer.test.mjs tests/browser/guest-chat-store-sequence.test.mjs tests/browser/guest-values-escape-probe.test.mjs tests/browser/guest-values-handler-identity.test.mjs",
+          "files": [
+            {
+              "path": "tests/browser/guest-chat-completion-oracle.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            },
+            {
+              "path": "tests/browser/guest-chat-transport-observer.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            },
+            {
+              "path": "tests/browser/guest-chat-store-sequence.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            },
+            {
+              "path": "tests/browser/guest-values-escape-probe.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            },
+            {
+              "path": "tests/browser/guest-values-handler-identity.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            }
+          ]
+        },
+        {
+          "command": "node --test tests/browser/native-sidepanel-qa-harness.test.mjs",
+          "files": [
+            {
+              "path": "tests/browser/native-sidepanel-qa-harness.test.mjs",
+              "already_focused": false,
+              "harness_reference": true
+            }
+          ]
+        },
+        {
+          "command": "node --test tests/browser/scrape-headed-launch.test.mjs",
+          "files": [
+            {
+              "path": "tests/browser/scrape-headed-launch.test.mjs",
+              "already_focused": false,
+              "harness_reference": true
+            }
+          ]
+        },
+        {
+          "command": "node --test tests/browser/authenticated-panel-host.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/member-pre-auth-resource-boundary.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs tests/browser/showcase-card-driver.test.mjs tests/browser/showcase-selection-diagnostic.test.mjs tests/browser/showcase-completion-diagnostic.test.mjs tests/browser/panel-transition-recorder.test.mjs",
+          "files": [
+            {
+              "path": "tests/browser/authenticated-panel-host.test.mjs",
+              "already_focused": false,
+              "harness_reference": true
+            },
+            {
+              "path": "tests/browser/settings-native-auth-driver.test.mjs",
+              "already_focused": true,
+              "harness_reference": false
+            },
+            {
+              "path": "tests/browser/member-pre-auth-resource-boundary.test.mjs",
+              "already_focused": true,
+              "harness_reference": false
+            },
+            {
+              "path": "tests/browser/showcase-organization-diagnostic.test.mjs",
+              "already_focused": true,
+              "harness_reference": false
+            },
+            {
+              "path": "tests/browser/showcase-card-driver.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            },
+            {
+              "path": "tests/browser/showcase-selection-diagnostic.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            },
+            {
+              "path": "tests/browser/showcase-completion-diagnostic.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            },
+            {
+              "path": "tests/browser/panel-transition-recorder.test.mjs",
+              "already_focused": true,
+              "harness_reference": false
+            }
+          ]
+        },
+        {
+          "command": "node --test scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs scripts/hosted-settings-fixture-preflight.test.mjs scripts/hosted-showcase-route.test.mjs scripts/hosted-tab-groups-route.test.mjs",
+          "files": [
+            {
+              "path": "scripts/hosted-profile-route.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            },
+            {
+              "path": "scripts/hosted-scrape-route.test.mjs",
+              "already_focused": true,
+              "harness_reference": false
+            },
+            {
+              "path": "scripts/hosted-settings-fixture-preflight.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            },
+            {
+              "path": "scripts/hosted-showcase-route.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            },
+            {
+              "path": "scripts/hosted-tab-groups-route.test.mjs",
+              "already_focused": true,
+              "harness_reference": false
+            }
+          ]
+        },
+        {
+          "command": "node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
+          "files": [
+            {
+              "path": "tests/browser/showcase-d47-driver-evidence.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            }
+          ]
+        },
+        {
+          "command": "node --test tests/browser/showcase-d47-public-initial-load.test.mjs",
+          "files": [
+            {
+              "path": "tests/browser/showcase-d47-public-initial-load.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            }
+          ]
+        },
+        {
+          "command": "node --test tests/browser/showcase-d47-worker-probe.test.mjs",
+          "files": [
+            {
+              "path": "tests/browser/showcase-d47-worker-probe.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            }
+          ]
+        },
+        {
+          "command": "node --test tests/browser/scrape-media-timeout-evidence.test.mjs",
+          "files": [
+            {
+              "path": "tests/browser/scrape-media-timeout-evidence.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            }
+          ]
+        },
+        {
+          "command": "node --test tests/browser/scrape-empty-media-branch.test.mjs",
+          "files": [
+            {
+              "path": "tests/browser/scrape-empty-media-branch.test.mjs",
+              "already_focused": false,
+              "harness_reference": false
+            }
+          ]
+        },
+        {
+          "command": "node tests/browser/vault-owned-cdp.test.cjs",
+          "files": [
+            {
+              "path": "tests/browser/vault-owned-cdp.test.cjs",
+              "already_focused": false,
+              "harness_reference": false
+            }
+          ]
+        }
+      ],
+      "limit": "Full remaining CI regressions still must run; no claim static census proves their runtime health or all possible indirect source consumers."
+    }
+  },
+  "B": {
+    "verdict": "CONDITIONAL_PASS_EXISTING_CANONICAL_SUITE_COVERAGE_PLAN_REQUIRES_FRESH_PLAN_REVIEW_AND_MEASURED_GUARDED_RED_GREEN",
+    "legitimate_path": "Extend existing PLAN-mandated pnpm test:focused-acceptance collection with direct existing source-extraction test files, preserving exact resource-guard argv and all policy/capacity/watch/ownership decisions. This repairs why focused GREEN missed mandatory native source dependencies. It is not permission to run the refused node--test target, create a wrapper, append an allowed prefix to smuggle it, or alter resource policy. Parent must explicitly review the expanded test graph as coverage change before running normal existing guard.",
+    "new_direct_collection": [
+      "tests/browser/panel-visibility-diagnostic.test.mjs",
+      "tests/browser/panel-visible-reopen-repair.test.mjs",
+      "tests/browser/initial-panel-context-readiness.test.mjs",
+      "tests/browser/scrape-headed-launch.test.mjs",
+      "tests/browser/native-sidepanel-origin.test.mjs",
+      "tests/browser/native-extension-startup-diagnostic.test.mjs",
+      "tests/browser/native-cdp-startup-diagnostic.test.mjs",
+      "tests/browser/profile-report-boundary.test.mjs",
+      "tests/browser/authenticated-panel-host.test.mjs",
+      "scripts/hosted-notes-startup-diagnostic-route.test.mjs"
+    ],
+    "existing_collection": {
+      "direct_count": 105,
+      "transitive_count": 109
+    },
+    "exclude_slow_aggregate_from_focused": "Do NOT add native-sidepanel-qa-harness.test.mjs aggregate to focused; it remains once in existing fullCI Guest transport step. Direct diagnostic files give relevant extraction coverage without importing the slow top-level reloadCase block. Existing fast direct tests overlap within full aggregate by <1s in observed current log; no 153s duplication.",
+    "execution_plan": [
+      "After independent source-plan review, add the exact10 existing files to canonical focused command, before fixture correction, and run ONE normal existing resource-guarded pnpm test:focused-acceptance to collect real RED for entire class. No production source mutants.",
+      "Repair three fixture files; run same normal guarded full canonical command GREEN, preserve all failures/negative oracles and actual OS exit/journal. No guard command substitution or policy edit.",
+      "Fresh independent source/runtime verification; current automatic fullCI must run all unchanged later Guest transport groups and produce eligible artifact. Focused5minute/fullchecks15minute deadlines remain unchanged.",
+      "If expanded command hits resource refusal or existing timeout, stop and diagnose measured scheduling; never widen limits. Only then consider independently reviewed collection/dedup preserving exact test execution sets; no unmeasured timeout change."
+    ],
+    "ci_scope_cost": "No workflow/runner/schedule/policy changes proposed initially; original public repo standard runners billed increment$0, paid work remains paused. If measured data requires workflow collection/dedup, read ci-spend, update cost manifest first and preserve every original assertion/test exactly once; no new paid runner or account relocation.",
+    "timing": {
+      "official_job_seconds": 641.0,
+      "official_steps_seconds": {
+        "Set up job": 2.0,
+        "Run actions/checkout@v4": 4.0,
+        "Run pnpm/action-setup@v4": 2.0,
+        "Run actions/setup-node@v4": 8.0,
+        "Run astral-sh/setup-uv@v5": 3.0,
+        "Install dependencies": 6.0,
+        "Focused acceptance guards": 100.0,
+        "Hosted remote admission routes": 47.0,
+        "Typecheck": 7.0,
+        "Schema routing": 0.0,
+        "THERE IS ONE AGENT PICKER": 1.0,
+        "the picker guard can still fail (self-test)": 1.0,
+        "THE ARCHIVED-ITEMS LAW": 0.0,
+        "the archive guard can still fail (self-test)": 1.0,
+        "T-13 no new reference to the retiring row column": 2.0,
+        "the T-13 row-column guard can still fail (self-test)": 2.0,
+        "A SIGN-OUT ENDS ONLY THE DEVICE THAT ASKED": 5.0,
+        "the sign-out scope guard can still fail (self-test)": 2.0,
+        "Config reads go through the counted door (config attestation)": 1.0,
+        "No new hard-coded settings (ratchet)": 1.0,
+        "Every link leaving AI Matrx carries our referral data": 1.0,
+        "the outbound-referral guard can still fail (self-test)": 0.0,
+        "Mandate references (non-blocking; scan only in CI)": 7.0,
+        "Lint": 5.0,
+        "Unit tests": 271.0,
+        "Guest transport observer regression": 157.0,
+        "Resource safety regression": 0.0,
+        "Build on pull requests and release tags": 0.0,
+        "Require approved public runtime configuration": 0.0,
+        "Build keyed development test extension": 0.0,
+        "Record development test provenance": 0.0,
+        "Upload current-source development test artifact": 0.0,
+        "Workflow cost guard (proves it can fail, then checks every workflow)": 0.0,
+        "Post Run astral-sh/setup-uv@v5": 0.0,
+        "Post Run actions/setup-node@v4": 0.0,
+        "Post Run pnpm/action-setup@v4": 1.0,
+        "Post Run actions/checkout@v4": 0.0,
+        "Complete job": 0.0
+      },
+      "observed_slow_reload_block_seconds": 153,
+      "timing_limit": "Per-case reload timing not measured by this lane. Source shows direct reloadOwnedExtension fixture uses fixed polling waits/negative lifecycle cases; it does not call new runNativeSidepanelQa default resource resolution. Do not attribute153s to new resource guard or generalize as all28tests duration. Extra10 direct files must be measured; source expectation of fast execution is not proof of5minute fit."
+    }
+  },
+  "scope_markers": {
+    "origin_page_end_index": -1,
+    "origin_spawn_search_start": 66284,
+    "origin_spawn_old_end_after_start": -1
+  },
+  "source_hashes": {
+    "tests/browser/panel-visibility-diagnostic.test.mjs": "a1b87e25b4259e339f76425ada83616d501150c79cf95d2763fa0ca62735741b",
+    "tests/browser/panel-visible-reopen-repair.test.mjs": "3e825f1ba9f03d9af7788ca3fa643cf12b5040c9e9d9f53319e1f36892c31409",
+    "tests/browser/initial-panel-context-readiness.test.mjs": "ba8ed46458436d6b17d703ca605dc2fa594d8ccfd62ffb163d245cc4afcc50a5",
+    "tests/browser/scrape-headed-launch.test.mjs": "f75249fa15e6284c7f251fc0fd0c410ac3ddec54b7124b33309a59292c7c6696",
+    "tests/browser/native-sidepanel-origin.test.mjs": "b90a525a2da31ad26270a4ce2b69eb241b6415d8db61aacf17d3e11ef91eebee",
+    "tests/browser/native-extension-startup-diagnostic.test.mjs": "2f42d90232e4f8d1cf44c73eb45b3ba7b0a2b146f0e46f626df809c3f5f4ac13",
+    "tests/browser/native-cdp-startup-diagnostic.test.mjs": "5a2667de3e976955589d52a49df8a58878778fe7ed7d13182b5315a16f18b5ae",
+    "tests/browser/profile-report-boundary.test.mjs": "a9c96a7d218e5e9cc44b8b2300f2de42ee66baebafd93262d34d1f0496ae7c41",
+    "tests/browser/authenticated-panel-host.test.mjs": "67602c62c41931013441dcb61f5f4761a361928251c3cf198cf7d417f76e6638",
+    "scripts/hosted-notes-startup-diagnostic-route.test.mjs": "33dad606a9aa6abf6ad9b637365ecd5f579a2cfb3072e4e182927d89780ad416",
+    "tests/browser/native-sidepanel-qa-harness.mjs": "12b060756415d3934fa768d03e71bf02c1eb05b77a169aeae7f2468bd10a4d80",
+    "tests/browser/native-sidepanel-qa-harness.test.mjs": "def8854db159519ae8b4ae152d5709336d0f843dc58042cf9e247738410d2b68",
+    "tests/browser/native-reload-fixture.mjs": "9a53276c7a298ee1200125d1e3f690af850024e14bbd6613f33c555428370846",
+    "package.json": "493c112620756aebabfd5357ec08590b1979e6e1c85fc27117db36ec801b441b",
+    ".github/workflows/ci.yml": "3e47185e7f7e4c064174e2efe429cda8bce1971337474f42ae1bde0814dd10cb",
+    "docs/stabilization/resource-policy.json": "8ab675504bc46198109169ccc4cfc4970a30a0db11a069ec4f44d6e22a772afe"
+  },
+  "execution": {
+    "runtime_tests": 0,
+    "browser_AI_native_actions": 0,
+    "source_edits": 0,
+    "policy_workflow_dependency_edits": 0,
+    "new_wrapper": false,
+    "own_live_processes": false,
+    "own_commits": 0,
+    "only_writes": "This report and read-only officialCI job-step timing JSON in private scratch"
+  },
+  "next": "Parent independent plan attack/ruling, source-only collection+fixture lane with normalguard RED/GREEN, fresh verification, exact current-source CI. Production/native product acceptance remains separately bounded."
+}

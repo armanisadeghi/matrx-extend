@@ -1,0 +1,198 @@
+{
+  "task_id": "native_fixture_class_fix",
+  "at": "2026-10-27T00:01:36.498144+00:00",
+  "status": "DONE_LOCAL_CANONICAL_RED_GREEN_AND_COMPILE_READY_FOR_FRESH_INDEPENDENT_REPLAY",
+  "source_head_at_report": "8db97680a83e7b462dda8247511a38f3c3b638ae",
+  "parent_plan": {
+    "report": ".output/stabilization-checkpoints/d297-native-fixture-class-diagnosis.json",
+    "sha256": "2e354d53a357c733ce0ca891055dbd8ebcb3ff176890df27dd2527bf4a72d941",
+    "peer": ".output/stabilization-checkpoints/d297-fixture-collection-plan-peer.json",
+    "peer_sha256": "14e681cc61fc4d94f4c458d2ef8cb74f619a9a185721bdde0953a01d212ea3cc"
+  },
+  "changed_files": [
+    "package.json",
+    "tests/browser/scrape-headed-launch.test.mjs",
+    "tests/browser/native-sidepanel-origin.test.mjs",
+    "tests/browser/native-extension-startup-diagnostic.test.mjs",
+    "tests/browser/profile-report-boundary.test.mjs"
+  ],
+  "hashes": {
+    "package.json": "d60fd58e917e7a350137f8157355eea31f9023026858b76c44f0c308f9b60de0",
+    "tests/browser/scrape-headed-launch.test.mjs": "b660852410df0d30eb46016c135b4f8a49ff0b542e558df375059755cea14eec",
+    "tests/browser/native-sidepanel-origin.test.mjs": "a128be112eb9402129a626787b48566e6d5166f21cb01a3b6659fd8f8c2fb0e4",
+    "tests/browser/native-extension-startup-diagnostic.test.mjs": "9d764a1ef9fe9f49f236cb107baa0c4c9c2395b5c0fb4396f4493a9d34d6fb66",
+    "tests/browser/profile-report-boundary.test.mjs": "2681a2ece280bed480bcc55f0acb9e9a6b0bffd83826b1e612c4b0923fe78501",
+    "tests/browser/native-sidepanel-qa-harness.mjs": "12b060756415d3934fa768d03e71bf02c1eb05b77a169aeae7f2468bd10a4d80",
+    "docs/stabilization/resource-policy.json": "8ab675504bc46198109169ccc4cfc4970a30a0db11a069ec4f44d6e22a772afe"
+  },
+  "collection": {
+    "added_existing_direct_files": [
+      "tests/browser/panel-visibility-diagnostic.test.mjs",
+      "tests/browser/panel-visible-reopen-repair.test.mjs",
+      "tests/browser/initial-panel-context-readiness.test.mjs",
+      "tests/browser/scrape-headed-launch.test.mjs",
+      "tests/browser/native-sidepanel-origin.test.mjs",
+      "tests/browser/native-extension-startup-diagnostic.test.mjs",
+      "tests/browser/native-cdp-startup-diagnostic.test.mjs",
+      "tests/browser/profile-report-boundary.test.mjs",
+      "tests/browser/authenticated-panel-host.test.mjs",
+      "scripts/hosted-notes-startup-diagnostic-route.test.mjs"
+    ],
+    "package_only_semantic_change": "scripts.test:focused-acceptance appended exact10 reviewed existing direct suites; version/dependencies/allotherfields identical",
+    "slow_aggregate": "not added; original fullCI native-sidepanel-qa-harness.test remains unchanged once",
+    "policy": "original commandallowlist/thresholds/capacity/ownership/watch/refusal unchanged; original targeted node--test command remains refused; no wrapper/alternateprefix/workflow/runner/timeout edits"
+  },
+  "repairs": [
+    {
+      "file": "tests/browser/scrape-headed-launch.test.mjs",
+      "cause": "Extracted command-line seam omitted mandatory lexical resourceAction",
+      "change": "Bind actual runNativeResourceAction with declared external health adapter; retain real display-mode helper and headed/mismatch receipt assertions; add refusal-before-CDP/no-receipt assertions and in-memory constant/omitted-gate gutchecks."
+    },
+    {
+      "file": "tests/browser/native-sidepanel-origin.test.mjs",
+      "cause": "Obsolete newPage/end-of-spawn extraction markers; launch now owns callback/listeners",
+      "change": "Use actual current gated context/page boundary and actual launchNativeBrowser callback composition, real action primitive, actual helper, declared clock/health/process boundaries and EventEmitter child. Preserve exact web/server origins, headed/headless flags and about:blank; verify gate-before-spawn/stage/listeners/page and refusal; in-memory constant/omitted-gate oracles reject."
+    },
+    {
+      "file": "tests/browser/native-extension-startup-diagnostic.test.mjs",
+      "cause": "Actual worker-failure boundary now threads resourceAction into external wait; sandbox omitted it",
+      "change": "Declare real-action dependency with external health adapter and assert exact third argument at external wait boundary; preserve original error identity, safeclassification and failing-sink assertions."
+    },
+    {
+      "file": "tests/browser/profile-report-boundary.test.mjs",
+      "cause": "ActualRED additionally exposed missing gpuAbort lexical dependency and extraction range swallowing newer unrelated exported declaration",
+      "change": "Bind actual AbortController and assert abort+original rm/detach/error/report oracles. Reuse real exported attachTargetSession with external EventEmitter/CDP transport; verify detach refusal cannot replace original execution Error and exact detach callcount."
+    }
+  ],
+  "new_class_evidence": "Source census proposed3repairfiles but actual expanded RED found7failingcases including3previously missed profile boundaries; parent authorized fourthfile. Runtime collection caught these, so sourcecensus is not represented as exhaustiveproof.",
+  "verification": {
+    "RED": {
+      "session": 22970,
+      "actual_os_exit": 1,
+      "journal": "docs/stabilization/resource-journals/d297-fixture-class-red-20261026.jsonl",
+      "journal_sha256": "b0a3d06db72a93959798628adf734f7c29829d7ab868b16d0ae03783fdab36ec",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T23:52:00.769Z",
+        "runId": "d297-fixture-class-red-20261026",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "guard_wall_seconds": 215.294,
+      "pending_or_unsafe": [],
+      "private_log": ".output/stabilization-checkpoints/d297-fixture-class-red.log",
+      "private_log_sha256": "18d75d2e00a8acd2b3da17a73b882764657a6882b3bfc2cf69857e8355c1722a",
+      "child_elapsed_seconds": 147.999,
+      "tests": 1074,
+      "pass": 1056,
+      "fail": 7,
+      "skipped": 11,
+      "duration_ms": 147498.05975
+    },
+    "cancelled_preflight": {
+      "session": 89569,
+      "actual_os_exit": 2,
+      "journal": "docs/stabilization/resource-journals/d297-fixture-class-green-20261026.jsonl",
+      "journal_sha256": "26a00c1e3ca735b61bce75af5d6f1bba808b51c45168f193de690621b5d9c4f7",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T23:54:45.753Z",
+        "runId": "d297-fixture-class-green-20261026",
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "guard_wall_seconds": 67.259,
+      "pending_or_unsafe": [],
+      "private_log": ".output/stabilization-checkpoints/d297-fixture-class-green.log",
+      "private_log_sha256": "d6541725c6d8e53f190ef205ce73c9813a81cfe2fe0a0bb27b936f56d5a709b6",
+      "tests_executed": 0,
+      "admission_events": 0,
+      "operator_signals": 1,
+      "reason": "Lightweight Biome reported3useConst issues but outer shell continued to open guard; one SIGINT before admission, wait same handle to actual2 before style correction. No resource refusal bypass and no test execution."
+    },
+    "GREEN": {
+      "session": 73067,
+      "actual_os_exit": 0,
+      "journal": "docs/stabilization/resource-journals/d297-fixture-class-final-20261026.jsonl",
+      "journal_sha256": "faec160932c7b0f376cc03af79b08f86e2bd636cdc8fe2fa302cd9df93bdb615",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-26T23:58:45.545Z",
+        "runId": "d297-fixture-class-final-20261026",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "guard_wall_seconds": 214.182,
+      "pending_or_unsafe": [],
+      "private_log": ".output/stabilization-checkpoints/d297-fixture-class-final.log",
+      "private_log_sha256": "1e05d83b283ac64e51d2dc810bc94a04a737c757fe3bf83b7cfaa85218344791",
+      "child_elapsed_seconds": 146.882,
+      "tests": 1076,
+      "pass": 1065,
+      "fail": 0,
+      "skipped": 11,
+      "duration_ms": 146444.804875
+    },
+    "compile": {
+      "session": 95263,
+      "actual_os_exit": 0,
+      "journal": "docs/stabilization/resource-journals/d297-fixture-class-compile-20261026.jsonl",
+      "journal_sha256": "3835ba00381d267c49486b2cd5aaee456643912a4153f829aa117c9c4e4ed855",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T00:00:32.914Z",
+        "runId": "d297-fixture-class-compile-20261026",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "guard_wall_seconds": 69.434,
+      "pending_or_unsafe": [],
+      "private_log": ".output/stabilization-checkpoints/d297-fixture-class-compile.log",
+      "private_log_sha256": "8f5e4a7a4bb1c72ad609837c8364062bfdaac4545221d3efea0035beafa16d69",
+      "child_elapsed_seconds": 2.134
+    }
+  },
+  "forcing_function": {
+    "production_mutants": "none on shared disk",
+    "embedded_in_memory_gutchecks": "5 variants executed during fullGREEN: origin constant-success; launch constant-success/omitted-health; headed command seam constant-success/omitted-resourceAction. Every test oracle rejects via AssertionError; no real source weakening.",
+    "negative_oracles": "Real action/launch composition executes; health and external CDP/OS/clock boundaries honestly adapted. No native behavior acceptance from source fixtures."
+  },
+  "lightweight_checks": {
+    "syntax": "node--check all4fixtures actual0; final canonicalGREEN also parses/executes all",
+    "biome": "5owned files actual0/no fixes after final style correction",
+    "diff_check": "actual0",
+    "package_semantics": "only approved canonical collection changed"
+  },
+  "timing": {
+    "RED_suite_ms": 147498.05975,
+    "GREEN_suite_ms": 146444.804875,
+    "scope": "Both normal local guarded runs below existing300s focusedCI budget including guardwall~214s; this Mac does not prove hosted5minute/full15minute timing. No cap/timeout change. No causal performance improvement claim vs former collection."
+  },
+  "cleanup": {
+    "own_sessions_terminal": { "22970": 1, "89569": 2, "73067": 0, "95263": 0 },
+    "own_native_browser_credentials_AI_fixture_staging": 0,
+    "own_extra_processes": false,
+    "commits": 0,
+    "integration_owner": "parent; root inventory/reports untouched"
+  },
+  "limits": [
+    "Fresh zeroauthorship independent final runtime/source review still required.",
+    "Fullcurrent-source automaticCI must execute remaining original transport/safety/build/provenance/cost steps and produce eligible artifact; latest8db fullCI failure not retrocertified.",
+    "Installedlocaldependency versions may differ from lock; compile is local source-supporting evidence, hosted exact-lock install/CI still required.",
+    "No native/publicStore/currentDEV/wholeF0002/wholebrowser/rawPage correctness claim; prior historical mutation procedure deviation remains in parentrecord."
+  ],
+  "next": "Parent fresh independent fullcanonical replay after compileterminal, exactpath integration/push and fullCI; then normal exactartifact nativeadoption/registeredBguestScrape. D297closure remains parentowned/pending.",
+  "original_private_report_sha256": "190ce33bdf2a2892d64472c857810e08f99c5949136d4004f0f5d3d8a40e9e08"
+}

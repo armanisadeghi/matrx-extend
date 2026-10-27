@@ -1,0 +1,53 @@
+{
+  "task_id": "fixture_collection_plan_peer",
+  "at": "2026-10-26T23:47:25.783077+00:00",
+  "zero_authorship": true,
+  "status": "COMMIT_BOUNDED_SOURCE_PLAN_WITH_REQUIRED_RUNTIME_GATES",
+  "pinned_plan": {
+    "path": ".output/stabilization-checkpoints/d297-native-fixture-class-diagnosis.json",
+    "sha256": "2e354d53a357c733ce0ca891055dbd8ebcb3ff176890df27dd2527bf4a72d941"
+  },
+  "A": {
+    "verdict": "PASS_BOUNDED_BUILDABILITY_AND_CLASS_SCOPE",
+    "findings": [],
+    "evidence": [
+      "Actual CI40419767773 fails extracted command-line seam before CDP with resourceAction ReferenceError; production runner declares and resolves resourceAction.",
+      "Independent source read confirms native-origin page/newPage and spawn end markers are obsolete; startup diagnostic sandbox omits the action now threaded into waitForExpectedExtension.",
+      "All10 proposed files exist and are unique; resolved static test-import graph does not pull native-sidepanel-qa-harness.test.mjs slow aggregate. Existing unchanged direct module consumers outside this list are not additional lexical-extraction failures demonstrated by this change.",
+      "Repairs retain actual source snippets/helpers and assertions; headed refusal-before-command/no-receipt plus existing canonical launch/composition regressions distinguish actual gating from a no-op adapter."
+    ]
+  },
+  "B": {
+    "verdict": "PASS_BOUNDED_ENFORCEMENT_REUSE_AND_VERIFICATION_PLAN",
+    "findings": [],
+    "evidence": [
+      "PLAN mandates the canonical focused harness suite; resource policy already admits exact pnpm test:focused-acceptance. Extending its versioned collection with relevant existing tests is coverage repair, not a wrapper or alternative argv executing the refused targeted command.",
+      "Resource policy/capacity/ownership/watch/refusal decisions and original targeted-command refusal remain unchanged. Normal per-host guard must admit expanded suite; no tests were executed during this review.",
+      "Added direct files use controlled source/transport/filesystem seams and existing read-only workflow-admission tests; no observed new real native browser launch path is introduced by the collection itself.",
+      "Slow153s reload block remains only in original aggregate/fullCI step. Static source does not prove expanded focused completion within existing5minuteCI or full15minute gates; actual measured guarded RED/GREEN and fresh independent replay remain mandatory."
+    ]
+  },
+  "required_execution_gates": [
+    "Parent explicit plan adjudication before collection mutation.",
+    "Add only reviewed10 direct test files, then normal existing guarded canonical RED before fixture correction.",
+    "Repair3 fixture files without weakening production/oracles; same guarded canonical GREEN with actual exit/journal and elapsed duration.",
+    "Fresh independent final source/runtime check; automatic fullCI and exact artifact remain required before native adoption/dispatch or D297 closure.",
+    "Any resource refusal/timeout is honored; no limit increase, prefix smuggling, new wrapper or policy change authorized."
+  ],
+  "limits": [
+    "Source-plan review only; no runtime tests/browser/AI/heavy jobs, source edits or product health credit.",
+    "Remaining fullCI command graph still needs execution; no claim this census covers every possible future consumer."
+  ],
+  "checked_hashes": {
+    "package.json": "493c112620756aebabfd5357ec08590b1979e6e1c85fc27117db36ec801b441b",
+    "docs/stabilization/resource-policy.json": "8ab675504bc46198109169ccc4cfc4970a30a0db11a069ec4f44d6e22a772afe",
+    "tests/browser/native-sidepanel-qa-harness.mjs": "12b060756415d3934fa768d03e71bf02c1eb05b77a169aeae7f2468bd10a4d80",
+    "tests/browser/scrape-headed-launch.test.mjs": "f75249fa15e6284c7f251fc0fd0c410ac3ddec54b7124b33309a59292c7c6696",
+    "tests/browser/native-sidepanel-origin.test.mjs": "b90a525a2da31ad26270a4ce2b69eb241b6415d8db61aacf17d3e11ef91eebee",
+    "tests/browser/native-extension-startup-diagnostic.test.mjs": "2f42d90232e4f8d1cf44c73eb45b3ba7b0a2b146f0e46f626df809c3f5f4ac13"
+  },
+  "cleanup": {
+    "owned_live_processes": false,
+    "writes": "this scratch report only"
+  }
+}

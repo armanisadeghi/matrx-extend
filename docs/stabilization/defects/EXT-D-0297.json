@@ -41,7 +41,7 @@
   ],
   "fix_sha": "8232ae1b72019807c1c194e243ac9deb556d6656",
   "cleanup": "All8builderguards and independent19589 terminal; fixture directories absent; rootps saw no guard/Vitest process. No credentials or nativefixtures staged.",
-  "next_action": "Await automatic current-source CI for reviewed two-line visibility mutation fixture correction; runtimeGREEN and D297closure withheld. On successful exactartifact resume normal BguestScrape seo-schema-empty and currentDEVadoption/ownerReload. SameOct26 privateStore daily577/577 boundedcheck complete, no upload/submission.",
+  "next_action": "Commit reviewed class+inventory unit, merge contributor55ac/v627 without losing changes, require successful integratedfullCI/exactartifact; then normalBguestScrape and ownerChromeupdate. D297 remainsfixed untilfullCI; memberA activation additionally waits validminimalB content/resource result.",
   "transition_history": [
     {
       "at": "2026-10-26T21:36:34.048697+00:00",
@@ -87,7 +87,7 @@
     "B": "PASS_BOUNDED_SOURCE_WITH_RECORDED_PROCEDURAL_DEVIATION",
     "native": "PASS bounded original-route publicCRX577 unpacked on40408186617, stable4669 backend/three terminal replies/all3journalsvalid0; independently reviewed. No liveCPU_PENDING, actualStore installation or fullF0002 claim."
   },
-  "fix_commit_status": "Production fix committed/pushed8232; test-fixture correction pending independent replay and integrated current-source CI.",
+  "fix_commit_status": "Production fix8232 pushed; classfixture followthrough independentlyreplayed and bundled with current evidence. Integrated627 fullCI pending; do not retrocertify prior failedruns.",
   "ci_followthrough": {
     "source_run": 40408086395,
     "result": "failed6 VM missing-helper fixture bindings; production module bindings present",
@@ -131,6 +131,66 @@
         "docs/stabilization/reports/d297-visibility-mutation-fixture-fix-20261026.json",
         "docs/stabilization/reports/d297-visibility-fixture-source-peer-20261026.json"
       ]
+    },
+    "8db_outcome": {
+      "run": 40419767773,
+      "result": "failure: previous28 mutationvisibility casesPASS; headed fixture free resourceAction; noartifact",
+      "additional_source_siblings": [
+        "origin obsolete gatedpage/spawn extraction",
+        "extension-startup missing threaded action"
+      ],
+      "class_plan": "10existingfastdirect suites in canonicalfocused;3fixture repairs; freshplanpeerPASS, normalRED/GREEN+peer+fullCI required",
+      "production_harness": "12b\u2026unchanged; no productoutage inferred"
+    },
+    "class_unit": {
+      "test_base": "8db97680a83e7b462dda8247511a38f3c3b638ae",
+      "source_census": "22 referencing tests; runtime RED found3 further profile-boundary failures, no static-census completeness claim",
+      "collection": "10existing fastdirect suites added to approved canonical focused command; slowaggregate remains once in fullCI; no newwrapper/policy/timeout/workflow/runner change",
+      "RED": {
+        "session": 22970,
+        "actual_exit": 1,
+        "total": 1074,
+        "pass": 1056,
+        "fail": 7,
+        "skip": 11,
+        "suite_seconds": 147.498,
+        "resourceInvalid": false
+      },
+      "GREEN": {
+        "session": 73067,
+        "actual_exit": 0,
+        "total": 1076,
+        "pass": 1065,
+        "fail": 0,
+        "skip": 11,
+        "suite_seconds": 146.445,
+        "resource": "valid0"
+      },
+      "compile": {
+        "session": 95263,
+        "actual_exit": 0,
+        "child_seconds": 2.134,
+        "resource": "valid0"
+      },
+      "independent_peer": {
+        "session": 41237,
+        "actual_exit": 0,
+        "total": 1076,
+        "pass": 1065,
+        "fail": 0,
+        "skip": 11,
+        "suite_seconds": 145.046,
+        "resource": "valid0",
+        "A": "PASS_BOUNDED_COMPOSITION_AND_REPLAY",
+        "B": "PASS_BOUNDED_DOCTRINE_ENFORCEMENT",
+        "private_sha256": "bd5544dca1691bf34429edc3463c775e98c9d653d476b152a64645678e12d32f"
+      },
+      "cancelled_preflight": "89569actual2/admittedfalse/zero tests; one stop after lightweightlint failure, sourcefixed only after terminal; no bypass",
+      "reports": [
+        "docs/stabilization/reports/d297-native-fixture-class-fix-20261026.json",
+        "docs/stabilization/reports/d297-native-fixture-class-peer-20261026.json"
+      ],
+      "limits": "Frozen8db+existinginstalleddeps only; contributor627/dependency merge needs currentfullCI/artifact. No native/product/fullF0002 acceptance or closure."
     }
   }
 }

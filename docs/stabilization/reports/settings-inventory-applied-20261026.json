@@ -1,0 +1,30 @@
+{
+  "task_id": "settings_inventory_delta_prepared",
+  "at": "2026-10-26T23:42:35.811296+00:00",
+  "status": "APPLIED_EXPLICITLY",
+  "source_head": "8db97680a83e7b462dda8247511a38f3c3b638ae",
+  "input_inventory_sha256": "05f0fb19ce133aae318610ef5ad42873025d036cd3d310318e4293b1bbc58200",
+  "proposal": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/settings-inventory-proposal-20261026.json",
+  "proposal_sha256": "51bfd99b6deda8c74409cedd27a48126917de8867c9fba875f88e50dd6d858ae",
+  "checks": {
+    "original_case_count": 96,
+    "proposed_case_count": 98,
+    "controls_unchanged": 41,
+    "shared_aliases": 19,
+    "new_cases": ["EXT-F-1003-T97", "EXT-F-1003-T98"],
+    "unrelated_features_unchanged": true,
+    "historical_results_preserved_whole": true,
+    "current_changed_results": "unverified only",
+    "source_complete": false
+  },
+  "generator_compatible": {
+    "generated_into_scratch": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/settings-inventory-proposal-generated-20261026",
+    "outputs": ["STATUS.md", "STATUS.html", "CHECKLIST.md"],
+    "changed_current_cases_render_unverified": true
+  },
+  "source_apply_gate": "Explicit --apply plus current inventory compare-before-write, reviewed Settings source hash agreement and exact reviewed shared-picker lock version/integrity; new case collisions refuse.",
+  "tracked_inventory_unchanged": false,
+  "product_credit": 0,
+  "limits": "No native/source-derived applicability verdict. Stable IDs and complete original results/procedures retained as history; remaining nested picker mapping/current selector applicability explicitly incomplete.",
+  "next": "Parent fresh independent prepared-delta review, then explicit application only after current CI/native dispatch source freeze; regenerate/format/commit exact owned paths."
+}

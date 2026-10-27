@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
+import { EventEmitter } from 'node:events';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
+import { attachTargetSession } from './native-sidepanel-qa-harness.mjs';
 import * as failures from './profile-native-failure.mjs';
 
 const source = await readFile(new URL('./profile-native-acceptance.mjs', import.meta.url), 'utf8');
@@ -186,6 +188,7 @@ for (const executionFails of [true, false]) {
     let removed = false;
     let detached = 0;
     let finalError;
+    const gpuAbort = new AbortController();
     const dependencies = {
       report,
       executionError: executionFails ? primary : null,
@@ -204,6 +207,7 @@ for (const executionFails of [true, false]) {
         },
       },
       cdp: null,
+      gpuAbort,
       server: null,
       child: null,
       root: '/owned-profile',
@@ -231,6 +235,7 @@ for (const executionFails of [true, false]) {
     await run(...Object.values(dependencies));
     assert.equal(finalError, executionFails ? primary : cleanup);
     assert.equal(removed, true);
+    assert.equal(gpuAbort.signal.aborted, true);
     assert.equal(detached, 1);
     assert.equal(
       report.failure_code,
@@ -245,19 +250,28 @@ for (const executionFails of [true, false]) {
 }
 
 test('actual native panel detach cannot replace a primary transport failure', async () => {
-  const harness = await readFile(
-    new URL('./native-sidepanel-qa-harness.mjs', import.meta.url),
-    'utf8',
-  );
-  const start = harness.indexOf('async function attachTargetSession(');
-  const end = harness.indexOf('\nfunction stopOwnedChild(', start);
-  const attach = new AsyncFunction(`${harness.slice(start, end)}; return attachTargetSession;`);
-  const cdp = {
-    send: async (name) => {
-      if (name === 'Target.attachToTarget') return { sessionId: 'owned-session' };
-      throw new Error('private-transport@invalid.test');
-    },
+  // Use the actual exported session instead of slicing past unrelated exports.
+  // Only its external protocol transport is adapted, including retirement events.
+  const cdp = new EventEmitter();
+  let detachCalls = 0;
+  cdp.send = async (name) => {
+    if (name === 'Target.attachToTarget') return { sessionId: 'owned-session' };
+    assert.equal(name, 'Target.detachFromTarget');
+    detachCalls += 1;
+    throw new Error('private-transport@invalid.test');
   };
-  const panel = await (await attach())(cdp, 'owned-target');
-  await panel.detach();
+  const panel = await attachTargetSession(cdp, 'owned-target');
+  const primary = new Error('profile_primary_transport_failure');
+  await assert.rejects(
+    async () => {
+      try {
+        throw primary;
+      } finally {
+        await panel.detach();
+      }
+    },
+    (error) => error === primary,
+  );
+  assert.equal(detachCalls, 1);
+  cdp.removeAllListeners();
 });

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { extensionStartupDiagnostic } from './native-extension-startup-diagnostic.mjs';
+import { runNativeResourceAction } from './native-resource-boundary.mjs';
 const extensionId = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 // This guards the missing-worker boundary: absent and disabled must never be conflated.
 test('distinguishes absent, disabled, enabled without worker and unavailable registration', () => {
@@ -160,13 +161,19 @@ test('actual startup failure boundary emits safe classification and preserves th
     const failure = new Error('native_sidepanel_expected_extension_missing');
     failure.extensionStartupObservation = extensionStartupDiagnostic({ extensionId });
     const lines = [];
+    // Only the external wait boundary is adapted; preserve its exact action dependency.
+    const resourceAction = (work) => runNativeResourceAction(async () => {}, work);
     const invoke = runInNewContext(`(async () => { ${boundary} })`, {
       cdp: {},
+      resourceAction,
       expectedExtensionId: extensionId,
       profile: '/owned',
       chromeStderr: 'private stderr',
       onStage: () => {},
-      waitForExpectedExtension: async () => {
+      waitForExpectedExtension: async (cdp, observedId, observedAction) => {
+        assert.deepEqual(cdp, {});
+        assert.equal(observedId, extensionId);
+        assert.equal(observedAction, resourceAction);
         throw failure;
       },
       extensionStartupDiagnostic,

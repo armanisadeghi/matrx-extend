@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-26T06:23:48.180274+00:00",
+  "updated_at": "2026-10-26T23:42:35.811296+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -28,7 +28,9 @@
     ".research/clipboard-procedures-20261007.json",
     ".research/clipboard-procedures-peer-20261007.json",
     ".research/clipboard-final-peer-20261007.json",
-    ".research/inventory-source-delta-check-20261007.json"
+    ".research/inventory-source-delta-check-20261007.json",
+    "docs/stabilization/reports/settings-inventory-reconcile-20261026.json",
+    "docs/stabilization/reports/settings-inventory-peer-20261026.json"
   ],
   "features": [
     {
@@ -6927,7 +6929,35 @@
         {
           "id": "EXT-F-1003-C03",
           "label": "Default agent",
-          "action": "Choose active agent when org is set; inspect empty/unavailable states."
+          "action": "Choose active agent when org is set; inspect empty/unavailable states.",
+          "coverage_alias_of": [
+            "EXT-F-2013-C104",
+            "EXT-F-2013-C105",
+            "EXT-F-2013-C106",
+            "EXT-F-2013-C107",
+            "EXT-F-2013-C108",
+            "EXT-F-2013-C109",
+            "EXT-F-2013-C110",
+            "EXT-F-2013-C111",
+            "EXT-F-2013-C112",
+            "EXT-F-2013-C113",
+            "EXT-F-2013-C114",
+            "EXT-F-2013-C115",
+            "EXT-F-2013-C116",
+            "EXT-F-2013-C117",
+            "EXT-F-2013-C118",
+            "EXT-F-2013-C119",
+            "EXT-F-2013-C120",
+            "EXT-F-2013-C121",
+            "EXT-F-2013-C122"
+          ],
+          "coverage_context": {
+            "consumer_id": "extend.settings.default-agent",
+            "surface": "Settings > Chat > Default agent",
+            "source": "src/features/settings/SettingsView.tsx:380",
+            "shared_definition_rule": "Shared operations are defined by the referenced canonical controls, not copied here. Settings-context results are separate from Chat/Pilot results.",
+            "current_native_status": "unverified"
+          }
         },
         {
           "id": "EXT-F-1003-C04",
@@ -7115,7 +7145,13 @@
           "id": "EXT-F-1003-C40",
           "label": "Chat version selector",
           "action": "Choose Current or New chat surface and verify the choice is retained when the side panel is reopened.",
-          "source_anchor": "src/features/settings/SettingsView.tsx"
+          "source_anchor": "src/features/settings/SettingsView.tsx",
+          "source_reconciliation": {
+            "status": "source-absent-current-audit",
+            "reviewed_source_sha": "8db97680a83e7b462dda8247511a38f3c3b638ae",
+            "current_native_applicability": "unknown-unverified",
+            "detail": "Current Settings Chat group has Default agent/mode/speed but no Current/New version selector. Stable ID and history retained; source absence supplies no native absence or N/A."
+          }
         },
         {
           "id": "EXT-F-1003-C41",
@@ -7211,21 +7247,60 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
-            "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance."
+            "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance.",
+            "Use owned account/membership fixtures distinguishing a missing device choice from zero memberships or a real membership-read failure. Preserve and restore original device/account choices; do not manufacture a no-choice hold for a person who has memberships."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
-            "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
-            "Perform a full extension Reload and confirm the organization persists."
+            "With actual signed-in role and memberships verified, open Settings after load. For controlled owned fixtures, verify the first valid current-membership rung: device choice, account last-active organization, account start-up organization, then oldest membership. A missing device choice alone must not produce an unset/manual-choice hold.",
+            "Use an owned fixture with multiple current memberships to deliberately switch the Acting as organization; verify device choice and account last-active persistence through the normal real product/data doors, with organization attached to requests.",
+            "Fully Reload the extension, reopen Settings, and verify the valid chosen organization and actual request context persist. Treat an invalidated/stale membership separately from read failure.",
+            "Using suitable approved fixtures, independently check zero-membership refusal with the current actionable create/join remedy, and membership-read error with honest retry/recovery guidance. An unavailable required fixture remains unverified; neither state is represented as the ordinary missing-device-choice case.",
+            "Restore the original owned fixture/account/device state and verify restoration; record all unexecuted rungs and failure/recovery branches explicitly."
           ],
           "expected": [
-            "Selected organization is reflected as Acting as after reload; unset state requires explicit selection and does not choose an implicit default."
+            "A signed-in person with current memberships loads into the first valid membership-backed rung without an unset/manual-selection hold. A deliberate switch persists device and account choice and is retained after full Reload.",
+            "Zero memberships and read failure remain distinguishable, actionable and unverified until actually exercised. A stale/nonmember choice is never reused; no historical Pass transfers to these changed criteria."
           ],
           "dimensions": [
             "warm",
             "reload"
           ],
-          "scope_note": "SettingsView.tsx:144-153 offers Choose only while unset and ignores NONE; no clear control exists. Generated choose/clear step corrected to actual feature. Empty-membership/error states remain unverified unless tested."
+          "scope_note": "Binding October7 organization load ladder; original no-device-choice/manual-Choose procedure is archived whole. This is procedure reconciliation only; all current criteria remain unverified.",
+          "historical_procedure_results": [
+            {
+              "archived_at": "2026-10-26T23:42:35.811296+00:00",
+              "reason": "Current load-ladder semantics supersede the original no-device-choice/manual-Choose procedure; its old results are historical.",
+              "original": {
+                "title": "member: Organization selector",
+                "preconditions": [
+                  "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+                  "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
+                  "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
+                  "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance."
+                ],
+                "steps": [
+                  "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
+                  "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
+                  "Perform a full extension Reload and confirm the organization persists."
+                ],
+                "expected": [
+                  "Selected organization is reflected as Acting as after reload; unset state requires explicit selection and does not choose an implicit default."
+                ],
+                "scope_note": "SettingsView.tsx:144-153 offers Choose only while unset and ignores NONE; no clear control exists. Generated choose/clear step corrected to actual feature. Empty-membership/error states remain unverified unless tested."
+              },
+              "original_results_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+            }
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Current load-ladder semantics supersede the original no-device-choice/manual-Choose procedure; its old results are historical. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.",
+              "evidence": [
+                "docs/stabilization/reports/settings-inventory-reconcile-20261026.json",
+                "docs/stabilization/reports/settings-inventory-peer-20261026.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T03",
@@ -7240,29 +7315,68 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
-            "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance."
+            "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance.",
+            "Use owned account/membership fixtures distinguishing a missing device choice from zero memberships or a real membership-read failure. Preserve and restore original device/account choices; do not manufacture a no-choice hold for a person who has memberships."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
-            "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
-            "Perform a full extension Reload and confirm the organization persists."
+            "With actual signed-in role and memberships verified, open Settings after load. For controlled owned fixtures, verify the first valid current-membership rung: device choice, account last-active organization, account start-up organization, then oldest membership. A missing device choice alone must not produce an unset/manual-choice hold.",
+            "Use an owned fixture with multiple current memberships to deliberately switch the Acting as organization; verify device choice and account last-active persistence through the normal real product/data doors, with organization attached to requests.",
+            "Fully Reload the extension, reopen Settings, and verify the valid chosen organization and actual request context persist. Treat an invalidated/stale membership separately from read failure.",
+            "Using suitable approved fixtures, independently check zero-membership refusal with the current actionable create/join remedy, and membership-read error with honest retry/recovery guidance. An unavailable required fixture remains unverified; neither state is represented as the ordinary missing-device-choice case.",
+            "Restore the original owned fixture/account/device state and verify restoration; record all unexecuted rungs and failure/recovery branches explicitly."
           ],
           "expected": [
-            "Selected organization is reflected as Acting as after reload; unset state requires explicit selection and does not choose an implicit default."
+            "A signed-in person with current memberships loads into the first valid membership-backed rung without an unset/manual-selection hold. A deliberate switch persists device and account choice and is retained after full Reload.",
+            "Zero memberships and read failure remain distinguishable, actionable and unverified until actually exercised. A stale/nonmember choice is never reused; no historical Pass transfers to these changed criteria."
           ],
           "dimensions": [
             "warm",
             "reload"
           ],
-          "scope_note": "SettingsView.tsx:144-153 offers Choose only while unset and ignores NONE; no clear control exists. Generated choose/clear step corrected to actual feature. Empty-membership/error states remain unverified unless tested.",
+          "scope_note": "Binding October7 organization load ladder; original no-device-choice/manual-Choose procedure is archived whole. This is procedure reconciliation only; all current criteria remain unverified.",
           "results": {
             "admin": {
-              "status": "pass",
-              "run_id": "admin-org-001",
-              "evidence": "docs/stabilization/runs/admin-org-001.json",
-              "detail": "Initialunset did not chooseimplicitly; explicitfixture selected, Actingas and fullreload persistence verified. Nonexistent clear-step corrected from source/UI."
+              "status": "unverified",
+              "detail": "Current load-ladder semantics supersede the original no-device-choice/manual-Choose procedure; its old results are historical. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.",
+              "evidence": [
+                "docs/stabilization/reports/settings-inventory-reconcile-20261026.json",
+                "docs/stabilization/reports/settings-inventory-peer-20261026.json"
+              ]
             }
-          }
+          },
+          "historical_procedure_results": [
+            {
+              "archived_at": "2026-10-26T23:42:35.811296+00:00",
+              "reason": "Current load-ladder semantics supersede the original no-device-choice/manual-Choose procedure; its old results are historical.",
+              "original": {
+                "title": "admin: Organization selector",
+                "preconditions": [
+                  "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+                  "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
+                  "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
+                  "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance."
+                ],
+                "steps": [
+                  "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
+                  "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
+                  "Perform a full extension Reload and confirm the organization persists."
+                ],
+                "expected": [
+                  "Selected organization is reflected as Acting as after reload; unset state requires explicit selection and does not choose an implicit default."
+                ],
+                "scope_note": "SettingsView.tsx:144-153 offers Choose only while unset and ignores NONE; no clear control exists. Generated choose/clear step corrected to actual feature. Empty-membership/error states remain unverified unless tested.",
+                "results": {
+                  "admin": {
+                    "status": "pass",
+                    "run_id": "admin-org-001",
+                    "evidence": "docs/stabilization/runs/admin-org-001.json",
+                    "detail": "Initialunset did not chooseimplicitly; explicitfixture selected, Actingas and fullreload persistence verified. Nonexistent clear-step corrected from source/UI."
+                  }
+                }
+              },
+              "original_results_sha256": "1dfe5c85373622c9e078e98d0f6053330550994d912a2c391f0f9509201d7d77"
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T04",
@@ -8218,14 +8332,16 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
-            "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance."
+            "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance.",
+            "Distinguish successful membership-backed organization resolution, zero memberships and actual membership-read failure. Missing only a device choice is not an unset-organization premise."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Choose active agent when org is set; inspect empty/unavailable states."
+            "Open Settings > Chat after the load ladder settles for the verified role. With a valid membership-backed active organization, choose an available agent and inspect genuinely empty or unavailable roster states using suitable real owned fixtures.",
+            "For zero memberships or actual organization-read failure, inspect the truthful unavailable-organization boundary and remedy separately; do not simulate it merely by removing a device choice.",
+            "Fully Reload/reopen and verify actual chosen-agent identity and organization context. Restore the original default agent and owned fixture state, recording missing branches as unverified."
           ],
           "expected": [
-            "Selected agent is shown in the picker and persists; without org the UI instructs the user to choose one."
+            "Agent selection/identity and persistence are checked in the resolved organization context. Zero-membership/read-error unavailable states are distinct from a missing device choice; no old bounded selection Pass transfers to newly added organization criteria."
           ],
           "dimensions": [
             "warm",
@@ -8233,7 +8349,40 @@
           ],
           "linked_defects": [
             "EXT-D-0087"
-          ]
+          ],
+          "historical_procedure_results": [
+            {
+              "archived_at": "2026-10-26T23:42:35.811296+00:00",
+              "reason": "Expanded membership-backed load/unavailable-organization criteria are unverified; original agent-selection evidence is retained whole as bounded history.",
+              "original": {
+                "title": "member: Default agent",
+                "preconditions": [
+                  "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+                  "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
+                  "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
+                  "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance."
+                ],
+                "steps": [
+                  "Open Settings tab.",
+                  "Choose active agent when org is set; inspect empty/unavailable states."
+                ],
+                "expected": [
+                  "Selected agent is shown in the picker and persists; without org the UI instructs the user to choose one."
+                ]
+              },
+              "original_results_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+            }
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Expanded membership-backed load/unavailable-organization criteria are unverified; original agent-selection evidence is retained whole as bounded history. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.",
+              "evidence": [
+                "docs/stabilization/reports/settings-inventory-reconcile-20261026.json",
+                "docs/stabilization/reports/settings-inventory-peer-20261026.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T09",
@@ -8248,14 +8397,16 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
-            "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance."
+            "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance.",
+            "Distinguish successful membership-backed organization resolution, zero memberships and actual membership-read failure. Missing only a device choice is not an unset-organization premise."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Choose active agent when org is set; inspect empty/unavailable states."
+            "Open Settings > Chat after the load ladder settles for the verified role. With a valid membership-backed active organization, choose an available agent and inspect genuinely empty or unavailable roster states using suitable real owned fixtures.",
+            "For zero memberships or actual organization-read failure, inspect the truthful unavailable-organization boundary and remedy separately; do not simulate it merely by removing a device choice.",
+            "Fully Reload/reopen and verify actual chosen-agent identity and organization context. Restore the original default agent and owned fixture state, recording missing branches as unverified."
           ],
           "expected": [
-            "Selected agent is shown in the picker and persists; without org the UI instructs the user to choose one."
+            "Agent selection/identity and persistence are checked in the resolved organization context. Zero-membership/read-error unavailable states are distinct from a missing device choice; no old bounded selection Pass transfers to newly added organization criteria."
           ],
           "dimensions": [
             "warm",
@@ -8263,14 +8414,47 @@
           ],
           "results": {
             "admin": {
-              "status": "pass",
-              "run_id": "admin-default-agent-002",
-              "evidence": "docs/stabilization/runs/admin-default-agent-002.json",
-              "detail": "FreshSol visual+AX/detail reconciled sameQuickTestAgent plus2memberbadge; actualchosenidentity persisted afterfullreload, originalMatrxBrowserAgent restored."
+              "status": "unverified",
+              "detail": "Expanded membership-backed load/unavailable-organization criteria are unverified; original agent-selection evidence is retained whole as bounded history. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.",
+              "evidence": [
+                "docs/stabilization/reports/settings-inventory-reconcile-20261026.json",
+                "docs/stabilization/reports/settings-inventory-peer-20261026.json"
+              ]
             }
           },
           "linked_defects": [
             "EXT-D-0087"
+          ],
+          "historical_procedure_results": [
+            {
+              "archived_at": "2026-10-26T23:42:35.811296+00:00",
+              "reason": "Expanded membership-backed load/unavailable-organization criteria are unverified; original agent-selection evidence is retained whole as bounded history.",
+              "original": {
+                "title": "admin: Default agent",
+                "preconditions": [
+                  "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+                  "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
+                  "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
+                  "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance."
+                ],
+                "steps": [
+                  "Open Settings tab.",
+                  "Choose active agent when org is set; inspect empty/unavailable states."
+                ],
+                "expected": [
+                  "Selected agent is shown in the picker and persists; without org the UI instructs the user to choose one."
+                ],
+                "results": {
+                  "admin": {
+                    "status": "pass",
+                    "run_id": "admin-default-agent-002",
+                    "evidence": "docs/stabilization/runs/admin-default-agent-002.json",
+                    "detail": "FreshSol visual+AX/detail reconciled sameQuickTestAgent plus2memberbadge; actualchosenidentity persisted afterfullreload, originalMatrxBrowserAgent restored."
+                  }
+                }
+              },
+              "original_results_sha256": "10fc82454b1983e6bb6b581576b5c2de1f537eaa9bc3487b923c3b5d794e7ddd"
+            }
           ]
         },
         {
@@ -16602,75 +16786,111 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "local-settings-guest-20261012-1441",
-              "workflow_source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
-              "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
-              "build_version": "0.2.509",
-              "build_tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc",
-              "hosted_result_artifact_id": 11688730538,
-              "runner_arch": "ARM64",
-              "resource_valid": true,
-              "native_case_status": "fail",
+              "status": "unverified",
+              "detail": "The Current/New selector procedure is stale against audited source; current native applicability is unknown, not N/A. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.",
               "evidence": [
-                "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
-                "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
-              ],
-              "verified_substeps": [],
-              "unverified_substeps": [
-                "No T93 selector step ran: initial Current/default observation, New/package persistence after reopen, Current persistence after reopen, and original preference restoration remain unverified."
-              ],
-              "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-              "detail": "Fresh isolated native guest run verified New and Current persisted through actual panel close/reopen and restored the original Current value. Full Settings and Store remain unverified.",
-              "release_scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim.",
-              "bounded_subtarget_evidence": [
-                {
-                  "run_id": "local-settings-guest-20261012-1441",
-                  "status": "pass",
-                  "native_case_status": "pass",
-                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
-                  "build_version": "0.2.509",
-                  "development_ci_run_id": 38261957044,
-                  "development_artifact_id": 11752953286,
-                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
-                  "resource_valid": true,
-                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                  "evidence": [
-                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
-                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
-                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
-                  ],
-                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
-                }
-              ],
-              "previous_attempt": {
-                "status": "unverified",
-                "run_id": "38102203927",
-                "workflow_source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
-                "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
-                "build_version": "0.2.490",
-                "build_tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc",
-                "hosted_result_artifact_id": 11688730538,
-                "runner_arch": "ARM64",
-                "resource_valid": true,
-                "native_case_status": "fail",
-                "evidence": [
-                  "docs/stabilization/evidence/guest-settings-t93/run38102203927/receipt.sanitized.json",
-                  "docs/stabilization/evidence/guest-settings-t93/run38102203927/native-report.sanitized.json",
-                  "docs/stabilization/evidence/guest-settings-t93/run38102203927/resource-finals.sanitized.json"
-                ],
-                "verified_substeps": [],
-                "unverified_substeps": [
-                  "No T93 selector step ran: initial Current/default observation, New/package persistence after reopen, Current persistence after reopen, and original preference restoration remain unverified."
-                ],
-                "independent_review": "Completed; reviewer confirms zero T93 steps, all resource finals valid, and an earlier extension-reload failure. No T93 pass or product-defect inference.",
-                "detail": "Frozen v0.2.490 artifact only. Before T93 interaction, extension reload retired the old worker/panel and created a replacement worker; trusted open-panel click/send returned but the callback was not entered and no replacement panel target appeared. The later native_extension_live_panel_unavailable_for_cleanup is a cascading cleanup error. Lockfile @ai-matrx versions differ from the frozen source, so there is no current-main runtime acceptance claim. Keep T93 unverified.",
-                "release_scope": "Exact unpublished CI development artifact v0.2.490 only; lockfile runtime drift from current main; no current-main, Store, member/admin or full Settings claim."
-              },
-              "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625"
+                "docs/stabilization/reports/settings-inventory-reconcile-20261026.json",
+                "docs/stabilization/reports/settings-inventory-peer-20261026.json"
+              ]
             }
-          }
+          },
+          "historical_procedure_results": [
+            {
+              "archived_at": "2026-10-26T23:42:35.811296+00:00",
+              "reason": "The Current/New selector procedure is stale against audited source; current native applicability is unknown, not N/A.",
+              "original": {
+                "title": "guest: Chat version selector persistence",
+                "preconditions": [
+                  "Use an isolated profile and a receipt-bound current extension build; establish the selected signed-out or signed-in role in the actual UI.",
+                  "Open Settings > Chat and record the initial Chat version value before changing it."
+                ],
+                "steps": [
+                  "Select New, close the side panel, reopen it, and verify Settings > Chat still displays New.",
+                  "Select Current, close the side panel, reopen it, and verify Settings > Chat still displays Current.",
+                  "Restore the profile’s original value and reopen the panel to verify restoration."
+                ],
+                "expected": [
+                  "Both choices persist across side-panel close and reopen, and the selector reflects the saved choice.",
+                  "Restoring the initial value leaves the profile in its original state."
+                ],
+                "results": {
+                  "guest": {
+                    "status": "pass",
+                    "run_id": "local-settings-guest-20261012-1441",
+                    "workflow_source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                    "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                    "build_version": "0.2.509",
+                    "build_tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc",
+                    "hosted_result_artifact_id": 11688730538,
+                    "runner_arch": "ARM64",
+                    "resource_valid": true,
+                    "native_case_status": "fail",
+                    "evidence": [
+                      "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                      "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                      "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                    ],
+                    "verified_substeps": [],
+                    "unverified_substeps": [
+                      "No T93 selector step ran: initial Current/default observation, New/package persistence after reopen, Current persistence after reopen, and original preference restoration remain unverified."
+                    ],
+                    "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "detail": "Fresh isolated native guest run verified New and Current persisted through actual panel close/reopen and restored the original Current value. Full Settings and Store remain unverified.",
+                    "release_scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim.",
+                    "bounded_subtarget_evidence": [
+                      {
+                        "run_id": "local-settings-guest-20261012-1441",
+                        "status": "pass",
+                        "native_case_status": "pass",
+                        "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                        "build_version": "0.2.509",
+                        "development_ci_run_id": 38261957044,
+                        "development_artifact_id": 11752953286,
+                        "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                        "resource_valid": true,
+                        "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                        "evidence": [
+                          "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                          "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                          "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                        ],
+                        "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
+                      }
+                    ],
+                    "previous_attempt": {
+                      "status": "unverified",
+                      "run_id": "38102203927",
+                      "workflow_source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                      "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+                      "build_version": "0.2.490",
+                      "build_tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc",
+                      "hosted_result_artifact_id": 11688730538,
+                      "runner_arch": "ARM64",
+                      "resource_valid": true,
+                      "native_case_status": "fail",
+                      "evidence": [
+                        "docs/stabilization/evidence/guest-settings-t93/run38102203927/receipt.sanitized.json",
+                        "docs/stabilization/evidence/guest-settings-t93/run38102203927/native-report.sanitized.json",
+                        "docs/stabilization/evidence/guest-settings-t93/run38102203927/resource-finals.sanitized.json"
+                      ],
+                      "verified_substeps": [],
+                      "unverified_substeps": [
+                        "No T93 selector step ran: initial Current/default observation, New/package persistence after reopen, Current persistence after reopen, and original preference restoration remain unverified."
+                      ],
+                      "independent_review": "Completed; reviewer confirms zero T93 steps, all resource finals valid, and an earlier extension-reload failure. No T93 pass or product-defect inference.",
+                      "detail": "Frozen v0.2.490 artifact only. Before T93 interaction, extension reload retired the old worker/panel and created a replacement worker; trusted open-panel click/send returned but the callback was not entered and no replacement panel target appeared. The later native_extension_live_panel_unavailable_for_cleanup is a cascading cleanup error. Lockfile @ai-matrx versions differ from the frozen source, so there is no current-main runtime acceptance claim. Keep T93 unverified.",
+                      "release_scope": "Exact unpublished CI development artifact v0.2.490 only; lockfile runtime drift from current main; no current-main, Store, member/admin or full Settings claim."
+                    },
+                    "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625"
+                  }
+                }
+              },
+              "original_results_sha256": "6dc924703d2ceef2fa1d2c09df24b9c1632d0823f04ae6130c8834ab286db210"
+            }
+          ],
+          "procedure_status": "source-stale-current-native-applicability-unverified",
+          "test_execution_eligibility": "Reconcile intended current contract and actual current-artifact controls before executing the retained historical selector procedure.",
+          "scope_note": "Audited source omits this selector. Original procedure/results remain whole, including any contradictory historical fields. No current native absence, persistence Pass, or N/A is inferred."
         },
         {
           "id": "EXT-F-1003-T94",
@@ -16698,7 +16918,43 @@
             "warm",
             "panel-reopen",
             "preference-restoration"
-          ]
+          ],
+          "historical_procedure_results": [
+            {
+              "archived_at": "2026-10-26T23:42:35.811296+00:00",
+              "reason": "The Current/New selector procedure is stale against audited source; current native applicability is unknown, not N/A.",
+              "original": {
+                "title": "member: Chat version selector persistence",
+                "preconditions": [
+                  "Use an isolated profile and a receipt-bound current extension build; establish the selected signed-out or signed-in role in the actual UI.",
+                  "Open Settings > Chat and record the initial Chat version value before changing it."
+                ],
+                "steps": [
+                  "Select New, close the side panel, reopen it, and verify Settings > Chat still displays New.",
+                  "Select Current, close the side panel, reopen it, and verify Settings > Chat still displays Current.",
+                  "Restore the profile’s original value and reopen the panel to verify restoration."
+                ],
+                "expected": [
+                  "Both choices persist across side-panel close and reopen, and the selector reflects the saved choice.",
+                  "Restoring the initial value leaves the profile in its original state."
+                ]
+              },
+              "original_results_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+            }
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "The Current/New selector procedure is stale against audited source; current native applicability is unknown, not N/A. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.",
+              "evidence": [
+                "docs/stabilization/reports/settings-inventory-reconcile-20261026.json",
+                "docs/stabilization/reports/settings-inventory-peer-20261026.json"
+              ]
+            }
+          },
+          "procedure_status": "source-stale-current-native-applicability-unverified",
+          "test_execution_eligibility": "Reconcile intended current contract and actual current-artifact controls before executing the retained historical selector procedure.",
+          "scope_note": "Audited source omits this selector. Original procedure/results remain whole, including any contradictory historical fields. No current native absence, persistence Pass, or N/A is inferred."
         },
         {
           "id": "EXT-F-1003-T95",
@@ -16726,7 +16982,43 @@
             "warm",
             "panel-reopen",
             "preference-restoration"
-          ]
+          ],
+          "historical_procedure_results": [
+            {
+              "archived_at": "2026-10-26T23:42:35.811296+00:00",
+              "reason": "The Current/New selector procedure is stale against audited source; current native applicability is unknown, not N/A.",
+              "original": {
+                "title": "admin: Chat version selector persistence",
+                "preconditions": [
+                  "Use an isolated profile and a receipt-bound current extension build; establish the selected signed-out or signed-in role in the actual UI.",
+                  "Open Settings > Chat and record the initial Chat version value before changing it."
+                ],
+                "steps": [
+                  "Select New, close the side panel, reopen it, and verify Settings > Chat still displays New.",
+                  "Select Current, close the side panel, reopen it, and verify Settings > Chat still displays Current.",
+                  "Restore the profile’s original value and reopen the panel to verify restoration."
+                ],
+                "expected": [
+                  "Both choices persist across side-panel close and reopen, and the selector reflects the saved choice.",
+                  "Restoring the initial value leaves the profile in its original state."
+                ]
+              },
+              "original_results_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+            }
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "detail": "The Current/New selector procedure is stale against audited source; current native applicability is unknown, not N/A. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.",
+              "evidence": [
+                "docs/stabilization/reports/settings-inventory-reconcile-20261026.json",
+                "docs/stabilization/reports/settings-inventory-peer-20261026.json"
+              ]
+            }
+          },
+          "procedure_status": "source-stale-current-native-applicability-unverified",
+          "test_execution_eligibility": "Reconcile intended current contract and actual current-artifact controls before executing the retained historical selector procedure.",
+          "scope_note": "Audited source omits this selector. Original procedure/results remain whole, including any contradictory historical fields. No current native absence, persistence Pass, or N/A is inferred."
         },
         {
           "id": "EXT-F-1003-T96",
@@ -16815,6 +17107,518 @@
               "reason": "Bounded native guest observations now recorded; underlying transport/session still unverified."
             }
           ]
+        },
+        {
+          "id": "EXT-F-1003-T97",
+          "title": "member: shared agent-picker controls in Settings context",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C03"
+          ],
+          "coverage_alias_of": [
+            "EXT-F-2013-C104",
+            "EXT-F-2013-C105",
+            "EXT-F-2013-C106",
+            "EXT-F-2013-C107",
+            "EXT-F-2013-C108",
+            "EXT-F-2013-C109",
+            "EXT-F-2013-C110",
+            "EXT-F-2013-C111",
+            "EXT-F-2013-C112",
+            "EXT-F-2013-C113",
+            "EXT-F-2013-C114",
+            "EXT-F-2013-C115",
+            "EXT-F-2013-C116",
+            "EXT-F-2013-C117",
+            "EXT-F-2013-C118",
+            "EXT-F-2013-C119",
+            "EXT-F-2013-C120",
+            "EXT-F-2013-C121",
+            "EXT-F-2013-C122"
+          ],
+          "preconditions": [
+            "Use a normally admitted isolated native profile and exact current artifact receipt; verify extension ID/version/path, actual signed-in role, membership-backed active organization, permissions and backend. Never inject authentication/session state.",
+            "Use approved real owned agents with distinguishable metadata for Mine/Shared/All/Public ownership and nonempty categories/tags where those conditional controls are required. Do not mutate other people’s agents or permissions. Record unavailable required fixtures/branches as unverified.",
+            "Record the Settings consumer search, ownership tab, sort, favorite/archive/category/tag filters and selected default agent before changing controls; restore those exact values and verify restoration after the procedure.",
+            "Verify an ordinary non-admin member from actual UI and approved principal provenance; an admin success cannot substitute.",
+            "The signed-out negative picker-absence case remains T07; this case does not grant or infer guest access."
+          ],
+          "steps": [
+            "Open Settings > Chat > Default agent in the actual extension and bind the picker to consumer extend.settings.default-agent.",
+            "Execute the referenced canonical shared control operation for each criterion, using its explicit setup condition. Record expected roster/current-filter evidence and a separate result for every required criterion; do not copy Chat/Pilot outcomes.",
+            "Perform the relevant full-extension Reload/reopen check on the same frozen artifact and record which consumer state persists or resets without assuming persistence.",
+            "Restore the exact original Settings consumer/filter/default-agent state and verify the restoration in the actual UI; record fixture cleanup and remaining unknowns."
+          ],
+          "expected": [
+            "Each available operation follows its referenced canonical definition in this Settings consumer. Conditional missing fixture, loading/read failure, unexecuted branch or unverified restoration prevents a full case Pass.",
+            "Role and organization context remain correct; all observations and results are Settings-context evidence only. Guest absence remains independently covered by T07."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "role",
+            "organization",
+            "conditional-real-metadata-fixture"
+          ],
+          "criterion_conditions": {
+            "EXT-F-2013-C104": {
+              "canonical_control_ref": "EXT-F-2013-C104",
+              "setup_condition": "Real owned roster and known expected matching/nonmatching agents; use the canonical shared operation."
+            },
+            "EXT-F-2013-C105": {
+              "canonical_control_ref": "EXT-F-2013-C105",
+              "setup_condition": "Enter a nonempty search first so Clear search is actually rendered; record resulting roster before/after clearing."
+            },
+            "EXT-F-2013-C106": {
+              "canonical_control_ref": "EXT-F-2013-C106",
+              "setup_condition": "Prepare actual ownership/shared/public fixtures appropriate to this principal; distinguish legitimately empty tab from missing fixture, denied access, or loading failure."
+            },
+            "EXT-F-2013-C107": {
+              "canonical_control_ref": "EXT-F-2013-C107",
+              "setup_condition": "Prepare actual ownership/shared/public fixtures appropriate to this principal; distinguish legitimately empty tab from missing fixture, denied access, or loading failure."
+            },
+            "EXT-F-2013-C108": {
+              "canonical_control_ref": "EXT-F-2013-C108",
+              "setup_condition": "Prepare actual ownership/shared/public fixtures appropriate to this principal; distinguish legitimately empty tab from missing fixture, denied access, or loading failure."
+            },
+            "EXT-F-2013-C109": {
+              "canonical_control_ref": "EXT-F-2013-C109",
+              "setup_condition": "Prepare actual ownership/shared/public fixtures appropriate to this principal; distinguish legitimately empty tab from missing fixture, denied access, or loading failure."
+            },
+            "EXT-F-2013-C110": {
+              "canonical_control_ref": "EXT-F-2013-C110",
+              "setup_condition": "Real owned roster and known expected matching/nonmatching agents; use the canonical shared operation."
+            },
+            "EXT-F-2013-C111": {
+              "canonical_control_ref": "EXT-F-2013-C111",
+              "setup_condition": "Real owned roster and known expected matching/nonmatching agents; use the canonical shared operation."
+            },
+            "EXT-F-2013-C112": {
+              "canonical_control_ref": "EXT-F-2013-C112",
+              "setup_condition": "Real owned roster and known expected matching/nonmatching agents; use the canonical shared operation."
+            },
+            "EXT-F-2013-C113": {
+              "canonical_control_ref": "EXT-F-2013-C113",
+              "setup_condition": "Real owned roster and known expected matching/nonmatching agents; use the canonical shared operation."
+            },
+            "EXT-F-2013-C114": {
+              "canonical_control_ref": "EXT-F-2013-C114",
+              "setup_condition": "Real permitted agent metadata yields allCategories.length > 0; choose a category before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C115": {
+              "canonical_control_ref": "EXT-F-2013-C115",
+              "setup_condition": "Real permitted agent metadata yields allCategories.length > 0; choose a category before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C116": {
+              "canonical_control_ref": "EXT-F-2013-C116",
+              "setup_condition": "Real permitted agent metadata yields allCategories.length > 0; choose a category before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C117": {
+              "canonical_control_ref": "EXT-F-2013-C117",
+              "setup_condition": "Real permitted agent metadata yields allCategories.length > 0; choose a category before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C118": {
+              "canonical_control_ref": "EXT-F-2013-C118",
+              "setup_condition": "Real permitted agent metadata yields allTags.length > 0; choose a tag before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C119": {
+              "canonical_control_ref": "EXT-F-2013-C119",
+              "setup_condition": "Real permitted agent metadata yields allTags.length > 0; choose a tag before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C120": {
+              "canonical_control_ref": "EXT-F-2013-C120",
+              "setup_condition": "Real permitted agent metadata yields allTags.length > 0; choose a tag before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C121": {
+              "canonical_control_ref": "EXT-F-2013-C121",
+              "setup_condition": "Real permitted agent metadata yields allTags.length > 0; choose a tag before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C122": {
+              "canonical_control_ref": "EXT-F-2013-C122",
+              "setup_condition": "Activate a nondefault filter so activeFilterCount > 0 and Reset filters is actually rendered; verify canonical reset behavior, then restore the original consumer baseline."
+            }
+          },
+          "criterion_results": {
+            "EXT-F-2013-C104": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C105": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C106": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C107": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C108": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C109": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C110": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C111": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C112": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C113": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C114": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C115": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C116": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C117": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C118": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C119": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C120": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C121": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C122": {
+              "member": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            }
+          },
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New source-mapped procedure; no native execution or product credit."
+            }
+          },
+          "procedure_completion_rule": "A full Pass requires every required criterion and lifecycle/restoration branch to have real independent Settings-context evidence. Missing applicable fixtures or branches remain unverified, never source-derived N/A."
+        },
+        {
+          "id": "EXT-F-1003-T98",
+          "title": "admin: shared agent-picker controls in Settings context",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C03"
+          ],
+          "coverage_alias_of": [
+            "EXT-F-2013-C104",
+            "EXT-F-2013-C105",
+            "EXT-F-2013-C106",
+            "EXT-F-2013-C107",
+            "EXT-F-2013-C108",
+            "EXT-F-2013-C109",
+            "EXT-F-2013-C110",
+            "EXT-F-2013-C111",
+            "EXT-F-2013-C112",
+            "EXT-F-2013-C113",
+            "EXT-F-2013-C114",
+            "EXT-F-2013-C115",
+            "EXT-F-2013-C116",
+            "EXT-F-2013-C117",
+            "EXT-F-2013-C118",
+            "EXT-F-2013-C119",
+            "EXT-F-2013-C120",
+            "EXT-F-2013-C121",
+            "EXT-F-2013-C122"
+          ],
+          "preconditions": [
+            "Use a normally admitted isolated native profile and exact current artifact receipt; verify extension ID/version/path, actual signed-in role, membership-backed active organization, permissions and backend. Never inject authentication/session state.",
+            "Use approved real owned agents with distinguishable metadata for Mine/Shared/All/Public ownership and nonempty categories/tags where those conditional controls are required. Do not mutate other people’s agents or permissions. Record unavailable required fixtures/branches as unverified.",
+            "Record the Settings consumer search, ownership tab, sort, favorite/archive/category/tag filters and selected default agent before changing controls; restore those exact values and verify restoration after the procedure.",
+            "Verify the authorized admin from actual UI and approved principal provenance.",
+            "The signed-out negative picker-absence case remains T07; this case does not grant or infer guest access."
+          ],
+          "steps": [
+            "Open Settings > Chat > Default agent in the actual extension and bind the picker to consumer extend.settings.default-agent.",
+            "Execute the referenced canonical shared control operation for each criterion, using its explicit setup condition. Record expected roster/current-filter evidence and a separate result for every required criterion; do not copy Chat/Pilot outcomes.",
+            "Perform the relevant full-extension Reload/reopen check on the same frozen artifact and record which consumer state persists or resets without assuming persistence.",
+            "Restore the exact original Settings consumer/filter/default-agent state and verify the restoration in the actual UI; record fixture cleanup and remaining unknowns."
+          ],
+          "expected": [
+            "Each available operation follows its referenced canonical definition in this Settings consumer. Conditional missing fixture, loading/read failure, unexecuted branch or unverified restoration prevents a full case Pass.",
+            "Role and organization context remain correct; all observations and results are Settings-context evidence only. Guest absence remains independently covered by T07."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "role",
+            "organization",
+            "conditional-real-metadata-fixture"
+          ],
+          "criterion_conditions": {
+            "EXT-F-2013-C104": {
+              "canonical_control_ref": "EXT-F-2013-C104",
+              "setup_condition": "Real owned roster and known expected matching/nonmatching agents; use the canonical shared operation."
+            },
+            "EXT-F-2013-C105": {
+              "canonical_control_ref": "EXT-F-2013-C105",
+              "setup_condition": "Enter a nonempty search first so Clear search is actually rendered; record resulting roster before/after clearing."
+            },
+            "EXT-F-2013-C106": {
+              "canonical_control_ref": "EXT-F-2013-C106",
+              "setup_condition": "Prepare actual ownership/shared/public fixtures appropriate to this principal; distinguish legitimately empty tab from missing fixture, denied access, or loading failure."
+            },
+            "EXT-F-2013-C107": {
+              "canonical_control_ref": "EXT-F-2013-C107",
+              "setup_condition": "Prepare actual ownership/shared/public fixtures appropriate to this principal; distinguish legitimately empty tab from missing fixture, denied access, or loading failure."
+            },
+            "EXT-F-2013-C108": {
+              "canonical_control_ref": "EXT-F-2013-C108",
+              "setup_condition": "Prepare actual ownership/shared/public fixtures appropriate to this principal; distinguish legitimately empty tab from missing fixture, denied access, or loading failure."
+            },
+            "EXT-F-2013-C109": {
+              "canonical_control_ref": "EXT-F-2013-C109",
+              "setup_condition": "Prepare actual ownership/shared/public fixtures appropriate to this principal; distinguish legitimately empty tab from missing fixture, denied access, or loading failure."
+            },
+            "EXT-F-2013-C110": {
+              "canonical_control_ref": "EXT-F-2013-C110",
+              "setup_condition": "Real owned roster and known expected matching/nonmatching agents; use the canonical shared operation."
+            },
+            "EXT-F-2013-C111": {
+              "canonical_control_ref": "EXT-F-2013-C111",
+              "setup_condition": "Real owned roster and known expected matching/nonmatching agents; use the canonical shared operation."
+            },
+            "EXT-F-2013-C112": {
+              "canonical_control_ref": "EXT-F-2013-C112",
+              "setup_condition": "Real owned roster and known expected matching/nonmatching agents; use the canonical shared operation."
+            },
+            "EXT-F-2013-C113": {
+              "canonical_control_ref": "EXT-F-2013-C113",
+              "setup_condition": "Real owned roster and known expected matching/nonmatching agents; use the canonical shared operation."
+            },
+            "EXT-F-2013-C114": {
+              "canonical_control_ref": "EXT-F-2013-C114",
+              "setup_condition": "Real permitted agent metadata yields allCategories.length > 0; choose a category before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C115": {
+              "canonical_control_ref": "EXT-F-2013-C115",
+              "setup_condition": "Real permitted agent metadata yields allCategories.length > 0; choose a category before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C116": {
+              "canonical_control_ref": "EXT-F-2013-C116",
+              "setup_condition": "Real permitted agent metadata yields allCategories.length > 0; choose a category before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C117": {
+              "canonical_control_ref": "EXT-F-2013-C117",
+              "setup_condition": "Real permitted agent metadata yields allCategories.length > 0; choose a category before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C118": {
+              "canonical_control_ref": "EXT-F-2013-C118",
+              "setup_condition": "Real permitted agent metadata yields allTags.length > 0; choose a tag before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C119": {
+              "canonical_control_ref": "EXT-F-2013-C119",
+              "setup_condition": "Real permitted agent metadata yields allTags.length > 0; choose a tag before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C120": {
+              "canonical_control_ref": "EXT-F-2013-C120",
+              "setup_condition": "Real permitted agent metadata yields allTags.length > 0; choose a tag before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C121": {
+              "canonical_control_ref": "EXT-F-2013-C121",
+              "setup_condition": "Real permitted agent metadata yields allTags.length > 0; choose a tag before clearing. Search/select/clear criteria remain unverified if that required fixture is unavailable."
+            },
+            "EXT-F-2013-C122": {
+              "canonical_control_ref": "EXT-F-2013-C122",
+              "setup_condition": "Activate a nondefault filter so activeFilterCount > 0 and Reset filters is actually rendered; verify canonical reset behavior, then restore the original consumer baseline."
+            }
+          },
+          "criterion_results": {
+            "EXT-F-2013-C104": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C105": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C106": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C107": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C108": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C109": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C110": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C111": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C112": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C113": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C114": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C115": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C116": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C117": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C118": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C119": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C120": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C121": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            },
+            "EXT-F-2013-C122": {
+              "admin": {
+                "status": "unverified",
+                "detail": "Procedure prepared only; no Settings-context runtime execution."
+              }
+            }
+          },
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "detail": "New source-mapped procedure; no native execution or product credit."
+            }
+          },
+          "procedure_completion_rule": "A full Pass requires every required criterion and lifecycle/restoration branch to have real independent Settings-context evidence. Missing applicable fixtures or branches remain unverified, never source-derived N/A."
         }
       ],
       "cells": {
@@ -16934,16 +17738,36 @@
           "retest_status": "not-run"
         }
       },
-      "inventory_status": "complete",
-      "missing_items": [],
-      "source_complete": true,
+      "inventory_status": "source-control-reconciliation-pending",
+      "missing_items": [
+        "Default-agent shared picker: core C104-C122 canonical operations are Settings-context aliases only; remaining nested detail/favorite/select/default-drift/default-row/card doors still need explicit context mapping and native applicability review.",
+        "C40/T93-T95: source-absent Current/New selector retains stable IDs and history; current-artifact native applicability remains unknown, not N/A.",
+        "Changed organization load-ladder/unavailable-state procedures and new Settings-context shared-picker criteria remain unverified; no source-only or historical result supplies current product acceptance."
+      ],
+      "source_complete": false,
       "unverified_leads": [
         {
           "id": "EXT-L-0006",
-          "summary": "Capture list no-workspace notice appears immediately after signin and reload before explicit org selection. Determine intended unset-state UX before labeling defect; authentication succeeded.",
+          "summary": "October7 load ladder establishes expected organization behavior: a signed-in person with memberships resolves a valid organization without a missing-device-choice hold. The original no-workspace notice remains historical; current zero-membership/read-error/runtime behavior requires separately bound evidence.",
           "source": "docs/stabilization/runs/admin-signin-001.json",
-          "state": "needs-expected-behavior-review",
-          "wave": "A"
+          "state": "source-contract-known-runtime-unverified",
+          "wave": "A",
+          "source_reconciliation_history": [
+            {
+              "at": "2026-10-26T23:42:35.811296+00:00",
+              "original": {
+                "id": "EXT-L-0006",
+                "summary": "Capture list no-workspace notice appears immediately after signin and reload before explicit org selection. Determine intended unset-state UX before labeling defect; authentication succeeded.",
+                "source": "docs/stabilization/runs/admin-signin-001.json",
+                "state": "needs-expected-behavior-review",
+                "wave": "A"
+              }
+            }
+          ],
+          "current_source_review": [
+            "docs/stabilization/reports/settings-inventory-reconcile-20261026.json",
+            "docs/stabilization/reports/settings-inventory-peer-20261026.json"
+          ]
         },
         {
           "id": "EXT-L-0007",
@@ -16969,17 +17793,49 @@
         },
         {
           "id": "EXT-L-SETTINGS-001",
-          "summary": "Current-source Settings reconciliation found archive-filter, account identity/role, settled desktop status, and permission retry controls missing from explicit control inventory; new cases are procedure-ready but unexecuted. Audit-key export failure has no in-product error signal in current component.",
+          "summary": "Previously missing archive-filter, account identity/role, settled desktop status and permission-retry controls have explicit inventory entries. Audit export source now renders failure and Retry export; current runtime branches still require their mapped cases. Shared picker nested Settings-context mapping remains incomplete.",
           "source": "docs/stabilization/.research/settings-inventory-delta.json",
-          "state": "unverified-current-source-reconciliation",
-          "wave": "A"
+          "state": "source-reconciled-runtime-unverified",
+          "wave": "A",
+          "source_reconciliation_history": [
+            {
+              "at": "2026-10-26T23:42:35.811296+00:00",
+              "original": {
+                "id": "EXT-L-SETTINGS-001",
+                "summary": "Current-source Settings reconciliation found archive-filter, account identity/role, settled desktop status, and permission retry controls missing from explicit control inventory; new cases are procedure-ready but unexecuted. Audit-key export failure has no in-product error signal in current component.",
+                "source": "docs/stabilization/.research/settings-inventory-delta.json",
+                "state": "unverified-current-source-reconciliation",
+                "wave": "A"
+              }
+            }
+          ],
+          "current_source_review": [
+            "docs/stabilization/reports/settings-inventory-reconcile-20261026.json",
+            "docs/stabilization/reports/settings-inventory-peer-20261026.json"
+          ]
         },
         {
           "id": "EXT-L-SETTINGS-002",
-          "summary": "Audit-key export failure is caught and logged to console without a visible card error or retry affordance in current source. T60 requires actionable UI failure feedback and no false copied state; verify against a controlled clipboard failure before defect triage.",
+          "summary": "AuditKeyCard now sets an export error and renders a visible alert/Retry export. Original console-only source wording is stale. T60 still requires actual controlled clipboard-failure/recovery evidence; no runtime defect closure is inferred.",
           "source": "src/features/settings/AuditKeyCard.tsx:95",
-          "state": "unverified-source-lead-no-runtime-reproduction",
-          "wave": "A"
+          "state": "source-repair-present-runtime-unverified",
+          "wave": "A",
+          "source_reconciliation_history": [
+            {
+              "at": "2026-10-26T23:42:35.811296+00:00",
+              "original": {
+                "id": "EXT-L-SETTINGS-002",
+                "summary": "Audit-key export failure is caught and logged to console without a visible card error or retry affordance in current source. T60 requires actionable UI failure feedback and no false copied state; verify against a controlled clipboard failure before defect triage.",
+                "source": "src/features/settings/AuditKeyCard.tsx:95",
+                "state": "unverified-source-lead-no-runtime-reproduction",
+                "wave": "A"
+              }
+            }
+          ],
+          "current_source_review": [
+            "docs/stabilization/reports/settings-inventory-reconcile-20261026.json",
+            "docs/stabilization/reports/settings-inventory-peer-20261026.json"
+          ]
         }
       ],
       "runtime_evidence": [
@@ -17252,7 +18108,16 @@
           ],
           "detail": "Toolbar/G avatar plus blank main body only; no Settings case report. Native final invalid3 after CPU high-load/busy safe stop. All19 selected cases unverified; no CPU cause or source-fix closure."
         }
-      ]
+      ],
+      "source_reconciliation": {
+        "at": "2026-10-26T23:42:35.811296+00:00",
+        "application_head": "8db97680a83e7b462dda8247511a38f3c3b638ae",
+        "reports": [
+          "docs/stabilization/reports/settings-inventory-reconcile-20261026.json",
+          "docs/stabilization/reports/settings-inventory-peer-20261026.json"
+        ],
+        "scope": "Bounded Settings procedure/context mapping; source_complete remains false; no runtime acceptance."
+      }
     },
     {
       "id": "EXT-F-1004",
