@@ -1,0 +1,37 @@
+{
+  "id": "EXT-D-0301",
+  "feature_id": "EXT-F-2005",
+  "case_ids": ["EXT-F-2005-T08"],
+  "title": "Member Data name-entry failure discards available focus and wait diagnostics",
+  "surface": "supporting native acceptance evidence; application vs driver cause unknown",
+  "auth_mode": "confirmed ordinary member/nonadmin/expected approved fixture org; identifiers kept private",
+  "severity": "S3",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/failure_capture_implementation",
+  "source_sha": "103850a3e2168311a370dca67dbd99e00f342715",
+  "preconditions": [
+    "Exact1038 hosted A auto-extract run40579681320 with guarded original fixture and valid source/artifact."
+  ],
+  "reproduction": [
+    "Trusted CDP click then Input.insertText ran; expected Pattern name equality was not observed.",
+    "Original official artifact12768544187 retains failure code but omits focus/value counts/equality and last wait state; generic startup PNGs do not show failing boundary.",
+    "Independent source review confirms waitFor already attaches diagnostic/category while outer safe failure reporting discards these fields."
+  ],
+  "expected": "Best-effort read-only before/after/last-wait observations for the owned Pattern name input remain safely available; primary error, input event order and cleanup stay unchanged.",
+  "actual": "DataT08 automatic states untested; product vs driver cause unknown. Picker setup observations and confirmed member context retained; exact fixture cleanup and zero owned patterns verified.",
+  "cause": "Known acceptance reporting omission, not proven UI or React input defect.",
+  "evidence": [
+    "docs/stabilization/reports/member-data-1038-failure-diagnosis-20261027.json",
+    "docs/stabilization/reports/failure-capture-plan-attack-20261027.json"
+  ],
+  "next_action": "Diagnostics-only source repair reusing existing data-member-driver-diagnostic and shared waitFor; retain allowlisted boolean/count/length/equality/focus/document-time metadata, no raw value/auth/identity. All added reads best-effort; preserve original click/insert/wait and primary exception. performance.timeOrigin is document replacement only, not input remount proof. Guard actual caller RED/GREEN/mutants, compile/lint/fresh review; new exact CI then original native reproduction before product fix.",
+  "transition_history": [
+    {
+      "at": "2026-10-27T20:56:20.359552+00:00",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "Independent source/native diagnosis establishes reporting gap only; no application-cause claim."
+    }
+  ]
+}

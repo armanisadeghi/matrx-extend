@@ -1,0 +1,50 @@
+{
+  "case": "EXT-F-2005-T08",
+  "source_sha": "103850a3e2168311a370dca67dbd99e00f342715",
+  "run_id": 40579681320,
+  "A_observed_behavior_scope": {
+    "terminal": "fail",
+    "stage": "save_pattern",
+    "error_code": "data_member_pattern_name_entered_not_observed",
+    "observed": [
+      "member_nonadmin_expected_organization_proofs_passed",
+      "two_picker_fields_and_distinct_previews",
+      "one_name_input_and_save_button_present"
+    ],
+    "not_exercised": ["save_click", "pattern_write", "automatic_extraction_states"]
+  },
+  "integrity": {
+    "official_artifact_id": 12768544187,
+    "zip_sha256": "64d3ec18378a2c52ff94851b839a0047db83d834b4bf7f33371780b7d0639c35",
+    "all_six_member_hashes_and_extracted_bytes_match": true,
+    "all_actor_evidence_hashes_match": true
+  },
+  "resource_verdict": {
+    "package": "valid_exit0",
+    "browser": "valid_exit0",
+    "guest": "child_failed_exit1",
+    "resourceInvalid": false,
+    "normal_verifier": "HOSTED_RUN_NOT_SUCCESSFUL"
+  },
+  "B_auth_cleanup_verdict": {
+    "native_member_nonadmin_expected_org": true,
+    "owned_secret_and_auth_files_absent_receipt": true,
+    "exact_owned_archive_restore_readback": true,
+    "exact_owned_pattern_name_and_org_rows": 0,
+    "native_cleanup": null,
+    "remote_profile_and_process_deletion": "unobserved"
+  },
+  "actual_input_path": "Active Data pane unique input -> stable hit checked CDP mouse press/release -> CDP Input.insertText -> DOM value equality polling; no synthetic React setter.",
+  "product_handler": "DataView controlled BasicInput value=patternName, onChange=setPatternName(event.target.value); save handler is downstream and was never reached.",
+  "evidence_gap": "No failing-step screenshot or trace in official archive; two screenshots show initial generic Chat/open target. No retained input focus, selection, pre/post value lengths/equality, last wait diagnostic, or runtime-read failure category.",
+  "causal_verdict": "UNKNOWN_PRODUCT_VS_DRIVER: high confidence input equality was not observed; insufficient evidence to distinguish wrong focus, replacement/remount, content mismatch, observation failure, or product input-state failure.",
+  "D300_scope": "ff16d8498 changes reporting/Settings acceptance; does not change DataView, member native acceptance, or settings-panel-driver. Current inspected paths match 103850a3e.",
+  "reuse_census": [
+    "settings-panel-driver click already provides stable hit geometry but verifies post-click input focus only for port kind",
+    "scrape-save-native-acceptance trustedType captures focus/selection and lengths/equality around trusted selectAll+insertText",
+    "debug-log-controls-acceptance trusted search validates focus, select-all, and post-input equality"
+  ],
+  "next_action": "Owner may authorize bounded native name-entry replay with allowlisted before/after focus, pane/input counts, lengths, equality, document identity and wait-failure category. Preserve original trusted input path first; change one variable only after localizing first bad boundary; do not patch product or synthesize setters from this evidence.",
+  "forcing_repro_recommendation": "Original native T08 must first reproduce this exact input-equality failure. Add adjacent driver guard covering CDP click-to-focus and real controlled input event/state/value across rerender, including wrong focus, nonempty prefill and input replacement; retain red diagnostic and rerun original full path after proven fix. Existing happy-dom pointer test only records mouse commands and cannot prove browser focus/React behavior.",
+  "activity": "Read-only evidence/source inspection; wrote only this diagnosis. No UI/jobs/auth/DB mutations/source edits/tests/dispatches."
+}

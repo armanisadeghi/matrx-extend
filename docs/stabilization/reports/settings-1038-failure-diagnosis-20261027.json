@@ -1,0 +1,58 @@
+{
+  "status": "READ_ONLY_DIAGNOSIS_PRIMARY_EXCEPTION_UNKNOWN; D299/D300 remain open; no retry, closure, jobs, UI or tests",
+  "original": {
+    "run": 40579558041,
+    "source": "103850a3e2168311a370dca67dbd99e00f342715",
+    "ci": 40577593421,
+    "development_artifact": 12767619920,
+    "native_artifact": 12770355410,
+    "archive_sha256": "a401d85099fc2afd31173628bd4d2178a5ec2ef045968da5e32c217ada734d9a",
+    "all_six_raw_members_byte_equal_to_zip": true,
+    "all_six_actor_hashes_equal": true
+  },
+  "member_sha256": {
+    "settings-local-controls-acceptance.json": "e55a74c75d5ae27843bb46b33d9dfb8f9a2d606d6085ca69e775f08b01b48d46",
+    "native-side-panel.png": "86426d0be4776150d8df5a88f6c751b20c8b26f7f31b350bcdda6849f0f5bf6c",
+    "normal-target-after-open.png": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c",
+    "hosted-browser-40579558041-1.jsonl": "659648307e651ea2929b60231b93fc7c3f7e939b89088c935b98534d687c4de4",
+    "hosted-guest-40579558041-1.jsonl": "3e599c7f39a5d0272bb973676166b083ec7bb8240ad02712318674900d71cb72",
+    "hosted-package-40579558041-1.jsonl": "0f698862de1149ef2c84f4a36517e70107a7e7a3ecf96e2b676d37ee71eb4091"
+  },
+  "counts": {
+    "raw_pass": 5,
+    "raw_fail": 5,
+    "raw_unverified": 9,
+    "proven_product_defects": 0,
+    "acceptance_failures": 5,
+    "shared_failure_intervals": 1,
+    "resource_invalid": false,
+    "guest_exit": 1,
+    "browser_exit": 0,
+    "package_exit": 0,
+    "cpu_pending_or_recovery": 0
+  },
+  "proven_boundary": "Original native terminal=true/status=fail; last checkpoint case_end EXT-F-1003-T63 sequence62 20:45:39.191Z. T73/T76/T92 warm recorders and T63 complete. Failure after acceptance.mjs:1106 and before extension_reload_start1131: captureGuestPreferenceBaselines1107-1129. No before-first-extension restoration criterion. Five full_extension_recheck_missing failures are downstream enforcement, not five product diagnoses.",
+  "exception_limit": "No original trace member exists. Original JSON omits underlying exception. Hosted log20:45:41.111 FAIL then20:45:41.136 wrapper ERR_ASSERTION native side-panel acceptance exited1 at hosted-guest-acceptance.mjs:830. Guest catch1198-1207 drops ordinary warm errors, retaining stage and preceding safe observations only. Exact throwing helper/error and product-versus-driver root cause UNKNOWN.",
+  "class": "D300 whitelist regression DISPROVEN: original CASE_IDS includes T73/T76/T92; late recorders completed. Sticky atomic IO failure inconsistent with terminal=true/build.verified=true. captureGuestPreferenceBaselines and ordinary warm catch predate ff16d8498 and baseline module has zero diff from its parent to original source. D300 proof gap is real, but no introduced source regression established.",
+  "hypotheses": [
+    {
+      "cause": "pre-existing T10 immutable footprint mismatch after sibling writes",
+      "prediction": "actual capture first verifyWarmMode emits T10_shadow_baseline_mismatch_before_capture with differing store metadata; native late footprint absent, so unproven; T10 warm settings absent versus T67 cleanup settings present supports suspicion"
+    },
+    {
+      "cause": "settings/openSection/observation transport or driver failure",
+      "prediction": "safe stage/source identifies browser I/O before first restoration callback; not ruled out"
+    },
+    {
+      "cause": "Theme baseline restoration failure before callback",
+      "prediction": "safeBaselineRestoration contains validate/open/observe/select/remove/wait stage; no such diagnostic retained; not ruled out"
+    }
+  ],
+  "T10": "Real warm Ask refusal and panel reload record settings/chat/pilot all absent with valid absent metadata, no-shadow equality against captured immutable baseline; actual Chat consumer shows modeLabel Act without asking/permissionMode act on same panel callback, without AI call. These observations precede later sibling writes. No late three-store footprint, management reload, worker/panel replacement or post-extension consumer proof. Do not recapture baseline or relax exact comparator to make green.",
+  "identity_limits": "Verified development unpacked0.2.630/tree5e15f73366edbd3e676688d95be1924d6708c1efc842c5e69e9b419329677edc/idcihdmkcdjjckfhjpgoedmgfpoljebaml; late guest token/profile absent and organizationRequests0. No member, live backend SHA/health, browser version, remote cleanup-effects or Store acceptance established.",
+  "proof_gap_and_siblings": "D300 final-source-peer explicitly limits late guest phases to source inspection. Committed settings-progress-checkpoint tests exercise extracted checkpoint/runCase/finalization with synthetic CASE_IDS, not actual late guest/capture caller chain. Final-only D87/desktop/reset siblings remain unported. Ordinary warm catch is a proven diagnostic-loss defect.",
+  "smallest_reuse_recommendation": "Keep finite checkpoint labels and atomic writer strict. Reuse captureFailure transport/context classifier, safePreferenceBaselineRestoration and existing typed footprint reader; capture a finite baseline substage plus typed error/source and before-versus-immutable footprint at failing warm boundary, never raw message/stack, URLs, storage blobs or identities. A captureFailure-only call would classify T10 errors unclassified unless explicitly supported.",
+  "real_late_phase_red_green_recommendation": "No tests executed here. Owner should test actual extracted observe/recordGuestPhase/recordGuestAdvancedDenial/capture block and real baseline helper in real order, with browser-I/O doubles only: immutable absent baseline -> real Chat consumer and later Settings sibling write -> capture -> typed failure/retained checkpoint; second unchanged-footprint path must reach management reload callback. RED must expose original diagnostic loss and/or proven sequence mismatch, GREEN only after origin fix; mutate skipped late recorder, skipped immutable comparison, and erased failure capture separately. Then original native acceptance needs authorized future observation; do not manufacture full-case pass.",
+  "publication_allowlist": "Publish a parsed derivative only: original archive id/name/digest/workflow_run{id,head_sha}, six member basenames+sha256+bytes; native schema_version/status/terminal/build{extensionId,kind,publishState,version,treeSha256,verified}, diagnostic_progress{kind,label,sequence,at}, guestStageFailed, cases{id,status,criteria{name,status}} and failing criteria evidence{status,error}; T10 allowlisted steps observation{activeSettings,count,selected,stored,storedPresent,storagePresent,saveRefusal,shadowFootprint{status,stores{store,storagePresent,fieldPresent,parseStatus,mode,fingerprint,count}}} and Chat{activeChat,composerContextObserved,modeLabel,permissionMode}; resource finals{schema,at,runId,admitted,resourceInvalid,exitCode,decision,code} plus pending/recovery counts. Exclude raw ZIP/JSON/screenshots/logs, artifact absolute paths, arbitrary nested evidence/messages/stack, raw request/auth/storage/profile values. No originals changed.",
+  "next_action": "No retry. Preserve originals; repair typed capture at proven late baseline interval and execute actual late-phase forcing test before deciding whether baseline sequencing needs repair. Do not loosen whitelist, invent labels/verifier, alter UI/auth/flags/thresholds/timeouts or claim D299/D300 closure."
+}
