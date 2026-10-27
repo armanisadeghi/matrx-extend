@@ -195,6 +195,69 @@ describe('production Vault confirmation adapters', () => {
     ]);
   });
 
+  it('keeps email-code proof isolated across a bad-code retry through package auth', async () => {
+    const proof = proofClient('isolated-email-proof');
+    const send = vi.spyOn(proof, 'signInWithOtp');
+    const verify = vi.spyOn(proof, 'verifyOtp').mockResolvedValueOnce({
+      data: { user: null, session: null },
+      error: { message: 'bad code' },
+    });
+    const logout = vi.spyOn(proof, 'signOut');
+    boundary.createClient.mockReturnValue({ auth: proof });
+    const wire: Array<{
+      body: unknown;
+      authorization: string | null;
+      confirmation: string | null;
+    }> = [];
+    const request = vi.fn(async (_url: unknown, init: RequestInit) => {
+      const headers = new Headers(init.headers);
+      wire.push({
+        body: JSON.parse(String(init.body)),
+        authorization: headers.get('Authorization'),
+        confirmation: headers.get('X-Matrx-Step-Up'),
+      });
+      return Response.json({ grant: 'email-confirmation-grant', expires_in: 300 });
+    });
+    vi.stubGlobal('fetch', request);
+    const host = createVaultConfirmationHost(actor);
+    try {
+      await host.identity.sendEmailCode();
+      expect(send).toHaveBeenCalledWith({
+        email: actor.email,
+        options: { shouldCreateUser: false },
+      });
+      await expect(host.identity.withEmailCode('wrong')).rejects.toThrow('not accepted');
+      expect(request).not.toHaveBeenCalled();
+      expect(storage.values.size).toBe(0);
+      expect(logout).not.toHaveBeenCalled();
+      await host.identity.withEmailCode('123456');
+      expect(verify).toHaveBeenLastCalledWith({
+        email: actor.email,
+        token: '123456',
+        type: 'email',
+      });
+      expect(boundary.createClient).toHaveBeenCalledOnce();
+      expect(boundary.createClient.mock.calls[0]?.[0]).toMatchObject({
+        persist: false,
+        detectSessionInUrl: false,
+      });
+      expect(logout).toHaveBeenCalledExactlyOnceWith({ scope: 'local' });
+      expect(boundary.token).toBe('parent-oauth-bearer');
+      expect(wire).toEqual([
+        {
+          body: { access_token: 'isolated-email-proof' },
+          authorization: 'Bearer parent-oauth-bearer',
+          confirmation: null,
+        },
+      ]);
+      expect(await host.identity.headers()).toEqual({
+        'X-Matrx-Step-Up': 'email-confirmation-grant',
+      });
+    } finally {
+      host.dispose();
+    }
+  });
+
   it('serializes real session-cache reads under the one named exclusive Web Lock', async () => {
     await storage.area.set({
       'matrx.vault.primary-confirmation.v1': {

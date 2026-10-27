@@ -12,15 +12,17 @@ import { parsePnpmLock } from './check-matrx-packages.mjs';
 export async function checkChatPackageLink({ packageRoot } = {}) {
   const require = createRequire(import.meta.url);
   const graph = parsePnpmLock(readFileSync(new URL('../pnpm-lock.yaml', import.meta.url), 'utf8'));
-  const registryRoot = (name, manifestPath) => {
+  // `@ai-matrx/chat` is installed as an npm alias of `@ai-matrx/chat-v2`, so the artifact on disk
+  // and in the lock graph carries the real name; `name` is the specifier the host imports.
+  const registryRoot = (name, manifestPath, realName = name) => {
     const root = dirname(realpathSync(manifestPath));
     // pnpm links into its registry store are valid; links out to an aidream workspace are not artifacts.
-    const suffix = `${sep}node_modules${sep}${name.split('/').join(sep)}`;
+    const suffix = `${sep}node_modules${sep}${realName.split('/').join(sep)}`;
     if (!root.endsWith(suffix))
-      throw new Error(`${name} resolves to a workspace link, not an installed registry artifact`);
+      throw new Error(`${realName} resolves to a workspace link, not an installed registry artifact`);
     const manifest = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
-    const versions = graph.installed.get(name);
-    if (manifest.name !== name || versions?.size !== 1 || !versions.has(manifest.version))
+    const versions = graph.installed.get(realName);
+    if (manifest.name !== realName || versions?.size !== 1 || !versions.has(manifest.version))
       throw new Error(`${name}@${manifest.version} does not match the consumer lock graph`);
     return root;
   };
@@ -29,6 +31,7 @@ export async function checkChatPackageLink({ packageRoot } = {}) {
     packageRoot
       ? resolve(packageRoot, 'package.json')
       : require.resolve('@ai-matrx/chat/package.json'),
+    '@ai-matrx/chat-v2',
   );
   const chatRequire = createRequire(resolve(root, 'package.json'));
   registryRoot('@ai-matrx/summon', chatRequire.resolve('@ai-matrx/summon/package.json'));

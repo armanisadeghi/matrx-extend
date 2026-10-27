@@ -17,7 +17,13 @@ import { log } from '@/lib/debug/log';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import type { Api } from '@ai-matrx/api';
 import { primaryStepUpGrant } from '@ai-matrx/api/account';
-import { createAuthClient, signInWithPassword, signOut } from '@ai-matrx/auth';
+import {
+  createAuthClient,
+  signInWithOtp,
+  signInWithPassword,
+  signOut,
+  verifyOtp,
+} from '@ai-matrx/auth';
 import {
   type ConfirmationParent,
   type ExtensionVaultConfirmation,
@@ -251,8 +257,22 @@ const productionDeps: VaultConfirmationHostDeps = {
           return { data: { user: null, session: null }, error: refusal(error) };
         }
       },
-      signInWithOtp: (input) => client.auth.signInWithOtp(input),
-      verifyOtp: (input) => client.auth.verifyOtp(input),
+      async signInWithOtp(input) {
+        try {
+          await signInWithOtp(client, input);
+          return { error: null };
+        } catch (error) {
+          return { error: refusal(error) };
+        }
+      },
+      async verifyOtp(input) {
+        try {
+          const { session, person } = await verifyOtp(client, input);
+          return { data: { user: person, session }, error: null };
+        } catch (error) {
+          return { data: { user: null, session: null }, error: refusal(error) };
+        }
+      },
       async signOut() {
         try {
           await signOut(client, 'local');
