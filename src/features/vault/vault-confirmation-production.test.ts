@@ -15,7 +15,10 @@ const boundary = vi.hoisted(() => ({
   token: 'parent-oauth-bearer',
 }));
 
-vi.mock('@supabase/supabase-js', () => ({ createClient: boundary.createClient }));
+vi.mock('@ai-matrx/auth', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@ai-matrx/auth')>()),
+  createAuthClient: boundary.createClient,
+}));
 vi.mock('@/config/env', () => ({
   ENV: {
     SUPABASE_URL: 'https://db.example.test',
@@ -163,13 +166,7 @@ describe('production Vault confirmation adapters', () => {
     expect(firstSignOut).toHaveBeenCalledWith({ scope: 'local' });
     expect(secondSignOut).toHaveBeenCalledWith({ scope: 'local' });
     for (const call of boundary.createClient.mock.calls) {
-      expect(call[2]).toMatchObject({
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false,
-          detectSessionInUrl: false,
-        },
-      });
+      expect(call[0]).toMatchObject({ persist: false, detectSessionInUrl: false });
     }
     expect(wire).toEqual([
       {

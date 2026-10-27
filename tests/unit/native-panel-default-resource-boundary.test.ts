@@ -11,6 +11,8 @@ afterEach(async () => {
 });
 
 async function journalFixture() {
+  // .output is gitignored, so a fresh checkout (the release's temp copy) does not have it yet.
+  await mkdir(resolve('.output'), { recursive: true });
   const root = await mkdtemp(resolve('.output/native-default-guard-'));
   roots.push(root);
   const repo = join(root, 'repo');

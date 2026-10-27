@@ -92,7 +92,8 @@ export function createVaultConfirmation(deps: ConfirmationDeps): ExtensionVaultC
   let generation = 0;
   type Attempt = {
     generation: number;
-    auth: IsolatedConfirmationAuth;
+    /** The injected proof port (host-owned SDK custody), not a Supabase client. */
+    port: IsolatedConfirmationAuth;
     parent: ConfirmationParent | null;
     running: boolean;
     proof: boolean;
@@ -119,7 +120,7 @@ export function createVaultConfirmation(deps: ConfirmationDeps): ExtensionVaultC
     if (attempt.closed) return;
     attempt.closed = true;
     try {
-      const { error } = await attempt.auth.signOut({ scope: 'local' });
+      const { error } = await attempt.port.signOut({ scope: 'local' });
       if (error) throw new Error(INCOMPLETE);
     } catch {
       deps.cleanupFailed();
@@ -136,7 +137,7 @@ export function createVaultConfirmation(deps: ConfirmationDeps): ExtensionVaultC
     cancel();
     return {
       generation,
-      auth: deps.auth(),
+      port: deps.auth(),
       parent: null,
       running: true,
       proof: false,
@@ -209,15 +210,15 @@ export function createVaultConfirmation(deps: ConfirmationDeps): ExtensionVaultC
       },
       async signInWithPassword(input) {
         await check(attempt);
-        return complete(attempt, await attempt.auth.signInWithPassword(input));
+        return complete(attempt, await attempt.port.signInWithPassword(input));
       },
       async signInWithOtp(input) {
         await check(attempt);
-        return attempt.auth.signInWithOtp(input);
+        return attempt.port.signInWithOtp(input);
       },
       async verifyOtp(input) {
         await check(attempt);
-        return complete(attempt, await attempt.auth.verifyOtp(input));
+        return complete(attempt, await attempt.port.verifyOtp(input));
       },
       async signInWithOAuth() {
         throw new Error('Confirm here with your password or email code.');

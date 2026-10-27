@@ -13,6 +13,8 @@ import {
 const source = resolve(import.meta.dirname, '../..');
 
 async function fixture(kind: string, uncancelledWatch = false) {
+  // .output is gitignored, so a fresh checkout (the release's temp copy) does not have it yet.
+  await mkdir(join(source, '.output'), { recursive: true });
   const scratch = await mkdtemp(join(source, '.output', 'resource-stop-test-'));
   const scripts = join(scratch, 'scripts');
   const docs = join(scratch, 'docs/stabilization');
