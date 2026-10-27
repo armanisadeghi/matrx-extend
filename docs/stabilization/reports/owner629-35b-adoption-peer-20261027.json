@@ -1,0 +1,328 @@
+{
+  "schema": 1,
+  "task_id": "owner629_35b_adoption_independent_evidence_review",
+  "at": "2026-10-27T03:43:24.086319+00:00",
+  "status": "DONE_WITH_LIMITS",
+  "independence": "Fresh reviewer, zero authorship of actor operation; read-only evidence and tree bytes, no UI, API, downloaded-code execution, tests, heavy commands, source edits, commits, or children.",
+  "actor": {
+    "path": ".output/stabilization-checkpoints/owner629-35b-adoption-20261027.json",
+    "sha256": "9eed206a794bd56c21598d7066994ac12877d103aff6f8920ed6997642c51bf6",
+    "matchesAssignedSha": true
+  },
+  "verdictA": {
+    "verdict": "PASS_WITH_ATTESTED_CLEANUP_LIMIT",
+    "scope": "Recorded bounded owner maintenance behavior, not present-time UI replay or product acceptance.",
+    "originalEvidenceVerified": [
+      "Profile version AX proves Profile 8 and official Chrome 156.0.8078.47 arm64; account-menu AX proves arman@armansadeghi.com.",
+      "Before/after original development AX gives ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.629, On, Pin to toolbar on, and Loaded from stable .output/chrome-mv3-dev.",
+      "Visually inspected all three original PNGs. Before and after show 0.2.629; after shows Reloaded toast. Original AX and action ledger name management Reload button48, separate from browser toolbar Reload button6.",
+      "Store original AX and PNG prove hnfolienncfklkgmdjjmhhegglimlamg at 0.2.577, enabled, toolbar pinned, Chrome Web Store source.",
+      "24 started and 24 successful ended calls, eight groups, maximum four each; every group has same-run original journal gate; all calls within admitted interval and before final. No Guest action in recorded ledger; Guest menu presence alone is not action.",
+      "Watcher audit contains 76 reads, independent timestamp maximum gap 2.011469 seconds; reported monotonic maximum 2.011388 seconds. Exact run final valid, exitCode 0, resourceInvalid false."
+    ],
+    "attestedNotOriginalPrivateEvidence": [
+      "Original private page body/URL and cleanup AX were discarded; original-structure.json and cleanup.json attest original selected tab/window/focus restored and one selected tab. Ledger records close owned tab followed by cleanup AX, but restoration cannot be independently compared against retained private AX.",
+      "Actor claims holder session20831, watcher10422, importer71663 and promotion53988 actual exits zero. These session outputs are not independently accessible from retained report files; journal final confirms run exit zero, and current ps shows holder PID33432 absent and no matching run/watch process.",
+      "Actor attests initial getApp exposed private AX only in tool context, not persisted; later AX/PNG retain a private tab title, although no private body or URL appears in reviewed captures."
+    ],
+    "missing": [],
+    "extra": [],
+    "misunderstood": []
+  },
+  "verdictB": {
+    "verdict": "PASS_WITH_PROVENANCE_LIMIT",
+    "scope": "Retained source/artifact/promotion provenance and integrity, not independent original ZIP digest or live GitHub API verification.",
+    "verified": [
+      "All 26 present actor evidence files match hashes and bytes; temporarily absent public journal has byte-identical private archive matching original hash and archival manifest.",
+      "Official retained CI metadata: successful full CI 40443458190 attempt1, push on main, source35b619573fbddb462f046d6326084b20cf83f23c; retained artifact12707143793 has expected digest80816dc4cb171e8ef4331d357d68ab9b50569073d80bf17b9622eadc98335bb6, 49833438 bytes, expired false.",
+      "CI receipt/provenance/import status/local receipt in imported directory match preserved sidecars byte-for-byte; live canonical promotion receipt matches preserved promotion receipt. All identify version0.2.629 and expected source/run/artifact/tree; source receipts before Reload and after UI attest clean current_pushed_source at35b.",
+      "Independent read-only hashes of imported and stable 2819-file trees both match ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5, no symlinks, version0.2.629. Hash algorithm reviewed in canonical source and independently reproduced with full relative-path lexical sorting.",
+      "Canonical importer source verifies official ZIP digest, tree, provenance and source state, then writes import receipts; finally removes entire temporary ZIP directory normally. Canonical promotion verifies imported evidence/source compatibility and tree before stable promotion. Logs and receipts are consistent with these normal paths.",
+      "Prior owner adoption report retains same0.2.629 with prior9e4 source/treebb27170bd3e670e88567714da4c086c54510bf3aa8aef9f71192dcffc7f534df; current tree differs. This prior observation is retained actor evidence, not a fresh rehash of the former stable state."
+    ],
+    "limits": [
+      "Original downloaded ZIP not retained by canonical importer; independent offline ZIP rehash is unavailable. No alternate download made; no claim of independent ZIP-digest verification.",
+      "Official GitHub records reviewed as retained originals; no fresh network query performed under no-API scope.",
+      "Source eligibility at maintenance time comes from canonical pre/post receipts; no new source-eligibility execution performed.",
+      "Public journal restoration and sanitized publication belong to parent after normal verification; temporary absence is not a hash mismatch."
+    ],
+    "importantFindings": []
+  },
+  "computed": {
+    "imported": {
+      "sha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5",
+      "fileCount": 2819,
+      "bytes": 194259559,
+      "symlinks": [],
+      "seconds": 0.435,
+      "manifestVersion": "0.2.629",
+      "sorting": "full relative path lexical, matching canonical hashReleaseTree; earlier Path-component sort was discarded"
+    },
+    "stable": {
+      "sha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5",
+      "fileCount": 2819,
+      "bytes": 194259559,
+      "symlinks": [],
+      "seconds": 0.423,
+      "manifestVersion": "0.2.629",
+      "sorting": "full relative path lexical, matching canonical hashReleaseTree; earlier Path-component sort was discarded"
+    },
+    "ledger": {
+      "starts": 24,
+      "ends": 24,
+      "groups": {
+        "G1": 1,
+        "G2": 4,
+        "G3": 2,
+        "G4": 4,
+        "G5": 2,
+        "G6": 4,
+        "G7": 4,
+        "G8": 3
+      },
+      "gateAgesSeconds": {
+        "G1": 13.169343,
+        "G2": 9.652,
+        "G3": 6.092,
+        "G4": 12.813,
+        "G5": 0.225,
+        "G6": 11.862,
+        "G7": 1.036,
+        "G8": 7.361
+      },
+      "start": "2026-10-27T03:38:14.282343+00:00",
+      "end": "2026-10-27T03:39:13.401Z",
+      "allSuccess": true,
+      "gateRowsMatchJournal": true
+    },
+    "watch": {
+      "count": 76,
+      "maxGapSeconds": 2.011469,
+      "first": {
+        "read_at": "2026-10-27T03:36:48.736473Z",
+        "path": "docs/stabilization/resource-journals/owner629-35b-20261027-0340.pending.jsonl",
+        "latest_code": null,
+        "latest_at": null,
+        "journal_age_seconds": null,
+        "actual_read_gap_seconds": null,
+        "admitted_observed": false
+      },
+      "last": {
+        "read_at": "2026-10-27T03:39:19.148271Z",
+        "path": "docs/stabilization/resource-journals/owner629-35b-20261027-0340.jsonl",
+        "latest_code": "RESOURCE_FINAL_DECISION",
+        "latest_at": "2026-10-27T03:39:18.805Z",
+        "journal_age_seconds": 0.343271,
+        "actual_read_gap_seconds": 2.001206999993883,
+        "admitted_observed": true
+      },
+      "journalHealthyGaps": [16.024, 16.025, 16.022, 16.038],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T03:39:18.805Z",
+        "runId": "owner629-35b-20261027-0340",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "journalArchiveSha256": "1d2ce90de89ebb2f50763d701e964c9b9a53327c717c2152ed5e35d485a92454"
+  },
+  "evidenceHashes": {
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-before-original.png": {
+      "sha256": "bf7d3e256eec9a575c777916a711d876a5c4a76906134c5d9d01a172f8a3303c",
+      "bytes": 159952,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/original-structure.json": {
+      "sha256": "fbdba7e4b1dd75059940d453a1563dd01ba706a2ab6ca60f1c2096fc75134b31",
+      "bytes": 252,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-after-original.ax.txt": {
+      "sha256": "957fcfc8e910e75dc9828f98af4ca16a5d9b53ee0cb80fcf007d685278b7e835",
+      "bytes": 6287,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/api-ledger.jsonl": {
+      "sha256": "b8acc20b6f16fe213325616668bdbc318355b6c104b6892bc39eed7c7caaa299",
+      "bytes": 11652,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/cleanup.json": {
+      "sha256": "bba335645f1767fd91befb13c1925aa7fa91263c90eb3c48b6d4f55023153853",
+      "bytes": 304,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/owner-account-original.ax.txt": {
+      "sha256": "9f473e3616d9a009ab2eb69b067db97626f9521abdb12f462e60f9d0f027a430",
+      "bytes": 1457,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/profile-version-original.ax.txt": {
+      "sha256": "e2ab9ea489e60274b00273b153d45b581d8d813b792d0d4f619cfe509b95df4c",
+      "bytes": 6765,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/store-preserved-original.png": {
+      "sha256": "ce6be245e3e19e1f0c369ff18b0e7e9677e6919fe33dde935f2b4af86fffeb60",
+      "bytes": 159577,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-before-original.ax.txt": {
+      "sha256": "71564ef4fb3d8e921dcd980c09de74962b937411a4410186636aeeefccb74298",
+      "bytes": 6258,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-prereload-original.ax.txt": {
+      "sha256": "71564ef4fb3d8e921dcd980c09de74962b937411a4410186636aeeefccb74298",
+      "bytes": 6258,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-after-original.png": {
+      "sha256": "f0f024a7fa667917f87ac183fba6d48a97e95f5412ded9d2a509ac4d41651d2f",
+      "bytes": 162101,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/store-preserved-original.ax.txt": {
+      "sha256": "1e626dfb38a2589bf3eea864603321637f3236b845d607260b020b63a728fc32",
+      "bytes": 6035,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-promotion.log": {
+      "sha256": "acfbd7267711a7dba0c084d0555fd5b59e33357b5c95e95faea53b8d37395d7e",
+      "bytes": 191,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-provenance.json": {
+      "sha256": "d8933231c93bba67375d137d2b115f2668b25c5d9bb168fc21c3f36bc5ef69c8",
+      "bytes": 527,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-watch-20261027.jsonl": {
+      "sha256": "2ba2bc2d4baf847dd4249b75a1d3a8a9ebb6d67916073552796405989be7f2de",
+      "bytes": 24265,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-import-status.json": {
+      "sha256": "7ce296b42812c4c49d7714d0161a324309ee32172fa1bb50e9a16bf7272a718c",
+      "bytes": 786,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-prereload.json": {
+      "sha256": "1a05e78a0e52aafc02d147d0df7b1b030b5cfc7990113d6159857e23060089e4",
+      "bytes": 1804,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-official-ci.json": {
+      "sha256": "23894f5677bb3714e4f9d2880574c82ba763e0b95070e802fb6b7fbe1a7e342c",
+      "bytes": 12790,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-promotion-receipt.json": {
+      "sha256": "820304674d6570c6351fbf34d816ea4a3f653473655037ea1b5e1c45d57c8668",
+      "bytes": 785,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-watch-20261027-report.json": {
+      "sha256": "3850a433614000fab1d7ca0c0929cc7e84d6bc1c4b3f45cf9d787ea037d6ec77",
+      "bytes": 770,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-watch-20261027.py": {
+      "sha256": "c43bb2e3769a3ff52d82f4f152265a0c9c818cde1e53d08bde6e72bab623a621",
+      "bytes": 2953,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-postui.json": {
+      "sha256": "3da7edcfd39addf8e9e07e4b2e53c29b1c7da5126355b4dc3ea40c97173e7c16",
+      "bytes": 967,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-ci-receipt.json": {
+      "sha256": "4acd79498604e2a9dab3968214abb4c34d8b0717e7086fbfb6c87fde16bfed62",
+      "bytes": 330,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-local-dev-receipt.json": {
+      "sha256": "000f2fd51161a1c625e98ff317c3f3847f3e8ef89e610ed28751201350a7a655",
+      "bytes": 397,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-import.log": {
+      "sha256": "2e67e2af1fa11993a26e224dc20630534c73b8ecda0b1f01472ac5971523017f",
+      "bytes": 167,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-official-artifact.json": {
+      "sha256": "322d751275040d72527c88f8d6004c1006d8d4bcddf25a75f8b7f749b6bbedaf",
+      "bytes": 766,
+      "matchesActor": true
+    },
+    ".output/stabilization-checkpoints/owner629-35b-20261027-0340-completed-journal.jsonl": {
+      "sha256": "1d2ce90de89ebb2f50763d701e964c9b9a53327c717c2152ed5e35d485a92454",
+      "bytes": 2820,
+      "matchesOriginalActor": true
+    },
+    ".output/stabilization-checkpoints/d298-completed-journal-archive-20261027.json": {
+      "sha256": "2821c437ea69ceb18a25552cc674dd3491d8f50f194283daa078868d5a3e4bc9",
+      "bytes": 4469
+    },
+    ".output/stabilization-checkpoints/owner629-35b-peer-computed-20261027.json": {
+      "sha256": "ae1e8bd87061c8a051faf47ec5438a3a1ae56c555809b1d366f78762707ac9cd",
+      "bytes": 2445
+    },
+    ".output/stabilization-checkpoints/owner629-9e4-adoption-20261027.json": {
+      "sha256": "5f23f121ce7880928dda7c0106ae57db88ef4ad8ffdab0855ed060f028cc8e77",
+      "bytes": 11214
+    }
+  },
+  "temporarilyAbsentPublicPaths": [
+    "docs/stabilization/resource-journals/owner629-35b-20261027-0340.jsonl"
+  ],
+  "actualResourceFinals": {
+    "originalJournalFinal": {
+      "schema": 1,
+      "at": "2026-10-27T03:39:18.805Z",
+      "runId": "owner629-35b-20261027-0340",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "watcherObservedFinal": {
+      "read_at": "2026-10-27T03:39:19.148271Z",
+      "path": "docs/stabilization/resource-journals/owner629-35b-20261027-0340.jsonl",
+      "latest_code": "RESOURCE_FINAL_DECISION",
+      "latest_at": "2026-10-27T03:39:18.805Z",
+      "journal_age_seconds": 0.343271,
+      "actual_read_gap_seconds": 2.001206999993883,
+      "admitted_observed": true
+    },
+    "independentCurrent": {
+      "at": "2026-10-27T03:42:38.534314+00:00",
+      "holderPid33432Absent": true,
+      "matchingRunOrWatcherProcesses": 0,
+      "heavyLeaseAbsent": true,
+      "unsafeHoldAbsent": true
+    },
+    "archiveTiming": {
+      "latestOwnerArchiveAt": "2026-10-27T03:41:02.550260+00:00",
+      "afterJournalFinal": true,
+      "allActorSessionsTerminalBeforeArchive": "parent/actor attestation; not reconstructible from journal alone"
+    }
+  },
+  "acceptanceBoundary": "No product behavior, backend/runtime health, Store health, release, Guest acceptance or cross-profile acceptance transfer claimed.",
+  "commits": "none",
+  "gaps": [
+    "Private restoration retains structural attestation only.",
+    "Actual API session terminal statuses are actor/parent attestations; journal exit and current process absence independently corroborate without recreating session terminal outputs.",
+    "Original official ZIP unavailable for independent offline rehash.",
+    "Parent still owns public-path restoration and sanitized publication."
+  ],
+  "original_private_report_sha256": "5ba67fa30ca981f5bbe61e6cd5070ba7b1a410620d0af1343e7c41bcc47f98af",
+  "reference_limits": "Mapped originals are durable; maps distinguish original and formatted hashes. Unmapped scratch logs/ZIPs/private context remain private and are not implied independently verified."
+}

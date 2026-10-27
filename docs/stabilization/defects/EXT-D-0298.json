@@ -7,8 +7,8 @@
   "auth_mode": "not-applicable; no auth or product behavior tested",
   "severity": "S3",
   "priority": "P0",
-  "state": "in-fix",
-  "owner": "/root/d298_truthful_diagnostics_implementation",
+  "state": "fixed",
+  "owner": "root",
   "preconditions": [
     "Owned startup connector times out; optional startup observation callback enabled."
   ],
@@ -20,7 +20,7 @@
   "expected": "Unknown, last-reader outcome and actual filesystem observations are distinct, timestamped and honest; no file absence manufactured from a timeout or inspection error.",
   "actual": "Timeout callback manufactures false; postwatch non-ENOENT inspection errors also return false. Aggregate last-read timing cannot establish physical publication time.",
   "cause": "Presence and connector outcomes conflated; diagnostic serialization lacks observation provenance/per-read timing.",
-  "reproducibility": "Old-code canonical RED2; corrected batched focused1100total1089pass0fail11skip resource-valid; compile failed2 existing installed Vault/auth API errors. Current-dependency/independent/hosted retest pending.",
+  "reproducibility": "Old-code RED2; corrected focused1100total1089pass0fail11skip plus fresh independent current-lock replay/compile and fullCI92a/9e4/35b pass. Native connected-path diagnostics pass; natural timeout/post-timeout branch remains unexercised, so no retest-pass/closure.",
   "source_sha": "b3b3d345e87959e277a3513b3c38226160fe6d13",
   "evidence": [
     "docs/stabilization/reports/late-cdp-publication-diagnosis-20261027.json",
@@ -28,8 +28,8 @@
     "docs/stabilization/reports/d298-implementation-20261027.json"
   ],
   "related_defects": ["EXT-D-0254", "EXT-D-0231"],
-  "fix_sha": null,
-  "next_action": "Parent repair installed-dependency mismatch or establish current-dependency CI compile, then dispatch fresh independent A/B verification of this exact owned source unit; observe current-source full CI, then normal exact-source hosted startup diagnostic with preserved failures and measured unknowns. No D298 closure or D254/D231 closure until respective original-path gates pass.",
+  "fix_sha": "60cd2428930efe60b4cfb48e332687925c4b0fc6",
+  "next_action": "Retain fixed state until original natural timeout/post-timeout path and surrounding cases pass independent verification. D254 investigation must obtain missing child/lock/stdio/CPU/post-timeout record evidence on the original failing B path. No blind retry, policy8000/resource/runner bypass, bootstrap or product closure.",
   "transition_history": [
     {
       "at": "2026-10-27T01:57:17.590334+00:00",
@@ -42,6 +42,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Approved 12/12 plan attack COMMIT; bounded implementation lane assigned with both timing/refusal advisories binding."
+    },
+    {
+      "at": "2026-10-27T04:12:41.747358+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source implementation pushed; discriminating old RED/new GREEN, independent replay/compile and current-source full CI pass. Natural native failure branch still unexercised; retain later retest/closure gates."
     }
   ],
   "sibling_census": [
@@ -56,5 +62,10 @@
     "VM actual-driver compositions",
     "default ps child cancellation/close accounting"
   ],
-  "fix_sha_note": "Exact implementation SHA is the commit containing this report, discoverable by git log on the listed owned paths; final private return records actual pushed SHA after commit. No self-referential invented SHA."
+  "fix_sha_note": "Exact implementation SHA is the commit containing this report, discoverable by git log on the listed owned paths; final private return records actual pushed SHA after commit. No self-referential invented SHA.",
+  "independent_reports": [
+    "docs/stabilization/reports/d298-fresh-review-20261027.json",
+    "docs/stabilization/reports/startup9e4-fresh-evidence-review-20261027.json",
+    "docs/stabilization/reports/startup35b-matched-evidence-peer-20261027.json"
+  ]
 }

@@ -1,0 +1,594 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T04:18:31.377367+00:00",
+  "reviewer": "fresh-zero-authorship-completed-unit-record-review",
+  "status": "NEEDS_NARROW_METADATA_CORRECTION",
+  "scope": "Completed 120-path evidence publication unit; current COORDINATOR boundary and three defect records plus EXT-F-1008-T09. Historical rows not globally audited.",
+  "manifest": ".output/stabilization-checkpoints/d298-completed-publication-paths-20261027.json",
+  "manifest_sha256": "40af292eff84c4e8bf4842ef5a238bc935bb1c60a0573e48d2790b1319276c43",
+  "A_factual_spec": {
+    "verdict": "NEEDS_CORRECTION",
+    "confirmed_blocking_gaps": [
+      {
+        "id": "P1",
+        "severity": "blocking_publication_accuracy",
+        "path": "docs/stabilization/reports/scrape-b-35b-native-20261027.json",
+        "field": "parent_adjudication",
+        "claim": "All resource finals valid",
+        "actual": "Package and browser finals valid/exit0; hosted-guest-40444784947-1 final child_failed/exit1/resourceInvalid=false. The guard did not invalidate resources, but native execution did fail.",
+        "source": "docs/stabilization/resource-journals/hosted-guest-40444784947-1.jsonl",
+        "source_sha256": "7be5da06a7d71c1755b77b6742f93921991216ef169ec641992d5fcfa4e2b40c",
+        "recommended_repair": "Replace phrase with Package/browser valid0; native child_failed1/resourceInvalidfalse. Keep normal verifier refusal, no certificate and zero product credit.",
+        "current_top_coordinator_correct": true
+      }
+    ],
+    "supported": [
+      "D298 fixed at60cd; independent supporting replay remains distinct from unexercised natural timeout/post-timeout branch and closure.",
+      "Current B40444784947 failed before UI8044ms; 238polls and last missing7978-7979ms; normal verifier refused/no certificate/zero product credit.",
+      "Matched A40446409519 successful connected diagnostic; endpoint7618/owner7850/socket10163/callback10172ms, three valid0 resource finals; CPU_PENDING overlap not cause; A/B uncontrolled.",
+      "Owner35b actual Profile8 management Reload629-to629 with correct stable path/ID/On+pins beside Store577 supported by original AX and contemporaneous ledger;24starts/24ends/8groups and76watch reads.",
+      "Store SEO peer A/B partial, missing original action ledger acknowledged; no formal T09 promotion.",
+      "52df backend metadata in prior owner9e4 after receipt is metadata only; current35b owner had no backend bracket.",
+      "No formal case-result status changes against HEAD inventory; current coordinator relative links resolve; D254 triaged and D231 open."
+    ],
+    "unsupported_claims_other_than_P1": []
+  },
+  "B_quality_provenance": {
+    "verdict": "BOUNDED_PASS",
+    "confirmed_blocking_gaps": [],
+    "integrity": {
+      "all_manifest_paths_exist": 120,
+      "private_original_reports_hash_matched": 15,
+      "original_report_fields_changed": 0,
+      "map_entries": 96,
+      "durable_maps": 94,
+      "original_byte_copies": 82,
+      "JSON_formatting_only_semantically_equal": 12,
+      "operator_py_template_exclusions": 2,
+      "map_hash_or_semantic_errors": 0,
+      "completed_resource_journals": 15,
+      "formal_case_status_deltas_against_HEAD": 0
+    },
+    "hash_handling": "Original-private-report hashes checked against private original JSON bytes; publication additions kept separate. Original_sha256 vs published sha256 checked on every durable map, with JSON semantic equality where formatting changes bytes. No original report keys changed.",
+    "reference_limits": "Peer/original report private paths remain bounded by explicit reference_limits; mapped public originals exist. Scratch ZIP/log/context references are not represented as independently public or witnessed. Current coordinator links resolve.",
+    "limits": [
+      "No independent UI/API replay, current GitHub query, original ZIP rehash, source execution, full campaign audit or historical row polish.",
+      "All24 PNGs checked for byte integrity through map hashes only; no fresh visual interpretation. Existing independent peer visual reviews remain their own evidence.",
+      "Owner private restoration is structural attestation; original session terminal exits are actor/parent claims bounded by journal final.",
+      "Store SEO per-action causality/cadence and owner restoration remain unverified; original action trace absent.",
+      "Source eligibility and CI are historical retained records, not fresh source admission."
+    ]
+  },
+  "reviewed_paths": {
+    "all_120_integrity_snapshots": [
+      {
+        "path": "docs/stabilization/resource-journals/d298-fresh-current-lock-compile-20261027.jsonl",
+        "sha256": "45a6b8ca3db4c78d4208221da209e830c60943aa8d55a3cc680438fa5885ad28"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/d298-fresh-current-lock-install-20261027.jsonl",
+        "sha256": "ba937bc9b0a09a53795e80904907f2a963b7eed513fa92fb1b84d6db50b9dacc"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/d298-fresh-independent-focused-20261027.jsonl",
+        "sha256": "a57ab473fd56422c8011134ea7b191cf61fad97487ec40fa78bb585857d6abe7"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/store577-guest-seo-links-native-20261027-0207.jsonl",
+        "sha256": "a936b48dd1e20494e0e823640dcb92ec76151039650993fa6833607c3043bc7b"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/owner629-9e4-20261027-0307.jsonl",
+        "sha256": "379dee0c14aecd8b619dc0c9cb0ec4f60bd586264a9459aba9ff1b67656d2e89"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/owner629-35b-20261027-0340.jsonl",
+        "sha256": "1d2ce90de89ebb2f50763d701e964c9b9a53327c717c2152ed5e35d485a92454"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/dev-before-original.png",
+        "sha256": "fdf7c8ce2ae959d464799dc2b3592a1cbbf58081e6af5a165f961d04aa830ad4"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/original-structure.json",
+        "sha256": "bea28dd799fe506f74b6207bbe69db4f5d359e12ebfc9a8c3d3c951ebc540350"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/dev-after-original.ax.txt",
+        "sha256": "3daac65cc6a5f157c4c13e19afa7325ac2f1d9917ed276f77601d810f0b4649f"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/api-ledger.jsonl",
+        "sha256": "8df60b6061b960033788b9ba23e97f707b0215e509f41022d5378b6d7ea7adba"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/cleanup.json",
+        "sha256": "1e34fbca81d330ddfdca1900137fd9be9935d2a482ddac4024cbdfb45876456d"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/owner-account-original.ax.txt",
+        "sha256": "2f72c9cd7c3640aeac1bee2bf713c813bdf12a86102d9e0a3647b661b1e64efc"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/profile-version-original.ax.txt",
+        "sha256": "f3c5fcc553ea4654b0d811b3f4a7ed164b35ee795242e827593940c787be4e9a"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/store-preserved-original.png",
+        "sha256": "ce6be245e3e19e1f0c369ff18b0e7e9677e6919fe33dde935f2b4af86fffeb60"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/dev-before-original.ax.txt",
+        "sha256": "c9f631b64cd8af0305a2326635a8aafc0ae532e3c501af62e458bdca7a83105c"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/dev-prereload-original.ax.txt",
+        "sha256": "c9f631b64cd8af0305a2326635a8aafc0ae532e3c501af62e458bdca7a83105c"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/dev-after-original.png",
+        "sha256": "cc21bff0ba6d72b8cca012f05309fb6559b1417331d9e2ef0cc52f156d910453"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/store-preserved-original.ax.txt",
+        "sha256": "d879672d0d1fb8c3ca987fc1e193f23866b936734f3edc8555459086464134b9"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/owner629-9e4-watch-20261027.jsonl",
+        "sha256": "e6f4e44b4b2c4baad735e479da5393e2dd2897da6fd0893298519906930216a8"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/owner629-9e4-watch-20261027-report.json",
+        "sha256": "508327255d0e4e9388d4131e2981eface5ac2432fba3a48a0df40ced4ec8111a"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/owner629-9e4-import.log",
+        "sha256": "e10a4108e92a0ad6e2e7d35c76a79b68fb39637958249eefa6d9125dbbec657a"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/owner629-9e4-promotion.log",
+        "sha256": "55951ee3799e1cbfb7d3cbb9920538837d24f6f2788ada947b7091bd154e8310"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/owner629-9e4-backend-prepromote.json",
+        "sha256": "aeb672ff73fbf62111578b397da80a63b6282a1a93edcf2628f0004305fced78"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/owner629-9e4-backend-before.json",
+        "sha256": "aeb672ff73fbf62111578b397da80a63b6282a1a93edcf2628f0004305fced78"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/owner629-9e4-backend-prereload.json",
+        "sha256": "aeb672ff73fbf62111578b397da80a63b6282a1a93edcf2628f0004305fced78"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-9e4-20261027/owner629-9e4-backend-after.json",
+        "sha256": "aeb672ff73fbf62111578b397da80a63b6282a1a93edcf2628f0004305fced78"
+      },
+      {
+        "path": "docs/stabilization/reports/owner629-9e4-adoption-20261027.json",
+        "sha256": "e736d3b273964046fe796385d4926bb8938b7a91e405fe044c83670548247299"
+      },
+      {
+        "path": "docs/stabilization/reports/owner629-9e4-adoption-peer-20261027.json",
+        "sha256": "118a920e964a74c1dbffbb46862cf62db50d62f107233b22633241b281c0bd5d"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/dev-before-original.png",
+        "sha256": "bf7d3e256eec9a575c777916a711d876a5c4a76906134c5d9d01a172f8a3303c"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/original-structure.json",
+        "sha256": "bea28dd799fe506f74b6207bbe69db4f5d359e12ebfc9a8c3d3c951ebc540350"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/dev-after-original.ax.txt",
+        "sha256": "957fcfc8e910e75dc9828f98af4ca16a5d9b53ee0cb80fcf007d685278b7e835"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/api-ledger.jsonl",
+        "sha256": "b8acc20b6f16fe213325616668bdbc318355b6c104b6892bc39eed7c7caaa299"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/cleanup.json",
+        "sha256": "ac94a22d6520fe7c0ff61eb357fb664b4a7f104811b62db4881c952ecad2bef6"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner-account-original.ax.txt",
+        "sha256": "9f473e3616d9a009ab2eb69b067db97626f9521abdb12f462e60f9d0f027a430"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/profile-version-original.ax.txt",
+        "sha256": "e2ab9ea489e60274b00273b153d45b581d8d813b792d0d4f619cfe509b95df4c"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/store-preserved-original.png",
+        "sha256": "ce6be245e3e19e1f0c369ff18b0e7e9677e6919fe33dde935f2b4af86fffeb60"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/dev-before-original.ax.txt",
+        "sha256": "71564ef4fb3d8e921dcd980c09de74962b937411a4410186636aeeefccb74298"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/dev-prereload-original.ax.txt",
+        "sha256": "71564ef4fb3d8e921dcd980c09de74962b937411a4410186636aeeefccb74298"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/dev-after-original.png",
+        "sha256": "f0f024a7fa667917f87ac183fba6d48a97e95f5412ded9d2a509ac4d41651d2f"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/store-preserved-original.ax.txt",
+        "sha256": "1e626dfb38a2589bf3eea864603321637f3236b845d607260b020b63a728fc32"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-promotion.log",
+        "sha256": "acfbd7267711a7dba0c084d0555fd5b59e33357b5c95e95faea53b8d37395d7e"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-provenance.json",
+        "sha256": "d8933231c93bba67375d137d2b115f2668b25c5d9bb168fc21c3f36bc5ef69c8"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-watch-20261027.jsonl",
+        "sha256": "2ba2bc2d4baf847dd4249b75a1d3a8a9ebb6d67916073552796405989be7f2de"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-import-status.json",
+        "sha256": "7ce296b42812c4c49d7714d0161a324309ee32172fa1bb50e9a16bf7272a718c"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-prereload.json",
+        "sha256": "68631ab6ea696c94caba86c2c23415a71258e1d61de27374c014b8d6d3098ac8"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-official-ci.json",
+        "sha256": "f2873a6e8419769adae1e4c61c3c36de65afe14ee2a5747474289b9a95269949"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-promotion-receipt.json",
+        "sha256": "820304674d6570c6351fbf34d816ea4a3f653473655037ea1b5e1c45d57c8668"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-watch-20261027-report.json",
+        "sha256": "3850a433614000fab1d7ca0c0929cc7e84d6bc1c4b3f45cf9d787ea037d6ec77"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-postui.json",
+        "sha256": "ef58f772eae96fd6f61866ea0e15bc16ae092c986e4e22c2b1c85f7a6e02693c"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-ci-receipt.json",
+        "sha256": "4acd79498604e2a9dab3968214abb4c34d8b0717e7086fbfb6c87fde16bfed62"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-local-dev-receipt.json",
+        "sha256": "000f2fd51161a1c625e98ff317c3f3847f3e8ef89e610ed28751201350a7a655"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-import.log",
+        "sha256": "2e67e2af1fa11993a26e224dc20630534c73b8ecda0b1f01472ac5971523017f"
+      },
+      {
+        "path": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-official-artifact.json",
+        "sha256": "e68307650746dcd4929118a763439d77bb9c9eb37d00bb47348198eccfd39db2"
+      },
+      {
+        "path": "docs/stabilization/reports/owner629-35b-adoption-20261027.json",
+        "sha256": "1dcc35f648de6c5e4580db39fe20390da41a07ec3c574eae85122514a7326f2e"
+      },
+      {
+        "path": "docs/stabilization/reports/owner629-35b-adoption-peer-20261027.json",
+        "sha256": "fe0573ac9f349d74f55710c3bf3e1bba7f1b6eb1719474d9012ba31f9da430dd"
+      },
+      {
+        "path": "docs/stabilization/reports/owner629-92a-adoption-20261027.json",
+        "sha256": "3c0a9ac89e0af2137cefc66149a55fa564318e48810fdfb9a89dda5133bc156d"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/article-destination.ax.txt",
+        "sha256": "9aad2f677cb57427c682b595342ab649e6395fcb8c75dbd8612e2facdc0ab6eb"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/article-destination.png",
+        "sha256": "9d5add023b969ee41cfb1c37a216b9bb08876d677b3b81e36bda582cfa916374"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/browser-profile-version.ax.txt",
+        "sha256": "5ac9d80a589da0c7a2b330b334b02f1a5a74e47f378b857b835c87a3dfe5f466"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/browser-profile-version.png",
+        "sha256": "af101d076e60d726e15f372b7a97e35998a1e5f7e583c809a024a8502fdbb9f8"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/canonical-destination.ax.txt",
+        "sha256": "670a3d1e1e0caec9c1a6611c13cb25378f5e77dbd9342a9b270e4b59f84f2ff8"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/canonical-destination.png",
+        "sha256": "365aa3577516390289eb83f5a0e074256e0f73d20891c918c1055331205fc460"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/fixture-live.ax.txt",
+        "sha256": "df9553e7fcb3f2f7879e6600c6ab27c1b098bec89f790f98c988be3688154696"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/fixture-live.png",
+        "sha256": "eb40c5aff5f24b0ffdf32ba2cf9ed25ecd70c3dd6ff9b0a5660165cb52ce5cd9"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/guest-initial.ax.txt",
+        "sha256": "6292336d450951bb8b68c7d1d49adbb48c47f8de20737081475ffe49c89cbf97"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/guest-initial.png",
+        "sha256": "fecf93c7bacc2ebded2b983049c861336a854a4494bbbeae2148aa4fc2d54d80"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/guest-restored.ax.txt",
+        "sha256": "41e2029961c7d436429721a22b9b086d5dfa9ece1e5926a468ed8b3c31264dfc"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/guest-restored.png",
+        "sha256": "00a459db62a1e31f5433171ac0b3aaf915639eae4b6d0f2a5180047f1a1b80f0"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/panel-reopen-chat.ax.txt",
+        "sha256": "e00a7daa27e7f99c283a1e81732f239e123e091bda5c3fef131b68e0849a1a2d"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/panel-reopen-chat.png",
+        "sha256": "b28efe764980b6db84d18c07cae6f515e08e8f3f30fa2638e71d9e0a192884b9"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/schema-visible.ax.txt",
+        "sha256": "def908e9d3712ea670868938460fb432aa7bb96eff175103d4162d7fd25e620e"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/schema-visible.png",
+        "sha256": "e8cd48a77a2f3019da5def8bad5555cdef72be3ec33547b9de0ebbcfe9eab641"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/seo-after-reopen.ax.txt",
+        "sha256": "90b0a9a1039219335ae00b0447916a702b2517fd83468363ccf3fb150bb85028"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/seo-after-reopen.png",
+        "sha256": "14142aeac8127d9142264db2781e6c1f2654269b60b230d4d8bfd365cabb22bf"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/seo-open.ax.txt",
+        "sha256": "90b0a9a1039219335ae00b0447916a702b2517fd83468363ccf3fb150bb85028"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/seo-open.png",
+        "sha256": "f5a624cd68b5f9682cb2f05d20128c9d4882258858edceed79ccb7617676aff1"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/settings-guest-proof.ax.txt",
+        "sha256": "94fe35ce18010e0f62cd21b938dcc60109bafe3f17a1005c7b01565af17fc3c9"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/settings-guest-proof.png",
+        "sha256": "b020037705dcd698e319e31f11516e086f4d3715bcc645a2ba9ba2915f3fffa3"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/settings-guest-ready.ax.txt",
+        "sha256": "a35f01e3b612fce0e3aaa1085bddf21fc0d7c5b3c68fc8e43d802c2dc7c843f5"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/settings-guest-ready.png",
+        "sha256": "2f2e2b5e4155f84604eac102a8eb8f08ad42823c193eff431d3387a7d853ddb9"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/store-identity-full.ax.txt",
+        "sha256": "175493e1a378ff862a0ef613bbc32b4725f0ef05dca9999d59c1d5c74e3328a5"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/store-identity-full.png",
+        "sha256": "f4ca3330408c8293ddb3a74d7a954c1ca456e8674eccbdb724b39e06d42b4395"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/store-identity.ax.txt",
+        "sha256": "0064192320163571c67f0d9e782bd2d1539307696961e428d707365700b10d4b"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/store-identity.png",
+        "sha256": "f4ca3330408c8293ddb3a74d7a954c1ca456e8674eccbdb724b39e06d42b4395"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/store577-guest-seo-links-watch-20261027-0207.jsonl",
+        "sha256": "6570d5e21640cc0ec6185633a2f73c33c1c1517245ca19e75266cee9aa6c946e"
+      },
+      {
+        "path": "docs/stabilization/evidence/store577-seo-links-20261027/store577-guest-seo-links-watch-20261027-0207-report.json",
+        "sha256": "6972114f9a34d75343bb33f48ebc5d9fcc6a65476a93f26fde902e4977ebe0bf"
+      },
+      {
+        "path": "docs/stabilization/reports/store577-guest-seo-links-native-20261027.json",
+        "sha256": "642e2b556d36f626f4b11a948e90e4713cc45bccc4ea031b0e99c5b181551698"
+      },
+      {
+        "path": "docs/stabilization/reports/store577-seo-links-evidence-peer-20261027.json",
+        "sha256": "71c0f4ecd8a2be123b38476cfccc23477ca3d0df5ae311dff5475c2607125169"
+      },
+      {
+        "path": "docs/stabilization/reports/store577-seo-links-evidence-clarification-20261027.json",
+        "sha256": "3ba1be144e05b51be7a10cbf4bfbbe4e616c100ebd2e2c8512a9930d5d06c602"
+      },
+      {
+        "path": "docs/stabilization/reports/d298-fresh-review-20261027.json",
+        "sha256": "ef85261b0e0af88480f512c88e5b99b4a6977c246211a85f82075c9567116380"
+      },
+      {
+        "path": "docs/stabilization/reports/startup9e4-fresh-evidence-review-20261027.json",
+        "sha256": "276753d914547cc506c14a07fe6920bafa92e9345c439e1ba312d9d8fafc41e9"
+      },
+      {
+        "path": "docs/stabilization/reports/startup-a-b-boundary-diagnosis-20261027.json",
+        "sha256": "ba58cbdcc612dee63c283500c405230d824c3ec9e6b59c266eea9fcf211e1d0d"
+      },
+      {
+        "path": "docs/stabilization/reports/startup35b-matched-evidence-peer-20261027.json",
+        "sha256": "fadaa7ad77361ecc133934a80bc075d75375a0858f769a16884581dfc12c9a9b"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-package-40442729853-1.jsonl",
+        "sha256": "341f9bdd6294f7c5c70a0d2fde8a6f1954159e5fb64691fd3f5d69354c8f2f7d"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-browser-40442729853-1.jsonl",
+        "sha256": "85d3fe6fa02a3d5fd0cc17870ca8b2dbc813766e1e2377a85bd03b19a6d55548"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-startup-40442729853-1.jsonl",
+        "sha256": "1b6eb4f024370d8fb808c8ecc4e7edc84f31377e983af98d22af19cb235e657f"
+      },
+      {
+        "path": "docs/stabilization/evidence/hosted-startup-9e4-40442729853/native-side-panel.png",
+        "sha256": "6f5ec337fb4d7380411bb8130458c9ead5924f368598fb29ee46d53e9effab8e"
+      },
+      {
+        "path": "docs/stabilization/evidence/hosted-startup-9e4-40442729853/normal-target-after-open.png",
+        "sha256": "fb1191c2cbd2a6e88c3d4e9a167c3c6cd55f39a2c7e75f7022ead9e929b4263d"
+      },
+      {
+        "path": "docs/stabilization/evidence/hosted-startup-9e4-40442729853/startup-interval-diagnostic.json",
+        "sha256": "214fb87994a758e7974107070f85c3a5598c510a6f8d57e8cc0d0570e8988ca5"
+      },
+      {
+        "path": "docs/stabilization/reports/hosted-startup-9e4-20261027.json",
+        "sha256": "d26dba2e6304edc31f9f37db0c2fc208bd559917146ce1caeb6502317accc149"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-package-40446409519-1.jsonl",
+        "sha256": "40df99206753cf2fe87aa4325af8ac1095fc3ea0d5117b50de01d73e2144658e"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-browser-40446409519-1.jsonl",
+        "sha256": "275fcfcff79babf25ecbc481dc313b22b47094f4749329234047fb14463aa4d9"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-startup-40446409519-1.jsonl",
+        "sha256": "797dcb3b7ea555dbfc14110360fb2b4972f889da57ea6844338df0ca6420fc2b"
+      },
+      {
+        "path": "docs/stabilization/evidence/hosted-startup-35b-40446409519/native-side-panel.png",
+        "sha256": "58f686cabb48c02aa27aae89dd26810d430e8dda142040c2df7d53d6de931a6e"
+      },
+      {
+        "path": "docs/stabilization/evidence/hosted-startup-35b-40446409519/normal-target-after-open.png",
+        "sha256": "fb1191c2cbd2a6e88c3d4e9a167c3c6cd55f39a2c7e75f7022ead9e929b4263d"
+      },
+      {
+        "path": "docs/stabilization/evidence/hosted-startup-35b-40446409519/startup-interval-diagnostic.json",
+        "sha256": "e2dd327ee336853661c720f386ba2bbebc5be419934eb67bbf8c17268b02cccf"
+      },
+      {
+        "path": "docs/stabilization/reports/startup-35b-matched-20261027.json",
+        "sha256": "3f0df5251568d3adcf6c9f27ba1bb432d40cfcf7f2bf44a43d629c07892c5a01"
+      },
+      {
+        "path": "docs/stabilization/evidence/scrape-b-35b-40444784947/scrape-seo-schema-empty-guest-native.json",
+        "sha256": "3255f874b80b1cc2b091c4101bfd2c4199bcea2cf294c827431053d8e64db5ce"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-package-40444784947-1.jsonl",
+        "sha256": "c38a512c28ca397134d39e9da18530236e2edd33362563c9caea7d1811966428"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-guest-40444784947-1.jsonl",
+        "sha256": "7be5da06a7d71c1755b77b6742f93921991216ef169ec641992d5fcfa4e2b40c"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-browser-40444784947-1.jsonl",
+        "sha256": "218ddd0cfd6791d0de8466b12aaf5facfd30573967ffc5cb679451ba99d55cdf"
+      },
+      {
+        "path": "docs/stabilization/reports/scrape-b-35b-native-20261027.json",
+        "sha256": "a330536cb31112ed3179c481b353dddd4331974b795558ba657e2cd206f1332b"
+      },
+      {
+        "path": "docs/stabilization/defects/EXT-D-0298.json",
+        "sha256": "3d401d858402ee77232929be3b3d231e5633cd2dbf9ac624e1bd8d7f8b940b2b"
+      },
+      {
+        "path": "docs/stabilization/defects/EXT-D-0254.json",
+        "sha256": "e8f59477da710f3aa963f95f44634f339581940251b072ba83afcfbac1e17343"
+      },
+      {
+        "path": "docs/stabilization/defects/EXT-D-0231.json",
+        "sha256": "8ce10b5bbabf3a6f6c0deb38f7e7cce39c176d36668f1723732624c67b02a9db"
+      },
+      {
+        "path": "docs/stabilization/inventory.json",
+        "sha256": "617b3068d0596b4276a47de6f2451823db0c74c4b985137f36fe33e6c626f856"
+      },
+      {
+        "path": "docs/stabilization/COORDINATOR.md",
+        "sha256": "4a5a8b392102fac6cf457624ae8db2ac3ac6ad431d80b9b030b3a55a2038e9a2"
+      },
+      {
+        "path": "docs/stabilization/STATUS.md",
+        "sha256": "3dac71c5c475e47776de22bfd5ae60775d3962bf772e327234fa608fc5fc1785"
+      },
+      {
+        "path": "docs/stabilization/STATUS.html",
+        "sha256": "ec583b379404903837bb17a5f2591e613167ad3347bf7af60cb87bca9c67a15c"
+      },
+      {
+        "path": "docs/stabilization/CHECKLIST.md",
+        "sha256": "b68ff8c8c07fbe024b109d5f3da231344fe7eee4d27f6f5b2617b08a3ac4be10"
+      }
+    ],
+    "semantic_public_report_and_current_record_paths": [
+      "docs/stabilization/reports/owner629-9e4-adoption-20261027.json",
+      "docs/stabilization/reports/owner629-9e4-adoption-peer-20261027.json",
+      "docs/stabilization/reports/owner629-35b-adoption-20261027.json",
+      "docs/stabilization/reports/owner629-35b-adoption-peer-20261027.json",
+      "docs/stabilization/reports/owner629-92a-adoption-20261027.json",
+      "docs/stabilization/reports/store577-guest-seo-links-native-20261027.json",
+      "docs/stabilization/reports/store577-seo-links-evidence-peer-20261027.json",
+      "docs/stabilization/reports/store577-seo-links-evidence-clarification-20261027.json",
+      "docs/stabilization/reports/d298-fresh-review-20261027.json",
+      "docs/stabilization/reports/startup9e4-fresh-evidence-review-20261027.json",
+      "docs/stabilization/reports/startup-a-b-boundary-diagnosis-20261027.json",
+      "docs/stabilization/reports/startup35b-matched-evidence-peer-20261027.json",
+      "docs/stabilization/reports/hosted-startup-9e4-20261027.json",
+      "docs/stabilization/reports/startup-35b-matched-20261027.json",
+      "docs/stabilization/reports/scrape-b-35b-native-20261027.json",
+      "docs/stabilization/COORDINATOR.md",
+      "docs/stabilization/defects/EXT-D-0298.json",
+      "docs/stabilization/defects/EXT-D-0254.json",
+      "docs/stabilization/defects/EXT-D-0231.json",
+      "docs/stabilization/inventory.json"
+    ],
+    "additional_specific_originals": [
+      ".output/stabilization-checkpoints/publish-d298-completed-unit-20261027.py",
+      ".output/stabilization-checkpoints/fix-publication-maps.py",
+      "docs/stabilization/evidence/hosted-startup-35b-40446409519/startup-interval-diagnostic.json",
+      "docs/stabilization/evidence/hosted-startup-9e4-40442729853/startup-interval-diagnostic.json",
+      "docs/stabilization/evidence/owner629-35b-20261027/api-ledger.jsonl",
+      "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-watch-20261027.jsonl",
+      "docs/stabilization/evidence/owner629-35b-20261027/dev-before-original.ax.txt",
+      "docs/stabilization/evidence/owner629-35b-20261027/dev-after-original.ax.txt",
+      "docs/stabilization/evidence/owner629-35b-20261027/store-preserved-original.ax.txt",
+      "docs/stabilization/evidence/owner629-35b-20261027/profile-version-original.ax.txt",
+      "docs/stabilization/evidence/owner629-9e4-20261027/owner629-9e4-backend-after.json"
+    ],
+    "private_source_basis": "Same-basename .output/stabilization-checkpoints originals for all15 published reports; every durable_evidence_map original path read and compared. Archived .py exclusions explicitly nonpublic."
+  },
+  "actions": {
+    "UI": 0,
+    "API": 0,
+    "heavy": 0,
+    "tests": 0,
+    "source_edits": 0,
+    "commits": 0,
+    "children": 0,
+    "edits": "This audit JSON only; parent owns repairs/adjudication/push."
+  },
+  "original_private_report_sha256": "372b3e75cf63eaab33f8df3db25228d256753119083767c5215413bc1e8991c6",
+  "reference_limits": "Review references retain their original scope; unmapped private scratch references are not implied publicly retained."
+}

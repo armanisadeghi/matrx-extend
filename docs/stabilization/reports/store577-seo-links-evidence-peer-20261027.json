@@ -1,0 +1,356 @@
+{
+  "schema": 1,
+  "status": "DONE_WITH_CONCERNS",
+  "reviewedAtUtc": "2026-10-27T02:48:46.986636+00:00",
+  "reviewer": "fresh zero-authorship evidence peer",
+  "caseId": "EXT-F-1008-T09",
+  "runId": "store577-guest-seo-links-native-20261027-0207",
+  "method": "Read-only review of original retained AX/screenshots, completed guard journal/watcher, current installed payload hashes and terminal process/lease census. No independent live UI replay, browser action, tests, API, code edit or commit.",
+  "actorReport": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027.json",
+  "actorReportSha256": "4f2d63ef02b79c4243069cb8207b1261d5cdad621c104afb7082d77e07cf2ab1",
+  "A_behavior": {
+    "verdict": "PARTIAL",
+    "boundedEvidenceVerdict": "SUPPORTED_WITH_PROCEDURAL_LIMIT",
+    "caseVerdict": "PARTIAL; never full T09",
+    "observations": [
+      {
+        "target": "Store identity/profile",
+        "verdict": "SUPPORTED",
+        "evidence": [
+          "store-identity-full.ax.txt",
+          "store-identity-full.png",
+          "browser-profile-version.ax.txt",
+          "browser-profile-version.png",
+          "seo-open.ax.txt"
+        ],
+        "finding": "Extensions details show Chrome Web Store source, enabled/pinned 0.2.577 ID hnfolienncfklkgmdjjmhhegglimlamg. Actual sidepanel AX has that ID. chrome://version shows Profile 10, native window Matrx Guest Test, Chrome156.0.8078.47. Global launch Profile 8 argument does not override actual profile path."
+      },
+      {
+        "target": "guest conditional sign-in prerequisite",
+        "verdict": "SUPPORTED_UI_ONLY",
+        "evidence": ["settings-guest-ready.ax.txt", "settings-guest-ready.png"],
+        "finding": "Within extension Settings Account Email is em dash and extension Sign in exists (AX156), distinct from website Sign in (AX29). No token/session inspection; guest is UI-derived."
+      },
+      {
+        "target": "measured title/headings/canonical/schema candidates",
+        "verdict": "SUPPORTED_BOUNDED",
+        "evidence": [
+          "fixture-live.ax.txt",
+          "seo-open.ax.txt",
+          "seo-open.png",
+          "schema-visible.ax.txt",
+          "schema-visible.png"
+        ],
+        "finding": "Title matches live page AX title; all four heading texts/levels match page AX. Audit displays 33-char title,121-char description, canonical matching live route, en and Article+Organization. Description/schema/canonical source DOM fidelity is unverified; presence is established, general parser correctness is not."
+      },
+      {
+        "target": "canonical destination",
+        "verdict": "SUPPORTED_DESTINATION",
+        "evidence": [
+          "seo-open.ax.txt",
+          "canonical-destination.ax.txt",
+          "canonical-destination.png"
+        ],
+        "finding": "New selected fixture tab at shown canonical route with matching title/H1; original fixture tab remains. Trusted click causal step is actor-reported, not encoded in snapshots."
+      },
+      {
+        "target": "Article destination/referral",
+        "verdict": "SUPPORTED_DESTINATION",
+        "evidence": [
+          "schema-visible.ax.txt",
+          "article-destination.ax.txt",
+          "article-destination.png"
+        ],
+        "finding": "Selected new tab shows schema.org/Article?utm_source=aimatrx.com&utm_medium=referral, Article - Schema.org Type, H1 Article and A Schema.org Type; original fixture remains. Organization link not activated. No HTTP Referrer header claim."
+      },
+      {
+        "target": "panel reopen",
+        "verdict": "SUPPORTED_BOUNDED",
+        "evidence": [
+          "panel-reopen-chat.ax.txt",
+          "panel-reopen-chat.png",
+          "seo-after-reopen.ax.txt",
+          "seo-after-reopen.png"
+        ],
+        "finding": "Reopen receipt shows Chat selected; subsequent SEO receipt matches original audit (AX byte-identical). Does not establish retained SEO selection or fresh computation."
+      }
+    ],
+    "remaining": [
+      "Full T09 warm/reload/narrow360 dimensions, other controls/links, member/admin and other fixtures",
+      "Independent live UI replay",
+      "DOM JSON-LD/canonical/description fidelity",
+      "Current DEV/main or source commit/output tree/env attribution",
+      "Backend request-wire/server identity and AI/provider usage or cost"
+    ],
+    "acceptanceRuling": "Retain bounded observations only; formal procedural acceptance requires owner audit of original <=4-CUA-group checks. Missing proof is not proof of violation or product failure."
+  },
+  "B_evidenceQualityProvenance": {
+    "verdict": "PARTIAL",
+    "hashes": "All32 listed artifacts match actual SHA256 and byte count; three installed payload hashes independently match current Profile10 extension directory. Hashes establish consistency, not an independently witnessed historical capture.",
+    "resource": {
+      "completedJournalSha256": "a936b48dd1e20494e0e823640dcb92ec76151039650993fa6833607c3043bc7b",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T02:45:44.921Z",
+        "runId": "store577-guest-seo-links-native-20261027-0207",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "watchAuditSha256": "6570d5e21640cc0ec6185633a2f73c33c1c1517245ca19e75266cee9aa6c946e",
+      "watchPolls": 115,
+      "maxGapSeconds": 2.011765083007049,
+      "riskEvents": [],
+      "firstAdmissionReadUtc": "2026-10-27T02:43:10.257899Z",
+      "artifactCaptureBoundsUtc": [
+        "2026-10-27T02:43:38.609860+00:00",
+        "2026-10-27T02:45:30.907905+00:00"
+      ],
+      "ruling": "Completed journal admission/final and continuous watcher supported; recorded capture times fall within admitted interval. Guard healthy samples about16s apart are covered by actual2s dedicated reads. Watcher does not prove operator gate checks."
+    },
+    "findings": [
+      {
+        "id": "E1",
+        "severity": "Important",
+        "status": "UNVERIFIED",
+        "claim": "journal+watch checked before first input and each <=4 CUA group",
+        "basis": "Package has no time-stamped CUA invocation/operator gate ledger; artifact mtimes and2s watcher alone do not prove check-before-call ordering or group size.",
+        "ruling": "Owner must audit original execution transcript; do not infer compliance or violation from snapshots."
+      },
+      {
+        "id": "E2",
+        "severity": "Minor",
+        "status": "PARTIAL",
+        "claim": "all cleanup/restoration",
+        "basis": "Guest initial/final screenshots show one New Tab and both toolbar icons. Final AX confirms single guest New Tab; completed journal confirms stop. Current lease directory has historical stop files only and process census has no owned holder/watcher (excluding reviewer shell/search). No retained owner Profile8 before/after/focus receipt; terminal wrapper exit0 asserted in actor only.",
+        "ruling": "Guest tabs/pins and terminal guard final supported; owner focus/Profile8 preservation and wrapper terminal exits remain actor-reported."
+      },
+      {
+        "id": "E3",
+        "severity": "Minor",
+        "status": "LIMIT",
+        "claim": "one-click/trusted-click sequence and stale AX error",
+        "basis": "Snapshots show reached states/destinations but no original per-input transcript.",
+        "ruling": "Actor-reported causal sequence and no-delivery stale index error remain unverified by peer; no defect inferred."
+      }
+    ]
+  },
+  "installedPayloadHashes": {
+    "installedManifestSha256": "e39d8a19ad275f956968395a923534dbc1d08f0905cc47ddb00de40c1dbe81b9",
+    "installedBackgroundSha256": "1f76e3fc5a42ff1cc7b7b7defdf91131372976f888cd468471e7381164196953",
+    "installedSidepanelHtmlSha256": "d5cc996fac6e851d124a32dbc26854671701da4f85d08e18d7148f53f95d8b5d"
+  },
+  "installedPayloadHashBasis": "Independently read manifest.json/background.js/sidepanel.html from Profile10/Extensions/hnfolienncfklkgmdjjmhhegglimlamg/0.2.577_0; all match.",
+  "visuallyInspectedOriginals": [
+    "seo-open",
+    "canonical-destination",
+    "article-destination",
+    "settings-guest-ready",
+    "store-identity-full",
+    "browser-profile-version",
+    "schema-visible",
+    "panel-reopen-chat",
+    "seo-after-reopen",
+    "guest-initial",
+    "guest-restored"
+  ],
+  "verifiedArtifacts": [
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/article-destination.ax.txt",
+      "sha256": "9aad2f677cb57427c682b595342ab649e6395fcb8c75dbd8612e2facdc0ab6eb",
+      "bytes": 76503,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/article-destination.png",
+      "sha256": "9d5add023b969ee41cfb1c37a216b9bb08876d677b3b81e36bda582cfa916374",
+      "bytes": 277170,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/browser-profile-version.ax.txt",
+      "sha256": "5ac9d80a589da0c7a2b330b334b02f1a5a74e47f378b857b835c87a3dfe5f466",
+      "bytes": 6987,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/browser-profile-version.png",
+      "sha256": "af101d076e60d726e15f372b7a97e35998a1e5f7e583c809a024a8502fdbb9f8",
+      "bytes": 187734,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/canonical-destination.ax.txt",
+      "sha256": "670a3d1e1e0caec9c1a6611c13cb25378f5e77dbd9342a9b270e4b59f84f2ff8",
+      "bytes": 8697,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/canonical-destination.png",
+      "sha256": "365aa3577516390289eb83f5a0e074256e0f73d20891c918c1055331205fc460",
+      "bytes": 274334,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/fixture-live.ax.txt",
+      "sha256": "df9553e7fcb3f2f7879e6600c6ab27c1b098bec89f790f98c988be3688154696",
+      "bytes": 5425,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/fixture-live.png",
+      "sha256": "eb40c5aff5f24b0ffdf32ba2cf9ed25ecd70c3dd6ff9b0a5660165cb52ce5cd9",
+      "bytes": 201891,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/guest-initial.ax.txt",
+      "sha256": "6292336d450951bb8b68c7d1d49adbb48c47f8de20737081475ffe49c89cbf97",
+      "bytes": 266,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/guest-initial.png",
+      "sha256": "fecf93c7bacc2ebded2b983049c861336a854a4494bbbeae2148aa4fc2d54d80",
+      "bytes": 86839,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/guest-restored.ax.txt",
+      "sha256": "41e2029961c7d436429721a22b9b086d5dfa9ece1e5926a468ed8b3c31264dfc",
+      "bytes": 3716,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/guest-restored.png",
+      "sha256": "00a459db62a1e31f5433171ac0b3aaf915639eae4b6d0f2a5180047f1a1b80f0",
+      "bytes": 86411,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/panel-reopen-chat.ax.txt",
+      "sha256": "e00a7daa27e7f99c283a1e81732f239e123e091bda5c3fef131b68e0849a1a2d",
+      "bytes": 6936,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/panel-reopen-chat.png",
+      "sha256": "b28efe764980b6db84d18c07cae6f515e08e8f3f30fa2638e71d9e0a192884b9",
+      "bytes": 235903,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/schema-visible.ax.txt",
+      "sha256": "def908e9d3712ea670868938460fb432aa7bb96eff175103d4162d7fd25e620e",
+      "bytes": 8558,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/schema-visible.png",
+      "sha256": "e8cd48a77a2f3019da5def8bad5555cdef72be3ec33547b9de0ebbcfe9eab641",
+      "bytes": 251395,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/seo-after-reopen.ax.txt",
+      "sha256": "90b0a9a1039219335ae00b0447916a702b2517fd83468363ccf3fb150bb85028",
+      "bytes": 8503,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/seo-after-reopen.png",
+      "sha256": "14142aeac8127d9142264db2781e6c1f2654269b60b230d4d8bfd365cabb22bf",
+      "bytes": 271896,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/seo-open.ax.txt",
+      "sha256": "90b0a9a1039219335ae00b0447916a702b2517fd83468363ccf3fb150bb85028",
+      "bytes": 8503,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/seo-open.png",
+      "sha256": "f5a624cd68b5f9682cb2f05d20128c9d4882258858edceed79ccb7617676aff1",
+      "bytes": 271897,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/settings-guest-proof.ax.txt",
+      "sha256": "94fe35ce18010e0f62cd21b938dcc60109bafe3f17a1005c7b01565af17fc3c9",
+      "bytes": 6155,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/settings-guest-proof.png",
+      "sha256": "b020037705dcd698e319e31f11516e086f4d3715bcc645a2ba9ba2915f3fffa3",
+      "bytes": 264493,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/settings-guest-ready.ax.txt",
+      "sha256": "a35f01e3b612fce0e3aaa1085bddf21fc0d7c5b3c68fc8e43d802c2dc7c843f5",
+      "bytes": 8773,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/settings-guest-ready.png",
+      "sha256": "2f2e2b5e4155f84604eac102a8eb8f08ad42823c193eff431d3387a7d853ddb9",
+      "bytes": 264505,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/store-identity-full.ax.txt",
+      "sha256": "175493e1a378ff862a0ef613bbc32b4725f0ef05dca9999d59c1d5c74e3328a5",
+      "bytes": 5967,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/store-identity-full.png",
+      "sha256": "f4ca3330408c8293ddb3a74d7a954c1ca456e8674eccbdb724b39e06d42b4395",
+      "bytes": 152642,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/store-identity.ax.txt",
+      "sha256": "0064192320163571c67f0d9e782bd2d1539307696961e428d707365700b10d4b",
+      "bytes": 5649,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-native-20261027-raw/store-identity.png",
+      "sha256": "f4ca3330408c8293ddb3a74d7a954c1ca456e8674eccbdb724b39e06d42b4395",
+      "bytes": 152642,
+      "matches_actor": true
+    },
+    {
+      "path": "docs/stabilization/resource-journals/store577-guest-seo-links-native-20261027-0207.jsonl",
+      "sha256": "a936b48dd1e20494e0e823640dcb92ec76151039650993fa6833607c3043bc7b",
+      "bytes": 5199,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-watch-20261027-0207.py",
+      "sha256": "7279f8f39cb37e24188f050b9141869ff59b94f59bed624292b7e72874ff15e9",
+      "bytes": 3006,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-watch-20261027-0207.jsonl",
+      "sha256": "6570d5e21640cc0ec6185633a2f73c33c1c1517245ca19e75266cee9aa6c946e",
+      "bytes": 38958,
+      "matches_actor": true
+    },
+    {
+      "path": ".output/stabilization-checkpoints/store577-guest-seo-links-watch-20261027-0207-report.json",
+      "sha256": "6972114f9a34d75343bb33f48ebc5d9fcc6a65476a93f26fde902e4977ebe0bf",
+      "bytes": 844,
+      "matches_actor": true
+    }
+  ],
+  "publication": "Private report only. No inventory promotion, no product edits, no commits, no children. Owner owns publication and execution-transcript audit.",
+  "original_private_report_sha256": "942adeedbed41297d6b5c66e53747e9d8ae4bde7a7dc9499125dd500c584c1ad",
+  "reference_limits": "Mapped originals are durable; maps distinguish original and formatted hashes. Unmapped scratch logs/ZIPs/private context remain private and are not implied independently verified."
+}

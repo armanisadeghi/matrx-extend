@@ -1,0 +1,457 @@
+{
+  "schema": 1,
+  "task_id": "owner629_35b_artifact_adoption",
+  "at": "2026-10-27T03:39:56.662899+00:00",
+  "status": "PRIMARY_NATIVE_OWNER_CURRENT_ARTIFACT_VERIFIED_INDEPENDENT_REVIEW_PENDING",
+  "sourceSha": "35b619573fbddb462f046d6326084b20cf83f23c",
+  "headOriginBeforePromotionAndAfterUI": "35b619573fbddb462f046d6326084b20cf83f23c",
+  "import": {
+    "session": 71663,
+    "actualExit": 0,
+    "status": {
+      "schema_version": 1,
+      "eligibleStore": false,
+      "sourceSha": "35b619573fbddb462f046d6326084b20cf83f23c",
+      "runId": 40443458190,
+      "runAttempt": 1,
+      "artifactId": 12707143793,
+      "githubArtifactDigest": "sha256:80816dc4cb171e8ef4331d357d68ab9b50569073d80bf17b9622eadc98335bb6",
+      "treeSha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5",
+      "ciReceiptSha256": "4acd79498604e2a9dab3968214abb4c34d8b0717e7086fbfb6c87fde16bfed62",
+      "provenanceSha256": "d8933231c93bba67375d137d2b115f2668b25c5d9bb168fc21c3f36bc5ef69c8",
+      "source": {
+        "originMain": "35b619573fbddb462f046d6326084b20cf83f23c",
+        "localHead": "35b619573fbddb462f046d6326084b20cf83f23c",
+        "trackedDirty": false,
+        "untrackedRunnerInputs": [],
+        "claim": "current_pushed_source"
+      }
+    },
+    "canonicalStdout": ".output/stabilization-checkpoints/owner629-35b-import.log",
+    "archiveRetention": "Canonical importer hashes downloaded official ZIP against GitHub digest then removes temporary ZIP in finally; no archive retained, no alternate download performed. Offline original ZIP rehash unavailable. Imported tree, receipt/provenance, and official metadata retained."
+  },
+  "promotion": {
+    "session": 53988,
+    "actualExit": 0,
+    "receipt": {
+      "schema_version": 1,
+      "kind": "ci_development_test_promotion",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "observedAt": "2026-10-27T03:38:43.953Z",
+      "sourceSha": "35b619573fbddb462f046d6326084b20cf83f23c",
+      "mainSha": "35b619573fbddb462f046d6326084b20cf83f23c",
+      "compatibility": "exact-source",
+      "allowedDiffPaths": [],
+      "version": "0.2.629",
+      "runId": 40443458190,
+      "runAttempt": 1,
+      "artifactId": 12707143793,
+      "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/35b619573fbddb462f046d6326084b20cf83f23c/40443458190-1/chrome-mv3",
+      "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "treeSha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5",
+      "fileCount": 2819
+    },
+    "actualStableTreeRehashedBeforeReload": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5",
+    "actualStableTreeRehashedAfterUI": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5"
+  },
+  "officialCI": {
+    "runId": 40443458190,
+    "runAttempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40443458190",
+    "status": "completed",
+    "conclusion": "success",
+    "headSha": "35b619573fbddb462f046d6326084b20cf83f23c",
+    "artifactId": 12707143793,
+    "sizeBytes": 49833438,
+    "digest": "sha256:80816dc4cb171e8ef4331d357d68ab9b50569073d80bf17b9622eadc98335bb6",
+    "expired": false
+  },
+  "native": {
+    "actualProfilePath": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "actualAccount": "arman@armansadeghi.com",
+    "ChromeVersion": "156.0.8078.47 Official Build arm64",
+    "devId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "beforeVersion": "0.2.629",
+    "afterVersion": "0.2.629",
+    "actualManagementReload": true,
+    "ReloadedToast": true,
+    "LoadedFrom": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "enabled": true,
+    "pinned": true,
+    "StoreId": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "StoreVersion": "0.2.577",
+    "StoreSource": "Chrome Web Store",
+    "StoreOnPinned": true,
+    "GuestProfileTouched": false
+  },
+  "resource": {
+    "runId": "owner629-35b-20261027-0340",
+    "holderSession": 20831,
+    "holderPid": 33432,
+    "holderActualExit": 0,
+    "watcherSession": 10422,
+    "watcherActualExit": 0,
+    "final": {
+      "schema": 1,
+      "at": "2026-10-27T03:39:18.805Z",
+      "runId": "owner629-35b-20261027-0340",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "watcher": {
+      "runId": "owner629-35b-20261027-0340",
+      "first_read_at": "2026-10-27T03:36:48.736473Z",
+      "last_read_at": "2026-10-27T03:39:19.148271Z",
+      "actualPollCount": 76,
+      "maxGapSeconds": 2.0113883749581873,
+      "riskEvents": [],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T03:39:18.805Z",
+        "runId": "owner629-35b-20261027-0340",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/owner629-35b-20261027-0340.jsonl",
+      "audit": ".output/stabilization-checkpoints/owner629-35b-watch-20261027.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    },
+    "gateGroups": {
+      "G1": 1,
+      "G2": 4,
+      "G3": 2,
+      "G4": 4,
+      "G5": 2,
+      "G6": 4,
+      "G7": 4,
+      "G8": 3
+    },
+    "UIAPICalls": 24,
+    "ledgerContemporaneous": true,
+    "scope": "Canonical download/hash/copy light IO under admitted maintenance permit; no run-mode arbitrary heavy command admission claimed."
+  },
+  "sourceEligibility": {
+    "preReload": {
+      "originMain": "35b619573fbddb462f046d6326084b20cf83f23c",
+      "localHead": "35b619573fbddb462f046d6326084b20cf83f23c",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "current_pushed_source"
+    },
+    "postUI": {
+      "originMain": "35b619573fbddb462f046d6326084b20cf83f23c",
+      "localHead": "35b619573fbddb462f046d6326084b20cf83f23c",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "current_pushed_source"
+    }
+  },
+  "cleanup": {
+    "at": "2026-10-27T03:39:13.402Z",
+    "ownedMaintenanceTabClosed": true,
+    "originalOwnerWindow": true,
+    "selectedTabCount": 1,
+    "originalSelectedTabRestored": true,
+    "focusReturnedToOriginalContent": true,
+    "devToolbarPinned": true,
+    "storeToolbarPinned": true,
+    "privateBodyOrUrlSaved": false,
+    "allOwnProcessesTerminal": true,
+    "heavyLeaseAbsent": true,
+    "macSlotReleasedAt": "2026-10-27T03:39:19.148271Z",
+    "ownedRemainingHandles": []
+  },
+  "evidence": {
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-before-original.png": {
+      "sha256": "bf7d3e256eec9a575c777916a711d876a5c4a76906134c5d9d01a172f8a3303c",
+      "bytes": 159952
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/original-structure.json": {
+      "sha256": "fbdba7e4b1dd75059940d453a1563dd01ba706a2ab6ca60f1c2096fc75134b31",
+      "bytes": 252
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-after-original.ax.txt": {
+      "sha256": "957fcfc8e910e75dc9828f98af4ca16a5d9b53ee0cb80fcf007d685278b7e835",
+      "bytes": 6287
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/api-ledger.jsonl": {
+      "sha256": "b8acc20b6f16fe213325616668bdbc318355b6c104b6892bc39eed7c7caaa299",
+      "bytes": 11652
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/cleanup.json": {
+      "sha256": "bba335645f1767fd91befb13c1925aa7fa91263c90eb3c48b6d4f55023153853",
+      "bytes": 304
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/owner-account-original.ax.txt": {
+      "sha256": "9f473e3616d9a009ab2eb69b067db97626f9521abdb12f462e60f9d0f027a430",
+      "bytes": 1457
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/profile-version-original.ax.txt": {
+      "sha256": "e2ab9ea489e60274b00273b153d45b581d8d813b792d0d4f619cfe509b95df4c",
+      "bytes": 6765
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/store-preserved-original.png": {
+      "sha256": "ce6be245e3e19e1f0c369ff18b0e7e9677e6919fe33dde935f2b4af86fffeb60",
+      "bytes": 159577
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-before-original.ax.txt": {
+      "sha256": "71564ef4fb3d8e921dcd980c09de74962b937411a4410186636aeeefccb74298",
+      "bytes": 6258
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-prereload-original.ax.txt": {
+      "sha256": "71564ef4fb3d8e921dcd980c09de74962b937411a4410186636aeeefccb74298",
+      "bytes": 6258
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-after-original.png": {
+      "sha256": "f0f024a7fa667917f87ac183fba6d48a97e95f5412ded9d2a509ac4d41651d2f",
+      "bytes": 162101
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/store-preserved-original.ax.txt": {
+      "sha256": "1e626dfb38a2589bf3eea864603321637f3236b845d607260b020b63a728fc32",
+      "bytes": 6035
+    },
+    ".output/stabilization-checkpoints/owner629-35b-promotion.log": {
+      "sha256": "acfbd7267711a7dba0c084d0555fd5b59e33357b5c95e95faea53b8d37395d7e",
+      "bytes": 191
+    },
+    ".output/stabilization-checkpoints/owner629-35b-provenance.json": {
+      "sha256": "d8933231c93bba67375d137d2b115f2668b25c5d9bb168fc21c3f36bc5ef69c8",
+      "bytes": 527
+    },
+    ".output/stabilization-checkpoints/owner629-35b-watch-20261027.jsonl": {
+      "sha256": "2ba2bc2d4baf847dd4249b75a1d3a8a9ebb6d67916073552796405989be7f2de",
+      "bytes": 24265
+    },
+    ".output/stabilization-checkpoints/owner629-35b-import-status.json": {
+      "sha256": "7ce296b42812c4c49d7714d0161a324309ee32172fa1bb50e9a16bf7272a718c",
+      "bytes": 786
+    },
+    ".output/stabilization-checkpoints/owner629-35b-prereload.json": {
+      "sha256": "1a05e78a0e52aafc02d147d0df7b1b030b5cfc7990113d6159857e23060089e4",
+      "bytes": 1804
+    },
+    ".output/stabilization-checkpoints/owner629-35b-official-ci.json": {
+      "sha256": "23894f5677bb3714e4f9d2880574c82ba763e0b95070e802fb6b7fbe1a7e342c",
+      "bytes": 12790
+    },
+    ".output/stabilization-checkpoints/owner629-35b-promotion-receipt.json": {
+      "sha256": "820304674d6570c6351fbf34d816ea4a3f653473655037ea1b5e1c45d57c8668",
+      "bytes": 785
+    },
+    ".output/stabilization-checkpoints/owner629-35b-watch-20261027-report.json": {
+      "sha256": "3850a433614000fab1d7ca0c0929cc7e84d6bc1c4b3f45cf9d787ea037d6ec77",
+      "bytes": 770
+    },
+    ".output/stabilization-checkpoints/owner629-35b-watch-20261027.py": {
+      "sha256": "c43bb2e3769a3ff52d82f4f152265a0c9c818cde1e53d08bde6e72bab623a621",
+      "bytes": 2953
+    },
+    ".output/stabilization-checkpoints/owner629-35b-postui.json": {
+      "sha256": "3da7edcfd39addf8e9e07e4b2e53c29b1c7da5126355b4dc3ea40c97173e7c16",
+      "bytes": 967
+    },
+    ".output/stabilization-checkpoints/owner629-35b-ci-receipt.json": {
+      "sha256": "4acd79498604e2a9dab3968214abb4c34d8b0717e7086fbfb6c87fde16bfed62",
+      "bytes": 330
+    },
+    ".output/stabilization-checkpoints/owner629-35b-local-dev-receipt.json": {
+      "sha256": "000f2fd51161a1c625e98ff317c3f3847f3e8ef89e610ed28751201350a7a655",
+      "bytes": 397
+    },
+    ".output/stabilization-checkpoints/owner629-35b-import.log": {
+      "sha256": "2e67e2af1fa11993a26e224dc20630534c73b8ecda0b1f01472ac5971523017f",
+      "bytes": 167
+    },
+    ".output/stabilization-checkpoints/owner629-35b-official-artifact.json": {
+      "sha256": "322d751275040d72527c88f8d6004c1006d8d4bcddf25a75f8b7f749b6bbedaf",
+      "bytes": 766
+    },
+    "docs/stabilization/resource-journals/owner629-35b-20261027-0340.jsonl": {
+      "sha256": "1d2ce90de89ebb2f50763d701e964c9b9a53327c717c2152ed5e35d485a92454",
+      "bytes": 2820
+    }
+  },
+  "limits": [
+    "Initial getApp automatically emitted private Vault AX to tool context; original private body and screenshot never persisted.",
+    "Original/cleanup private page AX discarded; only structural metadata retained.",
+    "Same version update proven by official artifact provenance, changed stable tree and actual native management Reload toast; native Chrome does not display source SHA.",
+    "No backend metadata bracket collected; no runtime/backend health or product behavior proof claimed.",
+    "No Guest acceptance, authentication/storage changes, AI/product write, build, release, version bump, dispatch or code execution from downloaded artifact.",
+    "Independent review pending; parent owns sanitized publication."
+  ],
+  "commits": "none; completed owned resource journal retained untracked for parent",
+  "next": "Parent independently inspect original ledger/AX/screenshots and publish sanitized evidence.",
+  "original_private_report_sha256": "9eed206a794bd56c21598d7066994ac12877d103aff6f8920ed6997642c51bf6",
+  "durable_evidence_map": {
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-before-original.png": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/dev-before-original.png",
+      "original_sha256": "bf7d3e256eec9a575c777916a711d876a5c4a76906134c5d9d01a172f8a3303c",
+      "sha256": "bf7d3e256eec9a575c777916a711d876a5c4a76906134c5d9d01a172f8a3303c",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/original-structure.json": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/original-structure.json",
+      "original_sha256": "fbdba7e4b1dd75059940d453a1563dd01ba706a2ab6ca60f1c2096fc75134b31",
+      "sha256": "bea28dd799fe506f74b6207bbe69db4f5d359e12ebfc9a8c3d3c951ebc540350",
+      "transform": "Biome formatting only; JSON values unchanged"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-after-original.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/dev-after-original.ax.txt",
+      "original_sha256": "957fcfc8e910e75dc9828f98af4ca16a5d9b53ee0cb80fcf007d685278b7e835",
+      "sha256": "957fcfc8e910e75dc9828f98af4ca16a5d9b53ee0cb80fcf007d685278b7e835",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/api-ledger.jsonl": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/api-ledger.jsonl",
+      "original_sha256": "b8acc20b6f16fe213325616668bdbc318355b6c104b6892bc39eed7c7caaa299",
+      "sha256": "b8acc20b6f16fe213325616668bdbc318355b6c104b6892bc39eed7c7caaa299",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/cleanup.json": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/cleanup.json",
+      "original_sha256": "bba335645f1767fd91befb13c1925aa7fa91263c90eb3c48b6d4f55023153853",
+      "sha256": "ac94a22d6520fe7c0ff61eb357fb664b4a7f104811b62db4881c952ecad2bef6",
+      "transform": "Biome formatting only; JSON values unchanged"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/owner-account-original.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner-account-original.ax.txt",
+      "original_sha256": "9f473e3616d9a009ab2eb69b067db97626f9521abdb12f462e60f9d0f027a430",
+      "sha256": "9f473e3616d9a009ab2eb69b067db97626f9521abdb12f462e60f9d0f027a430",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/profile-version-original.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/profile-version-original.ax.txt",
+      "original_sha256": "e2ab9ea489e60274b00273b153d45b581d8d813b792d0d4f619cfe509b95df4c",
+      "sha256": "e2ab9ea489e60274b00273b153d45b581d8d813b792d0d4f619cfe509b95df4c",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/store-preserved-original.png": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/store-preserved-original.png",
+      "original_sha256": "ce6be245e3e19e1f0c369ff18b0e7e9677e6919fe33dde935f2b4af86fffeb60",
+      "sha256": "ce6be245e3e19e1f0c369ff18b0e7e9677e6919fe33dde935f2b4af86fffeb60",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-before-original.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/dev-before-original.ax.txt",
+      "original_sha256": "71564ef4fb3d8e921dcd980c09de74962b937411a4410186636aeeefccb74298",
+      "sha256": "71564ef4fb3d8e921dcd980c09de74962b937411a4410186636aeeefccb74298",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-prereload-original.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/dev-prereload-original.ax.txt",
+      "original_sha256": "71564ef4fb3d8e921dcd980c09de74962b937411a4410186636aeeefccb74298",
+      "sha256": "71564ef4fb3d8e921dcd980c09de74962b937411a4410186636aeeefccb74298",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/dev-after-original.png": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/dev-after-original.png",
+      "original_sha256": "f0f024a7fa667917f87ac183fba6d48a97e95f5412ded9d2a509ac4d41651d2f",
+      "sha256": "f0f024a7fa667917f87ac183fba6d48a97e95f5412ded9d2a509ac4d41651d2f",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-native/store-preserved-original.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/store-preserved-original.ax.txt",
+      "original_sha256": "1e626dfb38a2589bf3eea864603321637f3236b845d607260b020b63a728fc32",
+      "sha256": "1e626dfb38a2589bf3eea864603321637f3236b845d607260b020b63a728fc32",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-promotion.log": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-promotion.log",
+      "original_sha256": "acfbd7267711a7dba0c084d0555fd5b59e33357b5c95e95faea53b8d37395d7e",
+      "sha256": "acfbd7267711a7dba0c084d0555fd5b59e33357b5c95e95faea53b8d37395d7e",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-provenance.json": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-provenance.json",
+      "original_sha256": "d8933231c93bba67375d137d2b115f2668b25c5d9bb168fc21c3f36bc5ef69c8",
+      "sha256": "d8933231c93bba67375d137d2b115f2668b25c5d9bb168fc21c3f36bc5ef69c8",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-watch-20261027.jsonl": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-watch-20261027.jsonl",
+      "original_sha256": "2ba2bc2d4baf847dd4249b75a1d3a8a9ebb6d67916073552796405989be7f2de",
+      "sha256": "2ba2bc2d4baf847dd4249b75a1d3a8a9ebb6d67916073552796405989be7f2de",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-import-status.json": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-import-status.json",
+      "original_sha256": "7ce296b42812c4c49d7714d0161a324309ee32172fa1bb50e9a16bf7272a718c",
+      "sha256": "7ce296b42812c4c49d7714d0161a324309ee32172fa1bb50e9a16bf7272a718c",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-prereload.json": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-prereload.json",
+      "original_sha256": "1a05e78a0e52aafc02d147d0df7b1b030b5cfc7990113d6159857e23060089e4",
+      "sha256": "68631ab6ea696c94caba86c2c23415a71258e1d61de27374c014b8d6d3098ac8",
+      "transform": "Biome formatting only; JSON values unchanged"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-official-ci.json": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-official-ci.json",
+      "original_sha256": "23894f5677bb3714e4f9d2880574c82ba763e0b95070e802fb6b7fbe1a7e342c",
+      "sha256": "f2873a6e8419769adae1e4c61c3c36de65afe14ee2a5747474289b9a95269949",
+      "transform": "Biome formatting only; JSON values unchanged"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-promotion-receipt.json": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-promotion-receipt.json",
+      "original_sha256": "820304674d6570c6351fbf34d816ea4a3f653473655037ea1b5e1c45d57c8668",
+      "sha256": "820304674d6570c6351fbf34d816ea4a3f653473655037ea1b5e1c45d57c8668",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-watch-20261027-report.json": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-watch-20261027-report.json",
+      "original_sha256": "3850a433614000fab1d7ca0c0929cc7e84d6bc1c4b3f45cf9d787ea037d6ec77",
+      "sha256": "3850a433614000fab1d7ca0c0929cc7e84d6bc1c4b3f45cf9d787ea037d6ec77",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-watch-20261027.py": {
+      "original_sha256": "c43bb2e3769a3ff52d82f4f152265a0c9c818cde1e53d08bde6e72bab623a621",
+      "durable": null,
+      "reason": "Private operator watcher template; actual watcher audit and report retained."
+    },
+    ".output/stabilization-checkpoints/owner629-35b-postui.json": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-postui.json",
+      "original_sha256": "3da7edcfd39addf8e9e07e4b2e53c29b1c7da5126355b4dc3ea40c97173e7c16",
+      "sha256": "ef58f772eae96fd6f61866ea0e15bc16ae092c986e4e22c2b1c85f7a6e02693c",
+      "transform": "Biome formatting only; JSON values unchanged"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-ci-receipt.json": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-ci-receipt.json",
+      "original_sha256": "4acd79498604e2a9dab3968214abb4c34d8b0717e7086fbfb6c87fde16bfed62",
+      "sha256": "4acd79498604e2a9dab3968214abb4c34d8b0717e7086fbfb6c87fde16bfed62",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-local-dev-receipt.json": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-local-dev-receipt.json",
+      "original_sha256": "000f2fd51161a1c625e98ff317c3f3847f3e8ef89e610ed28751201350a7a655",
+      "sha256": "000f2fd51161a1c625e98ff317c3f3847f3e8ef89e610ed28751201350a7a655",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-import.log": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-import.log",
+      "original_sha256": "2e67e2af1fa11993a26e224dc20630534c73b8ecda0b1f01472ac5971523017f",
+      "sha256": "2e67e2af1fa11993a26e224dc20630534c73b8ecda0b1f01472ac5971523017f",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner629-35b-official-artifact.json": {
+      "durable": "docs/stabilization/evidence/owner629-35b-20261027/owner629-35b-official-artifact.json",
+      "original_sha256": "322d751275040d72527c88f8d6004c1006d8d4bcddf25a75f8b7f749b6bbedaf",
+      "sha256": "e68307650746dcd4929118a763439d77bb9c9eb37d00bb47348198eccfd39db2",
+      "transform": "Biome formatting only; JSON values unchanged"
+    },
+    "docs/stabilization/resource-journals/owner629-35b-20261027-0340.jsonl": {
+      "durable": "docs/stabilization/resource-journals/owner629-35b-20261027-0340.jsonl",
+      "original_sha256": "1d2ce90de89ebb2f50763d701e964c9b9a53327c717c2152ed5e35d485a92454",
+      "sha256": "1d2ce90de89ebb2f50763d701e964c9b9a53327c717c2152ed5e35d485a92454",
+      "transform": "original bytes"
+    }
+  },
+  "reference_limits": "Mapped originals are durable; maps distinguish original and formatted hashes. Unmapped scratch logs/ZIPs/private context remain private and are not implied independently verified.",
+  "parent_adjudication": "Bounded actual owner maintenance accepted; original ZIP offline rehash unavailable. Canonical verification receipts, official metadata where retained, independent imported/stable tree hashes and actual Reload/path/ID/pins support this scope. No product, Store, or Guest runtime acceptance."
+}

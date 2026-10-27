@@ -1,0 +1,2299 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T04:07:15.817206+00:00",
+  "status": "REVIEW_COMPLETE_DIAGNOSTIC_SUPPORTED_CAUSE_AND_PRODUCT_GATES_OPEN",
+  "reviewer": "/root/startup35b_matched_evidence_peer",
+  "zeroAuthorship": true,
+  "rawEvidenceReadBeforeCollector": true,
+  "scope": "Offline artifact/source review only; no API, browser/UI session, tests, heavy work, source edits, commits, or children.",
+  "verdictA_behaviorSpec": {
+    "verdict": "PASS_BOUNDED_DIAGNOSTIC_ONLY",
+    "officialRun": 40446409519,
+    "attempt": 1,
+    "jobId": 121998655535,
+    "conclusion": "success",
+    "productCredit": 0,
+    "basis": "Original diagnostic reports completedAt, observed headed via Browser.getBrowserCommandLine, native panel reached; three raw journals end valid/resourceInvalid false/exit0. Same source/build can connect. Neither product assertion nor startup cause repaired is established."
+  },
+  "verdictB_provenanceQuality": {
+    "verdict": "PASS_ARTIFACT_INTEGRITY_WITH_EXPLICIT_OBSERVER_DEVIATION_AND_COVERAGE_GAPS",
+    "originalBRun": 40444784947,
+    "originalBConclusion": "failure",
+    "originalBJob": 121993358455,
+    "originalBResourceFinal": "child_failed / resourceInvalid false / exit1",
+    "finding": "A/B source and imported build match; raw hashes and final decisions support bounded collector conclusions. First poll completion gap misses requested 65s; collector records it honestly. No basis for D298/D254/D231 or product closure from this pair."
+  },
+  "provenance": {
+    "sourceSha": "35b619573fbddb462f046d6326084b20cf83f23c",
+    "developmentRun": 40443458190,
+    "developmentAttempt": 1,
+    "developmentArtifact": 12707143793,
+    "developmentDigestFromSavedOfficialMetadata": "sha256:80816dc4cb171e8ef4331d357d68ab9b50569073d80bf17b9622eadc98335bb6",
+    "developmentVersion": "0.2.629",
+    "importedTreeSha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5",
+    "basis": "Saved official CI run/artifact metadata, A dispatch receipt, A/B raw logs PREPARED_DEVELOPMENT and raw diagnostic/native imported receipt agree. Development ZIP was not independently redownloaded/rehashed in this review.",
+    "AArtifact": 12708597651,
+    "AOfficialDigestMatched": true,
+    "inputs": {
+      "lane": "A",
+      "acceptanceCase": "startup-resource-diagnostic",
+      "displayMode": "headed",
+      "runnerLabel": "macos-15-intel",
+      "scrapeAuthMode": "guest",
+      "developmentRunId": 40443458190,
+      "developmentArtifactId": 12707143793,
+      "developmentArtifactDigest": "sha256:80816dc4cb171e8ef4331d357d68ab9b50569073d80bf17b9622eadc98335bb6",
+      "developmentVersion": "0.2.629",
+      "provenance": [
+        "parent dispatch receipt",
+        ".output/stabilization-checkpoints/startup-35b-matched/job.log"
+      ],
+      "developmentDigestVersionBasis": "Prior official CI metadata and imported receipt captured by parent/B collector; not a newly downloaded development archive in this lane."
+    },
+    "sourceHashChecks": [
+      {
+        "path": ".github/workflows/hosted-guest-acceptance.yml",
+        "computedSha256BySource": {
+          "9e4e6ca65c3dd84146607c3d88903931723e4154": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+          "35b619573fbddb462f046d6326084b20cf83f23c": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596"
+        },
+        "matchesDiagnosis": true,
+        "identical": true
+      },
+      {
+        "path": "scripts/hosted-guest-acceptance.mjs",
+        "computedSha256BySource": {
+          "9e4e6ca65c3dd84146607c3d88903931723e4154": "5116b5781ee2431048be0e97a09b12acc67d70753f27d3bc4df826e500e54a8e",
+          "35b619573fbddb462f046d6326084b20cf83f23c": "5116b5781ee2431048be0e97a09b12acc67d70753f27d3bc4df826e500e54a8e"
+        },
+        "matchesDiagnosis": true,
+        "identical": true
+      },
+      {
+        "path": "scripts/hosted-startup-interval-diagnostic.mjs",
+        "computedSha256BySource": {
+          "9e4e6ca65c3dd84146607c3d88903931723e4154": "978390fe5f139fb0be0081248c146bd64636211caa37cf6dd665eeaeacce6c55",
+          "35b619573fbddb462f046d6326084b20cf83f23c": "978390fe5f139fb0be0081248c146bd64636211caa37cf6dd665eeaeacce6c55"
+        },
+        "matchesDiagnosis": true,
+        "identical": true
+      },
+      {
+        "path": "scripts/hosted-remote-admission.mjs",
+        "computedSha256BySource": {
+          "9e4e6ca65c3dd84146607c3d88903931723e4154": "08b192f12c00c70f5602a5340c7d9c736f0aade52ebe4cded32208d0078de9e1",
+          "35b619573fbddb462f046d6326084b20cf83f23c": "08b192f12c00c70f5602a5340c7d9c736f0aade52ebe4cded32208d0078de9e1"
+        },
+        "matchesDiagnosis": true,
+        "identical": true
+      },
+      {
+        "path": "tests/browser/native-sidepanel-qa-harness.mjs",
+        "computedSha256BySource": {
+          "9e4e6ca65c3dd84146607c3d88903931723e4154": "05c26eb45aba1d55087fb889e1fb5ea9143cca24ff33e17810646a2610af827f",
+          "35b619573fbddb462f046d6326084b20cf83f23c": "05c26eb45aba1d55087fb889e1fb5ea9143cca24ff33e17810646a2610af827f"
+        },
+        "matchesDiagnosis": true,
+        "identical": true
+      },
+      {
+        "path": "tests/browser/native-cdp-startup-diagnostic.mjs",
+        "computedSha256BySource": {
+          "9e4e6ca65c3dd84146607c3d88903931723e4154": "2795a56dd7162c99c8200ca38693cdec69ab925fe976dc2eae1744b570bf1290",
+          "35b619573fbddb462f046d6326084b20cf83f23c": "2795a56dd7162c99c8200ca38693cdec69ab925fe976dc2eae1744b570bf1290"
+        },
+        "matchesDiagnosis": true,
+        "identical": true
+      },
+      {
+        "path": "tests/browser/vault-owned-cdp.cjs",
+        "computedSha256BySource": {
+          "9e4e6ca65c3dd84146607c3d88903931723e4154": "4a8ab7180b966fccfbfa06ab03f4357f2b6e3a3ffbae48aae07501ae1bd71bd7",
+          "35b619573fbddb462f046d6326084b20cf83f23c": "4a8ab7180b966fccfbfa06ab03f4357f2b6e3a3ffbae48aae07501ae1bd71bd7"
+        },
+        "matchesDiagnosis": true,
+        "identical": true
+      },
+      {
+        "path": "tests/browser/scrape-seo-schema-empty-guest.mjs",
+        "computedSha256BySource": {
+          "9e4e6ca65c3dd84146607c3d88903931723e4154": "8b497c03a5abdc248eb745e608405fcefae905b1e7a47cb7cbdc158726360732",
+          "35b619573fbddb462f046d6326084b20cf83f23c": "8b497c03a5abdc248eb745e608405fcefae905b1e7a47cb7cbdc158726360732"
+        },
+        "matchesDiagnosis": true,
+        "identical": true
+      },
+      {
+        "path": "scripts/startup-process-interval.mjs",
+        "computedSha256BySource": {
+          "9e4e6ca65c3dd84146607c3d88903931723e4154": "74a8eb42354f3eee04d9ddfec192d037625a4ef7257e4a58789d884cea615d71",
+          "35b619573fbddb462f046d6326084b20cf83f23c": "74a8eb42354f3eee04d9ddfec192d037625a4ef7257e4a58789d884cea615d71"
+        },
+        "matchesDiagnosis": true,
+        "identical": true
+      },
+      {
+        "path": "docs/stabilization/resource-policy.json",
+        "computedSha256BySource": {
+          "9e4e6ca65c3dd84146607c3d88903931723e4154": "8ab675504bc46198109169ccc4cfc4970a30a0db11a069ec4f44d6e22a772afe",
+          "35b619573fbddb462f046d6326084b20cf83f23c": "8ab675504bc46198109169ccc4cfc4970a30a0db11a069ec4f44d6e22a772afe"
+        },
+        "matchesDiagnosis": true,
+        "identical": true
+      }
+    ]
+  },
+  "integrity": {
+    "A": {
+      "zipPath": ".output/stabilization-checkpoints/startup-35b-matched/artifact.zip",
+      "zipSha256": "fbc9cbb385ee1f55ca76485c1013c83835a635c69b48830845069db29a1990b1",
+      "members": [
+        {
+          "member": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40446409519-1.jsonl",
+          "bytes": 988,
+          "sha256": "40df99206753cf2fe87aa4325af8ac1095fc3ea0d5117b50de01d73e2144658e",
+          "matchesExtracted": true
+        },
+        {
+          "member": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40446409519-1.jsonl",
+          "bytes": 991,
+          "sha256": "275fcfcff79babf25ecbc481dc313b22b47094f4749329234047fb14463aa4d9",
+          "matchesExtracted": true
+        },
+        {
+          "member": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-startup-40446409519-1.jsonl",
+          "bytes": 27046,
+          "sha256": "797dcb3b7ea555dbfc14110360fb2b4972f889da57ea6844338df0ca6420fc2b",
+          "matchesExtracted": true
+        },
+        {
+          "member": "_temp/guest-acceptance/native-sidepanel-qa-5Ikbu2/native-side-panel.png",
+          "bytes": 5753,
+          "sha256": "58f686cabb48c02aa27aae89dd26810d430e8dda142040c2df7d53d6de931a6e",
+          "matchesExtracted": true
+        },
+        {
+          "member": "_temp/guest-acceptance/native-sidepanel-qa-5Ikbu2/normal-target-after-open.png",
+          "bytes": 36718,
+          "sha256": "fb1191c2cbd2a6e88c3d4e9a167c3c6cd55f39a2c7e75f7022ead9e929b4263d",
+          "matchesExtracted": true
+        },
+        {
+          "member": "_temp/guest-acceptance/startup-interval-diagnostic.json",
+          "bytes": 3459,
+          "sha256": "e2dd327ee336853661c720f386ba2bbebc5be419934eb67bbf8c17268b02cccf",
+          "matchesExtracted": true
+        }
+      ]
+    },
+    "B": {
+      "zipPath": ".output/stabilization-checkpoints/scrape-b-35b/artifact.zip",
+      "zipSha256": "fa77f47a1bb561c42444bab56f09240b02dc644e5eb38051234e5de01270198a",
+      "members": [
+        {
+          "member": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40444784947-1.jsonl",
+          "bytes": 993,
+          "sha256": "c38a512c28ca397134d39e9da18530236e2edd33362563c9caea7d1811966428",
+          "matchesExtracted": true
+        },
+        {
+          "member": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40444784947-1.jsonl",
+          "bytes": 989,
+          "sha256": "218ddd0cfd6791d0de8466b12aaf5facfd30573967ffc5cb679451ba99d55cdf",
+          "matchesExtracted": true
+        },
+        {
+          "member": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40444784947-1.jsonl",
+          "bytes": 1825,
+          "sha256": "7be5da06a7d71c1755b77b6742f93921991216ef169ec641992d5fcfa4e2b40c",
+          "matchesExtracted": true
+        },
+        {
+          "member": "matrx-extend/matrx-extend/test-results/scrape-seo-schema-empty-guest-native.json",
+          "bytes": 1592,
+          "sha256": "3255f874b80b1cc2b091c4101bfd2c4199bcea2cf294c827431053d8e64db5ce",
+          "matchesExtracted": true
+        }
+      ]
+    },
+    "ARecordedRawFileChecks": [
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/artifact.zip",
+        "bytes": 42944,
+        "sha256": "fbc9cbb385ee1f55ca76485c1013c83835a635c69b48830845069db29a1990b1",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/artifacts.json",
+        "bytes": 737,
+        "sha256": "5b48ece976df180456295c83e1cb4b3fd548c48ff00335debc1e66b5842ce539",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/job.log",
+        "bytes": 160398,
+        "sha256": "f446381baf06618145796c39925cf3a9607bedba1fceb2478c1cb1c82fb9b858",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/jobs-0356.json",
+        "bytes": 4295,
+        "sha256": "1e65333b0836a585450ad8fa2b1da58aa6e062b3b8c758067732e8293dd102cf",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/jobs.json",
+        "bytes": 4620,
+        "sha256": "e8be3a7cf4bcb5419c18a9b5cd2861933bfd13fa969be7e1aae21f45bdb80463",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/log-markers.json",
+        "bytes": 35687,
+        "sha256": "a437ad091deb0f3a28c584887db5dc81a30938a284d053d1826910014577ee87",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/raw/_temp/guest-acceptance/native-sidepanel-qa-5Ikbu2/native-side-panel.png",
+        "bytes": 5753,
+        "sha256": "58f686cabb48c02aa27aae89dd26810d430e8dda142040c2df7d53d6de931a6e",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/raw/_temp/guest-acceptance/native-sidepanel-qa-5Ikbu2/normal-target-after-open.png",
+        "bytes": 36718,
+        "sha256": "fb1191c2cbd2a6e88c3d4e9a167c3c6cd55f39a2c7e75f7022ead9e929b4263d",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/raw/_temp/guest-acceptance/startup-interval-diagnostic.json",
+        "bytes": 3459,
+        "sha256": "e2dd327ee336853661c720f386ba2bbebc5be419934eb67bbf8c17268b02cccf",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40446409519-1.jsonl",
+        "bytes": 991,
+        "sha256": "275fcfcff79babf25ecbc481dc313b22b47094f4749329234047fb14463aa4d9",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40446409519-1.jsonl",
+        "bytes": 988,
+        "sha256": "40df99206753cf2fe87aa4325af8ac1095fc3ea0d5117b50de01d73e2144658e",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-startup-40446409519-1.jsonl",
+        "bytes": 27046,
+        "sha256": "797dcb3b7ea555dbfc14110360fb2b4972f889da57ea6844338df0ca6420fc2b",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/run-0353.json",
+        "bytes": 12946,
+        "sha256": "9aa5d8f0537f4a05b1edbbd7c9eccdae5e36089db33a4214588c3716902496d6",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/run-0354.json",
+        "bytes": 12946,
+        "sha256": "9aa5d8f0537f4a05b1edbbd7c9eccdae5e36089db33a4214588c3716902496d6",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/run-0355.json",
+        "bytes": 12946,
+        "sha256": "9aa5d8f0537f4a05b1edbbd7c9eccdae5e36089db33a4214588c3716902496d6",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/run-0357.json",
+        "bytes": 12946,
+        "sha256": "9aa5d8f0537f4a05b1edbbd7c9eccdae5e36089db33a4214588c3716902496d6",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/run-0359.json",
+        "bytes": 12949,
+        "sha256": "1881e8c114180a517b596ee0f5433f3d3fe3936772e9e2d76ae1b5c73e67d608",
+        "matchesRecorded": true
+      }
+    ],
+    "BRecordedRawFileChecks": [
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/job.log",
+        "bytes": 174453,
+        "sha256": "ff91c739fe8bb0c00dd549fc0206a2d42308c30c25ba5b2102527f763d9b3fcb",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/normal-verifier.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/development-run.json",
+        "bytes": 12790,
+        "sha256": "23894f5677bb3714e4f9d2880574c82ba763e0b95070e802fb6b7fbe1a7e342c",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/development-artifact.json",
+        "bytes": 766,
+        "sha256": "322d751275040d72527c88f8d6004c1006d8d4bcddf25a75f8b7f749b6bbedaf",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/watch.txt",
+        "bytes": 5906,
+        "sha256": "8ea97e2dce45f9257cbe795473742b5dd2316261e93ad628446c5fb16a7b7595",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/artifact-download.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/normal-verifier.stderr",
+        "bytes": 48,
+        "sha256": "f481b929f84a8539d04908b49db8a50fbdb13dfcd1594416fdc563507ae75881",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/artifact.zip",
+        "bytes": 3243,
+        "sha256": "fa77f47a1bb561c42444bab56f09240b02dc644e5eb38051234e5de01270198a",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/artifacts.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/development-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/watch.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/jobs.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/job-log.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/run.json",
+        "bytes": 12943,
+        "sha256": "498b475bc0e3964041a2cec654d2837454a8ee7bfd367eeeabb744a8b76b7fb3",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/jobs.json",
+        "bytes": 4617,
+        "sha256": "ced6ac4767f5d586416ff0c2d1593f6e98b494c19dfedb0223d40290dd4c15a3",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/development-artifact.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/artifacts.json",
+        "bytes": 736,
+        "sha256": "9d66291aa26b9b894263aeed4be8af8e465d03f693ce4733578fae426c842a33",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/test-results/scrape-seo-schema-empty-guest-native.json",
+        "bytes": 1592,
+        "sha256": "3255f874b80b1cc2b091c4101bfd2c4199bcea2cf294c827431053d8e64db5ce",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40444784947-1.jsonl",
+        "bytes": 993,
+        "sha256": "c38a512c28ca397134d39e9da18530236e2edd33362563c9caea7d1811966428",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40444784947-1.jsonl",
+        "bytes": 1825,
+        "sha256": "7be5da06a7d71c1755b77b6742f93921991216ef169ec641992d5fcfa4e2b40c",
+        "matchesRecorded": true
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40444784947-1.jsonl",
+        "bytes": 989,
+        "sha256": "218ddd0cfd6791d0de8466b12aaf5facfd30573967ffc5cb679451ba99d55cdf",
+        "matchesRecorded": true
+      }
+    ],
+    "reviewInputHashes": [
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched-20261027.json",
+        "sha256": "4562c820c1655b33dc1df1f5553f1019b59ccd068cb83a34347daa4ab1914a13"
+      },
+      {
+        "path": ".output/stabilization-checkpoints/scrape-b-35b-native-20261027.json",
+        "sha256": "9c882ad2e830417f65f8ca857c177e64663d62c585f748f83406a04ea1944347"
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-a-b-boundary-diagnosis-20261027.json",
+        "sha256": "4490363aa8af74ae104e172960b7b5f3c7dd7ba5db9a52ee7aae46d153ad88fe"
+      }
+    ]
+  },
+  "chronology": [
+    {
+      "at": "2026-10-27T03:51:43.938Z",
+      "code": "RESOURCE_JOURNAL_OPENED",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:52:51.812Z",
+      "code": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "cpuBusyFraction": 0.055714285714285716
+    },
+    {
+      "at": "2026-10-27T03:52:54.734Z",
+      "code": "RESOURCE_JOB_EXIT",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:52:54.851Z",
+      "code": "RESOURCE_FINAL_DECISION",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:53:28.405Z",
+      "code": "RESOURCE_JOURNAL_OPENED",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:54:36.471Z",
+      "code": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "cpuBusyFraction": 0.0642857142857143
+    },
+    {
+      "at": "2026-10-27T03:54:50.988Z",
+      "code": "RESOURCE_JOB_EXIT",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:54:51.284Z",
+      "code": "RESOURCE_FINAL_DECISION",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:55:24.856Z",
+      "code": "RESOURCE_JOURNAL_OPENED",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:56:32.600Z",
+      "code": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "cpuBusyFraction": 0.03571428571428571
+    },
+    {
+      "at": "2026-10-27T03:56:48.809Z",
+      "code": "RESOURCE_WATCH_HEALTHY",
+      "reasons": [],
+      "cpuBusyFraction": 0.47
+    },
+    {
+      "at": "2026-10-27T03:56:48.889Z",
+      "code": "RESOURCE_STARTUP_INTERVAL_BRACKET",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:56:56.663Z",
+      "stage": "receipt"
+    },
+    {
+      "at": "2026-10-27T03:56:56.665Z",
+      "stage": "artifact_verify"
+    },
+    {
+      "at": "2026-10-27T03:56:57.398Z",
+      "stage": "browser_runtime"
+    },
+    {
+      "at": "2026-10-27T03:56:57.411Z",
+      "stage": "profile_prepare"
+    },
+    {
+      "at": "2026-10-27T03:56:57.453Z",
+      "stage": "browser_spawn"
+    },
+    {
+      "at": "2026-10-27T03:56:57.460Z",
+      "stage": "cdp_connect"
+    },
+    {
+      "at": "2026-10-27T03:57:05.304Z",
+      "code": "RESOURCE_CPU_PENDING",
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+      "cpuBusyFraction": 0.96
+    },
+    {
+      "at": "2026-10-27T03:57:05.311Z",
+      "code": "RESOURCE_STARTUP_INTERVAL_BRACKET",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:57:05.378Z",
+      "code": "RESOURCE_PROCESS_ATTRIBUTION",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:57:07.700Z",
+      "stage": "endpoint_read"
+    },
+    {
+      "at": "2026-10-27T03:57:07.703Z",
+      "stage": "command_line_query"
+    },
+    {
+      "at": "2026-10-27T03:57:21.472Z",
+      "code": "RESOURCE_CPU_PENDING",
+      "reasons": [],
+      "cpuBusyFraction": 0.01
+    },
+    {
+      "at": "2026-10-27T03:57:21.475Z",
+      "code": "RESOURCE_STARTUP_INTERVAL_BRACKET",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:57:37.619Z",
+      "code": "RESOURCE_CPU_PENDING",
+      "reasons": [],
+      "cpuBusyFraction": 0.01
+    },
+    {
+      "at": "2026-10-27T03:57:37.639Z",
+      "code": "RESOURCE_STARTUP_INTERVAL_BRACKET",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:57:53.848Z",
+      "code": "RESOURCE_CPU_RECOVERED",
+      "reasons": [],
+      "cpuBusyFraction": 0.01
+    },
+    {
+      "at": "2026-10-27T03:57:53.872Z",
+      "code": "RESOURCE_STARTUP_INTERVAL_BRACKET",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:57:54.363Z",
+      "stage": "command_line_verify"
+    },
+    {
+      "at": "2026-10-27T03:57:54.363Z",
+      "stage": "extension_worker"
+    },
+    {
+      "at": "2026-10-27T03:57:54.368Z",
+      "stage": "spawn_owner"
+    },
+    {
+      "at": "2026-10-27T03:57:54.369Z",
+      "stage": "local_server"
+    },
+    {
+      "at": "2026-10-27T03:57:54.377Z",
+      "stage": "playwright_connect"
+    },
+    {
+      "at": "2026-10-27T03:57:54.481Z",
+      "stage": "page_create"
+    },
+    {
+      "at": "2026-10-27T03:57:54.592Z",
+      "stage": "local_page_navigation"
+    },
+    {
+      "at": "2026-10-27T03:57:54.843Z",
+      "stage": "panel_open"
+    },
+    {
+      "at": "2026-10-27T03:57:55.051Z",
+      "stage": "panel_reply"
+    },
+    {
+      "at": "2026-10-27T03:57:55.068Z",
+      "stage": "panel_target"
+    },
+    {
+      "at": "2026-10-27T03:57:55.068Z",
+      "stage": "panel_context"
+    },
+    {
+      "at": "2026-10-27T03:57:55.096Z",
+      "stage": "panel_settle"
+    },
+    {
+      "at": "2026-10-27T03:57:56.546Z",
+      "stage": "screenshot"
+    },
+    {
+      "at": "2026-10-27T03:57:56.886Z",
+      "stage": "exercise_panel"
+    },
+    {
+      "at": "2026-10-27T03:58:10.030Z",
+      "code": "RESOURCE_WATCH_HEALTHY",
+      "reasons": [],
+      "cpuBusyFraction": 0.11
+    },
+    {
+      "at": "2026-10-27T03:58:10.071Z",
+      "code": "RESOURCE_STARTUP_INTERVAL_BRACKET",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:58:26.162Z",
+      "code": "RESOURCE_WATCH_HEALTHY",
+      "reasons": [],
+      "cpuBusyFraction": 0.16
+    },
+    {
+      "at": "2026-10-27T03:58:26.172Z",
+      "code": "RESOURCE_STARTUP_INTERVAL_BRACKET",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:58:37.527Z",
+      "code": "RESOURCE_JOB_EXIT",
+      "reasons": null,
+      "cpuBusyFraction": null
+    },
+    {
+      "at": "2026-10-27T03:58:37.667Z",
+      "code": "RESOURCE_FINAL_DECISION",
+      "reasons": null,
+      "cpuBusyFraction": null
+    }
+  ],
+  "resourceFinals": [
+    {
+      "path": ".output/stabilization-checkpoints/startup-35b-matched/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40446409519-1.jsonl",
+      "rows": 4,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T03:54:51.284Z",
+        "runId": "hosted-browser-40446409519-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": ".output/stabilization-checkpoints/startup-35b-matched/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40446409519-1.jsonl",
+      "rows": 4,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T03:52:54.851Z",
+        "runId": "hosted-package-40446409519-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": ".output/stabilization-checkpoints/startup-35b-matched/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-startup-40446409519-1.jsonl",
+      "rows": 19,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T03:58:37.667Z",
+        "runId": "hosted-startup-40446409519-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40444784947-1.jsonl",
+      "rows": 4,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T03:37:47.468Z",
+        "runId": "hosted-browser-40444784947-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40444784947-1.jsonl",
+      "rows": 6,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T03:40:16.350Z",
+        "runId": "hosted-guest-40444784947-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40444784947-1.jsonl",
+      "rows": 4,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T03:35:52.210Z",
+        "runId": "hosted-package-40444784947-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  ],
+  "rawLogMarkers": {
+    "BROWSER_CDP_STARTUP_INTERVAL": {
+      "schema": 1,
+      "outcome": "connected",
+      "initialStartupBoundary": {
+        "profileLock": "absent",
+        "childExitObserved": false,
+        "stderrClosed": false,
+        "stderrReadableEnded": false
+      },
+      "startupBoundary": null,
+      "phases": [
+        {
+          "phase": "endpoint_read",
+          "elapsedMs": 7618
+        },
+        {
+          "phase": "owner_check_started",
+          "elapsedMs": 7647
+        },
+        {
+          "phase": "owner_verified",
+          "elapsedMs": 7850
+        },
+        {
+          "phase": "socket_constructed",
+          "elapsedMs": 7865
+        },
+        {
+          "phase": "probe_tcp_connected",
+          "elapsedMs": 7889
+        },
+        {
+          "phase": "socket_open",
+          "elapsedMs": 10163
+        },
+        {
+          "phase": "connector_settled",
+          "elapsedMs": 10163
+        }
+      ],
+      "longestTimerDelayMs": 803,
+      "timerSamples": 53,
+      "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE"
+    },
+    "BROWSER_STARTUP_CPU_INTERVAL": {
+      "beforeStartedAt": "2026-10-27T03:56:57.412Z",
+      "beforeCompletedAt": "2026-10-27T03:56:57.447Z",
+      "afterStartedAt": "2026-10-27T03:57:07.626Z",
+      "afterCompletedAt": "2026-10-27T03:57:07.681Z",
+      "outcome": "cdp_connected",
+      "resolutionSeconds": 0.01,
+      "ownedAtStart": [31650, 32090],
+      "ownedAtEnd": [31650, 32091, 32125, 32126, 32127, 32129, 32183, 32184, 32271],
+      "exitedOrUnmatchedPids": [32090],
+      "appearedPids": [
+        32091, 32098, 32100, 32103, 32104, 32107, 32110, 32113, 32116, 32125, 32126, 32127, 32129,
+        32131, 32183, 32184, 32271
+      ],
+      "categoryTotalsSeconds": {
+        "ownedChromium": 0,
+        "ownedOther": 0.67,
+        "hostProvisioner": 0.81,
+        "otherHost": 21.22
+      },
+      "observed": [
+        {
+          "pid": 1,
+          "executable": "launchd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.37
+        },
+        {
+          "pid": 83,
+          "executable": "logd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.16
+        },
+        {
+          "pid": 84,
+          "executable": "smd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 85,
+          "executable": "UserEventAgent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.04
+        },
+        {
+          "pid": 88,
+          "executable": "fseventsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.09
+        },
+        {
+          "pid": 94,
+          "executable": "configd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.14
+        },
+        {
+          "pid": 96,
+          "executable": "powerd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 110,
+          "executable": "warmd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 111,
+          "executable": "mds",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.35
+        },
+        {
+          "pid": 112,
+          "executable": "iconservicesd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 117,
+          "executable": "coreduetd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 122,
+          "executable": "opendirectoryd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.1
+        },
+        {
+          "pid": 124,
+          "executable": "launchservicesd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.09
+        },
+        {
+          "pid": 125,
+          "executable": "timed",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 126,
+          "executable": "usbmuxd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 127,
+          "executable": "securityd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 129,
+          "executable": "locationd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.05
+        },
+        {
+          "pid": 130,
+          "executable": "nesessionmanager",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.25
+        },
+        {
+          "pid": 133,
+          "executable": "dasd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 135,
+          "executable": "distnoted",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 137,
+          "executable": "dirhelper",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 143,
+          "executable": "bluetoothd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.12
+        },
+        {
+          "pid": 144,
+          "executable": "notifyd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.08
+        },
+        {
+          "pid": 147,
+          "executable": "AirPlayXPCHelper",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 150,
+          "executable": "tccd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.68
+        },
+        {
+          "pid": 151,
+          "executable": "cfprefsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 153,
+          "executable": "loginwindow",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 154,
+          "executable": "runningboardd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.33
+        },
+        {
+          "pid": 155,
+          "executable": "WindowServer",
+          "category": "otherHost",
+          "cpuSecondsDelta": 1.34
+        },
+        {
+          "pid": 161,
+          "executable": "lsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.73
+        },
+        {
+          "pid": 162,
+          "executable": "trustd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.05
+        },
+        {
+          "pid": 168,
+          "executable": "distnoted",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 171,
+          "executable": "analyticsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 172,
+          "executable": "mobileassetd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 173,
+          "executable": "contextstored",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 174,
+          "executable": "airportd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.13
+        },
+        {
+          "pid": 177,
+          "executable": "nehelper",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.2
+        },
+        {
+          "pid": 178,
+          "executable": "mDNSResponder",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.23
+        },
+        {
+          "pid": 179,
+          "executable": "symptomsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 180,
+          "executable": "findmydeviced",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 183,
+          "executable": "secinitd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 184,
+          "executable": "syspolicyd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.1
+        },
+        {
+          "pid": 190,
+          "executable": "authd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 231,
+          "executable": "biomed",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 241,
+          "executable": "com.apple.geod",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 242,
+          "executable": "nsurlsessiond",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.04
+        },
+        {
+          "pid": 261,
+          "executable": "socketfilterfw",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 263,
+          "executable": "softwareupdated",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 279,
+          "executable": "backgroundtaskma",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 299,
+          "executable": "distnoted",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 300,
+          "executable": "findmybeaconingd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.05
+        },
+        {
+          "pid": 307,
+          "executable": "audioclocksyncd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 308,
+          "executable": "appleeventsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 319,
+          "executable": "addonsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 332,
+          "executable": "netbiosd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 338,
+          "executable": "distnoted",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 339,
+          "executable": "cfprefsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.09
+        },
+        {
+          "pid": 340,
+          "executable": "UserEventAgent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 349,
+          "executable": "neagent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.12
+        },
+        {
+          "pid": 350,
+          "executable": "CoreServicesUIAg",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 351,
+          "executable": "universalaccessd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 352,
+          "executable": "talagentd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.04
+        },
+        {
+          "pid": 353,
+          "executable": "WindowManager",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.66
+        },
+        {
+          "pid": 354,
+          "executable": "knowledge-agent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.04
+        },
+        {
+          "pid": 355,
+          "executable": "Dock",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.86
+        },
+        {
+          "pid": 356,
+          "executable": "pboard",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 357,
+          "executable": "ControlCenter",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.05
+        },
+        {
+          "pid": 358,
+          "executable": "SystemUIServer",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 359,
+          "executable": "lsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.71
+        },
+        {
+          "pid": 360,
+          "executable": "Finder",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.64
+        },
+        {
+          "pid": 364,
+          "executable": "tccd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.58
+        },
+        {
+          "pid": 365,
+          "executable": "com.apple.hiserv",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 367,
+          "executable": "filecoordination",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.1
+        },
+        {
+          "pid": 368,
+          "executable": "QuickLookUIServi",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 369,
+          "executable": "com.apple.quickl",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.46
+        },
+        {
+          "pid": 371,
+          "executable": "axassetsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.08
+        },
+        {
+          "pid": 372,
+          "executable": "pbs",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 373,
+          "executable": "secinitd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 374,
+          "executable": "usernotification",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 376,
+          "executable": "CoreLocationAgen",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.17
+        },
+        {
+          "pid": 378,
+          "executable": "dmd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.09
+        },
+        {
+          "pid": 379,
+          "executable": "secd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.13
+        },
+        {
+          "pid": 380,
+          "executable": "calaccessd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 381,
+          "executable": "suggestd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 382,
+          "executable": "callservicesd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.05
+        },
+        {
+          "pid": 383,
+          "executable": "sociallayerd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 384,
+          "executable": "WallpaperAgent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 385,
+          "executable": "iconservicesagen",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.29
+        },
+        {
+          "pid": 389,
+          "executable": "sharedfilelistd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.13
+        },
+        {
+          "pid": 390,
+          "executable": "ViewBridgeAuxili",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 392,
+          "executable": "fileproviderd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.1
+        },
+        {
+          "pid": 394,
+          "executable": "pkd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 395,
+          "executable": "AMPDeviceDiscove",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.08
+        },
+        {
+          "pid": 396,
+          "executable": "donotdisturbd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 399,
+          "executable": "BiomeAgent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.22
+        },
+        {
+          "pid": 400,
+          "executable": "rapportd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 402,
+          "executable": "cloudd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 403,
+          "executable": "identityservices",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 405,
+          "executable": "audioaccessoryd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 408,
+          "executable": "AudioComponentRe",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.04
+        },
+        {
+          "pid": 415,
+          "executable": "replicatord",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 416,
+          "executable": "fontd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.28
+        },
+        {
+          "pid": 419,
+          "executable": "fontworker",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.09
+        },
+        {
+          "pid": 420,
+          "executable": "usernoted",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.12
+        },
+        {
+          "pid": 424,
+          "executable": "useractivityd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 425,
+          "executable": "com.apple.dock.e",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 429,
+          "executable": "routined",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 430,
+          "executable": "ContextStoreAgen",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.08
+        },
+        {
+          "pid": 440,
+          "executable": "askpermissiond",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 442,
+          "executable": "sharingd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.09
+        },
+        {
+          "pid": 443,
+          "executable": "AirPlayUIAgent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 444,
+          "executable": "imagent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 446,
+          "executable": "diagnostics_agen",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 448,
+          "executable": "TextInputMenuAge",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.1
+        },
+        {
+          "pid": 449,
+          "executable": "remindd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 450,
+          "executable": "amsaccountsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 453,
+          "executable": "syncdefaultsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 454,
+          "executable": "transparencyd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 455,
+          "executable": "ctkd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.04
+        },
+        {
+          "pid": 458,
+          "executable": "TextInputSwitche",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.11
+        },
+        {
+          "pid": 459,
+          "executable": "deleted",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.1
+        },
+        {
+          "pid": 461,
+          "executable": "UIKitSystem",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.17
+        },
+        {
+          "pid": 466,
+          "executable": "milod",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 467,
+          "executable": "nearbyd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 468,
+          "executable": "cloudd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 469,
+          "executable": "nsurlsessiond",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 470,
+          "executable": "CommCenter",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.05
+        },
+        {
+          "pid": 482,
+          "executable": "AppSSOAgent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.09
+        },
+        {
+          "pid": 483,
+          "executable": "Spotlight",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.08
+        },
+        {
+          "pid": 484,
+          "executable": "AppSSODaemon",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.05
+        },
+        {
+          "pid": 485,
+          "executable": "CursorUIViewServ",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.11
+        },
+        {
+          "pid": 486,
+          "executable": "localizationswit",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 489,
+          "executable": "corespotlightd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.12
+        },
+        {
+          "pid": 490,
+          "executable": "extensionkitserv",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 493,
+          "executable": "homed",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 496,
+          "executable": "com.apple.geod",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 497,
+          "executable": "parsecd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 499,
+          "executable": "ScreenTimeAgent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 501,
+          "executable": "appleaccountd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 502,
+          "executable": "linkd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.12
+        },
+        {
+          "pid": 507,
+          "executable": "avconferenced",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.09
+        },
+        {
+          "pid": 508,
+          "executable": "itunescloudd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 509,
+          "executable": "networkservicepr",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.37
+        },
+        {
+          "pid": 511,
+          "executable": "parsec-fbf",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 514,
+          "executable": "amsengagementd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 515,
+          "executable": "SoftwareUpdateNo",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 520,
+          "executable": "newsd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 521,
+          "executable": "assistantd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.13
+        },
+        {
+          "pid": 522,
+          "executable": "bird",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.12
+        },
+        {
+          "pid": 523,
+          "executable": "APFSUserAgent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.05
+        },
+        {
+          "pid": 524,
+          "executable": "mdbulkimport",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.16
+        },
+        {
+          "pid": 530,
+          "executable": "AssetCacheLocato",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 532,
+          "executable": "IOUIAgent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.12
+        },
+        {
+          "pid": 536,
+          "executable": "iCloudNotificati",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.08
+        },
+        {
+          "pid": 561,
+          "executable": "CloudTelemetrySe",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 568,
+          "executable": "swcd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.51
+        },
+        {
+          "pid": 572,
+          "executable": "financed",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 583,
+          "executable": "AssetCacheLocato",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 609,
+          "executable": "rtcreportingd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 634,
+          "executable": "WiFiAgent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 636,
+          "executable": "StocksKitService",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 637,
+          "executable": "CloudTelemetrySe",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 639,
+          "executable": "logd_helper",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 640,
+          "executable": "gamecontrollerag",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 659,
+          "executable": "aned",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.14
+        },
+        {
+          "pid": 662,
+          "executable": "aneuserd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.05
+        },
+        {
+          "pid": 666,
+          "executable": "appstoreagent",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 670,
+          "executable": "siriknowledged",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.22
+        },
+        {
+          "pid": 681,
+          "executable": "promotedcontentd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 825,
+          "executable": "UsageTrackingAge",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 826,
+          "executable": "diagnosticextens",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 828,
+          "executable": "siriinferenced",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.73
+        },
+        {
+          "pid": 829,
+          "executable": "extensionkitserv",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.06
+        },
+        {
+          "pid": 843,
+          "executable": "taskgated",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 861,
+          "executable": "weatherd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 862,
+          "executable": "adprivacyd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.04
+        },
+        {
+          "pid": 904,
+          "executable": "SiriSuggestionsB",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.23
+        },
+        {
+          "pid": 947,
+          "executable": "BackgroundTaskMa",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 955,
+          "executable": "provjobd26445279",
+          "category": "hostProvisioner",
+          "cpuSecondsDelta": 0.81
+        },
+        {
+          "pid": 1218,
+          "executable": "SafariBookmarksS",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 1231,
+          "executable": "proactived",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.02
+        },
+        {
+          "pid": 1232,
+          "executable": "duetexpertd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 1.25
+        },
+        {
+          "pid": 1233,
+          "executable": "CategoriesServic",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.05
+        },
+        {
+          "pid": 1243,
+          "executable": "AppPredictionInt",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.05
+        },
+        {
+          "pid": 1855,
+          "executable": "nsattributedstri",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 1869,
+          "executable": "nsattributedstri",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.08
+        },
+        {
+          "pid": 2244,
+          "executable": "spindump",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 2247,
+          "executable": "modelmanagerd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.13
+        },
+        {
+          "pid": 3032,
+          "executable": "mlhostd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 3178,
+          "executable": "betaenrollmentag",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.03
+        },
+        {
+          "pid": 15397,
+          "executable": "homeenergyd",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.01
+        },
+        {
+          "pid": 27548,
+          "executable": "Runner.Listener",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.09
+        },
+        {
+          "pid": 27633,
+          "executable": "Runner.Worker",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.1
+        },
+        {
+          "pid": 30948,
+          "executable": "node",
+          "category": "otherHost",
+          "cpuSecondsDelta": 0.07
+        },
+        {
+          "pid": 31650,
+          "executable": "node",
+          "category": "ownedOther",
+          "cpuSecondsDelta": 0.67
+        }
+      ],
+      "otherHostObservedProcessCount": 433,
+      "limitation": "ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time.",
+      "appearedProcesses": [
+        {
+          "pid": 32091,
+          "executable": "Chromium",
+          "ownedAtEnd": true,
+          "lifetimeCpuSeconds": 5.16
+        },
+        {
+          "pid": 32098,
+          "executable": "chrome_crashpad_",
+          "ownedAtEnd": false,
+          "lifetimeCpuSeconds": 0.01
+        },
+        {
+          "pid": 32100,
+          "executable": "chrome_crashpad_",
+          "ownedAtEnd": false,
+          "lifetimeCpuSeconds": 0.01
+        },
+        {
+          "pid": 32103,
+          "executable": "MTLAssetUpgrader",
+          "ownedAtEnd": false,
+          "lifetimeCpuSeconds": 0.15
+        },
+        {
+          "pid": 32104,
+          "executable": "MENotificationAg",
+          "ownedAtEnd": false,
+          "lifetimeCpuSeconds": 0.25
+        },
+        {
+          "pid": 32107,
+          "executable": "MTLCompilerServi",
+          "ownedAtEnd": false,
+          "lifetimeCpuSeconds": 2.07
+        },
+        {
+          "pid": 32110,
+          "executable": "ManagedClient",
+          "ownedAtEnd": false,
+          "lifetimeCpuSeconds": 0.16
+        },
+        {
+          "pid": 32113,
+          "executable": "mdmclient",
+          "ownedAtEnd": false,
+          "lifetimeCpuSeconds": 0.2
+        },
+        {
+          "pid": 32116,
+          "executable": "SetStoreUpdateSe",
+          "ownedAtEnd": false,
+          "lifetimeCpuSeconds": 0.14
+        },
+        {
+          "pid": 32125,
+          "executable": "Chromium Helper",
+          "ownedAtEnd": true,
+          "lifetimeCpuSeconds": 0.62
+        },
+        {
+          "pid": 32126,
+          "executable": "Chromium Helper",
+          "ownedAtEnd": true,
+          "lifetimeCpuSeconds": 0.23
+        },
+        {
+          "pid": 32127,
+          "executable": "Chromium Helper",
+          "ownedAtEnd": true,
+          "lifetimeCpuSeconds": 0.15
+        },
+        {
+          "pid": 32129,
+          "executable": "Chromium Helper",
+          "ownedAtEnd": true,
+          "lifetimeCpuSeconds": 0.27
+        },
+        {
+          "pid": 32131,
+          "executable": "CVMServer",
+          "ownedAtEnd": false,
+          "lifetimeCpuSeconds": 0.09
+        },
+        {
+          "pid": 32183,
+          "executable": "Chromium Helper",
+          "ownedAtEnd": true,
+          "lifetimeCpuSeconds": 0.2
+        },
+        {
+          "pid": 32184,
+          "executable": "Chromium Helper",
+          "ownedAtEnd": true,
+          "lifetimeCpuSeconds": 0.21
+        },
+        {
+          "pid": 32271,
+          "executable": "ps",
+          "ownedAtEnd": true,
+          "lifetimeCpuSeconds": 0
+        }
+      ],
+      "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE"
+    }
+  },
+  "timingSemantics": {
+    "connectorObserverOrigin": "observeNativeCdpStartup performance.now before initial bounded boundary and connect; endpoint/owner/socket phases relative to this origin.",
+    "connectorDeadlineOrigin": "connectOwnedCdp sets deadline before waitStartedAt; loop checks performance.now()<deadline before each read. No absolute bound over in-flight read, owner validation, or entire CDP connection.",
+    "harnessOrigin": "startupStartedAt immediately before spawn; callback elapsed10172ms includes spawn-to-connect. reportedElapsed10240ms includes recordStartupInterval/report work; UTC callback at03:57:07.695 is report time.",
+    "phasesMs": [
+      {
+        "phase": "endpoint_read",
+        "elapsedMs": 7618
+      },
+      {
+        "phase": "owner_check_started",
+        "elapsedMs": 7647
+      },
+      {
+        "phase": "owner_verified",
+        "elapsedMs": 7850
+      },
+      {
+        "phase": "socket_constructed",
+        "elapsedMs": 7865
+      },
+      {
+        "phase": "probe_tcp_connected",
+        "elapsedMs": 7889
+      },
+      {
+        "phase": "socket_open",
+        "elapsedMs": 10163
+      },
+      {
+        "phase": "connector_settled",
+        "elapsedMs": 10163
+      }
+    ],
+    "endpointReadIsPhysicalPublicationTime": false,
+    "wholeConnectionOver8000IsDeadlineBypass": false,
+    "successPollsZeroMeaning": "Callback placeholder, not connector read count; successful path does not emit lastRead/poll summary.",
+    "initialBoundary": {
+      "profileLock": "absent",
+      "childExitObserved": false,
+      "stderrClosed": false,
+      "stderrReadableEnded": false
+    },
+    "initialBoundaryLimits": "Asynchronous bounded snapshot is not continuous lock absence. childExitObserved false and open stderr snapshot alone do not prove child progress. Success emits final startupBoundary null; later spawn_owner passes exact PID/SingletonLock equality by source control flow before local_server.",
+    "CPUChronology": "Guard healthy03:56:48.809 precedes spawn03:56:57.453. Pending03:57:05.304 busy0.96/load9.37 overlaps connector; pending persists in later low-busy samples until recovery03:57:53.848. Command-line query stage03:57:07.703 to verify03:57:54.363 spans46.660s; resourceAction can wait on guard, but no wait-vs-RPC split emitted. UI panel_open03:57:54.843 and ready03:57:56.894 follow recovery.",
+    "CPUInterpretation": "Appeared main Chromium32091 has lifetimeCPU5.16s; ownedChromium delta0 in startup bracket reflects absent initial PID, not zero CPU. Per-process centisecond snapshots do not exactly equal iostat interval; exited/new/reparented/PID-reused processes limit attribution. Overlap is correlation, not CPU cause.",
+    "BFailure": {
+      "harnessElapsedMs": 8044,
+      "connectorElapsedMs": 8027,
+      "polls": 238,
+      "lastRead": {
+        "startedElapsedMs": 7978,
+        "completedElapsedMs": 7979,
+        "outcome": "missing"
+      },
+      "longestReadMs": 246,
+      "spawnObserved": true,
+      "launchFailed": false,
+      "exitCode": null,
+      "signalCode": null,
+      "hadStderr": false,
+      "limits": "No B lock ownership, stdio close/end, owned PID progress, post-timeout endpoint record, exact Chrome exit or later publication evidence. Wrapper child_failed is not a measured Chromium exit. Sparse healthy guard samples do not establish the entire startup interval CPU."
+    }
+  },
+  "screenshots": {
+    "inspected": true,
+    "nativePanel": "Visible extension toolbar and largely blank panel; supports panel target rendering only.",
+    "normalTarget": "Owned local demo article and successful open-panel reply; no SEO/Schema product assertions or guest Settings identity proof.",
+    "actualHeadedProof": "Raw browserLaunch observed_mode headed, verified_by Browser.getBrowserCommandLine; source verifies executed command-line flags. Screenshots alone do not prove display mode.",
+    "actualFullChromiumVersion": "unemitted; download label is not executed-version proof"
+  },
+  "pollAudit": {
+    "bindingPlanMinimumSeconds": 60,
+    "requestedCollectorIntervalSeconds": 65,
+    "observations": [
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/run-0353.json",
+        "responseFileMtimeUtc": "2026-10-27T03:53:05.646465+00:00",
+        "completionGapSeconds": null
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/run-0354.json",
+        "responseFileMtimeUtc": "2026-10-27T03:54:07.970943+00:00",
+        "completionGapSeconds": 62.324478
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/run-0355.json",
+        "responseFileMtimeUtc": "2026-10-27T03:55:17.965380+00:00",
+        "completionGapSeconds": 69.994437
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/jobs-0356.json",
+        "responseFileMtimeUtc": "2026-10-27T03:56:37.861801+00:00",
+        "completionGapSeconds": 79.896421
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/run-0357.json",
+        "responseFileMtimeUtc": "2026-10-27T03:57:48.063843+00:00",
+        "completionGapSeconds": 70.202041
+      },
+      {
+        "path": ".output/stabilization-checkpoints/startup-35b-matched/run-0359.json",
+        "responseFileMtimeUtc": "2026-10-27T03:59:00.227390+00:00",
+        "completionGapSeconds": 72.163547
+      }
+    ],
+    "firstCompletionGapSeconds": 62.324478,
+    "meetsRequested65OnCompletionEvidence": false,
+    "allCompletionGapsAtLeastBinding60": true,
+    "limits": "File mtimes are response completion evidence, not request starts. Cannot manufacture strict request-start compliance from them. Collector requiredMinimumSeconds65 describes requested lane cadence, not binding PLAN minimum60. No API calls made by reviewer."
+  },
+  "coverage": {
+    "observed": [
+      "connected record with validated_connector_record provenance",
+      "initial bounded lock/child/stderr snapshot",
+      "headed command-line verification",
+      "CPU_PENDING then RECOVERED and three valid finals",
+      "native panel target and orderly diagnostic return"
+    ],
+    "notExercised": [
+      "D298 timeout callback unknown-presence serialization",
+      "failure final startupBoundary lock/child/stdio snapshot",
+      "post_timeout real lstat and canonical nonconnecting record inspection, including error/missing/unavailable/refusal cases",
+      "B normal child-wrapper failing path with diagnostic instrumentation",
+      "SEO/Schema assertions/capture/export invariance/full reload/roles/Store"
+    ],
+    "D298GateJudgment": "Success demonstrates connected branch only. It does not exercise original timeout-manufactured-absence defect or post-timeout error/refusal siblings. Existing tests/peer evidence may support separate gates, but this pair cannot supply original-path failure-branch verification or justify closure.",
+    "D254D231GateJudgment": "Cause remains unproven; same-build A success does not repair B or establish reliability. No product certification."
+  },
+  "remainingDiscriminatingMeasurement": {
+    "measurement": "At the next naturally occurring original B-path endpoint failure, preserve exact source/build, normal child Node wrapper and headed args; capture spawned PID and initial/failure SingletonLock comparison, child exit/signal plus stderr destroyed/readableEnded, last real endpoint read start/end/outcome, startup process CPU bracket/timer delay, and bounded post-timeout lstat plus canonical nonconnecting ownership inspection with observation-origin times. Record guard recovery/final and actual child termination separately.",
+    "why": "Distinguishes no owned startup progress, observed exit/pipe closure, and a later valid owned record; it still cannot identify physical publication instant or prove CPU causality. Existing diagnostic-on-A success does not answer these failed-state questions.",
+    "executionPrerequisite": "Owner resolves whether existing observers can be composed onto original B wrapper without silently changing compared path; record perturbation/confounders. This review authorizes no dispatch or blind retry.",
+    "excludedChanges": [
+      "deadline increase",
+      "resource guard relaxation",
+      "runner change",
+      "automatic product retry"
+    ]
+  },
+  "constraintsHonored": true,
+  "original_private_report_sha256": "37b718125b565ac43b638af6c70e72298d007573d2ff98d3f695ba3b0c86ba3c",
+  "reference_limits": "Mapped originals are durable; maps distinguish original and formatted hashes. Unmapped scratch logs/ZIPs/private context remain private and are not implied independently verified."
+}

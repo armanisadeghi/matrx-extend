@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-27T01:57:17.590334+00:00",
+  "updated_at": "2026-10-27T04:12:41.747358+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -35880,6 +35880,24 @@
               ],
               "independent_review": "docs/stabilization/reports/peer-review-run38060126213.json",
               "scope": "Exact repeat of the already credited owned-fixture T09 target. Confirms that same behavior on frozen product source 998cfc86 only; no new distinct subtarget credit and no current-main 663 product claim. T09 and guest SEO remain partial."
+            }
+          ],
+          "bounded_native_observations": [
+            {
+              "at": "2026-10-27T04:12:41.747358+00:00",
+              "run_id": "store577-guest-seo-links-native-20261027-0207",
+              "mode": "guest",
+              "installation": "actual Store-installed",
+              "version": "0.2.577",
+              "status": "partial",
+              "resource_final_valid": true,
+              "formal_case_pass": false,
+              "scope": "Five attempted behaviors: SEO smoke/values, canonical destination, Article destination, panel close/reopen. Captured states supported; action causality/per<=4Cua cadence/original owner restoration not independently established because no contemporaneous action ledger exists. Backend/wire and full T09 dimensions unverified.",
+              "evidence": [
+                "docs/stabilization/reports/store577-guest-seo-links-native-20261027.json",
+                "docs/stabilization/reports/store577-seo-links-evidence-peer-20261027.json",
+                "docs/stabilization/reports/store577-seo-links-evidence-clarification-20261027.json"
+              ]
             }
           ]
         },

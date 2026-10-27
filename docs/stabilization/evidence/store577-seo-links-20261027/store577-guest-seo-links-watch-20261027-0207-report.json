@@ -1,0 +1,21 @@
+{
+  "runId": "store577-guest-seo-links-native-20261027-0207",
+  "first_read_at": "2026-10-27T02:41:58.023646Z",
+  "last_read_at": "2026-10-27T02:45:46.651654Z",
+  "actualPollCount": 115,
+  "maxGapSeconds": 2.011765083007049,
+  "riskEvents": [],
+  "final": {
+    "schema": 1,
+    "at": "2026-10-27T02:45:44.921Z",
+    "runId": "store577-guest-seo-links-native-20261027-0207",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid",
+    "code": "RESOURCE_FINAL_DECISION"
+  },
+  "completed_path": "docs/stabilization/resource-journals/store577-guest-seo-links-native-20261027-0207.jsonl",
+  "audit": ".output/stabilization-checkpoints/store577-guest-seo-links-watch-20261027-0207.jsonl",
+  "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+}

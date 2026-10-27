@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "kind": "ci_development_test_promotion",
+  "eligibleStore": false,
+  "publish_state": "not_published",
+  "observedAt": "2026-10-27T03:38:43.953Z",
+  "sourceSha": "35b619573fbddb462f046d6326084b20cf83f23c",
+  "mainSha": "35b619573fbddb462f046d6326084b20cf83f23c",
+  "compatibility": "exact-source",
+  "allowedDiffPaths": [],
+  "version": "0.2.629",
+  "runId": 40443458190,
+  "runAttempt": 1,
+  "artifactId": 12707143793,
+  "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/35b619573fbddb462f046d6326084b20cf83f23c/40443458190-1/chrome-mv3",
+  "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "treeSha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5",
+  "fileCount": 2819
+}

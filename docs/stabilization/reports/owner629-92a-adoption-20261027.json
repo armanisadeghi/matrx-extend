@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "task_id": "owner629_92a_artifact_adoption",
+  "at": "2026-10-27T02:51:54.413Z",
+  "status": "STOPPED_CURRENT_RUNTIME_SOURCE_ADVANCED_BEFORE_IMPORT",
+  "requested": {
+    "sourceSha": "92accd7c35731fd9ff1c671d3f0972ea21891238",
+    "version": "0.2.629",
+    "runId": 40439154588,
+    "artifactId": 12705847584,
+    "officialDigest": "sha256:d729a2eadc5b4cda34d9b600b2c02a18497d63d147319375484a35c10b1db8ae",
+    "metadataSource": "parent handoff; not independently revalidated after source stop"
+  },
+  "source": {
+    "localHead": "92accd7c35731fd9ff1c671d3f0972ea21891238",
+    "originMain": "9e4e6ca65c3dd84146607c3d88903931723e4154",
+    "changedPaths": ["pnpm-lock.yaml"],
+    "canonicalCompatibilityRefusal": "ci_dev_checkout_not_origin_main"
+  },
+  "incumbentDiskPromotionReceipt": {
+    "schema_version": 1,
+    "kind": "ci_development_test_promotion",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "observedAt": "2026-10-27T01:40:28.004Z",
+    "sourceSha": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+    "mainSha": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+    "compatibility": "exact-source",
+    "allowedDiffPaths": [],
+    "version": "0.2.628",
+    "runId": 40431711230,
+    "runAttempt": 1,
+    "artifactId": 12702018987,
+    "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/b3b3d345e87959e277a3513b3c38226160fe6d13/40431711230-1/chrome-mv3",
+    "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "treeSha256": "30153eb00dab7efa4534c21fe5a1e4305b21867f1d405d765a38bcd35c149df2",
+    "fileCount": 2817
+  },
+  "native": {
+    "observed": false,
+    "actualManagementReload": false,
+    "versionLoadedFromPinStates": "No Chrome calls made; prior 628 and Store577 owner observations remain historical only",
+    "guestProfileTouched": false,
+    "privateStateCaptured": false
+  },
+  "resource": {
+    "permitStarted": false,
+    "watcherStarted": false,
+    "admitted": false,
+    "gateGroups": 0,
+    "uiApiCalls": 0,
+    "allOwnProcessesTerminal": true,
+    "macSlot": "released throughout; no holder acquired"
+  },
+  "actions": {
+    "import": false,
+    "promotion": false,
+    "localBuild": false,
+    "release": false,
+    "workflowDispatch": false,
+    "gitMutation": "fetch origin main only; no checkout/main integration; parent owns tracking metadata"
+  },
+  "cleanup": {
+    "ownedTabsCreated": 0,
+    "ownedTabsClosed": 0,
+    "originalTabFocus": "untouched; never acquired Chrome",
+    "allOwnHandles": [],
+    "parentNotified": true
+  },
+  "limits": [
+    "Intended artifact adoption is unverified and intentionally stopped before any import because current main changes runtime dependencies.",
+    "No current browser version/Loaded from/pin assertion; existing disk receipt does not prove active native state.",
+    "No backend metadata bracket started because adoption was ineligible."
+  ],
+  "next": "Parent reconcile current main and await exact current-source successful artifact before a newly authorized eligibility recheck.",
+  "original_private_report_sha256": "90e2b8ca71909226f6de07d72c469bc735542b18bb6f9cf34766525919138a0c",
+  "reference_limits": "Mapped originals are durable; maps distinguish original and formatted hashes. Unmapped scratch logs/ZIPs/private context remain private and are not implied independently verified.",
+  "parent_adjudication": "Canonical source drift refusal preserved; no import/promotion/permit/UI on stale92a. Later35b maintenance is separate evidence."
+}

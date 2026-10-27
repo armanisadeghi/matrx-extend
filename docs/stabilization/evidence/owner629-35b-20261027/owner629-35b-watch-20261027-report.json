@@ -1,0 +1,21 @@
+{
+  "runId": "owner629-35b-20261027-0340",
+  "first_read_at": "2026-10-27T03:36:48.736473Z",
+  "last_read_at": "2026-10-27T03:39:19.148271Z",
+  "actualPollCount": 76,
+  "maxGapSeconds": 2.0113883749581873,
+  "riskEvents": [],
+  "final": {
+    "schema": 1,
+    "at": "2026-10-27T03:39:18.805Z",
+    "runId": "owner629-35b-20261027-0340",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid",
+    "code": "RESOURCE_FINAL_DECISION"
+  },
+  "completed_path": "docs/stabilization/resource-journals/owner629-35b-20261027-0340.jsonl",
+  "audit": ".output/stabilization-checkpoints/owner629-35b-watch-20261027.jsonl",
+  "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+}

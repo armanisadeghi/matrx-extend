@@ -1,0 +1,275 @@
+{
+  "schema": 1,
+  "lane": "fresh-independent-zero-authorship",
+  "defect": "EXT-D-0298",
+  "status": "DONE_WITH_FULL_CI_AND_HOSTED_GATES_OPEN",
+  "at": "2026-10-27T02:41:35.001827+00:00",
+  "reviewed_commits": ["60cd2428930efe60b4cfb48e332687925c4b0fc6"],
+  "original_first": {
+    "archive_sha256": "3112adc015e0b877b68fd450ab2f6943428bd86a912f64ff70c5585fac717051",
+    "all_four_member_hashes_match": true,
+    "original_verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE",
+    "original_resource_verdict": {
+      "exitCode": 1,
+      "resourceInvalid": false,
+      "decision": "child_failed"
+    },
+    "conclusion": "Raw timeout false is unmeasured. Later lstat true supplies a later interval only; no physical publication time, producer delay or CPU cause proved."
+  },
+  "A": {
+    "verdict": "PARTIAL_HOSTED_ORIGINAL_PATH_UNVERIFIED",
+    "supporting_replay": "PASS: real production helper/serializer and actual complete-driver timeout catch replayed. Null/provenance, read/sample timing, budget fences, zero late sockets, original error and cleanup preserved. No product acceptance.",
+    "confirmed_findings": [],
+    "missing": [],
+    "extra": [],
+    "misunderstood": [],
+    "cannot_verify": [
+      "Exact-source guarded hosted startup original-path replay.",
+      "D254/D231 startup/CPU root cause remains unknown."
+    ]
+  },
+  "B": {
+    "verdict": "PASS_SOURCE_AND_DISCRIMINATING_FOCUSED_CHECKS",
+    "confirmed_findings": [],
+    "basis": "One shared parser/owner phase; fixed-label safe serialization; abort stage fences/default-child drain; normal socket/owner/refusal/cleanup behavior preserved. Executed constant-result and realistic omission mutations fail their named oracles. No migration/dependency declaration/access path/policy/workflow/runner/deadline/auth/model/product PASS change.",
+    "limits": "Comprehensive connector/harness suites remain parent-owned full-CI gates. This verdict is not closure or global health."
+  },
+  "artifact_hashes": {
+    "d298-measurement-plan-20261027.json": "7a1ae51a192e1daf3cc7f8508bd4deab4f6dda623957736fc4f973e2ad71ad63",
+    "d298-plan-attack-20261027.json": "e46094cbb1dfcde755fcf47a861af91ae7cdbf67a6faef2118dbf16714f03096",
+    "d298-implementation-20261027.json": "516bd3240d345b2f32dd5ca564fc3af4a36fda1be488d9a09bda1a7909696784",
+    "startup-b3-40433575951.zip": "3112adc015e0b877b68fd450ab2f6943428bd86a912f64ff70c5585fac717051",
+    "d298-exact-owned-review.diff": "50b2322b2c3d56424540300157a363f31b11bda66a086434f812fd80d395c0fe",
+    "d298-merged-lock-review.diff": "fc7425796ddf153a556221375d882d61d1727b39eca038f24513aa52ab5aa2ac"
+  },
+  "claim_audit": {
+    "all_builder_source_hashes_match": true,
+    "all_five_builder_journal_hashes_and_finals_match": true,
+    "all_four_retained_builder_terminal_log_hashes_match": true,
+    "red_stdout": "Not retained by builder; initial 2 assertion RED is transcribed, not independently recoverable from journal alone. Later executed counterfactuals are retained.",
+    "compile": "Builder stale-install compile failed and remains retained. Parent prior-lock compile passed. Independent current92a lock install/focused/compile all passed with rich-content328."
+  },
+  "requirements": [
+    {
+      "id": 1,
+      "source_assessment": "Source keeps8000 policy read, poll-entry condition,5000 command timeout and socket phase unchanged.",
+      "anchors": "tests/browser/vault-owned-cdp.cjs:205; native-sidepanel-qa-harness.mjs:77",
+      "execution": "Supporting canonical replay PASS; full CI/hosted acceptance remain separate gates."
+    },
+    {
+      "id": 2,
+      "source_assessment": "Timeout null, non-ENOENT null, zero-window null; census found only shared hosted/Notes/SEO sinks.",
+      "anchors": "native-sidepanel-qa-harness.mjs:1599,1922",
+      "execution": "Supporting canonical replay PASS; full CI/hosted acceptance remain separate gates."
+    },
+    {
+      "id": 3,
+      "source_assessment": "One safeEndpointObservation validates nullable boolean and explicit provenance; Notes distinguishes presence_unknown.",
+      "anchors": "native-cdp-startup-diagnostic.mjs:198; notes-startup-diagnostic.mjs:50",
+      "execution": "Supporting canonical replay PASS; full CI/hosted acceptance remain separate gates."
+    },
+    {
+      "id": 4,
+      "source_assessment": "lstat sample has begin/end relative observer origin; exhaustion retains last sample interval.",
+      "anchors": "native-sidepanel-qa-harness.mjs:1626",
+      "execution": "Supporting canonical replay PASS; full CI/hosted acceptance remain separate gates."
+    },
+    {
+      "id": 5,
+      "source_assessment": "Real connector records lastRead in finally, attaches it on timeout/read/parser/owner failures; safe serializer strips all extra fields.",
+      "anchors": "vault-owned-cdp.cjs:225; native-sidepanel-qa-harness.mjs:1552",
+      "execution": "Supporting canonical replay PASS; full CI/hosted acceptance remain separate gates."
+    },
+    {
+      "id": 6,
+      "source_assessment": "Failure elapsed captured before awaited CPU bookkeeping; later report elapsed explicit; doc correctly describes polling-entry budget.",
+      "anchors": "native-sidepanel-qa-harness.mjs:1902; PLAN.md:45",
+      "execution": "Supporting canonical replay PASS; full CI/hosted acceptance remain separate gates."
+    },
+    {
+      "id": 7,
+      "source_assessment": "One private canonical parser/owner phase reused by connector and diagnostic; no WebSocket/probe entry in inspector.",
+      "anchors": "vault-owned-cdp.cjs:58,118,268",
+      "execution": "Supporting canonical replay PASS; full CI/hosted acceptance remain separate gates."
+    },
+    {
+      "id": 8,
+      "source_assessment": "Observer passes only remaining window; diagnostic aborts default ps, drains close, fences later stages; original thrown error retained.",
+      "anchors": "vault-owned-cdp.cjs:132,183; native-sidepanel-qa-harness.mjs:1940",
+      "execution": "Supporting canonical replay PASS; full CI/hosted acceptance remain separate gates."
+    },
+    {
+      "id": 9,
+      "source_assessment": "Shared hosted serializer consumed by SEO; Notes consumer uses shared safe contract; fixture compositions updated; original archive hashes unchanged.",
+      "anchors": "hosted-startup-interval-diagnostic.mjs:12; hosted-seo-route.mjs:6; notes-native-acceptance.mjs:910",
+      "execution": "Supporting canonical replay PASS; full CI/hosted acceptance remain separate gates."
+    },
+    {
+      "id": 10,
+      "source_assessment": "Tests use production functions with real temporary records, external transport/process/clock seams; actual driver error identity/cleanup verified by its oracle. Counterfactuals target false absence, dropped read timing, constant validation and skipped drain.",
+      "anchors": "native-cdp-startup-diagnostic.test.mjs:178; native-startup-interval-callsite.test.mjs:243",
+      "execution": "Supporting canonical replay PASS; full CI/hosted acceptance remain separate gates."
+    },
+    {
+      "id": 11,
+      "source_assessment": "Only fast Notes suite added to existing canonical focused collection; no workflow/policy/runner edits. Full CI and hosted gate remain open.",
+      "anchors": "package.json:28; .github/workflows/ci.yml:256,265",
+      "execution": "Supporting canonical replay PASS; full CI/hosted acceptance remain separate gates."
+    },
+    {
+      "id": 12,
+      "source_assessment": "Only supporting defect/contract/evidence; no product PASS or deadline/resource/account/model changes.",
+      "anchors": "EXT-D-0298.json; PLAN.md:45",
+      "execution": "Supporting canonical replay PASS; full CI/hosted acceptance remain separate gates."
+    }
+  ],
+  "unverified": [
+    "Current-source full CI including comprehensive vault-owned-cdp/native harness suites is parent-owned, not queried by reviewer.",
+    "Exact-source guarded hosted startup original-path replay.",
+    "Chrome/product/Store acceptance; zero product acceptance from repair.",
+    "D254/D231 root cause remains unknown."
+  ],
+  "actions": {
+    "source_edits": 0,
+    "commits": 0,
+    "child_agents": 0,
+    "browser": 0,
+    "product_network": 0,
+    "auth_changes": 0,
+    "test_commands": 1,
+    "install_commands": 1,
+    "compile_commands": 1,
+    "resource_bypasses": 0
+  },
+  "process_cleanup": {
+    "sessions": [
+      {
+        "id": 76689,
+        "operation": "install",
+        "exit": 0
+      },
+      {
+        "id": 32728,
+        "operation": "focused",
+        "exit": 0
+      },
+      {
+        "id": 47672,
+        "operation": "compile",
+        "exit": 0
+      }
+    ],
+    "journals": "All3 completed valid0/resourceInvalidfalse after guard-owned cleanup. No pending reviewer journal.",
+    "fixture_readback": "0matching owned-endpoint-observation/native-cdp-diagnostic/startup-observation/native-cdp-late-endpoint directories in actual TMPDIR after focused. Controlled HTTP/socket/child cleanup checks passed.",
+    "browser_auth_fixtures": "None started.",
+    "remaining_owned_processes": 0,
+    "slot": "Released to parent."
+  },
+  "execution_basis": {
+    "merge": "92accd7c35731fd9ff1c671d3f0972ea21891238",
+    "lock_dependency_commits": [
+      "cfc364c99e819a6e91027cf8b1e3902fcdffb91b",
+      "d35acad45bfbcb74280662e6183e20375522b3fe"
+    ],
+    "lock_sha256": "ac9ff730f82379d77a274341241f127153b55354b4d57fc13c89b670fcb94ea7",
+    "actual_source_commit_hashes_match_builder": true,
+    "parent_compile_limitation": "Parent green compile preceded the newly merged rich-content328 lock; independent current-lock install completed02:35:51 and independent focused/compile follow."
+  },
+  "checks": [
+    {
+      "run_id": "d298-fresh-current-lock-install-20261027",
+      "journal": "docs/stabilization/resource-journals/d298-fresh-current-lock-install-20261027.jsonl",
+      "journal_sha256": "ba937bc9b0a09a53795e80904907f2a963b7eed513fa92fb1b84d6db50b9dacc",
+      "terminal_log": ".output/stabilization-checkpoints/d298-fresh-current-lock-install-20261027.log",
+      "terminal_log_sha256": "6015c4bf160752155e86f4f84e935f58bdb3fdb0c9652448225bb69cac52f1fd",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T02:35:51.117Z",
+        "runId": "d298-fresh-current-lock-install-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "healthy_watch_events": 0
+    },
+    {
+      "run_id": "d298-fresh-independent-focused-20261027",
+      "journal": "docs/stabilization/resource-journals/d298-fresh-independent-focused-20261027.jsonl",
+      "journal_sha256": "a57ab473fd56422c8011134ea7b191cf61fad97487ec40fa78bb585857d6abe7",
+      "terminal_log": ".output/stabilization-checkpoints/d298-fresh-independent-focused-20261027.log",
+      "terminal_log_sha256": "a41a166e9f1edc41d43cc3131faa0f735fee6e4f639c6613e76f4b9058b09d02",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T02:39:29.158Z",
+        "runId": "d298-fresh-independent-focused-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "healthy_watch_events": 9,
+      "counts": {
+        "tests": 1100,
+        "pass": 1089,
+        "fail": 0,
+        "cancelled": 0,
+        "skip": 11,
+        "todo": 0
+      },
+      "decisive_replay": [
+        "unknown/error/zero-sample presence",
+        "null round trip",
+        "real valid/invalid/foreign/missing temp records with zero sockets",
+        "late read/process stage fencing",
+        "actual connector read intervals and hostile field stripping",
+        "lstat interval/window exhaustion",
+        "default process children close/drain plus removal mutation",
+        "constant validated result mutation",
+        "dropped lastRead mutation",
+        "manufactured false error/callback mutations",
+        "actual driver original error identity, sink failure and cleanup"
+      ]
+    },
+    {
+      "run_id": "d298-fresh-current-lock-compile-20261027",
+      "journal": "docs/stabilization/resource-journals/d298-fresh-current-lock-compile-20261027.jsonl",
+      "journal_sha256": "45a6b8ca3db4c78d4208221da209e830c60943aa8d55a3cc680438fa5885ad28",
+      "terminal_log": ".output/stabilization-checkpoints/d298-fresh-current-lock-compile-20261027.log",
+      "terminal_log_sha256": "f3360a88ad1afde5ba8e2216b82ddf6d8e12e7563c92213399f42e173cf7a77c",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T02:40:43.996Z",
+        "runId": "d298-fresh-current-lock-compile-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "healthy_watch_events": 0
+    }
+  ],
+  "final_source_basis": "92accd7c35731fd9ff1c671d3f0972ea21891238",
+  "final_owned_hash_check": {
+    "package.json": false,
+    "scripts/hosted-seo-route.test.mjs": true,
+    "scripts/hosted-startup-interval-diagnostic.mjs": true,
+    "scripts/test-hosted-startup-interval-diagnostic.mjs": true,
+    "tests/browser/native-cdp-startup-diagnostic.mjs": true,
+    "tests/browser/native-cdp-startup-diagnostic.test.mjs": true,
+    "tests/browser/native-cdp-startup-deadline.test.mjs": true,
+    "tests/browser/native-sidepanel-qa-harness.mjs": true,
+    "tests/browser/native-sidepanel-qa-harness.test.mjs": true,
+    "tests/browser/native-startup-interval-callsite.test.mjs": true,
+    "tests/browser/notes-startup-diagnostic.mjs": true,
+    "tests/browser/notes-startup-diagnostic.test.mjs": true,
+    "tests/browser/vault-owned-cdp.cjs": true,
+    "docs/stabilization/PLAN.md": true
+  },
+  "merged_manifest_delta": "Only package version628→629 from preserved contributor merge; focused script/dependency declarations exactly match owned source commit. Full package hash differs legitimately.",
+  "original_private_report_sha256": "11f52bd7a2e88702b52713fda5858c8112a8eb4130168acd13b048d14557f333",
+  "reference_limits": "Mapped originals are durable; maps distinguish original and formatted hashes. Unmapped scratch logs/ZIPs/private context remain private and are not implied independently verified."
+}

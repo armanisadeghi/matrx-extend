@@ -1,0 +1,642 @@
+{
+  "schema": 1,
+  "status": "TERMINAL_PRE_UI_FAILURE_ZERO_PRODUCT_CREDIT",
+  "at": "2026-10-27T03:42:26.823121+00:00",
+  "scope": {
+    "feature_id": "EXT-F-1007",
+    "case_id": "EXT-F-1007-T08",
+    "control_id": "EXT-F-1007-C08",
+    "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+    "case": "guest-scrape-development",
+    "scrape_scope": "seo-schema-empty",
+    "auth_mode": "guest",
+    "lane": "B",
+    "runner_label": "macos-15-intel"
+  },
+  "official": {
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40444784947",
+    "run_id": 40444784947,
+    "attempt": 1,
+    "source_sha": "35b619573fbddb462f046d6326084b20cf83f23c",
+    "workflow_path": ".github/workflows/hosted-guest-acceptance.yml",
+    "event": "workflow_dispatch",
+    "branch": "main",
+    "status": "completed",
+    "conclusion": "failure",
+    "job_id": 121993358455,
+    "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40444784947/job/121993358455",
+    "job_started_at": "2026-10-27T03:33:13Z",
+    "job_completed_at": "2026-10-27T03:40:23Z",
+    "runner_id": 1000117240,
+    "runner_name": "GitHub Actions 1000117240",
+    "labels": ["macos-15-intel"]
+  },
+  "inputs_provenance": {
+    "parent_dispatch_receipt": ".output/stabilization-checkpoints/scrape-b-35b-dispatch-20261027.json",
+    "official_job_log": ".output/stabilization-checkpoints/scrape-b-35b/job.log",
+    "observed_inputs": {
+      "ACCEPTANCE_CASE": "guest-scrape-development",
+      "ACCEPTANCE_LANE": "B",
+      "SCRAPE_SCOPE": "seo-schema-empty",
+      "SCRAPE_AUTH_MODE": "guest",
+      "MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC": "0",
+      "MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE": ""
+    }
+  },
+  "development": {
+    "run_id": 40443458190,
+    "attempt": 1,
+    "source_sha": "35b619573fbddb462f046d6326084b20cf83f23c",
+    "conclusion": "success",
+    "artifact": {
+      "id": 12707143793,
+      "node_id": "MDg6QXJ0aWZhY3QxMjcwNzE0Mzc5Mw==",
+      "name": "matrx-extend-development-test-35b619573fbddb462f046d6326084b20cf83f23c-40443458190-1",
+      "size_in_bytes": 49833438,
+      "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/artifacts/12707143793",
+      "archive_download_url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/artifacts/12707143793/zip",
+      "expired": false,
+      "digest": "sha256:80816dc4cb171e8ef4331d357d68ab9b50569073d80bf17b9622eadc98335bb6",
+      "created_at": "2026-10-27T03:31:01Z",
+      "updated_at": "2026-10-27T03:31:01Z",
+      "expires_at": "2027-01-25T03:18:44Z",
+      "workflow_run": {
+        "id": 40443458190,
+        "repository_id": 1225111202,
+        "head_repository_id": 1225111202,
+        "head_branch": "main",
+        "head_sha": "35b619573fbddb462f046d6326084b20cf83f23c"
+      }
+    },
+    "imported_receipt": {
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "sourceSha": "35b619573fbddb462f046d6326084b20cf83f23c",
+      "runId": 40443458190,
+      "artifactId": 12707143793,
+      "githubArtifactDigest": "sha256:80816dc4cb171e8ef4331d357d68ab9b50569073d80bf17b9622eadc98335bb6",
+      "runAttempt": 1,
+      "version": "0.2.629",
+      "treeSha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5"
+    },
+    "build": {
+      "before": {
+        "treeSha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5"
+      },
+      "after": {
+        "treeSha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5"
+      }
+    },
+    "archive_downloaded_by_collector": false
+  },
+  "native_archive": {
+    "artifact": {
+      "id": 12707773527,
+      "node_id": "MDg6QXJ0aWZhY3QxMjcwNzc3MzUyNw==",
+      "name": "hosted-guest-40444784947-1",
+      "size_in_bytes": 3243,
+      "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/artifacts/12707773527",
+      "archive_download_url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/artifacts/12707773527/zip",
+      "expired": false,
+      "digest": "sha256:fa77f47a1bb561c42444bab56f09240b02dc644e5eb38051234e5de01270198a",
+      "created_at": "2026-10-27T03:40:18Z",
+      "updated_at": "2026-10-27T03:40:18Z",
+      "expires_at": "2027-01-25T03:33:04Z",
+      "workflow_run": {
+        "id": 40444784947,
+        "repository_id": 1225111202,
+        "head_repository_id": 1225111202,
+        "head_branch": "main",
+        "head_sha": "35b619573fbddb462f046d6326084b20cf83f23c"
+      }
+    },
+    "path": ".output/stabilization-checkpoints/scrape-b-35b/artifact.zip",
+    "sha256": "fa77f47a1bb561c42444bab56f09240b02dc644e5eb38051234e5de01270198a",
+    "official_digest_matched": true,
+    "member_count": 4,
+    "members": {
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40444784947-1.jsonl": {
+        "bytes": 993,
+        "sha256": "c38a512c28ca397134d39e9da18530236e2edd33362563c9caea7d1811966428",
+        "extracted_identical": true
+      },
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40444784947-1.jsonl": {
+        "bytes": 989,
+        "sha256": "218ddd0cfd6791d0de8466b12aaf5facfd30573967ffc5cb679451ba99d55cdf",
+        "extracted_identical": true
+      },
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40444784947-1.jsonl": {
+        "bytes": 1825,
+        "sha256": "7be5da06a7d71c1755b77b6742f93921991216ef169ec641992d5fcfa4e2b40c",
+        "extracted_identical": true
+      },
+      "matrx-extend/matrx-extend/test-results/scrape-seo-schema-empty-guest-native.json": {
+        "bytes": 1592,
+        "sha256": "3255f874b80b1cc2b091c4101bfd2c4199bcea2cf294c827431053d8e64db5ce",
+        "extracted_identical": true
+      }
+    }
+  },
+  "native_report_path": ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/test-results/scrape-seo-schema-empty-guest-native.json",
+  "native_report": {
+    "schema_version": 1,
+    "feature_id": "EXT-F-1007",
+    "case_id": "EXT-F-1007-T08",
+    "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+    "auth_mode": "guest",
+    "status": "fail",
+    "stage": "preflight",
+    "native_stage": "cdp_connect",
+    "artifact": {
+      "kind": "ci_development_test",
+      "source_sha": "35b619573fbddb462f046d6326084b20cf83f23c",
+      "run_id": 40443458190,
+      "artifact_id": 12707143793,
+      "version": "0.2.629",
+      "tree_sha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5"
+    },
+    "observations": null,
+    "capture_diagnostic": null,
+    "pane_screenshots": null,
+    "panel_viewport": null,
+    "failure_code": "owned_cdp_endpoint_timeout",
+    "limits": "One owned localhost guest page; only T08 no-signal SEO and empty Schema panes. No broader T08, role, width, Store, or current-main claim.",
+    "imported_artifact": {
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "sourceSha": "35b619573fbddb462f046d6326084b20cf83f23c",
+      "runId": 40443458190,
+      "artifactId": 12707143793,
+      "githubArtifactDigest": "sha256:80816dc4cb171e8ef4331d357d68ab9b50569073d80bf17b9622eadc98335bb6",
+      "runAttempt": 1,
+      "version": "0.2.629",
+      "treeSha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5"
+    },
+    "build": {
+      "before": {
+        "treeSha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5"
+      },
+      "after": {
+        "treeSha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5"
+      }
+    }
+  },
+  "browser_startup_failure": [
+    {
+      "failureCode": "owned_cdp_endpoint_timeout",
+      "elapsedMs": 8044,
+      "exitCode": null,
+      "signalCode": null,
+      "launchFailed": false,
+      "spawnObserved": true,
+      "stderrFlags": {
+        "hadStderr": false,
+        "codeSignature": false,
+        "dynamicLoader": false,
+        "permissionDenied": false,
+        "sandbox": false,
+        "crash": false,
+        "devtoolsListening": false
+      },
+      "endpointWaitDiagnostic": {
+        "polls": 238,
+        "elapsedMs": 8027,
+        "longestReadMs": 246,
+        "lastRead": {
+          "startedElapsedMs": 7978,
+          "completedElapsedMs": 7979,
+          "outcome": "missing"
+        }
+      }
+    }
+  ],
+  "resource_journals": {
+    "hosted-package-40444784947-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40444784947-1.jsonl",
+      "events": [
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:34:37.181Z",
+          "runId": "hosted-package-40444784947-1",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:35:45.225Z",
+          "runId": "hosted-package-40444784947-1",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.73,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.017142857142857144,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.17151641845703,
+            "profileFreeGiB": 109.17151641845703,
+            "safetyFreeGiB": 109.17151641845703,
+            "systemFreeGiB": 109.17151641845703
+          },
+          "cpuBusySamples": [0.03, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:35:52.031Z",
+          "runId": "hosted-package-40444784947-1",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:35:52.210Z",
+          "runId": "hosted-package-40444784947-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T03:35:52.210Z",
+        "runId": "hosted-package-40444784947-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "hosted-guest-40444784947-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40444784947-1.jsonl",
+      "events": [
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:38:20.961Z",
+          "runId": "hosted-guest-40444784947-1",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:39:28.739Z",
+          "runId": "hosted-guest-40444784947-1",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 0.9,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.060000000000000005,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 108.9282112121582,
+            "profileFreeGiB": 108.9282112121582,
+            "safetyFreeGiB": 108.9282112121582,
+            "systemFreeGiB": 108.9282112121582
+          },
+          "cpuBusySamples": [0.05, 0.01, 0.01, 0.01, 0.32, 0.01, 0.01],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:39:44.820Z",
+          "runId": "hosted-guest-40444784947-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 0.92,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.51,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 108.70027160644531,
+            "profileFreeGiB": 108.70027160644531,
+            "safetyFreeGiB": 108.70027160644531,
+            "systemFreeGiB": 108.70027160644531
+          },
+          "code": "RESOURCE_WATCH_HEALTHY"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:40:01.086Z",
+          "runId": "hosted-guest-40444784947-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.28,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.37,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 108.72599411010742,
+            "profileFreeGiB": 108.72599411010742,
+            "safetyFreeGiB": 108.72599411010742,
+            "systemFreeGiB": 108.72599411010742
+          },
+          "code": "RESOURCE_WATCH_HEALTHY"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:40:16.103Z",
+          "runId": "hosted-guest-40444784947-1",
+          "childExitCode": 1,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:40:16.350Z",
+          "runId": "hosted-guest-40444784947-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 1,
+          "decision": "child_failed",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T03:40:16.350Z",
+        "runId": "hosted-guest-40444784947-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "hosted-browser-40444784947-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40444784947-1.jsonl",
+      "events": [
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:36:25.669Z",
+          "runId": "hosted-browser-40444784947-1",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:37:33.130Z",
+          "runId": "hosted-browser-40444784947-1",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.1,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.038571428571428576,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.18835067749023,
+            "profileFreeGiB": 109.18835067749023,
+            "safetyFreeGiB": 109.18835067749023,
+            "systemFreeGiB": 109.18835067749023
+          },
+          "cpuBusySamples": [0.21, 0, 0.01, 0.02, 0.01, 0.01, 0.01],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:37:47.325Z",
+          "runId": "hosted-browser-40444784947-1",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T03:37:47.468Z",
+          "runId": "hosted-browser-40444784947-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T03:37:47.468Z",
+        "runId": "hosted-browser-40444784947-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  },
+  "normal_verifier": {
+    "clean_ready_parent_at": "2026-10-27T03:41:02Z",
+    "command": [
+      "node",
+      "scripts/hosted-remote-admission.mjs",
+      "verify-scrape",
+      "--run-id",
+      "40444784947",
+      "--attempt",
+      "1",
+      "--artifact-zip",
+      ".output/stabilization-checkpoints/scrape-b-35b/artifact.zip",
+      "--source-sha",
+      "35b619573fbddb462f046d6326084b20cf83f23c",
+      "--development-run-id",
+      "40443458190",
+      "--development-artifact-id",
+      "12707143793"
+    ],
+    "os_exit_code": 1,
+    "stdout_path": ".output/stabilization-checkpoints/scrape-b-35b/normal-verifier.stdout",
+    "stderr_path": ".output/stabilization-checkpoints/scrape-b-35b/normal-verifier.stderr",
+    "stdout": "",
+    "stderr": "HOSTED_REMOTE_REFUSED HOSTED_RUN_NOT_SUCCESSFUL\n",
+    "certificate_path": null
+  },
+  "acceptance": {
+    "product_credit": 0,
+    "seo_assertions": "unexecuted",
+    "schema_assertions": "unexecuted",
+    "capture_export_invariance": "unexecuted",
+    "actual_ui": "not_reached",
+    "decisive_images": [],
+    "whole_T08": "unverified",
+    "full_reload": "unverified",
+    "Store": "unverified",
+    "other_roles": "unverified"
+  },
+  "identity_and_real_data": {
+    "browser_full_version": null,
+    "browser_full_version_basis": "not emitted; failed before Browser.getVersion",
+    "extension_version": "0.2.629",
+    "actual_extension_runtime_id": null,
+    "login_method": "none; requested guest, pre-UI failure prevents actual Settings signed-out proof",
+    "principal": null,
+    "organization": null,
+    "fixture": "Driver config only: owned localhost /seo-schema-empty title Harbor Dental appointment information, empty body/no metadata or schema; navigation/assertion stage never reached",
+    "backend_identity": null,
+    "AI_calls": 0,
+    "DB_fixtures_created_by_collector": 0,
+    "mock_or_stand_in_used_by_collector": false
+  },
+  "diagnostic_limits": [
+    "Observed failure boundary is owned CDP endpoint wait before panel connection; downstream assertion is a consequence, not product defect.",
+    "Last completed connector read was missing at7978–7979ms; this is not continuous absence or physical publication time.",
+    "Native healthy samples do not measure critical8second startup CPU; no CPU causal conclusion.",
+    "Success of earlier9e4 diagnostic on another hosted VM does not establish original-path recovery or negate this failure.",
+    "No BROWSER_STARTUP_OBSERVATION or startup diagnostic artifact emitted on this normal route; full version, later endpoint presence and process cleanup are unknown.",
+    "D298 measurement source does not claim Chrome startup repair; D254/D231 remain unresolved."
+  ],
+  "cleanup": {
+    "collector_mac_browser_or_heavy_processes_created": 0,
+    "watch_session": 54426,
+    "watch_os_exit": 0,
+    "watch_interval_seconds": 65,
+    "watch_cli_exit_does_not_equal_job_verdict": true,
+    "metadata_fetch_session": 66136,
+    "metadata_fetch_os_exit": 0,
+    "remote_profile_deletion": "unverified",
+    "remote_browser_process_deletion": "unverified",
+    "remote_fixture_deletion": "unverified",
+    "credentials_or_secrets_mutated_by_collector": false,
+    "retry_or_alternate_runner": false
+  },
+  "next_action": "Preserve this failed original-path evidence and route first-boundary startup diagnosis/measurement to the owner before another native product attempt; no retry/timeout/runner/policy change authorized by this result.",
+  "file_hashes": {
+    ".output/stabilization-checkpoints/scrape-b-35b/run.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/job.log": {
+      "bytes": 174453,
+      "sha256": "ff91c739fe8bb0c00dd549fc0206a2d42308c30c25ba5b2102527f763d9b3fcb"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/normal-verifier.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/development-run.json": {
+      "bytes": 12790,
+      "sha256": "23894f5677bb3714e4f9d2880574c82ba763e0b95070e802fb6b7fbe1a7e342c"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/development-artifact.json": {
+      "bytes": 766,
+      "sha256": "322d751275040d72527c88f8d6004c1006d8d4bcddf25a75f8b7f749b6bbedaf"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/watch.txt": {
+      "bytes": 5906,
+      "sha256": "8ea97e2dce45f9257cbe795473742b5dd2316261e93ad628446c5fb16a7b7595"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/artifact-download.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/normal-verifier.stderr": {
+      "bytes": 48,
+      "sha256": "f481b929f84a8539d04908b49db8a50fbdb13dfcd1594416fdc563507ae75881"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/artifact.zip": {
+      "bytes": 3243,
+      "sha256": "fa77f47a1bb561c42444bab56f09240b02dc644e5eb38051234e5de01270198a"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/artifacts.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/development-run.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/watch.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/jobs.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/job-log.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/run.json": {
+      "bytes": 12943,
+      "sha256": "498b475bc0e3964041a2cec654d2837454a8ee7bfd367eeeabb744a8b76b7fb3"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/jobs.json": {
+      "bytes": 4617,
+      "sha256": "ced6ac4767f5d586416ff0c2d1593f6e98b494c19dfedb0223d40290dd4c15a3"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/development-artifact.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/artifacts.json": {
+      "bytes": 736,
+      "sha256": "9d66291aa26b9b894263aeed4be8af8e465d03f693ce4733578fae426c842a33"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/test-results/scrape-seo-schema-empty-guest-native.json": {
+      "bytes": 1592,
+      "sha256": "3255f874b80b1cc2b091c4101bfd2c4199bcea2cf294c827431053d8e64db5ce"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40444784947-1.jsonl": {
+      "bytes": 993,
+      "sha256": "c38a512c28ca397134d39e9da18530236e2edd33362563c9caea7d1811966428"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40444784947-1.jsonl": {
+      "bytes": 1825,
+      "sha256": "7be5da06a7d71c1755b77b6742f93921991216ef169ec641992d5fcfa4e2b40c"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40444784947-1.jsonl": {
+      "bytes": 989,
+      "sha256": "218ddd0cfd6791d0de8466b12aaf5facfd30573967ffc5cb679451ba99d55cdf"
+    }
+  },
+  "original_private_report_sha256": "9c882ad2e830417f65f8ca857c177e64663d62c585f748f83406a04ea1944347",
+  "durable_evidence_map": {
+    ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/test-results/scrape-seo-schema-empty-guest-native.json": {
+      "durable": "docs/stabilization/evidence/scrape-b-35b-40444784947/scrape-seo-schema-empty-guest-native.json",
+      "original_sha256": "3255f874b80b1cc2b091c4101bfd2c4199bcea2cf294c827431053d8e64db5ce",
+      "sha256": "3255f874b80b1cc2b091c4101bfd2c4199bcea2cf294c827431053d8e64db5ce",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40444784947-1.jsonl": {
+      "durable": "docs/stabilization/resource-journals/hosted-package-40444784947-1.jsonl",
+      "original_sha256": "c38a512c28ca397134d39e9da18530236e2edd33362563c9caea7d1811966428",
+      "sha256": "c38a512c28ca397134d39e9da18530236e2edd33362563c9caea7d1811966428",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40444784947-1.jsonl": {
+      "durable": "docs/stabilization/resource-journals/hosted-guest-40444784947-1.jsonl",
+      "original_sha256": "7be5da06a7d71c1755b77b6742f93921991216ef169ec641992d5fcfa4e2b40c",
+      "sha256": "7be5da06a7d71c1755b77b6742f93921991216ef169ec641992d5fcfa4e2b40c",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/scrape-b-35b/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40444784947-1.jsonl": {
+      "durable": "docs/stabilization/resource-journals/hosted-browser-40444784947-1.jsonl",
+      "original_sha256": "218ddd0cfd6791d0de8466b12aaf5facfd30573967ffc5cb679451ba99d55cdf",
+      "sha256": "218ddd0cfd6791d0de8466b12aaf5facfd30573967ffc5cb679451ba99d55cdf",
+      "transform": "original bytes"
+    }
+  },
+  "reference_limits": "Mapped originals are durable; maps distinguish original and formatted hashes. Unmapped scratch logs/ZIPs/private context remain private and are not implied independently verified.",
+  "parent_adjudication": "Exact-source B failed before UI at8044ms. Package/browser valid0; native child_failed1 with resourceInvalidfalse, but normal verifier refused HOSTED_RUN_NOT_SUCCESSFUL and no certificate exists. Zero product credit. Missing child/lock/post-timeout evidence prevents causal diagnosis; no blind retry or timeout/guard/runner change."
+}
