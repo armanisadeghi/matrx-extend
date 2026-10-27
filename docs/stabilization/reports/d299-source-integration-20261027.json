@@ -106,5 +106,20 @@
       "public_sha256": "fd1b38577c588e9c199eed9c313ec9a9f48542dc2eb1191782f748c805527cfb"
     }
   ],
-  "next_action": "Observe fullCI909 and exact development artifact; recheck source/runtime eligibility, normal import/verify/promote, then owner Profile8 native Reload/ID/path/version/pin proof. Use normal exact-source admission for frozen guest T10 and member D87/tab-groups retests; do not transfer old passes or relax refusal. Preserve daily Store state and paid-spend hold."
+  "next_action": "Observe fullCI909 and exact development artifact; recheck source/runtime eligibility, normal import/verify/promote, then owner Profile8 native Reload/ID/path/version/pin proof. Use normal exact-source admission for frozen guest T10 and member D87/tab-groups retests; do not transfer old passes or relax refusal. Preserve daily Store state and paid-spend hold.",
+  "last_CI_observation": {
+    "at": "2026-10-27T15:17:57.328596+00:00",
+    "run": 40528122564,
+    "status": "in_progress",
+    "active_step": "Unit tests",
+    "artifacts_observed": [],
+    "normal_adoption": "withheld: no successful source-matching artifact available; no import/promotion/reload attempted or claimed"
+  },
+  "canonical_record_update": {
+    "own_commit": "44c5ef4e2de",
+    "merged_main": "0529f65fedf",
+    "record": "aidream/common-docs/systems/apps/extension/CHROME-WEB-STORE.md",
+    "scope": "Two factual bullets distinguish historical owner copy and source-only harness progress from current native/release acceptance. Store/mail/guest observations unchanged; completed daily claim reused.",
+    "validation": "Five current bullets; reference sets unchanged; staged OKF check emitted no errors; one-home passes. Repository-wide docs checks are not clean: reported unrelated broken pointers,102 docs-guard violations,60 OKF violations; no global pass claimed and no policy/guard changes."
+  }
 }
