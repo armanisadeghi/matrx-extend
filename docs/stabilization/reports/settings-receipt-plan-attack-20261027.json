@@ -1,0 +1,21 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "verdict": "REVISE",
+  "coverage": "Same-sample capture seam, immutable baseline, initial/final restoration order, no extra reads, safe finite output, actual warm catch, primary preservation and diagnostics failure isolation mapped; exact shadow equality coverage needs explicit ruling.",
+  "blocking": [
+    {
+      "id": "B1",
+      "finding": "guestModeShadowMatches validates only status/stores length/order/basic presence types, then compares entire JSON.stringify objects. All listed field categories can match while extra properties or property insertion order make the authoritative equality false. A field-only receipt could report every category equal and fail to identify the actual false predicate.",
+      "required_plan_change": "Include finite exact_serialization_equal/unequal/unavailable category after observed-valid and baseline-valid, and a residual serialization mismatch when fixed categories agree; never output serialized values or change comparator. Cover this residual, store length/order/identity and parseStatus differences explicitly."
+    }
+  ],
+  "rulings": [
+    "Project receipt independently of caseId: actual warm catch calls safeUnexpectedError(error) without T10; prove receipt reaches report.guestFailure at both stages.",
+    "Isolate new receipt access/projection from existing safeUnexpectedError outer catch: throwing receipt getter must retain original allowlisted name/code/source, rather than replacing them with diagnostic_unavailable. Existing getter scenario covers throwing error.name, not throwing new receipt data.",
+    "Mutation proof must freeze only the receipt while preserving correct varying primary metadata; existing constant_projector varies the entire error projection and can be killed without checking receipt correctness. Assert different predicate/store failures produce distinct exact finite receipts and ordered first false with multiple simultaneous failures."
+  ],
+  "limits": "Read source/plan/governing diagnosis only; no native/UI/CI/auth/sampling/tests/source edits; no product fix or baseline changes. Live-first skill step excluded by explicit read-only no-UI brief.",
+  "evidence": "settings-full-extension-rechecks.mjs:42,261; settings-guest-preference-batch.mjs:230,766; settings-local-controls-acceptance.mjs:1206; settings-reload-boundary.test.mjs:703-885; docs/stabilization/reports/settings-f670-primary-diagnosis-20261027.json",
+  "publication": "Typed supporting evidence; no native/product/Store acceptance from source tests/review. Earlier source hashes and known review findings remain bounded to their observation.",
+  "private_original_sha256": "32decddcb3669bc3ead466ce944a6b2cb976e1f96c512ec5fe0aa9b964858ee5"
+}

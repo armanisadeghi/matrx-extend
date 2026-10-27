@@ -27,7 +27,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Successful exact synchronized-main CI/artifact for committed supporting auth pointer capture unit, then one discriminating member native retest through unchanged normal gates. Original D301 name-entry remains untested on diagnostic source; underlying product/driver cause UNKNOWN. Keep source gates/diagnostic capture separate from actual native/Store acceptance; no blind retry or resource bypass.",
+  "next_action": "Original Data name entry remains UNVERIFIED. No blind A rerun, new pointer instrumentation/patch, timeout increase or wall-time exclusion justified by513 intentional setup deadline rejection. Use an existing admitted targeted/native-operator route only when it provides new discriminating evidence and normal fixtures/leases; native controller currently unavailable. Keep D297 closed to its actual scope and D301 IN-FIX; prioritize newly instrumented original B Settings reproduction once its exact-source artifact is ready.",
   "transition_history": [
     {
       "at": "2026-10-27T20:56:20.359552+00:00",
@@ -50,13 +50,17 @@
   "underlying_product_cause": "UNKNOWN",
   "diagnostic_source_fix_sha": "8157f0811f675548c867b740121229793afba376",
   "current_native_observation": {
-    "run_id": 40590496401,
-    "source_sha": "f670242504c54f99f434d74236a3155b0d713e54",
-    "stage": "member_auth/member_logical_organization_proof",
-    "error": "pointer_stable_hit_not_observed",
+    "run_id": 40596980098,
+    "source_sha": "513d1bb71aa11e66b119df5bdb6d43776527652b",
+    "stage": "input/panel_context",
+    "supporting_branch": "intentional initial panel wall-budget expiry",
     "original_reproduction_reached": false,
     "authentication": null,
-    "scope": "Samecase stopped earlier, before actual Tools mouse dispatch. Existing safe pointer veto sample is dropped by shared auth report; supporting capture repair owned by root. Product/driver cause UNKNOWN. No D301 closure."
+    "scope": "Before auth pointer capture or Data name entry; last exact context retained after existing15s deadline, followUp reused same original sample. ThreeCPU_PENDING/oneRECOVERED overlap does not prove physical resource cause; no driver/product defect or timeout change justified.",
+    "evidence": [
+      "docs/stabilization/reports/member-513-report-20261027.json",
+      "docs/stabilization/reports/member-513-panel-diagnosis-20261027.json"
+    ]
   },
   "supporting_auth_capture": {
     "owner": "root/auth_pointer_capture_fix",

@@ -1,0 +1,59 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "lane": "Fresh independent re-verification; zero source authorship; source-only",
+  "snapshot": {
+    "settings-full-extension-rechecks.mjs": "93937d6239552fef958e6ff50255bebadbbd0bd03f053acdd5967d06ebfc45df",
+    "settings-reload-boundary.test.mjs": "5944e9d2bb15430aba951d65b288e9e803683c4edb90717b56a375570824b6eb",
+    "final_gates": "PENDING: final focused run, compile and lint results not observed in this review. Earlier 1213/1202 pass and 11 skip runs are intermediate only, per parent brief; no final-source credit."
+  },
+  "prior_findings": [
+    {
+      "id": "R1",
+      "status": "ADDRESSED",
+      "evidence": "safeModeComparison snapshots stage, firstFalse, serialization, residual, stores, shape scalars and field categories before validating/emitting them. Output uses fixed store names and finite primitives only. Stateful getter regression asserts primary name, receipt stage/predicate/category and no canary."
+    },
+    {
+      "id": "R2",
+      "status": "NOT_FULLY_ADDRESSED",
+      "evidence": "Expanded tests now cover count-only, baselineValue-only, baselineValid-only and missing/unknown footprints. Standalone throwing receipt getter test asserts meaningful original source; actual warm caller asserts initial/final capture stage. However missing-footprint branch tests assert only firstFalse/code and never serialization=unavailable; null-entry best-effort omission is still untested/undocumented. Full stated malformed/unavailable matrix remains incomplete."
+    }
+  ],
+  "verdict_A": {
+    "verdict": "PASS_WITH_LIMITS_FOR_STABLE_JSON_SOURCE_CAPABILITY",
+    "native_cause": "UNKNOWN",
+    "evidence": "Unchanged preferenceBaselineMatches first decides the mismatch. Receipt derives from that existing observation and immutable T10 baseline after the original Error is created. No new Chrome reads, comparator verdict, baseline selection/restoration, input or budget change in diff. Ordered UI/baseline/shadow-validity predicates match canonical comparator on stable JSON. Whole-JSON unequal category and residual preserve extra-property/order mismatch meaning without emitting data. Actual warm catch calls safeUnexpectedError without caseId; new receipt publication is independent of caseId and survives existing enforcement.",
+    "limitations": "Source capability only. No execution, live/native acceptance, original failing sample reconstruction, product cause or D300 closure. Malformed/throwing samples may omit receipt while preserving mismatch error, except newly identified primary-projection regression R3."
+  },
+  "verdict_B": {
+    "verdict": "REVISE",
+    "findings": [
+      {
+        "id": "R3",
+        "severity": "Important",
+        "location": "tests/browser/settings-full-extension-rechecks.mjs:193",
+        "finding": "Snapshotting rawMessage eagerly introduces a primary-error preservation regression. Previously an allowlisted error.code short-circuited access to error.message. Now a throwing message getter triggers the outer diagnostic_unavailable fallback despite valid name/code/stack.",
+        "proof": "Source counterexample: Error-like object with name=Error, code=EPIPE, stack containing an allowed settings test frame, and throwing message getter. Previous projection preserved Error/EPIPE/source because message was not read; current rawMessage read throws before result construction. No scratch probe was executed.",
+        "required": "Read message once only when rawCode is not allowlisted; retain single-read semantics and add regression asserting name/code/source for an allowlisted code plus throwing message getter."
+      },
+      {
+        "id": "R2_remaining",
+        "severity": "Important",
+        "location": "tests/browser/settings-reload-boundary.test.mjs:1120-1186",
+        "finding": "Malformed/unavailable proof remains narrower than the explicit accepted plan and prior finding.",
+        "required": "Assert serialization=unavailable for malformed/missing footprints; cover a malformed null store following an earlier false UI predicate and its intentional best-effort receipt omission, or record a clear adjudicated scope limit."
+      }
+    ],
+    "positive": "Canonical comparator and existing capture/warm/publication seams reused. No production comparator fork. No diagnostic branch changes acceptance behavior. Real projector and actual warm catch are exercised. Receipt-only constant-firstFalse mutant retains ordinary metadata yet fails distinct store mismatch assertions. Existing callback failure and no extra observation/restoration ordering guards remain.",
+    "pending": [
+      "Resolve R3 and remaining R2 proof scope",
+      "Fresh scoped re-verification on any changed hashes",
+      "Resource-admitted focused suite on exact final source",
+      "Compile and lint on exact final source"
+    ]
+  },
+  "actions": "Read source diff, actual canonical comparator/warm catch, accepted plan/prior review and exact hashes. Wrote this report only. No source edits, agents, execution tests, scratch bypass, UI/native/CI/auth/build/install.",
+  "notification": "Important R3 and remaining R2 scope sent promptly to root.",
+  "publication": "Typed supporting evidence; no native/product/Store acceptance from source tests/review. Earlier source hashes and known review findings remain bounded to their observation.",
+  "private_original_sha256": "40b8152d4dd9e94a29c56a59e081f7c89e9e27006c1addbba356988f99dcc595",
+  "continuation": "Important findings transferred to fresh Sol; final source capability reviewed in settings-receipt-completion-peer-20261027.json. Final source/gate record follows; earlier hashes are not final-source verification."
+}

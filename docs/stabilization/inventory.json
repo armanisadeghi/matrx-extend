@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-27T22:04:03.551921+00:00",
+  "updated_at": "2026-10-27T22:55:44.753564+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -49434,35 +49434,36 @@
             },
             "member": {
               "status": "unverified",
-              "run_id": 40590496401,
-              "source_sha": "f670242504c54f99f434d74236a3155b0d713e54",
-              "development_ci_run_id": 40587669744,
-              "development_artifact_id": 12774320314,
+              "run_id": 40596980098,
+              "source_sha": "513d1bb71aa11e66b119df5bdb6d43776527652b",
+              "development_ci_run_id": 40594372373,
+              "development_artifact_id": 12776012647,
               "build_version": "0.2.630",
               "resource_invalid": false,
               "acceptance_run_successful": false,
               "full_case_pass": false,
               "new_product_credit": false,
-              "failure_stage": "member_auth/member_logical_organization_proof",
-              "error_code": "pointer_stable_hit_not_observed",
+              "failure_stage": "input/panel_context",
+              "error_code": "native_acceptance_error; BROWSER_PANEL_CONTEXT_FAILURE retained log",
+              "supporting_branch": "intentional initial panel wall-budget expiry",
               "auth_preconditions_verified": false,
               "not_exercised": [
-                "Tools click dispatch",
-                "logical organization proof completion",
+                "browser member sign-in/proof",
+                "auth pointer receipt",
                 "original name entry",
                 "automatic extraction states"
               ],
               "evidence": [
-                "docs/stabilization/reports/member-data-f670-report-20261027.json",
-                "docs/stabilization/reports/member-f670-failure-peer-20261027.json"
+                "docs/stabilization/reports/member-513-report-20261027.json",
+                "docs/stabilization/reports/member-513-panel-diagnosis-20261027.json"
               ],
-              "scope": "Shared pointer admission refused before mouse dispatch; one matched/visible target and expected selected organization do not prove complete browser member authentication. Safe pointer veto details lost. Cause UNKNOWN; no resource cause proven, busy sample recovered and guest final child_failed1 NONINVALID. Original D301 not reached. Exact fixture archive and zero fresh-run rows restored/readback by actor, secret/authfiles absent; peer verified receipt consistency and GitHub secret absence, not fresh DB read. Remote profile deletion unknown. No retry/AI/closure."
+              "scope": "Last retained exact context rejected after shared15s wall setup deadline. FollowUp reused original sample, not fresh worker read; later frame/renderer exact/ready diagnostics are not acceptance. ThreeCPU_PENDING/oneRECOVERED48.211s span overlaps failure but physical causal explanation unproven. Normal verifier correctly refuses failed run. Actor exactnewrun rows0/archive restored/readback and secret/authfiles absent; independent retained-byte/script/instant checks, not independent live DB cleanup or remote deletion. No native retry/timeout/timeexclusion/newcapture or productcause/closure."
             },
             "admin": {
               "status": "unverified"
             }
           },
-          "verification_status": "member-unverified-current-f670; frozen0.2.493 pass retained; guest-not-applicable; admin-unverified; feature-incomplete",
+          "verification_status": "member-unverified-current-513; frozen0.2.493 pass retained; guest-not-applicable; admin-unverified; feature-incomplete",
           "previous_results": [
             {
               "mode": "member",
@@ -49534,6 +49535,37 @@
               },
               "superseded_at": "2026-10-27T22:04:03.551921+00:00",
               "reason": "Fresh f670 native attempt stopped earlier in auth pointer admission; original1038 name-entry evidence preserved without cause inference."
+            },
+            {
+              "mode": "member",
+              "result": {
+                "status": "unverified",
+                "run_id": 40590496401,
+                "source_sha": "f670242504c54f99f434d74236a3155b0d713e54",
+                "development_ci_run_id": 40587669744,
+                "development_artifact_id": 12774320314,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "failure_stage": "member_auth/member_logical_organization_proof",
+                "error_code": "pointer_stable_hit_not_observed",
+                "auth_preconditions_verified": false,
+                "not_exercised": [
+                  "Tools click dispatch",
+                  "logical organization proof completion",
+                  "original name entry",
+                  "automatic extraction states"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/member-data-f670-report-20261027.json",
+                  "docs/stabilization/reports/member-f670-failure-peer-20261027.json"
+                ],
+                "scope": "Shared pointer admission refused before mouse dispatch; one matched/visible target and expected selected organization do not prove complete browser member authentication. Safe pointer veto details lost. Cause UNKNOWN; no resource cause proven, busy sample recovered and guest final child_failed1 NONINVALID. Original D301 not reached. Exact fixture archive and zero fresh-run rows restored/readback by actor, secret/authfiles absent; peer verified receipt consistency and GitHub secret absence, not fresh DB read. Remote profile deletion unknown. No retry/AI/closure."
+              },
+              "superseded_at": "2026-10-27T22:55:44.753564+00:00",
+              "reason": "New513 attempt stopped earlier at initial panel setup wall-budget deadline; originalf670 authpointer and1038 nameentry observations remain retained."
             }
           ]
         },

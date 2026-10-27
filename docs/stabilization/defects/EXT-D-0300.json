@@ -34,7 +34,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Queue same-sample finite comparator receipt to localize false T10 predicate without extra Chrome reads, raw storage or immutable-baseline/verdict change; prove actual caller/projector capture guards. Intermediate sibling container mutation is proven, late thrown predicate and application cause UNKNOWN. Remaining final-only report siblings/fullreload proof stay open. No closure from diagnostic source/nativepartial.",
+  "next_action": "Successful new exact synchronized-main CI/development artifact, normal adoption, then one original guest Settings controls B native retest with new finite comparison receipt under unchanged normal gates. Inspect actual firstFalse/store/serialization categories; do not rebaseline/relax comparator or infer guest mode leak from sibling writes alone. Fullreload/late-report siblings and product/driver causes remain UNKNOWN/open; no closure from source guards.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -93,5 +93,18 @@
       "docs/stabilization/reports/settings-controls-f670-20261027.json",
       "docs/stabilization/reports/settings-f670-primary-diagnosis-20261027.json"
     ]
+  },
+  "mode_comparison_receipt": {
+    "owner": "root/settings_receipt_finish",
+    "state": "source-verified-native-pending",
+    "source_fix_sha": "d83fe8aadab4dd02cff0c320422971f5f2c32efb",
+    "source_hashes": {
+      "tests/browser/settings-full-extension-rechecks.mjs": "69252d3af765ed39225be95a8a9ef2876ac4e4c172c86e24793202e1ea0f4418",
+      "tests/browser/settings-reload-boundary.test.mjs": "91b3359e73d5571818aa025a5c1ab0402ad7d11ab07ffad682fbcc8261b18c98"
+    },
+    "verification": "docs/stabilization/reports/settings-receipt-finish-20261027.json",
+    "independent_source_review": "docs/stabilization/reports/settings-receipt-completion-peer-20261027.json",
+    "gate_audit": "docs/stabilization/reports/settings-receipt-gate-audit-20261027.json",
+    "scope": "Same already-read initial/final failed T10 comparator samples produce finite first-predicate and three-store comparison receipt; residual whole-JSON mismatch retained. Original comparator/baseline/reads/restoration/verdict untouched. Getter snapshots and lazy primary-message read preserve original metadata; malformed comparator throws/receipt omission are intentional and guarded. No native false-predicate observation yet."
   }
 }
