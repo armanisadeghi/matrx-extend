@@ -119,5 +119,7 @@
   "intermediate_limits": "Intermediate GREEN had one existing catch-harness invocation missing injected projector; diagnostic scenarios and initial mutants passed. This was not final source-frozen verification; reviewer fixes/test additions proceeded around its completion.",
   "peer": "docs/stabilization/reports/failure-capture-source-peer-20261027.json",
   "native_retest": "UNVERIFIED; original A/B failed before diagnostic change. New exact synchronized-main CI artifact and original native reproduction/surrounding cases required.",
-  "metrics": "Source tests and diagnostic transport evidence only; zero new native fullcase/product-fix/defect-closure/Store-release credit."
+  "metrics": "Source tests and diagnostic transport evidence only; zero new native fullcase/product-fix/defect-closure/Store-release credit.",
+  "code_commit_sha": "8157f0811f675548c867b740121229793afba376",
+  "observation_timing_limit": "Added read-only diagnostic CDP samples can affect timing; a later non-reproduction alone establishes neither an application fix nor root cause."
 }

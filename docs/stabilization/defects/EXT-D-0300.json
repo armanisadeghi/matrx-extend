@@ -77,5 +77,6 @@
   "diagnostic_source_verification": "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
   "diagnostic_independent_review": "docs/stabilization/reports/failure-capture-source-peer-20261027.json",
   "native_diagnostic_retest": "UNVERIFIED",
-  "underlying_product_cause": "UNKNOWN"
+  "underlying_product_cause": "UNKNOWN",
+  "diagnostic_source_fix_sha": "8157f0811f675548c867b740121229793afba376"
 }
