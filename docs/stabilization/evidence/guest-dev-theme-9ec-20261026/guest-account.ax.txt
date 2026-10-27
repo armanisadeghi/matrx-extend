@@ -1,0 +1,38 @@
+The following is a diff from the previous accessibility tree for Window: "Example Domain" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 30-55
++					83 container
++						84 tab group
++							85 tab (selected) Chat, Value: 1
++							86 tab (settable, integer) Scrape, Value: 0
++							87 tab (settable, integer) SEO, Value: 0
++							88 tab (settable, integer) Data, Value: 0
++							89 tab (settable, integer) Settings, Value: 0
++						90 pop up button Site access
++						91 pop up button G, Help: Account
++						92 container Chat
++							93 container
++								94 toggle button Chats, Value: 0
++								95 text New chat
++								96 button New chat
++								97 container
++									98 heading Evening, Value: 1
++										99 text Evening
++									100 text entry area (settable) How can I help you today?
++									101 button Chat Options
++									102 pop up button Talk out loud
++									103 toggle button Record audio, Value: 0
++									104 button 10 included
++									105 pop up button Capabilities
++									106 button Agent: Claude Sonnet 5.5 · Matrx Browser Agent
++									107 pop up button Output: Text, Help: Text
++									108 container Loading quick actions
++						109 container
++							110 text G
++							111 text Guest
++							112 text Desktop: 
++							113 text Not connected
++							114 button Preferences
++							115 button Sign out
++							116 text Version 
++							117 text 0.2.627
+The focused UI element is 114 button Preferences

@@ -1,0 +1,10 @@
+The following is a diff from the previous accessibility tree for Window: "Extensions" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 15, 660-661, 664
++					735 pop up button Matrx Extend DEV
+~								659 text 0.2.627 AI assistant for understanding and working with the page open in your browser. ID: cihdmkcdjjckfhjpgoedmgfpoljebaml Inspect views
++								736 link service worker
++									737 text service worker
++								738 button Reload
++						739 text Reloaded
+~					621 tab (selected, settable, boolean) Extensions - Memory usage - 49.8 MB, Value: on
+The focused UI element is 624 HTML content Extensions, URL: chrome://extensions/

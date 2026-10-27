@@ -1,0 +1,279 @@
+{
+  "task_id": "guest_scrape_b_9ec",
+  "at": "2026-10-27T00:42:52.789312+00:00",
+  "status": "UNVERIFIED_INFRA_STARTUP_RESOURCE_INVALID",
+  "scope": {
+    "feature": "EXT-F-1007",
+    "case": "EXT-F-1007-T08",
+    "control": "EXT-F-1007-C08",
+    "subtarget": "seo-schema-empty",
+    "mode": "guest",
+    "channel": "CI development unpacked",
+    "limits": "warm minimalemptyownedHTML only; no fullT08/reload/clipboard/Store/member/admin"
+  },
+  "source": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+  "development": {
+    "run": 40425771456,
+    "artifact": 12699643957,
+    "digest": "sha256:8b070e51259fc6263d7dd41dbec4658b2e23a67f4fc16f0a444073b4915d3c08",
+    "version": "0.2.627",
+    "fullCI": "success"
+  },
+  "native": {
+    "run": 40427158131,
+    "attempt": 1,
+    "job": 121935677204,
+    "status": "completed",
+    "conclusion": "failure",
+    "job_conclusion": "failure",
+    "runner_id": 1000117174,
+    "runner_name": "GitHub Actions 1000117174",
+    "runner_labels": ["macos-15-intel"],
+    "completed_at": "2026-10-27T00:40:01Z",
+    "requested_mode": "guest",
+    "actual_UI_auth_role": "unobserved; CDP neverconnected",
+    "report_path": ".output/stabilization-checkpoints/scrape-b-9ec-40427158131/matrx-extend/matrx-extend/test-results/scrape-seo-schema-empty-guest-native.json",
+    "report_sha256": "801e1ffcdedf852912af7c6c54bf724f590e2a5b5cc548ba3df25f6befe68d0d",
+    "report_status": "fail",
+    "stage": "preflight",
+    "native_stage": "cdp_connect",
+    "failure_code": "owned_cdp_endpoint_timeout",
+    "observations": null,
+    "pane_screenshots": null,
+    "panel_viewport": null,
+    "artifact": {
+      "kind": "ci_development_test",
+      "source_sha": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+      "run_id": 40425771456,
+      "artifact_id": 12699643957,
+      "version": "0.2.627",
+      "tree_sha256": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277"
+    },
+    "imported_artifact": {
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "sourceSha": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+      "runId": 40425771456,
+      "artifactId": 12699643957,
+      "githubArtifactDigest": "sha256:8b070e51259fc6263d7dd41dbec4658b2e23a67f4fc16f0a444073b4915d3c08",
+      "runAttempt": 1,
+      "version": "0.2.627",
+      "treeSha256": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277"
+    },
+    "before_after_tree": {
+      "before": {
+        "treeSha256": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277"
+      },
+      "after": {
+        "treeSha256": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277"
+      }
+    }
+  },
+  "dispatch": {
+    "normal_helper": true,
+    "count": 1,
+    "local_session": 30489,
+    "actual_exit": 0,
+    "requested_by": "extend-stabilization",
+    "fresh_source_tree_workflow_capacity_gates": "normalhelperpassed; HEAD/origin9ec,fullclean immediatelybeforedispatch",
+    "plan_path": ".output/stabilization-checkpoints/scrape-b-9ec-plan.json",
+    "dispatch_path": ".output/stabilization-checkpoints/scrape-b-9ec-dispatch.json"
+  },
+  "actions": {
+    "AI": 0,
+    "credentials": 0,
+    "auth_injection": 0,
+    "local_heavy": 0,
+    "source_edits": 0
+  },
+  "cleanup": {
+    "local": "All own exec/watch processes terminal; no localbrowser/resourceguard/credential/fixture created.",
+    "remote": "Workflowterminalfailure and all3journals finalized; package/browservalid0, nativeinvalid3. No secretstaging/fixtureaccountmutation by lane. Ownedprofile/process/localhostfixture deletion not independentlyreadback; do not claim fullremote filesystemcleanup.",
+    "shared_credentials": "No authentication/credential injection or newgrant by lane; requested genuinefreshguest, actualauthUI neverobserved."
+  },
+  "product_credit": 0,
+  "next": "Parent stop B retries and diagnose actual ownedCDPtimeout/hostCPU chronology on this source/archive. A memberexecution discriminator is notmet; no fixtureactivation/mint/secretstaging basedonthisrun. Current sourceCI success alone doesnotprove nativehealth.",
+  "archive": {
+    "id": 12699779074,
+    "name": "hosted-guest-40427158131-1",
+    "official_digest": "sha256:a4e04d317a7f2f693b7775096185d08c9ab5670bd0e9c95f1a9b69636c9d7e91",
+    "path": ".output/stabilization-checkpoints/scrape-b-9ec-40427158131.zip",
+    "sha256": "a4e04d317a7f2f693b7775096185d08c9ab5670bd0e9c95f1a9b69636c9d7e91",
+    "safe_entries": 4,
+    "screenshots": 0
+  },
+  "resources": {
+    "hosted-package-40427158131-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/scrape-b-9ec-40427158131/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40427158131-1.jsonl",
+      "sha256": "234daf6c9031166e298e2ac896fb35e42460081dcf5e84676a83d6ef67e34116",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T00:35:43.231Z",
+        "runId": "hosted-package-40427158131-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events_of_interest": [
+        {
+          "schema": 1,
+          "at": "2026-10-27T00:35:43.111Z",
+          "runId": "hosted-package-40427158131-1",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        }
+      ]
+    },
+    "hosted-guest-40427158131-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/scrape-b-9ec-40427158131/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40427158131-1.jsonl",
+      "sha256": "89549a18b97d194b5d208516e98ab4f3993cb2a7a67d97d4c2460580f88047b9",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T00:39:56.191Z",
+        "runId": "hosted-guest-40427158131-1",
+        "admitted": true,
+        "resourceInvalid": true,
+        "exitCode": 3,
+        "decision": "invalid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events_of_interest": [
+        {
+          "schema": 1,
+          "at": "2026-10-27T00:39:51.084Z",
+          "runId": "hosted-guest-40427158131-1",
+          "reasons": ["RESOURCE_CPU_BUSY"],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.07,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 1,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 108.72176742553711,
+            "profileFreeGiB": 108.72176742553711,
+            "safetyFreeGiB": 108.72176742553711,
+            "systemFreeGiB": 108.72176742553711
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T00:39:56.050Z",
+          "runId": "hosted-guest-40427158131-1",
+          "childExitCode": 1,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        }
+      ]
+    },
+    "hosted-browser-40427158131-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/scrape-b-9ec-40427158131/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40427158131-1.jsonl",
+      "sha256": "cb7287ae6f0bb9c708af20f82352f10854f7afe4918a3bf2b771764bc03af024",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T00:37:36.944Z",
+        "runId": "hosted-browser-40427158131-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "events_of_interest": [
+        {
+          "schema": 1,
+          "at": "2026-10-27T00:37:36.550Z",
+          "runId": "hosted-browser-40427158131-1",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        }
+      ]
+    }
+  },
+  "startup_diagnostic": {
+    "event_at": "2026-10-27T00:39:50.6318290Z",
+    "failureCode": "owned_cdp_endpoint_timeout",
+    "elapsedMs": 8009,
+    "exitCode": null,
+    "signalCode": null,
+    "launchFailed": false,
+    "spawnObserved": true,
+    "stderrFlags": {
+      "hadStderr": false,
+      "codeSignature": false,
+      "dynamicLoader": false,
+      "permissionDenied": false,
+      "sandbox": false,
+      "crash": false,
+      "devtoolsListening": false
+    },
+    "endpointWaitDiagnostic": {
+      "polls": 223,
+      "elapsedMs": 8001,
+      "longestReadMs": 151
+    }
+  },
+  "chronology_and_cause_limits": [
+    "Native admitted00:39:18.209; lasthealthy00:39:34.407 load0.8/4cpu,busy0.39.",
+    "Timeoutevent00:39:50.631 precedes emittedCPU_PENDING00:39:51.084 busy1/load1.07/4cpu; condition onset/samplewindow not retained, no causalorder claim.",
+    "CPU processsnapshot mixes ownedNode/Chromium/helpers and unrelated Siri/OSservices; cannotassigncause. No WATCH_UNSAFE/forcedsignal; no recoverybeforefinalinvalid3/childExit1/signalnull00:39:56.",
+    "Same pre-CDP timeout boundary recurs after narrow minimalguest decomposition; no blindretry or Aactivation basedonthisfailedresult."
+  ],
+  "normal_verifier": {
+    "actual_os_exit": 1,
+    "output": "HOSTED_REMOTE_REFUSED HOSTED_RUN_NOT_SUCCESSFUL\n"
+  },
+  "certificate": null,
+  "evidence_logs": {
+    "failed_log": ".output/stabilization-checkpoints/scrape-b-9ec-failed.log",
+    "failed_log_sha256": "61c50f3ebe7d24ef178fffccb05141aa78d11a3eacba46a022cca18fb651a305"
+  },
+  "counts": {
+    "native_product_assertions": 0,
+    "UI_actions": 0,
+    "product_case_passes": 0,
+    "product_defects_proved": 0,
+    "releases": 0,
+    "dispatches": 1,
+    "AI_calls": 0
+  },
+  "observation_procedure_deviation": {
+    "initial_watch_session": 94223,
+    "initial_interval_seconds": 30,
+    "correction": "Parent clarified PLAN119 <=onceper60s. Stoppedonlylocalwatch once withSIGINT actual130; remotejob untouched; subsequent statusobservations>=60s. Nativejobnotcancelled/restarted.",
+    "last_watcher_actual_exit": 130,
+    "limits": "Do not claim complete pollingprocedure compliance."
+  },
+  "original_private_report_sha256": "0bd1cdd0852542d8e79070a0b402561bcfde160943665eb813e7dd78bae04e66",
+  "durable_evidence_map": {
+    ".output/stabilization-checkpoints/scrape-b-9ec-40427158131/matrx-extend/matrx-extend/test-results/scrape-seo-schema-empty-guest-native.json": {
+      "durable": "docs/stabilization/evidence/scrape-b-9ec-40427158131/scrape-seo-schema-empty-guest-native.json",
+      "sha256": "801e1ffcdedf852912af7c6c54bf724f590e2a5b5cc548ba3df25f6befe68d0d",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/scrape-b-9ec-40427158131/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40427158131-1.jsonl": {
+      "durable": "docs/stabilization/resource-journals/hosted-package-40427158131-1.jsonl",
+      "sha256": "234daf6c9031166e298e2ac896fb35e42460081dcf5e84676a83d6ef67e34116",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/scrape-b-9ec-40427158131/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40427158131-1.jsonl": {
+      "durable": "docs/stabilization/resource-journals/hosted-guest-40427158131-1.jsonl",
+      "sha256": "89549a18b97d194b5d208516e98ab4f3993cb2a7a67d97d4c2460580f88047b9",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/scrape-b-9ec-40427158131/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40427158131-1.jsonl": {
+      "durable": "docs/stabilization/resource-journals/hosted-browser-40427158131-1.jsonl",
+      "sha256": "cb7287ae6f0bb9c708af20f82352f10854f7afe4918a3bf2b771764bc03af024",
+      "transform": "original bytes"
+    }
+  },
+  "reference_limits": "Unmapped .output/test-results references are private scratch/control receipts or logs, not durable public evidence. Original private-report hashes remain hashes of originals, not transformed publications."
+}

@@ -1,0 +1,24 @@
+The following is a diff from the previous accessibility tree for Window: "About Version" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~			628 (selected) Arman (armansadeghi.com) Signed in
++		660 menu Arman (armansadeghi.com) Signed in
++			661 (disabled) Signed in as arman@armansadeghi.com
++			662 Manage your Google Account
++			663 Customize your Chrome
++			664 Close this profile
++			665 (disabled) Other Chrome profiles
++			666 AI (aimatrx.com)
++			667 Dev (aimatrx.com)
++			668 admin (aisafetyinst.com)
++			669 Agent (aisafetyinst.org)
++			670 Arman (allgreenrecycling.com)
++			671 Arman
++			672 armansadeghi.com
++			673 armansadeghi.com
++			674 Arman (Claude)
++			675 Codex
++			676 Matrx Guest Test
++			677 Armani (vasaro.com)
++			678 Add new profile
++			679 Open Guest profile
++			680 Manage Chrome profiles
+The focused UI element is 628 (selected) Arman (armansadeghi.com) Signed in

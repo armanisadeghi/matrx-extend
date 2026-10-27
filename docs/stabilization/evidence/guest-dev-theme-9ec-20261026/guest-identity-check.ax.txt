@@ -1,0 +1,97 @@
+Window: "Example Domain", App: Google Chrome.
+0 standard window Example Domain - Google Chrome - Matrx Guest Test, URL: example.com/, Secondary Actions: Raise
+	1 container Example Domain - Google Chrome - Matrx Guest Test, URL: example.com/
+		2 container
+			3 toolbar
+				4 button Back
+				5 button (disabled) Forward
+				6 button Reload
+				7 container
+					8 pop up button View site information
+					9 text field (settable) Address and search bar, Value: example.com, Placeholder: Ask Google or type a URL
+					10 button Bookmark this tab
+				11 container
+					12 pop up button Matrx
+Has access to this site
+					13 pop up button Matrx Extend DEV
+Has access to this site
+					14 pop up button Extensions
+					15 button Close Side Panel
+				16 button Matrx Guest Test
+				17 pop up button Chrome
+			18 container
+				19 scroll area
+					20 HTML content Example Domain, URL: example.com/
+						21 text This domain is for use in documentation examples without needing permission. This is not a service; avoid relying on it for testing and monitoring purposes.
+						22 text هذا النطاق مُخصص للاستخدام في أمثلة التوثيق دون الحاجة إلى إذن. هذه ليست خدمة، يُرجى تجنب الاعتماد عليها لأغراض الاختبار والمراقبة.
+						23 text 该域名仅用于文档示例，无需获得许可。这并非一项服务，请勿将其用于测试和监控目的。
+						24 text L’usage de ce domaine est réservé à des exemples de documentation, sans autorisation préalable. Il ne s’agit pas d’un service ; son utilisation à des fins de test ou de surveillance est à éviter.
+						25 text Данный домен предназначен для использования в примерах документации без необходимости получения предварительного разрешения. Это не сервис; не рекомендуется его использование для тестирования и мониторинга.
+						26 text Este dominio está destinado al uso en ejemplos de documentación sin necesidad de permiso. Esto no es un servicio; evitar utilizarlo para realizar pruebas o monitoreos.
+						27 link Learn more, Value: iana.org/help/example-domains
+			28 scroll area
+				29 HTML content Matrx Extend, URL: chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html
+					30 container
+						31 tab group
+							32 tab (selected) Chat, Value: 1
+							33 tab (settable, integer) Scrape, Value: 0
+							34 tab (settable, integer) SEO, Value: 0
+							35 tab (settable, integer) Data, Value: 0
+							36 tab (settable, integer) Settings, Value: 0
+						37 pop up button Site access
+						38 pop up button G, Help: Account
+						39 container Chat
+							40 container
+								41 toggle button Chats, Value: 0
+								42 text New chat
+								43 button New chat
+								44 container
+									45 heading Evening, Value: 1
+										46 text Evening
+									47 text entry area (settable) How can I help you today?
+									48 button Chat Options
+									49 pop up button Talk out loud
+									50 toggle button Record audio, Value: 0
+									51 button 10 included
+									52 pop up button Capabilities
+									53 button Agent: Claude Sonnet 5.5 · Matrx Browser Agent
+									54 pop up button Output: Text, Help: Text
+									55 container Loading quick actions
+						56 container
+							57 text G
+							58 text Guest
+							59 text Desktop: 
+							60 text Not connected
+							61 button Preferences
+							62 button Sign out
+							63 text Version 
+							64 text 0.2.627
+			65 slider Side Panel Resize Handle (draggable), Secondary Actions: Decrement, Increment
+			66 container
+				67 text Matrx
+				68 checkbox Unpin from toolbar, Value: 1
+				69 button Close side panel
+			70 pop up button Tab search
+			71 container
+				72 tab group
+					73 tab (settable, boolean) New Tab - Memory usage - 74.2 MB, Value: off
+						74 button Close
+					75 tab (selected, settable, boolean) Example Domain - Memory usage - 55.4 MB, Value: on
+						76 button Close
+			77 button New Tab
+	78 close button
+	79 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	80 minimize button
+81 menu bar
+	82 Chrome
+	83 File
+	84 Edit
+	85 View
+	86 History
+	87 Bookmarks
+	88 Profiles
+	89 Tab
+	90 Window
+	91 Help
+
+The focused UI element is 61 button Preferences

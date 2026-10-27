@@ -1,0 +1,193 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T00:42:43.185325+00:00",
+  "lane": "owner-dev-9ec-update",
+  "sourceSha": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+  "originMainShaBeforeAndAfterUi": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+  "ci": {
+    "runId": 40425771456,
+    "conclusion": "success",
+    "artifactId": 12699643957,
+    "officialArtifactDigest": "sha256:8b070e51259fc6263d7dd41dbec4658b2e23a67f4fc16f0a444073b4915d3c08",
+    "independentOfficialMetadataVerified": true
+  },
+  "import": {
+    "execSession": 40622,
+    "exitCode": 0,
+    "dir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/9ecba0611084831ccbc7aa4fca639677cc4f0001/40425771456-1",
+    "status": {
+      "schema_version": 1,
+      "eligibleStore": false,
+      "sourceSha": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+      "runId": 40425771456,
+      "runAttempt": 1,
+      "artifactId": 12699643957,
+      "githubArtifactDigest": "sha256:8b070e51259fc6263d7dd41dbec4658b2e23a67f4fc16f0a444073b4915d3c08",
+      "treeSha256": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277",
+      "ciReceiptSha256": "7ec3efc320920f9dbc1debbe7da8c42512fa583005ce642e2433f17cef621aee",
+      "provenanceSha256": "d44fa002d52aa65e01e139515e1bc9e746bc9f8a8ac3c3f7ed50bf992582c0c3",
+      "source": {
+        "originMain": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+        "localHead": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+        "trackedDirty": false,
+        "untrackedRunnerInputs": [],
+        "claim": "current_pushed_source"
+      }
+    }
+  },
+  "promotion": {
+    "execSession": 49311,
+    "exitCode": 0,
+    "receipt": {
+      "schema_version": 1,
+      "kind": "ci_development_test_promotion",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "observedAt": "2026-10-27T00:41:28.443Z",
+      "sourceSha": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+      "mainSha": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+      "compatibility": "exact-source",
+      "allowedDiffPaths": [],
+      "version": "0.2.627",
+      "runId": 40425771456,
+      "runAttempt": 1,
+      "artifactId": 12699643957,
+      "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/9ecba0611084831ccbc7aa4fca639677cc4f0001/40425771456-1/chrome-mv3",
+      "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "treeSha256": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277",
+      "fileCount": 2817
+    },
+    "stableTreeVerifiedAfterUi": true
+  },
+  "native": {
+    "profilePath": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "account": "arman@armansadeghi.com",
+    "devId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "versionBefore": "0.2.625",
+    "versionAfter": "0.2.627",
+    "actualManagerReload": true,
+    "enabled": true,
+    "pinned": true,
+    "loadedFrom": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "storeId": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "storeVersion": "0.2.577",
+    "storeEnabled": true,
+    "storePinned": true,
+    "restore": {
+      "at": "2026-10-27T00:42:19.256Z",
+      "originalSelectedTabRestored": true,
+      "ownedMaintenanceTabClosed": true,
+      "focusReturnedToOriginalContent": true
+    },
+    "safeAxEvidence": {
+      ".output/stabilization-checkpoints/owner-dev-9ec-profile-20261026.ax.txt": {
+        "sha256": "89818cc75ba78e39b2071a3e2afcc815875323811e377bc0d1355442427191a4",
+        "bytes": 1288
+      },
+      ".output/stabilization-checkpoints/owner-dev-9ec-details-20261026.ax.txt": {
+        "sha256": "144f34f19f7c232c9a1d7a46180c51d25732261233e37405efe9899ad3305470",
+        "bytes": 6258
+      },
+      ".output/stabilization-checkpoints/owner-dev-9ec-version-20261026.ax.txt": {
+        "sha256": "ec537f07ade4d7038c3fe276cdf0394075b2b28dee4c428828aa852fe1bdfee2",
+        "bytes": 6719
+      },
+      ".output/stabilization-checkpoints/owner-dev-9ec-store-20261026.ax.txt": {
+        "sha256": "7c6fc63f4fcaeaeeb8b580a52dfd9ee9a471797558f93efd898a3ba0613dd2ac",
+        "bytes": 6035
+      },
+      ".output/stabilization-checkpoints/owner-dev-9ec-manager-after-20261026.ax.txt": {
+        "sha256": "136a627f9c389d3715a924f62a0b4d031b1f1e50ad12f6ded08f37ee50c54964",
+        "bytes": 724
+      },
+      ".output/stabilization-checkpoints/owner-dev-9ec-account-20261026.ax.txt": {
+        "sha256": "453401372483b2286b5f7c603d030cdf6781407f6057cddf4bdde6c3f5ff59d7",
+        "bytes": 957
+      },
+      ".output/stabilization-checkpoints/owner-dev-9ec-manager-before-20261026.ax.txt": {
+        "sha256": "15a75a028b4d4a1d3de243e06c0cb8e5e89826c550c0838ef9d288d24c1ebb42",
+        "bytes": 6621
+      }
+    }
+  },
+  "resource": {
+    "runId": "owner-dev-9ec-20261026-001",
+    "holderSession": 36566,
+    "holderActualExitCode": 0,
+    "watcherSession": 68381,
+    "watcherActualExitCode": 0,
+    "watcher": {
+      "runId": "owner-dev-9ec-20261026-001",
+      "first_read_at": "2026-10-27T00:38:34.144979Z",
+      "last_read_at": "2026-10-27T00:42:22.806667Z",
+      "actualPollCount": 115,
+      "maxGapSeconds": 2.0119260419742204,
+      "riskEvents": [],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T00:42:22.625Z",
+        "runId": "owner-dev-9ec-20261026-001",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/owner-dev-9ec-20261026-001.jsonl",
+      "audit": ".output/stabilization-checkpoints/owner-dev-9ec-watch-20261026.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    },
+    "perApiGateCount": 26,
+    "lightIoClassification": "Canonical download/verify/hash/file-copy under admitted monitored manual browser session; not run-mode command-admitted or per-process supervised. Source inspected: no build/release/downloaded-code execution. Explicit user mandate and DEVELOPMENT62; parent scoped adjudication. No prior command refusal or alternate-prefix/policy change.",
+    "unsafeOrPendingDuringUi": false
+  },
+  "cleanup": {
+    "ownedMaintenanceTabClosed": true,
+    "originalTabAndContentFocusRestored": true,
+    "holderReleased": true,
+    "privateResourceEnvRemoved": true,
+    "ownedProcessesTerminal": true
+  },
+  "limits": [
+    "Browser identity is Chrome profile identity, not extension login identity.",
+    "No product behavior pass, guest acceptance or Store publication claimed.",
+    "Original private Vault body/URL not saved in checkpoint or AX evidence; initial automatic getApp observation emitted it in tool-only context.",
+    "No source or public metadata edits; completed resource journal remains untracked for parent ownership."
+  ],
+  "nextAction": "Parent may advance integration after recording this exact-source native maintenance receipt.",
+  "original_private_report_sha256": "116fbe5add2c6fd15e93f28ede03c6ad69547e764fea3590f860827700660e42",
+  "durable_evidence_map": {
+    ".output/stabilization-checkpoints/owner-dev-9ec-details-20261026.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner-dev-9ec-20261026/owner-dev-9ec-details-20261026.ax.txt",
+      "sha256": "144f34f19f7c232c9a1d7a46180c51d25732261233e37405efe9899ad3305470",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner-dev-9ec-store-20261026.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner-dev-9ec-20261026/owner-dev-9ec-store-20261026.ax.txt",
+      "sha256": "7c6fc63f4fcaeaeeb8b580a52dfd9ee9a471797558f93efd898a3ba0613dd2ac",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner-dev-9ec-manager-after-20261026.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner-dev-9ec-20261026/owner-dev-9ec-manager-after-20261026.ax.txt",
+      "sha256": "136a627f9c389d3715a924f62a0b4d031b1f1e50ad12f6ded08f37ee50c54964",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner-dev-9ec-account-20261026.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner-dev-9ec-20261026/owner-dev-9ec-account-20261026.ax.txt",
+      "sha256": "453401372483b2286b5f7c603d030cdf6781407f6057cddf4bdde6c3f5ff59d7",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner-dev-9ec-manager-before-20261026.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner-dev-9ec-20261026/owner-dev-9ec-manager-before-20261026.ax.txt",
+      "sha256": "15a75a028b4d4a1d3de243e06c0cb8e5e89826c550c0838ef9d288d24c1ebb42",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner-dev-9ec-version-20261026.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner-dev-9ec-20261026/profile-version-extract.ax.txt",
+      "sha256": "f3495650aea6c40c9f9b27bec97286a93cc58dfcc54116484cfcfa33e1e0a0e1",
+      "original_sha256": "ec537f07ade4d7038c3fe276cdf0394075b2b28dee4c428828aa852fe1bdfee2",
+      "transform": "Only Chrome version text559 and Profile Path nodes593\u2013596; commandline and all other nodes omitted."
+    }
+  },
+  "reference_limits": "Unmapped .output/test-results references are private scratch/control receipts or logs, not durable public evidence. Original private-report hashes remain hashes of originals, not transformed publications."
+}

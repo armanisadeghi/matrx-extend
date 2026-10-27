@@ -1,0 +1,107 @@
+The following is a diff from the previous accessibility tree for Window: "Extensions - Matrx Extend" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 15, 19-55, 65-69, 92-93
+~0 standard window Extensions - Matrx Extend - Google Chrome - Matrx Guest Test, URL: chrome://extensions/?id=hnfolienncfklkgmdjjmhhegglimlamg, Secondary Actions: Raise
+~	1 container Extensions - Matrx Extend - Google Chrome - Matrx Guest Test, URL: chrome://extensions/?id=hnfolienncfklkgmdjjmhhegglimlamg
+~					8 pop up button Chrome
+~					9 text field (settable) Address and search bar, Value: chrome://extensions/?id=hnfolienncfklkgmdjjmhhegglimlamg, Placeholder: Ask Google or type a URL
+~					12 pop up button Matrx
+~					13 pop up button Matrx Extend DEV
++				92 scroll area
++					93 HTML content Extensions - Matrx Extend, URL: chrome://extensions/?id=hnfolienncfklkgmdjjmhhegglimlamg
++						94 container
++							95 heading Extensions, Value: 1
++								96 text Extensions
++							97 search text field (settable) Search extensions
++							98 text Developer mode
++							99 switch Developer mode, Value: on
++							100 container
++								101 button Load unpacked
++								102 button Pack extension
++								103 button Update, Help: Update extensions now
++						104 container
++							105 container
++								106 menu Secondary Actions: Cancel
++									107 My extensions
++										108 text My extensions
++									109 Keyboard shortcuts
++										110 text Keyboard shortcuts
++								111 text Using AI coding agents to build extensions? Install the 
++								112 link Chrome Extensions and Chrome Web Store skill, Value: developer.chrome.com/docs/extensions/ai/build-with-ai?utm_source=ext_sidebar&hl=en-US#modern_web_guidance
++								113 text  to teach your coding agent the latest API updates and best practices.
++								114 container
++									115 text Discover more extensions and themes on the 
++									116 link Chrome Web Store, Value: chromewebstore.google.com/category/extensions?utm_source=ext_sidebar&hl=en-US
++							117 container
++								118 click to navigate away from matrx extend details page. Matrx Extend details page back button
++								119 heading Matrx Extend, Value: 1
++									120 text Matrx Extend
++								121 text On
++								122 switch On, extension enabled, Value: on
++								123 heading Description, Value: 2
++									124 text Description
++								125 text AI assistant for understanding and working with the page open in your browser.
++								126 heading Version, Value: 2
++									127 text Version
++								128 text 0.2.577
++								129 heading Size, Value: 2
++									130 text Size
++								131 text 165 MB
++								132 heading ID, Value: 2
++									133 text ID
++								134 text hnfolienncfklkgmdjjmhhegglimlamg
++								135 heading Inspect views, Value: 2
++									136 text Inspect views
++								137 content list
++									138 container
++										139 AXListMarker • 
++										140 link service worker
++											141 text service worker
++								142 heading Permissions, Value: 2
++									143 text Permissions
++								144 content list
++									145 container
++										146 AXListMarker • 
++										147 text Access the page debugger backend
++									148 container
++										149 AXListMarker • 
++										150 text Read and change all your data on all websites
++									151 container
++										152 AXListMarker • 
++										153 text Read and change your browsing history on all your signed-in devices
++									154 container
++										155 AXListMarker • 
++										156 text Display notifications
++									157 container
++										158 AXListMarker • 
++										159 text Read and change your bookmarks
++									160 container
++										161 AXListMarker • 
++										162 text Modify data you copy and paste
++									163 container
++										164 AXListMarker • 
++										165 text Manage your downloads
++									166 container
++										167 AXListMarker • 
++										168 text Communicate with cooperating native applications
++									169 container
++										170 AXListMarker • 
++										171 text View and manage your tab groups
++								172 heading Site access, Value: 2
++									173 text Site access
++								174 text Allow this extension to read and change all your data on websites you visit:
++								175 link Learn more about extension permissions, Value: support.google.com/chrome?p=enable_extensions
++								176 pop up button Allow this extension to read and change all your data on websites you visit:, Value: On all sites
++									177 (selected) On all sites
++								178 link Site settings
++								179 switch Pin to toolbar, Value: on
++								180 switch Value: off, Allow in Incognito Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option. Changes to this setting will be applied once Chrome restarts. 
++								181 switch Allow access to file URLs Changes to this setting will be applied once Chrome restarts. , Value: off
++								182 switch Collect errors, Value: off
++								183 link Extension options
++								184 link View in Chrome Web Store
++								185 heading Source, Value: 2
++									186 text Source
++								187 text Chrome Web Store
++								188 link Remove extension
+~					75 tab (selected, settable, boolean) Extensions - Matrx Extend, Value: on
+The focused UI element is 118 click to navigate away from matrx extend details page. Matrx Extend details page back button

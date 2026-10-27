@@ -38,8 +38,19 @@
     "docs/stabilization/reports/headless-startup-lane-a-20261019.json"
   ],
   "cause": "Unknown. Host CPU pressure was observed but not proven causal; source comparison found no owned-launcher/connector change from559.",
-  "next_action": "Fresh independent review of valid headless operational viability and exact candidate acceptance route. Headless39318657314 connectedownedCDP3251ms and panelready; allthreejournals valid. This doesnotresolve priorheadedtimeout/D248 or provideproduct/Storeacceptance. No arbitrarydeadline/guardchange; useonlyexistingauthorizedroutes.",
+  "next_action": "No product retry/member activation. Review existing headed A startup-resource-diagnostic on then-current exact-main artifact with unchanged8000ms deadline and normal source/workflow/capacity/spend admission. Latest minimal B omitted existing diagnostic flags; cause unknown. No timeout/resource/runner bypass.",
   "active_diagnostic_run": null,
   "completed_diagnostic_run": "39312706355",
-  "completed_diagnostic_runs": ["39312706355", "39318657314"]
+  "completed_diagnostic_runs": ["39312706355", "39318657314"],
+  "execution_followthrough": [
+    {
+      "at": "2026-10-27T00:53:42.633001+00:00",
+      "run": 40427158131,
+      "source": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+      "boundary": "owned_cdp_endpoint_timeout at8009ms beforeUI; nativeinvalid3 afterCPU_PENDING; causalorder unknown",
+      "report": "docs/stabilization/reports/scrape-b-9ec-20261026.json",
+      "diagnosis": "docs/stabilization/reports/hosted-cdp-bootstrap-diagnosis-20261026.json",
+      "product_credit": 0
+    }
+  ]
 }

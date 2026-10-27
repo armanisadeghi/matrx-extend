@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-26T23:42:35.811296+00:00",
+  "updated_at": "2026-10-27T00:53:42.633001+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -8138,6 +8138,18 @@
               "resource_valid": true,
               "scope": "Visible selection/restoration only; rendering/storage/reopen/full reload/runtime effects unverified; no independent retest or current-main credit.",
               "evidence": "docs/stabilization/reports/store205-settings-guest-native-20261019.json"
+            },
+            {
+              "run_id": "store577-guest-theme-20261026-001",
+              "version": "0.2.577",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Actual Store-installed primary: Light/Dark/System visibly apply and retain later panel-close/reopen readbacks. Full extension Reload unavailable on Store card; source/lock/tree unmeasured. No DEV/member/admin/fullcase pass or defect closure.",
+              "evidence": [
+                "docs/stabilization/reports/store577-guest-theme-20261026.json",
+                "docs/stabilization/reports/store577-guest-theme-peer-20261026.json"
+              ]
             }
           ],
           "execution_attempts": [

@@ -1,0 +1,221 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T00:53:19.054346+00:00",
+  "lane": "guest-dev-theme-9ec-native",
+  "case": "EXT-F-1003-T04",
+  "status": "CHECKPOINT_PREREQUISITE_UNVERIFIED",
+  "productBehaviorPasses": 0,
+  "source": {
+    "frozenSha": "9ecba0611084831ccbc7aa4fca639677cc4f0001",
+    "originMainAtEnd": "c072ed1f86f1ef8562f7a5771c11cd9716de164d",
+    "latestMainClaim": false,
+    "before": {
+      "at": "2026-10-27T00:50:50.230Z",
+      "tree": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277",
+      "version": "0.2.627"
+    },
+    "after": {
+      "at": "2026-10-27T00:53:02.051Z",
+      "tree": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277",
+      "version": "0.2.627"
+    },
+    "stableTreeUnchanged": true
+  },
+  "ci": {
+    "runId": 40425771456,
+    "artifactId": 12699643957,
+    "digest": "sha256:8b070e51259fc6263d7dd41dbec4658b2e23a67f4fc16f0a444073b4915d3c08",
+    "eligibleStore": false,
+    "provenanceReceipt": ".output/stabilization-checkpoints/owner-dev-9ec-20261026.json"
+  },
+  "native": {
+    "profile": "Matrx Guest Test",
+    "profilePath": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10",
+    "chromeVersion": "156.0.8078.47 Official Build arm64",
+    "devId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "beforeVersion": "0.2.625",
+    "afterVersion": "0.2.627",
+    "normalManagerReloadVerified": true,
+    "loadedFrom": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "enabled": true,
+    "pinned": true,
+    "storeId": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "storeVersion": "0.2.577",
+    "storeOnAndPinnedPreserved": true,
+    "storeSource": "Chrome Web Store",
+    "actualPanelIdentity": {
+      "label": "Guest",
+      "emailVisible": false,
+      "menuAction": "Sign out",
+      "requiredSettingsSignInNotInspected": true,
+      "interpretation": "UserMenu action insufficient for signed-out classification. Parent subsequent source diagnosis says unconditional Sign out; conditional Settings action needed."
+    }
+  },
+  "theme": {
+    "inputsMade": false,
+    "originalChoice": "unobserved",
+    "Light": "unverified",
+    "Dark": "unverified",
+    "System": "unverified",
+    "fullReloadPersistence": "unverified",
+    "restoration": "No theme change made; no restoration necessary"
+  },
+  "resources": {
+    "runId": "guest-dev-theme-9ec-20261026-001",
+    "holderSession": 94069,
+    "holderActualExitCode": 0,
+    "watcherSession": 43537,
+    "watcherActualExitCode": 0,
+    "watcher": {
+      "runId": "guest-dev-theme-9ec-20261026-001",
+      "first_read_at": "2026-10-27T00:50:34.414421Z",
+      "last_read_at": "2026-10-27T00:53:02.775593Z",
+      "actualPollCount": 75,
+      "maxGapSeconds": 2.0108452499844134,
+      "riskEvents": [],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T00:53:01.889Z",
+        "runId": "guest-dev-theme-9ec-20261026-001",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/guest-dev-theme-9ec-20261026-001.jsonl",
+      "audit": ".output/stabilization-checkpoints/guest-dev-theme-9ec-watch-20261026.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    },
+    "perApiGateCount": 39,
+    "ownedLiveProcessesRemaining": false,
+    "leaseFileRemaining": false
+  },
+  "cleanup": {
+    "initialWindowsRecordedBeforeAnyProfileChooser": true,
+    "profileChooserUsed": false,
+    "initialGuestNewTabPreserved": true,
+    "ownedFixtureTabClosed": true,
+    "ownedPanelClosed": true,
+    "at": "2026-10-27T00:52:53.987Z",
+    "originalWindowRestored": true,
+    "originalSelectedSingleTabRestored": true,
+    "focusRestored": true,
+    "privateBodyOrUrlSaved": false,
+    "newTabShortcutsChangedByNormalBrowsing": true
+  },
+  "evidence": {
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/cleanup-focus.json": {
+      "sha256": "999650bedb6b7c1c5207d570aa4eebd7a9354e6ae5906e57c72bdf585ca2e5ef",
+      "bytes": 176
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/cleanup-window-menu.ax.txt": {
+      "sha256": "3b2d9d4b718b57bd05f45a7d1bd5de7f9991dcd91ea1cee15c5e07acda7e6290",
+      "bytes": 1301
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/dev-before.ax.txt": {
+      "sha256": "6e7c47e7ed1a88788a59b4c4574519975dbe078c4a326e9e8c76c151b1e46957",
+      "bytes": 5649
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/dev627-reloaded.ax.txt": {
+      "sha256": "85a5404329a19260925fe31cc542309e525aa552b8254051d3ac3d61626e2a88",
+      "bytes": 829
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/dev627-reloaded.png": {
+      "sha256": "1a1eca1f6f61465e47b16e9e53d431c720ca2e771aaf311bf475e073c04804f6",
+      "bytes": 161698
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/gates.json": {
+      "sha256": "590f8c342e12dd14ad66d24568ff3595388ec1a6725b2baec93d26e8b9ea5acd",
+      "bytes": 26950
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/guest-account.ax.txt": {
+      "sha256": "22ef4366e17c5949ab4724d787c2843dc0e01ebadd55f63fffa17a1e4dd8e5eb",
+      "bytes": 1537
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/guest-identity-check.ax.txt": {
+      "sha256": "90eecea9b1704267dd3496e95711d2e86215573f1632f3c0e59a3c80215c3eb5",
+      "bytes": 4466
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/guest-identity-check.png": {
+      "sha256": "a352a4a5add765ac64afc2a8f9de2a773b39b22086e9c5505194e5b243fa47c7",
+      "bytes": 157666
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/guest-panel-loaded.ax.txt": {
+      "sha256": "e8c1fe81f12bc5bc12289049bf2e86364bd5460cf8596a5a7fb752c7dd9a74d9",
+      "bytes": 4287
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/guest-panel-loaded.png": {
+      "sha256": "39817aef8a75dda8d608fc95c9761e932010d014d493340ffadc601ba3f38533",
+      "bytes": 153623
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/guest-panel.ax.txt": {
+      "sha256": "d0aecdc77cd3be8fdbfd097c75ac182842ff73fddb0fd2516d1a3f47c3d307ef",
+      "bytes": 542
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/guest-window-restored.ax.txt": {
+      "sha256": "8dab227bf5941e24ebeee211db644dbef24c5d8e841cfd83d4f6d6b20274f786",
+      "bytes": 3344
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/initial-guest-window.ax.txt": {
+      "sha256": "8ff9951360f9af43889c59a5f17b00d8d074544de641badb1f7b816ba5f9735a",
+      "bytes": 3729
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/initial-window-menu.ax.txt": {
+      "sha256": "bc64f127420063d6a055e06e936ab01cf0c8ade2196ac852870f631207b1c211",
+      "bytes": 1323
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/profile.ax.txt": {
+      "sha256": "16cb88f23a96e29fd40634b51e5e188571fc44b284c2e0fcff18e60d501f1e5a",
+      "bytes": 6619
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/store-preserved.ax.txt": {
+      "sha256": "a74849a1b11b9a732dbcf2564c2f020f1521bcd486092ef647d056e684029af5",
+      "bytes": 5554
+    }
+  },
+  "limits": [
+    "Theme receives zero product behavior credit. No auth, preference, storage, OS-theme, source, DB or metadata mutation.",
+    "One normal DEV reload updated existing guest-profile installation; not Store-installed acceptance.",
+    "Original private Vault body/URL not retained in files; first automatic getApp observation emitted body in tool-only context.",
+    "Full native raw snapshots may include pre-existing New Tab shortcut links; do not publish without whitelist review.",
+    "No hosted cold-start/CDP bootstrap repair claim.",
+    "Parent stop arrived before Settings identity source clarification; cleanup already completed, so no re-admission."
+  ],
+  "nextAction": "Parent may integrate source; next admitted guest Theme run must verify Settings conditional Sign in and no email before mutation.",
+  "commitStatus": "No commits; completed own journal left untracked for parent.",
+  "original_private_report_sha256": "1b2ff31a879054ff8abb4ca76a6d62458ca1ea4b8aea5c63c7bb16fd0bac9cf3",
+  "durable_evidence_map": {
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/dev-before.ax.txt": {
+      "durable": "docs/stabilization/evidence/guest-dev-theme-9ec-20261026/dev-before.ax.txt",
+      "sha256": "6e7c47e7ed1a88788a59b4c4574519975dbe078c4a326e9e8c76c151b1e46957",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/dev627-reloaded.ax.txt": {
+      "durable": "docs/stabilization/evidence/guest-dev-theme-9ec-20261026/dev627-reloaded.ax.txt",
+      "sha256": "85a5404329a19260925fe31cc542309e525aa552b8254051d3ac3d61626e2a88",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/guest-account.ax.txt": {
+      "durable": "docs/stabilization/evidence/guest-dev-theme-9ec-20261026/guest-account.ax.txt",
+      "sha256": "22ef4366e17c5949ab4724d787c2843dc0e01ebadd55f63fffa17a1e4dd8e5eb",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/guest-identity-check.ax.txt": {
+      "durable": "docs/stabilization/evidence/guest-dev-theme-9ec-20261026/guest-identity-check.ax.txt",
+      "sha256": "90eecea9b1704267dd3496e95711d2e86215573f1632f3c0e59a3c80215c3eb5",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/store-preserved.ax.txt": {
+      "durable": "docs/stabilization/evidence/guest-dev-theme-9ec-20261026/store-preserved.ax.txt",
+      "sha256": "a74849a1b11b9a732dbcf2564c2f020f1521bcd486092ef647d056e684029af5",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/cleanup-focus.json": {
+      "durable": "docs/stabilization/evidence/guest-dev-theme-9ec-20261026/cleanup-focus.json",
+      "sha256": "999650bedb6b7c1c5207d570aa4eebd7a9354e6ae5906e57c72bdf585ca2e5ef",
+      "transform": "original bytes"
+    }
+  },
+  "reference_limits": "Unmapped raw snapshots/windowmenus/profile commandline/NewTab shortcuts, watcher audit and API-gate timings remain private; hashes identify originals. No Theme input/behavior credit or authenticated-guest inference."
+}
