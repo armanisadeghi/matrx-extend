@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-27T18:35:10.382Z",
+  "independent": true,
+  "A_diskAdoption": "PASS",
+  "B_officialProvenance": "PASS",
+  "verification": {
+    "kind": "ci_development_test_promotion",
+    "publishState": "not_published",
+    "extensionDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "sourceSha": "3ef3d0f2e63a820db0863c2fa5bdff14672e946d",
+    "mainSha": "3ef3d0f2e63a820db0863c2fa5bdff14672e946d",
+    "compatibility": "exact-source",
+    "version": "0.2.630",
+    "treeSha256": "e8ece878b45f4b6d52ac0c230fff7442f7c0473102a46e59312f6079d41377fe",
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "runId": 40558182029,
+    "runAttempt": 1,
+    "artifactId": 12759111108,
+    "githubArtifactDigest": "sha256:943c22c464119016a3a0a19ee182747d4485e1825dcf3f06c8c546a89deebcf6"
+  },
+  "fileCount": 2819,
+  "stableHashBefore": "e8ece878b45f4b6d52ac0c230fff7442f7c0473102a46e59312f6079d41377fe",
+  "stableHashAfter": "e8ece878b45f4b6d52ac0c230fff7442f7c0473102a46e59312f6079d41377fe",
+  "officialRun": {
+    "id": 40558182029,
+    "status": "completed",
+    "conclusion": "success",
+    "workflow": ".github/workflows/ci.yml",
+    "event": "push",
+    "attempt": 1,
+    "sourceSha": "3ef3d0f2e63a820db0863c2fa5bdff14672e946d",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40558182029"
+  },
+  "officialArtifact": {
+    "id": 12759111108,
+    "expired": false,
+    "digest": "sha256:943c22c464119016a3a0a19ee182747d4485e1825dcf3f06c8c546a89deebcf6"
+  },
+  "uiLimit": "GUI tools unavailable. No Chrome reload, loaded version, profile, pin, current browser, or product acceptance verified.",
+  "productAcceptance": false,
+  "reviewedPriorReport": ".output/stabilization-checkpoints/wake1832/dev630-disk-verification.json",
+  "publication": {
+    "private_report_sha256": "0c48e6c6fec638c56d416b007a832a57381ef84c858f9287707d4285d46c357a",
+    "projection": "parsed report, formatted for repository; no raw-byte identity claim",
+    "native_ui_acceptance": false
+  }
+}

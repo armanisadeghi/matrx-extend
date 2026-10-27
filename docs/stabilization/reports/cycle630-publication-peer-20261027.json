@@ -1,0 +1,12 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "review_scope": "Read-only publication/integration; no tests/UI/jobs/agents; no fresh native acceptance",
+  "A_publication": "PASS: all 11 mappings hashes/lengths; ten byte-exact; A formatted JSON parsed-equal and base64 payload exact original roundtrip; 12 evidence files all mapped",
+  "B_integrity": "PASS: exactly peer-allowlisted two target PNGs/three journals; raw native B excluded; every selected native field equals original; all six omitted native keys explicitly disclosed with reasons",
+  "issue": "Public B report does not explicitly enumerate all omitted native keys: build, capture_diagnostic, imported_artifact, native_target, pane_screenshots, startup_endpoint_observations. Add explicit omission list/reasons before publication.",
+  "inventory": "PASS: only EXT-F-1007-T08 guest partial/frozen3ef changed; old guest exactly retained in previous_results; previous history prefix exact; no other case/mode changes",
+  "integration": "PASS: D299 next_action only/in-fix; generated views retain counts94pass/97partial/1fail; coordinator distinguishes latest7d pending from frozen3ef; reload unverified; 40.555 includes checks/cleanup; .28 prelaunch; newA not B recovery/Settings cause; zero product credit",
+  "terminal": "Reports and six journals show owned A/B terminal/valid; whole-host/profile deletion unobserved; latest CI pending explicitly separate",
+  "limits": "Relied on existing native independent peers for originals; no native rerun, live CI refresh, tests, UI or jobs; source product verification unchanged",
+  "remediation": "Rechecked only disclosure and selected-key equality: omitted_native_keys exactly matches six omitted keys, each with nonempty reason/limit. Original finding retained above; resolved before publication."
+}

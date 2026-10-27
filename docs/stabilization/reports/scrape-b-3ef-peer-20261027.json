@@ -1,0 +1,46 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "review_type": "Independent read-only historical evidence review; no native retest, tests, UI, jobs or source changes",
+  "behavior_A": "Bounded PASS: guest warm no-signal SEO baseline, empty Schema and capture identity/digest invariance; full EXT-F-1007-T08 PARTIAL; Data and broader SEO NOT EXECUTED; no closure/Store/reload/other-role/width/current-main claim",
+  "integrity_B": {
+    "verdict": "PASS",
+    "run": 40561344284,
+    "artifact": 12760239069,
+    "zip_sha256": "8b69221bb4b623f32f3d4149994954c2fceff70b3b3bac2dc61622f3abe5a0ea",
+    "all_eight_archive_members_match_original_extraction": true,
+    "normal_verify_scrape_replay": "exit0 valid:true; three receipts valid; exact workflow/app 3ef3d0f2e63a820db0863c2fa5bdff14672e946d, development run40558182029/artifact12759111108 DEV630 treee8ece878b45f4b6d52ac0c230fff7442f7c0473102a46e59312f6079d41377fe"
+  },
+  "assertion_attack": "Frozen native driver reads three real capture exports and compares identity/digest after each pane; oracle checks selected visible panes, title/description/groups and zero optional schema fields. Images corroborate bounded states only; cropped pane PNGs do not prove tab chrome or digest independently. Schema title horizontally clipped. Initial target screenshot is bootstrap article, not empty fixture.",
+  "resource_intervals_UTC": {
+    "package": "18:37:36.864 to 18:37:42.400",
+    "browser": "18:39:40.651 to 18:39:51.913",
+    "guest": "18:41:33.491 to 18:42:11.452; healthy samples18:41:49.570,18:42:05.692"
+  },
+  "resource_terminal": "All admitted; each childExitCode0/null signal then RESOURCE_FINAL_DECISION valid exit0 resourceInvalid:false; short package/browser intervals have no periodic health samples",
+  "cleanup": "Frozen harness finally closes fixture and stops owned browser/removes root; terminal success supports path execution, not explicit absence proof; remote profile deletion UNKNOWN",
+  "original_member_sha256": {
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40561344284-1.jsonl": "b763f05a321cc942afb6a846c49cbfc3907999021a8a86b88a30815acd5e9a32",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40561344284-1.jsonl": "8cafa5da44ea1cb4a87dc1c1a8052cbadf1097e014f80ed4761727bfcf77c824",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40561344284-1.jsonl": "751a712f632af0e7b463b80af9e95e321b3b03cb6a6b58ec5f78123592fcc038",
+    "matrx-extend/matrx-extend/test-results/scrape-seo-schema-empty-guest-native.json": "205c4cc9b24b14c622d430049b47f9fc2c779ffe745cb9a3bc663887bac51f06",
+    "_temp/guest-acceptance/native-sidepanel-qa-eFEU1x/native-side-panel.png": "e8fb0512e0adf6ed7ee29a2de55d82804a1e1612367c0ad15642e81934468261",
+    "_temp/guest-acceptance/native-sidepanel-qa-eFEU1x/normal-target-after-open.png": "fb1191c2cbd2a6e88c3d4e9a167c3c6cd55f39a2c7e75f7022ead9e929b4263d",
+    "_temp/guest-acceptance/native-sidepanel-qa-eFEU1x/scrape-t08-schema-pane.png": "5be9ffaa1766685200d59fa65921c47d531886932d8e7a04f8ca63c7554e30fc",
+    "_temp/guest-acceptance/native-sidepanel-qa-eFEU1x/scrape-t08-seo-pane.png": "cbddcaf3ab02dd516c255d46c328be6e5b10e935abe02d029910c4eb1a76579e"
+  },
+  "privacy_safe_original_publication_allowlist": {
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40561344284-1.jsonl": "b763f05a321cc942afb6a846c49cbfc3907999021a8a86b88a30815acd5e9a32",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40561344284-1.jsonl": "8cafa5da44ea1cb4a87dc1c1a8052cbadf1097e014f80ed4761727bfcf77c824",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40561344284-1.jsonl": "751a712f632af0e7b463b80af9e95e321b3b03cb6a6b58ec5f78123592fcc038",
+    "_temp/guest-acceptance/native-sidepanel-qa-eFEU1x/scrape-t08-schema-pane.png": "5be9ffaa1766685200d59fa65921c47d531886932d8e7a04f8ca63c7554e30fc",
+    "_temp/guest-acceptance/native-sidepanel-qa-eFEU1x/scrape-t08-seo-pane.png": "cbddcaf3ab02dd516c255d46c328be6e5b10e935abe02d029910c4eb1a76579e"
+  },
+  "publication_limits": "Only five exact original members in allowlist; exclude raw ZIP/log/actor/native report (runner paths and native target identifier); exclude bootstrap PNGs as irrelevant. A sanitized native report must be separately reviewed and hashed; do not call derived bytes originals. Pane images contain owned synthetic title, no credentials/endpoints/profile paths. Journals contain resource telemetry/run IDs only.",
+  "next_action": "Parent may publish allowlisted original evidence and bounded conclusion; retain unknown cleanup and unexecuted scope; no retry needed.",
+  "normal_certificate": {
+    "path": ".output/stabilization-checkpoints/wake1832/scrape-b-3ef-certificate.json",
+    "sha256": "297acc2dd4a16f182289aa12a8a2cd8a544690cf6c053dc5492464f156beb853",
+    "exact_stdout": true,
+    "exit": 0
+  }
+}
