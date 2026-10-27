@@ -17,7 +17,7 @@ import { log } from '@/lib/debug/log';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import type { Api } from '@ai-matrx/api';
 import { primaryStepUpGrant } from '@ai-matrx/api/account';
-import { createClient } from '@supabase/supabase-js';
+import { createAuthClient, signInWithPassword, signOut } from '@ai-matrx/auth';
 import {
   type ConfirmationParent,
   type ExtensionVaultConfirmation,
@@ -230,20 +230,37 @@ const productionDeps: VaultConfirmationHostDeps = {
   refresh: refreshAccessTokenStrict,
   api: createPackageApi,
   proofAuth: () => {
-    const client = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_PUBLISHABLE_KEY, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false,
-      },
+    // persist:false = no storage write and no background refresh; URL detection is off too.
+    const client = createAuthClient({
+      url: ENV.SUPABASE_URL,
+      key: ENV.SUPABASE_PUBLISHABLE_KEY,
+      persist: false,
+      detectSessionInUrl: false,
     });
-    // The SDK auth object never escapes this custody boundary. In particular, cleanup always uses
+    const refusal = (error: unknown) => ({
+      message: error instanceof Error ? error.message : 'Sign-in was refused.',
+    });
+    // The SDK client never escapes this custody boundary. In particular, cleanup always uses
     // local scope so an isolated proof cannot revoke or replace the extension's OAuth session.
     return {
-      signInWithPassword: (input) => client.auth.signInWithPassword(input),
+      async signInWithPassword(input) {
+        try {
+          const { session, person } = await signInWithPassword(client, input);
+          return { data: { user: person, session }, error: null };
+        } catch (error) {
+          return { data: { user: null, session: null }, error: refusal(error) };
+        }
+      },
       signInWithOtp: (input) => client.auth.signInWithOtp(input),
       verifyOtp: (input) => client.auth.verifyOtp(input),
-      signOut: () => client.auth.signOut({ scope: 'local' }),
+      async signOut() {
+        try {
+          await signOut(client, 'local');
+          return { error: null };
+        } catch (error) {
+          return { error };
+        }
+      },
     } satisfies IsolatedConfirmationAuth;
   },
   issueGrant: (api, proofToken) => primaryStepUpGrant(api, { body: { access_token: proofToken } }),

@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { createAuthClient } from '@ai-matrx/auth';
 import { readAdminStatus } from '@ai-matrx/auth/admin';
-import { createClient } from '@supabase/supabase-js';
 import { observeCanonicalAdminCheck } from './member-native-auth-proof.mjs';
 import { verifyReviewerRole } from './reviewer-chat-identity-diagnostic.mjs';
 import { verifyMemberNonadminRole } from './settings-native-auth-driver.mjs';
@@ -49,26 +49,29 @@ test('current SDK admin reader produces a request recognized by the native obser
   const candidate = panelWithRows([]);
   const proof = observeCanonicalAdminCheck(candidate.panel, ORIGIN, 10);
   await proof.start();
-  const client = createClient(ORIGIN, 'transport-only-test-key', {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
-    global: {
-      fetch: async (url, options) => {
-        candidate.emitter.emit('Network.requestWillBeSent', {
-          requestId: 'sdk-admin-read',
-          request: {
-            url: String(url),
-            method: options.method,
-            headers: Object.fromEntries(new Headers(options.headers)),
-          },
-        });
-        candidate.emitter.emit('Network.responseReceived', {
-          requestId: 'sdk-admin-read',
-          response: { status: 200 },
-        });
-        candidate.emitter.emit('Network.loadingFinished', { requestId: 'sdk-admin-read' });
-        return new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } });
+  // The auth package's client factory takes no fetch option, so the transport is the global fetch.
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (url, options) => {
+    candidate.emitter.emit('Network.requestWillBeSent', {
+      requestId: 'sdk-admin-read',
+      request: {
+        url: String(url),
+        method: options.method,
+        headers: Object.fromEntries(new Headers(options.headers)),
       },
-    },
+    });
+    candidate.emitter.emit('Network.responseReceived', {
+      requestId: 'sdk-admin-read',
+      response: { status: 200 },
+    });
+    candidate.emitter.emit('Network.loadingFinished', { requestId: 'sdk-admin-read' });
+    return new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } });
+  };
+  const client = createAuthClient({
+    url: ORIGIN,
+    key: 'transport-only-test-key',
+    persist: false,
+    detectSessionInUrl: false,
   });
   try {
     assert.deepEqual(await readAdminStatus(client, USER), { state: 'not_admin' });
@@ -79,6 +82,7 @@ test('current SDK admin reader produces a request recognized by the native obser
     });
     assert.deepEqual(proof.networkSnapshot().role_mismatches, {});
   } finally {
+    globalThis.fetch = realFetch;
     await proof.stop();
   }
 });
