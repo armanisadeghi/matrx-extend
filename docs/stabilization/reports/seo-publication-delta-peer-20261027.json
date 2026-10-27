@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T14:36:58.092721+00:00",
+  "lane": "seo_publication_delta_peer",
+  "authorship": "Fresh read-only publication peer; no source/native/publication authorship",
+  "reviewed_commit": "e487aff7c337ba8aba495fdef6ecbe3c0299f1df",
+  "A_reader_truth": {
+    "verdict": "PASS",
+    "observed": [
+      "Published actor projection retains all selected original actor fields exactly, including workflowdd5e/app eBee/raw originb555 and no current-main transfer.",
+      "T02 guest remains partial, same one notice subtarget pass, full_case_pass false. Prior guest result is preserved exactly as final history entry. Semantic inventory comparison proves every other inventory value unchanged.",
+      "Original certificate valid at actor observation remains distinct from fresh peer replay refused after executable edits. Startup-image, browser/profile/backend and whole-case/defect/Store limits remain explicit."
+    ],
+    "findings": []
+  },
+  "B_byte_scope_quality": {
+    "verdict": "PASS",
+    "checks": {
+      "changed_paths": 12,
+      "all_under_stabilization": true,
+      "defect_records_changed": 0,
+      "original_members_byte_equal_archive_and_private": 4,
+      "original_certificate_byte_equal_private": true,
+      "public_hash_mappings_match": true,
+      "projection_original_report_hash_matches": true,
+      "original_peer_fields_unchanged": true,
+      "inventory_only_T02_guest_and_history": true,
+      "git_diff_check_exit": 0
+    },
+    "archive_sha256": "14ab64837625d5bacc199007b37f4e23a6f43e445b3dc9932327e99a65103655",
+    "findings": []
+  },
+  "limits": [
+    "Publication delta review only; no fresh native UI, current canonical replay, product behavior or release acceptance.",
+    "Unfiltered workflow log, original ZIP and startup PNGs remain private; no whole-archive privacy claim.",
+    "Contributor uncommitted D299 source excluded; exact owned commit reviewed."
+  ],
+  "actions": {
+    "tracked_edits": false,
+    "tests": false,
+    "browser": false,
+    "auth": false,
+    "dispatch": false,
+    "heavy_jobs": false,
+    "commits": false
+  },
+  "owned_processes": []
+}

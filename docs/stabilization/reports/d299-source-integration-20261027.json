@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T15:13:09.934697+00:00",
+  "source_commit": "9093620ce6d9733f4a7b4b23dbe0a2c2d8c617a2",
+  "source_pushed": true,
+  "scope": "Seven acceptance-harness/callsite/test paths; no application behavior or resource/CI policy changes.",
+  "source_review": "R1/R2 ADDRESSED; final source and transport independently reviewed. Tentative R3 navigation finding REFUTED against independent expanded Collapsible components, no invented exclusive-tab fix.",
+  "guarded_results": {
+    "full_focused_suite": {
+      "tests": 1174,
+      "pass": 1163,
+      "fail": 0,
+      "skip": 11,
+      "resource": "valid",
+      "exit": 0
+    },
+    "compile": {
+      "resource": "valid",
+      "exit": 0
+    },
+    "full_lint": {
+      "files": 3480,
+      "errors": 0,
+      "existing_warnings": 1037,
+      "resource": "valid",
+      "exit": 0
+    }
+  },
+  "preserved_attempts": "Initial missing-directory setup refusal ran no tests. Valid old-source RED12; candidate1 invalid-syntax gut test failure; freshRED3; candidate2 six fixture/early-refusal failures; all retained, none counted as GREEN. All terminal owned journals are committed alongside this report.",
+  "semantic_neutral_after_GREEN": "Only optional expectedBaseline=undefined and import ordering; independently verified, no repeated full suite claimed.",
+  "CI": {
+    "full": {
+      "id": 40528122564,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    "focused": {
+      "id": 40528122585,
+      "status": "completed",
+      "conclusion": "success"
+    }
+  },
+  "owner_copy": {
+    "last_verified_source": "ebee382ab03092bd3177e0475e2ac16d25e55c25",
+    "version": "0.2.629",
+    "current_main_artifact_promoted": false,
+    "current_main_Chrome_reload_verified": false,
+    "limit": "Full source CI artifact still pending; last owner copy is historical, not current after contributor lock/source advancement."
+  },
+  "daily_Store": "October27 completed daily claim reused; authenticated Published577/Draft577unpublished observation unchanged; no dashboard/mail replay, upload/submission/baseline change.",
+  "product_metrics": {
+    "native_guest_SEO_subtargets_passed": 1,
+    "full_cases_new_PASS": 0,
+    "defects_closed": 0,
+    "independently_verified_product_fixes": 0,
+    "releases": 0,
+    "known_product_regressions_introduced": "none established; partial testing is not overall health"
+  },
+  "native_limits": "Full T10 remains partial on frozen80. New observer/member caller source has not been natively retested. Whole-key equality is conservative: sibling differences block certification without proving guest Ask caused them. Existing installed dependencies used locally; current lock validation requires hosted CI.",
+  "owned_cleanup": {
+    "workers_terminal": true,
+    "local_heavy_jobs": 0,
+    "local_UI_leases": 0,
+    "auth_or_secret_changes": 0,
+    "fixture_mutations": 0
+  },
+  "reports": [
+    {
+      "path": "docs/stabilization/reports/d299-remaining-contracts-20261027.json",
+      "original_private_record_sha256": "db1b577e876f99180ff794d20cdb0a274b4d0ddc71225c87e0d89952734892f4",
+      "public_sha256": "595391a61fb26dfd4dea79956e67902922e70fd6a72681e37aafc7a4122c5334"
+    },
+    {
+      "path": "docs/stabilization/reports/d299-remaining-source-peer-20261027.json",
+      "original_private_record_sha256": "7cfff5056fec6ddc0605fee43ad862e671d208d85e2677eeff06fc513116185c",
+      "public_sha256": "7cfff5056fec6ddc0605fee43ad862e671d208d85e2677eeff06fc513116185c"
+    },
+    {
+      "path": "docs/stabilization/reports/d299-fresh-fixer-20261027.json",
+      "original_private_record_sha256": "d8bb17e3a057330f31928c1a0aad5d6997a8dfaa7c993406925d43bf038e174b",
+      "public_sha256": "8196b9d5704215f3a561080a209028570dececccac799725f298f6d89f8885ae"
+    },
+    {
+      "path": "docs/stabilization/reports/d299-scoped-reverify-20261027.json",
+      "original_private_record_sha256": "25f58565627970242320f00c7202a277a0cf5282d9ed4eb3aec5eec87f898a31",
+      "public_sha256": "25f58565627970242320f00c7202a277a0cf5282d9ed4eb3aec5eec87f898a31"
+    },
+    {
+      "path": "docs/stabilization/reports/d299-fixture-delta-reverify-20261027.json",
+      "original_private_record_sha256": "89a8196ee81ab62bfc14ea4c8a5bb0aed9ace5a7744c3691d6985cfdeaeaf5e6",
+      "public_sha256": "89a8196ee81ab62bfc14ea4c8a5bb0aed9ace5a7744c3691d6985cfdeaeaf5e6"
+    },
+    {
+      "path": "docs/stabilization/reports/d299-final-lint-integration-20261027.json",
+      "original_private_record_sha256": "e6c792ff30388fef64dccd1acd76de5b8aa906efe15470b619a7050ee0ca1211",
+      "public_sha256": "e6c792ff30388fef64dccd1acd76de5b8aa906efe15470b619a7050ee0ca1211"
+    },
+    {
+      "path": "docs/stabilization/reports/seo-raw-json-transport-fix-20261027.json",
+      "original_private_record_sha256": "de9e65beabf195373591910b816ae2bc28065df02426000c03d7d270961b245a",
+      "public_sha256": "de9e65beabf195373591910b816ae2bc28065df02426000c03d7d270961b245a"
+    },
+    {
+      "path": "docs/stabilization/reports/seo-publication-delta-peer-20261027.json",
+      "original_private_record_sha256": "fd1b38577c588e9c199eed9c313ec9a9f48542dc2eb1191782f748c805527cfb",
+      "public_sha256": "fd1b38577c588e9c199eed9c313ec9a9f48542dc2eb1191782f748c805527cfb"
+    }
+  ],
+  "next_action": "Observe fullCI909 and exact development artifact; recheck source/runtime eligibility, normal import/verify/promote, then owner Profile8 native Reload/ID/path/version/pin proof. Use normal exact-source admission for frozen guest T10 and member D87/tab-groups retests; do not transfer old passes or relax refusal. Preserve daily Store state and paid-spend hold."
+}

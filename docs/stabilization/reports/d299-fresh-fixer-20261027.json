@@ -1,0 +1,235 @@
+{
+  "status": "HANDOFF",
+  "lane": "d299_contract_fresh_fixer",
+  "at": "2026-10-27T15:04:53.268758+00:00",
+  "base": "e487aff7c337ba8aba495fdef6ecbe3c0299f1df",
+  "own_commits": [],
+  "owned_source_sha256": {
+    "tests/browser/settings-d87-native-acceptance.mjs": "e34cd63345b4a2f4541c01f1e95d1af0518910684a3d9aa88166545e0827bcdf",
+    "tests/browser/tab-groups-member-native-acceptance.mjs": "29d1a44858c0d052edd0765743b2ce1ade6c054d08894072744ef291b40199f9",
+    "tests/browser/settings-guest-preference-batch.mjs": "bf832a773eb27669e0fd9eaaed8f34f46fcaf5c69d6f3cc9bf557484e4a5d6b7",
+    "tests/browser/settings-native-auth-driver.test.mjs": "fd971cf051c8ba16b0fad2e3c0235c6e75a64073248242faf10d85d4ec484332",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "112718b63ff887a4ac82ff605d48168b3c5b7ffa365176aca0620dc9fa0ec44a",
+    "tests/browser/settings-full-extension-rechecks.mjs": "6e8ffa9a19513b8b09f0bbbb3e92d8a57632b0dfea17569047c71c43fead60fb",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "989ca47df1222362e803f861d6719ede2746f30ac575eac7507780d78e1f8cab"
+  },
+  "packet": ".output/stabilization-checkpoints/d299-fresh-fixer-final-20261027.patch",
+  "packet_sha256": "ba1c1f446988e4934a3567c40f8b6934bee407899cd74e952e20098a89e6c48f",
+  "changes": [
+    "R1: immutable carried T10 checked at rerun entry before any sibling action and again before a later reload; Theme settings/restoration boundaries check same footprint before and after cleanup.",
+    "R2: missing/unmatched warm T10 expectation refuses before any restoration; capture never recaptures T10.",
+    "Actual shared raw Settings storage feeds generated observer and destructive Theme removal in outer/later replacement regressions.",
+    "Syntax-valid constant-absence observer gut and constant-equality matcher gut execute assertion failures.",
+    "External fixture now routes option choices from actual clicked control label rather than last observer; five Theme restoration outcome assertions retained.",
+    "Existing mode-drift case asserts zero reload/choice effects and retained Ask state."
+  ],
+  "prior_runs": {
+    "red": {
+      "run": "d299-fresh-red-20261027",
+      "session": 71965,
+      "terminal": true,
+      "tests": 1172,
+      "pass": 1158,
+      "fail": 3,
+      "skip": 11,
+      "resourceInvalid": false,
+      "exit": 1,
+      "meaning": "Expected outer shared-store, missing-warm and unmatched-warm failures; observer gut parses and passes its expected assertion rejection."
+    },
+    "candidate_green": {
+      "run": "d299-fresh-green-20261027",
+      "session": 60704,
+      "terminal": true,
+      "tests": 1174,
+      "pass": 1157,
+      "fail": 6,
+      "skip": 11,
+      "resourceInvalid": false,
+      "exit": 1,
+      "meaning": "Five stale external fixture option-routing failures and old reload expectation, diagnosed and corrected without relaxing Theme outcome assertions."
+    }
+  },
+  "active_run": {
+    "run": "d299-fresh-green2-20261027",
+    "session": 3212,
+    "terminal": true,
+    "tests": 1174,
+    "pass": 1163,
+    "fail": 0,
+    "skip": 11,
+    "admitted": true,
+    "resourceInvalid": false,
+    "exit": 0,
+    "final_at": "2026-10-27T14:58:23.940Z",
+    "packet_at_run": "7e4f1b3a179704faf12b2461be3f61604d2a466366d4cb41dfaa5cec820ff0d9"
+  },
+  "review": {
+    "first_fresh_scoped": "R1/R2 addressed source contract PASS, nativeUNVERIFIED; B staticPASS b46a4ee snapshot",
+    "R3": "REFUTED: actual independent Collapsible sections defaultOpen; openSection expands requested section and never closes Appearance. No false exclusive-section fixture added.",
+    "final_delta_review": "Parent reports fresh AstaticPASS/BstaticPASS packet7e4f, nativeUNVERIFIED. Final optional-undefined/import-only presentation delta still requires parent verification/normal lint."
+  },
+  "validation_limits": [
+    "No dependency install; contributor b555 reselect5.3 lock preserved, existing installed dependencies used. Exact-current hosted CI/artifact still required.",
+    "Whole-key equality is conservative: sibling-caused container change blocks proof but does not attribute a guest Ask product failure.",
+    "No native/product/defect/current-main browser/Store acceptance; no app behavior, CI/resource policy, credentials, fixtures, build or publication changes."
+  ],
+  "process_cleanup": {
+    "all_owned_sessions_terminal": [71965, 60704, 3212, 62505, 70221],
+    "terminal_actual_exits": [1, 1, 0, 0, 1],
+    "remaining_owned_processes": [],
+    "heavy_lease_present": false,
+    "unsafe_hold_present": false,
+    "no_pending_owned_journals": true
+  },
+  "next_action": "Root evidence fixer preserves/formats raw SEO transport; then fresh normal lint and final presentation-delta verifier. If valid, reconcile current main and commit/push exact7 source paths. Root publishes bounded reports/journals. Exact-current hosted CI/artifact/native guest/member acceptance stays pending; no defect closure.",
+  "source_ownership": "RELEASED_TO_ROOT_AFTER_ALL_OWNED_GUARDS_TERMINAL",
+  "candidate_committed": false,
+  "candidate_pushed": false,
+  "compile": {
+    "run": "d299-fresh-compile-20261027",
+    "session": 62505,
+    "terminal": true,
+    "admitted": true,
+    "resourceInvalid": false,
+    "exit": 0,
+    "final_at": "2026-10-27T15:00:32.718Z"
+  },
+  "lint": {
+    "run": "d299-fresh-lint-20261027",
+    "session": 70221,
+    "terminal": true,
+    "admitted": true,
+    "resourceInvalid": false,
+    "exit": 1,
+    "final_at": "2026-10-27T15:02:16.374Z",
+    "errors": 5,
+    "warnings": 1037,
+    "own_errors": "3useDefaultParameterLast from optional expectedBaseline plus1organizeImports",
+    "outside_owned_paths": "Root-published seo-guest-acceptance.json original-byte formatting; root evidence transport lane owns repair.",
+    "status": "Own4errors corrected by optional undefined default/import ordering; full normal lint rerun still REQUIRED after root evidence repair."
+  },
+  "presentation_delta_after_guarded_GREEN": {
+    "from_packet": "7e4f1b3a179704faf12b2461be3f61604d2a466366d4cb41dfaa5cec820ff0d9",
+    "changes": [
+      "expectedBaseline = undefined preserves omitted/undefined call semantics and original four required parameters; no position change.",
+      "Import ordering only, formatter/organizeImports with linter disabled was presentation-only, not a lint acceptance claim."
+    ],
+    "git_diff_check": 0,
+    "full_suite_repeated": false,
+    "reason": "No behavioral change; parent authorized normal lint + trivial-delta verification, no repeated full suite required."
+  },
+  "resource_journals": [
+    {
+      "path": "docs/stabilization/resource-journals/d299-contracts-red-20261027.jsonl",
+      "sha256": "047d682f0db22e481b2254561903349770eafdf06f73e695cc501f20791a3762",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T14:30:02.880Z",
+        "runId": "d299-contracts-red-20261027",
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/d299-contracts-red2-20261027.jsonl",
+      "sha256": "9eaf37a8ccecf69452575f01debac2efe620bb3c63aacccd49c8d04cdb7ec86c",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T14:34:19.912Z",
+        "runId": "d299-contracts-red2-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/d299-contracts-green-20261027.jsonl",
+      "sha256": "51b8d464285169557dffd2a38ddd9f6fbbb891d43d006e70372ffc25a1713c68",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T14:40:22.480Z",
+        "runId": "d299-contracts-green-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/d299-fresh-red-20261027.jsonl",
+      "sha256": "754c28626d36107249de9051622ada0d90dbcb93844a2b15bb07b5fade71bf19",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T14:48:46.394Z",
+        "runId": "d299-fresh-red-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/d299-fresh-green-20261027.jsonl",
+      "sha256": "901a0bc24bececb19c83ce0e1350fc439c962bde7ca3d6ec2cd74f6e40d5f3e1",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T14:53:26.023Z",
+        "runId": "d299-fresh-green-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/d299-fresh-green2-20261027.jsonl",
+      "sha256": "fe5a5615b81cd4e0eb3af9aee4a2900b1ffc0e9f4de894c205ee80eaa137e1cc",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T14:58:23.940Z",
+        "runId": "d299-fresh-green2-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/d299-fresh-compile-20261027.jsonl",
+      "sha256": "b0bea7b3718bcc82924e620a2ba2a8431e8453fd66eceda9c83040ae549a29f3",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T15:00:32.718Z",
+        "runId": "d299-fresh-compile-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/d299-fresh-lint-20261027.jsonl",
+      "sha256": "aa94f115f9d9ca4d6b2423b393ded393fad11cb980b0fd3a0ed98b275f939f4f",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T15:02:16.374Z",
+        "runId": "d299-fresh-lint-20261027",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  ]
+}

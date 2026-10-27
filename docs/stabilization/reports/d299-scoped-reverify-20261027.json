@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T14:53:07.614707+00:00",
+  "lane": "d299_contract_scoped_reverify",
+  "authorship": "fresh zero-authorship read-only scoped source reverify",
+  "base": "e487aff7c",
+  "pinned_patch": ".output/stabilization-checkpoints/d299-fresh-fixer-review-20261027.patch",
+  "patch_sha256": "b46a4ee195e319d907d26a6a67900cf08dba914c207b5b65d03af8fa70153f78",
+  "reality_contact": {
+    "first_record": "docs/stabilization/reports/eighty-guest-20261027.json",
+    "native_run": 40509061963,
+    "kind": "recorded real native observations; no fresh UI",
+    "observed": "Visible guest Ask refusal/Act rollback and replacement consumer proof passed bounded original replay, while synthetic storage flags left fullT10 partial."
+  },
+  "finding_resolution": [
+    {
+      "id": "R1",
+      "status": "ADDRESSED",
+      "evidence": [
+        "rerun entry loop verifies saved mode footprint before first T04 choice/read/restoration (settings-full-extension-rechecks.mjs:337-366).",
+        "The mode expectation is structuredClone of carried warm baseline; each later preference loop checks the same value before another replacement can erase it.",
+        "settingsBeforeTheme verifies after each actual Theme replacement before the shared helper reopens Appearance/read; absent-container restorer checks before and after mutation.",
+        "New outer-replacement and Theme-replacement regressions feed one raw Settings storage object to actual generated mode observer and actual destructive Theme cleanup; failures preserve new ask field and zero removals/T10 choices."
+      ]
+    },
+    {
+      "id": "R2",
+      "status": "ADDRESSED",
+      "evidence": [
+        "capture verifyWarmMode requires matched warm T10 before any sibling restore, fails unavailable/mismatch; no T10 capture fallback remains (settings-full-extension-rechecks.mjs:256-284).",
+        "Missing/unmatched/unknown warm regressions call actual capture with both preferences and destructive restorer spy; assert refusal and zero restoration callbacks."
+      ]
+    }
+  ],
+  "A_contract": {
+    "verdict": "PASS_SOURCE_CONTRACT; NATIVE_UNVERIFIED",
+    "accepted": [
+      "Approved organization context remains required before native browser/auth effects and forwarded at both member callsites.",
+      "Actual allowlisted storage observer, unknown handling, immutable carry, pre-cleanup comparisons and actual presence flags fit the stated no-shadow evidence contract.",
+      "No new product/full-case/current-main/Store acceptance or defect closure from source verification."
+    ],
+    "limits": [
+      "No fresh browser, independent test execution, credential use or fixture mutation.",
+      "Whole-key footprint equality is conservative: sibling-created container differences may block certification without proving guest Ask caused a product failure."
+    ]
+  },
+  "B_quality": {
+    "verdict": "PASS_STATIC_SCOPE; GUARDED_GREEN_PENDING",
+    "findings": [],
+    "observed": [
+      "Real generated observer source is executed against external Chrome storage/DOM fixtures; raw map keys/other values remain excluded from report.",
+      "Observer constant-absence mutant now replaces the complete outer shadowFootprint assignment bounded by the following raw declaration, leaving syntactically valid code; rejected assertion must match Expected values rather than accept SyntaxError.",
+      "Matcher gut runs the actual matcher on same and changed footprints, then proves constant true fails the changed input.",
+      "Fresh RED log shows1172 tests/1158pass/3intendedfail/11skip; no gut syntax failure. Final fresh GREEN was still executing at this observation; no green claim inferred.",
+      "No CI/resource/app/lock/dependency installation changes in the seven-path candidate."
+    ],
+    "tentative_finding_adjudication": {
+      "finding": "Opening Chat would hide Appearance before direct T04 read.",
+      "ruling": "REFUTED",
+      "evidence": [
+        "SettingsView mounts Appearance and Chat as independent Collapsible components, defaultOpen=true (SettingsView.tsx:335,371; components/ui/collapsible.tsx:11).",
+        "settings-panel-driver.openSection expands requested section and does not collapse any sibling (line240).",
+        "Shared restart helper explicitly reopens requested section after settings callbacks and before reads (settings-guest-extension-rechecks.mjs:183-187,236-249,303-321).",
+        "Therefore Chat check does not make Theme absent; no navigation repair required by this report."
+      ]
+    }
+  },
+  "file_sha256": {
+    "tests/browser/settings-d87-native-acceptance.mjs": "e34cd63345b4a2f4541c01f1e95d1af0518910684a3d9aa88166545e0827bcdf",
+    "tests/browser/settings-full-extension-rechecks.mjs": "89dd848bf6cbcdb3bda31bcd10920b0323be8d8a98863d939603e6695b50d4e5",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "1e76c0307c617ca4cb467583adb438e621edbdae1c53df8cf1b7f1f54fceb3ca",
+    "tests/browser/settings-guest-preference-batch.mjs": "6c52ca9a0d9e527a50c4011495e4285a1f8fb93091ec74ca0e40ed4af1713fbe",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "112718b63ff887a4ac82ff605d48168b3c5b7ffa365176aca0620dc9fa0ec44a",
+    "tests/browser/settings-native-auth-driver.test.mjs": "fd971cf051c8ba16b0fad2e3c0235c6e75a64073248242faf10d85d4ec484332",
+    "tests/browser/tab-groups-member-native-acceptance.mjs": "29d1a44858c0d052edd0765743b2ce1ade6c054d08894072744ef291b40199f9"
+  },
+  "owned_actions": {
+    "tracked_edits": false,
+    "tests": false,
+    "browser": false,
+    "auth": false,
+    "dispatch": false,
+    "processes": [],
+    "scratch_report_only": true
+  },
+  "next_action": "Parent observe terminal valid GREEN and remaining quality gates, preserve pinned hashes, commit/push verified source unit; obtain eligible exact-artifact independent native replay before any D299/full T10 closure."
+}
