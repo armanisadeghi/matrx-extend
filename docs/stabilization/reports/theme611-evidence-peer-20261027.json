@@ -1,0 +1,214 @@
+{
+  "schema": 1,
+  "task_id": "theme611_evidence_peer_20261027",
+  "reviewer": "/root/theme611_evidence_peer",
+  "zero_authorship": true,
+  "at": "2026-10-27T01:33:47.306760+00:00",
+  "status": "PASS_BOUNDED_PRIMARY_THEME_MATRIX_EVIDENCE_INDEPENDENT_LIVE_RETEST_NOT_RUN",
+  "A": {
+    "verdict": "PASS_BOUNDED_FROZEN611_PRIMARY_WARM_AND_FULL_RELOAD_EVIDENCE",
+    "findings": [],
+    "verified": [
+      "Eight original PNGs inspected: Light renders light; Dark renders dark; System renders dark like originalSystem in this observed environment. Warm and later full-reload readbacks display the intended Light/Dark/System choice.",
+      "Settled readback AX for each choice identifies actual DEVcihdmkcdjjckfhjpgoedmgfpoljebaml sidepanel, Email emdash and conditionalSettingsSign in. This avoids the known unconditionalUserMenuSignout observer error.",
+      "Each named management capture includes Reloaded toast, DEV627/On/pin and exact611importLoadedfrom; later named settled Settings captures retain each choice. File write chronology differs for the three identical management AX bodies; identical text/hash does not itself prove distinctclicks. Separate actualclick sequences are operator-reported and source tooltrace remains actor-owned; no independent UI replay performed here.",
+      "OriginalSystem displayed/restored and readback after its reported managementReload; no rawstorage or implicit-key absence claim.",
+      "Original Guestregistration restored to stable.output/chrome-mv3-dev/627/On+pin with Reloadedtoast. ActualStore577 ChromeWebStore/On+pin preserved. Safe structuralcleanup receipts support ownedtabs/panel closure and originalGuestNewTab/ownerwindow/tab/focus restoration, without privatebody bytecomparison."
+    ],
+    "remaining_gates": [
+      "Fresh independent live UI replay remains unverified by this evidence-only lane. Do not label this result independently UI-retested.",
+      "System↔OS matching, both OS appearance states and live OS-following changes were neither independently observed nor altered; only one observedSystemenvironment is covered.",
+      "Currentmain628/newer runtime, actualStoreinstalled Theme fullReload, member/admin and wholeSettings/campaign acceptance are not established.",
+      "D87 and D186 are already closed in current records; this positive Theme matrix neither changes those states nor independently replays D87 rejected-storage/retry/rapid-write originalreproduction or D186 internal stale-panel-target harness reproduction."
+    ],
+    "case_advancement": "The registered T04 selection/appearance/reopen behavior has primary real-UI evidence on frozen611/currentobservedenvironment. Parent may record the six scoped observations with explicit build/channel limits. Full independent-live-retest/current-release gates remain unmet; this review cannot supply them."
+  },
+  "B": {
+    "verdict": "PASS_BOUNDED_PROVENANCE_RESOURCE_CLEANUP_AND_PUBLICATION_WITH_EXPLICIT_LIMITS",
+    "findings": [],
+    "verified": [
+      "All34 original evidence SHA256/bytecounts match. Archived completed journal SHA751169…609e8f matches and finalvalid0; no unsafe or CPU_PENDING events.",
+      "OfficialGitHub readonly verification: CI40430067150 attempt1 push/main/source611 completedSUCCESS; nonexpiredartifact12701936382/digest45e842…87515/49795987B belongs exactsameCI/source. LocalCIreceipt/provenance hashes match import-status.",
+      "Independent complete tree recomputation: importedb2eb8f46…b7f6ed3 and stable99034489…42277, both version627; no source identity inferred merely from version.",
+      "All48 gate entries map to realhealthyjournal timestamps/codes, recomputed ages match, maximum15.82s, allafterliteralADMITTED01:17:56.468 andbeforeSTOP01:23:06.708. Watchaudit independentlycounts192reads/maxgap2.012320541s/no risk rows.",
+      "Actual OS exit0 of holder81944/watcher68174 is supplied by actor/parent tool-output attestation, not independently repolled by reviewer. Journal final alone is not substituted for OSexit. PerAPIcount is notmachinecounted; operator-reported <=4calls/group remains an explicit trace limit.",
+      "ReviewedTheme run no longer owns current heavy lease; another parent-owned Storeaa9lane now owns it. Actor/parent verified Theme heavy absence atcleanup; do not claim globalleaseabsence atreview.",
+      "No code fix/diff, test execution, browser action, auth change, build/release or dispatch by reviewer. Read/hash/catalogmetadataonly; no modelcalls.",
+      "All eight PNGs and AX/JSON whitelist contain only publicExample fixture, guest extensionmanager/Settings, structuralcleanup and source/hash/guard metadata. No retained ownerVaultURL/body, credential or guestauthentication value. Original tool-only Vault observation must remain private."
+    ],
+    "publication_requirements": [
+      "Restore the archived completed originaljournal to original publicpath with identicalbytes atpublication; never move active evidence.",
+      "Use durable publicevidence maps for private .output references; preserve AXwhitespace/hashes. If authoredJSON formatting changes bytes, publish original/transformed hashes and a precise transform note.",
+      "Include explicit reviewer-derived frozen lockfile SHA below and non-HMR CIbuild mode/observedpermissionstate; actorreport did not list lockhash separately.",
+      "Retain frozen exact_pushed_commit_only/currentmainlag, independentUIreplay/SystemOS/perinputtrace and cleanup limits. No defectclosure, Store release or wholefeaturepass follows."
+    ]
+  },
+  "source_receipt_addendum": {
+    "source_sha": "6111a5a4f9143127f982c0ab8adab0a5932033e6",
+    "lockfile_sha256": "2c5c50950bdf196fc4cb71c20cba96743f744a533a82641ef5439d08b7fa677a",
+    "lock_hash_method": "SHA256 of git show611:pnpm-lock.yaml bytes",
+    "WXT_build_evidence": "Frozen611 CIworkflow runs pnpm wxt build for keyeddevelopmentartifact; non-HMR imported CIbuild, not devserver. No independent runtime NODE_ENV value inspection.",
+    "observed_permissions": "DEV enabled; siteaccess On all sites; incognitoOff; fileURLsOn; no permissionchanges by this test/review claimed."
+  },
+  "source_report_sha256": "28df0245afdb1e9711c8d87e07b603ec37097910f742c54cd3ac427eb5734cd1",
+  "original_journal": {
+    "public_path": "docs/stabilization/resource-journals/guest-theme611-20261027-0116.jsonl",
+    "current_byte_archive": ".output/stabilization-checkpoints/guest-theme611-20261027-0116-completed-journal.jsonl",
+    "sha256": "751169080890d7b067d0040866a37e54b7eedb667f611e23f689251075609e8f"
+  },
+  "safe_publication_whitelist": {
+    "dark-full-reload-readback.ax.txt": {
+      "sha256": "8c3e679e7058b944d4c047a93250d9ca527d5c431aab5e687117fa99d344d358",
+      "bytes": 6362
+    },
+    "dark-full-reload-readback.png": {
+      "sha256": "5adbf01c3bf3175c681fd20684a8b501d19b2a20d9324a965cbe3232d29dbf00",
+      "bytes": 183439
+    },
+    "dark-management-reload.ax.txt": {
+      "sha256": "01252aa75fc21c81a80a3f2a2e534fa2c22aba54850d755dcbc225bbb6b3c8c5",
+      "bytes": 6440
+    },
+    "dark-warm.ax.txt": {
+      "sha256": "9fdfee445700d14436abf06359f11715dbc93c6b15cfe20d4c4ef49d0d3bc6df",
+      "bytes": 6354
+    },
+    "dark-warm.png": {
+      "sha256": "e30653978bea1d92fbcdeddd49ada06b40f6482d2fc7caa91c5e57829f45da2b",
+      "bytes": 183539
+    },
+    "dev-imported-first-reload.ax.txt": {
+      "sha256": "ef07ba71cfbe0857de3da14d4c15d2bd53fd2647c93709a22771b091ddb26a25",
+      "bytes": 693
+    },
+    "dev-imported-loaded.ax.txt": {
+      "sha256": "bafd2959e55f1452526e8ec85ea99072d95356c4cf265d0a886022e489b937fd",
+      "bytes": 6255
+    },
+    "dev-prior.ax.txt": {
+      "sha256": "c9d16b247207619327d2d35492526a568a15d50427ac6cb6602c69f17702e280",
+      "bytes": 6140
+    },
+    "dev-registration-restored.ax.txt": {
+      "sha256": "94db2841b20043a9f7f7fe702d1df5779cef468acbcd1068d7ff1bff59d912fc",
+      "bytes": 6225
+    },
+    "dev-stable-reloaded.ax.txt": {
+      "sha256": "3427ad4d23f7d250f582126c6d5550eed4dfec885c9e20c3b4150c456b60d8ca",
+      "bytes": 6302
+    },
+    "gates.json": {
+      "sha256": "e7c9b58b03411155bb0876a2012e3d33bff0c7af2e79451a14f991fa9fc44c20",
+      "bytes": 7122
+    },
+    "guest-cleanup.json": {
+      "sha256": "e048497ddd46ab907c16d00547d88f0a6b917c4c79618225e6d585c8c0e5a5d9",
+      "bytes": 259
+    },
+    "initial-structure.json": {
+      "sha256": "d55cf698e61513792e89a50c11ae4d3cf0030f6ecd09d998828b8a28e2f94fff",
+      "bytes": 282
+    },
+    "light-full-reload-readback.ax.txt": {
+      "sha256": "a00d0a87fe2c5417f5662f5f8dfdee4630a3ae30ea04f63d747882c285c0f28f",
+      "bytes": 6364
+    },
+    "light-full-reload-readback.png": {
+      "sha256": "be500920e4a54eb7eb2056ffbfaf5f3fcf87dab78b0e7448f85cf4e7ca41941f",
+      "bytes": 195816
+    },
+    "light-management-reload.ax.txt": {
+      "sha256": "01252aa75fc21c81a80a3f2a2e534fa2c22aba54850d755dcbc225bbb6b3c8c5",
+      "bytes": 6440
+    },
+    "light-warm.ax.txt": {
+      "sha256": "cd0bc72ced47430e3f1f3e398bdaca062e29973029e2b3b35f60af05a45a57fb",
+      "bytes": 6357
+    },
+    "light-warm.png": {
+      "sha256": "5365f450ffe533d8bc95e76173f0e69a89907e5f400d254f5923f2d7260f29b3",
+      "bytes": 195898
+    },
+    "owner-cleanup.json": {
+      "sha256": "eb5aca2c347349e026efc8cd9cf31503e77c4ac12c4a40d312dd9e68fb97c045",
+      "bytes": 272
+    },
+    "panel-initial.ax.txt": {
+      "sha256": "eb83e9adfe38557d44b962bb4842d2f518f01db473769f17d5502be40015625a",
+      "bytes": 1553
+    },
+    "panel-initial.png": {
+      "sha256": "d9ee391d92d354d1a1ab84a9ac135ddf251240819c9491b1b53c1b7da386799e",
+      "bytes": 156205
+    },
+    "profile-version-extract.ax.txt": {
+      "sha256": "93e6515f120b199bf40f4636f572d81ae64300a7e742812966f1b99f6cb1007a",
+      "bytes": 438
+    },
+    "settings-original-settled.ax.txt": {
+      "sha256": "82d00c0fe180f9b2ca26f7c67e71f9700ee4ffe21d9a248e0abd349167e6a32c",
+      "bytes": 6366
+    },
+    "settings-original.ax.txt": {
+      "sha256": "7930c3c7598c3df6b31ee3362de40356c956887b69a32b537a267ec2dcbf18f3",
+      "bytes": 3777
+    },
+    "settings-original.png": {
+      "sha256": "9f32123e932f84165cc30d9e20b99281c5dce4a0de6abcb969063474a95d3e1b",
+      "bytes": 183630
+    },
+    "store-preserved.ax.txt": {
+      "sha256": "fba0375f7022852d6bf42ffcb98c7e23bb38bb66273ad57618322e4439f24fa0",
+      "bytes": 6050
+    },
+    "system-full-reload-readback.ax.txt": {
+      "sha256": "fade6ae1ca43aee04ed545c1de9caf988c4e8ac96b0bd5ee2843d1eef34ff20f",
+      "bytes": 6366
+    },
+    "system-full-reload-readback.png": {
+      "sha256": "7cf99ff22875b959525c11209ebd4297568bf6c0a7562e584cac60bdff695a2f",
+      "bytes": 183627
+    },
+    "system-management-reload.ax.txt": {
+      "sha256": "01252aa75fc21c81a80a3f2a2e534fa2c22aba54850d755dcbc225bbb6b3c8c5",
+      "bytes": 6440
+    },
+    "system-restored-warm.ax.txt": {
+      "sha256": "1479007cce65ae5b84ea6dbfc41ca4d6b3b4b96ff8a3fef119d7ded316b5708a",
+      "bytes": 6360
+    },
+    "system-restored-warm.png": {
+      "sha256": "4576f97c9f92bb5d43520edbab05a1d311e50fa8f05182aaf064df578a4b8277",
+      "bytes": 184028
+    },
+    "tree-after-cleanup.json": {
+      "sha256": "f613ca29a852602b305e10f7102d731a3476050295c24731f14e04caf471a35a",
+      "bytes": 201
+    },
+    "tree-after-test.json": {
+      "sha256": "f2051d6598e507165a4f0d3527bdea39717f15650f8db181e1b217083a11e30f",
+      "bytes": 201
+    },
+    "tree-before.json": {
+      "sha256": "4639eadb96e5c64850883f86f8971ab1537c8100ed057d846ddce8670dbf472d",
+      "bytes": 1278
+    }
+  },
+  "public_evidence_directory_suggestion": "docs/stabilization/evidence/guest-theme-frozen611-20261027/",
+  "review_actions": {
+    "original_files_hash_checked": 34,
+    "original_PNGs_visually_inspected": 8,
+    "independent_tree_hashes": 2,
+    "official_GitHub_metadata_reads": 2,
+    "new_tests": 0,
+    "UI_replay": 0,
+    "source_edits": 0,
+    "dispatches": 0,
+    "AI_calls": 0,
+    "own_live_processes": 0,
+    "commits": 0
+  },
+  "next": "Parent publishes bounded evidence with receipt/map addenda after strict-source boundary; route fresh independent live replay if advancing independent-UI gate. No current-release or defectclosure inference.",
+  "original_private_peer_sha256": "fba6057277608f19e631de482e313082be21d7b5b2790d2a9304bd76a4188e51",
+  "durable_evidence_directory": "docs/stabilization/evidence/guest-theme611-20261027"
+}

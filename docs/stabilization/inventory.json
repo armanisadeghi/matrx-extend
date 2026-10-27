@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-27T00:53:42.633001+00:00",
+  "updated_at": "2026-10-27T01:57:17.590334+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -8164,6 +8164,21 @@
                 "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
               ]
             }
+          ],
+          "bounded_native_observations": [
+            {
+              "at": "2026-10-27T01:57:17.590334+00:00",
+              "run_id": "guest-theme611-20261027-0116",
+              "build_version": "0.2.627",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Frozen611CI development: Light/Dark/System warm+separate full DEV Reload readbacks observed, original System/prior registration restored; System/OS matching, independent live UI replay, currentmain/Store/member/admin unverified. No fullcase or linked-defect closure.",
+              "evidence": [
+                "docs/stabilization/reports/guest-theme-frozen611-native-20261027.json",
+                "docs/stabilization/reports/theme611-evidence-peer-20261027.json"
+              ]
+            }
           ]
         },
         {
@@ -9330,6 +9345,21 @@
               "evidence": [
                 "docs/stabilization/reports/settings-b-40262577587-20261026.json",
                 "docs/stabilization/reports/hosted-ab-evidence-peer-20261026.json"
+              ]
+            }
+          ],
+          "bounded_native_observations": [
+            {
+              "at": "2026-10-27T01:57:17.590334+00:00",
+              "run_id": "store-speed-20261027-0103",
+              "build_version": "0.2.577",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "scope": "Actual Store guest Fast/Thinking display+panel reopening observed; originalFast restored. Full extension Reload/effective Chat speed/currentDEV unverified; UI announces COMING SOON.",
+              "evidence": [
+                "docs/stabilization/reports/store-speed-20261027-0103.json",
+                "docs/stabilization/reports/store-speed-peer-20261027-0103.json"
               ]
             }
           ]

@@ -1,0 +1,5 @@
+The following is a diff from the previous accessibility tree for Window: "Extensions - Matrx Extend" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~					9 pop up button View site information
+~					10 text field (settable) Address and search bar, Value: aimatrx.com/matrx-extend-demo, Placeholder: Ask Google or type a URL
+~					161 tab (selected, settable, boolean) Extensions - Matrx Extend - Memory usage - 71.1 MB, Value: on
+The focused UI element is 189 click to navigate away from matrx extend details page. Matrx Extend details page back button

@@ -1,0 +1,259 @@
+{
+  "schema": 1,
+  "task_id": "owner628_b3_adoption",
+  "at": "2026-10-27T01:43:48.885093+00:00",
+  "status": "PRIMARY_NATIVE_OWNER_UPDATE_VERIFIED_INDEPENDENT_REVIEW_PENDING",
+  "sourceSha": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+  "headOriginBeforeAfter": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+  "ci": {
+    "run": 40431711230,
+    "attempt": 1,
+    "conclusion": "success",
+    "artifact": 12702018987,
+    "official_digest": "sha256:e311c6a8272db435bacb6db3bfd58252448f11e03464d578a86e4871c9db9ced",
+    "officialMetadataIndependentlyRechecked": true
+  },
+  "import": {
+    "session": 67982,
+    "actual_exit": 0,
+    "status": {
+      "schema_version": 1,
+      "eligibleStore": false,
+      "sourceSha": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+      "runId": 40431711230,
+      "runAttempt": 1,
+      "artifactId": 12702018987,
+      "githubArtifactDigest": "sha256:e311c6a8272db435bacb6db3bfd58252448f11e03464d578a86e4871c9db9ced",
+      "treeSha256": "30153eb00dab7efa4534c21fe5a1e4305b21867f1d405d765a38bcd35c149df2",
+      "ciReceiptSha256": "c557faec351898870808e1f1b034decfa2d2dfabc66605c9ec7170e0626d0bc0",
+      "provenanceSha256": "338048dc1e9581bf069d1a76c093c5f4eaeeb71575eea624f49e40255a181153",
+      "source": {
+        "originMain": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+        "localHead": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+        "trackedDirty": false,
+        "untrackedRunnerInputs": [],
+        "claim": "current_pushed_source"
+      }
+    }
+  },
+  "promotion": {
+    "session": 9039,
+    "actual_exit": 0,
+    "receipt": {
+      "schema_version": 1,
+      "kind": "ci_development_test_promotion",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "observedAt": "2026-10-27T01:40:28.004Z",
+      "sourceSha": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+      "mainSha": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+      "compatibility": "exact-source",
+      "allowedDiffPaths": [],
+      "version": "0.2.628",
+      "runId": 40431711230,
+      "runAttempt": 1,
+      "artifactId": 12702018987,
+      "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/b3b3d345e87959e277a3513b3c38226160fe6d13/40431711230-1/chrome-mv3",
+      "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "treeSha256": "30153eb00dab7efa4534c21fe5a1e4305b21867f1d405d765a38bcd35c149df2",
+      "fileCount": 2817
+    },
+    "finalTree": {
+      "at": "2026-10-27T01:43:12.362Z",
+      "treeSha256": "30153eb00dab7efa4534c21fe5a1e4305b21867f1d405d765a38bcd35c149df2",
+      "fileCount": 2817,
+      "sourceSha": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+      "version": "0.2.628"
+    }
+  },
+  "runtime": {
+    "advertised_backend_before": "aa9dd5f37d581de1de7ca929bf92de0ef1547cac",
+    "advertised_backend_pre_promotion": "aa9dd5f37d581de1de7ca929bf92de0ef1547cac",
+    "advertised_backend_after_UI": "9cbb39c70b219f714f5ef0514a05e41de21f3153",
+    "built_at": "2026-10-27T01:26:07Z",
+    "driftObserved": true,
+    "bound": "Health brackets, not request-wire correlation; no product/AI request made."
+  },
+  "native": {
+    "actualProfilePath": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "actualAccount": "arman@armansadeghi.com",
+    "ChromeVersion": "156.0.8078.47 Official Build arm64",
+    "devId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "beforeVersion": "0.2.627",
+    "afterVersion": "0.2.628",
+    "actualManagementReload": true,
+    "ReloadedToast": true,
+    "LoadedFrom": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "enabled": true,
+    "pinned": true,
+    "StoreId": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "StoreVersion": "0.2.577",
+    "StoreSource": "Chrome Web Store",
+    "StoreOnPinned": true,
+    "GuestProfileTouched": false,
+    "guestCachedVersion": "Not reloaded or verified; prior627/source9ec remains historical even though stable bytes now628."
+  },
+  "resource": {
+    "runId": "owner628-b3-20261027-0138",
+    "holderSession": 9932,
+    "holderActualExit": 0,
+    "watcherSession": 13014,
+    "watcherActualExit": 0,
+    "journal": "docs/stabilization/resource-journals/owner628-b3-20261027-0138.jsonl",
+    "journal_sha256": "a560360edf913d8d8353cef9127b4e71a0c293bd24ae07d2f4236e6317162995",
+    "final": {
+      "schema": 1,
+      "at": "2026-10-27T01:43:19.941Z",
+      "runId": "owner628-b3-20261027-0138",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "watcher": {
+      "runId": "owner628-b3-20261027-0138",
+      "first_read_at": "2026-10-27T01:38:30.368274Z",
+      "last_read_at": "2026-10-27T01:43:21.088621Z",
+      "actualPollCount": 146,
+      "maxGapSeconds": 2.007766416994855,
+      "riskEvents": [],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T01:43:19.941Z",
+        "runId": "owner628-b3-20261027-0138",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/owner628-b3-20261027-0138.jsonl",
+      "audit": ".output/stabilization-checkpoints/owner628-b3-watch-20261027.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    },
+    "gateGroups": 14,
+    "maxGateAgeSeconds": 15.679,
+    "scope": "Direct canonical download/hash/copy during admitted monitored manual browsermaintenance; not run-mode argv-admitted or per-process supervised. No build/release/downloaded-code execution; inherited guard environment private0600envfile removed."
+  },
+  "cleanup": {
+    "at": "2026-10-27T01:43:06.810Z",
+    "originalOwnerWindow": true,
+    "selectedTabs": [
+      "~\t\t\t\t\t119 tab (selected, settable, boolean) Credential | Vault | AI Matrx - Memory usage - 294 MB, Value: on"
+    ],
+    "focusReturnedToOriginalContent": true,
+    "ownedMaintenanceTabClosed": true,
+    "privateBodyOrUrlSaved": false,
+    "guestProfileTouched": false,
+    "privateResourceEnvRemoved": true,
+    "heavyLeaseAbsent": true,
+    "allOwnProcessesTerminal": true
+  },
+  "evidence": {
+    ".output/stabilization-checkpoints/owner628-b3-native/initial-window-menu.ax.txt": {
+      "sha256": "bc64f127420063d6a055e06e936ab01cf0c8ade2196ac852870f631207b1c211",
+      "bytes": 1323
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/profile-version-extract.ax.txt": {
+      "sha256": "22ed7e3bb2d3a0f0ade57afcef37066cddcdd60a772017672f00f670783e5412",
+      "bytes": 312
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/owner-account-extract.ax.txt": {
+      "sha256": "7fbd3717fefb3d6743985b833a08c27051780e81797d254c0fd949570d337a4a",
+      "bytes": 296
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/dev-before.ax.txt": {
+      "sha256": "4ba5805f13180d23492c9cd3a12a321bb082f7972115e72efaac7c80db807d7b",
+      "bytes": 5671
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/dev-reloaded.ax.txt": {
+      "sha256": "75807990b3ca10cb2cf2da47943dcd43d421d75145d3fe267809378933d572f3",
+      "bytes": 6287
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/store-preserved.ax.txt": {
+      "sha256": "1be5ca7fc1ad328c87cd681b19796370f0a95dd7e047c3e49759d97ce62f0ac2",
+      "bytes": 6035
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/cleanup.json": {
+      "sha256": "0a14638b7cee8491b7dc90157c88315bac3fd26d3282bf54f1e5b9e53d041aca",
+      "bytes": 360
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/gates.json": {
+      "sha256": "e67636b599ffff4d0aea0c822106aa8769857d64474d1995b5458329da492dcd",
+      "bytes": 2081
+    }
+  },
+  "publicationWhitelist": [
+    "initial-window-menu.ax.txt",
+    "profile-version-extract.ax.txt",
+    "owner-account-extract.ax.txt",
+    "dev-before.ax.txt",
+    "dev-reloaded.ax.txt",
+    "store-preserved.ax.txt",
+    "cleanup.json",
+    "gates.json"
+  ],
+  "limits": [
+    "No product behavior case, guest acceptance, Store publication, source edit or AI call.",
+    "Native Window menu did not dismiss via Escape; existing exposed Cancel action restored page. Screenshot unavailable while native menu selected, no screenshot proof claimed.",
+    "One stale-index error after full AX renumbering opened Chrome menu instead of profile menu; no menu item/settings action selected. Wrong-menu AX stays private/excluded from publication; corrected fresh Work-profile observation verifies actual owner email.",
+    "Initial automatic getApp emitted ownerVaultbody/URL in tool-only context; never saved. Only structural cleanup and safe profile/version extracts retained.",
+    "No independent UI replay or evidence review yet.",
+    "Store daily version/private state and latest628 guest/nonadmin release acceptance remain separate."
+  ],
+  "next": "Parent independent evidence review/publication and current-source drift recheck before further release actions.",
+  "commits": "none; completed resource journal left untracked for parent.",
+  "original_private_report_sha256": "92b07e8aa9c27063b7361c9b98dc9b56e87ab7127b9e55f77b0e8f7ac1e8fb7e",
+  "durable_evidence_map": {
+    ".output/stabilization-checkpoints/owner628-b3-native/initial-window-menu.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner628-b3-20261027/initial-window-menu.ax.txt",
+      "original_sha256": "bc64f127420063d6a055e06e936ab01cf0c8ade2196ac852870f631207b1c211",
+      "sha256": "bc64f127420063d6a055e06e936ab01cf0c8ade2196ac852870f631207b1c211",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/profile-version-extract.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner628-b3-20261027/profile-version-extract.ax.txt",
+      "original_sha256": "22ed7e3bb2d3a0f0ade57afcef37066cddcdd60a772017672f00f670783e5412",
+      "sha256": "22ed7e3bb2d3a0f0ade57afcef37066cddcdd60a772017672f00f670783e5412",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/owner-account-extract.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner628-b3-20261027/owner-account-extract.ax.txt",
+      "original_sha256": "7fbd3717fefb3d6743985b833a08c27051780e81797d254c0fd949570d337a4a",
+      "sha256": "7fbd3717fefb3d6743985b833a08c27051780e81797d254c0fd949570d337a4a",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/dev-before.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner628-b3-20261027/dev-before.ax.txt",
+      "original_sha256": "4ba5805f13180d23492c9cd3a12a321bb082f7972115e72efaac7c80db807d7b",
+      "sha256": "4ba5805f13180d23492c9cd3a12a321bb082f7972115e72efaac7c80db807d7b",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/dev-reloaded.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner628-b3-20261027/dev-reloaded.ax.txt",
+      "original_sha256": "75807990b3ca10cb2cf2da47943dcd43d421d75145d3fe267809378933d572f3",
+      "sha256": "75807990b3ca10cb2cf2da47943dcd43d421d75145d3fe267809378933d572f3",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/store-preserved.ax.txt": {
+      "durable": "docs/stabilization/evidence/owner628-b3-20261027/store-preserved.ax.txt",
+      "original_sha256": "1be5ca7fc1ad328c87cd681b19796370f0a95dd7e047c3e49759d97ce62f0ac2",
+      "sha256": "1be5ca7fc1ad328c87cd681b19796370f0a95dd7e047c3e49759d97ce62f0ac2",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/cleanup.json": {
+      "durable": "docs/stabilization/evidence/owner628-b3-20261027/cleanup.json",
+      "original_sha256": "0a14638b7cee8491b7dc90157c88315bac3fd26d3282bf54f1e5b9e53d041aca",
+      "sha256": "0a14638b7cee8491b7dc90157c88315bac3fd26d3282bf54f1e5b9e53d041aca",
+      "transform": "original bytes"
+    },
+    ".output/stabilization-checkpoints/owner628-b3-native/gates.json": {
+      "durable": "docs/stabilization/evidence/owner628-b3-20261027/gates.json",
+      "original_sha256": "e67636b599ffff4d0aea0c822106aa8769857d64474d1995b5458329da492dcd",
+      "sha256": "e67636b599ffff4d0aea0c822106aa8769857d64474d1995b5458329da492dcd",
+      "transform": "original bytes"
+    }
+  },
+  "reference_limits": "Unmapped scratch receipts/audits/privateoriginals remain private. Public maps distinguish original and formatted hashes. No broader/current runtime acceptance inferred."
+}

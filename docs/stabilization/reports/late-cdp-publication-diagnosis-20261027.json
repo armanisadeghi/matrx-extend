@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "task_id": "late_cdp_publication_diagnosis",
+  "owner": "/root/late_cdp_publication_diagnosis",
+  "at": "2026-10-27T01:52:20.327103+00:00",
+  "status": "SUPPORTING_MEASUREMENT_DEFECT_IDENTIFIED_STARTUP_CAUSE_OPEN",
+  "zero_authorship": true,
+  "scope": "Readonly adversarial diagnosis; no Chrome/model/test/dispatch/source-policy action. Existing D254/D231 remain original startup investigations.",
+  "A": {
+    "verdict": "PARTIAL_FIRST_READER_BOUNDARY_PROVEN_PRODUCER_AND_CPU_CAUSE_UNPROVED",
+    "confirmed": [
+      "Run40433575951 failed first at the shared connector endpoint-file polling loop with owned_cdp_endpoint_timeout:221 reads, elapsed8001ms, longestread878ms. No owner validation, WebSocket, command-line query, extension worker or product panel boundary was reached.",
+      "OfficialZIP digest3112adc015e0b877b68fd450ab2f6943428bd86a912f64ff70c5585fac717051 and all4 member hashes independently match collector report.",
+      "Startup final is child_failed/exit1/resourceInvalidfalse; package/browser valid0. This differs from priorB40427158131 nativeinvalid3/CPU_PENDING, but does not prove uniformly healthy CPU during current startup.",
+      "Initial lock observation absent and final lock shape spawned_child; child not observed exited; stderr flags empty. These snapshots are bounded observations, not full lock lifecycle.",
+      "Post-timeout lstat first returned presence at01:43:11.355; observation elapsed779ms is measured from the post-watch start. It is not779ms from the original nominal deadline. Browser_spawn stage01:43:02.435 to this positive callback is8920ms in wall timestamps, not an exact creation/readiness bound."
+    ],
+    "critical_source_correction": {
+      "finding": "cdp_timeout.endpointPresent=false is an unsupported absence assertion, not an independent filesystem measurement.",
+      "source": "tests/browser/native-sidepanel-qa-harness.mjs timeout catch serializes endpointPresent:false after connector failure and await recordStartupInterval(cdp_failed). No lstat/read at that callback supplies the false value. Post-timeout observer separately performs lstat.",
+      "consequence": "Do not describe01:43:10.569 as independently observed endpoint absence or conclude file publication occurred after8s. No successful read was returned by any polling attempt; file could have appeared after the last lookup but before its delayed completion/deadline check. Current data cannot distinguish producer delay from reader/scheduling boundary delay.",
+      "clock_semantics": "startupDeadlineMs controls entry to the next read attempt using performance.now. Awaited fs.readFile has no same-deadline cancellation; a read started before cutoff can finish later and be accepted. Parsing/process inspection and WebSocket-open use further separate waits. The knob is not a hard bound on whole CDP connection time."
+    },
+    "resource_limits": [
+      "Last guard healthy sample01:43:01.844 precedes browser_spawn01:43:02.435. Next15s guard sample did not occur before childexit01:43:14.480. No critical8s CPU sample; noPending/resourceInvalidfalse does not prove no transient saturation.",
+      "Timer maxdelay742ms and read max878ms show coincident reader/scheduler delay; neither identifies its cause.",
+      "CPU bracket starts00.874 before launch admission/spawn and ends10.562 after connector settlement. Continuous otherHost16.59s/hostProvisioner0.8s/ownedOther0.34s cannot alone assign launch delay. AppearedChrome/helper values are process lifetimeCPU, not a complete exact interval attribution.",
+      "Download log announces Chromium141.0.7390.37/playwrightv1194. Actual executable runtime version/digest was not emitted."
+    ],
+    "sibling_comparison": "Same connector and native-CDP observer code had a4392ms successful diagnostic40264782778. Shared harness changed afterward for reviewed D297 prelaunch/resource callback wiring; actual launch flags stayed unchanged and startup clock remains inside admitted launch factory. Older headed39312706355 also had a later positive lstat (9322ms after browser_spawn) but resource-invalid evidence. Different ephemeral hosts and these code/source differences prevent a causal A/B conclusion."
+  },
+  "B": {
+    "verdict": "FAIL_DIAGNOSTIC_TRUTHFULNESS_CONTRACT_WITH_ENFORCED_RUN_POLICY_PRESERVED",
+    "findings": [
+      {
+        "id": "MEASURE-UNKNOWN-AS-ABSENT",
+        "importance": "Important supporting observation defect",
+        "detail": "A timeout result is converted to a concrete endpointPresent:false observation without measuring file presence at that point. Collector interpretations of absence/publication timing can therefore become stronger than evidence."
+      }
+    ],
+    "preserved": [
+      "Existing normal source/artifact/workflow admission executed; no read-only review evidence of a bypass. Original failed run remains failure; no late connection, product certificate or product pass follows from post-timeout presence.",
+      "8000ms startup poll knob is operational and distinct from CPU/load/memory/swap/disk admission ceilings. This distinction does not authorize changing either as a workaround. Current data does not yet justify a new startup default or resource weakening.",
+      "No new runner/account/repo, deadline/resource/ownership change, product retry or fixture activation is recommended from this review."
+    ],
+    "missing": [
+      "No validated late endpoint record/owner proof, no late handshake, no continuous critical-span resource measurement, no actual binary version/hash, no deterministic producer root-cause reproduction."
+    ]
+  },
+  "smallest_justified_next_action": {
+    "decision": "Fix truthful diagnostic measurement first, then review one discriminating diagnostic; do not widen8s or repeat product acceptance now.",
+    "required_outcome": [
+      "Represent timeout file presence as unobserved unless an actual bounded filesystem probe supplies it. Preserve original connector error and original failed verdict. Do not silently keep a false absence boolean plus an obscure note.",
+      "Capture bounded last-read start/completion/outcome and true probe start/completion on a shared monotonic elapsed origin; keep wall timestamp and observation basis explicit. One last/longest descriptor is enough; no unbounded per-poll log.",
+      "For any optional late record validation, reuse/extract the existing canonical endpoint shape/owner validation, not a third parser. Return only safe state/shape counts; never serialize port/path/URL/lock/arguments/auth values. Do not construct a WebSocket or issue input after original failure; foreign/malformed/unreadable records remain refusal/unknown.",
+      "Diagnostic observer failures/timeouts must never replace the original timeout or prevent owned cleanup. Retain8000ms, existing post-observation bound, policy/refusal enforcement and full original run evidence."
+    ],
+    "forcing_function_oracle": "Extend the existing actual-complete-driver callsite test seam, not a fake nativeRunner callback alone: cause the real timeout catch to execute while a real temporary endpoint file is already present by callback time. Old behavior must fail an assertion against an unmeasured absence claim; corrected behavior must report unknown or a truly bracketed observation. Cover absent/unreadable/partial/foreign/late file states, original-error identity, no WebSocket/input after failure, bounded cleanup and diagnostic-disabled path. No test was authored or run in this readonly task.",
+    "next_discriminator": "After reviewed source tests/current exact artifact, one guarded existing diagnostic can discriminate: a validated owned record observed late versus continuing malformed/missing record, and last-read/snapshot timing overlap. Such data may support reviewing a startup budget later; it still cannot identify CPU/Chrome internal producer cause or prove product readiness."
+  },
+  "references": [
+    "docs/stabilization/defects/EXT-D-0254.json",
+    "docs/stabilization/defects/EXT-D-0231.json",
+    "docs/stabilization/reports/startup-a-40264782778-20261026.json",
+    "docs/stabilization/reports/startup-bootstrap-escalation-20261019.json",
+    "docs/stabilization/reports/scrape-b-9ec-20261026.json",
+    ".output/stabilization-checkpoints/hosted-startup-b3-20261027.json"
+  ],
+  "sha256": {
+    "tests/browser/vault-owned-cdp.cjs": "3aa494dd1e3fdf3943f8001bcce6612cfe2bb0d1517086313f720d9b826ea2e8",
+    "tests/browser/native-sidepanel-qa-harness.mjs": "12b060756415d3934fa768d03e71bf02c1eb05b77a169aeae7f2468bd10a4d80",
+    "tests/browser/native-cdp-startup-diagnostic.mjs": "a914faf6424e68a1f1bf5874f6df30e6470fcadc4e80c09a1a0593146812d9c2",
+    "scripts/hosted-startup-interval-diagnostic.mjs": "0da7ff8a99f0efbb85a7c731a46ddd6d68994d18ce24835a9e06d8030f1807eb",
+    "tests/browser/native-startup-interval-callsite.test.mjs": "02540ce783011211a968daedb4c208d10b086fa309cdb041a34350260a0560bf",
+    "docs/stabilization/resource-policy.json": "8ab675504bc46198109169ccc4cfc4970a30a0db11a069ec4f44d6e22a772afe",
+    ".output/stabilization-checkpoints/hosted-startup-b3-20261027.json": "d11cbfbb31b59ca830891d48392fdce5a1bba1391203562d4da616e88581b30f",
+    ".output/stabilization-checkpoints/startup-b3-safe-markers.json": "37407c813157a595119300a66e0e94a52023cc4a34ebeadcc157d9b3e9ccc8b4"
+  },
+  "actions": {
+    "source_edits": 0,
+    "tests": 0,
+    "browser": 0,
+    "AI": 0,
+    "dispatches": 0,
+    "retries": 0,
+    "policy_changes": 0,
+    "commits": 0,
+    "own_live_processes": 0
+  },
+  "next": "Parent may claim the bounded supporting measurement repair and independent plan/retest lane. Do not close D254/D231 or call a producer/CPU fix from this evidence.",
+  "independent_sibling_source_hashes": {
+    "tests/browser/vault-owned-cdp.cjs": {
+      "9a055021e6699c1aeaa434ccb373e2aa3955e7fe": "3aa494dd1e3fdf3943f8001bcce6612cfe2bb0d1517086313f720d9b826ea2e8",
+      "b3b3d345e87959e277a3513b3c38226160fe6d13": "3aa494dd1e3fdf3943f8001bcce6612cfe2bb0d1517086313f720d9b826ea2e8"
+    },
+    "tests/browser/native-cdp-startup-diagnostic.mjs": {
+      "9a055021e6699c1aeaa434ccb373e2aa3955e7fe": "a914faf6424e68a1f1bf5874f6df30e6470fcadc4e80c09a1a0593146812d9c2",
+      "b3b3d345e87959e277a3513b3c38226160fe6d13": "a914faf6424e68a1f1bf5874f6df30e6470fcadc4e80c09a1a0593146812d9c2"
+    }
+  },
+  "original_private_report_sha256": "30f85519dfc78a44231e50d538dcdc3b4cddf19a59ff1728a1f57d17e0602e01"
+}

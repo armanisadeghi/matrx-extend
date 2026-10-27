@@ -1,0 +1,37 @@
+The following is a diff from the previous accessibility tree for Window: "Example Domain" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
++					172 button Close Side Panel
++			173 scroll area
++				174 HTML content Matrx Extend, URL: chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html
++					175 container
++						176 tab group
++							177 tab (selected) Chat, Value: 1
++							178 tab (settable, integer) Scrape, Value: 0
++							179 tab (settable, integer) Data, Value: 0
++							180 tab (settable, integer) SEO, Value: 0
++							181 tab (settable, integer) Settings, Value: 0
++						182 pop up button Site access
++						183 pop up button G, Help: Account
++						184 container Chat
++							185 toggle button Conversations, Value: 0
++							186 button New chat
++							187 container
++								188 heading Evening, Value: 1
++									189 text Evening
++								190 pop up button Files, Help: Attach a Google Doc or Sheet you've shared with AI Matrx
++								191 text entry area (settable) How can I help you today?
++								192 button Chat Options
++								193 container
++									194 toggle button Record audio, Value: 0
++									195 pop up button Choose microphone
++								196 button Live audio, Help: Live audio — talk and hear the answer
++								197 button (disabled) Send message
++								198 pop up button Sources
++								199 button 7 included
++								200 button Agent: Matrx Browser Agent · Claude Sonnet 5.5
++								201 container Loading quick actions
++			202 slider Side Panel Resize Handle (draggable), Secondary Actions: Decrement, Increment
++			203 container
++				204 text Matrx
++				205 checkbox Unpin from toolbar, Value: 1
++				206 button Close side panel
+The focused UI element is 191 text entry area (settable) How can I help you today?

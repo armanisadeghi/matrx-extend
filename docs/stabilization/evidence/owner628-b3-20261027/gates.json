@@ -1,0 +1,86 @@
+[
+  {
+    "at": "2026-10-27T01:40:22.264Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:40:15.230Z",
+    "age": 7.034
+  },
+  {
+    "at": "2026-10-27T01:40:43.716Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:40:31.255Z",
+    "age": 12.461
+  },
+  {
+    "at": "2026-10-27T01:40:44.173Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:40:31.255Z",
+    "age": 12.918
+  },
+  {
+    "at": "2026-10-27T01:40:57.066Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:40:47.288Z",
+    "age": 9.778
+  },
+  {
+    "at": "2026-10-27T01:41:07.707Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:41:03.314Z",
+    "age": 4.393
+  },
+  {
+    "at": "2026-10-27T01:41:23.536Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:41:19.339Z",
+    "age": 4.197
+  },
+  {
+    "at": "2026-10-27T01:41:36.543Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:41:35.363Z",
+    "age": 1.18
+  },
+  {
+    "at": "2026-10-27T01:42:02.902Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:41:51.387Z",
+    "age": 11.515
+  },
+  {
+    "at": "2026-10-27T01:42:07.066Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:41:51.387Z",
+    "age": 15.679
+  },
+  {
+    "at": "2026-10-27T01:42:21.028Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:42:07.408Z",
+    "age": 13.62
+  },
+  {
+    "at": "2026-10-27T01:42:21.439Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:42:07.408Z",
+    "age": 14.031
+  },
+  {
+    "at": "2026-10-27T01:42:36.933Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:42:23.425Z",
+    "age": 13.508
+  },
+  {
+    "at": "2026-10-27T01:42:41.928Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:42:39.455Z",
+    "age": 2.473
+  },
+  {
+    "at": "2026-10-27T01:43:05.763Z",
+    "latest": "RESOURCE_WATCH_HEALTHY",
+    "latestAt": "2026-10-27T01:42:55.479Z",
+    "age": 10.284
+  }
+]

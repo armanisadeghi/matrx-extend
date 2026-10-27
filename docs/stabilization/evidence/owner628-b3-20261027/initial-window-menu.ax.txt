@@ -1,0 +1,46 @@
+Window: "Credential | Vault | AI Matrx", App: Google Chrome.
+1 Window, Secondary Actions: Cancel, Pick
+	2 menu Secondary Actions: Cancel
+		3 Minimize, ID: performMiniaturize:
+		4 Minimize All, ID: miniaturizeAll:
+		5 Zoom, ID: performZoom:
+		6 Zoom All, ID: zoomAll:
+		7 Fill
+		8 Center
+		9 Move & Resize
+			10 menu Secondary Actions: Cancel
+				11 (disabled) Halves
+				12 Left
+				13 Right
+				14 Top
+				15 Bottom
+				16 (disabled) Quarters
+				17 Top Left
+				18 Top Right
+				19 Bottom Left
+				20 Bottom Right
+				21 (disabled) Arrange
+				22 Left & Right
+				23 Left & Quarters
+				24 Right & Left
+				25 Right & Quarters
+				26 Top & Bottom
+				27 Top & Quarters
+				28 Bottom & Top
+				29 Bottom & Quarters
+				30 Quarters
+				31 (disabled) Return to Previous Size
+		32 Full Screen Tile
+			33 menu Secondary Actions: Cancel
+				34 Left of Screen
+				35 Right of Screen
+		36 (disabled) Show As Tab, ID: commandDispatch:
+		37 Name Window…, ID: commandDispatch:
+		38 Downloads, ID: commandDispatch:
+		39 Extensions, ID: commandDispatch:
+		40 Task Manager, ID: commandDispatch:
+		41 Bring All to Front, ID: arrangeInFront:
+		42 Arrange in Front, ID: alternateArrangeInFront:
+		43 (disabled) Remove Window from Set
+		44 Credential | Vault | AI Matrx, ID: makeKeyAndOrderFront:
+		45 New Tab, ID: makeKeyAndOrderFront:

@@ -1,0 +1,559 @@
+{
+  "schema": 1,
+  "task_id": "hosted_startup_b3_observer",
+  "at": "2026-10-27T01:51:39.738208+00:00",
+  "status": "TERMINAL_DIAGNOSTIC_CHILD_FAILURE_PHYSICAL_PRESENCE_UNKNOWN_UNTIL_POSTFAILURE_LSTAT",
+  "source": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+  "development": {
+    "run": 40431711230,
+    "artifact": 12702018987,
+    "digest": "sha256:e311c6a8272db435bacb6db3bfd58252448f11e03464d578a86e4871c9db9ced",
+    "version": "0.2.628"
+  },
+  "run": {
+    "id": 40433575951,
+    "head_sha": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+    "run_attempt": 1,
+    "display_title": "Native A · startup-resource-diagnostic (by extend-stabilization)",
+    "created_at": "2026-10-27T01:36:31Z",
+    "updated_at": "2026-10-27T01:43:22Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "html_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40433575951"
+  },
+  "job": {
+    "id": 121956825001,
+    "status": "completed",
+    "conclusion": "failure",
+    "runner_id": 1000117202,
+    "runner_name": "GitHub Actions 1000117202",
+    "labels": ["macos-15-intel"],
+    "started_at": "2026-10-27T01:36:37Z",
+    "completed_at": "2026-10-27T01:43:22Z"
+  },
+  "archive": {
+    "id": 12702194938,
+    "name": "hosted-guest-40433575951-1",
+    "size_in_bytes": 3857,
+    "digest": "sha256:3112adc015e0b877b68fd450ab2f6943428bd86a912f64ff70c5585fac717051",
+    "expired": false
+  },
+  "archive_path": ".output/stabilization-checkpoints/startup-b3-40433575951.zip",
+  "archive_sha256": "3112adc015e0b877b68fd450ab2f6943428bd86a912f64ff70c5585fac717051",
+  "archive_members": {
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40433575951-1.jsonl": {
+      "sha256": "3df37e95786fcbfd88c98a59830ab8fdab36337a28d8651e687390e43eebc475",
+      "bytes": 992
+    },
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-startup-40433575951-1.jsonl": {
+      "sha256": "2dc153ab8009e94d46bade23b58f0e77ef7a7a196af596a3aca336cf743104f3",
+      "bytes": 5010
+    },
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40433575951-1.jsonl": {
+      "sha256": "ca4ce6e6ee586765ac38a12b9bb41b0e3de2c81d36d26ba26bec2cac2ff23d87",
+      "bytes": 993
+    },
+    "_temp/guest-acceptance/startup-interval-diagnostic.json": {
+      "sha256": "4647097ba517dc2442697ac076001b54b53f6138f89548d90966705ae7df6c91",
+      "bytes": 1594
+    }
+  },
+  "original_diagnostic": {
+    "schema": 2,
+    "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE",
+    "sourceSha": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+    "runId": 40431711230,
+    "artifactId": 12702018987,
+    "startedAt": "2026-10-27T01:42:59.755Z",
+    "lastNativeStage": "cdp_connect",
+    "nativeStages": [
+      {
+        "stage": "receipt",
+        "at": "2026-10-27T01:42:59.767Z"
+      },
+      {
+        "stage": "artifact_verify",
+        "at": "2026-10-27T01:42:59.776Z"
+      },
+      {
+        "stage": "browser_runtime",
+        "at": "2026-10-27T01:43:00.813Z"
+      },
+      {
+        "stage": "profile_prepare",
+        "at": "2026-10-27T01:43:00.865Z"
+      },
+      {
+        "stage": "browser_spawn",
+        "at": "2026-10-27T01:43:02.435Z"
+      },
+      {
+        "stage": "cdp_connect",
+        "at": "2026-10-27T01:43:02.442Z"
+      }
+    ],
+    "runnerArch": "X64",
+    "requestedDisplayMode": "headed",
+    "browserLaunch": null,
+    "startupEndpointObservations": [
+      {
+        "phase": "cdp_timeout",
+        "endpointPresent": false,
+        "inspectionFailed": false,
+        "exitObserved": false,
+        "elapsedMs": 8016,
+        "polls": 221,
+        "at": "2026-10-27T01:43:10.569Z"
+      },
+      {
+        "phase": "post_timeout",
+        "endpointPresent": true,
+        "inspectionFailed": false,
+        "exitObserved": false,
+        "elapsedMs": 779,
+        "polls": 8,
+        "at": "2026-10-27T01:43:11.355Z"
+      }
+    ],
+    "gpuObservation": {
+      "status": "UNKNOWN"
+    },
+    "panelReadyAt": null,
+    "completedAt": null,
+    "guardJournal": "docs/stabilization/resource-journals/hosted-startup-40433575951-1.jsonl",
+    "failureCode": "STARTUP_PANEL_DIAGNOSTIC_FAILED"
+  },
+  "original_diagnostic_path": ".output/stabilization-checkpoints/startup-b3-40433575951/_temp/guest-acceptance/startup-interval-diagnostic.json",
+  "original_diagnostic_sha256": "4647097ba517dc2442697ac076001b54b53f6138f89548d90966705ae7df6c91",
+  "resources": {
+    "hosted-browser-40433575951-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/startup-b3-40433575951/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40433575951-1.jsonl",
+      "sha256": "3df37e95786fcbfd88c98a59830ab8fdab36337a28d8651e687390e43eebc475",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T01:40:47.719Z",
+        "runId": "hosted-browser-40433575951-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "admission": {
+        "schema": 1,
+        "at": "2026-10-27T01:40:37.044Z",
+        "runId": "hosted-browser-40433575951-1",
+        "mode": "run",
+        "policySchema": 1,
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 12.6,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 0.79,
+          "logicalCpus": 4,
+          "cpuBusyFraction": 0.03428571428571429,
+          "swapUsedMiB": 0,
+          "repoFreeGiB": 109.17340087890625,
+          "profileFreeGiB": 109.17340087890625,
+          "safetyFreeGiB": 109.17340087890625,
+          "systemFreeGiB": 109.17340087890625
+        },
+        "cpuBusySamples": [0.03, 0.02, 0.01, 0.11, 0.02, 0.04, 0.01],
+        "reasons": [],
+        "swapWindowSeconds": 60,
+        "code": "RESOURCE_ADMITTED"
+      },
+      "healthy_samples": [],
+      "risk_events": [],
+      "child_exit": {
+        "schema": 1,
+        "at": "2026-10-27T01:40:47.205Z",
+        "runId": "hosted-browser-40433575951-1",
+        "childExitCode": 0,
+        "childSignal": null,
+        "code": "RESOURCE_JOB_EXIT"
+      },
+      "sanitized_path": ".output/stabilization-checkpoints/startup-b3-sanitized-journals/hosted-browser-40433575951-1.jsonl",
+      "sanitized_sha256": "3df37e95786fcbfd88c98a59830ab8fdab36337a28d8651e687390e43eebc475"
+    },
+    "hosted-startup-40433575951-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/startup-b3-40433575951/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-startup-40433575951-1.jsonl",
+      "sha256": "2dc153ab8009e94d46bade23b58f0e77ef7a7a196af596a3aca336cf743104f3",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T01:43:14.837Z",
+        "runId": "hosted-startup-40433575951-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "admission": {
+        "schema": 1,
+        "at": "2026-10-27T01:42:29.389Z",
+        "runId": "hosted-startup-40433575951-1",
+        "mode": "run",
+        "policySchema": 1,
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 12.6,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 0.65,
+          "logicalCpus": 4,
+          "cpuBusyFraction": 0.07,
+          "swapUsedMiB": 0,
+          "repoFreeGiB": 108.90861892700195,
+          "profileFreeGiB": 108.90861892700195,
+          "safetyFreeGiB": 108.90861892700195,
+          "systemFreeGiB": 108.90861892700195
+        },
+        "cpuBusySamples": [0.04, 0.02, 0.01, 0.28, 0.02, 0.01, 0.11],
+        "reasons": [],
+        "swapWindowSeconds": 60,
+        "code": "RESOURCE_ADMITTED"
+      },
+      "healthy_samples": [
+        {
+          "schema": 1,
+          "at": "2026-10-27T01:42:45.572Z",
+          "runId": "hosted-startup-40433575951-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 0.8,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.29,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 108.68022155761719,
+            "profileFreeGiB": 108.68022155761719,
+            "safetyFreeGiB": 108.68022155761719,
+            "systemFreeGiB": 108.68022155761719
+          },
+          "code": "RESOURCE_WATCH_HEALTHY"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-27T01:43:01.844Z",
+          "runId": "hosted-startup-40433575951-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.33,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.1,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 108.70652770996094,
+            "profileFreeGiB": 108.70652770996094,
+            "safetyFreeGiB": 108.70652770996094,
+            "systemFreeGiB": 108.70652770996094
+          },
+          "code": "RESOURCE_WATCH_HEALTHY"
+        }
+      ],
+      "risk_events": [],
+      "child_exit": {
+        "schema": 1,
+        "at": "2026-10-27T01:43:14.480Z",
+        "runId": "hosted-startup-40433575951-1",
+        "childExitCode": 1,
+        "childSignal": null,
+        "code": "RESOURCE_JOB_EXIT"
+      },
+      "sanitized_path": ".output/stabilization-checkpoints/startup-b3-sanitized-journals/hosted-startup-40433575951-1.jsonl",
+      "sanitized_sha256": "009d105a76dec1aecddd640c0b0192b1d166dfc98a08da116534886152f7a4e9"
+    },
+    "hosted-package-40433575951-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/startup-b3-40433575951/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40433575951-1.jsonl",
+      "sha256": "ca4ce6e6ee586765ac38a12b9bb41b0e3de2c81d36d26ba26bec2cac2ff23d87",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T01:38:55.596Z",
+        "runId": "hosted-package-40433575951-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "admission": {
+        "schema": 1,
+        "at": "2026-10-27T01:38:51.618Z",
+        "runId": "hosted-package-40433575951-1",
+        "mode": "run",
+        "policySchema": 1,
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 12.6,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 1.99,
+          "logicalCpus": 4,
+          "cpuBusyFraction": 0.027142857142857142,
+          "swapUsedMiB": 0,
+          "repoFreeGiB": 109.15653991699219,
+          "profileFreeGiB": 109.15653991699219,
+          "safetyFreeGiB": 109.15653991699219,
+          "systemFreeGiB": 109.15653991699219
+        },
+        "cpuBusySamples": [0.03, 0.01, 0.02, 0.02, 0.09, 0.01, 0.01],
+        "reasons": [],
+        "swapWindowSeconds": 60,
+        "code": "RESOURCE_ADMITTED"
+      },
+      "healthy_samples": [],
+      "risk_events": [],
+      "child_exit": {
+        "schema": 1,
+        "at": "2026-10-27T01:38:55.424Z",
+        "runId": "hosted-package-40433575951-1",
+        "childExitCode": 0,
+        "childSignal": null,
+        "code": "RESOURCE_JOB_EXIT"
+      },
+      "sanitized_path": ".output/stabilization-checkpoints/startup-b3-sanitized-journals/hosted-package-40433575951-1.jsonl",
+      "sanitized_sha256": "ca4ce6e6ee586765ac38a12b9bb41b0e3de2c81d36d26ba26bec2cac2ff23d87"
+    }
+  },
+  "startup_failure": {
+    "failureCode": "owned_cdp_endpoint_timeout",
+    "elapsedMs": 8016,
+    "exitCode": null,
+    "signalCode": null,
+    "launchFailed": false,
+    "spawnObserved": true,
+    "stderrFlags": {
+      "hadStderr": false,
+      "codeSignature": false,
+      "dynamicLoader": false,
+      "permissionDenied": false,
+      "sandbox": false,
+      "crash": false,
+      "devtoolsListening": false
+    },
+    "endpointWaitDiagnostic": {
+      "polls": 221,
+      "elapsedMs": 8001,
+      "longestReadMs": 878
+    }
+  },
+  "startup_interval": {
+    "schema": 1,
+    "outcome": "failed",
+    "initialStartupBoundary": {
+      "profileLock": "absent",
+      "childExitObserved": false,
+      "stderrClosed": false,
+      "stderrReadableEnded": false
+    },
+    "startupBoundary": {
+      "profileLock": "spawned_child",
+      "childExitObserved": false,
+      "stderrClosed": false,
+      "stderrReadableEnded": false
+    },
+    "phases": [
+      {
+        "phase": "connector_settled",
+        "elapsedMs": 8002
+      }
+    ],
+    "longestTimerDelayMs": 742,
+    "timerSamples": 42,
+    "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE"
+  },
+  "CPU_bracket_summary": {
+    "beforeStartedAt": "2026-10-27T01:43:00.874Z",
+    "beforeCompletedAt": "2026-10-27T01:43:00.918Z",
+    "afterStartedAt": "2026-10-27T01:43:10.458Z",
+    "afterCompletedAt": "2026-10-27T01:43:10.562Z",
+    "outcome": "cdp_failed",
+    "resolutionSeconds": 0.01,
+    "categoryTotalsSeconds": {
+      "ownedChromium": 0,
+      "ownedOther": 0.34,
+      "hostProvisioner": 0.8,
+      "otherHost": 16.59
+    },
+    "exitedOrUnmatchedPids": [8732, 8733],
+    "appearedPids": [
+      8742, 8749, 8751, 8763, 8764, 8767, 8789, 8821, 8841, 8842, 8843, 8847, 8848, 8849
+    ],
+    "limitation": "ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time."
+  },
+  "appeared_processes": [
+    {
+      "pid": 8742,
+      "executable": "Chromium",
+      "ownedAtEnd": true,
+      "lifetimeCpuSeconds": 3.81
+    },
+    {
+      "pid": 8749,
+      "executable": "chrome_crashpad_",
+      "ownedAtEnd": false,
+      "lifetimeCpuSeconds": 0.02
+    },
+    {
+      "pid": 8751,
+      "executable": "chrome_crashpad_",
+      "ownedAtEnd": false,
+      "lifetimeCpuSeconds": 0.02
+    },
+    {
+      "pid": 8763,
+      "executable": "MTLAssetUpgrader",
+      "ownedAtEnd": false,
+      "lifetimeCpuSeconds": 0.24
+    },
+    {
+      "pid": 8764,
+      "executable": "MENotificationAg",
+      "ownedAtEnd": false,
+      "lifetimeCpuSeconds": 0.35
+    },
+    {
+      "pid": 8767,
+      "executable": "MTLCompilerServi",
+      "ownedAtEnd": false,
+      "lifetimeCpuSeconds": 2.33
+    },
+    {
+      "pid": 8789,
+      "executable": "ManagedClient",
+      "ownedAtEnd": false,
+      "lifetimeCpuSeconds": 0.15
+    },
+    {
+      "pid": 8821,
+      "executable": "mdmclient",
+      "ownedAtEnd": false,
+      "lifetimeCpuSeconds": 0.15
+    },
+    {
+      "pid": 8841,
+      "executable": "SetStoreUpdateSe",
+      "ownedAtEnd": false,
+      "lifetimeCpuSeconds": 0.12
+    },
+    {
+      "pid": 8842,
+      "executable": "Chromium Helper",
+      "ownedAtEnd": true,
+      "lifetimeCpuSeconds": 0.52
+    },
+    {
+      "pid": 8843,
+      "executable": "Chromium Helper",
+      "ownedAtEnd": true,
+      "lifetimeCpuSeconds": 0.3
+    },
+    {
+      "pid": 8847,
+      "executable": "Chromium Helper",
+      "ownedAtEnd": true,
+      "lifetimeCpuSeconds": 0.14
+    },
+    {
+      "pid": 8848,
+      "executable": "Chromium Helper",
+      "ownedAtEnd": true,
+      "lifetimeCpuSeconds": 0.15
+    },
+    {
+      "pid": 8849,
+      "executable": "ps",
+      "ownedAtEnd": true,
+      "lifetimeCpuSeconds": 0.01
+    }
+  ],
+  "safe_markers_path": ".output/stabilization-checkpoints/startup-b3-safe-markers.json",
+  "safe_markers_sha256": "37407c813157a595119300a66e0e94a52023cc4a34ebeadcc157d9b3e9ccc8b4",
+  "private_log_path": ".output/stabilization-checkpoints/startup-b3-full.log",
+  "private_log_sha256": "4636199f3f3a6240feb76ccb20da4927000788e5151bf2144937ca6d13192188",
+  "binary_receipt": {
+    "announced_download_version": "Chromium141.0.7390.37",
+    "playwright_build": "v1194",
+    "actual_runtime_version": "unverified",
+    "actual_executable_hash": "unverified"
+  },
+  "A": {
+    "verdict": "NEW_DISCRIMINATING_EVIDENCE_CAUSE_NOT_YET_PROVED",
+    "findings": [
+      "Original8s owned endpoint timeout reproduced at8016ms; no CDP ownership/commandline/extension-worker/panel stages reached.",
+      "The timeout callback endpointPresent:false is hardcoded after awaiting the CPU bracket, not an lstat observation at01:43:10.569. Connector evidence supports221 completed ENOENT reads and no successful read within the poll-loop admission cutoff, but last read begin/end are unretained and a read can straddle the cutoff. Physical file presence is UNKNOWN until actual postfailure lstat reports present01:43:11.355,779ms after the callback. This is not a validated endpoint/handshake; original8016ms failure remains.",
+      "Initial profilelockabsent then spawned_child; no childexit, no stderr/crash/DevToolsListening observed.",
+      "Guard resourceInvalidfalse and child_failed1 with noCPU_PENDING/unsafe; lasthealthy sample01:43:01.844 is BEFORE browser_spawn01:43:02.435. No guardCPU sampleduringcritical8s; uniformlyhealthyCPUcannotbeclaimed.",
+      "Longesttimerdelay742ms and longestendpointread878ms show coincidentreader/schedulingdelay but notitscause. CPUbracket continuousotherHost16.59s,hostProvisioner0.8s,ownedOther0.34s; ownedChromium0 meansno continuouslymatchedChromium acrosssnapshots, notzeroChromeCPU. AppearedChromium3.81s/helpersare lifetimeCPU, notexactintervalattribution."
+    ],
+    "comparison": "PriorB40427158131 timed out8009ms thenCPU_PENDING/nativeinvalid3; currentA times out8016ms without recordedpending/nativechild_failed1. The timeout callback does not independently establish file absence at its timestamp or a physical publication interval. Oldpositive40264782778 endpoint4392ms is only a successful sibling. No causal CPU or product-health conclusion follows."
+  },
+  "B": {
+    "verdict": "EXISTING_ENFORCED_DIAGNOSTIC_ROUTE_EXECUTED_NO_PRODUCT_ACCEPTANCE",
+    "limits": [
+      "Normalparentplan/dispatchsession73329exit0; strictsource/fullclean/workflow/resource/active-lane checks passed atdispatch; observerdispatchednothing.",
+      "Original3journals retain hosted-startup name; package/browservalid0, startupchild_failed1/resourceInvalidfalse. Canonicaljournal sanitizer acceptedall3. No normalproductcertificate requested or issued.",
+      "ArchiveofficialdigestmatchesZIP;4originalfiles/noPNGs. Headsource/CIartifactbindingexplicit.",
+      "Statusreads37:46,38:57,40:10,41:38,43:10,44:39UTC intervals>=65s; no localwatchprocessor retry/cancel byobserver."
+    ]
+  },
+  "cleanup": {
+    "local": "All ownCLIcalls terminal; no ownlocalwatch/browser/guard/credentials/fixture created.",
+    "remote": "Workflowand3resourcephasesfinalized. No retained-owner/unsafe events inarchive. RemoteChromium/profile deletion not independentlyreadback; no fullfilesystemcleanupclaim."
+  },
+  "actions": {
+    "dispatches_by_observer": 0,
+    "retries": 0,
+    "cancels": 0,
+    "AI": 0,
+    "auth_changes": 0,
+    "source_edits": 0,
+    "new_defects": 0,
+    "product_case_passes": 0,
+    "certificates": 0,
+    "own_live_processes": 0
+  },
+  "next": "Fresh independent review of corrected observation semantics and unretained read timing. Any guarded late-endpoint validation requires separate review; do not infer physical publication timing, blindly retry product, increase deadline or claim CPU capacity fixed. Member fixture activation remains held.",
+  "interpretation_correction": {
+    "at": "2026-10-27T01:51:39.738715+00:00",
+    "authority": "Parent adjudicated direct source finding; no new API/run/source changes by observer.",
+    "original_report_path": ".output/stabilization-checkpoints/hosted-startup-b3-original-interpretation-20261027.json",
+    "original_report_sha256": "69bf0d5f79040eb4a2aab005958fbcdc03a5bd575562fbe7fbb675e6ef845cbc",
+    "unsupported_original_inference": "File lstat absent at timeout01:43:10.569 and present779ms later, implying physical publication after the8016ms timeout.",
+    "corrected_interpretation": "endpointPresent:false in the timeout callback is hardcoded after awaitCPUbracket. It is not lstat evidence. Connector221completedENOENT reads/no successfulread before poll-loop admission cutoff do not retain lastread begin/end; a read may straddle cutoff. Physical presence is unknown until actual postfailure lstattrue779ms after callback.",
+    "raw_evidence_unchanged": true,
+    "preserved_facts": [
+      "Original owned_cdp_endpoint_timeout elapsed8016ms.",
+      "Startup child_failed1/resourceInvalidfalse; critical8s CPU sampling/causality unknown.",
+      "No endpoint ownership, socket/handshake, panel readiness or product acceptance established.",
+      "Original four archive files and official ZIP remain byte-identical."
+    ]
+  },
+  "original_private_report_sha256": "d11cbfbb31b59ca830891d48392fdce5a1bba1391203562d4da616e88581b30f",
+  "owner_adjudication": "Raw timeout endpointPresent:false was hardcoded, not filesystem measurement; physical deadline presence UNKNOWN. Later lstat true does not establish late physical publication or validated ownership/handshake. Original interpretation preserved privately; collector corrected; D298 tracks measurement repair. Keep8s/resource gates and child_failed1 verdict.",
+  "durable_evidence_map": {
+    ".output/stabilization-checkpoints/startup-b3-40433575951/_temp/guest-acceptance/startup-interval-diagnostic.json": {
+      "durable": "docs/stabilization/evidence/hosted-startup-b3-40433575951/startup-interval-diagnostic.json",
+      "sha256": "4647097ba517dc2442697ac076001b54b53f6138f89548d90966705ae7df6c91",
+      "transform": "original bytes; historical hardcoded field requires interpretation correction"
+    },
+    ".output/stabilization-checkpoints/startup-b3-40433575951/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40433575951-1.jsonl": {
+      "durable": "docs/stabilization/resource-journals/hosted-browser-40433575951-1.jsonl",
+      "sha256": "3df37e95786fcbfd88c98a59830ab8fdab36337a28d8651e687390e43eebc475",
+      "transform": "original bytes; historical hardcoded field requires interpretation correction"
+    },
+    ".output/stabilization-checkpoints/startup-b3-40433575951/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-startup-40433575951-1.jsonl": {
+      "durable": "docs/stabilization/resource-journals/hosted-startup-40433575951-1.jsonl",
+      "sha256": "2dc153ab8009e94d46bade23b58f0e77ef7a7a196af596a3aca336cf743104f3",
+      "transform": "original bytes; historical hardcoded field requires interpretation correction"
+    },
+    ".output/stabilization-checkpoints/startup-b3-40433575951/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40433575951-1.jsonl": {
+      "durable": "docs/stabilization/resource-journals/hosted-package-40433575951-1.jsonl",
+      "sha256": "ca4ce6e6ee586765ac38a12b9bb41b0e3de2c81d36d26ba26bec2cac2ff23d87",
+      "transform": "original bytes; historical hardcoded field requires interpretation correction"
+    }
+  }
+}

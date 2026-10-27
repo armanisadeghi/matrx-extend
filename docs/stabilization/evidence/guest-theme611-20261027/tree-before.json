@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-27T01:18:54.245Z",
+  "stable": {
+    "path": ".output/chrome-mv3-dev",
+    "tree": "99034489b20f5ca5231ac3927e717c1495728be96f88ba16ebbb1e3da8942277",
+    "version": "0.2.627"
+  },
+  "imported": {
+    "path": "test-results/ci-artifacts/6111a5a4f9143127f982c0ab8adab0a5932033e6/40430067150-1/chrome-mv3",
+    "tree": "b2eb8f46c45f1f145282c50386d2cc17c85988e752ff209e3029e0d16b7f6ed3",
+    "version": "0.2.627"
+  },
+  "importStatus": {
+    "schema_version": 1,
+    "eligibleStore": false,
+    "sourceSha": "6111a5a4f9143127f982c0ab8adab0a5932033e6",
+    "runId": 40430067150,
+    "runAttempt": 1,
+    "artifactId": 12701936382,
+    "githubArtifactDigest": "sha256:45e8427486b4d6a128b735bd64ad33708610ee3e1a886977342983610e987515",
+    "treeSha256": "b2eb8f46c45f1f145282c50386d2cc17c85988e752ff209e3029e0d16b7f6ed3",
+    "ciReceiptSha256": "ec2afebd6afeef9f128936fea65f392a48d45af6f915c5eaa136805219ac006d",
+    "provenanceSha256": "b9d90982dab947f1ea36675d9d5e139cf9d6b37c27d73a1f823a82c328d38451",
+    "source": {
+      "originMain": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+      "localHead": "63d6dec1109ef41cbd80dc67eec4aab81b9b4827",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  }
+}
