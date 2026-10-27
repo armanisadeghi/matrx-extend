@@ -26,7 +26,63 @@ export function captureDataMemberDriverDiagnostic(error) {
 }
 
 export function recordDataMemberDriverDiagnostic(error, report) {
+  if (
+    error?.waitLabel === 'data_member_pattern_name_entered' &&
+    report &&
+    typeof report === 'object'
+  ) {
+    const entry = (report.name_entry_diagnostic ??= {});
+    entry.last_wait = dataMemberNameEntrySample(error.waitDiagnostic);
+    entry.wait_label = 'data_member_pattern_name_entered';
+    entry.wait_failure_category = [
+      'panel_target_unavailable',
+      'panel_runtime_unavailable',
+      'panel_observation_unavailable',
+    ].includes(error.waitFailureCategory)
+      ? error.waitFailureCategory
+      : null;
+  }
   const diagnostic = captureDataMemberDriverDiagnostic(error);
   if (diagnostic && report && typeof report === 'object') report.driver_diagnostic = diagnostic;
   return diagnostic;
+}
+
+const safeLength = (value) => (Number.isSafeInteger(value) && value >= 0 ? value : null);
+const safeBoolean = (value) => (typeof value === 'boolean' ? value : null);
+
+/** Project the owned input observation; never retain values or waitFor's transient text. */
+export function dataMemberNameEntrySample(value) {
+  const sampled = typeof value?.active === 'boolean';
+  const field = (raw, projected) => value?.[raw] ?? value?.[projected];
+  const origin = field('documentTimeOrigin', 'document_time_origin');
+  return {
+    sampled,
+    read_failure_category: sampled ? null : 'diagnostic_read_unavailable',
+    active: safeBoolean(value?.active),
+    input_count: safeCount(field('nameInputCount', 'input_count')),
+    focused: safeBoolean(field('nameFocused', 'focused')),
+    nonempty: safeBoolean(field('nameNonempty', 'nonempty')),
+    value_length: safeLength(field('nameValueLength', 'value_length')),
+    expected_length: safeLength(field('nameExpectedLength', 'expected_length')),
+    matches: safeBoolean(field('nameMatches', 'matches')),
+    document_time_origin: Number.isFinite(origin) && origin >= 0 ? origin : null,
+  };
+}
+
+/** Diagnostic reads are best effort and cannot prevent the original trusted operations. */
+export async function observeDataMemberNameEntry(report, stage, read) {
+  if (!['before_click', 'after_click', 'after_insert'].includes(stage)) return;
+  let sample;
+  try {
+    sample = dataMemberNameEntrySample(await read());
+  } catch {
+    sample = dataMemberNameEntrySample(null);
+  }
+  const entry = (report.name_entry_diagnostic ??= { input_replacement: 'unknown' });
+  entry[stage] = sample;
+  const origins = ['before_click', 'after_click', 'after_insert']
+    .map((key) => entry[key]?.document_time_origin)
+    .filter((value) => typeof value === 'number');
+  entry.document_replaced =
+    origins.length >= 2 ? origins.some((value) => value !== origins[0]) : null;
 }

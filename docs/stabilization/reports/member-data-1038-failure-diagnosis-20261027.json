@@ -46,5 +46,29 @@
   ],
   "next_action": "Owner may authorize bounded native name-entry replay with allowlisted before/after focus, pane/input counts, lengths, equality, document identity and wait-failure category. Preserve original trusted input path first; change one variable only after localizing first bad boundary; do not patch product or synthesize setters from this evidence.",
   "forcing_repro_recommendation": "Original native T08 must first reproduce this exact input-equality failure. Add adjacent driver guard covering CDP click-to-focus and real controlled input event/state/value across rerender, including wrong focus, nonempty prefill and input replacement; retain red diagnostic and rerun original full path after proven fix. Existing happy-dom pointer test only records mouse commands and cannot prove browser focus/React behavior.",
-  "activity": "Read-only evidence/source inspection; wrote only this diagnosis. No UI/jobs/auth/DB mutations/source edits/tests/dispatches."
+  "activity": "Read-only evidence/source inspection; wrote only this diagnosis. No UI/jobs/auth/DB mutations/source edits/tests/dispatches.",
+  "publication_rule": {
+    "verdict": "ALLOW_DERIVED_PROJECTION_ONLY",
+    "allowlist": [
+      "official artifact id/name/digest and workflow run id/head SHA",
+      "six original member basenames/SHA256/byte counts",
+      "native case/status/stage/error code",
+      "auth booleans only: signed-in/nonadmin/expected-org proof",
+      "setup observations only: two previews and unique name input/save button",
+      "original resource FINAL rows",
+      "normal verifier refusal",
+      "cleanup booleans/archive timestamp semantic equality/owned pattern count zero",
+      "limits: missing name-entry focus and wait diagnostics; remote profile/process deletion unobserved"
+    ],
+    "private_hash_reference_only": [
+      "raw ZIP",
+      "original native JSON",
+      "screenshots",
+      "logs",
+      "identity and organization values",
+      "links and fixture values",
+      "private authentication and cleanup receipts"
+    ],
+    "condition": "No raw receipt copying or inferred name-entry focus/value/driver/product conclusions; independently check final semantic projection and original-member hash mapping."
+  }
 }

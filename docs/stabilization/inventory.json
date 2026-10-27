@@ -8654,30 +8654,34 @@
           ],
           "results": {
             "guest": {
+              "run_id": "40579558041",
+              "source_sha": "103850a3e2168311a370dca67dbd99e00f342715",
+              "development_ci_run_id": 40577593421,
+              "development_artifact_id": 12767619920,
+              "build_version": "0.2.630",
+              "resource_invalid": false,
+              "acceptance_run_successful": false,
+              "full_case_pass": false,
+              "new_product_credit": false,
               "status": "partial",
-              "run_id": "40509061963",
-              "source_sha": "80e30c62a1259e657519ec274bc951bbf36c5100",
-              "build_version": "0.2.629",
-              "development_ci_run_id": 40507157903,
-              "development_artifact_id": 12736232145,
-              "resource_valid": true,
-              "passed_subtargets": [
-                "Visible guest Ask refusal and rollback to Act, with actual panel reload retaining Act.",
-                "Unique owned Device All chats control observed once with permissionMode act in a fresh Chat.",
-                "Actual dev-reload worker/panel retirement and replacement followed by fresh Chat Device Act observation; original lookup failure no longer reproduces."
+              "observed_subtargets": [
+                "warmAskrefusal",
+                "realSettingsChatPilotstorefootprints_absent_before_after_panelreload_againstimmutablewarmexpectation",
+                "actualChatActconsumer_samepanel_withoutAIcall"
               ],
               "unverified": [
-                "No-shadow-write criterion: T10 observer deliberately sets raw=null and returns synthetic false storage flags; those are not actual storage evidence.",
-                "Actual executed browser version/profile path/backend SHA not emitted; downloaded version is not execution identity.",
-                "Current eBee/future source, member/admin, Store-installed and server-action acceptance."
+                "latefootprintafterinterveningsiblingwrites",
+                "fullmanagementextensionReload_worker_panelreplacement",
+                "postextensionReloadconsumer",
+                "exactwarmbaselineexception_productvsdrivercause",
+                "runtimebrowser_profile_backend_Store_currentmain"
               ],
-              "resource_note": "Automated native boundary paused CPU_PENDING13:12:49 to RECOVERED13:13:37; finalvalid0. Not a zero-pending or manual-lease result.",
               "evidence": [
-                "docs/stabilization/reports/eighty-guest-20261027.json",
-                "docs/stabilization/reports/eighty-native-peer-20261027.json",
-                "docs/stabilization/reports/eighty-publication-manifest-20261027.json"
+                "docs/stabilization/reports/settings-controls-1038-20261027.json",
+                "docs/stabilization/reports/settings-1038-failure-diagnosis-20261027.json",
+                "docs/stabilization/reports/native1038-publication-manifest-20261027.json"
               ],
-              "scope": "Frozen source80 CI development unpacked actual signed-out native UI only. Raw batch12pass/0fail/7unknown does not confer12 inventoryPASS cells. Full T10 remains partial."
+              "scope": "Original1038retstFAILEDacceptance; warmT10actual3storeabsence/refusal/panelReload/ChatActretained. LatercaptureGuestPreferenceBaselines stoppedbeforeextensionreload. Primaryexceptiondiscardedbyordinarycatch, exactcauseUNKNOWN; immutablemismatchafterothercasewritesplausibleNOTproven. Whitelist/Reactguessesnotfixbasis. Fivefull_extension_recheck_missing aresecondaryacceptancefailuresNOTfiveproductbugs. NoCPU_PENDING/resourceInvalid; nativechildfailed1, no verifierinvented. D299/D300/fullT10/Storestayopen."
             }
           },
           "linked_defects": [
@@ -9251,6 +9255,37 @@
                 "docs/stabilization/reports/guest-mode-peer-20261026.json"
               ],
               "detail": "Warm refusal/Act rollback and actual freshChatTools consumer observed; second fullReload SettingsAct observed, postReloadToolsconsumer unverified. Completed resourcefinalvalid0 conflicts with late-secondSIGINT holderexit1; preserve observations but no formal acceptance or closure. No rawstorage/server/AI observation."
+            }
+          ],
+          "previous_results": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "40509061963",
+                "source_sha": "80e30c62a1259e657519ec274bc951bbf36c5100",
+                "build_version": "0.2.629",
+                "development_ci_run_id": 40507157903,
+                "development_artifact_id": 12736232145,
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Visible guest Ask refusal and rollback to Act, with actual panel reload retaining Act.",
+                  "Unique owned Device All chats control observed once with permissionMode act in a fresh Chat.",
+                  "Actual dev-reload worker/panel retirement and replacement followed by fresh Chat Device Act observation; original lookup failure no longer reproduces."
+                ],
+                "unverified": [
+                  "No-shadow-write criterion: T10 observer deliberately sets raw=null and returns synthetic false storage flags; those are not actual storage evidence.",
+                  "Actual executed browser version/profile path/backend SHA not emitted; downloaded version is not execution identity.",
+                  "Current eBee/future source, member/admin, Store-installed and server-action acceptance."
+                ],
+                "resource_note": "Automated native boundary paused CPU_PENDING13:12:49 to RECOVERED13:13:37; finalvalid0. Not a zero-pending or manual-lease result.",
+                "evidence": [
+                  "docs/stabilization/reports/eighty-guest-20261027.json",
+                  "docs/stabilization/reports/eighty-native-peer-20261027.json",
+                  "docs/stabilization/reports/eighty-publication-manifest-20261027.json"
+                ],
+                "scope": "Frozen source80 CI development unpacked actual signed-out native UI only. Raw batch12pass/0fail/7unknown does not confer12 inventoryPASS cells. Full T10 remains partial."
+              }
             }
           ]
         },
@@ -49364,43 +49399,78 @@
               "detail": "Signed-out useAutoExtract returns before starting the automatic extraction path; this does not waive guest Data or access-control checks."
             },
             "member": {
-              "status": "pass",
-              "run_id": 38118648430,
-              "source_sha": "a98c46a7d01cbf99af88aa90e4cabc296546a46f",
-              "workflow_source_sha": "7d3d9d877eda1da5e32544f61026cdd227a7db18",
-              "development_ci_run_id": 38118062600,
-              "development_artifact_id": 11694303227,
-              "hosted_result_artifact_id": 11693984833,
-              "build_version": "0.2.493",
-              "resource_valid": true,
-              "independent_review": "docs/stabilization/reports/data-t08-member-run38118648430-peer-20261011.json",
-              "defect_ids": [
-                "EXT-D-0197"
+              "run_id": "40579681320",
+              "source_sha": "103850a3e2168311a370dca67dbd99e00f342715",
+              "development_ci_run_id": 40577593421,
+              "development_artifact_id": 12767619920,
+              "build_version": "0.2.630",
+              "resource_invalid": false,
+              "acceptance_run_successful": false,
+              "full_case_pass": false,
+              "new_product_credit": false,
+              "status": "unverified",
+              "failure_stage": "save_pattern",
+              "error_code": "data_member_pattern_name_entered_not_observed",
+              "auth_preconditions_verified": "realordinarymember/nonadmin/approvedorg",
+              "observed_setup": [
+                "twopickerfields_distinctpreviews",
+                "uniquenameinput_andSavepatternbutton"
               ],
-              "passed_subtargets": [
-                "Verified signed-in non-admin member; captured X-Organization-Id, write body organization_id and selected organization matched on one saved-pattern POST 201 with exact row readback.",
-                "Rendered automatic running badge latched before completion, then success showed the exact owned JSON row.",
-                "Controlled empty fixture showed no_match badge and explanation with no extracted rows.",
-                "Owned invalid-selector fixture showed automatic failure with detail and manual Extract enabled.",
-                "Original root selector was restored and read back; exact owned saved-pattern row was deleted."
-              ],
-              "unverified": [
-                "Admin T08 is an independent unverified mode and does not inherit the member result.",
-                "Current-main after later package/driver changes, Store-installed runtime and full Data feature remain unverified."
+              "not_exercised": [
+                "saveclick",
+                "patternwrite",
+                "automaticextractionstates"
               ],
               "evidence": [
-                "docs/stabilization/runs/data-member-auto-extract-run38118648430.json",
-                "docs/stabilization/reports/data-t08-member-run38118648430-peer-20261011.json",
-                "docs/stabilization/evidence/data-member-auto-extract-member/run38118648430/"
+                "docs/stabilization/reports/member-data-1038-20261027.json",
+                "docs/stabilization/reports/member-data-1038-failure-diagnosis-20261027.json",
+                "docs/stabilization/reports/native1038-publication-manifest-20261027.json"
               ],
-              "screenshots": "Hosted screenshots show generic guest Chat, not T08; native rendered-DOM assertions and independently reviewed artifact/journals support the bounded member verdict.",
-              "detail": "Independent A/B review passed bounded member T08 on frozen CI development v0.2.493 source a98c46a7d01cbf99af88aa90e4cabc296546a46f. Native driver observed all applicable member running/success/no_match/error/manual-Extract states and matching selected organization header/body on saved-pattern POST. Exact owned row cleanup and selector restoration passed; all three hosted resource finals were valid. This is a historical frozen member case pass, not current-main, admin, Store or whole-feature acceptance."
+              "scope": "OriginaltrustedCDPclick/Input.insertText ran butexpectedvalueequalitynotobserved. ProductvsdriverUNKNOWN; no failingfocus/inputstate/lastwaittargetcapture. D300notDataUIchange. NormalverifierHOSTED_RUN_NOT_SUCCESSFUL; package/browservalid0, guestchildfailed1(noninvalid). Ownedsecret/authfilesabsent/exactarchiveRestoredReadback/exactrunownedpatternrows0 independentlyreviewed; remoteprofiledeletionunobserved. NoT08productpass/defectclosure/AIcall/retry."
             },
             "admin": {
               "status": "unverified"
             }
           },
-          "verification_status": "member-pass-frozen-0.2.493; guest-not-applicable; admin-unverified; feature-incomplete"
+          "verification_status": "member-pass-frozen-0.2.493; guest-not-applicable; admin-unverified; feature-incomplete",
+          "previous_results": [
+            {
+              "mode": "member",
+              "result": {
+                "status": "pass",
+                "run_id": 38118648430,
+                "source_sha": "a98c46a7d01cbf99af88aa90e4cabc296546a46f",
+                "workflow_source_sha": "7d3d9d877eda1da5e32544f61026cdd227a7db18",
+                "development_ci_run_id": 38118062600,
+                "development_artifact_id": 11694303227,
+                "hosted_result_artifact_id": 11693984833,
+                "build_version": "0.2.493",
+                "resource_valid": true,
+                "independent_review": "docs/stabilization/reports/data-t08-member-run38118648430-peer-20261011.json",
+                "defect_ids": [
+                  "EXT-D-0197"
+                ],
+                "passed_subtargets": [
+                  "Verified signed-in non-admin member; captured X-Organization-Id, write body organization_id and selected organization matched on one saved-pattern POST 201 with exact row readback.",
+                  "Rendered automatic running badge latched before completion, then success showed the exact owned JSON row.",
+                  "Controlled empty fixture showed no_match badge and explanation with no extracted rows.",
+                  "Owned invalid-selector fixture showed automatic failure with detail and manual Extract enabled.",
+                  "Original root selector was restored and read back; exact owned saved-pattern row was deleted."
+                ],
+                "unverified": [
+                  "Admin T08 is an independent unverified mode and does not inherit the member result.",
+                  "Current-main after later package/driver changes, Store-installed runtime and full Data feature remain unverified."
+                ],
+                "evidence": [
+                  "docs/stabilization/runs/data-member-auto-extract-run38118648430.json",
+                  "docs/stabilization/reports/data-t08-member-run38118648430-peer-20261011.json",
+                  "docs/stabilization/evidence/data-member-auto-extract-member/run38118648430/"
+                ],
+                "screenshots": "Hosted screenshots show generic guest Chat, not T08; native rendered-DOM assertions and independently reviewed artifact/journals support the bounded member verdict.",
+                "detail": "Independent A/B review passed bounded member T08 on frozen CI development v0.2.493 source a98c46a7d01cbf99af88aa90e4cabc296546a46f. Native driver observed all applicable member running/success/no_match/error/manual-Extract states and matching selected organization header/body on saved-pattern POST. Exact owned row cleanup and selector restoration passed; all three hosted resource finals were valid. This is a historical frozen member case pass, not current-main, admin, Store or whole-feature acceptance."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-2005-T09",

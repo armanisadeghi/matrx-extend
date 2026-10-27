@@ -1,0 +1,135 @@
+{
+  "status": "DONE_WITH_LIMITS_SOURCE_VERIFIED_NATIVE_PENDING",
+  "at": "2026-10-27T21:15:00.214027+00:00",
+  "defects": ["EXT-D-0300", "EXT-D-0301"],
+  "source_sha": "b843467cf",
+  "owned_files": [
+    "tests/browser/settings-full-extension-rechecks.mjs",
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "tests/browser/data-member-native-acceptance.mjs",
+    "tests/browser/data-member-driver-diagnostic.mjs",
+    "tests/browser/settings-reload-boundary.test.mjs",
+    "tests/browser/data-member-driver-diagnostic.test.mjs"
+  ],
+  "frozen_sha256": {
+    "tests/browser/settings-full-extension-rechecks.mjs": "4e217ed445a61b6b6ae5469f2e78efc3d4d49c1c4ba2b1565d9eabaf2886a621",
+    "tests/browser/settings-local-controls-acceptance.mjs": "c10d218b4b569fee6af3c1d1533115b5fcc0666d5b824d10219fc2161c01e340",
+    "tests/browser/data-member-native-acceptance.mjs": "7a1d293ecaccf2f1a09a7cd21cb0c515664b59d4273cce327aa0214c71a84c70",
+    "tests/browser/data-member-driver-diagnostic.mjs": "85f7a3464aaa258a52122af879d48d5e2e18b762ed315342df0972b3044ede1f",
+    "tests/browser/settings-reload-boundary.test.mjs": "020d95ff4463507a1abf337aa7257a8d20527b4471397701e6e3ea64d1f747d5",
+    "tests/browser/data-member-driver-diagnostic.test.mjs": "7c4f594c0a20f8d4fc90093cef49b7d16a9422eb114e3e81a352c03e43fc4470"
+  },
+  "current_sha256": {
+    "tests/browser/settings-full-extension-rechecks.mjs": "4e217ed445a61b6b6ae5469f2e78efc3d4d49c1c4ba2b1565d9eabaf2886a621",
+    "tests/browser/settings-local-controls-acceptance.mjs": "c10d218b4b569fee6af3c1d1533115b5fcc0666d5b824d10219fc2161c01e340",
+    "tests/browser/data-member-native-acceptance.mjs": "7a1d293ecaccf2f1a09a7cd21cb0c515664b59d4273cce327aa0214c71a84c70",
+    "tests/browser/data-member-driver-diagnostic.mjs": "85f7a3464aaa258a52122af879d48d5e2e18b762ed315342df0972b3044ede1f",
+    "tests/browser/settings-reload-boundary.test.mjs": "020d95ff4463507a1abf337aa7257a8d20527b4471397701e6e3ea64d1f747d5",
+    "tests/browser/data-member-driver-diagnostic.test.mjs": "7c4f594c0a20f8d4fc90093cef49b7d16a9422eb114e3e81a352c03e43fc4470"
+  },
+  "frozen_matches_current": true,
+  "verification": {
+    "red": {
+      "command": "node scripts/stabilization-resource.mjs run --run-id failure-capture-sol-red-20261027a -- pnpm test:focused-acceptance",
+      "run_id": "failure-capture-sol-red-20261027a",
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-27T21:04:05.748Z",
+        "runId": "failure-capture-sol-red-20261027a",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "journal": "docs/stabilization/resource-journals/failure-capture-sol-red-20261027a.jsonl",
+      "log": ".output/stabilization-checkpoints/wake2034/failure-capture-sol-red.log",
+      "counts": { "tests": "1194", "pass": "1170", "fail": "13", "skipped": "11" }
+    },
+    "intermediate": {
+      "command": "node scripts/stabilization-resource.mjs run --run-id failure-capture-sol-green-20261027a -- pnpm test:focused-acceptance",
+      "run_id": "failure-capture-sol-green-20261027a",
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-27T21:08:26.902Z",
+        "runId": "failure-capture-sol-green-20261027a",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "journal": "docs/stabilization/resource-journals/failure-capture-sol-green-20261027a.jsonl",
+      "log": ".output/stabilization-checkpoints/wake2034/failure-capture-sol-green.log",
+      "counts": { "tests": "1197", "pass": "1185", "fail": "1", "skipped": "11" }
+    },
+    "focused": {
+      "command": "node scripts/stabilization-resource.mjs run --run-id failure-capture-sol-final-20261027a -- pnpm test:focused-acceptance",
+      "run_id": "failure-capture-sol-final-20261027a",
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-27T21:12:40.180Z",
+        "runId": "failure-capture-sol-final-20261027a",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "journal": "docs/stabilization/resource-journals/failure-capture-sol-final-20261027a.jsonl",
+      "log": ".output/stabilization-checkpoints/wake2034/failure-capture-sol-final.log",
+      "counts": { "tests": "1203", "pass": "1192", "fail": "0", "skipped": "11" }
+    },
+    "compile": {
+      "command": "node scripts/stabilization-resource.mjs run --run-id failure-capture-sol-compile-20261027a -- pnpm compile",
+      "run_id": "failure-capture-sol-compile-20261027a",
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-27T21:13:49.727Z",
+        "runId": "failure-capture-sol-compile-20261027a",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "journal": "docs/stabilization/resource-journals/failure-capture-sol-compile-20261027a.jsonl",
+      "log": ".output/stabilization-checkpoints/wake2034/failure-capture-sol-compile.log",
+      "counts": {}
+    },
+    "lint": {
+      "command": "node scripts/stabilization-resource.mjs run --run-id failure-capture-sol-lint-20261027a -- pnpm lint",
+      "run_id": "failure-capture-sol-lint-20261027a",
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-27T21:14:59.941Z",
+        "runId": "failure-capture-sol-lint-20261027a",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "journal": "docs/stabilization/resource-journals/failure-capture-sol-lint-20261027a.jsonl",
+      "log": ".output/stabilization-checkpoints/wake2034/failure-capture-sol-lint.log",
+      "counts": {}
+    }
+  },
+  "source_peer": ".output/stabilization-checkpoints/wake2034/failure-capture-source-peer.json",
+  "scope": "Diagnostic-only; ordinary warm Settings safe failure class/code/source/restoration and finite baseline substage; member Data best-effort input observations and projected last wait/category. No app/input/baseline/compare/restore/timeout/threshold semantics changed.",
+  "red_proof": "Actual old warm catch lost context in five scenarios and actual old Data wrong-focus path lost samples. Seven later Data variants in initial RED hit a happy-dom performance-property fixture setup error, repaired before GREEN.",
+  "intermediate_limit": "Intermediate GREEN had one existing catch-harness invocation missing injected projector; diagnostic scenarios and initial mutants passed. This was not final source-frozen verification; reviewer fixes/test additions proceeded around its completion.",
+  "mutations": "Executed in memory by existing actual-caller tests: Settings catch erasure/constant projection; Data outer-catch erasure, skipped after-click capture, wait-diagnostic callback erasure and constant projector guts. No shared source weakening.",
+  "preservation_guards": "Original primary click/wait error object reaches real safeFailureCode and actual outer reporter despite injected diagnostic read failure. Warm immutable comparison maintained with frozen/primitive/throwing-getter errors; synchronous/asynchronous stage callback failures cannot replace primary comparison.",
+  "limits": [
+    "CDP and DOM doubles do not prove Chrome focus or React controlled-input behavior.",
+    "No product root cause established; no native, Store, release or defect closure credit.",
+    "No native jobs, DB/auth mutations, policy/workflow/sidecar edits, commits, staging or pushes.",
+    "Root owns durable inventory, evidence integration, exact new CI and original native retest."
+  ],
+  "next_action": "Root independently verify guarded evidence and integrate exact six-file unit; require fresh exact CI then original native cases and adjacent behavior.",
+  "publication": {
+    "projection": "parsed typed report, formatted; not original-byte identity",
+    "private_original_sha256": "d497c647b8a026b73ea0cae1d07a1e077a8d6b46698316e139a6f79e4b7760c8"
+  }
+}

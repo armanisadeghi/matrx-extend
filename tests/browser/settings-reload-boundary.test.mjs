@@ -9,6 +9,12 @@ import { Window } from 'happy-dom';
 import { publishAtomicJsonReport } from './atomic-json-report.mjs';
 import { captureFailure } from './profile-reload-capture.mjs';
 import { NATIVE_STAGES } from './scrape-save-auth-report.mjs';
+import * as fullRechecks from './settings-full-extension-rechecks.mjs';
+import {
+  GUEST_PREFERENCES,
+  preferenceBaseline,
+  restoreGuestPreferenceBaseline,
+} from './settings-guest-preference-batch.mjs';
 import {
   evaluate,
   settingsActionSummary,
@@ -430,6 +436,8 @@ test('actual Settings guest catch persists safe extension reload failure evidenc
     'captureFailure',
     'transportFailureClass',
     'publicationFailure',
+    'safeUnexpectedError',
+    'guestCaptureStage = "not_started"',
     `try { throw injected;\n${actualCatch}\nreturn report;`,
   );
   const error = new Error(
@@ -480,6 +488,8 @@ test('actual Settings guest catch persists safe extension reload failure evidenc
         (item, name, status, evidence) => item.criteria.push({ name, status, evidence }),
         captureFailure,
         () => 'socket_error',
+        undefined,
+        fullRechecks.safeUnexpectedError,
       ),
     ),
   );
@@ -522,6 +532,8 @@ test('actual Settings guest catch persists safe extension reload failure evidenc
         (item, name, status, evidence) => item.criteria.push({ name, status, evidence }),
         captureFailure,
         () => 'private transport class',
+        undefined,
+        fullRechecks.safeUnexpectedError,
       ),
     ),
   );
@@ -691,3 +703,241 @@ for (const lifted of [false, true]) {
     }
   });
 }
+
+// Removing the actual ordinary warm catch projection must lose these diagnostics.
+async function runWarmSettingsScenario(scenario, mutation = null) {
+  let source = await readFile(
+    new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  if (mutation === 'drop_catch')
+    source = source.replace('        report.guestFailure = safeUnexpectedError(error);', '');
+  const start = source.indexOf("      let guestStage = 'warm_observation';");
+  const end = source.indexOf("      criterion(\n        byId('T63')", start);
+  assert.ok(start > 0 && end > start);
+  const observed = {
+    activeSettings: true,
+    count: 1,
+    selected: 'Act without asking',
+    shadowFootprint: {
+      status: 'observed',
+      stores: ['settings', 'chat', 'pilot'].map((store) => ({
+        store,
+        storagePresent: false,
+        fieldPresent: false,
+        parseStatus: 'absent',
+        mode: null,
+        fingerprint: null,
+        count: null,
+      })),
+    },
+  };
+  const mode = GUEST_PREFERENCES.find((p) => p.caseId === 'T10');
+  const theme = GUEST_PREFERENCES.find((p) => p.caseId === 'T04');
+  const baseline = preferenceBaseline(observed, mode);
+  const immutable = JSON.stringify(baseline);
+  const report = {
+    cases: ['T04', 'T10', 'T28', 'T40', 'T67', 'T63', 'T73', 'T76', 'T92'].map((id) => ({
+      id: `EXT-F-1003-${id}`,
+      steps: [],
+      criteria: [],
+    })),
+  };
+  const calls = [];
+  const canary = 'CANARY_private_token_storage_identity';
+  const failure = new TypeError(canary);
+  failure.code = 'EPIPE';
+  failure.stack = `TypeError: ${canary}\n at observe (/private/tests/browser/settings-guest-preference-batch.mjs:812:7)`;
+  const unknown = Object.assign(new Error(canary), { name: canary, code: canary, stack: canary });
+  const deps = {
+    report,
+    publicationFailure: undefined,
+    checkpoint: (...args) => calls.push(args.join(':')),
+    observeGuestIdentityAndOrganization: async () => {
+      calls.push('identity');
+      return {};
+    },
+    recordGuestPhase: () => calls.push('record_phase'),
+    recordGuestAdvancedDenial: async () => calls.push('record_denial'),
+    caseEntryBaselines: {
+      T10: baseline,
+      ...(scenario === 'restore' ? { T04: { value: 'system' } } : {}),
+    },
+    captureGuestPreferenceBaselines: fullRechecks.captureGuestPreferenceBaselines,
+    restoreGuestPreferenceBaseline: (...args) =>
+      restoreGuestPreferenceBaseline(...args, {
+        openSection: async () => {
+          throw failure;
+        },
+      }),
+    criterion: (c, name, status, evidence) => c.criteria.push({ name, status, evidence }),
+    byId: (suffix) => report.cases.find((c) => c.id.endsWith(suffix)),
+    panel: {},
+    GUEST_PREFERENCES: [mode, ...(scenario === 'restore' ? [theme] : [])],
+    settings: async () => calls.push('settings'),
+    openSection: async () => calls.push('open_section'),
+    observeGuestPreference: async () => {
+      calls.push('observe');
+      if (scenario === 'observer') throw failure;
+      if (scenario === 'getter')
+        throw Object.defineProperty({}, 'name', {
+          get() {
+            throw failure;
+          },
+        });
+      if (scenario === 'primitive') throw 'CANARY_private_primitive';
+      if (scenario === 'frozen') throw Object.freeze(failure);
+      if (scenario === 'unknown') throw unknown;
+      return scenario === 'mismatch' ? { ...observed, selected: 'Ask before acting' } : observed;
+    },
+    preferenceBaseline: () => {
+      throw new Error('immutable baseline must not be recaptured');
+    },
+    reloadExtension: async () => {
+      calls.push('reload');
+      throw failure;
+    },
+    captureFailure,
+    transportFailureClass: () => 'socket_error',
+    safeUnexpectedError:
+      mutation === 'constant_projector'
+        ? () => ({
+            name: 'TypeError',
+            code: 'EPIPE',
+            source: { file: 'settings-guest-preference-batch.mjs', line: 812, column: 7 },
+          })
+        : fullRechecks.safeUnexpectedError,
+  };
+  await new Function(...Object.keys(deps), `return (async () => {${source.slice(start, end)}})();`)(
+    ...Object.values(deps),
+  );
+  assert.deepEqual(calls.slice(0, 3), [
+    'guest_phase:warm_observation_start',
+    'identity',
+    'guest_phase:warm_observation_end',
+  ]);
+  assert.ok(calls.includes('record_denial'));
+  assert.equal(JSON.stringify(baseline), immutable);
+  assert.equal(calls.includes('reload'), scenario === 'unchanged');
+  assert.equal(
+    report.guestStageFailed,
+    scenario === 'unchanged' ? 'extension_reload' : 'warm_observation',
+  );
+  const diagnostic = report.guestFailure;
+  assert.ok(diagnostic, 'ordinary warm errors must survive the actual catch');
+  assert.equal(
+    diagnostic.code,
+    scenario === 'mismatch'
+      ? 'T10_shadow_baseline_mismatch_before_capture'
+      : scenario === 'getter'
+        ? 'diagnostic_unavailable'
+        : ['unknown', 'primitive'].includes(scenario)
+          ? 'other'
+          : 'EPIPE',
+  );
+  assert.equal(
+    diagnostic.name,
+    scenario === 'mismatch'
+      ? 'Error'
+      : ['unknown', 'primitive', 'getter'].includes(scenario)
+        ? 'OtherError'
+        : 'TypeError',
+  );
+  assert.equal(
+    report.guestCaptureStageFailed,
+    scenario === 'mismatch'
+      ? 'initial_mode_compare'
+      : scenario === 'restore'
+        ? 'restore_preference'
+        : scenario === 'unchanged'
+          ? 'final_mode_compare'
+          : 'initial_mode_observe',
+  );
+  if (scenario === 'observer')
+    assert.deepEqual(diagnostic.source, {
+      file: 'settings-guest-preference-batch.mjs',
+      line: 812,
+      column: 7,
+    });
+  if (scenario === 'restore') assert.equal(diagnostic.baselineRestoration.stage, 'open_section');
+  assert.doesNotMatch(JSON.stringify(report), /CANARY|private_token|\/private/);
+  fullRechecks.enforceFullExtensionRechecks(report.cases);
+  assert.equal(report.cases.find((c) => c.id.endsWith('T10')).criteria.at(-1).status, 'fail');
+  assert.ok(report.guestFailure, 'downstream missing checks must preserve first diagnostic');
+}
+
+for (const scenario of [
+  'mismatch',
+  'observer',
+  'restore',
+  'unknown',
+  'unchanged',
+  'getter',
+  'primitive',
+  'frozen',
+])
+  test(`actual warm Settings baseline boundary retains ${scenario} safely`, () =>
+    runWarmSettingsScenario(scenario));
+test('Settings actual warm oracle kills erased catch and constant diagnostic guts in memory', async () => {
+  await assert.rejects(
+    () => runWarmSettingsScenario('observer', 'drop_catch'),
+    /ordinary warm errors must survive/,
+  );
+  await assert.rejects(
+    () => runWarmSettingsScenario('unknown', 'constant_projector'),
+    (error) => error.code === 'ERR_ASSERTION',
+  );
+});
+
+test('baseline capture diagnostic callbacks cannot replace comparison failure or block reload readiness', async () => {
+  const mode = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  const observed = {
+    activeSettings: true,
+    count: 1,
+    selected: 'Act without asking',
+    shadowFootprint: {
+      status: 'observed',
+      stores: ['settings', 'chat', 'pilot'].map((store) => ({
+        store,
+        storagePresent: false,
+        fieldPresent: false,
+        parseStatus: 'absent',
+        mode: null,
+        fingerprint: null,
+        count: null,
+      })),
+    },
+  };
+  const baseline = preferenceBaseline(observed, mode);
+  for (const asynchronous of [false, true]) {
+    const calls = [];
+    const injected = new Error('CANARY_diagnostic_callback');
+    const args = {
+      panel: {},
+      preferences: [mode],
+      caseEntryBaselines: { T10: baseline },
+      settings: async () => calls.push('settings'),
+      openSection: async () => calls.push('open'),
+      observePreference: async () => {
+        calls.push('observe');
+        return observed;
+      },
+      onStage: () => {
+        if (asynchronous) return Promise.reject(injected);
+        throw injected;
+      },
+    };
+    const restored = await fullRechecks.captureGuestPreferenceBaselines(args);
+    assert.equal(restored.T10, baseline);
+    assert.deepEqual(calls, ['settings', 'open', 'observe', 'open', 'observe']);
+    await assert.rejects(
+      () =>
+        fullRechecks.captureGuestPreferenceBaselines({
+          ...args,
+          observePreference: async () => ({ ...observed, selected: 'Ask before acting' }),
+        }),
+      (error) =>
+        error !== injected && error.message === 'T10_shadow_baseline_mismatch_before_capture',
+    );
+  }
+});

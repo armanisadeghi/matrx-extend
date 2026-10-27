@@ -1,0 +1,12 @@
+{
+  "A": "PASS: official CI 40577593421 and focused 40577593282 completed success at 103850a3e2168311a370dca67dbd99e00f342715; current HEAD matches and tracked status clean when observed.",
+  "B": "PASS: read-only verifyCiDevPromotionReceipt exited 0; independently validates imported local/CI/provenance receipt hashes, manifest DEV identity cihdmkcdjjckfhjpgoedmgfpoljebaml version 0.2.630, imported and stable disk tree 5e15f73366edbd3e676688d95be1924d6708c1efc842c5e69e9b419329677edc.",
+  "artifact": "12767619920, unexpired, official digest sha256:ac0d1551d540c91f0204bdd971fc1eff20db1b86ff8f21b0eafb3ac0edcf1a52; run/source/name match.",
+  "import": "Current import1038.log explicitly DEVELOPMENT_TEST_IMPORTED and promote1038.log CI_DEV_PROMOTED; adoption records import_exit=0 and promote_exit=0. Earlier 944 failure is historical and cannot override current receipts.",
+  "limits": "Disk adoption only. No UI attempted; loaded Chrome, current browser/profile/pin, product acceptance and Store acceptance remain unverified; eligibleStore=false, not_published. Frozen owner last actual remains 629.",
+  "operations": "Read-only inspection and verifier only; no CI dispatched, reimport, promotion, fixture/auth change, source edit, or UI control.",
+  "publication": {
+    "projection": "typed parsed report; originalSHAindicatesprivate report identity, notpublicrawbytes",
+    "private_report_sha256": "908b1006dcdcb13b105fb12b623089de88841f2c2c26cdae91c4b08f677786f8"
+  }
+}

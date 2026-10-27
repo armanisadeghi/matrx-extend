@@ -34,67 +34,84 @@ const SAFE_ERROR_CODES = new Set([
   'ERR_ASSERTION',
   'ERR_INVALID_STATE',
   'ERR_TIMED_OUT',
+  'T10_shadow_baseline_unobserved',
+  'T10_shadow_baseline_mismatch_before_capture',
+  'case_entry_baseline_restorer_required',
 ]);
 
-function safeUnexpectedError(error, caseId) {
-  const name = SAFE_ERROR_NAMES.has(error?.name) ? error.name : 'OtherError';
-  const code = SAFE_ERROR_CODES.has(error?.code) ? error.code : 'other';
-  const stack = typeof error?.stack === 'string' ? error.stack.split('\n') : [];
-  let source = null;
-  for (const frame of stack) {
-    const match = frame.match(/\/tests\/browser\/([A-Za-z0-9._-]+\.mjs):(\d+):(\d+)\)?$/);
-    if (!match || !match[1].startsWith('settings-')) continue;
-    source = { file: match[1], line: Number(match[2]), column: Number(match[3]) };
-    break;
-  }
-  const result = {
-    name,
-    code,
-    source: source ?? { file: 'unavailable', line: null, column: null },
-  };
-  if (caseId.endsWith('T28') && error?.safeSectionCensus) {
-    const census = error.safeSectionCensus;
-    result.sectionCensus = {
-      active: census.active === true,
-      count: Number.isInteger(census.count) ? census.count : null,
-      headings: Array.isArray(census.headings)
-        ? census.headings.filter((name) => SECTIONS.includes(name))
-        : [],
-      unrecognizedHeadingCount: Number.isInteger(census.unrecognizedHeadingCount)
-        ? census.unrecognizedHeadingCount
-        : null,
-      expandedControlCount: Number.isInteger(census.expandedControlCount)
-        ? census.expandedControlCount
-        : null,
-      nonSectionExpandedControlCount: Number.isInteger(census.nonSectionExpandedControlCount)
-        ? census.nonSectionExpandedControlCount
-        : null,
+export function safeUnexpectedError(error, caseId = '') {
+  try {
+    const name = SAFE_ERROR_NAMES.has(error?.name) ? error.name : 'OtherError';
+    const code = SAFE_ERROR_CODES.has(error?.code)
+      ? error.code
+      : SAFE_ERROR_CODES.has(error?.message)
+        ? error.message
+        : 'other';
+    const stack = typeof error?.stack === 'string' ? error.stack.split('\n') : [];
+    let source = null;
+    for (const frame of stack) {
+      const match = frame.match(/\/tests\/browser\/([A-Za-z0-9._-]+\.mjs):(\d+):(\d+)\)?$/);
+      if (!match || !match[1].startsWith('settings-')) continue;
+      source = { file: match[1], line: Number(match[2]), column: Number(match[3]) };
+      break;
+    }
+    const result = {
+      name,
+      code,
+      source: source ?? { file: 'unavailable', line: null, column: null },
     };
-  }
-  if (caseId.endsWith('T40') && AUTO_SCRAPE_WAIT_LABELS.has(error?.waitLabel)) {
-    const sample = error.waitDiagnostic ?? {};
-    result.wait = {
-      label: error.waitLabel,
-      sample: {
+    const restoration = safePreferenceBaselineRestoration(error?.safeBaselineRestoration);
+    if (restoration) result.baselineRestoration = restoration;
+    if (caseId.endsWith('T28') && error?.safeSectionCensus) {
+      const census = error.safeSectionCensus;
+      result.sectionCensus = {
+        active: census.active === true,
+        count: Number.isInteger(census.count) ? census.count : null,
+        headings: Array.isArray(census.headings)
+          ? census.headings.filter((name) => SECTIONS.includes(name))
+          : [],
+        unrecognizedHeadingCount: Number.isInteger(census.unrecognizedHeadingCount)
+          ? census.unrecognizedHeadingCount
+          : null,
+        expandedControlCount: Number.isInteger(census.expandedControlCount)
+          ? census.expandedControlCount
+          : null,
+        nonSectionExpandedControlCount: Number.isInteger(census.nonSectionExpandedControlCount)
+          ? census.nonSectionExpandedControlCount
+          : null,
+      };
+    }
+    if (caseId.endsWith('T40') && AUTO_SCRAPE_WAIT_LABELS.has(error?.waitLabel)) {
+      const sample = error.waitDiagnostic ?? {};
+      result.wait = {
+        label: error.waitLabel,
+        sample: {
+          active: sample.active === true,
+          sectionOpen: sample.sectionOpen === true,
+          controlCount: Number.isInteger(sample.controlCount) ? sample.controlCount : null,
+          visibleMatches: sample.visibleMatches === true,
+          storedMatches: sample.storedMatches === true,
+        },
+      };
+    }
+    if (caseId.endsWith('T40') && error?.safeLastAutoScrapeObservation) {
+      const sample = error.safeLastAutoScrapeObservation;
+      result.lastSafeObservation = {
         active: sample.active === true,
         sectionOpen: sample.sectionOpen === true,
         controlCount: Number.isInteger(sample.controlCount) ? sample.controlCount : null,
         visibleMatches: sample.visibleMatches === true,
         storedMatches: sample.storedMatches === true,
-      },
+      };
+    }
+    return result;
+  } catch {
+    return {
+      name: 'OtherError',
+      code: 'diagnostic_unavailable',
+      source: { file: 'unavailable', line: null, column: null },
     };
   }
-  if (caseId.endsWith('T40') && error?.safeLastAutoScrapeObservation) {
-    const sample = error.safeLastAutoScrapeObservation;
-    result.lastSafeObservation = {
-      active: sample.active === true,
-      sectionOpen: sample.sectionOpen === true,
-      controlCount: Number.isInteger(sample.controlCount) ? sample.controlCount : null,
-      visibleMatches: sample.visibleMatches === true,
-      storedMatches: sample.storedMatches === true,
-    };
-  }
-  return result;
 }
 
 const AUTO_SCRAPE_WAIT_LABELS = new Set([
@@ -250,33 +267,50 @@ export async function captureGuestPreferenceBaselines({
   preferenceBaseline,
   caseEntryBaselines = {},
   restorePreferenceBaseline,
+  onStage = () => {},
 }) {
+  const stage = (value) => {
+    try {
+      const pending = onStage(value);
+      if (pending && typeof pending.then === 'function') Promise.resolve(pending).catch(() => {});
+    } catch {
+      /* diagnostic only */
+    }
+  };
   const baselines = { ...caseEntryBaselines };
+  stage('initial_settings');
   await settings(panel);
   const mode = preferences.find((item) => item.caseId === 'T10');
-  const verifyWarmMode = async () => {
+  const verifyWarmMode = async (pass) => {
     if (!mode) return;
+    stage(`${pass}_mode_baseline`);
     if (caseEntryBaselines.T10?.matched !== true) throw new Error('T10_shadow_baseline_unobserved');
+    stage(`${pass}_mode_open`);
     await openSection(panel, mode.section);
+    stage(`${pass}_mode_observe`);
     const observed = await observePreference(panel, mode);
+    stage(`${pass}_mode_compare`);
     if (!preferenceBaselineMatches(observed, mode, caseEntryBaselines.T10))
       throw new Error('T10_shadow_baseline_mismatch_before_capture');
   };
   // Check BEFORE any Theme cleanup can remove the whole settings container.
-  await verifyWarmMode();
+  await verifyWarmMode('initial');
   // Theme may own the whole Settings container. T10 is never restored or
   // recaptured: compare the same warm expectation on both sides of cleanup.
   for (const preference of preferences.filter(
     (item) => item.caseId !== 'T10' && caseEntryBaselines[item.caseId],
   )) {
+    stage('restore_preference');
     if (typeof restorePreferenceBaseline !== 'function')
       throw new Error('case_entry_baseline_restorer_required');
     await restorePreferenceBaseline(panel, preference, baselines[preference.caseId]);
   }
-  await verifyWarmMode();
+  await verifyWarmMode('final');
   for (const preference of preferences.filter((item) => item.caseId === 'T04')) {
     if (baselines[preference.caseId]) continue;
+    stage('capture_preference_open');
     await openSection(panel, preference.section);
+    stage('capture_preference_observe');
     baselines[preference.caseId] = preferenceBaseline(
       await observePreference(panel, preference),
       preference,

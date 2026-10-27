@@ -8,7 +8,7 @@
   "severity": "S3",
   "priority": "P1",
   "state": "in-fix",
-  "owner": "root/failure_capture_implementation",
+  "owner": "root",
   "source_sha": "103850a3e2168311a370dca67dbd99e00f342715",
   "preconditions": [
     "Exact1038 hosted A auto-extract run40579681320 with guarded original fixture and valid source/artifact."
@@ -23,9 +23,11 @@
   "cause": "Known acceptance reporting omission, not proven UI or React input defect.",
   "evidence": [
     "docs/stabilization/reports/member-data-1038-failure-diagnosis-20261027.json",
-    "docs/stabilization/reports/failure-capture-plan-attack-20261027.json"
+    "docs/stabilization/reports/failure-capture-plan-attack-20261027.json",
+    "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
+    "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Diagnostics-only source repair reusing existing data-member-driver-diagnostic and shared waitFor; retain allowlisted boolean/count/length/equality/focus/document-time metadata, no raw value/auth/identity. All added reads best-effort; preserve original click/insert/wait and primary exception. performance.timeOrigin is document replacement only, not input remount proof. Guard actual caller RED/GREEN/mutants, compile/lint/fresh review; new exact CI then original native reproduction before product fix.",
+  "next_action": "Observe new exact synchronized-main full CI, import/promote eligible artifact, and repeat original native case with safe new diagnostics plus surrounding cases. Product/driver cause remains unknown until first bad boundary is measured. Keep original click/insert/wait and immutable baseline unchanged; never relax comparators/rebaseline or infer input remount from document timeOrigin. D300 late/sibling retention scope remains open; D301 automatic extraction remains untested. No CI/native/source-count conflation, paid relocation or Store closure.",
   "transition_history": [
     {
       "at": "2026-10-27T20:56:20.359552+00:00",
@@ -33,5 +35,17 @@
       "to": "in-fix",
       "reason": "Independent source/native diagnosis establishes reporting gap only; no application-cause claim."
     }
-  ]
+  ],
+  "diagnostic_source_files": {
+    "tests/browser/settings-full-extension-rechecks.mjs": "4e217ed445a61b6b6ae5469f2e78efc3d4d49c1c4ba2b1565d9eabaf2886a621",
+    "tests/browser/settings-local-controls-acceptance.mjs": "c10d218b4b569fee6af3c1d1533115b5fcc0666d5b824d10219fc2161c01e340",
+    "tests/browser/data-member-native-acceptance.mjs": "7a1d293ecaccf2f1a09a7cd21cb0c515664b59d4273cce327aa0214c71a84c70",
+    "tests/browser/data-member-driver-diagnostic.mjs": "85f7a3464aaa258a52122af879d48d5e2e18b762ed315342df0972b3044ede1f",
+    "tests/browser/settings-reload-boundary.test.mjs": "020d95ff4463507a1abf337aa7257a8d20527b4471397701e6e3ea64d1f747d5",
+    "tests/browser/data-member-driver-diagnostic.test.mjs": "7c4f594c0a20f8d4fc90093cef49b7d16a9422eb114e3e81a352c03e43fc4470"
+  },
+  "diagnostic_source_verification": "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
+  "diagnostic_independent_review": "docs/stabilization/reports/failure-capture-source-peer-20261027.json",
+  "native_diagnostic_retest": "UNVERIFIED",
+  "underlying_product_cause": "UNKNOWN"
 }

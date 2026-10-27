@@ -10,7 +10,11 @@ import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { verifyDataGuestArtifact } from './data-guest-artifact-contract.mjs';
 import { clickPickerDone, clickPickerField, pickerText } from './data-guest-picker-driver.mjs';
 import { runMemberAutoExtract } from './data-member-auto-extract-driver.mjs';
-import { recordDataMemberDriverDiagnostic } from './data-member-driver-diagnostic.mjs';
+import {
+  dataMemberNameEntrySample,
+  observeDataMemberNameEntry,
+  recordDataMemberDriverDiagnostic,
+} from './data-member-driver-diagnostic.mjs';
 import {
   buildDataPatternDeleteUrl,
   buildDataPatternLookupUrl,
@@ -111,11 +115,17 @@ async function dataState(panel, name) {
       const root = ${activeTabPanelExpression('Data')};
       if (!root) return { active: false };
       const text = root.textContent ?? '';
+      const nameInput = root.querySelector('input[placeholder="Pattern name…"]');
       return {
         active: true,
         pickedTwo: text.includes('2 fields selected') && text.includes('field_1:') && text.includes('field_2:'),
         savePatternCount: [...root.querySelectorAll('button')].filter((button) => button.textContent.trim() === 'Save pattern').length,
         nameInputCount: root.querySelectorAll('input[placeholder="Pattern name…"]').length,
+        nameFocused: nameInput ? document.activeElement === nameInput : false,
+        nameNonempty: (nameInput?.value.length ?? 0) > 0,
+        nameValueLength: nameInput?.value.length ?? 0,
+        nameExpectedLength: ${JSON.stringify(name.length)},
+        documentTimeOrigin: performance.timeOrigin,
         nameMatches: root.querySelector('input[placeholder="Pattern name…"]')?.value === ${JSON.stringify(name)},
         savedPatternVisible: text.includes(${JSON.stringify(name)}),
       };
@@ -406,12 +416,17 @@ try {
       report.observations.pattern_name_visible = true;
 
       report.stage = 'save_pattern';
+      await observeDataMemberNameEntry(report, 'before_click', () => dataState(panel, patternName));
       await click(panel, 'data-pattern-name', 'Pattern name…');
+      await observeDataMemberNameEntry(report, 'after_click', () => dataState(panel, patternName));
       await panel.send('Input.insertText', { text: patternName });
+      await observeDataMemberNameEntry(report, 'after_insert', () => dataState(panel, patternName));
       const named = await waitFor(
         'data_member_pattern_name_entered',
         () => dataState(panel, patternName),
         (state) => state?.nameMatches === true,
+        undefined,
+        dataMemberNameEntrySample,
       );
       assert.equal(named.nameMatches, true, 'data_member_pattern_name_not_set');
       await panel.send('Network.enable');

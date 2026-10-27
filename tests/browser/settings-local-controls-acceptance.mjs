@@ -18,6 +18,7 @@ import {
   enforceFullExtensionRechecks,
   initializeFullExtensionRechecks,
   rerunGuestSettingsAfterExtensionReload,
+  safeUnexpectedError,
   snapshotPanelDocumentReload,
 } from './settings-full-extension-rechecks.mjs';
 import { recordGuestAdminAbsence } from './settings-guest-absence.mjs';
@@ -1098,6 +1099,7 @@ try {
         );
       });
       let guestStage = 'warm_observation';
+      let guestCaptureStage = 'not_started';
       try {
         checkpoint('guest_phase', 'warm_observation_start');
         const warmGuest = await observeGuestIdentityAndOrganization(panel);
@@ -1105,6 +1107,9 @@ try {
         recordGuestPhase('warm', warmGuest);
         await recordGuestAdvancedDenial('warm', panel, warmGuest);
         const preExtensionBaselines = await captureGuestPreferenceBaselines({
+          onStage: (stage) => {
+            guestCaptureStage = stage;
+          },
           caseEntryBaselines,
           restorePreferenceBaseline: (target, preference, baseline) =>
             restoreGuestPreferenceBaseline(
@@ -1198,6 +1203,8 @@ try {
       } catch (error) {
         if (publicationFailure) throw publicationFailure;
         report.guestStageFailed = guestStage;
+        report.guestFailure = safeUnexpectedError(error);
+        report.guestCaptureStageFailed = guestCaptureStage;
         if (guestStage === 'extension_reload' || error?.lifecycleEvidence || error?.contextBoundary)
           report.guestExtensionReloadFailure = captureFailure(error, transportFailureClass);
         for (const suffix of ['T63', 'T73', 'T76', 'T92']) {
