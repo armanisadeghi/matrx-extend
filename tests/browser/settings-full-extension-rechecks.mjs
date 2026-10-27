@@ -39,15 +39,166 @@ const SAFE_ERROR_CODES = new Set([
   'case_entry_baseline_restorer_required',
 ]);
 
+const MODE_STORES = ['settings', 'chat', 'pilot'];
+const MODE_FIELDS = [
+  'storagePresent',
+  'fieldPresent',
+  'parseStatus',
+  'mode',
+  'fingerprint',
+  'count',
+];
+const comparisonCategory = (a, b) =>
+  a === undefined || b === undefined ? 'missing' : a === b ? 'equal' : 'unequal';
+
+// Diagnostics inspect only the samples already handed to the authoritative comparator.
+function modeComparisonReceipt(observed, baseline, stage) {
+  const footprint = observed?.shadowFootprint;
+  const original = baseline?.observation?.shadowFootprint;
+  const valid = (value) =>
+    value?.status === 'observed' &&
+    Array.isArray(value.stores) &&
+    value.stores.length === 3 &&
+    value.stores.every(
+      (entry, index) =>
+        entry.store === MODE_STORES[index] &&
+        ['valid', 'absent'].includes(entry.parseStatus) &&
+        typeof entry.storagePresent === 'boolean' &&
+        typeof entry.fieldPresent === 'boolean',
+    );
+  const observedValid = valid(footprint);
+  const baselineValid = valid(original);
+  const predicates = {
+    visible: observed?.activeSettings === true,
+    count: observed?.count === 1,
+    selection: observed?.selected === 'Act without asking',
+    baselineValue: baseline?.value === 'act',
+    observedValid,
+    baselineValid,
+  };
+  let serialization = 'unavailable';
+  try {
+    if (observedValid && baselineValid)
+      serialization = JSON.stringify(footprint) === JSON.stringify(original) ? 'equal' : 'unequal';
+  } catch {
+    /* Diagnostic must never replace the comparison failure. */
+  }
+  const stores = MODE_STORES.map((store, index) => {
+    const left = footprint?.stores?.[index];
+    const right = original?.stores?.[index];
+    const fields = {};
+    for (const field of MODE_FIELDS)
+      fields[field] = comparisonCategory(left?.[field], right?.[field]);
+    const shape = (entry) => ({
+      status: ['valid', 'absent', 'invalid', 'unavailable'].includes(entry?.parseStatus)
+        ? entry.parseStatus
+        : 'missing',
+      storage: typeof entry?.storagePresent === 'boolean' ? entry.storagePresent : null,
+      field: typeof entry?.fieldPresent === 'boolean' ? entry.fieldPresent : null,
+    });
+    return {
+      store,
+      identity: left?.store === store && right?.store === store ? 'valid' : 'invalid',
+      observed: shape(left),
+      baseline: shape(right),
+      ...fields,
+    };
+  });
+  const firstFalse =
+    Object.keys(predicates).find((key) => !predicates[key]) ??
+    (serialization === 'unequal'
+      ? 'serialization'
+      : serialization === 'unavailable'
+        ? 'unavailable'
+        : 'none');
+  const residual =
+    serialization === 'unequal' &&
+    stores.every(
+      (entry) =>
+        entry.identity === 'valid' && MODE_FIELDS.every((field) => entry[field] === 'equal'),
+    );
+  return { stage, predicates, firstFalse, serialization, residual, stores };
+}
+
+// Project again at publication; never trust properties attached to an exception.
+function safeModeComparison(error) {
+  try {
+    const value = error?.safeModeComparison;
+    const stage = value?.stage;
+    if (!['initial', 'final'].includes(stage)) return null;
+    const predicateNames = [
+      'visible',
+      'count',
+      'selection',
+      'baselineValue',
+      'observedValid',
+      'baselineValid',
+    ];
+    const sourcePredicates = value.predicates;
+    const predicates = Object.fromEntries(
+      predicateNames.map((name) => [name, sourcePredicates?.[name] === true]),
+    );
+    const first = value.firstFalse;
+    const serial = value.serialization;
+    const residual = value.residual;
+    const sourceStores = value.stores;
+    const categories = ['equal', 'unequal', 'missing'];
+    const shape = (entry) => {
+      const status = entry?.status;
+      const storage = entry?.storage;
+      const field = entry?.field;
+      return {
+        status: ['valid', 'absent', 'invalid', 'unavailable'].includes(status) ? status : 'missing',
+        storage: typeof storage === 'boolean' ? storage : null,
+        field: typeof field === 'boolean' ? field : null,
+      };
+    };
+    return {
+      stage,
+      predicates,
+      firstFalse: [...predicateNames, 'serialization', 'unavailable', 'none'].includes(first)
+        ? first
+        : 'unavailable',
+      serialization: ['equal', 'unequal', 'unavailable'].includes(serial) ? serial : 'unavailable',
+      residual: residual === true,
+      stores: MODE_STORES.map((store, index) => {
+        const source = sourceStores?.[index];
+        const identity = source?.identity;
+        const observed = source?.observed;
+        const baseline = source?.baseline;
+        const fields = Object.fromEntries(
+          MODE_FIELDS.map((field) => {
+            const candidate = source?.[field];
+            return [field, categories.includes(candidate) ? candidate : 'missing'];
+          }),
+        );
+        return {
+          store,
+          identity: identity === 'valid' ? 'valid' : 'invalid',
+          observed: shape(observed),
+          baseline: shape(baseline),
+          ...fields,
+        };
+      }),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function safeUnexpectedError(error, caseId = '') {
   try {
-    const name = SAFE_ERROR_NAMES.has(error?.name) ? error.name : 'OtherError';
-    const code = SAFE_ERROR_CODES.has(error?.code)
-      ? error.code
-      : SAFE_ERROR_CODES.has(error?.message)
-        ? error.message
+    const rawName = error?.name;
+    const rawCode = error?.code;
+    const rawMessage = SAFE_ERROR_CODES.has(rawCode) ? undefined : error?.message;
+    const rawStack = error?.stack;
+    const name = SAFE_ERROR_NAMES.has(rawName) ? rawName : 'OtherError';
+    const code = SAFE_ERROR_CODES.has(rawCode)
+      ? rawCode
+      : SAFE_ERROR_CODES.has(rawMessage)
+        ? rawMessage
         : 'other';
-    const stack = typeof error?.stack === 'string' ? error.stack.split('\n') : [];
+    const stack = typeof rawStack === 'string' ? rawStack.split('\n') : [];
     let source = null;
     for (const frame of stack) {
       const match = frame.match(/\/tests\/browser\/([A-Za-z0-9._-]+\.mjs):(\d+):(\d+)\)?$/);
@@ -60,6 +211,8 @@ export function safeUnexpectedError(error, caseId = '') {
       code,
       source: source ?? { file: 'unavailable', line: null, column: null },
     };
+    const modeComparison = safeModeComparison(error);
+    if (modeComparison) result.modeComparison = modeComparison;
     const restoration = safePreferenceBaselineRestoration(error?.safeBaselineRestoration);
     if (restoration) result.baselineRestoration = restoration;
     if (caseId.endsWith('T28') && error?.safeSectionCensus) {
@@ -290,8 +443,15 @@ export async function captureGuestPreferenceBaselines({
     stage(`${pass}_mode_observe`);
     const observed = await observePreference(panel, mode);
     stage(`${pass}_mode_compare`);
-    if (!preferenceBaselineMatches(observed, mode, caseEntryBaselines.T10))
-      throw new Error('T10_shadow_baseline_mismatch_before_capture');
+    if (!preferenceBaselineMatches(observed, mode, caseEntryBaselines.T10)) {
+      const error = new Error('T10_shadow_baseline_mismatch_before_capture');
+      try {
+        error.safeModeComparison = modeComparisonReceipt(observed, caseEntryBaselines.T10, pass);
+      } catch {
+        /* best effort */
+      }
+      throw error;
+    }
   };
   // Check BEFORE any Theme cleanup can remove the whole settings container.
   await verifyWarmMode('initial');

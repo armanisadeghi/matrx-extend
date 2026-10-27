@@ -744,6 +744,7 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
     })),
   };
   const calls = [];
+  let sampleCount = 0;
   const canary = 'CANARY_private_token_storage_identity';
   const failure = new TypeError(canary);
   failure.code = 'EPIPE';
@@ -778,6 +779,7 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
     openSection: async () => calls.push('open_section'),
     observeGuestPreference: async () => {
       calls.push('observe');
+      sampleCount += 1;
       if (scenario === 'observer') throw failure;
       if (scenario === 'getter')
         throw Object.defineProperty({}, 'name', {
@@ -788,7 +790,16 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
       if (scenario === 'primitive') throw 'CANARY_private_primitive';
       if (scenario === 'frozen') throw Object.freeze(failure);
       if (scenario === 'unknown') throw unknown;
-      return scenario === 'mismatch' ? { ...observed, selected: 'Ask before acting' } : observed;
+      if (scenario === 'mismatch') return { ...observed, selected: 'Ask before acting' };
+      if (scenario === 'store' || (scenario === 'final_store' && sampleCount === 2)) {
+        const stores = observed.shadowFootprint.stores.map((entry) => ({ ...entry }));
+        stores[0].storagePresent = true;
+        stores[0].parseStatus = 'valid';
+        return { ...observed, shadowFootprint: { status: 'observed', stores } };
+      }
+      if (scenario === 'residual')
+        return { ...observed, shadowFootprint: { ...observed.shadowFootprint, CANARY: canary } };
+      return observed;
     },
     preferenceBaseline: () => {
       throw new Error('immutable baseline must not be recaptured');
@@ -800,13 +811,19 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
     captureFailure,
     transportFailureClass: () => 'socket_error',
     safeUnexpectedError:
-      mutation === 'constant_projector'
-        ? () => ({
-            name: 'TypeError',
-            code: 'EPIPE',
-            source: { file: 'settings-guest-preference-batch.mjs', line: 812, column: 7 },
-          })
-        : fullRechecks.safeUnexpectedError,
+      mutation === 'constant_receipt'
+        ? (error) => {
+            const value = fullRechecks.safeUnexpectedError(error);
+            if (value.modeComparison) value.modeComparison.firstFalse = 'selection';
+            return value;
+          }
+        : mutation === 'constant_projector'
+          ? () => ({
+              name: 'TypeError',
+              code: 'EPIPE',
+              source: { file: 'settings-guest-preference-batch.mjs', line: 812, column: 7 },
+            })
+          : fullRechecks.safeUnexpectedError,
   };
   await new Function(...Object.keys(deps), `return (async () => {${source.slice(start, end)}})();`)(
     ...Object.values(deps),
@@ -825,9 +842,23 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
   );
   const diagnostic = report.guestFailure;
   assert.ok(diagnostic, 'ordinary warm errors must survive the actual catch');
+  if (scenario === 'mismatch') {
+    assert.equal(diagnostic.modeComparison.firstFalse, 'selection');
+    assert.equal(diagnostic.modeComparison.serialization, 'equal');
+  }
+  if (['store', 'final_store', 'residual'].includes(scenario)) {
+    assert.equal(diagnostic.modeComparison.firstFalse, 'serialization');
+    assert.equal(diagnostic.modeComparison.serialization, 'unequal');
+    assert.equal(diagnostic.modeComparison.residual, scenario === 'residual');
+    assert.equal(diagnostic.modeComparison.stage, scenario === 'final_store' ? 'final' : 'initial');
+    assert.equal(
+      diagnostic.modeComparison.stores[0].storagePresent,
+      scenario === 'residual' ? 'equal' : 'unequal',
+    );
+  }
   assert.equal(
     diagnostic.code,
-    scenario === 'mismatch'
+    ['mismatch', 'store', 'final_store', 'residual'].includes(scenario)
       ? 'T10_shadow_baseline_mismatch_before_capture'
       : scenario === 'getter'
         ? 'diagnostic_unavailable'
@@ -837,7 +868,7 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
   );
   assert.equal(
     diagnostic.name,
-    scenario === 'mismatch'
+    ['mismatch', 'store', 'final_store', 'residual'].includes(scenario)
       ? 'Error'
       : ['unknown', 'primitive', 'getter'].includes(scenario)
         ? 'OtherError'
@@ -845,13 +876,15 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
   );
   assert.equal(
     report.guestCaptureStageFailed,
-    scenario === 'mismatch'
+    ['mismatch', 'store', 'residual'].includes(scenario)
       ? 'initial_mode_compare'
-      : scenario === 'restore'
-        ? 'restore_preference'
-        : scenario === 'unchanged'
-          ? 'final_mode_compare'
-          : 'initial_mode_observe',
+      : scenario === 'final_store'
+        ? 'final_mode_compare'
+        : scenario === 'restore'
+          ? 'restore_preference'
+          : scenario === 'unchanged'
+            ? 'final_mode_compare'
+            : 'initial_mode_observe',
   );
   if (scenario === 'observer')
     assert.deepEqual(diagnostic.source, {
@@ -868,6 +901,9 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
 
 for (const scenario of [
   'mismatch',
+  'store',
+  'final_store',
+  'residual',
   'observer',
   'restore',
   'unknown',
@@ -882,6 +918,10 @@ test('Settings actual warm oracle kills erased catch and constant diagnostic gut
   await assert.rejects(
     () => runWarmSettingsScenario('observer', 'drop_catch'),
     /ordinary warm errors must survive/,
+  );
+  await assert.rejects(
+    () => runWarmSettingsScenario('store', 'constant_receipt'),
+    (error) => error.code === 'ERR_ASSERTION',
   );
   await assert.rejects(
     () => runWarmSettingsScenario('unknown', 'constant_projector'),
@@ -939,5 +979,361 @@ test('baseline capture diagnostic callbacks cannot replace comparison failure or
       (error) =>
         error !== injected && error.message === 'T10_shadow_baseline_mismatch_before_capture',
     );
+  }
+});
+
+test('receipt getter failure preserves the original error projection', () => {
+  const error = new Error('T10_shadow_baseline_mismatch_before_capture');
+  error.stack =
+    'Error: mismatch\n at capture (/private/tests/browser/settings-full-extension-rechecks.mjs:294:13)';
+  Object.defineProperty(error, 'safeModeComparison', {
+    get() {
+      throw new Error('CANARY');
+    },
+  });
+  const result = fullRechecks.safeUnexpectedError(error);
+  assert.equal(result.name, 'Error');
+  assert.equal(result.code, 'T10_shadow_baseline_mismatch_before_capture');
+  assert.equal(result.modeComparison, undefined);
+  assert.deepEqual(result.source, {
+    file: 'settings-full-extension-rechecks.mjs',
+    line: 294,
+    column: 13,
+  });
+  assert.doesNotMatch(JSON.stringify(result), /CANARY/);
+});
+
+test('same-sample receipt identifies ordered failures and invalid store structure', async () => {
+  const mode = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  const footprint = {
+    status: 'observed',
+    stores: ['settings', 'chat', 'pilot'].map((store) => ({
+      store,
+      storagePresent: false,
+      fieldPresent: false,
+      parseStatus: 'absent',
+      mode: null,
+      fingerprint: null,
+      count: null,
+    })),
+  };
+  const observed = {
+    activeSettings: true,
+    count: 1,
+    selected: 'Act without asking',
+    shadowFootprint: footprint,
+  };
+  const baseline = preferenceBaseline(observed, mode);
+  const samples = [
+    { sample: { ...observed, activeSettings: false, count: 2 }, first: 'visible' },
+    {
+      sample: {
+        ...observed,
+        shadowFootprint: { ...footprint, stores: footprint.stores.slice(0, 2) },
+      },
+      first: 'observedValid',
+    },
+    {
+      sample: {
+        ...observed,
+        shadowFootprint: {
+          ...footprint,
+          stores: [footprint.stores[1], footprint.stores[0], footprint.stores[2]],
+        },
+      },
+      first: 'observedValid',
+    },
+    {
+      sample: {
+        ...observed,
+        shadowFootprint: {
+          ...footprint,
+          stores: footprint.stores.map((entry, i) =>
+            i === 2 ? { ...entry, parseStatus: 'invalid' } : entry,
+          ),
+        },
+      },
+      first: 'observedValid',
+    },
+  ];
+  for (const { sample, first } of samples) {
+    let reads = 0;
+    await assert.rejects(
+      () =>
+        fullRechecks.captureGuestPreferenceBaselines({
+          panel: {},
+          preferences: [mode],
+          caseEntryBaselines: { T10: baseline },
+          settings: async () => {},
+          openSection: async () => {},
+          observePreference: async () => {
+            reads++;
+            return sample;
+          },
+        }),
+      (error) => {
+        const receipt = fullRechecks.safeUnexpectedError(error).modeComparison;
+        assert.equal(receipt.firstFalse, first);
+        assert.equal(error.message, 'T10_shadow_baseline_mismatch_before_capture');
+        return true;
+      },
+    );
+    assert.equal(reads, 1);
+  }
+});
+
+test('projector reads receipt fields once before emitting finite categories', () => {
+  const flip = (first) => {
+    let n = 0;
+    return () => (++n === 1 ? first : 'CANARY_private');
+  };
+  const entry = Object.defineProperties(
+    {},
+    {
+      identity: { get: flip('valid') },
+      storagePresent: { get: flip('equal') },
+      observed: {
+        get: () =>
+          Object.defineProperties(
+            {},
+            {
+              status: { get: flip('valid') },
+              storage: { get: flip(true) },
+              field: { get: flip(false) },
+            },
+          ),
+      },
+    },
+  );
+  const receipt = Object.defineProperties(
+    { predicates: {}, stores: [entry] },
+    {
+      stage: { get: flip('initial') },
+      firstFalse: { get: flip('count') },
+      serialization: { get: flip('unequal') },
+    },
+  );
+  const error = Object.defineProperties(new Error('T10_shadow_baseline_mismatch_before_capture'), {
+    safeModeComparison: { value: receipt },
+    name: { get: flip('Error') },
+  });
+  const projected = fullRechecks.safeUnexpectedError(error);
+  assert.equal(projected.name, 'Error');
+  assert.equal(projected.modeComparison.stage, 'initial');
+  assert.equal(projected.modeComparison.firstFalse, 'count');
+  assert.equal(projected.modeComparison.stores[0].storagePresent, 'equal');
+  assert.doesNotMatch(JSON.stringify(projected), /CANARY/);
+});
+
+test('comparison reports distinct count, baseline and missing-footprint branches', async () => {
+  const mode = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  const footprint = {
+    status: 'observed',
+    stores: ['settings', 'chat', 'pilot'].map((store) => ({
+      store,
+      storagePresent: false,
+      fieldPresent: false,
+      parseStatus: 'absent',
+      mode: null,
+      fingerprint: null,
+      count: null,
+    })),
+  };
+  const sample = {
+    activeSettings: true,
+    count: 1,
+    selected: 'Act without asking',
+    shadowFootprint: footprint,
+  };
+  const original = preferenceBaseline(sample, mode);
+  const cases = [
+    [{ ...sample, count: 2 }, original, 'count'],
+    [sample, { ...original, value: 'ask' }, 'baselineValue'],
+    [
+      sample,
+      {
+        ...original,
+        observation: { ...sample, shadowFootprint: { ...footprint, status: 'unknown' } },
+      },
+      'baselineValid',
+    ],
+    [{ ...sample, shadowFootprint: undefined }, original, 'observedValid'],
+    [
+      { ...sample, shadowFootprint: { ...footprint, status: 'unknown' } },
+      original,
+      'observedValid',
+    ],
+  ];
+  for (const [observation, baseline, first] of cases) {
+    await assert.rejects(
+      () =>
+        fullRechecks.captureGuestPreferenceBaselines({
+          panel: {},
+          preferences: [mode],
+          caseEntryBaselines: { T10: baseline },
+          settings: async () => {},
+          openSection: async () => {},
+          observePreference: async () => observation,
+        }),
+      (error) => {
+        const result = fullRechecks.safeUnexpectedError(error);
+        assert.equal(result.modeComparison.firstFalse, first);
+        assert.equal(
+          result.modeComparison.serialization,
+          ['observedValid', 'baselineValid'].includes(first) ? 'unavailable' : 'equal',
+        );
+        assert.equal(result.code, 'T10_shadow_baseline_mismatch_before_capture');
+        return true;
+      },
+    );
+  }
+});
+
+test('allowlisted code preserves primary metadata without reading a throwing message', () => {
+  let messageReads = 0;
+  const failure = Object.defineProperties(
+    {},
+    {
+      name: { value: 'TypeError' },
+      code: { value: 'EPIPE' },
+      stack: {
+        value:
+          'TypeError: CANARY\n at observe (/private/tests/browser/settings-guest-preference-batch.mjs:812:7)',
+      },
+      message: {
+        get() {
+          messageReads++;
+          throw new Error('CANARY_private');
+        },
+      },
+    },
+  );
+  assert.deepEqual(fullRechecks.safeUnexpectedError(failure), {
+    name: 'TypeError',
+    code: 'EPIPE',
+    source: { file: 'settings-guest-preference-batch.mjs', line: 812, column: 7 },
+  });
+  assert.equal(messageReads, 0);
+  let fallbackReads = 0;
+  const fallback = Object.defineProperty({ name: 'Error', code: 'unknown' }, 'message', {
+    get() {
+      fallbackReads++;
+      return fallbackReads === 1 ? 'T10_shadow_baseline_mismatch_before_capture' : 'CANARY_private';
+    },
+  });
+  assert.equal(
+    fullRechecks.safeUnexpectedError(fallback).code,
+    'T10_shadow_baseline_mismatch_before_capture',
+  );
+  assert.equal(fallbackReads, 1);
+});
+
+test('malformed samples retain comparator exceptions or intentionally omit best-effort receipt', async () => {
+  const mode = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  const theme = GUEST_PREFERENCES.find((item) => item.caseId === 'T04');
+  const footprint = {
+    status: 'observed',
+    stores: ['settings', 'chat', 'pilot'].map((store) => ({
+      store,
+      storagePresent: false,
+      fieldPresent: false,
+      parseStatus: 'absent',
+      mode: null,
+      fingerprint: null,
+      count: null,
+    })),
+  };
+  const sample = {
+    activeSettings: true,
+    count: 1,
+    selected: 'Act without asking',
+    shadowFootprint: footprint,
+  };
+  const baseline = preferenceBaseline(sample, mode);
+  const immutable = JSON.stringify(baseline);
+  const failure = Object.assign(new TypeError('CANARY_private'), {
+    code: 'EPIPE',
+    stack:
+      'TypeError: CANARY\n at compare (/private/tests/browser/settings-guest-preference-batch.mjs:239:15)',
+  });
+  const throwingStore = Object.defineProperty({}, 'store', {
+    get() {
+      throw failure;
+    },
+  });
+  const throwingJson = {
+    ...footprint,
+    toJSON() {
+      throw failure;
+    },
+  };
+  for (const kind of [
+    'early_ui_null_store',
+    'comparator_null_store',
+    'comparator_getter',
+    'comparator_serialization',
+  ]) {
+    const calls = [];
+    const observation = {
+      ...sample,
+      shadowFootprint:
+        kind === 'comparator_serialization'
+          ? throwingJson
+          : {
+              ...footprint,
+              stores: [
+                kind === 'comparator_getter' ? throwingStore : null,
+                ...footprint.stores.slice(1),
+              ],
+            },
+      ...(kind === 'early_ui_null_store' ? { activeSettings: false } : {}),
+    };
+    await assert.rejects(
+      () =>
+        fullRechecks.captureGuestPreferenceBaselines({
+          panel: {},
+          preferences: [mode, theme],
+          caseEntryBaselines: { T10: baseline, T04: { value: 'system' } },
+          settings: async () => calls.push('settings'),
+          openSection: async () => calls.push('open'),
+          observePreference: async () => {
+            calls.push('observe');
+            return observation;
+          },
+          restorePreferenceBaseline: async () => calls.push('restore'),
+          preferenceBaseline: () => {
+            throw new Error('baseline must remain immutable');
+          },
+          onStage: (stage) => calls.push(stage),
+        }),
+      (error) => {
+        // Null stores are malformed: the unchanged comparator can throw before attaching a receipt.
+        // With an earlier false UI predicate, only best-effort receipt generation throws and is omitted.
+        if (kind === 'early_ui_null_store')
+          assert.equal(error.message, 'T10_shadow_baseline_mismatch_before_capture');
+        else if (kind === 'comparator_null_store') assert.ok(error instanceof TypeError);
+        else assert.equal(error, failure, 'original comparator exception identity must survive');
+        const projected = fullRechecks.safeUnexpectedError(error);
+        assert.equal(
+          projected.modeComparison,
+          undefined,
+          'malformed/throwing samples intentionally omit receipt',
+        );
+        if (kind === 'comparator_getter' || kind === 'comparator_serialization') {
+          assert.equal(projected.code, 'EPIPE');
+          assert.deepEqual(projected.source, {
+            file: 'settings-guest-preference-batch.mjs',
+            line: 239,
+            column: 15,
+          });
+        }
+        assert.doesNotMatch(JSON.stringify(projected), /CANARY|private/);
+        return true;
+      },
+    );
+    assert.equal(calls.at(-1), 'initial_mode_compare');
+    assert.equal(calls.filter((value) => value === 'observe').length, 1);
+    assert.equal(calls.includes('restore'), false);
+    assert.equal(JSON.stringify(baseline), immutable);
   }
 });
