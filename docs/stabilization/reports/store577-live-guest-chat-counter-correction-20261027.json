@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T07:42:48.399017+00:00",
+  "lane": "store577_live_guest_chat_20261027_counter_correction",
+  "status": "IMPORTANT_METADATA_AND_RETAINED_LEDGER_GAP_FORMAL_ACCEPTANCE_UNVERIFIED",
+  "actions": "Read existing actor/gates/stop receipt and wrote this separate addendum only; no UI, replay, source edits, mutated originals, reconstructed timestamps or replacement ledger.",
+  "originals": {
+    ".output/stabilization-checkpoints/store577-live-guest-chat-20261027.json": {
+      "sha256": "6146b6d1b0e81e81c918f961414f429550a694c11be5bd759ea955b071a45592",
+      "bytes": 19777
+    },
+    ".output/stabilization-checkpoints/store577-live-guest-native-20261027/gates.jsonl": {
+      "sha256": "81db3b99638551723b050e99c5e9b330a5ef067e38b2b8e07e13f0acbaebdf70",
+      "bytes": 19099
+    },
+    ".output/stabilization-checkpoints/store577-live-guest-native-20261027/ui-stopped-time.json": {
+      "sha256": "a0664fa48e7216f85e7e5b03dd17ded85966f49218cca7dc86d422f4ae808a4f",
+      "bytes": 83
+    }
+  },
+  "raw_facts": {
+    "gate_rows": 23,
+    "gate_group_values": [
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
+    ],
+    "gate_prior_calls": [null, 1, 4, 1, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0],
+    "gate_prior_calls_sum": 25,
+    "stop_receipt_original": {
+      "at": "2026-10-27T07:39:04.908Z",
+      "group": 2,
+      "last_group_calls": 59,
+      "ui_stopped": true
+    },
+    "actor_original_B_provenance": {
+      "verdict": "PARTIAL_UNTIL_PARENT_RESOURCE_FINAL_AND_FRESH_REVIEW",
+      "resource_journal": "docs/stabilization/resource-journals/store577-live-guest-20261027-0733.pending.jsonl",
+      "correct_profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+      "parent_UI_READY": "literaladmit07:33:50.235 verifiedbyparent",
+      "first_gate_original_retained": ".output/stabilization-checkpoints/store577-live-guest-native-20261027/gates.jsonl",
+      "groups": 23,
+      "calls": 84,
+      "max_calls_per_group": 59,
+      "watcher": ".output/stabilization-checkpoints/store577-live-guest-watch-20261027.jsonl",
+      "each_group_journal_healthy_and_watcher_read_fresh": true,
+      "parent_owns_stop": true,
+      "native_tool_errors": 0
+    }
+  },
+  "counter_semantics": {
+    "intended": "gate() writes prior_calls from its captured calls variable, increments captured group and resets captured calls=0; individual native call sites and ax() separately increment calls.",
+    "observed": "Counter domains demonstrably diverged: gate rows end group23 while final top-level stop receipt says group2; prior_calls undercounts visible API call blocks and becomes0; stop last_group_calls59 is not a per-group attestation.",
+    "cause_limit": "The persistent REPL function-closure counters and top-level call-site counters did not track one shared effective binding. This is a diagnosis from inconsistent retained counter values and authored tool-call code, not a newly executed REPL experiment or authoritative runtime instrumentation. Exact engine binding mechanism remains unverified.",
+    "report_formula": "Actor calls=sum(retained prior_calls)+stop.last_group_calls; max=max(retained prior_calls,stop.last_group_calls). These yield84 and59 from incompatible counters, so neither is a reliable API-total/per-group metric.",
+    "what_59_means": "Raw final counter value labeled last_group_calls, semantically unreliable/cumulative-looking. It does not prove59 actual calls occurred between two gates."
+  },
+  "withdrawn_claims": [
+    "My final/chat claim max4 is not established by durable counter ledger.",
+    "Actor calls84 and max59 are computed from incompatible counter domains and must not be treated as reliable counts.",
+    "Every≤4API group check compliance is UNVERIFIED from retained evidence."
+  ],
+  "A_behavior": {
+    "verdict": "PARTIAL_BOUNDED_FRAMES_ONLY_FORMAL_ACCEPTANCE_UNVERIFIED",
+    "facts": "Original decisive actual Store577/Profile10/guest before-after/READY./FOLLOWUP/terminal and cleanup frames remain retained; this addendum does not erase or strengthen them.",
+    "limits": "No formal current guest health acceptance until the manual guard call-interval evidence requirement is independently satisfied; this actor cannot supply missing original per-call ledger."
+  },
+  "B_provenance": {
+    "verdict": "FIX_FIRST",
+    "severity": "Important",
+    "finding": "Per-group counters are inconsistent and no separate durable original per-call API ledger exists. Existing gates prove23 actual recorded health/watcher reads, but cannot alone bound intervening API count.",
+    "actual_unsafe_or_59_call_group_proven": false,
+    "resource_health_final_separate": "Parent owns resource final journal/watch review; a valid final does not repair this interval-proof gap."
+  },
+  "existing_original_per_call_evidence": {
+    "separate_retained_ledger": null,
+    "existing_tool_history": "Actual original CUA tool invocations remain in this child conversation. They contain authored gate()/API call sequences, but this addendum does not reconstruct a new per-call ledger or timestamps from them. Parent may independently inspect original history if accessible.",
+    "raw_gate_and_assertion_files": "Preserved unchanged. Assertion file mtimes are not promoted to API-call timestamps or counts."
+  },
+  "next_action": "Parent retain correction with original actor; classify formal guest acceptance UNVERIFIED unless an independent review of existing original tool history can prove the constraint. Otherwise fix counter/ledger capture and run a separately admitted replay; no retrocredit.",
+  "original_private_report_sha256": "f07b25bcd99730d73bf729e1b96c6ee090e5a021d64e3fa8ad82df9781a166d4",
+  "durable_evidence_manifest": "docs/stabilization/reports/store577-live-guest-publication-manifest-20261027.json",
+  "owner_adjudication": "ActualStore577 guest reply frames and unchanged advertised backendd65652e bracket are independently supported bounded observations. FormalguesthealthacceptanceUNVERIFIED: retained counters conflict and cannot prove atmost4callsbetweenmanualchecks. No actualunsafe59callgroup proved. Correctrootresourcefinalvalid0 plus203watchreads/no risks does not repair percallledgergap. Original84/max59/max4 claims unreliable; original actor unchanged apartfromthisaddendum. Unintendeduv16package localbuild violation remains explicit; stoppedownedprocess, noacceptancecredit fromit. No currentDEV/candidateacceptance/defectclosure/fullhealth inferred."
+}

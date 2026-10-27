@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-27T07:33:29.290699+00:00",
+  "authority": "existing0600SupabaseCLItoken/ManagementAPI/read-onlyai.test_model_choice/projectbrsgrqvjdzwihsvnfqkf",
+  "result": [
+    {
+      "choice": {
+        "why": "Cheapest priced chat model that supports tool calls (input plus output price), not restricted. Use it for anything that does not depend on the provider or the quality of the answer.",
+        "source": "computed",
+        "purpose": "plumbing",
+        "model_id": "9f6c69bc-768f-4232-a30b-12b78bc9557d",
+        "provider": "OpenAI",
+        "model_name": "openai/gpt-oss-20b",
+        "served_via": "Matrx Fast",
+        "common_name": "GPT OSS 20B",
+        "price_in_per_1m_usd": 0.075,
+        "price_out_per_1m_usd": 0.3,
+        "restricted_min_cost_rating": 6
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "at": "2026-10-27T07:39:22.265562+00:00",
+  "runId": "store577-live-guest-20261027-0733",
+  "pid": 98742,
+  "stop": "SIGTERMnormalbrowserguardonlyafterUI_STOPPED",
+  "sessions": [48374, 81471]
+}
