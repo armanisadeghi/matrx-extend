@@ -1,0 +1,215 @@
+Window: "Extensions - Matrx Extend DEV", App: Google Chrome.
+0 standard window Extensions - Matrx Extend DEV - Google Chrome - Matrx Guest Test, URL: chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml, Secondary Actions: Raise
+	1 container Extensions - Matrx Extend DEV - Google Chrome - Matrx Guest Test, URL: chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml
+		2 container
+			3 toolbar
+				4 button Back
+				5 button (disabled) Forward
+				6 button Reload
+				7 container
+					8 pop up button Chrome
+					9 text field (settable) Address and search bar, Value: chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml, Placeholder: Ask Google or type a URL
+					10 button Bookmark this tab
+				11 container
+					12 pop up button Matrx
+					13 pop up button Matrx Extend DEV
+					14 pop up button Extensions
+					15 button Close Side Panel
+				16 button Matrx Guest Test
+				17 pop up button Chrome
+			18 container
+				19 scroll area
+					20 HTML content Extensions - Matrx Extend DEV, URL: chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml
+						21 container
+							22 heading Extensions, Value: 1
+								23 text Extensions
+							24 search text field (settable) Search extensions
+							25 text Developer mode
+							26 switch Developer mode, Value: on
+							27 container
+								28 button Load unpacked
+								29 button Pack extension
+								30 button Update, Help: Update extensions now
+						31 container
+							32 container
+								33 menu Secondary Actions: Cancel
+									34 My extensions
+										35 text My extensions
+									36 Keyboard shortcuts
+										37 text Keyboard shortcuts
+								38 text Using AI coding agents to build extensions? Install the 
+								39 link Chrome Extensions and Chrome Web Store skill, Value: developer.chrome.com/docs/extensions/ai/build-with-ai?utm_source=ext_sidebar&hl=en-US#modern_web_guidance
+								40 text  to teach your coding agent the latest API updates and best practices.
+								41 container
+									42 text Discover more extensions and themes on the 
+									43 link Chrome Web Store, Value: chromewebstore.google.com/category/extensions?utm_source=ext_sidebar&hl=en-US
+							44 container
+								45 click to navigate away from matrx extend dev details page. Matrx Extend DEV details page back button
+								46 heading Matrx Extend DEV, Value: 1
+									47 text Matrx Extend DEV
+								48 button Reload
+								49 text On
+								50 switch On, extension enabled, Value: on
+								51 heading Description, Value: 2
+									52 text Description
+								53 text AI assistant for understanding and working with the page open in your browser.
+								54 heading Version, Value: 2
+									55 text Version
+								56 text 0.2.629
+								57 heading Size, Value: 2
+									58 text Size
+								59 text 185 MB
+								60 heading ID, Value: 2
+									61 text ID
+								62 text cihdmkcdjjckfhjpgoedmgfpoljebaml
+								63 heading Inspect views, Value: 2
+									64 text Inspect views
+								65 content list
+									66 container
+										67 AXListMarker • 
+										68 link service worker
+											69 text service worker
+									70 container
+										71 AXListMarker • 
+										72 link sidepanel.html
+											73 text sidepanel.html
+								74 heading Permissions, Value: 2
+									75 text Permissions
+								76 content list
+									77 container
+										78 AXListMarker • 
+										79 text Access the page debugger backend
+									80 container
+										81 AXListMarker • 
+										82 text Read and change all your data on all websites
+									83 container
+										84 AXListMarker • 
+										85 text Read and change your browsing history on all your signed-in devices
+									86 container
+										87 AXListMarker • 
+										88 text Display notifications
+									89 container
+										90 AXListMarker • 
+										91 text Read and change your bookmarks
+									92 container
+										93 AXListMarker • 
+										94 text Modify data you copy and paste
+									95 container
+										96 AXListMarker • 
+										97 text Manage your downloads
+									98 container
+										99 AXListMarker • 
+										100 text Communicate with cooperating native applications
+									101 container
+										102 AXListMarker • 
+										103 text View and manage your tab groups
+								104 heading Site access, Value: 2
+									105 text Site access
+								106 text Allow this extension to read and change all your data on websites you visit:
+								107 link Learn more about extension permissions, Value: support.google.com/chrome?p=enable_extensions
+								108 pop up button Allow this extension to read and change all your data on websites you visit:, Value: On all sites
+									109 (selected) On all sites
+								110 link Site settings
+								111 switch Pin to toolbar, Value: on
+								112 switch Value: off, Allow in Incognito Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option. Changes to this setting will be applied once Chrome restarts. 
+								113 switch Allow access to file URLs Changes to this setting will be applied once Chrome restarts. , Value: on
+								114 switch Collect errors, Value: on
+								115 link Extension options
+								116 heading Source, Value: 2
+									117 text Source
+								118 text Unpacked extension Loaded from:
+								119 link /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev
+									120 text /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev
+								121 link Remove extension
+			122 scroll area
+				123 HTML content Matrx Extend, URL: chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html
+					124 container
+						125 tab group
+							126 tab (settable, integer) Chat, Value: 0
+							127 tab (settable, integer) Scrape, Value: 0
+							128 tab (settable, integer) SEO, Value: 0
+							129 tab (settable, integer) Data, Value: 0
+							130 tab (selected) Settings, Value: 1
+						131 pop up button Site access
+						132 pop up button G, Help: Account
+						133 container Settings
+							134 text Settings
+							135 container
+								136 button ACCOUNT
+								137 text Email
+								138 text —
+								139 button ORGANIZATION
+								140 button APPEARANCE
+								141 text Theme
+								142 combo box (settable) System
+									143 text System
+								144 button CHAT
+								145 text Default agent Choose an organization above Default mode
+								146 combo box (settable) Act without asking
+									147 text Act without asking
+								148 text Default speed COMING SOON
+								149 combo box (settable) Fast
+									150 text Fast
+								151 button PRIVACY
+								152 text Share page identity & email content LETS THE AGENT SEE YOUR VISIBLE USERNAME ON SITES AND GMAIL SUBJECTS/EXCERPTS
+								153 switch Share page identity & email content, Value: on
+								154 text Offer to save logins to the Vault AFTER YOU SIGN IN TO A SITE, ASK WHETHER TO SAVE THAT LOGIN — NOTHING IS SAVED WITHOUT YOUR CLICK
+								155 switch Offer to save logins to the Vault, Value: on
+								156 text Offer saved logins on sign-in forms ALLOWS MATCHING SAVED LOGINS; CHOOSE WHERE SUGGESTIONS APPEAR BELOW
+								157 switch Offer saved logins on sign-in forms, Value: on
+								158 text Show password suggestions on websites OFF KEEPS WEBSITES QUIET. PIN MATRX TO SEE TOOLBAR ASSISTANCE, THEN OPEN VAULT TO REVIEW SAVE OR UPDATE; NOTHING IS SAVED AUTOMATICALLY.
+								159 switch Show password suggestions on websites, Value: off
+								160 button SCRAPE
+								161 text Deep clean COMING SOON
+								162 switch Deep clean, Value: off
+								163 text Auto-scrape on load CAPTURE PAGE CONTENT IN THE BACKGROUND AFTER EACH LOAD
+								164 switch Auto-scrape on load, Value: off
+								165 text Auto-scrape mode SCROLL & CAPTURE LOADS LAZY CONTENT FIRST (SLOWER)
+								166 combo box (settable) Capture
+									167 text Capture
+								168 button DATA
+								169 button SEO
+								170 button DESKTOP BRIDGE
+								171 text Matrx 2
+								172 text Matrx 2 is not running on this computer
+								173 text Matrx Local
+								174 text Not connected
+								175 text Pairing is automatic when the Matrx desktop app runs on this computer. The code below is only needed to pair with a desktop app on another machine — copy it from that app's Settings → Bridge Test → Extension pairing.
+								176 text field (settable) Pair code
+								177 button (disabled) Pair
+								178 text Local engine port
+								179 text field (settable) auto
+								180 button Set
+								181 button DATA & RESET
+								182 button Clear local data on this device
+								183 button ABOUT
+							184 button Sign in
+			185 slider Side Panel Resize Handle (draggable), Secondary Actions: Decrement, Increment
+			186 container
+				187 text Matrx
+				188 checkbox Unpin from toolbar, Value: 1
+				189 button Close side panel
+			190 pop up button Tab search
+			191 container
+				192 tab group
+					193 tab (settable, boolean) New Tab - Memory usage - 67.9 MB, Value: off
+						194 button Close
+					195 tab (selected, settable, boolean) Extensions - Matrx Extend DEV - Memory usage - 71.3 MB, Value: on
+						196 button Close
+			197 button New Tab
+	198 close button
+	199 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	200 minimize button
+201 menu bar
+	202 Chrome
+	203 File
+	204 Edit
+	205 View
+	206 History
+	207 Bookmarks
+	208 Profiles
+	209 Tab
+	210 Window
+	211 Help
+
+The focused UI element is 130 tab (selected) Settings, Value: 1

@@ -1,0 +1,8 @@
+{
+  "phase": "UI_READY",
+  "runId": "b175-native-20261027-1158",
+  "fingerprintPath": "docs/stabilization/evidence/b175-20261027/b175-disk-fingerprint-20261027.json",
+  "journalPath": "docs/stabilization/resource-journals/b175-native-20261027-1158.pending.jsonl",
+  "watchPath": "docs/stabilization/evidence/b175-20261027/b175-resource-build-watch-20261027.jsonl",
+  "ledgerPath": "docs/stabilization/evidence/b175-20261027/b175-native-api-ledger-20261027.jsonl"
+}

@@ -1,0 +1,391 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T12:03:45.056678+00:00",
+  "source_sha": "b1751d77a1f99b2fb1ef56329cc35a062c3b522f",
+  "scope": "Safe native discriminator evidence only; no new product case, source repair, full guest acceptance or Store claim",
+  "final_current_truth": {
+    "guard": "valid/exit0/noninvalid",
+    "watch_reads": 145,
+    "max_gap_seconds": 2.0077792499796487,
+    "resource_risks": 0,
+    "UI_attempts": 55,
+    "UI_completed": 54,
+    "UI_unsupported_key_abort": 1,
+    "owner_reload_completion": "UNVERIFIED; Reload click/static manager metadata do not establish completion",
+    "guest_profile_path": "UNVERIFIED; actual designated label and signed-out Settings observed",
+    "guest_T10": "Actual mobile Tools sheet Device All chats switchOFF; full case and rawDOM/mediaquery unverified"
+  },
+  "finalization_correction": {
+    "resource.parent_stop_required": "Historical actor flag; parentstop receipt and valid final establish normal finalization completed",
+    "next_action": "Original actor awaiting-finalization wording is preserved as producer history; completed journal/watch and peer govern final verdict"
+  },
+  "privacy": {
+    "excluded_originals": [
+      {
+        "path": ".output/stabilization-checkpoints/b175-owner-version-navigation-recovery-20261027.ax.txt",
+        "sha256": "b299966237ed48ea1ed498beb2289616f5b11b7b39c8fae9695d56ed5a18c054",
+        "reason": "Nondecisive AboutVersion recovery includes JWT-like diagnostic strings; original withheld, no credential-leak inference"
+      }
+    ],
+    "never_copied": [
+      "full Vault body",
+      "raw initial getApp",
+      "Chrome profiles",
+      "auth or fixture files",
+      "arbitrary scratch directory"
+    ],
+    "safe_original_scan": "Every allowlisted original hash verified; credential-value pattern scan0 on29 retained files; both retained PNGs visually inspected",
+    "peer_scope": "Peer original evidence hash inventory is preserved, including the subsequently withheld recovery AX; it is not blanket publication approval of every original. Publication allowlist review excludes that one file."
+  },
+  "reference_policy": "Mapped allowlisted path VALUES refer to durable public files. Producer safe_evidence_sha256 keys intentionally retain original paths and original-byte hashes; they are not public-byte hash claims. Manifest entries own public hashes. Unmapped cache/output paths and excluded originals are provenance references unavailable in this publication.",
+  "entries": [
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-guest-t10-surface-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-guest-t10-surface-20261027.ax.txt",
+      "original_sha256": "3e1c3e03168b0ad916ac4d901afd9af1e79a7d161b6df5496f8d1585e9077ee7",
+      "producer_recorded_sha256": "3e1c3e03168b0ad916ac4d901afd9af1e79a7d161b6df5496f8d1585e9077ee7",
+      "producer_hash_current": true,
+      "bytes_original": 7371,
+      "transformation": "byte-exact",
+      "published_sha256": "3e1c3e03168b0ad916ac4d901afd9af1e79a7d161b6df5496f8d1585e9077ee7",
+      "bytes_published": 7371
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-owner-profile-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-owner-profile-20261027.ax.txt",
+      "original_sha256": "234ba6e96cde8dd7b72876a499809b0f69a6e2ac3045eb0a123bb1e554804b08",
+      "producer_recorded_sha256": "234ba6e96cde8dd7b72876a499809b0f69a6e2ac3045eb0a123bb1e554804b08",
+      "producer_hash_current": true,
+      "bytes_original": 239,
+      "transformation": "byte-exact",
+      "published_sha256": "234ba6e96cde8dd7b72876a499809b0f69a6e2ac3045eb0a123bb1e554804b08",
+      "bytes_published": 239
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-verified-evidence-20261027.json",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-verified-evidence-20261027.json",
+      "original_sha256": "bf80573497c83d618709abcacc7015f3b2928c64684068cf80b9716e49f2216c",
+      "producer_recorded_sha256": "bf80573497c83d618709abcacc7015f3b2928c64684068cf80b9716e49f2216c",
+      "producer_hash_current": true,
+      "bytes_original": 788,
+      "transformation": "JSON formatting and allowlisted path remapping",
+      "published_sha256": "bf80573497c83d618709abcacc7015f3b2928c64684068cf80b9716e49f2216c",
+      "bytes_published": 788,
+      "semantic_equal_after_declared_path_mapping": true
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-ui-postcheck-20261027.json",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-ui-postcheck-20261027.json",
+      "original_sha256": "2f211b08297e264ff507eed2a099820ba9ed809ab115f454c6dddc5117d6559a",
+      "producer_recorded_sha256": "2f211b08297e264ff507eed2a099820ba9ed809ab115f454c6dddc5117d6559a",
+      "producer_hash_current": true,
+      "bytes_original": 610,
+      "transformation": "JSON formatting and allowlisted path remapping",
+      "published_sha256": "2f211b08297e264ff507eed2a099820ba9ed809ab115f454c6dddc5117d6559a",
+      "bytes_published": 610,
+      "semantic_equal_after_declared_path_mapping": true
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-promotion-correct-path-20261027.log",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-promotion-correct-path-20261027.log.txt",
+      "original_sha256": "87536ce2cd7f8d5c6dc1414f120786493929ebf11079136db8244f218c98d786",
+      "producer_recorded_sha256": "87536ce2cd7f8d5c6dc1414f120786493929ebf11079136db8244f218c98d786",
+      "producer_hash_current": true,
+      "bytes_original": 191,
+      "transformation": "byte-exact",
+      "published_sha256": "87536ce2cd7f8d5c6dc1414f120786493929ebf11079136db8244f218c98d786",
+      "bytes_published": 191
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-native-api-ledger-20261027.jsonl",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-native-api-ledger-20261027.jsonl",
+      "original_sha256": "82bf7369a8b92f71f5334ba32f9777d245888787ca147a2361f91803e5ee291c",
+      "producer_recorded_sha256": "82bf7369a8b92f71f5334ba32f9777d245888787ca147a2361f91803e5ee291c",
+      "producer_hash_current": true,
+      "bytes_original": 64602,
+      "transformation": "byte-exact",
+      "published_sha256": "82bf7369a8b92f71f5334ba32f9777d245888787ca147a2361f91803e5ee291c",
+      "bytes_published": 64602
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-owner-restored-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-owner-restored-20261027.ax.txt",
+      "original_sha256": "ec62556ab66fd2713c847d3ea516c941a51d56df03f969a581cf75ddec645e5e",
+      "producer_recorded_sha256": "ec62556ab66fd2713c847d3ea516c941a51d56df03f969a581cf75ddec645e5e",
+      "producer_hash_current": true,
+      "bytes_original": 350,
+      "transformation": "byte-exact",
+      "published_sha256": "ec62556ab66fd2713c847d3ea516c941a51d56df03f969a581cf75ddec645e5e",
+      "bytes_published": 350
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-guest-settings-identity-loaded-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-guest-settings-identity-loaded-20261027.ax.txt",
+      "original_sha256": "6951578b233599be40e709ded2bdb45043b191b39193131bd107d157b5d61da1",
+      "producer_recorded_sha256": "6951578b233599be40e709ded2bdb45043b191b39193131bd107d157b5d61da1",
+      "producer_hash_current": true,
+      "bytes_original": 9599,
+      "transformation": "byte-exact",
+      "published_sha256": "6951578b233599be40e709ded2bdb45043b191b39193131bd107d157b5d61da1",
+      "bytes_published": 9599
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-owner-store-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-owner-store-20261027.ax.txt",
+      "original_sha256": "8d597771c1e824fafa9298237aefcd70b9daf7f47d01cb5aad1d37df0afd7773",
+      "producer_recorded_sha256": "8d597771c1e824fafa9298237aefcd70b9daf7f47d01cb5aad1d37df0afd7773",
+      "producer_hash_current": true,
+      "bytes_original": 7702,
+      "transformation": "byte-exact",
+      "published_sha256": "8d597771c1e824fafa9298237aefcd70b9daf7f47d01cb5aad1d37df0afd7773",
+      "bytes_published": 7702
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-owner-version-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-owner-version-20261027.ax.txt",
+      "original_sha256": "9db245186c682b9c3e13b9756e724e7dc3f5586a07f3a1f38401efe1fda8f290",
+      "producer_recorded_sha256": "9db245186c682b9c3e13b9756e724e7dc3f5586a07f3a1f38401efe1fda8f290",
+      "producer_hash_current": true,
+      "bytes_original": 1516,
+      "transformation": "byte-exact",
+      "published_sha256": "9db245186c682b9c3e13b9756e724e7dc3f5586a07f3a1f38401efe1fda8f290",
+      "bytes_published": 1516
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-import-20261027.log",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-import-20261027.log.txt",
+      "original_sha256": "8c783689cd8f48efe8bcb282167c7ca4727355e8a63d435db05d6a4d56b38588",
+      "producer_recorded_sha256": "8c783689cd8f48efe8bcb282167c7ca4727355e8a63d435db05d6a4d56b38588",
+      "producer_hash_current": true,
+      "bytes_original": 31,
+      "transformation": "byte-exact",
+      "published_sha256": "8c783689cd8f48efe8bcb282167c7ca4727355e8a63d435db05d6a4d56b38588",
+      "bytes_published": 31
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-first-call-20261027.json",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-first-call-20261027.json",
+      "original_sha256": "88ecb105bef65673f64981bb9d61fad0e9a9c41906433c09c21f631c444b296f",
+      "producer_recorded_sha256": "88ecb105bef65673f64981bb9d61fad0e9a9c41906433c09c21f631c444b296f",
+      "producer_hash_current": true,
+      "bytes_original": 75,
+      "transformation": "JSON formatting and allowlisted path remapping",
+      "published_sha256": "367d27aaaf418e4749231e4c6dc06494a8a4efa610485d08d2a782d3b2714c0c",
+      "bytes_published": 84,
+      "semantic_equal_after_declared_path_mapping": true
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-parent-ui-admission-20261027.json",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-parent-ui-admission-20261027.json",
+      "original_sha256": "3a6061b3b42a71561b77ecb0c4fb09c50f90cbf5dd71a3a09f3ddbfea0530ac8",
+      "producer_recorded_sha256": "3a6061b3b42a71561b77ecb0c4fb09c50f90cbf5dd71a3a09f3ddbfea0530ac8",
+      "producer_hash_current": true,
+      "bytes_original": 642,
+      "transformation": "JSON formatting and allowlisted path remapping",
+      "published_sha256": "3a6061b3b42a71561b77ecb0c4fb09c50f90cbf5dd71a3a09f3ddbfea0530ac8",
+      "bytes_published": 642,
+      "semantic_equal_after_declared_path_mapping": true
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-resource-build-watch-20261027.jsonl",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-resource-build-watch-20261027.jsonl",
+      "original_sha256": "4a3dbde8f800e6171d3afcc919ee20718cebb7db13ee736e811e7cd55b85b0a6",
+      "producer_recorded_sha256": "4a3dbde8f800e6171d3afcc919ee20718cebb7db13ee736e811e7cd55b85b0a6",
+      "producer_hash_current": true,
+      "bytes_original": 72004,
+      "transformation": "byte-exact",
+      "published_sha256": "4a3dbde8f800e6171d3afcc919ee20718cebb7db13ee736e811e7cd55b85b0a6",
+      "bytes_published": 72004
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-resource-build-watch-20261027-report.json",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-resource-build-watch-20261027-report.json",
+      "original_sha256": "ba7e342b639802fbbb592cf43621cb4cb95da6a3fc24462c6de2ef801668c2de",
+      "producer_recorded_sha256": "ba7e342b639802fbbb592cf43621cb4cb95da6a3fc24462c6de2ef801668c2de",
+      "producer_hash_current": true,
+      "bytes_original": 775,
+      "transformation": "JSON formatting and allowlisted path remapping",
+      "published_sha256": "6cf07ce364751a5148bf4b3e3441e924f171d2ce40cb978a0dccc2daff79d6b5",
+      "bytes_published": 783,
+      "semantic_equal_after_declared_path_mapping": true
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-guest-t10-surface-20261027.png",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-guest-t10-surface-20261027.png",
+      "original_sha256": "0769559a395e94f1b91e04586fc615743a9dd8105d0e7839fa7c513ea23169a6",
+      "producer_recorded_sha256": "0769559a395e94f1b91e04586fc615743a9dd8105d0e7839fa7c513ea23169a6",
+      "producer_hash_current": true,
+      "bytes_original": 178752,
+      "transformation": "byte-exact",
+      "published_sha256": "0769559a395e94f1b91e04586fc615743a9dd8105d0e7839fa7c513ea23169a6",
+      "bytes_published": 178752
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-guest-settings-identity-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-guest-settings-identity-20261027.ax.txt",
+      "original_sha256": "7e5392e289c00079da4bbf363b655b8eb849ba9b29433d7dbfe810273872dc0d",
+      "producer_recorded_sha256": "7e5392e289c00079da4bbf363b655b8eb849ba9b29433d7dbfe810273872dc0d",
+      "producer_hash_current": true,
+      "bytes_original": 6979,
+      "transformation": "byte-exact",
+      "published_sha256": "7e5392e289c00079da4bbf363b655b8eb849ba9b29433d7dbfe810273872dc0d",
+      "bytes_published": 6979
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-promotion-20261027.log",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-promotion-20261027.log.txt",
+      "original_sha256": "a88f67b65140eb6fc4b9f096fc7ee340e6fc08c74b1b999026037ca7976cbcc8",
+      "producer_recorded_sha256": "a88f67b65140eb6fc4b9f096fc7ee340e6fc08c74b1b999026037ca7976cbcc8",
+      "producer_hash_current": true,
+      "bytes_original": 24,
+      "transformation": "byte-exact",
+      "published_sha256": "a88f67b65140eb6fc4b9f096fc7ee340e6fc08c74b1b999026037ca7976cbcc8",
+      "bytes_published": 24
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-ui-config-20261027.json",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-ui-config-20261027.json",
+      "original_sha256": "7780d2659810fdd1fc2bf17f7f81357db488e0e9f7bf5572c3bab330c974e081",
+      "producer_recorded_sha256": "7780d2659810fdd1fc2bf17f7f81357db488e0e9f7bf5572c3bab330c974e081",
+      "producer_hash_current": true,
+      "bytes_original": 441,
+      "transformation": "JSON formatting and allowlisted path remapping",
+      "published_sha256": "a9394f1358d781c78b3853c1990a122772df5bb7b31197b382a6e7dc4a9c7db8",
+      "bytes_published": 465,
+      "semantic_equal_after_declared_path_mapping": true
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-owner-foreground-cleanup-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-owner-foreground-cleanup-20261027.ax.txt",
+      "original_sha256": "16753d3c580c0a6567cc9f12027b9c89070853c9d2ec441ccc803b21bb8403d6",
+      "producer_recorded_sha256": "16753d3c580c0a6567cc9f12027b9c89070853c9d2ec441ccc803b21bb8403d6",
+      "producer_hash_current": true,
+      "bytes_original": 433,
+      "transformation": "byte-exact",
+      "published_sha256": "16753d3c580c0a6567cc9f12027b9c89070853c9d2ec441ccc803b21bb8403d6",
+      "bytes_published": 433
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-guest-cleanup-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-guest-cleanup-20261027.ax.txt",
+      "original_sha256": "450565e0c79f0fc77232c1e7452f5a8e33dfadddf5e590039f0eca43e8ccefa8",
+      "producer_recorded_sha256": "450565e0c79f0fc77232c1e7452f5a8e33dfadddf5e590039f0eca43e8ccefa8",
+      "producer_hash_current": true,
+      "bytes_original": 3716,
+      "transformation": "byte-exact",
+      "published_sha256": "450565e0c79f0fc77232c1e7452f5a8e33dfadddf5e590039f0eca43e8ccefa8",
+      "bytes_published": 3716
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-guest-reload-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-guest-reload-20261027.ax.txt",
+      "original_sha256": "265a119ea03d58385a3bfdfab336ff18f2babfbc51c92b372c10bbe7e2617ccd",
+      "producer_recorded_sha256": "265a119ea03d58385a3bfdfab336ff18f2babfbc51c92b372c10bbe7e2617ccd",
+      "producer_hash_current": true,
+      "bytes_original": 6194,
+      "transformation": "byte-exact",
+      "published_sha256": "265a119ea03d58385a3bfdfab336ff18f2babfbc51c92b372c10bbe7e2617ccd",
+      "bytes_published": 6194
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-native-holder-20261027.log",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-native-holder-20261027.log.txt",
+      "original_sha256": "67ab8e294565dc3041d21671894a23a4ed0b0dab946b8112218767083deb2bb9",
+      "producer_recorded_sha256": "67ab8e294565dc3041d21671894a23a4ed0b0dab946b8112218767083deb2bb9",
+      "producer_hash_current": true,
+      "bytes_original": 6733,
+      "transformation": "byte-exact",
+      "published_sha256": "67ab8e294565dc3041d21671894a23a4ed0b0dab946b8112218767083deb2bb9",
+      "bytes_published": 6733
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-initial-structure-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-initial-structure-20261027.ax.txt",
+      "original_sha256": "dc6d13e85ad929d4390d64a5fad8abc037a9827ae2c64f5186f9c9fec1146de5",
+      "producer_recorded_sha256": "dc6d13e85ad929d4390d64a5fad8abc037a9827ae2c64f5186f9c9fec1146de5",
+      "producer_hash_current": true,
+      "bytes_original": 82,
+      "transformation": "byte-exact",
+      "published_sha256": "dc6d13e85ad929d4390d64a5fad8abc037a9827ae2c64f5186f9c9fec1146de5",
+      "bytes_published": 82
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-disk-fingerprint-20261027.json",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-disk-fingerprint-20261027.json",
+      "original_sha256": "2ff1593528f24d9bb36da7ca741b08a37046e51a1215b9c5c08570c51b26aae8",
+      "producer_recorded_sha256": "2ff1593528f24d9bb36da7ca741b08a37046e51a1215b9c5c08570c51b26aae8",
+      "producer_hash_current": true,
+      "bytes_original": 612,
+      "transformation": "JSON formatting and allowlisted path remapping",
+      "published_sha256": "2ff1593528f24d9bb36da7ca741b08a37046e51a1215b9c5c08570c51b26aae8",
+      "bytes_published": 612,
+      "semantic_equal_after_declared_path_mapping": true
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-guest-initial-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-guest-initial-20261027.ax.txt",
+      "original_sha256": "ae533ec81a5374790b1c431969af98114a15a7b22988ea7d8cee992c9a5f9dff",
+      "producer_recorded_sha256": "ae533ec81a5374790b1c431969af98114a15a7b22988ea7d8cee992c9a5f9dff",
+      "producer_hash_current": true,
+      "bytes_original": 426,
+      "transformation": "byte-exact",
+      "published_sha256": "ae533ec81a5374790b1c431969af98114a15a7b22988ea7d8cee992c9a5f9dff",
+      "bytes_published": 426
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-parent-stop-20261027.json",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-parent-stop-20261027.json",
+      "original_sha256": "aaf57b9b8966194f87e9df9febf33cb322cc1fae005fa9c1645bbefe0c6f4d9f",
+      "producer_recorded_sha256": "aaf57b9b8966194f87e9df9febf33cb322cc1fae005fa9c1645bbefe0c6f4d9f",
+      "producer_hash_current": true,
+      "bytes_original": 205,
+      "transformation": "JSON formatting and allowlisted path remapping",
+      "published_sha256": "aaf57b9b8966194f87e9df9febf33cb322cc1fae005fa9c1645bbefe0c6f4d9f",
+      "bytes_published": 205,
+      "semantic_equal_after_declared_path_mapping": true
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-owner-reloaded-20261027.ax.txt",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-owner-reloaded-20261027.ax.txt",
+      "original_sha256": "6450f17a13d0888e2320e4df1bd126d62aee9f1af5172de7bc56be1152c182a7",
+      "producer_recorded_sha256": "6450f17a13d0888e2320e4df1bd126d62aee9f1af5172de7bc56be1152c182a7",
+      "producer_hash_current": true,
+      "bytes_original": 668,
+      "transformation": "byte-exact",
+      "published_sha256": "6450f17a13d0888e2320e4df1bd126d62aee9f1af5172de7bc56be1152c182a7",
+      "bytes_published": 668
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-owner-reloaded-20261027.png",
+      "published_path": "docs/stabilization/evidence/b175-20261027/b175-owner-reloaded-20261027.png",
+      "original_sha256": "d00d7db11145c61a4b149a82e88d572f34287cb4f72f1e74cf273adcc236ba48",
+      "producer_recorded_sha256": "d00d7db11145c61a4b149a82e88d572f34287cb4f72f1e74cf273adcc236ba48",
+      "producer_hash_current": true,
+      "bytes_original": 205474,
+      "transformation": "byte-exact",
+      "published_sha256": "d00d7db11145c61a4b149a82e88d572f34287cb4f72f1e74cf273adcc236ba48",
+      "bytes_published": 205474
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-owner-guest-native-20261027.json",
+      "published_path": "docs/stabilization/reports/b175-native-20261027.json",
+      "original_sha256": "01d630f0263f1dbf8fa7dc632ae7a11f914ac016503482a1ae3628683d646aba",
+      "bytes_original": 13459,
+      "transformation": "JSON formatting and allowlisted path remapping",
+      "published_sha256": "cb25a0b09cbadd4ae58d9386c4c34867c3c77b598bb2f7ecb52f12634a208a74",
+      "bytes_published": 13464,
+      "semantic_equal_after_declared_path_mapping": true
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/b175-native-peer-20261027.json",
+      "published_path": "docs/stabilization/reports/b175-native-peer-20261027.json",
+      "original_sha256": "b39f6e106046ca3d7380d095c9415328504bbd113c304da5199a535dda7ed65a",
+      "bytes_original": 10290,
+      "transformation": "JSON formatting and allowlisted path remapping",
+      "published_sha256": "f70e81aa8c31f00dc6ef326b80c4f550064f13baee9d5f55ed89077107085455",
+      "bytes_published": 10247,
+      "semantic_equal_after_declared_path_mapping": true
+    }
+  ],
+  "formatting": "JSON formatted using existing Biome via neutral --stdin-file-path=b175-evidence.json because reports/** is intentionally ignored by repo formatter configuration; no policy/config changed. Non-JSON bytes preserved exactly."
+}

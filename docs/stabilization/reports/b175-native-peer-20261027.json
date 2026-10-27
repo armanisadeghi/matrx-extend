@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T12:02:55.445010+00:00",
+  "lane": "b175_native_peer",
+  "independence": "Fresh zero-authorship read-only reviewer; no UI, workflow, auth, fixture, source/test edits, or independent native replay. Scratch report only.",
+  "reviewed_actor_report": "docs/stabilization/reports/b175-native-20261027.json",
+  "actor_sha256": "01d630f0263f1dbf8fa7dc632ae7a11f914ac016503482a1ae3628683d646aba",
+  "A_vision_behavior": {
+    "verdict": "PASS_BOUNDED_DISCRIMINATOR_OWNER_REFRESH_PARTIAL",
+    "owner": "Actual Profile8 path/account, Chrome156.0.8078.48, canonical development ID/version0.2.629/path/pin/enabled and actual Reload click supported. Retained owner PNG/AX has no Reloaded toast; current-source loaded completion remains UNVERIFIED, not refreshed-current credit. Adjacent Store577 enabled/pinned observed.",
+    "guest": "Actual Matrx Guest Test window, development manager literalReloaded and canonical ID/path/version/pin, active DEV sidepanel URL, conditional Settings Sign in/Email— and Act without asking precede Tools sheet. Actual Guest profile directory not independently observed.",
+    "T10": "Decisive raw PNG+AX shows Chat options / Bottom sheet panel / Tools, visible Ask before acting All chats switch OFF, distinct from Auto tools/Agent default. This supports harness mobile resolver blind spot, not a product permission default bug. No full T10, warm/cold persistence, original6ea rerun, Store, AI, or overall health credit.",
+    "Missing": [
+      "Owner Reloaded/completion proof",
+      "Guest actual filesystem profile path",
+      "Raw DOM selected-tab/mediaquery/windowdimensions and full T10 original/adjacent retest"
+    ],
+    "Extra": [],
+    "Misunderstood": []
+  },
+  "B_quality_provenance": {
+    "verdict": "PASS_WITH_EXPLICIT_RECORD_LIMITS",
+    "artifact": {
+      "source": "b1751d77a1f99b2fb1ef56329cc35a062c3b522f",
+      "run": 40493853885,
+      "artifact": 12729758260,
+      "digest": "0eb83c8913daf15ab2fbd65d0bb81ed0610af12af5c6484b6ea08da8f06bbfc8",
+      "canonical_verify_and_correct_promotion": "actual0 per original receipts; initialimport operation_failed/existing completecache and wrongpath promotion1 retained, no destructive cache bypass inferred",
+      "tree": "5c12ce8e92cf073161c099b1e27e59de7c188e3ac1ca08243314d26e3a975f4c",
+      "independent_canonical_hashReleaseTree_after_run": "matches frozen tree",
+      "official_archive_limit": "Used normal verifier provenance and existing receipts; no independent redownload of official ZIP."
+    },
+    "source_crosscheck": {
+      "RunControlsWindow": "Actual artifact SDK0.8.397 sourcemap sourceSHA cfc85f295412b7615bca485b1372c06934c57b132b044cfa54a7d064d3efb67e equals prior396. Mobile branch uses TabbedBottomSheet; role=tab aria-selected belongs desktop branch.",
+      "TabbedBottomSheet": "Actual artifact design-system0.86.399 SHA c875713d92ea729544a684ca2b352e776e7a1cba2a90b82273a555b68148a47a unchanged. Selectedmobile branch renders Back/header/content; no role=tab/aria-selected nav. This supplies source corroboration beyond nativeAX role absence."
+    },
+    "resource": {
+      "correct_profile_root": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T11:59:42.531Z",
+        "runId": "b175-native-20261027-1158",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "watch_reads": 145,
+      "watch_maxgap_seconds": 2.0077792499796487,
+      "watch_risks": 0,
+      "watch_buildfalse": 0,
+      "heavy_owner_paths_after_final": 0,
+      "unsafe_hold_paths_after_final": 0,
+      "journal_entire_admitted_range": "ADMITTED then HEALTHY only until UI stopped; STOP_REQUESTED/BROWSER_STOP_CONFIRMED/FINALvalid0 afterward",
+      "per_api": "55 unique BEGIN,54 END,1 unsupportedchord ABORT; every call exactly one terminal, callback source hashes all match. Abort healthy resource/build and recovery preserved; no unrecordedresource/build abort.",
+      "gate_limit": "PerAPI/build watcher checks stable directory stat+receipt, not full contents or HEAD eachAPI. Canonical promotion/pre fingerprint and full post hash/source snapshot bind this cooperative no-writer run; no global atomic promotion lock is claimed."
+    },
+    "approval_order_limit": {
+      "first_native_external_bounds": ["2026-10-27T11:56:18.179Z", "2026-10-27T11:56:26.026Z"],
+      "parent_record_file_at": "2026-10-27T11:56:22.328878+00:00",
+      "parent_literal_admitted_read_at": "2026-10-27T11:56:06.299248Z",
+      "ruling": "Parent confirms authoritative UI_READY goahead message preceded first native call in tool ordering; record file written later. Exact walltime of approval message unretained. FirstAPI actualtime inside externalbounds unrecorded. Do not claim firstAPI began after record file; no unsafe or unauthorized ordering proven."
+    },
+    "privacy_cleanup": "All30 safe evidence hashes/bytes independently match. Raw extension/guest/settings/T10 PNG/AX contains no credential values. First getApp auto-output exposed Vault item labels/account email, no credential values and no fullVaultbody persisted; limit retained. Owned manager tabs/guestpanel closed, GuestNewTab address focus and original ownerVault/composer focus restored by raw structural proof. No settings/auth/fixture/AI actions claimed or seen in ledger.",
+    "Missing": [],
+    "Extra": [],
+    "Misunderstood": []
+  },
+  "next_action": "Publish bounded raw evidence/limits. Repair canonical mobile resolver + real-shape forcing guard with independent review, then original/adjacent native retest on eligible artifact. Owner loaded-current completion remains separately pending.",
+  "evidence_sha256": {
+    ".output/stabilization-checkpoints/b175-guest-t10-surface-20261027.ax.txt": "3e1c3e03168b0ad916ac4d901afd9af1e79a7d161b6df5496f8d1585e9077ee7",
+    ".output/stabilization-checkpoints/b175-owner-profile-20261027.ax.txt": "234ba6e96cde8dd7b72876a499809b0f69a6e2ac3045eb0a123bb1e554804b08",
+    ".output/stabilization-checkpoints/b175-verified-evidence-20261027.json": "bf80573497c83d618709abcacc7015f3b2928c64684068cf80b9716e49f2216c",
+    ".output/stabilization-checkpoints/b175-ui-postcheck-20261027.json": "2f211b08297e264ff507eed2a099820ba9ed809ab115f454c6dddc5117d6559a",
+    ".output/stabilization-checkpoints/b175-promotion-correct-path-20261027.log": "87536ce2cd7f8d5c6dc1414f120786493929ebf11079136db8244f218c98d786",
+    ".output/stabilization-checkpoints/b175-native-api-ledger-20261027.jsonl": "82bf7369a8b92f71f5334ba32f9777d245888787ca147a2361f91803e5ee291c",
+    ".output/stabilization-checkpoints/b175-owner-restored-20261027.ax.txt": "ec62556ab66fd2713c847d3ea516c941a51d56df03f969a581cf75ddec645e5e",
+    ".output/stabilization-checkpoints/b175-guest-settings-identity-loaded-20261027.ax.txt": "6951578b233599be40e709ded2bdb45043b191b39193131bd107d157b5d61da1",
+    ".output/stabilization-checkpoints/b175-owner-store-20261027.ax.txt": "8d597771c1e824fafa9298237aefcd70b9daf7f47d01cb5aad1d37df0afd7773",
+    ".output/stabilization-checkpoints/b175-owner-version-20261027.ax.txt": "9db245186c682b9c3e13b9756e724e7dc3f5586a07f3a1f38401efe1fda8f290",
+    ".output/stabilization-checkpoints/b175-import-20261027.log": "8c783689cd8f48efe8bcb282167c7ca4727355e8a63d435db05d6a4d56b38588",
+    ".output/stabilization-checkpoints/b175-first-call-20261027.json": "88ecb105bef65673f64981bb9d61fad0e9a9c41906433c09c21f631c444b296f",
+    ".output/stabilization-checkpoints/b175-parent-ui-admission-20261027.json": "3a6061b3b42a71561b77ecb0c4fb09c50f90cbf5dd71a3a09f3ddbfea0530ac8",
+    ".output/stabilization-checkpoints/b175-resource-build-watch-20261027.jsonl": "4a3dbde8f800e6171d3afcc919ee20718cebb7db13ee736e811e7cd55b85b0a6",
+    ".output/stabilization-checkpoints/b175-resource-build-watch-20261027-report.json": "ba7e342b639802fbbb592cf43621cb4cb95da6a3fc24462c6de2ef801668c2de",
+    ".output/stabilization-checkpoints/b175-guest-t10-surface-20261027.png": "0769559a395e94f1b91e04586fc615743a9dd8105d0e7839fa7c513ea23169a6",
+    ".output/stabilization-checkpoints/b175-guest-settings-identity-20261027.ax.txt": "7e5392e289c00079da4bbf363b655b8eb849ba9b29433d7dbfe810273872dc0d",
+    ".output/stabilization-checkpoints/b175-promotion-20261027.log": "a88f67b65140eb6fc4b9f096fc7ee340e6fc08c74b1b999026037ca7976cbcc8",
+    ".output/stabilization-checkpoints/b175-ui-config-20261027.json": "7780d2659810fdd1fc2bf17f7f81357db488e0e9f7bf5572c3bab330c974e081",
+    ".output/stabilization-checkpoints/b175-owner-foreground-cleanup-20261027.ax.txt": "16753d3c580c0a6567cc9f12027b9c89070853c9d2ec441ccc803b21bb8403d6",
+    ".output/stabilization-checkpoints/b175-owner-version-navigation-recovery-20261027.ax.txt": "b299966237ed48ea1ed498beb2289616f5b11b7b39c8fae9695d56ed5a18c054",
+    ".output/stabilization-checkpoints/b175-guest-cleanup-20261027.ax.txt": "450565e0c79f0fc77232c1e7452f5a8e33dfadddf5e590039f0eca43e8ccefa8",
+    ".output/stabilization-checkpoints/b175-guest-reload-20261027.ax.txt": "265a119ea03d58385a3bfdfab336ff18f2babfbc51c92b372c10bbe7e2617ccd",
+    ".output/stabilization-checkpoints/b175-native-holder-20261027.log": "67ab8e294565dc3041d21671894a23a4ed0b0dab946b8112218767083deb2bb9",
+    ".output/stabilization-checkpoints/b175-initial-structure-20261027.ax.txt": "dc6d13e85ad929d4390d64a5fad8abc037a9827ae2c64f5186f9c9fec1146de5",
+    ".output/stabilization-checkpoints/b175-disk-fingerprint-20261027.json": "2ff1593528f24d9bb36da7ca741b08a37046e51a1215b9c5c08570c51b26aae8",
+    ".output/stabilization-checkpoints/b175-guest-initial-20261027.ax.txt": "ae533ec81a5374790b1c431969af98114a15a7b22988ea7d8cee992c9a5f9dff",
+    ".output/stabilization-checkpoints/b175-parent-stop-20261027.json": "aaf57b9b8966194f87e9df9febf33cb322cc1fae005fa9c1645bbefe0c6f4d9f",
+    ".output/stabilization-checkpoints/b175-owner-reloaded-20261027.ax.txt": "6450f17a13d0888e2320e4df1bd126d62aee9f1af5172de7bc56be1152c182a7",
+    ".output/stabilization-checkpoints/b175-owner-reloaded-20261027.png": "d00d7db11145c61a4b149a82e88d572f34287cb4f72f1e74cf273adcc236ba48"
+  },
+  "commits": [],
+  "owned_processes": []
+}

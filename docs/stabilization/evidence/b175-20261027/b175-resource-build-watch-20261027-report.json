@@ -1,0 +1,21 @@
+{
+  "runId": "b175-native-20261027-1158",
+  "first_read_at": "2026-10-27T11:54:54.125786Z",
+  "last_read_at": "2026-10-27T11:59:42.846829Z",
+  "actualPollCount": 145,
+  "maxGapSeconds": 2.0077792499796487,
+  "riskEvents": [],
+  "final": {
+    "schema": 1,
+    "at": "2026-10-27T11:59:42.531Z",
+    "runId": "b175-native-20261027-1158",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid",
+    "code": "RESOURCE_FINAL_DECISION"
+  },
+  "completed_path": "docs/stabilization/resource-journals/b175-native-20261027-1158.jsonl",
+  "audit": "docs/stabilization/evidence/b175-20261027/b175-resource-build-watch-20261027.jsonl",
+  "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+}

@@ -1,0 +1,18 @@
+~0 standard window About Version - Google Chrome - Arman (armansadeghi.com), URL: chrome://version/, Secondary Actions: Raise
+~	1 container About Version - Google Chrome - Arman (armansadeghi.com), URL: chrome://version/
++								538 container Google Chrome:
++									539 text Google Chrome :
++								540 container 156.0.8078.48 (Official Build) (arm64) Copy version string
++										542 text 156.0.8078.48  ( Official Build )  (arm64)
++								556 container JavaScript:
++									557 text JavaScript :
++								563 container Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36
++									564 text Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36
++								568 container /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --profile-directory=Profile 10 --flag-switches-begin --flag-switches-end
++									569 text /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --profile-directory=Profile 10 --flag-switches-begin --flag-switches-end
++								573 container /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
++									574 text /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
++								576 container Profile Path:
++									577 text Profile Path :
++								578 container /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8
++									579 text /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8
