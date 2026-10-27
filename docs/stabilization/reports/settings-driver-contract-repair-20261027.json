@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T07:57:44.002149+00:00",
+  "lane": "settings_driver_contract_repair",
+  "status": "HANDOFF_UNVERIFIED_FIX_FIRST",
+  "source_boundary": "main4c lockSDK395/currenta1artifact395 verifiedsourcemaps; frozen472392 separate",
+  "own_paths": [
+    "scripts/hosted-guest-acceptance.mjs",
+    "tests/browser/settings-account-popover-native.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/settings-guest-preference-batch.mjs",
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "tests/browser/settings-guest-preference-batch.test.mjs",
+    "tests/browser/settings-native-auth-driver.test.mjs",
+    "tests/browser/reviewer-chat-organization-boundary.test.mjs"
+  ],
+  "semantic_discriminator": "Agentactions isdirectiveApplyPolicy, notpermissionMode. DeviceToolsModeRow livesRunToolPicker.topSlot; compactTools layoutmenuomitstopSlot. RequiredcurrentrouteCapabilitiesToolsAdvanced/Seeallfullpicker; mobileselectedToolsChatoptionssheetordesktoprun-controls-window.",
+  "guard_refusal": {
+    "run": "settings-driver-contract-20261027",
+    "actual_exit": 2,
+    "admitted": false,
+    "resourceInvalid": false,
+    "cause": "RESOURCE_COMMAND_NOT_ALLOWED Pythonorchestratordisallowed; nochild,noresourcebypass"
+  },
+  "active_check": null,
+  "sibling_census": {
+    "allowLadder_callers_without_approved_file": [
+      "settings-d87-native-acceptance.mjs",
+      "tab-groups-member-native-acceptance.mjs"
+    ],
+    "limit": "notmodified; broaderfixturecontextwirewouldneedregisteredroute/secretcontractpreflight. Currentrepairboundedaccountpopoverapprovedfixtures; helpergloballegacyfallbacknotweakened."
+  },
+  "live_verdict": "UNVERIFIED/noUI/hosteddispatch/authfixturechanges; sourceguardsonly",
+  "commits": [],
+  "current_head": "a3be3438ff55ca8c9df06f719ba60e6890a40eff",
+  "source_hashes": {
+    "scripts/hosted-guest-acceptance.mjs": "3ae95438af04bc644609536867f45c5a190f116531571551a16173b04d8d5f65",
+    "tests/browser/settings-account-popover-native.mjs": "e17d7c2788b5c18ab3d886e6212a39b632a0b351d9ce19bd0fdbd53dd00f25f5",
+    "tests/browser/settings-panel-driver.mjs": "03de895d6c2c7a2475f803216c7297aa1560c17bc32edc037ae070aea62ab2ca",
+    "tests/browser/settings-guest-preference-batch.mjs": "c0fb187be20b801875c3059847acd42693fb0264875571a0402997d27b57d401",
+    "tests/browser/settings-local-controls-acceptance.mjs": "c9ec4490f5897190a9be76c1449f7c8a517faefe8d8a5523187c18dc5825e45c",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "62f587869d069c3f11f1a272fc99e1fabe74c5fb7f0e6479fa2d2df306564a04",
+    "tests/browser/settings-native-auth-driver.test.mjs": "19261df81cb50da2cc58b476fe7fd4c13b45b5df01f9118d28a9bae736a982db",
+    "tests/browser/reviewer-chat-organization-boundary.test.mjs": "d4c9adcef7ff7135768e84297bb28b0f4d34ea01fa3fd2b3e99d3716c0817a92"
+  },
+  "source_396": {
+    "provenance": ".output/stabilization-checkpoints/settings-driver-source396/npm-provenance.json",
+    "comparison": ".output/stabilization-checkpoints/settings-driver-source396/contract-comparison.json",
+    "result": "Officialnpm396tarballsha512SRIverified; sixrelevantfilesbyte-identicaltoimportedCIa1SDK395; noinstall/build/executionofdownloadedpackage"
+  },
+  "initial_focused": {
+    "session": 12771,
+    "actual_exit": 1,
+    "total": 1110,
+    "pass": 1095,
+    "fail": 4,
+    "skip": 11,
+    "resource": "child_failed1/resourceInvalidfalse; final07:47:36.460",
+    "failures": "3 newcaptured-variabledependencies in wrapperVMseams +1 fixturebodyinnerHTMLresetlostlayout. Correctedinlinecaseforwarding+nondestructiveinsertAdjacentHTML; noexistingassertionweakened."
+  },
+  "combined_shared_mutation_attempt": {
+    "session": 82458,
+    "actual_exit": 1,
+    "normal_guard_started": false,
+    "guard_credit": 0,
+    "cause": "plant.py locks perREPOSITORY; nestedinnerwaitedouterlock. Onlyouterwrapperplantapplied. SIGTERMonlyownedinnerlockwaiter65987; outerfinallyrestorednormally.",
+    "proof": ".output/stabilization-checkpoints/settings-driver-combined-red-result-20261027.json",
+    "all_three_before_after_hashes_identical": true,
+    "protocol_deviation": "Launchedliveyieldedexec; sharedweakening+restorationdidnotfinishinsamecompletedtoolcall(§4a). Helperlock+commitholdreducesriskbutnotprotocolPASS; noadditionalsharedmutations."
+  },
+  "in_memory_guards": {
+    "method": "Actualsourceexcerpts/DOMexpressionsrunwithwrongbehaviorinmemory; noexternallyREDsuiteclaimed",
+    "org": "Actualwrapperstaging/forwarding/finally newSettingsmembercasepositive; old3-casecontextcandidateassertsnamedforwardfailureandprivatefilecleanup; existingemptyreturngutcheckassertslaunchrequired.",
+    "door": "ActualcurrentCapabilitiesDOMexpressionpositive; oldChatOptionsfilterandemptyreturncandidatefailnamedownedToolsassert. BothAsk/Actmodeoutcomeskillconstantandinverteddetection.",
+    "isolation": "ActualextractedT10callbackwithrealrestorationhelper; originalconsumererrorpreserved+Settingssectionrestored onbothsuccess/failure; consumeOnlyandconstantreturncandidatesfailrestoreevents.",
+    "limits": "ReducedrealSDKmarkupguards, noactualUI/liveauth/driverhostedacceptance. InternalmutationkillsnotexternalREDsuiteexit1; siblingallowLadderclassnotfullyrepaired."
+  },
+  "typecheck": "DeferredstrictcleanCI; noMacmanualcompile/build/install",
+  "final_focused": {
+    "session": 49689,
+    "actual_exit": 0,
+    "run": "settings-driver-final-green-20261027",
+    "counts": {
+      "total": 1110,
+      "pass": 1099,
+      "fail": 0,
+      "skip": 11,
+      "duration_ms": 146975.220708
+    },
+    "resource_journal": "docs/stabilization/resource-journals/settings-driver-final-green-20261027.jsonl",
+    "log": ".output/stabilization-checkpoints/settings-driver-final-green-20261027.log",
+    "limit": "GUARDBASELINEONLY: fabricatedsubmenuaria-controlsfixturemeansGREENdoesnotverifyactualnavigationcontract"
+  },
+  "blocking_findings": [
+    {
+      "id": "FABRICATED_SUBMENU_LINKAGE",
+      "severity": "Important",
+      "confirmed": true,
+      "evidence": "OfficialSDK396 ComposerMenu.js ComposerSubmenu returns PopoverAnchor+MenuRow, notPopoverTrigger. MenuRowdestructuresknownfieldsanddoesnotforwardaria-controls. OnlyCapabilitiesbuttonisrealPopoverTrigger. CurrentfixtureaddsTools/Advancedaria-controlsnotrenderedbySDK; chatToolsContextExpression linked(tools)/linked(details) thereforewrongforactualUI.",
+      "next": "Freshfixerrepaircanonicalownedsubmenuobservation/fixturefromactualrenderedsemantics; refuseambiguity/stale/unrelatedpanels. SourceT10+currentfixtureunverifieduntilfreshsource/livecheck."
+    },
+    {
+      "id": "ORG_SIBLING_SCOPE_OPEN",
+      "severity": "Important",
+      "confirmed": true,
+      "evidence": "settings-d87-native-acceptance and tab-groups-member-native-acceptance stillallowLadderwithoutapprovedfile. Boundedaccountpopovercontractonly, nofullclassclosure.",
+      "next": "Freshfixer/revieweradjudicateexistingapprovedconfigreuse/registeredrouteswithoutrelaxingUUID/namechecks."
+    }
+  ],
+  "mutation_state": "All3hashesrestored; noactiveownedplant. CombinedattemptzeroREDcredit; nofurtherweakening. Inmemorywrongbehaviorguardsruninsidefinalsuite,butfalseDOMfixtureblocksbroaderverification.",
+  "owned_processes": "Initialguard12771terminal1; combinedhelper82458terminal1; finalguard49689terminal0. NoownedUI/credential/fixture/externaljob. Parentheavyownerabsenceverifiedseparately.",
+  "next_action": "Parentfreshfixerrequired; no commit/accept/release from thisdraft. Preserve8dirtyfilesandalllogs/journals/reviewfindings; sourceverifieralreadyassigned.",
+  "A_behavior": "UNVERIFIED: noactualUI/auth/hostedrepairretest; exactmodefixturelinkagecontradictsSDK.",
+  "B_quality": "FIX_FIRST: fabricatedsubmenuaria-controlsandunresolvedorgsiblings; sharedmutation§4adeviationretained. Noacceptance/closurefromGREEN.",
+  "publication_limit": "Source-only failed draft/review; referenced private scratch logs/diffs/source snapshots not implied publicly retained. No native acceptance or closure."
+}

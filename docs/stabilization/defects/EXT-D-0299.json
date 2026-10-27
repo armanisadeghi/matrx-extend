@@ -1,0 +1,54 @@
+{
+  "id": "EXT-D-0299",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T10", "EXT-F-1003-T13", "EXT-F-1003-T22"],
+  "related_case_ids": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
+  "title": "Settings native acceptance loses approved organization context and uses obsolete composer controls",
+  "surface": "supporting Settings acceptance drivers; no confirmed product regression",
+  "auth_mode": "designated signed-out guest and approved ordinary member; no credential values recorded",
+  "severity": "S3",
+  "priority": "P0",
+  "state": "in-fix",
+  "owner": "root/settings_driver_repair_round2",
+  "preconditions": [
+    "Exact472 successful CI development artifact and normal guarded hosted Settings A/B routes."
+  ],
+  "reproduction": [
+    "Hosted A40460876503 stops at member_organization_selection with d87_member_organization_option_unavailable_not_observed before T20/T23/T26.",
+    "Hosted B40460707057 first stops T10 at guest_chat_tools_entry_ready_not_observed; later wrong-pane failures cascade.",
+    "Independent actual built-source diagnosis finds approved fixture UUID paired with fallback organization name, obsolete Tools navigation, and absent Settings restoration after failed Chat subcases."
+  ],
+  "expected": "Carry canonical approved organization name/id through strict role verification; reach actual device permission-mode controls through current owned composer surfaces; restore Settings between independent subcases and retain cleanup/original failure truthfully.",
+  "actual": "Original hosted drivers fail before meaningful target behavior. First repair draft additionally invents aria-controls absent from real Tools/Advanced rows and misses cleanup postconditions; green source guards do not certify that draft.",
+  "cause": "Acceptance composition and fixtures drifted from canonical fixture identity/current shared UI contract; failure recovery lacks an independently forced Settings state.",
+  "source_sha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+  "fix_sha": null,
+  "reproducibility": "Two exact-artifact hosted failures retained. First repair baseline1110tests1099pass11skip/valid0 is NOT accepted: fresh source review FIX_FIRST. No fresh native or Store-candidate acceptance.",
+  "evidence": [
+    "docs/stabilization/reports/settings-member-a472-native-20261027.json",
+    "docs/stabilization/reports/settings-guest-b472-native-20261027.json",
+    "docs/stabilization/reports/settings472-first-failure-diagnosis-20261027.json",
+    "docs/stabilization/reports/settings-driver-contract-repair-20261027.json",
+    "docs/stabilization/reports/settings-driver-fresh-source-review-20261027.json"
+  ],
+  "sibling_census": [
+    "Other allowLadder callers settings-d87-native-acceptance and tab-groups-member: unresolved class scope.",
+    "Shared settings-probe-cleanup preserveFailureDuringCleanup has primitive/frozen original-error masking; fresh fixer extends canonical primitive instead of adding a duplicate.",
+    "Mobile and desktop current Tools mode sheets; no-op Escape retained-open state."
+  ],
+  "next_action": "Fresh round2 fixer owns approved context, authentic current portal fixtures/selection, canonical cleanup primitive and negative closure/error guards. Require meaningful in-memory old-behavior discriminators, normal guarded focused GREEN, fresh independent review, synchronized CI and original/adjacent hosted retests before fixed/retest/closure transitions. No source/permission/resource/fixture bypass.",
+  "transition_history": [
+    {
+      "at": "2026-10-27T07:59:58.931033+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Existing hosted raw failures and independent source diagnosis now assigned stable supporting-defect record; chronology is not a retroactive claim."
+    },
+    {
+      "at": "2026-10-27T07:59:58.931033+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "First draft rejected by fresh source review; all mutations restored/owned processes terminal, ownership transferred to fresh round2 fixer. Source edits remain uncommitted and unaccepted."
+    }
+  ]
+}
