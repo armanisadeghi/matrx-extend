@@ -27,9 +27,12 @@
   "evidence": [
     "docs/stabilization/reports/settings-progress-diagnosis-20261027.json",
     "docs/stabilization/reports/settings-checkpoint-plan-attack-20261027.json",
-    "docs/stabilization/reports/settings280-resource-diagnosis-20261027.json"
+    "docs/stabilization/reports/settings280-resource-diagnosis-20261027.json",
+    "docs/stabilization/reports/d300-owner-source-verification-20261027.json",
+    "docs/stabilization/reports/d300-final-source-peer-20261027.json",
+    "docs/stabilization/reports/d300-packet-integrity-peer-20261027.json"
   ],
-  "next_action": "Implement same-OUTPUT atomic progress/final writer with existing D294 primitive reuse and native/case boundaries. Incorporate all three fresh plan-attack requirements: sticky publication failure escapes case catch, all checkpoints nonterminal/unverified including case statuses, real catch/finally cleanup/failure regression. Guarded RED\u2192GREEN, D294 compatibility, compile/lint/fresh review; native/resource/product acceptance stays unverified.",
+  "next_action": "Integrate this verified bounded controls/shared-theme source unit and observe fresh exact synchronized-main CI. D300 remains in-fix: execute late phase/progress paths, port identified D87/desktop/reset siblings through reviewed primitive, and obtain eligible native retention evidence without forcing resource refusal. Do not count source/mutation tests as product passes, infer CPU cause/B recovery, or transfer frozen944 acceptance to new source. FullT10/formalguestidentity/D299/Store acceptance remain separate.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -37,5 +40,27 @@
       "to": "in-fix",
       "reason": "Bounded source diagnosis and independent plan attack; owner accepts required changes. No closure or product credit."
     }
-  ]
+  ],
+  "bounded_source_fix_files": {
+    "package.json": "a6c8c6270bca6e1f63c80c41391af829941b191bc498dd5d41f7997b3862f516",
+    "tests/browser/atomic-json-report.mjs": "7d3bb5b5618c2bb74178ccd5ddcd34896d63f9e586dddf49b1971bb0e8a2f134",
+    "tests/browser/scrape-save-auth-report.mjs": "08f0d9e18ea09a76bbb0046569c73bda0ac7715ca3293d02b028dc59e1027dc9",
+    "tests/browser/settings-local-controls-acceptance.mjs": "af9c1f49b0cc46b0c7f4e1a8fc793eafe75c00399b1c3efcf8cdf3ee5de39b4a",
+    "tests/browser/settings-progress-checkpoint.test.mjs": "46c1cd069df3327303b2615e0093476d9298d7598c60a26600359c899b409fd0",
+    "tests/browser/scrape-save-member-auth-diagnostic.test.mjs": "f1515fe10df13a1c9353e723255a5aae793ef967c58670bf4e2cf1b1d262dc4f",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "3a294c96835058a180762c42c6e3889a6ee61ef97efe74aec71ea3027edfc3da",
+    "tests/browser/settings-guest-scrape-controls.test.mjs": "460a57e3e88bb97af74b5a8593d8968cfe92dad7a73c05824eeb78d5d87005ac",
+    "tests/browser/settings-reload-boundary.test.mjs": "8a9ebe03b7d12277068a93ec91033b328bee86062c608ffdd1a02cb95706a499"
+  },
+  "bounded_source_verification": "docs/stabilization/reports/d300-owner-source-verification-20261027.json",
+  "independent_source_review": "docs/stabilization/reports/d300-final-source-peer-20261027.json",
+  "verification": {
+    "focused": { "tests": 1181, "pass": 1170, "fail": 0, "skip": 11 },
+    "compile_exit": 0,
+    "lint": { "files": 3506, "errors": 0, "warnings": 1037, "fixes_applied": false },
+    "all_three_resource_finals": "valid0/admitted/resourceInvalidfalse",
+    "behavior_A": "PARTIAL executed seams only; late source placement inspection",
+    "integrity_B": "PASS bounded source/gates",
+    "native_retention": "UNVERIFIED"
+  }
 }

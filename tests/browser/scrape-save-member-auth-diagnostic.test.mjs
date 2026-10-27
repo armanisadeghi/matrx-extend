@@ -179,11 +179,21 @@ async function interruptedProducer(mode, { mutant = null } = {}) {
         "'./settings-member-auth-diagnostic.mjs'",
         JSON.stringify(new URL('./settings-member-auth-diagnostic.mjs', import.meta.url).href),
       );
+      let atomicSource = await readFile(
+        new URL('./atomic-json-report.mjs', import.meta.url),
+        'utf8',
+      );
       if (mutant === 'truncate-final')
-        helper = helper.replace(
+        atomicSource = atomicSource.replace(
           'renameSync(temporary, destination);',
           "if (report.status === 'pass') writeFileSync(destination, '{');\n    renameSync(temporary, destination);",
         );
+      const atomicPath = join(directory, 'atomic-json-report.mjs');
+      await writeFile(atomicPath, atomicSource, { mode: 0o600 });
+      helper = helper.replace(
+        "'./atomic-json-report.mjs'",
+        JSON.stringify(new URL(`file://${atomicPath}`).href),
+      );
       if (mutant === 'corrupt-timestamps')
         helper = helper.replace(
           'const at = new Date().toISOString();',

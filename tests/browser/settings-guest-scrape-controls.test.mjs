@@ -1,9 +1,14 @@
 import assert from 'node:assert/strict';
 import { webcrypto } from 'node:crypto';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
+import { publishAtomicJsonReport } from './atomic-json-report.mjs';
+import { NATIVE_STAGES } from './scrape-save-auth-report.mjs';
 import { runFullExtensionRecheck } from './settings-full-extension-rechecks.mjs';
 import {
   runGuestAutoScrapeCase,
@@ -211,7 +216,9 @@ test('T28 case runner rejects an open section without rendered content and verif
   assert.equal(state.reloads, 0);
 });
 
-test('T28 onFailure receipt bounds diagnostics for inactive and same-count roster drift', async () => {
+test('T28 onFailure receipt bounds diagnostics for inactive and same-count roster drift', async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'settings-case-fixture-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
   const acceptanceSource = await readFile(
     new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
     'utf8',
@@ -221,8 +228,20 @@ test('T28 onFailure receipt bounds diagnostics for inactive and same-count roste
   assert.ok(runCaseStart >= 0 && runCaseEnd > runCaseStart);
   const runCase = new Function(
     'criterion',
-    `${acceptanceSource.slice(runCaseStart, runCaseEnd)}\nreturn runCase;`,
-  )((c, name, status, evidence) => c.criteria.push({ name, status, evidence }));
+    'publishAtomicJsonReport',
+    'NATIVE_STAGES',
+    'OUTPUT',
+    'CASE_IDS',
+    'report',
+    `${acceptanceSource.slice(acceptanceSource.indexOf('let publicationFailure;'), runCaseEnd)}\nreturn runCase;`,
+  )(
+    (c, name, status, evidence) => c.criteria.push({ name, status, evidence }),
+    publishAtomicJsonReport,
+    NATIVE_STAGES,
+    join(dir, 'report.json'),
+    ['EXT-F-1003-T28'],
+    { cases: [] },
+  );
 
   const privateLookingHeading = 'Patient preview private-record-7f3c';
   const cases = [
@@ -260,7 +279,7 @@ test('T28 onFailure receipt bounds diagnostics for inactive and same-count roste
       return observed;
     };
 
-    const receipt = { criteria: [] };
+    const receipt = { id: 'EXT-F-1003-T28', criteria: [] };
     await runCase(receipt, () => runGuestSectionsCase(null, reload, () => {}, driver));
 
     assert.equal(receipt.status, 'fail', scenario.label);

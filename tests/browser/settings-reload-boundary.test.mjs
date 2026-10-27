@@ -1,9 +1,14 @@
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
+import { publishAtomicJsonReport } from './atomic-json-report.mjs';
 import { captureFailure } from './profile-reload-capture.mjs';
+import { NATIVE_STAGES } from './scrape-save-auth-report.mjs';
 import {
   evaluate,
   settingsActionSummary,
@@ -253,7 +258,9 @@ for (const scenario of [
     assert.equal(diagnosticCalls, 0);
   });
 
-test('failed native Settings panel reload serializes the owned document and context boundary', async () => {
+test('failed native Settings panel reload serializes the owned document and context boundary', async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'settings-case-fixture-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
   const extensionId = 'owned-extension';
   const panelUrl = `chrome-extension://${extensionId}/sidepanel.html`;
   const document = {
@@ -318,7 +325,12 @@ test('failed native Settings panel reload serializes the owned document and cont
     'observeSettingsReacquisition',
     'EXTENSION_ID',
     'criterion',
-    `${await sharedGuestOpeningSource()}\n${source.slice(settingsStart, reloadEnd)}\n${runCaseSource}\nreturn { reloadSettings, runCase };`,
+    'publishAtomicJsonReport',
+    'NATIVE_STAGES',
+    'OUTPUT',
+    'CASE_IDS',
+    'report',
+    `${await sharedGuestOpeningSource()}\n${source.slice(settingsStart, reloadEnd)}\n${source.slice(source.indexOf('let publicationFailure;'), runCaseStart)}\n${runCaseSource}\nreturn { reloadSettings, runCase };`,
   )(
     (ownedPanel) => waitForReplacementSettingsTab(ownedPanel, 120),
     () => {
@@ -329,8 +341,13 @@ test('failed native Settings panel reload serializes the owned document and cont
     observeSettingsReacquisition,
     extensionId,
     (c, name, status, evidence) => c.criteria.push({ name, status, evidence }),
+    publishAtomicJsonReport,
+    NATIVE_STAGES,
+    join(dir, 'report.json'),
+    ['EXT-F-1003-T04'],
+    { cases: [] },
   );
-  const c = { criteria: [] };
+  const c = { id: 'EXT-F-1003-T04', criteria: [] };
   await runCase(c, () => reloadSettings(panel));
   const receipt = JSON.parse(JSON.stringify(c));
   assert.equal(reloads, 1);
@@ -399,7 +416,7 @@ test('actual Settings guest catch persists safe extension reload failure evidenc
     'utf8',
   );
   const start = source.indexOf(
-    '      } catch (error) {\n        report.guestStageFailed = guestStage;',
+    '      } catch (error) {\n        if (publicationFailure) throw publicationFailure;\n        report.guestStageFailed = guestStage;',
   );
   const end = source.indexOf("      criterion(\n        byId('T63')", start);
   assert.ok(start >= 0 && end > start);
@@ -412,10 +429,26 @@ test('actual Settings guest catch persists safe extension reload failure evidenc
     'criterion',
     'captureFailure',
     'transportFailureClass',
+    'publicationFailure',
     `try { throw injected;\n${actualCatch}\nreturn report;`,
   );
   const error = new Error(
     'native_extension_replacement_panel_unverified: private browser response',
+  );
+  const publicationError = new Error('checkpoint publication failed');
+  assert.throws(
+    () =>
+      runCatch(
+        new Error('guest failure'),
+        {},
+        'extension_reload',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        publicationError,
+      ),
+    (error) => error === publicationError,
   );
   error.lifecycleEvidence = {
     old_worker_absent: true,

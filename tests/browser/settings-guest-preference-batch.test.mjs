@@ -1,8 +1,13 @@
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
+import { publishAtomicJsonReport } from './atomic-json-report.mjs';
+import { NATIVE_STAGES } from './scrape-save-auth-report.mjs';
 import {
   GUEST_PREFERENCES,
   guestChatDefaultExpression,
@@ -652,7 +657,9 @@ test('real preference callback restores Settings and its section after consumer 
   );
 });
 
-test('actual case serialization preserves explicit cleanup failure without raw causes, rejecting flag-loss mutants', async () => {
+test('actual case serialization preserves explicit cleanup failure without raw causes, rejecting flag-loss mutants', async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'settings-case-fixture-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
   const source = await readFile(
     new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
     'utf8',
@@ -662,8 +669,23 @@ test('actual case serialization preserves explicit cleanup failure without raw c
   const end = source.indexOf('\nlet observedPort;', start);
   assert.ok(criterionSource && start > 0 && end > start);
   const caseSource = source.slice(start, end);
-  const runner = (body) =>
-    runInNewContext(`(() => { ${criterionSource}\n${body}\nreturn runCase; })()`);
+  const checkpointSource = source.slice(source.indexOf('let publicationFailure;'), start);
+  const runner = (body) => {
+    const actual = runInNewContext(
+      `(() => { ${criterionSource}\n${checkpointSource}\n${body}\nreturn runCase; })()`,
+      {
+        publishAtomicJsonReport,
+        NATIVE_STAGES,
+        OUTPUT: join(dir, 'report.json'),
+        CASE_IDS: ['EXT-F-1003-T04'],
+        report: { cases: [] },
+      },
+    );
+    return (c, fn) => {
+      c.id = 'EXT-F-1003-T04';
+      return actual(c, fn);
+    };
+  };
   const verify = async (body) => {
     const runCase = runner(body);
     for (const frozen of [false, true]) {

@@ -1,0 +1,47 @@
+{
+  "scope": "D300 source-only independent zero-authorship review; no UI/jobs/tests run",
+  "A_supporting_behavior_proof": "PARTIAL: root guarded focused 1170 pass/0 fail/11 skip, final valid0/resourceInvalid=false. Executed extracted native callback/runCase, outer catch/finally including post-finally sticky rethrow, PASS-eligible final, exact-byte SIGTERM/destructive-final mutation. Late guest phase/recorder sites SOURCE-INSPECTED ONLY; no runtime/full-class closure.",
+  "B_code_integrity": "PASS for bounded root source integrity AND focused/compile/lint gates; no source blocker; no native/full-class acceptance",
+  "finding_1": {
+    "severity": "Important",
+    "file": "tests/browser/settings-progress-checkpoint.test.mjs:323-328",
+    "issue": "git show fixed 50e180dbd requires historical object missing in normal shallow CI checks checkout (.github/workflows/ci.yml:134).",
+    "correction": "Use disclosed current-source scratch mutation or committed explicit old-behavior fixture, no git history/private paths.",
+    "status": "RESOLVED after first review: current-source checkpoint-erasure mutation at lines325-363 uses exact start/end replace counts plus differs assertion; SIGTERM before finalization leaves no report; no Git/private-output dependency. Guarded b run records this test passing."
+  },
+  "finding_2": {
+    "severity": "Important proof gap",
+    "file": "tests/browser/settings-local-controls-acceptance.mjs:1075-1170",
+    "issue": "Late guest phases and recordGuestPhase/recordGuestAdvancedDenial checkpoint callbacks correctly placed by source inspection, but not executed by committed D300 proof tests. T73/T76/T92 case boundaries describe recording after shared observation; guest_phase bounds observation.",
+    "correction": "Narrow proof claim explicitly or execute actual extracted late phase/recorder paths with dependency doubles and interruption oracles.",
+    "status": "RETAINED EXPLICIT LIMIT accepted by owner: no late-phase execution claim; D300 remains in-fix; D87/desktop/reset siblings not ported and native retention unverified."
+  },
+  "positives": "Checkpoints synchronously publish before memory advance; snapshots force report and every case unverified/nonterminal; sticky IO blocks next case and final publication; cleanup/final IO preserve prior checkpoint; invalid finite labels refused; shared writer mechanically matches D294 exclusive0600/write/fsync/close/rename/finally cleanup; test registered; no signal/resource/policy/auth/workflow/product changes in owned diff.",
+  "evidence": ".output/stabilization-checkpoints/wake1935/d300-owner-final-focused.log and docs/stabilization/resource-journals/d300-owner-final-focused-20261027.jsonl terminal20:14:56.318Z valid exit0/resourceInvalid=false; no reviewer-run jobs/tests",
+  "head": "942e8d80e0856c00268bd4641f9a24414ac1d8dc",
+  "boundary_sha256": "03fa7d6053c782d7e3e83eee709079b39d9c77a05e8fe517eeece1f101132b8c",
+  "source_sha256": {
+    "package.json": "a6c8c6270bca6e1f63c80c41391af829941b191bc498dd5d41f7997b3862f516",
+    "tests/browser/atomic-json-report.mjs": "7d3bb5b5618c2bb74178ccd5ddcd34896d63f9e586dddf49b1971bb0e8a2f134",
+    "tests/browser/scrape-save-auth-report.mjs": "08f0d9e18ea09a76bbb0046569c73bda0ac7715ca3293d02b028dc59e1027dc9",
+    "tests/browser/settings-local-controls-acceptance.mjs": "af9c1f49b0cc46b0c7f4e1a8fc793eafe75c00399b1c3efcf8cdf3ee5de39b4a",
+    "tests/browser/settings-progress-checkpoint.test.mjs": "46c1cd069df3327303b2615e0093476d9298d7598c60a26600359c899b409fd0",
+    "tests/browser/scrape-save-member-auth-diagnostic.test.mjs": "f1515fe10df13a1c9353e723255a5aae793ef967c58670bf4e2cf1b1d262dc4f",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "3a294c96835058a180762c42c6e3889a6ee61ef97efe74aec71ea3027edfc3da",
+    "tests/browser/settings-guest-scrape-controls.test.mjs": "460a57e3e88bb97af74b5a8593d8968cfe92dad7a73c05824eeb78d5d87005ac",
+    "tests/browser/settings-reload-boundary.test.mjs": "8a9ebe03b7d12277068a93ec91033b328bee86062c608ffdd1a02cb95706a499"
+  },
+  "hash_verification": "After final lint independently rechecked: all nine SHA256 AND mtime_ns exactly match owner boundary; runner af9c1f49b0cc46b0c7f4e1a8fc793eafe75c00399b1c3efcf8cdf3ee5de39b4a; no reviewer authorship/jobs/tests",
+  "limits": "A remains PARTIAL executed seams only. Late guest phases SOURCE-INSPECTED ONLY; D87/desktop/reset siblings unported; no real native D300 progress-retention proof. D300 remains in-fix; no D299/product/Store/full-class closure or release acceptance.",
+  "root_control_flow_repair": "Reviewed actual branch: sticky publicationFailure sets exitCode1 and skips terminal/publish/success output; nonfailed arm retains original publisher/output/exit status; rethrow after complete finally avoids noUnsafeFinally without suppression/helper-disguised throw; cleanup failure still nonzero/prior checkpoint preserved. Root focused rerun covers extracted trailing code.",
+  "final_gates": {
+    "review": "Independently read raw owner logs and final journal rows; all admitted=true/resourceInvalid=false/exitCode=0/decision=valid",
+    "focused": "d300-owner-final-focused-20261027;1170 pass/0 fail/11 skip of1181; final20:14:56.318Z",
+    "compile": "d300-owner-final-compile-20261027;actual pnpm compile/tsc --noEmit; final20:16:23.611Z",
+    "lint": "d300-owner-final-lint-20261027;3506files/0errors/1037warnings/no fixes; final20:18:11.921Z"
+  },
+  "publication": {
+    "kind": "parsed typed report, formatted; not raw byte identity",
+    "original_private_sha256": "439377de79a39d3cc1dbeeb3180c3edd8482255e9a890235a8eb220c61116d0a"
+  }
+}

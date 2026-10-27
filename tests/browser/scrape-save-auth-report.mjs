@@ -1,20 +1,11 @@
-import { randomUUID } from 'node:crypto';
-import {
-  closeSync,
-  fsyncSync,
-  mkdirSync,
-  openSync,
-  renameSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
 import { join } from 'node:path';
+import { publishAtomicJsonReport } from './atomic-json-report.mjs';
 import {
   memberAuthFailureReport,
   safeMemberAuthFailureCode,
 } from './settings-member-auth-diagnostic.mjs';
 
-const NATIVE_STAGES = new Set([
+export const NATIVE_STAGES = new Set([
   'receipt',
   'artifact_verify',
   'browser_runtime',
@@ -210,21 +201,11 @@ function safeAuthentication(value) {
 
 /** One synchronous atomic replacement serves both interrupted checkpoints and final reports. */
 function publishScrapeSaveReport(report, outputDir) {
-  mkdirSync(outputDir, { recursive: true });
-  const destination = join(outputDir, 'scrape-save-native-acceptance.json');
-  const temporary = join(outputDir, `.scrape-save-native-acceptance-${randomUUID()}.json`);
-  let fd;
-  try {
-    fd = openSync(temporary, 'wx', 0o600);
-    writeFileSync(fd, `${JSON.stringify(report, null, 2)}\n`);
-    fsyncSync(fd);
-    closeSync(fd);
-    fd = undefined;
-    renameSync(temporary, destination);
-  } finally {
-    if (fd !== undefined) closeSync(fd);
-    rmSync(temporary, { force: true });
-  }
+  publishAtomicJsonReport(
+    report,
+    join(outputDir, 'scrape-save-native-acceptance.json'),
+    '.scrape-save-native-acceptance-',
+  );
 }
 
 export function recordScrapeSaveCheckpoint(report, kind, value, outputDir = 'test-results') {

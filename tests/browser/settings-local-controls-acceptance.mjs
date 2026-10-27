@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { join, resolve } from 'node:path';
 import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-identity.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { publishAtomicJsonReport } from './atomic-json-report.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { captureFailure, captureLifecycleEvidence } from './profile-reload-capture.mjs';
 import { reloadOpenEvidenceClass } from './scrape-reload-open-diagnostic.mjs';
+import { NATIVE_STAGES } from './scrape-save-auth-report.mjs';
 import {
   FULL_EXTENSION_RECHECK_IDS,
   captureGuestPreferenceBaselines,
@@ -453,6 +455,7 @@ function recordGuestPhase(phase, observation) {
   ];
   for (const [suffix, check, name] of cases) {
     const c = byId(suffix);
+    checkpoint('case_start', c.id);
     c.steps.push({
       phase,
       action: 'Inspect native guest Settings Account and Organization',
@@ -463,11 +466,13 @@ function recordGuestPhase(phase, observation) {
       checkPassed: checks[check],
       organizationRequests: observation.organizationRequests,
     });
+    checkpoint('case_end', c.id);
   }
 }
 
 async function recordGuestAdvancedDenial(phase, panel, observation) {
   const c = byId('T63');
+  checkpoint('case_start', c.id);
   const signedOut = guestSettingsChecks(
     observation.state,
     observation.organizationRequests,
@@ -481,12 +486,61 @@ async function recordGuestAdvancedDenial(phase, panel, observation) {
     action: 'Inspect guest Settings admin section and actions',
     criterionName: `${phase}: guest admin section, optional controls and audit actions absent`,
   });
+  checkpoint('case_end', c.id);
+}
+
+let publicationFailure;
+function checkpoint(kind, value) {
+  if (publicationFailure) throw publicationFailure;
+  if (
+    kind === 'native_stage'
+      ? !NATIVE_STAGES.has(value)
+      : kind === 'guest_phase'
+        ? ![
+            'warm_observation_start',
+            'warm_observation_end',
+            'extension_reload_start',
+            'extension_reload_end',
+            'reload_settings_start',
+            'reload_settings_end',
+            'reload_observation_start',
+            'reload_observation_end',
+            'extension_rechecks_start',
+            'extension_rechecks_end',
+          ].includes(value)
+        : !['case_start', 'case_end'].includes(kind) || !CASE_IDS.includes(value)
+  )
+    throw new Error('settings_checkpoint_boundary_invalid');
+  const progress = {
+    kind,
+    label: value,
+    sequence: (report.diagnostic_progress?.sequence ?? 0) + 1,
+    at: new Date().toISOString(),
+  };
+  try {
+    publishAtomicJsonReport(
+      {
+        ...report,
+        status: 'unverified',
+        terminal: false,
+        cases: report.cases.map((item) => ({ ...item, status: 'unverified' })),
+        diagnostic_progress: progress,
+      },
+      OUTPUT,
+    );
+  } catch (error) {
+    publicationFailure = error;
+    throw error;
+  }
+  report.diagnostic_progress = progress;
 }
 
 async function runCase(c, fn) {
+  checkpoint('case_start', c.id);
   try {
     await fn();
   } catch (error) {
+    if (publicationFailure) throw publicationFailure;
     c.error = String(error?.message ?? error);
     if (error?.reacquireDiagnostic) c.reacquireDiagnostic = error.reacquireDiagnostic;
     if (error?.safeCleanupFailed === true) c.cleanupAlsoFailed = true;
@@ -497,6 +551,7 @@ async function runCase(c, fn) {
     : c.criteria.length && c.criteria.every((x) => x.status === 'pass')
       ? 'pass'
       : 'unverified';
+  checkpoint('case_end', c.id);
 }
 
 let observedPort;
@@ -541,6 +596,7 @@ try {
   }
   if (!THEME_RENDERING_PROBE) observedPort = await startObservedDeadPort();
   const result = await runNativeSidepanelQa({
+    onStage: (stage) => checkpoint('native_stage', stage),
     reloadSenderDocumentDiagnostic: RELOAD_SENDER_DOCUMENT_DIAGNOSTIC,
     reloadOpenDiagnostic: RELOAD_OPEN_DIAGNOSTIC,
     ...(DEV_BUILD_RECEIPT !== undefined && {
@@ -1043,7 +1099,9 @@ try {
       });
       let guestStage = 'warm_observation';
       try {
+        checkpoint('guest_phase', 'warm_observation_start');
         const warmGuest = await observeGuestIdentityAndOrganization(panel);
+        checkpoint('guest_phase', 'warm_observation_end');
         recordGuestPhase('warm', warmGuest);
         await recordGuestAdvancedDenial('warm', panel, warmGuest);
         const preExtensionBaselines = await captureGuestPreferenceBaselines({
@@ -1070,7 +1128,9 @@ try {
           preferenceBaseline,
         });
         guestStage = 'extension_reload';
+        checkpoint('guest_phase', 'extension_reload_start');
         const replacement = await reloadExtension();
+        checkpoint('guest_phase', 'extension_reload_end');
         if (RELOAD_OPEN_DIAGNOSTIC)
           report.reload_open_diagnostic.outcome = captureLifecycleEvidence(
             replacement.retirement_evidence,
@@ -1090,6 +1150,7 @@ try {
           'owned extension reload lifecycle incomplete',
         );
         guestStage = 'reload_settings';
+        checkpoint('guest_phase', 'reload_settings_start');
         let reloadStep = 'before_click';
         try {
           await settings(replacement.panel, (step) => {
@@ -1107,10 +1168,14 @@ try {
           };
           throw error;
         }
+        checkpoint('guest_phase', 'reload_settings_end');
         guestStage = 'reload_observation';
+        checkpoint('guest_phase', 'reload_observation_start');
         const reloadedGuest = await observeGuestIdentityAndOrganization(replacement.panel);
+        checkpoint('guest_phase', 'reload_observation_end');
         recordGuestPhase('reload', reloadedGuest);
         await recordGuestAdvancedDenial('reload', replacement.panel, reloadedGuest);
+        checkpoint('guest_phase', 'extension_rechecks_start');
         await rerunGuestSettingsAfterExtensionReload({
           panel: replacement.panel,
           cases: report.cases,
@@ -1129,7 +1194,9 @@ try {
           preferenceMatches,
           transportFailureClass,
         });
+        checkpoint('guest_phase', 'extension_rechecks_end');
       } catch (error) {
+        if (publicationFailure) throw publicationFailure;
         report.guestStageFailed = guestStage;
         if (guestStage === 'extension_reload' || error?.lifecycleEvidence || error?.contextBoundary)
           report.guestExtensionReloadFailure = captureFailure(error, transportFailureClass);
@@ -1180,23 +1247,32 @@ try {
   await observedPort?.close();
   if (!THEME_RENDERING_PROBE) enforceFullExtensionRechecks(report.cases);
   for (const c of report.cases) {
+    if (report.setup_error || !report.build.verified) c.status = 'unverified';
     c.build = report.build;
     c.preconditions = report.preconditions;
     c.evidence = report.artifacts ?? null;
   }
-  report.status = report.cases.some((c) => c.status === 'fail')
-    ? 'fail'
-    : report.cases.every((c) => c.status === 'pass')
-      ? 'pass'
-      : 'unverified';
+  report.status =
+    report.setup_error || publicationFailure
+      ? 'unverified'
+      : report.cases.some((c) => c.status === 'fail')
+        ? 'fail'
+        : report.cases.every((c) => c.status === 'pass')
+          ? 'pass'
+          : 'unverified';
   const diagnosticOnly = finalizeSettingsSenderDocumentDiagnostic(
     report,
     RELOAD_SENDER_DOCUMENT_DIAGNOSTIC,
     RELOAD_OPEN_DIAGNOSTIC,
   );
-  await mkdir(join(REPO, 'test-results'), { recursive: true });
-  await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
-  console.log(`${report.status.toUpperCase()} settings-local-controls: ${OUTPUT}`);
-  if (report.setup_error) console.error(report.setup_error);
-  if (diagnosticOnly || report.status === 'fail' || report.setup_error) process.exitCode = 1;
+  if (publicationFailure) {
+    process.exitCode = 1;
+  } else {
+    report.terminal = true;
+    publishAtomicJsonReport(report, OUTPUT);
+    console.log(`${report.status.toUpperCase()} settings-local-controls: ${OUTPUT}`);
+    if (report.setup_error) console.error(report.setup_error);
+    if (diagnosticOnly || report.status === 'fail' || report.setup_error) process.exitCode = 1;
+  }
 }
+if (publicationFailure) throw publicationFailure;
