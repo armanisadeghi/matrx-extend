@@ -1,0 +1,205 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T09:41:15.088Z",
+  "lane": "owner6ea_ci_reload",
+  "status": "UI_STOPPED_AWAIT_PARENT_GUARD_FINALIZATION_AND_FRESH_PEER",
+  "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+  "development": {
+    "run": 40479439004,
+    "artifact": 12723041435,
+    "artifact_digest": "da7881f9fe5db4d23a5f6fea97af238247048ca00284c500b4fd8820467c3e14",
+    "version": "0.2.629",
+    "tree_sha256": "14d39196f53cdeebdc26788a5157c4264404e1598838c67f417379ff2530d321",
+    "file_count": 2819
+  },
+  "disk": {
+    "at": "2026-10-27T09:36:53.677Z",
+    "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+    "artifact": 12723041435,
+    "run": 40479439004,
+    "version": "0.2.629",
+    "tree_sha256": "14d39196f53cdeebdc26788a5157c4264404e1598838c67f417379ff2530d321",
+    "file_count": 2819,
+    "receipt_path": "test-results/ci-dev-promotion-receipt.json",
+    "receipt_sha256": "d0b34f62df994c7e3bdb822082149b16da05968e7edfc6f6a2460a6586a83cb8",
+    "directory": {
+      "path": "PRIVATE_UNPUBLISHED_OR_HISTORICAL_REFERENCE: .output/chrome-mv3-dev",
+      "dev": "16777244",
+      "ino": "24301162",
+      "ctimeNs": "1793093802387259231",
+      "mtimeNs": "1793093802150578958"
+    },
+    "limits": "Diskpromotedonly; noChromeUIorbrowserleaseyet; SOURCE_READYbeforeactualUIrequired."
+  },
+  "import": {
+    "session": 63000,
+    "actual_exit": 0,
+    "note": "B plan contained only remote metadata; owncanonicalimportrequiredandcompletedonce."
+  },
+  "verification": {
+    "session": 1740,
+    "actual_exit": 0
+  },
+  "promotion": {
+    "session": 29783,
+    "actual_exit": 0,
+    "mode": "canonicalpromote-ci-dev-artifact lightIO, nobuild"
+  },
+  "UI": {
+    "allowed": true,
+    "stopped_at": "2026-10-27T10:01:23.492Z",
+    "reload_verified": true,
+    "profile": "Profile 8",
+    "email": "arman@armansadeghi.com",
+    "chrome_version": "156.0.8078.48",
+    "development_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.629",
+    "loaded_from": "PRIVATE_UNPUBLISHED_OR_HISTORICAL_REFERENCE: /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "enabled": true,
+    "pinned": true,
+    "store": {
+      "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+      "version": "0.2.577",
+      "enabled": true,
+      "pinned": true
+    },
+    "api_begin_count": 29,
+    "api_end_count": 29,
+    "api_abort_count": 0,
+    "initial_entry_timing": "external-file-tool-before-invocation-after-tool-return",
+    "native_lease_parent_owned": true
+  },
+  "setup_limits": [
+    "Unsupported --help returnedtest_artifact_arguments_refused; noimporttarget/admissionattempt. ReadactualCLIthenusedauthorizedimport.",
+    "No GUI or backend currentSHA observed yet; diskproof is not Chrome-loaded proof."
+  ],
+  "gate_protocol": "Per-API UUID begin/end ledger with actual resource/watch/build checks. FirstgetApp logged externally around exactsingle-entry CUA invocation. No capturedREPLcounter used; source tree rehash required immediatelybeforefirstUIandafterlastUI. Each invoke API_BEGIN now stores actual callback functionSource and its SHA256; direct single native call per callback. Initialentry uses honest external tool-call bounds.",
+  "evidence": {
+    "docs/stabilization/evidence/sixea-20261027/owner/owner629-6ea-import-20261027.log.txt": {
+      "sha256": "52b1a6bf1b8ec422245eef80c14e767bccd9e748a3e259d7411f8300d2f4fe1d",
+      "bytes": 167
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner629-6ea-verified-evidence-20261027.json": {
+      "sha256": "73bf4a797ecb57edc795d049dacef28c70263a2274810ea5f1222e885b6be0d7",
+      "bytes": 788
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner629-6ea-promotion-20261027.log.txt": {
+      "sha256": "5fc5afd22f65f6a2c3126ca32416177c54c0c7681891839b1ab112f4024fba4c",
+      "bytes": 191
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner629-6ea-disk-fingerprint-20261027.json": {
+      "sha256": "389588019332f882220af92b2096ff07a6616ba149505ebb40cf75c11a508ad0",
+      "bytes": 710
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-ui-gate-20261027.mjs.txt": {
+      "sha256": "5a92b1cf1b0b1b5a8387755ff8a64615de20d76d5e5d95616fd17fb6397c0bde",
+      "bytes": 3315
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-chrome-version-20261027.ax.txt": {
+      "sha256": "a87e108d425301ae7c934c036d450c75be48d55bf14678ec4da5658dee4d5a17",
+      "bytes": 6745
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-cleanup-structural-projection-20261027.txt": {
+      "sha256": "e626a573c9c7cd07883271918f0d8a8d00d44f1f4b77866b44d70b8eb445c69e",
+      "bytes": 499
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-dev-before-20261027.ax.txt": {
+      "sha256": "1cf848cb5dce8c46adaa2923a53373f72dbde237437d0b1355769518b841210c",
+      "bytes": 6258
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-dev-reload-20261027.ax.txt": {
+      "sha256": "a2e05b0c5ce74f725828569f27d8f85c7dfef5441dbb562cfbb6c6b5991d58fe",
+      "bytes": 6287
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-dev-reload-20261027.png": {
+      "sha256": "dfe49e3326841d2ac141ead09153e02fe3a2304ec0f25a379d4041cb2b950d43",
+      "bytes": 162005
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-foreground-restored-20261027.txt": {
+      "sha256": "65c22db6189af5d44ae80dbc60c10895151225757caa625f45a9f6b20e29acf0",
+      "bytes": 427
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-initial-call-20261027.json": {
+      "sha256": "1f0eee196d80939b507fa9cdd0d956e29e8f174d4205f6ca33bd02e3d5f03961",
+      "bytes": 51
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-native-admitted-20261027.json": {
+      "sha256": "bd732e5421e55f3be862ab741603fff844842c1108660f12521e43704d46a5e5",
+      "bytes": 1541
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-native-api-ledger-20261027.jsonl": {
+      "sha256": "99187ac75359f456235e79d3bf6d2724dd976639583eb60d40720387614c89db",
+      "bytes": 34843
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-native-holder-20261027.log.txt": {
+      "sha256": "7acfa9c14591a9aae73e1bd80f9bcd8f97e718c6cadc69b90dd9aac202b80f03",
+      "bytes": 7609
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-native-intent-20261027.json": {
+      "sha256": "1b965a670c77ebf08e3c061f3a2aee9846da6b5254b52863c377c78829181a7f",
+      "bytes": 857
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-original-first-gate-20261027.json": {
+      "sha256": "67e68d809dba14d8f85af06aa9f97b50fe9a81b8681bf12027d74371378e6989",
+      "bytes": 671
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-original-structural-projection-20261027.txt": {
+      "sha256": "ccc777bb46eab08e47432e98f9e92dc2cd88fd5aadcd557e4ce1eef5fc2e8a95",
+      "bytes": 262
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-profile-20261027.ax.txt": {
+      "sha256": "4c61163456f81c767159a4c86b2c67c8ff41a97bc867578f33abe5946c91e2b9",
+      "bytes": 296
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-store577-20261027.ax.txt": {
+      "sha256": "0262e8486ceac79b923c0ab608a41f7b82b7a2a1d4d1c8133854addc1e9524b2",
+      "bytes": 6060
+    },
+    "docs/stabilization/evidence/sixea-20261027/owner/owner6ea-ui-config-20261027.json": {
+      "sha256": "62c9985c771b048ee61e40858863fcc406af068ca9d86dfa62746cea0c7d5439",
+      "bytes": 465
+    }
+  },
+  "source_tracked_writes": [],
+  "commits": [],
+  "next_action": "Parent normal-finalizes owned guard/watch after UI_STOPPED, validates final journal and fresh peer against callback ledger/raw decisive AX+PNG/build/source fingerprints.",
+  "gate_prepared_at": "2026-10-27T09:58:33.162554+00:00",
+  "post_ui": {
+    "at": "2026-10-27T10:01:23.078Z",
+    "runId": "owner6ea-native-20261027-0955",
+    "resourceCode": "RESOURCE_WATCH_HEALTHY",
+    "resourceAt": "2026-10-27T10:01:17.965Z",
+    "watchReadAt": "2026-10-27T10:01:22.538804Z",
+    "watchAgeMs": 540,
+    "sourceSha": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+    "receiptSha256": "d0b34f62df994c7e3bdb822082149b16da05968e7edfc6f6a2460a6586a83cb8",
+    "directoryInode": "24301162",
+    "tree_sha256": "14d39196f53cdeebdc26788a5157c4264404e1598838c67f417379ff2530d321",
+    "source": "6ea64c8208490501ef2a21a4e24589fc4890cd28",
+    "origin": "6ea64c8208490501ef2a21a4e24589fc4890cd28"
+  },
+  "cleanup": {
+    "owned_tabs_opened": 1,
+    "owned_tabs_closed": 1,
+    "owner_vault_tab_preserved": true,
+    "owner_vault_selected_restored": true,
+    "initial_guest_newtab_foreground_and_address_focus_restored": true,
+    "no_guest_extension_actions": true
+  },
+  "private_exclusions": [
+    "Vault body never intentionally persisted; original and cleanup proof use original-line structural projection only",
+    "Initial structural regex included one credential-item label without value; immediately narrowed and replaced the private file before continuing. This label remains in tool output; no credential/auth values logged.",
+    "Owner profile proof keeps active-account lines only; other profile rows excluded"
+  ],
+  "acceptance_limits": [
+    "Owner extension maintenance only; zero guest product/formal acceptance cases",
+    "Parent resource finalization and fresh independent review still required"
+  ],
+  "publication": {
+    "original_private_sha256": "b112beb5c798d6926d7cf364fe804947d76d3f016cb58d2469ed126d26735072",
+    "source_report": ".output/stabilization-checkpoints/owner629-6ea-adoption-20261027.json",
+    "reference_policy": "Exact safe paths remapped; excluded or historical scratch references explicitly marked unavailable. Run-time and pending labels are original actor observations; owner finalization is a separate receipt, not rewritten history.",
+    "evidence_manifest": "docs/stabilization/reports/sixea-publication-manifest-20261027.json",
+    "guest_raw": "Excluded by original guest allowlist; typed bounded summary only"
+  }
+}

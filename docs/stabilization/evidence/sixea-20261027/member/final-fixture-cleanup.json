@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-27T10:04:13.236955+00:00",
+  "trigger": "sole native job terminal success including postcleanup",
+  "restore_actual_exit": 0,
+  "readback_actual_exit": 0,
+  "exact_original_timestamp_restored": true,
+  "archivetimestamp_source": "fresh current6ea snapshot, not historical472",
+  "restoration_scope": "exactarchived_at+test_fixtureguard; real auth sessions/audit/lastactiveorg effects not rolled back",
+  "owned_secret_absence_already_verified": true
+}

@@ -1,0 +1,8 @@
+{
+  "phase": "UI_READY",
+  "runId": "owner6ea-native-20261027-0955",
+  "fingerprintPath": ".output/stabilization-checkpoints/owner629-6ea-disk-fingerprint-20261027.json",
+  "journalPath": "docs/stabilization/resource-journals/owner6ea-native-20261027-0955.pending.jsonl",
+  "watchPath": ".output/stabilization-checkpoints/owner6ea-resource-build-watch-20261027.jsonl",
+  "ledgerPath": ".output/stabilization-checkpoints/owner6ea-native-api-ledger-20261027.jsonl"
+}

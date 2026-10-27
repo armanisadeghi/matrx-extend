@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-27T09:58:42.205374+00:00",
+  "runId": "owner6ea-native-20261027-0955",
+  "literal_admission": {
+    "schema": 1,
+    "at": "2026-10-27T09:57:01.555Z",
+    "runId": "owner6ea-native-20261027-0955",
+    "mode": "browser",
+    "policySchema": 1,
+    "sample": {
+      "pressureLevel": 1,
+      "availableMemoryGiB": 9.12,
+      "requiredMemoryGiB": 4,
+      "oneMinuteLoad": 1.43,
+      "logicalCpus": 10,
+      "cpuBusyFraction": 0.17857142857142855,
+      "swapUsedMiB": 327.75,
+      "repoFreeGiB": 1588.5703811645508,
+      "profileFreeGiB": 26.22393798828125,
+      "safetyFreeGiB": 26.22393798828125,
+      "systemFreeGiB": 26.22393798828125
+    },
+    "cpuBusySamples": [0.18, 0.17, 0.17, 0.18, 0.18, 0.19, 0.18],
+    "reasons": [],
+    "swapWindowSeconds": 60,
+    "code": "RESOURCE_ADMITTED"
+  },
+  "watch_last": {
+    "read_at": "2026-10-27T09:58:42.053850Z",
+    "path": "docs/stabilization/resource-journals/owner6ea-native-20261027-0955.pending.jsonl",
+    "latest_code": "RESOURCE_WATCH_HEALTHY",
+    "latest_at": "2026-10-27T09:58:37.720Z",
+    "journal_age_seconds": 4.33385,
+    "actual_read_gap_seconds": 2.0016097920015454,
+    "admitted_observed": true,
+    "build_fingerprint_valid": true,
+    "receipt_sha256": "d0b34f62df994c7e3bdb822082149b16da05968e7edfc6f6a2460a6586a83cb8",
+    "source_sha": "6ea64c8208490501ef2a21a4e24589fc4890cd28"
+  },
+  "parent_checked_correct_root": true,
+  "A_run": 40484355701,
+  "B_run": 40483916612,
+  "ui_allowed": true
+}
