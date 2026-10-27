@@ -62,5 +62,6 @@
     "behavior_A": "PARTIAL executed seams only; late source placement inspection",
     "integrity_B": "PASS bounded source/gates",
     "native_retention": "UNVERIFIED"
-  }
+  },
+  "bounded_source_fix_sha": "ff16d8498f9dcf6f64314e997ee74fc54130a6e2"
 }
