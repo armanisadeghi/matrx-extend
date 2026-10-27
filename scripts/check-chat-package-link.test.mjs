@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { parsePnpmLock } from './check-matrx-packages.mjs';
 
 // The host installs `@ai-matrx/chat` as an npm alias of `@ai-matrx/chat-v2`: on disk and in the lock it is chat-v2.
-const real = name => (name === 'chat' ? 'chat-v2' : name);
+const real = (name) => (name === 'chat' ? 'chat-v2' : name);
 
 // The real packed dependency JS must link; tsc skips the .175/.15 missing named export.
 // An incomplete installed package must produce a failed release gate, never a successful no-op.
@@ -62,9 +62,13 @@ for (const linked of ['chat', 'summon']) {
         mkdirSync(sourceScope, { recursive: true });
         symlinkSync(join(scope, 'summon'), join(sourceScope, 'summon'), 'dir');
       }
-      const refused = spawnSync(process.execPath, [script, '--package-root', join(scope, 'chat-v2')], {
-        encoding: 'utf8',
-      });
+      const refused = spawnSync(
+        process.execPath,
+        [script, '--package-root', join(scope, 'chat-v2')],
+        {
+          encoding: 'utf8',
+        },
+      );
       assert.equal(
         refused.status,
         1,
@@ -121,9 +125,13 @@ test('published Chat link gate executes ESM linking after provenance checks', ()
         join(windows, 'chat-overlays.js'),
         `import { defineOverlay } from '@ai-matrx/summon/${entry}'; export const CHAT_OVERLAYS = [defineOverlay()({id:'run-controls'})];`,
       );
-      const linked = spawnSync(process.execPath, [script, '--package-root', join(scope, 'chat-v2')], {
-        encoding: 'utf8',
-      });
+      const linked = spawnSync(
+        process.execPath,
+        [script, '--package-root', join(scope, 'chat-v2')],
+        {
+          encoding: 'utf8',
+        },
+      );
       if (entry === 'root') {
         assert.equal(linked.status, 1, 'removed named export must fail the actual ESM import');
         assert.match(linked.stderr, /does not provide an export named 'defineOverlay'/);

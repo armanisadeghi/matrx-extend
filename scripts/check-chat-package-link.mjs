@@ -19,7 +19,9 @@ export async function checkChatPackageLink({ packageRoot } = {}) {
     // pnpm links into its registry store are valid; links out to an aidream workspace are not artifacts.
     const suffix = `${sep}node_modules${sep}${realName.split('/').join(sep)}`;
     if (!root.endsWith(suffix))
-      throw new Error(`${realName} resolves to a workspace link, not an installed registry artifact`);
+      throw new Error(
+        `${realName} resolves to a workspace link, not an installed registry artifact`,
+      );
     const manifest = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
     const versions = graph.installed.get(realName);
     if (manifest.name !== realName || versions?.size !== 1 || !versions.has(manifest.version))
