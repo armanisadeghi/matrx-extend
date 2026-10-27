@@ -1365,3 +1365,68 @@ test('account popover member caller carries the approved fixture to authenticati
     /account_popover_member_approved_organization_required/,
   );
 });
+
+for (const [file, roleName, marker] of [
+  ['settings-d87-native-acceptance.mjs', 'AUTH_MODE', "    stage = 'baseline';"],
+  ['tab-groups-member-native-acceptance.mjs', null, '        report.authentication ='],
+]) {
+  test(`${file} real member call forwards approved organization context`, async () => {
+    const source = await readFile(new URL(`./${file}`, import.meta.url), 'utf8');
+    const start = source.indexOf('signInSettings({');
+    const end = source.indexOf('})', start) + 2;
+    assert.ok(start > 0 && end > start, marker);
+    const calls = [];
+    await runInNewContext(`(async()=>${source.slice(start, end)})()`, {
+      [roleName ?? 'unused']: 'member',
+      page: {},
+      panel: {},
+      REPO: '/repo',
+      process: {
+        env: {
+          MATRX_REVIEWER_MAGIC_LINK_FILE: '/private/link.json',
+          MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE: '/private/approved.json',
+        },
+      },
+      signInSettings: async (options) => {
+        calls.push(options);
+        assert.equal(options.memberApprovedOrganizationFile, '/private/approved.json');
+        assert.equal(options.memberLinkFile, '/private/link.json');
+        assert.equal(options.allowLadderOrganization, true);
+      },
+    });
+    assert.equal(calls.length, 1);
+  });
+}
+
+for (const [file, role, message] of [
+  ['settings-d87-native-acceptance.mjs', 'AUTH_MODE', 'd87_member_approved_organization_required'],
+  [
+    'tab-groups-member-native-acceptance.mjs',
+    null,
+    'tab_groups_member_approved_organization_required',
+  ],
+]) {
+  test(`${file} requires member context before browser/auth effects`, async () => {
+    const source = await readFile(new URL(`./${file}`, import.meta.url), 'utf8');
+    const line = source.split('\n').findIndex((value) => value.includes(message));
+    assert.ok(line > 0);
+    const lines = source.split('\n');
+    const start = role
+      ? lines.slice(0, line).findLastIndex((value) => value.includes("if (AUTH_MODE === 'member')"))
+      : line - 2;
+    const statement = lines.slice(start, line + 2).join('\n');
+    assert.ok(source.indexOf(message) < source.indexOf('await runNativeSidepanelQa({'));
+    assert.throws(
+      () => runInNewContext(statement, { assert, AUTH_MODE: 'member', process: { env: {} } }),
+      new RegExp(message),
+    );
+    if (role)
+      for (const mode of ['admin', 'guest'])
+        runInNewContext(statement, { assert, AUTH_MODE: mode, process: { env: {} } });
+    runInNewContext(statement, {
+      assert,
+      AUTH_MODE: 'member',
+      process: { env: { MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE: '/private/approved.json' } },
+    });
+  });
+}

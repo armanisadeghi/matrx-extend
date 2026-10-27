@@ -253,14 +253,28 @@ export async function captureGuestPreferenceBaselines({
 }) {
   const baselines = { ...caseEntryBaselines };
   await settings(panel);
-  // A case-entry Theme baseline may own the entire Settings container. Restore
-  // it before capturing Default mode, since removal also resets that mode.
-  for (const preference of preferences.filter((item) => caseEntryBaselines[item.caseId])) {
+  const mode = preferences.find((item) => item.caseId === 'T10');
+  const verifyWarmMode = async () => {
+    if (!mode) return;
+    if (caseEntryBaselines.T10?.matched !== true) throw new Error('T10_shadow_baseline_unobserved');
+    await openSection(panel, mode.section);
+    const observed = await observePreference(panel, mode);
+    if (!preferenceBaselineMatches(observed, mode, caseEntryBaselines.T10))
+      throw new Error('T10_shadow_baseline_mismatch_before_capture');
+  };
+  // Check BEFORE any Theme cleanup can remove the whole settings container.
+  await verifyWarmMode();
+  // Theme may own the whole Settings container. T10 is never restored or
+  // recaptured: compare the same warm expectation on both sides of cleanup.
+  for (const preference of preferences.filter(
+    (item) => item.caseId !== 'T10' && caseEntryBaselines[item.caseId],
+  )) {
     if (typeof restorePreferenceBaseline !== 'function')
       throw new Error('case_entry_baseline_restorer_required');
     await restorePreferenceBaseline(panel, preference, baselines[preference.caseId]);
   }
-  for (const preference of preferences.filter((item) => ['T04', 'T10'].includes(item.caseId))) {
+  await verifyWarmMode();
+  for (const preference of preferences.filter((item) => item.caseId === 'T04')) {
     if (baselines[preference.caseId]) continue;
     await openSection(panel, preference.section);
     baselines[preference.caseId] = preferenceBaseline(
@@ -316,8 +330,41 @@ export async function rerunGuestSettingsAfterExtensionReload({
 }) {
   let activePanel = panel;
   let panelRecoveryFailed = false;
+  const mode = preferences.find((item) => item.caseId === 'T10');
+  const modeBaseline = preExtensionBaselines?.T10
+    ? structuredClone(preExtensionBaselines.T10)
+    : undefined;
+  const verifyModeBeforeCleanup = async (target) => {
+    if (!mode) return;
+    if (modeBaseline?.matched !== true) throw new Error('T10_shadow_baseline_unobserved');
+    await openSection(target, mode.section);
+    const observed = await observePreference(target, mode);
+    if (!preferenceBaselineMatches(observed, mode, modeBaseline))
+      throw new Error('T10_shadow_baseline_mismatch');
+  };
+  const settingsBeforeTheme = async (target) => {
+    await settings(target);
+    await verifyModeBeforeCleanup(target);
+  };
   try {
     for (const preference of preferences.filter((item) => ['T04', 'T10'].includes(item.caseId))) {
+      // The caller already replaced the extension. Observe that generation before
+      // any sibling choice/cleanup, and again before a later reload can mask it.
+      try {
+        await verifyModeBeforeCleanup(activePanel);
+      } catch {
+        const error = Object.assign(new Error('T10_shadow_baseline_unverified'), {
+          safeCategory: 'full_extension_preference_or_restore_failed',
+          safeFirstChoiceFailureStage: 'initial_baseline_observation',
+        });
+        await runFullExtensionRecheck(
+          cases.find((candidate) => candidate.id.endsWith('T10')),
+          async () => {
+            throw error;
+          },
+        );
+        return;
+      }
       const item = cases.find((candidate) => candidate.id.endsWith(preference.caseId));
       if (preference.caseId === 'T10') {
         await runFullExtensionRecheck(item, async (record) => {
@@ -353,6 +400,7 @@ export async function rerunGuestSettingsAfterExtensionReload({
             }
           };
           try {
+            if (modeBaseline?.matched !== true) throw new Error('T10_shadow_baseline_unobserved');
             const previousPanel = activePanel;
             const replacement = await at('choice_extension_reload', reloadExtension);
             stage = 'choice_replacement_validation';
@@ -397,6 +445,7 @@ export async function rerunGuestSettingsAfterExtensionReload({
               },
               choiceDriver ? { ...choiceDriver, openSection } : undefined,
               onStage,
+              modeBaseline,
             );
           } catch (error) {
             const failure = error instanceof Error ? error : new Error('guest_mode_recheck_failed');
@@ -446,21 +495,25 @@ export async function rerunGuestSettingsAfterExtensionReload({
             controlLabel: preference.label,
             choices: preference.choices,
             baseline,
-            settings,
+            settings: settingsBeforeTheme,
             openSection,
             read: (target) => observePreference(target, preference),
             matches: (state, value, label) => preferenceMatches(state, preference, value, label),
             matchesBaseline: (state) => preferenceBaselineMatches(state, preference, baseline),
             ...(baseline?.storedPresent === false && {
-              restoreBaseline: (target) =>
-                restoreGuestPreferenceBaseline(
+              restoreBaseline: async (target) => {
+                await verifyModeBeforeCleanup(target);
+                const restored = await restoreGuestPreferenceBaseline(
                   target,
                   preference,
                   baseline,
                   (name, observation, passed) =>
                     record(name, passed ? 'pass' : 'fail', observation),
                   ...(choiceDriver ? [{ ...choiceDriver, openSection }] : []),
-                ),
+                );
+                await verifyModeBeforeCleanup(target);
+                return restored;
+              },
             }),
             reloadExtension,
             acquireLivePanel,

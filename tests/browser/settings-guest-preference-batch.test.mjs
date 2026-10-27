@@ -7,6 +7,7 @@ import {
   GUEST_PREFERENCES,
   guestChatDefaultExpression,
   guestChatDefaultMatches,
+  guestModeShadowMatches,
   observeGuestNewChatDefault,
   observeGuestPreference,
   preferenceMatches,
@@ -1152,6 +1153,7 @@ test('T10 guest Ask is refused, visibly reverted, and remains Act after panel re
     activeSettings: true,
     count: 1,
     selected: 'Act without asking',
+    shadowFootprint: emptyModeFootprint(),
     stored: null,
     storedPresent: false,
     storagePresent: false,
@@ -1198,71 +1200,46 @@ import {
   restoreGuestPreferenceBaseline,
 } from './settings-guest-preference-batch.mjs';
 
-test('T10 baseline is captured after T04 restores its original absent settings container', async () => {
-  const theme = GUEST_PREFERENCES.find((item) => item.caseId === 'T04');
-  const mode = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
-  const state = {
-    T04: {
-      activeSettings: true,
-      count: 1,
-      selected: 'System',
-      stored: 'system',
-      storedPresent: true,
-      storagePresent: true,
-    },
-    T10: {
-      activeSettings: true,
-      count: 1,
-      selected: 'Act without asking',
-      stored: null,
-      storedPresent: false,
-      storagePresent: false,
-    },
-  };
-  const originalTheme = preferenceBaseline(
-    {
-      ...state.T04,
-      stored: null,
-      storedPresent: false,
-      storagePresent: false,
-      darkClass: false,
-      systemDark: false,
-      renderedBackgroundMatches: true,
-    },
-    theme,
-  );
-  const baselines = await captureGuestPreferenceBaselines({
-    panel: {},
-    preferences: [theme, mode],
-    settings: async () => {},
-    openSection: async () => {},
-    observePreference: async (_panel, preference) => ({ ...state[preference.caseId] }),
-    preferenceBaseline,
-    caseEntryBaselines: { T04: originalTheme },
-    restorePreferenceBaseline: async () => {
-      state.T04 = { ...state.T04, stored: null, storedPresent: false, storagePresent: false };
-      state.T10 = { ...state.T10, stored: null, storedPresent: false, storagePresent: false };
-    },
+for (const kind of ['missing', 'unmatched', 'unknown']) {
+  test(`T10 ${kind} warm baseline refuses before Theme restoration or recapture`, async () => {
+    const theme = GUEST_PREFERENCES.find((item) => item.caseId === 'T04');
+    const mode = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+    const f = modeStorageFixture();
+    const valid = preferenceBaseline(await observeGuestPreference({}, mode, f.driver), mode);
+    const entry =
+      kind === 'missing'
+        ? undefined
+        : kind === 'unmatched'
+          ? { ...valid, matched: false }
+          : {
+              ...valid,
+              observation: {
+                ...valid.observation,
+                shadowFootprint: { status: 'unknown', stores: [] },
+              },
+            };
+    const calls = [];
+    await assert.rejects(
+      () =>
+        captureGuestPreferenceBaselines({
+          panel: {},
+          preferences: [theme, mode],
+          settings: async () => {},
+          openSection: async () => {},
+          observePreference: (panel, preference) =>
+            observeGuestPreference(panel, preference, f.driver),
+          preferenceBaseline,
+          caseEntryBaselines: { T04: { value: 'system' }, ...(entry && { T10: entry }) },
+          restorePreferenceBaseline: async () => {
+            calls.push('destructive Theme restore');
+            delete f.storage['matrx.settings.v1'];
+          },
+        }),
+      /T10_shadow_baseline/,
+    );
+    assert.deepEqual(calls, []);
   });
-  assert.equal(baselines.T10.value, 'act');
-  assert.equal(baselines.T10.storedPresent, false);
-  assert.equal(baselines.T10.storagePresent, false);
-  assert.equal(preferenceBaselineMatches(state.T10, mode, baselines.T10), true);
-  assert.equal(
-    preferenceBaselineMatches(
-      {
-        ...state.T10,
-        stored: 'ask',
-        selected: 'Ask before acting',
-        storedPresent: true,
-        storagePresent: true,
-      },
-      mode,
-      baselines.T10,
-    ),
-    false,
-  );
-});
+}
 
 // The harness owns baseline capture/restoration/comparison; only browser I/O is a fixture.
 for (const storagePresent of [false, true]) {
@@ -1354,3 +1331,229 @@ for (const storagePresent of [false, true]) {
     });
   }
 }
+
+// Controlled storage/DOM input, not native browser acceptance.
+function modeStorageFixture(storage = {}, options = {}) {
+  const window = new Window();
+  const document = window.document;
+  document.body.innerHTML =
+    '<button role="tab" data-matrx-title="Settings" data-state="active" aria-controls="settings-pane"></button><div id="settings-pane" role="tabpanel" data-state="active"><div><div><span>Default mode</span></div><button role="combobox">Act without asking</button></div></div>';
+  const calls = [];
+  const driver = {
+    openSection: async () => {},
+    click: async (_panel, kind) => {
+      calls.push(kind);
+      if (kind === 'option') {
+        document
+          .getElementById('settings-pane')
+          .insertAdjacentHTML('beforeend', '<div role="alert">Sign in to save Default mode.</div>');
+        options.onAsk?.(storage);
+      }
+    },
+    evaluate: async (_panel, expression) =>
+      JSON.parse(
+        JSON.stringify(
+          await runInNewContext(expression, {
+            document,
+            window: { matchMedia: () => ({ matches: false }) },
+            getComputedStyle: () => ({ backgroundColor: 'rgb(255, 255, 255)' }),
+            TextEncoder,
+            crypto: (await import('node:crypto')).webcrypto,
+            chrome: {
+              storage: {
+                local: {
+                  get: async (keys) => {
+                    calls.push(Array.isArray(keys) ? [...keys] : keys);
+                    if (options.unavailable) throw new Error('private failure details');
+                    return Object.fromEntries(
+                      (Array.isArray(keys) ? keys : [keys])
+                        .filter((key) => Object.hasOwn(storage, key))
+                        .map((key) => [key, storage[key]]),
+                    );
+                  },
+                },
+              },
+            },
+          }),
+        ),
+      ),
+    waitFor: async (name, read, accept) => {
+      const value = await read();
+      if (!accept(value)) throw new Error(`${name}_not_observed`);
+      return value;
+    },
+  };
+  return { driver, calls, storage, window };
+}
+
+test('T10 observer reads real populated legacy permission footprint without private map keys', async () => {
+  const preference = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  const f = modeStorageFixture({
+    'matrx.settings.v1': JSON.stringify({
+      state: { defaultPermissionMode: 'ask', privateOther: 'never-return' },
+    }),
+    'matrx.chat.v1': JSON.stringify({ state: { permissionMode: { 'private-agent-id': 'ask' } } }),
+    'matrx.pilot-chat.v1': { state: { permissionMode: {} } },
+  });
+  const observed = await observeGuestPreference({}, preference, f.driver);
+  assert.equal(observed.shadowFootprint?.status, 'observed');
+  assert.equal(observed.stored, 'ask');
+  assert.equal(observed.storedPresent, true);
+  assert.equal(observed.storagePresent, true);
+  assert.deepEqual(f.calls[0], ['matrx.settings.v1', 'matrx.chat.v1', 'matrx.pilot-chat.v1']);
+  assert.match(observed.shadowFootprint.stores[1].fingerprint, /^[a-f0-9]{64}$/);
+  assert.equal(JSON.stringify(observed).includes('private-agent-id'), false);
+  assert.equal(JSON.stringify(observed).includes('never-return'), false);
+});
+
+for (const [name, storage, options] of [
+  ['absent', {}, {}],
+  ['malformed', { 'matrx.settings.v1': '{' }, {}],
+  ['invalid state', { 'matrx.chat.v1': { state: [] } }, {}],
+  ['invalid map', { 'matrx.pilot-chat.v1': { state: { permissionMode: [] } } }, {}],
+  [
+    'invalid mode',
+    { 'matrx.settings.v1': { state: { defaultPermissionMode: 'private-value' } } },
+    {},
+  ],
+  ['unavailable', {}, { unavailable: true }],
+]) {
+  test(`T10 distinguishes actual ${name} storage from valid absence`, async () => {
+    const preference = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+    const f = modeStorageFixture(storage, options);
+    const value = await observeGuestPreference({}, preference, f.driver);
+    assert.equal(value.shadowFootprint?.status, name === 'absent' ? 'observed' : 'unknown');
+    assert.equal(preferenceBaseline(value, preference).matched, name === 'absent');
+    if (name === 'absent')
+      assert.equal(
+        value.shadowFootprint.stores.every((item) => item.parseStatus === 'absent'),
+        true,
+      );
+  });
+}
+
+for (const changed of [false, true]) {
+  test(`T10 actual refusal preserves populated legacy fields, shadow changed=${changed}`, async () => {
+    const preference = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+    const f = modeStorageFixture(
+      {
+        'matrx.settings.v1': JSON.stringify({ state: { defaultPermissionMode: 'ask' } }),
+        'matrx.chat.v1': JSON.stringify({ state: { permissionMode: { fixture: 'ask' } } }),
+      },
+      {
+        onAsk: changed
+          ? (storage) => {
+              storage['matrx.chat.v1'] = JSON.stringify({
+                state: { permissionMode: { fixture: 'act' } },
+              });
+            }
+          : undefined,
+      },
+    );
+    const baselines = [];
+    const action = () =>
+      runGuestPreferenceCase(
+        {},
+        async () => {},
+        preference,
+        () => {},
+        async () => {},
+        f.driver,
+        (baseline) => baselines.push(baseline),
+      );
+    if (changed) await assert.rejects(action, /T10_guest_ask_refused|shadow/);
+    else {
+      const result = await action();
+      assert.equal(result.storedPresent, true);
+      assert.equal(result.storagePresent, true);
+      assert.equal(baselines.length, 1);
+      assert.equal(baselines[0].value, 'act');
+      assert.equal(baselines[0].observation.stored, 'ask');
+    }
+  });
+}
+
+test('T10 mutation before capture fails before even destructive Theme restoration', async () => {
+  const mode = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  const theme = GUEST_PREFERENCES.find((item) => item.caseId === 'T04');
+  const f = modeStorageFixture();
+  const warm = preferenceBaseline(await observeGuestPreference({}, mode, f.driver), mode);
+  f.storage['matrx.settings.v1'] = JSON.stringify({ state: { defaultPermissionMode: 'ask' } });
+  const restoration = [];
+  await assert.rejects(
+    () =>
+      captureGuestPreferenceBaselines({
+        panel: {},
+        preferences: [theme, mode],
+        settings: async () => {},
+        openSection: async () => {},
+        observePreference: (panel, preference) =>
+          observeGuestPreference(panel, preference, f.driver),
+        preferenceBaseline,
+        caseEntryBaselines: { T04: { value: 'system' }, T10: warm },
+        restorePreferenceBaseline: async () => {
+          restoration.push('destructive');
+          delete f.storage['matrx.settings.v1'];
+        },
+      }),
+    /T10.*baseline|shadow/,
+  );
+  assert.deepEqual(restoration, []);
+  assert.equal(Object.hasOwn(f.storage, 'matrx.settings.v1'), true);
+});
+
+function emptyModeFootprint() {
+  return {
+    status: 'observed',
+    stores: ['settings', 'chat', 'pilot'].map((store) => ({
+      store,
+      storagePresent: false,
+      fieldPresent: false,
+      parseStatus: 'absent',
+      mode: null,
+      fingerprint: null,
+      count: null,
+    })),
+  };
+}
+
+test('T10 observer gut guard rejects a constant absent footprint against populated input', async () => {
+  const preference = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  const populated = { 'matrx.settings.v1': { state: { defaultPermissionMode: 'ask' } } };
+  const check = async (mutate) => {
+    const f = modeStorageFixture(populated);
+    const real = f.driver.evaluate;
+    f.driver.evaluate = (_panel, expression) => real(_panel, mutate(expression));
+    const observed = await observeGuestPreference({}, preference, f.driver);
+    assert.equal(observed.storedPresent, true);
+    assert.equal(observed.shadowFootprint.stores[0].mode, 'ask');
+  };
+  await check((source) => source);
+  await assert.rejects(
+    () =>
+      check((source) => {
+        const start = source.indexOf('    const shadowFootprint =');
+        const end = source.indexOf('\n    const raw = shadowFootprint', start);
+        assert.ok(start > 0 && end > start);
+        return `${source.slice(0, start)}const shadowFootprint = ${JSON.stringify(emptyModeFootprint())};\n${source.slice(end)}`;
+      }),
+    /Expected values/,
+  );
+});
+
+test('mode footprint matcher gut rejects constant equality on a changed actual footprint', () => {
+  const baseline = emptyModeFootprint();
+  const changed = structuredClone(baseline);
+  Object.assign(changed.stores[0], {
+    storagePresent: true,
+    fieldPresent: true,
+    parseStatus: 'valid',
+    mode: 'ask',
+  });
+  const check = (matches) => {
+    assert.equal(matches(baseline, baseline), true);
+    assert.equal(matches(changed, baseline), false);
+  };
+  check(guestModeShadowMatches);
+  assert.throws(() => check(() => true), assert.AssertionError);
+});

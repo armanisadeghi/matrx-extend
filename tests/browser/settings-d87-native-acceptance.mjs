@@ -396,6 +396,12 @@ try {
     artifact_id: artifactId,
   };
   stage = 'native_panel';
+
+  if (AUTH_MODE === 'member')
+    assert.ok(
+      process.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
+      'd87_member_approved_organization_required',
+    );
   const run = await runNativeSidepanelQa({
     headed: true,
     onStage: (value) => {
@@ -416,6 +422,7 @@ try {
             repo: REPO,
             adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
             memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+            memberApprovedOrganizationFile: process.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
             allowLadderOrganization: AUTH_MODE === 'member',
             onStage: (value) => {
               operation = value;

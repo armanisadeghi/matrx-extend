@@ -174,6 +174,76 @@ export async function observeGuestNewChatDefault(
   );
 }
 
+// Derived from persisted settings and the explicit Ask carry-over's two stores.
+// Only permission fields leave Chrome; per-agent keys are hashed in the panel.
+function guestModeShadowExpression() {
+  return `(async () => {
+    const definitions = [
+      ['settings', 'matrx.settings.v1', 'defaultPermissionMode'],
+      ['chat', 'matrx.chat.v1', 'permissionMode'],
+      ['pilot', 'matrx.pilot-chat.v1', 'permissionMode'],
+    ];
+    let values;
+    try {
+      values = await chrome.storage.local.get(definitions.map((entry) => entry[1]));
+      if (!values || typeof values !== 'object' || Array.isArray(values)) throw new Error();
+    } catch {
+      return { status: 'unknown', stores: definitions.map(([store]) => ({ store,
+        parseStatus: 'unavailable', storagePresent: null, fieldPresent: null, mode: null, fingerprint: null, count: null })) };
+    }
+    const stores = [];
+    for (const [store, key, field] of definitions) {
+      const storagePresent = Object.hasOwn(values, key);
+      const result = { store, storagePresent, fieldPresent: false, parseStatus: storagePresent ? 'valid' : 'absent', mode: null, fingerprint: null, count: null };
+      if (storagePresent) {
+        try {
+          const raw = values[key];
+          const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+          if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) ||
+            !parsed.state || typeof parsed.state !== 'object' || Array.isArray(parsed.state)) throw new Error();
+          result.fieldPresent = Object.hasOwn(parsed.state, field);
+          if (result.fieldPresent) {
+            const value = parsed.state[field];
+            if (store === 'settings') {
+              if (!['ask', 'act'].includes(value)) throw new Error();
+              result.mode = value;
+            } else {
+              if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error();
+              const entries = Object.entries(value).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
+              if (entries.some(([, mode]) => !['ask', 'act'].includes(mode))) throw new Error();
+              const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(entries)));
+              result.fingerprint = [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+              result.count = entries.length;
+            }
+          }
+        } catch {
+          result.parseStatus = 'invalid'; result.fieldPresent = null;
+          result.mode = null; result.fingerprint = null; result.count = null;
+        }
+      }
+      stores.push(result);
+    }
+    return { status: stores.every((entry) => ['valid', 'absent'].includes(entry.parseStatus)) ? 'observed' : 'unknown', stores };
+  })()`;
+}
+
+export function guestModeShadowMatches(observed, baseline) {
+  const valid = (value) =>
+    value?.status === 'observed' &&
+    Array.isArray(value.stores) &&
+    value.stores.length === 3 &&
+    value.stores.every(
+      (entry, index) =>
+        entry.store === ['settings', 'chat', 'pilot'][index] &&
+        ['valid', 'absent'].includes(entry.parseStatus) &&
+        typeof entry.storagePresent === 'boolean' &&
+        typeof entry.fieldPresent === 'boolean',
+    );
+  return (
+    valid(observed) && valid(baseline) && JSON.stringify(observed) === JSON.stringify(baseline)
+  );
+}
+
 export async function observeGuestPreference(panel, preference, driver = nativeDriver) {
   return driver.evaluate(
     panel,
@@ -182,8 +252,8 @@ export async function observeGuestPreference(panel, preference, driver = nativeD
     const rows = [...(pane?.querySelectorAll('span') ?? [])]
       .filter((node) => node.textContent.trim() === ${JSON.stringify(preference.label)});
     const triggers = rows.flatMap((row) => [...row.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
-    const raw = ${JSON.stringify(preference.caseId)} === 'T10'
-      ? null : (await chrome.storage.local.get('matrx.settings.v1'))['matrx.settings.v1'];
+    const shadowFootprint = ${JSON.stringify(preference.caseId)} === 'T10' ? await ${guestModeShadowExpression()} : null;
+    const raw = shadowFootprint ? null : (await chrome.storage.local.get('matrx.settings.v1'))['matrx.settings.v1'];
     let value = null;
     let storedPresent = false;
     try {
@@ -191,6 +261,10 @@ export async function observeGuestPreference(panel, preference, driver = nativeD
       storedPresent = Object.hasOwn(state ?? {}, ${JSON.stringify(preference.key)});
       value = state?.[${JSON.stringify(preference.key)}] ?? null;
     } catch {}
+    if (shadowFootprint) {
+      value = shadowFootprint.stores[0].mode;
+      storedPresent = shadowFootprint.stores[0].fieldPresent;
+    }
     const allowed = ${JSON.stringify(preference.choices.map(([value]) => value))};
     const rendered = (() => {
       const probe = document.createElement('div');
@@ -221,7 +295,8 @@ export async function observeGuestPreference(panel, preference, driver = nativeD
         ? triggers[0].textContent.trim() : null,
       stored: allowed.includes(value) ? value : null,
       storedPresent,
-      storagePresent: typeof raw === 'string',
+      storagePresent: shadowFootprint ? shadowFootprint.stores[0].storagePresent : typeof raw === 'string',
+      ...(shadowFootprint && { shadowFootprint }),
       saveRefusal: ${JSON.stringify(preference.caseId)} === 'T10' &&
         [...(pane?.querySelectorAll('[role="alert"]') ?? [])]
           .some((node) => node.textContent.trim() === 'Sign in to save Default mode.'),
@@ -233,12 +308,13 @@ export async function observeGuestPreference(panel, preference, driver = nativeD
   );
 }
 
-export function guestModeRefusalMatches(state) {
+export function guestModeRefusalMatches(state, baseline = state) {
   return (
     state?.activeSettings === true &&
     state?.count === 1 &&
     state.selected === 'Act without asking' &&
-    state.saveRefusal === true
+    state.saveRefusal === true &&
+    guestModeShadowMatches(state.shadowFootprint, baseline?.shadowFootprint)
   );
 }
 
@@ -250,6 +326,8 @@ export async function runGuestModeRefusalCase(
   afterReload = async () => {},
   driver = nativeDriver,
   onStage = () => {},
+  expectedBaseline = undefined,
+  onBaseline = () => {},
 ) {
   const at = async (stage, action) => {
     onStage(stage, 'started');
@@ -268,6 +346,14 @@ export async function runGuestModeRefusalCase(
     observeGuestPreference(panel, preference, driver),
   );
   assert.equal(initial?.selected, 'Act without asking', 'guest_mode_requires_effective_act');
+  const baseline = expectedBaseline ?? preferenceBaseline(initial, preference);
+  assert.equal(baseline?.matched, true, 'T10_shadow_baseline_unobserved');
+  assert.equal(
+    preferenceBaselineMatches(initial, preference, baseline),
+    true,
+    'T10_shadow_baseline_mismatch',
+  );
+  onBaseline(baseline);
   await at('choice_control', () => driver.click(panel, 'settings-select', preference.label));
   await at('choice_option', () => driver.click(panel, 'option', 'Ask before acting'));
   const refused = await at('choice_observation', () =>
@@ -278,7 +364,7 @@ export async function runGuestModeRefusalCase(
         onStage('choice_observation', 'sample', sample);
         return sample;
       },
-      guestModeRefusalMatches,
+      (state) => guestModeRefusalMatches(state, baseline.observation),
     ),
   );
   record('Guest Ask choice is refused and Act restored with sign-in guidance', refused, true);
@@ -290,7 +376,8 @@ export async function runGuestModeRefusalCase(
   const restored =
     reloaded?.activeSettings === true &&
     reloaded?.count === 1 &&
-    reloaded.selected === 'Act without asking';
+    reloaded.selected === 'Act without asking' &&
+    preferenceBaselineMatches(reloaded, preference, baseline);
   record('Guest mode remains Act after panel reload', reloaded, restored);
   assert.equal(restored, true, 'T10_guest_mode_reload_mismatch');
   await at('choice_after_reload_callback', () =>
@@ -305,8 +392,9 @@ export async function runGuestModeRefusalCase(
   return {
     value: 'act',
     label: 'Act without asking',
-    storedPresent: false,
-    storagePresent: false,
+    storedPresent: reloaded.storedPresent,
+    storagePresent: reloaded.storagePresent,
+    shadowFootprint: reloaded.shadowFootprint,
     matched: restored,
     observation: reloaded,
   };
@@ -322,7 +410,17 @@ export async function runGuestPreferenceCase(
   onBaseline = () => {},
 ) {
   if (preference.caseId === 'T10')
-    return runGuestModeRefusalCase(panel, reloadSettings, preference, record, afterReload, driver);
+    return runGuestModeRefusalCase(
+      panel,
+      reloadSettings,
+      preference,
+      record,
+      afterReload,
+      driver,
+      undefined,
+      undefined,
+      onBaseline,
+    );
   await driver.openSection(panel, preference.section);
   const initial = await observeGuestPreference(panel, preference, driver);
   const baselineChoice =
@@ -627,6 +725,23 @@ async function restoreAbsentPreference(panel, preference, storagePresent, driver
 }
 
 export function preferenceBaseline(observation, preference) {
+  if (preference.caseId === 'T10') {
+    const choice = preference.choices.find(([, label]) => label === observation?.selected);
+    const baseline = {
+      value: choice?.[0] ?? null,
+      label: choice?.[1] ?? null,
+      storedPresent: observation?.storedPresent,
+      storagePresent: observation?.storagePresent,
+      observation: observation ? JSON.parse(JSON.stringify(observation)) : null,
+    };
+    return {
+      ...baseline,
+      matched:
+        !!choice &&
+        choice[0] === 'act' &&
+        preferenceBaselineMatches(observation, preference, baseline),
+    };
+  }
   const byStored = preference.choices.find(([value]) => value === observation?.stored);
   const bySelected = preference.choices.find(([, label]) => label === observation?.selected);
   const value = byStored?.[0] ?? bySelected?.[0] ?? null;
@@ -649,6 +764,14 @@ export function preferenceBaseline(observation, preference) {
 }
 
 export function preferenceBaselineMatches(observed, preference, baseline) {
+  if (preference.caseId === 'T10')
+    return (
+      observed?.activeSettings === true &&
+      observed?.count === 1 &&
+      observed.selected === 'Act without asking' &&
+      baseline?.value === 'act' &&
+      guestModeShadowMatches(observed.shadowFootprint, baseline?.observation?.shadowFootprint)
+    );
   if (baseline?.storedPresent === undefined)
     return preferenceMatches(observed, preference, baseline?.value, baseline?.label);
   return (
@@ -705,6 +828,17 @@ export async function restoreGuestPreferenceBaseline(
   record,
   driver = nativeDriver,
 ) {
+  if (preference.caseId === 'T10') {
+    await driver.openSection(panel, preference.section);
+    const observed = await observeGuestPreference(panel, preference, driver);
+    assert.equal(
+      preferenceBaselineMatches(observed, preference, baseline),
+      true,
+      'T10_shadow_baseline_mismatch',
+    );
+    record('Original Default mode footprint remains unchanged', observed, true);
+    return observed;
+  }
   let stage = 'validate_baseline';
   let last;
   try {

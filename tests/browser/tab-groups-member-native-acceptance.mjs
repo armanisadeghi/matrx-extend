@@ -358,6 +358,11 @@ async function runCanonicalTool(panel, name, args) {
 }
 
 async function main() {
+  assert.ok(
+    process.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
+    'tab_groups_member_approved_organization_required',
+  );
+
   assert.ok(extensionDir && receiptPath, 'tab_groups_artifact_inputs_missing');
   assert.match(
     process.env.MATRX_TAB_GROUPS_SOURCE_SHA ?? '',
@@ -432,6 +437,7 @@ async function main() {
               panel,
               repo: REPO,
               memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+              memberApprovedOrganizationFile: process.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
               allowLadderOrganization: true,
               onStage: (value) => {
                 report.stage = `auth_${value}`;

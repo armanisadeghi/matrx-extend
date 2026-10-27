@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
+import { webcrypto } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
+import { Window } from 'happy-dom';
 import {
   FULL_EXTENSION_RECHECK_IDS,
   enforceFullExtensionRechecks,
@@ -10,7 +12,11 @@ import {
   runFullExtensionRecheck,
   snapshotPanelDocumentReload,
 } from './settings-full-extension-rechecks.mjs';
-import { GUEST_PREFERENCES, preferenceBaseline } from './settings-guest-preference-batch.mjs';
+import {
+  GUEST_PREFERENCES,
+  observeGuestPreference,
+  preferenceBaseline,
+} from './settings-guest-preference-batch.mjs';
 import {
   runGuestSectionsCase,
   scrapeSwitchWaitDiagnostic,
@@ -217,6 +223,9 @@ test('inner restoration serialization rejects unknown stages and strips arbitrar
 });
 
 function fullRestartFixture({
+  mutateModeAfterReplacement = false,
+  realModeStorage = false,
+  mutateRawModeAfterReplacement = false,
   absentTheme = false,
   absentMode = false,
   omitChoiceDriver = false,
@@ -247,6 +256,7 @@ function fullRestartFixture({
       activeSettings: true,
       count: 1,
       selected: 'Act without asking',
+      shadowFootprint: emptyModeFootprint(),
       stored: null,
       storedPresent: false,
       storagePresent: false,
@@ -271,10 +281,22 @@ function fullRestartFixture({
     version: 0,
   });
   const storage = scrapeContainerPresent ? { [settingsKey]: scrapeBaseline } : {};
-  const calls = { reloads: [], options: [], chats: [], caseRunners: [], scrapeBaseline };
+  const calls = {
+    reloads: [],
+    options: [],
+    chats: [],
+    caseRunners: [],
+    scrapeBaseline,
+    removals: [],
+  };
+  const modeDocument = realModeStorage ? new Window().document : null;
+  if (modeDocument)
+    modeDocument.body.innerHTML =
+      '<button role="tab" data-matrx-title="Settings" data-state="active" aria-controls="settings-pane"></button><div id="settings-pane" role="tabpanel" data-state="active"><div><div><span>Default mode</span></div><button role="combobox">Act without asking</button></div></div>';
   const local = {
     get: async () => ({ ...storage }),
     remove: async (key) => {
+      calls.removals.push(key);
       delete storage[key];
     },
     set: async (entries) => Object.assign(storage, entries),
@@ -325,6 +347,21 @@ function fullRestartFixture({
   const choiceDriver = {
     async evaluate(panel, script) {
       assert.equal(panel, activePanel);
+      if (realModeStorage && script.includes('const shadowFootprint = "T10"')) {
+        currentPreference = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+        return JSON.parse(
+          JSON.stringify(
+            await runInNewContext(script, {
+              document: modeDocument,
+              window: { matchMedia: () => ({ matches: false }) },
+              getComputedStyle: () => ({ backgroundColor: 'rgb(255, 255, 255)' }),
+              TextEncoder,
+              crypto: webcrypto,
+              chrome: { storage: { local } },
+            }),
+          ),
+        );
+      }
       if (script.includes('"defaultPermissionMode"'))
         currentPreference = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
       if (
@@ -335,6 +372,7 @@ function fullRestartFixture({
         return runInNewContext(script, { chrome: { storage: { local } } });
       }
       if (script.includes('const originalStoragePresent =')) {
+        if (realModeStorage) await runInNewContext(script, { chrome: { storage: { local } } });
         if (failBaselineRestore === 'remove_absent_key')
           throw new TypeError('private token secret');
         const restored = script.includes('"defaultPermissionMode"') ? states.T10 : states.T04;
@@ -348,6 +386,11 @@ function fullRestartFixture({
     },
     async click(panel, kind, label) {
       assert.equal(panel, activePanel);
+      if (kind === 'settings-select') {
+        const control = allChoices.find((item) => item.label === label);
+        assert.ok(control, `unknown fixture control ${label}`);
+        currentPreference = control;
+      }
       if (kind !== 'option') return;
       calls.options.push([currentPreference.caseId, label]);
       if (label === skipChoice) return;
@@ -367,7 +410,16 @@ function fullRestartFixture({
           if (refusalNeverShows) {
             state.selected = 'Ask before acting';
             state.saveRefusal = false;
-          } else state.saveRefusal = true;
+          } else {
+            state.saveRefusal = true;
+            if (modeDocument && !modeDocument.querySelector('[role="alert"]'))
+              modeDocument
+                .getElementById('settings-pane')
+                .insertAdjacentHTML(
+                  'beforeend',
+                  '<div role="alert">Sign in to save Default mode.</div>',
+                );
+          }
           return;
         }
         state.selected = label;
@@ -406,6 +458,8 @@ function fullRestartFixture({
   const observePreference = async (panel, preference) => {
     assert.equal(panel, activePanel);
     currentPreference = preference;
+    if (realModeStorage && preference.caseId === 'T10')
+      return observeGuestPreference(panel, preference, choiceDriver);
     return { ...states[preference.caseId] };
   };
   const observeAutoScrapeMode = async (panel) => {
@@ -424,6 +478,18 @@ function fullRestartFixture({
     };
   };
   const reloadExtension = async () => {
+    if (mutateRawModeAfterReplacement)
+      storage[settingsKey] = JSON.stringify({ state: { defaultPermissionMode: 'ask' } });
+    if (mutateModeAfterReplacement) {
+      const entry = states.T10.shadowFootprint.stores[1];
+      Object.assign(entry, {
+        storagePresent: true,
+        fieldPresent: true,
+        parseStatus: 'valid',
+        fingerprint: 'a'.repeat(64),
+        count: 1,
+      });
+    }
     const previous = activePanel;
     calls.reloads.push(previous.targetId);
     activePanel = makePanel(`panel-replacement-${calls.reloads.length}`);
@@ -705,7 +771,7 @@ test('T10 failed refusal predicate records the last Ask poll rather than its ini
   assert.doesNotMatch(JSON.stringify(mode.fullExtensionReload), /private|secret|https?:\/\//);
 });
 
-test('guest mode drift fails rather than reporting a persisted Ask choice', async () => {
+test('guest mode drift fails before a reload or sibling choice can conceal it', async () => {
   const f = fullRestartFixture();
   f.states.T10.selected = 'Ask before acting';
   f.states.T10.stored = 'ask';
@@ -715,7 +781,8 @@ test('guest mode drift fails rather than reporting a persisted Ask choice', asyn
   assert.equal(mode.fullExtensionReload.firstChoiceFailureStage, 'initial_baseline_observation');
   assert.equal(f.states.T10.selected, 'Ask before acting');
   assert.equal(f.states.T10.stored, 'ask');
-  assert.ok(f.calls.reloads.length >= 1);
+  assert.deepEqual(f.calls.reloads, []);
+  assert.deepEqual(f.calls.options, []);
 });
 
 test('full-extension callbacks retain separate safe choice and restore stages plus allowlisted transport classes', async () => {
@@ -890,4 +957,84 @@ test('T67 restores an originally absent container after exercising explicit capt
   await f.run();
   assert.equal(f.reportCases[4].fullExtensionReload.status, 'pass');
   assert.equal(Object.hasOwn(f.storage, 'matrx.settings.v1'), false);
+});
+
+function emptyModeFootprint() {
+  return {
+    status: 'observed',
+    stores: ['settings', 'chat', 'pilot'].map((store) => ({
+      store,
+      storagePresent: false,
+      fieldPresent: false,
+      parseStatus: 'absent',
+      mode: null,
+      fingerprint: null,
+      count: null,
+    })),
+  };
+}
+
+test('T10 compares immutable warm footprint after replacement before a new Ask choice', async () => {
+  const f = fullRestartFixture({ mutateModeAfterReplacement: true });
+  await f.run();
+  const mode = f.reportCases.find((item) => item.id.endsWith('T10'));
+  assert.equal(mode.fullExtensionReload.status, 'fail');
+  assert.equal(mode.fullExtensionReload.firstChoiceFailureStage, 'initial_baseline_observation');
+  assert.equal(
+    f.calls.options.some(([id]) => id === 'T10'),
+    false,
+  );
+  assert.ok(f.calls.reloads.length > 0);
+  assert.equal(
+    f.preExtensionBaselines.T10.observation.shadowFootprint.stores[1].storagePresent,
+    false,
+  );
+});
+
+// One shared raw settings store feeds the real generated mode observer and Theme cleanup.
+// A detached synthetic mode footprint would not expose deletion hiding this mutation.
+test('outer replacement mode shadow is detected before destructive Theme work', async () => {
+  const f = fullRestartFixture({
+    realModeStorage: true,
+    absentTheme: true,
+    scrapeContainerPresent: false,
+  });
+  const mode = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  f.preExtensionBaselines.T10 = preferenceBaseline(
+    await f.observePreference(f.activePanel, mode),
+    mode,
+  );
+  f.storage['matrx.settings.v1'] = JSON.stringify({ state: { defaultPermissionMode: 'ask' } });
+  await f.run();
+  const result = f.reportCases.find((item) => item.id.endsWith('T10')).fullExtensionReload;
+  assert.equal(result.status, 'fail');
+  assert.deepEqual(f.calls.options, []);
+  assert.deepEqual(f.calls.removals, []);
+  assert.equal(JSON.parse(f.storage['matrx.settings.v1']).state.defaultPermissionMode, 'ask');
+});
+
+test('Theme replacement mode shadow remains observable before absent-container cleanup', async () => {
+  const f = fullRestartFixture({
+    realModeStorage: true,
+    absentTheme: true,
+    scrapeContainerPresent: false,
+    mutateRawModeAfterReplacement: true,
+  });
+  const mode = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  f.preExtensionBaselines.T10 = preferenceBaseline(
+    await f.observePreference(f.activePanel, mode),
+    mode,
+  );
+  await f.run();
+  assert.equal(
+    f.reportCases.find((item) => item.id.endsWith('T10')).fullExtensionReload.status,
+    'fail',
+  );
+  assert.ok(f.calls.reloads.length > 0);
+  assert.deepEqual(f.calls.removals, []);
+  assert.equal(JSON.parse(f.storage['matrx.settings.v1']).state.defaultPermissionMode, 'ask');
+  assert.equal(
+    f.calls.options.some(([id]) => id === 'T10'),
+    false,
+  );
 });
