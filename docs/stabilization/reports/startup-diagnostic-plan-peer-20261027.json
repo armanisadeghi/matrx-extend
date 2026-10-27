@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "task_id": "startup_diagnostic_plan_peer_20261027",
+  "reviewer": "/root/startup_diagnostic_plan_peer",
+  "zero_authorship": true,
+  "at": "2026-10-27T01:00:44.163093+00:00",
+  "source_sha_at_review": "c4633012ee8dfad4b991ccbb9d8a28255b8725a2",
+  "status": "EXECUTE_EXISTING_ROUTE_ONLY_AFTER_EXACT_SOURCE_PREREQUISITES",
+  "A": {
+    "verdict": "PASS_BOUNDED_DISCRIMINATING_PLAN_NOT_ROOT_CAUSE_OR_PRODUCT_PROOF",
+    "findings": [],
+    "useful_evidence": [
+      "Existing headed A startup-resource-diagnostic uses shared launcher and connector with policy nativeCdpStartupDeadlineMs8000 unchanged. MATRX_STARTUP_INTERVAL_DIAGNOSTIC=1 enables both CPU bracket and observeNativeCdpStartup; separate CDP flag is unnecessary.",
+      "Missing endpoint can be separated into still-absent versus appeared-after-timeout, live versus exited child, and initial/final lock shape. Timer samples and CPU capture timestamps can show coincident reader/scheduling/CPU delay.",
+      "Compared latest minimal B disabled these observers; using existing route adds discriminating evidence rather than repeating same product run. Prior diagnostic4392ms success proves only a successful sibling, not this cause."
+    ],
+    "limits": [
+      "Two lock snapshots are not a complete lock lifecycle or Chrome internal phase trace. No causal CPU attribution from mixed process snapshot, correlation or process CPU lifetime. CPU bracket begins before launch resource admission and ends after connector settlement, not exact Chrome-only interval.",
+      "Post-timeout helper uses lstat presence only. endpointPresenttrue is not readable/validated/owned CDP, successful handshake or authorization to connect after the original failure. Original8000ms timeout remains failure.",
+      "Successful CDP/panel-ready diagnostic does not reproduce timeout, fix it, establish batch reliability or prove product content. Exact failed Chromium binary/version/digest remains unknown absent existing emitted readback."
+    ]
+  },
+  "B": {
+    "verdict": "PASS_EXISTING_ENFORCED_ROUTE_WITH_UNMET_EXECUTION_PREREQUISITES",
+    "requirements": [
+      "Use only normal plan-startup-diagnostic then dispatch-startup-diagnostic, A/startup-resource-diagnostic/macos-15-intel/headed; requested_by is extend-stabilization. No direct hosted-guest workflow fallback after refusal.",
+      "Helper requires HEAD==remote main==sourceSha and completely clean porcelain before and immediately before dispatch. Artifact CI source must equal sourceSha: startup route does not pass allowRuntimeEquivalent. A documentation-descendant artifact accepted for owner promotion is insufficient here.",
+      "Require exact successful main CI and official nonexpired development artifact/digest; current source/runtime/workflow recheck. Workflow byte hash must equal reviewed41bda5ce\u2026dee596. Never change runner, deadline, resource threshold or source-eligibility rules to make this probe pass.",
+      "Normal helper checks queued/in_progress/waiting/pending/requested for hosted acceptance and hosted resource diagnostics, rejects incomplete listings and active A/diagnostic conflicts, allows isolated B only. Remote package/browser/startup each run through unchanged host-local resource guard. One job/host, max2hosted, max3workers+owner and shared fixture/secret serialization still apply.",
+      "No auth/AI/fixture activation/secret staging in this route; member activation remains held. Guard unsafe/pending unrecovered/missing terminal/cleanup uncertainty preserves invalid/unverified. Observe owned GitHub handle no more often once60s.",
+      "Capture official result artifact and package/browser/hosted-startup original journals, finalized resource decisions/watch evidence, diagnostic JSON, safe BROWSER_CDP_STARTUP_INTERVAL/BROWSER_STARTUP_CPU_INTERVAL/BROWSER_STARTUP_FAILURE log markers and exact artifact provenance. Full raw logs stay private until sanitized.",
+      "Diagnostic emits hosted-startup journal, not hosted-guest. Existing normal product verifier will refuse HOSTED_JOURNAL_FOREIGN; preserve that limit, do not rename journals or issue a product certificate. Prior40264782778 record already proves this expected distinction."
+    ]
+  },
+  "exact_main_CI_option": {
+    "verdict": "EXISTING_CI_DISPATCH_TECHNICALLY_SUPPORTED_AFTER_DEDUP_NOT_DISPATCHED_OR_NEW_AUTHORIZATION",
+    "evidence": [
+      "ci.yml declares workflow_dispatch expected_source_sha/requested_by; assert-source checks main/ref/expected exactSHA.",
+      "ci-change-scope allows docs optimization only push/main or PR, so workflow_dispatch fails closed to full checks/build.",
+      "development-ci-event accepts authorized workflow_dispatch, main/success/path/attempt; artifact producer also recognizes it.",
+      "Manifest ci.yml includes dispatch trigger and public billed increment$0 for existing Linux/Mac legs. $100 total ceiling and any actual account/job billing block still bind."
+    ],
+    "conditions": [
+      "First inspect actual current automatic CI and artifacts. Do not duplicate a confirmed live exact-source run; wait existing handle until terminal. If automatic exact-current run is docs-only/no artifact and no other eligible artifact exists, one real exact-source ci.yml dispatch can produce needed artifact via existing path.",
+      "Use real current pushed main SHA and requested_by=extend-stabilization, no fake publish receipt/GITHUB_RUN_ID or use of release-only dispatch helper. Recheck source immediately before dispatch; wait/record exact resulting handle.",
+      "Finalize needed tracked metadata first and keep source stable during CI/diagnostic. Any subsequent docs commit again violates this startup route strict exact-source rule; ordinary promoter compatibility does not waive it. New contributor runtime drift needs current source/artifact, not stale adoption or dispatch loops.",
+      "Parent must independently establish existing authorization/spend/billing state. This readonly peer creates no extra budget, paid-job permission, runner change, dispatch or release."
+    ]
+  },
+  "references": [
+    "docs/stabilization/reports/hosted-cdp-bootstrap-diagnosis-20261026.json",
+    "docs/stabilization/reports/startup-a-40264782778-20261026.json",
+    "docs/stabilization/reports/scrape-b-9ec-20261026.json",
+    "docs/stabilization/PLAN.md#3-resource-admission-and-watchdog"
+  ],
+  "source_sha256": {
+    "scripts/hosted-remote-admission.mjs": "08b192f12c00c70f5602a5340c7d9c736f0aade52ebe4cded32208d0078de9e1",
+    "scripts/hosted-remote-admission.test.mjs": "ed8b8afda7a36a582a58567147c6379f4973be864c3ea491ed19d0da508268db",
+    ".github/workflows/hosted-guest-acceptance.yml": "41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596",
+    "tests/browser/native-sidepanel-qa-harness.mjs": "12b060756415d3934fa768d03e71bf02c1eb05b77a169aeae7f2468bd10a4d80",
+    "tests/browser/native-cdp-startup-diagnostic.mjs": "a914faf6424e68a1f1bf5874f6df30e6470fcadc4e80c09a1a0593146812d9c2",
+    "tests/browser/vault-owned-cdp.cjs": "3aa494dd1e3fdf3943f8001bcce6612cfe2bb0d1517086313f720d9b826ea2e8",
+    "scripts/hosted-startup-interval-diagnostic.mjs": "0da7ff8a99f0efbb85a7c731a46ddd6d68994d18ce24835a9e06d8030f1807eb",
+    "scripts/startup-process-interval.mjs": "74a8eb42354f3eee04d9ddfec192d037625a4ef7257e4a58789d884cea615d71",
+    "scripts/ci-change-scope.mjs": "8dab12c9545baf077e53e5c22932e372ce8a274e4f20c1141061f9f0ba7485a1",
+    "scripts/development-ci-event.mjs": "7c0fecd5ee73e65c102fb7d4c185e4e08547d64f77fba9c5d7741de72f2560c1",
+    ".github/workflows/ci.yml": "3e47185e7f7e4c064174e2efe429cda8bce1971337474f42ae1bde0814dd10cb",
+    ".github/ci-cost.json": "01825163ccc57be9570bf1f5e7c19d27cd7fe11a4148ce07111b93422736a98e",
+    "docs/stabilization/resource-policy.json": "8ab675504bc46198109169ccc4cfc4970a30a0db11a069ec4f44d6e22a772afe"
+  },
+  "execution": {
+    "dispatches": 0,
+    "tests": 0,
+    "UI": 0,
+    "auth": 0,
+    "AI": 0,
+    "source_edits": 0,
+    "product_credit": 0,
+    "commits": 0,
+    "owned_processes": 0
+  },
+  "next": "Parent verifies current automatic CI/artifact and strict source eligibility, then may execute one existing headed diagnostic after all normal gates. No blind product retry/member activation.",
+  "original_private_report_sha256": "337befc9da25a40a2c215b3e71ee8e2386ee793cac10b56858691ee012ecf8ec"
+}
