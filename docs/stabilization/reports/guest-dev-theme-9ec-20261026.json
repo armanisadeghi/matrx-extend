@@ -213,9 +213,11 @@
     },
     ".output/stabilization-checkpoints/guest-dev-theme-9ec-native/cleanup-focus.json": {
       "durable": "docs/stabilization/evidence/guest-dev-theme-9ec-20261026/cleanup-focus.json",
-      "sha256": "999650bedb6b7c1c5207d570aa4eebd7a9354e6ae5906e57c72bdf585ca2e5ef",
-      "transform": "original bytes"
+      "sha256": "e06ba2c7d386094f8ca135353d34c73c667825410d4f1166c9c8d131d2d657a4",
+      "transform": "Only append missing final newline for mandatory formatter; JSON values unchanged. Original private file/hash retained.",
+      "original_sha256": "999650bedb6b7c1c5207d570aa4eebd7a9354e6ae5906e57c72bdf585ca2e5ef"
     }
   },
-  "reference_limits": "Unmapped raw snapshots/windowmenus/profile commandline/NewTab shortcuts, watcher audit and API-gate timings remain private; hashes identify originals. No Theme input/behavior credit or authenticated-guest inference."
+  "reference_limits": "Unmapped raw snapshots/windowmenus/profile commandline/NewTab shortcuts, watcher audit and API-gate timings remain private; hashes identify originals. No Theme input/behavior credit or authenticated-guest inference.",
+  "publication_format_followthrough": "Post-review scoped Biome found only cleanup-focus.json missing final newline. Public copy normalized; private original unchanged. Other3 scoped JSON checks passed; final scoped check rerun."
 }
