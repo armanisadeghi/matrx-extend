@@ -1,0 +1,125 @@
+Window: "Example Domain", App: Google Chrome.
+0 standard window Example Domain - Google Chrome - Matrx Guest Test, URL: example.com/, Secondary Actions: Raise
+	1 container Example Domain - Google Chrome - Matrx Guest Test, URL: example.com/
+		2 container
+			3 toolbar
+				4 button Back
+				5 button (disabled) Forward
+				6 button Reload
+				7 container
+					8 pop up button View site information
+					9 text field (settable) Address and search bar, Value: example.com, Placeholder: Ask Google or type a URL
+					10 button Bookmark this tab
+				11 container
+					12 pop up button Matrx
+Has access to this site
+					13 pop up button Matrx Extend DEV
+Has access to this site
+					14 pop up button Extensions
+					15 button Close Side Panel
+				16 button Matrx Guest Test
+				17 pop up button Chrome
+			18 container
+				19 scroll area
+					20 HTML content Example Domain, URL: example.com/
+						21 text This domain is for use in documentation examples without needing permission. This is not a service; avoid relying on it for testing and monitoring purposes.
+						22 text هذا النطاق مُخصص للاستخدام في أمثلة التوثيق دون الحاجة إلى إذن. هذه ليست خدمة، يُرجى تجنب الاعتماد عليها لأغراض الاختبار والمراقبة.
+						23 text 该域名仅用于文档示例，无需获得许可。这并非一项服务，请勿将其用于测试和监控目的。
+						24 text L’usage de ce domaine est réservé à des exemples de documentation, sans autorisation préalable. Il ne s’agit pas d’un service ; son utilisation à des fins de test ou de surveillance est à éviter.
+						25 text Данный домен предназначен для использования в примерах документации без необходимости получения предварительного разрешения. Это не сервис; не рекомендуется его использование для тестирования и мониторинга.
+						26 text Este dominio está destinado al uso en ejemplos de documentación sin necesidad de permiso. Esto no es un servicio; evitar utilizarlo para realizar pruebas o monitoreos.
+						27 link Learn more, Value: iana.org/help/example-domains
+			28 scroll area
+				29 HTML content Matrx Extend, URL: chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html
+					30 container
+						31 tab group
+							32 tab (settable, integer) Chat, Value: 0
+							33 tab (settable, integer) Scrape, Value: 0
+							34 tab (settable, integer) SEO, Value: 0
+							35 tab (settable, integer) Data, Value: 0
+							36 tab (selected) Settings, Value: 1
+						37 pop up button Site access
+						38 pop up button G, Help: Account
+						39 container Settings
+							40 text Settings
+							41 container
+								42 button ACCOUNT
+								43 text Email
+								44 text —
+								45 button ORGANIZATION
+								46 button APPEARANCE
+								47 text Theme
+								48 combo box (settable) Dark
+									49 text Dark
+								50 button CHAT
+								51 text Default agent Choose an organization above Default mode
+								52 combo box (settable) Act without asking
+									53 text Act without asking
+								54 text Default speed COMING SOON
+								55 combo box (settable) Fast
+									56 text Fast
+								57 button PRIVACY
+								58 text Share page identity & email content LETS THE AGENT SEE YOUR VISIBLE USERNAME ON SITES AND GMAIL SUBJECTS/EXCERPTS
+								59 switch Share page identity & email content, Value: on
+								60 text Offer to save logins to the Vault AFTER YOU SIGN IN TO A SITE, ASK WHETHER TO SAVE THAT LOGIN — NOTHING IS SAVED WITHOUT YOUR CLICK
+								61 switch Offer to save logins to the Vault, Value: on
+								62 text Offer saved logins on sign-in forms ALLOWS MATCHING SAVED LOGINS; CHOOSE WHERE SUGGESTIONS APPEAR BELOW
+								63 switch Offer saved logins on sign-in forms, Value: on
+								64 text Show password suggestions on websites OFF KEEPS WEBSITES QUIET. PIN MATRX TO SEE TOOLBAR ASSISTANCE, THEN OPEN VAULT TO REVIEW SAVE OR UPDATE; NOTHING IS SAVED AUTOMATICALLY.
+								65 switch Show password suggestions on websites, Value: off
+								66 button SCRAPE
+								67 text Deep clean COMING SOON
+								68 switch Deep clean, Value: off
+								69 text Auto-scrape on load CAPTURE PAGE CONTENT IN THE BACKGROUND AFTER EACH LOAD
+								70 switch Auto-scrape on load, Value: off
+								71 text Auto-scrape mode SCROLL & CAPTURE LOADS LAZY CONTENT FIRST (SLOWER)
+								72 combo box (settable) Capture
+									73 text Capture
+								74 button DATA
+								75 button SEO
+								76 button DESKTOP BRIDGE
+								77 text Matrx 2
+								78 text Matrx 2 is not running on this computer
+								79 text Matrx Local
+								80 text Not connected
+								81 text Pairing is automatic when the Matrx desktop app runs on this computer. The code below is only needed to pair with a desktop app on another machine — copy it from that app's Settings → Bridge Test → Extension pairing.
+								82 text field (settable) Pair code
+								83 button (disabled) Pair
+								84 text Local engine port
+								85 text field (settable) auto
+								86 button Set
+								87 button DATA & RESET
+								88 button Clear local data on this device
+								89 button ABOUT
+							90 button Sign in
+			91 slider Side Panel Resize Handle (draggable), Secondary Actions: Decrement, Increment
+			92 container
+				93 text Matrx
+				94 checkbox Unpin from toolbar, Value: 1
+				95 button Close side panel
+			96 pop up button Tab search
+			97 container
+				98 tab group
+					99 tab (settable, boolean) New Tab - Memory usage - 90.3 MB, Value: off
+						100 button Close
+					101 tab (settable, boolean) Extensions - Matrx Extend DEV - Memory usage - 69.3 MB, Value: off
+						102 button Close
+					103 tab (selected, settable, boolean) Example Domain - Memory usage - 58.2 MB, Value: on
+						104 button Close
+			105 button New Tab
+	106 close button
+	107 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	108 minimize button
+109 menu bar
+	110 Chrome
+	111 File
+	112 Edit
+	113 View
+	114 History
+	115 Bookmarks
+	116 Profiles
+	117 Tab
+	118 Window
+	119 Help
+
+The focused UI element is 36 tab (selected) Settings, Value: 1

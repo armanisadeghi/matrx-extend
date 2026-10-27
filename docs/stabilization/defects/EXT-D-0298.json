@@ -1,0 +1,40 @@
+{
+  "id": "EXT-D-0298",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01"],
+  "title": "Startup diagnostics report unmeasured endpoint absence as false",
+  "surface": "supporting native startup diagnostics",
+  "auth_mode": "not-applicable; no auth or product behavior tested",
+  "severity": "S3",
+  "priority": "P0",
+  "state": "triaged",
+  "owner": "/root / endpoint_observation_truthfulness",
+  "preconditions": [
+    "Owned startup connector times out; optional startup observation callback enabled."
+  ],
+  "reproduction": [
+    "Inspect actual guarded diagnostic40433575951/sourceB3 timeout observation endpointPresent:false.",
+    "Inspect native harness timeout callback: it assigns literal false after CPU reporting, with no filesystem observation there.",
+    "Compare actual postfailure lstat true779ms later; physical presence at timeout remains unmeasured."
+  ],
+  "expected": "Unknown, last-reader outcome and actual filesystem observations are distinct, timestamped and honest; no file absence manufactured from a timeout or inspection error.",
+  "actual": "Timeout callback manufactures false; postwatch non-ENOENT inspection errors also return false. Aggregate last-read timing cannot establish physical publication time.",
+  "cause": "Presence and connector outcomes conflated; diagnostic serialization lacks observation provenance/per-read timing.",
+  "reproducibility": "Deterministic source composition plus one actual diagnostic; controlled RED/GREEN pending.",
+  "source_sha": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+  "evidence": [
+    "docs/stabilization/reports/late-cdp-publication-diagnosis-20261027.json",
+    "docs/stabilization/reports/hosted-startup-b3-20261027.json"
+  ],
+  "related_defects": ["EXT-D-0254", "EXT-D-0231"],
+  "fix_sha": null,
+  "next_action": "Attack bounded truthful-measurement contract, then implement with forcing RED/GREEN/compile and fresh independent retest. Preserve8s/polling behavior/resource thresholds/owner proof/original failed verdict. No product retry or bootstrap closure.",
+  "transition_history": [
+    {
+      "at": "2026-10-27T01:57:17.590334+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Fresh independent raw/source diagnosis confirms manufactured absence, distinct from still-open startup cause."
+    }
+  ]
+}

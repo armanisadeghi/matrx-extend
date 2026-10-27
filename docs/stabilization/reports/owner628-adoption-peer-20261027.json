@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "task_id": "owner628_adoption_peer_20261027",
+  "reviewer": "/root/owner628_adoption_peer",
+  "zero_authorship": true,
+  "at": "2026-10-27T01:49:51.261537+00:00",
+  "status": "PASS_BOUNDED_OWNER_PROFILE_INSTALLATION_AND_PROCEDURE_WITH_EXPLICIT_LIMITS",
+  "A": {
+    "verdict": "PASS_BOUNDED_OWNER628_SOURCE_B3_INSTALLATION",
+    "findings": [],
+    "verified": [
+      "Actual Chrome version/profile extract names156.0.8078.47 Official Build arm64 and Profile8; safe account extract namesarman@armansadeghi.com. This is Chrome profile identity, not extension sign-in or admin-role proof.",
+      "Native manager originals explicitly show DEV627 before and628 after, Reloaded toast, expectedcihdmkcdjjckfhjpgoedmgfpoljebaml, stable absolute Loadedfrom path, enabled and pinned. Store primaryhnfolienncfklkgmdjjmhhegglimlamg remains577/ChromeWebStore/enabled/pinned.",
+      "Independent canonical hashReleaseTree recomputation of imported and stable2817-file trees returns30153eb00dab7efa4534c21fe5a1e4305b21867f1d405d765a38bcd35c149df2; current promotion and original CI/local receipts agree.",
+      "Official GitHub reads independently confirm CI40431711230 attempt1 completed/success, push/main, sourceB3, ci.yml path; artifact12702018987 nonexpired/49797519B/digeste311c6a8272db435bacb6db3bfd58252448f11e03464d578a86e4871c9db9ced.",
+      "Native cleanup structural receipt attests original owner window/single selected tab/content focus restored and owned maintenance tabclosed; no independent UI cleanup replay or privatebody comparison performed."
+    ],
+    "limits": [
+      "No independent live UI replay or screenshot corroboration; nativeAX is observed-manager evidence.",
+      "No product behavior pass, actual extension admin identity, GuestProfile10 reload/currentness, Store submission or release acceptance.",
+      "Backend before/prepromotionaa9 differs from afterUI9cbb39c70b219f714f5ef0514a05e41de21f3153; priorAA9 guestChat proof cannot transfer to newer deployment."
+    ]
+  },
+  "B": {
+    "verdict": "PASS_BOUNDED_AUTHORIZED_IO_RESOURCE_PROVENANCE_AND_PUBLICATION_HYGIENE",
+    "findings": [],
+    "verified": [
+      "All8 whitelisted original files match SHA256 and bytecounts; safe profile/account extracts retain identity without full commandline/private ownerVaultbody or URL. Raw wrong-menu/account originals are excluded.",
+      "DEVELOPMENT explicitly authorizes canonical imported CI artifact promotion then actual Reload/path/version check. Import branch performs official gh metadata/download/digest and ZIP path checks, unzip, read/hash/copy/receipt writes; promoter rechecks provenance/current-main compatibility then staged filesystem copy/rename/hash and receipt. No local build/release or execution of downloaded artifact code in these IO branches.",
+      "Direct IO is bounded authorized control-plane download/hash/copy under monitored browser maintenance; it is not run-mode argv admission or per-process child supervision, and cannot authorize arbitrary heavy commands. No evidence of policy/allowlist/threshold changes or bypassing an actual refusal.",
+      "Journal SHAa560360edf913d8d8353cef9127b4e71a0c293bd24ae07d2f4236e6317162995 verified: ADMITTED01:39:43.186; all14 gate groups map exactly to latest healthy journal event with recomputed age(max15.679s), before STOP01:43:19.926; finalvalid0/resourceInvalidfalse. Local import receipt01:40:16.697 and promotion01:40:28.004 are inside admitted interval.",
+      "Watcher original audit contains146reads/maxgap2.007766416994855s/no risks, finalvalid0. Actual tool-session exits are actor/parent attested; reviewer did not inherit or repoll old handles.",
+      "One stale-index click opened only Chrome menu; retained private snapshot supports menu-open state without chosen submenu/item. Actor reports dismissal and correct fresh Work-account observation. Preserve this operator deviation, not perfect process compliance.",
+      "Canonical heavy child directory absent at review observation; registryroot persistence is not a lease. Private guard environment removal and all owned processes terminal are actor attestations, consistent with final journal/absence. No global future lease-absence claim."
+    ],
+    "limits": [
+      "Original ownerVaultbody/URL emitted automatically in tool-only getApp context is not public evidence; do not publish that context.",
+      "IO command start/individual process supervision, original full browser-state restoration and private envfile deletion are not independently replayed.",
+      "Source/currentness is bounded to B3 receipt/observation; later source/runtime drift requires recheck."
+    ]
+  },
+  "verified_github": {
+    "run": 40431711230,
+    "attempt": 1,
+    "event": "push",
+    "branch": "main",
+    "source": "b3b3d345e87959e277a3513b3c38226160fe6d13",
+    "path": ".github/workflows/ci.yml",
+    "status": "completed/success",
+    "artifact": 12702018987,
+    "nonexpired": true,
+    "size_bytes": 49797519,
+    "digest": "sha256:e311c6a8272db435bacb6db3bfd58252448f11e03464d578a86e4871c9db9ced"
+  },
+  "independent_tree_verification": {
+    "imported_tree": "30153eb00dab7efa4534c21fe5a1e4305b21867f1d405d765a38bcd35c149df2",
+    "stable_tree": "30153eb00dab7efa4534c21fe5a1e4305b21867f1d405d765a38bcd35c149df2",
+    "files_each": 2817,
+    "method": "Existing canonical hashReleaseTree export, readonly filesystem hashing; no test/build/browser execution."
+  },
+  "source_report_sha256": "92b07e8aa9c27063b7361c9b98dc9b56e87ab7127b9e55f77b0e8f7ac1e8fb7e",
+  "original_journal": {
+    "path": "docs/stabilization/resource-journals/owner628-b3-20261027-0138.jsonl",
+    "sha256": "a560360edf913d8d8353cef9127b4e71a0c293bd24ae07d2f4236e6317162995"
+  },
+  "safe_publication_whitelist": {
+    "initial-window-menu.ax.txt": {
+      "sha256": "bc64f127420063d6a055e06e936ab01cf0c8ade2196ac852870f631207b1c211",
+      "bytes": 1323,
+      "original_path": ".output/stabilization-checkpoints/owner628-b3-native/initial-window-menu.ax.txt"
+    },
+    "profile-version-extract.ax.txt": {
+      "sha256": "22ed7e3bb2d3a0f0ade57afcef37066cddcdd60a772017672f00f670783e5412",
+      "bytes": 312,
+      "original_path": ".output/stabilization-checkpoints/owner628-b3-native/profile-version-extract.ax.txt"
+    },
+    "owner-account-extract.ax.txt": {
+      "sha256": "7fbd3717fefb3d6743985b833a08c27051780e81797d254c0fd949570d337a4a",
+      "bytes": 296,
+      "original_path": ".output/stabilization-checkpoints/owner628-b3-native/owner-account-extract.ax.txt"
+    },
+    "dev-before.ax.txt": {
+      "sha256": "4ba5805f13180d23492c9cd3a12a321bb082f7972115e72efaac7c80db807d7b",
+      "bytes": 5671,
+      "original_path": ".output/stabilization-checkpoints/owner628-b3-native/dev-before.ax.txt"
+    },
+    "dev-reloaded.ax.txt": {
+      "sha256": "75807990b3ca10cb2cf2da47943dcd43d421d75145d3fe267809378933d572f3",
+      "bytes": 6287,
+      "original_path": ".output/stabilization-checkpoints/owner628-b3-native/dev-reloaded.ax.txt"
+    },
+    "store-preserved.ax.txt": {
+      "sha256": "1be5ca7fc1ad328c87cd681b19796370f0a95dd7e047c3e49759d97ce62f0ac2",
+      "bytes": 6035,
+      "original_path": ".output/stabilization-checkpoints/owner628-b3-native/store-preserved.ax.txt"
+    },
+    "cleanup.json": {
+      "sha256": "0a14638b7cee8491b7dc90157c88315bac3fd26d3282bf54f1e5b9e53d041aca",
+      "bytes": 360,
+      "original_path": ".output/stabilization-checkpoints/owner628-b3-native/cleanup.json"
+    },
+    "gates.json": {
+      "sha256": "e67636b599ffff4d0aea0c822106aa8769857d64474d1995b5458329da492dcd",
+      "bytes": 2081,
+      "original_path": ".output/stabilization-checkpoints/owner628-b3-native/gates.json"
+    }
+  },
+  "auxiliary_safe_source_evidence": {
+    ".output/stabilization-checkpoints/owner628-b3-backend-before.json": {
+      "sha256": "b0e4ee96ef56f85e88c3f637b1ef3429ac6b2ab319c2ba30f47668557cc60417",
+      "bytes": 102
+    },
+    ".output/stabilization-checkpoints/owner628-b3-backend-prepromote.json": {
+      "sha256": "b0e4ee96ef56f85e88c3f637b1ef3429ac6b2ab319c2ba30f47668557cc60417",
+      "bytes": 102
+    },
+    ".output/stabilization-checkpoints/owner628-b3-backend-after.json": {
+      "sha256": "053cf35b73486203bc01825bfbe7b022dd427972c5cb5402dd1c6e35f41d7fe4",
+      "bytes": 102
+    },
+    ".output/stabilization-checkpoints/owner628-b3-watch-20261027.jsonl": {
+      "sha256": "3397fabea442cb67c0a0399ac01452e01fb2d3bab1fedecb684f15316ac951b9",
+      "bytes": 46584
+    },
+    ".output/stabilization-checkpoints/owner628-b3-watch-20261027-report.json": {
+      "sha256": "0b54871fc559953291bb8e8a2a66fd771161248c9dabd8eac1cb0fc4806b3a0d",
+      "bytes": 766
+    }
+  },
+  "private_exclusions": [
+    ".output/stabilization-checkpoints/owner628-b3-native/private-wrong-menu.ax.txt",
+    ".output/stabilization-checkpoints/owner628-b3-native/owner-account.ax.txt",
+    "tool-only originalVault context"
+  ],
+  "publication_requirements": [
+    "Preserve originalAX bytes/whitespace and hashes. Format authored JSON; if copy transforms formatting, retain originalhash and explicit new publichash/transform.",
+    "Add durable public evidence map for copied safe originals and restored journal; unmapped .output references are private source paths, not durable public files.",
+    "Retain backenddrift, wrong-menu correction, absence of independentUIreplay, noGuestcurrentness and no product/release credit."
+  ],
+  "review_actions": {
+    "UI_actions": 0,
+    "tests": 0,
+    "AI_calls": 0,
+    "dispatches": 0,
+    "tracked_edits": 0,
+    "commits": 0,
+    "live_own_processes": 0
+  },
+  "next": "Parent can publish bounded maintenance proof; separately retest current9cbb guest behavior before any relevant release acceptance, preserve current-source eligibility and outstanding nonadmin/product gates.",
+  "original_private_peer_sha256": "7bd1383bb5fbfc529ee6fb291d927e5cedfe5e394fae331152de29eef399a0e4",
+  "durable_evidence_directory": "docs/stabilization/evidence/owner628-b3-20261027"
+}

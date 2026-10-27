@@ -1,0 +1,31 @@
+The following is a diff from the previous accessibility tree for Window: "Example Domain" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
++			158 scroll area
++				159 HTML content Matrx Extend, URL: chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html
++					160 container
++						161 tab group
++							162 tab (selected) Chat, Value: 1
++							163 tab (settable, integer) Scrape, Value: 0
++							164 tab (settable, integer) SEO, Value: 0
++							165 tab (settable, integer) Data, Value: 0
++							166 tab (settable, integer) Settings, Value: 0
++						167 pop up button Site access
++						168 pop up button G, Help: Account
++						169 container Chat
++							170 container
++								171 toggle button Chats, Value: 0
++								172 text New chat
++								173 button New chat
++								174 container
++									175 heading Evening, Value: 1
++										176 text Evening
++									177 text entry area (settable) How can I help you today?
++									178 button Chat Options
++									179 pop up button Talk out loud
++									180 toggle button Record audio, Value: 0
++									181 button 10 included
++									182 pop up button Capabilities
++									183 button Agent: Claude Sonnet 5.5 · Matrx Browser Agent
++									184 pop up button Output: Text, Help: Text
++									185 container Loading quick actions
+~					150 tab (selected, settable, boolean) Example Domain - Memory usage - 58.2 MB, Value: on
+The focused UI element is 177 text entry area (settable) How can I help you today?

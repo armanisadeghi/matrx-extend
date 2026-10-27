@@ -1,0 +1,4 @@
+The following is a diff from the previous accessibility tree for Window: "Matrx Extend Demo Page — AI Matrx" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~								112 text entry area (settable) Value: What is the main heading of this page? Reply with the heading only., Placeholder: How can I help you today?
+~								118 button Send message
+The focused UI element is 112 text entry area (settable) Value: What is the main heading of this page? Reply with the heading only., Placeholder: How can I help you today?
