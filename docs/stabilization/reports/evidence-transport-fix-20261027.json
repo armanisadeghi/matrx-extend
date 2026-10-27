@@ -1,0 +1,186 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T14:12:07.462728+00:00",
+  "status": "TRANSPORT_REPAIR_PUSHED_ROUNDTRIPS_AND_DIFF_CHECK_PASS_FRESH_PEER_CI_PENDING",
+  "source_base": "1d2e78b7ee0a3e275633372cf3c9e10459d3ad2f",
+  "official_RED": {
+    "run_id": 40516503583,
+    "job_id": 122231792824,
+    "failed_step": "Validate tracked documentation and report JSON",
+    "reason": "git diff --check rejects native AX trailing whitespace",
+    "bounded_original_log": ".output/stabilization-checkpoints/ci1d2-docs-failure-20261027.log"
+  },
+  "original_packet_sha256": "2adff1a5ecab1994cba9a82360e7f28d72992f8d874f4a632e08d44a0c8685ad",
+  "current_owned_packet_sha256": "e3ecddf5ab94e81d7169986d08d215c9439f3ea5b0328e39a4fff923cba0a930",
+  "affected_captures": {
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt": {
+      "original_sha256": "4b9cc21ed70f2f6e7524d941fa545abfe69406462e6e8e6fc4bb6704ffb93db1",
+      "readable_projection_sha256": "2acdf01ab4f9917ef690a3b5bdb82199db5fd9dada2069d1c5d4e68f48d238e4",
+      "raw_payload_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt.raw.json",
+      "raw_payload_sha256": "47ebb1554d5414b620fb9e09e88e2fa0532aa6dd11a80ab35edd44b08a385840",
+      "byte_count": 6233,
+      "changed_trailing_space_lines": 13
+    },
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt": {
+      "original_sha256": "366639769b86cf3a5a53781b0647f9bf69629a27eefb1b8a99f3e90f1e13aca4",
+      "readable_projection_sha256": "89ffb84d8c1979a872eaa0eae4c7524aeb5cb580e33a30d643a6198dce055b58",
+      "raw_payload_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt.raw.json",
+      "raw_payload_sha256": "1c7dc9cbdf1e844d36062eb147f65435e8481ef45beea2dfe25133f7e7142476",
+      "byte_count": 6287,
+      "changed_trailing_space_lines": 13
+    },
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt": {
+      "original_sha256": "f487613091f9043c3f71bff5e875ea6f1f99b355a9e697bdde44231accd8d069",
+      "readable_projection_sha256": "281e84961df4b37ae44e6909f52980f8ddc8691f34a80136dbc429585dcb9dd7",
+      "raw_payload_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt.raw.json",
+      "raw_payload_sha256": "d3aadc93c78fb89cc28a83c2ac068c8c526a1ab5e14dbc216b3d9e6aeb472cf9",
+      "byte_count": 6035,
+      "changed_trailing_space_lines": 13
+    },
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-dev-before-20261027.ax.txt": {
+      "original_sha256": "1e583bda5ac2b48c2c3298c4d32d7984e3a839c82c174c1a218a6adcdc41edc7",
+      "readable_projection_sha256": "63653362acea0e54053b0bd7430dee007140ec67923810978405ef6a210174f1",
+      "raw_payload_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-dev-before-20261027.ax.txt.raw.json",
+      "raw_payload_sha256": "5bc5c03eb496ce99323380aadee0fce6eb3bdaa885a8a4d6d60add7ae825ca2e",
+      "byte_count": 7776,
+      "changed_trailing_space_lines": 13
+    },
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt": {
+      "original_sha256": "4e47cbb33ae2a15a7f3606dc5b724b4cbcbd45eb101545c3894f7ade33e2e002",
+      "readable_projection_sha256": "08151b92d812bc58e381d81ab891b26fc9b466bab6bfd345ec850e1a20860f96",
+      "raw_payload_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt.raw.json",
+      "raw_payload_sha256": "66a7d29c567d672f256216d4c941d93d02a79e896c19f45eb90889c6292dff39",
+      "byte_count": 7781,
+      "changed_trailing_space_lines": 13
+    },
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt": {
+      "original_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+      "readable_projection_sha256": "af6b40f8e3379a66d713ffd5d1e681072c0cb131c1f2c1dfb5f75154de7e7c9b",
+      "raw_payload_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt.raw.json",
+      "raw_payload_sha256": "fa2910ee867c2f2899620c0840832cf2d85949226263f7d1f4a91aadd94c8222",
+      "byte_count": 7781,
+      "changed_trailing_space_lines": 13
+    },
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt": {
+      "original_sha256": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+      "readable_projection_sha256": "af6b40f8e3379a66d713ffd5d1e681072c0cb131c1f2c1dfb5f75154de7e7c9b",
+      "raw_payload_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt.raw.json",
+      "raw_payload_sha256": "080df453c84e1e5d0b9f3451c86bbb913b14b41ca0ab427f557858e3befa7834",
+      "byte_count": 7781,
+      "changed_trailing_space_lines": 13
+    },
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-store577-20261027.ax.txt": {
+      "original_sha256": "4b8a01b9320b2ce04d83216a4d856a726e0f5081cf2375c2dda121a48fbaa753",
+      "readable_projection_sha256": "f636cc65f8b2a561f07dc254f2757f1155e9fdff631f5029b17d7018413ebc0a",
+      "raw_payload_path": "docs/stabilization/evidence/eighty-20261027/owner/owner80-store577-20261027.ax.txt.raw.json",
+      "raw_payload_sha256": "08dee8b0c05e859ca7c75c99ed0866519d44f9b8e9369e4e4c273789be39f996",
+      "byte_count": 7702,
+      "changed_trailing_space_lines": 14
+    }
+  },
+  "round_trips_verified": 8,
+  "unchanged_png_jsonl_count": 14,
+  "original_field_hashes_preserved": true,
+  "native_outcome_fields_unchanged": true,
+  "CI_policy_or_workflow_changes": 0,
+  "product_credit": 0,
+  "owned_paths": [
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-store577-20261027.ax.txt",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-dev-before-20261027.ax.txt",
+    "docs/stabilization/reports/owner-ebee-publication-manifest-20261027.json",
+    "docs/stabilization/reports/eighty-publication-manifest-20261027.json",
+    "docs/stabilization/reports/owner-ebee-refresh-20261027.json",
+    "docs/stabilization/reports/ebee-owner-peer-20261027.json",
+    "docs/stabilization/reports/eighty-owner-20261027.json",
+    "docs/stabilization/reports/eighty-native-peer-20261027.json",
+    "docs/stabilization/PLAN.md",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt.raw.json",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt.raw.json",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt.raw.json",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-dev-before-20261027.ax.txt.raw.json",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt.raw.json",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt.raw.json",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt.raw.json",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-store577-20261027.ax.txt.raw.json"
+  ],
+  "commits": [
+    {
+      "sha": "dd5e56b344aaf0a12fdc370b897944cb2ecc98c7",
+      "subject": "docs(stabilization): preserve lossless AX evidence without whitespace failures",
+      "pushed_to_main": true
+    }
+  ],
+  "limits": [
+    "This is evidence transport verification, not new product/native behavior acceptance.",
+    "Hosted CI and fresh independent transport peer remain pending.",
+    "Original native reports and peer findings remain bounded to their original observations."
+  ],
+  "packet_algorithm": "SHA256 of sorted repo-relative path + NUL + fileSHA256 + LF. Original packet includes existing owned paths; after packet also includes new payloads.",
+  "original_owned_file_sha256": {
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt": "366639769b86cf3a5a53781b0647f9bf69629a27eefb1b8a99f3e90f1e13aca4",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt": "f487613091f9043c3f71bff5e875ea6f1f99b355a9e697bdde44231accd8d069",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt": "4b9cc21ed70f2f6e7524d941fa545abfe69406462e6e8e6fc4bb6704ffb93db1",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt": "a7e1d3ff8678adb96eb10a2a729b02d20f16c1c20b795eda4483809a1ee76876",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-store577-20261027.ax.txt": "4b8a01b9320b2ce04d83216a4d856a726e0f5081cf2375c2dda121a48fbaa753",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt": "4e47cbb33ae2a15a7f3606dc5b724b4cbcbd45eb101545c3894f7ade33e2e002",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-dev-before-20261027.ax.txt": "1e583bda5ac2b48c2c3298c4d32d7984e3a839c82c174c1a218a6adcdc41edc7",
+    "docs/stabilization/reports/owner-ebee-publication-manifest-20261027.json": "6a2f48062bd3d2249756697a3bad291653c73abbc481a8316a9af7968789a324",
+    "docs/stabilization/reports/eighty-publication-manifest-20261027.json": "070b33cb83e9e826bf319e1a69123eb1fb69598a27175849cc48d64ef7a9d028",
+    "docs/stabilization/reports/owner-ebee-refresh-20261027.json": "1fdaf702eeb315c324c41c327ff80301b9ffbb8f2f97c174f29e82b7c938bb24",
+    "docs/stabilization/reports/ebee-owner-peer-20261027.json": "1f5c7227c2730dede417d11da2c7ae379e73b88c4845058e055616cef81d94a5",
+    "docs/stabilization/reports/eighty-owner-20261027.json": "0c4f8fb45c42f2c5fa91ce9b1e3d1506fc1a6c0f943a4642d1c0595fa2705326",
+    "docs/stabilization/reports/eighty-native-peer-20261027.json": "98281ee3e11f45bb3c13d89feafce53fbad7eaad3f2da7c7c198da2d4c88446d",
+    "docs/stabilization/PLAN.md": "0cc9ae04622ca3875ec1d5d6d005eadd5b21c71d2dae0bc23a3bd66c57a8bf56"
+  },
+  "current_owned_file_sha256": {
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt": "89ffb84d8c1979a872eaa0eae4c7524aeb5cb580e33a30d643a6198dce055b58",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt": "281e84961df4b37ae44e6909f52980f8ddc8691f34a80136dbc429585dcb9dd7",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt": "2acdf01ab4f9917ef690a3b5bdb82199db5fd9dada2069d1c5d4e68f48d238e4",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt": "af6b40f8e3379a66d713ffd5d1e681072c0cb131c1f2c1dfb5f75154de7e7c9b",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt": "af6b40f8e3379a66d713ffd5d1e681072c0cb131c1f2c1dfb5f75154de7e7c9b",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-store577-20261027.ax.txt": "f636cc65f8b2a561f07dc254f2757f1155e9fdff631f5029b17d7018413ebc0a",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt": "08151b92d812bc58e381d81ab891b26fc9b466bab6bfd345ec850e1a20860f96",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-dev-before-20261027.ax.txt": "63653362acea0e54053b0bd7430dee007140ec67923810978405ef6a210174f1",
+    "docs/stabilization/reports/owner-ebee-publication-manifest-20261027.json": "bfca8a2f9ee848a9656bdf9174b4894e582d80fa60a19ee445e4d082e4a20fce",
+    "docs/stabilization/reports/eighty-publication-manifest-20261027.json": "64b1b58c072c73342ae57c1200eee34644492a8fa84da5d37963486fb14ff052",
+    "docs/stabilization/reports/owner-ebee-refresh-20261027.json": "7de96c7c29b8ba122bcec3d2696a8f24acf53c3dc6f7c2d0d51e8fa5681fb2b5",
+    "docs/stabilization/reports/ebee-owner-peer-20261027.json": "e2e93a208415d2cc6b3ad51609b0518918784134a668d20b3dd477514039e7e4",
+    "docs/stabilization/reports/eighty-owner-20261027.json": "535c261a354c678c3cdce0f3c19fa86e96a3d2d720f1536d185a35d56ce8be8b",
+    "docs/stabilization/reports/eighty-native-peer-20261027.json": "a8de4fddf1991a52bf763e50b25a91c7f22d04b2b38c798c279a0db9d371bd79",
+    "docs/stabilization/PLAN.md": "53a8876f0f6adbd5f7a055c595d1f9134b32b115127521b46b0e3fef33c2e040",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt.raw.json": "47ebb1554d5414b620fb9e09e88e2fa0532aa6dd11a80ab35edd44b08a385840",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt.raw.json": "1c7dc9cbdf1e844d36062eb147f65435e8481ef45beea2dfe25133f7e7142476",
+    "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt.raw.json": "d3aadc93c78fb89cc28a83c2ac068c8c526a1ab5e14dbc216b3d9e6aeb472cf9",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-dev-before-20261027.ax.txt.raw.json": "5bc5c03eb496ce99323380aadee0fce6eb3bdaa885a8a4d6d60add7ae825ca2e",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-ax-20261027.ax.txt.raw.json": "66a7d29c567d672f256216d4c941d93d02a79e896c19f45eb90889c6292dff39",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-fast-20261027.ax.txt.raw.json": "fa2910ee867c2f2899620c0840832cf2d85949226263f7d1f4a91aadd94c8222",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-reload-attempt-physical-20261027.ax.txt.raw.json": "080df453c84e1e5d0b9f3451c86bbb913b14b41ca0ab427f557858e3befa7834",
+    "docs/stabilization/evidence/eighty-20261027/owner/owner80-store577-20261027.ax.txt.raw.json": "08dee8b0c05e859ca7c75c99ed0866519d44f9b8e9369e4e4c273789be39f996"
+  },
+  "verification": {
+    "lossless_payloads_decoded": 8,
+    "original_bytes_vs_git_baseline": true,
+    "manifest_file_hashes": "all matched",
+    "public_path_hash_maps": "all checked public file keys matched",
+    "git_diff_check": "workingtree0 and staged0",
+    "staged_paths_exactly_owned": 23
+  },
+  "owned_processes": [],
+  "parent_followup": {
+    "observed_at": "2026-10-27T14:28:31.759426+00:00",
+    "independent_peer": "transport-integrity-peer-20261027.json",
+    "ci_run": 40518780496,
+    "ci_source": "dd5e56b344aaf0a12fdc370b897944cb2ecc98c7",
+    "ci_status": "completed",
+    "ci_conclusion": "success",
+    "scope": "Transport only; original actor pending-at-observation fields retained.",
+    "ci_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40518780496"
+  }
+}
