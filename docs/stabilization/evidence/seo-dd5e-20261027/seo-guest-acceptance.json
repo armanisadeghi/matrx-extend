@@ -15,23 +15,11 @@
         "notice_count": 2,
         "long_message_length": 199,
         "distinct_notice_titles": 2,
-        "visible_dismiss_counts": [
-          1,
-          1
-        ],
+        "visible_dismiss_counts": [1, 1],
         "target_hit_points": 9,
         "notice_hit_points": 0,
         "current_title_matched": true,
-        "independently_dismissed": [
-          [
-            0,
-            1
-          ],
-          [
-            0,
-            0
-          ]
-        ],
+        "independently_dismissed": [[0, 1], [0, 0]],
         "cleared_count": 0
       }
     }
@@ -121,15 +109,9 @@
   },
   "case_selection": {
     "scope": "notice-stacked",
-    "selected_cases": [
-      "T02"
-    ],
-    "selected_subtargets": [
-      "multiple_and_long_notice_clearance_at_native_360px"
-    ],
-    "excluded_cases": [
-      "all other SEO targets; no full T02 or D199 closure"
-    ]
+    "selected_cases": ["T02"],
+    "selected_subtargets": ["multiple_and_long_notice_clearance_at_native_360px"],
+    "excluded_cases": ["all other SEO targets; no full T02 or D199 closure"]
   },
   "resource_diagnostic_enabled": false,
   "operation_start_sample": {
