@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-27T06:15:16.399Z",
+  "originalNativeForeground": "Matrx Guest Test New Tab",
+  "finalNativeForeground": "Matrx Guest Test New Tab",
+  "ownerOriginalVaultTabRestored": true,
+  "ownerOriginalProviderTabId": "2091622300",
+  "guestOwnedNeutralTabClosed": true,
+  "noGuestExtensionAuthSettingsAction": true,
+  "limits": "Original native Guest tab ID and physical window ID not exposed/retained; foreground/profile/sole-tab structure observed. No claim of full private-state replay."
+}

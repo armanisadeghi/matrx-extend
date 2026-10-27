@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T06:17:10.127976+00:00",
+  "status": "BOUNDED_NATIVE_SUBTARGET_PASS_NORMAL_CERTIFICATE_VALID_IDENTITY_SCOPE_PARTIAL",
+  "run_id": 40459086951,
+  "official": "success/attempt1/exact472",
+  "normal_verifier": "actualexit0/validtrue",
+  "report": ".output/stabilization-checkpoints/scrape-b-472-native-20261027.json",
+  "all_owned_collection_processes_terminal": true,
+  "next": "Independent review of original native evidence and bounded case interpretation. This minimal B content/resource prerequisite now has normal certificate; owner may evaluate next registered Settings/member case through existing auth/fixture gates. Do not close D254/D298 or repeat startup diagnostic just because connected path succeeded. No retry or Store submission."
+}

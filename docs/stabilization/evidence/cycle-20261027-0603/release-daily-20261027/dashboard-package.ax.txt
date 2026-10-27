@@ -1,0 +1,173 @@
+Window: "Package Information", App: Google Chrome.
+0 standard window Package Information - Google Chrome - Arman (armansadeghi.com), Secondary Actions: Raise, URL: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
+	1 container Package Information - Google Chrome - Arman (armansadeghi.com), URL: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
+		2 container
+			3 toolbar
+				4 button Back
+				5 button (disabled) Forward
+				6 button Reload
+				7 container
+					8 pop up button View site information
+					9 text field (settable) Address and search bar, Placeholder: Ask Google or type a URL, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
+					10 button Bookmark this tab
+				11 container
+					12 pop up button LastPass
+					13 pop up button Matrx Extend DEV
+					14 pop up button Matrx
+					15 pop up button Extensions
+				16 button Work
+				17 pop up button Chrome
+			18 container
+				19 scroll area
+					20 HTML content Package Information, URL: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
+						21 container
+							22 container
+								23 button Main menu
+								24 link Chrome Web Store Developer Dashboard, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f
+								25 link Skip to main content
+									26 text Skip to main content
+								27 text Publisher:
+								28 list box Switch Publisher Account Menu
+									29 text (selected) Matrx
+								30 container
+									31 button Google apps
+									32 button Google Account: Arman Sadeghi (arman@armansadeghi.com)
+							33 container
+								34 container Primary menu
+								35 container Matrx Extend
+									36 heading Matrx Extend, Value: 1
+										37 link Matrx Extend, Value: chromewebstore.google.com/detail/hnfolienncfklkgmdjjmhhegglimlamg?authuser=0&hl=en
+									38 text Status: Published  -  public ID:  hnfolienncfklkgmdjjmhhegglimlamg
+									39 button Roll back to previous version
+									40 button Upload new package
+								41 container Item menu
+									42 container Build
+										43 heading Build, Value: 2
+											44 text Build
+										45 content list
+											46 link Status, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/status
+											47 link Package, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
+											48 link Store listing, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/listing
+											49 link Privacy, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/privacy
+											50 link Distribution, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/distribution
+									51 container Access
+										52 heading Access, Value: 2
+											53 text Access
+										54 content list
+											55 link Test instructions, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/testcredentials
+									56 container Analytics
+										57 heading Analytics, Value: 2
+											58 text Analytics
+										59 content list
+											60 link Installs & uninstalls, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/analytics/installs
+											61 link Impressions, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/analytics/impressions
+											62 link Users, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/analytics/users
+											63 link Ratings, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/ratings
+								64 heading Package, Value: 2
+									65 text Package
+								66 container
+									67 heading Draft, Value: 3
+										68 text Draft
+									69 table Draft
+										70 row
+											71 row header
+												72 text Version
+											73 cell
+												74 text 0.2.577
+										75 row
+											76 row header
+												77 text Item type
+											78 cell
+												79 text Extension
+										80 row
+											81 row header
+												82 text Permissions
+											83 cell
+												84 text storage ,  sidePanel ,  activeTab ,  tabs ,  tabGroups ,  scripting ,  identity ,  offscreen ,  nativeMessaging ,  alarms ,  contextMenus ,  clipboardWrite ,  downloads ,  webNavigation ,  history ,  bookmarks ,  notifications ,  sessions ,  debugger ,  cookies ,  pageCapture ,  clipboardRead ,  tabCapture ,  host permission
+										85 row
+											86 row header
+												87 text CRX file
+											88 cell
+												89 link main.crx, Value: chrome.google.com/webstore/download/hnfolienncfklkgmdjjmhhegglimlamg/revision/__DRAFT/package/main/crx/3
+										90 row
+											91 row header
+												92 text Public key
+											93 cell
+												94 link View public key, Value: chrome.google.com/webstore/devconsole
+										95 row
+											96 row header
+												97 text Verified CRX uploads
+												98 pop up button Learn more about verified CRX uploads
+											99 cell
+												100 button Opt in to verified CRX uploads
+								101 container
+									102 heading Published, Value: 3
+										103 text Published
+									104 table Published
+										105 row
+											106 row header
+												107 text Version
+											108 cell
+												109 text 0.2.577
+										110 row
+											111 row header
+												112 text Item type
+											113 cell
+												114 text Extension
+										115 row
+											116 row header
+												117 text Permissions
+											118 cell
+												119 text storage ,  sidePanel ,  activeTab ,  tabs ,  tabGroups ,  scripting ,  identity ,  offscreen ,  nativeMessaging ,  alarms ,  contextMenus ,  clipboardWrite ,  downloads ,  webNavigation ,  history ,  bookmarks ,  notifications ,  sessions ,  debugger ,  cookies ,  pageCapture ,  clipboardRead ,  tabCapture ,  host permission
+										120 row
+											121 row header
+												122 text CRX file
+											123 cell
+												124 link main.crx, Value: chrome.google.com/webstore/download/hnfolienncfklkgmdjjmhhegglimlamg/package/main/crx/3
+										125 row
+											126 row header
+												127 text Public key
+											128 cell
+												129 link View public key, Value: chrome.google.com/webstore/devconsole
+								130 container
+									131 heading Useful Resources, Value: 2
+										132 text Useful Resources
+									133 content list Useful Resources
+										134 link Developer Guide, Value: developer.chrome.com/webstore?hl=en
+								135 heading Need Help?, Value: 2
+									136 text Need Help?
+								137 content list Need Help?
+									138 link Contact Us, Value: support.google.com/chrome_webstore?p=contact&hl=en
+									139 link Give Feedback, Value: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package
+								140 container
+									141 text ©  2026  Google  - 
+									142 link Developer Agreement, Value: developer.chrome.com/webstore/terms?hl=en
+									143 text  - 
+									144 link Google Privacy Policy, Value: google.com/intl/en/privacy.html
+							145 text Package Information
+			146 pop up button Tab search
+			147 container
+				148 tab group
+					149 tab (settable, boolean) Vault | AI Matrx — AI Matrx - Memory usage - 258 MB, Value: off
+						150 button Close
+					151 tab (selected, settable, boolean) Package Information - Memory usage - 171 MB, Value: on
+						152 button Close
+			153 button New Tab
+			154 button Open Gemini in Chrome
+		155 text chrome.google.com/webstore/devconsole/…/package
+	156 close button
+	157 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	158 minimize button
+159 menu bar
+	160 Chrome
+	161 File
+	162 Edit
+	163 View
+	164 History
+	165 Bookmarks
+	166 Profiles
+	167 Tab
+	168 Window
+	169 Help
+
+The focused UI element is 20 HTML content Package Information, URL: chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package

@@ -1,0 +1,23 @@
+{
+  "command": [
+    "node",
+    "scripts/hosted-remote-admission.mjs",
+    "verify-scrape",
+    "--run-id",
+    "40459086951",
+    "--attempt",
+    "1",
+    "--artifact-zip",
+    ".output/stabilization-checkpoints/scrape-b-472/artifact.zip",
+    "--source-sha",
+    "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+    "--development-run-id",
+    "40452473314",
+    "--development-artifact-id",
+    "12711641563"
+  ],
+  "started_at": "2026-10-27T06:14:32.549917+00:00",
+  "ended_at": "2026-10-27T06:14:35.061896+00:00",
+  "actual_exit_code": 0,
+  "first_invocation_limit": "First stdout certificate retained, but shell compound did not separately record first verifier process exit. This confirmation captures subprocess returncode directly; read-only verifier repeated, no workflow/test rerun."
+}

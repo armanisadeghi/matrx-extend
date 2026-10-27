@@ -1,0 +1,42 @@
+{
+  "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40459086951-1.jsonl": {
+    "bytes": 993,
+    "sha256": "6ed980018705e491eb82582a46cf9e0c0ee4a030cf4fae57f783867dbdcd724e",
+    "path": ".output/stabilization-checkpoints/scrape-b-472/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40459086951-1.jsonl"
+  },
+  "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40459086951-1.jsonl": {
+    "bytes": 993,
+    "sha256": "972d286fd94ee4591670b72faef3c0742805840a00609a11a81aaf3ffb51bad1",
+    "path": ".output/stabilization-checkpoints/scrape-b-472/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40459086951-1.jsonl"
+  },
+  "matrx-extend/matrx-extend/test-results/scrape-seo-schema-empty-guest-native.json": {
+    "bytes": 6355,
+    "sha256": "bd22d3ddf9aaa3cb08504e33638bed8dcdf753d37c308333bfd7755c7274c84a",
+    "path": ".output/stabilization-checkpoints/scrape-b-472/raw/matrx-extend/matrx-extend/test-results/scrape-seo-schema-empty-guest-native.json"
+  },
+  "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40459086951-1.jsonl": {
+    "bytes": 1370,
+    "sha256": "8165be85e9d0b3b7d33aaa378cea836a85cca0be1ca01b0a9ca7c9ad1141eda0",
+    "path": ".output/stabilization-checkpoints/scrape-b-472/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40459086951-1.jsonl"
+  },
+  "_temp/guest-acceptance/native-sidepanel-qa-FhFLwe/native-side-panel.png": {
+    "bytes": 10021,
+    "sha256": "2f032863f1a7fc914d07ca631eb62240891966fc92135f8145430bfcf332bb63",
+    "path": ".output/stabilization-checkpoints/scrape-b-472/raw/_temp/guest-acceptance/native-sidepanel-qa-FhFLwe/native-side-panel.png"
+  },
+  "_temp/guest-acceptance/native-sidepanel-qa-FhFLwe/normal-target-after-open.png": {
+    "bytes": 36718,
+    "sha256": "fb1191c2cbd2a6e88c3d4e9a167c3c6cd55f39a2c7e75f7022ead9e929b4263d",
+    "path": ".output/stabilization-checkpoints/scrape-b-472/raw/_temp/guest-acceptance/native-sidepanel-qa-FhFLwe/normal-target-after-open.png"
+  },
+  "_temp/guest-acceptance/native-sidepanel-qa-FhFLwe/scrape-t08-schema-pane.png": {
+    "bytes": 18467,
+    "sha256": "5be9ffaa1766685200d59fa65921c47d531886932d8e7a04f8ca63c7554e30fc",
+    "path": ".output/stabilization-checkpoints/scrape-b-472/raw/_temp/guest-acceptance/native-sidepanel-qa-FhFLwe/scrape-t08-schema-pane.png"
+  },
+  "_temp/guest-acceptance/native-sidepanel-qa-FhFLwe/scrape-t08-seo-pane.png": {
+    "bytes": 18132,
+    "sha256": "3efcf068b85157b87f45f0557bf35b5ac793cd25dde0b8b907c086d7b3b38d56",
+    "path": ".output/stabilization-checkpoints/scrape-b-472/raw/_temp/guest-acceptance/native-sidepanel-qa-FhFLwe/scrape-t08-seo-pane.png"
+  }
+}

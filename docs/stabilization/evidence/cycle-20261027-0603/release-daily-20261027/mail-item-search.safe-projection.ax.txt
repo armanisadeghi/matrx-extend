@@ -1,0 +1,28 @@
+Window: "Search results - arman@armans…i.com - armansadeghi.com Mail", App: Google Chrome.
+0 standard window Secondary Actions: Raise, Search results - arman@armansadeghi.com - armansadeghi.com Mail - High memory usage - 1.3 GB - Google Chrome - Arman (armansadeghi.com), URL: mail.google.com/mail/u/0/#search/in%3Aanywhere+from%3Agoogle.com+%7Bhnfolienncfklkgmdjjmhhegglimlamg+%22Matrx+Extend%22%7D+after%3A2026%2F10%2F22
+										35 container Search mail
+											36 heading Search mail, Value: 2
+												37 text Search mail
+											38 container in:anywhere from:google.com {hnfolienncfklkgmdjjmhhegglimlamg "Matrx Extend"} after:2026/10/22 
+												39 text field (settable) Ask Gmail, Value: in:anywhere from:google.com {hnfolienncfklkgmdjjmhhegglimlamg "Matrx Extend"} after:2026/10/22 
+											40 button Advanced search options
+											41 button Clear search
+											42 button (disabled) Search mail
+										43 button Status: Active
+										44 pop up button Support
+										474 heading Conversations, Value: 2
+											475 text Conversations
+										476 table
+											477 row starred, Chrome Web Store , Chrome Web Store: Item successfully published , Oct 23 , ID: hnfolienncfklkgmdjjmhhegglimlamg Item Name: Matrx Extend Item Type: extension Version: 0.2.577 Visibility: Public.
+												478 cell
+													479 checkbox Value: 0, starred, Chrome Web Store , Chrome Web Store: Item successfully published , Oct 23 , ID: hnfolienncfklkgmdjjmhhegglimlamg Item Name: Matrx Extend Item Type: extension Version: 0.2.577 Visibility: Public.
+												480 cell
+													481 button Starred
+												482 cell
+													483 text Chrome Web Store
+												484 cell
+													485 link Inbox Chrome Web Store: Item successfully published  -  ID: hnfolienncfklkgmdjjmhhegglimlamg Item Name: Matrx Extend Item Type: extension Version: 0.2.577 Visibility: Public
+														486 text Inbox
+														487 text Chrome Web Store: Item successfully published
+														488 container
+															489 text  -  ID:  hnfolienncfklkgmdjjmhhegglimlamg  Item Name:  Matrx Extend  Item Type: extension Version: 0.2.577 Visibility: Public

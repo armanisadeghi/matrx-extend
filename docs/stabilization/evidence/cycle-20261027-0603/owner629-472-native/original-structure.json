@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-27T06:10:52.389Z",
+  "chromeApps": [
+    {
+      "id": "com.google.Chrome",
+      "isRunning": true
+    }
+  ],
+  "browsers": [
+    {
+      "id": "1",
+      "name": "Chrome",
+      "profileName": "armansadeghi.com",
+      "tabs": [
+        {
+          "id": "2091622300",
+          "selectedUnknown": true,
+          "kind": "other-page"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Codex MCP Apps",
+      "tabs": []
+    },
+    {
+      "id": "3",
+      "name": "ChatGPT in-app browser",
+      "tabs": []
+    }
+  ]
+}

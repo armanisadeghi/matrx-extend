@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "reviewed_at": "2026-10-27T07:19:36.796548+00:00",
+  "reviewer": "correct_root472_replay_peer",
+  "independence": "Zero authorship evidence review only; no UI/API/tests/build/source edits/commits. Excluded private originals were not opened.",
+  "target": "native472-correct-profile-replay-20261027.json",
+  "A": {
+    "owner_maintenance": {
+      "verdict": "PASS",
+      "reason": "Raw Profile8/version/management Reloaded/pin/Loaded from stablepath/devID/version629; Store577 pinned and enabled separately; original structural tabs restored."
+    },
+    "cases": {
+      "EXT-F-1003-T01": {
+        "verdict": "PASS",
+        "scope": "native guest on frozen source472 / DEV0.2.629, warm and actual management Reload",
+        "reason": "Organization opens to Sign in to choose; no selector/action, both phases."
+      },
+      "EXT-F-1003-T07": {
+        "verdict": "PASS",
+        "scope": "native guest on frozen source472 / DEV0.2.629, warm and actual management Reload",
+        "reason": "Default agent has Choose an organization above and no agent picker, both phases."
+      },
+      "EXT-F-1003-T22": {
+        "verdict": "PASS",
+        "scope": "native guest on frozen source472 / DEV0.2.629, warm and actual management Reload",
+        "reason": "Advanced/admin/audit-key controls absent throughout raw guest section captures, both phases."
+      },
+      "EXT-F-1003-T28": {
+        "verdict": "PASS",
+        "scope": "native guest on frozen source472 / DEV0.2.629, warm and actual management Reload",
+        "reason": "All11 role-visible groups toggle to opposite state then restore, both phases; raw empty/content subtree transitions verified; Data/SEO No options yet."
+      },
+      "EXT-F-1003-T73": {
+        "verdict": "PASS",
+        "scope": "native guest on frozen source472 / DEV0.2.629, warm and actual management Reload",
+        "reason": "Account Email unavailable, no Name/admin badge, footer Sign in, both phases."
+      }
+    },
+    "counts": {
+      "distinct_guest_cases": 5,
+      "phase_case_observations": 10,
+      "groups": 11,
+      "paired_cycles": 22
+    },
+    "limits": "No Store-installed guest acceptance, Chat/server verification, linked D87/D186 closure, full Settings/member/admin/T10/preferences/global health, or latest-main417 transfer."
+  },
+  "B": {
+    "historical_provenance_verdict": "PASS",
+    "resource_verdict": "PASS",
+    "evidence_quality_verdict": "PASS_WITH_NONBLOCKING_NOTES",
+    "confirmed_blocking_gaps": [],
+    "artifact": {
+      "source": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+      "ci_run": 40452473314,
+      "artifact": 12711641563,
+      "artifact_digest": "aed5f1cbf3c23802b7d490744797a215485cd4e6a24aaa4d0924d4910a874f02",
+      "tree_sha256": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6",
+      "tree_files": 2819,
+      "verification": "Independently rehashed immutable imported source472 directory; CI/local/promotion receipts and provenance SHA match. No network API verification."
+    },
+    "resource": {
+      "profile_root": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+      "admitted": "2026-10-27T07:00:05.913Z",
+      "first_ui": "2026-10-27T07:02:33.317Z",
+      "ui_stopped": "2026-10-27T07:10:12.503Z",
+      "stop": "2026-10-27T07:11:08.544682+00:00",
+      "final": "2026-10-27T07:11:08.553Z",
+      "final_exit": 0,
+      "valid": true,
+      "profile_free_GiB": 26.639759063720703,
+      "repo_free_GiB": 1589.2531127929688,
+      "api_calls": 174,
+      "groups": 45,
+      "max_group_calls": 4,
+      "api_errors": 0,
+      "all_group_gates_healthy": true,
+      "max_gate_age_seconds": 15.789,
+      "watch_reads": 387,
+      "max_watch_gap_seconds": 2.0116444579907693,
+      "risk_events": 0,
+      "ordering": "Correct-root admission precedes every UI call; sequential owner8 then guest10; finalization after UI STOPPED. Completed journal supplements actor pending-path reference; does not repair old invalid leases.",
+      "cleanup": "Raw structural tab projections restored; parent-stop records normal SIGTERM to ownedguard93663. Final journal valid0. No Chrome kill evidence. Process/hold absence not independently re-read because another lane may now own them."
+    },
+    "notes": [
+      "section-content-verdicts.json closedContent incorrectly repeats open content for initially-open groups. Raw first captures are empty and restored captures contain correct contents, so this summary defect does not invalidate observed T28.",
+      "Current stablepath independently hashes d4ed3f80c08aa5b69f6c769e948ac518f9766a5905f600ca7346233441cf8525; historical bcfa result must not be represented as current stable/main417 verification. Parent promotion chronology is separate.",
+      "Browser startup command line shows Profile8 in guest chrome://version; actual Profile Path is Profile10, the relevant active-profile identity."
+    ]
+  },
+  "publication": {
+    "allowlist_count": 85,
+    "sha256_and_bytes_verified": 85,
+    "mismatches": 0,
+    "whitelist_source": "target.publication.allowlist exact paths and hashes only",
+    "private_excluded_count": 5,
+    "excluded_read": false,
+    "private_vault_body": "Never opened or published; owner identity uses permitted projected New Tab header.",
+    "supplements": [
+      "native472-correct-profile-intent-20261027.json",
+      "native472-correct-profile-admitted-20261027.json",
+      "native472-correct-profile-parent-stop-20261027.json",
+      "native472-correct-profile-watch-20261027-report.json",
+      "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.jsonl"
+    ]
+  },
+  "next_action": "Owner may record five scoped frozen472 guest passes and owner maintenance with this peer and completed journal; preserve all older invalid-lease no-credit records; independently refresh/reload/retest newer cohort before claiming current-main status.",
+  "original_private_report_sha256": "de6bfbe1afa15b8999ba466675697e9c1467005b730ba41f0f9328b49231090a",
+  "durable_evidence_manifest": "docs/stabilization/reports/cycle-0603-publication-manifest-20261027.json",
+  "publication_limits": "Only mapped evidence is retained publicly; unmapped logs/ZIP/private original bodies are private references, not public evidence. Original actor/peer verdicts retained with owner correction below. No new formal inventory credit, current-main health, defect closure or Store acceptance.",
+  "owner_adjudication": "Correct-root resource finalvalid0 is independently supported, but source472 attribution contradicted by a1 promotion07:00:44 beforefirstUI07:02:33. Retrospective a1 evidence is strong inference only. Five cases and ownermaintenance stay build-unverified pending controlled exactpayload replay. Prior peer historical472PASS/zero-blocker conclusion is superseded by native-replay-build-binding-audit-20261027.json."
+}

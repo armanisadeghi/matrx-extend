@@ -1,0 +1,200 @@
+[
+  {
+    "phase": "warm",
+    "name": "ACCOUNT",
+    "initialOpen": true,
+    "openContent": "text Email\ntext —",
+    "closedContent": "text Email\ntext —",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "warm",
+    "name": "ORGANIZATION",
+    "initialOpen": false,
+    "openContent": "text Organization\ntext Sign in to choose",
+    "closedContent": "",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "warm",
+    "name": "APPEARANCE",
+    "initialOpen": true,
+    "openContent": "text Theme\ncombo box (settable) System\ntext System",
+    "closedContent": "text Theme\ncombo box (settable) System\ntext System",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "warm",
+    "name": "CHAT",
+    "initialOpen": true,
+    "openContent": "text Default agent Choose an organization above Default mode\ncombo box (settable) Act without asking\ntext Act without asking\ntext Default speed COMING SOON\ncombo box (settable) Fast\ntext Fast",
+    "closedContent": "text Default agent Choose an organization above Default mode\ncombo box (settable) Act without asking\ntext Act without asking\ntext Default speed COMING SOON\ncombo box (settable) Fast\ntext Fast",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "warm",
+    "name": "PRIVACY",
+    "initialOpen": true,
+    "openContent": "text Share page identity & email content LETS THE AGENT SEE YOUR VISIBLE USERNAME ON SITES AND GMAIL SUBJECTS/EXCERPTS\nswitch Share page identity & email content, Value: on\ntext Offer to save logins to the Vault AFTER YOU SIGN IN TO A SITE, ASK WHETHER TO SAVE THAT LOGIN — NOTHING IS SAVED WITHOUT YOUR CLICK\nswitch Offer to save logins to the Vault, Value: on\ntext Offer saved logins on sign-in forms ALLOWS MATCHING SAVED LOGINS; CHOOSE WHERE SUGGESTIONS APPEAR BELOW\nswitch Offer saved logins on sign-in forms, Value: on\ntext Show password suggestions on websites OFF KEEPS WEBSITES QUIET. PIN MATRX TO SEE TOOLBAR ASSISTANCE, THEN OPEN VAULT TO REVIEW SAVE OR UPDATE; NOTHING IS SAVED AUTOMATICALLY.\nswitch Show password suggestions on websites, Value: off",
+    "closedContent": "text Share page identity & email content LETS THE AGENT SEE YOUR VISIBLE USERNAME ON SITES AND GMAIL SUBJECTS/EXCERPTS\nswitch Share page identity & email content, Value: on\ntext Offer to save logins to the Vault AFTER YOU SIGN IN TO A SITE, ASK WHETHER TO SAVE THAT LOGIN — NOTHING IS SAVED WITHOUT YOUR CLICK\nswitch Offer to save logins to the Vault, Value: on\ntext Offer saved logins on sign-in forms ALLOWS MATCHING SAVED LOGINS; CHOOSE WHERE SUGGESTIONS APPEAR BELOW\nswitch Offer saved logins on sign-in forms, Value: on\ntext Show password suggestions on websites OFF KEEPS WEBSITES QUIET. PIN MATRX TO SEE TOOLBAR ASSISTANCE, THEN OPEN VAULT TO REVIEW SAVE OR UPDATE; NOTHING IS SAVED AUTOMATICALLY.\nswitch Show password suggestions on websites, Value: off",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "warm",
+    "name": "SCRAPE",
+    "initialOpen": true,
+    "openContent": "text Deep clean COMING SOON\nswitch Deep clean, Value: off\ntext Auto-scrape on load CAPTURE PAGE CONTENT IN THE BACKGROUND AFTER EACH LOAD\nswitch Auto-scrape on load, Value: off\ntext Auto-scrape mode SCROLL & CAPTURE LOADS LAZY CONTENT FIRST (SLOWER)\ncombo box (settable) Capture\ntext Capture",
+    "closedContent": "text Deep clean COMING SOON\nswitch Deep clean, Value: off\ntext Auto-scrape on load CAPTURE PAGE CONTENT IN THE BACKGROUND AFTER EACH LOAD\nswitch Auto-scrape on load, Value: off\ntext Auto-scrape mode SCROLL & CAPTURE LOADS LAZY CONTENT FIRST (SLOWER)\ncombo box (settable) Capture\ntext Capture",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "warm",
+    "name": "DATA",
+    "initialOpen": false,
+    "openContent": "text No options yet",
+    "closedContent": "",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "warm",
+    "name": "SEO",
+    "initialOpen": false,
+    "openContent": "text No options yet",
+    "closedContent": "",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "warm",
+    "name": "DESKTOP BRIDGE",
+    "initialOpen": true,
+    "openContent": "text Matrx 2\ntext Matrx 2 is not running on this computer\ntext Matrx Local\ntext Not connected\ntext Pairing is automatic when the Matrx desktop app runs on this computer. The code below is only needed to pair with a desktop app on another machine — copy it from that app's Settings → Bridge Test → Extension pairing.\ntext field (settable) Pair code\nbutton (disabled) Pair\ntext Local engine port\ntext field (settable) auto\nbutton Set",
+    "closedContent": "text Matrx 2\ntext Matrx 2 is not running on this computer\ntext Matrx Local\ntext Not connected\ntext Pairing is automatic when the Matrx desktop app runs on this computer. The code below is only needed to pair with a desktop app on another machine — copy it from that app's Settings → Bridge Test → Extension pairing.\ntext field (settable) Pair code\nbutton (disabled) Pair\ntext Local engine port\ntext field (settable) auto\nbutton Set",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "warm",
+    "name": "DATA & RESET",
+    "initialOpen": true,
+    "openContent": "button Clear local data on this device",
+    "closedContent": "button Clear local data on this device",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "warm",
+    "name": "ABOUT",
+    "initialOpen": false,
+    "openContent": "text Browser\ntext Chrome\ntext Installed version\ntext 0.2.629\ntext Extension ID\ntext cihdmkcdjjckfhjpgoedmgfpoljebaml\ntext Browser APIs for saved logins\ntext Available\ntext Vault checks whether saved logins can be used for this browser and site when you choose one.\nbutton Check for extension update",
+    "closedContent": "",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "reloaded",
+    "name": "ACCOUNT",
+    "initialOpen": true,
+    "openContent": "text Email\ntext —",
+    "closedContent": "text Email\ntext —",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "reloaded",
+    "name": "ORGANIZATION",
+    "initialOpen": false,
+    "openContent": "text Organization\ntext Sign in to choose",
+    "closedContent": "",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "reloaded",
+    "name": "APPEARANCE",
+    "initialOpen": true,
+    "openContent": "text Theme\ncombo box (settable) System\ntext System",
+    "closedContent": "text Theme\ncombo box (settable) System\ntext System",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "reloaded",
+    "name": "CHAT",
+    "initialOpen": true,
+    "openContent": "text Default agent Choose an organization above Default mode\ncombo box (settable) Act without asking\ntext Act without asking\ntext Default speed COMING SOON\ncombo box (settable) Fast\ntext Fast",
+    "closedContent": "text Default agent Choose an organization above Default mode\ncombo box (settable) Act without asking\ntext Act without asking\ntext Default speed COMING SOON\ncombo box (settable) Fast\ntext Fast",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "reloaded",
+    "name": "PRIVACY",
+    "initialOpen": true,
+    "openContent": "text Share page identity & email content LETS THE AGENT SEE YOUR VISIBLE USERNAME ON SITES AND GMAIL SUBJECTS/EXCERPTS\nswitch Share page identity & email content, Value: on\ntext Offer to save logins to the Vault AFTER YOU SIGN IN TO A SITE, ASK WHETHER TO SAVE THAT LOGIN — NOTHING IS SAVED WITHOUT YOUR CLICK\nswitch Offer to save logins to the Vault, Value: on\ntext Offer saved logins on sign-in forms ALLOWS MATCHING SAVED LOGINS; CHOOSE WHERE SUGGESTIONS APPEAR BELOW\nswitch Offer saved logins on sign-in forms, Value: on\ntext Show password suggestions on websites OFF KEEPS WEBSITES QUIET. PIN MATRX TO SEE TOOLBAR ASSISTANCE, THEN OPEN VAULT TO REVIEW SAVE OR UPDATE; NOTHING IS SAVED AUTOMATICALLY.\nswitch Show password suggestions on websites, Value: off",
+    "closedContent": "text Share page identity & email content LETS THE AGENT SEE YOUR VISIBLE USERNAME ON SITES AND GMAIL SUBJECTS/EXCERPTS\nswitch Share page identity & email content, Value: on\ntext Offer to save logins to the Vault AFTER YOU SIGN IN TO A SITE, ASK WHETHER TO SAVE THAT LOGIN — NOTHING IS SAVED WITHOUT YOUR CLICK\nswitch Offer to save logins to the Vault, Value: on\ntext Offer saved logins on sign-in forms ALLOWS MATCHING SAVED LOGINS; CHOOSE WHERE SUGGESTIONS APPEAR BELOW\nswitch Offer saved logins on sign-in forms, Value: on\ntext Show password suggestions on websites OFF KEEPS WEBSITES QUIET. PIN MATRX TO SEE TOOLBAR ASSISTANCE, THEN OPEN VAULT TO REVIEW SAVE OR UPDATE; NOTHING IS SAVED AUTOMATICALLY.\nswitch Show password suggestions on websites, Value: off",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "reloaded",
+    "name": "SCRAPE",
+    "initialOpen": true,
+    "openContent": "text Deep clean COMING SOON\nswitch Deep clean, Value: off\ntext Auto-scrape on load CAPTURE PAGE CONTENT IN THE BACKGROUND AFTER EACH LOAD\nswitch Auto-scrape on load, Value: off\ntext Auto-scrape mode SCROLL & CAPTURE LOADS LAZY CONTENT FIRST (SLOWER)\ncombo box (settable) Capture\ntext Capture",
+    "closedContent": "text Deep clean COMING SOON\nswitch Deep clean, Value: off\ntext Auto-scrape on load CAPTURE PAGE CONTENT IN THE BACKGROUND AFTER EACH LOAD\nswitch Auto-scrape on load, Value: off\ntext Auto-scrape mode SCROLL & CAPTURE LOADS LAZY CONTENT FIRST (SLOWER)\ncombo box (settable) Capture\ntext Capture",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "reloaded",
+    "name": "DATA",
+    "initialOpen": false,
+    "openContent": "text No options yet",
+    "closedContent": "",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "reloaded",
+    "name": "SEO",
+    "initialOpen": false,
+    "openContent": "text No options yet",
+    "closedContent": "",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "reloaded",
+    "name": "DESKTOP BRIDGE",
+    "initialOpen": true,
+    "openContent": "text Matrx 2\ntext Matrx 2 is not running on this computer\ntext Matrx Local\ntext Not connected\ntext Pairing is automatic when the Matrx desktop app runs on this computer. The code below is only needed to pair with a desktop app on another machine — copy it from that app's Settings → Bridge Test → Extension pairing.\ntext field (settable) Pair code\nbutton (disabled) Pair\ntext Local engine port\ntext field (settable) auto\nbutton Set",
+    "closedContent": "text Matrx 2\ntext Matrx 2 is not running on this computer\ntext Matrx Local\ntext Not connected\ntext Pairing is automatic when the Matrx desktop app runs on this computer. The code below is only needed to pair with a desktop app on another machine — copy it from that app's Settings → Bridge Test → Extension pairing.\ntext field (settable) Pair code\nbutton (disabled) Pair\ntext Local engine port\ntext field (settable) auto\nbutton Set",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "reloaded",
+    "name": "DATA & RESET",
+    "initialOpen": true,
+    "openContent": "button Clear local data on this device",
+    "closedContent": "button Clear local data on this device",
+    "restored": true,
+    "status": "PASS"
+  },
+  {
+    "phase": "reloaded",
+    "name": "ABOUT",
+    "initialOpen": false,
+    "openContent": "text Browser\ntext Chrome\ntext Installed version\ntext 0.2.629\ntext Extension ID\ntext cihdmkcdjjckfhjpgoedmgfpoljebaml\ntext Browser APIs for saved logins\ntext Available\ntext Vault checks whether saved logins can be used for this browser and site when you choose one.\nbutton Check for extension update",
+    "closedContent": "",
+    "restored": true,
+    "status": "PASS"
+  }
+]

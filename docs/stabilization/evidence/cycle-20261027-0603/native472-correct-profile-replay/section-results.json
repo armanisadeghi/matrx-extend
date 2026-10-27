@@ -1,0 +1,112 @@
+[
+  {
+    "phase": "warm",
+    "name": "ACCOUNT",
+    "toggledTwice": true
+  },
+  {
+    "phase": "warm",
+    "name": "ORGANIZATION",
+    "toggledTwice": true
+  },
+  {
+    "phase": "warm",
+    "name": "APPEARANCE",
+    "toggledTwice": true
+  },
+  {
+    "phase": "warm",
+    "name": "CHAT",
+    "toggledTwice": true
+  },
+  {
+    "phase": "warm",
+    "name": "PRIVACY",
+    "toggledTwice": true
+  },
+  {
+    "phase": "warm",
+    "name": "SCRAPE",
+    "toggledTwice": true
+  },
+  {
+    "phase": "warm",
+    "name": "DATA",
+    "toggledTwice": true
+  },
+  {
+    "phase": "warm",
+    "name": "SEO",
+    "toggledTwice": true
+  },
+  {
+    "phase": "warm",
+    "name": "DESKTOP BRIDGE",
+    "toggledTwice": true
+  },
+  {
+    "phase": "warm",
+    "name": "DATA & RESET",
+    "toggledTwice": true
+  },
+  {
+    "phase": "warm",
+    "name": "ABOUT",
+    "toggledTwice": true
+  },
+  {
+    "phase": "reloaded",
+    "name": "ACCOUNT",
+    "toggledTwice": true
+  },
+  {
+    "phase": "reloaded",
+    "name": "ORGANIZATION",
+    "toggledTwice": true
+  },
+  {
+    "phase": "reloaded",
+    "name": "APPEARANCE",
+    "toggledTwice": true
+  },
+  {
+    "phase": "reloaded",
+    "name": "CHAT",
+    "toggledTwice": true
+  },
+  {
+    "phase": "reloaded",
+    "name": "PRIVACY",
+    "toggledTwice": true
+  },
+  {
+    "phase": "reloaded",
+    "name": "SCRAPE",
+    "toggledTwice": true
+  },
+  {
+    "phase": "reloaded",
+    "name": "DATA",
+    "toggledTwice": true
+  },
+  {
+    "phase": "reloaded",
+    "name": "SEO",
+    "toggledTwice": true
+  },
+  {
+    "phase": "reloaded",
+    "name": "DESKTOP BRIDGE",
+    "toggledTwice": true
+  },
+  {
+    "phase": "reloaded",
+    "name": "DATA & RESET",
+    "toggledTwice": true
+  },
+  {
+    "phase": "reloaded",
+    "name": "ABOUT",
+    "toggledTwice": true
+  }
+]

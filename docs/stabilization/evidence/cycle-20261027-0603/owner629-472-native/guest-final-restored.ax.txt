@@ -1,0 +1,89 @@
+Window: "New Tab", App: Google Chrome.
+0 standard window New Tab - Google Chrome - Matrx Guest Test, URL: chrome://newtab/, Secondary Actions: Raise
+	1 container New Tab - Google Chrome - Matrx Guest Test, URL: chrome://newtab/
+		2 container
+			3 toolbar
+				4 button (disabled) Back
+				5 button (disabled) Forward
+				6 button Reload
+				7 container
+					8 image Search icon
+					9 text field (settable) Address and search bar, Placeholder: Press tab then enter to ask AI Mode. Press up or down arrow for auto completions. Type to autocomplete..
+					10 button AI Mode button, press Enter to ask AI Mode
+				11 container
+					12 pop up button Matrx
+					13 pop up button Matrx Extend DEV
+					14 pop up button Extensions
+				15 button Matrx Guest Test
+				16 pop up button Chrome
+			17 container
+				18 scroll area
+					19 HTML content New Tab, URL: chrome://new-tab-page/
+						20 container
+							21 HTML content chrome-untrusted://new-tab-page/one-google-bar?paramsencoded=
+								22 container
+									23 heading 1
+									24 container
+										25 link Gmail , Value: mail.google.com/mail/?tab=rm&ogbl
+										26 link Search for Images , Value: google.com/imghp?hl=en&tab=ri&ogbl
+									27 button Google apps
+							28 container
+								29 container
+									30 container
+										31 button Enhance your search with tabs, files, or an AI tool
+									32 text entry area (settable) Ask Google
+									33 button Search by voice
+									34 button Search by image
+									35 button Ask AI Mode in Google Search
+							36 button Do more with AI Mode Create, summarize, plan
+							37 button Create images Reimagine, illustrate, edit
+							38 container
+								39 link Matrx Extend Demo Page — AI Matrx, Value: aimatrx.com/matrx-extend-demo
+								40 button More actions for Matrx Extend Demo Page — AI Matrx shortcut
+								41 text Matrx Extend Demo Page — AI Matrx
+							42 container
+								43 link Example Domain, Value: example.com/
+								44 button More actions for Example Domain shortcut
+								45 text Example Domain
+							46 container
+								47 link Wikipedia, Value: en.wikipedia.org/wiki/Golden_Gate_Bridge
+								48 button More actions for Wikipedia shortcut
+								49 text Wikipedia
+							50 container
+								51 link IANA-managed Reserved Domains, Value: iana.org/domains/reserved
+								52 button More actions for IANA-managed Reserved Domains shortcut
+								53 text IANA-managed Reserved Domains
+							54 container
+								55 link data:text/html,%3Ch1%3EOwned%20restricted%20fixture%3C%2Fh1%3E
+								56 button More actions for data:text/html,%3Ch1%3EOwned%20restricted%20fixture%3C%2Fh1%3E shortcut
+								57 text data:text/html,%3Ch1%3EOwned%20restricted%20fixture%3C%2Fh1%3E
+							58 container
+								59 link Web scraping, Value: en.wikipedia.org/wiki/Web_scraping
+								60 button More actions for Web scraping shortcut
+								61 text Web scraping
+							62 button Show more
+							63 toggle button Customize Chrome, Help: Customize this page, Value: 0
+								64 text Customize Chrome
+							65 image
+			66 pop up button Tab search
+			67 container
+				68 tab group
+					69 tab (selected, settable, boolean) New Tab - Memory usage - 76.1 MB, Value: on
+						70 button Close
+			71 button New Tab
+	72 close button
+	73 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	74 minimize button
+75 menu bar
+	76 Chrome
+	77 File
+	78 Edit
+	79 View
+	80 History
+	81 Bookmarks
+	82 Profiles
+	83 Tab
+	84 Window
+	85 Help
+
+The focused UI element is 9 text field (settable) Address and search bar, Placeholder: Press tab then enter to ask AI Mode. Press up or down arrow for auto completions. Type to autocomplete..

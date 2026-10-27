@@ -1,0 +1,1577 @@
+[
+  {
+    "id": 1,
+    "label": "initial-native-binding",
+    "at": "2026-10-27T07:02:33.316Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:02:30.209Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.64,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.83,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.37,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.963607788086,
+        "profileFreeGiB": 26.644332885742188,
+        "safetyFreeGiB": 26.644332885742188,
+        "systemFreeGiB": 26.644332885742188
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:02:31.803220Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:02:30.209Z",
+      "journal_age_seconds": 1.59422,
+      "actual_read_gap_seconds": 2.002771749976091,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 2,
+    "label": "owner-select-and-ownedtab",
+    "at": "2026-10-27T07:03:17.524Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:03:02.257Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.92,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.16,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.959861755371,
+        "profileFreeGiB": 26.641944885253906,
+        "safetyFreeGiB": 26.641944885253906,
+        "systemFreeGiB": 26.641944885253906
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:03:15.905155Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:03:02.257Z",
+      "journal_age_seconds": 13.648155,
+      "actual_read_gap_seconds": 2.00214875000529,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 3,
+    "label": "owner-browser-version",
+    "at": "2026-10-27T07:03:39.172Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:03:34.304Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.64,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.53,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.16,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9597473144531,
+        "profileFreeGiB": 26.644031524658203,
+        "safetyFreeGiB": 26.644031524658203,
+        "systemFreeGiB": 26.644031524658203
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:03:37.950300Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:03:34.304Z",
+      "journal_age_seconds": 3.6463,
+      "actual_read_gap_seconds": 2.006121375015937,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 4,
+    "label": "owner-extension-manager",
+    "at": "2026-10-27T07:03:48.472Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:03:34.304Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.64,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.53,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.16,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9597473144531,
+        "profileFreeGiB": 26.644031524658203,
+        "safetyFreeGiB": 26.644031524658203,
+        "systemFreeGiB": 26.644031524658203
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:03:47.973954Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:03:34.304Z",
+      "journal_age_seconds": 13.669954,
+      "actual_read_gap_seconds": 2.0063986250315793,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 5,
+    "label": "owner-actual-reload",
+    "at": "2026-10-27T07:03:59.306Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:03:50.321Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.48,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.35,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.44,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.959732055664,
+        "profileFreeGiB": 26.642547607421875,
+        "safetyFreeGiB": 26.642547607421875,
+        "systemFreeGiB": 26.642547607421875
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:03:57.998735Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:03:50.321Z",
+      "journal_age_seconds": 7.677735,
+      "actual_read_gap_seconds": 2.0060220829909667,
+      "admitted_observed": true
+    },
+    "calls": 3
+  },
+  {
+    "id": 6,
+    "label": "owner-store-preserved",
+    "at": "2026-10-27T07:04:04.632Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:03:50.321Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.48,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.35,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.44,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.959732055664,
+        "profileFreeGiB": 26.642547607421875,
+        "safetyFreeGiB": 26.642547607421875,
+        "systemFreeGiB": 26.642547607421875
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:04:04.010879Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:03:50.321Z",
+      "journal_age_seconds": 13.689879,
+      "actual_read_gap_seconds": 2.0053985419799574,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 7,
+    "label": "owner-restored-guest-selection",
+    "at": "2026-10-27T07:04:29.222Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:04:22.368Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.64,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.8,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.18,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9594497680664,
+        "profileFreeGiB": 26.639766693115234,
+        "safetyFreeGiB": 26.639766693115234,
+        "systemFreeGiB": 26.639766693115234
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:04:28.069060Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:04:22.368Z",
+      "journal_age_seconds": 5.70106,
+      "actual_read_gap_seconds": 2.0054673749837093,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 8,
+    "label": "guest-profile-and-ownedtab",
+    "at": "2026-10-27T07:04:46.818Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:04:38.394Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.02,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.3,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9595375061035,
+        "profileFreeGiB": 26.620830535888672,
+        "safetyFreeGiB": 26.620830535888672,
+        "systemFreeGiB": 26.620830535888672
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:04:46.115385Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:04:38.394Z",
+      "journal_age_seconds": 7.721385,
+      "actual_read_gap_seconds": 2.006643666944001,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 9,
+    "label": "guest-version",
+    "at": "2026-10-27T07:04:54.183Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:04:38.394Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.02,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.3,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9595375061035,
+        "profileFreeGiB": 26.620830535888672,
+        "safetyFreeGiB": 26.620830535888672,
+        "systemFreeGiB": 26.620830535888672
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:04:54.134796Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:04:38.394Z",
+      "journal_age_seconds": 15.740796,
+      "actual_read_gap_seconds": 2.006742709025275,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 10,
+    "label": "guest-manager-initial",
+    "at": "2026-10-27T07:05:01.346Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:04:54.422Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.48,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.93,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.26,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9594917297363,
+        "profileFreeGiB": 26.616191864013672,
+        "safetyFreeGiB": 26.616191864013672,
+        "systemFreeGiB": 26.616191864013672
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:05:00.149475Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:04:54.422Z",
+      "journal_age_seconds": 5.727475,
+      "actual_read_gap_seconds": 2.0033282499643974,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 11,
+    "label": "guest-initial-management-reload",
+    "at": "2026-10-27T07:05:07.580Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:04:54.422Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.48,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.93,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.26,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9594917297363,
+        "profileFreeGiB": 26.616191864013672,
+        "safetyFreeGiB": 26.616191864013672,
+        "systemFreeGiB": 26.616191864013672
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:05:06.163673Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:04:54.422Z",
+      "journal_age_seconds": 11.741673,
+      "actual_read_gap_seconds": 2.0023072499898262,
+      "admitted_observed": true
+    },
+    "calls": 3
+  },
+  {
+    "id": 12,
+    "label": "guest-store-preserved",
+    "at": "2026-10-27T07:05:18.996Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:05:10.446Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.64,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.42,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.19,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9593200683594,
+        "profileFreeGiB": 26.61263656616211,
+        "safetyFreeGiB": 26.61263656616211,
+        "systemFreeGiB": 26.61263656616211
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:05:18.199252Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:05:10.446Z",
+      "journal_age_seconds": 7.753252,
+      "actual_read_gap_seconds": 2.006299292028416,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 13,
+    "label": "guest-owned-demo",
+    "at": "2026-10-27T07:05:24.995Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:05:10.446Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.64,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.42,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.19,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9593200683594,
+        "profileFreeGiB": 26.61263656616211,
+        "safetyFreeGiB": 26.61263656616211,
+        "systemFreeGiB": 26.61263656616211
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:05:24.214111Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:05:10.446Z",
+      "journal_age_seconds": 13.768111,
+      "actual_read_gap_seconds": 2.006185624981299,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 14,
+    "label": "guest-resume-state",
+    "at": "2026-10-27T07:06:51.921Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:06:46.586Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.1,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9595031738281,
+        "profileFreeGiB": 26.625545501708984,
+        "safetyFreeGiB": 26.625545501708984,
+        "systemFreeGiB": 26.625545501708984
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:06:50.432401Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:06:46.586Z",
+      "journal_age_seconds": 3.846401,
+      "actual_read_gap_seconds": 2.0067411250201985,
+      "admitted_observed": true
+    },
+    "calls": 2
+  },
+  {
+    "id": 15,
+    "label": "guest-settings-oneclick-smoke",
+    "at": "2026-10-27T07:07:10.701Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:07:02.612Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.67,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.21,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9594841003418,
+        "profileFreeGiB": 26.624252319335938,
+        "safetyFreeGiB": 26.624252319335938,
+        "systemFreeGiB": 26.624252319335938
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:07:10.469228Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:07:02.612Z",
+      "journal_age_seconds": 7.857228,
+      "actual_read_gap_seconds": 2.005661167029757,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 16,
+    "label": "guest-warm-settings",
+    "at": "2026-10-27T07:07:18.061Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:07:02.612Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.67,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.21,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9594841003418,
+        "profileFreeGiB": 26.624252319335938,
+        "safetyFreeGiB": 26.624252319335938,
+        "systemFreeGiB": 26.624252319335938
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:07:16.480354Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:07:02.612Z",
+      "journal_age_seconds": 13.868354,
+      "actual_read_gap_seconds": 2.0017313749995083,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 17,
+    "label": "guest-warm-section-ACCOUNT",
+    "at": "2026-10-27T07:08:09.347Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:06.714Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.78,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9589767456055,
+        "profileFreeGiB": 26.61678695678711,
+        "safetyFreeGiB": 26.61678695678711,
+        "systemFreeGiB": 26.61678695678711
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:08.627181Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:06.714Z",
+      "journal_age_seconds": 1.913181,
+      "actual_read_gap_seconds": 2.006441250036005,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 18,
+    "label": "guest-warm-section-ORGANIZATION",
+    "at": "2026-10-27T07:08:10.600Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:06.714Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.78,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9589767456055,
+        "profileFreeGiB": 26.61678695678711,
+        "safetyFreeGiB": 26.61678695678711,
+        "systemFreeGiB": 26.61678695678711
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:08.627181Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:06.714Z",
+      "journal_age_seconds": 1.913181,
+      "actual_read_gap_seconds": 2.006441250036005,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 19,
+    "label": "guest-warm-section-APPEARANCE",
+    "at": "2026-10-27T07:08:12.044Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:06.714Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.78,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9589767456055,
+        "profileFreeGiB": 26.61678695678711,
+        "safetyFreeGiB": 26.61678695678711,
+        "systemFreeGiB": 26.61678695678711
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:10.633991Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:06.714Z",
+      "journal_age_seconds": 3.919991,
+      "actual_read_gap_seconds": 2.0067337499931455,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 20,
+    "label": "guest-warm-section-CHAT",
+    "at": "2026-10-27T07:08:13.519Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:06.714Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.78,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9589767456055,
+        "profileFreeGiB": 26.61678695678711,
+        "safetyFreeGiB": 26.61678695678711,
+        "systemFreeGiB": 26.61678695678711
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:12.638831Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:06.714Z",
+      "journal_age_seconds": 5.924831,
+      "actual_read_gap_seconds": 2.0048467500018887,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 21,
+    "label": "guest-warm-section-PRIVACY",
+    "at": "2026-10-27T07:08:14.961Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:06.714Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.78,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9589767456055,
+        "profileFreeGiB": 26.61678695678711,
+        "safetyFreeGiB": 26.61678695678711,
+        "systemFreeGiB": 26.61678695678711
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:14.645521Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:06.714Z",
+      "journal_age_seconds": 7.931521,
+      "actual_read_gap_seconds": 2.006728790991474,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 22,
+    "label": "guest-warm-section-SCRAPE",
+    "at": "2026-10-27T07:08:16.405Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:06.714Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.78,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9589767456055,
+        "profileFreeGiB": 26.61678695678711,
+        "safetyFreeGiB": 26.61678695678711,
+        "systemFreeGiB": 26.61678695678711
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:14.645521Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:06.714Z",
+      "journal_age_seconds": 7.931521,
+      "actual_read_gap_seconds": 2.006728790991474,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 23,
+    "label": "guest-warm-section-DATA",
+    "at": "2026-10-27T07:08:18.072Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:06.714Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.78,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9589767456055,
+        "profileFreeGiB": 26.61678695678711,
+        "safetyFreeGiB": 26.61678695678711,
+        "systemFreeGiB": 26.61678695678711
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:16.651331Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:06.714Z",
+      "journal_age_seconds": 9.937331,
+      "actual_read_gap_seconds": 2.0057573749800213,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 24,
+    "label": "guest-warm-section-SEO",
+    "at": "2026-10-27T07:08:19.527Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:06.714Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.78,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9589767456055,
+        "profileFreeGiB": 26.61678695678711,
+        "safetyFreeGiB": 26.61678695678711,
+        "systemFreeGiB": 26.61678695678711
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:18.657396Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:06.714Z",
+      "journal_age_seconds": 11.943396,
+      "actual_read_gap_seconds": 2.0060531670460477,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 25,
+    "label": "guest-warm-section-DESKTOP BRIDGE",
+    "at": "2026-10-27T07:08:20.959Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:06.714Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.78,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9589767456055,
+        "profileFreeGiB": 26.61678695678711,
+        "safetyFreeGiB": 26.61678695678711,
+        "systemFreeGiB": 26.61678695678711
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:20.661496Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:06.714Z",
+      "journal_age_seconds": 13.947496,
+      "actual_read_gap_seconds": 2.0041317499708384,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 26,
+    "label": "guest-warm-section-DATA & RESET",
+    "at": "2026-10-27T07:08:22.416Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:06.714Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.78,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9589767456055,
+        "profileFreeGiB": 26.61678695678711,
+        "safetyFreeGiB": 26.61678695678711,
+        "systemFreeGiB": 26.61678695678711
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:20.661496Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:06.714Z",
+      "journal_age_seconds": 13.947496,
+      "actual_read_gap_seconds": 2.0041317499708384,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 27,
+    "label": "guest-warm-section-ABOUT",
+    "at": "2026-10-27T07:08:23.849Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:22.730Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.74,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.25,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9570617675781,
+        "profileFreeGiB": 26.610816955566406,
+        "safetyFreeGiB": 26.610816955566406,
+        "systemFreeGiB": 26.610816955566406
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:22.663394Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:06.714Z",
+      "journal_age_seconds": 15.949394,
+      "actual_read_gap_seconds": 2.0019217500230297,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 28,
+    "label": "guest-second-management-navigation",
+    "at": "2026-10-27T07:08:47.161Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:38.758Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.63,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.21,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9570007324219,
+        "profileFreeGiB": 26.60828399658203,
+        "safetyFreeGiB": 26.60828399658203,
+        "systemFreeGiB": 26.60828399658203
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:46.724445Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:38.758Z",
+      "journal_age_seconds": 7.966445,
+      "actual_read_gap_seconds": 2.0064024580060504,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 29,
+    "label": "guest-second-management-reload",
+    "at": "2026-10-27T07:08:50.228Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:38.758Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.63,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.21,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9570007324219,
+        "profileFreeGiB": 26.60828399658203,
+        "safetyFreeGiB": 26.60828399658203,
+        "systemFreeGiB": 26.60828399658203
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:08:48.730745Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:38.758Z",
+      "journal_age_seconds": 9.972745,
+      "actual_read_gap_seconds": 2.0063067079754546,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 30,
+    "label": "guest-postreload-public-fixture",
+    "at": "2026-10-27T07:09:01.457Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:54.772Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.37,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.29,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9569702148438,
+        "profileFreeGiB": 26.612350463867188,
+        "safetyFreeGiB": 26.612350463867188,
+        "systemFreeGiB": 26.612350463867188
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:00.760225Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:54.772Z",
+      "journal_age_seconds": 5.988225,
+      "actual_read_gap_seconds": 2.006906708003953,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 31,
+    "label": "guest-postreload-panel",
+    "at": "2026-10-27T07:09:09.895Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:08:54.772Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.37,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.29,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9569702148438,
+        "profileFreeGiB": 26.612350463867188,
+        "safetyFreeGiB": 26.612350463867188,
+        "systemFreeGiB": 26.612350463867188
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:08.783811Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:08:54.772Z",
+      "journal_age_seconds": 14.011811,
+      "actual_read_gap_seconds": 2.003034249995835,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 32,
+    "label": "guest-reloaded-settings",
+    "at": "2026-10-27T07:09:21.900Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:10.797Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.85,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.47,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9568252563477,
+        "profileFreeGiB": 26.60186767578125,
+        "safetyFreeGiB": 26.60186767578125,
+        "systemFreeGiB": 26.60186767578125
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:20.808980Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:10.797Z",
+      "journal_age_seconds": 10.01198,
+      "actual_read_gap_seconds": 2.0057030000025406,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 33,
+    "label": "guest-reloaded-section-ACCOUNT",
+    "at": "2026-10-27T07:09:32.913Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:26.816Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.56,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9563026428223,
+        "profileFreeGiB": 26.597511291503906,
+        "safetyFreeGiB": 26.597511291503906,
+        "systemFreeGiB": 26.597511291503906
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:32.843641Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:26.816Z",
+      "journal_age_seconds": 6.027641,
+      "actual_read_gap_seconds": 2.0068493339931592,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 34,
+    "label": "guest-reloaded-section-ORGANIZATION",
+    "at": "2026-10-27T07:09:34.118Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:26.816Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.56,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9563026428223,
+        "profileFreeGiB": 26.597511291503906,
+        "safetyFreeGiB": 26.597511291503906,
+        "systemFreeGiB": 26.597511291503906
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:32.843641Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:26.816Z",
+      "journal_age_seconds": 6.027641,
+      "actual_read_gap_seconds": 2.0068493339931592,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 35,
+    "label": "guest-reloaded-section-APPEARANCE",
+    "at": "2026-10-27T07:09:35.586Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:26.816Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.56,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9563026428223,
+        "profileFreeGiB": 26.597511291503906,
+        "safetyFreeGiB": 26.597511291503906,
+        "systemFreeGiB": 26.597511291503906
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:34.847247Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:26.816Z",
+      "journal_age_seconds": 8.031247,
+      "actual_read_gap_seconds": 2.003578457981348,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 36,
+    "label": "guest-reloaded-section-CHAT",
+    "at": "2026-10-27T07:09:37.026Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:26.816Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.56,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9563026428223,
+        "profileFreeGiB": 26.597511291503906,
+        "safetyFreeGiB": 26.597511291503906,
+        "systemFreeGiB": 26.597511291503906
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:36.853013Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:26.816Z",
+      "journal_age_seconds": 10.037013,
+      "actual_read_gap_seconds": 2.0057401669910178,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 37,
+    "label": "guest-reloaded-section-PRIVACY",
+    "at": "2026-10-27T07:09:38.472Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:26.816Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.56,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9563026428223,
+        "profileFreeGiB": 26.597511291503906,
+        "safetyFreeGiB": 26.597511291503906,
+        "systemFreeGiB": 26.597511291503906
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:36.853013Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:26.816Z",
+      "journal_age_seconds": 10.037013,
+      "actual_read_gap_seconds": 2.0057401669910178,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 38,
+    "label": "guest-reloaded-section-SCRAPE",
+    "at": "2026-10-27T07:09:39.929Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:26.816Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.56,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9563026428223,
+        "profileFreeGiB": 26.597511291503906,
+        "safetyFreeGiB": 26.597511291503906,
+        "systemFreeGiB": 26.597511291503906
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:38.859217Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:26.816Z",
+      "journal_age_seconds": 12.043217,
+      "actual_read_gap_seconds": 2.0062628750456497,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 39,
+    "label": "guest-reloaded-section-DATA",
+    "at": "2026-10-27T07:09:41.598Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:26.816Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.56,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9563026428223,
+        "profileFreeGiB": 26.597511291503906,
+        "safetyFreeGiB": 26.597511291503906,
+        "systemFreeGiB": 26.597511291503906
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:40.864418Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:26.816Z",
+      "journal_age_seconds": 14.048418,
+      "actual_read_gap_seconds": 2.0051062909769826,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 40,
+    "label": "guest-reloaded-section-SEO",
+    "at": "2026-10-27T07:09:43.086Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:42.835Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.28,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.45,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9561500549316,
+        "profileFreeGiB": 26.59256362915039,
+        "safetyFreeGiB": 26.59256362915039,
+        "systemFreeGiB": 26.59256362915039
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:42.865057Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:42.835Z",
+      "journal_age_seconds": 0.030057,
+      "actual_read_gap_seconds": 2.000642750004772,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 41,
+    "label": "guest-reloaded-section-DESKTOP BRIDGE",
+    "at": "2026-10-27T07:09:44.560Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:42.835Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.28,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.45,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9561500549316,
+        "profileFreeGiB": 26.59256362915039,
+        "safetyFreeGiB": 26.59256362915039,
+        "systemFreeGiB": 26.59256362915039
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:42.865057Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:42.835Z",
+      "journal_age_seconds": 0.030057,
+      "actual_read_gap_seconds": 2.000642750004772,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 42,
+    "label": "guest-reloaded-section-DATA & RESET",
+    "at": "2026-10-27T07:09:46.020Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:42.835Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.28,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.45,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9561500549316,
+        "profileFreeGiB": 26.59256362915039,
+        "safetyFreeGiB": 26.59256362915039,
+        "systemFreeGiB": 26.59256362915039
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:44.871167Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:42.835Z",
+      "journal_age_seconds": 2.036167,
+      "actual_read_gap_seconds": 2.0060832499875687,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 43,
+    "label": "guest-reloaded-section-ABOUT",
+    "at": "2026-10-27T07:09:47.517Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:42.835Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.28,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.45,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9561500549316,
+        "profileFreeGiB": 26.59256362915039,
+        "safetyFreeGiB": 26.59256362915039,
+        "systemFreeGiB": 26.59256362915039
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:09:46.876793Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:42.835Z",
+      "journal_age_seconds": 4.041793,
+      "actual_read_gap_seconds": 2.0056184999994002,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 44,
+    "label": "guest-final-settings-cleanup",
+    "at": "2026-10-27T07:10:08.168Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:58.859Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 9.28,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 4.17,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.13,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9567260742188,
+        "profileFreeGiB": 26.583675384521484,
+        "safetyFreeGiB": 26.583675384521484,
+        "systemFreeGiB": 26.583675384521484
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:10:06.931206Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:58.859Z",
+      "journal_age_seconds": 8.072206,
+      "actual_read_gap_seconds": 2.0015518750296906,
+      "admitted_observed": true
+    },
+    "calls": 4
+  },
+  {
+    "id": 45,
+    "label": "guest-original-restored",
+    "at": "2026-10-27T07:10:12.075Z",
+    "guard": {
+      "schema": 1,
+      "at": "2026-10-27T07:09:58.859Z",
+      "runId": "native472-correct-profile-replay-20261027-0655",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 9.28,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 4.17,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.13,
+        "swapUsedMiB": 325.56,
+        "repoFreeGiB": 1588.9567260742188,
+        "profileFreeGiB": 26.583675384521484,
+        "safetyFreeGiB": 26.583675384521484,
+        "systemFreeGiB": 26.583675384521484
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "watch": {
+      "read_at": "2026-10-27T07:10:10.945172Z",
+      "path": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+      "latest_code": "RESOURCE_WATCH_HEALTHY",
+      "latest_at": "2026-10-27T07:09:58.859Z",
+      "journal_age_seconds": 12.086172,
+      "actual_read_gap_seconds": 2.007558416982647,
+      "admitted_observed": true
+    },
+    "calls": 2
+  }
+]

@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T08",
+  "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+  "auth_mode": "guest",
+  "status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+    "run_id": 40452473314,
+    "artifact_id": 12711641563,
+    "version": "0.2.629",
+    "tree_sha256": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6"
+  },
+  "observations": {
+    "case_id": "EXT-F-1007-T08",
+    "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+    "fixture": "owned localhost; title only; no body, SEO metadata, links, images, headings or JSON-LD",
+    "seo": {
+      "visible": true,
+      "selected": "SEO",
+      "title_matches": true,
+      "description_dash": true,
+      "groups": ["Title & description", "Performance"]
+    },
+    "schema": {
+      "visible": true,
+      "selected": "Schema",
+      "json_valid": true,
+      "metadata_title_matches": true,
+      "description_absent": true,
+      "canonical_absent": true,
+      "og_count": 0,
+      "twitter_count": 0,
+      "schema_types_count": 0,
+      "ld_json_count": 0
+    },
+    "export_checks": [
+      {
+        "after_pane": "SEO",
+        "identity_unchanged": true,
+        "digest_unchanged": true
+      },
+      {
+        "after_pane": "Schema",
+        "identity_unchanged": true,
+        "digest_unchanged": true
+      }
+    ],
+    "verdict": {
+      "seo_no_signal_baseline": true,
+      "schema_empty": true,
+      "capture_export_unchanged_after_each_pane": true
+    }
+  },
+  "capture_diagnostic": {
+    "before": {
+      "capture_match_count": 1,
+      "capture_inside_scrape": true,
+      "chat_active": false,
+      "active_scrape_count": 1,
+      "scrape_controls_present": true,
+      "scrape_pane_found": true,
+      "scrape_pane_active": true,
+      "result_tablist_count": 0,
+      "selected_count": 0,
+      "article": false,
+      "selected_inside_scrape": false,
+      "result_controls_present": false,
+      "result_pane_found": false,
+      "result_pane_active": false,
+      "result_pane_inside_scrape": false,
+      "result_pane_visible": false,
+      "title_matches": true
+    },
+    "immediate": {
+      "capture_match_count": 1,
+      "capture_inside_scrape": true,
+      "chat_active": false,
+      "active_scrape_count": 1,
+      "scrape_controls_present": true,
+      "scrape_pane_found": true,
+      "scrape_pane_active": true,
+      "result_tablist_count": 0,
+      "selected_count": 0,
+      "article": false,
+      "selected_inside_scrape": false,
+      "result_controls_present": false,
+      "result_pane_found": false,
+      "result_pane_active": false,
+      "result_pane_inside_scrape": false,
+      "result_pane_visible": false,
+      "title_matches": true
+    },
+    "immediate_events": {
+      "pointerdown": 1,
+      "pointerup": 1,
+      "click": 1,
+      "trusted_click": 1,
+      "capture_click": 1,
+      "trusted_capture_click": 1,
+      "last_target_is_capture": true,
+      "last_target_inside_scrape": true
+    },
+    "timeout": null,
+    "pointer_target": {
+      "target_rect": {
+        "x": 12,
+        "y": 695,
+        "width": 164,
+        "height": 36
+      },
+      "clipped_rect": {
+        "x": 12,
+        "y": 695,
+        "width": 164,
+        "height": 36
+      },
+      "viewport": {
+        "width": 360,
+        "height": 743
+      },
+      "clipping_ancestor_count": 0,
+      "tested_point_count": 9,
+      "center_hit_category": "target",
+      "interior_hit_kinds": [
+        "target",
+        "target",
+        "target",
+        "target",
+        "target",
+        "target",
+        "target",
+        "target",
+        "target"
+      ],
+      "center_occluder": null,
+      "first_interior_occluder": null,
+      "selected_point_available": true,
+      "selected_point": {
+        "x": 94,
+        "y": 713
+      },
+      "target_disabled": false,
+      "target_pointer_events_none": false
+    },
+    "pointer_phase": "release_returned",
+    "pointer_failure": null,
+    "events": {
+      "pointerdown": 1,
+      "pointerup": 1,
+      "click": 1,
+      "trusted_click": 1,
+      "capture_click": 1,
+      "trusted_capture_click": 1,
+      "last_target_is_capture": true,
+      "last_target_inside_scrape": true
+    }
+  },
+  "pane_screenshots": {
+    "SEO": "/Users/runner/work/_temp/guest-acceptance/native-sidepanel-qa-FhFLwe/scrape-t08-seo-pane.png",
+    "Schema": "/Users/runner/work/_temp/guest-acceptance/native-sidepanel-qa-FhFLwe/scrape-t08-schema-pane.png"
+  },
+  "panel_viewport": {
+    "mode": "narrow",
+    "mechanism": "native_default",
+    "observed_px": 360,
+    "minimum_px": null
+  },
+  "failure_code": null,
+  "limits": "One owned localhost guest page; only T08 no-signal SEO and empty Schema panes. No broader T08, role, width, Store, or current-main claim.",
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "sourceSha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+    "runId": 40452473314,
+    "artifactId": 12711641563,
+    "githubArtifactDigest": "sha256:aed5f1cbf3c23802b7d490744797a215485cd4e6a24aaa4d0924d4910a874f02",
+    "runAttempt": 1,
+    "version": "0.2.629",
+    "treeSha256": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6"
+  },
+  "build": {
+    "before": {
+      "treeSha256": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6"
+    },
+    "after": {
+      "treeSha256": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6"
+    }
+  },
+  "startup_endpoint_observations": [
+    {
+      "phase": "cdp_connected",
+      "endpointPresent": true,
+      "presenceBasis": "validated_connector_record",
+      "sampleTiming": null,
+      "recordInspection": {
+        "outcome": "not_attempted",
+        "timing": null
+      },
+      "inspectionFailed": false,
+      "exitObserved": false,
+      "elapsedMs": 3142,
+      "polls": 0,
+      "reportedElapsedMs": 3142
+    }
+  ],
+  "native_target": {
+    "target_id": "25737092EF26A631760CD80D9462F8E3",
+    "type": "page",
+    "url": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html"
+  },
+  "browser_version": "Chrome/141.0.7390.37"
+}

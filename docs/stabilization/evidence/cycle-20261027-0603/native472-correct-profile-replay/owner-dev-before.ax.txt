@@ -1,0 +1,144 @@
+Window: "Extensions - Matrx Extend DEV", App: Google Chrome.
+0 standard window Extensions - Matrx Extend DEV - Google Chrome - Arman (armansadeghi.com), URL: chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml, Secondary Actions: Raise
+	1 container Extensions - Matrx Extend DEV - Google Chrome - Arman (armansadeghi.com), URL: chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml
+		2 container
+			3 toolbar
+				4 button Back
+				5 button (disabled) Forward
+				6 button Reload
+				7 container
+					8 pop up button Chrome
+					9 text field (settable) Address and search bar, Value: chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml, Placeholder: Ask Google or type a URL
+					10 button Bookmark this tab
+				11 container
+					12 pop up button LastPass
+					13 pop up button Matrx Extend DEV
+					14 pop up button Matrx
+					15 pop up button Extensions
+				16 button Work
+				17 pop up button Chrome
+			18 container
+				19 scroll area
+					20 HTML content Extensions - Matrx Extend DEV, URL: chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml
+						21 container
+							22 heading Extensions, Value: 1
+								23 text Extensions
+							24 search text field (settable) Search extensions
+							25 text Developer mode
+							26 switch Developer mode, Value: on
+							27 container
+								28 button Load unpacked
+								29 button Pack extension
+								30 button Update, Help: Update extensions now
+						31 container
+							32 container
+								33 menu Secondary Actions: Cancel
+									34 My extensions
+										35 text My extensions
+									36 Keyboard shortcuts
+										37 text Keyboard shortcuts
+								38 text Using AI coding agents to build extensions? Install the 
+								39 link Chrome Extensions and Chrome Web Store skill, Value: developer.chrome.com/docs/extensions/ai/build-with-ai?utm_source=ext_sidebar&hl=en-US#modern_web_guidance
+								40 text  to teach your coding agent the latest API updates and best practices.
+								41 container
+									42 text Discover more extensions and themes on the 
+									43 link Chrome Web Store, Value: chromewebstore.google.com/category/extensions?utm_source=ext_sidebar&hl=en-US
+							44 container
+								45 click to navigate away from matrx extend dev details page. Matrx Extend DEV details page back button
+								46 heading Matrx Extend DEV, Value: 1
+									47 text Matrx Extend DEV
+								48 button Reload
+								49 text On
+								50 switch On, extension enabled, Value: on
+								51 heading Description, Value: 2
+									52 text Description
+								53 text AI assistant for understanding and working with the page open in your browser.
+								54 heading Version, Value: 2
+									55 text Version
+								56 text 0.2.629
+								57 heading Size, Value: 2
+									58 text Size
+								59 text 185 MB
+								60 heading ID, Value: 2
+									61 text ID
+								62 text cihdmkcdjjckfhjpgoedmgfpoljebaml
+								63 heading Inspect views, Value: 2
+									64 text Inspect views
+								65 content list
+									66 container
+										67 AXListMarker • 
+										68 link service worker
+											69 text service worker
+								70 heading Permissions, Value: 2
+									71 text Permissions
+								72 content list
+									73 container
+										74 AXListMarker • 
+										75 text Access the page debugger backend
+									76 container
+										77 AXListMarker • 
+										78 text Read and change all your data on all websites
+									79 container
+										80 AXListMarker • 
+										81 text Read and change your browsing history on all your signed-in devices
+									82 container
+										83 AXListMarker • 
+										84 text Display notifications
+									85 container
+										86 AXListMarker • 
+										87 text Read and change your bookmarks
+									88 container
+										89 AXListMarker • 
+										90 text Modify data you copy and paste
+									91 container
+										92 AXListMarker • 
+										93 text Manage your downloads
+									94 container
+										95 AXListMarker • 
+										96 text Communicate with cooperating native applications
+									97 container
+										98 AXListMarker • 
+										99 text View and manage your tab groups
+								100 heading Site access, Value: 2
+									101 text Site access
+								102 text Allow this extension to read and change all your data on websites you visit:
+								103 link Learn more about extension permissions, Value: support.google.com/chrome?p=enable_extensions
+								104 pop up button Allow this extension to read and change all your data on websites you visit:, Value: On all sites
+									105 (selected) On all sites
+								106 link Site settings
+								107 switch Pin to toolbar, Value: on
+								108 switch Value: off, Allow in Incognito Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option. Changes to this setting will be applied once Chrome restarts. 
+								109 switch Allow access to file URLs Changes to this setting will be applied once Chrome restarts. , Value: on
+								110 switch Collect errors, Value: on
+								111 link Extension options
+								112 heading Source, Value: 2
+									113 text Source
+								114 text Unpacked extension Loaded from:
+								115 link /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev
+									116 text /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev
+								117 link Remove extension
+			118 pop up button Tab search
+			119 container
+				120 tab group
+					121 tab (settable, boolean) Vault | AI Matrx — AI Matrx - Memory usage - 269 MB, Value: off
+						122 button Close
+					123 tab (selected, settable, boolean) Extensions - Matrx Extend DEV, Value: on
+						124 button Close
+			125 button New Tab
+			126 button Open Gemini in Chrome
+	127 close button
+	128 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	129 minimize button
+130 menu bar
+	131 Chrome
+	132 File
+	133 Edit
+	134 View
+	135 History
+	136 Bookmarks
+	137 Profiles
+	138 Tab
+	139 Window
+	140 Help
+
+The focused UI element is 45 click to navigate away from matrx extend dev details page. Matrx Extend DEV details page back button

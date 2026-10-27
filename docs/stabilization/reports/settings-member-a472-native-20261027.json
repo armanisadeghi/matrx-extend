@@ -1,0 +1,406 @@
+{
+  "schema": 1,
+  "task_id": "settings_member_a472_native",
+  "at": "2026-10-27T06:39:23.768538+00:00",
+  "status": "TERMINAL_AUTH_ORGANIZATION_BOUNDARY_FAILURE_ALL_CASES_UNVERIFIED_CLEANUP_VERIFIED",
+  "source_sha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+  "development": {
+    "run": 40452473314,
+    "artifact": 12711641563,
+    "digest": "sha256:aed5f1cbf3c23802b7d490744797a215485cd4e6a24aaa4d0924d4910a874f02"
+  },
+  "native": {
+    "run": 40460876503,
+    "attempt": 1,
+    "head_sha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "status": "completed",
+    "conclusion": "failure",
+    "job_id": 122044913985,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40460876503",
+    "dispatch_actual_exit": 0
+  },
+  "scope": {
+    "case_ids": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
+    "role": "existing approved ordinary member; native proof pending"
+  },
+  "fixture": {
+    "existing_approved_identity_and_organization_preflight": true,
+    "canonical_active_dry_run_actual_exit": 0,
+    "membership_exact_member_verified_before_dispatch": true,
+    "original_archived": true,
+    "temporary_unarchive_actual_exit": 0,
+    "restore_actual_exit": 0,
+    "readback_exact_original_archive": true,
+    "restore_scope": "Exact approved organization archived_at and test_fixture marker; not all user/account/session audit state."
+  },
+  "credentials": {
+    "at": "2026-10-27T06:32:35.895569+00:00",
+    "secret_metadata_check_exit": 0,
+    "owned_secret_absent": true,
+    "owned_temporary_auth_files_absent": true,
+    "fixture_restore_readback_exact_original_archive": true,
+    "restoration_scope": "Exact approved organization archived_at; real authentication audit/session events are not rolled back."
+  },
+  "poll_audit": {
+    "path": ".output/stabilization-checkpoints/settings-member-a472/poll-audit.jsonl",
+    "count": 4,
+    "minimum_command_start_gap_seconds": 117.91262750001624,
+    "all_gaps_at_least_65": true,
+    "semantics": "Recorded gh CLI bounded-view invocation starts/ends; underlying HTTP wire starts not independently instrumented."
+  },
+  "A_behavior": {
+    "verdict": "UNVERIFIED for all3 cases",
+    "product_passes": 0,
+    "product_failure_assertions": 0,
+    "reason": "Authentication organization-selection prerequisite failed; no case observations."
+  },
+  "B_provenance": {
+    "verdict": "PASS bounded failed-attempt collection with limits",
+    "archive_digest_matched": true,
+    "all_members_hashed": true,
+    "source_import_tree_validated": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6",
+    "normal_certificate": null,
+    "limits": [
+      "No post-auth option/label snapshot.",
+      "No standalone actual browser version/display-mode record.",
+      "Remote profile/descendant/private-input deletion not independently read back.",
+      "Native report sourceSha null; canonical original job log binds frozen import/tree."
+    ]
+  },
+  "next_action": "Do not retry. Parent/fresh diagnostic lane should reconcile approved organization input/current fixture with hardcoded fallback and preserve stage-specific safe observations before a changed/reviewed exact-source retest. Do not hardcode a different name or weaken source/resource/ownership/role gates.",
+  "actions": {
+    "source_edits": 0,
+    "Mac_UI": 0,
+    "Mac_heavy": 0,
+    "provider_AI_calls": 0,
+    "new_dispatches": 1,
+    "new_auth_grants": 0,
+    "children": 0,
+    "commits": 0,
+    "owned_secret_stage": 1,
+    "owned_secret_delete": 1,
+    "owned_fixture_unarchive": 1,
+    "owned_fixture_restore": 1
+  },
+  "evidence_private": {
+    ".output/stabilization-checkpoints/settings-member-a472/official-run.json": {
+      "sha256": "3752becdb5fda56bd7dc364391452d1c523163fd229171f1dbdc42927af4dfd7",
+      "bytes": 13009
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/official-artifacts.json": {
+      "sha256": "6b6a945cbe866cef1c925e8af39fc480bdd81a3cb9ea1ba972b8bc903afce707",
+      "bytes": 737
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/job.log": {
+      "sha256": "2622c4be1f435d45d8406c3d8a9d519402851d0849c27ab9841b29f2f2435f67",
+      "bytes": 178027
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/native.zip": {
+      "sha256": "443644a6d3fb71c9272ad0f5b93ca495a2a5c46d757b19edae07d38aee20b0e0",
+      "bytes": 36701
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/normal-verifier.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/normal-verifier.stderr": {
+      "sha256": "f481b929f84a8539d04908b49db8a50fbdb13dfcd1594416fdc563507ae75881",
+      "bytes": 48
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/normal-verifier-exit.json": {
+      "sha256": "96eb27f61774a24167a3cbdff0c6d92dd1fe94afad8cda16e8de7f938fb6a6e7",
+      "bytes": 55
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/log-provenance-only.json": {
+      "sha256": "b7503549eb860911d2a3f2020ddc4f98865c4e06105adcd51bba6a63bfeec699",
+      "bytes": 216
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/dispatch-exit.json": {
+      "sha256": "67929a94c58f8977ba59c69fe136eb5cab8d3087a46b215275ec89b00a80c421",
+      "bytes": 67
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/plan.json": {
+      "sha256": "98a435455edd89fbc49203e0fafcf11960f94171157e6d33a1db3915b0fc4369",
+      "bytes": 691
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/poll-audit.jsonl": {
+      "sha256": "d4aaf9deba05a1e59a35d41acf0ed997220be64d59a6d1cb798b7088bb4d2bfb",
+      "bytes": 1334
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/cleanup-final.json": {
+      "sha256": "4c74e3a283d064295bf5bdc6a09612d9ffcc3f9a091a2d61303cdb17108a4309",
+      "bytes": 346
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/secret-cleanup.json": {
+      "sha256": "3ec790e0c08ebdbc55f5a7116c45dfb9b1d387a2b4d426e2f0f58737bb2bd42d",
+      "bytes": 379
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/recover-receipt.json": {
+      "sha256": "16241276951a7078660e5b2eb7fc3ab75ef3458835d257aa9237a02edcf053ef",
+      "bytes": 179
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/dry-before-activation.json": {
+      "sha256": "8f332fd9331f345e77713313427932bb025568b85824a906aa52081aa0686405",
+      "bytes": 201
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/dry-active.log": {
+      "sha256": "743a08376adf2a24e4b08594372465bd63c1852ef78bb17686c127d3cf2cd845",
+      "bytes": 43
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/fixture-unarchive-receipt.json": {
+      "sha256": "3463cf96d816975ddac8e389020d326b5ae7d8be1119f290e18dc9bbbd913c78",
+      "bytes": 229
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/fixture-restore-receipt.json": {
+      "sha256": "d8adaa934e949a5af7f5b6b8fa1b0d5177b3c9073749515055cdf726a420bbb0",
+      "bytes": 253
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/fixture-read-receipt.json": {
+      "sha256": "35b1e6bf33cc0f9fa1442f7f6303e73d45e632d16e70dc749c7e2ba33d4050d5",
+      "bytes": 250
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/bounded-source-diagnosis.json": {
+      "sha256": "fea6cbfca0734cea697aa98dbc021f3a527cfe7eaef42711258581b5fc441edb",
+      "bytes": 591
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/safe-resource-summary.json": {
+      "sha256": "f0c3b42ef7f6490fb3a8aad033732372d5386976ed5f5c52ca201211cefe5c83",
+      "bytes": 832
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/original-fixture.json": {
+      "sha256": "45f0a4042331fd967e22dbe1592dbf770477caeaa8d6558e0efa5eef8ec88d99",
+      "bytes": 128
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/baseline-read-status.json": {
+      "sha256": "e2593531f2dcce98a9284a0ffb336ed0566724f8e0218a329a5a9d6bf4e16b57",
+      "bytes": 96
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/dry-before-activation.log": {
+      "sha256": "b1dbb3caa9c39ddb95c0882161db81d3a2f100451c9fa83438380f8f3a680aea",
+      "bytes": 71
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/activate-status.json": {
+      "sha256": "3ef0e79c4dbbd45a70abf35b0fd5a5f632120c11e5a3c968241e863dd5bfce77",
+      "bytes": 102
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/final-restore-status.json": {
+      "sha256": "96a88e89118f4e1f829bbed68c96aad3c639f217522e466eb978e486d3da7521",
+      "bytes": 99
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/final-readback-status.json": {
+      "sha256": "e2593531f2dcce98a9284a0ffb336ed0566724f8e0218a329a5a9d6bf4e16b57",
+      "bytes": 96
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/secret-staged-metadata.json": {
+      "sha256": "08d614e7415015c5d5454507b67b58e8a376b5090b0cb647064fece155bbca65",
+      "bytes": 98
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/mint-stage-receipt.json": {
+      "sha256": "e3b9a6d5ffab08e525904767c1677f905c3f8cfb7a61167c7542e6d4dcb8732e",
+      "bytes": 239
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/collection-exits.json": {
+      "sha256": "1605e51968b2a9023da2f9d7c110193582158dc69aeac243dbb8b0893dff17b9",
+      "bytes": 338
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/native-archive-receipt.json": {
+      "sha256": "482650e38466d64f2196e5b75917b02bfd934c84c56ca73aee5c0a96d9f2dbfe",
+      "bytes": 293
+    },
+    ".output/stabilization-checkpoints/settings-member-a472/native-members.json": {
+      "sha256": "bf9206f95964814e24cb7ac407f99e6a80dbd6270772dac986daa8e0bb45239d",
+      "bytes": 1296
+    }
+  },
+  "native_archive": {
+    "artifact_id": 12714152803,
+    "name": "hosted-guest-40460876503-1",
+    "digest": "sha256:443644a6d3fb71c9272ad0f5b93ca495a2a5c46d757b19edae07d38aee20b0e0",
+    "actual_sha256": "443644a6d3fb71c9272ad0f5b93ca495a2a5c46d757b19edae07d38aee20b0e0",
+    "size": 36701,
+    "download_actual_exit": 0
+  },
+  "native_members": [
+    {
+      "path": "matrx-extend/matrx-extend/test-results/settings-account-popover-member.json",
+      "sha256": "3da730912f1b88335a74d7100d9200c017824ae7f40b625edc8c6a25015904ca",
+      "bytes": 559
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-YdtmZj/native-side-panel.png",
+      "sha256": "86426d0be4776150d8df5a88f6c751b20c8b26f7f31b350bcdda6849f0f5bf6c",
+      "bytes": 8598
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-YdtmZj/normal-target-after-open.png",
+      "sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c",
+      "bytes": 27046
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40460876503-1.jsonl",
+      "sha256": "63c43fcb77ea36a85c47cc5eee9df67714599043198dfdfafddbc658ef6841ed",
+      "bytes": 986
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40460876503-1.jsonl",
+      "sha256": "98bc87f1f0472d6aa8c19383b96c2615676d0c152aac9ddf3f07d8bf8b10663c",
+      "bytes": 4375
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40460876503-1.jsonl",
+      "sha256": "f29a6cc40f76585b41467e99c3c7cfa19f1265d34bd0f4c3417a2507316b2384",
+      "bytes": 986
+    }
+  ],
+  "native_report": {
+    "path": ".output/stabilization-checkpoints/settings-member-a472/raw/matrx-extend/matrx-extend/test-results/settings-account-popover-member.json",
+    "sha256": "3da730912f1b88335a74d7100d9200c017824ae7f40b625edc8c6a25015904ca",
+    "status": "fail",
+    "failure": "member_auth_boundary_failed",
+    "case_ids": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
+    "all_case_statuses": ["unverified", "unverified", "unverified"],
+    "all_observation_counts": [0, 0, 0],
+    "build_kind": "local_dev_unpacked",
+    "report_source_sha": null
+  },
+  "first_failure": {
+    "observed_error": "member_auth_boundary_failed",
+    "boundary": "member_organization_selection",
+    "failure_code": "d87_member_organization_option_unavailable_not_observed",
+    "at": "2026-10-27T06:31:23.719069Z",
+    "source": "Retained original full job log Error properties, not generic last wrapper assertion.",
+    "classification": "Post-startup member authentication/organization-selection prerequisite failure before Profile/Preferences/Signout assertions; not product assertion failure or CDP timeout.",
+    "identity_limit": "Source control flow reaches this stage after awaited first-party web identity, extension identity/token and canonical nonadmin proof. This case emitted no direct retained observations of those stages and no post-auth organization snapshot; do not promote that inference to observed full native member acceptance."
+  },
+  "resource_journals": {
+    "hosted-browser-40460876503-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/settings-member-a472/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40460876503-1.jsonl",
+      "sha256": "63c43fcb77ea36a85c47cc5eee9df67714599043198dfdfafddbc658ef6841ed",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T06:28:04.908Z",
+        "runId": "hosted-browser-40460876503-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "hosted-guest-40460876503-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/settings-member-a472/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40460876503-1.jsonl",
+      "sha256": "98bc87f1f0472d6aa8c19383b96c2615676d0c152aac9ddf3f07d8bf8b10663c",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T06:31:23.860Z",
+        "runId": "hosted-guest-40460876503-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "hosted-package-40460876503-1.jsonl": {
+      "path": ".output/stabilization-checkpoints/settings-member-a472/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40460876503-1.jsonl",
+      "sha256": "f29a6cc40f76585b41467e99c3c7cfa19f1265d34bd0f4c3417a2507316b2384",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-27T06:26:14.662Z",
+        "runId": "hosted-package-40460876503-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  },
+  "CPU_chronology": [
+    {
+      "at": "2026-10-27T06:29:45.934Z",
+      "code": "RESOURCE_ADMITTED",
+      "reasons": []
+    },
+    {
+      "at": "2026-10-27T06:30:18.137Z",
+      "code": "RESOURCE_CPU_PENDING",
+      "reasons": ["RESOURCE_CPU_BUSY"]
+    },
+    {
+      "at": "2026-10-27T06:30:34.219Z",
+      "code": "RESOURCE_CPU_PENDING",
+      "reasons": []
+    },
+    {
+      "at": "2026-10-27T06:30:50.274Z",
+      "code": "RESOURCE_CPU_PENDING",
+      "reasons": []
+    },
+    {
+      "at": "2026-10-27T06:31:06.379Z",
+      "code": "RESOURCE_CPU_RECOVERED",
+      "reasons": []
+    },
+    {
+      "at": "2026-10-27T06:31:23.741Z",
+      "code": "RESOURCE_JOB_EXIT",
+      "childExitCode": 1,
+      "childSignal": null
+    },
+    {
+      "at": "2026-10-27T06:31:23.860Z",
+      "code": "RESOURCE_FINAL_DECISION",
+      "exitCode": 1,
+      "decision": "child_failed",
+      "resourceInvalid": false
+    }
+  ],
+  "CPU_limit": "CPU_PENDING06:30:18 through recovery06:31:06 overlaps auth interval. Native final child_failed1/resourceInvalidfalse; no causal attribution from overlap.",
+  "normal_verifier": {
+    "actual_exit": 1,
+    "stderr": "HOSTED_REMOTE_REFUSED HOSTED_RUN_NOT_SUCCESSFUL",
+    "certificate": null,
+    "log_provenance_component": {
+      "scope": "Canonical log provenance component only; normal verifier refused failed job; no certificate or product acceptance.",
+      "treeSha256": "bcfac7943d66d0a7f6d2bc99d3266885f485a1dc4203a4d17115f7ad0a66a4a6"
+    },
+    "component_limit": "Direct exported canonical log parser validates frozen import/tree only; it does not override normal failed-run refusal or mint acceptance."
+  },
+  "bounded_source_diagnosis": {
+    "approved_fixture_name_differs_from_driver_fallback": true,
+    "caller_supplies_member_approved_organization_file": false,
+    "allow_ladder_organization_uses_credential_uuid": true,
+    "actual_postauth_organization_label_or_option_list": "NOT RETAINED; no UI cause conclusion",
+    "boundary_evidence": "member_organization_selection/d87_member_organization_option_unavailable_not_observed",
+    "source_flow_only": "The failure stage occurs after awaited web identity, extension token/identity and canonical nonadmin gates; those gates emitted no direct retained observations in this case."
+  },
+  "browser_mode": {
+    "driver_default": "headless (headed option omitted, harness default false)",
+    "source_flow": "Harness checks Browser.getBrowserCommandLine mode before exercisePanel, which was reached.",
+    "executed_mode_record": "No standalone command-line/browserLaunch record retained; source-flow support only.",
+    "exact_executed_browser_version": "UNVERIFIED; download label/build1194 not executed-version proof."
+  },
+  "screenshots": {
+    "inspected": true,
+    "count": 2,
+    "native_panel": "Initial G avatar and skeleton placeholders, before auth; no organization failure UI.",
+    "normal_target": "Owned local research brief and successful Open panel reply.",
+    "limits": "Neither is a post-auth identity/organization option observation."
+  },
+  "credential_preflight_cleanup": {
+    "at": "2026-10-27T06:25:36.250133+00:00",
+    "trigger": "selected-authentication metadata preflight completed, not proof of native login",
+    "delete_actual_exit": 0,
+    "absence_metadata_exit": 0,
+    "secret_absent": true,
+    "owned_private_files_removed": ["reviewer-link.json", "identity.json", "admin.env"],
+    "original_credential_tokenfile_unchanged": true
+  },
+  "owned_processes": "All owned tool sessions terminal:46195,38328,15577,43669,46127,72886,89695,13279,8666 exited0; normal verifier subprocess actual1/refusal. No local heavy/browser/holder/watch or child agents. Remote job terminal failure; full remote cleanup unverified.",
+  "reference_limits": "Original ZIP/log/report/resources retained privately; public publication must whitelist safe evidence. Private fixture receipts contain approved org UUID/archive baseline, not auth values. Temporary identity/admin/link inputs deleted; no credential values in this report.",
+  "original_private_report_sha256": "266d1d2a7db0f34dc866f7e9b8a2f1dd1b6045c315f1d018073a2111c77a5599",
+  "durable_evidence_manifest": "docs/stabilization/reports/cycle-0603-publication-manifest-20261027.json",
+  "publication_limits": "Only mapped evidence is retained publicly; unmapped logs/ZIP/private original bodies are private references, not public evidence. Original actor/peer verdicts retained with owner correction below. No new formal inventory credit, current-main health, defect closure or Store acceptance."
+}

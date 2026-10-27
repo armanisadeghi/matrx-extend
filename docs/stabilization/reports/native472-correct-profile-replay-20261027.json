@@ -1,0 +1,779 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T07:11:09.722Z",
+  "run_id": "native472-correct-profile-replay-20261027-0655",
+  "lane": "fresh-correct-root-native-replay",
+  "ui_stopped": true,
+  "ui_stopped_at": "2026-10-27T07:10:12.503Z",
+  "resource": {
+    "parent_owned": true,
+    "holder_session": 74790,
+    "watcher_session": 70643,
+    "finalization": "parent must stop and finalize after UI STOPPED",
+    "admitted_at": "2026-10-27T07:00:05.913Z",
+    "first_ui_at": "2026-10-27T07:02:33.317Z",
+    "profile_root": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "profile_free_gib": 26.639759063720703,
+    "repo_free_gib": 1589.2531127929688,
+    "admission_receipt": ".output/stabilization-checkpoints/native472-correct-profile-admitted-20261027.json",
+    "journal": "docs/stabilization/resource-journals/native472-correct-profile-replay-20261027-0655.pending.jsonl",
+    "watch": ".output/stabilization-checkpoints/native472-correct-profile-watch-20261027.jsonl",
+    "groups": 45,
+    "max_api_calls_per_group": 4,
+    "api_calls": 174,
+    "api_errors": 0,
+    "budget_allowance": 200,
+    "prior_wrong_root_runs_reused": false
+  },
+  "build": {
+    "source_sha": "472c12bd6b3e3c8c952dc7d19fb05269b564bbe0",
+    "development_ci_run": 40452473314,
+    "artifact_id": 12711641563,
+    "artifact_digest": "aed5f1cbf3c23802b7d490744797a215485cd4e6a24aaa4d0924d4910a874f02",
+    "version": "0.2.629",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "disk_verification": "parent-owned canonical artifact import/promotion/tree receipts; no disk mutation in this lane",
+    "browser_version": "156.0.8078.48",
+    "backend_sha": "not tested; no API or Chat calls"
+  },
+  "owner": {
+    "profile": 8,
+    "email": "arman@armansadeghi.com",
+    "identity_evidence": "owner-version.ax.txt and owner-account-identity.projected.ax.txt",
+    "actual_management_reload": "PASS;629 Reloaded toast +On/pin +stable path/dev ID",
+    "store": "0.2.577;hnfolienncfklkgmdjjmhhegglimlamg;On/pin;Chrome Web Store source",
+    "cleanup": "original sole Vault tab restored; structural header only, private Vault body excluded"
+  },
+  "guest": {
+    "profile": 10,
+    "identity": "Actual Profile Path, not provider label",
+    "signed_out_evidence": "Account Email — +footer Sign in; no Name/admin",
+    "management_reload_count": 2,
+    "management_reload": "both actual manager Reload with Reloaded toast +629/ID/path/On/pin",
+    "store": "577 source Chrome Web Store/On/pin preserved",
+    "cases": [
+      {
+        "phase": "warm",
+        "case": "EXT-F-1003-T01",
+        "observed": "text Organization\ntext Sign in to choose",
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "case": "EXT-F-1003-T07",
+        "observed": "text Default agent Choose an organization above Default mode\ncombo box (settable) Act without asking\ntext Act without asking\ntext Default speed COMING SOON\ncombo box (settable) Fast\ntext Fast",
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "case": "EXT-F-1003-T22",
+        "observed": "Advanced agent capabilities, admin controls and audit-key controls absent in all eleven guest section snapshots",
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "case": "EXT-F-1003-T28",
+        "observed": "All eleven rendered sections open/close, correct section content; Data and SEO No options yet; exact initial content restored",
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "case": "EXT-F-1003-T73",
+        "observed": "Account Email —, no Name/admin badge, footer Sign in",
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "case": "EXT-F-1003-T01",
+        "observed": "text Organization\ntext Sign in to choose",
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "case": "EXT-F-1003-T07",
+        "observed": "text Default agent Choose an organization above Default mode\ncombo box (settable) Act without asking\ntext Act without asking\ntext Default speed COMING SOON\ncombo box (settable) Fast\ntext Fast",
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "case": "EXT-F-1003-T22",
+        "observed": "Advanced agent capabilities, admin controls and audit-key controls absent in all eleven guest section snapshots",
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "case": "EXT-F-1003-T28",
+        "observed": "All eleven rendered sections open/close, correct section content; Data and SEO No options yet; exact initial content restored",
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "case": "EXT-F-1003-T73",
+        "observed": "Account Email —, no Name/admin badge, footer Sign in",
+        "status": "PASS"
+      }
+    ],
+    "sections": [
+      {
+        "phase": "warm",
+        "name": "ACCOUNT",
+        "initialOpen": true,
+        "openContent": "text Email\ntext —",
+        "closedContent": "text Email\ntext —",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "name": "ORGANIZATION",
+        "initialOpen": false,
+        "openContent": "text Organization\ntext Sign in to choose",
+        "closedContent": "",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "name": "APPEARANCE",
+        "initialOpen": true,
+        "openContent": "text Theme\ncombo box (settable) System\ntext System",
+        "closedContent": "text Theme\ncombo box (settable) System\ntext System",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "name": "CHAT",
+        "initialOpen": true,
+        "openContent": "text Default agent Choose an organization above Default mode\ncombo box (settable) Act without asking\ntext Act without asking\ntext Default speed COMING SOON\ncombo box (settable) Fast\ntext Fast",
+        "closedContent": "text Default agent Choose an organization above Default mode\ncombo box (settable) Act without asking\ntext Act without asking\ntext Default speed COMING SOON\ncombo box (settable) Fast\ntext Fast",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "name": "PRIVACY",
+        "initialOpen": true,
+        "openContent": "text Share page identity & email content LETS THE AGENT SEE YOUR VISIBLE USERNAME ON SITES AND GMAIL SUBJECTS/EXCERPTS\nswitch Share page identity & email content, Value: on\ntext Offer to save logins to the Vault AFTER YOU SIGN IN TO A SITE, ASK WHETHER TO SAVE THAT LOGIN — NOTHING IS SAVED WITHOUT YOUR CLICK\nswitch Offer to save logins to the Vault, Value: on\ntext Offer saved logins on sign-in forms ALLOWS MATCHING SAVED LOGINS; CHOOSE WHERE SUGGESTIONS APPEAR BELOW\nswitch Offer saved logins on sign-in forms, Value: on\ntext Show password suggestions on websites OFF KEEPS WEBSITES QUIET. PIN MATRX TO SEE TOOLBAR ASSISTANCE, THEN OPEN VAULT TO REVIEW SAVE OR UPDATE; NOTHING IS SAVED AUTOMATICALLY.\nswitch Show password suggestions on websites, Value: off",
+        "closedContent": "text Share page identity & email content LETS THE AGENT SEE YOUR VISIBLE USERNAME ON SITES AND GMAIL SUBJECTS/EXCERPTS\nswitch Share page identity & email content, Value: on\ntext Offer to save logins to the Vault AFTER YOU SIGN IN TO A SITE, ASK WHETHER TO SAVE THAT LOGIN — NOTHING IS SAVED WITHOUT YOUR CLICK\nswitch Offer to save logins to the Vault, Value: on\ntext Offer saved logins on sign-in forms ALLOWS MATCHING SAVED LOGINS; CHOOSE WHERE SUGGESTIONS APPEAR BELOW\nswitch Offer saved logins on sign-in forms, Value: on\ntext Show password suggestions on websites OFF KEEPS WEBSITES QUIET. PIN MATRX TO SEE TOOLBAR ASSISTANCE, THEN OPEN VAULT TO REVIEW SAVE OR UPDATE; NOTHING IS SAVED AUTOMATICALLY.\nswitch Show password suggestions on websites, Value: off",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "name": "SCRAPE",
+        "initialOpen": true,
+        "openContent": "text Deep clean COMING SOON\nswitch Deep clean, Value: off\ntext Auto-scrape on load CAPTURE PAGE CONTENT IN THE BACKGROUND AFTER EACH LOAD\nswitch Auto-scrape on load, Value: off\ntext Auto-scrape mode SCROLL & CAPTURE LOADS LAZY CONTENT FIRST (SLOWER)\ncombo box (settable) Capture\ntext Capture",
+        "closedContent": "text Deep clean COMING SOON\nswitch Deep clean, Value: off\ntext Auto-scrape on load CAPTURE PAGE CONTENT IN THE BACKGROUND AFTER EACH LOAD\nswitch Auto-scrape on load, Value: off\ntext Auto-scrape mode SCROLL & CAPTURE LOADS LAZY CONTENT FIRST (SLOWER)\ncombo box (settable) Capture\ntext Capture",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "name": "DATA",
+        "initialOpen": false,
+        "openContent": "text No options yet",
+        "closedContent": "",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "name": "SEO",
+        "initialOpen": false,
+        "openContent": "text No options yet",
+        "closedContent": "",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "name": "DESKTOP BRIDGE",
+        "initialOpen": true,
+        "openContent": "text Matrx 2\ntext Matrx 2 is not running on this computer\ntext Matrx Local\ntext Not connected\ntext Pairing is automatic when the Matrx desktop app runs on this computer. The code below is only needed to pair with a desktop app on another machine — copy it from that app's Settings → Bridge Test → Extension pairing.\ntext field (settable) Pair code\nbutton (disabled) Pair\ntext Local engine port\ntext field (settable) auto\nbutton Set",
+        "closedContent": "text Matrx 2\ntext Matrx 2 is not running on this computer\ntext Matrx Local\ntext Not connected\ntext Pairing is automatic when the Matrx desktop app runs on this computer. The code below is only needed to pair with a desktop app on another machine — copy it from that app's Settings → Bridge Test → Extension pairing.\ntext field (settable) Pair code\nbutton (disabled) Pair\ntext Local engine port\ntext field (settable) auto\nbutton Set",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "name": "DATA & RESET",
+        "initialOpen": true,
+        "openContent": "button Clear local data on this device",
+        "closedContent": "button Clear local data on this device",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "warm",
+        "name": "ABOUT",
+        "initialOpen": false,
+        "openContent": "text Browser\ntext Chrome\ntext Installed version\ntext 0.2.629\ntext Extension ID\ntext cihdmkcdjjckfhjpgoedmgfpoljebaml\ntext Browser APIs for saved logins\ntext Available\ntext Vault checks whether saved logins can be used for this browser and site when you choose one.\nbutton Check for extension update",
+        "closedContent": "",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "name": "ACCOUNT",
+        "initialOpen": true,
+        "openContent": "text Email\ntext —",
+        "closedContent": "text Email\ntext —",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "name": "ORGANIZATION",
+        "initialOpen": false,
+        "openContent": "text Organization\ntext Sign in to choose",
+        "closedContent": "",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "name": "APPEARANCE",
+        "initialOpen": true,
+        "openContent": "text Theme\ncombo box (settable) System\ntext System",
+        "closedContent": "text Theme\ncombo box (settable) System\ntext System",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "name": "CHAT",
+        "initialOpen": true,
+        "openContent": "text Default agent Choose an organization above Default mode\ncombo box (settable) Act without asking\ntext Act without asking\ntext Default speed COMING SOON\ncombo box (settable) Fast\ntext Fast",
+        "closedContent": "text Default agent Choose an organization above Default mode\ncombo box (settable) Act without asking\ntext Act without asking\ntext Default speed COMING SOON\ncombo box (settable) Fast\ntext Fast",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "name": "PRIVACY",
+        "initialOpen": true,
+        "openContent": "text Share page identity & email content LETS THE AGENT SEE YOUR VISIBLE USERNAME ON SITES AND GMAIL SUBJECTS/EXCERPTS\nswitch Share page identity & email content, Value: on\ntext Offer to save logins to the Vault AFTER YOU SIGN IN TO A SITE, ASK WHETHER TO SAVE THAT LOGIN — NOTHING IS SAVED WITHOUT YOUR CLICK\nswitch Offer to save logins to the Vault, Value: on\ntext Offer saved logins on sign-in forms ALLOWS MATCHING SAVED LOGINS; CHOOSE WHERE SUGGESTIONS APPEAR BELOW\nswitch Offer saved logins on sign-in forms, Value: on\ntext Show password suggestions on websites OFF KEEPS WEBSITES QUIET. PIN MATRX TO SEE TOOLBAR ASSISTANCE, THEN OPEN VAULT TO REVIEW SAVE OR UPDATE; NOTHING IS SAVED AUTOMATICALLY.\nswitch Show password suggestions on websites, Value: off",
+        "closedContent": "text Share page identity & email content LETS THE AGENT SEE YOUR VISIBLE USERNAME ON SITES AND GMAIL SUBJECTS/EXCERPTS\nswitch Share page identity & email content, Value: on\ntext Offer to save logins to the Vault AFTER YOU SIGN IN TO A SITE, ASK WHETHER TO SAVE THAT LOGIN — NOTHING IS SAVED WITHOUT YOUR CLICK\nswitch Offer to save logins to the Vault, Value: on\ntext Offer saved logins on sign-in forms ALLOWS MATCHING SAVED LOGINS; CHOOSE WHERE SUGGESTIONS APPEAR BELOW\nswitch Offer saved logins on sign-in forms, Value: on\ntext Show password suggestions on websites OFF KEEPS WEBSITES QUIET. PIN MATRX TO SEE TOOLBAR ASSISTANCE, THEN OPEN VAULT TO REVIEW SAVE OR UPDATE; NOTHING IS SAVED AUTOMATICALLY.\nswitch Show password suggestions on websites, Value: off",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "name": "SCRAPE",
+        "initialOpen": true,
+        "openContent": "text Deep clean COMING SOON\nswitch Deep clean, Value: off\ntext Auto-scrape on load CAPTURE PAGE CONTENT IN THE BACKGROUND AFTER EACH LOAD\nswitch Auto-scrape on load, Value: off\ntext Auto-scrape mode SCROLL & CAPTURE LOADS LAZY CONTENT FIRST (SLOWER)\ncombo box (settable) Capture\ntext Capture",
+        "closedContent": "text Deep clean COMING SOON\nswitch Deep clean, Value: off\ntext Auto-scrape on load CAPTURE PAGE CONTENT IN THE BACKGROUND AFTER EACH LOAD\nswitch Auto-scrape on load, Value: off\ntext Auto-scrape mode SCROLL & CAPTURE LOADS LAZY CONTENT FIRST (SLOWER)\ncombo box (settable) Capture\ntext Capture",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "name": "DATA",
+        "initialOpen": false,
+        "openContent": "text No options yet",
+        "closedContent": "",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "name": "SEO",
+        "initialOpen": false,
+        "openContent": "text No options yet",
+        "closedContent": "",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "name": "DESKTOP BRIDGE",
+        "initialOpen": true,
+        "openContent": "text Matrx 2\ntext Matrx 2 is not running on this computer\ntext Matrx Local\ntext Not connected\ntext Pairing is automatic when the Matrx desktop app runs on this computer. The code below is only needed to pair with a desktop app on another machine — copy it from that app's Settings → Bridge Test → Extension pairing.\ntext field (settable) Pair code\nbutton (disabled) Pair\ntext Local engine port\ntext field (settable) auto\nbutton Set",
+        "closedContent": "text Matrx 2\ntext Matrx 2 is not running on this computer\ntext Matrx Local\ntext Not connected\ntext Pairing is automatic when the Matrx desktop app runs on this computer. The code below is only needed to pair with a desktop app on another machine — copy it from that app's Settings → Bridge Test → Extension pairing.\ntext field (settable) Pair code\nbutton (disabled) Pair\ntext Local engine port\ntext field (settable) auto\nbutton Set",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "name": "DATA & RESET",
+        "initialOpen": true,
+        "openContent": "button Clear local data on this device",
+        "closedContent": "button Clear local data on this device",
+        "restored": true,
+        "status": "PASS"
+      },
+      {
+        "phase": "reloaded",
+        "name": "ABOUT",
+        "initialOpen": false,
+        "openContent": "text Browser\ntext Chrome\ntext Installed version\ntext 0.2.629\ntext Extension ID\ntext cihdmkcdjjckfhjpgoedmgfpoljebaml\ntext Browser APIs for saved logins\ntext Available\ntext Vault checks whether saved logins can be used for this browser and site when you choose one.\nbutton Check for extension update",
+        "closedContent": "",
+        "restored": true,
+        "status": "PASS"
+      }
+    ],
+    "original_open_groups": [
+      "ACCOUNT",
+      "APPEARANCE",
+      "CHAT",
+      "PRIVACY",
+      "SCRAPE",
+      "DESKTOP BRIDGE",
+      "DATA & RESET"
+    ],
+    "original_closed_groups": ["ORGANIZATION", "DATA", "SEO", "ABOUT"],
+    "cleanup": "all original seven open/four closed states restored after each pair and final; side panel closed; owned tab closed; original sole Guest New Tab foreground; pins/preferences/auth unchanged"
+  },
+  "limits": [
+    "Operator-observed PASS pending parent journal finalization and fresh independent evidence review",
+    "No actual Store-installed guest Chat/current deployed server verification",
+    "No full Settings, member/admin, T10, mode/preferences, original linked-defect closure or overall health claim",
+    "No prior wrong-profile admission receives acceptance credit",
+    "No source/docs edits, commits, dispatch, build, reimport, promotion, credentials or AI calls"
+  ],
+  "publication": {
+    "allowlist": [
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/api-ledger.jsonl",
+        "sha256": "ab0a1334f6b57db86d2db5b73193f7a34bf3cdc3aed93ed15acd009fce6a775f",
+        "bytes": 26524
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/groups.json",
+        "sha256": "8c5613fe9b4d5fbf7cb945356787fb87328b244d850c2e08300bd574895ebe16",
+        "bytes": 51702
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-demo-current.ax.txt",
+        "sha256": "c074392b582568cc1fa7f37db4577f40eef5d91a5ebef54f6e6153026bdeb729",
+        "bytes": 5449
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-demo.ax.txt",
+        "sha256": "28c5039bad2e01aad27ab6edf73ffdff98edf0e92e3c9e2ec84440c32ed7fc5e",
+        "bytes": 5955
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-dev-before.ax.txt",
+        "sha256": "674ab67277fd6a41351a59d3a808ad06e107c16e266577d672f6dafc0564a7f8",
+        "bytes": 6140
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-dev-initial-reloaded.ax.txt",
+        "sha256": "b98592e02d2688e0a7506671bcc26ceed6719411ebbdac6df85b994ae1d262b7",
+        "bytes": 6194
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-dev-initial-reloaded.png",
+        "sha256": "a22e860e06c47c22133974f1a2d918e6d95b846a5fe0e934f62cd66748b2d715",
+        "bytes": 155141
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-original-structure.ax.txt",
+        "sha256": "2af3c21f34017c989fd90b650b0eab73e7a0e5212ad52ed00aec6d16adf5e4f6",
+        "bytes": 217
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-panel-closed.ax.txt",
+        "sha256": "e46dd76c0918bc3e4d5e3214491b1045efcb1bb6e0373a2a34d150c95f4d365d",
+        "bytes": 5480
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-panel-loading.png",
+        "sha256": "1ae006a8433235c4fda1e93604d7a6053082aeb1c9cae969a553a95de57e9de4",
+        "bytes": 238223
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-panel-open.ax.txt",
+        "sha256": "05ab3ff5baba377079bcbbf1709cf7fad1822c2a7722b50efa620112ccc5da9c",
+        "bytes": 5574
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-panel-ready.ax.txt",
+        "sha256": "1a229aa1d0721c48a4500f00b72a268f6a440695216092154deb395158e4664b",
+        "bytes": 6802
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-postreload-demo.ax.txt",
+        "sha256": "e3e53fd1c760b8f235b972d9a14c9949ad276595327157818396d7ed97dc78f6",
+        "bytes": 5425
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-postreload-panel-loading.png",
+        "sha256": "d7b73479fc0eddfa7fcc6fec1d068dc9ff88121f1f3c403aed6ca83b5ea0b098",
+        "bytes": 238476
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-postreload-panel-ready.ax.txt",
+        "sha256": "9fba79dcb4e4506fcdc31463652ddd985698e06d74cefe339b182217c0550c1d",
+        "bytes": 6802
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-postreload-panel.ax.txt",
+        "sha256": "f5f806c28561f7fe996d1f18b4ed8b46a48f4d6014b7846d38511ac2c544d85b",
+        "bytes": 5574
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-ABOUT-first.ax.txt",
+        "sha256": "9771a9a23148c20c163abc5f3c68680919b4defc5b2ca9d2737baa37ca0b0c4b",
+        "bytes": 9173
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-ABOUT-restored.ax.txt",
+        "sha256": "4cba884f37698197ca553d359f426593d7191e18bd3ab08add50553f59825be3",
+        "bytes": 8754
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-ACCOUNT-first.ax.txt",
+        "sha256": "0d43aa1dcdd605fa175667a6734cc5cc84abbf825b5adc96a936b338fec57f9f",
+        "bytes": 8712
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-ACCOUNT-restored.ax.txt",
+        "sha256": "22d6af32e6fab0199d96f7180b72b4320d47721b75d962c3bb4249f261df6cc9",
+        "bytes": 8756
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-APPEARANCE-first.ax.txt",
+        "sha256": "dc6cfc0c6a3be770554a3156faff8f8e48fced0be20a376355b0e57a3e2392bb",
+        "bytes": 8671
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-APPEARANCE-restored.ax.txt",
+        "sha256": "d611b62fb87add448f2d75b4ffe609424bd07e7f566b10605a013095708b42ea",
+        "bytes": 8759
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-CHAT-first.ax.txt",
+        "sha256": "a082a6254fd7b6efd4d136d5edb64f0091eb7a095f6cd0f29da9b9bb2fc8a963",
+        "bytes": 8487
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-CHAT-restored.ax.txt",
+        "sha256": "24f86471960a58f592f1a07748df1946f67d3cbb1e6848681d54643db0f38d38",
+        "bytes": 8753
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-DATA-&-RESET-first.ax.txt",
+        "sha256": "9a6b4e58ae00288669bb11f7283d20b85805d97b6d8ddf43e73c92b5d090edf8",
+        "bytes": 8710
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-DATA-&-RESET-restored.ax.txt",
+        "sha256": "3ed99c115b92c7231eebbfcf775f10910b22c5fd2f69e749f5f0347d17bf8d3d",
+        "bytes": 8761
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-DATA-first.ax.txt",
+        "sha256": "97777bdba1a7ff8a9a3d928706f7bb6f9d57aa719f7899d1dc109d24f4afe6e4",
+        "bytes": 8785
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-DATA-restored.ax.txt",
+        "sha256": "648739a57d006c8fe8920952afc0e19cb9be4f35fecaf92e16ff566ed727c908",
+        "bytes": 8753
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-DESKTOP-BRIDGE-first.ax.txt",
+        "sha256": "c0eedec53d0132118d17b2aadd9ced6e063e615bdc483ba00f0368c80832c9e9",
+        "bytes": 8205
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-DESKTOP-BRIDGE-restored.ax.txt",
+        "sha256": "4611df700cfe26d63a5b830c016dfecc95521e92d2709e3e311b43034bae3267",
+        "bytes": 8763
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-ORGANIZATION-first.ax.txt",
+        "sha256": "f7ae5181cc465abdf95cad70bf8c3ba2459f21bfc46d8e0b22fa3322c1b90170",
+        "bytes": 8826
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-ORGANIZATION-restored.ax.txt",
+        "sha256": "aa80325c323094a8ae77c23aadf32b732b9c960cfe52180331254931a46685a0",
+        "bytes": 8761
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-PRIVACY-first.ax.txt",
+        "sha256": "2ff4a909bc473f5183293feff3ef4485e8d17159b236ca494d5d28f11ecc2e4b",
+        "bytes": 7896
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-PRIVACY-restored.ax.txt",
+        "sha256": "215f3e190bfc1dafc1d2a810a991e2b9a89bdcf976c9011a9fdb734e03437a2c",
+        "bytes": 8756
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-SCRAPE-first.ax.txt",
+        "sha256": "a0ccc1b96dd681ec34da6b76010fd5d41abf9cd938bb22925ca0016e81a0089d",
+        "bytes": 8378
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-SCRAPE-restored.ax.txt",
+        "sha256": "dc16ccf9bdc9118f16a6be71f386bec1ca53134a6e188a974987856627167feb",
+        "bytes": 8755
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-SEO-first.ax.txt",
+        "sha256": "3fdbc00a8235a7c1f5700d9e7af12fdda6ebfa0d1cf0673566b328f7d617009a",
+        "bytes": 8784
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-SEO-restored.ax.txt",
+        "sha256": "18ed944e4ee22122be843a4923e023ea59c7a9a8449375e54bc08f8f2826328b",
+        "bytes": 8752
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-settings-final.png",
+        "sha256": "96933ec85282723a421ab18e7dcc4a04d2593ebbfc6e0872fc2f340eaa07f095",
+        "bytes": 265475
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-settings-loading.ax.txt",
+        "sha256": "cb7ef8ae642a631d31c588af385477ca3843d34bee7d01b962e337466c9a23e0",
+        "bytes": 6155
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-settings-ready.ax.txt",
+        "sha256": "55176039189c3b1a2ae8fa07229521e79074b6cdeb15e6628e449077f5ee5a00",
+        "bytes": 8775
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-reloaded-settings.png",
+        "sha256": "8c207e392652b92453edbd1a51b8630f4de295c6c9f773f2b6def04ed9e2b94b",
+        "bytes": 265844
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-restored-structure.ax.txt",
+        "sha256": "2af3c21f34017c989fd90b650b0eab73e7a0e5212ad52ed00aec6d16adf5e4f6",
+        "bytes": 217
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-resume-structure.ax.txt",
+        "sha256": "d5d4bafdb514a7fd5e2509ff07752e85e9b565f41f6c9ac3dadc967e81eff89b",
+        "bytes": 350
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-second-manager-before.ax.txt",
+        "sha256": "3b23301371161918dc6ca6fe16a4dd4224b19f7f15be901911f9ba88fdd29a48",
+        "bytes": 6165
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-second-manager-reloaded.ax.txt",
+        "sha256": "be1f29a22bb46f5ab8a155c9c3304b2474a6a6a970d11e98b0d9844054cb1c07",
+        "bytes": 6194
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-second-manager-reloaded.png",
+        "sha256": "c2ab36894e5eca9c81cf77695621ccc4dd95fc23f1f88b3365bdae970abb74ad",
+        "bytes": 155136
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-store-preserved.ax.txt",
+        "sha256": "1840f2c09a2b51387113eae840750af92ba6bc8463f8cfe5db9498ae38f5f69f",
+        "bytes": 5942
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-version.ax.txt",
+        "sha256": "fb814f25b3172bbeb0a604bd55f41d81d8719401fd66d6ecc17f591056b68626",
+        "bytes": 6962
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-ABOUT-first.ax.txt",
+        "sha256": "9771a9a23148c20c163abc5f3c68680919b4defc5b2ca9d2737baa37ca0b0c4b",
+        "bytes": 9173
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-ABOUT-restored.ax.txt",
+        "sha256": "4cba884f37698197ca553d359f426593d7191e18bd3ab08add50553f59825be3",
+        "bytes": 8754
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-ACCOUNT-first.ax.txt",
+        "sha256": "7091cd9563343312159340def8cb5956f6c0cced8773fea8f4a6b9c2bd688ce1",
+        "bytes": 8712
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-ACCOUNT-restored.ax.txt",
+        "sha256": "d774c7688faa250858ef3b2caab6ecda5e68f861a3dbff184025ec3f8df4aa5b",
+        "bytes": 8756
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-APPEARANCE-first.ax.txt",
+        "sha256": "3fbb9cd9ea49d506040ae55b54dfad784ec4c8f8ee9048ad63d330e5902c5be1",
+        "bytes": 8671
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-APPEARANCE-restored.ax.txt",
+        "sha256": "b86a41dfe329b28e3583b51af1dbe204e1c5a29ce1d2ef7a952dbfe86efcb6cb",
+        "bytes": 8759
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-CHAT-first.ax.txt",
+        "sha256": "d6c8d66f35447edc76e4b741f696180fea30b2df35ee7af0617b97736238de02",
+        "bytes": 8487
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-CHAT-restored.ax.txt",
+        "sha256": "6c8e4108668e6979feab8eaed09178ded5540fd231518b7c0f94b934a80cc74a",
+        "bytes": 8753
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-DATA-&-RESET-first.ax.txt",
+        "sha256": "9a6b4e58ae00288669bb11f7283d20b85805d97b6d8ddf43e73c92b5d090edf8",
+        "bytes": 8710
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-DATA-&-RESET-restored.ax.txt",
+        "sha256": "3ed99c115b92c7231eebbfcf775f10910b22c5fd2f69e749f5f0347d17bf8d3d",
+        "bytes": 8761
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-DATA-first.ax.txt",
+        "sha256": "97777bdba1a7ff8a9a3d928706f7bb6f9d57aa719f7899d1dc109d24f4afe6e4",
+        "bytes": 8785
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-DATA-restored.ax.txt",
+        "sha256": "648739a57d006c8fe8920952afc0e19cb9be4f35fecaf92e16ff566ed727c908",
+        "bytes": 8753
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-DESKTOP-BRIDGE-first.ax.txt",
+        "sha256": "c0eedec53d0132118d17b2aadd9ced6e063e615bdc483ba00f0368c80832c9e9",
+        "bytes": 8205
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-DESKTOP-BRIDGE-restored.ax.txt",
+        "sha256": "4611df700cfe26d63a5b830c016dfecc95521e92d2709e3e311b43034bae3267",
+        "bytes": 8763
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-ORGANIZATION-first.ax.txt",
+        "sha256": "61f2a49e94e1183e2df7a42c700016d4b749c69592628bdd19d95b5e3948b56a",
+        "bytes": 8826
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-ORGANIZATION-restored.ax.txt",
+        "sha256": "f3c3d2115fd0033f87493cae82637da1795645d40a5704877d1b8a1d73c96220",
+        "bytes": 8761
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-PRIVACY-first.ax.txt",
+        "sha256": "7b61706ce1826c31f692fd7e1a03f30ef4b23bce8d7119488a21693fea8516ab",
+        "bytes": 7896
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-PRIVACY-restored.ax.txt",
+        "sha256": "f7b60bab0379bed13ca2a2d0da5f9c7453228b111c91df3985dd6bf80e85205d",
+        "bytes": 8756
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-SCRAPE-first.ax.txt",
+        "sha256": "a0ccc1b96dd681ec34da6b76010fd5d41abf9cd938bb22925ca0016e81a0089d",
+        "bytes": 8378
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-SCRAPE-restored.ax.txt",
+        "sha256": "dc16ccf9bdc9118f16a6be71f386bec1ca53134a6e188a974987856627167feb",
+        "bytes": 8755
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-SEO-first.ax.txt",
+        "sha256": "3fdbc00a8235a7c1f5700d9e7af12fdda6ebfa0d1cf0673566b328f7d617009a",
+        "bytes": 8784
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-SEO-restored.ax.txt",
+        "sha256": "18ed944e4ee22122be843a4923e023ea59c7a9a8449375e54bc08f8f2826328b",
+        "bytes": 8752
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-settings-ready.ax.txt",
+        "sha256": "cb0c6e4963fc94b7a8bb94e67cc30421931dae22373bfaa54ab3a95b6dba1599",
+        "bytes": 8775
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-settings.ax.txt",
+        "sha256": "9b20709dfa0217a2b1e4430529a0a4260a97668ae42d44c089fdd51b199f4b72",
+        "bytes": 6155
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/guest-warm-settings.png",
+        "sha256": "b1e025be41e3b5b79b98c84952269efc1cf4340c151a391f53d0715ff756fa13",
+        "bytes": 265846
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/initial-guest-structure.ax.txt",
+        "sha256": "84903dbcef00cba9a0169a8ecd5a562835349cf8bd2330d3c178afe0298a1874",
+        "bytes": 217
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/owner-account-identity.projected.ax.txt",
+        "sha256": "aedcd0ac37a493a8c858991f082d80cfdbd6711cfd983cf3d69fa760dd2d1b01",
+        "bytes": 113
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/owner-dev-before.ax.txt",
+        "sha256": "4b9cc21ed70f2f6e7524d941fa545abfe69406462e6e8e6fc4bb6704ffb93db1",
+        "bytes": 6233
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/owner-dev-reloaded.ax.txt",
+        "sha256": "e668e8f7b53cd2be3d6db0c0b52c262394450b1723eb92faf4d8807ece605825",
+        "bytes": 6287
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/owner-dev-reloaded.png",
+        "sha256": "e2e927cb9d9584b62f85232e53ce5b98ca5746cbcc533cae2f6f89635536aa5a",
+        "bytes": 162005
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/owner-original-structure.ax.txt",
+        "sha256": "ce829d5bf6d276197ef4c56b263ebb5af31189837c47e587aedcddc1bb807e87",
+        "bytes": 232
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/owner-restored-structure.ax.txt",
+        "sha256": "7d0de21bb76c7d6a35d4b5d08c5a14d16ce309fd70984212116bd5b6b4e042c2",
+        "bytes": 232
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/owner-store-preserved.ax.txt",
+        "sha256": "f487613091f9043c3f71bff5e875ea6f1f99b355a9e697bdde44231accd8d069",
+        "bytes": 6035
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/owner-version.ax.txt",
+        "sha256": "e39f4b9e61378e4e6bd3d5410f409d974d010f484a0ca4c8892ae8cba3433f80",
+        "bytes": 7078
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/section-content-verdicts.json",
+        "sha256": "335422425aa4e654022ecd19e28b56ba6c6dee3348cece228ef6d7f75cc7e1c5",
+        "bytes": 11834
+      },
+      {
+        "path": ".output/stabilization-checkpoints/native472-correct-profile-replay/section-results.json",
+        "sha256": "99e0df0c3a1738380f70fdff2eebd9aa51081b30edbd1a82d68d2a476457e4f4",
+        "bytes": 1776
+      }
+    ],
+    "excluded_local_only": [
+      "owner-owned-newtab.ax.txt",
+      "guest-owned-tab.ax.txt",
+      "profiles-menu.ax.txt",
+      "profiles-for-guest.ax.txt",
+      "guest-restored.png"
+    ],
+    "private_vault_body": "never stored",
+    "projection_note": "Owner identity projection is derived from owned New Tab capture; structural originals separately projected; hashes refer exact listed bytes"
+  },
+  "next_action": "Parent finalize existing lease/watch, independently review exact new raw captures and resource journal before acceptance credit",
+  "original_private_report_sha256": "c4580b6fe1e88726b24c97adce5a096c6560b8a466e378606872f80a8a3dc99d",
+  "durable_evidence_manifest": "docs/stabilization/reports/cycle-0603-publication-manifest-20261027.json",
+  "publication_limits": "Only mapped evidence is retained publicly; unmapped logs/ZIP/private original bodies are private references, not public evidence. Original actor/peer verdicts retained with owner correction below. No new formal inventory credit, current-main health, defect closure or Store acceptance.",
+  "owner_adjudication": "Correct-root resource finalvalid0 is independently supported, but source472 attribution contradicted by a1 promotion07:00:44 beforefirstUI07:02:33. Retrospective a1 evidence is strong inference only. Five cases and ownermaintenance stay build-unverified pending controlled exactpayload replay. Prior peer historical472PASS/zero-blocker conclusion is superseded by native-replay-build-binding-audit-20261027.json."
+}

@@ -1,0 +1,2 @@
+Window: "New Tab", App: Google Chrome.
+										54 button Google Account: Arman Sadeghi (arman@armansadeghi.com)
