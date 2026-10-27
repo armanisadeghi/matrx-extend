@@ -10531,6 +10531,9 @@
  "/workflow/platform-tables": {
   "get": []
  },
+ "/workflow/subgraph-target": {
+  "get": []
+ },
  "/workflows": {
   "post": [
    "application/json"
