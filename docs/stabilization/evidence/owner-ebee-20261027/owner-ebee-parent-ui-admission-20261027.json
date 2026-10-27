@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-27T13:35:54.654493+00:00",
+  "runId": "owner-ebee-native-20261027-1335",
+  "UI_READY_sent": true,
+  "approval_written_before_goahead": true,
+  "holderPID": 3604,
+  "holder_session": 96861,
+  "watcher_session": 1297,
+  "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+  "literal_admitted_at": "2026-10-27T13:34:43.678Z",
+  "parent_watch_read_at": "2026-10-27T13:35:53.637273Z",
+  "watch_age_seconds": 1.01722,
+  "source_sha": "ebee382ab03092bd3177e0475e2ac16d25e55c25",
+  "tree_sha256": "76fb21bac80481678627e5ec06cce9b4fec5c084204bf3d92d498162d6517336",
+  "receipt_sha256": "35bec212023a2e8c88fd50baf6dcd6ccc2055e46d6050fc72a467f6bdac7540c",
+  "scope": "OneDEVmanagerReloadactivation+boundedcompletiontimingprobe; nooffon; originalStorepanelcollapsedonlyifemptydraft/preservable; perAPI+watch+fullhashsourcepostmandatory."
+}

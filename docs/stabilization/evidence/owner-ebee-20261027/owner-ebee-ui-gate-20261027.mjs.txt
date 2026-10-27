@@ -1,0 +1,47 @@
+import { appendFileSync, readFileSync, statSync } from 'node:fs';
+import { createHash, randomUUID } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { resolve } from 'node:path';
+const ROOT='/Volumes/Samsung2TB/code/matrx-extend';
+const digest=(x)=>createHash('sha256').update(x).digest('hex');
+const json=(p)=>JSON.parse(readFileSync(p,'utf8'));
+const rows=(p)=>readFileSync(p,'utf8').split('\n').filter(Boolean).map(JSON.parse);
+export function createGate(config) {
+  const cfg=Object.freeze(Object.fromEntries(Object.entries(config).map(([k,v])=>[k,k.endsWith('Path')?resolve(ROOT,v):v])));
+  config=cfg;
+  const expected=Object.freeze(json(config.fingerprintPath));
+  const gate=()=>{
+    if(config.phase!=='UI_READY')throw new Error('owner_ui_not_ready');
+    const approval=json(config.approvalPath);
+    if(approval.runId!==config.runId||approval.UI_READY_sent!==true)throw new Error('owner_parent_approval_missing');
+    const jr=rows(config.journalPath),ai=jr.findIndex(x=>x.code==='RESOURCE_ADMITTED');
+    if(ai<0||jr.slice(ai).some(x=>!['RESOURCE_ADMITTED','RESOURCE_WATCH_HEALTHY'].includes(x.code)))throw new Error('owner_resource_not_healthy');
+    const last=jr.at(-1), wr=rows(config.watchPath),w=wr.at(-1);
+    if(!w||Date.now()-Date.parse(w.read_at)>15000||wr.some(x=>x.admitted_observed&&x.risk))throw new Error('owner_watcher_not_fresh');
+    const owner=json('/var/tmp/matrx-stabilization-resource-501/heavy/owner.json');
+    if(owner.kind!=='browser'||owner.runId!==config.runId)throw new Error('owner_browser_lease_mismatch');
+    const identity=execFileSync('/bin/ps',['-p',String(owner.pid),'-o','lstart='],{encoding:'utf8'}).trim();
+    if(identity!==owner.processStart)throw new Error('owner_browser_process_mismatch');
+    const s=statSync(resolve(ROOT,'.output/chrome-mv3-dev'),{bigint:true});
+    for(const k of ['dev','ino','ctimeNs','mtimeNs'])if(String(s[k])!==expected.directory[k])throw new Error('owner_stable_directory_drift');
+    const receiptSha=digest(readFileSync(resolve(ROOT,expected.receipt_path)));
+    if(receiptSha!==expected.receipt_sha256)throw new Error('owner_build_receipt_drift');
+    return {at:new Date().toISOString(),runId:config.runId,resourceCode:last.code,resourceAt:last.at,watchReadAt:w.read_at,watchAgeMs:Date.now()-Date.parse(w.read_at),sourceSha:expected.source_sha,parentApprovalAt:approval.at,receiptSha256:receiptSha,directoryInode:String(s.ino)};
+  };
+  const begin=(action,metadata={})=>{
+    const observed=gate(),callId=randomUUID();
+    appendFileSync(config.ledgerPath,JSON.stringify({event:'API_BEGIN',callId,action,...metadata,...observed})+'\n',{mode:0o600});
+    return callId;
+  };
+  const end=(callId,action,outcome='success')=>{
+    const observed=gate();
+    appendFileSync(config.ledgerPath,JSON.stringify({event:'API_END',callId,action,outcome,...observed})+'\n',{mode:0o600});
+  };
+  const invoke=async(action,fn)=>{
+    const functionSource=Function.prototype.toString.call(fn);
+    const id=begin(action,{functionSource,functionSourceSha256:digest(functionSource),timingBounds:'inside-wrapper-before-and-after-native-api'});
+    try {const value=await fn();end(id,action);return value;}
+    catch(error){appendFileSync(config.ledgerPath,JSON.stringify({event:'API_ABORT',callId:id,action,at:new Date().toISOString(),errorName:error?.name??'UnknownError'})+'\n',{mode:0o600});throw new Error(`owner_native_call_aborted:${id}`);}
+  };
+  return Object.freeze({check:gate,begin,end,invoke});
+}

@@ -1,0 +1,9 @@
+{
+  "phase": "UI_READY",
+  "runId": "owner-ebee-native-20261027-1335",
+  "fingerprintPath": ".output/stabilization-checkpoints/owner-ebee-disk-fingerprint-20261027.json",
+  "journalPath": "docs/stabilization/resource-journals/owner-ebee-native-20261027-1335.pending.jsonl",
+  "watchPath": ".output/stabilization-checkpoints/owner-ebee-resource-build-watch-20261027.jsonl",
+  "ledgerPath": ".output/stabilization-checkpoints/owner-ebee-native-api-ledger-20261027.jsonl",
+  "approvalPath": ".output/stabilization-checkpoints/owner-ebee-parent-ui-admission-20261027.json"
+}

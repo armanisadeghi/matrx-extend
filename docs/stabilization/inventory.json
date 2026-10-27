@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-27T10:13:20.826710+00:00",
+  "updated_at": "2026-10-27T13:49:55.424027+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -8583,25 +8583,29 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "guest-mode-737-20261026-0504",
-              "source_sha": "737d814b93a59933b154bb7f6af2b9bd6e478315",
-              "build_version": "0.2.624",
-              "development_ci_run_id": 40269940075,
-              "development_artifact_id": 12628111520,
+              "run_id": "40509061963",
+              "source_sha": "80e30c62a1259e657519ec274bc951bbf36c5100",
+              "build_version": "0.2.629",
+              "development_ci_run_id": 40507157903,
+              "development_artifact_id": 12736232145,
               "resource_valid": true,
               "passed_subtargets": [
-                "Guest Ask choice visibly refused and rolled back to Act; warm fresh Chat Tools shows Act (independently raw-reviewed).",
-                "Post-full-extension Reload, explicit fresh Chat Tools shows Act; independently repeated in guest-mode-peer-20261026-0514."
+                "Visible guest Ask refusal and rollback to Act, with actual panel reload retaining Act.",
+                "Unique owned Device All chats control observed once with permissionMode act in a fresh Chat.",
+                "Actual dev-reload worker/panel retirement and replacement followed by fresh Chat Device Act observation; original lookup failure no longer reproduces."
               ],
               "unverified": [
-                "No raw-storage or no-shadow-write proof; full T10 remains partial.",
-                "No current-main, member/admin, Store or server-action acceptance."
+                "No-shadow-write criterion: T10 observer deliberately sets raw=null and returns synthetic false storage flags; those are not actual storage evidence.",
+                "Actual executed browser version/profile path/backend SHA not emitted; downloaded version is not execution identity.",
+                "Current eBee/future source, member/admin, Store-installed and server-action acceptance."
               ],
+              "resource_note": "Automated native boundary paused CPU_PENDING13:12:49 to RECOVERED13:13:37; finalvalid0. Not a zero-pending or manual-lease result.",
               "evidence": [
-                "docs/stabilization/reports/guest737-mode-warm-reload-20261026.json",
-                "docs/stabilization/reports/guest737-mode-native-peer-20261026.json"
+                "docs/stabilization/reports/eighty-guest-20261027.json",
+                "docs/stabilization/reports/eighty-native-peer-20261027.json",
+                "docs/stabilization/reports/eighty-publication-manifest-20261027.json"
               ],
-              "scope": "Actual designated guest Profile10 on frozen737 development runtime. Producer choice was reviewed, consumer independently replayed. Both holders/watchers actual exit0; no transfer across later dependency updates."
+              "scope": "Frozen source80 CI development unpacked actual signed-out native UI only. Raw batch12pass/0fail/7unknown does not confer12 inventoryPASS cells. Full T10 remains partial."
             }
           },
           "linked_defects": [
@@ -8964,6 +8968,33 @@
               },
               "superseded_at": "2026-10-26T06:23:48.180274+00:00",
               "reason": "New guarded frozen737 observations and independent native post-fullReload consumer replay; full case remains partial."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "guest-mode-737-20261026-0504",
+                "source_sha": "737d814b93a59933b154bb7f6af2b9bd6e478315",
+                "build_version": "0.2.624",
+                "development_ci_run_id": 40269940075,
+                "development_artifact_id": 12628111520,
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Guest Ask choice visibly refused and rolled back to Act; warm fresh Chat Tools shows Act (independently raw-reviewed).",
+                  "Post-full-extension Reload, explicit fresh Chat Tools shows Act; independently repeated in guest-mode-peer-20261026-0514."
+                ],
+                "unverified": [
+                  "No raw-storage or no-shadow-write proof; full T10 remains partial.",
+                  "No current-main, member/admin, Store or server-action acceptance."
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/guest737-mode-warm-reload-20261026.json",
+                  "docs/stabilization/reports/guest737-mode-native-peer-20261026.json"
+                ],
+                "scope": "Actual designated guest Profile10 on frozen737 development runtime. Producer choice was reviewed, consumer independently replayed. Both holders/watchers actual exit0; no transfer across later dependency updates."
+              },
+              "superseded_at": "2026-10-27T13:49:16.578690+00:00",
+              "reason": "Fresh independently reviewed source80 original consumer retest; partial status retained because storage-proof criterion remains unverified."
             }
           ],
           "attempt_history": [

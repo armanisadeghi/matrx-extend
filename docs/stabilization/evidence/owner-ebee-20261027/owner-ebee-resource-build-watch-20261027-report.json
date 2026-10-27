@@ -1,0 +1,21 @@
+{
+  "runId": "owner-ebee-native-20261027-1335",
+  "first_read_at": "2026-10-27T13:33:35.117981Z",
+  "last_read_at": "2026-10-27T13:40:52.435803Z",
+  "actualPollCount": 219,
+  "maxGapSeconds": 2.0120297909597866,
+  "riskEvents": [],
+  "final": {
+    "schema": 1,
+    "at": "2026-10-27T13:40:51.233Z",
+    "runId": "owner-ebee-native-20261027-1335",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid",
+    "code": "RESOURCE_FINAL_DECISION"
+  },
+  "completed_path": "docs/stabilization/resource-journals/owner-ebee-native-20261027-1335.jsonl",
+  "audit": ".output/stabilization-checkpoints/owner-ebee-resource-build-watch-20261027.jsonl",
+  "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+}

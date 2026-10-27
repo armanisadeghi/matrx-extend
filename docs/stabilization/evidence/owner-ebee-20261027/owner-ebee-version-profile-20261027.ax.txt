@@ -1,0 +1,8 @@
+Window: "About Version", App: Google Chrome.
+0 standard window About Version - Google Chrome - Arman (armansadeghi.com), URL: chrome://version/, Secondary Actions: Raise
+								28 container 156.0.8078.48 (Official Build) (arm64) Copy version string
+										30 text 156.0.8078.48  ( Official Build )  (arm64)
+								64 container Profile Path:
+									65 text Profile Path :
+								66 container /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8
+									67 text /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8

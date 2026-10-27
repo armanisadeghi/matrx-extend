@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-27T13:33:27.972Z",
+  "source_sha": "ebee382ab03092bd3177e0475e2ac16d25e55c25",
+  "artifact": 12736992428,
+  "run": 40510348725,
+  "version": "0.2.629",
+  "tree_sha256": "76fb21bac80481678627e5ec06cce9b4fec5c084204bf3d92d498162d6517336",
+  "file_count": 2819,
+  "receipt_path": "test-results/ci-dev-promotion-receipt.json",
+  "receipt_sha256": "35bec212023a2e8c88fd50baf6dcd6ccc2055e46d6050fc72a467f6bdac7540c",
+  "directory": {
+    "path": ".output/chrome-mv3-dev",
+    "dev": "16777244",
+    "ino": "24596196",
+    "ctimeNs": "1793107995108433883",
+    "mtimeNs": "1793107994848576975"
+  }
+}

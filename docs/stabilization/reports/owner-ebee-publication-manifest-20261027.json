@@ -1,0 +1,237 @@
+{
+  "schema": 1,
+  "source_sha": "ebee382ab03092bd3177e0475e2ac16d25e55c25",
+  "entries": [
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-import-20261027.log",
+      "original_sha256": "8b816701992cb213720dcb74b610edf3966fa5d393334ad7896373a54db369f0",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-import-20261027.log.txt",
+      "public_sha256": "8b816701992cb213720dcb74b610edf3966fa5d393334ad7896373a54db369f0",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-verify-20261027.json",
+      "original_sha256": "29cb20e0c209eecbee6ff8700b2c13a1f6d1160131c5e9c48eac2f84a9c8ad75",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-verify-20261027.json",
+      "public_sha256": "226ae5251c9d1864ff2db3bd8cc7009145a1f2d425a72bb8d33597f50187e595",
+      "kind": "json_semantic_identical"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-verify-20261027.stderr",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-verify-20261027.stderr.txt",
+      "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-promotion-20261027.log",
+      "original_sha256": "8ab7d70f056dc0ce526e93577feffdb0b5b3a0b219b3f3e08eeaa214444fdc68",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-promotion-20261027.log.txt",
+      "public_sha256": "8ab7d70f056dc0ce526e93577feffdb0b5b3a0b219b3f3e08eeaa214444fdc68",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-disk-fingerprint-20261027.json",
+      "original_sha256": "c01b2c65c6405b3bed4c9661aa854932b482e09b25992d3c481ad36a17ac1958",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-disk-fingerprint-20261027.json",
+      "public_sha256": "c01b2c65c6405b3bed4c9661aa854932b482e09b25992d3c481ad36a17ac1958",
+      "kind": "json_semantic_identical"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-ui-config-20261027.json",
+      "original_sha256": "2cffdfeb9bb1fb7cc0fb3a4d0f514f2db3e7b03c72aaee5842ad08e44727787e",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-ui-config-20261027.json",
+      "public_sha256": "2cffdfeb9bb1fb7cc0fb3a4d0f514f2db3e7b03c72aaee5842ad08e44727787e",
+      "kind": "json_semantic_identical"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-ui-gate-20261027.mjs",
+      "original_sha256": "64abc775e051c754dc76bfb2b8ea734d59057fc630aca9ccefa9446100d14438",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-ui-gate-20261027.mjs.txt",
+      "public_sha256": "64abc775e051c754dc76bfb2b8ea734d59057fc630aca9ccefa9446100d14438",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-native-api-ledger-20261027.jsonl",
+      "original_sha256": "afcf0d84e5afd9fb6e6f1f9e797d998efc1fe11d3950d086d6026ca5864a12cb",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-native-api-ledger-20261027.jsonl",
+      "public_sha256": "afcf0d84e5afd9fb6e6f1f9e797d998efc1fe11d3950d086d6026ca5864a12cb",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-initial-call-20261027.json",
+      "original_sha256": "8c5616ea82612115cac5e71a4734b7dda8a2b289fe478d9dc3fcbe926755d136",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-initial-call-20261027.json",
+      "public_sha256": "be5caa1c0ba108b27a878bfbfa27bdeb6cc3544966d1febcff5b5bd3e5a4156c",
+      "kind": "json_semantic_identical"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-original-structural-20261027.txt",
+      "original_sha256": "d84233e31cc5519819856b26edd99d214cb26b545dcca0ae02766d4fd6adb04a",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-original-structural-20261027.txt",
+      "public_sha256": "d84233e31cc5519819856b26edd99d214cb26b545dcca0ae02766d4fd6adb04a",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-version-profile-20261027.ax.txt",
+      "original_sha256": "c4607815dca0fffbbbbac3a8953fd5ee5172e4c3fa83cafbe42c4a19a13faa59",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-version-profile-20261027.ax.txt",
+      "public_sha256": "c4607815dca0fffbbbbac3a8953fd5ee5172e4c3fa83cafbe42c4a19a13faa59",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-active-account-20261027.ax.txt",
+      "original_sha256": "2f8d9073dc5b245d1e11228116e0b99007d455a9393a1e92d4f1ba0e571d172a",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-active-account-20261027.ax.txt",
+      "public_sha256": "2f8d9073dc5b245d1e11228116e0b99007d455a9393a1e92d4f1ba0e571d172a",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-dev-before-20261027.ax.txt",
+      "original_sha256": "4b9cc21ed70f2f6e7524d941fa545abfe69406462e6e8e6fc4bb6704ffb93db1",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt",
+      "public_sha256": "4b9cc21ed70f2f6e7524d941fa545abfe69406462e6e8e6fc4bb6704ffb93db1",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-reload-capture1-20261027.png",
+      "original_sha256": "e2e927cb9d9584b62f85232e53ce5b98ca5746cbcc533cae2f6f89635536aa5a",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture1-20261027.png",
+      "public_sha256": "e2e927cb9d9584b62f85232e53ce5b98ca5746cbcc533cae2f6f89635536aa5a",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-reload-capture2-20261027.ax.txt",
+      "original_sha256": "366639769b86cf3a5a53781b0647f9bf69629a27eefb1b8a99f3e90f1e13aca4",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt",
+      "public_sha256": "366639769b86cf3a5a53781b0647f9bf69629a27eefb1b8a99f3e90f1e13aca4",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-reload-capture2-20261027.png",
+      "original_sha256": "e4153d9010516e72bc0ff003c8767a1560c37a6f4a2e2e7ee8655ff431b420e3",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.png",
+      "public_sha256": "e4153d9010516e72bc0ff003c8767a1560c37a6f4a2e2e7ee8655ff431b420e3",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-store577-20261027.ax.txt",
+      "original_sha256": "f487613091f9043c3f71bff5e875ea6f1f99b355a9e697bdde44231accd8d069",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt",
+      "public_sha256": "f487613091f9043c3f71bff5e875ea6f1f99b355a9e697bdde44231accd8d069",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-restored-structural-20261027.txt",
+      "original_sha256": "5cd8691c30ab91d35fe21a878d5e5bc10c4676a76f5efe395226e0e7cc16dcdb",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-restored-structural-20261027.txt",
+      "public_sha256": "5cd8691c30ab91d35fe21a878d5e5bc10c4676a76f5efe395226e0e7cc16dcdb",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-fulltree-after-20261027.json",
+      "original_sha256": "d3c2e5f2d9beaa4386ab0549fd7168e0f410e5dfc7499723a92e878d3f476347",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-fulltree-after-20261027.json",
+      "public_sha256": "d3c2e5f2d9beaa4386ab0549fd7168e0f410e5dfc7499723a92e878d3f476347",
+      "kind": "json_semantic_identical"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-parent-ui-admission-20261027.json",
+      "original_sha256": "09c9f3ef5d5c12bdf8eeca16b284f7c3bb1cedaa600c5ada33c084ed3934eed3",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-parent-ui-admission-20261027.json",
+      "public_sha256": "09c9f3ef5d5c12bdf8eeca16b284f7c3bb1cedaa600c5ada33c084ed3934eed3",
+      "kind": "json_semantic_identical"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-native-holder-20261027.log",
+      "original_sha256": "10d9ccacd213eaaca05d5d0b7bf01922b4699992d5c8a17a54cd5fb191896200",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-native-holder-20261027.log.txt",
+      "public_sha256": "10d9ccacd213eaaca05d5d0b7bf01922b4699992d5c8a17a54cd5fb191896200",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-resource-build-watch-20261027.jsonl",
+      "original_sha256": "bda073851fb83579a699cda4b77d7a72843bd6ae2c7b592af9b57d4c06e11aa4",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-resource-build-watch-20261027.jsonl",
+      "public_sha256": "bda073851fb83579a699cda4b77d7a72843bd6ae2c7b592af9b57d4c06e11aa4",
+      "kind": "byte_exact"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-resource-build-watch-20261027-report.json",
+      "original_sha256": "c5232be1e367968b9f8d5d89aee4ba5d8f26afd0ecc0b71c2be9125251d00bc2",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-resource-build-watch-20261027-report.json",
+      "public_sha256": "c5232be1e367968b9f8d5d89aee4ba5d8f26afd0ecc0b71c2be9125251d00bc2",
+      "kind": "json_semantic_identical"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-parent-stop-20261027.json",
+      "original_sha256": "f845159e55ce10cb838822e7d3371cca47c83c58fe71a7b0e63d4dfb9ff77835",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-parent-stop-20261027.json",
+      "public_sha256": "f845159e55ce10cb838822e7d3371cca47c83c58fe71a7b0e63d4dfb9ff77835",
+      "kind": "json_semantic_identical"
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/owner-ebee-refresh-20261027.json",
+      "original_sha256": "d6443ce743325825a97ccafd349ede6309c60f8ba36ab2b57542c451ae74c9f0",
+      "public_path": "docs/stabilization/reports/owner-ebee-refresh-20261027.json",
+      "public_sha256": "1fdaf702eeb315c324c41c327ff80301b9ffbb8f2f97c174f29e82b7c938bb24",
+      "kind": "typed_report_public_reference_remapping",
+      "reference_mapping": {
+        ".output/stabilization-checkpoints/owner-ebee-import-20261027.log": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-import-20261027.log.txt",
+        ".output/stabilization-checkpoints/owner-ebee-verify-20261027.json": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-verify-20261027.json",
+        ".output/stabilization-checkpoints/owner-ebee-verify-20261027.stderr": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-verify-20261027.stderr.txt",
+        ".output/stabilization-checkpoints/owner-ebee-promotion-20261027.log": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-promotion-20261027.log.txt",
+        ".output/stabilization-checkpoints/owner-ebee-disk-fingerprint-20261027.json": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-disk-fingerprint-20261027.json",
+        ".output/stabilization-checkpoints/owner-ebee-ui-config-20261027.json": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-ui-config-20261027.json",
+        ".output/stabilization-checkpoints/owner-ebee-ui-gate-20261027.mjs": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-ui-gate-20261027.mjs.txt",
+        ".output/stabilization-checkpoints/owner-ebee-native-api-ledger-20261027.jsonl": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-native-api-ledger-20261027.jsonl",
+        ".output/stabilization-checkpoints/owner-ebee-initial-call-20261027.json": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-initial-call-20261027.json",
+        ".output/stabilization-checkpoints/owner-ebee-original-structural-20261027.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-original-structural-20261027.txt",
+        ".output/stabilization-checkpoints/owner-ebee-version-profile-20261027.ax.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-version-profile-20261027.ax.txt",
+        ".output/stabilization-checkpoints/owner-ebee-active-account-20261027.ax.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-active-account-20261027.ax.txt",
+        ".output/stabilization-checkpoints/owner-ebee-dev-before-20261027.ax.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-dev-before-20261027.ax.txt",
+        ".output/stabilization-checkpoints/owner-ebee-reload-capture1-20261027.png": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture1-20261027.png",
+        ".output/stabilization-checkpoints/owner-ebee-reload-capture2-20261027.ax.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.ax.txt",
+        ".output/stabilization-checkpoints/owner-ebee-reload-capture2-20261027.png": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-reload-capture2-20261027.png",
+        ".output/stabilization-checkpoints/owner-ebee-store577-20261027.ax.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-store577-20261027.ax.txt",
+        ".output/stabilization-checkpoints/owner-ebee-restored-structural-20261027.txt": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-restored-structural-20261027.txt",
+        ".output/stabilization-checkpoints/owner-ebee-fulltree-after-20261027.json": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-fulltree-after-20261027.json",
+        ".output/stabilization-checkpoints/owner-ebee-parent-ui-admission-20261027.json": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-parent-ui-admission-20261027.json",
+        ".output/stabilization-checkpoints/owner-ebee-native-holder-20261027.log": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-native-holder-20261027.log.txt",
+        ".output/stabilization-checkpoints/owner-ebee-resource-build-watch-20261027.jsonl": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-resource-build-watch-20261027.jsonl",
+        ".output/stabilization-checkpoints/owner-ebee-resource-build-watch-20261027-report.json": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-resource-build-watch-20261027-report.json",
+        ".output/stabilization-checkpoints/owner-ebee-parent-stop-20261027.json": "docs/stabilization/evidence/owner-ebee-20261027/owner-ebee-parent-stop-20261027.json"
+      }
+    },
+    {
+      "original_path": ".output/stabilization-checkpoints/ebee-owner-peer-20261027.json",
+      "original_sha256": "de52a892c7dcd4b1b403edf42d347c0234443cbb8b45183c57c85d22c88f3b42",
+      "public_path": "docs/stabilization/reports/ebee-owner-peer-20261027.json",
+      "public_sha256": "1f5c7227c2730dede417d11da2c7ae379e73b88c4845058e055616cef81d94a5",
+      "kind": "json_semantic_identical_peer_original_references_retained"
+    },
+    {
+      "original_path": "test-results/ci-dev-promotion-receipt.json",
+      "original_sha256": "35bec212023a2e8c88fd50baf6dcd6ccc2055e46d6050fc72a467f6bdac7540c",
+      "public_path": "docs/stabilization/evidence/owner-ebee-20261027/actual-promotion-receipt.json.txt",
+      "public_sha256": "35bec212023a2e8c88fd50baf6dcd6ccc2055e46d6050fc72a467f6bdac7540c",
+      "kind": "byte_exact_original_JSON_receipt_stored_as_txt"
+    }
+  ],
+  "limits": [
+    "Maintenanceonly;zeroproductcase/guest/Storeacceptancecredit.",
+    "Parentresourcefinalizationcomplete; freshindependentpeerrequiredbeforefinalverifiedclaim.",
+    "ActualReloadedcompletionobservedforfrozenebee; no sourceidentitytransfertofuturemainchanges.",
+    "OneearlyrestoreAXsamplecapturedloadingpanelwithcomposerabsent; logictrimerroroutsideAPIwrappercausednoadditionalinput; subsequentfreshAXconfirmedStoreURL/emptycomposerandfocusrestored."
+  ],
+  "privacy": {
+    "first_getApp_auto_output": "VaultitemLABELSautoemitted; nocredentialvalues; nofullVaultstatepersisted. Structuraloriginal-lineprojectiononlythereafter.",
+    "version_projection": "Initialbroadin-memoryprojectionbrieflyemittedChromeCLI/UserAgentlines(noencodeddiagnostics/credentials); narrowedretainedfiletooriginalversion/ProfilePathlines. ActualProfile8bindingusesProfilePath, notsharedChromeprocessstartupProfile10flag.",
+    "no_private_store_chat_body": "OriginalandfinalStorepanelemptycomposer/Chatstructuralprojectiononly; screenshotcaptureswereonmanagerwithStorepanelcollapsed."
+  },
+  "peer": "Independent A PASS frozenownermaintenance/B PASSwithlimits; no product/Storeacceptance",
+  "no_product_case_or_Store_credit": true,
+  "peer_report": "docs/stabilization/reports/ebee-owner-peer-20261027.json",
+  "reference_note": "Actor derivative references and safe_evidence_sha256 map public bytes. Peer retains original ignored-path hash references; entries map those original paths/hashes to public evidence; no independent findings rewritten.",
+  "exact_promotion_receipt": "docs/stabilization/evidence/owner-ebee-20261027/actual-promotion-receipt.json.txt"
+}

@@ -1,0 +1,6 @@
+Window: "Vault | AI Matrx — AI Matrx", App: Google Chrome.
+0 standard window Vault | AI Matrx — AI Matrx - Google Chrome - Arman (armansadeghi.com), URL: aimatrx.com/vault, Secondary Actions: Raise
+				372 HTML content Matrx Extend, URL: chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html
+							375 tab (selected) Chat, Value: 1
+					408 tab (selected, settable, boolean) Vault | AI Matrx — AI Matrx - Memory usage - 313 MB, Value: on
+The focused UI element is 389 text entry area (settable) How can I help you today?

@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T13:44:35.547258+00:00",
+  "lane": "ebee_owner_peer",
+  "status": "INDEPENDENT_MAINTENANCE_PASS_WITH_LIMITS",
+  "reviewed_actor": ".output/stabilization-checkpoints/owner-ebee-refresh-20261027.json",
+  "reviewed_actor_sha256": "d6443ce743325825a97ccafd349ede6309c60f8ba36ab2b57542c451ae74c9f0",
+  "A_maintenance_spec": {
+    "verdict": "PASS_FROZEN_EBEE_OWNER_REFRESH",
+    "observed": [
+      "Original version/profile projection identifies Chrome156.0.8078.48 and actual Profile 8; account projection identifies arman@armansadeghi.com.",
+      "Fresh manager AX distinguishes browsertoolbarReload6 from correct DEVmanagerReload48. One actualclick at13:37:47.346–47.425; immediatePNG13:37:47.482–48.132 visiblysaysReloaded, secondoriginalAX+PNG13:37:48.136–48.196 confirms same.",
+      "DEVcihdmkcdjjckfhjpgoedmgfpoljebaml, version0.2.629, canonical .output/chrome-mv3-dev path, enabled and pin observed before and after completion.",
+      "Actual Store primaryhnfolienncfklkgmdjjmhhegglimlamg version0.2.577 SourceChromeWebStore remains enabled/pinned.",
+      "Original/final structural native lines show Vault selected, original Store sidepanelURL/Chat and composerfocus389 restored. One ownedmanager tab closed."
+    ],
+    "scope": "Maintenance of frozen eBee source/artifact only; no guest/product-case/Store-publication/overallhealth credit. No source transfer to future main updates.",
+    "missing": [],
+    "extra": [],
+    "misunderstood": []
+  },
+  "B_provenance_resource_privacy": {
+    "verdict": "PASS_WITH_EXPLICIT_LIMITS",
+    "normal_artifact": {
+      "source": "ebee382ab03092bd3177e0475e2ac16d25e55c25",
+      "run": 40510348725,
+      "artifact": 12736992428,
+      "version": "0.2.629",
+      "eligibleStore": false,
+      "tree_sha256": "76fb21bac80481678627e5ec06cce9b4fec5c084204bf3d92d498162d6517336",
+      "receipt_sha256": "35bec212023a2e8c88fd50baf6dcd6ccc2055e46d6050fc72a467f6bdac7540c"
+    },
+    "source_binding": "Canonical normal verification source/run/artifact/tree plus fingerprint beforeUI and fulltreepost sourceHEAD/origin eBee. Independent canonical hashReleaseTree replay after UI equals76fb21...17336.",
+    "safe_hash_refs_checked": 24,
+    "safe_hash_mismatches": 0,
+    "ledger": {
+      "begins": 29,
+      "ends": 29,
+      "aborts": 0,
+      "unique_call_ids": 29,
+      "matching_callback_source_hashes": true,
+      "actual_native_count": 29,
+      "callback_audit": "Each retainedcallback invokesoneactualCuaAPI; getAXStateAndScreenshot returnsboth butisoneAPI. FirstgetApp usesexplicitexternalbounds.",
+      "approval_at": "2026-10-27T13:35:54.654493+00:00",
+      "first_begin_at": "2026-10-27T13:36:13.312Z",
+      "last_end_at": "2026-10-27T13:39:51.891Z"
+    },
+    "resource": {
+      "actual_chrome_root": true,
+      "admitted_at": "2026-10-27T13:34:43.678Z",
+      "admitted_to_UI_end": "OnlyADMITTED/WATCH_HEALTHY beforeUIend; normalSTOP_REQUESTED/STOP_CONFIRMED afterward.",
+      "completed_final": "valid0/noninvalid13:40:51.233",
+      "watch_reads": 219,
+      "max_read_gap_seconds": 2.0120297909597866,
+      "risk_rows": 0,
+      "invalid_build_rows": 0,
+      "canonical_heavy_exists_after": false,
+      "canonical_unsafe_hold_exists_after": false
+    },
+    "privacy": "All24allowlistedoriginalhashes match; text-patternscan found0JWT/secretassignmentcandidates. Both decisive PNGs showmanagerwithStorepanelcollapsed; no Vault/privateStoreChatbody visible. Actualprofile projection excludesChromeencodeddiagnostics. No credentialvalues or privatebodies copied by reviewer.",
+    "limitations": [
+      "FirstgetApp autoemitted Vaultitemlabels into tooloutput per actor; no values and no fullVaultbody persisted.",
+      "OneearlyrestoreloadingAXsample hadcomposerabsent; trimminglogic failedoutsideAPIwrapper, caused no additionalnativeinput. Later actualfreshAX establishes restoredStoreURL/emptycomposer/focus.",
+      "CollapsedStorepanel, exactfresh target and faster/immediatecapture changed together; cause of prior missingtoast is UNKNOWN.",
+      "Onlystat/inode/receiptwerewatchedevery2s; fullcontentimmutability is boundedbybefore/after fulltree hashes, not a globalatomicpayloadlock.",
+      "No live UI replay by this reviewer; raw original UI evidence, source callbacks, receipts and independent disk hash were audited."
+    ],
+    "missing": [],
+    "extra": [],
+    "misunderstood": []
+  },
+  "findings": [],
+  "commits": [],
+  "source_edits": [],
+  "own_processes": [],
+  "evidence_hashes": {
+    ".output/stabilization-checkpoints/owner-ebee-import-20261027.log": "8b816701992cb213720dcb74b610edf3966fa5d393334ad7896373a54db369f0",
+    ".output/stabilization-checkpoints/owner-ebee-verify-20261027.json": "29cb20e0c209eecbee6ff8700b2c13a1f6d1160131c5e9c48eac2f84a9c8ad75",
+    ".output/stabilization-checkpoints/owner-ebee-verify-20261027.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".output/stabilization-checkpoints/owner-ebee-promotion-20261027.log": "8ab7d70f056dc0ce526e93577feffdb0b5b3a0b219b3f3e08eeaa214444fdc68",
+    ".output/stabilization-checkpoints/owner-ebee-disk-fingerprint-20261027.json": "c01b2c65c6405b3bed4c9661aa854932b482e09b25992d3c481ad36a17ac1958",
+    ".output/stabilization-checkpoints/owner-ebee-ui-config-20261027.json": "2cffdfeb9bb1fb7cc0fb3a4d0f514f2db3e7b03c72aaee5842ad08e44727787e",
+    ".output/stabilization-checkpoints/owner-ebee-ui-gate-20261027.mjs": "64abc775e051c754dc76bfb2b8ea734d59057fc630aca9ccefa9446100d14438",
+    ".output/stabilization-checkpoints/owner-ebee-native-api-ledger-20261027.jsonl": "afcf0d84e5afd9fb6e6f1f9e797d998efc1fe11d3950d086d6026ca5864a12cb",
+    ".output/stabilization-checkpoints/owner-ebee-initial-call-20261027.json": "8c5616ea82612115cac5e71a4734b7dda8a2b289fe478d9dc3fcbe926755d136",
+    ".output/stabilization-checkpoints/owner-ebee-original-structural-20261027.txt": "d84233e31cc5519819856b26edd99d214cb26b545dcca0ae02766d4fd6adb04a",
+    ".output/stabilization-checkpoints/owner-ebee-version-profile-20261027.ax.txt": "c4607815dca0fffbbbbac3a8953fd5ee5172e4c3fa83cafbe42c4a19a13faa59",
+    ".output/stabilization-checkpoints/owner-ebee-active-account-20261027.ax.txt": "2f8d9073dc5b245d1e11228116e0b99007d455a9393a1e92d4f1ba0e571d172a",
+    ".output/stabilization-checkpoints/owner-ebee-dev-before-20261027.ax.txt": "4b9cc21ed70f2f6e7524d941fa545abfe69406462e6e8e6fc4bb6704ffb93db1",
+    ".output/stabilization-checkpoints/owner-ebee-reload-capture1-20261027.png": "e2e927cb9d9584b62f85232e53ce5b98ca5746cbcc533cae2f6f89635536aa5a",
+    ".output/stabilization-checkpoints/owner-ebee-reload-capture2-20261027.ax.txt": "366639769b86cf3a5a53781b0647f9bf69629a27eefb1b8a99f3e90f1e13aca4",
+    ".output/stabilization-checkpoints/owner-ebee-reload-capture2-20261027.png": "e4153d9010516e72bc0ff003c8767a1560c37a6f4a2e2e7ee8655ff431b420e3",
+    ".output/stabilization-checkpoints/owner-ebee-store577-20261027.ax.txt": "f487613091f9043c3f71bff5e875ea6f1f99b355a9e697bdde44231accd8d069",
+    ".output/stabilization-checkpoints/owner-ebee-restored-structural-20261027.txt": "5cd8691c30ab91d35fe21a878d5e5bc10c4676a76f5efe395226e0e7cc16dcdb",
+    ".output/stabilization-checkpoints/owner-ebee-fulltree-after-20261027.json": "d3c2e5f2d9beaa4386ab0549fd7168e0f410e5dfc7499723a92e878d3f476347",
+    ".output/stabilization-checkpoints/owner-ebee-parent-ui-admission-20261027.json": "09c9f3ef5d5c12bdf8eeca16b284f7c3bb1cedaa600c5ada33c084ed3934eed3",
+    ".output/stabilization-checkpoints/owner-ebee-native-holder-20261027.log": "10d9ccacd213eaaca05d5d0b7bf01922b4699992d5c8a17a54cd5fb191896200",
+    ".output/stabilization-checkpoints/owner-ebee-resource-build-watch-20261027.jsonl": "bda073851fb83579a699cda4b77d7a72843bd6ae2c7b592af9b57d4c06e11aa4",
+    ".output/stabilization-checkpoints/owner-ebee-resource-build-watch-20261027-report.json": "c5232be1e367968b9f8d5d89aee4ba5d8f26afd0ecc0b71c2be9125251d00bc2",
+    ".output/stabilization-checkpoints/owner-ebee-parent-stop-20261027.json": "f845159e55ce10cb838822e7d3371cca47c83c58fe71a7b0e63d4dfb9ff77835"
+  }
+}
