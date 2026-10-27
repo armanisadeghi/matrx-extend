@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFile } from 'node:fs/promises';
 import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
 import {
@@ -7,127 +8,204 @@ import {
   guestChatDefaultExpression,
   guestChatDefaultMatches,
   observeGuestNewChatDefault,
+  withSettingsRestoration,
   observeGuestPreference,
   preferenceMatches,
   runGuestPreferenceCase,
   runGuestThemeRenderingProbe,
 } from './settings-guest-preference-batch.mjs';
-import { chatToolsCandidatesExpression } from './settings-panel-driver.mjs';
+import {
+  chatToolsCandidatesExpression,
+  chatToolsContextExpression,
+} from './settings-panel-driver.mjs';
+import { preserveFailureDuringCleanup } from './settings-probe-cleanup.mjs';
 
-// SUT owns traversal and DOM observation; browser layout/input are external seams.
-// Captured semantics: chat 0.8.370 DeviceToolsModeRow / PicksSwitchRow.
-function chatModeFixture(checked = 'false') {
+// Source-derived, reduced unit input from official SDK396 (same six source files as395).
+// ComposerSourcesChip uses PopoverTrigger; ComposerSubmenu uses PopoverAnchor +
+// MenuRow, so ONLY Capabilities has aria-controls. Tools/Advanced never do.
+// RunPicksSurface menu exposes data-picks-layout/search; full picker owns All chats.
+// This is controlled DOM input, not a captured live DOM or native acceptance proof.
+function chatModeFixture(checked = 'false', presentation = 'window') {
   const window = new Window();
-  window.document.body.innerHTML = `<button role="tab" data-matrx-title="Chat"
+  const document = window.document;
+  document.body.innerHTML = `<button role="tab" data-matrx-title="Chat"
     data-state="active" aria-controls="chat-pane"></button>
     <div id="chat-pane" role="tabpanel" data-state="active">
-      <button title="New chat"></button><button title="Chat Options" aria-controls="fixture-options" aria-expanded="true"></button>
-    </div><div id="fixture-options"><button aria-expanded="true">Tools</button></div><div data-composer-panel><label>Ask before acting<span>All chats</span>
-      <button role="switch" aria-label="Ask before acting" aria-checked="${checked}"></button>
-    </label></div>`;
-  const read = () =>
-    runInNewContext(guestChatDefaultExpression(), {
-      document: window.document,
+      <button title="New chat"></button><button aria-label="Capabilities" aria-controls="capabilities" aria-expanded="false"></button>
+    </div><div id="capabilities" hidden><button aria-expanded="false"><span>Tools</span></button></div>
+    <div id="tools" data-composer-panel hidden><div data-picks-layout="menu"><input placeholder="Search tools to add"/><button ${presentation === 'inline' ? 'aria-expanded="false"' : ''}><span>${presentation === 'inline' ? 'Advanced' : 'See all'}</span></button></div></div>
+    <div id="advanced" hidden ${presentation === 'window' ? 'data-window-panel data-window-id="run-controls-window"' : presentation === 'sheet' ? 'role="dialog" aria-label="Chat options"' : 'data-composer-panel'}>
+      ${presentation !== 'inline' ? '<nav aria-label="Run controls"><button role="tab" title="Tools" aria-selected="true">Tools</button></nav>' : ''}
+      <input placeholder="Search tools"/><label>Ask before acting<span>All chats</span><button role="switch" aria-label="Ask before acting" aria-checked="${checked}"></button></label>
+    </div>`;
+  for (const node of document.querySelectorAll('*'))
+    node.getBoundingClientRect = () => ({ width: 100, height: 30 });
+  const evaluate = (script) =>
+    runInNewContext(script, {
+      document,
       getComputedStyle: () => ({ visibility: 'visible', display: 'block' }),
     });
-  for (const node of window.document.querySelectorAll('*'))
-    node.getBoundingClientRect = () => ({ width: 100, height: 30 });
-  return { window, read };
+  const open = (id) => {
+    document.getElementById(id).removeAttribute('hidden');
+    const trigger =
+      id === 'capabilities'
+        ? document.querySelector('[aria-label="Capabilities"]')
+        : id === 'tools'
+          ? document.querySelector('#capabilities button')
+          : document.querySelector('#tools button');
+    if (trigger?.hasAttribute('aria-expanded')) trigger.setAttribute('aria-expanded', 'true');
+    if (id === 'advanced' && presentation !== 'inline') {
+      // See all closes its composer cascade before opening the host window/sheet.
+      for (const parent of ['capabilities', 'tools'])
+        document.getElementById(parent).setAttribute('hidden', '');
+      document.querySelector('[aria-label="Capabilities"]').setAttribute('aria-expanded', 'false');
+    }
+  };
+  const close = () => {
+    for (const id of ['capabilities', 'tools', 'advanced'])
+      document.getElementById(id).setAttribute('hidden', '');
+    for (const trigger of document.querySelectorAll('button[aria-expanded]'))
+      trigger.setAttribute('aria-expanded', 'false');
+  };
+  return {
+    window,
+    document,
+    evaluate,
+    open,
+    close,
+    read: () => evaluate(guestChatDefaultExpression()),
+  };
 }
 
-test('Tools traversal selects package portal doors and excludes outer navigation and hidden copies', async () => {
+test('current Tools traversal requires the owned Capabilities portal, not outer Tools navigation', async () => {
   const f = chatModeFixture();
   try {
-    const document = f.window.document;
-    const read = () =>
-      runInNewContext(chatToolsCandidatesExpression(), {
-        document,
-        getComputedStyle: () => ({ display: 'block', visibility: 'visible' }),
-      });
-    document.getElementById('fixture-options').remove();
-    document.body.innerHTML += `<button role="tab">Tools</button>
-      <div role="dialog" aria-label="Add to chat" id="options"><button><span><span>Tools</span></span><span>3</span></button></div>
-      <div role="dialog" aria-label="Unrelated"><button>Tools</button></div>
-      <div role="dialog" aria-label="Tools" hidden><button>Tools</button></div>`;
-    document.querySelector('[title="Chat Options"]').setAttribute('aria-controls', 'options');
-    for (const node of document.querySelectorAll('*'))
-      node.getBoundingClientRect = () => ({ width: 100, height: 30 });
-    assert.equal(read().length, 1);
-    document.getElementById('options').remove();
-    assert.equal(read().length, 0);
-    document.body.innerHTML +=
-      '<div id="options"><div role="tablist" aria-label="Run controls"><button role="tab">Tools</button></div></div>';
-    for (const node of document.querySelectorAll('*'))
-      node.getBoundingClientRect = () => ({ width: 100, height: 30 });
-    assert.equal(read().length, 1);
-  } finally {
-    await f.window.happyDOM.abort();
-  }
-});
-
-test('Chat default observes actual Ask switch for both values and rejects stale or ambiguous controls', async () => {
-  const f = chatModeFixture();
-  try {
-    const control = f.window.document.querySelector('[role="switch"]');
-    assert.deepEqual(
-      Array.from(
-        ['activeChat', 'newChatCount', 'modeControlCount', 'permissionMode'],
-        (key) => f.read()[key],
-      ),
-      [true, 1, 1, 'act'],
+    assert.equal(f.evaluate(chatToolsCandidatesExpression()).length, 0);
+    f.open('capabilities');
+    assert.equal(f.evaluate(chatToolsCandidatesExpression()).length, 1);
+    const requireOwnedTools = (expression) =>
+      assert.equal(f.evaluate(expression).length, 1, 'owned current Tools door required');
+    const oldDoor = chatToolsCandidatesExpression().replace(
+      ".filter((button) => /^(Capabilities)(:|$)/.test(button.getAttribute('aria-label') ?? ''));",
+      ".filter((button) => button.getAttribute('title') === 'Chat Options');",
     );
-    control.setAttribute('aria-checked', 'true');
-    assert.equal(f.read().permissionMode, 'ask');
-    control.setAttribute('aria-checked', 'mixed');
-    assert.equal(f.read().permissionMode, null);
-    control.setAttribute('aria-checked', 'false');
-    const duplicate = control.cloneNode(true);
-    duplicate.getBoundingClientRect = () => ({ width: 100, height: 30 });
-    control.parentElement.appendChild(duplicate);
-    assert.equal(f.read().modeControlCount, 2);
-    assert.equal(f.read().permissionMode, null);
-    control.parentElement.lastElementChild.remove();
-    f.window.document
-      .querySelector('#fixture-options button')
-      .setAttribute('aria-expanded', 'false');
-    assert.equal(f.read().modeControlCount, 0, 'stale singleton without opened Tools is refused');
-    f.window.document
-      .querySelector('#fixture-options button')
-      .setAttribute('aria-expanded', 'true');
-    control.setAttribute('hidden', '');
-    assert.equal(f.read().modeControlCount, 0);
-    control.removeAttribute('hidden');
-    f.window.document.getElementById('chat-pane').setAttribute('data-state', 'inactive');
-    assert.equal(f.read().activeChat, false);
-    f.window.document.getElementById('chat-pane').setAttribute('data-state', 'active');
-    control.parentElement.parentElement.removeAttribute('data-composer-panel');
-    assert.equal(f.read().modeControlCount, 0, 'unrelated singleton switch is not Tools evidence');
-    control.remove();
-    f.window.document.getElementById('chat-pane').innerHTML +=
-      '<button title="Tool permission mode"><svg class="lucide-zap"></svg>Act without asking</button>';
-    assert.equal(f.read().modeControlCount, 0);
-    assert.equal(f.read().permissionMode, null);
-    f.window.document.querySelector('[role="tab"]').setAttribute('aria-controls', 'wrong-pane');
-    assert.equal(f.read().activeChat, false);
+    assert.notEqual(oldDoor, chatToolsCandidatesExpression());
+    requireOwnedTools(chatToolsCandidatesExpression());
+    assert.throws(() => requireOwnedTools(oldDoor), /owned current Tools door required/);
+    assert.throws(() => requireOwnedTools('[]'), /owned current Tools door required/);
+
+    f.document.body.insertAdjacentHTML(
+      'beforeend',
+      '<button>Tools</button><div role="dialog" aria-label="Unrelated"><button>Tools</button></div>',
+    );
+    for (const node of f.document.querySelectorAll('*'))
+      node.getBoundingClientRect = () => ({ width: 100, height: 30 });
+    assert.equal(f.evaluate(chatToolsCandidatesExpression()).length, 1);
+    f.document.getElementById('capabilities').setAttribute('hidden', '');
+    assert.equal(f.evaluate(chatToolsCandidatesExpression()).length, 0);
   } finally {
     await f.window.happyDOM.abort();
   }
 });
 
-test('mode observation assertions reject constant and inverted checked-state mutants', async () => {
+test('full picker observes Ask and Act; compact Tools and unrelated Agent actions cannot certify permission mode', async () => {
+  for (const presentation of ['window', 'inline', 'sheet']) {
+    const f = chatModeFixture('false', presentation);
+    try {
+      const control = f.document.querySelector('[role="switch"]');
+      f.open('capabilities');
+      f.open('tools');
+      assert.equal(f.read().modeControlCount, 0, 'compact Tools excludes its topSlot');
+      f.open('advanced');
+      assert.equal(f.read().permissionMode, 'act');
+      control.setAttribute('aria-checked', 'true');
+      assert.equal(f.read().permissionMode, 'ask');
+      control.setAttribute('aria-checked', 'mixed');
+      assert.equal(f.read().permissionMode, null);
+      control.setAttribute('aria-checked', 'false');
+      const duplicate = control.cloneNode(true);
+      duplicate.getBoundingClientRect = () => ({ width: 100, height: 30 });
+      control.parentElement.appendChild(duplicate);
+      assert.equal(f.read().modeControlCount, 2);
+      assert.equal(f.read().permissionMode, null);
+      duplicate.remove();
+      control.setAttribute('hidden', '');
+      assert.equal(f.read().modeControlCount, 0);
+      control.removeAttribute('hidden');
+      f.document.getElementById('advanced').setAttribute('hidden', '');
+      f.document.body.insertAdjacentHTML(
+        'beforeend',
+        '<div><label>Agent actions</label><button role="combobox">Ask first</button></div>',
+      );
+      assert.equal(f.read().modeControlCount, 0);
+      assert.equal(f.read().permissionMode, null);
+      f.document.getElementById('chat-pane').setAttribute('data-state', 'inactive');
+      assert.equal(f.read().activeChat, false);
+    } finally {
+      await f.window.happyDOM.abort();
+    }
+  }
+});
+
+test('ambiguous compact pickers and full permission surfaces never select an arbitrary portal', async () => {
+  const f = chatModeFixture('false', 'inline');
+  const revealTree = (node) => {
+    for (const child of [node, ...node.querySelectorAll('*')])
+      child.getBoundingClientRect = () => ({ width: 100, height: 30 });
+  };
+  try {
+    f.open('capabilities');
+    f.open('tools');
+    const duplicatePicker = f.document.getElementById('tools').cloneNode(true);
+    duplicatePicker.id = 'second-compact';
+    revealTree(duplicatePicker);
+    f.document.body.appendChild(duplicatePicker);
+    assert.equal(
+      f.evaluate(`(${chatToolsContextExpression()}).details.length`),
+      0,
+      'ambiguous compact ownership must refuse the details click',
+    );
+    duplicatePicker.remove();
+    f.open('advanced');
+    const duplicateFull = f.document.getElementById('advanced').cloneNode(true);
+    duplicateFull.id = 'second-full';
+    revealTree(duplicateFull);
+    f.document.body.appendChild(duplicateFull);
+    assert.equal(
+      f.read().permissionMode,
+      null,
+      'two full mode surfaces must not certify a default',
+    );
+    duplicateFull.remove();
+    f.document.querySelector('#advanced input').setAttribute('placeholder', 'Search 37 tools');
+    assert.equal(
+      f.read().permissionMode,
+      'act',
+      'full picker accepts the actual catalog-count placeholder',
+    );
+    f.document.getElementById('tools').removeAttribute('data-composer-panel');
+    assert.equal(
+      f.read().permissionMode,
+      null,
+      'lost actual compact portal boundary must not certify the full picker',
+    );
+  } finally {
+    await f.window.happyDOM.abort();
+  }
+});
+
+test('mode observation rejects constant and inverted checked-state mutants on different expected outcomes', async () => {
   const f = chatModeFixture();
   try {
-    const control = f.window.document.querySelector('[role="switch"]');
+    f.open('capabilities');
+    f.open('tools');
+    f.open('advanced');
+    const control = f.document.querySelector('[role="switch"]');
     const verify = (expression) => {
-      const read = () =>
-        runInNewContext(expression, {
-          document: f.window.document,
-          getComputedStyle: () => ({ visibility: 'visible', display: 'block' }),
-        });
       control.setAttribute('aria-checked', 'false');
-      assert.equal(read().permissionMode, 'act');
+      assert.equal(f.evaluate(expression).permissionMode, 'act');
       control.setAttribute('aria-checked', 'true');
-      assert.equal(read().permissionMode, 'ask');
+      assert.equal(f.evaluate(expression).permissionMode, 'ask');
     };
     verify(guestChatDefaultExpression());
     assert.throws(() => verify(`({ permissionMode: 'act' })`), assert.AssertionError);
@@ -146,140 +224,406 @@ test('mode observation assertions reject constant and inverted checked-state mut
   }
 });
 
-test('fresh Chat default traverses Chat Options and Tools without clicking the mode switch', async () => {
-  const f = chatModeFixture();
-  try {
+test('fresh Chat default traverses current full picker without writing mode and closes it after failure', async () => {
+  for (const [checked, expected, label] of [
+    ['false', 'act', 'Act without asking'],
+    ['true', 'ask', 'Ask before acting'],
+  ]) {
+    const f = chatModeFixture(checked);
     const events = [];
-    let toolsOpen = false;
-    let optionsOpen = false;
     const driver = {
+      click: async (_panel, kind, value) => {
+        events.push([kind, value]);
+        if (kind === 'chat-capabilities') f.open('capabilities');
+        else if (kind === 'chat-tools') f.open('tools');
+        else if (kind === 'chat-tools-details') f.open('advanced');
+        else assert.ok(['Chat', 'New chat'].includes(value), 'mode switch must never be written');
+      },
+      evaluate: async (_panel, script) => f.evaluate(script),
       pressEscape: async () => {
-        toolsOpen = false;
-        optionsOpen = false;
         events.push(['key', 'Escape']);
+        f.close();
       },
-      click: async (_panel, kind, label) => {
-        events.push([kind, label]);
-        if (label === 'Chat Options') optionsOpen = true;
-        if (kind === 'chat-tools') toolsOpen = true;
-      },
-      evaluate: async (_panel, script) =>
-        script.includes('toolsEntryCount')
-          ? { toolsEntryCount: 1 }
-          : {
-              ...f.read(),
-              modeControlCount: toolsOpen ? 1 : 0,
-              optionsOpen,
-              ownedPopupOpen: optionsOpen,
-              composerPanelCount: toolsOpen ? 1 : 0,
-              optionsSheetCount: 0,
-            },
-      waitFor: async (label, read, accept) => {
+      waitFor: async (stage, read, accept) => {
         const value = await read();
-        assert.equal(accept(value), true, label);
+        assert.equal(accept(value), true, stage);
         return value;
       },
     };
-    assert.equal(
-      (await observeGuestNewChatDefault({}, 'act', 'Act without asking', driver)).permissionMode,
-      'act',
-    );
-    assert.deepEqual(events, [
-      ['title', 'Chat'],
-      ['title', 'New chat'],
-      ['title', 'Chat Options'],
-      ['chat-tools', 'Tools'],
-      ['key', 'Escape'],
-    ]);
-    await assert.rejects(
-      observeGuestNewChatDefault({}, 'ask', 'Ask before acting', driver),
-      /guest_new_chat_default_mode/,
-    );
-    assert.equal(toolsOpen, false, 'mismatch still closes Tools');
-    const entryFailure = {
-      ...driver,
-      evaluate: async (_panel, script) =>
-        script.includes('toolsEntryCount')
-          ? { toolsEntryCount: 0 }
-          : driver.evaluate(_panel, script),
-    };
-    await assert.rejects(
-      observeGuestNewChatDefault({}, 'act', 'Act without asking', entryFailure),
-      /guest_chat_tools_entry_ready/,
-    );
-    assert.equal(
-      optionsOpen,
-      false,
-      'missing Tools entry closes parent menu even without a switch',
-    );
-    const openingFailure = {
-      ...driver,
-      click: async (panel, kind, label) => {
-        await driver.click(panel, kind, label);
-        if (label === 'Chat Options') throw new Error('options_open_dispatch_failed');
-      },
-    };
-    await assert.rejects(
-      observeGuestNewChatDefault({}, 'act', 'Act without asking', openingFailure),
-      /options_open_dispatch_failed/,
-    );
-    assert.equal(optionsOpen, false, 'opening dispatch failure still dismisses its menu');
-    for (const field of [
-      'optionsOpen',
-      'ownedPopupOpen',
-      'composerPanelCount',
-      'optionsSheetCount',
-    ]) {
-      const noOpEscape = {
-        ...entryFailure,
-        pressEscape: async () => {},
-        evaluate: async (_panel, script) =>
-          script.includes('toolsEntryCount')
-            ? { toolsEntryCount: 0 }
-            : {
-                ...f.read(),
-                modeControlCount: 0,
-                optionsOpen: false,
-                ownedPopupOpen: false,
-                composerPanelCount: 0,
-                optionsSheetCount: 0,
-                [field]: optionsOpen
-                  ? field.endsWith('Count')
-                    ? 1
-                    : true
-                  : field.endsWith('Count')
-                    ? 0
-                    : false,
-              },
-      };
-      await assert.rejects(
-        observeGuestNewChatDefault({}, 'act', 'Act without asking', noOpEscape),
-        (error) =>
-          error.message.includes('guest_chat_tools_entry_ready') && error.cleanupFailed === true,
-        `no-op Escape must detect remaining ${field} even with no switch`,
+    try {
+      assert.equal(
+        (await observeGuestNewChatDefault({}, expected, label, driver)).permissionMode,
+        expected,
       );
-      optionsOpen = false;
+      assert.deepEqual(
+        events.map((x) => x[0]),
+        ['title', 'title', 'chat-capabilities', 'chat-tools', 'chat-tools-details', 'key'],
+      );
+      assert.equal(f.read().optionsOpen, false);
+      const fail = new Error('consumer_input_failure');
+      await assert.rejects(
+        observeGuestNewChatDefault({}, expected, label, {
+          ...driver,
+          click: async (...args) => {
+            await driver.click(...args);
+            if (args[1] === 'chat-tools') throw fail;
+          },
+        }),
+        (error) => error === fail,
+      );
+      assert.equal(f.read().ownedPopupOpen, false);
+      await assert.rejects(
+        observeGuestNewChatDefault({}, expected, label, {
+          ...driver,
+          pressEscape: async () => {
+            throw new Error('escape_failed');
+          },
+        }),
+        (error) => error.safeCleanupFailed === true && error.cause?.message === 'escape_failed',
+      );
+      f.close();
+    } finally {
+      await f.window.happyDOM.abort();
     }
-    const cleanupDriver = {
-      ...driver,
-      pressEscape: async () => {
-        throw new Error('escape_failed');
-      },
-    };
-    await assert.rejects(
-      observeGuestNewChatDefault({}, 'ask', 'Ask before acting', cleanupDriver),
-      (error) =>
-        error.message.includes('guest_new_chat_default_mode') && error.cleanupFailed === true,
-    );
-    toolsOpen = false;
-    optionsOpen = false;
-    await assert.rejects(
-      observeGuestNewChatDefault({}, 'act', 'Act without asking', cleanupDriver),
-      /escape_failed/,
+  }
+});
+
+async function requireRetainedSurfaceFailure(candidate, field) {
+  const f = chatModeFixture();
+  let cleanup = false;
+  const original = new Error('tools_entry_unavailable');
+  const driver = {
+    click: async (_panel, kind) => {
+      if (kind === 'chat-capabilities') f.open('capabilities');
+    },
+    evaluate: async (_panel, script) => {
+      if (script.includes('toolsEntryCount')) return { toolsEntryCount: 0 };
+      const value = f.read();
+      return cleanup
+        ? {
+            ...value,
+            modeControlCount: 0,
+            optionsOpen: false,
+            ownedPopupOpen: false,
+            composerPanelCount: 0,
+            optionsSheetCount: 0,
+            [field]:
+              field === 'composerContextObserved' ? false : field.endsWith('Count') ? 1 : true,
+          }
+        : value;
+    },
+    pressEscape: async () => {
+      cleanup = true;
+    },
+    waitFor: async (stage, read, accept) => {
+      if (stage === 'guest_chat_tools_entry_ready') throw original;
+      const value = await read();
+      assert.equal(accept(value), true, stage);
+      return value;
+    },
+  };
+  try {
+    let caught;
+    try {
+      await candidate({}, 'act', 'Act without asking', driver);
+    } catch (error) {
+      caught = error;
+    }
+    assert.equal(caught, original);
+    assert.equal(
+      caught.safeCleanupFailed,
+      true,
+      `unclosed ${field} must remain an explicit cleanup failure`,
     );
   } finally {
     await f.window.happyDOM.abort();
   }
+}
+
+const CLOSED_SURFACE_CONDITIONS = {
+  composerContextObserved: 'value?.composerContextObserved === true',
+  modeControlCount: 'value.modeControlCount === 0',
+  optionsOpen: 'value.optionsOpen === false',
+  ownedPopupOpen: 'value.ownedPopupOpen === false',
+  composerPanelCount: 'value.composerPanelCount === 0',
+  optionsSheetCount: 'value.optionsSheetCount === 0',
+};
+function observerFromSource(source) {
+  return runInNewContext(`(${source})`, {
+    nativeDriver: {},
+    preserveFailureDuringCleanup,
+    guestChatDefaultExpression,
+    guestChatDefaultMatches,
+    chatToolsCandidatesExpression,
+    chatToolsContextExpression,
+  });
+}
+for (const [field, condition] of Object.entries(CLOSED_SURFACE_CONDITIONS)) {
+  test(`no-op Escape rejects retained ${field} and its own missing-condition mutant`, async () => {
+    await requireRetainedSurfaceFailure(observeGuestNewChatDefault, field);
+    const actual = observeGuestNewChatDefault.toString();
+    const closureStart = actual.indexOf("'guest_chat_options_closed'");
+    assert.ok(closureStart > 0);
+    const closure = actual.slice(closureStart);
+    const replacedClosure = closure.replace(condition, 'true');
+    assert.notEqual(replacedClosure, closure, 'mutant must remove the intended closure condition');
+    const withoutCondition = actual.slice(0, closureStart) + replacedClosure;
+    await assert.rejects(
+      requireRetainedSurfaceFailure(observerFromSource(withoutCondition), field),
+      /unclosed/,
+    );
+  });
+}
+async function requireLostContextFailure(candidate, lost) {
+  const f = chatModeFixture();
+  const original = new Error('tools_entry_unavailable');
+  const driver = {
+    click: async (_panel, kind) => {
+      if (kind === 'chat-capabilities') f.open('capabilities');
+    },
+    evaluate: async (_panel, script) =>
+      script.includes('toolsEntryCount') ? { toolsEntryCount: 0 } : f.evaluate(script),
+    pressEscape: async () => {
+      // A retained host window is real DOM input; losing its composer boundary
+      // must never turn the hidden-by-ownership zero counts into closure proof.
+      f.open('advanced');
+      const pane = f.document.getElementById('chat-pane');
+      if (lost === 'missing-chat') pane.remove();
+      else if (lost === 'inactive-chat') pane.setAttribute('data-state', 'inactive');
+      else if (lost === 'missing-capabilities')
+        pane.querySelector('[aria-label="Capabilities"]').remove();
+      else if (lost === 'duplicate-capabilities') {
+        const duplicate = pane.querySelector('[aria-label="Capabilities"]').cloneNode(true);
+        duplicate.getBoundingClientRect = () => ({ width: 100, height: 30 });
+        pane.appendChild(duplicate);
+      } else if (lost === 'missing-new-chat') pane.querySelector('[title="New chat"]').remove();
+      else if (lost === 'duplicate-new-chat')
+        pane.appendChild(pane.querySelector('[title="New chat"]').cloneNode(true));
+    },
+    waitFor: async (stage, read, accept) => {
+      if (stage === 'guest_chat_tools_entry_ready') throw original;
+      const value = await read();
+      assert.equal(accept(value), true, stage);
+      return value;
+    },
+  };
+  try {
+    let caught;
+    try {
+      await candidate({}, 'act', 'Act without asking', driver);
+    } catch (error) {
+      caught = error;
+    }
+    assert.equal(
+      f.document.getElementById('advanced').hasAttribute('hidden'),
+      false,
+      'window remains rendered',
+    );
+    assert.equal(
+      f.read().composerContextObserved,
+      false,
+      'boundary validity derives from actual Chat/New chat/Capabilities',
+    );
+    assert.equal(caught, original);
+    assert.equal(caught.safeCleanupFailed, true, `unclosed ${lost} must not certify absence`);
+  } finally {
+    await f.window.happyDOM.abort();
+  }
+}
+for (const lost of [
+  'missing-chat',
+  'inactive-chat',
+  'missing-capabilities',
+  'duplicate-capabilities',
+  'missing-new-chat',
+  'duplicate-new-chat',
+]) {
+  test(`retained window remains unverified after ${lost}`, async () => {
+    await requireLostContextFailure(observeGuestNewChatDefault, lost);
+    if (!lost.endsWith('new-chat')) {
+      const source = observeGuestNewChatDefault.toString();
+      const at = source.indexOf("'guest_chat_options_closed'");
+      const mutant =
+        source.slice(0, at) +
+        source.slice(at).replace('value?.composerContextObserved === true', 'true');
+      assert.notEqual(mutant, source);
+      await assert.rejects(requireLostContextFailure(observerFromSource(mutant), lost), /unclosed/);
+    }
+  });
+}
+
+test('cleanup postcondition rejects skipping the whole wait or returning an arranged result', async () => {
+  const actual = observeGuestNewChatDefault.toString();
+  const skipped = actual.replace(
+    /await driver\.waitFor\(\s*'guest_chat_options_closed',[\s\S]*?\n\s*\);/,
+    '',
+  );
+  assert.notEqual(skipped, actual);
+  await assert.rejects(
+    requireRetainedSurfaceFailure(observerFromSource(skipped), 'optionsOpen'),
+    /unclosed/,
+  );
+  await assert.rejects(
+    requireRetainedSurfaceFailure(async () => ({ permissionMode: 'act' }), 'optionsOpen'),
+    assert.AssertionError,
+  );
+});
+
+test('real preference callback restores Settings and its section after consumer failure, retaining the original error', async () => {
+  const source = await readFile(
+    new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const start = source.indexOf('            async ({ value, label }) => {');
+  const end =
+    source.indexOf('            },\n            undefined,', start) + '            }'.length;
+  assert.ok(start > 0 && end > start);
+  const callbackSource = source.slice(start, end);
+  const verify = async (candidate) => {
+    for (const consumerFails of [false, true]) {
+      const events = [];
+      const original = new Error('original_consumer_failure');
+      const c = { steps: [] };
+      const callback = runInNewContext(`(${callbackSource})`, {
+        panel: {},
+        preference: { caseId: 'T10', section: 'Chat' },
+        c,
+        observeGuestNewChatDefault: async () => {
+          events.push('consume');
+          if (consumerFails) throw original;
+          return { modeLabel: 'Act without asking', permissionMode: 'act' };
+        },
+        criterion: () => events.push('criterion'),
+        withSettingsRestoration: candidate,
+        settings: async () => events.push('Settings'),
+        openSection: async (_panel, section) => events.push(section),
+      });
+      if (consumerFails)
+        await assert.rejects(
+          callback({ value: 'act', label: 'Act without asking' }),
+          (error) => error === original,
+        );
+      else await callback({ value: 'act', label: 'Act without asking' });
+      assert.deepEqual(events.slice(-2), ['Settings', 'Chat']);
+    }
+  };
+  await verify(withSettingsRestoration);
+  await assert.rejects(
+    verify(async () => undefined),
+    assert.AssertionError,
+  );
+  await assert.rejects(
+    verify(async (consume) => consume()),
+    assert.AssertionError,
+  );
+  const original = new Error('original');
+  await assert.rejects(
+    withSettingsRestoration(
+      async () => {
+        throw original;
+      },
+      async () => {
+        throw new Error('cleanup');
+      },
+    ),
+    (error) => error === original && error.safeCleanupFailed === true,
+  );
+  await assert.rejects(
+    withSettingsRestoration(
+      async () => 'observation',
+      async () => {
+        throw new Error('cleanup_only');
+      },
+    ),
+    (error) => error.safeCleanupFailed === true && error.cause?.message === 'cleanup_only',
+  );
+});
+
+test('actual case serialization preserves explicit cleanup failure without raw causes, rejecting flag-loss mutants', async () => {
+  const source = await readFile(
+    new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const criterionSource = source.match(/^const criterion = .*;$/m)?.[0];
+  const start = source.indexOf('async function runCase(c, fn) {');
+  const end = source.indexOf('\nlet observedPort;', start);
+  assert.ok(criterionSource && start > 0 && end > start);
+  const caseSource = source.slice(start, end);
+  const runner = (body) =>
+    runInNewContext(`(() => { ${criterionSource}\n${body}\nreturn runCase; })()`);
+  const verify = async (body) => {
+    const runCase = runner(body);
+    for (const frozen of [false, true]) {
+      const primary = new Error('guest_chat_tools_entry_ready_not_observed');
+      if (frozen) Object.freeze(primary);
+      const c = { criteria: [], steps: [] };
+      await runCase(c, () =>
+        preserveFailureDuringCleanup(
+          async () => {
+            throw primary;
+          },
+          async () => {
+            throw new Error('private-cleanup-payload');
+          },
+        ),
+      );
+      const written = JSON.parse(JSON.stringify(c));
+      assert.equal(
+        written.cleanupAlsoFailed,
+        true,
+        'cleanup failure flag must be preserved in the case report',
+      );
+      assert.equal(written.error, frozen ? 'settings_probe_cleanup_failed' : primary.message);
+      assert.equal(written.status, 'fail');
+      assert.deepEqual(written.criteria, [
+        { name: 'runner completed the case', status: 'fail', evidence: written.error },
+      ]);
+      assert.equal(JSON.stringify(written).includes('private-cleanup-payload'), false);
+      assert.equal(Object.hasOwn(written, 'cause'), false);
+    }
+    for (const marker of [undefined, false, 'true']) {
+      const ordinary = Object.assign(new Error('ordinary_observation_failure'), {
+        safeCleanupFailed: marker,
+        privatePayload: 'private-ordinary-payload',
+      });
+      const c = { criteria: [], steps: [] };
+      await runCase(c, async () => {
+        throw ordinary;
+      });
+      const written = JSON.parse(JSON.stringify(c));
+      assert.equal(
+        Object.hasOwn(written, 'cleanupAlsoFailed'),
+        false,
+        'only explicit true marks cleanup failure',
+      );
+      assert.equal(written.status, 'fail');
+      assert.equal(written.error, 'ordinary_observation_failure');
+      assert.equal(JSON.stringify(written).includes('private-ordinary-payload'), false);
+    }
+  };
+  await verify(caseSource);
+  await assert.rejects(
+    verify('async function runCase() { return undefined; }'),
+    /cleanup failure flag must be preserved/,
+  );
+  await assert.rejects(
+    verify(
+      `async function runCase() { return { error: 'guest_chat_tools_entry_ready_not_observed', cleanupAlsoFailed: true, status: 'fail', criteria: [{ name: 'runner completed the case', status: 'fail', evidence: 'guest_chat_tools_entry_ready_not_observed' }] }; }`,
+    ),
+    /cleanup failure flag must be preserved/,
+  );
+  const missingFlag = caseSource.replace(
+    '    if (error?.safeCleanupFailed === true) c.cleanupAlsoFailed = true;\n',
+    '',
+  );
+  assert.notEqual(missingFlag, caseSource);
+  await assert.rejects(verify(missingFlag), /cleanup failure flag must be preserved/);
+  const truthyFlag = caseSource.replace(
+    'error?.safeCleanupFailed === true',
+    'error?.safeCleanupFailed',
+  );
+  assert.notEqual(truthyFlag, caseSource);
+  await assert.rejects(verify(truthyFlag), /only explicit true/);
 });
 
 function themeProbeFixture({

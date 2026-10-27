@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "at": "2026-10-27T08:33:56.398031+00:00",
+  "reviewer": "root/d299_b4_fresh_reverify",
+  "status": "PASS_WITH_LIMITS",
+  "independence": "Fresh zeroauthorship seat; read-only code/primary-source/evidence review. No UI, network, source edits, mutations, credentials, independent test replay, compile or commits. Final builder journal/log independently read; no repeated suite without a remaining concern.",
+  "target": {
+    "base": "baacb3eee729ff059c9adf79daa1ec652ff3b2ca",
+    "diff": ".output/stabilization-checkpoints/settings-driver-repair-round2-20261027.diff",
+    "diff_sha256": "163776a0e32702887fcb051c190fe64305dfa42acb1c916329f1133dd2073dd9",
+    "source_hashes": {
+      "scripts/hosted-guest-acceptance.mjs": "3ae95438af04bc644609536867f45c5a190f116531571551a16173b04d8d5f65",
+      "tests/browser/settings-account-popover-native.mjs": "e17d7c2788b5c18ab3d886e6212a39b632a0b351d9ce19bd0fdbd53dd00f25f5",
+      "tests/browser/settings-panel-driver.mjs": "4a4c8693cf2f62ae385ad4d8f15eadc9bd51bc40045b2d7869638bb342acd03e",
+      "tests/browser/settings-guest-preference-batch.mjs": "ac3662da00dc9d727524c83f822ee58581c65716fd5e2ae0e0d8c2fd986d70a3",
+      "tests/browser/settings-local-controls-acceptance.mjs": "c9ec4490f5897190a9be76c1449f7c8a517faefe8d8a5523187c18dc5825e45c",
+      "tests/browser/settings-guest-preference-batch.test.mjs": "72935097bce3084fee01d4b2ccd1a11355886ffc21ff34c32fd701ab0da91433",
+      "tests/browser/settings-native-auth-driver.test.mjs": "19261df81cb50da2cc58b476fe7fd4c13b45b5df01f9118d28a9bae736a982db",
+      "tests/browser/reviewer-chat-organization-boundary.test.mjs": "d4c9adcef7ff7135768e84297bb28b0f4d34ea01fa3fd2b3e99d3716c0817a92",
+      "tests/browser/settings-probe-cleanup.mjs": "2cd97ee94d299bb3bbeb464d746aa681c4dcf7fc7051a8a60860fe3c7e9ddb56",
+      "tests/browser/settings-probe-cleanup.test.mjs": "d86e8d629b73bea510726c107d9aaaec4d6535521d9a8ac9efcb5bc88af4f8a1",
+      "package.json": "784014d09c4bffcb443a9362b9057cf713c11b87b7609ed7f200b6d73eb9f870"
+    },
+    "hash_verification": "All11 files and pinned diff matched at initial and final read; no mismatches."
+  },
+  "finding_reverification": [
+    {
+      "id": "B4",
+      "status": "ADDRESSED",
+      "basis": "guestChatDefaultExpression derives composerContextObserved from positively active Chat, exactly one New chat control and exactly one visible Capabilities trigger. Cleanup predicate requires that boolean before accepting zero/false closure fields. Missing/inactive Chat and zero/duplicate Capabilities therefore remain unknown even though resolver discovery hides retained host windows. Six actual-expression reduced-DOM retained-window negatives include zero/duplicate New chat. Four zero-count context cases also kill removal of the closure context condition."
+    },
+    {
+      "id": "MUTATION_ORACLE_ANCHOR",
+      "status": "ADDRESSED",
+      "basis": "Missing-condition mutations split actual observer source at unique guest_chat_options_closed stage and mutate only its suffix, avoiding the identical readiness clause. Each of six cleanup condition tests asserts mutation changed the intended suffix and requires its forcing assertion to fail; whole-wait omission and arranged-result candidates are also rejected."
+    }
+  ],
+  "A_behavior": {
+    "verdict": "PARTIAL",
+    "source_contracts": "Reviewed scoped source behavior and independently retained builder GREEN support the B4/closure-oracle correction. Previously reviewed strict approved member, authentic no-ID portal route and shared cleanup changes remain intact.",
+    "live": "No actual guest/member sign-in or original hosted A/B reproductions retested; current developer installation, Store candidate acceptance and D299 closure remain unverified.",
+    "fixture": "Source-derived reduced controlled DOM, with real snapshot/resolver expressions evaluated; external SDK layout/interactions are controlled inputs. Not captured complete live DOM/native proof.",
+    "other_class_scope": "Two allowLadder sibling routes remain explicitly unresolved, not silently closed."
+  },
+  "B_quality_provenance": {
+    "verdict": "PASS_WITH_LIMITS",
+    "blocking_findings": [],
+    "new_breakage": "None found in reviewed frozen bytes. Positive context is carried from actual ownership observations rather than manufactured from empty root counts. No source/auth/resource/assertion relaxation or duplicate cleanup implementation introduced by this correction.",
+    "forcing_guards": "Named normal and malformed ownership inputs, retained-open surfaces, condition omission, whole-wait omission, constant result and real expression mode inversions are tested in memory. Tests execute real observation/cleanup orchestration; no SUT mocked to return expected output.",
+    "new_chat_mutation_limit": "Zero/duplicate New chat negative outcomes pass, but are not advertised as independent context-flag omission kills: the retained window remains discoverable and other closure fields reject it. No broader mutation-completeness/native proof is inferred.",
+    "primary_source": "Six retained official SDK396 source files independently hashed against comparison manifest; ComposerMenu PopoverAnchor/data-composer-panel and RunPicksSurface data-picks-layout plus Capabilities PopoverTrigger inspected. No independent tarball redownload/SRI network replay."
+  },
+  "verification": {
+    "builder_suite": {
+      "command": "normal exact pnpm test:focused-acceptance",
+      "session_parent_reported": 52008,
+      "tests": 1140,
+      "pass": 1129,
+      "fail": 0,
+      "skip": 11,
+      "duration_ms": 145873.701667,
+      "independent_replay": false
+    },
+    "resource_final": {
+      "schema": 1,
+      "at": "2026-10-27T08:31:17.848Z",
+      "runId": "settings-driver-round2-final-green-20261027",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "resource_journal": {
+      "path": "docs/stabilization/resource-journals/settings-driver-round2-final-green-20261027.jsonl",
+      "sha256": "639fb8d9a2f11554f8d03cb55c0edc3020df89787ef023914d046b7f9ece6046"
+    },
+    "builder_log": {
+      "path": ".output/stabilization-checkpoints/settings-driver-round2-final-green-20261027.log",
+      "sha256": "d6d47150f81866157fd2293e233aa60a65cf3b4fae0427f4ba39bb7b9da7284b"
+    },
+    "named_guard_lines_independently_read": "Six no-op Escape condition/omission tests, six lost-context retained-window tests, falsey/frozen original failure cases and canonical cleanup forcing test all report pass.",
+    "unsafe_events_in_completed_journal": []
+  },
+  "limits": [
+    "No UI or full original/adjacent hosted retest; source quality verdict is not a product behavior pass.",
+    "No current-main CI/typecheck/native/Store acceptance transferred from builder unit guards.",
+    "Historical failed draft/mutation protocol deviations remain retained; this source correction does not erase them."
+  ],
+  "actions": {
+    "source_edits": 0,
+    "UI": 0,
+    "network": 0,
+    "heavy_tests": 0,
+    "mutations": 0,
+    "credentials": 0,
+    "commits": []
+  },
+  "next_action": "Parent may integrate this source unit only with explicit CI/native/Store/class-sibling limits. Require strict current-source CI and original/adjacent hosted guest/member retests before D299 retest/closure or release acceptance.",
+  "original_private_report_sha256": "9bea7c643fb13b2c6b099cdcb35d2eb68263ec2882a39806dfbe64a20eaf454c",
+  "durable_evidence_manifest": "docs/stabilization/reports/d299-source-publication-manifest-20261027.json",
+  "publication_limits": "Controlled source/unit proofs only. Older reviews retain their pinned historical hashes; final current11-file packet34218f and B5/G1 review govern source quality. Full private logs/SDK archives/source snapshots are unmapped private references. No independent test replay, native product-case pass, Store/current-development installation or overall-health inference."
+}

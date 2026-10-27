@@ -29,14 +29,16 @@
     "docs/stabilization/reports/settings-guest-b472-native-20261027.json",
     "docs/stabilization/reports/settings472-first-failure-diagnosis-20261027.json",
     "docs/stabilization/reports/settings-driver-contract-repair-20261027.json",
-    "docs/stabilization/reports/settings-driver-fresh-source-review-20261027.json"
+    "docs/stabilization/reports/settings-driver-fresh-source-review-20261027.json",
+    "docs/stabilization/reports/settings-driver-repair-round2-20261027.json",
+    "docs/stabilization/reports/d299-b5-final-reverify-20261027.json"
   ],
   "sibling_census": [
     "Other allowLadder callers settings-d87-native-acceptance and tab-groups-member: unresolved class scope.",
     "Shared settings-probe-cleanup preserveFailureDuringCleanup has primitive/frozen original-error masking; fresh fixer extends canonical primitive instead of adding a duplicate.",
     "Mobile and desktop current Tools mode sheets; no-op Escape retained-open state."
   ],
-  "next_action": "Fresh round2 fixer owns approved context, authentic current portal fixtures/selection, canonical cleanup primitive and negative closure/error guards. Require meaningful in-memory old-behavior discriminators, normal guarded focused GREEN, fresh independent review, synchronized CI and original/adjacent hosted retests before fixed/retest/closure transitions. No source/permission/resource/fixture bypass.",
+  "next_action": "Require successful exact-source full CI/typecheck and eligible development artifact; normal guarded hosted original A member T20/T23/T26 and B guest Settings-controls retests on one frozen artifact, with real approved non-admin sign-in. Evaluate two remaining allowLadder sibling fixture contracts. Keep D299 in-fix/native unverified until gates pass; source-only guards do not close it. Owner pinned copy/current formal Store health remain independently unverified.",
   "transition_history": [
     {
       "at": "2026-10-27T07:59:58.931033+00:00",
@@ -49,6 +51,43 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "First draft rejected by fresh source review; all mutations restored/owned processes terminal, ownership transferred to fresh round2 fixer. Source edits remain uncommitted and unaccepted."
+    }
+  ],
+  "supporting_source": {
+    "status": "reviewed_guarded_source_ready_pending_full_CI_and_original_native_retest",
+    "source_hashes": {
+      "scripts/hosted-guest-acceptance.mjs": "3ae95438af04bc644609536867f45c5a190f116531571551a16173b04d8d5f65",
+      "tests/browser/settings-account-popover-native.mjs": "e17d7c2788b5c18ab3d886e6212a39b632a0b351d9ce19bd0fdbd53dd00f25f5",
+      "tests/browser/settings-panel-driver.mjs": "4a4c8693cf2f62ae385ad4d8f15eadc9bd51bc40045b2d7869638bb342acd03e",
+      "tests/browser/settings-guest-preference-batch.mjs": "ac3662da00dc9d727524c83f822ee58581c65716fd5e2ae0e0d8c2fd986d70a3",
+      "tests/browser/settings-local-controls-acceptance.mjs": "68f46349eebf7f181bfa375779dc2f9d645ea78b82c48e63f07a74f0bbd1e740",
+      "tests/browser/settings-guest-preference-batch.test.mjs": "a4ac22429d3d08134b4664c5949a7749d69d094fcacec10b7dbc870089cdd979",
+      "tests/browser/settings-native-auth-driver.test.mjs": "19261df81cb50da2cc58b476fe7fd4c13b45b5df01f9118d28a9bae736a982db",
+      "tests/browser/reviewer-chat-organization-boundary.test.mjs": "d4c9adcef7ff7135768e84297bb28b0f4d34ea01fa3fd2b3e99d3716c0817a92",
+      "tests/browser/settings-probe-cleanup.mjs": "2cd97ee94d299bb3bbeb464d746aa681c4dcf7fc7051a8a60860fe3c7e9ddb56",
+      "tests/browser/settings-probe-cleanup.test.mjs": "d86e8d629b73bea510726c107d9aaaec4d6535521d9a8ac9efcb5bc88af4f8a1",
+      "package.json": "784014d09c4bffcb443a9362b9057cf713c11b87b7609ed7f200b6d73eb9f870"
+    },
+    "final_guard": "settings-driver-round2-b5-gut-green-20261027",
+    "final_result": {
+      "tests": 1141,
+      "pass": 1130,
+      "fail": 0,
+      "skip": 11,
+      "actual_exit": 0,
+      "resource": "valid0/noninvalid"
+    },
+    "reviews": [
+      "docs/stabilization/reports/d299-b4-fresh-reverify-20261027.json",
+      "docs/stabilization/reports/d299-b5-final-reverify-20261027.json"
+    ],
+    "source_commit_note": "Exact source unit is the commit containing these11 hashes and reports, discoverable by git log on the listed paths. No self-referential SHA invented."
+  },
+  "repair_attempts": [
+    {
+      "at": "2026-10-27T08:56:54.697750+00:00",
+      "result": "source_review_pass_with_limits",
+      "details": "Permanent RED4 then registered canonical RED13 failures; source-derived unit portals/canonical cleanup/context-closure/strict case serialization repaired. Final1141/1130pass/11skip valid0; B4/B5/G1 fresh reviews accept source only. All6round2 guards terminal; no source mutation/UI/auth/hosted action remains."
     }
   ]
 }

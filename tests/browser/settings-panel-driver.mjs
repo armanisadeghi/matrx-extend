@@ -547,27 +547,53 @@ export async function toolsCatalogState(panel) {
   );
 }
 
-// Current package Tools doors: Run controls tab, or a Composer menu/sheet row.
-// Scope portals separately so the extension's outer Tools navigation never matches.
-export function chatToolsCandidatesExpression() {
+// SDK396: only Capabilities is a PopoverTrigger. Tools/Advanced use
+// PopoverAnchor rows without aria-controls; identify their unique rendered
+// picker by its actual source semantics, never a fabricated trigger link.
+export function chatToolsContextExpression() {
   return `(() => {
+    const visible = (node) => {
+      const rect = node.getBoundingClientRect(), style = getComputedStyle(node);
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
+        style.display !== 'none' && !node.closest('[inert], [hidden]');
+    };
+    const rows = (roots, names) => [...new Set(roots.flatMap((root) => [...root.querySelectorAll('button')]))]
+      .filter(visible).filter((button) => names.some((name) => button.textContent.trim() === name ||
+        [...button.querySelectorAll('span')].some((span) => span.children.length === 0 && span.textContent.trim() === name)));
     const chat = ${activeTabPanelExpression('Chat')};
-    const triggers = [...(chat?.querySelectorAll('button[title="Chat Options"], button:not([title])[data-matrx-title="Chat Options"]') ?? [])];
-    const content = triggers.length === 1 ? document.getElementById(triggers[0].getAttribute('aria-controls') ?? '') : null;
-    const sheets = [...document.querySelectorAll('[role="dialog"]')].filter((dialog) => {
-      const name = dialog.getAttribute('aria-label') ?? document.getElementById(dialog.getAttribute('aria-labelledby') ?? '')?.textContent.trim();
-      return ['Add to chat', 'Tools', 'Chat options'].includes(name);
-    });
-    const roots = [...new Set([content, ...sheets].filter(Boolean))];
-    return [...new Set(roots.flatMap((root) => [...root.querySelectorAll('button')]))]
-      .filter((button) => button.textContent.trim() === 'Tools' ||
-        [...button.querySelectorAll('span')].some((span) => span.children.length === 0 && span.textContent.trim() === 'Tools'))
-      .filter((button) => {
-        const rect = button.getBoundingClientRect(), style = getComputedStyle(button);
-        return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
-          style.display !== 'none' && !button.closest('[inert], [hidden]');
-      });
+    const capabilities = [...(chat?.querySelectorAll('button[aria-label]') ?? [])].filter(visible)
+      .filter((button) => /^(Capabilities)(:|$)/.test(button.getAttribute('aria-label') ?? ''));
+    const uniqueContext = capabilities.length === 1;
+    const linkedMenu = uniqueContext && capabilities[0].getAttribute('aria-expanded') === 'true'
+      ? document.getElementById(capabilities[0].getAttribute('aria-controls') ?? '') : null;
+    const menus = linkedMenu && visible(linkedMenu) ? [linkedMenu] : [];
+    const tools = menus.length === 1 ? rows(menus, ['Tools']) : [];
+    const composerPanels = chat ? [...document.querySelectorAll('[data-composer-panel]')].filter(visible) : [];
+    const pickers = tools.length === 1 && tools[0].getAttribute('aria-expanded') === 'true'
+      ? composerPanels.filter((root) => [...root.querySelectorAll('[data-picks-layout="menu"]')]
+        .some((menu) => menu.closest('[data-composer-panel]') === root &&
+          menu.querySelector('input[placeholder="Search tools to add"]'))) : [];
+    const details = pickers.length === 1 ? rows(pickers, ['Advanced', 'See all']) : [];
+    const isDeviceMode = (node) => node.matches('[role="switch"][aria-label="Ask before acting"]') &&
+      [...(node.closest('label')?.querySelectorAll('span') ?? [])]
+        .some((span) => span.textContent.trim() === 'All chats');
+    const inline = details.length === 1 && details[0].getAttribute('aria-expanded') === 'true'
+      ? composerPanels.filter((root) => !pickers.includes(root) &&
+        [...root.querySelectorAll('input[placeholder]')].some((field) => /^Search(?: \\d+)? tools$/.test(field.getAttribute('placeholder') ?? '')) &&
+        [...root.querySelectorAll('[role="switch"]')].some(isDeviceMode)) : [];
+    const windows = uniqueContext ? [...document.querySelectorAll('[data-window-panel][data-window-id="run-controls-window"], [role="dialog"]')]
+      .filter(visible).filter((root) => root.getAttribute('data-window-id') === 'run-controls-window' ||
+        ['Chat options', 'Chat Options'].includes(root.getAttribute('aria-label') ??
+          document.getElementById(root.getAttribute('aria-labelledby') ?? '')?.textContent.trim())) : [];
+    const toolWindows = windows.filter((root) => [...root.querySelectorAll('[role="tab"][aria-selected="true"]')]
+      .some((tab) => (tab.getAttribute('title') ?? tab.getAttribute('data-matrx-title') ?? tab.textContent.trim()) === 'Tools'));
+    const modeRoots = [...new Set([...inline, ...toolWindows])];
+    return { capabilities, menus, tools, pickers, details, windows, modeRoots, composerPanels };
   })()`;
+}
+
+export function chatToolsCandidatesExpression() {
+  return `(${chatToolsContextExpression()}).tools`;
 }
 
 export async function pressEscape(panel) {
@@ -621,7 +647,9 @@ export async function click(panel, kind, label, onPhase = undefined, beforeDispa
         };
       }
     }
+    else if (kind === 'chat-capabilities') candidates = (${chatToolsContextExpression()}).capabilities;
     else if (kind === 'chat-tools') candidates = label === 'Tools' ? ${chatToolsCandidatesExpression()} : [];
+    else if (kind === 'chat-tools-details') candidates = (${chatToolsContextExpression()}).details;
     else if (kind === 'account-avatar') candidates = [...document.querySelectorAll('button[aria-haspopup="dialog"]')]
       .filter((el) => el.getAttribute('title') === 'Account' ||
         (el.getAttribute('title') ?? '').includes('@'));

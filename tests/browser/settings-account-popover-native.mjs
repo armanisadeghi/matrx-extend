@@ -208,6 +208,11 @@ try {
   const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
   assert.equal(receipt.kind, 'local_dev_unpacked', 'account_popover_development_receipt_required');
   report.build = { kind: receipt.kind, sourceSha: receipt.sourceSha ?? null };
+  if (MODE === 'member')
+    assert.ok(
+      process.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
+      'account_popover_member_approved_organization_required',
+    );
   await runNativeSidepanelQa({
     extensionDir,
     expectedRelease: receipt,
@@ -222,6 +227,10 @@ try {
           repo: REPO,
           adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
           memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+          memberApprovedOrganizationFile: process.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
+          onAuthDiagnostic: (observation) => {
+            (report.authentication_diagnostics ??= []).push(observation);
+          },
           allowLadderOrganization: MODE === 'member',
         });
         assert.equal(auth.extension_signed_in, true, 'extension_signin_unverified');

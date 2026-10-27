@@ -1308,3 +1308,60 @@ test('admin identity parking projects closed navigation failure categories witho
     assert.equal(foreground, true);
   }
 });
+
+test('account popover member caller carries the approved fixture to authentication before role acceptance', async () => {
+  const source = await readFile(
+    new URL('./settings-account-popover-native.mjs', import.meta.url),
+    'utf8',
+  );
+  const start = source.indexOf("      if (MODE !== 'guest') {");
+  const end = source.indexOf('      const baseline =', start);
+  assert.ok(start > 0 && end > start);
+  const approvedFile = '/private/approved-organization.json';
+  for (const role of ['member', 'admin', 'guest']) {
+    const calls = [];
+    const report = {};
+    await runInNewContext(`(async () => { ${source.slice(start, end)} })()`, {
+      MODE: role,
+      page: {},
+      panel: {},
+      REPO: '/repo',
+      assert,
+      report,
+      process: {
+        env: {
+          MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE: approvedFile,
+          MATRX_REVIEWER_MAGIC_LINK_FILE: '/private/link.json',
+        },
+      },
+      signInSettings: async (options) => {
+        calls.push(options);
+        if (role === 'member') {
+          assert.equal(
+            options.memberApprovedOrganizationFile,
+            approvedFile,
+            'approved fixture context must reach signInSettings',
+          );
+          assert.equal(options.memberLinkFile, '/private/link.json');
+          options.onAuthDiagnostic({ stage: 'member_organization_selection', matched: true });
+        }
+        return { extension_signed_in: true, canonical_nonadmin_check: { returned_rows: 0 } };
+      },
+      activatePanel: async () => calls.push('activate'),
+    });
+    assert.equal(calls.length, role === 'guest' ? 0 : 2);
+    if (role === 'member') assert.equal(report.authentication_diagnostics[0].matched, true);
+  }
+  const preflightStart = source.indexOf("  if (MODE === 'member')");
+  const preflightEnd = source.indexOf('  await runNativeSidepanelQa({', preflightStart);
+  assert.ok(preflightStart > 0 && preflightEnd > preflightStart);
+  assert.throws(
+    () =>
+      runInNewContext(source.slice(preflightStart, preflightEnd), {
+        MODE: 'member',
+        assert,
+        process: { env: {} },
+      }),
+    /account_popover_member_approved_organization_required/,
+  );
+});

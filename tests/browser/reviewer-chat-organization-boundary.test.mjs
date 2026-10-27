@@ -77,12 +77,17 @@ test('hosted member paths remove the private organization on success and child l
       screenshotRoute: null,
       spawn: (_command, args, options) => {
         launched = true;
-        assert.equal(options.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE, path);
+        assert.equal(
+          options.env.MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE,
+          path,
+          'approved context must reach member child',
+        );
         assert.equal(options.env.MATRX_HOSTED_PROFILE_ORGANIZATION_JSON, undefined);
         const expectedDriver = {
           'member-chat': 'reviewer-chat-store-acceptance.mjs',
           'member-data': 'data-member-native-acceptance.mjs',
           'scrape-save-member': 'scrape-save-native-acceptance.mjs',
+          'settings-account-popover-member': 'settings-account-popover-native.mjs',
         }[acceptanceCase];
         assert.equal(args[0], join(directory, 'tests/browser', expectedDriver));
         const child = new EventEmitter();
@@ -111,10 +116,25 @@ test('hosted member paths remove the private organization on success and child l
     await assert.rejects(stat(memberLinkPath), { code: 'ENOENT' });
   };
   try {
-    for (const acceptanceCase of ['member-chat', 'member-data', 'scrape-save-member']) {
+    for (const acceptanceCase of [
+      'member-chat',
+      'member-data',
+      'scrape-save-member',
+      'settings-account-popover-member',
+    ]) {
       await requireCleanup(lifecycle, acceptanceCase, false);
       await requireCleanup(lifecycle, acceptanceCase, true);
     }
+    const oldContext = lifecycle
+      .replace(" ||\n    acceptanceCase === 'settings-account-popover-member'", '')
+      .replace("      'settings-account-popover-member',\n", '');
+    assert.notEqual(oldContext, lifecycle);
+    await assert.rejects(
+      requireCleanup(oldContext, 'settings-account-popover-member', false),
+      /approved context must reach member child/,
+    );
+    await assert.rejects(stat(path), { code: 'ENOENT' });
+    await assert.rejects(stat(memberLinkPath), { code: 'ENOENT' });
     const cleanup =
       '    if (memberOrganizationCreated) await unlink(approvedMemberOrganizationPath);';
     assert.equal(lifecycle.split(cleanup).length, 2);

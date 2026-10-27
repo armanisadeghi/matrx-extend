@@ -1,0 +1,35 @@
+✖ no-op Escape cannot certify closure for any retained composer surface (3.798792ms)
+✖ real preference callback restores Settings and its section after consumer failure, retaining the original error (2.947667ms)
+✖ falsey primary rejection remains rejected after successful cleanup (undefined) (0.374167ms)
+✖ dual failure retains falsey original cause and cleanup flag (undefined) (0.10475ms)
+✖ falsey primary rejection remains rejected after successful cleanup (null) (0.074583ms)
+✖ dual failure retains falsey original cause and cleanup flag (null) (0.0605ms)
+✖ falsey primary rejection remains rejected after successful cleanup (false) (0.369875ms)
+✖ dual failure retains falsey original cause and cleanup flag (false) (0.091083ms)
+✖ falsey primary rejection remains rejected after successful cleanup (0) (0.06975ms)
+✖ dual failure retains falsey original cause and cleanup flag (0) (0.05875ms)
+✖ falsey primary rejection remains rejected after successful cleanup () (0.063792ms)
+✖ dual failure retains falsey original cause and cleanup flag () (0.05525ms)
+✖ frozen primary reload diagnostics survive simultaneous cleanup failure without raw serialization (0.715583ms)
+ℹ tests 1126
+ℹ suites 0
+ℹ pass 1102
+ℹ fail 13
+ℹ cancelled 0
+ℹ skipped 11
+ℹ todo 0
+ℹ duration_ms 145152.811167
+✖ failing tests:
+✖ no-op Escape cannot certify closure for any retained composer surface (3.798792ms)
+✖ real preference callback restores Settings and its section after consumer failure, retaining the original error (2.947667ms)
+✖ falsey primary rejection remains rejected after successful cleanup (undefined) (0.374167ms)
+✖ dual failure retains falsey original cause and cleanup flag (undefined) (0.10475ms)
+✖ falsey primary rejection remains rejected after successful cleanup (null) (0.074583ms)
+✖ dual failure retains falsey original cause and cleanup flag (null) (0.0605ms)
+✖ falsey primary rejection remains rejected after successful cleanup (false) (0.369875ms)
+✖ dual failure retains falsey original cause and cleanup flag (false) (0.091083ms)
+✖ falsey primary rejection remains rejected after successful cleanup (0) (0.06975ms)
+✖ dual failure retains falsey original cause and cleanup flag (0) (0.05875ms)
+✖ falsey primary rejection remains rejected after successful cleanup () (0.063792ms)
+✖ dual failure retains falsey original cause and cleanup flag () (0.05525ms)
+✖ frozen primary reload diagnostics survive simultaneous cleanup failure without raw serialization (0.715583ms)

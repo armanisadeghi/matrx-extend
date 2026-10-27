@@ -567,7 +567,8 @@ async function run(prepared, artifactMode) {
   const needsApprovedMemberOrganization =
     acceptanceCase === 'member-chat' ||
     acceptanceCase === 'member-data' ||
-    acceptanceCase === 'scrape-save-member';
+    acceptanceCase === 'scrape-save-member' ||
+    acceptanceCase === 'settings-account-popover-member';
   let memberOrganizationCreated = false;
   const childEnv = {
     ...process.env,
@@ -603,7 +604,12 @@ async function run(prepared, artifactMode) {
       : {}),
     MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_RELEASE_RECEIPT: relocatedReceipt,
-    ...(['member-chat', 'member-data', 'scrape-save-member'].includes(acceptanceCase)
+    ...([
+      'member-chat',
+      'member-data',
+      'scrape-save-member',
+      'settings-account-popover-member',
+    ].includes(acceptanceCase)
       ? { MATRX_REVIEWER_APPROVED_ORGANIZATION_FILE: approvedMemberOrganizationPath }
       : {}),
     ...(tabGroupsRoute?.env ?? {}),

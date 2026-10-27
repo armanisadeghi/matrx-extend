@@ -22,6 +22,7 @@ import { recordGuestAdminAbsence } from './settings-guest-absence.mjs';
 import {
   GUEST_PREFERENCES,
   observeGuestNewChatDefault,
+  withSettingsRestoration,
   observeGuestPreference,
   preferenceBaseline,
   preferenceMatches,
@@ -488,6 +489,7 @@ async function runCase(c, fn) {
   } catch (error) {
     c.error = String(error?.message ?? error);
     if (error?.reacquireDiagnostic) c.reacquireDiagnostic = error.reacquireDiagnostic;
+    if (error?.safeCleanupFailed === true) c.cleanupAlsoFailed = true;
     criterion(c, 'runner completed the case', 'fail', c.error);
   }
   c.status = c.criteria.some((x) => x.status === 'fail')
@@ -584,20 +586,26 @@ try {
             },
             async ({ value, label }) => {
               if (preference.caseId !== 'T10') return;
-              const chat = await observeGuestNewChatDefault(panel, value, label);
-              c.steps.push({
-                phase: 'consumer',
-                action: 'Start a new chat and observe its inherited default mode',
-                observation: chat,
-              });
-              criterion(
-                c,
-                `new chat inherits ${label}`,
-                chat.modeLabel === label && chat.permissionMode === value ? 'pass' : 'fail',
-                chat,
+              await withSettingsRestoration(
+                async () => {
+                  const chat = await observeGuestNewChatDefault(panel, value, label);
+                  c.steps.push({
+                    phase: 'consumer',
+                    action: 'Start a new chat and observe its inherited default mode',
+                    observation: chat,
+                  });
+                  criterion(
+                    c,
+                    `new chat inherits ${label}`,
+                    chat.modeLabel === label && chat.permissionMode === value ? 'pass' : 'fail',
+                    chat,
+                  );
+                },
+                async () => {
+                  await settings(panel);
+                  await openSection(panel, preference.section);
+                },
               );
-              await settings(panel);
-              await openSection(panel, preference.section);
             },
             undefined,
             (baseline) => {

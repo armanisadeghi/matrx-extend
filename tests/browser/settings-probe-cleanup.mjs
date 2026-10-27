@@ -71,33 +71,55 @@ function reloadBoundary(value) {
   };
 }
 
+class SettingsCleanupFailure extends Error {
+  constructor(primary) {
+    super('settings_probe_cleanup_failed', { cause: primary });
+    this.safeCleanupFailed = true;
+  }
+}
+
 export async function preserveFailureDuringCleanup(operation, cleanup) {
-  let value;
-  let primaryError;
+  let value, failure, cleanupFailure;
   try {
     value = await operation();
   } catch (error) {
-    primaryError = error;
+    failure = { error };
   }
-
-  let cleanupFailed = false;
   try {
     await cleanup();
-  } catch {
-    cleanupFailed = true;
+  } catch (error) {
+    cleanupFailure = { error };
   }
-
-  if (primaryError) {
-    if (cleanupFailed && typeof primaryError === 'object') {
-      primaryError.safeCleanupFailed = true;
+  if (failure) {
+    if (!cleanupFailure) throw failure.error;
+    // Preserve existing Error identity when it can carry the safe flag. Frozen
+    // objects and primitive rejections retain their exact original as cause.
+    let marked = false;
+    if (
+      failure.error !== null &&
+      (typeof failure.error === 'object' || typeof failure.error === 'function')
+    ) {
+      try {
+        Object.defineProperty(failure.error, 'safeCleanupFailed', {
+          value: true,
+          configurable: true,
+          writable: true,
+        });
+        marked = true;
+      } catch {
+        // An immutable rejection still needs an explicit cleanup-failure signal.
+      }
     }
-    throw primaryError;
+    if (marked) throw failure.error;
+    throw new SettingsCleanupFailure(failure.error);
   }
-  if (cleanupFailed) throw new Error('settings_probe_cleanup_failed');
+  if (cleanupFailure) throw new SettingsCleanupFailure(cleanupFailure.error);
   return value;
 }
 
 export function serializeGuestReloadFailure(error) {
+  const cleanupAlsoFailed = error?.safeCleanupFailed === true;
+  if (error instanceof SettingsCleanupFailure) error = error.cause;
   if (error?.safeCategory !== 'full_extension_preference_or_restore_failed') return null;
   const stage = (value) =>
     value === 'not_failed' || GUEST_EXTENSION_RECHECK_FAILURE_STAGES.includes(value)
@@ -118,6 +140,6 @@ export function serializeGuestReloadFailure(error) {
       : 'unavailable',
     firstChoiceReloadBoundary: reloadBoundary(error.safeFirstChoiceReloadBoundary),
     restorationReloadBoundary: reloadBoundary(error.safeRestorationReloadBoundary),
-    cleanupAlsoFailed: error.safeCleanupFailed === true,
+    cleanupAlsoFailed: cleanupAlsoFailed || error.safeCleanupFailed === true,
   };
 }

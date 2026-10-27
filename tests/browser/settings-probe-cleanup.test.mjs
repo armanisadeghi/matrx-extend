@@ -136,3 +136,105 @@ test('reload failure receipt replaces unrecognized diagnostics with safe default
     cleanupAlsoFailed: false,
   });
 });
+
+for (const primary of [undefined, null, false, 0, '']) {
+  test(`falsey primary rejection remains rejected after successful cleanup (${String(primary)})`, async () => {
+    let outcome;
+    try {
+      outcome = {
+        returned: await preserveFailureDuringCleanup(
+          async () => {
+            throw primary;
+          },
+          async () => {},
+        ),
+      };
+    } catch (error) {
+      outcome = { error };
+    }
+    assert.equal(
+      Object.hasOwn(outcome, 'error'),
+      true,
+      'cleanup must not swallow a falsey rejection',
+    );
+    assert.equal(outcome.error, primary);
+  });
+  test(`dual failure retains falsey original cause and cleanup flag (${String(primary)})`, async () => {
+    await assert.rejects(
+      preserveFailureDuringCleanup(
+        async () => {
+          throw primary;
+        },
+        async () => {
+          throw new Error('cleanup');
+        },
+      ),
+      (error) =>
+        error instanceof Error &&
+        Object.is(error.cause, primary) &&
+        error.safeCleanupFailed === true &&
+        error.message === 'settings_probe_cleanup_failed',
+    );
+  });
+}
+
+test('frozen primary reload diagnostics survive simultaneous cleanup failure without raw serialization', async () => {
+  const primary = Object.freeze(
+    Object.assign(new Error('private-primary-value'), {
+      safeCategory: 'full_extension_preference_or_restore_failed',
+      safeFirstChoiceFailureStage: 'choice_extension_reload',
+      privatePayload: 'private-auth-material',
+    }),
+  );
+  let caught;
+  try {
+    await preserveFailureDuringCleanup(
+      async () => {
+        throw primary;
+      },
+      async () => {
+        throw new Error('private-cleanup-value');
+      },
+    );
+  } catch (error) {
+    caught = error;
+  }
+  assert.equal(caught?.cause, primary, 'immutable original is retained as the exact cause');
+  assert.equal(caught?.safeCleanupFailed, true);
+  const receipt = serializeGuestReloadFailure(caught);
+  assert.equal(receipt?.firstChoiceFailureStage, 'choice_extension_reload');
+  assert.equal(receipt?.cleanupAlsoFailed, true);
+  assert.equal(JSON.stringify(receipt).includes('private-'), false);
+});
+
+test('canonical cleanup forwards results only after executing operation then cleanup, rejecting bypasses', async () => {
+  const verify = async (candidate) => {
+    for (const value of ['settings-snapshot-ready', 'reload-check-ready']) {
+      const events = [];
+      const result = await candidate(
+        async () => {
+          events.push('operation');
+          return value;
+        },
+        async () => {
+          events.push('cleanup');
+        },
+      );
+      assert.deepEqual(events, ['operation', 'cleanup']);
+      assert.equal(result, value);
+    }
+  };
+  await verify(preserveFailureDuringCleanup);
+  await assert.rejects(
+    verify(async () => 'settings-snapshot-ready'),
+    assert.AssertionError,
+  );
+  await assert.rejects(
+    verify(async (operation) => operation()),
+    assert.AssertionError,
+  );
+  await assert.rejects(
+    verify(async (_operation, cleanup) => cleanup()),
+    assert.AssertionError,
+  );
+});
