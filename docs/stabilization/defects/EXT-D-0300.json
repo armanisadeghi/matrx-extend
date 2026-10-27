@@ -1,0 +1,41 @@
+{
+  "id": "EXT-D-0300",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T10"],
+  "title": "Settings acceptance loses all case progress when interrupted before final report",
+  "surface": "supporting native acceptance observation; no product or CPU-causality finding",
+  "auth_mode": "guest controls; source census includes shared theme runner",
+  "severity": "S3",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/settings_checkpoint_implementation",
+  "source_sha": "944d1f612f52ebe89ed57cec8733bfdc449a69c1",
+  "preconditions": [
+    "Original resource-invalid SettingsB40542388953 and official artifact12751074426; no thresholds/timeout changes."
+  ],
+  "reproduction": [
+    "Original resource journal requests ordinary SIGTERM after panel context ready; artifact contains three resource journals and two startup PNGs but no native case report.",
+    "Current controls runner stores native/case progress only in memory and writes OUTPUT only in outer finally; harness onStage is default no-op.",
+    "A guarded real-caller SIGTERM regression must reproduce the persistence gap before repair."
+  ],
+  "expected": "Last completed pre-operation native/case boundary remains atomic and explicitly nonterminal/unverified after interruption; only an eligible successful final producer may publish final verdicts.",
+  "actual": "Original individual case attempts are unknown. Source establishes final-only persistence; it does not establish which case started or application CPU cause.",
+  "cause": "Final-only diagnostic publication depends on orderly completion, same lifetime class as D294.",
+  "sibling_census": [
+    "Settings theme uses same controls runner; independent D87/desktop/reset drivers retain final-only patterns as bounded follow-on scope, not falsely fixed by controls repair."
+  ],
+  "evidence": [
+    "docs/stabilization/reports/settings-progress-diagnosis-20261027.json",
+    "docs/stabilization/reports/settings-checkpoint-plan-attack-20261027.json",
+    "docs/stabilization/reports/settings280-resource-diagnosis-20261027.json"
+  ],
+  "next_action": "Implement same-OUTPUT atomic progress/final writer with existing D294 primitive reuse and native/case boundaries. Incorporate all three fresh plan-attack requirements: sticky publication failure escapes case catch, all checkpoints nonterminal/unverified including case statuses, real catch/finally cleanup/failure regression. Guarded RED\u2192GREEN, D294 compatibility, compile/lint/fresh review; native/resource/product acceptance stays unverified.",
+  "transition_history": [
+    {
+      "at": "2026-10-27T19:40:18.049879+00:00",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "Bounded source diagnosis and independent plan attack; owner accepts required changes. No closure or product credit."
+    }
+  ]
+}
