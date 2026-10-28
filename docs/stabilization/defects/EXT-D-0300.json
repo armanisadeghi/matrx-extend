@@ -34,13 +34,20 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Afteralllocaljournalscomplete integrate/pushrecords, obtain authorizedexact-currentmainCItestartifact through existingstandardunpaidCI path ifdocs-onlyCIhasnoartifact; no fabricatedreleasecontext. Rechecksource/spend/capacity andnormalSettingsBhelper only. No directhostedfallback to source refusal.",
+  "next_action": "Reproduce fresh absent Settings store to first real Theme full-state persist using actual shared persistence and harness baseline/comparator. Independently review fixture-lifecycle remedy before changing comparison or fixture. Preserve immutable original and categorical diagnostics.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
       "from": "open",
       "to": "in-fix",
       "reason": "Bounded source diagnosis and independent plan attack; owner accepts required changes. No closure or product credit."
+    },
+    {
+      "at": "2026-10-28T13:00:00Z",
+      "from": "in-fix",
+      "to": "in-fix",
+      "reason": "Exact5f native finite diagnostics localize compound reopen failure to mode serialization absent-to-present Settings footprint; cause/repair/full acceptance still open. No product closure.",
+      "evidence": "docs/stabilization/reports/source5f-native-20261028.json"
     }
   ],
   "bounded_source_fix_files": {
@@ -223,9 +230,9 @@
     }
   },
   "reload_reopen_diagnostic": {
-    "state": "EXACT859_SOURCE_CI_GREEN_NATIVE_PENDING",
+    "state": "EXACT5F_NATIVE_COMPARISON_MISMATCH_LOCALIZED",
     "owner_lane": "/root",
-    "native_cause": "UNKNOWN; choice_settings_reopen callback includes actual open and mode section/read/compare",
+    "native_cause": "Actual failing suboperation mode_compare; serialization differs because Settings footprint absent becomes valid/present/field-present. Exact causal writer and appropriate fixture remedy remain unproven.",
     "diagnosis": "docs/stabilization/reports/settings-reopen-diagnosis-20261028.json",
     "plan_review": "docs/stabilization/reports/reopen-plan-peer-20261028.json",
     "hypothesis": "Untested native hypothesis: representative real Theme full-state persistence changes shared frozen mode footprint; existing fixture misses shared storage. No appcause proof.",
@@ -241,14 +248,26 @@
       "tests/browser/settings-guest-extension-rechecks.mjs": "a0a2bd1beb4020f83c9977ebbea8a9b77d30d3cc072f03364160c512ace853e2",
       "tests/browser/settings-full-extension-rechecks.test.mjs": "fc09a55d9e6e10a98342037d1a351af53701c8b01b7b3138bcc8098a0e3531f9"
     },
-    "verification": "Exact859 fullCI40647207940/focused40647207929 succeeded; focused1280tests1279pass1skip0fail, actualcompile/lint. Prior14b/c060lint failures supersededbycontributor859import-sort fix, no permanentblock.",
+    "verification": "Exact5f authorized CI40688525855 succeeded; artifact12817405280. Native B40690220452 terminal failure, all3 journals NONINVALID; guest childfailed1. T04 choice/first restoration/recovery and later T10 initial baseline fail the same immutable mode serialization comparison. Visible/count/selection/baseline/validity predicates true. No navigation/pointer cause inferred.",
     "handoff": "docs/stabilization/reports/reopen-diagnostic-source-preservation-20261028.json",
-    "latest_native_admission": {
+    "native_run": 40690220452,
+    "native_source_sha": "5f356e968df6cc71d7af92886d453562fbd8403c",
+    "native_report": "docs/stabilization/reports/source5f-native-20261028.json",
+    "native_peer": "docs/stabilization/reports/settings5f-peer-20261028.json",
+    "next_action": "Reproduce fresh absent Settings store to first real Theme full-state persist using actual shared persistence and harness baseline/comparator. Independently review fixture-lifecycle remedy before changing comparison or fixture. Preserve immutable original and categorical diagnostics.",
+    "prior_native_admission": {
       "state": "REFUSED_NO_JOB",
       "source": "8592e61af7aa2796b98781431a8eaf37673126e3",
       "code": "HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED",
       "cause": "Parent started daily localreleaselease before native-first ordering; untrackedownedpendingjournal. No sourceguardbypass/removal/alternate route/retry.",
       "report": "docs/stabilization/reports/settings859-admission-20261028.json"
+    },
+    "latest_native_admission": {
+      "state": "ADMITTED_TERMINAL_CHILD_FAILURE",
+      "source_sha": "5f356e968df6cc71d7af92886d453562fbd8403c",
+      "run_id": 40690220452,
+      "report": "docs/stabilization/reports/source5f-native-20261028.json",
+      "resource_invalid": false
     }
   }
 }

@@ -27951,11 +27951,11 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 40627509549,
-              "source_sha": "906a8ad56eb20be3d2dcd40b3e82512879f32e0f",
+              "run_id": 40691705584,
+              "source_sha": "5f356e968df6cc71d7af92886d453562fbd8403c",
               "build_version": "0.2.630",
-              "development_ci_run_id": 40625170785,
-              "development_artifact_id": 12789765843,
+              "development_ci_run_id": 40688525855,
+              "development_artifact_id": 12817405280,
               "resource_valid": true,
               "full_case_pass": false,
               "passed_subtargets": [
@@ -27968,15 +27968,14 @@
                 "fullreload",
                 "populatedSEO/Schema/video",
                 "member/admin/otherwidths/Store",
-                "backendSHA/actualprofilepath/currentownerloaded",
-                "latesthead afterfrozen906"
+                "backendSHA/actualhostedprofilepath",
+                "latesthead afterfrozen5f"
               ],
               "evidence": [
-                "docs/stabilization/reports/seo906-native-20261028.json",
-                "docs/stabilization/reports/seo906-native-peer-20261028.json",
-                "docs/stabilization/reports/seo906-image-provenance-20261028.json"
+                "docs/stabilization/reports/seo5f-native-20261028.json",
+                "docs/stabilization/reports/seo5f-peer-20261028.json"
               ],
-              "detail": "OriginalZIP8members/18actorrefs verified; normalverify-scrape validtrue,all3resourcefinalsvalid0 with3CPUpending1recovery. ActualBrowser.getVersion141.0.7390.37. Role freshguestroute+stablecontrols, notindependentSettings/email/tokencensus. Remoteprofiledeletionunknown. Boundedold3efsubtargets revalidated, nofullT08/defectclosure/release."
+              "detail": "Original officialZIP/all8members and normalverify-scrape independently authenticated. All3 resourcefinalsvalid0;3CPU_PENDING/1RECOVERED. Actual narrow360px Browser141.0.7390.37 on owned title-onlylocalhost guest fixture. Current5f no-signal/empty subset only; nofullT08/defectclosure/release. Remoteprofiledeletionunknown."
             },
             "member": {
               "status": "partial",
@@ -28727,6 +28726,37 @@
                 "docs/stabilization/reports/scrape568-empty-fresh-peer-20261020.json"
               ],
               "verified_at": "2026-10-20T05:09:48.044065+00:00"
+            }
+          ],
+          "prior_bounded_guest_observations": [
+            {
+              "status": "partial",
+              "run_id": 40627509549,
+              "source_sha": "906a8ad56eb20be3d2dcd40b3e82512879f32e0f",
+              "build_version": "0.2.630",
+              "development_ci_run_id": 40625170785,
+              "development_artifact_id": 12789765843,
+              "resource_valid": true,
+              "full_case_pass": false,
+              "passed_subtargets": [
+                "warm guest no-signal SEO title/description/groups",
+                "warm empty Schema metadata/optional groups",
+                "actual clipboard capture identity/full-payload digest unchanged aftereachpane"
+              ],
+              "unverified": [
+                "remaining4panes currentbuild",
+                "fullreload",
+                "populatedSEO/Schema/video",
+                "member/admin/otherwidths/Store",
+                "backendSHA/actualprofilepath/currentownerloaded",
+                "latesthead afterfrozen906"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/seo906-native-20261028.json",
+                "docs/stabilization/reports/seo906-native-peer-20261028.json",
+                "docs/stabilization/reports/seo906-image-provenance-20261028.json"
+              ],
+              "detail": "OriginalZIP8members/18actorrefs verified; normalverify-scrape validtrue,all3resourcefinalsvalid0 with3CPUpending1recovery. ActualBrowser.getVersion141.0.7390.37. Role freshguestroute+stablecontrols, notindependentSettings/email/tokencensus. Remoteprofiledeletionunknown. Boundedold3efsubtargets revalidated, nofullT08/defectclosure/release."
             }
           ]
         },

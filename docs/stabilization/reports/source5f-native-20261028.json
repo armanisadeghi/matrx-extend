@@ -1,0 +1,1082 @@
+{
+  "source_sha": "5f356e968df6cc71d7af92886d453562fbd8403c",
+  "ci_run": 40688525855,
+  "development_artifact_id": 12817405280,
+  "development_artifact_digest": "sha256:f552f151397e3507169c8abc80a98864de4b1c9101a957e3d038dc37dd5de70a",
+  "native_run": 40690220452,
+  "native_conclusion": "failure",
+  "artifact_id": 12817412175,
+  "artifact_digest": "sha256:09106561dcc454ba614645630edefaa12df34a763686d0a74015a9baf59cebbd",
+  "originals": {
+    "extracted/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json": "a718dcb0f6817e1b2702d4728589586fd708f8ea6e2095c2cbe1b525323a750c",
+    "extracted/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-QfWPRS/native-side-panel.png": "86426d0be4776150d8df5a88f6c751b20c8b26f7f31b350bcdda6849f0f5bf6c",
+    "extracted/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-QfWPRS/normal-target-after-open.png": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c",
+    "extracted/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40690220452-1.jsonl": "3c6aa082f3c984d2f86181a4cec3d308c11080d8e8683d22402dcbe43e9cb99d",
+    "extracted/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40690220452-1.jsonl": "2f11d822d897954f815a4743409df9918c9d4f6dcbceb3ce184fd92f39ac5bb8",
+    "extracted/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40690220452-1.jsonl": "e748e4ae8794f10a861019f8efd42ee4c2b6bd81e278d587c982744a3192b88b"
+  },
+  "job_log_sha256": "66c8db094588012f2c511951797fa9d8f098df282f8802eb48d397cd652553fb",
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "build": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "kind": "local_dev_unpacked",
+    "publishState": "not_published",
+    "version": "0.2.630",
+    "treeSha256": "cae2f75b5b2abf23ef2ee9fc0186673e8b292e6f5c2688d85f382549c70d012a",
+    "verified": true
+  },
+  "resource_journals": [
+    {
+      "file": "hosted-package-40690220452-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T12:46:25.811Z",
+        "runId": "hosted-package-40690220452-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "file": "hosted-browser-40690220452-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T12:48:21.019Z",
+        "runId": "hosted-browser-40690220452-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "file": "hosted-guest-40690220452-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T12:53:41.019Z",
+        "runId": "hosted-guest-40690220452-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  ],
+  "management_reload": {
+    "managementReloadClicked": true,
+    "oldTargetsRetired": true,
+    "workerReplaced": true,
+    "panelReplaced": true
+  },
+  "case_outcomes": [
+    {
+      "id": "EXT-F-1003-T04",
+      "status": "fail",
+      "steps": 12
+    },
+    {
+      "id": "EXT-F-1003-T10",
+      "status": "fail",
+      "steps": 4
+    },
+    {
+      "id": "EXT-F-1003-T13",
+      "status": "pass",
+      "steps": 6
+    },
+    {
+      "id": "EXT-F-1003-T16",
+      "status": "unverified",
+      "steps": 4
+    },
+    {
+      "id": "EXT-F-1003-T19",
+      "status": "unverified",
+      "steps": 4
+    },
+    {
+      "id": "EXT-F-1003-T22",
+      "status": "pass",
+      "steps": 2
+    },
+    {
+      "id": "EXT-F-1003-T28",
+      "status": "fail",
+      "steps": 44
+    },
+    {
+      "id": "EXT-F-1003-T31",
+      "status": "unverified",
+      "steps": 4
+    },
+    {
+      "id": "EXT-F-1003-T34",
+      "status": "unverified",
+      "steps": 4
+    },
+    {
+      "id": "EXT-F-1003-T37",
+      "status": "pass",
+      "steps": 4
+    },
+    {
+      "id": "EXT-F-1003-T40",
+      "status": "fail",
+      "steps": 6
+    },
+    {
+      "id": "EXT-F-1003-T46",
+      "status": "pass",
+      "steps": 11
+    },
+    {
+      "id": "EXT-F-1003-T63",
+      "status": "unverified",
+      "steps": 2
+    },
+    {
+      "id": "EXT-F-1003-T64",
+      "status": "pass",
+      "steps": 5
+    },
+    {
+      "id": "EXT-F-1003-T67",
+      "status": "fail",
+      "steps": 5
+    },
+    {
+      "id": "EXT-F-1003-T70",
+      "status": "unverified",
+      "steps": 3
+    },
+    {
+      "id": "EXT-F-1003-T73",
+      "status": "pass",
+      "steps": 2
+    },
+    {
+      "id": "EXT-F-1003-T76",
+      "status": "pass",
+      "steps": 2
+    },
+    {
+      "id": "EXT-F-1003-T92",
+      "status": "pass",
+      "steps": 2
+    }
+  ],
+  "T04_criteria": [
+    [
+      "Dark changes UI, persisted preference, and applied appearance",
+      "pass"
+    ],
+    [
+      "Dark survives panel reload",
+      "pass"
+    ],
+    [
+      "Light changes UI, persisted preference, and applied appearance",
+      "pass"
+    ],
+    [
+      "Light survives panel reload",
+      "pass"
+    ],
+    [
+      "System changes UI, persisted preference, and applied appearance",
+      "pass"
+    ],
+    [
+      "System survives panel reload",
+      "pass"
+    ],
+    [
+      "Original theme baseline restored after panel reload",
+      "pass"
+    ],
+    [
+      "before first extension reload: original Theme preference restored",
+      "pass"
+    ],
+    [
+      "full extension reload: pre-run Theme matches saved baseline",
+      "pass"
+    ],
+    [
+      "full extension reload: initial: original preference matches",
+      "pass"
+    ],
+    [
+      "full extension reload: Dark changes visible and stored preference",
+      "pass"
+    ],
+    [
+      "full extension reload: Dark extension worker and panel were replaced",
+      "pass"
+    ],
+    [
+      "full extension reload: full extension reload recheck completed",
+      "fail"
+    ],
+    [
+      "full extension reload recheck required",
+      "fail"
+    ]
+  ],
+  "T10_criteria": [
+    [
+      "Guest Ask choice is refused and Act restored with sign-in guidance",
+      "pass"
+    ],
+    [
+      "Guest mode remains Act after panel reload",
+      "pass"
+    ],
+    [
+      "new chat inherits Act without asking",
+      "pass"
+    ],
+    [
+      "full extension reload: full extension reload recheck completed",
+      "fail"
+    ],
+    [
+      "full extension reload recheck required",
+      "fail"
+    ]
+  ],
+  "limits": "Guest isolated Chrome for Testing, unpacked dev 0.2.630, not Store installation; exact browser version/backend SHA and remote profile deletion not established. No full-case credit inferred from raw pass. Fixture final backup/disposal receipt not established. Cause of serialization discrepancy unknown; no CPU cause inferred.",
+  "schema": 1,
+  "status": "NATIVE_DIAGNOSTIC_NO_CLOSURE",
+  "observed_at": "2026-10-28T12:54:43.847636+00:00",
+  "raw_case_counts": {
+    "pass": 8,
+    "fail": 5,
+    "unverified": 6
+  },
+  "diagnostic": {
+    "T04_full_reload": {
+      "status": "fail",
+      "criteria": [
+        {
+          "name": "pre-run Theme matches saved baseline",
+          "status": "pass",
+          "evidence": {
+            "before": {
+              "activeSettings": true,
+              "count": 1,
+              "selected": "System",
+              "stored": null,
+              "storedPresent": false,
+              "storagePresent": false,
+              "saveRefusal": false,
+              "darkClass": false,
+              "systemDark": false,
+              "renderedBackgroundMatches": true,
+              "renderedBackgrounds": {
+                "token": "rgb(252, 252, 253)",
+                "body": "rgb(252, 252, 253)",
+                "root": null,
+                "activePanel": "rgba(0, 0, 0, 0)"
+              }
+            },
+            "expectedValue": "system",
+            "expectedLabel": "System",
+            "expectedStoredPresent": false,
+            "expectedStoragePresent": false
+          }
+        },
+        {
+          "name": "initial: original preference matches",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "saveRefusal": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(252, 252, 253)",
+              "body": "rgb(252, 252, 253)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "name": "Dark changes visible and stored preference",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Dark",
+            "stored": "dark",
+            "storedPresent": true,
+            "storagePresent": true,
+            "saveRefusal": false,
+            "darkClass": true,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(31, 31, 33)",
+              "body": "rgb(31, 31, 33)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "name": "Dark extension worker and panel were replaced",
+          "status": "pass",
+          "evidence": {
+            "managementReloadClicked": true,
+            "oldTargetsRetired": true,
+            "workerReplaced": true,
+            "panelReplaced": true,
+            "replacementTargetChanged": true,
+            "lifecyclePredicatePassed": true
+          }
+        },
+        {
+          "name": "full extension reload recheck completed",
+          "status": "fail",
+          "evidence": {
+            "category": "full_extension_preference_or_restore_failed",
+            "baselineRestoration": null,
+            "firstChoiceReopen": {
+              "operation": "mode_compare",
+              "openStep": "guest_wait_started",
+              "failureCode": "mode_baseline_mismatch",
+              "modeComparison": {
+                "stage": "full_recheck",
+                "predicates": {
+                  "visible": true,
+                  "count": true,
+                  "selection": true,
+                  "baselineValue": true,
+                  "observedValid": true,
+                  "baselineValid": true
+                },
+                "firstFalse": "serialization",
+                "serialization": "unequal",
+                "residual": false,
+                "stores": [
+                  {
+                    "store": "settings",
+                    "identity": "valid",
+                    "observed": {
+                      "status": "valid",
+                      "storage": true,
+                      "field": true
+                    },
+                    "baseline": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "storagePresent": "unequal",
+                    "fieldPresent": "unequal",
+                    "parseStatus": "unequal",
+                    "mode": "unequal",
+                    "fingerprint": "equal",
+                    "count": "equal"
+                  },
+                  {
+                    "store": "chat",
+                    "identity": "valid",
+                    "observed": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "baseline": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "storagePresent": "equal",
+                    "fieldPresent": "equal",
+                    "parseStatus": "equal",
+                    "mode": "equal",
+                    "fingerprint": "equal",
+                    "count": "equal"
+                  },
+                  {
+                    "store": "pilot",
+                    "identity": "valid",
+                    "observed": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "baseline": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "storagePresent": "equal",
+                    "fieldPresent": "equal",
+                    "parseStatus": "equal",
+                    "mode": "equal",
+                    "fingerprint": "equal",
+                    "count": "equal"
+                  }
+                ]
+              }
+            },
+            "firstRestorationReopen": {
+              "operation": "mode_compare",
+              "openStep": "guest_wait_started",
+              "failureCode": "mode_baseline_mismatch",
+              "modeComparison": {
+                "stage": "full_recheck",
+                "predicates": {
+                  "visible": true,
+                  "count": true,
+                  "selection": true,
+                  "baselineValue": true,
+                  "observedValid": true,
+                  "baselineValid": true
+                },
+                "firstFalse": "serialization",
+                "serialization": "unequal",
+                "residual": false,
+                "stores": [
+                  {
+                    "store": "settings",
+                    "identity": "valid",
+                    "observed": {
+                      "status": "valid",
+                      "storage": true,
+                      "field": true
+                    },
+                    "baseline": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "storagePresent": "unequal",
+                    "fieldPresent": "unequal",
+                    "parseStatus": "unequal",
+                    "mode": "unequal",
+                    "fingerprint": "equal",
+                    "count": "equal"
+                  },
+                  {
+                    "store": "chat",
+                    "identity": "valid",
+                    "observed": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "baseline": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "storagePresent": "equal",
+                    "fieldPresent": "equal",
+                    "parseStatus": "equal",
+                    "mode": "equal",
+                    "fingerprint": "equal",
+                    "count": "equal"
+                  },
+                  {
+                    "store": "pilot",
+                    "identity": "valid",
+                    "observed": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "baseline": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "storagePresent": "equal",
+                    "fieldPresent": "equal",
+                    "parseStatus": "equal",
+                    "mode": "equal",
+                    "fingerprint": "equal",
+                    "count": "equal"
+                  }
+                ]
+              }
+            },
+            "recoveryReopen": {
+              "operation": "mode_compare",
+              "openStep": "guest_wait_started",
+              "failureCode": "mode_baseline_mismatch",
+              "modeComparison": {
+                "stage": "full_recheck",
+                "predicates": {
+                  "visible": true,
+                  "count": true,
+                  "selection": true,
+                  "baselineValue": true,
+                  "observedValid": true,
+                  "baselineValid": true
+                },
+                "firstFalse": "serialization",
+                "serialization": "unequal",
+                "residual": false,
+                "stores": [
+                  {
+                    "store": "settings",
+                    "identity": "valid",
+                    "observed": {
+                      "status": "valid",
+                      "storage": true,
+                      "field": true
+                    },
+                    "baseline": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "storagePresent": "unequal",
+                    "fieldPresent": "unequal",
+                    "parseStatus": "unequal",
+                    "mode": "unequal",
+                    "fingerprint": "equal",
+                    "count": "equal"
+                  },
+                  {
+                    "store": "chat",
+                    "identity": "valid",
+                    "observed": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "baseline": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "storagePresent": "equal",
+                    "fieldPresent": "equal",
+                    "parseStatus": "equal",
+                    "mode": "equal",
+                    "fingerprint": "equal",
+                    "count": "equal"
+                  },
+                  {
+                    "store": "pilot",
+                    "identity": "valid",
+                    "observed": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "baseline": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "storagePresent": "equal",
+                    "fieldPresent": "equal",
+                    "parseStatus": "equal",
+                    "mode": "equal",
+                    "fingerprint": "equal",
+                    "count": "equal"
+                  }
+                ]
+              }
+            },
+            "firstRestorationReopenStage": "restore_settings",
+            "firstChoiceFailureStage": "choice_settings_reopen",
+            "restorationFailureStage": "restore_recovered_settings",
+            "firstChoiceTransportClass": "none",
+            "restorationTransportClass": "none",
+            "firstChoicePostReplacementStages": [
+              {
+                "stage": "choice_detach_previous_panel",
+                "outcome": "completed",
+                "observation": null
+              },
+              {
+                "stage": "choice_settings_reopen",
+                "outcome": "failed",
+                "observation": null
+              }
+            ],
+            "restorationPostReplacementStages": []
+          }
+        }
+      ],
+      "error": "full_extension_preference_or_restore_failed",
+      "baselineRestoration": null,
+      "firstChoiceReopen": {
+        "operation": "mode_compare",
+        "openStep": "guest_wait_started",
+        "failureCode": "mode_baseline_mismatch",
+        "modeComparison": {
+          "stage": "full_recheck",
+          "predicates": {
+            "visible": true,
+            "count": true,
+            "selection": true,
+            "baselineValue": true,
+            "observedValid": true,
+            "baselineValid": true
+          },
+          "firstFalse": "serialization",
+          "serialization": "unequal",
+          "residual": false,
+          "stores": [
+            {
+              "store": "settings",
+              "identity": "valid",
+              "observed": {
+                "status": "valid",
+                "storage": true,
+                "field": true
+              },
+              "baseline": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "storagePresent": "unequal",
+              "fieldPresent": "unequal",
+              "parseStatus": "unequal",
+              "mode": "unequal",
+              "fingerprint": "equal",
+              "count": "equal"
+            },
+            {
+              "store": "chat",
+              "identity": "valid",
+              "observed": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "baseline": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "storagePresent": "equal",
+              "fieldPresent": "equal",
+              "parseStatus": "equal",
+              "mode": "equal",
+              "fingerprint": "equal",
+              "count": "equal"
+            },
+            {
+              "store": "pilot",
+              "identity": "valid",
+              "observed": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "baseline": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "storagePresent": "equal",
+              "fieldPresent": "equal",
+              "parseStatus": "equal",
+              "mode": "equal",
+              "fingerprint": "equal",
+              "count": "equal"
+            }
+          ]
+        }
+      },
+      "firstRestorationReopen": {
+        "operation": "mode_compare",
+        "openStep": "guest_wait_started",
+        "failureCode": "mode_baseline_mismatch",
+        "modeComparison": {
+          "stage": "full_recheck",
+          "predicates": {
+            "visible": true,
+            "count": true,
+            "selection": true,
+            "baselineValue": true,
+            "observedValid": true,
+            "baselineValid": true
+          },
+          "firstFalse": "serialization",
+          "serialization": "unequal",
+          "residual": false,
+          "stores": [
+            {
+              "store": "settings",
+              "identity": "valid",
+              "observed": {
+                "status": "valid",
+                "storage": true,
+                "field": true
+              },
+              "baseline": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "storagePresent": "unequal",
+              "fieldPresent": "unequal",
+              "parseStatus": "unequal",
+              "mode": "unequal",
+              "fingerprint": "equal",
+              "count": "equal"
+            },
+            {
+              "store": "chat",
+              "identity": "valid",
+              "observed": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "baseline": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "storagePresent": "equal",
+              "fieldPresent": "equal",
+              "parseStatus": "equal",
+              "mode": "equal",
+              "fingerprint": "equal",
+              "count": "equal"
+            },
+            {
+              "store": "pilot",
+              "identity": "valid",
+              "observed": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "baseline": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "storagePresent": "equal",
+              "fieldPresent": "equal",
+              "parseStatus": "equal",
+              "mode": "equal",
+              "fingerprint": "equal",
+              "count": "equal"
+            }
+          ]
+        }
+      },
+      "recoveryReopen": {
+        "operation": "mode_compare",
+        "openStep": "guest_wait_started",
+        "failureCode": "mode_baseline_mismatch",
+        "modeComparison": {
+          "stage": "full_recheck",
+          "predicates": {
+            "visible": true,
+            "count": true,
+            "selection": true,
+            "baselineValue": true,
+            "observedValid": true,
+            "baselineValid": true
+          },
+          "firstFalse": "serialization",
+          "serialization": "unequal",
+          "residual": false,
+          "stores": [
+            {
+              "store": "settings",
+              "identity": "valid",
+              "observed": {
+                "status": "valid",
+                "storage": true,
+                "field": true
+              },
+              "baseline": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "storagePresent": "unequal",
+              "fieldPresent": "unequal",
+              "parseStatus": "unequal",
+              "mode": "unequal",
+              "fingerprint": "equal",
+              "count": "equal"
+            },
+            {
+              "store": "chat",
+              "identity": "valid",
+              "observed": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "baseline": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "storagePresent": "equal",
+              "fieldPresent": "equal",
+              "parseStatus": "equal",
+              "mode": "equal",
+              "fingerprint": "equal",
+              "count": "equal"
+            },
+            {
+              "store": "pilot",
+              "identity": "valid",
+              "observed": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "baseline": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "storagePresent": "equal",
+              "fieldPresent": "equal",
+              "parseStatus": "equal",
+              "mode": "equal",
+              "fingerprint": "equal",
+              "count": "equal"
+            }
+          ]
+        }
+      },
+      "firstRestorationReopenStage": "restore_settings",
+      "firstChoiceFailureStage": "choice_settings_reopen",
+      "restorationFailureStage": "restore_recovered_settings",
+      "firstChoiceTransportClass": "none",
+      "restorationTransportClass": "none",
+      "firstChoicePostReplacementStages": [
+        {
+          "stage": "choice_detach_previous_panel",
+          "outcome": "completed",
+          "observation": null
+        },
+        {
+          "stage": "choice_settings_reopen",
+          "outcome": "failed",
+          "observation": null
+        }
+      ],
+      "restorationPostReplacementStages": []
+    },
+    "T10_full_reload": {
+      "status": "fail",
+      "criteria": [
+        {
+          "name": "full extension reload recheck completed",
+          "status": "fail",
+          "evidence": {
+            "category": "full_extension_preference_or_restore_failed",
+            "baselineRestoration": null,
+            "firstChoiceReopen": {
+              "operation": "mode_compare",
+              "openStep": "unknown",
+              "failureCode": "mode_baseline_mismatch",
+              "modeComparison": {
+                "stage": "full_recheck",
+                "predicates": {
+                  "visible": true,
+                  "count": true,
+                  "selection": true,
+                  "baselineValue": true,
+                  "observedValid": true,
+                  "baselineValid": true
+                },
+                "firstFalse": "serialization",
+                "serialization": "unequal",
+                "residual": false,
+                "stores": [
+                  {
+                    "store": "settings",
+                    "identity": "valid",
+                    "observed": {
+                      "status": "valid",
+                      "storage": true,
+                      "field": true
+                    },
+                    "baseline": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "storagePresent": "unequal",
+                    "fieldPresent": "unequal",
+                    "parseStatus": "unequal",
+                    "mode": "unequal",
+                    "fingerprint": "equal",
+                    "count": "equal"
+                  },
+                  {
+                    "store": "chat",
+                    "identity": "valid",
+                    "observed": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "baseline": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "storagePresent": "equal",
+                    "fieldPresent": "equal",
+                    "parseStatus": "equal",
+                    "mode": "equal",
+                    "fingerprint": "equal",
+                    "count": "equal"
+                  },
+                  {
+                    "store": "pilot",
+                    "identity": "valid",
+                    "observed": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "baseline": {
+                      "status": "absent",
+                      "storage": false,
+                      "field": false
+                    },
+                    "storagePresent": "equal",
+                    "fieldPresent": "equal",
+                    "parseStatus": "equal",
+                    "mode": "equal",
+                    "fingerprint": "equal",
+                    "count": "equal"
+                  }
+                ]
+              }
+            },
+            "firstRestorationReopen": null,
+            "recoveryReopen": null,
+            "firstRestorationReopenStage": "unavailable",
+            "firstChoiceFailureStage": "initial_baseline_observation",
+            "restorationFailureStage": "unavailable",
+            "firstChoiceTransportClass": "other",
+            "restorationTransportClass": "other",
+            "firstChoicePostReplacementStages": [],
+            "restorationPostReplacementStages": []
+          }
+        }
+      ],
+      "error": "full_extension_preference_or_restore_failed",
+      "baselineRestoration": null,
+      "firstChoiceReopen": {
+        "operation": "mode_compare",
+        "openStep": "unknown",
+        "failureCode": "mode_baseline_mismatch",
+        "modeComparison": {
+          "stage": "full_recheck",
+          "predicates": {
+            "visible": true,
+            "count": true,
+            "selection": true,
+            "baselineValue": true,
+            "observedValid": true,
+            "baselineValid": true
+          },
+          "firstFalse": "serialization",
+          "serialization": "unequal",
+          "residual": false,
+          "stores": [
+            {
+              "store": "settings",
+              "identity": "valid",
+              "observed": {
+                "status": "valid",
+                "storage": true,
+                "field": true
+              },
+              "baseline": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "storagePresent": "unequal",
+              "fieldPresent": "unequal",
+              "parseStatus": "unequal",
+              "mode": "unequal",
+              "fingerprint": "equal",
+              "count": "equal"
+            },
+            {
+              "store": "chat",
+              "identity": "valid",
+              "observed": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "baseline": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "storagePresent": "equal",
+              "fieldPresent": "equal",
+              "parseStatus": "equal",
+              "mode": "equal",
+              "fingerprint": "equal",
+              "count": "equal"
+            },
+            {
+              "store": "pilot",
+              "identity": "valid",
+              "observed": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "baseline": {
+                "status": "absent",
+                "storage": false,
+                "field": false
+              },
+              "storagePresent": "equal",
+              "fieldPresent": "equal",
+              "parseStatus": "equal",
+              "mode": "equal",
+              "fingerprint": "equal",
+              "count": "equal"
+            }
+          ]
+        }
+      },
+      "firstRestorationReopen": null,
+      "recoveryReopen": null,
+      "firstRestorationReopenStage": "unavailable",
+      "firstChoiceFailureStage": "initial_baseline_observation",
+      "restorationFailureStage": "unavailable",
+      "firstChoiceTransportClass": "other",
+      "restorationTransportClass": "other",
+      "firstChoicePostReplacementStages": [],
+      "restorationPostReplacementStages": []
+    }
+  },
+  "conclusion": "Actual first failure is the immutable mode serialization comparison after reopening, not proof of failed Settings navigation. Settings storage changed absent to valid/present/field-present while visible Act and other validity predicates pass. Chat and Pilot footprints agree. Cause remains unproven; no comparator relaxation, normalization, app repair, full-case closure or release credit.",
+  "next_action": "Reproduce the fresh-store to first Theme-write transition using real shared Zustand persistence and actual harness baseline/comparator. Independently attack a bounded fixture-lifecycle remedy; preserve original footprint/baseline and categorical diagnostics. Do not add a speculative pointer/navigation repair.",
+  "independent_review": "settings5f-peer-20261028.json"
+}
