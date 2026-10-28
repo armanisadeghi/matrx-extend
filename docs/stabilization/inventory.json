@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-28T01:47:20.516097+00:00",
+  "updated_at": "2026-10-28T04:03:45.460619+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -8655,38 +8655,42 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 40615716489,
-              "source_sha": "7f1744da34bcce57ba83d91bfcf79d563fb34190",
-              "development_ci_run_id": 40614408686,
-              "development_artifact_id": 12785121542,
+              "run_id": 40626192102,
+              "source_sha": "906a8ad56eb20be3d2dcd40b3e82512879f32e0f",
+              "development_ci_run_id": 40625170785,
+              "development_artifact_id": 12789765843,
               "build_version": "0.2.630",
               "resource_invalid": false,
               "acceptance_run_successful": false,
               "full_case_pass": false,
               "new_product_credit": false,
-              "observed_subtargets": [
-                "Original initial_mode_compare mismatch reproduced after T63/sequence62",
-                "Same-sample six predicates true; firstFalse serialization/unequal/residualfalse",
-                "Settings storage/field/parse/mode inequality against absent baseline; Chat/Pilot equal"
-              ],
-              "failure_stage": "warm_observation/initial_mode_compare",
-              "error_code": "T10_shadow_baseline_mismatch_before_capture",
-              "confirmed_supporting_cause": "Test-owned T40/T67/T37 sibling lifecycle leaves Settings container/field presence after value-only cleanup; no application mode-selection failure proved. Exact last writer not proved.",
-              "unverified": [
-                "Original management full extension Reload and worker/panel replacement",
-                "Post-fullReload consumer and all full-extension surrounding rechecks",
-                "Exact Chrome version/profile path/backend and Store/current-main acceptance"
-              ],
-              "raw_batch_counts": {
-                "pass": 5,
-                "fail": 5,
-                "unverified": 9
+              "failure_stage": "T40 fixture capture; original lateT10/T63 not reached",
+              "error_code": "settings_fixture_integrity_failed",
+              "fixture_receipt": {
+                "phase": "capture",
+                "ownershipEstablished": false,
+                "restoredAfterReload": false,
+                "snapshotRetained": true,
+                "documentReplaced": false,
+                "backupPresent": true,
+                "backupOwned": true,
+                "cleanupPhase": "capture"
               },
-              "evidence": [
-                "docs/stabilization/reports/settings7f-native-20261028.json",
-                "docs/stabilization/reports/settings7f-failure-peer-20261028.json"
+              "raw_batch_counts": {
+                "pass": 3,
+                "fail": 5,
+                "unverified": 11
+              },
+              "unverified": [
+                "original lateModeComparison/surroundingfullReload",
+                "actualnativefailedcapturepredicate",
+                "backend/profile/owner/Store/currentnewclassfixacceptance"
               ],
-              "scope": "Frozen hosted DEV, not actual Store. All resources noninvalid; package/browser valid0 and guest child_failed1 after CPU recovery. Five raw failures miss full-extension rechecks; not five proved product bugs. No retry/AI/auth/fixture-secret mutation; remote profile deletion unverified. No applicable guest Settings verifier CLI/certificate exists; no wrong-mode refusal invented."
+              "evidence": [
+                "docs/stabilization/reports/native906-fixture-capture-20261028.json",
+                "docs/stabilization/reports/fixture-capture-diagnosis-20261028.json"
+              ],
+              "detail": "AllresourceNONINVALID/packagebrowservalid0/guestchildfailed1. Backupinspectionowned/present/retained, directbody/restore/dispose notreached; actualsourcechangeconditionunknown. DeterministicAPIRecordorder sourcevulnerabilityproven, notnativeoperandcausality. Missingfullrechecks not5appbugs; no retry/auth/AI/sharedfixture-secretstaging; remoteprofiledeletionunknown. Prior7fexactModeComparisoncause remainsretained history."
             }
           },
           "linked_defects": [
@@ -9111,6 +9115,46 @@
               },
               "superseded_at": "2026-10-28T01:47:20.516097+00:00",
               "reason": "Exact7f original-boundary native repetition retained the new same-sample diagnostic; no full-case pass or app-fix claim."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 40615716489,
+                "source_sha": "7f1744da34bcce57ba83d91bfcf79d563fb34190",
+                "development_ci_run_id": 40614408686,
+                "development_artifact_id": 12785121542,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "observed_subtargets": [
+                  "Original initial_mode_compare mismatch reproduced after T63/sequence62",
+                  "Same-sample six predicates true; firstFalse serialization/unequal/residualfalse",
+                  "Settings storage/field/parse/mode inequality against absent baseline; Chat/Pilot equal"
+                ],
+                "failure_stage": "warm_observation/initial_mode_compare",
+                "error_code": "T10_shadow_baseline_mismatch_before_capture",
+                "confirmed_supporting_cause": "Test-owned T40/T67/T37 sibling lifecycle leaves Settings container/field presence after value-only cleanup; no application mode-selection failure proved. Exact last writer not proved.",
+                "unverified": [
+                  "Original management full extension Reload and worker/panel replacement",
+                  "Post-fullReload consumer and all full-extension surrounding rechecks",
+                  "Exact Chrome version/profile path/backend and Store/current-main acceptance"
+                ],
+                "raw_batch_counts": {
+                  "pass": 5,
+                  "fail": 5,
+                  "unverified": 9
+                },
+                "evidence": [
+                  "docs/stabilization/reports/settings7f-native-20261028.json",
+                  "docs/stabilization/reports/settings7f-failure-peer-20261028.json"
+                ],
+                "scope": "Frozen hosted DEV, not actual Store. All resources noninvalid; package/browser valid0 and guest child_failed1 after CPU recovery. Five raw failures miss full-extension rechecks; not five proved product bugs. No retry/AI/auth/fixture-secret mutation; remote profile deletion unverified. No applicable guest Settings verifier CLI/certificate exists; no wrong-mode refusal invented."
+              },
+              "superseded_at": "2026-10-28T04:03:45.460619+00:00",
+              "reason": "Exact906 native retest evidence; preserve previous frozen observations, no fullcase pass."
             }
           ],
           "attempt_history": [
@@ -27711,32 +27755,32 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "40561344284",
-              "source_sha": "3ef3d0f2e63a820db0863c2fa5bdff14672e946d",
+              "run_id": 40627509549,
+              "source_sha": "906a8ad56eb20be3d2dcd40b3e82512879f32e0f",
               "build_version": "0.2.630",
-              "development_ci_run_id": 40558182029,
-              "development_artifact_id": 12759111108,
+              "development_ci_run_id": 40625170785,
+              "development_artifact_id": 12789765843,
               "resource_valid": true,
               "full_case_pass": false,
               "passed_subtargets": [
-                "guest_warm_no_signal_SEO_title_description_groups",
-                "guest_warm_empty_Schema_metadata_and_optional_groups",
-                "capture_identity_and_export_digest_unchanged_after_each_of_SEO_and_Schema"
+                "warm guest no-signal SEO title/description/groups",
+                "warm empty Schema metadata/optional groups",
+                "actual clipboard capture identity/full-payload digest unchanged aftereachpane"
               ],
               "unverified": [
-                "remaining_four_panes_current_build",
-                "full_extension_reload",
-                "populated_video_extraction",
-                "member_admin_other_widths_Store",
-                "backend_SHA_and_actual_profile_path",
-                "latest_main_after_frozen3ef"
+                "remaining4panes currentbuild",
+                "fullreload",
+                "populatedSEO/Schema/video",
+                "member/admin/otherwidths/Store",
+                "backendSHA/actualprofilepath/currentownerloaded",
+                "latesthead afterfrozen906"
               ],
               "evidence": [
-                "docs/stabilization/reports/scrape-b-3ef-20261027.json",
-                "docs/stabilization/reports/scrape-b-3ef-peer-20261027.json",
-                "docs/stabilization/reports/cycle630-publication-manifest-20261027.json"
+                "docs/stabilization/reports/seo906-native-20261028.json",
+                "docs/stabilization/reports/seo906-native-peer-20261028.json",
+                "docs/stabilization/reports/seo906-image-provenance-20261028.json"
               ],
-              "detail": "Frozen3ef guest native Chrome141.0.7390.37 DEV630/treee8ece878; normalverify-scrape validtrue and3resourcefinalsvalid0. Two original target-pane PNGs plus independently checked original assertions. Only warm SEO/Schema empty-state and capture/export invariance subtarget, fullT08partial. Original raw native report retained privately; public selected-field projection explicitly derived, journals/targetimages byte-exact. Remote profile deletion unobserved. No Data/broaderSEO/Settings/Store/defectclosure/currentmain credit."
+              "detail": "OriginalZIP8members/18actorrefs verified; normalverify-scrape validtrue,all3resourcefinalsvalid0 with3CPUpending1recovery. ActualBrowser.getVersion141.0.7390.37. Role freshguestroute+stablecontrols, notindependentSettings/email/tokencensus. Remoteprofiledeletionunknown. Boundedold3efsubtargets revalidated, nofullT08/defectclosure/release."
             },
             "member": {
               "status": "partial",
@@ -28152,6 +28196,40 @@
                 "evidence_quality": "Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.",
                 "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "40561344284",
+                "source_sha": "3ef3d0f2e63a820db0863c2fa5bdff14672e946d",
+                "build_version": "0.2.630",
+                "development_ci_run_id": 40558182029,
+                "development_artifact_id": 12759111108,
+                "resource_valid": true,
+                "full_case_pass": false,
+                "passed_subtargets": [
+                  "guest_warm_no_signal_SEO_title_description_groups",
+                  "guest_warm_empty_Schema_metadata_and_optional_groups",
+                  "capture_identity_and_export_digest_unchanged_after_each_of_SEO_and_Schema"
+                ],
+                "unverified": [
+                  "remaining_four_panes_current_build",
+                  "full_extension_reload",
+                  "populated_video_extraction",
+                  "member_admin_other_widths_Store",
+                  "backend_SHA_and_actual_profile_path",
+                  "latest_main_after_frozen3ef"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/scrape-b-3ef-20261027.json",
+                  "docs/stabilization/reports/scrape-b-3ef-peer-20261027.json",
+                  "docs/stabilization/reports/cycle630-publication-manifest-20261027.json"
+                ],
+                "detail": "Frozen3ef guest native Chrome141.0.7390.37 DEV630/treee8ece878; normalverify-scrape validtrue and3resourcefinalsvalid0. Two original target-pane PNGs plus independently checked original assertions. Only warm SEO/Schema empty-state and capture/export invariance subtarget, fullT08partial. Original raw native report retained privately; public selected-field projection explicitly derived, journals/targetimages byte-exact. Remote profile deletion unobserved. No Data/broaderSEO/Settings/Store/defectclosure/currentmain credit."
+              },
+              "superseded_at": "2026-10-28T04:03:45.460619+00:00",
+              "reason": "Exact906 native retest evidence; preserve previous frozen observations, no fullcase pass."
             }
           ],
           "attempt_history": [

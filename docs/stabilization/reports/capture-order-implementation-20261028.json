@@ -1,0 +1,261 @@
+{
+  "schema": 1,
+  "task_id": "capture-order-implementation",
+  "status": "DONE_SOURCE_GUARDS_GATES_PASS_NATIVE_PENDING",
+  "at": "2026-10-28T03:57:54.458914+00:00",
+  "scope": [
+    "tests/browser/settings-scrape-mode-baseline.mjs",
+    "tests/browser/settings-guest-scrape-controls.test.mjs"
+  ],
+  "source_hashes": {
+    "tests/browser/settings-scrape-mode-baseline.mjs": "2ee93e7a0bc3507633d5f38e00fc1fb1ba76588f1ef340c0f1ec9a49d5680bbb",
+    "tests/browser/settings-probe-cleanup.mjs": "ee948302c98ee4f120ae9fb862a100afbfd2c30f13434054e7715c19729bb666",
+    "tests/browser/settings-probe-cleanup.test.mjs": "bafde7b782bbdd51231737c8974a58685713f79ecd91c18b2e63a8023ccb643a",
+    "tests/browser/settings-guest-scrape-controls.mjs": "a8a2193689a0ba7803a3fbd4d29112a14a6a9c62bf5149533c577c565b7ff782",
+    "tests/browser/settings-local-controls-acceptance.mjs": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+    "tests/browser/settings-full-extension-rechecks.mjs": "96c9c5b2b9dc66839f7a91faf5c8aaa6e4b01754151efec89c51df35cd7fb5eb",
+    "tests/browser/settings-guest-scrape-controls.test.mjs": "d0b42e4bb5bb09a87a31b25e3dd7b949b26b2d64eb980f92f812460f55f10dba",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+    "tests/browser/settings-reload-boundary.test.mjs": "552887d75a8015edb754092d54d68d7019d5664c8486df3349363f95d3bf2dde",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "8d269a5083d33c65dda474a2b83d3debedb166f361de1b39e1945a19446fc416",
+    "tests/browser/settings-progress-checkpoint.test.mjs": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a"
+  },
+  "lock_sha256": "a509ae55fa034a4663c35c931f8cd067d4e02c3ee25a22db668600e553bd65d5",
+  "source_changes": [
+    "strict five-own-field envelope comparison and shared validation; independent record order",
+    "JSON domain checked before serialization; no unsupported coercion; typed equality ignores record order only; opaque Settings strings remain bytes",
+    "finite known capture stage/outcome/nullable predicate projection in branded receipt, no new reads/retries",
+    "actual caller sorted backend and immutable mode comparator guards; helper typedJSON and drift/domain/envelope/privacy/mutant corpus",
+    "native array prototypes only; Array subclass/custom prototypes reject before backup write; array-domain omission mutant added",
+    "B1 addressed: constructor.prototype authentic identity for both record and array prototypes, inherited method/accessor hooks never invoked; independent record/array prototype omission mutants; null-prototype record positive"
+  ],
+  "red": {
+    "run_id": "d300-capture-order-red-20261028a",
+    "journal": "docs/stabilization/resource-journals/d300-capture-order-red-20261028a.jsonl",
+    "log": ".output/stabilization-checkpoints/wake0212/capture-order-red.log",
+    "pre_frame": ".output/stabilization-checkpoints/wake0212/capture-order-red-source-frame.json",
+    "post_frame": ".output/stabilization-checkpoints/wake0212/capture-order-red-post-source-frame.json",
+    "resource_valid": true,
+    "child_exit": 1,
+    "wrapper_exit": 1,
+    "assertion": "order-only backend envelope reserialization must allow actual T40 body",
+    "helper_unmodified_before_red": true,
+    "journal_sha256": "68a7f8cc9d68b580ae2edcf2f1aa977e1d75e1f2ba75dca4fb135b610a7bfb87",
+    "log_sha256": "2395217c5903934a5bd72ad330e49af5a6ba6e2273b067a4f1913692b2775707",
+    "counts": {
+      "tests": 1261,
+      "pass": 1249,
+      "fail": 1,
+      "skipped": 11
+    }
+  },
+  "guards": {
+    "new_final_corpus_executed": true,
+    "actual_callers": [
+      "T40 reorder-only backend regression with actual observation expressions",
+      "T40/T67/T37 sortedbackend absent/partial/explicit immutable mode footprints"
+    ],
+    "typed_lifecycle": [
+      "opaque malformed/whitespace strings",
+      "native/nullprototype records and dense native arrays",
+      "unsupported undefined/function/symbol/NaN/Infinity/negativezero/BigInt/holes/extra-arrayfields/cycles/Date/Map/inherited/customprototype/ownaccessor/hidden/symbolfields rejected before writes",
+      "record/array key order only irrelevant; types, unknown keys, array order/length, rawbytes and sourcepresence binding",
+      "capture readback drift and postreload drift fail; corrupt envelope exact5fields/shared inspect",
+      "finite capture substage/predicates and exception unavailable/privacy projections"
+    ],
+    "negative_proof": [
+      "actual caller envelope-whole-stringify mutant produces capturefailure/body0/reload0",
+      "record-order-sensitive equality mutant rejected by supported JSON oracle",
+      "JSON domain bypass rejected before-write oracle",
+      "native array domain omission rejected by unsupported oracle",
+      "record constructor.prototype identity omission rejected by zero-hook oracle",
+      "array constructor.prototype identity omission rejected by zero-hook oracle",
+      "source-drift comparison constanttrue rejected by drift oracle",
+      "extra envelopefields admitted mutant rejected by shared capture/inspect oracle",
+      "raw result leak caught at actual external evaluate boundary, becomes unavailable branded capture failure"
+    ],
+    "claim_limit": "Named outer node:test cases passed; no individually emitted child-mutant transcript/exit claim. All source mutants created only in-memory; no shared-file tampering."
+  },
+  "static": {
+    "biome2paths_exit": 0,
+    "warnings": 0,
+    "queued_source_changes": false
+  },
+  "limits": [
+    "Original nativeB40626192102 capture operand UNKNOWN; sorted model proves class vulnerability, not Chrome original operand or application mode cause.",
+    "Nonstring values exercised through actual canonical lifecycle/storage expression; actual product UI observers parse Settings strings, so no fabricated nonstring native UI claim.",
+    "No native original/surrounding acceptance, app cause, source/full-case/Store closure or native teardown proof.",
+    "No UI, AI/auth, CI/children, manual build/install/release/commits/policy/runner/threshold change."
+  ],
+  "processes": {
+    "RED_session": 58373,
+    "RED_terminal_exit": 1,
+    "final_sessions": [
+      {
+        "id": 60034,
+        "exit": 0
+      },
+      {
+        "id": 87927,
+        "exit": 0
+      },
+      {
+        "id": 31290,
+        "exit": 0
+      }
+    ],
+    "all_owned_terminal": true,
+    "owned_running": [],
+    "authority": "actual tool terminal exits and completed guard-owned final journals; no native/process-profile teardown claim"
+  },
+  "next_action": "Root integrate two reviewed source paths plus evidence/journals; exact-source CI and new admitted native original/surrounding retest still required.",
+  "report_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/capture-order-implementation.json",
+  "peer_findings": [
+    {
+      "id": "B1",
+      "status": "ADDRESSED_SOURCE_AND_GUARD_PASS",
+      "evidence": "Both native constructor tests now require exact constructor.prototype identity; actual-expression forged record/array method/accessor cases assert zero hooks, writes, body/reloads and unchanged source."
+    }
+  ],
+  "gates": [
+    {
+      "command": "pnpm test:focused-acceptance",
+      "run_id": "d300-capture-order-final-focused-20261028a",
+      "journal": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d300-capture-order-final-focused-20261028a.jsonl",
+      "journal_sha256": "e971287ac9b518a441287ff3d0c9b16776900d6a3af791b6014b7c01d26358c8",
+      "log": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/capture-order-final-focused.log",
+      "log_sha256": "f5f7aada3b0f567cc0c801f8b4fc49b3518d80b72fdc0558da8d69af001ebd15",
+      "admission_at": "2026-10-28T03:52:21.859Z",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T03:54:50.579Z",
+        "runId": "d300-capture-order-final-focused-20261028a",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "child": {
+        "schema": 1,
+        "at": "2026-10-28T03:54:50.527Z",
+        "runId": "d300-capture-order-final-focused-20261028a",
+        "childExitCode": 0,
+        "childSignal": null,
+        "code": "RESOURCE_JOB_EXIT"
+      },
+      "frames": [
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/capture-order-final-pre-focused.json",
+          "sha256": "bc9c6c5289c40b2fd1d9b2a090739f074b97055b2bd84c9a6d9d3ba2936ab3a1",
+          "at": "2026-10-28T03:51:14.352794+00:00",
+          "boundary": "before focused invocation/admission"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/capture-order-final-post-focused.json",
+          "sha256": "860578ad6e9611fd57abef54d2ab211e216c896a6226f912eaea8e365481ab58",
+          "at": "2026-10-28T03:54:57.848563+00:00",
+          "boundary": "after focused terminal before compile invocation/admission"
+        }
+      ],
+      "counts": {
+        "tests": 1272,
+        "pass": 1261,
+        "fail": 0,
+        "skipped": 11
+      }
+    },
+    {
+      "command": "pnpm compile",
+      "run_id": "d300-capture-order-final-compile-20261028a",
+      "journal": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d300-capture-order-final-compile-20261028a.jsonl",
+      "journal_sha256": "ebc06ddc9776fb34575701f13624ebccd3fc62202c83decd801f4a91fa0727f0",
+      "log": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/capture-order-final-compile.log",
+      "log_sha256": "b3d0c711663bac51d2d3486b55515316dded52575289e17bb1b5133912b265dd",
+      "admission_at": "2026-10-28T03:56:05.183Z",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T03:56:07.513Z",
+        "runId": "d300-capture-order-final-compile-20261028a",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "child": {
+        "schema": 1,
+        "at": "2026-10-28T03:56:07.459Z",
+        "runId": "d300-capture-order-final-compile-20261028a",
+        "childExitCode": 0,
+        "childSignal": null,
+        "code": "RESOURCE_JOB_EXIT"
+      },
+      "frames": [
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/capture-order-final-pre-compile.json",
+          "sha256": "f8e59094d789248a85859d65c9d8811da56634fb40218382558ea5865b650c9d",
+          "at": "2026-10-28T03:54:57.855131+00:00",
+          "boundary": "before compile invocation/admission"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/capture-order-final-post-compile.json",
+          "sha256": "869017d4427e07d20b58b44154ba366a0c96ffb2bc1061fe3d89c333066a1729",
+          "at": "2026-10-28T03:56:21.416938+00:00",
+          "boundary": "after compile terminal before lint invocation/admission"
+        }
+      ]
+    },
+    {
+      "command": "pnpm lint",
+      "run_id": "d300-capture-order-final-lint-20261028a",
+      "journal": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d300-capture-order-final-lint-20261028a.jsonl",
+      "journal_sha256": "1ea9694a8b1f79a4e48137a48a619db239e0430e466d24eb51b8b206b3823eec",
+      "log": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/capture-order-final-lint.log",
+      "log_sha256": "6699e31f7f3938a45de140ec5347517f80553deaf045f6bdb02cdeb77d84a1ad",
+      "admission_at": "2026-10-28T03:57:28.756Z",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T03:57:31.644Z",
+        "runId": "d300-capture-order-final-lint-20261028a",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "child": {
+        "schema": 1,
+        "at": "2026-10-28T03:57:31.594Z",
+        "runId": "d300-capture-order-final-lint-20261028a",
+        "childExitCode": 0,
+        "childSignal": null,
+        "code": "RESOURCE_JOB_EXIT"
+      },
+      "frames": [
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/capture-order-final-pre-lint.json",
+          "sha256": "96779892bf66bd68afb17d5d143ca8bf123df190c5cef53504d129b156061357",
+          "at": "2026-10-28T03:56:21.429881+00:00",
+          "boundary": "before lint invocation/admission"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/capture-order-final-post-lint.json",
+          "sha256": "ad4e562672da7da45cb76315863cb87c3fbaaf3a48ad9ca60b9922eef75d30f9",
+          "at": "2026-10-28T03:57:54.458914+00:00",
+          "boundary": "after lint terminal"
+        }
+      ],
+      "counts": {
+        "files": 3508,
+        "errors": 0,
+        "warnings": 1039
+      }
+    }
+  ],
+  "source_freeze": {
+    "all_eleven_and_lock_match_every_saved_prepost_frame": true,
+    "boundaries": "pre frames generated before each invocation/admission; post frames after each actual wrapper terminal exit",
+    "red_boundary_limit": "RED preframe after invocation but before admission, explicit in saved original; RED postframe before helper edits"
+  }
+}

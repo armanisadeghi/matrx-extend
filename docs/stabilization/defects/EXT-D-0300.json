@@ -34,7 +34,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Query automatic full/focused CI on latest synchronized main; choose exact-current eligible artifact and dispatch ONE original B Settings controls retest before any metadata/manualjournal dirties checkout. Then serialize same-B SEO/schema-empty using same artifact if still eligible; recheck source drift before each dispatch. Preserve immutable comparator/realUI/read/order/deadlines/verdict. D300 other final-only original/surrounding native gaps remain open; do not close from guards.",
+  "next_action": "Obtain successful automatic exactcurrentmain CI/artifact; original Settings B retest FIRST on clean current source, no stale906retry. Actual finitecapturepredicates nowretained iffailure. No blindA/timeout/policy/runner/legacybypass. D300 original/adjacent andfullReload stillopen; SEO906boundedpass separate.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -173,5 +173,43 @@
     "implementation": "docs/stabilization/reports/fixture-fresh-fix-20261028.json",
     "quality": "Round2 primary-owncause residual fixed by fresh Sol with private canonical WeakMap resolver; authentic producer/controller/mutant guards and fresh source review pass.",
     "limits": "Recorded guard/log outcomes independently hash-checked; raw mutant child transcripts not emitted. Receipt/tree branch and native physical teardown still unverified. No current native/artifact/Store/product closure."
+  },
+  "fixture_lifecycle_native_retest": {
+    "run_id": 40626192102,
+    "source_sha": "906a8ad56eb20be3d2dcd40b3e82512879f32e0f",
+    "status": "failed atnewfixturecapture beforeoriginalboundary",
+    "receipt": {
+      "phase": "capture",
+      "ownershipEstablished": false,
+      "restoredAfterReload": false,
+      "snapshotRetained": true,
+      "documentReplaced": false,
+      "backupPresent": true,
+      "backupOwned": true,
+      "cleanupPhase": "capture"
+    },
+    "cause_limit": "exactnativeoperandunknown; deterministicrecord-order sourceclass separatelyproven",
+    "evidence": "docs/stabilization/reports/native906-fixture-capture-20261028.json"
+  },
+  "fixture_capture_order_source_fix": {
+    "source_sha": "665c106516c6b4148d272fc14205492334a746e7",
+    "state": "SOURCE_GUARDS_REVIEW_PASS; CI/nativepending",
+    "source_hashes": {
+      "tests/browser/settings-scrape-mode-baseline.mjs": "2ee93e7a0bc3507633d5f38e00fc1fb1ba76588f1ef340c0f1ec9a49d5680bbb",
+      "tests/browser/settings-probe-cleanup.mjs": "ee948302c98ee4f120ae9fb862a100afbfd2c30f13434054e7715c19729bb666",
+      "tests/browser/settings-probe-cleanup.test.mjs": "bafde7b782bbdd51231737c8974a58685713f79ecd91c18b2e63a8023ccb643a",
+      "tests/browser/settings-guest-scrape-controls.mjs": "a8a2193689a0ba7803a3fbd4d29112a14a6a9c62bf5149533c577c565b7ff782",
+      "tests/browser/settings-local-controls-acceptance.mjs": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+      "tests/browser/settings-full-extension-rechecks.mjs": "96c9c5b2b9dc66839f7a91faf5c8aaa6e4b01754151efec89c51df35cd7fb5eb",
+      "tests/browser/settings-guest-scrape-controls.test.mjs": "d0b42e4bb5bb09a87a31b25e3dd7b949b26b2d64eb980f92f812460f55f10dba",
+      "tests/browser/settings-full-extension-rechecks.test.mjs": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+      "tests/browser/settings-reload-boundary.test.mjs": "552887d75a8015edb754092d54d68d7019d5664c8486df3349363f95d3bf2dde",
+      "tests/browser/settings-guest-preference-batch.test.mjs": "8d269a5083d33c65dda474a2b83d3debedb166f361de1b39e1945a19446fc416",
+      "tests/browser/settings-progress-checkpoint.test.mjs": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a"
+    },
+    "gates": "OriginalactualT40RED1261/1249pass/1fail/11skip valid; final1272/1261pass/0fail/11skip valid,compile0,lint3508/0errors1039warnings,all3completedvalid0. Rawpre/postsource11+lockframes andlogsretained/hashesverified.",
+    "review": "docs/stabilization/reports/capture-order-gate-peer-20261028.json",
+    "scope": "Strictfiveownenvelopefields/values independentRecordorder, opaque rawstrings exact, supportedtypedJSON unchangedkeys/types/arraysordered, unsupportedbeforemutation, finitealready-readcapturepredicates. T10 immutablecomparator untouched.",
+    "causal_limit": "Native originaloperandUNKNOWN; not appcause or closure."
   }
 }

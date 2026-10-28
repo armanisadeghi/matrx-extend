@@ -1,0 +1,51 @@
+{
+  "task_id": "capture-publication-peer",
+  "at": "2026-10-28T04:08:08.230846+00:00",
+  "scope": "Read-only current uncommitted metadata packet against retained originals and code commit665c106516c6b4148d272fc14205492334a746e7; no native/source/gate execution",
+  "A": {
+    "verdict": "ACCEPT_BOUNDED_PUBLICATION_TRUTH",
+    "checks": [
+      "All8 copied source/diagnosis/disk/native peer reports JSON-semantically identical to retained originals.",
+      "All11 selected committed code hashes match implementation source receipt at665c106.",
+      "Exactly2inventorymode deltas: EXT-F-1003-T10 guest and EXT-F-1007-T08 guest. Each prior result retained exactly once, both remain partial/full_case_pass false.",
+      "Typed Settings projection maintains original lateT10/T63 not reached, backup retained/capture stopped, native operand unknown and no application-cause claim.",
+      "Typed SEO projection remains one bounded warm guest subtarget; owner/profile/backend/reload/otherroles/Store unknown explicit.",
+      "Two published PNG bytes/size/SHA exactly match independently approved official ZIP members.",
+      "COORD and generated status changes preserve open D299/D300/D301 and no overall/fullcase health claim."
+    ],
+    "limits": [
+      "Original prior evidence peers own official API/native assertions; this lane compares their retained reports, source hashes, raw ZIP PNG members, current typed publication and inventory only.",
+      "No new resource/gate execution, production, browser, authentication, profile deletion or Store status observation."
+    ]
+  },
+  "B": {
+    "verdict": "ACCEPT_PUBLICATION_QUALITY_AFTER_CORRECTIONS",
+    "findings": [],
+    "addressed": [
+      {
+        "issue": "Settings copied actor status still in_progress/cleanup pending",
+        "result": "Root corrected typed projection to completed/failure and exact retained-backup/remote-deletion limits; private original remains unchanged."
+      },
+      {
+        "issue": "SEO copied actor status pending independent review",
+        "result": "Root corrected typed projection to BOUNDED_NATIVE_PASS_INDEPENDENTLY_REVIEWED with completed peer reference."
+      }
+    ],
+    "privacy": "No credentials/raw Settings payload/backup nonce or generic raw native/log/ZIP publication in inspected packet; only approved2targetPNG originals. Retained paths/hashes and fixed diagnostic scope are explicit.",
+    "diff_check": "git diff --check actual0"
+  },
+  "publication_hashes": {
+    "docs/stabilization/reports/seo906-native-peer-20261028.json": "ada6dca1fdf52d75827e823fdc9146aa6ba11c932a2c5b2f092b20857eb6585d",
+    "docs/stabilization/reports/906-source-disk-peer-20261028.json": "832f10bf83a55e21f608f560e6efcbcfce3d758939b3047a9bce095ad938e956",
+    "docs/stabilization/reports/seo906-image-provenance-20261028.json": "214e0b82809b5b3e1d40813613de6062e11e7b70f473283c3c0f3b4436b26899",
+    "docs/stabilization/reports/capture-order-gate-peer-20261028.json": "0d5a75af6e28d1ba590973456d3ba6bd70d39ded6b38c6c22b98d2ce59ec9710",
+    "docs/stabilization/reports/native906-fixture-capture-20261028.json": "3603073dc3d233d470133da8ca8a449d769a7d60592febfc9ce9da2fd233bbee",
+    "docs/stabilization/reports/seo906-native-20261028.json": "00758d6ab8bffa1f89a920622be3e6a4fa160a0c915002d2a494764218095aa7",
+    "docs/stabilization/reports/capture-order-source-peer-20261028.json": "b46d68171a8fb992db252cfdad1190731e04551064d26e11cef791e0c248e708",
+    "docs/stabilization/reports/capture-order-implementation-20261028.json": "fbf9e2b9951837ee7f1226b3dd52d2d3df04c58bad469b9007a814e6dd70b5a0",
+    "docs/stabilization/reports/capture-order-plan-peer-20261028.json": "ca40f47a4c84532fc0cdf672c72b09fc75ac77b35dd4b87aeab6447fa79e02b7",
+    "docs/stabilization/reports/fixture-capture-diagnosis-20261028.json": "deb917b13c2075cc42ec53a8cfbc89aaaee9fbcc074ef2e15e1f5adb898997d3",
+    "docs/stabilization/reports/906-disk-adoption-20261028.json": "ab3311be81efe2a62c1c79c798f52e43d6fddacad36e2f12901c03fb68f49bf7"
+  },
+  "processes": "All own read/hash commands terminal; no browser/profile/observer/dispatch/authfixture or mutation of tracked source created."
+}
