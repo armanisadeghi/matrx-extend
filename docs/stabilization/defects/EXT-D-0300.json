@@ -34,7 +34,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Implement reviewed finite compound Settings-open/mode-check diagnostic; actual-path RED/GREEN with independent source review before exact-source CI/native. Native cause unknown; no blind retry.",
+  "next_action": "Use automatic exact-source full/focused CI as actual final checks. Record any failure and fix after permitted admission; once green and machine notice permits long work, normal exact-source original Settings B first. Preserve guest/member/Store acceptance limits.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -223,16 +223,25 @@
     }
   },
   "reload_reopen_diagnostic": {
-    "state": "SOURCE_REPORTING_GAP_PROVEN; IMPLEMENTATION_AND_NATIVE_PENDING",
-    "owner_lane": "/root/reopen_restoration_fix",
+    "state": "SOURCE_PRESERVED_STATIC_REVIEW_PASS_FINAL_GATES_AND_NATIVE_PENDING",
+    "owner_lane": "/root",
     "native_cause": "UNKNOWN; choice_settings_reopen callback includes actual open and mode section/read/compare",
     "diagnosis": "docs/stabilization/reports/settings-reopen-diagnosis-20261028.json",
     "plan_review": "docs/stabilization/reports/reopen-plan-peer-20261028.json",
     "hypothesis": "Untested native hypothesis: representative real Theme full-state persistence changes shared frozen mode footprint; existing fixture misses shared storage. No appcause proof.",
     "limits": "Reuse existing finitecode/onStep/same-samplecomparison, distinguish choice/firstrestore/recovery; defer warmrunCase/newgeometry. No operation count/deadline/comparator/verdict changes.",
-    "model": "gpt-6.1-terra/medium",
-    "source_review": "docs/stabilization/reports/reopen-source-peer-20261028.json",
+    "model": "gpt-6.1-sol/medium after Terra capacity failure",
+    "source_review": "docs/stabilization/reports/restoration-diagnostic-static-peer-20261028.json",
     "owner_repair_decision": "docs/stabilization/reports/reopen-owner-repair-decision-20261028.json",
-    "review_state": "B1 Important restoration-preservation gap remains; first worker terminal, fresh bounded executor, no final passing source/native gates."
+    "review_state": "B1/B2 addressed statically, no new Important source finding; no product/native closure.",
+    "source_commit": "499964bd3cb1502c190c392022a03846ac8a4813",
+    "implementation_lane": "/root/restoration_b1_finish",
+    "source_hashes": {
+      "tests/browser/settings-full-extension-rechecks.mjs": "ab0398badf6550b2cbe29ed7afc0a8fbef80e6ef85f2828aedf7856aaeec2bd8",
+      "tests/browser/settings-guest-extension-rechecks.mjs": "a0a2bd1beb4020f83c9977ebbea8a9b77d30d3cc072f03364160c512ace853e2",
+      "tests/browser/settings-full-extension-rechecks.test.mjs": "fc09a55d9e6e10a98342037d1a351af53701c8b01b7b3138bcc8098a0e3531f9"
+    },
+    "verification": "Qualified semantic RED2; final GREEN/compile/lint and new sentinel guard unexecuted under build notice; static checks only.",
+    "handoff": "docs/stabilization/reports/reopen-diagnostic-source-preservation-20261028.json"
   }
 }

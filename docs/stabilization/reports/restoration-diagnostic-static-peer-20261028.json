@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "task_id": "restoration_b1_static_peer",
+  "at": "2026-10-28T05:18:57.752171+00:00",
+  "review_kind": "zero-authorship LIGHT read-only static source; not GREEN acceptance",
+  "frozen_frame": {
+    "path": ".output/stabilization-checkpoints/wake0439/restoration-b1-frozen.json",
+    "sha256": "fc205f33d077c6917ead464cb00c93fcc3428977dd5345276bcf7c05ded5f9b3",
+    "entries": 14,
+    "mismatches": []
+  },
+  "source_hashes": {
+    "tests/browser/settings-full-extension-rechecks.mjs": "bdf66dd327d8af8c51aa99be06b5d0765d41e6ef295afc607fcb1067539375de",
+    "tests/browser/settings-guest-extension-rechecks.mjs": "a0a2bd1beb4020f83c9977ebbea8a9b77d30d3cc072f03364160c512ace853e2",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "135f8772dedd9a7e011ab0c9099276d5cd36950dbba23357efc9eaeb6b2b208f"
+  },
+  "B1": {
+    "verdict": "ADDRESSED_STATIC_ONLY",
+    "evidence": [
+      "Explicit firstRestorationCaptured flag captures original null/unavailable receipts exactly once.",
+      "Inner restore catch captures original closed failure stage before acquisition and recovery.",
+      "Outer restore catch captures baseline-restorer and post-management-reload sibling failures only when no original captured; recovery diagnostic remains separate.",
+      "Theme wrapper forwards original receipt plus original stage; final publisher applies finite stage/diagnostic projection.",
+      "Three semantic lifecycle guard bodies assert faultInjected and expected failed stage before the previously missing receipt assertions."
+    ],
+    "limits": "Final focused test, compile, lint, CI and native acceptance remain pending; no test run by reviewer."
+  },
+  "B": {
+    "verdict": "IMPORTANT_STATIC_FINDING",
+    "findings": [
+      {
+        "id": "B2",
+        "severity": "Important",
+        "file": "tests/browser/settings-full-extension-rechecks.mjs",
+        "line": 320,
+        "end_line": 324,
+        "title": "Final safe diagnostic projector can publish a second unvalidated getter value",
+        "evidence": "safeSettingsReopenDiagnostic checks REOPEN_OPERATIONS.includes(value.operation) and then reads value.operation again for output; openStep and failureCode use the same double-read pattern. A stateful accessor can return an allowed enum on its first read and a private URL/settings string on its second. The catch only handles throwing getters; nonthrowing changing getters bypass final finite projection.",
+        "required": "Read operation/openStep/failureCode once into locals inside the existing try and validate/publish those locals. Add a changing-getter sentinel through runFullExtensionRecheck and final JSON serialization; keep generic failed verdict and no raw value.",
+        "proof_scope": "Static JavaScript evaluation semantics and exact source; no runtime test executed."
+      }
+    ],
+    "other_reviewed": [
+      "No new browser IO/retries/deadlines/control ordering/comparator/baseline/verdict changes found in the reviewed three-path diff.",
+      "B1 repair does not overwrite an unavailable original receipt with recovery details.",
+      "No additional Important scope or primary-failure regression found by bounded static inspection."
+    ]
+  },
+  "A": {
+    "verdict": "UNKNOWN",
+    "native_run": "40631696825",
+    "status": "retained failure; current source has no fresh native proof; no application cause or closure inferred"
+  },
+  "execution": {
+    "source_edits": 0,
+    "tests": 0,
+    "builds": 0,
+    "gui_calls": 0,
+    "dispatches": 0,
+    "subagents": 0,
+    "owned_processes": "none; completed read-only terminal commands and this private report write"
+  },
+  "pending": [
+    "B2 repair and independently reviewed final source",
+    "final focused tests",
+    "compile",
+    "lint",
+    "remote CI",
+    "exact-source native/full-case acceptance"
+  ],
+  "B2_readback": {
+    "at": "2026-10-28T05:20:26.348852+00:00",
+    "verdict": "ADDRESSED_STATIC_ONLY",
+    "frame": ".output/stabilization-checkpoints/wake0439/restoration-b2-frozen.json",
+    "frame_sha256": "fe4b224b07c0f68650db5387f0c6909cbfa6c90e84b91dbbade2b5665e6af319",
+    "entries": 14,
+    "mismatches": [],
+    "source_hashes": {
+      "tests/browser/settings-full-extension-rechecks.mjs": "ab0398badf6550b2cbe29ed7afc0a8fbef80e6ef85f2828aedf7856aaeec2bd8",
+      "tests/browser/settings-full-extension-rechecks.test.mjs": "fc09a55d9e6e10a98342037d1a351af53701c8b01b7b3138bcc8098a0e3531f9",
+      "tests/browser/settings-guest-extension-rechecks.mjs": "a0a2bd1beb4020f83c9977ebbea8a9b77d30d3cc072f03364160c512ace853e2"
+    },
+    "evidence": [
+      "operation/openStep/failureCode/modeComparison each read once into local within try; whitelist checks and returned enum fields use those locals.",
+      "New test body supplies stateful getters that return valid enum once then private URL; invokes actual runFullExtensionRecheck; checks failed final receipt and full item JSON excludes private/URL sentinel. Test is UNEXECUTED.",
+      "Guest source hash unchanged from B1 reviewed frame; B1 verdict retained."
+    ],
+    "new_important_findings": [],
+    "limits": [
+      "Static source acceptance only; no tests or heavy work run.",
+      "Focused tests/compile/lint/remote CI/native/full-case gates remain pending.",
+      "Native40631696825 remains retained failure, application cause UNKNOWN."
+    ]
+  }
+}
