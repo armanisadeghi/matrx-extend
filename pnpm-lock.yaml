@@ -4793,8 +4793,8 @@ packages:
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  lucide-react@1.62.0:
-    resolution: {integrity: sha512-2i8QZZhkgYMA3oJvKYpCltHh54VnT/3rIPkDLHbzr3IJQBaCz8+7j7V2k2rczYd2aCqcBaMmNlWQ2KKeDfcxmw==}
+  lucide-react@1.63.0:
+    resolution: {integrity: sha512-GkBfQG+FUJ41x6y3/lNXiOziVU0Rcqqq0TCzhHS8avsFXHZmOdmfBqsVTvHSaVmbI+wbdGkxHRmhYWhD3N4/yA==}
     peerDependencies:
       '@types/react': '*'
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -6520,7 +6520,7 @@ snapshots:
       '@radix-ui/react-slider': 1.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@supabase/supabase-js': 2.117.2
       lodash: 4.18.1
-      lucide-react: 1.62.0(@types/react@19.3.0)(react@19.3.0)
+      lucide-react: 1.63.0(@types/react@19.3.0)(react@19.3.0)
       motion: 14.7.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-dropzone: 20.1.4(@types/react@19.3.0)(react@19.3.0)
       redux: 5.0.1
@@ -6574,7 +6574,7 @@ snapshots:
       '@ai-matrx/design-system': 0.86.401(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@typescript/typescript6@6.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/icons': 0.3.94(@types/react@19.3.0)(@typescript/typescript6@6.0.2)(react@19.3.0)
       '@babel/standalone': 8.0.9
-      lucide-react: 1.62.0(@types/react@19.3.0)(react@19.3.0)
+      lucide-react: 1.63.0(@types/react@19.3.0)(react@19.3.0)
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
       recharts: 3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1)
@@ -6713,7 +6713,7 @@ snapshots:
   '@ai-matrx/icons@0.3.94(@types/react@19.3.0)(@typescript/typescript6@6.0.2)(react@19.3.0)':
     dependencies:
       '@ai-matrx/kit': 0.45.46(@typescript/typescript6@6.0.2)(react@19.3.0)
-      lucide-react: 1.62.0(@types/react@19.3.0)(react@19.3.0)
+      lucide-react: 1.63.0(@types/react@19.3.0)(react@19.3.0)
       react: 19.3.0
     optionalDependencies:
       react-icons: 5.7.0(react@19.3.0)
@@ -6748,7 +6748,7 @@ snapshots:
       '@supabase/postgrest-js': 2.118.0
       '@supabase/supabase-js': 2.117.2
       dexie: 4.4.7
-      lucide-react: 1.62.0(@types/react@19.3.0)(react@19.3.0)
+      lucide-react: 1.63.0(@types/react@19.3.0)(react@19.3.0)
       motion: 14.7.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react: 19.3.0
       reselect: 5.3.0
@@ -6991,7 +6991,7 @@ snapshots:
       hast-util-to-text: 4.0.3
       html-url-attributes: 3.0.1
       katex: 0.19.1
-      lucide-react: 1.62.0(@types/react@19.3.0)(react@19.3.0)
+      lucide-react: 1.63.0(@types/react@19.3.0)(react@19.3.0)
       marked: 18.1.2
       mdast-util-from-markdown: 2.1.0
       mdast-util-gfm: 3.1.0
@@ -7073,7 +7073,7 @@ snapshots:
       '@ai-matrx/summon': 0.1.63(@reduxjs/toolkit@2.13.0(react-redux@9.3.1(@types/react@19.3.0)(react@19.3.0)(redux@5.0.1))(react@19.3.0))(@supabase/supabase-js@2.117.2)(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@typescript/typescript6@6.0.2)(react-dom@19.3.0(react@19.3.0))(react-redux@9.3.1(@types/react@19.3.0)(react@19.3.0)(redux@5.0.1))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/vault': 0.1.57(@supabase/supabase-js@2.117.2)(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@typescript/typescript6@6.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@supabase/supabase-js': 2.117.2
-      lucide-react: 1.62.0(@types/react@19.3.0)(react@19.3.0)
+      lucide-react: 1.63.0(@types/react@19.3.0)(react@19.3.0)
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
     transitivePeerDependencies:
@@ -11347,7 +11347,7 @@ snapshots:
     dependencies:
       react: 19.3.0
 
-  lucide-react@1.62.0(@types/react@19.3.0)(react@19.3.0):
+  lucide-react@1.63.0(@types/react@19.3.0)(react@19.3.0):
     dependencies:
       react: 19.3.0
     optionalDependencies:
