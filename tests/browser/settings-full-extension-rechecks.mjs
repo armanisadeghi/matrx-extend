@@ -16,7 +16,11 @@ import {
   observeGuestAutoScrapeMode,
   scrapeModeMatches,
 } from './settings-guest-scrape-controls.mjs';
-import { runWithAbsentScrapeModeBaseline } from './settings-scrape-mode-baseline.mjs';
+import { originalSettingsCleanupFailure } from './settings-probe-cleanup.mjs';
+import {
+  runWithAbsentScrapeModeBaseline,
+  settingsFixtureIntegrityFailure,
+} from './settings-scrape-mode-baseline.mjs';
 
 export const FULL_EXTENSION_RECHECK_IDS = ['T04', 'T10', 'T28', 'T40', 'T67'];
 
@@ -186,8 +190,9 @@ function safeModeComparison(error) {
   }
 }
 
-export function safeUnexpectedError(error, caseId = '') {
+export function safeUnexpectedError(failure, caseId = '') {
   try {
+    const error = originalSettingsCleanupFailure(failure);
     const rawName = error?.name;
     const rawCode = error?.code;
     const rawMessage = SAFE_ERROR_CODES.has(rawCode) ? undefined : error?.message;
@@ -257,6 +262,8 @@ export function safeUnexpectedError(error, caseId = '') {
         storedMatches: sample.storedMatches === true,
       };
     }
+    const modeFailure = safeAutoScrapeModeFailure(error);
+    if (modeFailure) result.autoScrapeMode = modeFailure;
     return result;
   } catch {
     return {
@@ -349,6 +356,23 @@ export function snapshotPanelDocumentReload(item) {
   };
 }
 
+function safeAutoScrapeModeFailure(error) {
+  if (
+    error?.safeCategory !== 'auto_scrape_mode_recheck_failed' ||
+    !AUTO_SCRAPE_MODE_FAILURE_STAGES.includes(error.safeStage) ||
+    !['case', 'restore', 'case_and_restore'].includes(error.safeFailureKind)
+  )
+    return null;
+  return {
+    category: error.safeCategory,
+    stage: error.safeStage,
+    kind: error.safeFailureKind,
+    ...(AUTO_SCRAPE_MODE_FAILURE_STAGES.includes(error.safeOriginalStage) && {
+      originalStage: error.safeOriginalStage,
+    }),
+  };
+}
+
 export async function runFullExtensionRecheck(item, execute) {
   const result = { status: 'missing', criteria: [] };
   item.fullExtensionReload = result;
@@ -365,11 +389,20 @@ export async function runFullExtensionRecheck(item, execute) {
     if (result.status !== 'pass') result.error = 'full_extension_recheck_not_all_passed';
   } catch (error) {
     result.status = 'fail';
-    const t67Failure =
-      item.id.endsWith('T67') &&
-      error?.safeCategory === 'auto_scrape_mode_recheck_failed' &&
-      AUTO_SCRAPE_MODE_FAILURE_STAGES.includes(error.safeStage) &&
-      ['case', 'restore', 'case_and_restore'].includes(error.safeFailureKind);
+    const fixtureFailure = settingsFixtureIntegrityFailure(error);
+    if (fixtureFailure) {
+      result.error = 'settings_fixture_integrity_failed';
+      result.fixtureIntegrityFailure = fixtureFailure;
+      result.operationFailure = safeUnexpectedError(error, item.id);
+      if (error?.safeCleanupFailed === true) result.cleanupAlsoFailed = true;
+      record('full extension reload recheck completed', 'fail', {
+        category: result.error,
+        fixtureIntegrityFailure: fixtureFailure,
+        operationFailure: result.operationFailure,
+      });
+      throw error;
+    }
+    const t67Failure = item.id.endsWith('T67') && safeAutoScrapeModeFailure(error);
     if (t67Failure) {
       result.error = error.safeCategory;
       result.failureStage = error.safeStage;
@@ -800,6 +833,7 @@ export async function rerunGuestSettingsAfterExtensionReload({
         settings,
         openSection,
         observe: observeAutoScrapeMode,
+        matches: scrapeModeMatches,
         record,
         ...(choiceDriver && { driver: choiceDriver }),
         execute: async (initial) => {

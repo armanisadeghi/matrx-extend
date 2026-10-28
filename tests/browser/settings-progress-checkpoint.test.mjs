@@ -12,6 +12,7 @@ const source = readFileSync(
 );
 const atomic = new URL('./atomic-json-report.mjs', import.meta.url).href;
 const scrape = new URL('./scrape-save-auth-report.mjs', import.meta.url).href;
+const fixture = new URL('./settings-scrape-mode-baseline.mjs', import.meta.url).href;
 
 // The real callback and case producer must persist before the process can be killed.
 test('native and case checkpoints survive ordinary SIGTERM without final verdicts', async () => {
@@ -27,7 +28,8 @@ test('native and case checkpoints survive ordinary SIGTERM without final verdict
     const script = join(dir, 'child.mjs');
     writeFileSync(
       script,
-      `import { publishAtomicJsonReport } from ${JSON.stringify(atomic)};
+      `import { settingsFixtureIntegrityFailure } from ${JSON.stringify(fixture)};
+import { publishAtomicJsonReport } from ${JSON.stringify(atomic)};
 import { NATIVE_STAGES } from ${JSON.stringify(scrape)};
 const OUTPUT = ${JSON.stringify(join(dir, 'report.json'))};
 const CASE_IDS = ['EXT-F-1003-T04','EXT-F-1003-T10'];
@@ -86,7 +88,8 @@ test('failed publication blocks the operation and does not advance memory', asyn
     const script = join(dir, 'child.mjs');
     writeFileSync(
       script,
-      `import { publishAtomicJsonReport } from ${JSON.stringify(atomic)};
+      `import { settingsFixtureIntegrityFailure } from ${JSON.stringify(fixture)};
+import { publishAtomicJsonReport } from ${JSON.stringify(atomic)};
 import { NATIVE_STAGES } from ${JSON.stringify(scrape)};
 const OUTPUT = ${JSON.stringify(dir)};
 const CASE_IDS = ['EXT-F-1003-T04'];
@@ -110,7 +113,10 @@ if (ran || report.diagnostic_progress !== undefined || !publicationFailure) proc
 test('actual outer cleanup and sticky publication errors preserve the prior checkpoint', async () => {
   const start = source.indexOf('let publicationFailure;');
   const end = source.indexOf('\nlet observedPort;', start);
-  const outer = source.indexOf('} catch (error) {\n  report.setup_error', end);
+  const outer = source.indexOf(
+    '} catch (error) {\n  const fixtureFailure = settingsFixtureIntegrityFailure(error);',
+    end,
+  );
   assert.ok(start >= 0 && end > start && outer > end);
   const dir = mkdtempSync(join(tmpdir(), 'settings-final-errors-'));
   try {
@@ -119,7 +125,8 @@ test('actual outer cleanup and sticky publication errors preserve the prior chec
       const script = join(dir, `${mode}.mjs`);
       writeFileSync(
         script,
-        `import { publishAtomicJsonReport as actual } from ${JSON.stringify(atomic)};
+        `import { settingsFixtureIntegrityFailure } from ${JSON.stringify(fixture)};
+import { publishAtomicJsonReport as actual } from ${JSON.stringify(atomic)};
 import { NATIVE_STAGES } from ${JSON.stringify(scrape)};
 const OUTPUT = ${JSON.stringify(output)};
 const CASE_IDS = ['EXT-F-1003-T04'];
@@ -182,7 +189,8 @@ test('scratch mutants cannot fake a durable pre-operation nonfinal checkpoint', 
       const script = join(dir, `${mutant}.mjs`);
       writeFileSync(
         script,
-        `import { publishAtomicJsonReport as actual } from ${JSON.stringify(atomic)};
+        `import { settingsFixtureIntegrityFailure } from ${JSON.stringify(fixture)};
+import { publishAtomicJsonReport as actual } from ${JSON.stringify(atomic)};
 import { NATIVE_STAGES } from ${JSON.stringify(scrape)};
 import { writeFileSync } from 'node:fs';
 const OUTPUT = ${JSON.stringify(output)};
@@ -234,7 +242,10 @@ await runCase(report.cases[0], async () => { process.stdout.write('parked\\n'); 
 test('actual PASS-eligible final producer preserves exact checkpoint bytes across SIGTERM', async () => {
   const start = source.indexOf('let publicationFailure;');
   const end = source.indexOf('\nlet observedPort;', start);
-  const outer = source.indexOf('} catch (error) {\n  report.setup_error', end);
+  const outer = source.indexOf(
+    '} catch (error) {\n  const fixtureFailure = settingsFixtureIntegrityFailure(error);',
+    end,
+  );
   assert.ok(start >= 0 && end > start && outer > end);
   const finalCall = '  publishAtomicJsonReport(report, OUTPUT);';
   const finalProducer = source.slice(outer);
@@ -266,7 +277,8 @@ test('actual PASS-eligible final producer preserves exact checkpoint bytes acros
       const script = join(dir, `${mode}.mjs`);
       writeFileSync(
         script,
-        `import { publishAtomicJsonReport } from ${JSON.stringify(helper)};
+        `import { settingsFixtureIntegrityFailure } from ${JSON.stringify(fixture)};
+import { publishAtomicJsonReport } from ${JSON.stringify(helper)};
 import { NATIVE_STAGES } from ${JSON.stringify(scrape)};
 import { readFileSync, writeFileSync } from 'node:fs';
 const OUTPUT = ${JSON.stringify(output)}, CASE_IDS = ['EXT-F-1003-T04'];
@@ -325,7 +337,10 @@ ${producer}
 test('current-source checkpoint-erasure mutant loses progress on SIGTERM', async () => {
   const start = source.indexOf('async function runCase(c, fn) {');
   const end = source.indexOf('\nlet observedPort;', start);
-  const outer = source.indexOf('} catch (error) {\n  report.setup_error', end);
+  const outer = source.indexOf(
+    '} catch (error) {\n  const fixtureFailure = settingsFixtureIntegrityFailure(error);',
+    end,
+  );
   assert.ok(start >= 0 && end > start && outer > end);
   const actual = source.slice(start, end);
   assert.equal(actual.split("  checkpoint('case_start', c.id);").length, 2);
@@ -339,7 +354,8 @@ test('current-source checkpoint-erasure mutant loses progress on SIGTERM', async
     const script = join(dir, 'erased.mjs');
     writeFileSync(
       script,
-      `import { publishAtomicJsonReport } from ${JSON.stringify(atomic)};
+      `import { settingsFixtureIntegrityFailure } from ${JSON.stringify(fixture)};
+import { publishAtomicJsonReport } from ${JSON.stringify(atomic)};
 import { join } from 'node:path';
 const REPO = ${JSON.stringify(dir)}, OUTPUT = join(REPO, 'test-results', 'settings-local-controls-acceptance.json');
 const publicationFailure = undefined;
@@ -375,7 +391,8 @@ test('unknown stage and case labels refuse private canaries without publication'
     const output = join(dir, 'report.json');
     writeFileSync(
       script,
-      `import { publishAtomicJsonReport } from ${JSON.stringify(atomic)};
+      `import { settingsFixtureIntegrityFailure } from ${JSON.stringify(fixture)};
+import { publishAtomicJsonReport } from ${JSON.stringify(atomic)};
 import { NATIVE_STAGES } from ${JSON.stringify(scrape)};
 const OUTPUT = ${JSON.stringify(output)}, CASE_IDS = ['EXT-F-1003-T04'];
 const report = {cases:[{id:CASE_IDS[0],status:'pass',criteria:[]}]};

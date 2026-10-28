@@ -294,7 +294,12 @@ function fullRestartFixture({
     modeDocument.body.innerHTML =
       '<button role="tab" data-matrx-title="Settings" data-state="active" aria-controls="settings-pane"></button><div id="settings-pane" role="tabpanel" data-state="active"><div><div><span>Default mode</span></div><button role="combobox">Act without asking</button></div></div>';
   const local = {
-    get: async () => ({ ...storage }),
+    get: async (keys) =>
+      Object.fromEntries(
+        (Array.isArray(keys) ? keys : [keys])
+          .filter((key) => Object.hasOwn(storage, key))
+          .map((key) => [key, structuredClone(storage[key])]),
+      ),
     remove: async (key) => {
       calls.removals.push(key);
       delete storage[key];
@@ -369,10 +374,19 @@ function fullRestartFixture({
         !script.includes('const originalStoragePresent =') &&
         !script.includes('document.')
       ) {
-        return runInNewContext(script, { chrome: { storage: { local } } });
+        return runInNewContext(script, {
+          chrome: { storage: { local } },
+          crypto: webcrypto,
+          TextEncoder,
+        });
       }
       if (script.includes('const originalStoragePresent =')) {
-        if (realModeStorage) await runInNewContext(script, { chrome: { storage: { local } } });
+        if (realModeStorage)
+          await runInNewContext(script, {
+            chrome: { storage: { local } },
+            crypto: webcrypto,
+            TextEncoder,
+          });
         if (failBaselineRestore === 'remove_absent_key')
           throw new TypeError('private token secret');
         const restored = script.includes('"defaultPermissionMode"') ? states.T10 : states.T04;

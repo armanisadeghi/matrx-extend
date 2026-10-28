@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { webcrypto } from 'node:crypto';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -27,6 +28,11 @@ import {
   observeReloadSettingsPanel,
   observeSettingsReacquisition,
 } from './settings-reload-boundary.mjs';
+import {
+  settingsFixtureIntegrityFailure,
+  withExactSettingsFixture,
+} from './settings-scrape-mode-baseline.mjs';
+import { finalizeSettingsSenderDocumentDiagnostic } from './settings-sender-document-diagnostic.mjs';
 
 async function sharedGuestOpeningSource() {
   const source = await readFile(new URL('./settings-panel-driver.mjs', import.meta.url), 'utf8');
@@ -170,7 +176,7 @@ for (const scenario of [
       'utf8',
     );
     const start = source.indexOf('async function settings(panel, onStep = () => {}) {');
-    const end = source.indexOf('\nasync function deepClean(', start);
+    const end = source.indexOf('\nasync function port(', start);
     assert.ok(start >= 0 && end > start);
     const commands = [];
     const settingsTab = {
@@ -186,14 +192,19 @@ for (const scenario of [
           ? Array(scenario.tabCount ?? 1).fill(settingsTab)
           : [],
     };
+    let origin = 100;
     const panel = {
       async send(method, params) {
         commands.push(method);
-        if (method === 'Page.reload') return {};
+        if (method === 'Page.reload') {
+          origin = 200;
+          return {};
+        }
         if (method === 'Target.getTargetInfo') throw new Error('diagnostic lookup unavailable');
         assert.equal(method, 'Runtime.evaluate');
         const value = await runInNewContext(params.expression, {
           document,
+          performance: { timeOrigin: origin },
           getComputedStyle: () => ({ visibility: 'visible', display: 'block' }),
         });
         return { result: { value } };
@@ -210,6 +221,7 @@ for (const scenario of [
           )
         : opening;
     const reloadSettings = new Function(
+      'assert',
       'waitForReplacementSettingsTab',
       'click',
       'waitFor',
@@ -219,6 +231,7 @@ for (const scenario of [
       'EXTENSION_ID',
       `${subject}\nreturn reloadSettings;`,
     )(
+      assert,
       (ownedPanel) => waitForReplacementSettingsTab(ownedPanel, 120),
       async () => {
         trustedClicks++;
@@ -255,7 +268,7 @@ for (const scenario of [
       return;
     }
     assert.equal(failure, null, 'current guest DOM must finish native Settings reload readiness');
-    assert.equal(commands[0], 'Page.reload');
+    assert.deepEqual(commands.slice(0, 2), ['Runtime.evaluate', 'Page.reload']);
     assert.equal(
       commands.every((method) => ['Page.reload', 'Runtime.evaluate'].includes(method)),
       true,
@@ -300,7 +313,11 @@ test('failed native Settings panel reload serializes the owned document and cont
         return {};
       }
       assert.equal(method, 'Runtime.evaluate');
-      const value = await runInNewContext(params.expression, { document, chrome });
+      const value = await runInNewContext(params.expression, {
+        document,
+        chrome,
+        performance: { timeOrigin: 100 + reloads },
+      });
       return { result: { value } };
     },
   };
@@ -310,7 +327,7 @@ test('failed native Settings panel reload serializes the owned document and cont
   );
   const settingsStart = source.indexOf('async function settings(panel, onStep = () => {}) {');
   const reloadStart = source.indexOf('\nasync function reloadSettings(panel) {', settingsStart);
-  const reloadEnd = source.indexOf('\nasync function deepClean(', reloadStart);
+  const reloadEnd = source.indexOf('\nasync function port(', reloadStart);
   const runCaseStart = source.indexOf('async function runCase(c, fn) {');
   const runCaseEnd = source.indexOf('\nlet observedPort;', runCaseStart);
   assert.ok(settingsStart >= 0 && reloadStart > settingsStart && reloadEnd > reloadStart);
@@ -324,6 +341,8 @@ test('failed native Settings panel reload serializes the owned document and cont
         )
       : originalRunCase;
   const { reloadSettings, runCase } = new Function(
+    'settingsFixtureIntegrityFailure',
+    'assert',
     'waitForReplacementSettingsTab',
     'click',
     'waitFor',
@@ -338,6 +357,8 @@ test('failed native Settings panel reload serializes the owned document and cont
     'report',
     `${await sharedGuestOpeningSource()}\n${source.slice(settingsStart, reloadEnd)}\n${source.slice(source.indexOf('let publicationFailure;'), runCaseStart)}\n${runCaseSource}\nreturn { reloadSettings, runCase };`,
   )(
+    settingsFixtureIntegrityFailure,
+    assert,
     (ownedPanel) => waitForReplacementSettingsTab(ownedPanel, 120),
     () => {
       throw new Error('readiness must prevent click');
@@ -422,12 +443,13 @@ test('actual Settings guest catch persists safe extension reload failure evidenc
     'utf8',
   );
   const start = source.indexOf(
-    '      } catch (error) {\n        if (publicationFailure) throw publicationFailure;\n        report.guestStageFailed = guestStage;',
+    '        } catch (error) {\n          if (publicationFailure) throw publicationFailure;\n          const fixtureFailure = settingsFixtureIntegrityFailure(error);\n          report.guestStageFailed = guestStage;',
   );
-  const end = source.indexOf("      criterion(\n        byId('T63')", start);
+  const end = source.indexOf("        criterion(\n          byId('T63')", start);
   assert.ok(start >= 0 && end > start);
   const actualCatch = source.slice(start, end);
   const runCatch = new Function(
+    'settingsFixtureIntegrityFailure',
     'injected',
     'report',
     'guestStage',
@@ -447,6 +469,7 @@ test('actual Settings guest catch persists safe extension reload failure evidenc
   assert.throws(
     () =>
       runCatch(
+        settingsFixtureIntegrityFailure,
         new Error('guest failure'),
         {},
         'extension_reload',
@@ -481,6 +504,7 @@ test('actual Settings guest catch persists safe extension reload failure evidenc
   const saved = JSON.parse(
     JSON.stringify(
       runCatch(
+        settingsFixtureIntegrityFailure,
         error,
         report,
         'extension_reload',
@@ -525,6 +549,7 @@ test('actual Settings guest catch persists safe extension reload failure evidenc
   const second = JSON.parse(
     JSON.stringify(
       runCatch(
+        settingsFixtureIntegrityFailure,
         other,
         secondReport,
         'reload_settings',
@@ -712,8 +737,8 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
   );
   if (mutation === 'drop_catch')
     source = source.replace('        report.guestFailure = safeUnexpectedError(error);', '');
-  const start = source.indexOf("      let guestStage = 'warm_observation';");
-  const end = source.indexOf("      criterion(\n        byId('T63')", start);
+  const start = source.indexOf("        let guestStage = 'warm_observation';");
+  const end = source.indexOf("        criterion(\n          byId('T63')", start);
   assert.ok(start > 0 && end > start);
   const observed = {
     activeSettings: true,
@@ -749,8 +774,10 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
   const failure = new TypeError(canary);
   failure.code = 'EPIPE';
   failure.stack = `TypeError: ${canary}\n at observe (/private/tests/browser/settings-guest-preference-batch.mjs:812:7)`;
+  const markedFixtureFailure = scenario === 'fixture' ? await fixturePrimaryFailure() : null;
   const unknown = Object.assign(new Error(canary), { name: canary, code: canary, stack: canary });
   const deps = {
+    settingsFixtureIntegrityFailure,
     report,
     publicationFailure: undefined,
     checkpoint: (...args) => calls.push(args.join(':')),
@@ -780,6 +807,7 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
     observeGuestPreference: async () => {
       calls.push('observe');
       sampleCount += 1;
+      if (scenario === 'fixture') throw markedFixtureFailure;
       if (scenario === 'observer') throw failure;
       if (scenario === 'getter')
         throw Object.defineProperty({}, 'name', {
@@ -1335,5 +1363,481 @@ test('malformed samples retain comparator exceptions or intentionally omit best-
     assert.equal(calls.filter((value) => value === 'observe').length, 1);
     assert.equal(calls.includes('restore'), false);
     assert.equal(JSON.stringify(baseline), immutable);
+  }
+});
+
+async function actualDocumentReplacement(mutation = null, unchanged = false, invalid = false) {
+  const source = await readFile(
+    new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  let body = source.slice(
+    source.indexOf('async function reloadSettings(panel) {'),
+    source.indexOf('\nasync function port('),
+  );
+  if (mutation === 'ready_only') body = body.replace('v.origin !== previousOrigin &&', '');
+  const samples = [
+    { origin: 111, ready: true },
+    { origin: 111, ready: true },
+    { origin: 222, ready: false },
+    { origin: 222, ready: true },
+  ];
+  let current = { origin: invalid ? null : 111, ready: true };
+  let sent = false;
+  let reads = 0;
+  const opened = [];
+  const deps = {
+    assert,
+    evaluate: async (_panel, expression) => {
+      reads++;
+      return runInNewContext(expression, {
+        performance: { timeOrigin: current.origin },
+        document: { readyState: current.ready ? 'complete' : 'loading' },
+      });
+    },
+    waitFor: async (label, read, accept) => {
+      assert.equal(label, 'panel_document_after_reload');
+      for (const sample of samples) {
+        current = unchanged ? samples[0] : sample;
+        if (accept(await read())) return current;
+      }
+      throw new Error(`${label}_not_observed`);
+    },
+    settings: async () => opened.push(current.origin),
+    observeSettingsReacquisition: async () => ({}),
+    EXTENSION_ID: 'owned-extension',
+  };
+  const reload = new Function(...Object.keys(deps), `${body}; return reloadSettings;`)(
+    ...Object.values(deps),
+  );
+  if (unchanged || invalid) {
+    await assert.rejects(
+      reload({
+        send: async () => {
+          sent = true;
+        },
+      }),
+      invalid ? /identity_unavailable/ : /panel_document_after_reload_not_observed/,
+    );
+    assert.deepEqual(opened, []);
+    if (invalid) assert.equal(sent, false);
+  } else {
+    await reload({
+      send: async () => {
+        sent = true;
+      },
+    });
+    assert.equal(sent, true);
+    assert.deepEqual(opened, [222], 'Settings may open only in the new complete document');
+    assert.equal(reads, 5);
+  }
+}
+
+test('actual canonical reload rejects old complete samples and requires a new complete document', async () => {
+  await actualDocumentReplacement();
+  await actualDocumentReplacement(null, true);
+  await actualDocumentReplacement(null, false, true);
+  await assert.rejects(actualDocumentReplacement('ready_only'), /Settings may open only/);
+});
+
+async function fixturePrimaryFailure(primary = new Error('CANARY_primary_private')) {
+  const local = {
+    values: {},
+    async get(keys) {
+      return Object.fromEntries(
+        (Array.isArray(keys) ? keys : [keys])
+          .filter((key) => Object.hasOwn(this.values, key))
+          .map((key) => [key, structuredClone(this.values[key])]),
+      );
+    },
+    async set(values) {
+      Object.assign(this.values, structuredClone(values));
+    },
+    async remove(key) {
+      delete this.values[key];
+    },
+  };
+  try {
+    await withExactSettingsFixture({
+      getPanel: () => null,
+      driver: {
+        evaluate: (_panel, expression) =>
+          runInNewContext(expression, {
+            chrome: { storage: { local } },
+            crypto: webcrypto,
+            TextEncoder,
+          }),
+      },
+      reloadSettings: async () => {
+        throw new Error('CANARY_cleanup');
+      },
+      execute: async () => {
+        throw primary;
+      },
+    });
+  } catch (error) {
+    return error;
+  }
+  throw new Error('fixture failure was not produced');
+}
+
+async function extractedRunCase(source, events, projector = fullRechecks.safeUnexpectedError) {
+  const start = source.indexOf('async function runCase(c, fn) {');
+  const end = source.indexOf('\nlet observedPort;', start);
+  const deps = {
+    settingsFixtureIntegrityFailure,
+    safeUnexpectedError: projector,
+    publicationFailure: undefined,
+    checkpoint: (kind, id) => events.push([kind, id]),
+    criterion: (item, name, status, evidence) => item.criteria.push({ name, status, evidence }),
+  };
+  return new Function(...Object.keys(deps), `${source.slice(start, end)}; return runCase;`)(
+    ...Object.values(deps),
+  );
+}
+
+test('actual runCase publishes originating fail and case_end before genuine fixture abort, ordinary failures continue', async () => {
+  const source = await readFile(
+    new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const marked = await fixturePrimaryFailure();
+  for (const failure of [
+    new Error('ordinary assertion'),
+    Object.assign(new Error('ordinary cleanup'), { safeCleanupFailed: true }),
+    Object.assign(new Error('forged fixture'), { fixtureIntegrityFailure: { phase: 'restore' } }),
+    marked,
+  ]) {
+    const events = [];
+    const runCase = await extractedRunCase(source, events);
+    const c = { id: 'EXT-F-1003-T40', criteria: [] };
+    let caught;
+    try {
+      await runCase(c, async () => {
+        throw failure;
+      });
+    } catch (error) {
+      caught = error;
+    }
+    assert.equal(c.status, 'fail');
+    assert.deepEqual(events, [
+      ['case_start', c.id],
+      ['case_end', c.id],
+    ]);
+    assert.equal(caught, failure === marked ? marked : undefined);
+    if (failure === marked) {
+      assert.equal(c.cleanupAlsoFailed, true);
+      assert.equal(c.error, 'settings_fixture_integrity_failed');
+      assert.doesNotMatch(JSON.stringify(c), /CANARY/);
+    }
+  }
+  const mutant = source.replace('if (fixtureAbort) throw fixtureAbort;', '');
+  const runCase = await extractedRunCase(mutant, []);
+  await assert.rejects(
+    async () =>
+      assert.rejects(
+        runCase({ id: 'T40', criteria: [] }, async () => {
+          throw marked;
+        }),
+        (error) => error === marked,
+      ),
+    /Missing expected rejection/,
+  );
+});
+
+test('actual exercisePanel controlled return preserves harness verification and terminal outer publication', async () => {
+  const source = await readFile(
+    new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const start = source.indexOf('exercisePanel: async (') + 'exercisePanel: '.length;
+  const end =
+    source.indexOf('\n    },\n  });\n  assert.equal(result.verified, true);', start) +
+    '\n    }'.length;
+  assert.ok(start > 0 && end > start);
+  const marked = await fixturePrimaryFailure();
+  const events = [];
+  const report = {
+    cases: ['T04', 'T10'].map((id) => ({
+      id: `EXT-F-1003-${id}`,
+      status: 'unverified',
+      criteria: [],
+      steps: [],
+    })),
+  };
+  let remaining = 0;
+  const deps = {
+    settingsFixtureIntegrityFailure,
+    publicationFailure: undefined,
+    report,
+    settings: async () => {},
+    THEME_RENDERING_PROBE: false,
+    GUEST_PREFERENCES: [{ caseId: 'T04' }, { caseId: 'T10' }],
+    byId: (id) => report.cases.find((c) => c.id.endsWith(id)),
+    runCase: await extractedRunCase(source, events),
+    reloadSettings: async () => {},
+    runGuestPreferenceCase: async () => {
+      if (events.length === 1) throw marked;
+      remaining++;
+    },
+  };
+  const exercise = new Function(...Object.keys(deps), `return (${source.slice(start, end)});`)(
+    ...Object.values(deps),
+  );
+  let teardown = 0;
+  // External native harness owns this callback/teardown boundary; callback source owns the abort.
+  try {
+    await exercise({ panel: {} });
+  } finally {
+    teardown++;
+  }
+  assert.equal(teardown, 1);
+  assert.equal(remaining, 0);
+  assert.equal(report.fixtureAborted, true);
+  assert.equal(report.cases[0].status, 'fail');
+  assert.equal(report.cases[1].status, 'unverified');
+  assert.deepEqual(
+    events.map(([kind]) => kind),
+    ['case_start', 'case_end'],
+  );
+  assert.doesNotMatch(JSON.stringify(report), /CANARY/);
+  const removedReturn = source
+    .slice(start, end)
+    .replace('if (!fixtureFailure) throw error;', 'throw error;');
+  const exerciseMutant = new Function(...Object.keys(deps), `return (${removedReturn});`)(
+    ...Object.values(deps),
+  );
+  events.length = 0;
+  await assert.rejects(exerciseMutant({ panel: {} }), (error) => error === marked);
+
+  // Execute the unchanged post-native verification, catch, enforcement and final publisher source.
+  const suffixStart = source.indexOf('  assert.equal(result.verified, true);', end);
+  assert.ok(suffixStart > end);
+  const directory = mkdtempSync(join(tmpdir(), 'settings-controlled-abort-final-'));
+  try {
+    const output = join(directory, 'report.json');
+    report.build = {};
+    report.preconditions = [];
+    const outerDeps = {
+      assert,
+      report,
+      result: { verified: true, artifacts: [] },
+      DEV_BUILD_RECEIPT: undefined,
+      settingsFixtureIntegrityFailure,
+      publicationFailure: undefined,
+      observedPort: undefined,
+      THEME_RENDERING_PROBE: false,
+      enforceFullExtensionRechecks: fullRechecks.enforceFullExtensionRechecks,
+      RELOAD_SENDER_DOCUMENT_DIAGNOSTIC: false,
+      RELOAD_OPEN_DIAGNOSTIC: false,
+      finalizeSettingsSenderDocumentDiagnostic,
+      publishAtomicJsonReport,
+      OUTPUT: output,
+      console: { log() {}, error() {} },
+      process: { exitCode: 0 },
+      criterion: (item, name, status, evidence) => item.criteria.push({ name, status, evidence }),
+    };
+    const finish = new Function(
+      ...Object.keys(outerDeps),
+      `return (async () => { try { ${source.slice(suffixStart)} return report; })();`,
+    );
+    await finish(...Object.values(outerDeps));
+    const published = JSON.parse(await readFile(output, 'utf8'));
+    assert.equal(published.build.verified, true);
+    assert.equal(published.terminal, true);
+    assert.equal(published.status, 'fail');
+    assert.equal(published.fixtureAborted, true);
+    assert.equal(published.cases[0].status, 'fail');
+    assert.equal(published.cases[1].fullExtensionReload, undefined);
+    const prior = await readFile(output, 'utf8');
+    await assert.rejects(
+      finish(
+        ...Object.values({
+          ...outerDeps,
+          publishAtomicJsonReport: () => {
+            throw new Error('publisher_failed');
+          },
+        }),
+      ),
+      /publisher_failed/,
+    );
+    assert.equal(await readFile(output, 'utf8'), prior);
+    report.build = {};
+    await finish(...Object.values({ ...outerDeps, result: { verified: false } }));
+    assert.equal(
+      JSON.parse(await readFile(output, 'utf8')).build.verified,
+      undefined,
+      'failed native verification cannot fabricate verified build',
+    );
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('actual inner guest catch rethrows fixture integrity after bounded stage receipt', async () => {
+  await assert.rejects(
+    runWarmSettingsScenario('fixture'),
+    (error) => settingsFixtureIntegrityFailure(error)?.ownershipEstablished === true,
+  );
+});
+
+test('actual full recheck records fixture fail before rethrow and kills swallowed-marker mutant', async () => {
+  const marked = await fixturePrimaryFailure();
+  const item = { id: 'EXT-F-1003-T67', criteria: [], steps: [] };
+  await assert.rejects(
+    fullRechecks.runFullExtensionRecheck(item, async () => {
+      throw marked;
+    }),
+    (error) => error === marked,
+  );
+  assert.equal(item.fullExtensionReload.status, 'fail');
+  assert.equal(item.fullExtensionReload.criteria.at(-1).status, 'fail');
+  assert.ok(item.fullExtensionReload.fixtureIntegrityFailure);
+  assert.doesNotMatch(JSON.stringify(item), /CANARY/);
+  const mutantSource = fullRechecks.runFullExtensionRecheck
+    .toString()
+    .replace('throw error;', 'return result;');
+  assert.notEqual(mutantSource, fullRechecks.runFullExtensionRecheck.toString());
+  const mutant = new Function(
+    'settingsFixtureIntegrityFailure',
+    'safeUnexpectedError',
+    `return (${mutantSource});`,
+  )(settingsFixtureIntegrityFailure, fullRechecks.safeUnexpectedError);
+  await assert.rejects(
+    async () =>
+      assert.rejects(
+        mutant({ id: item.id, criteria: [], steps: [] }, async () => {
+          throw marked;
+        }),
+      ),
+    /Missing expected rejection/,
+  );
+});
+
+// A mutable primary's own cause must never select the diagnostics for its cleanup wrapper.
+async function verifyBrandedPrimaryDiagnostics(rechecks = fullRechecks) {
+  const source = await readFile(
+    new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const misleadingCause = Object.assign(new Error('CANARY_misleading_cause'), {
+    code: 'ECONNRESET',
+    safeCategory: 'auto_scrape_mode_recheck_failed',
+    safeStage: 'choice_wait',
+    safeFailureKind: 'restore',
+  });
+  const t40 = () =>
+    Object.assign(new Error('CANARY_operation', { cause: misleadingCause }), {
+      code: 'EPIPE',
+      safeLastAutoScrapeObservation: {
+        active: true,
+        sectionOpen: true,
+        controlCount: 1,
+        visibleMatches: false,
+        storedMatches: false,
+        raw: 'CANARY_raw',
+      },
+    });
+  const t67 = () =>
+    Object.assign(new Error('CANARY_operation', { cause: misleadingCause }), {
+      code: 'ETIMEDOUT',
+      safeCategory: 'auto_scrape_mode_recheck_failed',
+      safeStage: 'choice_record',
+      safeFailureKind: 'case',
+      safeOriginalStage: 'choice_wait',
+    });
+  const getterPrimary = t40();
+  Object.defineProperty(getterPrimary, 'cause', {
+    get() {
+      throw new Error('CANARY_getter');
+    },
+  });
+  const errors = [
+    ['T40', t40()],
+    ['T40', getterPrimary],
+    ['T67', t67()],
+    ['T67', Object.freeze(t67())],
+    ['T40', 'CANARY_primitive'],
+  ];
+  for (const [id, primary] of errors) {
+    const marked = await fixturePrimaryFailure(primary);
+    if (Object.isFrozen(primary)) assert.equal(marked.cause, primary);
+    else assert.equal(marked, primary);
+    const item = { id: `EXT-F-1003-${id}`, criteria: [], steps: [] };
+    const run = await extractedRunCase(source, [], rechecks.safeUnexpectedError);
+    await assert.rejects(
+      run(item, async () => {
+        throw marked;
+      }),
+      (error) => error === marked,
+    );
+    const operation = item.operationFailure;
+    assert.ok(operation);
+    if (typeof primary === 'string') {
+      assert.equal(operation.code, 'other');
+      assert.equal(operation.name, 'OtherError');
+    } else if (id === 'T40') {
+      assert.equal(
+        operation.code,
+        'EPIPE',
+        'mutable primary owns operation code despite misleading cause',
+      );
+      assert.deepEqual(operation.lastSafeObservation, {
+        active: true,
+        sectionOpen: true,
+        controlCount: 1,
+        visibleMatches: false,
+        storedMatches: false,
+      });
+    } else {
+      assert.equal(operation.code, 'ETIMEDOUT');
+      assert.deepEqual(operation.autoScrapeMode, {
+        category: 'auto_scrape_mode_recheck_failed',
+        stage: 'choice_record',
+        kind: 'case',
+        originalStage: 'choice_wait',
+      });
+    }
+    assert.equal(item.fixtureIntegrityFailure.phase, 'retire_before_restore');
+    assert.equal(item.cleanupAlsoFailed, true);
+    const full = { id: item.id, criteria: [], steps: [] };
+    await assert.rejects(
+      rechecks.runFullExtensionRecheck(full, async () => {
+        throw marked;
+      }),
+      (error) => error === marked,
+    );
+    assert.deepEqual(full.fullExtensionReload.operationFailure, operation);
+    assert.equal(full.fullExtensionReload.cleanupAlsoFailed, true);
+    assert.doesNotMatch(JSON.stringify(item) + JSON.stringify(full), /CANARY|raw:/);
+  }
+}
+
+test('actual cleanup producer and controllers retain primary diagnostics with own causes and authentic wrappers', async () => {
+  await verifyBrandedPrimaryDiagnostics();
+  const source = await readFile(
+    new URL('./settings-full-extension-rechecks.mjs', import.meta.url),
+    'utf8',
+  );
+  for (const replacement of [
+    'const error = failure?.safeCleanupFailed === true && failure?.cause !== undefined ? failure.cause : failure;',
+    "const error = new Error('constant_projector');",
+  ]) {
+    const mutated = source.replace(
+      'const error = originalSettingsCleanupFailure(failure);',
+      replacement,
+    );
+    assert.notEqual(mutated, source);
+    const executable = mutated.replace(
+      /from '(\.\/[^']+)'/g,
+      (_match, relative) => `from '${new URL(relative, import.meta.url).href}'`,
+    );
+    const rechecks = await import(
+      `data:text/javascript;base64,${Buffer.from(executable).toString('base64')}`
+    );
+    await assert.rejects(
+      verifyBrandedPrimaryDiagnostics(rechecks),
+      /mutable primary owns operation code/,
+    );
   }
 });

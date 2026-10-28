@@ -25,6 +25,7 @@ import {
   chatToolsContextExpression,
 } from './settings-panel-driver.mjs';
 import { preserveFailureDuringCleanup } from './settings-probe-cleanup.mjs';
+import { settingsFixtureIntegrityFailure } from './settings-scrape-mode-baseline.mjs';
 
 // Source-derived, reduced unit input from frozen SDK397 / design-system399.
 // The b175 native capture corroborates the mobile Tools header and Device switch;
@@ -592,9 +593,9 @@ test('real preference callback restores Settings and its section after consumer 
     new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
     'utf8',
   );
-  const start = source.indexOf('            async ({ value, label }) => {');
+  const start = source.indexOf('              async ({ value, label }) => {');
   const end =
-    source.indexOf('            },\n            undefined,', start) + '            }'.length;
+    source.indexOf('              },\n              undefined,', start) + '              }'.length;
   assert.ok(start > 0 && end > start);
   const callbackSource = source.slice(start, end);
   const verify = async (candidate) => {
@@ -674,6 +675,7 @@ test('actual case serialization preserves explicit cleanup failure without raw c
     const actual = runInNewContext(
       `(() => { ${criterionSource}\n${checkpointSource}\n${body}\nreturn runCase; })()`,
       {
+        settingsFixtureIntegrityFailure,
         publishAtomicJsonReport,
         NATIVE_STAGES,
         OUTPUT: join(dir, 'report.json'),

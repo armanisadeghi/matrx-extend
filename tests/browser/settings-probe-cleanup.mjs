@@ -71,10 +71,18 @@ function reloadBoundary(value) {
   };
 }
 
+const cleanupOriginals = new WeakMap();
+
+// Only wrappers created here resolve to a primary; public flags/cause confer no identity.
+export function originalSettingsCleanupFailure(failure) {
+  return cleanupOriginals.has(failure) ? cleanupOriginals.get(failure) : failure;
+}
+
 class SettingsCleanupFailure extends Error {
   constructor(primary) {
     super('settings_probe_cleanup_failed', { cause: primary });
     this.safeCleanupFailed = true;
+    cleanupOriginals.set(this, primary);
   }
 }
 
@@ -121,7 +129,7 @@ export async function preserveFailureDuringCleanup(operation, cleanup) {
 
 export function serializeGuestReloadFailure(failure) {
   const cleanupAlsoFailed = failure?.safeCleanupFailed === true;
-  const error = failure instanceof SettingsCleanupFailure ? failure.cause : failure;
+  const error = originalSettingsCleanupFailure(failure);
   if (error?.safeCategory !== 'full_extension_preference_or_restore_failed') return null;
   const stage = (value) =>
     value === 'not_failed' || GUEST_EXTENSION_RECHECK_FAILURE_STAGES.includes(value)

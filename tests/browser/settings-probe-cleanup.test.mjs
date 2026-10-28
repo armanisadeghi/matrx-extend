@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  originalSettingsCleanupFailure,
   preserveFailureDuringCleanup,
   serializeGuestReloadFailure,
 } from './settings-probe-cleanup.mjs';
@@ -236,5 +237,64 @@ test('canonical cleanup forwards results only after executing operation then cle
   await assert.rejects(
     verify(async (_operation, cleanup) => cleanup()),
     assert.AssertionError,
+  );
+});
+
+test('canonical cleanup resolver uses wrapper identity and preserves exact immutable or primitive originals', async () => {
+  const mutable = Object.assign(new Error('CANARY_primary', { cause: new Error('CANARY_decoy') }), {
+    safeCategory: 'full_extension_preference_or_restore_failed',
+    safeFirstChoiceFailureStage: 'choice_extension_reload',
+  });
+  const frozen = Object.freeze(
+    Object.assign(new Error('CANARY_frozen', { cause: mutable }), {
+      safeCategory: 'full_extension_preference_or_restore_failed',
+      safeFirstChoiceFailureStage: 'restore_extension_reload',
+    }),
+  );
+  const verify = async (resolve) => {
+    for (const primary of [mutable, frozen, undefined, null, false, 0, '', 'CANARY_primitive']) {
+      let caught;
+      try {
+        await preserveFailureDuringCleanup(
+          async () => {
+            throw primary;
+          },
+          async () => {
+            throw new Error('CANARY_cleanup');
+          },
+        );
+      } catch (error) {
+        caught = error;
+      }
+      assert.equal(
+        resolve(caught),
+        primary,
+        'only authentic wrapper resolves to its exact original',
+      );
+      assert.equal(caught.safeCleanupFailed, true);
+      if (primary === mutable || primary === frozen) {
+        const receipt = serializeGuestReloadFailure(caught);
+        assert.equal(receipt.firstChoiceFailureStage, primary.safeFirstChoiceFailureStage);
+        assert.equal(receipt.cleanupAlsoFailed, true);
+        assert.doesNotMatch(JSON.stringify(receipt), /CANARY/);
+      }
+    }
+    const forged = { safeCleanupFailed: true, cause: mutable };
+    assert.equal(resolve(forged), forged);
+    const throwing = Object.defineProperty({ safeCleanupFailed: true }, 'cause', {
+      get() {
+        throw new Error('CANARY_getter');
+      },
+    });
+    assert.equal(resolve(throwing), throwing);
+  };
+  await verify(originalSettingsCleanupFailure);
+  await assert.rejects(
+    verify(() => mutable),
+    /only authentic wrapper/,
+  );
+  await assert.rejects(
+    verify((failure) => (failure?.safeCleanupFailed ? failure.cause : failure)),
+    /only authentic wrapper/,
   );
 });
