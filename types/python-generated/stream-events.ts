@@ -2692,21 +2692,18 @@ export interface StructuredInputWarningData {
 }
 
 export interface VaultPasswordHealthDiscoveryReference {
-  __kind?: "password_health_discovery_reference";
   request_id: string;
   execution_id: string;
 }
 
 export interface VaultPasswordHealthDiscoveryPageData {
   type?: "vault_password_health_discovery_page";
-  __kind: "password_health_discovery_page";
   references: VaultPasswordHealthDiscoveryReference[];
   continuation?: string | null;
 }
 
 export interface VaultPasswordHealthProgressData {
   type?: "vault_password_health_progress";
-  __kind: "password_health_progress";
   request_id: string;
   execution_id: string;
   checked: number;
@@ -2715,7 +2712,6 @@ export interface VaultPasswordHealthProgressData {
 
 export interface VaultPasswordHealthScanReferenceData {
   type?: "vault_password_health_scan_reference";
-  __kind: "password_health_scan_reference";
   request_id: string;
   execution_id: string;
   resumed_from_execution_id?: string | null;

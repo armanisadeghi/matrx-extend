@@ -43,6 +43,9 @@
    "application/json"
   ]
  },
+ "/action-requests/{request_id}/end": {
+  "post": []
+ },
  "/actions": {
   "get": []
  },
@@ -842,23 +845,7 @@
    "application/json"
   ]
  },
- "/ai-visibility/panels/design": {
-  "post": [
-   "application/json"
-  ]
- },
  "/ai-visibility/panels/{panel_id}/active": {
-  "post": [
-   "application/json"
-  ]
- },
- "/ai-visibility/panels/{panel_id}/design": {
-  "get": []
- },
- "/ai-visibility/panels/{panel_id}/design/artifacts/{name}": {
-  "get": []
- },
- "/ai-visibility/panels/{panel_id}/design/gates/{gate}": {
   "post": [
    "application/json"
   ]
@@ -4332,6 +4319,11 @@
  "/hindsight/crystallization/sweep": {
   "post": []
  },
+ "/hindsight/debriefs/access": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/hindsight/debriefs/apply": {
   "post": [
    "application/json"
@@ -6919,6 +6911,11 @@
   ]
  },
  "/recovery/workflows/{definition_id}/apply-patch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/recovery/workflows/{definition_id}/convert-node": {
   "post": [
    "application/json"
   ]
@@ -10681,6 +10678,11 @@
  },
  "/workflows/{definition_id}/step-runs": {
   "post": [
+   "application/json"
+  ]
+ },
+ "/workflows/{definition_id}/tags": {
+  "patch": [
    "application/json"
   ]
  },
