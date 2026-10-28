@@ -1,0 +1,307 @@
+{
+  "schema": 1,
+  "status": "INDEPENDENT_NATIVE_AUDIT_COMPLETE_RESOURCE_INVALID_NO_PRODUCT_CREDIT",
+  "review_lane": "/root/theme9a_native_peer",
+  "authorship": "zero source or harness implementation authorship",
+  "observed_at": "2026-10-28T15:29:03.797869+00:00",
+  "run": {
+    "id": 40714335249,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40714335249",
+    "head_sha": "9a8f715c88bf578ffa5f37ce2bc9bda0d5c9b345",
+    "status": "completed",
+    "conclusion": "failure",
+    "job_id": 122907794698,
+    "job_completed_at": "2026-10-28T15:26:41Z"
+  },
+  "provenance": {
+    "actual_root_plan_exit": 0,
+    "actual_root_dispatch_exit": 0,
+    "root_originals": "../theme9a/root-{plan,dispatch}.{stdout,stderr,exit}",
+    "prior_actor_btoa_capture": "Preserved UNKNOWN separately; actual root receipt does not repair or infer the missing original actor exit.",
+    "source_ci": 40710365760,
+    "source_ci_status": "completed/success/push/attempt1",
+    "source_artifact": 12826783539,
+    "source_artifact_digest": "sha256:88847ebd1169387d15d163b50ff0ad3ea44ba7731320714d02f14a4367deb1e2",
+    "source_sha": "9a8f715c88bf578ffa5f37ce2bc9bda0d5c9b345",
+    "native_log_import": "DEVELOPMENT_TEST_IMPORTED exact_pushed_commit_only; PREPARED_DEVELOPMENT matches source and tree",
+    "development_tree": "41160e410580d0f5b9c12161c9d8e78c7eb843fb3e445ab3242c18cc30e6bc2a",
+    "version": "0.2.630",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "output_artifact": 12828241835,
+    "output_zip_sha256": "af1ca08bfc3ffc5efc6489f4f6dfc820a9b3c4d004d0b867e0bf5403845c5c58",
+    "output_zip_digest_matches_official": true,
+    "member_manifest": "member-manifest.json",
+    "members_retained": 6,
+    "official_log_zip_sha256": "7f7f9bf36709ea963cf5935d7e7837cdb87403b7dfaac47566ed251120dbaada",
+    "official_log_members_retained": 19,
+    "log_member_manifest": "log-member-manifest.json"
+  },
+  "verdict_A": {
+    "result": "UNVERIFIED_RESOURCE_INVALID",
+    "product_behaviors_verified": [],
+    "first_actual_failure": "Resource watchdog CPU confirmation expired; not a recorded product assertion failure.",
+    "last_checkpoint": {
+      "kind": "case_start",
+      "label": "EXT-F-1003-T04",
+      "sequence": 23,
+      "at": "2026-10-28T15:24:59.527Z"
+    },
+    "native_report_terminal": false,
+    "raw_case_counts": {
+      "unverified": 19,
+      "pass": 0,
+      "fail": 0
+    },
+    "all_steps_and_criteria_empty": true,
+    "original_and_surrounding": {
+      "T04": {
+        "status": "unverified",
+        "full_extension_reload": "missing",
+        "cleanup": "unverified"
+      },
+      "T10": {
+        "status": "unverified",
+        "full_extension_reload": "missing",
+        "cleanup": "unverified"
+      },
+      "T28": {
+        "status": "unverified",
+        "full_extension_reload": "missing",
+        "cleanup": "unverified"
+      },
+      "T40": {
+        "status": "unverified",
+        "full_extension_reload": "missing",
+        "cleanup": "unverified"
+      },
+      "T67": {
+        "status": "unverified",
+        "full_extension_reload": "missing",
+        "cleanup": "unverified"
+      }
+    },
+    "screenshots": "Viewed exact original PNGs: native panel initial skeleton; ordinary page owned research-brief fixture and Open panel result. Neither proves Settings identity, Theme choice or reload behavior.",
+    "unknowns": [
+      "No original Theme/mode comparator operands or native cause established.",
+      "No warm or full-extension preference outcomes, restoration or surrounding-case outcome.",
+      "Guest role is requested scope and owned-profile source path; raw artifact has no explicit settled guest identity assertion.",
+      "No independent UI replay beyond this normal real native automator.",
+      "No full Settings, current owner installation, Store, release or defect closure credit."
+    ]
+  },
+  "verdict_B": {
+    "result": "PROVENANCE_AUTHENTIC_ACCEPTANCE_INVALID_DIAGNOSTICS_LIMITED",
+    "runtime": "Official logs identify Playwright 1.56.1, Chromium 141.0.7390.37 build1194, macos-15-intel X64/x86_64, exact owned native route.",
+    "driver_source": "settings-controls selects settings-local-controls-acceptance.mjs -> native-sidepanel-qa-harness.mjs. Source-bound owned spawned profile, extension receipt/tree, native panel context and CDP checks are real; no replacement product implementation identified.",
+    "mock_limit": "Harness explicitly includes --use-mock-keychain, a Chromium macOS credential-store option; no blanket no-mocks claim. This source does not replace Settings storage/consumer logic.",
+    "fixture_limit": "Owned localhost research-brief page and dead engine port503 plus finite preference-baseline fixture cleanup are controlled test inputs, not general-world acceptance. The run reached no retained preference assertion.",
+    "diagnostic_flags": {
+      "enabled": false,
+      "evidence_class": "acceptance_eligible",
+      "perturbation": "none"
+    },
+    "sender_document_flags": {
+      "enabled": false,
+      "evidence_class": "acceptance_eligible",
+      "perturbation": "none"
+    },
+    "authentication": "Lane B guest selected; workflow wrapper receives masked admin/org secrets but source excludes this route from credential-file staging and clears raw JSON variables before child. No credential/account mutation performed by reviewer; independent remote secret/profile census not performed.",
+    "resources": {
+      "hosted-guest-40714335249-1.jsonl": {
+        "sha256": "dda0bd789638aa6d46fa009f67fec2f6f7cde240f9716e79aeded31bc55bf9e1",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T15:26:31.619Z",
+          "runId": "hosted-guest-40714335249-1",
+          "admitted": true,
+          "resourceInvalid": true,
+          "exitCode": 3,
+          "decision": "invalid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "codes": {
+          "RESOURCE_JOURNAL_OPENED": 1,
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_WATCH_HEALTHY": 1,
+          "RESOURCE_CPU_PENDING": 8,
+          "RESOURCE_PROCESS_ATTRIBUTION": 2,
+          "RESOURCE_CPU_RECOVERED": 1,
+          "RESOURCE_WATCH_UNSAFE": 1,
+          "RESOURCE_STOP_AT_SAFE_BOUNDARY": 1,
+          "RESOURCE_GROUP_STOP_REQUESTED": 1,
+          "RESOURCE_FINAL_DECISION": 1
+        }
+      },
+      "hosted-browser-40714335249-1.jsonl": {
+        "sha256": "c8c27572680aa5760fea00a0cb3125a72716dc949cfd245e1aa4fe2143ec317d",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T15:21:50.258Z",
+          "runId": "hosted-browser-40714335249-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "codes": {
+          "RESOURCE_JOURNAL_OPENED": 1,
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_FINAL_DECISION": 1
+        }
+      },
+      "hosted-package-40714335249-1.jsonl": {
+        "sha256": "f59c0ceb13746920dc99e452e8454c4798b2d788de4a1d5c329d445efbad2b10",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T15:19:54.567Z",
+          "runId": "hosted-package-40714335249-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "codes": {
+          "RESOURCE_JOURNAL_OPENED": 1,
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_WATCH_HEALTHY": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_FINAL_DECISION": 1
+        }
+      }
+    },
+    "resource_interpretation": "Guest8 CPU_PENDING/1RECOVERED, then CPU_CONFIRMATION_EXPIRED unsafe, stop-at-safe-boundary, group SIGTERM, resourceInvalid true exit3. This establishes guard invalidity, not physical CPU causation of product failure or regression.",
+    "cleanup_limit": "Official workflow/job completed and final resource decision retained. Guest journal has group-stop request but no RESOURCE_JOB_EXIT or driver terminal report, so exact child graceful exit, restoration and profile deletion cannot be asserted. Runner teardown follows terminal hosted job; no ongoing reviewer process.",
+    "source_boundaries": "Reviewed source repair/final independent source reports for Settings, Chat and Pilot footprint boundaries; no source/unit green treated as native credit.",
+    "findings": [
+      "Native progress receipt terminal:false with empty per-case criteria is not a full result.",
+      "All original/surrounding native acceptance remains open."
+    ]
+  },
+  "actions": "Read/API/archive/image inspection and uniquely owned scratch evidence only. No tracked edits, local GUI/build/install/auth/secret/fixture mutation, subagent, dispatch, commit or retry.",
+  "next_action": "Return exact invalid attempt to root; stop this attempt. Any further run requires separately authorized normal admission and cannot inherit acceptance from this run.",
+  "evidence_kind": "typed privacy-limited projection of independent official native packet audit",
+  "private_original_sha256": "9b807059ee40b6d51f03476c54134a54c682ffa73ccaaa31fe3f8904d79e6760",
+  "publication_limits": "No raw AX, screenshots, clipboard bytes, authentication, storage or provider transcript published. Original archives and complete member maps retained privately.",
+  "retained_cpu_diagnosis": {
+    "lane": "/root/cpu9a_attribution",
+    "status": "BOUNDED_DIAGNOSTIC_COMPLETE_NO_PRODUCT_CAUSE",
+    "private_original_sha256": "f98849fa1031966f7ba08522f0f966d704be74559006fe84f40250176a8080ef",
+    "original_six_members_hash_verified": true,
+    "hypotheses": [
+      {
+        "rank": 1,
+        "cause": "External provider/system activity alone accounts for the CPU episodes; owned Chromium is idle.",
+        "falsifiable_prediction": "Retained process snapshot should show no material owned Chromium CPU accounting while external provider/system activity is present.",
+        "one_variable_discriminator": "Read-only classification of existing snapshot by parent ownership rather than executable label.",
+        "assessment": "Idle-owned premise contradicted: owned Chromium/main+helpers are materially active in both snapshots. External contribution remains possible; accounting snapshots cannot prove sole interval cause."
+      },
+      {
+        "rank": 2,
+        "cause": "A particular extension renderer or Theme product callback drives second-episode overload.",
+        "falsifiable_prediction": "A retained role/target identity plus interval CPU evidence would bind the busy helper to that renderer/callback; different role or no overlap would refute it.",
+        "one_variable_discriminator": "Check retained role/target/process-time binding only; do not infer role from Chromium Helper basename.",
+        "assessment": "UNRESOLVED: PID4971 belongs to owned Chromium by parent chain and has94.5 ps accounting percentage, but no renderer role, CDP target binding, interval process-time bracket or product callback correlation exists. case_start T04 does not prove a Theme action executed."
+      },
+      {
+        "rank": 3,
+        "cause": "The guard improperly carried the first CPU episode or misclassified healthy samples, producing a false second expiry.",
+        "falsifiable_prediction": "Exact-source replay of recorded sample reasons/times should disagree with journal or show failure to reset on recovery.",
+        "one_variable_discriminator": "Pure cpuEpisode replay using immutable9a policy/source and recorded watch observations.",
+        "assessment": "REFUTED within wall-time replay limits: all11 transitions match, first recovers and second begins anew. Second busy sample resets goodCount; expiry takes precedence over the would-be third healthy sample."
+      }
+    ],
+    "episode1": {
+      "start": "2026-10-28T15:24:04.877Z",
+      "trigger": {
+        "hostBusyFraction": 0.97,
+        "oneMinuteLoad": 1.22,
+        "reasons": ["RESOURCE_CPU_BUSY"]
+      },
+      "recovery": "2026-10-28T15:24:53.374Z",
+      "elapsedSeconds": 48.497,
+      "threeConsecutiveHealthyBusyFractions": [0.02, 0.16, 0.06],
+      "firstHealthyLoad4_63": "High load alone is insufficient: high-load reason also requires busy>=0.6.",
+      "relationToProduct": "After PREPARED_DEVELOPMENT15:23:57.425; recovery precedes BROWSER_PANEL_CONTEXT_READY15:24:55.652. No startup CPU cause is established."
+    },
+    "episode2": {
+      "start": "2026-10-28T15:25:09.832Z",
+      "trigger": {
+        "hostBusyFraction": 0.81,
+        "oneMinuteLoad": 3.15,
+        "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+      },
+      "subsequentBusy": "15:25:42.199 busy0.86 resets healthy count after one healthy sample; not a second consecutive bad sample.",
+      "laterHealthy": ["15:25:58.308 busy0.02", "15:26:14.398 busy0.05"],
+      "expiry": "2026-10-28T15:26:30.499Z",
+      "elapsedSeconds": 80.667,
+      "whyHealthyExpiryIsExpected": "Confirmation limit=(2+3)*15s=75s. observe checks expired before evaluating current reasons or incrementing healthy count. The current healthy0.02 sample cannot recover after expiry; previous observation elapsed64.566s had only2 consecutive healthy samples.",
+      "terminal": "safe-boundary stop15:26:30.515, SIGTERM ownedgroup4572 at15:26:30.557, finalinvalid/exit3 at15:26:31.619"
+    },
+    "ownership": {
+      "observed_chain": "helpers4886/4889/4902/4903(first) and4971/4965(second) \u2192 Chromium4859 \u2192 node4851 \u21924572; final guard stop explicitly names ownedgroup4572.",
+      "strength": "Parent chains plus terminal ownedgroup and exact-source launch path support owned Chromium attribution, rather than guessing ownership from basename.",
+      "limits": [
+        "No owner.json/childStart/lstart receipt retained in the official six-member packet.",
+        "No snapshot PGID or complete zero-CPU ancestor census retained; same-group membership and start-identity continuity are source-backed inference rather than separately retained runtime census.",
+        "No renderer/GPU/utility/tab/extension-target role can be established for Chromium Helper.",
+        "Provider-named PID1091 parent1089 is outside the recorded owned chain; actual service identity and its complete ancestry are not captured. It is unowned/external to this bounded chain, not evidence of application cause."
+      ]
+    },
+    "replay": "Immutable exact9a source/policy pure replay matched all11 recorded watch transitions; wall timestamps projected as elapsed time, actual monotonic samples absent. Diagnostic replay only, zero product behavior passes.",
+    "measurement_limit": "ps accounting percentages and one-second iostat host interval differ; no summed percentage or helper basename establishes renderer role or causal host share.",
+    "next_action": {
+      "thisWake": "Root retains/publishes privacy-limited diagnosis if appropriate; no more native runs planned. Keep Settings19case zero-credit result and all three defects open.",
+      "beforeFutureAttempt": "Use healthy normal admission only after source/artifact/spend/runner checks. Name a discriminator before any original-route Settings attempt. Retained packet cannot choose an app patch or justify timeout/threshold/runner relocation.",
+      "discriminatorIfNeeded": "Root may separately scope a reviewed privacy-safe role-to-target identity plus interval process CPU-time measurement through existing diagnostic mechanisms before a future acceptance attempt; this report does not change or authorize any instrumentation/policy or rerun."
+    },
+    "source_hashes": [
+      {
+        "path": "scripts/stabilization-resource-cpu.mjs",
+        "githubBlobSha": "d88de422375137e3d37a2410e152ed24d5dccd36",
+        "sha256": "c2c7546df86617ab584132b1b3fb9298fb130c91e42dab06915c79198cad06d4",
+        "bytes": 1591
+      },
+      {
+        "path": "scripts/stabilization-resource.mjs",
+        "githubBlobSha": "2505eac34272bb9b37a6697f020e24382c993a1b",
+        "sha256": "ce5dc85325db0883c0298b7607782101bc498cafebbbc892eda9196c8ae2e4d9",
+        "bytes": 37505
+      },
+      {
+        "path": "scripts/stabilization-resource-safety.mjs",
+        "githubBlobSha": "21905893e505d6f6ac8c5878fc6acb10904ff117",
+        "sha256": "f7653569286611ec7938f4223d12ced26d76dfa43ed835c17e55ec65e36ae62b",
+        "bytes": 4426
+      },
+      {
+        "path": "docs/stabilization/resource-policy.json",
+        "githubBlobSha": "e9a43fc8675c3817b03da7c8b3f6621fc3f183a1",
+        "sha256": "8ab675504bc46198109169ccc4cfc4970a30a0db11a069ec4f44d6e22a772afe",
+        "bytes": 12113
+      },
+      {
+        "path": "scripts/hosted-guest-acceptance.mjs",
+        "githubBlobSha": "6264d6e454bca944804fe87bf987e00b309d2dd8",
+        "sha256": "3ae95438af04bc644609536867f45c5a190f116531571551a16173b04d8d5f65",
+        "bytes": 44895
+      },
+      {
+        "path": "tests/browser/settings-local-controls-acceptance.mjs",
+        "githubBlobSha": "983f24673019afcbd516769c0f3814d68b049093",
+        "sha256": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+        "bytes": 48908
+      },
+      {
+        "path": "tests/browser/native-sidepanel-qa-harness.mjs",
+        "githubBlobSha": "d6cc44ddd88ee80a4b109f51d9ed71cd27f2a8cb",
+        "sha256": "0873e3c37625d718f7b4c7271a41c73a67efef442d426bee0d3b671b00602cfe",
+        "bytes": 90558
+      }
+    ],
+    "no_changes": "No app/guard/policy/workflow or instrumentation edits; no native retry/dispatch/build/browser."
+  }
+}

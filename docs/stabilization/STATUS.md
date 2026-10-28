@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-28 14:51 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-28T12:19:42.293318+00:00. 207 features · 833 cases · 1422 controls · 301 linked defect records.
+Generated 2026-10-28 16:01 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-28T15:55:00Z. 207 features · 833 cases · 1422 controls · 301 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -1000,8 +1000,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: scrape577-copy-dismiss-retry-20261020-02, ['docs/stabilization/reports/scrape577-copy-dismiss-retry-20261020.json']
 - EXT-F-1007-T07 · guest: Pass. Visible Wikipedia sectionmarkers: ON livepage→article alignment, OFF articleisolation bothwarm and afteractualmanager/pageReload/recapture. One-waycontrolwording Stopfollowingpagescroll; article→page movementnotpromised. OriginalOFFrestored,2ownedtabsclosed,37/38calls,full16entryjournalvalid0/actualprocess0. Fresh evidence-onlypeer acceptsregisteredguestcase; no savedimages/pixeloffsets/nativepeer/member/admin/currentmain/Storeclaim. Procedureclarified to existingexpectedlive-page trigger, not weakened.
   Evidence / build / date recorded: guest-scroll-sync-b8-20261021-1810, ['docs/stabilization/reports/guest-scroll-sync-b8-20261021.json', 'docs/stabilization/reports/scroll-sync-evidence-peer-20261021.json', 'docs/stabilization/resource-journals/guest-scroll-sync-b8-20261021-1810.jsonl']
-- EXT-F-1007-T08 · guest: Partial. Original officialZIP/all8members and normalverify-scrape independently authenticated. All3 resourcefinalsvalid0;3CPU_PENDING/1RECOVERED. Actual narrow360px Browser141.0.7390.37 on owned title-onlylocalhost guest fixture. Current5f no-signal/empty subset only; nofullT08/defectclosure/release. Remoteprofiledeletionunknown.
-  Evidence / build / date recorded: 40691705584, ['docs/stabilization/reports/seo5f-native-20261028.json', 'docs/stabilization/reports/seo5f-peer-20261028.json']
+- EXT-F-1007-T08 · guest: Partial. Official exact-source CI/native ZIPs and all8members authenticated by independent peer; normal verify-scrape actual0/validtrue. All3 resourcefinalsvalid0; zeroCPU_PENDING/recovery. Actual Chrome141, narrow360px owned title-only localhost guest fixture. Same bounded warm no-signal SEO/empty Schema and clipboard invariance subset only; fullT08 remainspartial. --use-mock-keychain OS credential-store flag disclosed; no independent raw clipboard hash recomputation/remote profile deletion/settled identity census. No Settings/Store/closure/release credit.
+  Evidence / build / date recorded: 40718090999, ['docs/stabilization/reports/seo1130-native-20261028.json']
 - EXT-F-1007-T08 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Image and video empty states and reload lifecycle need full observation. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 - EXT-F-1007-T08 · admin: Partial. Warm Article, two Images, empty Video/Add URL,17Links,SEO and Article/Organization Schema panes rendered. No media extraction or reload claim.

@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "status": "EXACT_MAIN_RELOAD_OBSERVED",
+  "source_sha": "1130f8ecce2c294750748c8705224dee9d346bea",
+  "development_ci": {
+    "run_id": 40715497456,
+    "artifact_id": 12829191435,
+    "digest": "sha256:01766f1302d24dd6a143bc916812f5e6c19f4e6bb8a32a3c632d1ccd1adb76d1"
+  },
+  "development": {
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.630",
+    "source": "Unpacked",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "enabled": true,
+    "pinned": true,
+    "reload_clicked": true,
+    "reloaded_toast": true,
+    "tree_sha256": "82736d62938a2b5391ca3a2327795e2cca49726ddafdb3e1d17a5b264c10e618"
+  },
+  "store_copy": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.577",
+    "source": "Chrome Web Store",
+    "enabled": true,
+    "pinned": true
+  },
+  "requested_owner_profile_identity_observed": true,
+  "resource": {
+    "run_id": "owner1130-reload-20261028-001",
+    "actual_watcher_reads": 219,
+    "maximum_gap_seconds": 2.012196999974549,
+    "risk_events": [],
+    "holder_exit": 0,
+    "watcher_exit": 0,
+    "final": {
+      "schema": 1,
+      "at": "2026-10-28T15:53:17.893Z",
+      "runId": "owner1130-reload-20261028-001",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "ui": {
+    "paired_calls": 22,
+    "one_api_per_wrapper": true,
+    "first_getApp_manually_paired": true,
+    "stopped": {
+      "at": "2026-10-28T15:53:15.671Z",
+      "reason": "Owned maintenance tab closed; original owner Vault tab and guest New Tab focus restored; no further UI."
+    },
+    "kernel_reset": true
+  },
+  "private_original_hashes": {
+    ".output/stabilization-checkpoints/wake1308/owner1130/ui-api-ledger.jsonl": "3143ba974134989789ad0fd3fa383285a7d32cb9ff4feddc03c5e1a4b5582504",
+    ".output/stabilization-checkpoints/wake1308/owner1130/watch-report.json": "c3f243766375b2bfb938c33aa483eaade1dd34b6d82be7391eb1dfd561587c3d",
+    ".output/stabilization-checkpoints/wake1308/owner1130/watch.jsonl": "f317aaa3939e53845a52ea33f13aff144843ebe6dce9e300b4c2d5a33571e657",
+    ".output/stabilization-checkpoints/wake1308/owner1130/promotion-receipt.json": "410c859842a0161d19f74f39366dedea04271fd154c367c0b3dcfe8de98c7509",
+    ".output/stabilization-checkpoints/wake1308/owner1130/post-reload-tree.json": "6f32a5e55a4b6af4ddbd3ce9d5948ec7718cb2bba13e0f65de0607416059530f",
+    ".output/stabilization-checkpoints/wake1308/owner1130/ui-stopped.json": "29cc931e5458ce525890f31bc23446f6369a9bab211a52e64d7465f801a7a237"
+  },
+  "limits": [
+    "Observation-time exact1130 reload only; later main updates do not prove another artifact adoption or reload.",
+    "No product behavior, authentication, fixture or acceptance pass from copy maintenance.",
+    "Named owner profile, original owner Vault selected tab and original guest New Tab focus were observed; no Vault content retained.",
+    "Private owner/bookmark/AX/provider originals are not published."
+  ],
+  "independent_review": "owner1130-peer-20261028.json",
+  "identity_limit": "Named owner Chrome profile observed; this maintenance did not re-read the Google account email."
+}
