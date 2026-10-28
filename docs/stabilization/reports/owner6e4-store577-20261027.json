@@ -1,0 +1,338 @@
+{
+  "at": "2026-10-28T00:14:41.457324+00:00",
+  "status": "INDEPENDENT_BOUNDED_NATIVE_PASS",
+  "source_sha": "6e4fe25557903be5af9f5ac883368721c65b03eb",
+  "development": {
+    "ci": 40604512174,
+    "focused_ci": 40604512203,
+    "artifact": 12780906354,
+    "digest": "sha256:fb642aa86be817918d28778b50c8953ee718562cbb7c78ec710e1849ebae15b6",
+    "version": "0.2.630",
+    "tree": "45ee3033fd68be309f0c0ecbd46d5ba78e06391571c6533b601ad40e75a412b0",
+    "normal_import_exit": 0,
+    "normal_promotion_exit": 0,
+    "standalone_verify_exit": 0,
+    "before_after_tree_same": true,
+    "owner_profile": "Profile 8",
+    "Chrome": "156.0.8078.48",
+    "runtime_DEV_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "runtime_version_before_reload": "0.2.630",
+    "runtime_version_after_reload": "0.2.630",
+    "Loaded_from_observed": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "On_and_pin": true,
+    "literal_Reloaded_AX_and_PNG": true,
+    "limits": "Before manager already showed630; no629\u2192630 transition/actor claim. Actualrequestedprofile/fullReload/path/id/version/pin nowverified; maintenance only, not product candidate acceptance.",
+    "requested_owner_email_independently_verified": true
+  },
+  "store_guest": {
+    "evidence_class": "ACTUAL_STORE_INSTALLED_BROWSER",
+    "version": "0.2.577",
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "Source": "Chrome Web Store",
+    "On_and_pin": true,
+    "profile": "Profile 10 / Matrx Guest Test",
+    "role": "Settings Sign in visible, Email dash; no login",
+    "page": "https://www.aimatrx.com/matrx-extend-demo",
+    "first_prompt": "Reply with READY only. Do not use tools.",
+    "first_reply": "READY",
+    "followup_prompt": "Now reply with FOLLOWUP only. Do not use tools.",
+    "followup_reply": "FOLLOWUP",
+    "same_conversation": "one retained transcript with bothuser andassistantturns; noNewchatbetween",
+    "terminal": "Stop run absent, Send disabled, both replyactions/timestamps present",
+    "backend_before": {
+      "git_sha": "ebeecccdd2dc797343dd08092cfe298686e7fcc1",
+      "built_at": "2026-10-27T23:33:08Z",
+      "branch": null
+    },
+    "backend_after": {
+      "git_sha": "ebeecccdd2dc797343dd08092cfe298686e7fcc1",
+      "built_at": "2026-10-27T23:33:08Z",
+      "branch": null
+    },
+    "backend_scope": "advertised health/version bracket unchanged; actual UI replies on currentdefaultproductionserver, no streamserverSHA read insidebrowser",
+    "default_agent_model": "Observed actual public default Matrx Browser Agent \u00b7 Claude Sonnet5.5; no override/GeneralChat/premium choice; userrequested actual publishedflow;2tiny no-tool turns",
+    "AI_turns": 2,
+    "cost_limit": "Expected smallnonpremiumtwo-short-turncost; no actualinvoice/cheapestmodel claim. Canonical catalog read via EXISTING venv failed asyncpg.InternalServerError/AdapterError; no uv/install/build or othermodel chosen.",
+    "new_chat_cleanup": "AX and separate nativecoordinate New chat clicks showednoreset; retained transcript. Known historicalsame577 symptom, intermittentprior successfulNewchat; causeUNPROVEN, no newserverregression. Separateboundedsource diagnosis retained.",
+    "limits": "Onlyfirst+sameconversationfollowup replycontents/terminal; not page-groundedanswerquality/allChat/new-chatreset/currentDEV/Storecandidate acceptance."
+  },
+  "resource": {
+    "initial_run": "owner6e4-native-20261027-2357",
+    "initial_result": "REFUSED DISK_LOW19.20585GiB<20; actualexit2/noadmission/zeroCuaAPIs; failedapprovalscriptduefinalpublishedpathdidnotgrantUI",
+    "recovery": "Canonical disk-groom temp--apply actual0 freed12.7GB; sameprofile/root/threshold normalfreshpreflight admitted28.84968GiB, no policy/volume/threshold bypass",
+    "recovered_run": "owner6e4-recovered-20261028-0004",
+    "holder_session": 47963,
+    "holder_actual_exit": 0,
+    "watcher_session": 86809,
+    "watcher_actual_exit": 0,
+    "watch_report": {
+      "runId": "owner6e4-recovered-20261028-0004",
+      "first_read_at": "2026-10-28T00:00:52.402078Z",
+      "last_read_at": "2026-10-28T00:13:12.457083Z",
+      "actualPollCount": 370,
+      "maxGapSeconds": 2.011579832993448,
+      "riskEvents": [],
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T00:13:10.862Z",
+        "runId": "owner6e4-recovered-20261028-0004",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "completed_path": "docs/stabilization/resource-journals/owner6e4-recovered-20261028-0004.jsonl",
+      "audit": ".output/stabilization-checkpoints/wake2354/recovered/watch.jsonl",
+      "limits": "Prepared before holder; watcher does not authorize UI; actual two-second reads of this exact run only."
+    },
+    "approval": "parent-approval.json persistedbeforefirstAPI",
+    "API_begins": 71,
+    "API_ends": 71,
+    "API_errors": 0,
+    "guarding": "Firstdocumentation/getApp separatelymanuallypaired; thereafteroneactualCuaAPIperguardedcallback, actualwrapper/configsaved. JournalandwatchcheckedbeforeandafterEVERYAPI; continuous2s watcher, maxgap below15s. No unguardedgroup/estimatedcounterclaim."
+  },
+  "cleanup": {
+    "at": "2026-10-28T00:12:58.022Z",
+    "UI_stopped": true,
+    "owner_probe_closed": true,
+    "guest_probe_closed": true,
+    "owner_vault_restored": true,
+    "original_guest_newtab_focus_restored": true,
+    "test_conversation_retained": true,
+    "new_chat_direct_reset_not_observed": true
+  },
+  "release": "Oct27LA dailyprivatewindowreused,no dashboard/mailduplicate/upload/submission/baselinechange; Storecopyunchanged",
+  "local_actions": "No manualbuild/release/install/uv/packagepublication, noauth/token/permissionchange",
+  "remote_Settings_B": "Read-onlyplanpassed6e4/artifact; normalglobalcleanprerequisiteblockedbyownedjournal. No dispatch/refusal/nativecaseattempt; next exactcurrentmainartifactneededaftermetadata.",
+  "metrics": {
+    "new_bounded_product_behaviors": "2 actual Storeguestreplyterminal behaviors only; nofullcase/defectclosure/release"
+  },
+  "private_originals": {
+    ".output/stabilization-checkpoints/wake2354/recovered/ui-wrapper-config.json": {
+      "bytes": 399,
+      "sha256": "19a53ad2cd97f192275019717a0afcadc459e8ffb14025b1f307ffb8cf62bbbd"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/parent-approval.json": {
+      "bytes": 376,
+      "sha256": "25f9de4f1185e4c6d85eda6c64c02603a824c952d70e8ff826e992452c70794a"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/store-guest-settings.ax.txt": {
+      "bytes": 554,
+      "sha256": "24b29b037fb3499322c4bac82ffb42f7f8aa1fb0655368733ac49ca58843e61d"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-initial.ax.txt": {
+      "bytes": 3155,
+      "sha256": "5acb7015d8b8922beb6a758a6eeb5b6dc810786d5be26b63faab707d41401f5b"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/owner-initial.private.ax.txt": {
+      "bytes": 28360,
+      "sha256": "58223a9d017d9fc4ac97c30bbe055eab9a9c504530a3c3b558e01ac4a71518bc"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/watch-report.json": {
+      "bytes": 785,
+      "sha256": "33eb960dfe06a2c14614c3fade1672dba10d6149e1a50a402ae6fe065708b0a5"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-followup-terminal.ax.txt": {
+      "bytes": 9308,
+      "sha256": "5b9afdcfc709287646f590bd0ea5ac1be415d1341e293a024cb534750dac14c1"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-cleanup-before.ax.txt": {
+      "bytes": 9307,
+      "sha256": "be61ff8743b603f712a24143b2e6857931ab0a9370afa0344f38e339d0517989"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/backend-before-chat.json": {
+      "bytes": 102,
+      "sha256": "21f71b93706e079d79152eb4e2e479f4a62df1af19c21f114f181a2b42fe8ba2"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-first-prompt.ax.txt": {
+      "bytes": 529,
+      "sha256": "e2fb957496e2055eb8cd257a72117d4b42a35736c9f919f035a4fe47684861a3"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-version.ax.txt": {
+      "bytes": 6409,
+      "sha256": "dc0494872411a9e5bba2f25824dc46571941e2c2e3e8a6c0a5fa1b68dd280cff"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/owner-account.private.ax.txt": {
+      "bytes": 1446,
+      "sha256": "a09da1409d1c237d5aaa2a0c5cb92671f06356882a745ed2e6c3e12525d4df04"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/ui-stopped.json": {
+      "bytes": 284,
+      "sha256": "faa3e72197a71623a0a5351c520b86b865036b550cde2d51e31ccac621ed111c"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/owner-dev-verified-full.ax.txt": {
+      "bytes": 6263,
+      "sha256": "34aab2f8a8029609ec6296a7e95b2bf62cbf2fbcde664261071d94b7a6bd2037"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/restore-profile-menu.private.ax.txt": {
+      "bytes": 1425,
+      "sha256": "0660be37b03d0326c1bdd4f929cfa5208745c2ab08ac031135d6336ea38c8467"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-restored-empty-chat.ax.txt": {
+      "bytes": 147,
+      "sha256": "417d8485150a5ab68349037fb854557a9ce87473c1fdcb374446db6c0863f0b2"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-terminal.png": {
+      "bytes": 244251,
+      "sha256": "7f2278b9ae0fb19d75be8ca19edfdc879c9b690e549b05948159d4c640fc8e65"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/ui-wrapper-source.js": {
+      "bytes": 1110,
+      "sha256": "37f14f5fb15250560de00fcfcfc57ab6734adf8fb7fb6a8f7d783f258cefd5b6"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-restored-visual.ax.txt": {
+      "bytes": 345,
+      "sha256": "a66f940d2a90cb8407e8f83dc32c1513f947a9c244b119f4650e929f120c7572"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-restored-tab.ax.txt": {
+      "bytes": 3427,
+      "sha256": "f6580cfbc35421234743d7480d285cb493583ba081f713a3124847efc1e01161"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/store-guest-settings-full.ax.txt": {
+      "bytes": 8773,
+      "sha256": "9e13d324e7aa91695c0ed5786e1af518fcad0f83c562a566e47aeb61d51bf22b"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-restored-visual.png": {
+      "bytes": 244157,
+      "sha256": "dbfe1842b1ff5f8d1d10cfae1aa6cdd14296b54717bdd26983f6bceea6f2d278"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-followup-after-send.ax.txt": {
+      "bytes": 1002,
+      "sha256": "2667874174803ad5c3608709ff3ffcac19ec5ed7970bfd01eba224f7a33bdf0f"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/owner-restored.private.ax.txt": {
+      "bytes": 27696,
+      "sha256": "d822456fd7806d5374ca319f243ff37ffd2f779068753685fae6d9ebd42ba905"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-first-after-send.ax.txt": {
+      "bytes": 1495,
+      "sha256": "a4be607cfdce65e461e6349fb15afef803e941989b1b193e3fcb4e509f24b2bc"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/backend-after-chat.json": {
+      "bytes": 102,
+      "sha256": "21f71b93706e079d79152eb4e2e479f4a62df1af19c21f114f181a2b42fe8ba2"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/disk-before-reload.json": {
+      "bytes": 1799,
+      "sha256": "a9f9ba154849579851c9daab0aaa0721f8e54d59449d120cd5d10eec2d86ac9f"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-new-chat-native.ax.txt": {
+      "bytes": 147,
+      "sha256": "417d8485150a5ab68349037fb854557a9ce87473c1fdcb374446db6c0863f0b2"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/profile-menu.private.ax.txt": {
+      "bytes": 1418,
+      "sha256": "86e4656d42ffeec87e630317e6c6ff6f254513db7dd9688e9ef955f2bb2d8012"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/owner-probe-initial.ax.txt": {
+      "bytes": 4186,
+      "sha256": "8281d32ab31f93f6d5dcfbca22ad4c62bf6f8777b6268aebd435b8fc7aa1502f"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-followup-observation.ax.txt": {
+      "bytes": 518,
+      "sha256": "b020c5fd81060ac57778bc5bcdafc7c6231a20720e8d7fa7662a0940363a1cde"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/owner-dev-reloaded.png": {
+      "bytes": 166886,
+      "sha256": "1bfdd4a75ea72b1e33083550faa4dd2aad0f136365dd54f15e427f04c8241533"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-demo-loaded.ax.txt": {
+      "bytes": 4834,
+      "sha256": "78c9b2667069a74e95969fe123d20e5e0def2e8202cda421cff4d55671c8e463"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/owner-dev-reloaded.ax.txt": {
+      "bytes": 804,
+      "sha256": "d3edb910e4940ffd1809380aa7c771ac02936b1091dce62274692bf864a6f31d"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-chat-before.ax.txt": {
+      "bytes": 1216,
+      "sha256": "e31bd888c57b281b350c61bab0fb63fd515efc70b74ef83b212d5f524f249220"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-followup-observation.png": {
+      "bytes": 242584,
+      "sha256": "ef90ce7a6e7f1c145da47d03c01e8d0d9e20c3df5135f74d3df638b094c4a8a5"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/owner-store-preserved.ax.txt": {
+      "bytes": 5464,
+      "sha256": "6bc7537a52b4598121e50572c16f7bef9c2d71d4763446f47f281dcd068d66ef"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/store-panel-initial.ax.txt": {
+      "bytes": 1237,
+      "sha256": "6b8acf576f04fc63479fc32cf03bd95344117f849d85dc791d172802d3a59ae2"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/owner-version.ax.txt": {
+      "bytes": 6553,
+      "sha256": "79c9ea8e3672e34751d74e5f219c3c2e8de334ede2445432e9ed9a26b62fbd7d"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/ui-ledger.py": {
+      "bytes": 2186,
+      "sha256": "1e96f7f3fdd17cca863e4015be15c42fdc2966eea2a357695ba394b58195afa3"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/watch.py": {
+      "bytes": 2953,
+      "sha256": "9700469146d78148a936f47c93736cc8ca72a61f7a970a77fd3ae81035902536"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-demo.ax.txt": {
+      "bytes": 550,
+      "sha256": "ca27f3f96008a72e2339968a16b15ac1bd5cba7093d9dbbc6fd3ef541a6f71dc"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-followup-prompt.ax.txt": {
+      "bytes": 501,
+      "sha256": "213b4e5997f010215e52652eccafb74e5c0e87238e4ec95c103790f869d1d5cd"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-first-observation.ax.txt": {
+      "bytes": 1157,
+      "sha256": "03f62304cffd6aa9b8c3e6f20e08a2c61034d2c26b4371c2553e56890968a5c1"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-panel-closed.ax.txt": {
+      "bytes": 544,
+      "sha256": "c065a44a05115827b3ebef5f606584197f5fd9a7225aaf89249068449497ebcf"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/owner-dev-before.ax.txt": {
+      "bytes": 5671,
+      "sha256": "f3ae32f912d538a968e7c1448f1ba281ac6d8c310b67ae052df5d67e53087b84"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/disk-after-reload.json": {
+      "bytes": 954,
+      "sha256": "c5f6ac6a65a0ea1c8f51e69076327b916177b8475a19d9a4f66c5140aaaf62d9"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/owner-account-closed.ax.txt": {
+      "bytes": 7334,
+      "sha256": "d435517657d09a37d3876b44d9c96b7c053d465ae2beacabbd8561c27f3e7389"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-first-observation.png": {
+      "bytes": 238131,
+      "sha256": "c582fd2375e3be43e939d4ccb87471a4fe27a551111e812c2301e2ad44ef276a"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/watch.jsonl": {
+      "bytes": 120783,
+      "sha256": "f02a5f1cc4ee62e4d46c543e579ca6271b3863dfd47cf7fdf9fb646fc3a3d8e5"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/ui-api-ledger.jsonl": {
+      "bytes": 26366,
+      "sha256": "50307729d0598aadffc1be4e1f3d8f10548549e0075b25f86def1fb735ec16d8"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/guest-store-details.ax.txt": {
+      "bytes": 5531,
+      "sha256": "a974567b71d80a92e22f5588bd0a9c535d9e010e448782ad4671123fd5b8772f"
+    },
+    ".output/stabilization-checkpoints/wake2354/recovered/original-focus-restored.ax.txt": {
+      "bytes": 3929,
+      "sha256": "061c7acb4093624b8b01cd24d16f58166cd35cfb31fa06b4bebe6530984dedb0"
+    }
+  },
+  "status_at_observation": "ACTUAL_STORE_GUEST_REPLIES_AND_OWNER_RELOAD_OBSERVED_AWAIT_INDEPENDENT_REVIEW",
+  "adjudication": "Fresh independent provider peer resolves earlier original-command provenance gap; A/B PASS only requested owner maintenance and two actual Store guest terminal reply behaviors.",
+  "provider_evidence": {
+    "path": ".output/stabilization-checkpoints/wake2354/recovered/original-provider-executions.json",
+    "sha256": "71faa0cda20d5b232abc80701b12c593eba5ac24940b95aa037b9653d3231d75",
+    "source": "Fresh codex_app.read_thread; exact filtered structured provider item objects, not raw response byte identity",
+    "Cua_calls": 37,
+    "actual_API_methods": 71,
+    "actual_command_executions": 7
+  },
+  "private_original_sha256": "c741af1d6e133edafe17f36003c3bd8a1423b0e3740779bb585af599be1dce0d",
+  "final_independent_review": "docs/stabilization/reports/owner-store-provider-peer-20261027.json",
+  "publication": "Typed privacy-limited derivative with status adjudication/owner-email suppression; original Vault/account/model-error/full provider bundles remain private. Hash references authenticate originals, not public copies."
+}

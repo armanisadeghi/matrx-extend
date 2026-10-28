@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-27T22:55:44.753564+00:00",
+  "updated_at": "2026-10-28T00:26:29.260917+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -55561,19 +55561,35 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": 39444885231,
+              "status": "partial",
+              "run_id": "owner6e4-recovered-20261028-0004",
               "build_version": "0.2.577",
-              "source_sha": "91d7696626537676d0a5a1239ca29eb3fbed7331",
-              "receipt_kind": "candidate_store_zip_key_adapted_unpacked",
-              "actual_store_installed": false,
+              "actual_store_installed": true,
+              "receipt_kind": "actual_native_Store_ChromeWebStore_ID_version_On_pin_UI",
+              "published_baseline_source": "91d7696626537676d0a5a1239ca29eb3fbed7331 (mapping only; installed binary not freshly hashed)",
               "resource_invalid": false,
-              "server_sha_before": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
-              "server_sha_after": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
-              "detail": "Scoped native guest opening, same-conversation follow-up and panel-reload new conversation each grounded terminal; code and heading screenshot evidence. Independent raw peer PASS. Adapted577 Store ZIP; not Store-installed.",
+              "server_sha_before": "ebeecccdd2dc797343dd08092cfe298686e7fcc1",
+              "server_sha_after": "ebeecccdd2dc797343dd08092cfe298686e7fcc1",
+              "server_identity_scope": "advertised health/version bracket, not browser stream embedded SHA",
+              "observed_subtargets": [
+                "actual designatedProfile10Store577SettingsSignin/Emaildash",
+                "first actual READY assistant content andterminalUI",
+                "samevisibleconversation FOLLOWUP assistant content andterminalUI",
+                "raworiginalAX+PNG/71actualproviderAPImethods paired/continuouswatch/finalvalid0"
+              ],
+              "unverified": [
+                "unpredictable page grounding",
+                "actualwire conversationfingerprint/is_new",
+                "panelreloadnewconversation thirdturn",
+                "Newchatdirectreset",
+                "currentDEV/fullChat/candidateacceptance"
+              ],
+              "detail": "Two short actualpublicdefaultMatrxBrowserAgentSonnet5.5 no-toolturns; no login/modeloverride. Source/guard/provider freshindependentreview A/B PASS boundedonly. NewchatAXandnativecoordinateclick no reset observed; knownolder577same-symptom andprior successes meanclass/rootcauseunproven. OriginalguestNewTabfocus andownerVaulttab restored, testconversation retained; no falseemptycomposerrestoration. Original diskrefusal haltedallUI, canonicalgroomandfreshsameprofile/thresholdadmission recovered; no bypass.",
               "evidence": [
-                "docs/stabilization/reports/guest577-native-b-20261020.json",
-                "docs/stabilization/reports/guest577-raw-fresh-peer-20261020.json"
+                "docs/stabilization/reports/owner6e4-store577-20261027.json",
+                "docs/stabilization/reports/owner-store-provider-peer-20261027.json",
+                "docs/stabilization/evidence/store577-ebee-guest-terminal-20261027.png",
+                "docs/stabilization/reports/store577-newchat-diagnosis-20261027.json"
               ]
             }
           },
@@ -55970,6 +55986,27 @@
               },
               "superseded_at": "2026-10-20T15:32:37.877406+00:00",
               "reason": "Fresh independent exact577 native evidence; no Store-installed equivalence."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 39444885231,
+                "build_version": "0.2.577",
+                "source_sha": "91d7696626537676d0a5a1239ca29eb3fbed7331",
+                "receipt_kind": "candidate_store_zip_key_adapted_unpacked",
+                "actual_store_installed": false,
+                "resource_invalid": false,
+                "server_sha_before": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+                "server_sha_after": "32bfec95d561bfb1bd62ae49ad16634fff6e603a",
+                "detail": "Scoped native guest opening, same-conversation follow-up and panel-reload new conversation each grounded terminal; code and heading screenshot evidence. Independent raw peer PASS. Adapted577 Store ZIP; not Store-installed.",
+                "evidence": [
+                  "docs/stabilization/reports/guest577-native-b-20261020.json",
+                  "docs/stabilization/reports/guest577-raw-fresh-peer-20261020.json"
+                ]
+              },
+              "superseded_at": "2026-10-28T00:26:29.260917+00:00",
+              "reason": "New actualStoreinstalled narrow current-server UI reply check. Preserve broader frozen adapted577 three-turn/page-grounded/wire pass; current narrow observation does not repeat those dimensions."
             }
           ],
           "attempt_history": [
@@ -56719,6 +56756,13 @@
           "summary": "Reconcile extension decision-answer reader with additive agents 0.14.0 canonical reader. Changelog explicitly names frontend and Workflow Studio; extension adoption is a source-census follow-up, not a demonstrated integration break.",
           "source": "docs/stabilization/reports/remote-1100-reconcile.json",
           "reason": "User explicitly sequences Chat/Pilot last; retain this nonblocking convergence work for wave D. Reconsider immediately if integration gates expose a regression."
+        },
+        {
+          "id": "store577-direct-newchat-reset-20261027",
+          "status": "known unresolved/intermittent lead, no newclassdefectconfirmed",
+          "observation": "Aftertwo terminalguestturns, AX andnativecoordinateNewchatclicksstillshowoldtranscript. Not busy. Earlier577same-symptom report andsubsequentsuccessfulNewchatcasesretained; same-addressroute/resetcauseunproven.",
+          "evidence": "docs/stabilization/reports/store577-newchat-diagnosis-20261027.json",
+          "next_action": "Existingcontrolled keyboard/history→Newchat/actualsession-address observation undernormallease ifthiscaseisprioritized; no speculativepackage/serverfix ornewAIvolume."
         }
       ],
       "source_change_observations": [

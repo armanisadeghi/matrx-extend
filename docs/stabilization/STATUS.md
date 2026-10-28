@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-27 23:08 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-27T22:55:44.753564+00:00. 207 features · 833 cases · 1422 controls · 300 linked defect records.
+Generated 2026-10-28 00:26 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-28T00:26:29.260917+00:00. 207 features · 833 cases · 1422 controls · 300 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1340** — Pass: 93 · Partial: 98 · Fail: 1 · Unverified: 1137 · N/A: 11.
+Applicable case-by-role slots: **1340** — Pass: 92 · Partial: 99 · Fail: 1 · Unverified: 1137 · N/A: 11.
 Unverified splits into **205 explicitly marked unverified** and **932 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -47,7 +47,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 30, n/a 0 | 0 |
 | [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 0 |
-| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 1 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 2 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | pass 1, partial 3, fail 1, unverified 26, n/a 0 | 28 |
+| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 0 pass · 2 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 2 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | pass 0, partial 4, fail 1, unverified 26, n/a 0 | 28 |
 | [Pilot (deferred wave D)](#pilot-deferred-wave-d) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 5, n/a 0 | 1 |
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
@@ -1832,7 +1832,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-2013-T07 Send explicit page Source status in Chat context | N/A | Unverified | Unverified | EXT-F-2013-C134 |
 | EXT-F-2013-T08 Apply account default model when no extension model is selected | Unverified | Unverified | Unverified | EXT-F-2013-C135 |
 | EXT-F-2013-T09 Render typed decision answer in Chat live stream and conversation history | Unverified | Unverified | Unverified | EXT-F-2013-C136 |
-| EXT-F-2013-T10 Public guest Chat first reply, same-conversation follow-up, and new conversation after reload | Pass | N/A | N/A | EXT-F-2013-C08, EXT-F-2013-C10 |
+| EXT-F-2013-T10 Public guest Chat first reply, same-conversation follow-up, and new conversation after reload | Partial | N/A | N/A | EXT-F-2013-C08, EXT-F-2013-C10 |
 | EXT-F-2013-T11 Inspect actual context receipt blocks and delivered text | Unverified | Unverified | Unverified | EXT-F-2013-C137, EXT-F-2013-C138 |
 | EXT-F-2013-T12 Returning guest at the live usage limit receives free-account remedy without futile Retry | Fail | N/A | N/A | EXT-F-2013-C08, EXT-F-2013-C10, EXT-F-2013-C03 |
 | EXT-F-2013-T13 Inspect and dismiss context Values dialog | Partial | Unverified | Unverified | EXT-F-2013-C139, EXT-F-2013-C140 |
@@ -1842,8 +1842,8 @@ These historical checks retain their original artifact boundary; they do not est
 
 - EXT-F-2013-T02 · member: Partial. Hosted local-development-ZIP 0.2.205 nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case.
   Evidence / build / date recorded: 37182939504, .research/hosted-member205-final.json
-- EXT-F-2013-T10 · guest: Pass. Scoped native guest opening, same-conversation follow-up and panel-reload new conversation each grounded terminal; code and heading screenshot evidence. Independent raw peer PASS. Adapted577 Store ZIP; not Store-installed.
-  Evidence / build / date recorded: 39444885231, ['docs/stabilization/reports/guest577-native-b-20261020.json', 'docs/stabilization/reports/guest577-raw-fresh-peer-20261020.json']
+- EXT-F-2013-T10 · guest: Partial. Two short actualpublicdefaultMatrxBrowserAgentSonnet5.5 no-toolturns; no login/modeloverride. Source/guard/provider freshindependentreview A/B PASS boundedonly. NewchatAXandnativecoordinateclick no reset observed; knownolder577same-symptom andprior successes meanclass/rootcauseunproven. OriginalguestNewTabfocus andownerVaulttab restored, testconversation retained; no falseemptycomposerrestoration. Original diskrefusal haltedallUI, canonicalgroomandfreshsameprofile/thresholdadmission recovered; no bypass.
+  Evidence / build / date recorded: owner6e4-recovered-20261028-0004, ['docs/stabilization/reports/owner6e4-store577-20261027.json', 'docs/stabilization/reports/owner-store-provider-peer-20261027.json', 'docs/stabilization/evidence/store577-ebee-guest-terminal-20261027.png', 'docs/stabilization/reports/store577-newchat-diagnosis-20261027.json']
 - EXT-F-2013-T12 · guest: Fail. Historical Store-installed176 failed genericerror/Retry at liveHTTP402. Exact205candidate passed fresh/returning exhaustedguest remedy/noRetry;205 is now published. Public205CRX fresh/reload answers passed37267858358 but this did not exercise allowance402 or actualStoreinstalledprofile; retain open installed-acceptance requirement.
   Evidence / build / date recorded: urgent-live-guest-20261004-01, .research/urgent-live-guest-20261004.json
 - EXT-F-2013-T13 · guest: Partial. Original guest first trusted Escape closes/unmounts dialog and removes tooltip; independent native peer PASS for D244. FullT13 close control/reopen/full-view and surrounding broader paths remain unverified; auxiliary handler identity unknown.
